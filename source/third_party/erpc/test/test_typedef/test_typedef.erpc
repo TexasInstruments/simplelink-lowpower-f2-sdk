@@ -1,0 +1,43 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+@include("myAlloc.h")
+@output_dir("erpc_outputs")
+program test;
+
+import "../common/unit_test_common.erpc"
+
+struct A
+{
+    int32 m
+    int32 n
+}
+
+enum enumColor{red, green, blue}
+
+type ListType = list<int32>
+type ListType2 = list< list<int32> >
+type ArrayType = int32[8]
+type int32type = int32
+type newString = string
+//type MultiList = list< list<int32> >
+//type MultiArray = int32[2][3][4]
+//type MultiListArray = list< list<int32>[2] >
+type Colors = enumColor;
+type B = A;
+
+interface TypedefService {
+    sendReceiveInt(int32type a) -> int32type
+    sendReceiveEnum(Colors a) -> Colors
+    sendReceiveStruct(B a) -> B
+    sendReceiveListType(ListType listNumbers) -> ListType
+    sendReceive2ListType(ListType2 listNumbers) -> ListType2
+    sendReceiveString(newString hello @retain) -> newString
+    //sendTypeArray(ArrayType arrayNumbers) -> ArrayType
+    //sendMultiListArray(MultiListArray arrayNumbers) -> MultiListArray
+}

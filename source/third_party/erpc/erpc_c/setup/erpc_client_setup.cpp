@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) 2014-2016, Freescale Semiconductor, Inc.
+ * Copyright 2016-2017 NXP
+ * All rights reserved.
+ *
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#include "erpc_client_setup.h"
+#include "erpc_basic_codec.h"
+#include "erpc_client_manager.h"
+#include "erpc_crc16.h"
+#include "erpc_manually_constructed.h"
+#include "erpc_message_buffer.h"
+#include "erpc_transport.h"
+#include <cassert>
+#if ERPC_NESTED_CALLS
+#include "erpc_threading.h"
+#endif
+
+using namespace erpc;
+
+////////////////////////////////////////////////////////////////////////////////
+// Variables
+////////////////////////////////////////////////////////////////////////////////
+
+// global client variables
+static ManuallyConstructed<ClientManager> s_client;
+ClientManager *g_client = NULL;
+static ManuallyConstructed<BasicCodecFactory> s_codecFactory;
+static ManuallyConstructed<Crc16> s_crc16;
+
+////////////////////////////////////////////////////////////////////////////////
+// Code
+////////////////////////////////////////////////////////////////////////////////
+
+void erpc_client_init(erpc_transport_t transport, erpc_mbf_t message_buffer_factory)
+{
+    assert(transport);
+
+    // Init factories.
+    s_codecFactory.construct();
+
+    // Init client manager with the provided transport.
+    s_client.construct();
+    Transport *castedTransport = reinterpret_cast<Transport *>(transport);
+    s_crc16.construct();
+    castedTransport->setCrc16(s_crc16.get());
+    s_client->setTransport(castedTransport);
+    s_client->setCodecFactory(s_codecFactory);
+    s_client->setMessageBufferFactory(reinterpret_cast<MessageBufferFactory *>(message_buffer_factory));
+    g_client = s_client;
+}
+
+void erpc_client_init_ref(erpc_transport_t transport, erpc_mbf_t message_buffer_factory,
+        void *cm_obj, void *cf_obj, void *crc_obj)
+{
+    ManuallyConstructed<ClientManager> *client;
+    ManuallyConstructed<BasicCodecFactory> *codecFactory;
+    ManuallyConstructed<Crc16> *crc16;
+
+    assert(transport);
+
+    client = static_cast<erpc::ManuallyConstructed<ClientManager> *>(cm_obj);
+    codecFactory = static_cast<erpc::ManuallyConstructed<BasicCodecFactory> *>(cf_obj);
+    crc16 = static_cast<erpc::ManuallyConstructed<Crc16> *>(crc_obj);
+
+    // Init factories.
+    codecFactory->construct();
+
+    // Init client manager with the provided transport.
+    client->construct();
+    Transport *castedTransport = reinterpret_cast<Transport *>(transport);
+    crc16->construct();
+    castedTransport->setCrc16(crc16->get());
+    (*client)->setTransport(castedTransport);
+    (*client)->setCodecFactory(*codecFactory);
+    (*client)->setMessageBufferFactory(reinterpret_cast<MessageBufferFactory *>(message_buffer_factory));
+}
+
+void erpc_client_set_error_handler(client_error_handler_t error_handler)
+{
+    if (g_client != NULL)
+    {
+        g_client->setErrorHandler(error_handler);
+    }
+}
+
+void erpc_client_set_error_handler_ref(client_error_handler_t error_handler, void *cm)
+{
+    ClientManager *client;
+
+    if (cm != NULL)
+    {
+        client = static_cast<erpc::ClientManager *>(cm);
+        client->setErrorHandler(error_handler);
+    }
+}
+
+void erpc_client_set_crc(uint32_t crcStart)
+{
+    s_crc16->setCrcStart(crcStart);
+}
+
+void erpc_client_set_crc_ref(uint32_t crcStart, void *crc_obj)
+{
+    Crc16 *crc16;
+
+    crc16 = static_cast<erpc::Crc16 *>(crc_obj);
+    crc16->setCrcStart(crcStart);
+}
+
+#if ERPC_NESTED_CALLS
+void erpc_client_set_server(erpc_server_t server)
+{
+    if (g_client != NULL)
+    {
+        g_client->setServer(reinterpret_cast<Server *>(server));
+    }
+}
+
+void erpc_client_set_server_thread_id(void *serverThreadId)
+{
+    if (g_client != NULL)
+    {
+        g_client->setServerThreadId(reinterpret_cast<Thread::thread_id_t *>(serverThreadId));
+    }
+}
+#endif
+
+#if ERPC_MESSAGE_LOGGING
+bool erpc_client_add_message_logger(erpc_transport_t transport)
+{
+    if (g_client != NULL)
+    {
+        return g_client->addMessageLogger(reinterpret_cast<Transport *>(transport));
+    }
+    return false;
+}
+#endif
+
+void erpc_client_deinit(void)
+{
+    s_crc16.destroy();
+    s_client.destroy();
+    s_codecFactory.destroy();
+    g_client = NULL;
+}
+
+void erpc_client_deinit_ref(void *cm_obj, void *cf_obj, void *crc_obj)
+{
+    ManuallyConstructed<ClientManager> *client;
+    ManuallyConstructed<BasicCodecFactory> *codecFactory;
+    ManuallyConstructed<Crc16> *crc16;
+
+    client = static_cast<erpc::ManuallyConstructed<ClientManager> *>(cm_obj);
+    codecFactory = static_cast<erpc::ManuallyConstructed<BasicCodecFactory> *>(cf_obj);
+    crc16 = static_cast<erpc::ManuallyConstructed<Crc16> *>(crc_obj);
+
+    crc16->destroy();
+    client->destroy();
+    codecFactory->destroy();
+}

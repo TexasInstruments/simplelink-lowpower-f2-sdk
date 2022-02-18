@@ -1,0 +1,326 @@
+---
+name: allowed
+desc: client and server erros checks allowed
+params:
+  type:
+    - [bool, "false"]
+    - [int8, "-1"]
+    - [uint8, "0xFFU"]
+    - [float, "-1"]
+    - [string, "NULL"]
+    - [A, "NULL"]
+    - [B, "(B) -1"]
+idl: |
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f() -> {type[0]}
+    }
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - if (codec == NULL)
+  - err = kErpcStatus_MemoryError;
+  - codec->startWriteMessage
+  - g_client->performRequest
+  - err = codec->getStatus();
+  - g_client->callErrorHandler(err,
+  - if: type[1] != 'NULL'
+    then:
+      - if (err)
+      - return
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - err = codec->getStatus();
+  - if (!err)
+  - f();
+  - err = messageFactory->prepareServerBufferForSend
+  - if (!err)
+  - codec->startWriteMessage
+  - err = codec->getStatus();
+  - return err;
+
+---
+name: not allowed
+desc: client and server erros checks forbidden
+params:
+  type:
+    - [bool, "false", ""]
+    - [int8, "-1", ""]
+    - [uint8, "0xFFU", ""]
+    - [float, "-1", ""]
+    - [string, "NULL", "@max_length(10)"]
+    - [A, "NULL", ""]
+    - [B, "(B) -1", ""]
+  dir:
+    - "in"
+    - "out"
+
+idl: |
+    @no_infra_errors
+    @no_alloc_errors
+    program test
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f({dir} {type[0]} variable {type[2]}) -> {type[0]}
+    }
+test_client.cpp:
+  - not: '!err'
+  - not: '(err)'
+  - not: err =
+  - not: if (codec == NULL)
+  - not: codec->getStatus()
+
+test_server.cpp:
+  - not: '!err'
+  - not: err =
+  - not: '(err)'
+  - return codec->getStatus()
+
+---
+name: infra allowed
+desc: client and server infra erros checks allowed
+params:
+  type:
+    - [bool, "false"]
+    - [int8, "-1"]
+    - [uint8, "0xFFU"]
+    - [float, "-1"]
+    - [string, "NULL"]
+    - [A, "NULL"]
+    - [B, "(B) -1"]
+idl: |
+    @no_alloc_errors
+    program test
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f() -> {type[0]}
+    }
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - not: if (result == NULL)
+  - not: codec->updateStatus;
+  - codec->startWriteMessage
+  - g_client->performRequest
+  - err = codec->getStatus();
+  - g_client->callErrorHandler(err, kErrorTest_f_id)
+  - if: type[1] != 'NULL'
+    then:
+      - if (err)
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - not: if (result == NULL)
+  - err = codec->getStatus();
+  - if (!err)
+  - f();
+  - err = messageFactory->prepareServerBufferForSend
+  - if (!err)
+  - codec->startWriteMessage
+  - err = codec->getStatus();
+  - return err;
+
+---
+name: alloc allowed
+desc: client and server allocations erros checks allowed
+params:
+  type:
+    - [bool, "false"]
+    - [int8, "-1"]
+    - [uint8, "0xFFU"]
+    - [float, "-1"]
+    - [string, "NULL"]
+    - [A, "NULL"]
+    - [B, "(B) -1"]
+idl: |
+    @no_infra_errors
+    program test
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f() -> {type[0]}
+    }
+
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - if (codec == NULL)
+  - err = kErpcStatus_MemoryError;
+  - codec->startWriteMessage
+  - g_client->performRequest
+  - err = codec->getStatus();
+  - g_client->callErrorHandler(err,
+  - if: type[1] != 'NULL'
+    then:
+      - if (err)
+      - return
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - err = codec->getStatus();
+  - if (!err)
+  - f();
+  - err = messageFactory->prepareServerBufferForSend
+  - if (!err)
+  - codec->startWriteMessage
+  - err = codec->getStatus();
+  - return err;
+
+---
+name: allowed in_out_inout
+desc: set default return value when errors occur in client shim
+params:
+  type:
+    - [bool, "false", ""]
+    - [int8, "-1", ""]
+    - [uint8, "0xFFU", ""]
+    - [float, "-1", ""]
+    - [string, "NULL", "@max_length(10)"]
+    - [A, "NULL", ""]
+    - [B, "(B) -1", ""]
+  dir:
+    - "in"
+    - "out"
+    - "inout"
+idl: |
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f({dir} {type[0]} variable {type[2]}) -> void
+    }
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - if (codec == NULL)
+  - err = kErpcStatus_MemoryError;
+  - codec->startWriteMessage
+  - g_client->performRequest
+  - err = codec->getStatus();
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - err = codec->getStatus();
+  - if (!err)
+  - f(
+  - err = messageFactory->prepareServerBufferForSend
+  - if (!err)
+  - codec->startWriteMessage
+  - err = codec->getStatus();
+  - return err;
+
+---
+name: infra allowed in_out_inout
+desc: set default return value when errors occure in client shim
+params:
+  type:
+    - [bool, "false", ""]
+    - [int8, "-1", ""]
+    - [uint8, "0xFFU", ""]
+    - [float, "-1", ""]
+    - [string, "NULL", "@max_length(10)"]
+    - [A, "NULL", ""]
+    - [B, "(B) -1", ""]
+  dir:
+    - "in"
+    - "out"
+    - "inout"
+idl: |
+    @no_alloc_errors
+    program test
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f({dir} {type[0]} variable {type[2]}) -> void
+    }
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - not: if (codec == NULL)
+  - not: err = kErpcStatus_MemoryError;
+  - codec->startWriteMessage
+  - g_client->performRequest
+  - err = codec->getStatus();
+  - g_client->callErrorHandler(err,
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - not: if (variable == NULL)
+  - err = codec->getStatus();
+  - if (!err)
+  - f(
+  - if: dir in ('out', 'inout')
+    then:
+      - if (!err)
+      - codec->startWriteMessage
+      - err = codec->getStatus();
+  - return err;
+
+---
+name: alloc allowed in_out_inout
+desc: set default return value when errors occure in client shim
+params:
+  type:
+    - [bool, "false", ""]
+    - [int8, "-1", ""]
+    - [uint8, "0xFFU", ""]
+    - [float, "-1", ""]
+    - [string, "NULL", "@max_length(10)"]
+    - [A, "NULL", ""]
+    - [B, "(B) -1", ""]
+  dir:
+    - "in"
+    - "out"
+    - "inout"
+idl: |
+    @no_infra_errors
+    program test
+    struct A{
+        int32 a;
+    }
+
+    enum B { one }
+
+    interface ErrorTest{
+        f({dir} {type[0]} variable {type[2]}) -> void
+    }
+test_client.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - if (codec == NULL)
+  - err = kErpcStatus_MemoryError;
+  - else
+  - codec->startWriteMessage
+  - g_client->performRequest(request);
+  - err = codec->getStatus();
+  - g_client->releaseRequest(request);
+  - g_client->callErrorHandler(err, kErrorTest_f_id);
+
+test_server.cpp:
+  - erpc_status_t err = kErpcStatus_Success;
+  - err = codec->getStatus();
+  - if (!err)
+  - err = messageFactory->prepareServerBufferForSend
+  - if (!err)
+  - return err;

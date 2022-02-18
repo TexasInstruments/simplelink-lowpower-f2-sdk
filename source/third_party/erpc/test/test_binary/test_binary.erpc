@@ -1,0 +1,25 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+//Add data structures and function prototypes here
+//using Freescale's eRPC IDL language
+@include("myAlloc.h")
+@output_dir("erpc_outputs")
+program test;
+
+import "../common/unit_test_common.erpc"
+
+interface Binary {
+    //sendReceiveBinary(binary a) -> binary
+    oneway sendBinary(binary a)
+    //receiveBinary() -> binary
+    test_binary_allDirection(binary a, in binary b, inout binary e) -> void
+    test_binary_allDirectionLength(binary a @length(p1), in binary b, inout binary d, uint32 p1) -> void
+//    test_binary_allDirectionLength(binary a @length(p1), in binary b, inout binary c @length(p2), inout binary d, uint32 p1, inout uint32 p2) -> void
+    //test_binary_allDirection(binary a, in binary b, out binary c, out byref binary d, inout binary e) -> void
+}

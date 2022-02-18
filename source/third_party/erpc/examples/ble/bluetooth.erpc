@@ -1,0 +1,32 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016-2017 NXP
+ * All rights reserved.
+ *
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+@outputDir("bluetooth")
+@py_types_name_strip_suffix("_t")
+program bluetooth
+
+import "ble_common.erpc"
+
+type gapGenericCallback_t = uint32 // fnptr
+type hciHostToControllerInterface_t = uint32
+
+
+@group("ble_api")
+interface host {
+
+    _Ble_HostInitialize(
+        ) -> bleResult_t
+
+}
+
+
+import "ble_gatt.erpc"
+import "ble_gap.erpc"
+
+

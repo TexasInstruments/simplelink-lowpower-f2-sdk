@@ -1,0 +1,540 @@
+/*
+ * Copyright (c) 2015, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ *  ======== test.bld ========
+ */
+
+/* 
+ *  "testing.doc" in ti.sysbios.build.doc details specifying, building, and
+ *  running tests. Below are details on the properties supported by tests
+ *  in a package's testArray.
+ *
+ *  ======== testArray ========
+ *  The testArray is used by buildTests in test.bld to generate the makefile 
+ *  goals for the tests in this package. The test objects in this array can 
+ *  have the following properties:
+ *    name: The name of the test.
+ *    sources: An array of the names of the source files, without the '.c's
+ *    config: The name of the config file, without the '.cfg'
+ *    refOutput: The name of the golden output file, without the '.k'
+ *    timeout: The timeout for the test in seconds (i.e. timeout: "30").
+ *             Default timeout is 60 seconds.
+ *    argsToMain: String of arguments (not an array) to be passed to main() 
+ *                through argv and argc.
+ *    buildTargets: The names of the targets supported by the test. If this
+ *             property is undefined, the test will be built for all targets,
+ *             so this array is really intended for restricting the test to
+ *             the specified targets.
+ *    noBuildTargets: The names of targets *not* supported by the test.
+ *              The test will be built for all other targets listed in
+ *              Build.targets array. Cannot use buildTargets and noBuildTargets
+ *              for the same test.
+ *    buildPlatforms: The names of the platforms supported by the test. If this
+ *             property is undefined, the test will support all of the 
+ *             platforms in the target.platforms[] array in config.bld, so this
+ *             array is really intended for restricting the test to specific
+ *             platforms. When actually building the tests with sm-make, the 
+ *             platform to build for is specified using XDCARGS. Only specify
+ *             the platform suffix, not the entire name.
+ *   
+ *  Only the test name is required. If none of the other properties are 
+ *  specified, they will be inferred from the test name by adding the
+ *  appropriate file extension.
+ *
+ *  The buildTargets and buildPlatforms are really there so that tests whose
+ *  output changes depending on the target or platform can be separated.
+ *
+ */
+ 
+ 
+/* 
+ *  ======== buildTests ======== 
+ *  This function generates the makefile goals for all of the
+ *  tests in the testArray parameter. Each test package, in its
+ *  package.bld, should define a testArray, import this file, and
+ *  call buildTests. The second argument is the XDCARGS environment
+ *  variable. In package.bld, just pass 'arguments' as the second
+ *  parameter.
+ */ 
+function buildTests(testArray, xdcArgs)
+{
+    /* The XDCARGS specify which profiles and platforms to build for. */
+    var profiles = getProfiles(xdcArgs);
+    var platform = getPlatform(xdcArgs);
+
+    /*  ==== LOOP OVER TESTS ==== */
+    for (var i = 0; i < testArray.length; i++) {
+        var test = testArray[i];
+
+        /* Infer any missing properties from the name */
+        fillIn(test);
+        
+        /* ==== LOOP OVER TARGETS ==== */
+        for (var j = 0; j < Build.targets.length; j++) {
+            var targ = Build.targets[j];
+            
+            /* If the test doesn't support this target, skip this target. */
+            if (!testSupportsTarget(test, targ)) {
+                continue;
+            }
+
+            /* 
+             *  ==== platform=default ==== 
+             *  If we're using the default platform, don't create a platform
+             *  subdirectory for the test.             
+             */
+            if (platform.useDefaultPlatform) {
+                platform.name = platformSuffix(targ.platform);
+                
+                if (!testSupportsPlatform(test, platform.name)) {
+                    continue;
+                }
+                /* For each profile... */
+                for (var m = 0; m < profiles.length; m++) {
+                    var profile = profiles[m];
+
+                    var testName = profile + '/' + test.name;
+                    
+                    addTestGoals(test, profile, targ, targ.platform, testName);
+                }
+            }
+            /* 
+             *  ==== platform=<platform> ===== 
+             *  If a platform was specified explicitly, place it in a platform
+             *  subdirectory, regardless of whether or not it's the default.
+             */
+            else if (platform.useThisPlatform) {
+                if (!testSupportsPlatform(test, platform.name)) {
+                    continue;
+                }
+                
+                /* 
+                 * We have the platform suffix but need the full platform. Look
+                 * through the targ.platforms array to see find the full
+                 * platform name. It's possible that this target doesn't support
+                 * this platform, in which case, continue. 
+                 */
+                var fullPlatformName = "";
+                
+                for (var m = 0; m < targ.platforms.length; m++) {
+                    if (targ.platforms[m].indexOf(platform.name) != -1) {
+                        fullPlatformName = targ.platforms[m];
+                        break;
+                    }
+                }
+                /* 
+                 * If the platform wasn't found then it's not supported
+                 * by this target. 
+                 */
+                if (fullPlatformName == "") {
+                    continue;
+                }
+                
+                /* For each profile... */
+                for (var m = 0; m < profiles.length; m++) {
+                    var profile = profiles[m];
+                    
+                    /* Replace any ':' in platform name with '_' */
+                    platform.name = platform.name.replace(/\:/g, '_');
+                    
+                    var testName = platform.name + '/' + profile + '/' +
+                                   test.name;
+                    
+                    addTestGoals(test, profile, targ, fullPlatformName, 
+                                 testName);
+                }
+            }
+            /* 
+             *  ==== platform=all ===== 
+             *  If we are building for all platforms, place them ALL in
+             *  platform subdirectories, even the default platform.
+             */
+            else if (platform.useAllPlatforms) {    
+                /* For all of this target's platforms.. */
+                for (var k = 0; k < targ.platforms.length; k++) {
+                    platform.name = platformSuffix(targ.platforms[k]);
+                    
+                    if (!testSupportsPlatform(test, platform.name)) {
+                        continue;
+                    }
+                    
+                    /* For each profile... */
+                    for (var m = 0; m < profiles.length; m++) {
+                        var profile = profiles[m];
+                        
+                        /* Replace any ':' in platform name with '_' */
+                        platform.name = platform.name.replace(/\:/g, '_');
+                        
+                        var testName = platform.name + '/' + profile + '/' +
+                                       test.name;
+                        
+                        addTestGoals(test, profile, targ, targ.platforms[k],
+                                     testName);
+                    }
+                }
+            }
+            else {
+                print("\nERROR: Test.bld has incorrectly read in the " +
+                      "platform from XDCARGS.\n");
+                return (-1);
+            }
+        }
+    }
+    return (0);
+}
+
+
+/* 
+ *  ======== getProfiles ========
+ *  Determines which profiles to build for.
+ *
+ *  Any argument in XDCARGS which does not contain platform= is treated
+ *  as a profile here. This way multiple build profiles can be specified
+ *  just by separating them with a space. 
+ */
+function getProfiles(xdcArgs)
+{
+    var profiles = new Array();
+    
+    /* 
+     * cmdlProf[1] gets matched to "whole_program,debug" if 
+     * ["abc", "profile=whole_program,debug"] is passed in as xdcArgs
+     */
+    var cmdlProf = (" " + xdcArgs.join(" ") + " ").match(/ profile=([^ ]+) /);
+    
+    if (cmdlProf == null) {
+        /* No profile=XYZ found */
+    }
+    else {
+        /* Split "whole_program,debug" into ["whole_program", "debug"] */
+        profiles = cmdlProf[1].split(',');
+    }
+
+    /* If no profiles were assigned, use them all. */
+    if (profiles.length == 0) {
+        profiles[0] = "debug";
+        profiles[1] = "release";
+    }
+    
+    return (profiles);
+}
+
+/*
+ *  ======== getPlatform ========
+ *  Reads the XDCARGS to determine what platforms to build for. This function
+ *  returns an object containing all of the info about what platforms to build
+ *  for.
+ */
+function getPlatform(xdcArgs)
+{
+    var platform = new Object();
+    platform.name = "";
+    platform.useDefaultPlatform = true;
+    platform.useAllPlatforms = false;
+    platform.useThisPlatform = false;
+    
+    /* 
+     * Look through all of the XDCARGS to see if a platform has been
+     * specified.
+     */
+    for (var i = 0; i < xdcArgs.length; i++) {
+        var index = xdcArgs[i].indexOf("platform=");
+        if (index != -1) {
+            platform.name = xdcArgs[i].substring(index + 9, xdcArgs[i].length);
+            if (platform.name == "default") {
+                return (platform);
+            }
+            else if (platform.name == "all") {
+                platform.useDefaultPlatform = false;
+                platform.useAllPlatforms = true;
+                return (platform);
+            }
+            else {
+                platform.useDefaultPlatform = false;
+                platform.useThisPlatform = true;
+                return (platform);
+            }
+        }
+    }
+    
+    /* If nothing was specified in XDCARGS, use the default platform. */
+    return (platform);
+}
+
+/*
+ *  ======== testSupportsTarget ========
+ *  Returns true if the given test supports the given target.
+ *  If there are no filter arrays, that's taken to mean that
+ *  the test should be built for all targets.
+ *  Only one filter array is allowed.
+ */
+function testSupportsTarget(test, target)
+{
+    var count = 0;
+    var noFlag = false;
+    var fieldName; 
+    var list;
+
+    for (var f in test) {
+        switch (f) {
+            case 'noBuildTargets':
+            case 'noNameList': {
+                noFlag = true;
+            }
+            case 'buildTargets':
+            case 'nameList': {
+                fieldName = 'name';
+                list = test[f];
+                count++;
+                break;
+            }
+
+            case 'noIsaList': {
+                noFlag = true;
+            }
+            case 'isaList': {
+                fieldName = 'isa';
+                list = test[f];
+                count++;
+                break;
+            }
+
+            case 'noSuffixList': {
+                noFlag = true;
+            }
+            case 'suffixList': {
+                fieldName = 'suffix';
+                list = test[f];
+                count++;
+                break;
+            }
+        }
+    }
+
+    /* if no filters specified, then test supports all targets */
+    if (count == 0) {
+        return (true);
+    }
+
+    /* make sure only one filter list was specified */
+    if (count != 1) {
+        throw Error("cannot specify more than one filter list, "
+            + "test.name = " + test.name);
+    }
+
+    /*
+     * add ',' at front and and tail of list and field strings to allow
+     * use of simple match API.  For example, the string is updated to:
+     * ',v5T,v7R,' to allow match of ',v5t,'.
+     */
+    if (String(','+list.toString()+',').match(','+target[fieldName]+',')) {
+        return (!noFlag);
+    }
+    else {
+        return (noFlag);
+    }   
+
+    /* should not get here */
+    throw Error("internal error in testSupportsTarget()");
+}
+
+/*
+ *  ======== testSupportsPlatform ========
+ *  This function is to support the buildPlatforms array.
+ */
+function testSupportsPlatform(test, platform)
+{
+    if ((test.buildPlatforms == null) || (test.buildPlatforms.length == 0)) {
+        return (true);
+    }
+    
+    for (var i = 0; i < test.buildPlatforms.length; i++) {
+        if (test.buildPlatforms[i] == platform) {
+            return(true);
+        }        
+    }
+    
+    return (false);
+}
+
+/*
+ *  ======== platformSuffix ========
+ *  Parses a full platform name ("ti.platforms.ezdsp2812") to return only the
+ *  the platform suffix ("ezdsp2812"). It does this by returning everything
+ *  after the last period '.' in the platform name.
+ */
+function platformSuffix(platform)
+{
+    var begin = platform.lastIndexOf('.') + 1;
+    
+    return (platform.substring(begin, platform.length));
+}
+
+ 
+/*
+ *  ======== addTestGoal ========
+ *  This function calls pkg.addExecutable to create the .test and
+ *  .regress.test goals for the given test, profile, and target.
+ */
+function addTestGoals(test, profile, target, platform, testName)
+{
+    /* FIRST, specify the basic executable without reference output. */
+    
+    /* Specify the .test goal */
+    var testAttrs = {
+                        execArgs: test.timeout,
+                        args: ""
+                    };
+    /* get the options defined in the test argument */
+    var defs = (test.defs == undefined) ? "" : test.defs;
+    var copts = (test.copts == undefined) ? "" : test.copts;
+    var aopts = (test.aopts == undefined) ? "" : test.aopts;
+    var lopts = (test.lopts == undefined) ? "" : test.lopts;
+    
+    /*
+     *  profileCopts are needed for cudatest.  Since avala builds non tiTargets,
+     *  comment this out for now, and resolve later.
+     */
+    var profileCopts = undefined;
+            //tiTargets[target.name].profiles[profile].compileOpts.copts;
+    var profileAopts = undefined;
+            //tiTargets[target.name].profiles[profile].compileOpts.aopts;
+    var profileLopts = undefined;
+            //tiTargets[target.name].profiles[profile].linkOpts;
+    var profileDefs = undefined;
+            //tiTargets[target.name].profiles[profile].compileOpts.defs;
+
+    /* verify they are defined */
+    profileCopts = (profileCopts == undefined) ? "" : profileCopts;
+    profileAopts = (profileAopts == undefined) ? "" : profileAopts;
+    profileLopts = (profileLopts == undefined) ? "" : profileLopts;
+    profileDefs = (profileDefs == undefined) ? "" : profileDefs;
+
+    /* get config arguments, if any */
+    var cfgArgs = (test.cfgArgs == undefined || test.cfgArgs == "") ?
+            "" : test.cfgArgs;
+
+    /* Specify the executable's properties */
+    var execAttrs = {
+                        defs:  defs + profileDefs,
+                        copts: copts + profileCopts,
+                        aopts: aopts + profileAopts,
+                        lopts: lopts + profileLopts,
+                        cfgScript: test.config + ".cfg",
+                        cfgArgs: test.cfgArgs,
+                        profile: profile,
+                        test: testAttrs,
+                    };
+
+    var prog = Pkg.addExecutable(testName, target, platform, execAttrs);
+    
+    /* Add the source files */                                    
+    prog.addObjects(test.sources);
+    
+    /* 
+     * SECOND, add additional test goals as necessary for regression and for
+     * different sets of arguments.
+     */
+    
+    /* Specify the .regress.test goal */
+    var rTestAttrs = {
+                         groupName: "regress",
+                         refOutput: "golden/" + test.refOutput + ".k",
+                         execArgs: test.timeout,
+                         args: ""
+                     };
+    
+    /* If there are no arguments, then just add the regression goal. */
+    if (test.argsToMain.length == 0) {
+        prog.addTest(rTestAttrs);
+    }
+    /* 
+     * If there are arguments, then for each set of arguments, add one test
+     * goal with reference output (the regression test) and one without.
+     */
+    else {
+        for (var i = 0; i < test.argsToMain.length; i++) {
+            testAttrs.args = test.argsToMain[i].args;
+            prog.addTest(testAttrs);
+            
+            rTestAttrs.refOutput = "golden/" + test.argsToMain[i].refOutput + ".k";
+            rTestAttrs.args = test.argsToMain[i].args;
+            prog.addTest(rTestAttrs);
+        }
+    }
+} 
+
+
+/*
+ *  ======== fillIn ========
+ *  Fills in any missing test properties (except for targets array) 
+ *  using the test name.
+ */
+function fillIn(test)
+{
+    if ((test.name == undefined) || (test.name == "")) {
+        throw "Each test must have a test.name";
+    }
+    if ((test.sources == undefined) || (test.sources == null)) {
+        test.sources = [test.name];
+    }
+    if ((test.config == undefined) || (test.config == "")) {
+        test.config = test.name;
+    }
+    if ((test.refOutput == undefined) || (test.refOutput == "")) {
+        test.refOutput = test.name;
+    }
+    
+    /* 
+     * Test timeout needs to be converted from int to String. 
+     * Default is 60 seconds.
+     */
+    if ((test.timeout == undefined)) {
+        test.timeout = "-t 60";
+    }
+    else {
+        test.timeout = "-t " + test.timeout;
+    }
+    
+    /* argsToMain is an array. */
+    if ((test.argsToMain == undefined) || (test.argsToMain == null)) {
+        test.argsToMain = new Array();
+    }
+    
+    /* Fill in any missing reference outputs for the different arguments. */
+    for (var i = 0; i < test.argsToMain.length; i++) {
+        if ((test.argsToMain[i].refOutput == undefined) ||
+            (test.argsToMain[i].refOutput == null)) {
+            test.argsToMain[i].refOutput = test.refOutput;
+        }
+    }
+}
