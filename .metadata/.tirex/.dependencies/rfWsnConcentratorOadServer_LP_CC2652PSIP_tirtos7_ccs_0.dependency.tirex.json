@@ -1,0 +1,32 @@
+[
+    {
+        "files": [
+            "+../../ConcentratorRadioTask.c -> ConcentratorRadioTask.c",
+            "+../../ConcentratorRadioTask.h -> ConcentratorRadioTask.h",
+            "+../../ConcentratorTask.c -> ConcentratorTask.c",
+            "+../../ConcentratorTask.h -> ConcentratorTask.h",
+            "+../../rfWsnConcentrator.c -> rfWsnConcentrator.c",
+            "+../../oad/native_oad/oad_server.c -> oad/native_oad/oad_server.c",
+            "+../../oad/native_oad/oad_server.h -> oad/native_oad/oad_server.h",
+            "+../../oad/native_oad/oad_protocol.c -> oad/native_oad/oad_protocol.c",
+            "+../../oad/native_oad/oad_protocol.h -> oad/native_oad/oad_protocol.h",
+            "+../../oad/native_oad/oad_storage.c -> oad/native_oad/oad_storage.c",
+            "+../../oad/native_oad/oad_storage.h -> oad/native_oad/oad_storage.h",
+            "+../../oad/native_oad/oad_image_header_app.h -> oad/native_oad/oad_image_header_app.h",
+            "+../../common/cc26xx/flash_interface/external/flash_interface_ext_rtos_NVS.c -> common/cc26xx/flash_interface/external/flash_interface_ext_rtos_NVS.c",
+            "+../../common/cc26xx/flash_interface/flash_interface.h -> common/cc26xx/flash_interface/flash_interface.h",
+            "+../../common/cc26xx/oad/oad_image_header.h -> common/cc26xx/oad/oad_image_header.h",
+            "+../../common/cc26xx/oad/ext_flash_layout.h -> common/cc26xx/oad/ext_flash_layout.h",
+            "+../../common/cc26xx/crc/crc32.c -> common/cc26xx/crc/crc32.c",
+            "+../../common/cc26xx/crc/crc32.h -> common/cc26xx/crc/crc32.h",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../RadioProtocol.h -> RadioProtocol.h",
+            "+../../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../../easylink/EasyLink.c -> easylink/EasyLink.c",
+            "+../rfWsnConcentratorOadServer.syscfg -> rfWsnConcentratorOadServer.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.cmd -> cc13x2_cc26x2_tirtos7.cmd"
+        ]
+    }
+]

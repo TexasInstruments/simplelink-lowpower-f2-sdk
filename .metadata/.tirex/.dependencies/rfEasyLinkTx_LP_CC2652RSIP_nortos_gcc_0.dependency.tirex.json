@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../rfEasyLinkTx.syscfg -> rfEasyLinkTx.syscfg",
+            "+../rfEasyLinkTx_nortos.c -> rfEasyLinkTx_nortos.c",
+            "+../easylink/EasyLink_nortos.c -> easylink/EasyLink_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../../../../../../source/ti/boards/LP_CC2652RSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.lds -> cc13x2_cc26x2_nortos.lds"
+        ]
+    }
+]

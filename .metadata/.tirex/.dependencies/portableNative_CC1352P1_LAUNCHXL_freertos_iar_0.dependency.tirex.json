@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../console_freertos.c -> console_freertos.c",
+            "+../temperature_freertos.c -> temperature_freertos.c",
+            "+../../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_freertos.icf -> cc13x2_cc26x2_freertos.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../portableNative.syscfg -> portableNative.syscfg",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

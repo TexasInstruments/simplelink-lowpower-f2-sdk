@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../console_tirtos.c -> tirtos7/console_tirtos.c",
+            "+../temperature_tirtos.c -> tirtos7/temperature_tirtos.c",
+            "+../portableNative.syscfg -> portableNative.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_tirtos7.lds -> cc13x2x7_cc26x2x7_tirtos7.lds"
+        ]
+    }
+]

@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../application_settings.c -> application_settings.c",
+            "+../../application_settings.h -> application_settings.h",
+            "+../../../../../../../source/ti/boards/CC1312R1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfListenBeforeTalk.c -> rfListenBeforeTalk.c",
+            "+../rfListenBeforeTalk.syscfg -> rfListenBeforeTalk.syscfg"
+        ]
+    }
+]

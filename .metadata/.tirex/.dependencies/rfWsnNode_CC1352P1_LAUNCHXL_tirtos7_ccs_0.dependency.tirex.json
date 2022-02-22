@@ -1,0 +1,29 @@
+[
+    {
+        "files": [
+            "+../../NodeRadioTask.c -> NodeRadioTask.c",
+            "+../../NodeRadioTask.h -> NodeRadioTask.h",
+            "+../../NodeTask.c -> NodeTask.c",
+            "+../../NodeTask.h -> NodeTask.h",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfWsnNode.c -> rfWsnNode.c",
+            "+../../RadioProtocol.h -> RadioProtocol.h",
+            "+../../SceAdc.c -> SceAdc.c",
+            "+../../SceAdc.h -> SceAdc.h",
+            "+../../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../../easylink/EasyLink.c -> easylink/EasyLink.c",
+            "+../../sce/sce.lst -> sce/sce.lst",
+            "+../../sce/scif_framework.c -> sce/scif_framework.c",
+            "+../../sce/scif_framework.h -> sce/scif_framework.h",
+            "+../../sce/scif_osal_tirtos.c -> sce/scif_osal_tirtos.c",
+            "+../../sce/scif_osal_tirtos.h -> sce/scif_osal_tirtos.h",
+            "+../rfWsnNode.syscfg -> rfWsnNode.syscfg",
+            "+../../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+../../sce/adc_sample.scp -> sce/adc_sample.scp",
+            "+../../sce/scif.c -> sce/scif.c",
+            "+../../sce/scif.h -> sce/scif.h",
+            "+cc13x2_cc26x2_tirtos7.cmd -> cc13x2_cc26x2_tirtos7.cmd"
+        ]
+    }
+]

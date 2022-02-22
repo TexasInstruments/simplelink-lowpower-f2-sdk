@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../spiffsexternal.c -> spiffsexternal.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../spiffsexternal.syscfg -> spiffsexternal.syscfg",
+            "+../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_nortos.cmd -> cc13x2x7_cc26x2x7_nortos.cmd"
+        ]
+    }
+]

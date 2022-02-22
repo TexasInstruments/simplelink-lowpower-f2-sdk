@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../benchloop.c -> benchloop.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../benchloop.syscfg -> benchloop.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../benchloop.cfg -> benchloop.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos.cmd -> cc13x1_cc26x1_tirtos.cmd",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

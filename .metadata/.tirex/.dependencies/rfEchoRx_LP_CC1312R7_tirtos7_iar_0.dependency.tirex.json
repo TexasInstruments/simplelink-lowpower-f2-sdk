@@ -1,0 +1,17 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_tirtos7.icf -> cc13x2x7_cc26x2x7_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfEcho_ErrorTxRx.png -> rfEcho_ErrorTxRx.png",
+            "+../../rfEcho_PerfectEcho.png -> rfEcho_PerfectEcho.png",
+            "+../../rfEchoRx.c -> rfEchoRx.c",
+            "+../rfEchoRx.syscfg -> rfEchoRx.syscfg",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../RFQueue.h -> RFQueue.h"
+        ]
+    }
+]

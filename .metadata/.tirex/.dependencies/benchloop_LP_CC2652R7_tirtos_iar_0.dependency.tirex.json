@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../benchloop.c -> benchloop.c",
+            "+../benchloop.cfg -> benchloop.cfg",
+            "+../../benchloop.syscfg -> benchloop.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_tirtos.icf -> cc13x2x7_cc26x2x7_tirtos.icf",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

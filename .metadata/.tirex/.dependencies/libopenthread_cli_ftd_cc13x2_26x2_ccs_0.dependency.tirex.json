@@ -1,0 +1,36 @@
+[
+    {
+        "files": [
+            "+../../../../../../../third_party/openthread/src/cli/cli_config.h -> src/cli/cli_config.h",
+            "+../../../../../../../third_party/openthread/src/cli/cli.cpp -> src/cli/cli.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_coap.cpp -> src/cli/cli_coap.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_coap_secure.cpp -> src/cli/cli_coap_secure.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_commissioner.cpp -> src/cli/cli_commissioner.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_console.cpp -> src/cli/cli_console.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_dataset.cpp -> src/cli/cli_dataset.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_joiner.cpp -> src/cli/cli_joiner.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_server.cpp -> src/cli/cli_server.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_uart.cpp -> src/cli/cli_uart.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_udp.cpp -> src/cli/cli_udp.cpp",
+            "+../../../../../../../third_party/openthread/src/cli/README.md -> src/cli/README.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_COAP.md -> src/cli/README_COAP.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_COAPS.md -> src/cli/README_COAPS.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_COMMISSIONER.md -> src/cli/README_COMMISSIONER.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_COMMISSIONING.md -> src/cli/README_COMMISSIONING.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_DATASET.md -> src/cli/README_DATASET.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_JOINER.md -> src/cli/README_JOINER.md",
+            "+../../../../../../../third_party/openthread/src/cli/README_UDP.md -> src/cli/README_UDP.md",
+            "+../../../../../../../third_party/openthread/src/cli/cli.hpp -> src/cli/cli.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_coap.hpp -> src/cli/cli_coap.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_coap_secure.hpp -> src/cli/cli_coap_secure.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_commissioner.hpp -> src/cli/cli_commissioner.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_console.hpp -> src/cli/cli_console.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_dataset.hpp -> src/cli/cli_dataset.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_joiner.hpp -> src/cli/cli_joiner.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_server.hpp -> src/cli/cli_server.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_uart.hpp -> src/cli/cli_uart.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/cli_udp.hpp -> src/cli/cli_udp.hpp",
+            "+../../../../../../../third_party/openthread/src/cli/x509_cert_key.hpp -> src/cli/x509_cert_key.hpp"
+        ]
+    }
+]

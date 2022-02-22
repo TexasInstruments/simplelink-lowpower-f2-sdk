@@ -1,0 +1,18 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../EasyLinkEcho_PerfectEcho.png -> EasyLinkEcho_PerfectEcho.png",
+            "+../EasyLinkEcho_MissedFirstPacket.png -> EasyLinkEcho_MissedFirstPacket.png",
+            "+../EasyLinkEcho_MissingFirstCouplePackets.png -> EasyLinkEcho_MissingFirstCouplePackets.png",
+            "+../EasyLinkEcho_ErrorTxRx.png -> EasyLinkEcho_ErrorTxRx.png",
+            "+../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../rfEasyLinkEchoTx_nortos.c -> rfEasyLinkEchoTx_nortos.c",
+            "+../easylink/EasyLink_nortos.c -> easylink/EasyLink_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../rfEasyLinkEchoTx_gptimer.syscfg -> rfEasyLinkEchoTx_gptimer.syscfg",
+            "+../../../../../../source/ti/boards/LP_CC2652RSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.lds -> cc13x2_cc26x2_nortos.lds"
+        ]
+    }
+]

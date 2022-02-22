@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_CC1352P7_4/Board.html -> Board.html",
+            "+../nortos/iar/cc13x2x7_cc26x2x7_nortos.icf -> cc13x2x7_cc26x2x7_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.md -> README.md",
+            "+../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../rfDualModeRx.c -> rfDualModeRx.c",
+            "+../rfDualModeRx.syscfg -> rfDualModeRx.syscfg",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../RFQueue.h -> RFQueue.h"
+        ]
+    }
+]

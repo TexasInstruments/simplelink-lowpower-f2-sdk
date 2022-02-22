@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../display.c -> display.c",
+            "+../../splash_image.c -> splash_image.c",
+            "+../../splash_image.h -> splash_image.h",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../display.syscfg -> display.syscfg",
+            "+../../../../../../../source/ti/boards/CC1312R1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.cmd -> cc13x2_cc26x2_tirtos7.cmd"
+        ]
+    }
+]

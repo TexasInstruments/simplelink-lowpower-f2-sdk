@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_freertos.icf -> cc13x1_cc26x1_freertos.icf",
+            "+../../gpiointerrupt.c -> gpiointerrupt.c",
+            "+../gpiointerrupt.syscfg -> gpiointerrupt.syscfg",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

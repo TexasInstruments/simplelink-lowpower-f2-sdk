@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../../../../../../../third_party/openthread/examples/platforms/utils/code_utils.h -> examples/platforms/utils/code_utils.h",
+            "+../../../../../../../third_party/openthread/examples/platforms/utils/encoding.h -> examples/platforms/utils/encoding.h",
+            "+../../../../../../../third_party/openthread/examples/platforms/utils/mac_frame.h -> examples/platforms/utils/mac_frame.h",
+            "+../../../../../../../third_party/openthread/examples/platforms/utils/debug_uart.c -> examples/platforms/utils/debug_uart.c",
+            "+../../../../../../../third_party/openthread/examples/platforms/utils/mac_frame.cpp -> examples/platforms/utils/mac_frame.cpp"
+        ]
+    }
+]

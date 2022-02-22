@@ -1,0 +1,36 @@
+[
+    {
+        "files": [
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_config.h -> src/ncp/ncp_config.h",
+            "+../../../../../../../third_party/openthread/src/ncp/changed_props_set.cpp -> src/ncp/changed_props_set.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/example_vendor_hook.cpp -> src/ncp/example_vendor_hook.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base.cpp -> src/ncp/ncp_base.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base_dispatcher.cpp -> src/ncp/ncp_base_dispatcher.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base_ftd.cpp -> src/ncp/ncp_base_ftd.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base_mtd.cpp -> src/ncp/ncp_base_mtd.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base_radio.cpp -> src/ncp/ncp_base_radio.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_spi.cpp -> src/ncp/ncp_spi.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_uart.cpp -> src/ncp/ncp_uart.cpp",
+            "+../../../../../../../third_party/openthread/src/ncp/changed_props_set.hpp -> src/ncp/changed_props_set.hpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_base.hpp -> src/ncp/ncp_base.hpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_spi.hpp -> src/ncp/ncp_spi.hpp",
+            "+../../../../../../../third_party/openthread/src/ncp/ncp_uart.hpp -> src/ncp/ncp_uart.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/hdlc/hdlc.cpp -> src/lib/hdlc/hdlc.cpp",
+            "+../../../../../../../third_party/openthread/src/lib/hdlc/hdlc.hpp -> src/lib/hdlc/hdlc.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/openthread-spinel-config.h -> src/lib/spinel/openthread-spinel-config.h",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel.h -> src/lib/spinel/spinel.h",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_platform.h -> src/lib/spinel/spinel_platform.h",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel.c -> src/lib/spinel/spinel.c",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_buffer.cpp -> src/lib/spinel/spinel_buffer.cpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_decoder.cpp -> src/lib/spinel/spinel_decoder.cpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_encoder.cpp -> src/lib/spinel/spinel_encoder.cpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/radio_spinel.hpp -> src/lib/spinel/radio_spinel.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/radio_spinel_impl.hpp -> src/lib/spinel/radio_spinel_impl.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_buffer.hpp -> src/lib/spinel/spinel_buffer.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_decoder.hpp -> src/lib/spinel/spinel_decoder.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_encoder.hpp -> src/lib/spinel/spinel_encoder.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_encrypter.hpp -> src/lib/spinel/spinel_encrypter.hpp",
+            "+../../../../../../../third_party/openthread/src/lib/spinel/spinel_interface.hpp -> src/lib/spinel/spinel_interface.hpp"
+        ]
+    }
+]

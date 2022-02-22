@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC1311P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos.icf -> cc13x1_cc26x1_tirtos.icf",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../swi.c -> swi.c",
+            "+../swi.cfg -> swi.cfg",
+            "+../../swi.syscfg -> swi.syscfg"
+        ]
+    }
+]

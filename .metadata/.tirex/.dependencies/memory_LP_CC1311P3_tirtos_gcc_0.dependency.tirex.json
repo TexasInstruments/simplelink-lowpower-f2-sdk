@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../memory.c -> memory.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../memory.syscfg -> memory.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../memory.cfg -> memory.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC1311P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos.lds -> cc13x1_cc26x1_tirtos.lds",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

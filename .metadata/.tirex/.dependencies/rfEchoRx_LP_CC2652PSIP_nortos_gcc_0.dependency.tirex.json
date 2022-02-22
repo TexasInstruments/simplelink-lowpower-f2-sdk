@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../rfEcho_PerfectEcho.png -> rfEcho_PerfectEcho.png",
+            "+../rfEcho_ErrorTxRx.png -> rfEcho_ErrorTxRx.png",
+            "+../rfEchoRx.syscfg -> rfEchoRx.syscfg",
+            "+../rfEchoRx.c -> rfEchoRx.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.lds -> cc13x2_cc26x2_nortos.lds"
+        ]
+    }
+]

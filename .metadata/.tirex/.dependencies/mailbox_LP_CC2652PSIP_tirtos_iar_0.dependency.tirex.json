@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos.icf -> cc13x2_cc26x2_tirtos.icf",
+            "+../../mailbox.c -> mailbox.c",
+            "+../mailbox.cfg -> mailbox.cfg",
+            "+../../mailbox.syscfg -> mailbox.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

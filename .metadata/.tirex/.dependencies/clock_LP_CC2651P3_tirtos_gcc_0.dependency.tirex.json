@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../clock.c -> clock.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../clock.syscfg -> clock.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../clock.cfg -> clock.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos.lds -> cc13x1_cc26x1_tirtos.lds",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

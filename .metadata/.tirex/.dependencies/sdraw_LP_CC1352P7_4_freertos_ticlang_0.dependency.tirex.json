@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../sdraw.c -> sdraw.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../sdraw.syscfg -> sdraw.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC1352P7_4/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_freertos.cmd -> cc13x2x7_cc26x2x7_freertos.cmd"
+        ]
+    }
+]

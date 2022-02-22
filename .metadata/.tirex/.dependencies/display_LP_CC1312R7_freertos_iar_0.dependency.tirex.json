@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_freertos.icf -> cc13x2x7_cc26x2x7_freertos.icf",
+            "+../../display.c -> display.c",
+            "+../display.syscfg -> display.syscfg",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../splash_image.c -> splash_image.c",
+            "+../../splash_image.h -> splash_image.h"
+        ]
+    }
+]

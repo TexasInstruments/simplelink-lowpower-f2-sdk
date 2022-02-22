@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../rfEasyLinkRx_nortos.c -> rfEasyLinkRx_nortos.c",
+            "+../easylink/EasyLink_nortos.c -> easylink/EasyLink_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../rfEasyLinkRx_gptimer.syscfg -> rfEasyLinkRx_gptimer.syscfg",
+            "+../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.cmd -> cc13x2_cc26x2_nortos.cmd"
+        ]
+    }
+]

@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../i2ctmp.c -> i2ctmp.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../i2ctmp.syscfg -> i2ctmp.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652RSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_freertos.lds -> cc13x2_cc26x2_freertos.lds"
+        ]
+    }
+]

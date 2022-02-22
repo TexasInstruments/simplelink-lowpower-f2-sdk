@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../spiffsexternal.c -> spiffsexternal.c",
+            "+../main_spiffs_freertos.c -> freertos/main_spiffs_freertos.c",
+            "+../spiffsexternal.syscfg -> spiffsexternal.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC1311P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_freertos.lds -> cc13x1_cc26x1_freertos.lds"
+        ]
+    }
+]

@@ -1,0 +1,35 @@
+[
+    {
+        "files": [
+            "+../../../../../../posix/freertos/clock.c -> posix/clock.c",
+            "+../../../../../../posix/freertos/memory.c -> posix/memory.c",
+            "+../../../../../../posix/freertos/mqueue.c -> posix/mqueue.c",
+            "+../../../../../../posix/freertos/pthread_barrier.c -> posix/pthread_barrier.c",
+            "+../../../../../../posix/freertos/pthread_cond.c -> posix/pthread_cond.c",
+            "+../../../../../../posix/freertos/pthread.c -> posix/pthread.c",
+            "+../../../../../../posix/freertos/pthread_mutex.c -> posix/pthread_mutex.c",
+            "+../../../../../../posix/freertos/pthread_rwlock.c -> posix/pthread_rwlock.c",
+            "+../../../../../../posix/freertos/sched.c -> posix/sched.c",
+            "+../../../../../../posix/freertos/semaphore.c -> posix/semaphore.c",
+            "+../../../../../../posix/freertos/sleep.c -> posix/sleep.c",
+            "+../../../../../../posix/freertos/timer.c -> posix/timer.c",
+            "+../../../../../../../../kernel/freertos/dpl/ClockPCC26X2_freertos.c -> dpl/ClockPCC26X2_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/DebugP_freertos.c -> dpl/DebugP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/MutexP_freertos.c -> dpl/MutexP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/SemaphoreP_freertos.c -> dpl/SemaphoreP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/SystemP_freertos.c -> dpl/SystemP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/HwiPCC26X2_freertos.c -> dpl/HwiPCC26X2_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/PowerCC26X2_freertos.c -> dpl/PowerCC26X2_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/QueueP_freertos.c -> dpl/QueueP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/StaticAllocs_freertos.c -> dpl/StaticAllocs_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/SwiP_freertos.c -> dpl/SwiP_freertos.c",
+            "+../../../../../../../../kernel/freertos/dpl/TimerPCC26XX_freertos.c -> dpl/TimerPCC26XX_freertos.c",
+            "+../../../../../../../../kernel/freertos/startup/startup_cc13x2_cc26x2_gcc.c -> freertos/startup/startup_cc13x2_cc26x2_gcc.c",
+            "+../../FreeRTOSConfig.h -> FreeRTOSConfig.h",
+            "+../../TI_heap_wrapper.c -> ti_heap/TI_heap_wrapper.c",
+            "+../../bget.c -> ti_heap/bget.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html"
+        ]
+    }
+]

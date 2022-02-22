@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../mpu.c -> mpu.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../mpu.syscfg -> mpu.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../mpu.cfg -> mpu.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC1311P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos.lds -> cc13x1_cc26x1_tirtos.lds",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

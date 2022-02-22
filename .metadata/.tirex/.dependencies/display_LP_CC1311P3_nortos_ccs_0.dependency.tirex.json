@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../display.c -> display.c",
+            "+../splash_image.c -> splash_image.c",
+            "+../splash_image.h -> splash_image.h",
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../display.syscfg -> display.syscfg",
+            "+../../../../../../source/ti/boards/LP_CC1311P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_nortos.cmd -> cc13x1_cc26x1_nortos.cmd"
+        ]
+    }
+]

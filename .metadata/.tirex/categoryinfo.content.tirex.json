@@ -1,0 +1,28 @@
+[{
+        "name": "Examples",
+        "mainCategories": [
+            []
+        ],
+        "subCategories": [],
+        "resourceType": "categoryInfo",
+        "description": "<p>TI's SimpleLink CC13xx CC26xx SDK provides a comprehensive set of examples to help developers get started with the SimpleLink CC13xx CC26xx family of wireless microcontrollers. The SimpleLink CC13xx CC26xx SDK provides examples that cover how to use BLE5, DMM, Z-Stack, Proprietary RF, TI 15.4, TI-Drivers and other software included in the SDK.</p>"
+    },
+    {
+        "name": "Examples - SysConfig Preview",
+        "mainCategories": [
+            []
+        ],
+        "subCategories": [],
+        "resourceType": "categoryInfo",
+        "description": "<p>This is an early preview example that uses an alternative graphical configuration tool called SysConfig. These examples are similar to the examples in examples/rtos and examples/nortos but they use SysConfig to generate configuration code instead of having the application provide it. SysConfig is integrated with logic to help manage, expose and potentially solve conflicts visually to free up more time for creating differentiated applications. Use of the SysConfig preview examples is not required for developing on SimpleLink devices. However, we encourage you to try them out and to give us your feedback. More information on SysConfig can be found in the SysConfig section of the SimpleLink MCU SDK User's Guide. See the \"System Configuration Basics\" lab in <a href='http://www.ti.com/wireless-connectivity/simplelink-solutions/overview/simplelink-academy.html'>SimpleLink Academy</a> for step-by-step instructions for installing and using SysConfig</p>"
+    },
+    {
+        "name": "Documents",
+        "mainCategories": [
+            []
+        ],
+        "subCategories": [],
+        "resourceType": "categoryInfo",
+        "description": "<p>The SimpleLink CC13xx CC26xx SDK comes with documentation for all of the supported software libraries included in the SDK. For a good overview of what documentation is available in the SimpleLink CC13xx CC26xx SDK, go to \"Documentation Overview\". To get started quickly with the SimpleLink CC13xx CC26xx SDK, go to \"Quick Start Guide\".</p>"
+    }
+]

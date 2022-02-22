@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../swi.c -> swi.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../swi.syscfg -> swi.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../swi.cfg -> swi.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652RSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos.lds -> cc13x2_cc26x2_tirtos.lds",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

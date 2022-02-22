@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+../nortos/iar/cc13x1_cc26x1_nortos.icf -> cc13x1_cc26x1_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.md -> README.md",
+            "+../rfSynchronizedPacket.h -> rfSynchronizedPacket.h",
+            "+../rfSynchronizedPacketRx.syscfg -> rfSynchronizedPacketRx.syscfg",
+            "+../rfSynchronizedPacketRx_nortos.c -> rfSynchronizedPacketRx_nortos.c",
+            "+../state-machine.png -> state-machine.png",
+            "+../StateMachine_nortos.c -> StateMachine_nortos.c",
+            "+../StateMachine_nortos.h -> StateMachine_nortos.h"
+        ]
+    }
+]

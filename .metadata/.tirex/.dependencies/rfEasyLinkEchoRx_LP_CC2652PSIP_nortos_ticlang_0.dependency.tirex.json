@@ -1,0 +1,18 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../EasyLinkEcho_PerfectEcho.png -> EasyLinkEcho_PerfectEcho.png",
+            "+../EasyLinkEcho_MissedFirstPacket.png -> EasyLinkEcho_MissedFirstPacket.png",
+            "+../EasyLinkEcho_MissingFirstCouplePackets.png -> EasyLinkEcho_MissingFirstCouplePackets.png",
+            "+../EasyLinkEcho_ErrorTxRx.png -> EasyLinkEcho_ErrorTxRx.png",
+            "+../easylink/EasyLink.h -> easylink/EasyLink.h",
+            "+../rfEasyLinkEchoRx.syscfg -> rfEasyLinkEchoRx.syscfg",
+            "+../rfEasyLinkEchoRx_nortos.c -> rfEasyLinkEchoRx_nortos.c",
+            "+../easylink/EasyLink_nortos.c -> easylink/EasyLink_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.cmd -> cc13x2_cc26x2_nortos.cmd"
+        ]
+    }
+]

@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../bigtime.cpp -> bigtime.cpp",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../bigtime.syscfg -> bigtime.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../bigtime.cfg -> bigtime.cfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652RB/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos.cmd -> cc13x2_cc26x2_tirtos.cmd",
+            "+../makefile.defs -> makefile.defs"
+        ]
+    }
+]

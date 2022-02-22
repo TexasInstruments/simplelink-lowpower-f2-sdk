@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../rfCarrierWave.c -> rfCarrierWave.c",
+            "+../README.md -> README.md",
+            "+../rfCarrierWave.syscfg -> rfCarrierWave.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../../../../../../source/ti/boards/LP_CC1352P7_1/Board.html -> Board.html",
+            "+../nortos/gcc/cc13x2x7_cc26x2x7_nortos.lds -> cc13x2x7_cc26x2x7_nortos.lds"
+        ]
+    }
+]

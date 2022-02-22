@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../json.c -> json.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../json.syscfg -> json.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos7.cmd -> cc13x1_cc26x1_tirtos7.cmd"
+        ]
+    }
+]
