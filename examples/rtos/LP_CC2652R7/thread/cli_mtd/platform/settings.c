@@ -8,7 +8,7 @@
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
- 
+
  Copyright (c) 2017-2022, Texas Instruments Incorporated
  All rights reserved.
 
@@ -40,8 +40,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- 
- 
+
+
  *****************************************************************************/
 
 //*****************************************************************************
@@ -90,7 +90,11 @@
 static NVINTF_nvFuncts_t sNvoctpFps = { 0 };
 
 /* settings API */
+#if TIOP_LEGACY_SETTINGS_API
 void otPlatSettingsInit(otInstance *aInstance)
+#else
+void otPlatSettingsInit(otInstance *aInstance, const uint16_t *aSensitiveKeys, uint16_t aSensitiveKeysLength)
+#endif
 {
     /* Load NVOCMP function pointers, extended API */
     NVOCMP_loadApiPtrsExt(&sNvoctpFps);
