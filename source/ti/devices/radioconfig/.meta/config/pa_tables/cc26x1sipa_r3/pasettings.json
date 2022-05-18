@@ -1,0 +1,81 @@
+{
+    "patables": {
+        "RfDesign": {
+            "_name": "CC2651RSIPA-EM",
+            "FrequencyRange": {
+                "Min": "2360",
+                "Max": "2500",
+                "PaSettingTable": {
+                    "PaSetting": [
+                        {
+                            "_text": "5",
+                            "Value": "0xA42E"
+                        },
+                        {
+                            "_text": "4",
+                            "Value": "0x601E"
+                        },
+                        {
+                            "_text": "3",
+                            "Value": "0x246A"
+                        },
+                        {
+                            "_text": "2",
+                            "Value": "0x2E64"
+                        },
+                        {
+                            "_text": "1",
+                            "Value": "0x20A5"
+                        },
+                        {
+                            "_text": "0",
+                            "Value": "0x20A2"
+                        },
+                        {
+                            "_text": "-3",
+                            "Value": "0x0EE4"
+                        },
+                        {
+                            "_text": "-5",
+                            "Value": "0x08DC"
+                        },
+                        {
+                            "_text": "-6",
+                            "Value": "0x08DA"
+                        },
+                        {
+                            "_text": "-9",
+                            "Value": "0x00D4"
+                        },
+                        {
+                            "_text": "-10",
+                            "Value": "0x00D2"
+                        },
+                        {
+                            "_text": "-12",
+                            "Value": "0x00D0"
+                        },
+                        {
+                            "_text": "-15",
+                            "Value": "0x00CD"
+                        },
+                        {
+                            "_text": "-18",
+                            "Value": "0x00CA"
+                        },
+                        {
+                            "_text": "-20",
+                            "Value": "0x00C8"
+                        }
+                    ]
+                }
+            }
+        },
+        "DefaultPaTable": {
+            "PaSetting": {
+                "_text": "Unknown",
+                "Value": "0xFFFF"
+            }
+        }
+    }
+}

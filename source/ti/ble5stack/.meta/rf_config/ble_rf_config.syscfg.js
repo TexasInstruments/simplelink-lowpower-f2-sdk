@@ -272,6 +272,10 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LP_CC2651R3"}];
     }
+    else if(deviceId === "CC2651R3SIPA")
+    {
+        newRfDesignOptions = [{name: "LP_CC2651R3SIPA"}];
+    }
 
     return(newRfDesignOptions);
 }

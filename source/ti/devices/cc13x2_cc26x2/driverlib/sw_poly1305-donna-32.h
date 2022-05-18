@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       sw_poly1305-donna-32.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 ******************************************************************************/
 /*
    poly1305 implementation using 32 bit * 32 bit = 64 bit multiplication and 64 bit addition

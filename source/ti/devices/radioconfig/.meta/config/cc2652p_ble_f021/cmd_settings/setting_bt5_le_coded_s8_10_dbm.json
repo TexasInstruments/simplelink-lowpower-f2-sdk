@@ -213,6 +213,14 @@
                                         "$": "&coexConfig"
                                     }
                                 ]
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
+                                }
                             }
                         ]
                     },

@@ -180,9 +180,6 @@
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/cc26xx/devinfoservice.c</path>
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/devinfoservice.h</path>
             <path reference="$PROJ_DIR$/Profiles/gatt_profile_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_profile_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gatt_uuid.c</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gattservapp_util.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gattservapp_util.c</path>
             <path reference="$PROJ_DIR$/Profiles/simple_gatt_profile.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/simple_profile/cc26xx/simple_gatt_profile.c</path>
             <path reference="$PROJ_DIR$/Profiles/simple_gatt_profile.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/simple_profile/simple_gatt_profile.h</path>
         </group>

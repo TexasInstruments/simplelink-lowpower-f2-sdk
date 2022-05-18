@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       pka.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the PKA module
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -1499,8 +1497,8 @@ uint32_t PKAEccAddGetResult(uint8_t *curvePointX, uint8_t *curvePointY, uint32_t
 uint32_t PKAEccVerifyPublicKeyWeierstrassStart(const uint8_t *curvePointX, const uint8_t *curvePointY, const uint8_t *prime, const uint8_t *a, const uint8_t *b, const uint8_t *order, uint32_t length)
 {
     uint32_t pkaResult;
-    uint32_t resultAddress;
     uint32_t resultLength;
+    uint32_t resultAddress = 0; // Assign a value to avoid compiler warnings.
     uint8_t *scratchBuffer = (uint8_t *)(PKA_RAM_BASE + PKA_RAM_TOT_BYTE_SIZE / 2);
     uint8_t *scratchBuffer2 = scratchBuffer + 512;
 

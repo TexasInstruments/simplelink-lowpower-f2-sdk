@@ -55,7 +55,8 @@
  * The SPICC26XXDMA.h supports SPI0 and SPI1, and uses both TX and RX DMA channels.
  * Each control table entry is 16 bytes, so if an application uses both SSI0 and SSI1
  * the total RAM usage will be 4*16=64 bytes. If only one SSI module is used
- * only 2*16=32 bytes of RAM is used. Please see [Use cases] (@ref USE_CASE) for example.
+ * only 2*16=32 bytes of RAM is used. Please see [Use cases] (@ref UDMA_26XX_USE_CASES)
+ * for example.
  *
  * # Error handling #
  * Error handling is handled by the overlying driver which uses the DMA.
@@ -78,7 +79,7 @@
  * # Unsupported Functionality #
  * No known limitations
  *
- * # Use Cases @anchor USE_CASE #
+ * # Use Cases @anchor UDMA_26XX_USE_CASES #
  * The DMA is only used internally by other drivers, so the application
  * should never call any of the functions in this driver directly.
  * The only thing that the application is allowed to modify is the base address
@@ -282,7 +283,7 @@ __STATIC_INLINE void UDMACC26XX_init(UDMACC26XX_Handle handle)
  *
  *  @sa     UDMACC26XX_close()
  */
-extern UDMACC26XX_Handle UDMACC26XX_open();
+extern UDMACC26XX_Handle UDMACC26XX_open(void);
 
 /*!
  *  @internal

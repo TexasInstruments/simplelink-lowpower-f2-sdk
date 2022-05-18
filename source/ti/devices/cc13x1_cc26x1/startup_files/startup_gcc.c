@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       startup_gcc.c
-*  Revised:        $Date: 2017-06-01 16:01:48 +0200 (Thu, 01 Jun 2017) $
-*  Revision:       $Revision: 17804 $
 *
 *  Description:    Startup code for CC13x1, CC26x1 device family for use with GCC.
 *

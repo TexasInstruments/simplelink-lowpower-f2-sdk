@@ -50,12 +50,22 @@
 <p>The Board.html can also be found in your SDK installation:</p>
 <pre><code>    &lt;SDK_INSTALL_DIR&gt;/source/ti/boards/&lt;BOARD&gt;</code></pre>
 <h2 id="example-usage">Example Usage</h2>
-<p>Run the example.</p>
-<ol>
+<ul>
+<li>Open a serial session (e.g. <a href="http://www.putty.org/" title="PuTTY's Homepage"><code>PuTTY</code></a>, etc.) to the appropriate COM port.</li>
+<li>The COM port can be determined via Device Manager in Windows or via <code>ls /dev/tty*</code> in Linux.</li>
+</ul>
+<p>The connection will have the following settings:</p>
+<pre><code>    Baud-rate:     115200
+    Data bits:          8
+    Stop bits:          1
+    Parity:          None
+    Flow Control:    None</code></pre>
+<ul>
+<li><p>Run the example.</p></li>
 <li><p><code>CONFIG_GPIO_LED_0</code> is toggled when the temperature of the chip changes more than THRESHOLD_DELTA degrees C.</p></li>
 <li><p><code>CONFIG_GPIO_LED_1</code> is turned on when the temperature is above THRESHOLD_CUTOFF degrees C and turned off when the temperature falls below this threshold.</p></li>
 <li><p>The current temperature in degrees C is printed to the console once per second.</p></li>
-</ol>
+</ul>
 <h2 id="application-design-details">Application Design Details</h2>
 <p>TI-RTOS:</p>
 <ul>
@@ -72,7 +82,7 @@
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2021</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

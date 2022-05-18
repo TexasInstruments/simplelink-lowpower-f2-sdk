@@ -433,6 +433,8 @@ int_fast16_t SHA2_cancelOperation(SHA2_Handle handle) {
         /* Call the callback function provided by the application. */
         object->callbackFxn(handle, SHA2_STATUS_CANCELED);
     }
+	
+	SHA256_init(&object->workzone);
 
     return SHA2_STATUS_SUCCESS;
 }

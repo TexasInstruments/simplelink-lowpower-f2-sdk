@@ -66,9 +66,9 @@
 <h2 id="example-usage">Example Usage</h2>
 <ul>
 <li><p>Mount the CC3200 Audio BoosterPack.</p></li>
-<li><p>Connect headphones or speakers to the Audio BoosterPack and the audio source.</p></li>
+<li><p>Connect headphones or speakers to the Audio BoosterPack, as well as an audio source</p></li>
 <li><p>Run the example. <code>CONFIG_GPIO_LED_0</code> turns ON to indicate driver initialization is complete.</p></li>
-<li><p>Sounds captured audio line in are echoed after basic filtering.</p></li>
+<li><p>Sounds captured on audio line in are echoed after basic filtering.</p></li>
 <li><p>The quality of the audio output is directly related to the quality of your audio source. For this purpose, avoid using a highly disturbed audio source. For example, when using your smartphone as an audio source, avoid leaving it in charge at the same time: this creates a lot of audio disturbances.</p></li>
 </ul>
 <blockquote>
@@ -77,9 +77,9 @@
 <h2 id="application-design-details">Application Design Details</h2>
 <ul>
 <li><p>One thread, <code>echoThread</code> is used to configure the codec and start the I2S transfers.</p></li>
-<li><p>Ten I2S_Transactions are declared and a buffer is associate to each of them (in this example, the buffer hold by a transaction remains the same during all the execution).</p></li>
-<li><p>The I2S transactions are initially queued in two lists: <code>i2sReadList</code> and <code>i2sWriteList</code>. <code>treatmentList</code> will be populated latter (i.e. when some transaction of the <code>i2sReadList</code> will be finished).</p></li>
-<li><p>The buffers hold by the transactions are successively written (by the read interface), treated and send out (by the write interface). Here is a scheme showing the path followed by a transaction:</p></li>
+<li><p>Ten I2S_Transactions are declared and a buffer is associated to each of them (in this example, the buffer held by a transaction remains the same during execution).</p></li>
+<li><p>The I2S transactions are initially queued in two lists: <code>i2sReadList</code> and <code>i2sWriteList</code>. <code>treatmentList</code> will be populated later (i.e. when some transaction of the <code>i2sReadList</code> will be finished).</p></li>
+<li><p>The buffers held by the transactions are successively written (by the read interface), treated and sent out (by the write interface). Here is a scheme showing the path followed by a transaction:</p></li>
 </ul>
 <pre><code>
     `i2sReadList`          `treatmentList`          `i2sWriteList`
@@ -89,9 +89,9 @@
  ..&gt;[Transaction]                           :......&gt;[Transaction]   :
  :                                                                  :
  :..................................................................:</code></pre>
-<p><em>(1) The read interface systematically fills the buffer contained in the head transaction of the i2sReadList. When the buffer hold by this transaction is full, the transaction is dequeued from the i2sReadList and queued as the tail of the treatmentList. The read interface continues receiving data by using the next transaction of the i2sReadList.</em></p>
+<p><em>(1) The read interface systematically fills the buffer contained in the head transaction of the i2sReadList. When the buffer held by this transaction is full, the transaction is dequeued from the i2sReadList and queued as the tail of the treatmentList. The read interface continues receiving data by using the next transaction of the i2sReadList.</em></p>
 <p><em>(2) The treatment function treats the sample data contained by the transactions queued in the treatmentList. The transaction treated is the head transaction of the treatmentList. Once this transaction is treated, the transaction is dequeued from the treatmentList and queued in the i2sWriteList.</em></p>
-<p><em>(3) The write interface systematically sends out the buffer contained in the head transaction of the i2sWriteList. When the buffer hold by this transaction has been completely sent out, the corresponding transaction is dequeued from the i2sWriteList and queued in the i2sReadList . The write interface continues sending out data by using the next transaction of the i2sWriteList.</em></p>
+<p><em>(3) The write interface systematically sends out the buffer contained in the head transaction of the i2sWriteList. When the buffer held by this transaction has been completely sent out, the corresponding transaction is dequeued from the i2sWriteList and queued in the i2sReadList . The write interface continues sending out data by using the next transaction of the i2sWriteList.</em></p>
 <blockquote>
 <p>The drivers by default are non-instrumented in order to limit code size.</p>
 </blockquote>
@@ -110,7 +110,7 @@
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2021</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -638,16 +638,9 @@ static void initIO(I2S_Handle handle)
 
     GPIO_setMux(hwAttrs->pinWS, IOC_PORT_MCU_I2S_WCLK);
     GPIO_setMux(hwAttrs->pinSCK, IOC_PORT_MCU_I2S_BCLK);
-
-    if (hwAttrs->pinMCLK != GPIO_INVALID_INDEX) {
-        GPIO_setMux(hwAttrs->pinMCLK, IOC_PORT_MCU_I2S_MCLK);
-    }
-    if (hwAttrs->pinSD0 != GPIO_INVALID_INDEX) {
-        GPIO_setMux(hwAttrs->pinSD0, IOC_PORT_MCU_I2S_AD0);
-    }
-    if (hwAttrs->pinSD1 != GPIO_INVALID_INDEX) {
-        GPIO_setMux(hwAttrs->pinSD1, IOC_PORT_MCU_I2S_AD1);
-    }
+    GPIO_setMux(hwAttrs->pinMCLK, IOC_PORT_MCU_I2S_MCLK);
+    GPIO_setMux(hwAttrs->pinSD0, IOC_PORT_MCU_I2S_AD0);
+    GPIO_setMux(hwAttrs->pinSD1, IOC_PORT_MCU_I2S_AD1);
 }
 
 /*
@@ -662,16 +655,9 @@ static void finalizeIO(I2S_Handle handle)
 
     GPIO_resetConfig(hwAttrs->pinWS);
     GPIO_resetConfig(hwAttrs->pinSCK);
-
-    if (hwAttrs->pinMCLK != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(hwAttrs->pinMCLK);
-    }
-    if (hwAttrs->pinSD0 != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(hwAttrs->pinSD0);
-    }
-    if (hwAttrs->pinSD1 != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(hwAttrs->pinSD1);
-    }
+    GPIO_resetConfig(hwAttrs->pinMCLK);
+    GPIO_resetConfig(hwAttrs->pinSD0);
+    GPIO_resetConfig(hwAttrs->pinSD1);
 }
 
 /*

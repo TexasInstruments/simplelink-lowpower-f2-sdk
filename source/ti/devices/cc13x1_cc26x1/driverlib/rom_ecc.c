@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       ECC_NISTP256.c
-*  Revised:        2020-04-03 19:11:17 +0200 (Fri, 03 Apr 2020)
-*  Revision:       57290
 *
 *  Description:    Constant definitions for ECC_NISTP256 curve
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

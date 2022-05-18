@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2021, Texas Instruments Incorporated
+ Copyright (c) 2013-2022, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -2716,7 +2716,7 @@ switch(pMsg->opcode)
 
       // Wait until all PDU have been sent on cxn events
       Gap_RegisterConnEventCb(RemoteDisplay_processConnEvt, GAP_CB_REGISTER,
-                              OAD_getactiveCxnHandle());
+                              GAP_CB_CONN_EVENT_ALL, OAD_getactiveCxnHandle());
 
       /* Set the flag so that the connection event callback will
        * be processed in the context of a pending OAD reboot
@@ -3039,7 +3039,8 @@ static status_t RemoteDisplay_startAutoPhyChange(uint16_t connHandle)
   REMOTEDISPLAY_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Start Connection Event notice for RSSI calculation
-  status = Gap_RegisterConnEventCb(RemoteDisplay_connEvtCB, GAP_CB_REGISTER, connHandle);
+  status = Gap_RegisterConnEventCb(RemoteDisplay_connEvtCB, GAP_CB_REGISTER,
+               GAP_CB_CONN_EVENT_ALL, connHandle);
 
   // Flag in connection info if successful
   if (status == SUCCESS)
@@ -3067,7 +3068,8 @@ static status_t RemoteDisplay_stopAutoPhyChange(uint16_t connHandle)
   REMOTEDISPLAY_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Stop connection event notice
-  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, connHandle);
+  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER,
+      GAP_CB_CONN_EVENT_ALL, connHandle);
 
   // Also update the phychange request status for active RSSI tracking connection
   connList[connIndex].phyCngRq = FALSE;

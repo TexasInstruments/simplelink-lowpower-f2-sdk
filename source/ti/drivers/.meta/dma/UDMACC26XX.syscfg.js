@@ -38,17 +38,51 @@
 "use strict";
 
 /* get Common /ti/drivers utility functions */
-let Common = system.getScript("/ti/drivers/Common.js"); 
+let Common = system.getScript("/ti/drivers/Common.js");
+
+let intPriority = Common.newIntPri()[0];
+intPriority.displayName = "Interrupt Priority";
+intPriority.name = "interruptPriority";
+intPriority.description = "DMA interrupt priority.";
+
+let config = [
+    {
+        name        : "dmaErrorFunction",
+        displayName : "DMA Error Function",
+        description : "Specifies function invoked when a DMA error occurs.",
+        default     : "dmaErrorFxn"
+    },
+    intPriority
+];
 
 /*!
  *  ======== devSpecific ========
  *  Device-specific extensions to be added to base DMA configuration
  */
 let devSpecific = {
+    moduleStatic : {
+        config: Common.addNameConfig(config, "/ti/drivers/DMA", "CONFIG_DMA_"),
+        validate : validate
+    },
     templates : {
         boardc: "/ti/drivers/dma/UDMACC26XX.Board.c.xdt"
     }
 };
+
+/*
+ *  ======== validate ========
+ *  Validate this module's configuration
+ *
+ *  @param mod        - DMA module object to be validated
+ *  @param validation - object to hold detected validation issues
+ */
+function validate(mod, validation)
+{
+    if (!Common.isCName(mod.dmaErrorFunction)) {
+        Common.logError(validation, mod, 'dmaErrorFunction',
+            'Not a valid C identifier.');
+    }
+}
 
 /*
  *  ======== extend ========
@@ -60,20 +94,26 @@ let devSpecific = {
 function extend(base)
 {
     /* display which driver implementation can be used */
-    base = Common.addImplementationConfig(base, "DMA", null,
+    devSpecific = Common.addImplementationConfig(devSpecific, "DMA", null,
         [{name: "UDMACC26XX"}], null);
 
     /*
      *  Hide the dmaErrorFxn for UDMACC26XX, since this in not configurable
      *  by the user.  It is hardcoded in the UDMACC26XX driver.
      */
-    for (let i = 0; i < base.moduleStatic.config.length; i++) {
-        if (base.moduleStatic.config[i].name.match(/dmaErrorFunction/)) {
-            base.moduleStatic.config[i].hidden = true;
+    for (let i = 0; i < devSpecific.moduleStatic.config.length; i++) {
+        if (devSpecific.moduleStatic.config[i].name.match(/dmaErrorFunction/)) {
+            devSpecific.moduleStatic.config[i].hidden = true;
         }
     }
 
-    return Object.assign({}, base, devSpecific);
+    /* merge and overwrite base module attributes */
+    let result = Object.assign({}, base, devSpecific);
+
+    /* retain the modules from the base */
+    result.moduleStatic.modules = base.moduleStatic.modules;
+
+    return (result);
 }
 
 /*

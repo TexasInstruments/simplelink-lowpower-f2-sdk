@@ -31,8 +31,6 @@ The Board.html can also be found in your SDK installation:
 
         <SDK_INSTALL_DIR>/source/ti/boards/<BOARD>
 
-This example requires an external SD Card BoosterPack.
-
 ## Example Usage
 
 * Example output is generated through use of Display driver APIs. Refer to the

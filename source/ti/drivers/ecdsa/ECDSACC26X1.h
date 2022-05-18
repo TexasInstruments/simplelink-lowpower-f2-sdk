@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,9 +37,13 @@
  *  This file should only be included in the board file to fill the ECDSA_config
  *  struct.
  *
+ *  # Hardware and Implementation Details #
+ *
+ *  The driver is backed by a software ECC library implementation.
+ *
  *  # Supported Curves #
  *
- *  The driver implementation supports the following curves for ECDH:
+ *  The driver implementation supports the following curves for ECDSA:
  *
  *  | Curves Supported |
  *  |------------------|
@@ -91,11 +95,10 @@ typedef struct {
  *  The application must not access any member variables of this structure!
  */
 typedef struct {
-    bool                            isOpen;
-    ECDSA_CallbackFxn               callbackFxn;
-    ECDSA_ReturnBehavior            returnBehavior;
-    ECC_State                       eccState;
-    uint32_t                        eccWorkZone[288];
+    bool                     isOpen;
+    ECDSA_ReturnBehavior     returnBehavior; /* Callback mode is not supported */
+    ECC_State                eccState;
+    uint32_t                 eccWorkZone[288];
 } ECDSACC26X1_Object;
 
 #ifdef __cplusplus

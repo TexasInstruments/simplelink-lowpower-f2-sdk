@@ -25,11 +25,11 @@
             "options": [
                 {
                     "name": "2gfsk50kbps",
-                    "displayName": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
                 },
                 {
                     "name": "2gfsk50kbps154g",
-                    "displayName": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
                 },
                 {
                     "name": "2gfsk100kbps50dev915wsun2b",
@@ -705,12 +705,12 @@
             {
                 "file": "setting_tc106.json",
                 "name": "2gfsk50kbps",
-                "description": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
             },
             {
                 "file": "setting_tc106_154g.json",
                 "name": "2gfsk50kbps154g",
-                "description": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)",
                 "options": "ieee_15_4g"
             },
             {

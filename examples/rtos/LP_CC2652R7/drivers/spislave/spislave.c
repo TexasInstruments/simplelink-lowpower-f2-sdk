@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -265,7 +265,7 @@ void *mainThread(void *arg0)
 
     Display_printf(display, 0, 0, "Starting the SPI slave example");
     Display_printf(display, 0, 0, "This example requires external wires to be "
-        "connected to the header pins. Please see the Board.html for details.\n");
+        "connected to the header pins. Please see the Readme.html and Board.html for details.\n");
 
     /* Create application thread */
     pthread_attr_init(&attrs);

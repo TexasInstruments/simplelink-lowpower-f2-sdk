@@ -147,18 +147,19 @@ void localProgramStart(void)
 
     /* disable interrupts */
     _set_interrupt_priority(configMAX_SYSCALL_INTERRUPT_PRIORITY);
-    __asm( "    dsb" );
-    __asm( "    isb" );
+    __asm(" dsb");
+    __asm(" isb");
 
 #if configENABLE_ISR_STACK_INIT
     /* Initialize ISR stack to known value for Runtime Object View */
     register uint32_t *top = (uint32_t *)&__stack;
     register uint32_t *end = (uint32_t *)&vtor;
-    while (top < end) {
+    while (top < end)
+    {
         *top++ = (uint32_t)0xa5a5a5a5;
     }
 #endif
-    
+
     /*
      * set vector table base to point to above vectors in Flash; during
      * driverlib interrupt initialization this table will be copied to RAM
@@ -206,7 +207,8 @@ void resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -220,7 +222,8 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -234,7 +237,8 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -248,6 +252,7 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }

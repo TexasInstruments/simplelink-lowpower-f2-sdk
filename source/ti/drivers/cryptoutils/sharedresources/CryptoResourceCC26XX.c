@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,6 +88,6 @@ bool CryptoResourceCC26XX_acquireLock(uint32_t timeout) {
     return resourceAcquired == SemaphoreP_OK;
 }
 
-void CryptoResourceCC26XX_releaseLock() {
+void CryptoResourceCC26XX_releaseLock(void) {
     SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 }

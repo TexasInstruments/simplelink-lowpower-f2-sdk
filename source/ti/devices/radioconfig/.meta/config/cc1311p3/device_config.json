@@ -38,10 +38,6 @@
                 "$": ".\/..\/config\/cc1352p_prop_pg21"
             },
             {
-                "_file": "codegen.json",
-                "$": ".\/..\/config\/cc1352p_prop_pg21"
-            },
-            {
                 "_file": "radio_par_definitions.json",
                 "$": ".\/..\/config\/cc1352r_prop_pg21"
             },

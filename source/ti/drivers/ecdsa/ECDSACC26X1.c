@@ -54,9 +54,6 @@
 /* Octet string format requires an extra byte at the start of the public key */
 #define OCTET_STRING_OFFSET 1
 
-/* Extern globals */
-extern const ECDSA_Params ECDSA_defaultParams;
-
 /*
  *  ======== ECDSA_init ========
  */
@@ -81,11 +78,16 @@ void ECDSA_close(ECDSA_Handle handle) {
 ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params) {
     ECDSA_Handle handle         = (ECDSA_Handle)config;
     ECDSACC26X1_Object *object  = handle->object;
-    uint_fast8_t key;
+    uintptr_t key;
 
     /* If params are NULL, use defaults */
     if (params == NULL) {
-        params = (ECDSA_Params *)&ECDSA_defaultParams;
+        params = &ECDSA_defaultParams;
+    }
+
+    /* Since CC26X1 ECC is a pure SW implementation, callback return behavior is not supported */
+    if (params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) {
+        return NULL;
     }
 
     key = HwiP_disable();
@@ -99,11 +101,10 @@ ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params) {
 
     HwiP_restore(key);
 
-    /* Initialise object with NIST-P256 curve */
+    /* Initialize object with NIST-P256 curve */
     ECC_initialize(&(object->eccState), object->eccWorkZone);
 
     object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
 
     return handle;
 }
@@ -232,20 +233,7 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
                             operation->s,
                             ECC_NISTP256_PARAM_LENGTH_BYTES);
 
-    /* If the application uses callback return behaviour, emulate it */
-    if (object->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) {
-        ECDSA_Operation operationUnion = {.sign = operation};
-
-        object->callbackFxn(handle,
-                            returnStatus,
-                            operationUnion,
-                            ECDSA_OPERATION_TYPE_SIGN);
-
-        return ECDSA_STATUS_SUCCESS;
-    }
-    else {
-        return returnStatus;
-    }
+    return returnStatus;
 }
 
 /*
@@ -335,19 +323,5 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
         returnStatus = ECDSA_STATUS_ERROR;
     }
 
-    /* If the application uses callback return behaviour, emulate it */
-    if (object->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) {
-        ECDSA_Operation operationUnion = {.verify = operation};
-
-        object->callbackFxn(handle,
-                            returnStatus,
-                            operationUnion,
-                            ECDSA_OPERATION_TYPE_VERIFY);
-
-        return ECDSA_STATUS_SUCCESS;
-    }
-    else {
-        return returnStatus;
-    }
+    return returnStatus;
 }
-

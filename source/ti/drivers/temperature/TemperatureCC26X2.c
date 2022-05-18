@@ -98,18 +98,18 @@
 #define INVALID_TEMPERATURE_MIN BATMON_TEMPERATURE_MIN
 
 /* Forward declarations */
-static void walkNotifyList();
-static void setNextThresholds();
+static void walkNotifyList(void);
+static void setNextThresholds(void);
 static void temperatureHwiFxn(uintptr_t arg0);
 static void updateThresholds(int16_t thresholdHigh, int16_t thresholdLow);
 static uint32_t degreesToCode(int32_t temperatureDegreesC);
 static void setTempLowerLimit(int16_t thresholdLow);
 static void setTempUpperLimit(int16_t thresholdHigh);
-static void enableTempLowerLimit();
-static void enableTempUpperLimit();
-static void disableTempLowerLimit();
-static void disableTempUpperLimit();
-static void clearEventFlags();
+static void enableTempLowerLimit(void);
+static void enableTempUpperLimit(void);
+static void disableTempLowerLimit(void);
+static void disableTempUpperLimit(void);
+static void clearEventFlags(void);
 
 /* Globals */
 
@@ -219,35 +219,35 @@ static void setTempUpperLimit(int16_t thresholdHigh) {
 /*
  *  ======== enableTempLowerLimit ========
  */
-static void enableTempLowerLimit() {
+static void enableTempLowerLimit(void) {
     HWREG(AON_BATMON_BASE + AON_BATMON_O_EVENTMASK) |= AON_BATMON_EVENTMASK_TEMP_BELOW_LL_MASK;
 }
 
 /*
  *  ======== enableTempUpperLimit ========
  */
-static void enableTempUpperLimit() {
+static void enableTempUpperLimit(void) {
     HWREG(AON_BATMON_BASE + AON_BATMON_O_EVENTMASK) |= AON_BATMON_EVENTMASK_TEMP_OVER_UL_MASK;
 }
 
 /*
  *  ======== disableTempLowerLimit ========
  */
-static void disableTempLowerLimit() {
+static void disableTempLowerLimit(void) {
     HWREG(AON_BATMON_BASE + AON_BATMON_O_EVENTMASK) &= ~AON_BATMON_EVENTMASK_TEMP_BELOW_LL_MASK;
 }
 
 /*
  *  ======== disableTempUpperLimit ========
  */
-static void disableTempUpperLimit() {
+static void disableTempUpperLimit(void) {
     HWREG(AON_BATMON_BASE + AON_BATMON_O_EVENTMASK) &= ~AON_BATMON_EVENTMASK_TEMP_OVER_UL_MASK;
 }
 
 /*
  *  ======== clearEventFlags ========
  */
-static void clearEventFlags() {
+static void clearEventFlags(void) {
     do {
         HWREG(AON_BATMON_BASE + AON_BATMON_O_EVENT) &= AON_BATMON_EVENT_TEMP_BELOW_LL |
                                                        AON_BATMON_EVENT_TEMP_OVER_UL;
@@ -258,7 +258,7 @@ static void clearEventFlags() {
 /*
  *  ======== setNextThresholds ========
  */
-static void setNextThresholds() {
+static void setNextThresholds(void) {
     List_Elem *notifyLink;
     int16_t nextThresholdHigh = INVALID_TEMPERATURE_MAX;
     int16_t nextThresholdLow = INVALID_TEMPERATURE_MIN;
@@ -294,7 +294,7 @@ static void setNextThresholds() {
 /*
  *  ======== walkNotifyList ========
  */
-static void walkNotifyList() {
+static void walkNotifyList(void) {
     List_Elem *notifyLink       = List_head(&notificationList);
     int16_t currentTemperature  = Temperature_getTemperature();
 
@@ -387,7 +387,7 @@ static void temperatureHwiFxn(uintptr_t arg0) {
 /*
  *  ======== Temperature_init ========
  */
-void Temperature_init() {
+void Temperature_init(void) {
     uint32_t key;
 
     key = HwiP_disable();

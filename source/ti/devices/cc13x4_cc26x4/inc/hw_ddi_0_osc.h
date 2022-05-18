@@ -773,11 +773,19 @@
 
 // Field:   [3:0] RCOSC_MF_BIAS_ADJ
 //
-// Adjusts bias current to RCOSC_MF.
+// Adjusts bias current to RCOSC_MF.  The trim has binary encoding with MSB
+// inverted.
 //
-// 0x8 minimum current
-// 0x0 default current
-// 0x7 maximum current
+// 0x5 Minimum current
+// 0x6 Default -10
+// 0x7 Default -9
+// …
+// 0xF Default -1
+// 0x0 Default current
+// 0x1 Default +1
+// 0x2 Default +2
+// 0x3 Default +3
+// 0x4 Maximum current
 #define DDI_0_OSC_RCOSCMFCTL_RCOSC_MF_BIAS_ADJ_W                             4
 #define DDI_0_OSC_RCOSCMFCTL_RCOSC_MF_BIAS_ADJ_M                    0x0000000F
 #define DDI_0_OSC_RCOSCMFCTL_RCOSC_MF_BIAS_ADJ_S                             0

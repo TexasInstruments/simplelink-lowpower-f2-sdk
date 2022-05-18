@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       ioc.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the IO Controller.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -179,10 +177,6 @@ extern "C"
 #define IOC_PORT_MCU_UART0_TX     0x00000010  // MCU UART0 Transmit Pin
 #define IOC_PORT_MCU_UART0_CTS    0x00000011  // MCU UART0 Clear To Send Pin
 #define IOC_PORT_MCU_UART0_RTS    0x00000012  // MCU UART0 Request To Send Pin
-#define IOC_PORT_MCU_UART1_RX     0x00000013  // MCU UART1 Receive Pin
-#define IOC_PORT_MCU_UART1_TX     0x00000014  // MCU UART1 Transmit Pin
-#define IOC_PORT_MCU_UART1_CTS    0x00000015  // MCU UART1 Clear To Send Pin
-#define IOC_PORT_MCU_UART1_RTS    0x00000016  // MCU UART1 Request To Send Pin
 #define IOC_PORT_MCU_PORT_EVENT0  0x00000017  // MCU PORT EVENT 0
 #define IOC_PORT_MCU_PORT_EVENT1  0x00000018  // MCU PORT EVENT 1
 #define IOC_PORT_MCU_PORT_EVENT2  0x00000019  // MCU PORT EVENT 2
@@ -192,10 +186,6 @@ extern "C"
 #define IOC_PORT_MCU_PORT_EVENT6  0x0000001D  // MCU PORT EVENT 6
 #define IOC_PORT_MCU_PORT_EVENT7  0x0000001E  // MCU PORT EVENT 7
 #define IOC_PORT_MCU_SWV          0x00000020  // Serial Wire Viewer
-#define IOC_PORT_MCU_SSI1_RX      0x00000021  // MCU SSI1 Receive Pin
-#define IOC_PORT_MCU_SSI1_TX      0x00000022  // MCU SSI1 Transmit Pin
-#define IOC_PORT_MCU_SSI1_FSS     0x00000023  // MCU SSI1 FSS Pin
-#define IOC_PORT_MCU_SSI1_CLK     0x00000024  // MCU SSI1 Clock Pin
 #define IOC_PORT_MCU_I2S_AD0      0x00000025  // MCU I2S Data Pin 0
 #define IOC_PORT_MCU_I2S_AD1      0x00000026  // MCU I2S Data Pin 1
 #define IOC_PORT_MCU_I2S_WCLK     0x00000027  // MCU I2S Frame/Word Clock
@@ -369,10 +359,6 @@ extern "C"
 //! - \ref IOC_PORT_MCU_UART0_TX
 //! - \ref IOC_PORT_MCU_UART0_CTS
 //! - \ref IOC_PORT_MCU_UART0_RTS
-//! - \ref IOC_PORT_MCU_UART1_RX
-//! - \ref IOC_PORT_MCU_UART1_TX
-//! - \ref IOC_PORT_MCU_UART1_CTS
-//! - \ref IOC_PORT_MCU_UART1_RTS
 //! - \ref IOC_PORT_MCU_PORT_EVENT0
 //! - \ref IOC_PORT_MCU_PORT_EVENT1
 //! - \ref IOC_PORT_MCU_PORT_EVENT2
@@ -382,10 +368,6 @@ extern "C"
 //! - \ref IOC_PORT_MCU_PORT_EVENT6
 //! - \ref IOC_PORT_MCU_PORT_EVENT7
 //! - \ref IOC_PORT_MCU_SWV
-//! - \ref IOC_PORT_MCU_SSI1_RX
-//! - \ref IOC_PORT_MCU_SSI1_TX
-//! - \ref IOC_PORT_MCU_SSI1_FSS
-//! - \ref IOC_PORT_MCU_SSI1_CLK
 //! - \ref IOC_PORT_MCU_I2S_AD0
 //! - \ref IOC_PORT_MCU_I2S_AD1
 //! - \ref IOC_PORT_MCU_I2S_WCLK
@@ -718,10 +700,6 @@ extern void IOCIODrvStrengthSet(uint32_t ui32IOId, uint32_t ui32IOCurrent,
 //! - \ref IOC_PORT_MCU_UART0_TX
 //! - \ref IOC_PORT_MCU_UART0_CTS
 //! - \ref IOC_PORT_MCU_UART0_RTS
-//! - \ref IOC_PORT_MCU_UART1_RX
-//! - \ref IOC_PORT_MCU_UART1_TX
-//! - \ref IOC_PORT_MCU_UART1_CTS
-//! - \ref IOC_PORT_MCU_UART1_RTS
 //! - \ref IOC_PORT_MCU_PORT_EVENT0
 //! - \ref IOC_PORT_MCU_PORT_EVENT1
 //! - \ref IOC_PORT_MCU_PORT_EVENT2
@@ -731,10 +709,6 @@ extern void IOCIODrvStrengthSet(uint32_t ui32IOId, uint32_t ui32IOCurrent,
 //! - \ref IOC_PORT_MCU_PORT_EVENT6
 //! - \ref IOC_PORT_MCU_PORT_EVENT7
 //! - \ref IOC_PORT_MCU_SWV
-//! - \ref IOC_PORT_MCU_SSI1_RX
-//! - \ref IOC_PORT_MCU_SSI1_TX
-//! - \ref IOC_PORT_MCU_SSI1_FSS
-//! - \ref IOC_PORT_MCU_SSI1_CLK
 //! - \ref IOC_PORT_MCU_I2S_AD0
 //! - \ref IOC_PORT_MCU_I2S_AD1
 //! - \ref IOC_PORT_MCU_I2S_WCLK

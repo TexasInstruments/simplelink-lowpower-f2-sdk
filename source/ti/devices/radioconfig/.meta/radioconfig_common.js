@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,9 @@ const Device = system.deviceData.deviceId;
 const BasePath = "/ti/devices/radioconfig/";
 
 // Manage protocol support
-const hasProp = Device.match(/CC13|CC26[57][1234][RP][137]|CC2642R/);
+const hasProp = Device.match(/CC13|CC26[457][12][RP][137]|CC2674R10/);
 const hasBle = Device.match(/CC..[457][1234]/);
-const hasIeee = Device.match(/CC..[57][1234][RP][137B]/);
+const hasIeee = Device.match(/CC..[57][1234]/);
 const has24gProp = hasProp && !Device.includes("CC131");
 
 // Exported from this module
@@ -422,8 +422,7 @@ function validateNames(inst, validation) {
     if (inst.$name !== "") {
         const token = inst.$name;
         if (!isCName(token)) {
-            logError(validation, inst, "$name",
-                "'" + token + "' is not a valid a C identifier");
+            logError(validation, inst, "$name", "'" + token + "' is not a valid a C identifier");
         }
         myNames[token] = 1;
     }
@@ -438,12 +437,10 @@ function validateNames(inst, validation) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
         if (!isCName(token)) {
-            logError(validation, inst, "cAliases",
-                "'" + token + "' is not a valid a C identifier");
+            logError(validation, inst, "cAliases", "'" + token + "' is not a valid a C identifier");
         }
         if (myNames[token] !== null) {
-            logError(validation, inst, "cAliases",
-                "'" + token + "' is defined twice");
+            logError(validation, inst, "cAliases", "'" + token + "' is defined twice");
         }
         myNames[token] = 1;
     }
@@ -462,8 +459,7 @@ function validateNames(inst, validation) {
                 // compute all other names
                 let name = other.$name;
                 if (name !== "" && name in myNames) {
-                    logError(validation, inst, "cAliases",
-                        "multiple instances with the same name: '"
+                    logError(validation, inst, "cAliases", "multiple instances with the same name: '"
                         + name + "': " + inst.$name + " and " + other.$name);
                     break;
                 }
@@ -473,8 +469,7 @@ function validateNames(inst, validation) {
                     for (let k = 0; k < tokens.length; k++) {
                         name = tokens[k];
                         if (name !== "" && name in myNames) {
-                            logError(validation, inst, "cAliases",
-                                "multiple instances with the same name: '" + name
+                            logError(validation, inst, "cAliases", "multiple instances with the same name: '" + name
                                 + "': " + inst.$name + " and " + other.$name);
                             break;
                         }

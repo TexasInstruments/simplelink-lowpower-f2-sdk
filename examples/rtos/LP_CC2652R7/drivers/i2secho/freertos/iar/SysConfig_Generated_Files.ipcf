@@ -4,9 +4,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="IarProjectConnection_1.8.xsd">
     <files>
+        <path>$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</path>
         <path>$PROJ_DIR$/ti_drivers_config.c</path>
         <path>$PROJ_DIR$/ti_devices_config.c</path>
-        <path>$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</path>
         <path>$PROJ_DIR$/ti_drivers_config.h</path>
     </files>
 </iarProjectConnection>

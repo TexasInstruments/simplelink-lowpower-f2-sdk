@@ -448,7 +448,7 @@ extern void ITM_enableEventCounter(bool prescale1024, uint8_t postReset);
  * @sa ITM_enablePCSampling(), ITM_enableEventCounter
  *
  */
-extern void ITM_disablePCAndEventSampling();
+extern void ITM_disablePCAndEventSampling(void);
 
 /**
  * @brief Enable the generation of local timestamp packets from the ITM module

@@ -803,13 +803,25 @@ function getLibs(inst)
     // Add BLE Mesh libs
     if(inst.$static.mesh)
     {
-        if( toolchain == "ticlang")
-        {
-            libs.push("ti/mesh/ti/kernel/lib/ccs/m4f/zephyr.a");
+        if (system.getRTOS() === "tirtos7") {
+            if( toolchain == "ticlang")
+            {
+                libs.push("ti/mesh/ti/kernel/tirtos7/lib/ccs/m4f/zephyr.a");
+            }
+            else
+            {
+                libs.push(GenLibs.libPath("ti/mesh/ti/kernel/tirtos7", "zephyr.a"));
+            }
         }
-        else
-        {
-            libs.push(GenLibs.libPath("ti/mesh/ti/kernel", "zephyr.a"));
+        else {
+            if( toolchain == "ticlang")
+            {
+                libs.push("ti/mesh/ti/kernel/tirtos/lib/ccs/m4f/zephyr.a");
+            }
+            else
+            {
+                libs.push(GenLibs.libPath("ti/mesh/ti/kernel/tirtos", "zephyr.a"));
+            }
         }
         libs.push(GenLibs.libPath("third_party/erpc/ti", "erpc_tirtos_release.a"));
     }

@@ -135,8 +135,6 @@
         <property name="configuroOptions" value=" --compileOptions &quot;${COMPILER_FLAGS} &quot;"/>
         <file path="../../build_config.opt" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../persistent_app.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
         <file path="../../Application/oad_persistent_app.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/oad_persistent_app.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
@@ -152,12 +150,6 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/drivers/nvs/NVSCC26XX.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Drivers/NV">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/drivers/nvs/NVSCC26XX.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Drivers/NV">
-        </file>
-        <file path="../../Tools/persistent_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
-        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
-        </file>
-        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="../../Tools/Defines/persistent_app.opt" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools/Defines">
         </file>
@@ -237,15 +229,17 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_profile_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gatt_uuid.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gattservapp_util.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/rom/agama_r1/rom_init.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Startup">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
+        <file path="../../tirtos/persistent_app.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/persistent_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
+        </file>
+        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

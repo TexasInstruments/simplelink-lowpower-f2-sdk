@@ -66,7 +66,7 @@
                             },
                             {
                                 "_text": "-20",
-                                "Value": "0x04C5"
+                                "Value": "0x04C6"
                             }
                         ]
                     }
@@ -153,32 +153,32 @@
                             {
                                 "_text": "10",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x103F5F"
+                                "TxHighPa": "0x14475E"
                             },
                             {
                                 "_text": "9",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x10335A"
+                                "TxHighPa": "0x143957"
                             },
                             {
                                 "_text": "8",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x143661"
+                                "TxHighPa": "0x14592A"
                             },
                             {
                                 "_text": "7",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x144F2A"
+                                "TxHighPa": "0x144723"
                             },
                             {
                                 "_text": "6",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x144F26"
+                                "TxHighPa": "0x104120"
                             },
                             {
                                 "_text": "5.1",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x144722"
+                                "TxHighPa": "0x10391C"
                             }
                         ]
                     }

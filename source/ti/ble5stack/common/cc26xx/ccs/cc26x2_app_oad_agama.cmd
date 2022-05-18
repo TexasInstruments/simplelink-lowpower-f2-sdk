@@ -270,9 +270,9 @@ SECTIONS
 
   GROUP > ENTRY
   {
-    .resetVecs
+    .resetVecs LOAD_START(prgEntryAddr)
     .intvecs
-    EntrySection  LOAD_START(prgEntryAddr)
+    EntrySection
   }
  // .intvecs        :   >  FLASH_START
   GROUP >>  FLASH

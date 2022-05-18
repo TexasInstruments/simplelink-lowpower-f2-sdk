@@ -501,6 +501,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 #ifdef __cplusplus
@@ -519,7 +520,7 @@ extern "C" {
  * #define AESCMACXYZ_STATUS_ERROR2    AESCMAC_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCMAC_STATUS_RESERVED              (-32)
+#define AESCMAC_STATUS_RESERVED              AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -527,7 +528,7 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCMAC_STATUS_SUCCESS               (0)
+#define AESCMAC_STATUS_SUCCESS               AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -535,7 +536,7 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCMAC_STATUS_ERROR                 (-1)
+#define AESCMAC_STATUS_ERROR                 AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -545,7 +546,7 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCMAC_STATUS_RESOURCE_UNAVAILABLE  (-2)
+#define AESCMAC_STATUS_RESOURCE_UNAVAILABLE  AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  * @brief   The MAC verification failed.
@@ -553,12 +554,31 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_MAC_INVALID if the MAC computed
  * for the provided (key, message) pair did not match the MAC provided.
  */
-#define AESCMAC_STATUS_MAC_INVALID           (-3)
+#define AESCMAC_STATUS_MAC_INVALID           AES_STATUS_MAC_INVALID
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCMAC_STATUS_CANCELED              (-4)
+#define AESCMAC_STATUS_CANCELED              AES_STATUS_CANCELED
+
+/*!
+ *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
+ */
+#define AESCMAC_STATUS_KEYSTORE_INVALID_ID       AES_STATUS_KEYSTORE_INVALID_ID
+
+/*!
+ *  @brief  The key store module returned a generic error. See key store documentation
+ *  for additional details.
+ */
+#define AESCMAC_STATUS_KEYSTORE_GENERIC_ERROR    AES_STATUS_KEYSTORE_GENERIC_ERROR
+
+/*!
+ * @brief   The operation does not support non-word-aligned input.
+ *
+ * AESCMAC driver implementations may have restrictions on the alignment of
+ * input data due to performance limitations of the hardware.
+ */
+#define AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  *  @brief CMAC Global configuration
@@ -571,13 +591,7 @@ extern "C" {
  *
  *  @sa     #AESCMAC_init()
  */
-typedef struct {
-    /*! Pointer to a driver specific data object */
-    void               *object;
-
-    /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
-} AESCMAC_Config;
+typedef AESCommon_Config AESCMAC_Config;
 
 /*!
  *  @brief  A handle that is returned from an #AESCMAC_open() call.
@@ -605,17 +619,20 @@ typedef AESCMAC_Config *AESCMAC_Handle;
  *
  */
 typedef enum {
-    AESCMAC_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
+    AESCMAC_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
+                                            /*!< The function call will return immediately while the
                                              * MAC operation goes on in the background. The registered
                                              * callback function is called after the operation completes.
                                              * The context the callback function is called (task, HWI, SWI)
                                              * is implementation-dependent.
                                              */
-    AESCMAC_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while the MAC operation goes
+    AESCMAC_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
+                                            /*!< The function call will block while the MAC operation goes
                                              * on in the background. MAC operation results are available
                                              * after the function returns.
                                              */
-    AESCMAC_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while MAC
+    AESCMAC_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
+                                            /*!< The function call will continuously poll a flag while MAC
                                              * operation goes on in the background. MAC operation results
                                              * are available after the function returns.
                                              */
@@ -643,19 +660,24 @@ typedef struct {
     uint8_t *input;         /*!< - Sign: Pointer to the input message to
                              *     be authenticated.
                              *   - Verify: Pointer to the input message to be
-                             *     verified. */
+                             *     verified.
+                             */
     uint8_t *mac;           /*!< - Sign: Pointer to the output buffer to write
                              *     the generated MAC. Buffer size must be
                              *     at least equal to @a macLength.
                              *   - Verify: Pointer to the input MAC to be
-                             *     used for verification. */
+                             *     used for verification.
+                             */
     size_t  inputLength;    /*!< Length of the input message in bytes.
                              *   May be zero for CMAC but must be non-zero for CBC-MAC.
-                             *   See function descriptions for further restrictions. */
+                             *   See function descriptions for further restrictions.
+                             *   Max length supported may be limited depending on the return behavior.
+                             */
     size_t  macLength;      /*!< Length of the MAC in bytes.
                              *   Must be <= 16. A length of < 8 is not recommended and
                              *   should severely restrict MAC recomputation attempts.
-                             *   See appendix A of NIST SP800-38b for more information. */
+                             *   See appendix A of NIST SP800-38b for more information.
+                             */
 } AESCMAC_Operation;
 
 /*!
@@ -672,13 +694,11 @@ typedef enum {
     AESCMAC_OP_CODE_FINALIZE
 } AESCMAC_OperationCode;
 
-
 /*!
  *  @brief  Flag indicating a sign operation. If this bit is not set, then it
  *          is a verify operation.
  */
 #define AESCMAC_OP_FLAG_SIGN    0x10 /* bit 4 */
-
 
 /*!
  *  @brief  Mask for all valid operation flags.
@@ -886,7 +906,7 @@ int_fast16_t AESCMAC_setupVerify(AESCMAC_Handle handle, const CryptoKey *key);
  *  @retval #AESCMAC_STATUS_RESOURCE_UNAVAILABLE  The required hardware
  *                                                resource was not available.
  *                                                Try again later.
-
+ *  @retval #AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input buffer was not word-aligned.
  *
  *  @post   #AESCMAC_addData() or #AESCMAC_finalize()
  */
@@ -929,6 +949,7 @@ int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
  *                                                  Try again later.
  *  @retval #AESCMAC_STATUS_MAC_INVALID   The provided MAC did not match the generated MAC.
  *                                        This return value is only valid for verify operations.
+ *  @retval #AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input buffer was not word-aligned.
  */
 int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
                               AESCMAC_Operation *operation);
@@ -959,6 +980,7 @@ int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
  *  @retval #AESCMAC_STATUS_RESOURCE_UNAVAILABLE    The required hardware
  *                                                  resource was not available.
  *                                                  Try again later.
+ *  @retval #AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input buffer was not word-aligned.
  *
  *  @sa     #AESCMAC_oneStepVerify()
  */
@@ -993,6 +1015,7 @@ int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle,
  *                                                  Try again later.
  *  @retval #AESCMAC_STATUS_MAC_INVALID  The provided MAC did not match the generated MAC.
  *                                       This return value is only valid for verify operations.
+ *  @retval #AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input buffer was not word-aligned.
  *
  *  @sa     AESCMAC_oneStepSign()
  */

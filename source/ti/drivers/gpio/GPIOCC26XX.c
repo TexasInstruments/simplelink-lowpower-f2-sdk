@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,12 +60,17 @@ extern GPIO_Config GPIO_config;
 extern const uint_least8_t GPIO_pinLowerBound;
 extern const uint_least8_t GPIO_pinUpperBound;
 
+static void writePinmask64(uint_least8_t index, uint32_t value, uint32_t registerBaseAddress);
+
 /*
  *  ======== GPIO_clearInt ========
  */
 void GPIO_clearInt(uint_least8_t index)
 {
-    GPIO_clearEventDio(index);
+    if (index != GPIO_INVALID_INDEX)
+    {
+        GPIO_clearEventDio(index);
+    }
 }
 
 /*
@@ -77,8 +82,11 @@ void GPIO_disableInt(uint_least8_t index)
      * interrupts. Note we cannot just read-write the whole register.
      * See the IOCFG comment in setConfig().
      */
-    uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index) + 2;
-    HWREGB(iocfgRegAddr) = HWREGB(iocfgRegAddr) & ~0x4;
+    if (index != GPIO_INVALID_INDEX)
+    {
+        uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index) + 2;
+        HWREGB(iocfgRegAddr) = HWREGB(iocfgRegAddr) & ~0x4;
+    }
 }
 
 /*
@@ -90,8 +98,11 @@ void GPIO_enableInt(uint_least8_t index)
      * interrupts. Note we cannot just read-write the whole register.
      * See the IOCFG comment in setConfig().
      */
-    uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index) + 2;
-    HWREGB(iocfgRegAddr) = HWREGB(iocfgRegAddr) | 0x4;
+    if (index != GPIO_INVALID_INDEX)
+    {
+        uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index) + 2;
+        HWREGB(iocfgRegAddr) = HWREGB(iocfgRegAddr) | 0x4;
+    }
 }
 
 /* ======== PIN_hwi_bypass ========
@@ -171,17 +182,18 @@ void GPIO_hwiIntFxn(uintptr_t arg)
 /*
  *  ======== GPIO_init ========
  */
-void GPIO_init()
+void GPIO_init(void)
 {
     uintptr_t key;
     unsigned int i;
     HwiP_Params hwiParams;
-    uint32_t enableMask = 0x0;
 
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
     uint32_t tempPinConfigs[64];
+    uint64_t enableMask = 0x0;
 #else
     uint32_t tempPinConfigs[32];
+    uint32_t enableMask = 0x0;
 #endif
 
     key = HwiP_disable();
@@ -215,12 +227,19 @@ void GPIO_init()
 
         if (!(pinConfig & GPIOCC26XX_CFG_PIN_IS_INPUT_INTERNAL))
         {
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+            enableMask |= ((uint64_t)1) << i;
+#else
             enableMask |= 1 << i;
+#endif
             GPIO_write(i, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
         }
     }
 
     HWREG(GPIO_BASE + GPIO_O_DOE31_0) = enableMask;
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    HWREG(GPIO_BASE + GPIO_O_DOE47_32) = (uint32_t)(enableMask >> 32);
+#endif
 
     /* Apply all the masked values directly to IOC
      * pinUpperBound is inclusive, so we need to add 1 to get the full range
@@ -242,7 +261,7 @@ void GPIO_init()
 uint_fast8_t GPIO_read(uint_least8_t index)
 {
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-    if (index > 32)
+    if (index >= 32)
     {
         return HWREG(GPIO_BASE + GPIO_O_DIN47_32) &
                GPIO_PIN_TO_MASK(index - 32)
@@ -260,6 +279,12 @@ uint_fast8_t GPIO_read(uint_least8_t index)
 int_fast16_t GPIO_setConfig(uint_least8_t index, GPIO_PinConfig pinConfig)
 {
     uintptr_t key;
+
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return GPIO_STATUS_ERROR;
+    }
+
     uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
     uint32_t previousConfig = HWREG(iocfgRegAddr);
 
@@ -300,7 +325,7 @@ int_fast16_t GPIO_setConfig(uint_least8_t index, GPIO_PinConfig pinConfig)
     }
 
     key = HwiP_disable();
-    GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
+    writePinmask64(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE, GPIO_O_DOE31_0);
     HwiP_restore(key);
 
     return GPIO_STATUS_SUCCESS;
@@ -312,6 +337,12 @@ int_fast16_t GPIO_setConfig(uint_least8_t index, GPIO_PinConfig pinConfig)
 void GPIO_setInterruptConfig(uint_least8_t index, GPIO_PinConfig config)
 {
     uintptr_t key;
+
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return;
+    }
+
     uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index) + 2;
 
     /* Shift down and mask away all non-interrupt configuration */
@@ -338,16 +369,18 @@ void GPIO_getConfig(uint_least8_t index, GPIO_PinConfig *pinConfig)
  */
 void GPIO_setMux(uint_least8_t index, uint32_t mux)
 {
-    uintptr_t key;
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return;
+    }
+
     uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
     uint32_t previousConfig = HWREG(iocfgRegAddr);
 
-    key = HwiP_disable();
     if ((previousConfig & 0xFF) != mux)
     {
         HWREGB(iocfgRegAddr) = (uint8_t) (mux);
     }
-    HwiP_restore(key);
 }
 
 /*
@@ -355,7 +388,19 @@ void GPIO_setMux(uint_least8_t index, uint32_t mux)
  */
 void GPIO_toggle(uint_least8_t index)
 {
-    GPIO_toggleDio(index);
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return;
+    }
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    if (index >= 32)
+    {
+        HWREG(GPIO_BASE + GPIO_O_DOUTTGL47_32) = 1 << (index - 32);
+        return;
+    }
+#endif
+    HWREG(GPIO_BASE + GPIO_O_DOUTTGL31_0) = 1 << index;
 }
 
 /*
@@ -363,5 +408,39 @@ void GPIO_toggle(uint_least8_t index)
  */
 void GPIO_write(uint_least8_t index, unsigned int value)
 {
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return;
+    }
+
     HWREGB(GPIO_BASE + GPIO_O_DOUT3_0 + index) = (value & 0x1);
+}
+
+/*
+ *  ======== writePinmask ========
+ * Sets or clears a single bit in a standard RW register
+ * If index is between 32 and 64, this function:
+ *  - Subtracts 32 from index
+ *  - Adds 4 to registerBaseAddress
+ * This allows these numbers to index directly into adjacent config registers.
+ */
+static void writePinmask64(uint_least8_t index, uint32_t value, uint32_t registerBaseAddress)
+{
+    uint32_t mask;
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    if (index >= 32) {
+        index -= 32;
+        registerBaseAddress += 4;
+    }
+#endif
+
+    mask = 1 << index;
+
+    if (value) {
+        HWREG(GPIO_BASE + registerBaseAddress) = HWREG(GPIO_BASE + registerBaseAddress) | mask;
+    }
+    else {
+        HWREG(GPIO_BASE + registerBaseAddress) = HWREG(GPIO_BASE + registerBaseAddress) & ~mask;
+    }
 }

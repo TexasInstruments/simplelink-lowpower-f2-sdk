@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       uart.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the UART.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -272,10 +270,13 @@ UARTIntRegister(uint32_t ui32Base, void (*pfnHandler)(void))
 
     // Register and enable the interrupt handler.
     // (Doing the '& 0xFFFF' to catch both buffered and unbuffered offsets)
-    if (( ui32Base & 0xFFFF ) == ( UART0_BASE & 0xFFFF )) {
+    if (( ui32Base & 0xFFFF ) == ( UART0_BASE & 0xFFFF ))
+    {
         IntRegister(INT_UART0_COMB, pfnHandler);
         IntEnable(INT_UART0_COMB);
-    } else {
+    }
+    else
+    {
         IntRegister(INT_UART1_COMB, pfnHandler);
         IntEnable(INT_UART1_COMB);
     }
@@ -294,10 +295,13 @@ UARTIntUnregister(uint32_t ui32Base)
 
     // Disable and unregister the interrupt.
     // (Doing the '& 0xFFFF' to catch both buffered and unbuffered offsets)
-    if (( ui32Base & 0xFFFF ) == ( UART0_BASE & 0xFFFF )) {
+    if (( ui32Base & 0xFFFF ) == ( UART0_BASE & 0xFFFF ))
+    {
         IntDisable(INT_UART0_COMB);
         IntUnregister(INT_UART0_COMB);
-    } else {
+    }
+    else
+    {
         IntDisable(INT_UART1_COMB);
         IntUnregister(INT_UART1_COMB);
     }

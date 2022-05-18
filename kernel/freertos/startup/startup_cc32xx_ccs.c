@@ -121,14 +121,15 @@ void initVectors(void)
 
     /* Disable interrupts */
     _set_interrupt_priority(configMAX_SYSCALL_INTERRUPT_PRIORITY);
-    __asm( "    dsb" );
-    __asm( "    isb" );
+    __asm (" dsb");
+    __asm (" isb");
 
 #if configENABLE_ISR_STACK_INIT
     /* Initialize ISR stack to known value for Runtime Object View */
     register uint32_t *top = (uint32_t *)&__stack;
     register uint32_t *end = (uint32_t *)&i;
-    while (top < end) {
+    while (top < end)
+    {
         *top++ = (uint32_t)0xa5a5a5a5;
     }
 #endif
@@ -137,7 +138,7 @@ void initVectors(void)
     memcpy(ramVectors, resetVectors, 16*4);
 
     /* fill remaining vectors with default handler */
-    for (i=16; i < 195; i++)
+    for (i = 16; i < 195; i++)
     {
         ramVectors[i] = (unsigned long)defaultHandler;
     }
@@ -164,18 +165,18 @@ void resetISR(void)
      * stack when using a debugger since a reset within the debugger will
      * load the stack pointer from the bootloader's vector table at address '0'.
      */
-    __asm(" .global resetVectorAddr\n"
-          " ldr r0, resetVectorAddr\n"
-          " ldr r0, [r0]\n"
-          " mov sp, r0\n"
-          " bl initVectors");
+    __asm (" .global resetVectorAddr\n"
+           " ldr r0, resetVectorAddr\n"
+           " ldr r0, [r0]\n"
+           " mov sp, r0\n"
+           " bl initVectors");
 
     /* Jump to the CCS C Initialization Routine. */
-    __asm(" .global _c_int00\n"
-          " b.w     _c_int00");
+    __asm (" .global _c_int00\n"
+           " b.w     _c_int00");
 
     _Pragma("diag_suppress 1119");
-    __asm("resetVectorAddr: .word resetVectors");
+    __asm ("resetVectorAddr: .word resetVectors");
     _Pragma("diag_default 1119");
 }
 
@@ -190,7 +191,7 @@ static void
 nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -206,7 +207,7 @@ static void
 faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -223,7 +224,7 @@ static void
 busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -239,7 +240,7 @@ static void
 defaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }

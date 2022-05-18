@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -416,7 +416,7 @@ TRNG_Handle TRNG_construct(TRNG_Config *config, const TRNG_Params *params) {
 
     /* For callback mode, check if at least one of the
      * callback function pointers is set. */
-    if ((object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) &&
+    if ((params->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) &&
         (params->cryptoKeyCallbackFxn == NULL) &&
         (params->randomBytesCallbackFxn == NULL)) {
         return NULL;

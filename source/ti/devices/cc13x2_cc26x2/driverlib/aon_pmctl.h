@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aon_pmctl.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the AON Power-Management Controller
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -63,6 +61,7 @@ extern "C"
 #include <stdint.h>
 #include "../inc/hw_types.h"
 #include "../inc/hw_memmap.h"
+#include "../inc/hw_memmap_common.h"
 #include "../inc/hw_aon_pmctl.h"
 #include "debug.h"
 
@@ -134,9 +133,9 @@ AONPMCTLMcuSRamRetConfig(uint32_t ui32Retention)
            (ui32Retention == MCU_RAM_RET_FULL));
 
     // Configure the retention.
-    ui32Reg = HWREG(AON_PMCTL_BASE + AON_PMCTL_O_RAMCFG) & ~AON_PMCTL_RAMCFG_BUS_SRAM_RET_EN_M;
+    ui32Reg = HWREG(AON_PMCTL_BASE + NONSECURE_OFFSET + AON_PMCTL_O_RAMCFG) & ~AON_PMCTL_RAMCFG_BUS_SRAM_RET_EN_M;
     ui32Reg |= ui32Retention;
-    HWREG(AON_PMCTL_BASE + AON_PMCTL_O_RAMCFG) = ui32Reg;
+    HWREG(AON_PMCTL_BASE + NONSECURE_OFFSET + AON_PMCTL_O_RAMCFG) = ui32Reg;
 }
 
 //*****************************************************************************
@@ -154,7 +153,7 @@ __STATIC_INLINE uint32_t
 AONPMCTLPowerStatusGet(void)
 {
     // Return the power status.
-    return (HWREG(AON_PMCTL_BASE + AON_PMCTL_O_PWRSTAT));
+    return (HWREG(AON_PMCTL_BASE + NONSECURE_OFFSET + AON_PMCTL_O_PWRSTAT));
 }
 
 

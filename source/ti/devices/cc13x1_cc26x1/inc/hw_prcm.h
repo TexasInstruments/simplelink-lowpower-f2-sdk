@@ -64,13 +64,13 @@
 // VIMS Clock Gate
 #define PRCM_O_VIMSCLKG                                             0x00000030
 
-// SEC (PKA And TRNG And CRYPTO) And UDMA Clock Gate For Run And All Modes
+// SEC (TRNG And CRYPTO) And UDMA Clock Gate For Run And All Modes
 #define PRCM_O_SECDMACLKGR                                          0x0000003C
 
-// SEC (PKA And TRNG And CRYPTO) And UDMA Clock Gate For Sleep Mode
+// SEC (TRNG And CRYPTO) And UDMA Clock Gate For Sleep Mode
 #define PRCM_O_SECDMACLKGS                                          0x00000040
 
-// SEC (PKA And TRNG and CRYPTO) And UDMA Clock Gate For Deep Sleep Mode
+// SEC (TRNG and CRYPTO) And UDMA Clock Gate For Deep Sleep Mode
 #define PRCM_O_SECDMACLKGDS                                         0x00000044
 
 // GPIO Clock Gate For Run And All Modes
@@ -157,7 +157,7 @@
 // WCLK Division Ratio
 #define PRCM_O_I2SWCLKDIV                                           0x000000DC
 
-// RESET For SEC (PKA And TRNG And CRYPTO) And UDMA
+// RESET For SEC (TRNG And CRYPTO) And UDMA
 #define PRCM_O_RESETSECDMA                                          0x000000F0
 
 // RESET For GPIO IPs
@@ -240,9 +240,6 @@
 
 // Power Profiler Register
 #define PRCM_O_PWRPROFSTAT                                          0x000001E0
-
-// MCU SRAM configuration
-#define PRCM_O_MCUSRAMCFG                                           0x0000021C
 
 // Memory Retention Control
 #define PRCM_O_RAMRETEN                                             0x00000224
@@ -480,35 +477,6 @@
 #define PRCM_SECDMACLKGR_DMA_AM_CLK_EN_M                            0x01000000
 #define PRCM_SECDMACLKGR_DMA_AM_CLK_EN_S                                    24
 
-// Field:    [19] PKA_ZERIOZE_RESET_N
-//
-// Zeroization logic hardware reset.
-//
-// 0: pka_zeroize logic inactive.
-// 1: pka_zeroize of memory  is enabled.
-//
-// This register must remain active until the memory are completely zeroized
-// which requires 256 periods on systembus clock.
-#define PRCM_SECDMACLKGR_PKA_ZERIOZE_RESET_N                        0x00080000
-#define PRCM_SECDMACLKGR_PKA_ZERIOZE_RESET_N_BITN                           19
-#define PRCM_SECDMACLKGR_PKA_ZERIOZE_RESET_N_M                      0x00080000
-#define PRCM_SECDMACLKGR_PKA_ZERIOZE_RESET_N_S                              19
-
-// Field:    [18] PKA_AM_CLK_EN
-//
-//
-// 0: No force
-// 1: Force clock on for all modes (Run, Sleep and Deep Sleep)
-//
-// Overrides PKA_CLK_EN, SECDMACLKGS.PKA_CLK_EN and SECDMACLKGDS.PKA_CLK_EN
-// when enabled.
-//
-// For changes to take effect, CLKLOADCTL.LOAD needs to be written
-#define PRCM_SECDMACLKGR_PKA_AM_CLK_EN                              0x00040000
-#define PRCM_SECDMACLKGR_PKA_AM_CLK_EN_BITN                                 18
-#define PRCM_SECDMACLKGR_PKA_AM_CLK_EN_M                            0x00040000
-#define PRCM_SECDMACLKGR_PKA_AM_CLK_EN_S                                    18
-
 // Field:    [17] TRNG_AM_CLK_EN
 //
 //
@@ -554,20 +522,6 @@
 #define PRCM_SECDMACLKGR_DMA_CLK_EN_BITN                                     8
 #define PRCM_SECDMACLKGR_DMA_CLK_EN_M                               0x00000100
 #define PRCM_SECDMACLKGR_DMA_CLK_EN_S                                        8
-
-// Field:     [2] PKA_CLK_EN
-//
-//
-// 0: Disable clock
-// 1: Enable clock
-//
-// Can be forced on by PKA_AM_CLK_EN
-//
-// For changes to take effect, CLKLOADCTL.LOAD needs to be written
-#define PRCM_SECDMACLKGR_PKA_CLK_EN                                 0x00000004
-#define PRCM_SECDMACLKGR_PKA_CLK_EN_BITN                                     2
-#define PRCM_SECDMACLKGR_PKA_CLK_EN_M                               0x00000004
-#define PRCM_SECDMACLKGR_PKA_CLK_EN_S                                        2
 
 // Field:     [1] TRNG_CLK_EN
 //
@@ -616,20 +570,6 @@
 #define PRCM_SECDMACLKGS_DMA_CLK_EN_M                               0x00000100
 #define PRCM_SECDMACLKGS_DMA_CLK_EN_S                                        8
 
-// Field:     [2] PKA_CLK_EN
-//
-//
-// 0: Disable clock
-// 1: Enable clock
-//
-// Can be forced on by SECDMACLKGR.PKA_AM_CLK_EN
-//
-// For changes to take effect, CLKLOADCTL.LOAD needs to be written
-#define PRCM_SECDMACLKGS_PKA_CLK_EN                                 0x00000004
-#define PRCM_SECDMACLKGS_PKA_CLK_EN_BITN                                     2
-#define PRCM_SECDMACLKGS_PKA_CLK_EN_M                               0x00000004
-#define PRCM_SECDMACLKGS_PKA_CLK_EN_S                                        2
-
 // Field:     [1] TRNG_CLK_EN
 //
 //
@@ -676,20 +616,6 @@
 #define PRCM_SECDMACLKGDS_DMA_CLK_EN_BITN                                    8
 #define PRCM_SECDMACLKGDS_DMA_CLK_EN_M                              0x00000100
 #define PRCM_SECDMACLKGDS_DMA_CLK_EN_S                                       8
-
-// Field:     [2] PKA_CLK_EN
-//
-//
-// 0: Disable clock
-// 1: Enable clock
-//
-// Can be forced on by SECDMACLKGR.PKA_AM_CLK_EN
-//
-// For changes to take effect, CLKLOADCTL.LOAD needs to be written
-#define PRCM_SECDMACLKGDS_PKA_CLK_EN                                0x00000004
-#define PRCM_SECDMACLKGDS_PKA_CLK_EN_BITN                                    2
-#define PRCM_SECDMACLKGDS_PKA_CLK_EN_M                              0x00000004
-#define PRCM_SECDMACLKGDS_PKA_CLK_EN_S                                       2
 
 // Field:     [1] TRNG_CLK_EN
 //
@@ -990,13 +916,16 @@
 // Overrides CLK_EN,  UARTCLKGS.CLK_EN and  UARTCLKGDS.CLK_EN when enabled.
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// AM_UART1                 Enable clock for UART1
 // AM_UART0                 Enable clock for UART0
 #define PRCM_UARTCLKGR_AM_CLK_EN_W                                           2
 #define PRCM_UARTCLKGR_AM_CLK_EN_M                                  0x00000300
 #define PRCM_UARTCLKGR_AM_CLK_EN_S                                           8
-#define PRCM_UARTCLKGR_AM_CLK_EN_AM_UART1                           0x00000200
 #define PRCM_UARTCLKGR_AM_CLK_EN_AM_UART0                           0x00000100
 
 // Field:   [1:0] CLK_EN
@@ -1008,13 +937,16 @@
 // Can be forced on by AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// UART1                    Enable clock for UART1
 // UART0                    Enable clock for UART0
 #define PRCM_UARTCLKGR_CLK_EN_W                                              2
 #define PRCM_UARTCLKGR_CLK_EN_M                                     0x00000003
 #define PRCM_UARTCLKGR_CLK_EN_S                                              0
-#define PRCM_UARTCLKGR_CLK_EN_UART1                                 0x00000002
 #define PRCM_UARTCLKGR_CLK_EN_UART0                                 0x00000001
 
 //*****************************************************************************
@@ -1031,13 +963,16 @@
 // Can be forced on by UARTCLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// AM_UART1                 Enable clock for UART1
 // AM_UART0                 Enable clock for UART0
 #define PRCM_UARTCLKGS_CLK_EN_W                                              2
 #define PRCM_UARTCLKGS_CLK_EN_M                                     0x00000003
 #define PRCM_UARTCLKGS_CLK_EN_S                                              0
-#define PRCM_UARTCLKGS_CLK_EN_AM_UART1                              0x00000002
 #define PRCM_UARTCLKGS_CLK_EN_AM_UART0                              0x00000001
 
 //*****************************************************************************
@@ -1054,13 +989,16 @@
 // Can be forced on by UARTCLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// AM_UART1                 Enable clock for UART1
 // AM_UART0                 Enable clock for UART0
 #define PRCM_UARTCLKGDS_CLK_EN_W                                             2
 #define PRCM_UARTCLKGDS_CLK_EN_M                                    0x00000003
 #define PRCM_UARTCLKGDS_CLK_EN_S                                             0
-#define PRCM_UARTCLKGDS_CLK_EN_AM_UART1                             0x00000002
 #define PRCM_UARTCLKGDS_CLK_EN_AM_UART0                             0x00000001
 
 //*****************************************************************************
@@ -1077,13 +1015,16 @@
 // Overrides CLK_EN,  SSICLKGS.CLK_EN and  SSICLKGDS.CLK_EN when enabled.
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
 #define PRCM_SSICLKGR_AM_CLK_EN_W                                            2
 #define PRCM_SSICLKGR_AM_CLK_EN_M                                   0x00000300
 #define PRCM_SSICLKGR_AM_CLK_EN_S                                            8
-#define PRCM_SSICLKGR_AM_CLK_EN_SSI1                                0x00000200
 #define PRCM_SSICLKGR_AM_CLK_EN_SSI0                                0x00000100
 
 // Field:   [1:0] CLK_EN
@@ -1095,13 +1036,16 @@
 // Can be forced on by AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
 #define PRCM_SSICLKGR_CLK_EN_W                                               2
 #define PRCM_SSICLKGR_CLK_EN_M                                      0x00000003
 #define PRCM_SSICLKGR_CLK_EN_S                                               0
-#define PRCM_SSICLKGR_CLK_EN_SSI1                                   0x00000002
 #define PRCM_SSICLKGR_CLK_EN_SSI0                                   0x00000001
 
 //*****************************************************************************
@@ -1118,13 +1062,16 @@
 // Can be forced on by SSICLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
 #define PRCM_SSICLKGS_CLK_EN_W                                               2
 #define PRCM_SSICLKGS_CLK_EN_M                                      0x00000003
 #define PRCM_SSICLKGS_CLK_EN_S                                               0
-#define PRCM_SSICLKGS_CLK_EN_SSI1                                   0x00000002
 #define PRCM_SSICLKGS_CLK_EN_SSI0                                   0x00000001
 
 //*****************************************************************************
@@ -1141,13 +1088,16 @@
 // Can be forced on by SSICLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
+//
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 // ENUMs:
-// SSI1                     Enable clock for SSI1
 // SSI0                     Enable clock for SSI0
 #define PRCM_SSICLKGDS_CLK_EN_W                                              2
 #define PRCM_SSICLKGDS_CLK_EN_M                                     0x00000003
 #define PRCM_SSICLKGDS_CLK_EN_S                                              0
-#define PRCM_SSICLKGDS_CLK_EN_SSI1                                  0x00000002
 #define PRCM_SSICLKGDS_CLK_EN_SSI0                                  0x00000001
 
 //*****************************************************************************
@@ -1515,19 +1465,6 @@
 #define PRCM_RESETSECDMA_DMA_M                                      0x00000100
 #define PRCM_RESETSECDMA_DMA_S                                               8
 
-// Field:     [2] PKA
-//
-// Write 1 to reset. HW cleared.
-// Acess will only have effect when PERIPH power domain is on,
-// PDSTAT0.PERIPH_ON = 1
-// Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
-// activated while executing from flash. This means one cannot execute from
-// flash when using the SW reset.
-#define PRCM_RESETSECDMA_PKA                                        0x00000004
-#define PRCM_RESETSECDMA_PKA_BITN                                            2
-#define PRCM_RESETSECDMA_PKA_M                                      0x00000004
-#define PRCM_RESETSECDMA_PKA_S                                               2
-
 // Field:     [1] TRNG
 //
 // Write 1 to reset. HW cleared.
@@ -1622,22 +1559,6 @@
 // Register: PRCM_O_RESETUART
 //
 //*****************************************************************************
-// Field:     [1] UART1
-//
-//
-// 0: No action
-// 1: Reset UART1. HW cleared.
-//
-// Acess will only have effect when PERIPH power domain is on,
-// PDSTAT0.PERIPH_ON = 1
-// Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
-// activated while executing from flash. This means one cannot execute from
-// flash when using the SW reset.
-#define PRCM_RESETUART_UART1                                        0x00000002
-#define PRCM_RESETUART_UART1_BITN                                            1
-#define PRCM_RESETUART_UART1_M                                      0x00000002
-#define PRCM_RESETUART_UART1_S                                               1
-
 // Field:     [0] UART0
 //
 //
@@ -1672,16 +1593,11 @@
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
 //
-// SSI 1:
 //
-// 0: No action
-// 1: Reset SSI. HW cleared.
-//
-// Acess will only have effect when PERIPH power domain is on,
-// PDSTAT0.PERIPH_ON = 1
-// Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
-// activated while executing from flash. This means one cannot execute from
-// flash when using the SW reset.
+// NOTE:
+// MSB is reserverd
+// Writing any other value than the reset value may result in undefined
+// behavior.
 #define PRCM_RESETSSI_SSI_W                                                  2
 #define PRCM_RESETSSI_SSI_M                                         0x00000003
 #define PRCM_RESETSSI_SSI_S                                                  0
@@ -2123,77 +2039,6 @@
 #define PRCM_PWRPROFSTAT_VALUE_W                                             8
 #define PRCM_PWRPROFSTAT_VALUE_M                                    0x000000FF
 #define PRCM_PWRPROFSTAT_VALUE_S                                             0
-
-//*****************************************************************************
-//
-// Register: PRCM_O_MCUSRAMCFG
-//
-//*****************************************************************************
-// Field:     [5] BM_OFF
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_BM_OFF                                      0x00000020
-#define PRCM_MCUSRAMCFG_BM_OFF_BITN                                          5
-#define PRCM_MCUSRAMCFG_BM_OFF_M                                    0x00000020
-#define PRCM_MCUSRAMCFG_BM_OFF_S                                             5
-
-// Field:     [4] PAGE
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_PAGE                                        0x00000010
-#define PRCM_MCUSRAMCFG_PAGE_BITN                                            4
-#define PRCM_MCUSRAMCFG_PAGE_M                                      0x00000010
-#define PRCM_MCUSRAMCFG_PAGE_S                                               4
-
-// Field:     [3] PGS
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_PGS                                         0x00000008
-#define PRCM_MCUSRAMCFG_PGS_BITN                                             3
-#define PRCM_MCUSRAMCFG_PGS_M                                       0x00000008
-#define PRCM_MCUSRAMCFG_PGS_S                                                3
-
-// Field:     [2] BM
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_BM                                          0x00000004
-#define PRCM_MCUSRAMCFG_BM_BITN                                              2
-#define PRCM_MCUSRAMCFG_BM_M                                        0x00000004
-#define PRCM_MCUSRAMCFG_BM_S                                                 2
-
-// Field:     [1] PCH_F
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_PCH_F                                       0x00000002
-#define PRCM_MCUSRAMCFG_PCH_F_BITN                                           1
-#define PRCM_MCUSRAMCFG_PCH_F_M                                     0x00000002
-#define PRCM_MCUSRAMCFG_PCH_F_S                                              1
-
-// Field:     [0] PCH_L
-//
-//
-// NOT in use on AGAMA 704
-// Writing any other value than the reset value may result in undefined
-// behavior.
-#define PRCM_MCUSRAMCFG_PCH_L                                       0x00000001
-#define PRCM_MCUSRAMCFG_PCH_L_BITN                                           0
-#define PRCM_MCUSRAMCFG_PCH_L_M                                     0x00000001
-#define PRCM_MCUSRAMCFG_PCH_L_S                                              0
 
 //*****************************************************************************
 //

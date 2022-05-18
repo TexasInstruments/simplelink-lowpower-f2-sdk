@@ -44,6 +44,19 @@
     #define CRYPTOUTILS_NOINLINE
 #endif
 
+
+#define CryptoUtils_LIMIT_MASK (0xFFFFFFFEu)
+
+/*
+ * These constants take values at the very top of the memory map where it is unreasonable
+ * for an application to have stored a different number value.
+ */
+#define CryptoUtils_LIMIT_ZERO 0xFFFFFFFEu
+#define CryptoUtils_LIMIT_ONE  0xFFFFFFFFu
+
+const uint8_t * CryptoUtils_limitZero = (uint8_t *) CryptoUtils_LIMIT_ZERO;
+const uint8_t * CryptoUtils_limitOne  = (uint8_t *) CryptoUtils_LIMIT_ONE;
+
 /*
  *  ======== CryptoUtils_buffersMatch ========
  */
@@ -155,7 +168,7 @@ void CryptoUtils_memset(void *dest, size_t destSize, uint8_t val, size_t count) 
     DebugP_assert(dest);
     DebugP_assert(count <= destSize);
 
-    volatile uint8_t *p = (volatile uint8_t *)dest;
+    volatile uint8_t * volatile p = (volatile uint8_t *)dest;
 
     while (destSize-- && count--) {
         *p++ = val;
@@ -326,4 +339,190 @@ void CryptoUtils_reverseCopy(const void *source,
             *dstBytePtr-- = *sourceBytePtr++;
         }
     }
+}
+
+/* limitValue must be either CryptoUtils_LIMIT_ZERO or CryptoUtils_LIMIT_ONE */
+static int16_t CryptoUtils_convertLimitValueToInt(const void *limitValue) {
+    int16_t value = 0;
+
+    if (limitValue == CryptoUtils_limitOne) {
+        value = 1;
+    }
+
+    return value;
+}
+
+/*
+ * Returns number1[offset] - number2[offset].
+ *
+ * Can handle one of number1 or number2 (but not both) being one of the special limit values of
+ * CryptoUtils_LIMIT_ZERO or CryptoUtils_LIMIT_ONE.
+ *
+ * All pointer parameters must be non-NULL.
+ */
+static int16_t CryptoUtils_diffAtOffset(const uint8_t number1[], const uint8_t number2[],
+                                        size_t offset, size_t lsbOffset) {
+
+    int16_t diff;
+
+    /* Look at number2 first, as it will be more common for number2 to be one of the limit values. */
+    if (number2 == CryptoUtils_limitZero) {
+        diff = (int16_t)number1[offset];
+    }
+    else if (number2 == CryptoUtils_limitOne) {
+        if (offset == lsbOffset) {
+            diff = (int16_t)number1[offset] - 1;
+        }
+        else {
+            diff = (int16_t)number1[offset];
+        }
+    }
+    else if (number1 == CryptoUtils_limitZero) {
+        diff = 0 - (int16_t)number1[offset];
+    }
+    else if (number1 == CryptoUtils_limitOne){
+        if (offset == lsbOffset) {
+            diff = 1 - (int16_t)number1[offset];
+        }
+        else {
+            diff = 0 - (int16_t)number1[offset];
+        }
+    }
+    else {
+        diff = (int16_t)number1[offset] - (int16_t)number2[offset];
+    }
+
+    return diff;
+}
+
+/* Uses a timing constant algorithm to return 0 if value is 0 and return 1 otherwise. */
+static uint16_t CryptoUtils_valueNonZeroTimingConstantCheck(int16_t value) {
+    uint16_t valueNonZero;
+
+    /* Mask and shift bits such that if any bit in value is '1' then the
+       lsb of valueNonZero is 1 and otherwise valueNonZero is 0. */
+    valueNonZero = (((uint16_t)value & 0xFF00u) >> 8u) | ((uint8_t)value & 0xFFu);
+    valueNonZero = ((valueNonZero & 0xF0u) >> 4u) | (valueNonZero & 0x0Fu);
+    valueNonZero = ((valueNonZero & 0x0Cu) >> 2u) | (valueNonZero & 0x03u);
+    valueNonZero = ((valueNonZero & 0x02u) >> 1u) | (valueNonZero & 0x01u);
+
+    return valueNonZero;
+}
+
+/*
+ * Returns sign of number1 - number2:
+ * negative value if number2 is larger, positive value if number1 is larger and zero if numbers are equal.
+ *
+ * Note that the magnitude of the return value has no meaning.
+ *
+ * The comparison is performed with a time-constant algorithm with respect to either of the number
+ * arguments (number1, number2) when those inputs are not CryptoUtils_limitZero or CryptoUtils_limitOne.
+ *
+ * All pointer parameters must be non-NULL.
+ */
+static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t number2[],
+                                          size_t byteLength, CryptoUtils_Endianess endianess) {
+    int16_t result = 0x0;
+    int16_t diff;
+    uint16_t diffNonZero;
+    uint16_t diffResultMask;
+    uint16_t resultUnknown = 0xFFFFu;
+    uintptr_t number1Address;
+    uintptr_t number2Address;
+    size_t i;
+
+    number1Address = (uintptr_t)number1;
+    number2Address = (uintptr_t)number2;
+
+    /*
+     * Check if special RNG_limit values are being used for both values.
+     * This is not expected, but is handled for completeness.
+     */
+    if (((number1Address & CryptoUtils_LIMIT_MASK) == CryptoUtils_LIMIT_MASK) &&
+       ((number2Address & CryptoUtils_LIMIT_MASK) == CryptoUtils_LIMIT_MASK)) {
+
+        result = CryptoUtils_convertLimitValueToInt(number1) - CryptoUtils_convertLimitValueToInt(number2);
+    }
+    else if (number1 != number2) {
+        if (endianess == CryptoUtils_ENDIANESS_BIG) {
+            i = 0u;
+            while (i < byteLength) {
+                diff = CryptoUtils_diffAtOffset(number1, number2, i, byteLength-1);
+
+                /* Update result only if result was not known and is thus currently set to 0. */
+                result = (int16_t)((uint16_t) result | (resultUnknown & (uint16_t)diff));
+
+                /*
+                 * Determine if result is now known and update resultUnknown
+                 */
+
+                diffNonZero = CryptoUtils_valueNonZeroTimingConstantCheck(diff);
+
+                /* Create mask where mask value is 0 if bytes were equal, otherwise mask is all 1s. */
+                diffResultMask = diffNonZero - 1u;
+
+                /* Set resultUnknown to 0 (indicating result is known) if bytes were not equal. */
+                resultUnknown &= diffResultMask;
+
+                i++;
+            }
+        }
+        else {
+            i = byteLength;
+            while (i > 0u) {
+                i--;
+
+                diff = CryptoUtils_diffAtOffset(number1, number2, i, 0);
+
+                /* Update result only if result was not known and is thus currently set to 0. */
+                result = (int16_t)((uint16_t)result | (resultUnknown & (uint16_t)diff));
+
+                /*
+                 * Determine if result is now known and update resultUnknown
+                 */
+                diffNonZero = CryptoUtils_valueNonZeroTimingConstantCheck(diff);
+
+                /* Create mask where mask value is 0 if bytes were equal, otherwise mask is all 1s. */
+                diffResultMask = diffNonZero - 1u;
+
+                /* Set resultUnknown to 0 (indicating result is known) if bytes were not equal. */
+                resultUnknown &= diffResultMask;
+            }
+        }
+    }
+    else {
+        result = 0;
+    }
+
+    return result;
+}
+
+/*
+ *  ======== CryptoUtils_isNumberInRange ========
+ */
+bool CryptoUtils_isNumberInRange(const void *number, size_t bitLength, CryptoUtils_Endianess endianess,
+                                 const void *lowerLimit, const void *upperLimit) {
+    int16_t upperResult;
+    int16_t lowerResult;
+    bool inUpperLimit = true;
+    bool inLowerLimit = true;
+    size_t byteLength;
+
+    byteLength = (bitLength + 7u) >> 3u;
+
+    if (upperLimit != NULL) {
+        upperResult = CryptoUtils_compareNumbers(number, upperLimit, byteLength, endianess);
+        if (upperResult >= 0) {
+            inUpperLimit = false;
+        }
+    }
+
+    if (lowerLimit != NULL) {
+        lowerResult = CryptoUtils_compareNumbers(number, lowerLimit, byteLength, endianess);
+        if (lowerResult < 0) {
+            inLowerLimit = false;
+        }
+    }
+
+    return(inUpperLimit && inLowerLimit);
 }

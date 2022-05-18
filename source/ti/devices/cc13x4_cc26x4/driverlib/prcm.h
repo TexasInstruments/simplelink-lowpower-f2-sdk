@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       prcm.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the PRCM
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -63,6 +61,7 @@ extern "C"
 #include <stdint.h>
 #include "../inc/hw_types.h"
 #include "../inc/hw_memmap.h"
+#include "../inc/hw_memmap_common.h"
 #include "../inc/hw_ints.h"
 #include "../inc/hw_prcm.h"
 #include "../inc/hw_nvic.h"
@@ -241,13 +240,13 @@ PRCMPeripheralValid(uint32_t ui32Peripheral)
            (ui32Peripheral == PRCM_PERIPH_TIMER2)   ||
            (ui32Peripheral == PRCM_PERIPH_TIMER3)   ||
            (ui32Peripheral == PRCM_PERIPH_SSI0)     ||
-           (ui32Peripheral == PRCM_PERIPH_SSI1)     ||
            (ui32Peripheral == PRCM_PERIPH_UART0)    ||
+           (ui32Peripheral == PRCM_PERIPH_SSI1)     ||
            (ui32Peripheral == PRCM_PERIPH_UART1)    ||
+           (ui32Peripheral == PRCM_PERIPH_PKA)      ||
            (ui32Peripheral == PRCM_PERIPH_I2C0)     ||
            (ui32Peripheral == PRCM_PERIPH_CRYPTO)   ||
            (ui32Peripheral == PRCM_PERIPH_TRNG)     ||
-           (ui32Peripheral == PRCM_PERIPH_PKA)      ||
            (ui32Peripheral == PRCM_PERIPH_UDMA)     ||
            (ui32Peripheral == PRCM_PERIPH_GPIO)     ||
            (ui32Peripheral == PRCM_PERIPH_I2S));
@@ -337,7 +336,7 @@ __STATIC_INLINE void
 PRCMMcuUldoConfigure(uint32_t ui32Enable)
 {
     // Enable or disable the uLDO request signal.
-    HWREG(PRCM_BASE + PRCM_O_VDCTL) = ui32Enable;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_VDCTL) = ui32Enable;
 }
 
 //*****************************************************************************
@@ -376,7 +375,7 @@ PRCMGPTimerClockDivisionSet( uint32_t clkDiv )
 {
     ASSERT( clkDiv <= PRCM_GPTCLKDIV_RATIO_DIV256 );
 
-    HWREG( PRCM_BASE + PRCM_O_GPTCLKDIV ) = clkDiv;
+    HWREG( PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKDIV ) = clkDiv;
 }
 
 //*****************************************************************************
@@ -402,7 +401,7 @@ PRCMGPTimerClockDivisionSet( uint32_t clkDiv )
 __STATIC_INLINE uint32_t
 PRCMGPTimerClockDivisionGet( void )
 {
-    return ( HWREG( PRCM_BASE + PRCM_O_GPTCLKDIV ));
+    return ( HWREG( PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKDIV ));
 }
 
 
@@ -419,7 +418,7 @@ __STATIC_INLINE void
 PRCMAudioClockEnable(void)
 {
     // Enable the audio clock generation.
-    HWREG( PRCM_BASE + PRCM_O_I2SCLKCTL) |= PRCM_I2SCLKCTL_EN_M;
+    HWREG( PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) |= PRCM_I2SCLKCTL_EN_M;
 }
 
 //*****************************************************************************
@@ -435,7 +434,7 @@ __STATIC_INLINE void
 PRCMAudioClockDisable(void)
 {
     // Disable the audio clock generation
-    HWREG( PRCM_BASE + PRCM_O_I2SCLKCTL) &= ~PRCM_I2SCLKCTL_EN_M;
+    HWREG( PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) &= ~PRCM_I2SCLKCTL_EN_M;
 }
 
 //*****************************************************************************
@@ -593,7 +592,7 @@ __STATIC_INLINE void
 PRCMLoadSet(void)
 {
     // Enable the update of all load related registers.
-    HWREG(PRCM_NONBUF_BASE + PRCM_O_CLKLOADCTL) = PRCM_CLKLOADCTL_LOAD;
+    HWREG(PRCM_SEC_NONBUF_BASE + NONSECURE_OFFSET + PRCM_O_CLKLOADCTL) = PRCM_CLKLOADCTL_LOAD;
 }
 
 //*****************************************************************************
@@ -611,7 +610,7 @@ __STATIC_INLINE bool
 PRCMLoadGet(void)
 {
     // Return the load status.
-    return ((HWREG(PRCM_BASE + PRCM_O_CLKLOADCTL) & PRCM_CLKLOADCTL_LOAD_DONE) ?
+    return ((HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_CLKLOADCTL) & PRCM_CLKLOADCTL_LOAD_DONE) ?
             true : false);
 }
 
@@ -645,11 +644,11 @@ PRCMDomainEnable(uint32_t ui32Domains)
     // Enable the clock domain(s).
     if(ui32Domains & PRCM_DOMAIN_RFCORE)
     {
-        HWREG(PRCM_BASE + PRCM_O_RFCCLKG) = PRCM_RFCCLKG_CLK_EN;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCCLKG) = PRCM_RFCCLKG_CLK_EN;
     }
     if(ui32Domains & PRCM_DOMAIN_VIMS)
     {
-        HWREG(PRCM_BASE + PRCM_O_VIMSCLKG) = PRCM_VIMSCLKG_CLK_EN_M;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_VIMSCLKG) = PRCM_VIMSCLKG_CLK_EN_M;
     }
 }
 
@@ -684,11 +683,11 @@ PRCMDomainDisable(uint32_t ui32Domains)
     // Disable the power domains.
     if(ui32Domains & PRCM_DOMAIN_RFCORE)
     {
-        HWREG(PRCM_BASE + PRCM_O_RFCCLKG) = 0x0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCCLKG) = 0x0;
     }
     if(ui32Domains & PRCM_DOMAIN_VIMS)
     {
-        HWREG(PRCM_BASE + PRCM_O_VIMSCLKG) = 0x0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_VIMSCLKG) = 0x0;
     }
 }
 
@@ -781,7 +780,7 @@ __STATIC_INLINE void
 PRCMRfPowerDownWhenIdle(void)
 {
     // Configure the RF power domain.
-    HWREG(PRCM_BASE + PRCM_O_PDCTL0RFC) = 0;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0RFC) = 0;
 }
 
 //*****************************************************************************
@@ -1094,7 +1093,7 @@ __STATIC_INLINE bool
 PRCMRfReady(void)
 {
     // Return the ready status of the RF Core.
-    return ((HWREG(PRCM_BASE + PRCM_O_PDSTAT1RFC) &
+    return ((HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT1RFC) &
              PRCM_PDSTAT1RFC_ON) ? true : false);
 }
 

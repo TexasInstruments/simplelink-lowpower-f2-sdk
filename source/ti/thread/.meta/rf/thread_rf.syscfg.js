@@ -178,14 +178,14 @@ function moduleInstances(inst)
         cmdList.push("cmdRadioSetup");
         radioConfigArgs.txPower = RfDesign.getTxPowerOptions(2405, false)[0].name;
     }
-    else if(deviceId.match(/CC(265[12]P|2653P|2674P|1352P)/))
+    else if(deviceId.match(/CC(265[12]P|2674P|1352P)/))
     {
         cmdList.push("cmdRadioSetupPa");
         radioConfigArgs.highPA = true;
         radioConfigArgs.codeExportConfig.paExport = "combined";
         radioConfigArgs.txPowerHi = RfDesign.getTxPowerOptions(2405, true)[0].name;
     }
-    else if(deviceId.match(/CC(2654P|1354P)/))
+    else if(deviceId.match(/CC(265[34]|1354)P/))
     {
         // currently not characterized for high PA
         cmdList.push("cmdRadioSetupPa");
@@ -274,9 +274,9 @@ function getRfDesignOptions()
     {
         newRfDesignOptions = [{name: "LP_EM_CC1314R10"}];
     }
-    else if(deviceId === "CC2653P10RSK")
+    else if(deviceId === "CC2653P10RGZ")
     {
-        newRfDesignOptions = [{name: "LP_EM_CC2653P10"}];
+        newRfDesignOptions = [{name: "LP_CC2653P10"}];
     }
     else if(deviceId === "CC2674R10RSK")
     {

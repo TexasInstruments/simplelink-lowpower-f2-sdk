@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aux_sysif.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the AUX System Interface
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -37,6 +35,7 @@
 ******************************************************************************/
 
 #include "aux_sysif.h"
+#include "../inc/hw_memmap_common.h"
 
 //*****************************************************************************
 //
@@ -77,8 +76,8 @@ AUXSYSIFOpModeChange(uint32_t targetOpMode)
            (targetOpMode == AUX_SYSIF_OPMODEREQ_REQ_A));
 
     do {
-       currentOpMode = HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_OPMODEREQ);
-       while ( currentOpMode != HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_OPMODEACK));
+       currentOpMode = HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_OPMODEREQ);
+       while ( currentOpMode != HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_OPMODEACK));
        if (currentOpMode != targetOpMode)
        {
            currentOrder = g_OpMode_to_order[currentOpMode];
@@ -90,7 +89,7 @@ AUXSYSIFOpModeChange(uint32_t targetOpMode)
            {
                nextMode = g_Order_to_OpMode[currentOrder - 1];
            }
-           HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_OPMODEREQ) = nextMode;
+           HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_OPMODEREQ) = nextMode;
        }
     } while ( currentOpMode != targetOpMode );
 }

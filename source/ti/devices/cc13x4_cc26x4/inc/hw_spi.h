@@ -1046,6 +1046,20 @@
 #define SPI_CTL1_REPEATTX_MAXIMUM                                   0x00FF0000
 #define SPI_CTL1_REPEATTX_MINIMUM                                   0x00000000
 
+// Field:    [10] FIFORST
+//
+// This bit is used to reset transmit and receive FIFO pointers. The pointers
+// are held at a reset value until bit is cleared to zero.
+// ENUMs:
+// SET                      Set FIFO pointers reset trigger
+// CLR                      Clear FIFO pointers reset trigger
+#define SPI_CTL1_FIFORST                                            0x00000400
+#define SPI_CTL1_FIFORST_BITN                                               10
+#define SPI_CTL1_FIFORST_M                                          0x00000400
+#define SPI_CTL1_FIFORST_S                                                  10
+#define SPI_CTL1_FIFORST_SET                                        0x00000400
+#define SPI_CTL1_FIFORST_CLR                                        0x00000000
+
 // Field:   [9:8] MODE
 //
 // SPI Communication Mode Select

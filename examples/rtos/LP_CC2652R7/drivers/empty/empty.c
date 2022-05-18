@@ -43,7 +43,6 @@
 #include <ti/drivers/GPIO.h>
 // #include <ti/drivers/I2C.h>
 // #include <ti/drivers/SPI.h>
-// #include <ti/drivers/UART.h>
 // #include <ti/drivers/Watchdog.h>
 
 /* Driver configuration */
@@ -61,7 +60,6 @@ void *mainThread(void *arg0)
     GPIO_init();
     // I2C_init();
     // SPI_init();
-    // UART_init();
     // Watchdog_init();
 
     /* Configure the LED pin */

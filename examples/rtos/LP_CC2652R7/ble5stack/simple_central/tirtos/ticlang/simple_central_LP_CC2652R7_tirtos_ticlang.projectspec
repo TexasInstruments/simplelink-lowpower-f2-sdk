@@ -106,8 +106,6 @@
         <property name="configuroOptions" value=" --compileOptions &quot;${COMPILER_FLAGS} &quot;"/>
         <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../simple_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
         <file path="../../Application/simple_central.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/simple_central.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
@@ -115,12 +113,6 @@
         <file path="../../Application/simple_central_menu.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/simple_central_menu.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
-        </file>
-        <file path="../../Tools/simple_central_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
-        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
-        </file>
-        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
@@ -185,6 +177,14 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/rom/agama_r1/rom_init.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Startup">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
+        <file path="../../tirtos/simple_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/simple_central_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
+        </file>
+        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

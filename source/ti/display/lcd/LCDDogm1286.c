@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ static PIN_Handle hPin;
 static int LCD_count = -1;
 
 /* Static LCD functions */
-static bool LCD_initHw();
+static bool LCD_initHw(LCD_Handle handle);
 static void LCD_sendCommand(LCD_Handle handle, const char *pcCmd,
     unsigned char ucLen);
 static void LCD_sendData(LCD_Handle handle, const char *pcData,
@@ -698,7 +698,7 @@ void LCD_close(LCD_Handle handle)
 /*
  *  ======== LCD_init ========
  */
-void LCD_init()
+void LCD_init(void)
 {
     /* Allow multiple calls for LCD_init */
     if (LCD_count >= 0)

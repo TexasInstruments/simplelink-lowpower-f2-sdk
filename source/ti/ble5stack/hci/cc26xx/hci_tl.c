@@ -662,11 +662,15 @@ uint16 HCI_ProcessEvent( uint8 task_id, uint16 events )
         break;
       }
 #else // HCI_TL_NONE && defined(ICALL_LITE)
-      if ( (pMsg->event == HCI_HOST_TO_CTRL_DATA_EVENT) ||
-           (pMsg->event == HCI_CTRL_TO_HOST_EVENT) )
+      if (pMsg->event == HCI_HOST_TO_CTRL_DATA_EVENT)
       {
         // deallocate data
         osal_bm_free( ((hciDataPacket_t *)pMsg)->pData );
+      }
+      else if (pMsg->event == HCI_CTRL_TO_HOST_EVENT)
+      {
+        // All HCI_CTRL_TO_HOST_EVENT messages are of type hciPacket_t
+        osal_bm_free( ((hciPacket_t *)pMsg)->pData );
       }
 
       // deallocate the message

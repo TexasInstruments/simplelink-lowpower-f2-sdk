@@ -218,6 +218,9 @@
 #define FCFG1_O_SHDW_SCAN_DATA1_CRC                                 0x000003FC
 
 // Internal
+#define FCFG1_O_SHDW_ANA_TRIM                                       0x00000404
+
+// Internal
 #define FCFG1_O_DAC_BIAS_CNF                                        0x0000040C
 
 // Internal
@@ -1243,6 +1246,13 @@
 #define FCFG1_ANA2_TRIM_NANOAMP_RES_TRIM_M                          0x003F8000
 #define FCFG1_ANA2_TRIM_NANOAMP_RES_TRIM_S                                  15
 
+// Field: [14:12] DCDC_DRV_DS
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_ANA2_TRIM_DCDC_DRV_DS_W                                        3
+#define FCFG1_ANA2_TRIM_DCDC_DRV_DS_M                               0x00007000
+#define FCFG1_ANA2_TRIM_DCDC_DRV_DS_S                                       12
+
 // Field:    [11] DITHER_EN
 //
 // Internal. Only to be used through TI provided API.
@@ -2120,6 +2130,92 @@
 #define FCFG1_SHDW_SCAN_DATA1_CRC_TAP_DAP_LOCK_N_BITN                        0
 #define FCFG1_SHDW_SCAN_DATA1_CRC_TAP_DAP_LOCK_N_M                  0x00000001
 #define FCFG1_SHDW_SCAN_DATA1_CRC_TAP_DAP_LOCK_N_S                           0
+
+//*****************************************************************************
+//
+// Register: FCFG1_O_SHDW_ANA_TRIM
+//
+//*****************************************************************************
+// Field:    [30] ALT_VDDR_TRIM
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_ALT_VDDR_TRIM                           0x40000000
+#define FCFG1_SHDW_ANA_TRIM_ALT_VDDR_TRIM_BITN                              30
+#define FCFG1_SHDW_ANA_TRIM_ALT_VDDR_TRIM_M                         0x40000000
+#define FCFG1_SHDW_ANA_TRIM_ALT_VDDR_TRIM_S                                 30
+
+// Field:    [29] DET_LOGIC_DIS
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_DET_LOGIC_DIS                           0x20000000
+#define FCFG1_SHDW_ANA_TRIM_DET_LOGIC_DIS_BITN                              29
+#define FCFG1_SHDW_ANA_TRIM_DET_LOGIC_DIS_M                         0x20000000
+#define FCFG1_SHDW_ANA_TRIM_DET_LOGIC_DIS_S                                 29
+
+// Field: [28:27] BOD_BANDGAP_TRIM_CNF_EXT
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_EXT_W                       2
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_EXT_M              0x18000000
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_EXT_S                      27
+
+// Field: [26:25] BOD_BANDGAP_TRIM_CNF
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_W                           2
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_M                  0x06000000
+#define FCFG1_SHDW_ANA_TRIM_BOD_BANDGAP_TRIM_CNF_S                          25
+
+// Field:    [24] VDDR_ENABLE_PG1
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_VDDR_ENABLE_PG1                         0x01000000
+#define FCFG1_SHDW_ANA_TRIM_VDDR_ENABLE_PG1_BITN                            24
+#define FCFG1_SHDW_ANA_TRIM_VDDR_ENABLE_PG1_M                       0x01000000
+#define FCFG1_SHDW_ANA_TRIM_VDDR_ENABLE_PG1_S                               24
+
+// Field:    [23] VDDR_OK_HYS
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_VDDR_OK_HYS                             0x00800000
+#define FCFG1_SHDW_ANA_TRIM_VDDR_OK_HYS_BITN                                23
+#define FCFG1_SHDW_ANA_TRIM_VDDR_OK_HYS_M                           0x00800000
+#define FCFG1_SHDW_ANA_TRIM_VDDR_OK_HYS_S                                   23
+
+// Field: [22:21] IPTAT_TRIM
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_IPTAT_TRIM_W                                     2
+#define FCFG1_SHDW_ANA_TRIM_IPTAT_TRIM_M                            0x00600000
+#define FCFG1_SHDW_ANA_TRIM_IPTAT_TRIM_S                                    21
+
+// Field: [20:16] VDDR_TRIM
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_W                                      5
+#define FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_M                             0x001F0000
+#define FCFG1_SHDW_ANA_TRIM_VDDR_TRIM_S                                     16
+
+// Field: [15:11] TRIMBOD_INTMODE
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_INTMODE_W                                5
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_INTMODE_M                       0x0000F800
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_INTMODE_S                               11
+
+// Field:  [10:6] TRIMBOD_EXTMODE
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_EXTMODE_W                                5
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_EXTMODE_M                       0x000007C0
+#define FCFG1_SHDW_ANA_TRIM_TRIMBOD_EXTMODE_S                                6
+
+// Field:   [5:0] TRIMTEMP
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_W                                       6
+#define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_M                              0x0000003F
+#define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_S                                       0
 
 //*****************************************************************************
 //

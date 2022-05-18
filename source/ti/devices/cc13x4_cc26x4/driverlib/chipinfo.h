@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       chipinfo.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Collection of functions returning chip information.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -397,7 +395,6 @@ typedef enum {
    FAMILY_CC13x2_CC26x2     =  4, //!<  4 means that the chip is a CC13x2, CC26x2 family member.
    FAMILY_CC13x2x7_CC26x2x7 =  5, //!<  5 means that the chip is a CC13x2x7, CC26x2x7 family member.
    FAMILY_CC13x4_CC26x4     =  6, //!<  6 means that the chip is a CC13x4, CC26x4 family member.
-   FAMILY_CC23x0            =  7, //!<  7 means that the chip is a CC23x0 family member.
 } ChipFamily_t;
 
 //*****************************************************************************
@@ -422,7 +419,6 @@ extern ChipFamily_t ChipInfo_GetChipFamily( void );
 #define DRIVERLIB_BUILD_CC13X2_CC26X2     4 //!< 4 is the driverlib build ID for the cc13x2_cc26x2 driverlib.
 #define DRIVERLIB_BUILD_CC13X2X7_CC26X2X7 5 //!< 5 is the driverlib build ID for the cc13x2x7_cc26x2x7 driverlib.
 #define DRIVERLIB_BUILD_CC13X4_CC26X4     6 //!< 6 is the driverlib build ID for the cc13x4_cc26x4 driverlib.
-#define DRIVERLIB_BUILD_CC23X0            7 //!< 7 is the driverlib build ID for the cc23x0 driverlib.
 
 //*****************************************************************************
 //

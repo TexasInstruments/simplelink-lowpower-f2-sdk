@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -157,7 +157,7 @@ extern int_fast16_t NVSRAM_control(NVS_Handle handle, uint_fast16_t cmd,
 extern int_fast16_t NVSRAM_erase(NVS_Handle handle, size_t offset,
     size_t size);
 extern void NVSRAM_getAttrs(NVS_Handle handle, NVS_Attrs *attrs);
-extern void NVSRAM_init();
+extern void NVSRAM_init(void);
 extern int_fast16_t NVSRAM_lock(NVS_Handle handle, uint32_t timeout);
 extern NVS_Handle NVSRAM_open(uint_least8_t index, NVS_Params *params);
 extern int_fast16_t NVSRAM_read(NVS_Handle handle, size_t offset,

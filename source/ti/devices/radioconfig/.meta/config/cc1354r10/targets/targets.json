@@ -1,6 +1,10 @@
 {
     "targets": {
         "Default": "target_lp_cc1354r10_rgz.json",
-        "Target": "target_lp_cc1354r10_rgz.json"
+        "Target": [
+            "target_lp_cc1354r10_rgz.json",
+            "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1.json",
+            "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6.json"
+        ]
     }
 }

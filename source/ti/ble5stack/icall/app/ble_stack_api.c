@@ -64,6 +64,7 @@ bStatus_t bleStk_GapAdv_loadLocalByHandle(uint8_t advHandle,GapAdv_dataTypes_t a
 #include "ble_app_services.h"
 static pfnBleStkAdvCB_t  remote_bleApp_GapAdvCb = NULL;
 static void local_bleApp_GapAdvCb(uint32 event, GapAdv_data_t *pBuf, uint32_t *arg);
+static bleStk_pfnGapScanCB_t remote_bleApp_ScanCb = NULL;
 #endif
 
 #ifdef ICALL_NO_APP_EVENTS
@@ -430,57 +431,35 @@ bStatus_t bleStk_GapAdv_loadLocalByHandle(uint8_t advHandle,GapAdv_dataTypes_t a
   return(status);
 }
 
-uint8_t *shim_GapAdvCb(uint32 event, GapAdv_data_t *pBuf, uint32_t *arg)
+/*********************************************************************
+* @fn      appContext_GapAdvCb
+*
+* @brief   ADV callback - call the saved eRPC registered remote_bleApp_GapAdvCb
+*
+* @param   None.
+*
+* @return  None.
+*/
+static void appContext_GapAdvCb(uint32_t event, uint8_t *pBuf, uint32_t *arg)
 {
-  uint8_t *pMsg = malloc(sizeof(uint32) + sizeof(GapAdv_data_t) + sizeof(uint32_t));
-  if (pMsg)
-  {
-    uint32_t int_val;
-
-    // copy event
-    int_val = (uint32_t)event;
-    memcpy(pMsg, (void *)&int_val, sizeof(uint32_t));
-
-    if (pBuf)
-    {
-      // copy the buffer
-      memcpy(pMsg + sizeof(uint32_t), pBuf, sizeof(GapAdv_data_t));
-    }
-    else
-    {
-      // fill with zero
-      memset(pMsg + sizeof(uint32_t), 0, sizeof(GapAdv_data_t));
-    }
-
-    // copy arg
-    int_val = *arg;
-    memcpy(pMsg + sizeof(uint32_t) + sizeof(GapAdv_data_t), (void *)&int_val, sizeof(uint32_t));
-  }
-
-  return pMsg;
+    remote_bleApp_GapAdvCb(event, (GapAdv_data_t *)pBuf, arg);
 }
 
-static void appContext_GapAdvCb(uint8_t *pMsg)
-{
-  if (remote_bleApp_GapAdvCb)
-  {
-    uint32_t event = *(uint32_t *)pMsg;
-    GapAdv_data_t *pBuf = (GapAdv_data_t *)(pMsg+sizeof(uint32_t));
-    uint32_t *arg = (uint32_t *)(pMsg+sizeof(uint32_t)+sizeof(GapAdv_data_t));
-
-    remote_bleApp_GapAdvCb(event, pBuf, arg);
-  }
-}
-
+/*********************************************************************
+* @fn      local_bleApp_GapAdvCb
+*
+* @brief   Local ADV callback to be registered in the BLE stack
+*          !!! Context issue - In some events, It will be called by the BLE stack in the context of SWI context
+*          Switch - It must be handled in the server task context before forwarding to the ERPC client
+*          It will call the saved eRPC registered appContext_GapAdvCb
+*
+* @param   None.
+*
+* @return  None.
+*/
 static void local_bleApp_GapAdvCb(uint32 event, GapAdv_data_t *pBuf, uint32_t *arg)
 {
-  uint8_t *pMsg = shim_GapAdvCb(event, pBuf, arg);
-  if (pMsg)
-  {
-    bleSrv_callOnAppContext((callbackFxn_t)appContext_GapAdvCb, pMsg);
-  }
-
-  bleStack_free(pBuf);
+    bleSrv_callOnAppContext((callbackFxn_t)appContext_GapAdvCb, event, (uint8_t *)pBuf, arg);
 }
 
 #endif //ERPC_SERVER
@@ -505,3 +484,133 @@ void bleStk_getDevAddr(uint8_t wantIA, uint8_t *pAddr)
   pDevAddr = GAP_GetDevAddress(wantIA);
   memcpy(pAddr, pDevAddr, B_ADDR_LEN);
 }
+
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+#if defined(ERPC_SERVER)
+/*********************************************************************
+* @fn      appContext_ScanCb
+*
+* @brief   SCAN callback - call the saved eRPC registered remote_bleApp_ScanCb
+*
+* @param   None.
+*
+* @return  None.
+*/
+void appContext_ScanCb(uint32_t event, uint8_t *pBuf, uint32_t *arg)
+{
+  // No need to copy the message and internal pData, ERPC will copy the internal pData 
+  remote_bleApp_ScanCb(event, (Gap_Evt_data_t *)pBuf, arg);
+}
+
+/*********************************************************************
+* @fn      local_bleApp_ScanCb
+*
+* @brief   Local SCAN callback to be registered in the BLE stack
+*          !!! Context issue - It will be called by the BLE stack in the context of SWI context
+*          Switch - It must be handled in the server task context before forwarding to the ERPC client
+*          It will call the saved eRPC registered remote_bleApp_ScanCb
+*
+* @param   None.
+*
+* @return  None.
+*/
+void local_bleApp_ScanCb(uint32_t event, Gap_Evt_data_t *pBuf, uint32_t *arg)
+{
+    bleSrv_callOnAppContext((callbackFxn_t)appContext_ScanCb, event, (uint8_t *)pBuf, arg);
+}
+
+/*********************************************************************
+* @fn      bleStk_GapScan_registerCb
+*
+* @brief   Wrapper for stack API - in order not to use void * that is in pfnGapCB_t and to use local callback
+*          Original API: status_t GapScan_registerCb(pfnGapCB_t cb, uintptr_t arg)
+*
+* @param   None.
+*
+* @return  None.
+*/
+status_t bleStk_GapScan_registerCb(bleStk_pfnGapScanCB_t cb, uint32_t * arg)
+{
+  // save the original eRPC app callback
+  remote_bleApp_ScanCb = cb;
+
+  // regiter with local callback
+  return(GapScan_registerCb(local_bleApp_ScanCb, (uintptr_t) arg));
+}
+#endif //ERPC_SERVER
+#endif //#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG) )
+/*********************************************************************
+ * @fn      bleStk_scanInit
+ *
+ * @brief   Setup initial device scan settings.
+ *
+ * @return  None.
+ */
+bStatus_t bleStk_scanInit(bleStk_pfnGapScanCB_t scanCallback,
+                              GapScan_EventMask_t eventMask,
+                              uint8_t primPhys, uint8_t scanType, uint16_t scanInterval, uint16_t scanWindow,
+                              uint16_t advReportFields, uint8_t defaultScanPhy, uint8_t scanDupFilter,
+                              uint16_t scanFilterPduType,
+                              uint16_t scanMinConnInterval, uint16_t scanMaxConnInterval)
+{
+  status_t status;
+#if defined(ERPC_SERVER)
+  uint32_t arg = 0;
+  // save the original eRPC app callback
+  remote_bleApp_ScanCb = scanCallback;
+  // regiter with local callback
+  status = GapScan_registerCb(local_bleApp_ScanCb, (uintptr_t) arg);
+#else
+  // Register callback to process Scanner events
+  status = GapScan_registerCb(scanCallback, NULL);
+#endif
+  if (status != SUCCESS)
+  {
+    return status;
+  }
+
+  // Set Scanner Event Mask
+  GapScan_setEventMask(eventMask);
+
+  // Set Scan PHY parameters
+  status = GapScan_setPhyParams(primPhys, scanType, scanInterval, scanWindow);
+  if (status != SUCCESS)
+  {
+    return status;
+  }
+
+  // set scan params
+  {
+    uint8_t temp8;
+    uint16_t temp16;
+
+    // Set Advertising report fields to keep
+    temp16 = advReportFields;
+    GapScan_setParam(SCAN_PARAM_RPT_FIELDS, &temp16);
+    // Set Scanning Primary PHY
+    temp8 = defaultScanPhy;
+    GapScan_setParam(SCAN_PARAM_PRIM_PHYS, &temp8);
+    // Set LL Duplicate Filter
+    temp8 = scanDupFilter;
+    GapScan_setParam(SCAN_PARAM_FLT_DUP, &temp8);
+
+    // Set PDU type filter -
+    // Only 'Connectable' and 'Complete' packets are desired.
+    // It doesn't matter if received packets are
+    // whether Scannable or Non-Scannable, whether Directed or Undirected,
+    // whether Scan_Rsp's or Advertisements, and whether Legacy or Extended.
+    temp16 = scanFilterPduType;
+    GapScan_setParam(SCAN_PARAM_FLT_PDU_TYPE, &temp16);
+  }
+
+  // Set initiating PHY parameters
+  status = GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MIN, scanMinConnInterval);
+
+  status = GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MAX, scanMaxConnInterval);
+  
+  return status;
+}
+
+#endif //#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG) )

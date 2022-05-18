@@ -4,10 +4,8 @@ package/package.xdc.inc
 libBuilder.xs
 package.bld
 xdcArgParser.xs
-sources_cc32xx.xs
-sources_cc26xx.xs
-sources_cc23xx.xs
 sources_common.xs
+sources_cc26xx.xs
 ./nvs/flash/FlashCC26X4_ns.c
 ./nvs/flash/FlashCC26X4_ns.h
 ./nvs/flash/FlashCC26X4_s.c
@@ -62,6 +60,7 @@ AESGCM.h
 ./aesgcm/AESGCMCC26X4.h
 AESECB.h
 ./aesecb/AESECBCC26XX.h
+AESCommon.h
 ./cryptoutils/cryptokey/CryptoKey.h
 ./cryptoutils/cryptokey/CryptoKeyPlaintext.h
 ./cryptoutils/ecc/ECCParams.h
@@ -95,7 +94,10 @@ ITM.h
 ./itm/hw_cpu_itm.h
 ./power/PowerCC26XX.h
 ./power/PowerCC26X2.h
+./power/PowerCC26X2_helpers.h
 ./pwm/PWMTimerCC26XX.h
+RNG.h
+./rng/RNGCC26XX.h
 SHA2.h
 ./sha2/SHA2CC26X2.h
 ./spi/SPICC26X4DMA.h
@@ -113,9 +115,9 @@ TRNG.h
 ./aesgcm/AESGCMCC26XX.h
 PIN.h
 ./pin/PINCC26XX.h
-./spi/SPICC26XXDMA.h
 ./spi/SPICC26X2DMA.h
 ./adcbuf/ADCBufCC26XX.h
+./cryptoutils/ecc/ECCInitCC26X1.h
 ./ecdh/ECDHCC26X1.h
 ./ecdsa/ECDSACC26X1.h
 ./sha2/SHA2CC26X1.h
@@ -159,7 +161,8 @@ AESCMAC.c
 ./aescmac/AESCMACCC26XX.c
 AESECB.c
 ./aesecb/AESECBCC26XX.c
-./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c
+./cryptoutils/cryptokey/CryptoKeyPlaintext.c
+./cryptoutils/ecc/ECCInitCC26X1.c
 ./cryptoutils/ecc/ECCParamsCC26X1.c
 ./cryptoutils/sharedresources/CryptoResourceCC26XX.c
 ./cryptoutils/utils/CryptoUtils.c
@@ -183,10 +186,13 @@ ITM.c
 ./pin/PINCC26XX.c
 ./power/PowerCC26X2.c
 ./power/PowerCC26X2_calibrateRCOSC.c
+./power/PowerCC26X2_helpers.c
+./power/PowerCC26X2_calibrateRCOSC_helpers.c
 ./pwm/PWMTimerCC26XX.c
+RNG.c
+./rng/RNGCC26XX.c
 SHA2.c
 ./sha2/SHA2CC26X1.c
-./spi/SPICC26XXDMA.c
 ./spi/SPICC26X2DMA.c
 Temperature.c
 ./temperature/TemperatureCC26X2.c

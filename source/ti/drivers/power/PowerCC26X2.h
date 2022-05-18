@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ extern "C" {
  * See PowerCC26XX.h for peripheral IDs. Some are redefined here for compatibility.
  */
 
-/* The PKA and UART1 peripherals are not available on CC13X1 and CC26X1 devices */
+/* The PKA, UART1 and SSI1 peripherals are not available on CC13X1 and CC26X1 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
@@ -104,6 +104,9 @@ extern "C" {
 
 /*!< Resource ID: UART1 */
 #define PowerCC26X2_PERIPH_UART1        PowerCC26XX_PERIPH_UART1
+
+/*!< Resource ID: SSI1 */
+#define PowerCC26X2_PERIPH_SSI1         PowerCC26XX_PERIPH_SSI1
 
 #endif
 
@@ -192,7 +195,7 @@ typedef struct {
      *  To disable RCOSC calibration, the function PowerCC26X2_noCalibrate()
      *  should be specified.
      */
-    bool (*calibrateFxn)(unsigned int);
+    bool (*calibrateFxn)(unsigned int calibrationStage);
     /*!
      *  @brief Boolean specifying if the Power Policy function is enabled
      *
@@ -230,7 +233,7 @@ typedef struct {
      *  If TCXO is configured to be enabled in CCFG this function will
      *  enable or disable the TCXO by asserting or deasserting power to it.
      */
-    void (*enableTCXOFxn)(bool);
+    void (*enableTCXOFxn)(bool arg);
 } PowerCC26X2_Config;
 
 /*!
@@ -269,7 +272,7 @@ typedef struct {
     /*!< Array to maintain constraint reference counts */
     uint8_t resourceCounts[PowerCC26X2_NUMRESOURCES];
     /*!< Array to maintain resource dependency reference counts */
-    unsigned int (*resourceHandlers[3])(unsigned int);
+    unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
     Power_PolicyFxn policyFxn;   /*!< The Power policy function */
 } PowerCC26X2_ModuleState;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -146,7 +146,7 @@ uintptr_t SwiP_disable(void)
 /*
  *  ======== SwiP_getTrigger ========
  */
-uint32_t SwiP_getTrigger()
+uint32_t SwiP_getTrigger(void)
 {
     uint32_t trigger;
 

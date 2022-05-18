@@ -61,8 +61,8 @@ extern HwiP_Struct          CryptoResourceCC26XX_hwi;
 
 void CryptoResourceCC26XX_constructRTOSObjects(void);
 void CryptoResourceCC26XX_destructRTOSObjects(void);
-bool CryptoResourceCC26XX_acquireLock();
-void CryptoResourceCC26XX_releaseLock();
+bool CryptoResourceCC26XX_acquireLock(uint32_t timeout);
+void CryptoResourceCC26XX_releaseLock(void);
 
 #ifdef __cplusplus
 }

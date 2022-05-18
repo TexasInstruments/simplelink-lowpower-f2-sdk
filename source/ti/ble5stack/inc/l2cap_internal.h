@@ -361,6 +361,8 @@ extern void l2capProcessSignal( uint16 connHandle, l2capPacket_t *pPkt );
 
 extern bStatus_t l2capProcessRsp( uint16 connHandle, l2capSignalHdr_t *pHdr, uint8 *pData );
 
+extern bStatus_t l2capProcessReq_sPatch( uint16 connHandle, l2capSignalHdr_t *pHdr, uint8 *pData );
+
 extern bStatus_t l2capProcessReq( uint16 connHandle, l2capSignalHdr_t *pHdr, uint8 *pData );
 
 extern void l2capProcessConnectReq( uint16 connHandle, uint8 id, l2capConnectReq_t *pConnReq );

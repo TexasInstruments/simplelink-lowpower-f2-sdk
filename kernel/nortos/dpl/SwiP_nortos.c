@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ typedef struct SwiP_Obj {
 
 extern bool HwiP_inSwi(void);
 
-static void SwiP_handleHwi();
+static void SwiP_handleHwi(uintptr_t arg);
 
 static const SwiP_Params SwiP_defaultParams = {
     .arg0 = (uintptr_t) NULL,
@@ -288,7 +288,7 @@ void SwiP_dispatch(uintptr_t hwiKey)
     SwiP_schedulerRunning = false;
 }
 
-static void SwiP_handleHwi()
+static void SwiP_handleHwi(uintptr_t arg)
 {
     uintptr_t hwiKey = HwiP_disable();
 
@@ -300,7 +300,7 @@ static void SwiP_handleHwi()
 /*
  *  ======== SwiP_getTrigger ========
  */
-uint32_t SwiP_getTrigger()
+uint32_t SwiP_getTrigger(void)
 {
     return (SwiP_currentTrigger);
 }

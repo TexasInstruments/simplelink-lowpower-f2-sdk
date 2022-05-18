@@ -73,6 +73,10 @@ typedef struct
     uint32_t   RESERVED0                     ; // 0x50000060
     uint32_t   CCFG_CPU_LOCK_CFG             ; // 0x50000064
     uint32_t   CCFG_DEB_AUTH_CFG             ; // 0x50000068
+    uint32_t   CCFG_CKEY0                    ; // 0x5000006C
+    uint32_t   CCFG_CKEY1                    ; // 0x50000070
+    uint32_t   CCFG_CKEY2                    ; // 0x50000074
+    uint32_t   CCFG_CKEY3                    ; // 0x50000078
 } ccfg_t;
 
 //*****************************************************************************

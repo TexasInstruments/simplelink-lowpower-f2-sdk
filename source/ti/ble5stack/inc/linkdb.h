@@ -100,7 +100,7 @@ extern "C"
  * @return TRUE if the link is up
  * @return FALSE, otherwise.
  */
-#define linkDB_Up( connectionHandle )  linkDB_State( (connectionHandle), LINK_CONNECTED )
+#define linkDB_Up( connectionHandle )  ( LL_ConnActive( connectionHandle ) == LL_STATUS_SUCCESS ? TRUE : FALSE )
 
 /**
  * Check to see if the physical link is encrypted.

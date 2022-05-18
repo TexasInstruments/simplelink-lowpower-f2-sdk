@@ -158,21 +158,23 @@ void localProgramStart(void)
     uint32_t count;
     uint32_t i;
     uint32_t newBasePri;
-	
+
     /* Disable interrupts */
     __asm volatile (
-        "mov %0, %1 \n\t"
-        "msr basepri, %0 \n\t"
-        "isb \n\t"
-        "dsb \n\t"
-        :"=r" (newBasePri) : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY) : "memory"
-    );
+        " mov %0, %1 \n"
+        " msr basepri, %0 \n"
+        " isb \n"
+        " dsb \n"
+        :"=r" (newBasePri)
+        : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY)
+        : "memory");
 
 #if configENABLE_ISR_STACK_INIT
     /* Initialize ISR stack to known value for Runtime Object View */
     register uint32_t *top = (uint32_t *)&__stack;
     register uint32_t *end = (uint32_t *)&newBasePri;
-    while (top < end) {
+    while (top < end)
+    {
         *top++ = (uint32_t)0xa5a5a5a5;
     }
 #endif
@@ -180,7 +182,8 @@ void localProgramStart(void)
     /* initiailize .bss to zero */
     bs = & __bss_start__;
     be = & __bss_end__;
-    while (bs < be) {
+    while (bs < be)
+    {
         *bs = 0;
         bs++;
     }
@@ -189,8 +192,10 @@ void localProgramStart(void)
     dl = & __data_load__;
     ds = & __data_start__;
     de = & __data_end__;
-    if (dl != ds) {
-        while (ds < de) {
+    if (dl != ds)
+    {
+        while (ds < de)
+        {
             *ds = *dl;
             dl++;
             ds++;
@@ -199,7 +204,8 @@ void localProgramStart(void)
 
     /* Run any constructors */
     count = (uint32_t)(__init_array_end - __init_array_start);
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
         __init_array_start[i]();
     }
 
@@ -207,7 +213,7 @@ void localProgramStart(void)
     memcpy(ramVectors, resetVectors, 16*4);
 
     /* fill remaining vectors with default handler */
-    for (i=16; i < 195; i++)
+    for (i = 16; i < 195; i++)
     {
         ramVectors[i] = (unsigned long)defaultHandler;
     }
@@ -236,8 +242,7 @@ void __attribute__((naked)) resetISR(void)
         " movt r0, #:upper16:resetVectors\n"
         " ldr r0, [r0]\n"
         " mov sp, r0\n"
-        " bl localProgramStart"
-    );
+        " bl localProgramStart");
 }
 
 //*****************************************************************************
@@ -250,7 +255,7 @@ void __attribute__((naked)) resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -265,7 +270,7 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -280,7 +285,7 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }
@@ -295,7 +300,7 @@ static void busFaultHandler(void)
 static void defaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1)
+    while (1)
     {
     }
 }

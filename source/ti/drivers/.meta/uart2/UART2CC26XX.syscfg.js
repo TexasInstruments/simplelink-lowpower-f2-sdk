@@ -53,6 +53,16 @@ intPriority.description = "UART peripheral interrupt priority";
 let devSpecific = {
     config: [
         {
+            name        : "dataDirection",
+            displayName : "Data Direction",
+            default     : 'Send and Receive',
+            options     : [
+                { name : 'Send and Receive' },
+                { name : 'Send Only' },
+                { name : 'Receive Only' }
+            ]
+        },
+        {
             name        : "flowControl",
             displayName : "Flow Control",
             default     : false,

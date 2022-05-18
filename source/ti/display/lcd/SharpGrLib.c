@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -641,7 +641,7 @@ static void SharpGrLib_clearScreen(const Graphics_Display *pDisplay, uint16_t ul
 //! \return None.
 //
 //*****************************************************************************
-void SharpGrLib_sendToggleVCOMCommand()
+void SharpGrLib_sendToggleVCOMCommand(void)
 {
     // Check if valid handles since this is a somewhat opaque API
     if (NULL == spiHandle)

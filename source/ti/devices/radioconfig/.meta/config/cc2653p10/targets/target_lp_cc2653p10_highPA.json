@@ -1,26 +1,26 @@
 {
     "target": {
-        "Name": "LP_EM_CC2653P10-HIGH-PA",
+        "Name": "LP_CC2653P10-HIGH-PA",
         "Revision": [],
-        "Description": "CC2653P10 LaunchPad",
+        "Description": "LP_CC2653P10 LaunchPad",
         "DeviceName": "CC2653P10",
-        "DevicePackage": "RSL 6x6",
+        "DevicePackage": "RGZ 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC1352PEM-XD7793-XD24-PA24",
+        "RfDesign": "CC1354P10-7x7-XD7793-XD24-PA24_20dBm",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",
             "IoPin": [
                 {
-                    "_name": "DIO29",
+                    "_name": "DIO28",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
                     "Tx": "Output high",
                     "Rx": "Output high"
                 },
                 {
-                    "_name": "DIO30",
+                    "_name": "DIO29",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
                     "Tx": "Output low",

@@ -143,7 +143,11 @@ struct tx_power_max
 /*
  * Radio command structures that run on the CM0.
  */
+#ifdef SUPPORT_HIGH_PA
+static volatile rfc_CMD_RADIO_SETUP_PA_t     sRadioSetupCmd;
+#else
 static volatile rfc_CMD_RADIO_SETUP_t        sRadioSetupCmd;
+#endif
 
 static volatile rfc_CMD_IEEE_MOD_FILT_t      sModifyReceiveFilterCmd;
 static volatile rfc_CMD_IEEE_MOD_SRC_MATCH_t sModifyReceiveSrcMatchCmd;
@@ -202,12 +206,35 @@ static uint16_t seedRandom;
  */
 static int8_t sReqTxPower = TIOP_CONFIG_TX_POWER;
 
+/**
+ * Array of back-off values necessary for passing FCC testing.
+ */
+static const struct tx_power_max cTxMaxPower[] =
+{
+#if defined(LP_CC2652RSIP)
+    { .channel = 26, .maxPower = 2 }, /* back-off for FCC/CAN band edge, not needed in ETSI */
+
+#elif defined(LAUNCHXL_CC1352P_2)
+    { .channel = 26, .maxPower = 15 }, /* back-off for 25 deg C, 3.3V */
+    { .channel = 25, .maxPower = 19 }, /* back-off for 25 deg C, 3.3V */
+
+#elif defined(__IAR_SYSTEMS_ICC__)
+    /* Error[Pe1345]: an empty initializer is invalid for an array with unspecified bound
+     *
+     * Adding an extra value with max theoretical channel and power numbers to
+     * enable IAR to build with this array.
+     */
+    { .channel = UINT8_MAX, .maxPower = UINT8_MAX },
+
+#endif
+};
+
 /* Status of the coex priority signal line. This is passed to the RF Driver
  * with the scheduling parameters for each command. The value of this will only
  * be important in 2-wire or greater CoEx configurations.
  */
 static RF_PriorityCoex sPriorityCoex = RF_PriorityCoexDefault;
- 
+
 /* Status of the coex request signal for RX operations. This is passed to the
  * RF Driver with the scheduling parameters for each command. The value of this
  * will only be important in 3-wire or greater CoEx configurations.
@@ -960,6 +987,18 @@ static otError rfCoreSetTransmitPower(int8_t aPower)
     otError retval = OT_ERROR_NONE;
     RF_TxPowerTable_Value oldValue;
     RF_TxPowerTable_Value newValue;
+    unsigned int i;
+
+    /* search for a matching backoff if there is one */
+    for (i=0; i < (sizeof(cTxMaxPower) / sizeof(cTxMaxPower[0])); i++)
+    {
+        if (cTxMaxPower[i].channel == sReceiveCmd.channel &&
+            cTxMaxPower[i].maxPower < aPower)
+        {
+            /* drop aPower if it is above the channel's max power */
+            aPower = cTxMaxPower[i].maxPower;
+        }
+    }
 
     /* find the tx power configuration */
     newValue = RF_TxPowerTable_findValue(txPowerTable, aPower);
@@ -1158,7 +1197,7 @@ void rfCorePriorityCoex(bool aEnable)
         sPriorityCoex = RF_PriorityCoexLow;
     }
 }
- 
+
 /**
  * Function documented in radio.h
  */

@@ -944,23 +944,6 @@ function onHardwareChanged(inst, ui) {
         inst[`rfAntennaPinSymbol${index}`] = SYM_PREFIX + hardware.signals[signal].name;
     });
 
-    /* 
-     * Temporary workaround:
-     * Correction of signal mapping for the antenna switch
-     * on board LP_CC1311P3. The antenna switch logic will be
-     * wrong if signal "HIGH_PA" is mapped to device ball 42.
-     */
-    if (
-        hasHardware
-        && !!deviceData.deviceId.match(/CC1311P3/)
-        && (hardware.signals["HIGH_PA"].devicePin.ball === "42")
-    ) {
-        /* Swap antenna pin symbol defines to adjust signal mapping */
-        const tmp                = inst.rfAntennaPinSymbol0;
-        inst.rfAntennaPinSymbol0 = inst.rfAntennaPinSymbol1;
-        inst.rfAntennaPinSymbol1 = tmp;
-    }
-
     /* Update antenna pin selection to number of HW signals */
     updateConfigValue(inst, ui, "pinSelectionAntenna", hwSignals.length);
     ui.pinSelectionAntenna.readOnly = hasHardware;

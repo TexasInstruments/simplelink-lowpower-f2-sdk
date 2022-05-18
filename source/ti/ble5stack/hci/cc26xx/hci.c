@@ -123,7 +123,7 @@ extern RF_Handle rfHandle;
 
 // Major Version (8 bits) . Minor Version (4 bits) . SubMinor Version (4 bits)
 #if defined( CC26X2 ) || defined(CC13X2) || defined(CC13X2P)
-#define HCI_REVISION                                 0x0224  // HCI Version BLE5 2.2.4
+#define HCI_REVISION                                 0x0225  // HCI Version BLE5 2.2.5
 #elif defined( CC26XX )
 #define HCI_REVISION                                 0x0111  // HCI Version BLE5 1.1.1
 #else // !CC26X2 && !CC13X2 && !CC26XX && !CC13XX
@@ -2906,24 +2906,20 @@ hciStatus_t HCI_LE_SetPhyCmd( uint16 connHandle,
 
   // check if the LL determined that neither tx or rx PHY will change as a
   // result of this command
+  // send PHY Update Request anyway. This is to support timesync in CCC.
   if ( status == LL_STATUS_ERROR_REPEATED_ATTEMPTS )
   {
-    uint8 tx, rx;
+    llConnState_t *connPtr;
+    uint8          phy, supportedPhys;
 
-    // get the current tx/rx phy
-    MAP_LL_ReadPhy( connHandle,
-                    &tx,
-                    &rx );
+    connPtr = MAP_llDataGetConnPtr( connHandle );
+    supportedPhys = LL_PHY_SUPPORTED_PHYS;
+    phy = (txPhy & rxPhy) & supportedPhys;
 
-    // issue a successful command status
+    connPtr->phyInfo.updatePhy = phy;
+    MAP_llEnqueueCtrlPkt( connPtr, LL_CTRL_PHY_REQ );
     MAP_HCI_CommandStatusEvent( HCI_SUCCESS,
                                 HCI_LE_SET_PHY );
-
-    // issue a phy change update event
-    MAP_LL_PhyUpdateCompleteEventCback( HCI_SUCCESS,
-                                        connHandle,
-                                        tx,
-                                        rx );
   }
   else if ( status == LL_STATUS_ERROR_TRANSACTION_COLLISION )
   {

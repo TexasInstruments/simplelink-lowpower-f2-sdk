@@ -205,14 +205,6 @@
                                 "_comment": "DC\/DC regulator: In Tx, use DCDCCTL5[3:0]=0x7 (DITHER_EN=0 and IPEAK=7).",
                                 "$": "0x00F788D3"
                             }
-                        },
-                        {
-                            "_name": "override_patable_14dbm.json",
-                            "Element32b": {
-                                "_type": "ADI_REG_OVERRIDE",
-                                "_comment": "Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)",
-                                "$": "0,12,0xF8"
-                            }
                         }
                     ]
                 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/release.dtd -->
-<release name="ti_loggers_drivers" label="default" date="1635151480456" buildCount="5" producerId="undefined">
+<release name="ti_loggers_drivers" label="default" date="1646324417319" buildCount="5" producerId="undefined">
 <package name="ti.loggers.drivers"
     version="1, 0, 0"/>
 <imports>
@@ -128,8 +128,8 @@
         <file name="package.xs"/>
     </package>
     <package name="ti.drivers"
-        version="1, 0, 0, 1635151171000"
-        providerId="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/5.70.02.02/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
+        version="1, 0, 0, 1646324272000"
+        providerId="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/6.10.00.12/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
         <file name="ITM.h"/>
         <file name="dpl/HwiP.h"/>
         <file name="libBuilder.xs"/>
@@ -173,13 +173,13 @@
         <file name="select.h"/>
     </package>
     <package name="ti.utils.runtime"
-        version="1, 0, 0, 1631180694359"
-        providerId="/scratch/xlibrary/.conan/data/tiutils/1.30.00.05/library-sb/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
+        version="1, 0, 0, 1646222102146"
+        providerId="/scratch/xlibrary/.conan/data/tiutils/1.35.00.01/library-sb/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
         <file name="ILogger.h"/>
     </package>
     <package name="ti.loggers.drivers"
         version="1, 0, 0"
-        providerId="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/5.70.02.02/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
+        providerId="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/6.10.00.12/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/source">
         <file name="LoggerITM.h"/>
     </package>
     <targetRoot base="/scratch/xlibrary/.conan/data/ticodegen/20.2.5.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/"
@@ -214,6 +214,6 @@
     </xdcRoot>
 </references>
 <orphans>
-    <file name="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/5.70.02.02/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/drivers.bld"/>
+    <file name="/scratch/xlibrary/.conan/data/tidrivers_cc13xx_cc26xx/6.10.00.12/library-sb/ga/build/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/drivers.bld"/>
 </orphans>
 </release>

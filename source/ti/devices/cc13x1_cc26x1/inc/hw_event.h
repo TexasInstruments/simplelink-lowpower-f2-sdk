@@ -403,11 +403,11 @@
 //
 // Read only selection value
 // ENUMs:
-// PKA_IRQ                  PKA Interrupt event
+// TIE_LOW31                Not used tied to 0
 #define EVENT_CPUIRQSEL3_EV_W                                                7
 #define EVENT_CPUIRQSEL3_EV_M                                       0x0000007F
 #define EVENT_CPUIRQSEL3_EV_S                                                0
-#define EVENT_CPUIRQSEL3_EV_PKA_IRQ                                 0x0000001F
+#define EVENT_CPUIRQSEL3_EV_TIE_LOW31                               0x0000001F
 
 //*****************************************************************************
 //
@@ -485,12 +485,11 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
+// TIE_LOW35                Not used tied to 0
 #define EVENT_CPUIRQSEL8_EV_W                                                7
 #define EVENT_CPUIRQSEL8_EV_M                                       0x0000007F
 #define EVENT_CPUIRQSEL8_EV_S                                                0
-#define EVENT_CPUIRQSEL8_EV_SSI1_COMB                               0x00000023
+#define EVENT_CPUIRQSEL8_EV_TIE_LOW35                               0x00000023
 
 //*****************************************************************************
 //
@@ -859,21 +858,10 @@
 //                          the AUX_TDC status AUX_TDC:STAT.DONE
 // AUX_COMPB                AUX Compare B event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // CRYPTO_DMA_DONE_IRQ      CRYPTO DMA input done event, the correspondingg
 //                          flag is CRYPTO:IRQSTAT.DMA_IN_DONE. Controlled
 //                          by CRYPTO:IRQEN.DMA_IN_DONE
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
+// TIE_LOW31                Not used tied to 0
 // DMA_CH18_DONE            DMA done for software tiggered UDMA channel 18,
 //                          see UDMA0:SOFTREQ
 // DMA_CH0_DONE             DMA done for software tiggered UDMA channel 0, see
@@ -900,13 +888,8 @@
 #define EVENT_CPUIRQSEL30_EV_AUX_TIMER0_EV                          0x0000006D
 #define EVENT_CPUIRQSEL30_EV_AUX_TDC_DONE                           0x0000006C
 #define EVENT_CPUIRQSEL30_EV_AUX_COMPB                              0x0000006B
-#define EVENT_CPUIRQSEL30_EV_AUX_AON_WU_EV                          0x00000069
 #define EVENT_CPUIRQSEL30_EV_CRYPTO_DMA_DONE_IRQ                    0x0000005E
-#define EVENT_CPUIRQSEL30_EV_AUX_TIMER2_PULSE                       0x0000003C
-#define EVENT_CPUIRQSEL30_EV_AUX_TIMER2_EV3                         0x0000003B
-#define EVENT_CPUIRQSEL30_EV_AUX_TIMER2_EV2                         0x0000003A
-#define EVENT_CPUIRQSEL30_EV_AUX_TIMER2_EV1                         0x00000039
-#define EVENT_CPUIRQSEL30_EV_AUX_TIMER2_EV0                         0x00000038
+#define EVENT_CPUIRQSEL30_EV_TIE_LOW31                              0x0000001F
 #define EVENT_CPUIRQSEL30_EV_DMA_CH18_DONE                          0x00000016
 #define EVENT_CPUIRQSEL30_EV_DMA_CH0_DONE                           0x00000014
 #define EVENT_CPUIRQSEL30_EV_AON_AUX_SWEV0                          0x0000000A
@@ -987,12 +970,11 @@
 //
 // Read only selection value
 // ENUMs:
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
+// TIE_LOW56                Not used tied to 0
 #define EVENT_CPUIRQSEL35_EV_W                                               7
 #define EVENT_CPUIRQSEL35_EV_M                                      0x0000007F
 #define EVENT_CPUIRQSEL35_EV_S                                               0
-#define EVENT_CPUIRQSEL35_EV_AUX_TIMER2_EV0                         0x00000038
+#define EVENT_CPUIRQSEL35_EV_TIE_LOW56                              0x00000038
 
 //*****************************************************************************
 //
@@ -1003,12 +985,11 @@
 //
 // Read only selection value
 // ENUMs:
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
+// TIE_LOW37                Not used tied to 0
 #define EVENT_CPUIRQSEL36_EV_W                                               7
 #define EVENT_CPUIRQSEL36_EV_M                                      0x0000007F
 #define EVENT_CPUIRQSEL36_EV_S                                               0
-#define EVENT_CPUIRQSEL36_EV_UART1_COMB                             0x00000025
+#define EVENT_CPUIRQSEL36_EV_TIE_LOW37                              0x00000025
 
 //*****************************************************************************
 //
@@ -1196,32 +1177,16 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // SWEV1                    Software event 1, triggered by SWEV.SWEV1
 // SWEV0                    Software event 0, triggered by SWEV.SWEV0
 // CRYPTO_RESULT_AVAIL_IRQ  CRYPTO result available interupt event, the
 //                          corresponding flag is found here
 //                          CRYPTO:IRQSTAT.RESULT_AVAIL. Controlled by
 //                          CRYPTO:IRQSTAT.RESULT_AVAIL
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
 // DMA_DONE_COMB            Combined DMA done, corresponding flags are here
 //                          UDMA0:REQDONE
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // WDT_IRQ                  Watchdog interrupt event, controlled by
@@ -1249,19 +1214,11 @@
 #define EVENT_RFCSEL9_EV_AUX_TDC_DONE                               0x0000006C
 #define EVENT_RFCSEL9_EV_AUX_COMPB                                  0x0000006B
 #define EVENT_RFCSEL9_EV_AUX_COMPA                                  0x0000006A
-#define EVENT_RFCSEL9_EV_AUX_AON_WU_EV                              0x00000069
 #define EVENT_RFCSEL9_EV_SWEV1                                      0x00000065
 #define EVENT_RFCSEL9_EV_SWEV0                                      0x00000064
 #define EVENT_RFCSEL9_EV_CRYPTO_RESULT_AVAIL_IRQ                    0x0000005D
-#define EVENT_RFCSEL9_EV_AUX_TIMER2_PULSE                           0x0000003C
-#define EVENT_RFCSEL9_EV_AUX_TIMER2_EV3                             0x0000003B
-#define EVENT_RFCSEL9_EV_AUX_TIMER2_EV2                             0x0000003A
-#define EVENT_RFCSEL9_EV_AUX_TIMER2_EV1                             0x00000039
-#define EVENT_RFCSEL9_EV_AUX_TIMER2_EV0                             0x00000038
 #define EVENT_RFCSEL9_EV_DMA_DONE_COMB                              0x00000027
-#define EVENT_RFCSEL9_EV_UART1_COMB                                 0x00000025
 #define EVENT_RFCSEL9_EV_UART0_COMB                                 0x00000024
-#define EVENT_RFCSEL9_EV_SSI1_COMB                                  0x00000023
 #define EVENT_RFCSEL9_EV_SSI0_COMB                                  0x00000022
 #define EVENT_RFCSEL9_EV_WDT_IRQ                                    0x00000018
 #define EVENT_RFCSEL9_EV_AON_AUX_SWEV0                              0x0000000A
@@ -1307,8 +1264,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT1              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT1 wil be routed here.
@@ -1323,22 +1278,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -1384,7 +1325,6 @@
 #define EVENT_GPT0ACAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT0ACAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT0ACAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT0ACAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT0ACAPTSEL_EV_PORT_EVENT1                           0x00000056
 #define EVENT_GPT0ACAPTSEL_EV_PORT_EVENT0                           0x00000055
 #define EVENT_GPT0ACAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -1395,14 +1335,7 @@
 #define EVENT_GPT0ACAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT0ACAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT0ACAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT0ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT0ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT0ACAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT0ACAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT0ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT0ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -1454,8 +1387,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT1              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT1 wil be routed here.
@@ -1470,22 +1401,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -1531,7 +1448,6 @@
 #define EVENT_GPT0BCAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT0BCAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT0BCAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT0BCAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT0BCAPTSEL_EV_PORT_EVENT1                           0x00000056
 #define EVENT_GPT0BCAPTSEL_EV_PORT_EVENT0                           0x00000055
 #define EVENT_GPT0BCAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -1542,14 +1458,7 @@
 #define EVENT_GPT0BCAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT0BCAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT0BCAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT0BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT0BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT0BCAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT0BCAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT0BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT0BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -1601,8 +1510,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT3              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT3 wil be routed here.
@@ -1617,22 +1524,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -1678,7 +1571,6 @@
 #define EVENT_GPT1ACAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT1ACAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT1ACAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT1ACAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT1ACAPTSEL_EV_PORT_EVENT3                           0x00000058
 #define EVENT_GPT1ACAPTSEL_EV_PORT_EVENT2                           0x00000057
 #define EVENT_GPT1ACAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -1689,14 +1581,7 @@
 #define EVENT_GPT1ACAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT1ACAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT1ACAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT1ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT1ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT1ACAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT1ACAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT1ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT1ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -1748,8 +1633,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT3              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT3 wil be routed here.
@@ -1764,22 +1647,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -1825,7 +1694,6 @@
 #define EVENT_GPT1BCAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT1BCAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT1BCAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT1BCAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT1BCAPTSEL_EV_PORT_EVENT3                           0x00000058
 #define EVENT_GPT1BCAPTSEL_EV_PORT_EVENT2                           0x00000057
 #define EVENT_GPT1BCAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -1836,14 +1704,7 @@
 #define EVENT_GPT1BCAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT1BCAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT1BCAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT1BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT1BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT1BCAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT1BCAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT1BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT1BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -1895,8 +1756,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT5              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT4 wil be routed here.
@@ -1911,22 +1770,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -1972,7 +1817,6 @@
 #define EVENT_GPT2ACAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT2ACAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT2ACAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT2ACAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT2ACAPTSEL_EV_PORT_EVENT5                           0x0000005A
 #define EVENT_GPT2ACAPTSEL_EV_PORT_EVENT4                           0x00000059
 #define EVENT_GPT2ACAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -1983,14 +1827,7 @@
 #define EVENT_GPT2ACAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT2ACAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT2ACAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT2ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT2ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT2ACAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT2ACAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT2ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT2ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -2042,8 +1879,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT5              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT4 wil be routed here.
@@ -2058,22 +1893,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -2119,7 +1940,6 @@
 #define EVENT_GPT2BCAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT2BCAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT2BCAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT2BCAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT2BCAPTSEL_EV_PORT_EVENT5                           0x0000005A
 #define EVENT_GPT2BCAPTSEL_EV_PORT_EVENT4                           0x00000059
 #define EVENT_GPT2BCAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -2130,14 +1950,7 @@
 #define EVENT_GPT2BCAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT2BCAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT2BCAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT2BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT2BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT2BCAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT2BCAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT2BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT2BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -2289,12 +2102,11 @@
 //
 // Read only selection value
 // ENUMs:
-// UART1_RX_DMASREQ         UART1 RX DMA single request, controlled by
-//                          UART1:DMACTL.RXDMAE
+// TIE_LOW53                Not used tied to 0
 #define EVENT_UDMACH5SSEL_EV_W                                               7
 #define EVENT_UDMACH5SSEL_EV_M                                      0x0000007F
 #define EVENT_UDMACH5SSEL_EV_S                                               0
-#define EVENT_UDMACH5SSEL_EV_UART1_RX_DMASREQ                       0x00000035
+#define EVENT_UDMACH5SSEL_EV_TIE_LOW53                              0x00000035
 
 //*****************************************************************************
 //
@@ -2305,12 +2117,11 @@
 //
 // Read only selection value
 // ENUMs:
-// UART1_RX_DMABREQ         UART1 RX DMA burst request, controlled by
-//                          UART1:DMACTL.RXDMAE
+// TIE_LOW52                Not used tied to 0
 #define EVENT_UDMACH5BSEL_EV_W                                               7
 #define EVENT_UDMACH5BSEL_EV_M                                      0x0000007F
 #define EVENT_UDMACH5BSEL_EV_S                                               0
-#define EVENT_UDMACH5BSEL_EV_UART1_RX_DMABREQ                       0x00000034
+#define EVENT_UDMACH5BSEL_EV_TIE_LOW52                              0x00000034
 
 //*****************************************************************************
 //
@@ -2321,12 +2132,11 @@
 //
 // Read only selection value
 // ENUMs:
-// UART1_TX_DMASREQ         UART1 TX DMA single request, controlled by
-//                          UART1:DMACTL.TXDMAE
+// TIE_LOW55                Not used tied to 0
 #define EVENT_UDMACH6SSEL_EV_W                                               7
 #define EVENT_UDMACH6SSEL_EV_M                                      0x0000007F
 #define EVENT_UDMACH6SSEL_EV_S                                               0
-#define EVENT_UDMACH6SSEL_EV_UART1_TX_DMASREQ                       0x00000037
+#define EVENT_UDMACH6SSEL_EV_TIE_LOW55                              0x00000037
 
 //*****************************************************************************
 //
@@ -2337,12 +2147,11 @@
 //
 // Read only selection value
 // ENUMs:
-// UART1_TX_DMABREQ         UART1 TX DMA burst request, controlled by
-//                          UART1:DMACTL.TXDMAE
+// TIE_LOW54                Not used tied to 0
 #define EVENT_UDMACH6BSEL_EV_W                                               7
 #define EVENT_UDMACH6BSEL_EV_M                                      0x0000007F
 #define EVENT_UDMACH6BSEL_EV_S                                               0
-#define EVENT_UDMACH6BSEL_EV_UART1_TX_DMABREQ                       0x00000036
+#define EVENT_UDMACH6BSEL_EV_TIE_LOW54                              0x00000036
 
 //*****************************************************************************
 //
@@ -2429,7 +2238,7 @@
 // GPT1A_DMABREQ            GPT1A DMA trigger event. Configured by GPT1:DMAEV
 // GPT0B_DMABREQ            GPT0B DMA trigger event. Configured by GPT0:DMAEV
 // GPT0A_DMABREQ            GPT0A DMA trigger event. Configured by GPT0:DMAEV
-// TIE_LOW                  Not used tied to 0
+// TIE_LOW69                Not used tied to 0
 // NONE                     Always inactive
 #define EVENT_UDMACH9SSEL_EV_W                                               7
 #define EVENT_UDMACH9SSEL_EV_M                                      0x0000007F
@@ -2443,7 +2252,7 @@
 #define EVENT_UDMACH9SSEL_EV_GPT1A_DMABREQ                          0x0000004F
 #define EVENT_UDMACH9SSEL_EV_GPT0B_DMABREQ                          0x0000004E
 #define EVENT_UDMACH9SSEL_EV_GPT0A_DMABREQ                          0x0000004D
-#define EVENT_UDMACH9SSEL_EV_TIE_LOW                                0x00000045
+#define EVENT_UDMACH9SSEL_EV_TIE_LOW69                              0x00000045
 #define EVENT_UDMACH9SSEL_EV_NONE                                   0x00000000
 
 //*****************************************************************************
@@ -2503,7 +2312,7 @@
 // GPT1A_DMABREQ            GPT1A DMA trigger event. Configured by GPT1:DMAEV
 // GPT0B_DMABREQ            GPT0B DMA trigger event. Configured by GPT0:DMAEV
 // GPT0A_DMABREQ            GPT0A DMA trigger event. Configured by GPT0:DMAEV
-// TIE_LOW                  Not used tied to 0
+// TIE_LOW70                Not used tied to 0
 // NONE                     Always inactive
 #define EVENT_UDMACH10SSEL_EV_W                                              7
 #define EVENT_UDMACH10SSEL_EV_M                                     0x0000007F
@@ -2517,7 +2326,7 @@
 #define EVENT_UDMACH10SSEL_EV_GPT1A_DMABREQ                         0x0000004F
 #define EVENT_UDMACH10SSEL_EV_GPT0B_DMABREQ                         0x0000004E
 #define EVENT_UDMACH10SSEL_EV_GPT0A_DMABREQ                         0x0000004D
-#define EVENT_UDMACH10SSEL_EV_TIE_LOW                               0x00000046
+#define EVENT_UDMACH10SSEL_EV_TIE_LOW70                             0x00000046
 #define EVENT_UDMACH10SSEL_EV_NONE                                  0x00000000
 
 //*****************************************************************************
@@ -2577,7 +2386,7 @@
 // GPT1A_DMABREQ            GPT1A DMA trigger event. Configured by GPT1:DMAEV
 // GPT0B_DMABREQ            GPT0B DMA trigger event. Configured by GPT0:DMAEV
 // GPT0A_DMABREQ            GPT0A DMA trigger event. Configured by GPT0:DMAEV
-// TIE_LOW                  Not used tied to 0
+// TIE_LOW71                Not used tied to 0
 // NONE                     Always inactive
 #define EVENT_UDMACH11SSEL_EV_W                                              7
 #define EVENT_UDMACH11SSEL_EV_M                                     0x0000007F
@@ -2591,7 +2400,7 @@
 #define EVENT_UDMACH11SSEL_EV_GPT1A_DMABREQ                         0x0000004F
 #define EVENT_UDMACH11SSEL_EV_GPT0B_DMABREQ                         0x0000004E
 #define EVENT_UDMACH11SSEL_EV_GPT0A_DMABREQ                         0x0000004D
-#define EVENT_UDMACH11SSEL_EV_TIE_LOW                               0x00000047
+#define EVENT_UDMACH11SSEL_EV_TIE_LOW71                             0x00000047
 #define EVENT_UDMACH11SSEL_EV_NONE                                  0x00000000
 
 //*****************************************************************************
@@ -2651,7 +2460,7 @@
 // GPT1A_DMABREQ            GPT1A DMA trigger event. Configured by GPT1:DMAEV
 // GPT0B_DMABREQ            GPT0B DMA trigger event. Configured by GPT0:DMAEV
 // GPT0A_DMABREQ            GPT0A DMA trigger event. Configured by GPT0:DMAEV
-// TIE_LOW                  Not used tied to 0
+// TIE_LOW72                Not used tied to 0
 // NONE                     Always inactive
 #define EVENT_UDMACH12SSEL_EV_W                                              7
 #define EVENT_UDMACH12SSEL_EV_M                                     0x0000007F
@@ -2665,7 +2474,7 @@
 #define EVENT_UDMACH12SSEL_EV_GPT1A_DMABREQ                         0x0000004F
 #define EVENT_UDMACH12SSEL_EV_GPT0B_DMABREQ                         0x0000004E
 #define EVENT_UDMACH12SSEL_EV_GPT0A_DMABREQ                         0x0000004D
-#define EVENT_UDMACH12SSEL_EV_TIE_LOW                               0x00000048
+#define EVENT_UDMACH12SSEL_EV_TIE_LOW72                             0x00000048
 #define EVENT_UDMACH12SSEL_EV_NONE                                  0x00000000
 
 //*****************************************************************************
@@ -2765,8 +2574,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // TRNG_IRQ                 TRNG Interrupt event, controlled by TRNG:IRQEN.EN
 // SWEV3                    Software event 3, triggered by SWEV.SWEV3
 // SWEV2                    Software event 2, triggered by SWEV.SWEV2
@@ -2821,24 +2628,6 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_TX_DMASREQ         UART1 TX DMA single request, controlled by
-//                          UART1:DMACTL.TXDMAE
-// UART1_TX_DMABREQ         UART1 TX DMA burst request, controlled by
-//                          UART1:DMACTL.TXDMAE
-// UART1_RX_DMASREQ         UART1 RX DMA single request, controlled by
-//                          UART1:DMACTL.RXDMAE
-// UART1_RX_DMABREQ         UART1 RX DMA burst request, controlled by
-//                          UART1:DMACTL.RXDMAE
 // UART0_TX_DMASREQ         UART0 TX DMA single request, controlled by
 //                          UART0:DMACTL.TXDMAE
 // UART0_TX_DMABREQ         UART0 TX DMA burst request, controlled by
@@ -2847,14 +2636,6 @@
 //                          UART0:DMACTL.RXDMAE
 // UART0_RX_DMABREQ         UART0 RX DMA burst request, controlled by
 //                          UART0:DMACTL.RXDMAE
-// SSI1_TX_DMASREQ          SSI1 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI1_TX_DMABREQ          SSI1 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI1_RX_DMASREQ          SSI1 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
-// SSI1_RX_DMABREQ          SSI1 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
 // SSI0_TX_DMASREQ          SSI0 TX DMA single request, controlled by
 //                          SSI0:DMACR.TXDMAE
 // SSI0_TX_DMABREQ          SSI0 TX DMA burst request , controlled by
@@ -2866,15 +2647,10 @@
 // DMA_DONE_COMB            Combined DMA done, corresponding flags are here
 //                          UDMA0:REQDONE
 // DMA_ERR                  DMA bus error, corresponds to UDMA0:ERROR.STATUS
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
-// PKA_IRQ                  PKA Interrupt event
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -2952,7 +2728,6 @@
 #define EVENT_UDMACH14BSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_UDMACH14BSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_UDMACH14BSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_UDMACH14BSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_UDMACH14BSEL_EV_TRNG_IRQ                              0x00000068
 #define EVENT_UDMACH14BSEL_EV_SWEV3                                 0x00000067
 #define EVENT_UDMACH14BSEL_EV_SWEV2                                 0x00000066
@@ -2985,34 +2760,18 @@
 #define EVENT_UDMACH14BSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_UDMACH14BSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_UDMACH14BSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_UDMACH14BSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_UDMACH14BSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_UDMACH14BSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_UDMACH14BSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_UDMACH14BSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_UDMACH14BSEL_EV_UART1_TX_DMASREQ                      0x00000037
-#define EVENT_UDMACH14BSEL_EV_UART1_TX_DMABREQ                      0x00000036
-#define EVENT_UDMACH14BSEL_EV_UART1_RX_DMASREQ                      0x00000035
-#define EVENT_UDMACH14BSEL_EV_UART1_RX_DMABREQ                      0x00000034
 #define EVENT_UDMACH14BSEL_EV_UART0_TX_DMASREQ                      0x00000033
 #define EVENT_UDMACH14BSEL_EV_UART0_TX_DMABREQ                      0x00000032
 #define EVENT_UDMACH14BSEL_EV_UART0_RX_DMASREQ                      0x00000031
 #define EVENT_UDMACH14BSEL_EV_UART0_RX_DMABREQ                      0x00000030
-#define EVENT_UDMACH14BSEL_EV_SSI1_TX_DMASREQ                       0x0000002F
-#define EVENT_UDMACH14BSEL_EV_SSI1_TX_DMABREQ                       0x0000002E
-#define EVENT_UDMACH14BSEL_EV_SSI1_RX_DMASREQ                       0x0000002D
-#define EVENT_UDMACH14BSEL_EV_SSI1_RX_DMABREQ                       0x0000002C
 #define EVENT_UDMACH14BSEL_EV_SSI0_TX_DMASREQ                       0x0000002B
 #define EVENT_UDMACH14BSEL_EV_SSI0_TX_DMABREQ                       0x0000002A
 #define EVENT_UDMACH14BSEL_EV_SSI0_RX_DMASREQ                       0x00000029
 #define EVENT_UDMACH14BSEL_EV_SSI0_RX_DMABREQ                       0x00000028
 #define EVENT_UDMACH14BSEL_EV_DMA_DONE_COMB                         0x00000027
 #define EVENT_UDMACH14BSEL_EV_DMA_ERR                               0x00000026
-#define EVENT_UDMACH14BSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_UDMACH14BSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_UDMACH14BSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_UDMACH14BSEL_EV_SSI0_COMB                             0x00000022
-#define EVENT_UDMACH14BSEL_EV_PKA_IRQ                               0x0000001F
 #define EVENT_UDMACH14BSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_UDMACH14BSEL_EV_AUX_SWEV1                             0x0000001D
 #define EVENT_UDMACH14BSEL_EV_RFC_CPE_0                             0x0000001B
@@ -3068,12 +2827,11 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_RX_DMASREQ          SSI1 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
+// TIE_LOW45                Not used tied to 0
 #define EVENT_UDMACH16SSEL_EV_W                                              7
 #define EVENT_UDMACH16SSEL_EV_M                                     0x0000007F
 #define EVENT_UDMACH16SSEL_EV_S                                              0
-#define EVENT_UDMACH16SSEL_EV_SSI1_RX_DMASREQ                       0x0000002D
+#define EVENT_UDMACH16SSEL_EV_TIE_LOW45                             0x0000002D
 
 //*****************************************************************************
 //
@@ -3084,12 +2842,11 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_RX_DMABREQ          SSI1 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
+// TIE_LOW44                Not used tied to 0
 #define EVENT_UDMACH16BSEL_EV_W                                              7
 #define EVENT_UDMACH16BSEL_EV_M                                     0x0000007F
 #define EVENT_UDMACH16BSEL_EV_S                                              0
-#define EVENT_UDMACH16BSEL_EV_SSI1_RX_DMABREQ                       0x0000002C
+#define EVENT_UDMACH16BSEL_EV_TIE_LOW44                             0x0000002C
 
 //*****************************************************************************
 //
@@ -3100,12 +2857,11 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_TX_DMASREQ          SSI1 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
+// TIE_LOW47                Not used tied to 0
 #define EVENT_UDMACH17SSEL_EV_W                                              7
 #define EVENT_UDMACH17SSEL_EV_M                                     0x0000007F
 #define EVENT_UDMACH17SSEL_EV_S                                              0
-#define EVENT_UDMACH17SSEL_EV_SSI1_TX_DMASREQ                       0x0000002F
+#define EVENT_UDMACH17SSEL_EV_TIE_LOW47                             0x0000002F
 
 //*****************************************************************************
 //
@@ -3116,12 +2872,11 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_TX_DMABREQ          SSI1 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
+// TIE_LOW46                Not used tied to 0
 #define EVENT_UDMACH17BSEL_EV_W                                              7
 #define EVENT_UDMACH17BSEL_EV_M                                     0x0000007F
 #define EVENT_UDMACH17BSEL_EV_S                                              0
-#define EVENT_UDMACH17BSEL_EV_SSI1_TX_DMABREQ                       0x0000002E
+#define EVENT_UDMACH17BSEL_EV_TIE_LOW46                             0x0000002E
 
 //*****************************************************************************
 //
@@ -3280,8 +3035,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT7              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT7 wil be routed here.
@@ -3296,22 +3049,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -3357,7 +3096,6 @@
 #define EVENT_GPT3ACAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT3ACAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT3ACAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT3ACAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT3ACAPTSEL_EV_PORT_EVENT7                           0x0000005C
 #define EVENT_GPT3ACAPTSEL_EV_PORT_EVENT6                           0x0000005B
 #define EVENT_GPT3ACAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -3368,14 +3106,7 @@
 #define EVENT_GPT3ACAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT3ACAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT3ACAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT3ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT3ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT3ACAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT3ACAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT3ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT3ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
@@ -3427,8 +3158,6 @@
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPB
 // AUX_COMPA                AUX Compare A event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_COMPA
-// AUX_AON_WU_EV            AON wakeup event, the corresponding flag is here
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_WU_EV
 // PORT_EVENT7              Port capture event from IOC, configured by
 //                          IOC:IOCFGn.PORT_ID. Events on ports configured
 //                          with ENUM PORT_EVENT7 wil be routed here.
@@ -3443,22 +3172,8 @@
 // GPT1A_CMP                GPT1A compare event. Configured by GPT1:TAMR.TCACT
 // GPT0B_CMP                GPT0B compare event. Configured by GPT0:TBMR.TCACT
 // GPT0A_CMP                GPT0A compare event. Configured by GPT0:TAMR.TCACT
-// AUX_TIMER2_PULSE         AUX Timer2 pulse, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_PULSE
-// AUX_TIMER2_EV3           AUX Timer2 event 3, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV3
-// AUX_TIMER2_EV2           AUX Timer2 event 2, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV2
-// AUX_TIMER2_EV1           AUX Timer2 event 1, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV1
-// AUX_TIMER2_EV0           AUX Timer2 event 0, corresponding to flag
-//                          AUX_EVCTL:EVTOMCUFLAGS.AUX_TIMER2_EV0
-// UART1_COMB               UART1 combined interrupt, interrupt flags are
-//                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
 // SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
 //                          here SSI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
@@ -3504,7 +3219,6 @@
 #define EVENT_GPT3BCAPTSEL_EV_AUX_TDC_DONE                          0x0000006C
 #define EVENT_GPT3BCAPTSEL_EV_AUX_COMPB                             0x0000006B
 #define EVENT_GPT3BCAPTSEL_EV_AUX_COMPA                             0x0000006A
-#define EVENT_GPT3BCAPTSEL_EV_AUX_AON_WU_EV                         0x00000069
 #define EVENT_GPT3BCAPTSEL_EV_PORT_EVENT7                           0x0000005C
 #define EVENT_GPT3BCAPTSEL_EV_PORT_EVENT6                           0x0000005B
 #define EVENT_GPT3BCAPTSEL_EV_GPT3B_CMP                             0x00000044
@@ -3515,14 +3229,7 @@
 #define EVENT_GPT3BCAPTSEL_EV_GPT1A_CMP                             0x0000003F
 #define EVENT_GPT3BCAPTSEL_EV_GPT0B_CMP                             0x0000003E
 #define EVENT_GPT3BCAPTSEL_EV_GPT0A_CMP                             0x0000003D
-#define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_PULSE                      0x0000003C
-#define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_EV3                        0x0000003B
-#define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_EV2                        0x0000003A
-#define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_EV1                        0x00000039
-#define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
-#define EVENT_GPT3BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT3BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT3BCAPTSEL_EV_SSI1_COMB                             0x00000023
 #define EVENT_GPT3BCAPTSEL_EV_SSI0_COMB                             0x00000022
 #define EVENT_GPT3BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT3BCAPTSEL_EV_RFC_CPE_0                             0x0000001B

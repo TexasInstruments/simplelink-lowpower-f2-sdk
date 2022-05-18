@@ -1,0 +1,16 @@
+{
+    "target": {
+        "Name": "LP_CC2651R3SIPA",
+        "Revision": [],
+        "Description": "CC2651R3SIPA LaunchPad. 7x7 VQFN48 package. Internal bias, differential output. 2.4 GHz frequency band.",
+        "DeviceName": "CC2651R3SIPA",
+        "DevicePackage": "VQFN 7x7",
+        "FrontEnd": "ID",
+        "PaSettings": "pasettings.json",
+        "RfDesign": "CC2651RSIPA-EM",
+        "DefaultCategory": "Settings",
+        "IoSettingsIdle": [],
+        "IoSettingsRx": [],
+        "IoSettingsTx": []
+    }
+}

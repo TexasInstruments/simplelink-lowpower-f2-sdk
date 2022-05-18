@@ -104,7 +104,7 @@
 #define PKA_INT_BASE            0x58027000 // PKA_INT
 #define TRNG_BASE               0x58028000 // TRNG
 #define FLASH_BASE              0x58030000 // FLASH
-#define NVMNW_BASE              0x58032000 //
+#define NVMNW_BASE              0x58032000 // NVMNW
 #define SRAM_MMR_BASE           0x58035000 // SRAM_MMR
 #define PRCM_BASE               0x58082000 // PRCM
 #define ADI2_BASE               0x58086000 // ADI
@@ -162,97 +162,30 @@
 #define AUX_AIODIO3_NONBUF_BASE \
                                 0x600CF000 // AUX_AIODIO CPU nonbuf base
 #define AUX_RAM_NONBUF_BASE     0x600E0000 // AUX_RAM CPU nonbuf base
-#define CRYPTO_NONBUF_BASE      0x78024000 // CRYPTO CPU secure nonbuf base
-#define PKA_NONBUF_BASE         0x78025000 // PKA CPU secure nonbuf base
-#define PKA_RAM_NONBUF_BASE     0x78026000 // PKA_RAM CPU secure nonbuf base
-#define PKA_INT_NONBUF_BASE     0x78027000 // PKA_INT CPU secure nonbuf base
-#define TRNG_NONBUF_BASE        0x78028000 // TRNG CPU secure nonbuf base
-#define FLASH_NONBUF_BASE       0x78030000 // FLASH CPU secure nonbuf base
-#define NVMNW_NONBUF_BASE       0x78032000 //  CPU secure nonbuf base
-#define SRAM_MMR_NONBUF_BASE    0x78035000 // SRAM_MMR CPU secure nonbuf base
-#define PRCM_NONBUF_BASE        0x78082000 // PRCM CPU secure nonbuf base
-#define ADI2_NONBUF_BASE        0x78086000 // ADI CPU secure nonbuf base
-#define ADI3_NONBUF_BASE        0x78086200 // ADI CPU secure nonbuf base
-#define AON_PMCTL_NONBUF_BASE   0x78090000 // AON_PMCTL CPU secure nonbuf base
-#define AON_RTC_NONBUF_BASE     0x78092000 // AON_RTC CPU secure nonbuf base
-#define AUX_SYSIF_NONBUF_BASE   0x780C6000 // AUX_SYSIF CPU secure nonbuf base
-#define AUX_DDI0_OSC_NONBUF_BASE \
+#define CRYPTO_SEC_NONBUF_BASE  0x78024000 // CRYPTO CPU secure nonbuf base
+#define PKA_SEC_NONBUF_BASE     0x78025000 // PKA CPU secure nonbuf base
+#define PKA_RAM_SEC_NONBUF_BASE \
+                                0x78026000 // PKA_RAM CPU secure nonbuf base
+#define PKA_INT_SEC_NONBUF_BASE \
+                                0x78027000 // PKA_INT CPU secure nonbuf base
+#define TRNG_SEC_NONBUF_BASE    0x78028000 // TRNG CPU secure nonbuf base
+#define FLASH_SEC_NONBUF_BASE   0x78030000 // FLASH CPU secure nonbuf base
+#define NVMNW_SEC_NONBUF_BASE   0x78032000 // NVMNW CPU secure nonbuf base
+#define SRAM_MMR_SEC_NONBUF_BASE \
+                                0x78035000 // SRAM_MMR CPU secure nonbuf base
+#define PRCM_SEC_NONBUF_BASE    0x78082000 // PRCM CPU secure nonbuf base
+#define ADI2_SEC_NONBUF_BASE    0x78086000 // ADI CPU secure nonbuf base
+#define ADI3_SEC_NONBUF_BASE    0x78086200 // ADI CPU secure nonbuf base
+#define AON_PMCTL_SEC_NONBUF_BASE \
+                                0x78090000 // AON_PMCTL CPU secure nonbuf base
+#define AON_RTC_SEC_NONBUF_BASE \
+                                0x78092000 // AON_RTC CPU secure nonbuf base
+#define AUX_SYSIF_SEC_NONBUF_BASE \
+                                0x780C6000 // AUX_SYSIF CPU secure nonbuf base
+#define AUX_DDI0_OSC_SEC_NONBUF_BASE \
                                 0x780CA000 // DDI CPU secure nonbuf base
-#define AUX_SCE_NONBUF_BASE     0x780E1000 // AUX_SCE CPU secure nonbuf base
-#define SPI0_NONBUF_NONBUF_BASE \
-                                0x80000000 // SPI CPU nonbuf base CPU secure nonbuf base
-#define UART0_NONBUF_NONBUF_BASE \
-                                0x80001000 // UART CPU nonbuf base CPU secure nonbuf base
-#define I2C0_NONBUF_NONBUF_BASE \
-                                0x80002000 // I2C CPU nonbuf base CPU secure nonbuf base
-#define SPI1_NONBUF_NONBUF_BASE \
-                                0x80008000 // SPI CPU nonbuf base CPU secure nonbuf base
-#define SPI2_NONBUF_NONBUF_BASE \
-                                0x80009000 // SPI CPU nonbuf base CPU secure nonbuf base
-#define SPI3_NONBUF_NONBUF_BASE \
-                                0x8000A000 // SPI CPU nonbuf base CPU secure nonbuf base
-#define UART1_NONBUF_NONBUF_BASE \
-                                0x8000B000 // UART CPU nonbuf base CPU secure nonbuf base
-#define UART2_NONBUF_NONBUF_BASE \
-                                0x8000C000 // UART CPU nonbuf base CPU secure nonbuf base
-#define UART3_NONBUF_NONBUF_BASE \
-                                0x8000D000 // UART CPU nonbuf base CPU secure nonbuf base
-#define GPT0_NONBUF_NONBUF_BASE \
-                                0x80010000 // GPT CPU nonbuf base CPU secure nonbuf base
-#define GPT1_NONBUF_NONBUF_BASE \
-                                0x80011000 // GPT CPU nonbuf base CPU secure nonbuf base
-#define GPT2_NONBUF_NONBUF_BASE \
-                                0x80012000 // GPT CPU nonbuf base CPU secure nonbuf base
-#define GPT3_NONBUF_NONBUF_BASE \
-                                0x80013000 // GPT CPU nonbuf base CPU secure nonbuf base
-#define UDMA0_NONBUF_NONBUF_BASE \
-                                0x80020000 // UDMA CPU nonbuf base CPU secure nonbuf base
-#define I2S0_NONBUF_NONBUF_BASE \
-                                0x80021000 // I2S CPU nonbuf base CPU secure nonbuf base
-#define GPIO_NONBUF_NONBUF_BASE \
-                                0x80022000 // GPIO CPU nonbuf base CPU secure nonbuf base
-#define I2C1_NONBUF_NONBUF_BASE \
-                                0x8002A000 // I2C CPU nonbuf base CPU secure nonbuf base
-#define VIMS_NONBUF_NONBUF_BASE \
-                                0x80034000 // VIMS CPU nonbuf base CPU secure nonbuf base
-#define RFC_PWR_NONBUF_NONBUF_BASE \
-                                0x80040000 // RFC_PWR CPU nonbuf base CPU secure nonbuf base
-#define RFC_DBELL_NONBUF_NONBUF_BASE \
-                                0x80041000 // RFC_DBELL CPU nonbuf base CPU secure nonbuf base
-#define RFC_RAT_NONBUF_NONBUF_BASE \
-                                0x80043000 // RFC_RAT CPU nonbuf base CPU secure nonbuf base
-#define RFC_FSCA_NONBUF_NONBUF_BASE \
-                                0x80044000 // RFC_FSCA CPU nonbuf base CPU secure nonbuf base
-#define WDT_NONBUF_NONBUF_BASE  0x80080000 // WDT CPU nonbuf base CPU secure nonbuf base
-#define IOC_NONBUF_NONBUF_BASE  0x80081000 // IOC CPU nonbuf base CPU secure nonbuf base
-#define EVENT_NONBUF_NONBUF_BASE \
-                                0x80083000 // EVENT CPU nonbuf base CPU secure nonbuf base
-#define SMPH_NONBUF_NONBUF_BASE \
-                                0x80084000 // SMPH CPU nonbuf base CPU secure nonbuf base
-#define AON_EVENT_NONBUF_NONBUF_BASE \
-                                0x80093000 // AON_EVENT CPU nonbuf base CPU secure nonbuf base
-#define AON_IOC_NONBUF_NONBUF_BASE \
-                                0x80094000 // AON_IOC CPU nonbuf base CPU secure nonbuf base
-#define AON_BATMON_NONBUF_NONBUF_BASE \
-                                0x80095000 // AON_BATMON CPU nonbuf base CPU secure nonbuf base
-#define AUX_SPIM_NONBUF_NONBUF_BASE \
-                                0x800C1000 // AUX_SPIM CPU nonbuf base CPU secure nonbuf base
-#define AUX_MAC_NONBUF_NONBUF_BASE \
-                                0x800C2000 // AUX_MAC CPU nonbuf base CPU secure nonbuf base
-#define AUX_TIMER2_NONBUF_NONBUF_BASE \
-                                0x800C3000 // AUX_TIMER2 CPU nonbuf base CPU secure nonbuf base
-#define AUX_TDC_NONBUF_NONBUF_BASE \
-                                0x800C4000 // AUX_TDC CPU nonbuf base CPU secure nonbuf base
-#define AUX_EVCTL_NONBUF_NONBUF_BASE \
-                                0x800C5000 // AUX_EVCTL CPU nonbuf base CPU secure nonbuf base
-#define AUX_SMPH_NONBUF_NONBUF_BASE \
-                                0x800C8000 // AUX_SMPH CPU nonbuf base CPU secure nonbuf base
-#define AUX_ANAIF_NONBUF_NONBUF_BASE \
-                                0x800C9000 // AUX_ANAIF CPU nonbuf base CPU secure nonbuf base
-#define AUX_ADI4_NONBUF_NONBUF_BASE \
-                                0x800CB000 // ADI CPU nonbuf base CPU secure nonbuf base
-#define AUX_RAM_NONBUF_NONBUF_BASE \
-                                0x800E0000 // AUX_RAM CPU nonbuf base CPU secure nonbuf base
+#define AUX_SCE_SEC_NONBUF_BASE \
+                                0x780E1000 // AUX_SCE CPU secure nonbuf base
 #define FLASHMEM_ALIAS_BASE     0xA0000000 // FLASHMEM Alias base
 #define CPU_ITM_BASE            0xE0000000 // CPU_ITM
 #define CPU_DWT_BASE            0xE0001000 // CPU_DWT

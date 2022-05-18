@@ -142,7 +142,7 @@
             "displayName": "High PA",
             "description": "Select if the High Power Amplifier on the device should be used",
             "default": false,
-            "hidden": true
+            "hidden": false
         }
     ],
     "phys": {
@@ -150,8 +150,7 @@
             {
                 "file": "setting_ieee_802_15_4_10_dbm.json",
                 "name": "ieee154p10",
-                "description": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Release Candidate)",
-                "options": "10dBm,disable_high_pa"
+                "description": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Release Candidate)"
             }
         ]
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -177,8 +177,8 @@ typedef struct {
 void DisplayUart2Min_init(Display_Handle handle);
 void DisplayUart2Ansi_init(Display_Handle handle);
 
-Display_Handle DisplayUart2Min_open(Display_Handle, Display_Params * params);
-Display_Handle DisplayUart2Ansi_open(Display_Handle, Display_Params * params);
+Display_Handle DisplayUart2Min_open(Display_Handle handle, Display_Params * params);
+Display_Handle DisplayUart2Ansi_open(Display_Handle handle, Display_Params * params);
 
 void DisplayUart2Min_clear(Display_Handle handle);
 void DisplayUart2Ansi_clear(Display_Handle handle);
@@ -195,8 +195,8 @@ void DisplayUart2Min_vprintf(Display_Handle handle, uint8_t line,
 void DisplayUart2Ansi_vprintf(Display_Handle handle, uint8_t line,
                               uint8_t column, const char *fmt, va_list va);
 
-void DisplayUart2Min_close(Display_Handle);
-void DisplayUart2Ansi_close(Display_Handle);
+void DisplayUart2Min_close(Display_Handle handle);
+void DisplayUart2Ansi_close(Display_Handle handle);
 
 int DisplayUart2Min_control(Display_Handle handle, unsigned int cmd, void *arg);
 int DisplayUart2Ansi_control(Display_Handle handle, unsigned int cmd, void *arg);

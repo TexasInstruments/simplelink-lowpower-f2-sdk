@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aux_dac.c
-*  Revised:        2021-01-25 12:18:33 +0200 (mon., 25 jan 2021)
-*  Revision:       58172
 *
 *  Description:    Driver for the AUX Digital-to-Analog Converter interface.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -90,7 +88,7 @@ AUXDACCalcMax(void)
     uint32_t dacMax;
 
     // Depending on the selected DAC voltage reference, obtain calibration value C2 in millivolts.
-    refSource = ((HWREG(AUX_ADI4_BASE + ADI_4_AUX_O_MUX2) & ADI_4_AUX_MUX2_DAC_VREF_SEL_M) >> ADI_4_AUX_MUX2_DAC_VREF_SEL_S);
+    refSource = ((HWREGB(AUX_ADI4_BASE + ADI_4_AUX_O_MUX2) & ADI_4_AUX_MUX2_DAC_VREF_SEL_M) >> ADI_4_AUX_MUX2_DAC_VREF_SEL_S);
 
     switch (refSource)
     {
@@ -144,7 +142,7 @@ AUXDACCalcMin(void)
     uint32_t dacMin;
 
     // Depending on the selected DAC voltage reference, obtain calibration value C1 in millivolts.
-    refSource = ((HWREG(AUX_ADI4_BASE + ADI_4_AUX_O_MUX2) & ADI_4_AUX_MUX2_DAC_VREF_SEL_M) >> ADI_4_AUX_MUX2_DAC_VREF_SEL_S);
+    refSource = ((HWREGB(AUX_ADI4_BASE + ADI_4_AUX_O_MUX2) & ADI_4_AUX_MUX2_DAC_VREF_SEL_M) >> ADI_4_AUX_MUX2_DAC_VREF_SEL_S);
 
     switch (refSource)
     {

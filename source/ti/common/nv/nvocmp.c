@@ -318,7 +318,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 //*****************************************************************************
 // Page and Header Definitions
 //*****************************************************************************
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4)
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
 // CC26x4/CC13x4 devices flash page size is (1 << 11) or 0x800
 #define PAGE_SIZE_LSHIFT 11
 #else

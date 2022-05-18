@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== ECCParamsCC26X2.c ========
+ *  ======== ECCParamsCC26X1.c ========
  *
  *  This file contains structure definitions for various ECC curves for use
- *  on CC26XX devices.
+ *  on CC26X1 devices.
  */
 
 #include <stdbool.h>
@@ -46,9 +46,12 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/rom_ecc.h)
 
-/* The parameters are formatted as little-endian integers with a prepended
- * length word in words. That makes each param 36 bytes long with
- * the actual value starting after the first word.
+/*
+ * NIST P256 curve params in little endian format.
+ * byte[0-3] are the param length word as required by the ECC SW library.
+ * byte[4] is the least significant byte of the curve parameter.
+ *
+ * NOTE: NIST P256 curve params are in ROM for CC26X1.
  */
 const ECCParams_CurveParams ECCParams_NISTP256 = {
     .curveType      = ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3,
@@ -62,16 +65,68 @@ const ECCParams_CurveParams ECCParams_NISTP256 = {
     .cofactor       = 1
 };
 
-// TODO: fill out when adding Curve25519 support
+/*
+ * Curve25519 curve params in little endian format.
+ * byte[0-3] are the param length word as required by the ECC SW library.
+ * byte[4] is the least significant byte of the curve parameter.
+ */
+const ECC_Curve25519_Param ECC_Curve25519_generatorX = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+};
+
+const ECC_Curve25519_Param ECC_Curve25519_generatorY = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0xd9, 0xd3, 0xce, 0x7e, 0xa2, 0xc5, 0xe9, 0x29,
+             0xb2, 0x61, 0x7c, 0x6d, 0x7e, 0x4d, 0x3d, 0x92,
+             0x4c, 0xd1, 0x48, 0x77, 0x2c, 0xdd, 0x1e, 0xe0,
+             0xb4, 0x86, 0xa0, 0xb8, 0xa1, 0x19, 0xae, 0x20}
+};
+
+const ECC_Curve25519_Param ECC_Curve25519_prime = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0xed, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f}
+};
+
+const ECC_Curve25519_Param ECC_Curve25519_a = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0x06, 0x6d, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+};
+
+const ECC_Curve25519_Param ECC_Curve25519_b = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+};
+
+const ECC_Curve25519_Param ECC_Curve25519_order = {
+    .byte = {0x08, 0x00, 0x00, 0x00, /* Length word prefix */
+             0xb9, 0xdc, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58,
+             0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+};
+
 const ECCParams_CurveParams ECCParams_Curve25519 = {
     .curveType      = ECCParams_CURVE_TYPE_MONTGOMERY,
-    .length         = 32,
-    .prime          = NULL,
-    .order          = NULL,
-    .a              = NULL,
-    .b              = NULL,
-    .generatorX     = NULL,
-    .generatorY     = NULL,
+    .length         = ECCParams_CURVE25519_LENGTH,
+    .prime          = ECC_Curve25519_prime.byte,
+    .order          = ECC_Curve25519_order.byte,
+    .a              = ECC_Curve25519_a.byte,
+    .b              = ECC_Curve25519_b.byte,
+    .generatorX     = ECC_Curve25519_generatorX.byte,
+    .generatorY     = ECC_Curve25519_generatorY.byte,
     .cofactor       = 1
 };
 
@@ -87,7 +142,6 @@ int_fast16_t ECCParams_formatCurve25519PrivateKey(CryptoKey *myPrivateKey){
 }
 
 /*
- *
  *  ======== ECCParams_getUncompressedGeneratorPoint ========
  */
 int_fast16_t ECCParams_getUncompressedGeneratorPoint(const ECCParams_CurveParams *curveParams,
@@ -104,14 +158,8 @@ int_fast16_t ECCParams_getUncompressedGeneratorPoint(const ECCParams_CurveParams
     /* Reverse and concatenate x and y */
     uint32_t i = 0;
     for (i = 0; i < paramLength; i++) {
-        buffer[i + 1]               = curveParams->generatorX[paramLength
-                                                              + ECC_LENGTH_OFFSET_BYTES
-                                                              - i
-                                                              - 1];
-        buffer[i + 1 + paramLength] = curveParams->generatorY[paramLength
-                                                              + ECC_LENGTH_OFFSET_BYTES
-                                                              - i
-                                                              - 1];
+        buffer[i + 1]               = curveParams->generatorX[paramLength + ECC_LENGTH_PREFIX_BYTES - i - 1];
+        buffer[i + 1 + paramLength] = curveParams->generatorY[paramLength + ECC_LENGTH_PREFIX_BYTES - i - 1];
     }
 
     buffer[0] = 0x04;

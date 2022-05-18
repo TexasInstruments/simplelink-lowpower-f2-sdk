@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 "use strict";
 
 // Module version
-const RADIO_CONFIG_VERSION = "1.12";
+const RADIO_CONFIG_VERSION = "1.13";
 
 // Common utility functions
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
@@ -57,6 +57,7 @@ const DevNameMap = {
     CC2672P3RGZ: "cc2672p3",
     CC2652R1FRGZ: "cc2652r",
     CC2642R1FRGZ: "cc2642r",
+    CC2642R1FRTC: "cc2642rq1",
     CC2652P1FRGZ: "cc2652p",
     // BAW
     CC2652RB1FRGZ: "cc2652rb",
@@ -76,12 +77,13 @@ const DevNameMap = {
     CC1311R3RGZ: "cc1311r3",
     CC1311R3RKP: "cc1311r3",
     CC1311P3RGZ: "cc1311p3",
+    CC2651R3SIPA: "cc2651r3sipa",
     // Device class 10
     CC2674R10RGZ: "cc2674r10",
     CC2674R10RSK: "cc2674r10",
     CC2674P10RGZ: "cc2674p10",
     CC2674P10RSK: "cc2674p10",
-    CC2653P10RSL: "cc2653p10",
+    CC2653P10RGZ: "cc2653p10",
     CC1314R10RGZ: "cc1314r10",
     CC1314R10RSK: "cc1314r10",
     CC1354R10RGZ: "cc1354r10",

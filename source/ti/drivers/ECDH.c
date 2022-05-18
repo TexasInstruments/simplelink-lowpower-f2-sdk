@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,8 +71,8 @@ void ECDH_OperationGeneratePublicKey_init(ECDH_OperationGeneratePublicKey *opera
     operation->curve = NULL;
     operation->myPrivateKey = NULL;
     operation->myPublicKey = NULL;
-    /* Default public key format is octet string */
-    operation->publicKeyDataFormat = ECDH_PUBLIC_KEY_DATA_FORMAT_OCTET_STRING;
+    /* Default key material endianness is big endian*/
+    operation->keyMaterialEndianness = ECDH_BIG_ENDIAN_KEY;
 }
 /*
  *  ======== ECDH_OperationComputeSharedSecret_init ========
@@ -82,8 +82,6 @@ void ECDH_OperationComputeSharedSecret_init(ECDH_OperationComputeSharedSecret *o
     operation->myPrivateKey = NULL;
     operation->theirPublicKey = NULL;
     operation->sharedSecret = NULL;
-    /* Default public key format is octet string */
-    operation->publicKeyDataFormat = ECDH_PUBLIC_KEY_DATA_FORMAT_OCTET_STRING;
-    /* Default shared secret format is octet string */
-    operation->sharedSecretDataFormat = ECDH_PUBLIC_KEY_DATA_FORMAT_OCTET_STRING;
+    /* Default key material endianness is big endian*/
+    operation->keyMaterialEndianness = ECDH_BIG_ENDIAN_KEY;
 }

@@ -242,7 +242,7 @@ void ClockP_getCpuFreq(ClockP_FreqHz *freq)
 /*
  *  ======== ClockP_getSystemTickPeriod ========
  */
-uint32_t ClockP_getSystemTickPeriod()
+uint32_t ClockP_getSystemTickPeriod(void)
 {
     return (FREERTOS_TICKPERIOD_US);
 }
@@ -250,7 +250,7 @@ uint32_t ClockP_getSystemTickPeriod()
 /*
  *  ======== ClockP_getSystemTicks ========
  */
-uint32_t ClockP_getSystemTicks()
+uint32_t ClockP_getSystemTicks(void)
 {
     uint32_t ticks;
 

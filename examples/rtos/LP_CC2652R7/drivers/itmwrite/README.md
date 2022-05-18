@@ -1,8 +1,3 @@
----
-# itmwrite
-
----
-
 ## Example Summary
 
 Example that uses the Instrumentation Trace Macrocell (ITM) hardware to write
@@ -34,7 +29,7 @@ If using CC13XX/26XX the SWO jumper must be connected on the LaunchPad.
 Port. Do not use the "User UART" port. This should be a value like `COM22`.
 
 * Follow the setup instructions under the "Install Python Modules" heading in
-&lt;SDK_INSTALL_DIR&gt;tools/log/README to generate a virtual environment.
+&lt;SDK_INSTALL_DIR&gt;tools/log/README.md to generate a virtual environment.
 This will setup the ITM reader's python environment. You do not need Wireshark
 for this example, and instructions for it should be ignored. Stop at the end of
 "Install Python Modules" and move on to the next step in this document.
@@ -45,7 +40,7 @@ activate the virtual environment from the previous step by running
 with the prompt (e.g. `(.venv)` in PowerShell) indicating that a venv is active.
 
 * In the same terminal, start the tool: `tilogger_itm_viewer 115200 <PORT>`
-where <PORT> is the COM port from the first step (for example
+where `<PORT>` is the COM port from the first step (for example
 `tilogger_itm_viewer 115200 COM22`).
 
 * Build and flash the example using CCS or another tool. Once the firmware is

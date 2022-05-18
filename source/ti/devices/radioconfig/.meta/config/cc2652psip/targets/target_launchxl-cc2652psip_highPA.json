@@ -7,7 +7,7 @@
         "DevicePackage": "MOT 7x7",
         "FrontEnd": "ID",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC2652PSIP_10dBm",
+        "RfDesign": "CC2652PSIP-EM_10dBm",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",

@@ -217,7 +217,7 @@ void NVSSPI25X_getAttrs(NVS_Handle handle, NVS_Attrs *attrs)
 /*
  *  ======== NVSSPI25X_init ========
  */
-void NVSSPI25X_init()
+void NVSSPI25X_init(void)
 {
     unsigned int key;
     SemaphoreP_Handle tempSem;

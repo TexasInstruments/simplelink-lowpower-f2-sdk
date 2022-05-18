@@ -43,40 +43,6 @@ let Common      = system.getScript("/ti/drivers/Common.js");
 /* get /ti/drivers family name from device object */
 let family      = Common.device2Family(system.deviceData, "DMA");
 
-let intPriority = Common.newIntPri()[0];
-intPriority.displayName = "Interrupt Priority";
-intPriority.name = "interruptPriority";
-intPriority.description = "DMA interrupt priority.";
-
-let config = [
-    {
-        /*
-         *  This name is used by UDMACC26XX.syscfg.js.  If it is
-         *  changed, make sure to update UDMACC26XX.syscfg.js.
-         */
-        name        : "dmaErrorFunction",
-        displayName : "DMA Error Function",
-        description : "Specifies function invoked when a DMA error occurs.",
-        default     : "dmaErrorFxn"
-    },
-    intPriority
-];
-
-/*
- *  ======== validate ========
- *  Validate this module's configuration
- *
- *  @param mod        - DMA module object to be validated
- *  @param validation - object to hold detected validation issues
- */
-function validate(mod, validation)
-{
-    if (!Common.isCName(mod.dmaErrorFunction)) {
-        Common.logError(validation, mod, 'dmaErrorFunction',
-            'Not a valid C identifier.');
-    }
-}
-
 /*
  *  ======== base ========
  *  Define the base DMA properties and methods
@@ -96,9 +62,7 @@ See [__Driver configurations reference__][1] for more information.
 `,
     maxInstances : 1,
     moduleStatic : {
-        config: Common.addNameConfig(config, "/ti/drivers/DMA", "CONFIG_DMA_"),
-        modules: Common.autoForceModules(["Board"]),
-        validate : validate
+        modules: Common.autoForceModules(["Board"])
     }
 };
 

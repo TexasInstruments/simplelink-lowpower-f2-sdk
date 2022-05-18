@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "50 kbps, 2-GFSK, 25 kHz deviation, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band. (Pre-silicon settings)",
+        "Name": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)",
+        "Description": "50 kbps, 2-GFSK, 25 kHz deviation, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band. (Preview)",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -146,11 +146,11 @@
                     "_name": "pRegOverride",
                     "Block": [
                         {
-                            "_name": "override_prop_common.json",
+                            "_name": "override_prop_common_fc.json",
                             "Element32b": {
                                 "_type": "ELEMENT",
                                 "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
-                                "$": "0x000388D3"
+                                "$": "0x004388D3"
                             }
                         },
                         {

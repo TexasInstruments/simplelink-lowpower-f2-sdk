@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,25 @@
 let Common = system.getScript("/ti/drivers/Common.js");
 
 /*
+ *  ======== getLibs ========
+ *  Argument to the /ti/utils/build/GenLibs.cmd.xdt template
+ */
+function getLibs(mod)
+{
+    /* Get device information from GenLibs */
+    let GenLibs = system.getScript("/ti/utils/build/GenLibs");
+
+    let libGroup = {
+        name: "/third_party/ecc",
+        deps: [],
+        libs: [GenLibs.libPath("third_party/ecc", "ecc_cc13x1_cc26x1.a")],
+        allowDuplicates: true
+    };
+
+    return (libGroup);
+}
+
+/*
  *  ======== devSpecific ========
  *  Device-specific extensions to be added to base ECDH configuration
  */
@@ -49,7 +68,11 @@ let devSpecific = {
 
     templates : {
         boardc: "/ti/drivers/ecdh/ECDHCC26X1.Board.c.xdt",
-        boardh: "/ti/drivers/ecdh/ECDH.Board.h.xdt"
+        boardh: "/ti/drivers/ecdh/ECDH.Board.h.xdt",
+
+        /* contribute libraries to linker command file */
+        "/ti/utils/build/GenLibs.cmd.xdt":
+                {modName: "/ti/drivers/ECDH", getLibs: getLibs}
     }
 };
 

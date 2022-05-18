@@ -1,13 +1,13 @@
 {
     "setting": {
-        "Name": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Pre-silicon settings)",
-        "Description": "IEEE 802.15.4 O-QPSK DSSS PHY (250 kbps) at 2450 MHz band (Pre-silicon settings)",
+        "Name": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Preview)",
+        "Description": "IEEE 802.15.4 O-QPSK DSSS PHY (250 kbps) at 2450 MHz band (Preview)",
         "Frequency": "2405",
         "Patch": {
             "Define": "RF_MODE_AUTO",
             "Cpe": "rf_patch_cpe_multi_protocol",
             "Mce": "rf_patch_mce_ieee_cohr",
-            "Rfe": []
+            "Rfe": "rf_patch_rfe_ieee_cohr"
         },
         "Command": [
             {
@@ -88,21 +88,41 @@
                 ],
                 "OverrideField": {
                     "_name": "pRegOverride",
-                    "Block": {
-                        "_name": "override_ieee_802_15_4.json",
-                        "Element32b": [
-                            {
+                    "Block": [
+                        {
+                            "_name": "override_ieee_802_15_4.json",
+                            "Element32b": {
                                 "_type": "MCE_RFE_OVERRIDE",
-                                "_comment": "PHY: Use MCE RAM patch, RFE ROM bank 1",
-                                "$": "1,0,0,0,1,0"
-                            },
-                            {
-                                "_type": "ELEMENT",
-                                "_comment": "Rx: Configure LNA bias current trim offset",
-                                "$": "0x000F8883"
+                                "_comment": "PHY: Use MCE RAM patch, RFE RAM patch",
+                                "$": "1,0,0,1,0,0"
                             }
-                        ]
-                    }
+                        },
+                        {
+                            "_name": "override_ieee_coex.json",
+                            "Element32b": [
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "CoEx: set the radio IOMUX to enable coex signals",
+                                    "$": "0x1110,0xCE30"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "CoEx: Enable CoEx",
+                                    "$": "0x000188f3"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "CoEx: Enable 32 bit write for the pointer",
+                                    "$": "0xc0040371"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "CoEx: Place the pointer to the configuration struct at byte index 220",
+                                    "$": "&coexConfig"
+                                }
+                            ]
+                        }
+                    ]
                 }
             },
             {

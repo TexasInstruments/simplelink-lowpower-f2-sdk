@@ -162,7 +162,7 @@ extern "C" {
 #elif defined(DeviceFamily_CC23X0)
     #define DeviceFamily_ID             DeviceFamily_ID_CC23X0
     #define DeviceFamily_DIRECTORY      cc23x0
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23XX
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23X0
 
 #elif defined(DeviceFamily_CC13X1_CC26X1)
     #define DeviceFamily_ID             DeviceFamily_ID_CC13X1_CC26X1

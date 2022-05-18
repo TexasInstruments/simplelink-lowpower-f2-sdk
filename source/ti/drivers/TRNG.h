@@ -387,7 +387,7 @@ typedef void (*TRNG_CryptoKeyCallbackFxn) (TRNG_Handle handle,
 
 /*!
  *  @brief  The definition of a callback function used by the TRNG driver
- *          when TRNG_generateKey() is called with ::TRNG_RETURN_BEHAVIOR_CALLBACK
+ *          when TRNG_getRandomBytes() is called with ::TRNG_RETURN_BEHAVIOR_CALLBACK
  *
  *  @param  handle  Handle of the client that started the TRNG operation.
  *
@@ -463,7 +463,8 @@ void TRNG_init(void);
  *
  *  Default values are:    <br>
  *      returnBehavior              = TRNG_RETURN_BEHAVIOR_BLOCKING <br>
- *      callbackFxn                 = NULL                          <br>
+ *      cryptoKeyCallbackFxn        = NULL                          <br>
+ *      randomBytesCallbackFxn      = NULL                          <br>
  *      timeout                     = SemaphoreP_WAIT_FOREVER       <br>
  *      custom                      = NULL                          <br>
  */

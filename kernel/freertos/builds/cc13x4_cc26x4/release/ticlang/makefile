@@ -11,7 +11,7 @@ VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS
 CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 AR = "$(TICLANG_ARMCOMPILER)/bin/tiarmar"
 
-CFLAGS = -DDeviceFamily_CC13X4_CC26X4 -c -g -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/ticlang" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(TICLANG_ARMCOMPILER)/include"
+CFLAGS = -DDeviceFamily_CC13X4_CC26X4 -Oz -c -g -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/ticlang" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(TICLANG_ARMCOMPILER)/include"
 
 
 CFILES = \

@@ -1,0 +1,36 @@
+/*!
+ * Copyright 2017 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+@output_dir("erpc_outputs")
+program test
+
+import "../common/unit_test_common.erpc"
+
+oneway callback1_t(int32 a, int32 b)
+oneway callback2_t(int32, int32)
+
+@include("test_core1.h")
+@group("core0")
+interface ClientCore0Services
+{
+    myFun(in callback1_t pCallback1_in, out callback1_t pCallback1_out) -> void
+
+    myFun2(callback2_t pCallback2_in, out callback2_t pCallback2_out) -> void
+
+    @include("callbacks1.h")
+    callback1_t callback1a;
+
+    @include("callbacks1.h")
+    callback1_t callback1b(param1, param2);
+}
+
+@group("core1")
+interface ClientCore1Services
+{
+    @include("callbacks2.h")
+    callback2_t callback2(param1, param2);
+}

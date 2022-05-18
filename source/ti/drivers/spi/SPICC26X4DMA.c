@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,18 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/spi/SPICC26X4DMA.h>
 
+/* Headers required for intrinsics */
+#if defined(__TI_COMPILER_VERSION__)
+    #include <arm_acle.h>
+#elif defined(__GNUC__)
+    #include <arm_acle.h>
+#elif defined(__IAR_SYSTEMS_ICC__)
+    #include <intrinsics.h>
+#else
+    #error "Unsupported compiler"
+#endif
+
+
 #define MAX_DMA_TRANSFER_AMOUNT     (1024)
 
 #define SPI_DATASIZE_4                  (4)
@@ -107,7 +119,8 @@ static void enableDMA(uint32_t baseAddr, uint32_t dmaFlags);
 static void disableDMA(uint32_t baseAddr, uint32_t dmaFlags);
 static inline uint32_t getInterruptStatus(uint32_t baseAddr, bool masked);
 static bool configSPI(uint32_t baseAddr, uint32_t freq, uint32_t format,
-                          uint32_t mode, uint32_t bitRate, uint32_t dataSize);
+                          uint32_t mode, uint32_t bitRate, uint32_t dataSize,
+                          uint32_t dsample);
 static int32_t dataPutNonBlocking(uint32_t baseAddr, uint32_t frame);
 static void dataGet(uint32_t baseAddr, uint32_t *frame);
 static bool isSPIbusy(uint32_t baseAddr);
@@ -131,6 +144,10 @@ static bool isSPIbusy(uint32_t baseAddr);
                              SPI_MIS_RTOUT_SET | \
                              SPI_MIS_DMA_DONE_RX_SET | \
                              SPI_MIS_DMA_DONE_TX_SET)
+
+/* DSAMPLE default value limits based bit rate */
+#define DSAMPLE_MED_BITRATE     4000000
+#define DSAMPLE_HIGH_BITRATE    8000000
 
 /* SPI function table for SPICC26X4DMA implementation */
 const SPI_FxnTable SPICC26X4DMA_fxnTable = {
@@ -254,6 +271,7 @@ void SPICC26X4DMA_close(SPI_Handle handle)
  *  | ::SPICC26X4DMA_CMD_SET_MANUAL             | Enable manual start mode     |
  *  | ::SPICC26X4DMA_CMD_CLR_MANUAL             | Disable manual start mode    |
  *  | ::SPICC26X4DMA_CMD_MANUAL_START           | Perform a manual start       |
+ *  | ::SPICC26X4DMA_CMD_SET_SAMPLE_DELAY       | Set a custom DSAMPLE value   |
  *
  *  @param  *arg  Pointer to command arguments.
  *
@@ -264,6 +282,7 @@ int_fast16_t SPICC26X4DMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
     SPICC26X4DMA_Object         *object = handle->object;
     SPICC26X4DMA_HWAttrs const  *hwAttrs = handle->hwAttrs;
     uint_least8_t                pinIndex;
+    uint_least8_t                sampleDelay;
 
     /* Initialize return value */
     int ret = SPI_STATUS_ERROR;
@@ -339,6 +358,16 @@ int_fast16_t SPICC26X4DMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
                 ret = SPI_STATUS_SUCCESS;
             }
             break;
+        case SPICC26X4DMA_CMD_SET_SAMPLE_DELAY:
+            sampleDelay = *((uint_least8_t*) arg);
+            if (object->mode == SPI_MASTER && sampleDelay <= (SPI_CLKCTL_DSAMPLE_MAXIMUM >> SPI_CLKCTL_DSAMPLE_S)) {
+                /* Cache the value so it is persistent across standby */
+                object->dsample = sampleDelay << SPI_CLKCTL_DSAMPLE_S;
+
+                HWREG(hwAttrs->baseAddr + SPI_O_CLKCTL) &= ~SPI_CLKCTL_DSAMPLE_M;
+                HWREG(hwAttrs->baseAddr + SPI_O_CLKCTL) |= object->dsample;
+                ret = SPI_STATUS_SUCCESS;
+            }
         default:
             /* This command is not defined */
             ret = SPI_STATUS_UNDEFINEDCMD;
@@ -598,6 +627,20 @@ SPI_Handle SPICC26X4DMA_open(SPI_Handle handle, SPI_Params *params)
     object->busyBit = (params->mode == SPI_MASTER ? SPI_STAT_BUSY : SPI_STAT_TFE);
     object->manualStart = false;
 
+    /*
+     * Set a default dsample value based on the bitRate
+     * DSAMPLE can be changed later by the user using the SPI_control() API with
+     * the SPICC26X4DMA_CMD_SET_SAMPLE_DELAY option.
+     */
+    object->dsample = 0;
+    if(object->bitRate >= DSAMPLE_MED_BITRATE) {
+        object->dsample = 1 << SPI_CLKCTL_DSAMPLE_S;
+    }
+    else if (object->bitRate >= DSAMPLE_HIGH_BITRATE) {
+        object->dsample = 2 << SPI_CLKCTL_DSAMPLE_S;
+    }
+
+
     Power_setDependency(hwAttrs->powerMngrId);
 
     /*
@@ -615,10 +658,10 @@ SPI_Handle SPICC26X4DMA_open(SPI_Handle handle, SPI_Params *params)
         return (NULL);
     }
 
-    initIO(handle);
-
     /* CSN is initialized using hwAttrs, but can be re-configured later */
     object->csnPin = hwAttrs->csnPin;
+
+    initIO(handle);
 
     HwiP_Params_init(&paramsUnion.hwiParams);
     paramsUnion.hwiParams.arg = (uintptr_t) handle;
@@ -745,7 +788,7 @@ bool SPICC26X4DMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
     /* In slave mode, optionally enable callback on CSN de-assert */
     if (object->returnPartial == SPICC26X4DMA_retPartEnabledIntNotSet) {
         object->returnPartial = SPICC26X4DMA_retPartEnabledIntSet;
-        GPIO_setInterruptConfig(object->csnPin, GPIO_CFG_IN_INT_BOTH_EDGES);
+        GPIO_setInterruptConfig(object->csnPin, GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_INT_ENABLE);
     }
 
     /* Set constraints to guarantee transaction */
@@ -1184,6 +1227,21 @@ static void csnCallback(uint_least8_t index)
  */
 static void flushFifos(SPICC26X4DMA_HWAttrs const *hwAttrs)
 {
+
+    // TIDRIVERS-5163: Temporary workaround
+    // TODO: TIDRIVERS-5152: Replace with proper API for S/NS configuration
+    //  Perform a full reset of the correct SPI hardware instance
+    if (hwAttrs->baseAddr == SPI0_BASE) {
+        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI0;
+    } else if (hwAttrs->baseAddr == SPI1_BASE) {
+        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI1;
+    } else if (hwAttrs->baseAddr == SPI2_BASE) {
+        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI2;
+    } else if (hwAttrs->baseAddr == SPI3_BASE) {
+        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI3;
+    }
+
+
     /* Flush RX FIFO */
     while(!(HWREG(hwAttrs->baseAddr + SPI_O_STAT) & SPI_STAT_RFE_EMPTY)) {
         /* Read element from RX FIFO and discard */
@@ -1233,8 +1291,11 @@ static bool initHw(SPI_Handle handle) {
 
     /* Get requested format */
     format = frameFormat[object->format];
-    if(hwAttrs->csnPin) {
-        /* A CS pin was specified, set to 4 wire mode */
+
+    if( hwAttrs->csnPin && ((format & SPI_CTL0_FRF_M) == SPI_CTL0_FRF_MOTOROLA_3WIRE)) {
+        /*
+         * A CS pin was specified, upgrade the 3WIRE to a 4WIRE mode
+         */
         format |= SPI_CTL0_FRF_MOTOROLA_4WIRE;
     }
 
@@ -1242,7 +1303,8 @@ static bool initHw(SPI_Handle handle) {
     ClockP_getCpuFreq(&freq);
 
     if(freq.lo/2 >= object->bitRate) {
-        configSPI(hwAttrs->baseAddr, freq.lo, format, mode[object->mode], object->bitRate, object->dataSize);
+        configSPI(hwAttrs->baseAddr, freq.lo, format, mode[object->mode], object->bitRate, object->dataSize,
+            object->dsample);
         return true;
     }
     return false;
@@ -1265,22 +1327,15 @@ static void initIO(SPI_Handle handle)
         GPIO_setMux(hwAttrs->misoPin, hwAttrs->txPinMux);
         GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
 
-        /* Configure CSN callback for optional RETURN_PARTIAL slave mode */
-        if (object->csnPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
-            GPIO_setCallback(object->csnPin, csnCallback);
-            GPIO_setUserArg(object->csnPin, handle);
-        }
+        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
+        GPIO_setCallback(object->csnPin, csnCallback);
+        GPIO_setUserArg(object->csnPin, handle);
     }
     else {
         GPIO_setMux(hwAttrs->mosiPin, hwAttrs->txPinMux);
         GPIO_setMux(hwAttrs->misoPin, hwAttrs->rxPinMux);
         GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
-
-        /* Mux CS unless it is software-controlled */
-        if (object->csnPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
-        }
+        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
     }
 }
 
@@ -1296,11 +1351,7 @@ static void finalizeIO(SPI_Handle handle)
     GPIO_resetConfig(hwAttrs->mosiPin);
     GPIO_resetConfig(hwAttrs->misoPin);
     GPIO_resetConfig(hwAttrs->clkPin);
-
-    /* We always mux CS in slave mode, but as master it can be SW-controlled (and therefore unmuxed) */
-    if (object->mode == SPI_SLAVE || object->csnPin != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(object->csnPin);
-    }
+    GPIO_resetConfig(object->csnPin);
 }
 
 /*
@@ -1613,24 +1664,33 @@ static bool configSPI(uint32_t baseAddr,
                       uint32_t format,
                       uint32_t mode,
                       uint32_t bitRate,
-                      uint32_t dataSize)
+                      uint32_t dataSize,
+                      uint32_t dsample)
 {
     uint16_t scr;
     uint32_t ratio;
+
     /* Get existing settings */
-    uint32_t reg0 = HWREG(baseAddr + SPI_O_CTL0);
+    uint32_t reg = HWREG(baseAddr + SPI_O_CTL0);
     /* Create mask for settings to modify */
-    uint32_t mask0 = (SPI_CTL0_DSS_M | SPI_CTL0_FRF_M | SPI_CTL0_SPO_M | SPI_CTL0_SPH_M );
+    uint32_t mask = (SPI_CTL0_DSS_M | SPI_CTL0_FRF_M | SPI_CTL0_SPO_M | SPI_CTL0_SPH_M );
 
     /* Convert and mask data size to HW register format */
     dataSize = (SPI_CTL0_DSS_M & (dataSize - 1));
     /* Apply updated register */
-    HWREG(baseAddr + SPI_O_CTL0) = (reg0 & ~mask0) | format | dataSize;
+    HWREG(baseAddr + SPI_O_CTL0) = (reg & ~mask) | format | dataSize;
 
     /* Set master/slave mode, MSB first */
     HWREG(baseAddr + SPI_O_CTL1) = mode | SPI_CTL1_MSB_ENABLE;
 
-    /* Calculate clock control variable */
+
+    /* Get existing settings */
+    reg = HWREG(baseAddr + SPI_O_CLKCTL);
+
+    /* Create a mask for settings to modify */
+    mask = (SPI_CLKCTL_DSAMPLE_M | SPI_CLKCTL_SCR_M);
+
+    /* Calculate scr variable */
     ratio = freq/(2*bitRate);
     if(ratio > 0 && ratio <= SPI_CLKCTL_SCR_MAXIMUM) {
         scr = (uint16_t)(ratio - 1);
@@ -1638,8 +1698,9 @@ static bool configSPI(uint32_t baseAddr,
     else {
         scr = 0;
     }
+
     /* Set clock divider */
-    HWREG(baseAddr + SPI_O_CLKCTL) = (~SPI_CLKCTL_SCR_M & HWREG(baseAddr + SPI_O_CLKCTL)) | scr;
+    HWREG(baseAddr + SPI_O_CLKCTL) = (reg & ~mask) | dsample | scr;
 
     return(true);
 }
@@ -1660,7 +1721,7 @@ static int32_t dataPutNonBlocking(uint32_t baseAddr, uint32_t frame)
 static void dataGet(uint32_t baseAddr, uint32_t *frame)
 {
     /* Wait until there is data to be read. */
-    while(!(HWREG(baseAddr + SPI_O_STAT) & SPI_STAT_RFE_EMPTY))
+    while(HWREG(baseAddr + SPI_O_STAT) & SPI_STAT_RFE_EMPTY)
     {
     }
 

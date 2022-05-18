@@ -178,9 +178,9 @@ static void NPITL_relPM(void);
 //!
 //! \param[in]  params - Transport Layer parameters
 //!
-//! \return     void
+//! \return     uint8_t   Status NPI_SUCCESS, or NPI_TASK_FAILURE
 // -----------------------------------------------------------------------------
-void NPITL_openTL(NPITL_Params *params)
+uint8_t NPITL_openTL(NPITL_Params *params)
 {
     _npiCSKey_t key;
     key = NPIUtil_EnterCS();
@@ -190,11 +190,22 @@ void NPITL_openTL(NPITL_Params *params)
 
     // Allocate memory for Transport Layer Tx/Rx buffers
     npiBufSize = params->npiTLBufSize;
-    npiRxBuf = NPIUtil_malloc(params->npiTLBufSize);
-    memset(npiRxBuf, 0, npiBufSize);
-    npiTxBuf = NPIUtil_malloc(params->npiTLBufSize);
-    memset(npiTxBuf, 0, npiBufSize);
-
+    if ((npiRxBuf = NPIUtil_malloc(params->npiTLBufSize)) != NULL )
+    {
+       memset(npiRxBuf, 0, npiBufSize);
+    }
+    else
+    {
+        return NPI_TASK_FAILURE;
+    }
+    if ((npiTxBuf = NPIUtil_malloc(params->npiTLBufSize)) != NULL )
+    {
+       memset(npiTxBuf, 0, npiBufSize);
+    }
+    else
+    {
+        return NPI_TASK_FAILURE;
+    }
     // This will be updated to be able to select SPI/UART TL at runtime
     // Now only compile time with the NPI_USE_[UART,SPI] flag
 #if defined(NPI_USE_UART)
@@ -254,6 +265,7 @@ void NPITL_openTL(NPITL_Params *params)
 #endif // NPI_FLOW_CTRL = 0
 
     NPIUtil_ExitCS(key);
+    return NPI_SUCCESS;
 }
 
 // -----------------------------------------------------------------------------

@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       i2s.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the I2S.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -944,7 +942,7 @@ __STATIC_INLINE void I2SStop(uint32_t ui32Base)
 //!        single phase and user-defined phase.
 //! \param ui8BitsPerSample is the number of bits transmitted for each sample.
 //!        If this number does not match with the memory length selected
-//!        (16 bits or24 bits), samples will be truncated or padded.
+//!        (16 bits or 24 bits), samples will be truncated or padded.
 //! \param ui16transmissionDelay is the number of WCLK periods before the first
 //!        transmission.
 //!
@@ -964,8 +962,8 @@ I2SFormatConfigure(uint32_t ui32Base,
 {
     // Check the arguments.
     ASSERT(I2SBaseValid(ui32Base));
-    ASSERT(ui8BitsPerSample <= I2S_AIFFMTCFG_WORD_LEN_MAX);
-    ASSERT(ui8BitsPerSample >= I2S_AIFFMTCFG_WORD_LEN_MIN);
+    ASSERT(ui8BitsPerSample <= 24); // Max. I2S_AIFFMTCFG_WORD_LEN
+    ASSERT(ui8BitsPerSample >= 8);  // Min. I2S_AIFFMTCFG_WORD_LEN
 
     // Setup register AIFFMTCFG Source.
     HWREGH(I2S0_BASE + I2S_O_AIFFMTCFG) =
@@ -1061,13 +1059,13 @@ I2SWclkConfigure(uint32_t ui32Base,
                  bool     boolMaster,
                  bool     boolWCLKInvert)
 {
-    // Check the arguments.
-    ASSERT(I2SBaseValid(ui32Base));
-    ASSERT(ui8ClkSource < I2S_AIFWCLKSRC_WCLK_SRC_RESERVED);
-
     // if(boolMaster == 0) then ui8ClkSource = 1
     // if(boolMaster == 1) then ui8ClkSource = 2
     uint8_t ui8ClkSource = (uint8_t)boolMaster + 0x01;
+
+    // Check the arguments.
+    ASSERT(I2SBaseValid(ui32Base));
+    ASSERT(ui8ClkSource < I2S_AIFWCLKSRC_WCLK_SRC_RESERVED);
 
     // Setup register WCLK Source.
     HWREGB(I2S0_BASE + I2S_O_AIFWCLKSRC) =

@@ -632,6 +632,13 @@ typedef struct {
 } ECDSA_Params;
 
 /*!
+ *  @brief Default ECDSA_Params structure
+ *
+ *  @sa     ECDSA_Params_init()
+ */
+extern const ECDSA_Params ECDSA_defaultParams;
+
+/*!
  *  @brief  This function initializes the ECDSA module.
  *
  *  @pre    The ECDSA_config structure must exist and be persistent before this

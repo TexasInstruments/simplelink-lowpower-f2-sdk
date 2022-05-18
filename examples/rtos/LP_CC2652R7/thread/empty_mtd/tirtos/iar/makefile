@@ -67,7 +67,7 @@ LFLAGS = "$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26
     "$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libmbedcrypto/lib/iar/m4f/libmbedcrypto.a" \
     -f$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs \
     " -L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-     -LC:/.conan/c23840/1/external/source \
+     -LC:/.conan/7561cd/1/external/source \
     " -L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
     "$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib" \
     --config ../../tirtos/iar/cc13x2x7_cc26x2x7_tirtos.icf \

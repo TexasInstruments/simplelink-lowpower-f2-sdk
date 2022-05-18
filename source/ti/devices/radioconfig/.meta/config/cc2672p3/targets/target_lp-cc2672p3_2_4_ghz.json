@@ -7,7 +7,7 @@
         "DevicePackage": "VQFN 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC2652REM-7ID",
+        "RfDesign": "LAUNCHXL-CC1352P2",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",

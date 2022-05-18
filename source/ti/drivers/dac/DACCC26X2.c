@@ -316,7 +316,7 @@ int_fast16_t DAC_disable(DAC_Handle handle) {
 /*
  *  ======== DAC_setRange ========
  */
-int_fast16_t DAC_setRange(DAC_Handle handle) {
+static int_fast16_t DAC_setRange(DAC_Handle handle) {
 
     DACCC26XX_Object        *object;
     DACCC26XX_HWAttrs       const *hwAttrs;

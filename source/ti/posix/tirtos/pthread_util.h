@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,8 +100,16 @@
 extern "C" {
 #endif
 
-/*  Compute a timeout in Clock ticks from the difference of
+/**
+ * @brief Compute a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
+ * 
+ * @param[in] clockId CLOCK_MONOTONIC or CLOCK_REALTIME
+ * @param[in] abstime time for which the number of ticks should be calculated
+ * @param[out] ticks number of ticks until \a abstime
+ * @return Returns a status indicating success or failure
+ * @retval 0 The call was successful
+ * @retval -1 Invalid input arguments
  */
 extern int _pthread_abstime2ticks(clockid_t clockId,
         const struct timespec *abstime, uint32_t *ticks);

@@ -383,7 +383,7 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
                 }
                 break;
             case "txPower433Hi":
-                // CC1352P4: 433 MHz band uses "txPower433Hi" for High PA
+                // CC1352P4: 433 MHz band uses "txPower433Hi" for High PA (obsolete)
                 if (freqBand === 433) {
                     item.options = RfDesign.getTxPowerOptions(433, true);
                     item.default = item.options[0].name;
@@ -1394,10 +1394,6 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             }
 
             if ((key === "txPower169") && (useHighPA || !freq169)) {
-                return true;
-            }
-
-            if ((key === "txPower433Hi") && (!useHighPA || !freq433)) {
                 return true;
             }
 

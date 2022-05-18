@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:         chipinfo.c
-*  Revised:          $Date$
-*  Revision:         $Revision$
 *
 *  Description:     Collection of functions returning chip information.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -176,8 +174,11 @@ ChipInfo_GetHwRevision( void )
 
     if ( chipFam == FAMILY_CC13x2x7_CC26x2x7 ) {
         switch ( fcfg1Rev ) {
-        case 0 : // CC13x2x1x7, CC26x2x1x7
+        case 0 : // CC13x2x1x7, CC26x2x1x7 - PG1.0
             hwRev = (HwRevision_t)(((uint32_t)HWREV_1_0 ) + minorHwRev );
+            break;
+        case 1 : // CC13x2x1x7, CC26x2x1x7 - PG1.1 (or later)
+            hwRev = (HwRevision_t)(((uint32_t)HWREV_1_1 ) + minorHwRev );
             break;
         }
     }

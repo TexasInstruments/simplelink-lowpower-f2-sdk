@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,15 @@ real flash memory. This avoids wearing out device flash during software
 development.
 `
             }
-        ]
+        ],
+        getDisabledOptions: (inst) => {
+            let disabledExternal = [ {name: "External", reason: "SPI not currently implemented"} ];
+            if(family.match(/CC23/) !== null) { /* CC23XX has not yet implemented external SPI driver */
+                return disabledExternal;
+            } else {
+                return [];
+            }
+        }
     },
     {
         name: "nvsImplementation",

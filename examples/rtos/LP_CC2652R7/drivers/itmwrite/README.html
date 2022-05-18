@@ -34,9 +34,6 @@
 </header>
 <div id="content">
   <h1>itmwrite</h1>
-<hr />
-<h1 id="itmwrite">itmwrite</h1>
-<hr />
 <h2 id="example-summary">Example Summary</h2>
 <p>Example that uses the Instrumentation Trace Macrocell (ITM) hardware to write software instrumentation messages to the PC.</p>
 <p>These messages can be read using a suite of tools available in CCS, IAR, or standalone tools.</p>
@@ -53,9 +50,9 @@
 <h2 id="example-usage">Example Usage</h2>
 <ul>
 <li><p>Use Device Manager to check the value of the XDS110 Class Auxiliary Data Port. Do not use the “User UART” port. This should be a value like <code>COM22</code>.</p></li>
-<li><p>Follow the setup instructions under the “Install Python Modules” heading in &lt;SDK_INSTALL_DIR&gt;tools/log/README to generate a virtual environment. This will setup the ITM reader’s python environment. You do not need Wireshark for this example, and instructions for it should be ignored. Stop at the end of “Install Python Modules” and move on to the next step in this document.</p></li>
+<li><p>Follow the setup instructions under the “Install Python Modules” heading in &lt;SDK_INSTALL_DIR&gt;tools/log/README.md to generate a virtual environment. This will setup the ITM reader’s python environment. You do not need Wireshark for this example, and instructions for it should be ignored. Stop at the end of “Install Python Modules” and move on to the next step in this document.</p></li>
 <li><p>Start a terminal in the &lt;SDK_INSTALL_DIR&gt;tools/log/ folder and activate the virtual environment from the previous step by running <code>&gt; ./.venv/Scripts/activate</code>. Some terminals will now display an extra note with the prompt (e.g. <code>(.venv)</code> in PowerShell) indicating that a venv is active.</p></li>
-<li><p>In the same terminal, start the tool: <code>tilogger_itm_viewer 115200 &lt;PORT&gt;</code> where <PORT> is the COM port from the first step (for example <code>tilogger_itm_viewer 115200 COM22</code>).</p></li>
+<li><p>In the same terminal, start the tool: <code>tilogger_itm_viewer 115200 &lt;PORT&gt;</code> where <code>&lt;PORT&gt;</code> is the COM port from the first step (for example <code>tilogger_itm_viewer 115200 COM22</code>).</p></li>
 <li><p>Build and flash the example using CCS or another tool. Once the firmware is flashed, disconnect the debugger. ITM output will not display if the debugger is connected.</p></li>
 <li><p>Reset the board. <code>Board_GPIO_LED0</code> turns ON to indicate driver initialization is complete. The ITM tool will not begin printing until it receives a reset frame.</p></li>
 <li><p>The target will write a string message to the ITM software port: “Hello World from ITM”. Each write to the ITM stream will appear in the tool. See below for expected output and how this string appears in the data stream.</p></li>
@@ -127,7 +124,7 @@ HW Trace at 1020.757, Write Access, comparator: 0, value : 0x3</code></pre>
   with 100,000+ analog ICs and embedded processors, along with software, tools
   and the industry‘s largest sales/support staff.</p>
   <p>
-    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2021</a>, Texas Instruments Incorporated. All rights reserved. <br>
+    <a href="https://www.ti.com/corp/docs/legal/copyright.shtml">© Copyright 1995-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
     <a href="https://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="https://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="https://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="https://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
   </p>
 </footer>

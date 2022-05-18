@@ -123,9 +123,9 @@ typedef struct
 //!
 //! \param[in]  params - Transport Layer parameters
 //!
-//! \return     void
+//! \return     uint8_t   Status NPI_SUCCESS, or NPI_TASK_FAILURE
 // -----------------------------------------------------------------------------
-void NPITL_openTL(NPITL_Params *params);
+uint8_t NPITL_openTL(NPITL_Params *params);
 
 // -----------------------------------------------------------------------------
 //! \brief      This routine closes the transport layer

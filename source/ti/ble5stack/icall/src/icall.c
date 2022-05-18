@@ -58,7 +58,9 @@
 #include <ti/sysbios/BIOS.h>
 // This include file will ensure HEAPMGR_CONFIG is properly setup in the ti-rtos
 // config file.
+#ifndef TIRTOS7_SUPPORT
 #include <xdc/cfg/global.h>
+#endif
 #include "osal.h"
 #include <stdint.h>
 

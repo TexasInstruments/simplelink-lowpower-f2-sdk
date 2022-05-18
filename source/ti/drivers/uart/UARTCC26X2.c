@@ -954,6 +954,7 @@ static void initIO(UART_Handle handle)
 {
     UARTCC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
     if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
         GPIO_setMux(hwAttrs->txPin, hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_TX : IOC_PORT_MCU_UART1_TX);
     }
@@ -973,6 +974,22 @@ static void initIO(UART_Handle handle)
             );
         }
     }
+#else
+    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
+        GPIO_setMux(hwAttrs->txPin, IOC_PORT_MCU_UART0_TX);
+    }
+    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
+        GPIO_setMux(hwAttrs->rxPin, IOC_PORT_MCU_UART0_RX);
+    }
+    if (isFlowControlEnabled(hwAttrs)) {
+        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
+            GPIO_setMux(hwAttrs->ctsPin, IOC_PORT_MCU_UART0_CTS);
+        }
+        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
+            GPIO_setMux(hwAttrs->rtsPin, IOC_PORT_MCU_UART0_RTS);
+        }
+    }
+#endif
 }
 
 static void finalizeIO(UART_Handle handle)

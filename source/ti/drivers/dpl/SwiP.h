@@ -194,7 +194,7 @@ extern uintptr_t SwiP_disable(void);
  *  @brief  Function to get the trigger value of the currently running SwiP.
  *
  */
-extern uint32_t SwiP_getTrigger();
+extern uint32_t SwiP_getTrigger(void);
 
 /*!
  *  @brief  Clear bits in SwiP's trigger. Post SwiP if trigger becomes 0.

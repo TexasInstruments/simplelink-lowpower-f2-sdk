@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -264,7 +264,7 @@ PDMCC26XX_I2S_Handle PDMCC26XX_I2S_open(PDMCC26XX_I2S_Handle handle, PDMCC26XX_I
  *  ======== PDMCC26XX_I2S_deallocateBuffers ========
  *  @pre    Function assumes that the handle is not NULL
  */
-void PDMCC26XX_I2S_deallocateBuffers(PDMCC26XX_I2S_Handle handle){
+static void PDMCC26XX_I2S_deallocateBuffers(PDMCC26XX_I2S_Handle handle){
     PDMCC26XX_I2S_Object            *object;
 
     Assert_isTrue(handle, NULL);
@@ -320,7 +320,7 @@ void PDMCC26XX_I2S_deallocateBuffers(PDMCC26XX_I2S_Handle handle){
  *  ======== PDMCC26XX_I2S_allocateBuffers ========
  *  @pre    Function assumes that the handle is not NULL
  */
-bool PDMCC26XX_I2S_allocateBuffers(PDMCC26XX_I2S_Handle handle){
+static bool PDMCC26XX_I2S_allocateBuffers(PDMCC26XX_I2S_Handle handle){
     PDMCC26XX_I2S_Object            *object;
 
     Assert_isTrue(handle, NULL);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -254,6 +254,12 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     AESGCMCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     SemaphoreP_Status resourceAcquired;
     uint32_t aesCtrl;
+    uint32_t iv[4];
+
+    /* Only IVs with a length of 12 bytes are supported for now */
+    if (operation->ivLength != 12) {
+        return AESGCM_STATUS_ERROR;
+    }
 
     /* Only plaintext CryptoKeys are supported for now */
     DebugP_assert(operation->key);
@@ -321,13 +327,16 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
      */
     Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
-    HWREG(CRYPTO_BASE + CRYPTO_O_AESIV0) = ((uint32_t *)operation->iv)[0];
-    HWREG(CRYPTO_BASE + CRYPTO_O_AESIV1) = ((uint32_t *)operation->iv)[1];
-    HWREG(CRYPTO_BASE + CRYPTO_O_AESIV2) = ((uint32_t *)operation->iv)[2];
-    /* Set initial counter value to 1. Counter is interpreted as big-endian number of last
-     * four bytes of IV
+    /* Copy IV to a word-aligned buffer */
+    (void)memcpy(iv, (void *)operation->iv, operation->ivLength);
+
+    /*
+     * Set initial counter value to 1. Counter is interpreted as big-endian
+     * number of last four bytes of IV.
      */
-    HWREG(CRYPTO_BASE + CRYPTO_O_AESIV3) = 0x01000000;
+    iv[3] = 0x01000000;
+
+    AESSetInitializationVector(iv);
 
     /* We need to split building aesCtrl into multiple calls.
      * Trying to combine all of the below leads to the compiler removing the GCM flag
@@ -339,7 +348,7 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
               CRYPTO_AESCTL_CTR |
               CRYPTO_AESCTL_SAVE_CONTEXT |
               CRYPTO_AESCTL_CTR_WIDTH_32_BIT;
-    aesCtrl |= operationType == AESGCM_OPERATION_TYPE_ENCRYPT ? CRYPTO_AESCTL_DIR : 0;
+    aesCtrl |= (operationType == AESGCM_OPERATION_TYPE_ENCRYPT) ? CRYPTO_AESCTL_DIR : 0;
     AESSetCtrl(aesCtrl);
 
     AESSetDataLength(operation->inputLength);

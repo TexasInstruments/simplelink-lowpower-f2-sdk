@@ -1,6 +1,6 @@
 ## Example Summary
 
-Uses the Display driver to write output via the XDS100UART and the available
+Uses the Display driver to write output via the XDS110UART and the available
 LCD display.
 
 ## Peripherals & Pin Assignments

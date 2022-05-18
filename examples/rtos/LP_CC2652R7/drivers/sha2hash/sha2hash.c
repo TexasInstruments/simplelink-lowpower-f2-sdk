@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #include <string.h>
 
 /* Driver Header files */
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 #include <ti/drivers/SHA2.h>
 
 /* Driver configuration */
@@ -59,7 +59,7 @@ static char       formatedMsg[MAX_MSG_LENGTH];
 /*
  *  ======== printHash ========
  */
-void printHash(UART_Handle handle, uint8_t* msg)
+void printHash(UART2_Handle handle, uint8_t* msg)
 {
     uint32_t i;
 
@@ -69,9 +69,9 @@ void printHash(UART_Handle handle, uint8_t* msg)
     }
 
     /* Print prompt */
-    UART_write(handle, promptHash, strlen(promptHash));
+    UART2_write(handle, promptHash, strlen(promptHash), NULL);
     /* Print result */
-    UART_write(handle, formatedMsg, strlen(formatedMsg));
+    UART2_write(handle, formatedMsg, strlen(formatedMsg), NULL);
 }
 
 /*
@@ -82,11 +82,11 @@ void *mainThread(void *arg0)
     int_fast16_t result;
 
     /* Driver handles */
-    UART_Handle                 uartHandle;
+    UART2_Handle                uart2Handle;
     SHA2_Handle                 sha2Handle;
 
     /* UART variables */
-    UART_Params                 uartParams;
+    UART2_Params                uart2Params;
     uint8_t                     input;
     uint16_t                    msgLength = 0;
 
@@ -94,21 +94,16 @@ void *mainThread(void *arg0)
     uint8_t                     hashedMsg[SHA2_DIGEST_LENGTH_BYTES_256];
 
     /* Call driver initialization functions */
-    UART_init();
     SHA2_init();
 
     /* Open UART for console output */
-    UART_Params_init(&uartParams);
-    uartParams.writeDataMode = UART_DATA_BINARY;
-    uartParams.readDataMode = UART_DATA_BINARY;
-    uartParams.readReturnMode = UART_RETURN_FULL;
-    uartParams.readEcho = UART_ECHO_OFF;
-    uartParams.baudRate = 115200;
+    UART2_Params_init(&uart2Params);
+    uart2Params.readReturnMode = UART2_ReadReturnMode_FULL;
 
-    uartHandle = UART_open(CONFIG_UART_0, &uartParams);
+    uart2Handle = UART2_open(CONFIG_UART2_0, &uart2Params);
 
-    if (!uartHandle) {
-        /* UART_open() failed */
+    if (!uart2Handle) {
+        /* UART2_open() failed */
         while (1);
     }
 
@@ -121,23 +116,23 @@ void *mainThread(void *arg0)
     }
 
     /* Prompt startup message */
-    UART_write(uartHandle, promptStartup, strlen(promptStartup));
+    UART2_write(uart2Handle, promptStartup, strlen(promptStartup), NULL);
 
     /* Loop forever */
     while(1) {
         /* Print prompt */
-        UART_write(uartHandle, promptEnter, strlen(promptEnter));
+        UART2_write(uart2Handle, promptEnter, strlen(promptEnter), NULL);
 
         /* Reset message length */
         msgLength = 0;
 
         /* Read in from the console until carriage-return is detected */
         while (1) {
-            UART_read(uartHandle, &input, 1);
+            UART2_read(uart2Handle, &input, 1, NULL);
 
             /* If not carriage-return, echo input and continue to read */
             if (input != 0x0D) {
-                UART_write(uartHandle, &input, 1);
+                UART2_write(uart2Handle, &input, 1, NULL);
             }
             else {
                 break;
@@ -161,6 +156,6 @@ void *mainThread(void *arg0)
         }
 
         /* Print out the hashed result */
-        printHash(uartHandle, hashedMsg);
+        printHash(uart2Handle, hashedMsg);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -348,7 +348,7 @@ extern int_fast16_t NVSCC26XX_erase(NVS_Handle handle,
 extern void         NVSCC26XX_getAttrs(NVS_Handle handle,
                                        NVS_Attrs *attrs);
 
-extern void         NVSCC26XX_init();
+extern void         NVSCC26XX_init(void);
 
 extern int_fast16_t NVSCC26XX_lock(NVS_Handle handle,
                                    uint32_t timeout);

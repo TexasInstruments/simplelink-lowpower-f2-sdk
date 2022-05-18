@@ -48,7 +48,7 @@ CFLAGS = -I../.. \
     -IOPENTHREAD_MAKE_PATH/src/core \
     -IOPENTHREAD_MAKE_PATH/src \
     -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
-    -IC:/.conan/c23840/1/external/source \
+    -IC:/.conan/7561cd/1/external/source \
     -I${PROJECT_ROOT}/platform/crypto \
     -DOPENTHREAD_FTD=1 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/config" \
@@ -75,7 +75,7 @@ LFLAGS = --reread_libs \
     -Wl,-llibmbedcrypto.a \
     -l${PROJECT_BUILD_DIR}/syscfg/ti_utils_build_linker.cmd.genlibs \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    -LC:/.conan/c23840/1/external/source \
+    -LC:/.conan/7561cd/1/external/source \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
     -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib \
     ../../tirtos/ticlang/cc13x2x7_cc26x2x7_tirtos.cmd \

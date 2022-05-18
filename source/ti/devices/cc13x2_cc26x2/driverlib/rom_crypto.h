@@ -1,12 +1,10 @@
 /******************************************************************************
 *  Filename:       rom_crypto.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    This header file is the API to the crypto functions
 *                  built into ROM on the CC13xx/CC26xx.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

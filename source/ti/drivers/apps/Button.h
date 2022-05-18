@@ -380,7 +380,7 @@ extern void Button_close(Button_Handle handle);
 /*!
  *  @brief  Function to initialize Button driver.
  */
-extern void Button_init();
+extern void Button_init(void);
 
 /*!
  *  @brief  Function to open a given Button

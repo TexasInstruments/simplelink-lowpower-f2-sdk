@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,7 +104,7 @@ uint32_t Timer_getCount(Timer_Handle handle)
 /*
  *  ======== TimerCC26XX_callbackfxn ========
  */
-void TimerCC26XX_callbackfxn(GPTimerCC26XX_Handle gptHandle, GPTimerCC26XX_IntMask intMask)
+static void TimerCC26XX_callbackfxn(GPTimerCC26XX_Handle gptHandle, GPTimerCC26XX_IntMask intMask)
 {
     Timer_Handle handle;
     /* Get Timer Handle from arg in GPTimerCC26XX_Object */

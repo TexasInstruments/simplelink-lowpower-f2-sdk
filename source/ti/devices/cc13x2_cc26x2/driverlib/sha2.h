@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       sha2.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    SHA-2 header file.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

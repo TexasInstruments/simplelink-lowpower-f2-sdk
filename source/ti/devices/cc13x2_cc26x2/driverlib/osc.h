@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       osc.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the system oscillator control.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

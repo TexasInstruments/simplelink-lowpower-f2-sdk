@@ -259,7 +259,7 @@ static void PINCC26XX_setIoCfgMux(PIN_Id pinId, int32_t mux) {
     HWREG(IOC_BASE + IOC_O_IOCFG0 + 4 * pinId) = tmpConfig;
 }
 
-uint32_t PINCC26XX_getPinCount(){
+uint32_t PINCC26XX_getPinCount(void){
     // Get number of pins available on device (from HW register)
     uint32_t pinCount = (( HWREG( FCFG1_BASE + FCFG1_O_IOCONF ) &
                          FCFG1_IOCONF_GPIO_CNT_M ) >>
@@ -277,7 +277,7 @@ uint32_t PINCC26XX_getPinCount(){
  * so we use this weak definition to accomplish this without unconditionally
  * including GPIO in every application
  */
-__attribute__((weak)) void GPIO_init()
+__attribute__((weak)) void GPIO_init(void)
 {
     isGPIOIncluded = false;
 }

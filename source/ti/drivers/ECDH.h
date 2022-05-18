@@ -454,7 +454,7 @@ extern "C" {
 #define ECDH_STATUS_POINT_AT_INFINITY (-3)
 
 /*!
- * @brief   The private key passed in is larger than the order of the curve.
+ * @brief   The private key passed in is larger or equal to the order of the curve.
  *
  * Private keys must be integers in the interval [1, n - 1], where n is the
  * order of the curve.
@@ -526,18 +526,23 @@ typedef struct {
 typedef ECDH_Config *ECDH_Handle;
 
 /*!
- * @brief   The way in which ECC function calls return after performing an
- * encryption + authentication or decryption + verification operation.
+ * @brief   The way in which ECDH function calls return after performing a
+ * public key generation or shared secret compution operation.
  *
- * Not all ECC operations exhibit the specified return behavor. Functions that do not
- * require significant computation and cannot offload that computation to a background thread
- * behave like regular functions. Which functions exhibit the specfied return behavior is not
- * implementation dependent. Specifically, a software-backed implementation run on the same
- * CPU as the application will emulate the return behavior while not actually offloading
- * the computation to the background thread.
+ * Callback return behavior is not supported by software-backed implementations.
+ * A NULL handle will be returned when attempting to open or construct a driver
+ * instance with an unsupported return behavior.
  *
- * ECC functions exhibiting the specified return behavior have restrictions on the
- * context from which they may be called.
+ * Not all ECDH operations exhibit the specified return behavior. Functions that
+ * do not require significant computation and cannot offload that computation to
+ * a background thread behave like regular functions. Which functions exhibit
+ * the specfied return behavior is not implementation dependent. Specifically, a
+ * software-backed implementation run on the same CPU as the application will
+ * emulate the return behavior while not actually offloading the computation to
+ * the background thread.
+ *
+ * ECDH functions exhibiting the specified return behavior have restrictions on
+ * the context from which they may be called.
  *
  * |                                | Task  | Hwi   | Swi   |
  * |--------------------------------|-------|-------|-------|
@@ -563,16 +568,14 @@ typedef enum {
                                              */
 } ECDH_ReturnBehavior;
 
-
 typedef enum {
-    ECDH_PUBLIC_KEY_DATA_FORMAT_OCTET_STRING = 0,       /*!< Use standard NIST public key style (uncompressed) of the form
-                                                         *   {0x4 || x || y} in big-endian.
-                                                         */
-    ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY = 1,  /*!< Use X-only public key style from RFC 7748 of the form
-                                                         *   {x} in little-endian.
-                                                         */
-} ECDH_PublicKeyDataFormat;
-
+    ECDH_BIG_ENDIAN_KEY       = 0,  /*!< All ECDH key material (private key, public key, and shared secret (when used))
+                                     *   are in big-endian format
+                                     */
+    ECDH_LITTLE_ENDIAN_KEY    = 1,  /*!< All ECDH key material (private key, public key, and shared secret (when used))
+                                     *   are in little-endian format
+                                     */
+} ECDH_KeyMaterialEndianness; 
 
 /*!
  *  @brief  Struct containing the parameters required to generate a public key.
@@ -587,7 +590,9 @@ typedef struct {
                                                                *   The formatting byte will be filled in by the driver if the
                                                                *   publicKeyDataFormat requires it.
                                                                */
-    ECDH_PublicKeyDataFormat        publicKeyDataFormat;      /*!< Either standard Octet string type or X-only type public keys */
+    ECDH_KeyMaterialEndianness      keyMaterialEndianness;    /*!< All keyMaterials, including myPrivate and myPublicKey,
+                                                               *   are either in Big Endian (default) or Little Endian format
+                                                               */
 } ECDH_OperationGeneratePublicKey;
 
 /*!
@@ -608,8 +613,9 @@ typedef struct {
                                                                *   The formatting byte will be filled in by the driver if the
                                                                *   sharedSecretDataFormat requires it.
                                                                */
-    ECDH_PublicKeyDataFormat        publicKeyDataFormat;      /*!< Either standard Octet string type or X-only type public keys */
-    ECDH_PublicKeyDataFormat        sharedSecretDataFormat;   /*!< Either standard Octet string type or X-only type public keys */
+    ECDH_KeyMaterialEndianness      keyMaterialEndianness;    /*!< All keyMaterials, including myPrivate, theirPublicKey, and sharedSecret
+                                                               *   are either in Big Endian (default) or Little Endian format
+                                                               */
 } ECDH_OperationComputeSharedSecret;
 
 /*!
@@ -763,12 +769,13 @@ void ECDH_OperationComputeSharedSecret_init(ECDH_OperationComputeSharedSecret *o
  *
  *  @post ECDH_computeSharedSecret()
  *
- *  @retval #ECDH_STATUS_SUCCESS                The operation succeeded.
- *  @retval #ECDH_STATUS_ERROR                  The operation failed.
- *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE   The required hardware resource was not available. Try again later.
- *  @retval #ECDH_STATUS_CANCELED               The operation was canceled.
- *  @retval #ECDH_STATUS_POINT_AT_INFINITY      The computed public key is the point at infinity.
- *  @retval #ECDH_STATUS_PRIVATE_KEY_ZERO       The provided private key is zero.
+ *  @retval #ECDH_STATUS_SUCCESS                          The operation succeeded.
+ *  @retval #ECDH_STATUS_ERROR                            The operation failed.
+ *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE             The required hardware resource was not available. Try again later.
+ *  @retval #ECDH_STATUS_CANCELED                         The operation was canceled.
+ *  @retval #ECDH_STATUS_POINT_AT_INFINITY                The computed public key is the point at infinity.
+ *  @retval #ECDH_STATUS_PRIVATE_KEY_ZERO                 The provided private key is zero.
+ *  @retval #ECDH_STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER   The provided private key is larger than or equal to the order of the curve.
  *
  */
 int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle, ECDH_OperationGeneratePublicKey *operation);
@@ -799,7 +806,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
  *
  *  Asynchronously cancels an ECDH operation. Only available when using
  *  ECDH_RETURN_BEHAVIOR_CALLBACK or ECDH_RETURN_BEHAVIOR_BLOCKING.
- *  The operation will terminate as though an error occured. The
+ *  The operation will terminate as though an error occurred. The
  *  return status code of the operation will be ECDH_STATUS_CANCELED.
  *
  *  @param  handle Handle of the operation to cancel

@@ -584,7 +584,10 @@ uint8_t NPITask_open(NPI_Params *params)
     transportParams.portParams = params->portParams;
     transportParams.npiCallBacks = transportCBs;
 
-    NPITL_openTL(&transportParams);
+    if(NPITL_openTL(&transportParams)!=NPI_SUCCESS)
+    {
+        return NPI_TASK_FAILURE;
+    }
 
    // Clear Routing Tables
     memset(HostToSSTable, 0, sizeof(_npiFromHostTableEntry_t)*NPI_MAX_SS_ENTRY);

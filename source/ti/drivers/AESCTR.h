@@ -379,10 +379,10 @@
 #ifndef ti_drivers_AESCTR__include
 #define ti_drivers_AESCTR__include
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 #ifdef __cplusplus
@@ -402,7 +402,7 @@ extern "C" {
  * #define AESCTRXYZ_STATUS_ERROR2    AESCTR_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCTR_STATUS_RESERVED             (-32)
+#define AESCTR_STATUS_RESERVED  AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -410,7 +410,7 @@ extern "C" {
  * Functions return #AESCTR_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCTR_STATUS_SUCCESS              (0)
+#define AESCTR_STATUS_SUCCESS   AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -418,7 +418,7 @@ extern "C" {
  * Functions return #AESCTR_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCTR_STATUS_ERROR                (-1)
+#define AESCTR_STATUS_ERROR     AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -428,12 +428,36 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCTR_STATUS_RESOURCE_UNAVAILABLE (-2)
+#define AESCTR_STATUS_RESOURCE_UNAVAILABLE   AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCTR_STATUS_CANCELED             (-3)
+#define AESCTR_STATUS_CANCELED               AES_STATUS_CANCELED
+
+/*!
+ * @brief   The operation requested is not supported.
+ */
+#define AESCTR_STATUS_FEATURE_NOT_SUPPORTED  AES_STATUS_FEATURE_NOT_SUPPORTED
+
+/*!
+ *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
+ */
+#define AESCTR_STATUS_KEYSTORE_INVALID_ID      AES_STATUS_KEYSTORE_INVALID_ID
+
+/*!
+ *  @brief  The key store module returned a generic error. See key store documentation
+ *  for additional details.
+ */
+#define AESCTR_STATUS_KEYSTORE_GENERIC_ERROR   AES_STATUS_KEYSTORE_GENERIC_ERROR
+
+/*!
+ * @brief   The operation does not support non-word-aligned input and/or output.
+ *
+ * AESCTR driver implementations may have restrictions on the alignment of
+ * input/output data due to performance limitations of the hardware.
+ */
+#define AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 
 /*!
@@ -458,17 +482,20 @@ extern "C" {
  *
  */
 typedef enum {
-    AESCTR_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
+    AESCTR_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
+                                            /*!< The function call will return immediately while the
                                              *   CTR operation goes on in the background. The registered
                                              *   callback function is called after the operation completes.
                                              *   The context the callback function is called (task, HWI, SWI)
                                              *   is implementation-dependent.
                                              */
-    AESCTR_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while the CTR operation goes
+    AESCTR_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
+                                            /*!< The function call will block while the CTR operation goes
                                              *   on in the background. CTR operation results are available
                                              *   after the function returns.
                                              */
-    AESCTR_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while CTR
+    AESCTR_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
+                                            /*!< The function call will continuously poll a flag while CTR
                                              *   operation goes on in the background. CTR operation results
                                              *   are available after the function returns.
                                              */
@@ -505,6 +532,8 @@ typedef struct {
                                                  */
     size_t                   inputLength;       /*!< Length of the input in bytes. An equal number
                                                  *   of bytes will be output by the operation.
+                                                 *   Max length supported may be limited depending on
+                                                 *   the return behavior.
                                                  */
 } AESCTR_OneStepOperation;
 
@@ -609,13 +638,7 @@ typedef enum {
  *
  *  @sa     #AESCTR_init()
  */
-typedef struct {
-    /*! Pointer to a driver specific data object */
-    void               *object;
-
-    /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
-} AESCTR_Config;
+typedef AESCommon_Config AESCTR_Config;
 
 /*!
  *  @brief  A handle that is returned from an #AESCTR_open() call.
@@ -632,7 +655,7 @@ typedef AESCTR_Config *AESCTR_Handle;
  *                        Informs the application of why the callback function was
  *                        called.
  *
- *  @param  operation     Pointer to the operation union.
+ *  @param  operation     Pointer to the operation union struct.
  *
  *  @param  operationType This parameter determines which operation the
  *                        callback refers to.
@@ -786,6 +809,7 @@ int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key,
  *  @retval #AESCTR_STATUS_RESOURCE_UNAVAILABLE     The required hardware
  *                                                  resource was not available.
  *                                                  Try again later.
+ *  @retval #AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @post   #AESCTR_addData() or #AESCTR_finalize()
  */
@@ -815,6 +839,7 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle,
  *  @retval #AESCTR_STATUS_RESOURCE_UNAVAILABLE     The required hardware
  *                                                  resource was not available.
  *                                                  Try again later.
+ *  @retval #AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
 int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
                              AESCTR_SegmentedOperation *operation);
@@ -822,6 +847,9 @@ int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
 
 /*!
  *  @brief  Function to initialize an #AESCTR_Operation struct to its defaults (all zeroes)
+ *
+ *  @deprecated Use #AESCTR_OneStepOperation_init() or #AESCTR_SegmentedOperation_init()
+ *              based on whether it is a one-step or a segmented AESCTR operation.
  *
  *  @param  operation     Pointer to an #AESCTR_Operation structure for
  *                        initialization
@@ -859,6 +887,7 @@ void AESCTR_SegmentedOperation_init(AESCTR_SegmentedOperation *operation);
  *  @retval #AESCTR_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCTR_STATUS_ERROR                 The operation failed.
  *  @retval #AESCTR_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @sa     #AESCTR_oneStepDecrypt()
  */
@@ -878,6 +907,7 @@ int_fast16_t AESCTR_oneStepEncrypt(AESCTR_Handle handle, AESCTR_OneStepOperation
  *  @retval #AESCTR_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCTR_STATUS_ERROR                 The operation failed.
  *  @retval #AESCTR_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @sa     AESCTR_oneStepEncrypt()
  */

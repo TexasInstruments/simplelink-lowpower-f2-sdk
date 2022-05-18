@@ -41,10 +41,6 @@
             },
             {
                 "_file": "param_definition.json",
-                "$": ".\/..\/config\/cc2674p10_prop_pg10"
-            },
-            {
-                "_file": "param_definition.json",
                 "_phy": "ble",
                 "$": ".\/..\/config\/cc2674p10_ble_pg10"
             },
@@ -55,10 +51,6 @@
             },
             {
                 "_file": "param_cmd_mapping.json",
-                "$": ".\/..\/config\/cc1352p_prop_pg21"
-            },
-            {
-                "_file": "param_cmd_mapping.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21"
             },
@@ -66,10 +58,6 @@
                 "_file": "param_cmd_mapping.json",
                 "_phy": "ble",
                 "$": ".\/..\/config\/cc1352p_ble_pg21"
-            },
-            {
-                "_file": "radio_par_definitions.json",
-                "$": ".\/..\/config\/cc1352r_prop_pg21"
             },
             {
                 "_file": "radio_par_definitions.json",
@@ -83,10 +71,6 @@
             },
             {
                 "_file": "rf_command_definitions.json",
-                "$": ".\/..\/config\/cc1352p_prop_pg21"
-            },
-            {
-                "_file": "rf_command_definitions.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21"
             },
@@ -97,10 +81,6 @@
             },
             {
                 "_file": "categories.json",
-                "$": ".\/..\/config\/cc2674p10_prop_pg10\/cmd_settings"
-            },
-            {
-                "_file": "categories.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg10\/cmd_settings"
             },
@@ -111,10 +91,6 @@
             },
             {
                 "_file": "frontend_settings.json",
-                "$": ".\/..\/config\/cc2674p10_prop_pg10\/cmd_settings"
-            },
-            {
-                "_file": "frontend_settings.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg10\/cmd_settings"
             },
@@ -122,10 +98,6 @@
                 "_file": "frontend_settings.json",
                 "_phy": "ble",
                 "$": ".\/..\/config\/cc2674p10_ble_pg10\/cmd_settings"
-            },
-            {
-                "_file": "dummy_file_overrides.json",
-                "$": ".\/..\/config\/cc2674p10_prop_pg10\/overrides"
             },
             {
                 "_file": "dummy_file_overrides.json",

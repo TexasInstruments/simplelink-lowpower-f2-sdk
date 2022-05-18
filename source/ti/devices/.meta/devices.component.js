@@ -57,7 +57,12 @@ if (deviceId.match(/CC13.[124]|CC26.[1234]|CC23.0/)) {
 
     templates = [
         {
-            name: "/ti/devices/templates/ti_devices_config.c.xdt",
+            name: "/ti/devices/templates/ti_devices_CC26XX_config.c.xdt",
+            outputPath: "ti_devices_config.c",
+            alwaysRun: false
+        },
+        {
+            name: "/ti/devices/templates/ti_devices_CC23XX_config.c.xdt",
             outputPath: "ti_devices_config.c",
             alwaysRun: false
         }

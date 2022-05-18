@@ -943,6 +943,7 @@ static uint8_t SimplePeripheral_processL2CAPMsg(l2capSignalEvent_t *pMsg)
         // Wait until all PDU have been sent on cxn events
         Gap_RegisterConnEventCb(SimplePeripheral_connEvtCB,
                                   GAP_CB_REGISTER,
+                                  GAP_CB_CONN_EVENT_ALL,
                                   resetConnHandle);
                                   //OAD_getactiveCxnHandle());
                                   //pMsg->connHandle);
@@ -2342,7 +2343,7 @@ static status_t SimplePeripheral_startAutoPhyChange(uint16_t connHandle)
   SIMPLEPERIPHERAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Start Connection Event notice for RSSI calculation
-  Gap_RegisterConnEventCb(SimplePeripheral_connEvtCB, GAP_CB_REGISTER, connHandle);
+  Gap_RegisterConnEventCb(SimplePeripheral_connEvtCB, GAP_CB_REGISTER, GAP_CB_CONN_EVENT_ALL, connHandle);
 
   // Flag in connection info if successful
   if (status == SUCCESS)
@@ -2370,7 +2371,7 @@ static status_t SimplePeripheral_stopAutoPhyChange(uint16_t connHandle)
   SIMPLEPERIPHERAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Stop connection event notice
-  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, connHandle);
+  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, GAP_CB_CONN_EVENT_ALL, connHandle);
 
   // Also update the phychange request status for active RSSI tracking connection
   connList[connIndex].phyCngRq = FALSE;

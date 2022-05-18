@@ -177,12 +177,11 @@ int __low_level_init(void)
      *  This code ensures that the stack pointer is initialized.
      *  The first entry of the vector table is the address of the stack.
      */
-    __asm(
-        "    mov32 r0, __vector_table\n"
-        "    ldr r0, [r0]\n"
-        "    mov sp, r0\n"
-        "    b localProgramStart"
-    );
+    __asm (
+        " mov32 r0, __vector_table\n"
+        " ldr r0, [r0]\n"
+        " mov sp, r0\n"
+        " b localProgramStart");
 
     // This code is unreachable but the compiler expects a return statement
     return 1;
@@ -198,7 +197,8 @@ int __low_level_init(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -212,7 +212,8 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -226,7 +227,8 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -240,6 +242,7 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }

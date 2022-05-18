@@ -750,7 +750,7 @@
 #define MAP_l2capParseSignalHdr                                      l2capParseSignalHdr
 #define MAP_l2capProcessConnectReq                                   l2capProcessConnectReq
 #define MAP_l2capProcessOSALMsg                                      l2capProcessOSALMsg
-#define MAP_l2capProcessReq                                          l2capProcessReq
+#define MAP_l2capProcessReq                                          l2capProcessReq_sPatch
 #define MAP_l2capProcessRsp                                          l2capProcessRsp
 #define MAP_l2capProcessRxData                                       l2capProcessRxData
 #define MAP_l2capProcessSignal                                       l2capProcessSignal

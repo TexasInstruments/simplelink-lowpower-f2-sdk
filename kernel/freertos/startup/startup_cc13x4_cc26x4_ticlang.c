@@ -159,18 +159,20 @@ void localProgramStart(void)
 
     /* disable interrupts */
     __asm volatile (
-        "mov %0, %1 \n\t"
-        "msr basepri, %0 \n\t"
-        "isb \n\t"
-        "dsb \n\t"
-        :"=r" (newBasePri) : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY) : "memory"
-    );
+        " mov %0, %1 \n"
+        " msr basepri, %0 \n"
+        " isb \n"
+        " dsb \n"
+        :"=r" (newBasePri)
+        : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY)
+        : "memory");
 
 #if configENABLE_ISR_STACK_INIT
     /* Initialize ISR stack to known value for Runtime Object View */
     register uint32_t *top = (uint32_t *)&__stack;
     register uint32_t *end = (uint32_t *)&newBasePri;
-    while (top < end) {
+    while (top < end)
+    {
         *top++ = (uint32_t)0xa5a5a5a5;
     }
 #endif
@@ -182,8 +184,8 @@ void localProgramStart(void)
     *vtor = (unsigned long)&resetVectors[0];
 
     /* jump to the C initialization routine. */
-    __asm(" .global _c_int00\n"
-          " b.w     _c_int00");
+    __asm (" .global _c_int00\n"
+           " b.w     _c_int00");
 }
 
 //*****************************************************************************
@@ -206,8 +208,7 @@ void resetISR(void)
         " movt r0, #:upper16:resetVectors\n"
         " ldr r0, [r0]\n"
         " mov sp, r0\n"
-        " b localProgramStart"
-        );
+        " b localProgramStart");
 }
 
 //*****************************************************************************
@@ -220,7 +221,8 @@ void resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -234,7 +236,8 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -248,7 +251,8 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -262,6 +266,7 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }

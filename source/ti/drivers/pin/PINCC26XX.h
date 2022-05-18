@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,17 @@
 #include DeviceFamily_constructPath(driverlib/ioc.h)
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 
-//------------------------------------------------------------------------------
-// Internal function used to find the index of the rightmost set bit in
-// efficient way
-#if defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
+/* Intrinsics */
+#if defined(codered) || defined(gcc) || defined(sourcerygxx) || defined(__GNUC__)
+    #include <arm_acle.h>
+#elif defined(__IAR_SYSTEMS_ICC__) || defined(DOXYGEN)
     #include <intrinsics.h>
+#elif defined(rvmdk) || defined(__ARMCC_VERSION)
+    #include <arm_acle.h>
+#elif defined(__TI_COMPILER_VERSION__)
+    #include <arm_acle.h>
+#else
+    #error "Unsupported compiler used"
 #endif
 
 #ifdef __cplusplus
@@ -328,7 +334,7 @@ extern int32_t PINCC26XX_getMux(PIN_Id pinId);
  *  @return Device and package specific pin count
  *  @note  Mostly used by driver code
  */
-extern uint32_t PINCC26XX_getPinCount();
+extern uint32_t PINCC26XX_getPinCount(void);
 
 /** @brief Connect pin to HW peripheral, signal or to GPIO
  *

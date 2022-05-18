@@ -217,7 +217,7 @@
                                     {
                                         "_type": "ELEMENT",
                                         "_comment": "Set RTIM offset to 3 for high power PA",
-                                        "$": "0x00038783"
+                                        "$": "0x00030783"
                                     },
                                     {
                                         "_type": "ELEMENT",
@@ -233,6 +233,16 @@
                                         "_type": "ELEMENT",
                                         "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
                                         "$": "0x00F788D3"
+                                    },
+                                    {
+                                        "_type": "ADI_HALFREG_OVERRIDE",
+                                        "_comment": "Set VCTRIM to 0 for 20 dBm PA",
+                                        "$": "1,26,0xF,0x0"
+                                    },
+                                    {
+                                        "_type": "ADI_HALFREG_OVERRIDE",
+                                        "_comment": "Set VCTRIM to 0 for 20 dBm PA",
+                                        "$": "1,27,0x7,0x0"
                                     }
                                 ]
                             }

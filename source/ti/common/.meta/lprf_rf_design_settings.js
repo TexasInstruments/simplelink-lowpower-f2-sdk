@@ -107,6 +107,9 @@ const boardSpecificRfDesignSettings = {
     LP_CC2651P3_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_CC2651P3"
     },
+    LP_CC2651R3SIPA_RF_DESIGN_SETTINGS: {
+        rfDesign: "LP_CC2651R3SIPA"
+    },
     LP_CC1354R10_RGZ_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_CC1354R10_RGZ"
     },
@@ -122,9 +125,9 @@ const boardSpecificRfDesignSettings = {
     LP_EM_CC1314R10_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_EM_CC1314R10"
     },
-    LP_EM_CC2653P10_RF_DESIGN_SETTINGS: {
-        rfDesign: "LP_EM_CC2653P10"
-    }
+    LP_CC2653P10_RF_DESIGN_SETTINGS: {
+        rfDesign: "LP_CC2653P10"
+    },
 };
 
 // Get the LaunchPad specific CCFG Settings

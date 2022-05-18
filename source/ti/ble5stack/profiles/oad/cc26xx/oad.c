@@ -3039,7 +3039,7 @@ uint8_t oadCreateFactoryImageBackup(void)
                imgHdr.fixedHdr.crcStat = CRC_VALID;
 
                /* Update image length */
-               imgHdr.fixedHdr.len = imgHdr.fixedHdr.imgEndAddr - (uint32_t)&_imgHdr;
+               imgHdr.fixedHdr.len = _imgHdr.fixedHdr.imgEndAddr - (uint32_t)&_imgHdr;
 
                uint32_t *ptr = (uint32_t *)&imgHdr;
 

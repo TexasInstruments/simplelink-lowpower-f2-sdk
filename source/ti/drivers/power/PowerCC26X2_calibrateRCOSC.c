@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,9 @@
 #include <ti/drivers/dpl/HwiP.h>
 
 #include <ti/drivers/Power.h>
+#include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/drivers/power/PowerCC26X2.h>
+#include <ti/drivers/power/PowerCC26X2_helpers.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_aux_evctl.h)
@@ -62,14 +64,6 @@
 #define RCOSC_HF_LOW_THRESHOLD_TDC_VALUE             1535  /* If TDC value is within threshold range, no need for another TDC measurement */
 #define RCOSC_HF_PERFECT_TDC_VALUE                   1536  /* RCOSC_HF runs at perfect 48 MHz when ending up with this TDC value */
 #define RCOSC_HF_HIGH_THRESHOLD_TDC_VALUE            1537  /* If TDC value is within threshold range, no need for another TDC measurement */
-
-#define DDI_0_OSC_O_CTL1_LOCAL                       0x00000004             /* offset */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M     0x007C0000             /* mask */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S     18                     /* shift */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M  0x00020000             /* mask */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S  17                     /* shift */
-#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M 0x00000C00    /* offset */
-#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S 10            /* shift */
 
 /* AUX ISR states */
 #define WAIT_SMPH       0   /* just took SMPH, start RCOSC_LF */
@@ -117,8 +111,7 @@ unsigned int numISRs = 0;
 #endif
 
 /* Forward declarations */
-static bool getTdcSemaphore();
-static void updateSubSecInc(uint32_t tdcResult);
+static bool getTdcSemaphore(void);
 static void calibrateRcoscHf1(int32_t tdcResult);
 static void calibrateRcoscHf2(int32_t tdcResult);
 static PowerCC26X2_FsmResult runCalibrateFsm(void);
@@ -133,7 +126,7 @@ extern const PowerCC26X2_Config PowerCC26X2_config;
  *  ======== PowerCC26X2_initiateCalibration ========
  *  Initiate calibration of RCOSC_LF and RCOSCHF
  */
-bool PowerCC26X2_initiateCalibration()
+bool PowerCC26X2_initiateCalibration(void)
 {
     unsigned int hwiKey;
     bool busy = false;
@@ -225,14 +218,11 @@ void PowerCC26X2_auxISR(uintptr_t arg)
 
     /* **** state = CAL_RCOSC_LF: here when just finished LF counting **** */
     else if (PowerCC26X2_module.auxHwiState == CAL_RCOSC_LF) {
-
-        tdcResult = HWREG(AUX_TDC_BASE + AUX_TDC_O_RESULT);
-
-#if PowerCC26X2_INSTRUMENT_RCOSC_CALIBRATION
-        tdcResult_LF = tdcResult;
-#endif
         /* update the RTC SUBSECINC register based on LF measurement result */
-        updateSubSecInc(tdcResult);
+        PowerCC26X2_updateSubSecInc(PowerCC26X2_module.firstLF);
+        /* No longer first measurement */
+        PowerCC26X2_module.firstLF = false;
+
 #if PowerCC26X2_INSTRUMENT_RCOSC_CALIBRATION
         calLFi = 1;
 #endif
@@ -326,9 +316,6 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void) {
 
         case PowerCC26X2_STATE_TDC_INIT:
 
-            /* Turn on TDC clock */
-            HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_TDCCLKCTL) = AUX_SYSIF_TDCCLKCTL_REQ;
-
             /* set saturation config to 2^24 */
             HWREG(AUX_TDC_BASE + AUX_TDC_O_SATCFG) = AUX_TDC_SATCFG_LIMIT_R24;
 
@@ -340,16 +327,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void) {
                  AUX_TDC_TRIGSRC_START_POL_HIGH);
 
             /* set TDC_SRC clock to be XOSC_HF/2 = 24 MHz */
-            DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
-                               DDI_0_OSC_O_CTL0,
-                               DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
-                               DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S, 2);
-
-            /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
-            DDI16BitfieldRead(AUX_DDI0_OSC_BASE,
-                              DDI_0_OSC_O_CTL0,
-                              DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
-                              DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S);
+            PowerCC26X2_setTdcClkSrc24M();
 
             /* set AUX_SYSIF:TDCCLKCTL.REQ... */
             HWREG(AUX_SYSIF_BASE +AUX_SYSIF_O_TDCCLKCTL) = AUX_SYSIF_TDCCLKCTL_REQ;
@@ -394,10 +372,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void) {
             PowerCC26X2_module.auxHwiState = CAL_RCOSC_LF;
 
             /* set the ACLK reference clock */
-            DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL0,
-                       DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                       DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_S,
-                       ACLK_REF_SRC_RCOSC_LF);
+            PowerCC26X2_setAclkRefSrc(ACLK_REF_SRC_RCOSC_LF);
 
             /* set AUX_SYSIFTDCREFCLKCTL.REQ */
             HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_TDCREFCLKCTL) = AUX_SYSIF_TDCREFCLKCTL_REQ;
@@ -424,17 +399,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void) {
             PowerCC26X2_module.auxHwiState = CAL_RCOSC_HF1;
 
             /* set the ACLK reference clock */
-            DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
-                               DDI_0_OSC_O_CTL0,
-                               DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                               DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_S,
-                               ACLK_REF_SRC_RCOSC_HF);
-
-            /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
-            DDI16BitfieldRead(AUX_DDI0_OSC_BASE,
-                              DDI_0_OSC_O_CTL0,
-                              DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                              DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M);
+            PowerCC26X2_setAclkRefSrc(ACLK_REF_SRC_RCOSC_HF);
 
             /* set AUX_SYSIFTDCREFCLKCTL.REQ */
             HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_TDCREFCLKCTL) = AUX_SYSIF_TDCREFCLKCTL_REQ;
@@ -461,17 +426,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void) {
             PowerCC26X2_module.auxHwiState = CAL_RCOSC_HF2;
 
             /* set the ACLK reference clock */
-            DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
-                               DDI_0_OSC_O_CTL0,
-                               DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                               DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_S,
-                               ACLK_REF_SRC_RCOSC_HF);
-
-            /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
-            DDI16BitfieldRead(AUX_DDI0_OSC_BASE,
-                              DDI_0_OSC_O_CTL0,
-                              DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                              DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M);
+            PowerCC26X2_setAclkRefSrc(ACLK_REF_SRC_RCOSC_HF);
 
             /* set AUX_SYSIFTDCREFCLKCTL.REQ */
             HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_TDCREFCLKCTL) = AUX_SYSIF_TDCREFCLKCTL_REQ;
@@ -557,7 +512,7 @@ void PowerCC26X2_RCOSC_clockFunc(uintptr_t arg) {
  *  ======== getTdcSemaphore ========
  *  Get TDC semaphore (number 1)
  */
-static bool getTdcSemaphore()
+static bool getTdcSemaphore(void)
 {
     unsigned int own;
 
@@ -585,57 +540,6 @@ static bool getTdcSemaphore()
 }
 
 /*
- *  ======== updateSubSecInc ========
- *  Update the SUBSECINC register based on measured RCOSC_LF frequency
- */
-static void updateSubSecInc(uint32_t tdcResult)
-{
-    int32_t newSubSecInc;
-    uint32_t oldSubSecInc;
-    uint32_t subSecInc;
-    int32_t hposcOffset;
-    int32_t hposcOffsetInv;
-
-    /*
-     * Calculate the new SUBSECINC
-     * Here's the formula: AON_RTC:SUBSECINC = (45813 * NR) / 256
-     * Based on measuring 32 LF clock periods
-     */
-    newSubSecInc = (45813 * tdcResult) / 256;
-
-    /* Compensate HPOSC drift if HPOSC is in use */
-    if(OSC_IsHPOSCEnabled()) {
-        /* Get the HPOSC relative offset at this temperature */
-        hposcOffset = OSC_HPOSCRelativeFrequencyOffsetGet(AONBatMonTemperatureGetDegC());
-        /* Convert to RF core format */
-        hposcOffsetInv = OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert(hposcOffset);
-        /* Adjust SUBSECINC */
-        newSubSecInc += (((newSubSecInc >> 4) * (hposcOffsetInv >> 3)) >> 15);
-    }
-
-    /* Apply filter, but not for first calibration */
-    if (PowerCC26X2_module.firstLF) {
-        /* Don't apply filter first time, to converge faster */
-        subSecInc = newSubSecInc;
-        /* No longer first measurement */
-        PowerCC26X2_module.firstLF = false;
-    }
-    else {
-        /* Read old SUBSECINC value */
-        oldSubSecInc = HWREG(AON_RTC_BASE + AON_RTC_O_SUBSECINC) & 0x00FFFFFF;
-        /* Apply filter, 0.5 times old value, 0.5 times new value */
-        subSecInc = (oldSubSecInc * 1 + newSubSecInc * 1) / 2;
-    }
-
-    /* Update SUBSECINC values */
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINC0) = subSecInc;
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINC1) = subSecInc >> 16;
-
-    /* update to use new values */
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINCCTL) = AUX_SYSIF_RTCSUBSECINCCTL_UPD_REQ;
-}
-
-/*
  *  ======== PowerCC26X2_calibrateRcoscHf1 ========
  *  Calibrate RCOSC_HF agains XOSC_HF: compute and setup new trims
  */
@@ -643,21 +547,9 @@ static void calibrateRcoscHf1(int32_t tdcResult)
 {
     /* *** STEP 1: Find RCOSC_HF-XOSC_HF frequency offset with current trim settings */
     /* Read in current trim settings */
-    PowerCC26X2_module.nCtrimCurr =
-        (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL) &
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M) >>
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S;
-
-    PowerCC26X2_module.nCtrimFractCurr =
-        (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL)
-        & DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M) >>
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S;
-
-    PowerCC26X2_module.nRtrimCurr =
-        (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL)
-        & DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M) >>
-        DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S;
-
+    PowerCC26X2_module.nCtrimCurr = PowerCC26X2_readCtrim();
+    PowerCC26X2_module.nCtrimFractCurr = PowerCC26X2_readCtrimFract();
+    PowerCC26X2_module.nRtrimCurr = PowerCC26X2_readRtrim();
 
     /*
      * Find RCOSC_HF-XOSC_HF frequency offset with current trim settings
@@ -728,28 +620,16 @@ static void calibrateRcoscHf1(int32_t tdcResult)
     }
 
     /* Find RCOSC_HF vs XOSC_HF frequency offset with new trim settings */
-    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL,
-                           DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M,
-                           DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S,
-                           PowerCC26X2_module.nCtrimNew);
+    PowerCC26X2_writeCtrim(PowerCC26X2_module.nCtrimNew);
 
     /* Enable RCOSCHFCTRIMFRACT_EN */
-    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S,
-                           1);
+    PowerCC26X2_writeCtrimFractEn(1);
 
     /* Modify CTRIM_FRACT */
-    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S,
-                           PowerCC26X2_module.nCtrimFractNew);
+    PowerCC26X2_writeCtrimFract(PowerCC26X2_module.nCtrimFractNew);
 
     /* Modify RTRIM */
-    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL,
-                           DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M,
-                           DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S,
-                           PowerCC26X2_module.nRtrimNew);
+    PowerCC26X2_writeRtrim(PowerCC26X2_module.nRtrimNew);
 }
 
 /*
@@ -758,7 +638,6 @@ static void calibrateRcoscHf1(int32_t tdcResult)
  */
 static void calibrateRcoscHf2(int32_t tdcResult)
 {
-
     PowerCC26X2_module.nDeltaFreqNew = (int32_t) tdcResult - RCOSC_HF_PERFECT_TDC_VALUE;
     /* Calculate new delta freq */
 
@@ -769,23 +648,11 @@ static void calibrateRcoscHf2(int32_t tdcResult)
     }
     else {
         /* First measurement was better than second, restore current settings */
-        DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL,
-                           DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M,
-                           DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S,
-                           PowerCC26X2_module.nCtrimCurr);
-
-        DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M,
-                           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S,
-                           PowerCC26X2_module.nCtrimFractCurr);
-
-        DDI16BitfieldWrite(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL,
-                           DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M,
-                           DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S,
-                           PowerCC26X2_module.nRtrimCurr);
+        PowerCC26X2_writeCtrim(PowerCC26X2_module.nCtrimCurr);
+        PowerCC26X2_writeCtrimFract(PowerCC26X2_module.nCtrimFractCurr);
+        PowerCC26X2_writeRtrim(PowerCC26X2_module.nRtrimCurr);
 
         /* Enter a refinement mode where we keep searching for better matches */
         PowerCC26X2_module.bRefine = true;
     }
-
 }

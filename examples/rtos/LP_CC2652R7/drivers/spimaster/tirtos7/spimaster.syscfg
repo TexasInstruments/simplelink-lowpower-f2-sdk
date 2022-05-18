@@ -73,7 +73,7 @@ spi0.$name = "CONFIG_SPI_MASTER";
 spi0.mode = "Four Pin SS Active Low";
 
 if (board.match(/CC13|CC26/)) {
-    if (board.match(/CC1352[PR]|CC2652[PR]SIP|CC2651P|CC1311P|CC1354|CC1314|CC2653/)) {
+    if (board.match(/CC1352[PR]|CC2652[PR]SIP|CC2651P|CC1311P|CC1354|CC1314|CC2653|CC2651R3SIPA/)) {
         gpio2.$hardware = system.deviceData.board.components.BUTTON0;
     }
     else {

@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       ioc.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the IOC.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -536,7 +534,8 @@ IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
                     uint32_t ui32Clk)
 {
     // Check the arguments.
-    ASSERT((ui32Base == SSI0_BASE) || (ui32Base == SSI1_BASE));
+
+    ASSERT((ui32Base == SSI0_BASE));
     ASSERT((ui32Rx <= IOID_31) || (ui32Rx == IOID_UNUSED));
     ASSERT((ui32Tx <= IOID_31) || (ui32Tx == IOID_UNUSED));
     ASSERT((ui32Fss <= IOID_31) || (ui32Fss == IOID_UNUSED));
@@ -562,25 +561,6 @@ IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
             IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI0_CLK, IOC_STD_OUTPUT);
         }
     }
-    else
-    {
-        if(ui32Rx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI1_RX, IOC_STD_INPUT);
-        }
-        if(ui32Tx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI1_TX, IOC_STD_OUTPUT);
-        }
-        if(ui32Fss != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI1_FSS, IOC_STD_OUTPUT);
-        }
-        if(ui32Clk != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI1_CLK, IOC_STD_OUTPUT);
-        }
-    }
 }
 
 //*****************************************************************************
@@ -594,7 +574,7 @@ IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
                    uint32_t ui32Clk)
 {
     // Check the arguments.
-    ASSERT((ui32Base == SSI0_BASE) || (ui32Base == SSI1_BASE));
+    ASSERT((ui32Base == SSI0_BASE));
     ASSERT((ui32Rx <= IOID_31) || (ui32Rx == IOID_UNUSED));
     ASSERT((ui32Tx <= IOID_31) || (ui32Tx == IOID_UNUSED));
     ASSERT((ui32Fss <= IOID_31) || (ui32Fss == IOID_UNUSED));
@@ -618,25 +598,6 @@ IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
         if(ui32Clk != IOID_UNUSED)
         {
             IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI0_CLK, IOC_STD_INPUT);
-        }
-    }
-    else
-    {
-        if(ui32Rx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI1_RX, IOC_STD_INPUT);
-        }
-        if(ui32Tx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI1_TX, IOC_STD_OUTPUT);
-        }
-        if(ui32Fss != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI1_FSS, IOC_STD_INPUT);
-        }
-        if(ui32Clk != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI1_CLK, IOC_STD_INPUT);
         }
     }
 }

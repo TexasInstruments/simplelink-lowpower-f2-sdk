@@ -333,6 +333,7 @@ uint8_t OadApp_processL2CAPMsg(l2capSignalEvent_t *pMsg)
         // Wait until all PDU have been sent on cxn events
         Gap_RegisterConnEventCb(SimplePeripheral_connEvtCB,
                                   GAP_CB_REGISTER,
+                                  GAP_CB_CONN_EVENT_ALL,
 #if defined(OAD_SUPPORT_OFFCHIP)
                                   OAD_getactiveCxnHandle());
 #else

@@ -154,7 +154,7 @@
         <path copyTo="$PROJ_DIR$/build_config.opt">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/build_config.opt</path>
         <path copyTo="$PROJ_DIR$/cc26x2x7_app_and_stack_agama.icf">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/tirtos/iar/cc26x2x7_app_and_stack_agama.icf</path>
         <path copyTo="$PROJ_DIR$/persistent_app.cfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/Tools/persistent_app.cfg</path>
-        <path copyTo="$PROJ_DIR$/persistent_app.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/persistent_app.syscfg</path>
+        <path copyTo="$PROJ_DIR$/persistent_app.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/tirtos/persistent_app.syscfg</path>
         <group name="Application" build="true">
             <path copyTo="$PROJ_DIR$/Application/oad_persistent_app.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/Application/oad_persistent_app.c</path>
             <path copyTo="$PROJ_DIR$/Application/oad_persistent_app.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/Application/oad_persistent_app.h</path>
@@ -215,9 +215,6 @@
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/cc26xx/devinfoservice.c</path>
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/devinfoservice.h</path>
             <path reference="$PROJ_DIR$/Profiles/gatt_profile_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_profile_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gatt_uuid.c</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gattservapp_util.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gattservapp_util.c</path>
         </group>
         <group name="Startup" build="true">
             <path copyTo="$PROJ_DIR$/Startup/main.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/persistent_app/Startup/main.c</path>

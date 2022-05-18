@@ -32,8 +32,8 @@
 /** ============================================================================
  *  @file       ECCParams.h
  *
- *  This file contains a common definition for eliptic curve structures used
- *  throughout the ECC based drivers.
+ *  This file contains a common definition for elliptic curve structures used
+ *  throughout the ECC based drivers. Not all devices support every curve.
  */
 
 #ifndef ti_drivers_cryptoutils_ecc_ECCParams__include
@@ -44,6 +44,7 @@
 #include <stdbool.h>
 
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
+#include <ti/devices/DeviceFamily.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -197,9 +198,147 @@ extern const ECCParams_CurveParams ECCParams_Curve25519;
 extern const ECCParams_CurveParams ECCParams_Ed25519;
 
 /*!
- *  @brief Length of Curve25519 parameters in bytes.
+ *  @brief Number of bytes for the length word prepended before all parameters
+ *  passed into the ECC SW library functions.
  */
-#define ECCPARAMS_CURVE25519_LENGTH 32u
+#define ECC_LENGTH_PREFIX_BYTES 4
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+
+/*!
+ *  @defgroup nistp256_params NIST P256 curve params to be used with ECC SW library
+ *  Note: CC26X1 uses NIST P256 curve params defined in driverlib/rom_ecc.h
+ *  @{
+ */
+
+/*!
+ *  @brief Length of NIST P256 curve parameters in bytes
+ */
+#define ECCParams_NISTP256_LENGTH 32
+
+/*!
+ *  @brief Length in bytes of NISTP256 curve parameters including the prepended
+ *  length word.
+ */
+#define ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES   (ECCParams_NISTP256_LENGTH + ECC_LENGTH_PREFIX_BYTES)
+
+/*!
+ *  @brief Union to access ECC_NISTP256 curve params in bytes or words.
+ */
+typedef union {
+    uint8_t     byte[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES];
+    uint32_t    word[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
+} ECC_NISTP256_Param;
+
+/*!
+ *  @brief X coordinate of the generator point of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_generatorX;
+
+/*!
+ *  @brief Y coordinate of the generator point of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_generatorY;
+
+/*!
+ *  @brief Prime of the generator point of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_prime;
+
+/*!
+ *  @brief 'a' constant of the ECC_NISTP256 curve when expressed in short
+ *  Weierstrass form (y^3 = x^2 + a*x + b).
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_a;
+
+/*!
+ *  @brief 'b' constant of the ECC_NISTP256 curve when expressed in short
+ *  Weierstrass form (y^3 = x^2 + a*x + b).
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_b;
+
+/*!
+ *  @brief Order of the generator point of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_order;
+
+/*!
+ *  @brief 'k' in Montgomery domain of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_k_mont;
+
+/*!
+ *  @brief 'a' in Montgomery domain of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_a_mont;
+
+/*!
+ *  @brief 'b' in Montgomery domain of the ECC_NISTP256 curve.
+ */
+extern const ECC_NISTP256_Param ECC_NISTP256_b_mont;
+
+/*! @} */ /* end of nistp256_params */
+
+#endif /* DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 */
+
+/*!
+ *  @brief Length of Curve25519 curve parameters in bytes
+ */
+#define ECCParams_CURVE25519_LENGTH 32
+
+/*!
+ *  @defgroup curve25519_params Curve25519 curve params to be used with ECC SW library
+ *  @{
+ */
+
+/*!
+ *  @brief Length in bytes of Curve25519 curve parameters including the prepended
+ *  length word.
+ */
+#define ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES   (ECCParams_CURVE25519_LENGTH + ECC_LENGTH_PREFIX_BYTES)
+
+/*!
+ *  @brief Union to access ECC_Curve25519 curve params in bytes or words.
+ */
+typedef union {
+    uint8_t   byte[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES];
+    uint32_t  word[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
+} ECC_Curve25519_Param;
+
+/*!
+ *  @brief X coordinate of the generator point of the ECC_Curve25519 curve.
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_generatorX;
+
+/*!
+ *  @brief Y coordinate of the generator point of the ECC_Curve25519 curve.
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_generatorY;
+
+/*!
+ *  @brief Prime of the generator point of the ECC_Curve25519 curve.
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_prime;
+
+/*!
+ *  @brief 'a' constant of the ECC_Curve25519 curve when expressed in short
+ *  Weierstrass form (y^3 = x^2 + a*x + b).
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_a;
+
+/*!
+ *  @brief 'b' constant of the ECC_Curve25519 curve when expressed in short
+ *  Weierstrass form (y^3 = x^2 + a*x + b).
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_b;
+
+/*!
+ *  @brief Order of the generator point of the ECC_Curve25519 curve.
+ */
+extern const ECC_Curve25519_Param ECC_Curve25519_order;
+
+/*! @} */ /* end of curve25519_params */
+
 
 /* Utility functions */
 

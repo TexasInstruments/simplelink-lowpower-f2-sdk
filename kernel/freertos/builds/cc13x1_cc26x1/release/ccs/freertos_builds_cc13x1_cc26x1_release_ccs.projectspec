@@ -7,7 +7,7 @@
         toolChain="TI"
         outputType="staticLibrary"
         requiredVariables="FREERTOS_INSTALL_DIR"
-        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/CCS/ARM_CM3 -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ccs -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source -I${CG_TOOL_ROOT}/include -Dccs -DDeviceFamily_CC13X1_CC26X1 -mv7M4 --code_state=16 -me -g --display_error_number --diag_warning=255 --diag_wrap=off --gen_func_subsections=on --float_support=vfplib"
+        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/CCS/ARM_CM3 -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ccs -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source -I${CG_TOOL_ROOT}/include -Dccs -DDeviceFamily_CC13X1_CC26X1 -O3 -mv7M4 --code_state=16 -me -g --display_error_number --diag_warning=255 --diag_wrap=off --gen_func_subsections=on --float_support=vfplib"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
         description="A FreeRTOS release configuration project">

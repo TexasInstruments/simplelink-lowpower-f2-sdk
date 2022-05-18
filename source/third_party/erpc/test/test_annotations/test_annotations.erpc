@@ -1,0 +1,72 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+//Add data structures and function prototypes here
+//using Freescale's eRPC IDL language
+@include("myAlloc.h")
+@output_dir("erpc_outputs/") // testing directory with slash on end
+@include("addOne.h")
+@include("external.h")
+@dynamic_services
+program test;
+import "../common/unit_test_common.erpc"
+
+//test for external type
+@external
+type myInt = int32;
+
+@external
+const int32 i = 4
+
+@external
+enum myEnum { one, two, three }
+
+@external
+struct fooStruct
+{
+	int32 x
+	float y
+}
+
+struct nullableStruct
+{
+    int32 a
+    float b
+}
+
+//@annote(doesThisWork)
+//type pressure = int32
+//
+//@copy(3)
+//struct A {
+//    int32 x @annotate(this)
+//    float y @defaultValue(3.14)
+//}
+//
+@id(5)
+//@funcName("TestFunc")
+//@temperature(98.6)
+interface AnnotateTest {
+    add(int32 a, int32 b) -> int32
+    oneway testIfFooStructExist(fooStruct a @nullable)
+    oneway testIfMyEnumExist(myEnum a)
+    testIfMyIntAndConstExist(myInt a) -> myInt
+}
+//@id(5)
+//interface iface2Test
+//{
+//}
+//
+//@id(3)
+//interface foobar {}
+//
+//@id(3)
+//interface barfoo {}
+//
+//@id(5)
+//interface baz {}

@@ -24,7 +24,7 @@
         "DevicePackage": "VQFN 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC1352PEM-XD7793-XD24",
+        "RfDesign": "LAUNCHXL-CC1352P1",
         "DefaultCategory": "Settings for 779 - 930 MHz band",
         "IoSettings": {
             "_name": "RF Switch",

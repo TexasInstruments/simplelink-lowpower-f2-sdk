@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,8 @@ function freqBandOnChange(inst, ui) {
         if ("phyType433" in ui) {
             ui.phyType433.hidden = c433hidden;
             ui.txPower433.hidden = c433hidden;
-
+        }
+        if ("phyType169" in ui) {
             ui.phyType169.hidden = c169hidden;
             ui.txPower169.hidden = c169hidden;
         }
@@ -324,6 +325,8 @@ function onPermissionChange(inst, ui) {
         ui.phyType868.readOnly = phyTypeReadOnly;
         if ("phyType433" in ui) {
             ui.phyType433.readOnly = phyTypeReadOnly;
+        }
+        if ("phyType169" in ui) {
             ui.phyType169.readOnly = phyTypeReadOnly;
         }
     }
@@ -425,7 +428,7 @@ function validateFrequency(inst) {
     // Check if PA table is supported
     if (freqBand === null) {
         // No PA-table, not a valid range
-        const freqRanges = RfDesign.freqBands();
+        const freqRanges = RfDesign.getFreqBands();
 
         const midFreq = parseInt(inst.freqBand);
         let msg = "Frequency out of range. Valid range:";

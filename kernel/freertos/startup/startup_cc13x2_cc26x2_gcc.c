@@ -168,88 +168,96 @@ void localProgramStart(void)
     uint32_t * de;
     uint32_t count;
     uint32_t i;
+    /* Used for disabling interrupts and as limit during stack init */
     uint32_t newBasePri;
 
-    /* enable FPU */
+    /* Enable FPU */
     *cpacr |= (0xF0 << 16);
 
-    /* do final trim of device */
+    /* Do final trim of device */
     SetupTrimDevice();
 
     /* Disable interrupts */
     __asm volatile (
-        "mov %0, %1 \n\t"
-        "msr basepri, %0 \n\t"
-        "isb \n\t"
-        "dsb \n\t"
-        :"=r" (newBasePri) : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY) : "memory"
-    );
+        " mov %[aNewBasePri], %[aCfgMaxPri]\n"
+        " msr basepri, %[aNewBasePri] \n"
+        " isb \n"
+        " dsb \n"
+        : [aNewBasePri]"=r" (newBasePri)
+        : [aCfgMaxPri]"i" (configMAX_SYSCALL_INTERRUPT_PRIORITY)
+        : "memory");
 
 #if configENABLE_ISR_STACK_INIT
     /* Initialize ISR stack to known value for Runtime Object View */
     register uint32_t *top = (uint32_t *)&__stack;
     register uint32_t *end = (uint32_t *)&newBasePri;
-    while (top < end) {
+    while (top < end)
+    {
         *top++ = (uint32_t)0xa5a5a5a5;
     }
 #endif
 
-    /* initiailize .bss to zero */
+    /* Initiailize .bss to zero */
     bs = & __bss_start__;
     be = & __bss_end__;
-    while (bs < be) {
+    while (bs < be)
+    {
         *bs = 0;
         bs++;
     }
 
-    /* relocate the .data section */
+    /* Relocate the .data section */
     dl = & __data_load__;
     ds = & __data_start__;
     de = & __data_end__;
-    if (dl != ds) {
-        while (ds < de) {
+    if (dl != ds)
+    {
+        while (ds < de)
+        {
             *ds = *dl;
             dl++;
             ds++;
         }
     }
 
-    /* run any constructors */
+    /* Run any constructors */
     count = (uint32_t)(__init_array_end - __init_array_start);
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
         __init_array_start[i]();
     }
 
     /*
-     * set vector table base to point to above vectors in Flash; during
+     * Set vector table base to point to above vectors in Flash; during
      * driverlib interrupt initialization this table will be copied to RAM
      */
     *vtor = (uint32_t)&resetVectors[0];
 
-    /* call the application's entry point. */
+    /* Call the application's entry point. */
     main();
 }
 
 //*****************************************************************************
 //
-// This is the code that gets called when the processor is reset.
+// This is the code that gets called when the processor first starts execution
+// following a reset event.  Only the absolutely necessary steps are performed,
+// after which the application supplied entry routine is called.
 //
 //*****************************************************************************
 void __attribute__((naked)) resetISR(void)
 {
     /*
-     *  Some debuggers do not load the stack pointer from the reset vector.
-     *  This code ensures that the stack pointer is initialized.  We branch
-     *  to localProgramStart() so that nothing is pushed to the stack
-     *  before it has been initialized.
+     * Set stack pointer based on the stack value stored in the vector table.
+     * This is necessary to ensure that the application is using the correct
+     * stack when using a debugger since a reset within the debugger will
+     * load the stack pointer from the bootloader's vector table at address '0'.
      */
     __asm__ __volatile__ (
         " movw r0, #:lower16:resetVectors\n"
         " movt r0, #:upper16:resetVectors\n"
         " ldr r0, [r0]\n"
         " mov sp, r0\n"
-        " b localProgramStart"
-        );
+        " b localProgramStart");
 }
 
 //*****************************************************************************
@@ -262,7 +270,8 @@ void __attribute__((naked)) resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -276,7 +285,8 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -290,7 +300,8 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -304,7 +315,8 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 

@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aes.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the AES functions of the crypto module
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -530,7 +528,6 @@ void AESReset(void)
     AESSetCtrl(0);
     AESSetDataLength(0);
     AESSetAuthLength(0);
-
 
 }
 

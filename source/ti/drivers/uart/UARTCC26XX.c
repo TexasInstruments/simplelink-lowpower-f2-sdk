@@ -459,8 +459,7 @@ static void writeTxFifoFlush(UARTCC26XX_Object  *object, UARTCC26XX_HWAttrsV2 co
         SemaphoreP_pend(&(object->writeSem), SemaphoreP_WAIT_FOREVER);
     }
     /* 5. Revert to active pins before returning */
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
-    DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1)
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
     GPIO_setMux(hwAttrs->txPin, (hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_TX : IOC_PORT_MCU_UART1_TX));
     if(isFlowControlEnabled(hwAttrs)) {
         GPIO_setMux(hwAttrs->ctsPin, (hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_CTS : IOC_PORT_MCU_UART1_CTS));

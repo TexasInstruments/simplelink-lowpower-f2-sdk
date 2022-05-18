@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -311,7 +311,7 @@ extern "C" {
  * Functions return SHA2_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define SHA2_STATUS_SUCCESS         (0)
+#define SHA2_STATUS_SUCCESS         ((int_fast16_t) 0)
 
 /*!
  * @brief   Generic error status code.
@@ -319,7 +319,7 @@ extern "C" {
  * Functions return SHA2_STATUS_ERROR if the function was not executed
  * successfully and no more specific error is applicable.
  */
-#define SHA2_STATUS_ERROR           (-1)
+#define SHA2_STATUS_ERROR           ((int_fast16_t) -1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -329,12 +329,18 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define SHA2_STATUS_RESOURCE_UNAVAILABLE (-2)
+#define SHA2_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t) -2)
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define SHA2_STATUS_CANCELED (-3)
+#define SHA2_STATUS_CANCELED ((int_fast16_t) -3)
+
+ /*!
+  *  @brief  The requested operation or configuration is not
+  *  supported by the device specific implementation.
+  */
+ #define SHA2_STATUS_UNSUPPORTED ((int_fast16_t) -4)
 
 /*!
  * @brief   The way in which SHA2 function calls return after performing an

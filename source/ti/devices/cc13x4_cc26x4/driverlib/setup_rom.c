@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       setup_rom.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Setup file for CC13xx/CC26xx devices.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -204,8 +202,9 @@ SetupAfterColdResetWakeupFromShutDownCfg1( uint32_t ccfg_ModeConfReg )
     }
 
     // Enable or disable DCDC depending on CCFG:MODE_CONF:DCDC_ACTIVE
-    // Note: Inverse polarity
-    if ( HWREG( AON_PMCTL_BASE + AON_PMCTL_O_PWRCTL ) & AON_PMCTL_PWRCTL_DCDC_ACTIVE ) {
+    // Note 1: Inverse polarity -> if ( CCFG_.._ACTIVE = 1 ) then disable DCDC else enable DCDC
+    // Note 2: Both bits must be set equal (either both true or both false) - therefore testing only on the ACTIVE bit in CCFG.
+    if ( ccfg_ModeConfReg & CCFG_MODE_CONF_DCDC_ACTIVE_M ) {
         HWREG( AON_PMCTL_BASE + AON_PMCTL_O_PWRCTL ) &= ~( AON_PMCTL_PWRCTL_DCDC_EN | AON_PMCTL_PWRCTL_DCDC_ACTIVE );
     } else {
         HWREG( AON_PMCTL_BASE + AON_PMCTL_O_PWRCTL ) |=  ( AON_PMCTL_PWRCTL_DCDC_EN | AON_PMCTL_PWRCTL_DCDC_ACTIVE );

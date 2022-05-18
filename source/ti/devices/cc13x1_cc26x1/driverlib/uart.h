@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       uart.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the UART.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -209,8 +207,7 @@ extern "C"
 static bool
 UARTBaseValid(uint32_t ui32Base)
 {
-    return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ) ||
-           ( ui32Base == UART1_BASE ) || ( ui32Base == UART1_NONBUF_BASE )    );
+    return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ));
 }
 #endif
 

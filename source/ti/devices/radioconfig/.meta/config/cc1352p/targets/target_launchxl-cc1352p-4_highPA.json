@@ -7,7 +7,7 @@
         "DevicePackage": "VQFN 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC1352PEM-XD4251-XD24-PA24_10dBm",
+        "RfDesign": "LAUNCHXL-CC1352P4_10dBm",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",

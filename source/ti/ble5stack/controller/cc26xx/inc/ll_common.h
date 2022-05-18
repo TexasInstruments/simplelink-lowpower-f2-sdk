@@ -933,6 +933,15 @@ extern char *llCtrl_BleLogStrings[];
 #define CTE_TASK_ID_CONNECTIONLESS                     (2)
 #define CTE_TASK_ID_TEST                               (3)
 
+// Timesync events
+// The following events are used for connEvent registration.
+// This is a clone of the stuct GAP_CB_Event_e in gap.h
+// It's a bitmask event
+#define LL_CONN_EVT_INVALID_TYPE                       0x00
+#define LL_CONN_EVT_CONN_ESTABLISHED                   0x01
+#define LL_CONN_EVT_PHY_UPDATE                         0x02
+#define LL_CONN_EVT_ALL                                0xFF
+
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -1215,6 +1224,9 @@ typedef struct
   uint16_t errors;
   uint8_t  nextTaskType; // Type of next BLE task
   uint32_t nextTaskTime; // time to next BLE task
+  uint16_t eventCounter; // event Counter
+  uint32_t timeStamp;    // timestamp (anchor point)
+  uint8_t  eventType;    // event type of the connection report
 } connEvtRpt_t;
 
 // Callback function pointer type for Connection Event notifications
@@ -1229,6 +1241,7 @@ typedef struct
   llConnEvtCB_t cb;  // Host callback
   /// Connection handle to send connection events for. If 0xFFFF, send all.
   uint16_t handle;
+  uint8_t  eventType;
 } llConnEvtNotice_t;
 
 // Connection extra params which are needed becuase of not being able to
@@ -1253,6 +1266,7 @@ struct llConnExtraParams_t
   uint8   StarvationMode:1;               // connection starvation mode on/off
   uint8   numLSTORetries:3;               // connection number of retries in LSTO state
   uint8   reserved:4;					  // reserved
+  uint8   phyUpdatedNoChange;             // indicates that there was a phy update without phy change (Timesync Procedure 1)
 }; 
 
 // Connection Data
@@ -2054,7 +2068,8 @@ extern llStatus_t           llCheckWhiteListUsage( void );
 extern void                 llCBTimer_AptoExpiredCback( uint8 * );
 
 // Connection Event Notice
-extern void                 llRegisterConnEvtCallback( llConnEvtCB_t cb, uint16_t connHandle );
+extern void                 llRegisterConnEvtCallback( llConnEvtCB_t cb, uint8_t eventType, uint16_t connHandle );
+extern void                 llSendConnEvtCallback(uint8 connEvtStatus, uint16 numPkts, llConnState_t *connPtr );
 
 // DMM policy
 extern void                 llDmmSetThreshold(uint8 state, uint8 handle, uint8 reset);

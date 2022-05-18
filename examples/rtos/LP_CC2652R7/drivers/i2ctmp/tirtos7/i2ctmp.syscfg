@@ -57,7 +57,7 @@ displayUART.$hardware = system.deviceData.board.components.XDS110UART;
     gpio.$hardware = system.deviceData.board.components.LED0;
     gpio.$name = "CONFIG_GPIO_LED_0";
 
-if (!(board.match(/CC13.[12]P/) || board.match(/CC2651P/))) {
+if (!(board.match(/CC13.[12]P/) || board.match(/CC2651P/) || board.match(/CC2653P/))) {
     var gpio2 = GPIO.addInstance();
     gpio2.$name = "CONFIG_GPIO_TMP_EN";
     gpio2.$hardware = Sensors.components.TMP117.subComponents.POWER;

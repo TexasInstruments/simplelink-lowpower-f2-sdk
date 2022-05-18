@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       prcm.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the PRCM.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -93,37 +91,37 @@
 // Run mode registers
 static const uint32_t g_pui32RCGCRegs[] =
 {
-    PRCM_O_GPTCLKGR     , // Index 0
-    PRCM_O_SSICLKGR     , // Index 1
-    PRCM_O_UARTCLKGR    , // Index 2
-    PRCM_O_I2CCLKGR     , // Index 3
-    PRCM_O_SECDMACLKGR  , // Index 4
-    PRCM_O_GPIOCLKGR    , // Index 5
-    PRCM_O_I2SCLKGR       // Index 6
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGR),  // Index 0
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGR),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGR), // Index 2
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGR),  // Index 3
+    (PRCM_BASE + PRCM_O_SECDMACLKGR),                  // Index 4
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPIOCLKGR), // Index 5
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKGR)   // Index 6
 };
 
 // Sleep mode registers
 static const uint32_t g_pui32SCGCRegs[] =
 {
-    PRCM_O_GPTCLKGS     , // Index 0
-    PRCM_O_SSICLKGS     , // Index 1
-    PRCM_O_UARTCLKGS    , // Index 2
-    PRCM_O_I2CCLKGS     , // Index 3
-    PRCM_O_SECDMACLKGS  , // Index 4
-    PRCM_O_GPIOCLKGS    , // Index 5
-    PRCM_O_I2SCLKGS       // Index 6
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGS),  // Index 0
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGS),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGS), // Index 2
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGS),  // Index 3
+    (PRCM_BASE + PRCM_O_SECDMACLKGS),                  // Index 4
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPIOCLKGS), // Index 5
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKGS)   // Index 6
 };
 
 // Deep sleep mode registers
 static const uint32_t g_pui32DCGCRegs[] =
 {
-    PRCM_O_GPTCLKGDS    , // Index 0
-    PRCM_O_SSICLKGDS    , // Index 1
-    PRCM_O_UARTCLKGDS   , // Index 2
-    PRCM_O_I2CCLKGDS    , // Index 3
-    PRCM_O_SECDMACLKGDS , // Index 4
-    PRCM_O_GPIOCLKGDS   , // Index 5
-    PRCM_O_I2SCLKGDS      // Index 6
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGDS),  // Index 0
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGDS),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGDS), // Index 2
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGDS),  // Index 3
+    (PRCM_BASE + PRCM_O_SECDMACLKGDS),                  // Index 4
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPIOCLKGDS), // Index 5
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKGDS)   // Index 6
 };
 
 //*****************************************************************************
@@ -183,15 +181,15 @@ PRCMInfClockConfigureSet(uint32_t ui32ClkDiv, uint32_t ui32PowerMode)
     // Determine the correct power mode set the division factor accordingly.
     if(ui32PowerMode == PRCM_RUN_MODE)
     {
-        HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVR) = ui32Divisor;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVR) = ui32Divisor;
     }
     else if(ui32PowerMode == PRCM_SLEEP_MODE)
     {
-        HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVS) = ui32Divisor;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVS) = ui32Divisor;
     }
     else if(ui32PowerMode == PRCM_DEEP_SLEEP_MODE)
     {
-        HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVDS) = ui32Divisor;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVDS) = ui32Divisor;
     }
 }
 
@@ -217,15 +215,15 @@ PRCMInfClockConfigureGet(uint32_t ui32PowerMode)
     // Determine the correct power mode.
     if(ui32PowerMode == PRCM_RUN_MODE)
     {
-        ui32ClkDiv = HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVR);
+        ui32ClkDiv = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVR);
     }
     else if(ui32PowerMode == PRCM_SLEEP_MODE)
     {
-        ui32ClkDiv = HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVS);
+        ui32ClkDiv = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVS);
     }
     else if(ui32PowerMode == PRCM_DEEP_SLEEP_MODE)
     {
-        ui32ClkDiv = HWREG(PRCM_BASE + PRCM_O_INFRCLKDIVDS);
+        ui32ClkDiv = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_INFRCLKDIVDS);
     }
 
     // Find the correct division factor.
@@ -311,14 +309,14 @@ PRCMAudioClockConfigSet(uint32_t ui32ClkConfig, uint32_t ui32SampleRate)
     }
 
     // Write the clock division factors.
-    HWREG(PRCM_BASE + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
 
     // Configure the Word clock format and polarity.
-    ui32Reg = HWREG(PRCM_BASE + PRCM_O_I2SCLKCTL) & ~(PRCM_I2SCLKCTL_WCLK_PHASE_M |
+    ui32Reg = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) & ~(PRCM_I2SCLKCTL_WCLK_PHASE_M |
               PRCM_I2SCLKCTL_SMPL_ON_POSEDGE_M);
-    HWREG(PRCM_BASE + PRCM_O_I2SCLKCTL) = ui32Reg | ui32ClkConfig;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) = ui32Reg | ui32ClkConfig;
 }
 
 //*****************************************************************************
@@ -346,14 +344,14 @@ PRCMAudioClockConfigSetOverride(uint32_t ui32ClkConfig, uint32_t ui32MstDiv,
     }
 
     // Write the clock division factors.
-    HWREG(PRCM_BASE + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
 
     // Configure the Word clock format and polarity.
-    ui32Reg = HWREG(PRCM_BASE + PRCM_O_I2SCLKCTL) & ~(PRCM_I2SCLKCTL_WCLK_PHASE_M |
+    ui32Reg = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) & ~(PRCM_I2SCLKCTL_WCLK_PHASE_M |
               PRCM_I2SCLKCTL_SMPL_ON_POSEDGE_M);
-    HWREG(PRCM_BASE + PRCM_O_I2SCLKCTL) = ui32Reg | ui32ClkConfig;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) = ui32Reg | ui32ClkConfig;
 }
 
 //*****************************************************************************
@@ -369,9 +367,11 @@ PRCMAudioClockConfigOverride(uint8_t  ui8SamplingEdge,
                              uint32_t ui32WordDiv)
 {
     // Check the arguments.
-    ASSERT(    ui8BitsPerSample == PRCM_WCLK_SINGLE_PHASE
-            || ui8BitsPerSample == PRCM_WCLK_DUAL_PHASE
-            || ui8BitsPerSample == PRCM_WCLK_USER_DEF);
+    ASSERT(ui8SamplingEdge == PRCM_I2S_WCLK_NEG_EDGE ||
+           ui8SamplingEdge == PRCM_I2S_WCLK_POS_EDGE);
+    ASSERT(ui8WCLKPhase == PRCM_WCLK_SINGLE_PHASE ||
+           ui8WCLKPhase == PRCM_WCLK_DUAL_PHASE   ||
+           ui8WCLKPhase == PRCM_WCLK_USER_DEF);
 
     // Make sure the audio clock generation is disabled before reconfiguring.
     PRCMAudioClockDisable();
@@ -384,12 +384,12 @@ PRCMAudioClockConfigOverride(uint8_t  ui8SamplingEdge,
     }
 
     // Write the clock division factors.
-    HWREG(PRCM_BASE + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
-    HWREG(PRCM_BASE + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SMCLKDIV) = ui32MstDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SBCLKDIV) = ui32BitDiv;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SWCLKDIV) = ui32WordDiv;
 
     // Configure the Word clock format and polarity and enable it.
-    HWREG(PRCM_BASE + PRCM_O_I2SCLKCTL) =  (ui8SamplingEdge  << PRCM_I2SCLKCTL_SMPL_ON_POSEDGE_S) |
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SCLKCTL) =  (ui8SamplingEdge  << PRCM_I2SCLKCTL_SMPL_ON_POSEDGE_S) |
                                            (ui8WCLKPhase     << PRCM_I2SCLKCTL_WCLK_PHASE_S     ) |
                                            (1                << PRCM_I2SCLKCTL_EN_S             );
 }
@@ -401,7 +401,7 @@ PRCMAudioClockConfigOverride(uint8_t  ui8SamplingEdge,
 //*****************************************************************************
 void PRCMAudioClockInternalSource(void)
 {
-    HWREG(PRCM_BASE + PRCM_O_I2SBCLKSEL) = PRCM_I2SBCLKSEL_SRC;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SBCLKSEL) = PRCM_I2SBCLKSEL_SRC;
 }
 
 //*****************************************************************************
@@ -411,7 +411,7 @@ void PRCMAudioClockInternalSource(void)
 //*****************************************************************************
 void PRCMAudioClockExternalSource(void)
 {
-    HWREG(PRCM_BASE + PRCM_O_I2SBCLKSEL) = 0;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2SBCLKSEL) = 0;
 }
 
 //*****************************************************************************
@@ -432,23 +432,23 @@ PRCMPowerDomainOn(uint32_t ui32Domains)
     // Assert the request to power on the right domains.
     if(ui32Domains & PRCM_DOMAIN_RFCORE)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0RFC   ) = 1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0RFC   ) = 1;
     }
     if(ui32Domains & PRCM_DOMAIN_SERIAL)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0SERIAL) = 1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0SERIAL) = 1;
     }
     if(ui32Domains & PRCM_DOMAIN_PERIPH)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0PERIPH) = 1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0PERIPH) = 1;
     }
     if(ui32Domains & PRCM_DOMAIN_VIMS)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL1VIMS  ) = 1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1VIMS  ) = 1;
     }
     if(ui32Domains & PRCM_DOMAIN_CPU)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL1CPU   ) = 1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1CPU   ) = 1;
     }
 }
 
@@ -470,26 +470,26 @@ PRCMPowerDomainOff(uint32_t ui32Domains)
     // Assert the request to power off the right domains.
     if(ui32Domains & PRCM_DOMAIN_RFCORE)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0RFC   ) = 0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0RFC   ) = 0;
     }
     if(ui32Domains & PRCM_DOMAIN_SERIAL)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0SERIAL) = 0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0SERIAL) = 0;
     }
     if(ui32Domains & PRCM_DOMAIN_PERIPH)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL0PERIPH) = 0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL0PERIPH) = 0;
     }
     if(ui32Domains & PRCM_DOMAIN_VIMS)
     {
         // Write bits ui32Domains[17:16] to the VIMS_MODE alias register.
         // PRCM_DOMAIN_VIMS sets VIMS_MODE=0b00, PRCM_DOMAIN_VIMS_OFF_NO_WAKEUP sets VIMS_MODE=0b10.
         ASSERT(!(ui32Domains & 0x00010000));
-        HWREG(PRCM_BASE + PRCM_O_PDCTL1VIMS  ) = ( ui32Domains >> 16 ) & 3;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1VIMS  ) = ( ui32Domains >> 16 ) & 3;
     }
     if(ui32Domains & PRCM_DOMAIN_CPU)
     {
-        HWREG(PRCM_BASE + PRCM_O_PDCTL1CPU   ) = 0;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1CPU   ) = 0;
     }
 }
 
@@ -505,7 +505,7 @@ PRCMPeripheralRunEnable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Enable module in Run Mode.
-    HWREG(PRCM_BASE + g_pui32RCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
+    HWREG(g_pui32RCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
         PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -521,7 +521,7 @@ PRCMPeripheralRunDisable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Disable module in Run Mode.
-    HWREG(PRCM_BASE + g_pui32RCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
+    HWREG(g_pui32RCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
         ~PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -537,7 +537,7 @@ PRCMPeripheralSleepEnable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Enable this peripheral in sleep mode.
-    HWREG(PRCM_BASE + g_pui32SCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
+    HWREG(g_pui32SCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
         PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -553,7 +553,7 @@ PRCMPeripheralSleepDisable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Disable this peripheral in sleep mode
-    HWREG(PRCM_BASE + g_pui32SCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
+    HWREG(g_pui32SCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
         ~PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -569,7 +569,7 @@ PRCMPeripheralDeepSleepEnable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Enable this peripheral in deep-sleep mode.
-    HWREG(PRCM_BASE + g_pui32DCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
+    HWREG(g_pui32DCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) |=
         PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -585,7 +585,7 @@ PRCMPeripheralDeepSleepDisable(uint32_t ui32Peripheral)
     ASSERT(PRCMPeripheralValid(ui32Peripheral));
 
     // Disable this peripheral in Deep Sleep mode.
-    HWREG(PRCM_BASE + g_pui32DCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
+    HWREG(g_pui32DCGCRegs[PRCM_PERIPH_INDEX(ui32Peripheral)]) &=
         ~PRCM_PERIPH_MASKBIT(ui32Peripheral);
 }
 
@@ -607,8 +607,8 @@ PRCMPowerDomainsAllOff(uint32_t ui32Domains)
                            PRCM_DOMAIN_PERIPH)));
 
     bStatus = false;
-    ui32StatusRegister0 = HWREG(PRCM_BASE + PRCM_O_PDSTAT0);
-    ui32StatusRegister1 = HWREG(PRCM_BASE + PRCM_O_PDSTAT1);
+    ui32StatusRegister0 = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT0);
+    ui32StatusRegister1 = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT1);
 
     // Return the correct power status.
     if(ui32Domains & PRCM_DOMAIN_RFCORE)
@@ -648,8 +648,8 @@ PRCMPowerDomainsAllOn(uint32_t ui32Domains)
                            PRCM_DOMAIN_PERIPH)));
 
     bStatus = true;
-    ui32StatusRegister0 = HWREG(PRCM_BASE + PRCM_O_PDSTAT0);
-    ui32StatusRegister1 = HWREG(PRCM_BASE + PRCM_O_PDSTAT1);
+    ui32StatusRegister0 = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT0);
+    ui32StatusRegister1 = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT1);
 
     // Return the correct power status.
     if(ui32Domains & PRCM_DOMAIN_RFCORE)

@@ -48,6 +48,36 @@
 extern "C" {
 #endif
 
+/*!
+ *  @brief Indicates the endianess (byte order) of a multi-byte value.
+ */
+typedef enum {
+    CryptoUtils_ENDIANESS_BIG = 0u,     /*!< MSB at lowest address. */
+    CryptoUtils_ENDIANESS_LITTLE = 1u,  /*!< LSB at highest address. */
+} CryptoUtils_Endianess;
+
+/*!
+ *  @brief Limit value of 0
+ *
+ *  This is a value provided for convenience when checking a value
+ *  against a range.
+ *
+ *  @sa     CryptoUtils_limitOne
+ *  @sa     CryptoUtils_isNumberInRange
+ */
+extern const uint8_t *CryptoUtils_limitZero;
+
+/*!
+ *  @brief Limit value of 1
+ *
+ *  This is a value provided for convenience when checking a value
+ *  against a range.
+ *
+ *  @sa     CryptoUtils_limitZero
+ *  @sa     CryptoUtils_isNumberInRange
+ */
+extern const uint8_t *CryptoUtils_limitOne;
+
 /**
  *  @brief Compares two buffers for equality without branching
  *
@@ -191,6 +221,47 @@ void CryptoUtils_reverseCopyPad(const void *source,
 void CryptoUtils_reverseCopy(const void *source,
                              void *destination,
                              size_t sourceLength);
+
+/**
+ *  @brief Checks if number is within the range [lowerLimit, upperLimit)
+ *
+ *  Checks if the specified number is at greater than or equal to
+ *  the lower limit and less than the upper limit. Note that the boundary
+ *  set by the upper limit is not inclusive.
+ *
+ *  Note that the special values of #CryptoUtils_limitZero and
+ *  #CryptoUtils_limitOne are available to pass in for the @c lowerLimit.
+ *  (These values can also be used for the @c upperLimit but their use for
+ *  the upperLimit has no practical use.)
+ *
+ *  If @c lowerLimit is NULL then the lower limit is taken as 0.
+ *  If @c upperLimit is NULL then the upper limit is taken as
+ *  2<sup>(@c bitLength + 1)</sup>.
+ *
+ *  The implemented algorithm is timing-constant when the following parameters
+ *  are held constant: @c lowerLimit, @c upperLimit, @c bitLength,
+ *  and @c endianess. Thus, the @c number being checked may change and
+ *  timing will not leak its relation to the limits. However, timing may leak
+ *  the bitLength, the endianess, and the use of #CryptoUtils_limitZero,
+ *  #CryptoUtils_limitOne, and NULL for the limit values.
+ *
+ *  @param  number              Pointer to number to check
+ *  @param  bitLength           Length in bits of @c number, @c lowerLimit, and
+ *                              @c upperLimit.
+ *  @param  endianess           The endianess of @c number, @c lowerLimit, and
+ *                              @c upperLimit.
+ *  @param  lowerLimit          Pointer to lower limit value.
+ *  @param  upperLimit          Pointer to upper limit value.
+ *  @retval true                The randomNumber is within
+ *                              [@c lowerLimit, @c upperLimit).
+ *  @retval false               The randomNumber is not within
+ *                              [@c lowerLimit, @c upperLimit).
+ */
+bool CryptoUtils_isNumberInRange(const void *number,
+                                 size_t bitLength,
+                                 CryptoUtils_Endianess endianess,
+                                 const void *lowerLimit,
+                                 const void *upperLimit);
 
 #ifdef __cplusplus
 }

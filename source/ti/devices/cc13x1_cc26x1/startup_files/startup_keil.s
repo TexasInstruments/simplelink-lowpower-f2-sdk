@@ -1,7 +1,5 @@
 ; /******************************************************************************
 ; *  Filename:       startup_keil.c
-; *  Revised:        $Date: 2016-09-13 11:33:40 +0200 (Tue, 13 Sep 2016) $
-; *  Revision:       $Revision: 17320 $
 ; *
 ; *  Description:    Startup code for CC13x1, CC26x1 device family for use with KEIL.
 ; *
@@ -142,7 +140,7 @@ ResetISR        PROC
                 EXPORT  ResetISR                  [WEAK]
                 IMPORT  NOROM_SetupTrimDevice
                 IMPORT  __main
-                ; Final trim of device (setup.c in CC26xxWare)
+                ; Final trim of device (setup.c)
                 LDR     R0, =NOROM_SetupTrimDevice
                 BLX     R0
                 ; Jump to initialization routine

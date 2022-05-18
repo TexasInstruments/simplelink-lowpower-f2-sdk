@@ -183,8 +183,8 @@
  *  - #UART2_Mode_BLOCKING uses a semaphore to block while data is being sent,
  *    or while waiting for some data to be received. The context of calling
  *    UART2_read() and UART2_write() in blocking mode must always be a Task.
- *    The UART2_write() call will block until all data has been copied to
- *    the TX circular buffer.  The UART2_read() calls can be configured to
+ *    The UART2_write() call will block until all data has been
+ *    transmitted. The UART2_read() calls can be configured to
  *    have two different behaviors, using the #UART2_ReadReturnMode of the
  *    #UART2_Params.  In #UART2_ReadReturnMode_FULL (the default),
  *    UART2_read() will block until the requested number of bytes has been
@@ -615,7 +615,6 @@ typedef struct {
     bool                 readInUse;        /* Is a read() active */ \
     unsigned char       *readBuf;          /* Buffer data pointer */ \
     size_t               readSize;         /* Number of bytes to read */ \
-    uint32_t             nReadTransfers;   /* Number of DMA transfers needed */ \
     size_t               readCount;        /* Number of bytes left to read */ \
     size_t               rxSize;           /* # of bytes to read in DMA xfer */ \
     size_t               bytesRead;        /* Number of bytes read */ \
@@ -628,7 +627,6 @@ typedef struct {
     volatile bool        writeInUse;       /* Flag to show ongoing write */ \
     const unsigned char *writeBuf;         /* Buffer data pointer */ \
     size_t               writeSize;        /* Number of bytes to write*/ \
-    uint32_t             nWriteTransfers;  /* Number of DMA transfers needed */\
     size_t               writeCount;       /* Number of bytes left to write */ \
     size_t               txSize;           /* # of bytes to write with DMA */ \
     size_t               bytesWritten;     /* Number of bytes written */ \
@@ -974,7 +972,7 @@ extern void UART2_readCancel(UART2_Handle handle);
  *  is given by \a size.
  *
  *  In #UART2_Mode_BLOCKING, UART2_write() blocks task execution until all
- *  the data in buffer has been written.
+ *  the data in buffer has been transmitted.
  *
  *  In #UART2_Mode_CALLBACK, %UART2_write() does not block task execution.
  *  Instead, a callback function specified by UART2_Params::writeCallback is
@@ -1067,7 +1065,7 @@ extern void UART2_rxEnable(UART2_Handle handle);
  *  until all data is written (#UART2_Mode_BLOCKING only).
  *
  *  In #UART2_Mode_BLOCKING, UART2_writeTimeout() blocks task execution until
- *  all the data in buffer has been written, or the timeout expires.
+ *  all the data in buffer has been transmitted, or the timeout expires.
  *
  *  In #UART2_Mode_CALLBACK, %UART2_writeTimeout() does not block task
  *  execution.  Instead, a callback function specified by

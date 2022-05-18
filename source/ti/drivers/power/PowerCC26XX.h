@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,39 +109,36 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 #define PowerCC26XX_PERIPH_SSI0    4
 /*!< Resource ID: Synchronous Serial Interface 0 */
 
-#define PowerCC26XX_PERIPH_SSI1    5
-/*!< Resource ID: Synchronous Serial Interface 1 */
+#define PowerCC26XX_PERIPH_UART0   5  /*!< Resource ID: UART 0 */
 
-#define PowerCC26XX_PERIPH_UART0   6  /*!< Resource ID: UART 0 */
+#define PowerCC26XX_PERIPH_I2C0    6  /*!< Resource ID: I2C 0 */
 
-#define PowerCC26XX_PERIPH_I2C0    7  /*!< Resource ID: I2C 0 */
-
-#define PowerCC26XX_PERIPH_TRNG    8
+#define PowerCC26XX_PERIPH_TRNG    7
 /*!< Resource ID: True Random Number Generator */
 
-#define PowerCC26XX_PERIPH_GPIO    9  /*!< Resource ID: General Purpose I/Os */
+#define PowerCC26XX_PERIPH_GPIO    8  /*!< Resource ID: General Purpose I/Os */
 
-#define PowerCC26XX_PERIPH_UDMA    10 /*!< Resource ID: uDMA Controller */
+#define PowerCC26XX_PERIPH_UDMA    9  /*!< Resource ID: uDMA Controller */
 
-#define PowerCC26XX_PERIPH_CRYPTO  11 /*!< Resource ID: AES Security Module */
+#define PowerCC26XX_PERIPH_CRYPTO  10 /*!< Resource ID: AES Security Module */
 
-#define PowerCC26XX_PERIPH_I2S     12 /*!< Resource ID: I2S */
+#define PowerCC26XX_PERIPH_I2S     11 /*!< Resource ID: I2S */
 
-#define PowerCC26XX_PERIPH_RFCORE  13 /*!< Resource ID: RF Core Module */
+#define PowerCC26XX_PERIPH_RFCORE  12 /*!< Resource ID: RF Core Module */
 
-#define PowerCC26XX_XOSC_HF        14
+#define PowerCC26XX_XOSC_HF        13
 /*!< Resource ID: High Frequency Crystal Oscillator */
 
-#define PowerCC26XX_DOMAIN_PERIPH  15
+#define PowerCC26XX_DOMAIN_PERIPH  14
 /*!< Resource ID: Peripheral Power Domain */
 
-#define PowerCC26XX_DOMAIN_SERIAL  16
+#define PowerCC26XX_DOMAIN_SERIAL  15
 /*!< Resource ID: Serial Power Domain */
 
-#define PowerCC26XX_DOMAIN_RFCORE  17
+#define PowerCC26XX_DOMAIN_RFCORE  16
 /*!< Resource ID: RF Core Power Domain */
 
-#define PowerCC26XX_DOMAIN_SYSBUS  18
+#define PowerCC26XX_DOMAIN_SYSBUS  17
 /*!< Resource ID: System Bus Power Domain */
 
 /* The PKA and UART1 peripherals are not available on CC13X1 and CC26X1 devices */
@@ -149,10 +146,13 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
 /*!< Resource ID: PKA Module */
-#define PowerCC26XX_PERIPH_PKA      19
+#define PowerCC26XX_PERIPH_PKA      18
 
 /*!< Resource ID: UART1 */
-#define PowerCC26XX_PERIPH_UART1    20
+#define PowerCC26XX_PERIPH_UART1    19
+
+/*!< Resource ID: Synchronous Serial Interface 1 */
+#define PowerCC26XX_PERIPH_SSI1     20
 
 #endif
 
@@ -409,7 +409,7 @@ typedef struct {
      *  To disable RCOSC calibration, the function PowerCC26XX_noCalibrate()
      *  should be specified.
      */
-    bool (*calibrateFxn)(unsigned int);
+    bool (*calibrateFxn)(unsigned int arg);
     /*!
      *  @brief Time in system ticks that specifies the maximum duration the device
      *         may spend in standby.
@@ -539,7 +539,7 @@ typedef struct {
     /*!< Array to maintain constraint reference counts */
     uint8_t resourceCounts[PowerCC26XX_NUMRESOURCES];
     /*!< Array to maintain resource dependency reference counts */
-    unsigned int (*resourceHandlers[3])(unsigned int);
+    unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
     Power_PolicyFxn policyFxn;   /*!< The Power policy function */
 } PowerCC26XX_ModuleState;
@@ -602,7 +602,11 @@ uint32_t PowerCC26XX_getXoscStartupTime(uint32_t timeUntilWakeupInMs);
  *  can explicitly call this function, to initiate an immediate calibration
  *  cycle.
  *
- *  @return  true if calibration was actually initiated otherwise false
+ *  @pre    This function may only be called if the XOSC_HF running and stable.
+ *          Practically, this means that a dependency was set earlier on the
+ *          XOSC_HF and it has already been switched to earlier.
+ *
+ *  @return true if calibration was actually initiated otherwise false
  */
 bool PowerCC26XX_injectCalibration(void);
 

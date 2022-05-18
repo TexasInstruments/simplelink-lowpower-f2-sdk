@@ -781,6 +781,27 @@ extern "C" {
  */
 #define SPICC26X4DMA_CMD_MANUAL_START           (SPI_CMD_RESERVED + 6)
 
+/*!
+ * @brief Command used by SPI_control() to set the sample delay in master mode
+ *
+ * This command is only used when in master mode. After SPI_open() is called,
+ * the default DSAMPLE value is set as follows.
+ *   * (bitRate <  4MHz) -> delay = 0
+ *   * (bitRate >= 4MHz) -> delay = 1
+ *   * (bitRate >= 8MHz) -> delay = 2
+ *
+ * The sample delay is a measurement of clock cycles. In master mode the data
+ * on the input pin will delay sampling by the defined clock cycles. At lower
+ * bitRates a delay is usually not necessary. At higher bitRates a delay may
+ * become necessary if the slave device is not keeping pace with the master
+ * device. In this case, the delay can be used to ensure the master device
+ * captures the data on the input pin.
+ * This command @b arg is of type uint8_t.
+ *
+ * Returns #SPI_STATUS_SUCCESS or #SPI_STATUS_ERROR.
+ */
+#define SPICC26X4DMA_CMD_SET_SAMPLE_DELAY       (SPI_CMD_RESERVED + 7)
+
 /** @}*/
 
 /* BACKWARDS COMPATIBILITY */
@@ -947,40 +968,41 @@ typedef struct {
  *  The application must not access any member variables of this structure!
  */
 typedef struct {
-    HwiP_Struct                hwi;
-    PIN_Handle                 pinHandle;
-    PIN_State                  pinState;
-    Power_NotifyObj            spiPostObj;
-    SwiP_Struct                swi;
-    SemaphoreP_Struct          transferComplete;
+    HwiP_Struct                 hwi;
+    PIN_Handle                  pinHandle;
+    PIN_State                   pinState;
+    Power_NotifyObj             spiPostObj;
+    SwiP_Struct                 swi;
+    SemaphoreP_Struct           transferComplete;
 
-    SPI_CallbackFxn            transferCallbackFxn;
-    SPI_Transaction            *headPtr;
-    SPI_Transaction            *tailPtr;
-    SPI_Transaction            *completedTransfers;
-    UDMACC26XX_Handle          udmaHandle;
+    SPI_CallbackFxn             transferCallbackFxn;
+    SPI_Transaction             *headPtr;
+    SPI_Transaction             *tailPtr;
+    SPI_Transaction             *completedTransfers;
+    UDMACC26XX_Handle           udmaHandle;
 
-    size_t                     framesQueued;
-    size_t                     framesTransferred;
-    size_t                     priTransferSize;
-    size_t                     altTransferSize;
+    size_t                      framesQueued;
+    size_t                      framesTransferred;
+    size_t                      priTransferSize;
+    size_t                      altTransferSize;
 
-    uint32_t                   activeChannel;
-    uint32_t                   bitRate;
-    uint32_t                   dataSize;
-    uint32_t                   transferTimeout;
-    uint32_t                   busyBit;
+    uint32_t                    activeChannel;
+    uint32_t                    bitRate;
+    uint32_t                    dataSize;
+    uint32_t                    transferTimeout;
+    uint32_t                    busyBit;
+    uint32_t                    dsample;
 
-    uint16_t                   rxScratchBuf;
-    uint16_t                   txScratchBuf;
+    uint16_t                    rxScratchBuf;
+    uint16_t                    txScratchBuf;
 
-    SPI_TransferMode           transferMode;
-    SPI_Mode                   mode;
-    uint8_t                    format;
-    PIN_Id                     csnPin;
-    SPICC26X4DMA_ReturnPartial returnPartial;
-    bool                       isOpen;
-    bool                       manualStart;
+    SPI_TransferMode            transferMode;
+    SPI_Mode                    mode;
+    uint8_t                     format;
+    PIN_Id                      csnPin;
+    SPICC26X4DMA_ReturnPartial  returnPartial;
+    bool                        isOpen;
+    bool                        manualStart;
 } SPICC26X4DMA_Object;
 
 #ifdef __cplusplus

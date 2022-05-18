@@ -42,7 +42,8 @@
         <srcFile name="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="AESECB.c"/>
         <srcFile name="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="./cryptoutils/utils/CryptoUtils.c"/>
@@ -66,10 +67,13 @@
         <srcFile name="./pin/PINCC26XX.c"/>
         <srcFile name="./power/PowerCC26X2.c"/>
         <srcFile name="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="RNG.c"/>
+        <srcFile name="./rng/RNGCC26XX.c"/>
         <srcFile name="SHA2.c"/>
         <srcFile name="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="./spi/SPICC26XXDMA.c"/>
         <srcFile name="./spi/SPICC26X2DMA.c"/>
         <srcFile name="Temperature.c"/>
         <srcFile name="./temperature/TemperatureCC26X2.c"/>
@@ -145,7 +149,8 @@
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./aescmac/AESCMACCC26XX.om4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/AESECB.om4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./aesecb/AESECBCC26XX.om4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/ecc/ECCInitCC26X1.om4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/ecc/ECCParamsCC26X1.om4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./cryptoutils/utils/CryptoUtils.om4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -169,10 +174,13 @@
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./pin/PINCC26XX.om4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./power/PowerCC26X2.om4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC.om4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./power/PowerCC26X2_helpers.om4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC_helpers.om4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./pwm/PWMTimerCC26XX.om4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/RNG.om4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./rng/RNGCC26XX.om4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/SHA2.om4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./sha2/SHA2CC26X1.om4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./spi/SPICC26XXDMA.om4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./spi/SPICC26X2DMA.om4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/Temperature.om4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc13x1/./temperature/TemperatureCC26X2.om4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -223,7 +231,8 @@
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./aescmac/AESCMACCC26XX.oem4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/AESECB.oem4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./aesecb/AESECBCC26XX.oem4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/ecc/ECCInitCC26X1.oem4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/ecc/ECCParamsCC26X1.oem4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./cryptoutils/utils/CryptoUtils.oem4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -247,10 +256,13 @@
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./pin/PINCC26XX.oem4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./power/PowerCC26X2.oem4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC.oem4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./power/PowerCC26X2_helpers.oem4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./pwm/PWMTimerCC26XX.oem4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/RNG.oem4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./rng/RNGCC26XX.oem4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/SHA2.oem4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./sha2/SHA2CC26X1.oem4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./spi/SPICC26XXDMA.oem4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./spi/SPICC26X2DMA.oem4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/Temperature.oem4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc13x1/./temperature/TemperatureCC26X2.oem4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -302,7 +314,8 @@
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./aescmac/AESCMACCC26XX.om4g.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/AESECB.om4g.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./aesecb/AESECBCC26XX.om4g.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4g.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4g.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/ecc/ECCInitCC26X1.om4g.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/ecc/ECCParamsCC26X1.om4g.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4g.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./cryptoutils/utils/CryptoUtils.om4g.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -326,10 +339,13 @@
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./pin/PINCC26XX.om4g.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./power/PowerCC26X2.om4g.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC.om4g.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./power/PowerCC26X2_helpers.om4g.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC_helpers.om4g.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./pwm/PWMTimerCC26XX.om4g.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/RNG.om4g.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./rng/RNGCC26XX.om4g.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/SHA2.om4g.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./sha2/SHA2CC26X1.om4g.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./spi/SPICC26XXDMA.om4g.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./spi/SPICC26X2DMA.om4g.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/Temperature.om4g.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc13x1/./temperature/TemperatureCC26X2.om4g.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -381,7 +397,8 @@
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./aescmac/AESCMACCC26XX.orm4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/AESECB.orm4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./aesecb/AESECBCC26XX.orm4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/ecc/ECCInitCC26X1.orm4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/ecc/ECCParamsCC26X1.orm4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./cryptoutils/utils/CryptoUtils.orm4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -405,10 +422,13 @@
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./pin/PINCC26XX.orm4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./power/PowerCC26X2.orm4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC.orm4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./power/PowerCC26X2_helpers.orm4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./pwm/PWMTimerCC26XX.orm4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/RNG.orm4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./rng/RNGCC26XX.orm4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/SHA2.orm4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./sha2/SHA2CC26X1.orm4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./spi/SPICC26XXDMA.orm4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./spi/SPICC26X2DMA.orm4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/Temperature.orm4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc13x1/./temperature/TemperatureCC26X2.orm4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -460,7 +480,8 @@
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./aescmac/AESCMACCC26XX.om4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/AESECB.om4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./aesecb/AESECBCC26XX.om4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/ecc/ECCInitCC26X1.om4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/ecc/ECCParamsCC26X1.om4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./cryptoutils/utils/CryptoUtils.om4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -484,10 +505,13 @@
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./pin/PINCC26XX.om4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./power/PowerCC26X2.om4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC.om4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./power/PowerCC26X2_helpers.om4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC_helpers.om4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./pwm/PWMTimerCC26XX.om4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/RNG.om4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./rng/RNGCC26XX.om4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/SHA2.om4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./sha2/SHA2CC26X1.om4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./spi/SPICC26XXDMA.om4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./spi/SPICC26X2DMA.om4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/Temperature.om4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4/drivers_cc26x1/./temperature/TemperatureCC26X2.om4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -538,7 +562,8 @@
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./aescmac/AESCMACCC26XX.oem4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/AESECB.oem4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./aesecb/AESECBCC26XX.oem4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/ecc/ECCInitCC26X1.oem4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/ecc/ECCParamsCC26X1.oem4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./cryptoutils/utils/CryptoUtils.oem4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -562,10 +587,13 @@
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./pin/PINCC26XX.oem4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./power/PowerCC26X2.oem4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC.oem4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./power/PowerCC26X2_helpers.oem4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./pwm/PWMTimerCC26XX.oem4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/RNG.oem4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./rng/RNGCC26XX.oem4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/SHA2.oem4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./sha2/SHA2CC26X1.oem4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./spi/SPICC26XXDMA.oem4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./spi/SPICC26X2DMA.oem4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/Temperature.oem4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4/drivers_cc26x1/./temperature/TemperatureCC26X2.oem4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -617,7 +645,8 @@
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./aescmac/AESCMACCC26XX.om4g.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/AESECB.om4g.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./aesecb/AESECBCC26XX.om4g.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4g.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4g.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/ecc/ECCInitCC26X1.om4g.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/ecc/ECCParamsCC26X1.om4g.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4g.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./cryptoutils/utils/CryptoUtils.om4g.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -641,10 +670,13 @@
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./pin/PINCC26XX.om4g.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./power/PowerCC26X2.om4g.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC.om4g.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./power/PowerCC26X2_helpers.om4g.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC_helpers.om4g.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./pwm/PWMTimerCC26XX.om4g.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/RNG.om4g.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./rng/RNGCC26XX.om4g.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/SHA2.om4g.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./sha2/SHA2CC26X1.om4g.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./spi/SPICC26XXDMA.om4g.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./spi/SPICC26X2DMA.om4g.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/Temperature.om4g.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4/drivers_cc26x1/./temperature/TemperatureCC26X2.om4g.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -696,7 +728,8 @@
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./aescmac/AESCMACCC26XX.orm4.dep" src="./aescmac/AESCMACCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/AESECB.orm4.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./aesecb/AESECBCC26XX.orm4.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/ecc/ECCInitCC26X1.orm4.dep" src="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/ecc/ECCParamsCC26X1.orm4.dep" src="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./cryptoutils/utils/CryptoUtils.orm4.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -720,10 +753,13 @@
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./pin/PINCC26XX.orm4.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./power/PowerCC26X2.orm4.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC.orm4.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./power/PowerCC26X2_helpers.orm4.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./pwm/PWMTimerCC26XX.orm4.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/RNG.orm4.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./rng/RNGCC26XX.orm4.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/SHA2.orm4.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./sha2/SHA2CC26X1.orm4.dep" src="./sha2/SHA2CC26X1.c"/>
-        <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./spi/SPICC26XXDMA.orm4.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./spi/SPICC26X2DMA.orm4.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/Temperature.orm4.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4/drivers_cc26x1/./temperature/TemperatureCC26X2.orm4.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -776,7 +812,7 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./aesgcm/AESGCMCC26XX.om4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/AESECB.om4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./aesecb/AESECBCC26XX.om4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./cryptoutils/ecc/ECCParamsCC26X2.om4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./cryptoutils/utils/CryptoUtils.om4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -805,10 +841,13 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./pin/PINCC26XX.om4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./power/PowerCC26X2.om4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./power/PowerCC26X2_helpers.om4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC_helpers.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./pwm/PWMTimerCC26XX.om4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/RNG.om4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./rng/RNGCC26XX.om4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/SHA2.om4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./sha2/SHA2CC26X2.om4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./spi/SPICC26XXDMA.om4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./spi/SPICC26X2DMA.om4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/Temperature.om4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2/./temperature/TemperatureCC26X2.om4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -860,7 +899,7 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./aesgcm/AESGCMCC26XX.oem4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/AESECB.oem4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./aesecb/AESECBCC26XX.oem4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./cryptoutils/ecc/ECCParamsCC26X2.oem4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./cryptoutils/utils/CryptoUtils.oem4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -889,10 +928,13 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./pin/PINCC26XX.oem4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./power/PowerCC26X2.oem4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./power/PowerCC26X2_helpers.oem4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./pwm/PWMTimerCC26XX.oem4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/RNG.oem4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./rng/RNGCC26XX.oem4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/SHA2.oem4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./sha2/SHA2CC26X2.oem4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./spi/SPICC26XXDMA.oem4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./spi/SPICC26X2DMA.oem4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/Temperature.oem4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2/./temperature/TemperatureCC26X2.oem4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -945,7 +987,7 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./aesgcm/AESGCMCC26XX.om4fg.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/AESECB.om4fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./aesecb/AESECBCC26XX.om4fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./cryptoutils/ecc/ECCParamsCC26X2.om4fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./cryptoutils/utils/CryptoUtils.om4fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -974,10 +1016,13 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./pin/PINCC26XX.om4fg.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./power/PowerCC26X2.om4fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./power/PowerCC26X2_helpers.om4fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC_helpers.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./pwm/PWMTimerCC26XX.om4fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/RNG.om4fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./rng/RNGCC26XX.om4fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/SHA2.om4fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./sha2/SHA2CC26X2.om4fg.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./spi/SPICC26XXDMA.om4fg.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./spi/SPICC26X2DMA.om4fg.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/Temperature.om4fg.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2/./temperature/TemperatureCC26X2.om4fg.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1030,7 +1075,7 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./aesgcm/AESGCMCC26XX.orm4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/AESECB.orm4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./aesecb/AESECBCC26XX.orm4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./cryptoutils/ecc/ECCParamsCC26X2.orm4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./cryptoutils/utils/CryptoUtils.orm4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1059,10 +1104,13 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./pin/PINCC26XX.orm4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./power/PowerCC26X2.orm4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./power/PowerCC26X2_helpers.orm4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./pwm/PWMTimerCC26XX.orm4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/RNG.orm4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./rng/RNGCC26XX.orm4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/SHA2.orm4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./sha2/SHA2CC26X2.orm4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./spi/SPICC26XXDMA.orm4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./spi/SPICC26X2DMA.orm4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/Temperature.orm4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2/./temperature/TemperatureCC26X2.orm4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1115,7 +1163,7 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./aesgcm/AESGCMCC26XX.om4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/AESECB.om4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./aesecb/AESECBCC26XX.om4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./cryptoutils/ecc/ECCParamsCC26X2.om4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./cryptoutils/utils/CryptoUtils.om4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1144,10 +1192,13 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./pin/PINCC26XX.om4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./power/PowerCC26X2.om4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./power/PowerCC26X2_helpers.om4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC_helpers.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./pwm/PWMTimerCC26XX.om4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/RNG.om4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./rng/RNGCC26XX.om4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/SHA2.om4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./sha2/SHA2CC26X2.om4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./spi/SPICC26XXDMA.om4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./spi/SPICC26X2DMA.om4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/Temperature.om4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2/./temperature/TemperatureCC26X2.om4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1199,7 +1250,7 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./aesgcm/AESGCMCC26XX.oem4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/AESECB.oem4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./aesecb/AESECBCC26XX.oem4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./cryptoutils/ecc/ECCParamsCC26X2.oem4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./cryptoutils/utils/CryptoUtils.oem4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1228,10 +1279,13 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./pin/PINCC26XX.oem4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./power/PowerCC26X2.oem4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./power/PowerCC26X2_helpers.oem4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./pwm/PWMTimerCC26XX.oem4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/RNG.oem4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./rng/RNGCC26XX.oem4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/SHA2.oem4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./sha2/SHA2CC26X2.oem4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./spi/SPICC26XXDMA.oem4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./spi/SPICC26X2DMA.oem4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/Temperature.oem4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2/./temperature/TemperatureCC26X2.oem4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1284,7 +1338,7 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./aesgcm/AESGCMCC26XX.om4fg.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/AESECB.om4fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./aesecb/AESECBCC26XX.om4fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./cryptoutils/ecc/ECCParamsCC26X2.om4fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./cryptoutils/utils/CryptoUtils.om4fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1313,10 +1367,13 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./pin/PINCC26XX.om4fg.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./power/PowerCC26X2.om4fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./power/PowerCC26X2_helpers.om4fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC_helpers.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./pwm/PWMTimerCC26XX.om4fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/RNG.om4fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./rng/RNGCC26XX.om4fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/SHA2.om4fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./sha2/SHA2CC26X2.om4fg.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./spi/SPICC26XXDMA.om4fg.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./spi/SPICC26X2DMA.om4fg.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/Temperature.om4fg.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2/./temperature/TemperatureCC26X2.om4fg.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1369,7 +1426,7 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./aesgcm/AESGCMCC26XX.orm4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/AESECB.orm4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./aesecb/AESECBCC26XX.orm4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./cryptoutils/ecc/ECCParamsCC26X2.orm4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./cryptoutils/utils/CryptoUtils.orm4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1398,10 +1455,13 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./pin/PINCC26XX.orm4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./power/PowerCC26X2.orm4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./power/PowerCC26X2_helpers.orm4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./pwm/PWMTimerCC26XX.orm4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/RNG.orm4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./rng/RNGCC26XX.orm4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/SHA2.orm4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./sha2/SHA2CC26X2.orm4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./spi/SPICC26XXDMA.orm4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./spi/SPICC26X2DMA.orm4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/Temperature.orm4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2/./temperature/TemperatureCC26X2.orm4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1454,7 +1514,7 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./aesgcm/AESGCMCC26XX.om4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/AESECB.om4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./aesecb/AESECBCC26XX.om4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./cryptoutils/ecc/ECCParamsCC26X2.om4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./cryptoutils/utils/CryptoUtils.om4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1483,10 +1543,13 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./pin/PINCC26XX.om4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./power/PowerCC26X2.om4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./power/PowerCC26X2_helpers.om4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./pwm/PWMTimerCC26XX.om4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/RNG.om4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./rng/RNGCC26XX.om4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/SHA2.om4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./sha2/SHA2CC26X2.om4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./spi/SPICC26XXDMA.om4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./spi/SPICC26X2DMA.om4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/Temperature.om4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc13x2x7/./temperature/TemperatureCC26X2.om4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1538,7 +1601,7 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./aesgcm/AESGCMCC26XX.oem4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/AESECB.oem4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./aesecb/AESECBCC26XX.oem4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./cryptoutils/ecc/ECCParamsCC26X2.oem4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./cryptoutils/utils/CryptoUtils.oem4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1567,10 +1630,13 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./pin/PINCC26XX.oem4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./power/PowerCC26X2.oem4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./power/PowerCC26X2_helpers.oem4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./pwm/PWMTimerCC26XX.oem4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/RNG.oem4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./rng/RNGCC26XX.oem4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/SHA2.oem4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./sha2/SHA2CC26X2.oem4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./spi/SPICC26XXDMA.oem4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./spi/SPICC26X2DMA.oem4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/Temperature.oem4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc13x2x7/./temperature/TemperatureCC26X2.oem4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1623,7 +1689,7 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./aesgcm/AESGCMCC26XX.om4fg.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/AESECB.om4fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./aesecb/AESECBCC26XX.om4fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./cryptoutils/ecc/ECCParamsCC26X2.om4fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./cryptoutils/utils/CryptoUtils.om4fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1652,10 +1718,13 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./pin/PINCC26XX.om4fg.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./power/PowerCC26X2.om4fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./power/PowerCC26X2_helpers.om4fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./pwm/PWMTimerCC26XX.om4fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/RNG.om4fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./rng/RNGCC26XX.om4fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/SHA2.om4fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./sha2/SHA2CC26X2.om4fg.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./spi/SPICC26XXDMA.om4fg.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./spi/SPICC26X2DMA.om4fg.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/Temperature.om4fg.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc13x2x7/./temperature/TemperatureCC26X2.om4fg.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1708,7 +1777,7 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./aesgcm/AESGCMCC26XX.orm4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/AESECB.orm4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./aesecb/AESECBCC26XX.orm4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./cryptoutils/ecc/ECCParamsCC26X2.orm4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./cryptoutils/utils/CryptoUtils.orm4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1737,10 +1806,13 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./pin/PINCC26XX.orm4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./power/PowerCC26X2.orm4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./power/PowerCC26X2_helpers.orm4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./pwm/PWMTimerCC26XX.orm4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/RNG.orm4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./rng/RNGCC26XX.orm4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/SHA2.orm4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./sha2/SHA2CC26X2.orm4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./spi/SPICC26XXDMA.orm4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./spi/SPICC26X2DMA.orm4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/Temperature.orm4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc13x2x7/./temperature/TemperatureCC26X2.orm4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1793,7 +1865,7 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./aesgcm/AESGCMCC26XX.om4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/AESECB.om4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./aesecb/AESECBCC26XX.om4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./cryptoutils/ecc/ECCParamsCC26X2.om4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./cryptoutils/utils/CryptoUtils.om4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1822,10 +1894,13 @@
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./pin/PINCC26XX.om4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./power/PowerCC26X2.om4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./power/PowerCC26X2_helpers.om4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.om4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./pwm/PWMTimerCC26XX.om4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/RNG.om4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./rng/RNGCC26XX.om4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/SHA2.om4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./sha2/SHA2CC26X2.om4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./spi/SPICC26XXDMA.om4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./spi/SPICC26X2DMA.om4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/Temperature.om4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ticlang/m4f/drivers_cc26x2x7/./temperature/TemperatureCC26X2.om4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1877,7 +1952,7 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./aesgcm/AESGCMCC26XX.oem4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/AESECB.oem4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./aesecb/AESECBCC26XX.oem4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.oem4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./cryptoutils/ecc/ECCParamsCC26X2.oem4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.oem4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./cryptoutils/utils/CryptoUtils.oem4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1906,10 +1981,13 @@
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./pin/PINCC26XX.oem4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./power/PowerCC26X2.oem4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./power/PowerCC26X2_helpers.oem4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.oem4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./pwm/PWMTimerCC26XX.oem4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/RNG.oem4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./rng/RNGCC26XX.oem4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/SHA2.oem4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./sha2/SHA2CC26X2.oem4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./spi/SPICC26XXDMA.oem4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./spi/SPICC26X2DMA.oem4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/Temperature.oem4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/ccs/m4f/drivers_cc26x2x7/./temperature/TemperatureCC26X2.oem4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -1962,7 +2040,7 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./aesgcm/AESGCMCC26XX.om4fg.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/AESECB.om4fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./aesecb/AESECBCC26XX.om4fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.om4fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./cryptoutils/ecc/ECCParamsCC26X2.om4fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.om4fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./cryptoutils/utils/CryptoUtils.om4fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -1991,10 +2069,13 @@
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./pin/PINCC26XX.om4fg.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./power/PowerCC26X2.om4fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./power/PowerCC26X2_helpers.om4fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.om4fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./pwm/PWMTimerCC26XX.om4fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/RNG.om4fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./rng/RNGCC26XX.om4fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/SHA2.om4fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./sha2/SHA2CC26X2.om4fg.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./spi/SPICC26XXDMA.om4fg.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./spi/SPICC26X2DMA.om4fg.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/Temperature.om4fg.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/gcc/m4f/drivers_cc26x2x7/./temperature/TemperatureCC26X2.om4fg.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -2047,7 +2128,7 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./aesgcm/AESGCMCC26XX.orm4f.dep" src="./aesgcm/AESGCMCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/AESECB.orm4f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./aesecb/AESECBCC26XX.orm4f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm4f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./cryptoutils/ecc/ECCParamsCC26X2.orm4f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm4f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./cryptoutils/utils/CryptoUtils.orm4f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2076,10 +2157,13 @@
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./pin/PINCC26XX.orm4f.dep" src="./pin/PINCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./power/PowerCC26X2.orm4f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./power/PowerCC26X2_helpers.orm4f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./power/PowerCC26X2_calibrateRCOSC_helpers.orm4f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./pwm/PWMTimerCC26XX.orm4f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/RNG.orm4f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./rng/RNGCC26XX.orm4f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/SHA2.orm4f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./sha2/SHA2CC26X2.orm4f.dep" src="./sha2/SHA2CC26X2.c"/>
-        <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./spi/SPICC26XXDMA.orm4f.dep" src="./spi/SPICC26XXDMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./spi/SPICC26X2DMA.orm4f.dep" src="./spi/SPICC26X2DMA.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/Temperature.orm4f.dep" src="Temperature.c"/>
         <srcFile name="package/lib/lib/iar/m4f/drivers_cc26x2x7/./temperature/TemperatureCC26X2.orm4f.dep" src="./temperature/TemperatureCC26X2.c"/>
@@ -2132,7 +2216,7 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./aesgcm/AESGCMCC26X4.om33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/AESECB.om33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./aesecb/AESECBCC26XX.om33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./cryptoutils/ecc/ECCParamsCC26X2.om33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./cryptoutils/utils/CryptoUtils.om33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2161,6 +2245,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./power/PowerCC26X2.om33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./pwm/PWMTimerCC26XX.om33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/RNG.om33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./rng/RNGCC26XX.om33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/SHA2.om33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./sha2/SHA2CC26X2.om33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./spi/SPICC26X4DMA.om33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2174,6 +2260,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./uart/UARTCC26XX.om33f.dep" src="./uart/UARTCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./uart/UARTCC26X2.om33f.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./watchdog/WatchdogCC26XX.om33f.dep" src="./watchdog/WatchdogCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./power/PowerCC26X2_helpers.om33f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC_helpers.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/gcc/m33f/drivers_cc13x4.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/package/package_ti.drivers.om33fg.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/ADC.om33fg.dep" src="ADC.c"/>
@@ -2214,7 +2302,7 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./aesgcm/AESGCMCC26X4.om33fg.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/AESECB.om33fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./aesecb/AESECBCC26XX.om33fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./cryptoutils/ecc/ECCParamsCC26X2.om33fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./cryptoutils/utils/CryptoUtils.om33fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2243,6 +2331,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./power/PowerCC26X2.om33fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./pwm/PWMTimerCC26XX.om33fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/RNG.om33fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./rng/RNGCC26XX.om33fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/SHA2.om33fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./sha2/SHA2CC26X2.om33fg.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./spi/SPICC26X4DMA.om33fg.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2257,6 +2347,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./uart/UARTCC26X2.om33fg.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./watchdog/WatchdogCC26XX.om33fg.dep" src="./watchdog/WatchdogCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/pdm/pdm2pcm_cc26x2_gnu.om33fg.dep" src="pdm/pdm2pcm_cc26x2_gnu.asm"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./power/PowerCC26X2_helpers.om33fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC_helpers.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/iar/m33f/drivers_cc13x4.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/package/package_ti.drivers.orm33f.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/ADC.orm33f.dep" src="ADC.c"/>
@@ -2297,7 +2389,7 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./aesgcm/AESGCMCC26X4.orm33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/AESECB.orm33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./aesecb/AESECBCC26XX.orm33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./cryptoutils/ecc/ECCParamsCC26X2.orm33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./cryptoutils/utils/CryptoUtils.orm33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2326,6 +2418,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./power/PowerCC26X2.orm33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./pwm/PWMTimerCC26XX.orm33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/RNG.orm33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./rng/RNGCC26XX.orm33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/SHA2.orm33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./sha2/SHA2CC26X2.orm33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./spi/SPICC26X4DMA.orm33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2340,6 +2434,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./uart/UARTCC26X2.orm33f.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./watchdog/WatchdogCC26XX.orm33f.dep" src="./watchdog/WatchdogCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/pdm/pdm2pcm_cc26x2_iar.orm33f.dep" src="pdm/pdm2pcm_cc26x2_iar.asm"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./power/PowerCC26X2_helpers.orm33f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4/./power/PowerCC26X2_calibrateRCOSC_helpers.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/ticlang/m33f/drivers_cc13x4_spe.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/package/package_ti.drivers.om33f.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/ADC.om33f.dep" src="ADC.c"/>
@@ -2380,7 +2476,7 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./aesgcm/AESGCMCC26X4.om33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/AESECB.om33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./aesecb/AESECBCC26XX.om33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.om33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./cryptoutils/utils/CryptoUtils.om33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2409,6 +2505,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./power/PowerCC26X2.om33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./power/PowerCC26X2_calibrateRCOSC.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./pwm/PWMTimerCC26XX.om33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/RNG.om33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./rng/RNGCC26XX.om33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/SHA2.om33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./sha2/SHA2CC26X2.om33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc13x4_spe/./spi/SPICC26X4DMA.om33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2463,7 +2561,7 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./aesgcm/AESGCMCC26X4.om33fg.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/AESECB.om33fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./aesecb/AESECBCC26XX.om33fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.om33fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./cryptoutils/utils/CryptoUtils.om33fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2492,6 +2590,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./power/PowerCC26X2.om33fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./power/PowerCC26X2_calibrateRCOSC.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./pwm/PWMTimerCC26XX.om33fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/RNG.om33fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./rng/RNGCC26XX.om33fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/SHA2.om33fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./sha2/SHA2CC26X2.om33fg.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc13x4_spe/./spi/SPICC26X4DMA.om33fg.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2547,7 +2647,7 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./aesgcm/AESGCMCC26X4.orm33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/AESECB.orm33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./aesecb/AESECBCC26XX.orm33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.orm33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./cryptoutils/utils/CryptoUtils.orm33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2576,6 +2676,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./power/PowerCC26X2.orm33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./power/PowerCC26X2_calibrateRCOSC.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./pwm/PWMTimerCC26XX.orm33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/RNG.orm33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./rng/RNGCC26XX.orm33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/SHA2.orm33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./sha2/SHA2CC26X2.orm33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc13x4_spe/./spi/SPICC26X4DMA.orm33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2631,7 +2733,7 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./aesgcm/AESGCMCC26X4.om33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/AESECB.om33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./aesecb/AESECBCC26XX.om33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./cryptoutils/ecc/ECCParamsCC26X2.om33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./cryptoutils/utils/CryptoUtils.om33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2660,6 +2762,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./power/PowerCC26X2.om33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./pwm/PWMTimerCC26XX.om33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/RNG.om33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./rng/RNGCC26XX.om33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/SHA2.om33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./sha2/SHA2CC26X2.om33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./spi/SPICC26X4DMA.om33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2673,6 +2777,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./uart/UARTCC26XX.om33f.dep" src="./uart/UARTCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./uart/UARTCC26X2.om33f.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./watchdog/WatchdogCC26XX.om33f.dep" src="./watchdog/WatchdogCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./power/PowerCC26X2_helpers.om33f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC_helpers.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/gcc/m33f/drivers_cc26x4.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/package/package_ti.drivers.om33fg.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/ADC.om33fg.dep" src="ADC.c"/>
@@ -2713,7 +2819,7 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./aesgcm/AESGCMCC26X4.om33fg.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/AESECB.om33fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./aesecb/AESECBCC26XX.om33fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./cryptoutils/ecc/ECCParamsCC26X2.om33fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./cryptoutils/utils/CryptoUtils.om33fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2742,6 +2848,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./power/PowerCC26X2.om33fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./pwm/PWMTimerCC26XX.om33fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/RNG.om33fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./rng/RNGCC26XX.om33fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/SHA2.om33fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./sha2/SHA2CC26X2.om33fg.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./spi/SPICC26X4DMA.om33fg.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2756,6 +2864,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./uart/UARTCC26X2.om33fg.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./watchdog/WatchdogCC26XX.om33fg.dep" src="./watchdog/WatchdogCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/pdm/pdm2pcm_cc26x2_gnu.om33fg.dep" src="pdm/pdm2pcm_cc26x2_gnu.asm"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./power/PowerCC26X2_helpers.om33fg.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC_helpers.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/iar/m33f/drivers_cc26x4.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/package/package_ti.drivers.orm33f.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/ADC.orm33f.dep" src="ADC.c"/>
@@ -2796,7 +2906,7 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./aesgcm/AESGCMCC26X4.orm33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/AESECB.orm33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./aesecb/AESECBCC26XX.orm33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./cryptoutils/ecc/ECCParamsCC26X2.orm33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./cryptoutils/utils/CryptoUtils.orm33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2825,6 +2935,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./power/PowerCC26X2.orm33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./pwm/PWMTimerCC26XX.orm33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/RNG.orm33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./rng/RNGCC26XX.orm33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/SHA2.orm33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./sha2/SHA2CC26X2.orm33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./spi/SPICC26X4DMA.orm33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2839,6 +2951,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./uart/UARTCC26X2.orm33f.dep" src="./uart/UARTCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./watchdog/WatchdogCC26XX.orm33f.dep" src="./watchdog/WatchdogCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/pdm/pdm2pcm_cc26x2_iar.orm33f.dep" src="pdm/pdm2pcm_cc26x2_iar.asm"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./power/PowerCC26X2_helpers.orm33f.dep" src="./power/PowerCC26X2_helpers.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4/./power/PowerCC26X2_calibrateRCOSC_helpers.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <srcFile name="lib/ticlang/m33f/drivers_cc26x4_spe.a.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/package/package_ti.drivers.om33f.dep" src="package/package_ti.drivers.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/ADC.om33f.dep" src="ADC.c"/>
@@ -2879,7 +2993,7 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./aesgcm/AESGCMCC26X4.om33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/AESECB.om33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./aesecb/AESECBCC26XX.om33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.om33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./cryptoutils/utils/CryptoUtils.om33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2908,6 +3022,8 @@
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./power/PowerCC26X2.om33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./power/PowerCC26X2_calibrateRCOSC.om33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./pwm/PWMTimerCC26XX.om33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/RNG.om33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./rng/RNGCC26XX.om33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/SHA2.om33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./sha2/SHA2CC26X2.om33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/ticlang/m33f/drivers_cc26x4_spe/./spi/SPICC26X4DMA.om33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -2962,7 +3078,7 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./aesgcm/AESGCMCC26X4.om33fg.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/AESECB.om33fg.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./aesecb/AESECBCC26XX.om33fg.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.om33fg.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.om33fg.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.om33fg.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./cryptoutils/utils/CryptoUtils.om33fg.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -2991,6 +3107,8 @@
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./power/PowerCC26X2.om33fg.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./power/PowerCC26X2_calibrateRCOSC.om33fg.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./pwm/PWMTimerCC26XX.om33fg.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/RNG.om33fg.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./rng/RNGCC26XX.om33fg.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/SHA2.om33fg.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./sha2/SHA2CC26X2.om33fg.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/gcc/m33f/drivers_cc26x4_spe/./spi/SPICC26X4DMA.om33fg.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -3046,7 +3164,7 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./aesgcm/AESGCMCC26X4.orm33f.dep" src="./aesgcm/AESGCMCC26X4.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/AESECB.orm33f.dep" src="AESECB.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./aesecb/AESECBCC26XX.orm33f.dep" src="./aesecb/AESECBCC26XX.c"/>
-        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./cryptoutils/cryptokey/CryptoKeyPlaintext.orm33f.dep" src="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./cryptoutils/ecc/ECCParamsCC26X2.orm33f.dep" src="./cryptoutils/ecc/ECCParamsCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./cryptoutils/sharedresources/CryptoResourceCC26XX.orm33f.dep" src="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./cryptoutils/utils/CryptoUtils.orm33f.dep" src="./cryptoutils/utils/CryptoUtils.c"/>
@@ -3075,6 +3193,8 @@
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./power/PowerCC26X2.orm33f.dep" src="./power/PowerCC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./power/PowerCC26X2_calibrateRCOSC.orm33f.dep" src="./power/PowerCC26X2_calibrateRCOSC.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./pwm/PWMTimerCC26XX.orm33f.dep" src="./pwm/PWMTimerCC26XX.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/RNG.orm33f.dep" src="RNG.c"/>
+        <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./rng/RNGCC26XX.orm33f.dep" src="./rng/RNGCC26XX.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/SHA2.orm33f.dep" src="SHA2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./sha2/SHA2CC26X2.orm33f.dep" src="./sha2/SHA2CC26X2.c"/>
         <srcFile name="package/lib/lib/iar/m33f/drivers_cc26x4_spe/./spi/SPICC26X4DMA.orm33f.dep" src="./spi/SPICC26X4DMA.c"/>
@@ -3094,15 +3214,15 @@
     </makefiles>
     <targets>
         <target name="ti.targets.arm.clang.M4"
-            version="ti.targets.arm.clang.M4{1,0,1.3,0"
-            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
+            version="ti.targets.arm.clang.M4{1,0,1.3,1"
+            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
 Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
+InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
 "
             platform="ti.platforms.tiva:TM4C1294NCPDT:1"
             isa="v7M4"
             suffix="m4"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
@@ -3141,7 +3261,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
             platform="ti.platforms.tiva:TM4C1294NCPDT:1"
             isa="v7M4"
             suffix="rm4"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-2/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -3149,15 +3269,15 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.clang.M4F"
-            version="ti.targets.arm.clang.M4F{1,0,1.3,0"
-            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
+            version="ti.targets.arm.clang.M4F{1,0,1.3,1"
+            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
 Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
+InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
 "
             platform="ti.platforms.cortexM:MTL1_VSOC:1"
             isa="v7M4"
             suffix="m4f"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
@@ -3196,7 +3316,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
             platform="ti.platforms.tiva:TM4C1294NCPDT:1"
             isa="v7M4"
             suffix="rm4f"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-2/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -3204,15 +3324,15 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.clang.M33F"
-            version="ti.targets.arm.clang.M33F{1,0,1.3,0"
-            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
+            version="ti.targets.arm.clang.M33F{1,0,1.3,1"
+            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
 Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
+InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
 "
             platform="ti.platforms.cortexM:MTL1_VSOC:1"
             isa="v8M"
             suffix="m33f"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
@@ -3238,7 +3358,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
             platform="ti.platforms.cortexM:FVP_MPS2:2"
             isa="v8M"
             suffix="rm33f"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-2/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -3409,10 +3529,8 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="libBuilder.xs"/>
         <file name="package.bld"/>
         <file name="xdcArgParser.xs"/>
-        <file name="sources_cc32xx.xs"/>
-        <file name="sources_cc26xx.xs"/>
-        <file name="sources_cc23xx.xs"/>
         <file name="sources_common.xs"/>
+        <file name="sources_cc26xx.xs"/>
         <file name="./nvs/flash/FlashCC26X4_ns.c"/>
         <file name="./nvs/flash/FlashCC26X4_ns.h"/>
         <file name="./nvs/flash/FlashCC26X4_s.c"/>
@@ -3467,6 +3585,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="./aesgcm/AESGCMCC26X4.h"/>
         <file name="AESECB.h"/>
         <file name="./aesecb/AESECBCC26XX.h"/>
+        <file name="AESCommon.h"/>
         <file name="./cryptoutils/cryptokey/CryptoKey.h"/>
         <file name="./cryptoutils/cryptokey/CryptoKeyPlaintext.h"/>
         <file name="./cryptoutils/ecc/ECCParams.h"/>
@@ -3500,7 +3619,10 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="./itm/hw_cpu_itm.h"/>
         <file name="./power/PowerCC26XX.h"/>
         <file name="./power/PowerCC26X2.h"/>
+        <file name="./power/PowerCC26X2_helpers.h"/>
         <file name="./pwm/PWMTimerCC26XX.h"/>
+        <file name="RNG.h"/>
+        <file name="./rng/RNGCC26XX.h"/>
         <file name="SHA2.h"/>
         <file name="./sha2/SHA2CC26X2.h"/>
         <file name="./spi/SPICC26X4DMA.h"/>
@@ -3518,9 +3640,9 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="./aesgcm/AESGCMCC26XX.h"/>
         <file name="PIN.h"/>
         <file name="./pin/PINCC26XX.h"/>
-        <file name="./spi/SPICC26XXDMA.h"/>
         <file name="./spi/SPICC26X2DMA.h"/>
         <file name="./adcbuf/ADCBufCC26XX.h"/>
+        <file name="./cryptoutils/ecc/ECCInitCC26X1.h"/>
         <file name="./ecdh/ECDHCC26X1.h"/>
         <file name="./ecdsa/ECDSACC26X1.h"/>
         <file name="./sha2/SHA2CC26X1.h"/>
@@ -3564,7 +3686,8 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="./aescmac/AESCMACCC26XX.c"/>
         <file name="AESECB.c"/>
         <file name="./aesecb/AESECBCC26XX.c"/>
-        <file name="./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c"/>
+        <file name="./cryptoutils/cryptokey/CryptoKeyPlaintext.c"/>
+        <file name="./cryptoutils/ecc/ECCInitCC26X1.c"/>
         <file name="./cryptoutils/ecc/ECCParamsCC26X1.c"/>
         <file name="./cryptoutils/sharedresources/CryptoResourceCC26XX.c"/>
         <file name="./cryptoutils/utils/CryptoUtils.c"/>
@@ -3588,10 +3711,13 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.0.LTS-0/library-msp/ga
         <file name="./pin/PINCC26XX.c"/>
         <file name="./power/PowerCC26X2.c"/>
         <file name="./power/PowerCC26X2_calibrateRCOSC.c"/>
+        <file name="./power/PowerCC26X2_helpers.c"/>
+        <file name="./power/PowerCC26X2_calibrateRCOSC_helpers.c"/>
         <file name="./pwm/PWMTimerCC26XX.c"/>
+        <file name="RNG.c"/>
+        <file name="./rng/RNGCC26XX.c"/>
         <file name="SHA2.c"/>
         <file name="./sha2/SHA2CC26X1.c"/>
-        <file name="./spi/SPICC26XXDMA.c"/>
         <file name="./spi/SPICC26X2DMA.c"/>
         <file name="Temperature.c"/>
         <file name="./temperature/TemperatureCC26X2.c"/>

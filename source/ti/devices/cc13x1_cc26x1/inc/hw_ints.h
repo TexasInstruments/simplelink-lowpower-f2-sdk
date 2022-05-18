@@ -57,12 +57,12 @@
 #define INT_I2C_IRQ                     17 // Interrupt event from I2C
 #define INT_RFC_CPE_1                   18 // Combined Interrupt for CPE
                                            // Generated events
-#define INT_PKA_IRQ                     19 // PKA Interrupt event
+#define INT_TIE_LOW31                   19 // Not used tied to 0
 #define INT_AON_RTC_COMB                20 // Event from AON_RTC
 #define INT_UART0_COMB                  21 // UART0 combined interrupt
 #define INT_AUX_SWEV0                   22 // AUX software event 0
 #define INT_SSI0_COMB                   23 // SSI0 combined interrupt
-#define INT_SSI1_COMB                   24 // SSI1 combined interrupt
+#define INT_TIE_LOW35                   24 // Not used tied to 0
 #define INT_RFC_CPE_0                   25 // Combined Interrupt for CPE
                                            // Generated events
 #define INT_RFC_HW_COMB                 26 // Combined RFC hardware interrupt
@@ -93,8 +93,8 @@
 #define INT_TRNG_IRQ                    49 // TRNG Interrupt event
 #define INT_OSC_COMB                    50 // Combined event from Oscillator
                                            // control
-#define INT_AUX_TIMER2_EV0              51 // AUX Timer2 event 0
-#define INT_UART1_COMB                  52 // UART1 combined interrupt
+#define INT_TIE_LOW56                   51 // Not used tied to 0
+#define INT_TIE_LOW37                   52 // Not used tied to 0
 #define INT_BATMON_COMB                 53 // Combined event from battery
                                            // monitor
 

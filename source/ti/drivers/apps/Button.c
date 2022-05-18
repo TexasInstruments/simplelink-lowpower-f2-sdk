@@ -182,7 +182,7 @@ void Button_gpioCallbackFxn(uint_least8_t index)
 /*
  *  ======== Button_init ========
  */
-void Button_init()
+void Button_init(void)
 {
     /* Initialize GPIO driver if it wasn't already */
     GPIO_init();

@@ -121,6 +121,18 @@
 // Configuration register for debug authentication
 #define CCFG_O_DEB_AUTH_CFG                                         0x00000068
 
+// Not to be used
+#define CCFG_O_CKEY0                                                0x0000006C
+
+// Not to be used
+#define CCFG_O_CKEY1                                                0x00000070
+
+// Not to be used
+#define CCFG_O_CKEY2                                                0x00000074
+
+// Not to be used
+#define CCFG_O_CKEY3                                                0x00000078
+
 //*****************************************************************************
 //
 // Register: CCFG_O_SIZE_AND_DIS_FLAGS
@@ -271,7 +283,7 @@
 // Select source for SCLK_LF.
 // ENUMs:
 // RCOSC_LF                 Low frequency RCOSC (default)
-// XOSC_LF                  32.768kHz low frequency XOSC
+// XOSC_LF                  32.768 kHz low frequency XOSC
 // EXTERNAL_LF              External low frequency clock on DIO defined by
 //                          EXT_LF_CLK.DIO. The RTC tick speed
 //                          AON_RTC:SUBSECINC is updated to
@@ -279,9 +291,9 @@
 //                          SetupTrimDevice() driverlib boot function).
 //                          External clock must always be running when the
 //                          chip is in standby for VDDR recharge timing.
-// XOSC_HF_DLF              31.25kHz clock derived from 48MHz XOSC or HPOSC.
+// XOSC_HF_DLF              31.25 kHz clock derived from 48 MHz XOSC or HPOSC.
 //                          The RTC tick speed AON_RTC:SUBSECINC is updated
-//                          to 0x8637BD, corresponding to a 31.25kHz clock
+//                          to 0x8637BD, corresponding to a 31.25 kHz clock
 //                          (done in the SetupTrimDevice() driverlib boot
 //                          function). The device must be blocked from
 //                          entering Standby mode when using this clock
@@ -328,7 +340,7 @@
 // 24M                      24 MHz XOSC_HF. Not supported.
 // 48M                      48 MHz XOSC_HF
 // HPOSC                    Internal high precision oscillator.
-// TCXO                     External 48Mhz TCXO.
+// TCXO                     External 48 MHz TCXO.
 //                          Refer to
 //                          MODE_CONF_1.TCXO_MAX_START and
 //                          MODE_CONF_1.TCXO_TYPE bit fields for additional
@@ -571,7 +583,7 @@
 //*****************************************************************************
 // Field: [31:24] DIO
 //
-// Unsigned integer, selecting the DIO to supply external 32kHz clock as
+// Unsigned integer, selecting the DIO to supply external 32 kHz clock as
 // SCLK_LF when MODE_CONF.SCLK_LF_OPTION is set to EXTERNAL. The selected DIO
 // will be marked as reserved by the pin driver (TI-RTOS environment) and hence
 // not selectable for other usage.
@@ -746,6 +758,13 @@
 // Register: CCFG_O_CCFG_TI_OPTIONS
 //
 //*****************************************************************************
+// Field: [23:16] C_FA_DIS
+//
+// Reserved. Must be set to 0xC5.
+#define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_W                                      8
+#define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_M                             0x00FF0000
+#define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_S                                     16
+
 // Field:  [15:8] IDAU_CFG_ENABLE
 //
 // IDAU configuration.
@@ -1281,6 +1300,54 @@
 #define CCFG_DEB_AUTH_CFG_SPIDENSEL_BITN                                     0
 #define CCFG_DEB_AUTH_CFG_SPIDENSEL_M                               0x00000001
 #define CCFG_DEB_AUTH_CFG_SPIDENSEL_S                                        0
+
+//*****************************************************************************
+//
+// Register: CCFG_O_CKEY0
+//
+//*****************************************************************************
+// Field:  [31:0] KEY
+//
+// Reserved. Must be set to 0xFFFFFFFF.
+#define CCFG_CKEY0_KEY_W                                                    32
+#define CCFG_CKEY0_KEY_M                                            0xFFFFFFFF
+#define CCFG_CKEY0_KEY_S                                                     0
+
+//*****************************************************************************
+//
+// Register: CCFG_O_CKEY1
+//
+//*****************************************************************************
+// Field:  [31:0] KEY
+//
+// Reserved. Must be set to 0xFFFFFFFF.
+#define CCFG_CKEY1_KEY_W                                                    32
+#define CCFG_CKEY1_KEY_M                                            0xFFFFFFFF
+#define CCFG_CKEY1_KEY_S                                                     0
+
+//*****************************************************************************
+//
+// Register: CCFG_O_CKEY2
+//
+//*****************************************************************************
+// Field:  [31:0] KEY
+//
+// Reserved. Must be set to 0xFFFFFFFF.
+#define CCFG_CKEY2_KEY_W                                                    32
+#define CCFG_CKEY2_KEY_M                                            0xFFFFFFFF
+#define CCFG_CKEY2_KEY_S                                                     0
+
+//*****************************************************************************
+//
+// Register: CCFG_O_CKEY3
+//
+//*****************************************************************************
+// Field:  [31:0] KEY
+//
+// Reserved. Must be set to 0xFFFFFFFF.
+#define CCFG_CKEY3_KEY_W                                                    32
+#define CCFG_CKEY3_KEY_M                                            0xFFFFFFFF
+#define CCFG_CKEY3_KEY_S                                                     0
 
 
 #endif // __CCFG__

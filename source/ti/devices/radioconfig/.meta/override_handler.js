@@ -375,9 +375,15 @@ function processOverrideArray(items, codeParam, data) {
             code += "    (uint32_t)" + Common.int2hex(anaDiv, 8);
             break;
         case "ELEMENT":
-            code += "    (uint32_t)" + el.$;
+            // Convert to uppercase HEX if a hex value, otherwise leave as is
+            {
+                let val = el.$;
+                if (Common.isHex(val)) {
+                    val = Common.int2hex(val, 8);
+                }
+                code += "    (uint32_t)" + val;
+            }
             break;
-
         default:
             code += "//** ERROR: Element type not implemented: " + el._type;
             break;

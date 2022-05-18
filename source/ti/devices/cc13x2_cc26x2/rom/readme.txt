@@ -14,7 +14,7 @@ Loading ROM code symbols in CCS debug session:
   get this information:
   'Can't find a source file at "../<path>/driverlib.c"'
   you can navigate to the driverlib.c file in this folder by selecting
-  the 'Locate File..' button. 
+  the 'Locate File..' button.
 
 Loading ROM code symbols for use in IAR debug session:
 - In your project select the following before starting debug session:

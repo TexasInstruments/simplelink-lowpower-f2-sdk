@@ -105,7 +105,6 @@
         "
         linkerBuildOptions="
             -x
-            -l${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/examples/rtos/LP_CC2652R7/ble5stack/simple_mesh_node_oad_offchip/tirtos/ticlang/cc13x2x7_cc26x2x7_app.cmd
             --define=OAD_IMG_E=1
             --define=SECURITY
             --diag_suppress=16002-D
@@ -114,6 +113,7 @@
             --diag_suppress=10229-D
             --diag_suppress=16032-D
             --diag_suppress=10457-D
+            -l${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/examples/rtos/LP_CC2652R7/ble5stack/simple_mesh_node_oad_offchip/tirtos/ticlang/cc13x2x7_cc26x2x7_app.cmd
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
             --define=FLASH_ROM_BUILD=2
@@ -144,8 +144,6 @@
         <property name="configuroOptions" value=" --compileOptions &quot;${COMPILER_FLAGS} &quot;"/>
         <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../simple_mesh_node_oad_offchip.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
         <file path="../../Application/simple_mesh_node.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/simple_mesh_node.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
@@ -161,12 +159,6 @@
         <file path="../../Application/oad_app_support.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/oad_app_support.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
-        </file>
-        <file path="../../Tools/simple_mesh_node_oad_offchip_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
-        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
-        </file>
-        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
@@ -265,12 +257,6 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/dev_info/devinfoservice.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_profile_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gatt_uuid.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gattservapp_util.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/simple_profile/cc26xx/simple_gatt_profile.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
@@ -611,6 +597,14 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/mesh/zephyr/subsys/storage/flash_map/flash_map_default.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Mesh/zephyr/subsys/storage/flash_map">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
+        <file path="../../tirtos/simple_mesh_node_oad_offchip.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/simple_mesh_node_oad_offchip_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
+        </file>
+        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       startup_ccs.c
-*  Revised:        $Date: 2017-02-03 19:16:24 +0100 (Fri, 03 Feb 2017) $
-*  Revision:       $Revision: 17634 $
 *
 *  Description:    Startup code for CC13x2x7, CC26x2x7 device family for use with CCS.
 *

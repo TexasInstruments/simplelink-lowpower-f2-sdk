@@ -48,12 +48,12 @@ required to observe functionality.
 
 * Mount the CC3200 Audio BoosterPack.
 
-* Connect headphones or speakers to the Audio BoosterPack and the audio source.
+* Connect headphones or speakers to the Audio BoosterPack, as well as an audio source
 
 * Run the example. `CONFIG_GPIO_LED_0` turns ON to indicate driver
 initialization is complete.
 
-* Sounds captured audio line in are echoed after basic filtering.
+* Sounds captured on audio line in are echoed after basic filtering.
 
 * The quality of the audio output is directly related to the quality of your audio
 source. For this purpose, avoid using a highly disturbed audio source.
@@ -68,16 +68,16 @@ run again, the echoing will not resume. You will need to reload the program.
 * One thread, `echoThread` is used to configure the codec and start
 the I2S transfers.
 
-* Ten I2S_Transactions are declared and a buffer is associate to each
-of them (in this example, the buffer hold by a transaction remains the
-same during all the execution).
+* Ten I2S_Transactions are declared and a buffer is associated to each
+of them (in this example, the buffer held by a transaction remains the
+same during execution).
 
 * The I2S transactions are initially queued in two lists: `i2sReadList`
-and `i2sWriteList`. `treatmentList` will be populated latter (i.e. when
+and `i2sWriteList`. `treatmentList` will be populated later (i.e. when
 some transaction of the `i2sReadList` will be finished).
 
-* The buffers hold by the transactions are successively written (by the
-read interface), treated and send out (by the write interface).
+* The buffers held by the transactions are successively written (by the
+read interface), treated and sent out (by the write interface).
 Here is a scheme showing the path followed by a transaction:
 
 ```
@@ -92,7 +92,7 @@ Here is a scheme showing the path followed by a transaction:
 ```
 
 *(1) The read interface systematically fills the buffer contained in the head
-transaction of the i2sReadList. When the buffer hold by this transaction is
+transaction of the i2sReadList. When the buffer held by this transaction is
 full, the transaction is dequeued from the i2sReadList  and queued as the
 tail of the treatmentList. The read interface continues receiving data by
 using the next transaction of the i2sReadList.*
@@ -103,7 +103,7 @@ of the treatmentList. Once this transaction is treated, the transaction is
 dequeued from the treatmentList and queued in the i2sWriteList.*
 
 *(3) The write interface systematically sends out the buffer contained in the
-head transaction of the i2sWriteList. When the buffer hold by this transaction
+head transaction of the i2sWriteList. When the buffer held by this transaction
 has been completely sent out, the corresponding transaction is dequeued from
 the i2sWriteList and queued in the i2sReadList . The write interface continues
 sending out data by using the next transaction of the i2sWriteList.*

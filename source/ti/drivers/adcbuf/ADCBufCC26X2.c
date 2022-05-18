@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -540,10 +540,7 @@ int_fast16_t ADCBufCC26X2_convert(ADCBuf_Handle handle,
     }
 
     /* Add pin to measure on */
-    if (channelLookup.dio != GPIO_INVALID_INDEX)
-    {
-        GPIO_setConfig(channelLookup.dio, GPIO_CFG_NO_DIR);
-    }
+    GPIO_setConfig(channelLookup.dio, GPIO_CFG_NO_DIR);
 
     /* Store location of the current conversion */
     object->currentConversion = conversions;
@@ -868,10 +865,7 @@ static void ADCBufCC26X2_cleanADC(ADCBuf_Handle handle) {
     UDMACC26XX_channelDisable(object->udmaHandle, (1 << UDMA_CHAN_AUX_ADC));
 
     /* Deallocate conversion pin */
-    if (hwAttrs->adcChannelLut[object->currentChannel].dio != GPIO_INVALID_INDEX)
-    {
-        GPIO_resetConfig(hwAttrs->adcChannelLut[object->currentChannel].dio);
-    }
+    GPIO_resetConfig(hwAttrs->adcChannelLut[object->currentChannel].dio);
 
     /* Disable UDMA mode for ADC */
     HWREG(AUX_EVCTL_BASE + AUX_EVCTL_O_DMACTL) =

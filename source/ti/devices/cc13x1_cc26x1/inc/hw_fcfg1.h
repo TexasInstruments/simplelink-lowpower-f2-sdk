@@ -1933,6 +1933,21 @@
 // Register: FCFG1_O_MISC_TRIM
 //
 //*****************************************************************************
+// Field:    [31] RCOSCHF_FT_RETRIM_N
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_N                         0x80000000
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_N_BITN                            31
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_N_M                       0x80000000
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_N_S                               31
+
+// Field: [30:29] RCOSCHF_FT_RETRIM_FINE_R
+//
+// Internal. Only to be used through TI provided API.
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_FINE_R_W                           2
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_FINE_R_M                  0x60000000
+#define FCFG1_MISC_TRIM_RCOSCHF_FT_RETRIM_FINE_R_S                          29
+
 // Field: [16:12] TRIM_RECHARGE_COMP_OFFSET
 //
 // Internal. Only to be used through TI provided API.

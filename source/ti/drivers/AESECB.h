@@ -43,8 +43,8 @@
  *  Each input block is individually encrypted or decrypted. This means that
  *  blocks of ciphertext can be decrypted individually and out of order.
  *  Encrypting the same plaintext using the same key yields identical ciphertext.
- *  This raises several security issues. For this reason, it is not recommended
- *  that ECB be used unless interfacing with legacy systems that can't be updated
+ *  This raises several security issues. For this reason, ECB is not recommended
+ *  unless interfacing with legacy systems which cannot be updated
  *  or where a standard specifies its use. Better alternatives would be an
  *  authenticated encryption with associated data (AEAD) mode such as
  *  CCM or GCM.
@@ -62,7 +62,7 @@
  *      - Call AESECB_Params_init() to initialize the AESECB_Params to default values.
  *      - Modify the AESECB_Params as desired
  *      - Call AESECB_open() to open an instance of the driver
- *      - Initialize a CryptoKey. These opaque datastructures are representations
+ *      - Initialize a CryptoKey. These opaque data structures are representations
  *        of keying material and its storage. Depending on how the keying material
  *        is stored (RAM or flash, key store), the CryptoKey must be
  *        initialized differently. The AESECB API can handle all types of CryptoKey.
@@ -126,7 +126,7 @@
  *  @code
  *
  *  #include <ti/drivers/AESECB.h>
- *  #include <ti/drivers/cryptouils/cryptokey/CryptoKeyPlaintext.h>
+ *  #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
  *
  *  ...
  *
@@ -427,6 +427,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 #ifdef __cplusplus
@@ -445,7 +446,7 @@ extern "C" {
  * #define AESECBXYZ_STATUS_ERROR2    AESECB_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESECB_STATUS_RESERVED        (-32)
+#define AESECB_STATUS_RESERVED                 AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -453,7 +454,7 @@ extern "C" {
  * Functions return AESECB_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESECB_STATUS_SUCCESS         (0)
+#define AESECB_STATUS_SUCCESS                  AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -461,7 +462,7 @@ extern "C" {
  * Functions return AESECB_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESECB_STATUS_ERROR           (-1)
+#define AESECB_STATUS_ERROR                    AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -471,12 +472,37 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESECB_STATUS_RESOURCE_UNAVAILABLE (-2)
+#define AESECB_STATUS_RESOURCE_UNAVAILABLE     AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESECB_STATUS_CANCELED (-3)
+#define AESECB_STATUS_CANCELED                 AES_STATUS_CANCELED
+
+/*!
+ * @brief   The operation requested is not supported on the target hardware
+ *          or by the current state of the SW implementation.
+ */
+#define AESECB_STATUS_FEATURE_NOT_SUPPORTED    AES_STATUS_FEATURE_NOT_SUPPORTED
+
+/*!
+ *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
+ */
+#define AESECB_STATUS_KEYSTORE_INVALID_ID      AES_STATUS_KEYSTORE_INVALID_ID
+
+/*!
+ *  @brief  The key store module returned a generic error. See key store documentation
+ *  for additional details.
+ */
+#define AESECB_STATUS_KEYSTORE_GENERIC_ERROR   AES_STATUS_KEYSTORE_GENERIC_ERROR
+
+/*!
+ * @brief   The operation does not support non-word-aligned input and/or output.
+ *
+ * AESECB driver implementations may have restrictions on the alignment of
+ * input/output data due to performance limitations of the hardware.
+ */
+#define AESECB_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  *  @brief AESECB Global configuration
@@ -489,13 +515,7 @@ extern "C" {
  *
  *  @sa     AESECB_init()
  */
-typedef struct {
-    /*! Pointer to a driver specific data object */
-    void               *object;
-
-    /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
-} AESECB_Config;
+typedef AESCommon_Config AESECB_Config;
 
 /*!
  *  @brief  A handle that is returned from an AESECB_open() call.
@@ -524,17 +544,20 @@ typedef AESECB_Config *AESECB_Handle;
  *
  */
 typedef enum {
-    AESECB_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
+    AESECB_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
+                                            /*!< The function call will return immediately while the
                                              *   ECB operation goes on in the background. The registered
                                              *   callback function is called after the operation completes.
                                              *   The context the callback function is called (task, HWI, SWI)
                                              *   is implementation-dependent.
                                              */
-    AESECB_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while ECB operation goes
+    AESECB_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
+                                            /*!< The function call will block while ECB operation goes
                                              *   on in the background. ECB operation results are available
                                              *   after the function returns.
                                              */
-    AESECB_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while ECB
+    AESECB_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
+                                            /*!< The function call will continuously poll a flag while ECB
                                              *   operation goes on in the background. ECB operation results
                                              *   are available after the function returns.
                                              */
@@ -553,39 +576,41 @@ typedef enum {
  *          and a message.
  */
 typedef struct {
-   CryptoKey                *key;                        /*!< A previously initialized CryptoKey */
-   uint8_t                  *input;                      /*!<
-                                                          *   - Encryption: A pointer to the plaintext buffer.
-                                                          *   - Decryption: A pointer to the ciphertext buffer.
-                                                          *
-                                                          *   Both input and output buffers should be of the size
-                                                          *   \c inputLength in bytes each.
-                                                          */
-   uint8_t                  *output;                     /*!<
-                                                          *   - Encryption: A pointer to the buffer to store the
-                                                          *     resulting ciphertext.
-                                                          *   - Decryption: A pointer to the buffer to store the
-                                                          *   resulting plaintext.
-                                                          *
-                                                          *   Both input and output buffers should be of the size
-                                                          *   \c inputLength in bytes each.
-                                                          */
-   size_t                   inputLength;                 /*!<
-                                                          *   - One-step operation: Total length of the input in
-                                                          *     bytes.
-                                                          *   - Multi-step / Segmented operation: Length of the
-                                                          *     input in bytes for that #AESECB_addData()
-                                                          *     or #AESECB_finalize() call.
-                                                          *
-                                                          *   The output will be the same length as the input.
-                                                          *
-                                                          *   Must be a non-zero multiple of block-size (16 bytes).
-                                                          *   May be 0 only when calling #AESECB_finalize() to
-                                                          *   finalize a multi-step operation without additional
-                                                          *   data.
-                                                          *   The user or application should take care of
-                                                          *   necessary padding.
-                                                          */
+   CryptoKey                *key;           /*!< A previously initialized CryptoKey */
+   uint8_t                  *input;         /*!<
+                                             *   - Encryption: A pointer to the plaintext buffer.
+                                             *   - Decryption: A pointer to the ciphertext buffer.
+                                             *
+                                             *   Both input and output buffers should be of the size
+                                             *   \c inputLength in bytes each.
+                                             */
+   uint8_t                  *output;        /*!<
+                                             *   - Encryption: A pointer to the buffer to store the
+                                             *     resulting ciphertext.
+                                             *   - Decryption: A pointer to the buffer to store the
+                                             *   resulting plaintext.
+                                             *
+                                             *   Both input and output buffers should be of the size
+                                             *   \c inputLength in bytes each.
+                                             */
+   size_t                   inputLength;    /*!<
+                                             *   - One-step operation: Total length of the input in
+                                             *     bytes.
+                                             *   - Multi-step / Segmented operation: Length of the
+                                             *     input in bytes for that #AESECB_addData()
+                                             *     or #AESECB_finalize() call.
+                                             *
+                                             *   The output will be the same length as the input.
+                                             *   Max length supported may be limited depending on the
+                                             *   return behavior.
+                                             *
+                                             *   Must be a non-zero multiple of AES block size (16 bytes).
+                                             *   May be 0 only when calling #AESECB_finalize() to
+                                             *   finalize a multi-step operation without additional
+                                             *   data.
+                                             *   The user or application should take care of any
+                                             *   necessary padding.
+                                             */
 } AESECB_Operation;
 
 /*!
@@ -725,6 +750,7 @@ void AESECB_Operation_init(AESECB_Operation *operationStruct);
  *  @retval #AESECB_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESECB_STATUS_ERROR                 The operation failed.
  *  @retval #AESECB_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESECB_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @sa     AESECB_oneStepDecrypt()
  */
@@ -745,6 +771,7 @@ int_fast16_t AESECB_oneStepEncrypt(AESECB_Handle handle, AESECB_Operation *opera
  *  @retval #AESECB_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESECB_STATUS_ERROR                 The operation failed.
  *  @retval #AESECB_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESECB_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @sa     AESECB_oneStepEncrypt()
  */
@@ -805,11 +832,12 @@ int_fast16_t AESECB_setupDecrypt(AESECB_Handle handle, const CryptoKey *key);
  *  @retval #AESECB_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESECB_STATUS_ERROR                 The operation failed.
  *  @retval #AESECB_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESECB_STATUS_CANCELED              The operation was canceled.
+ *  @retval #AESECB_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  *
  *  @post   #AESECB_addData() or #AESECB_finalize()
  */
-int_fast16_t AESECB_addData(AESECB_Handle handle,
-                            AESECB_Operation * operation);
+int_fast16_t AESECB_addData(AESECB_Handle handle, AESECB_Operation *operation);
 
 /*!
  *  @brief  Finalize the AES transaction. If new data needs to be added,
@@ -821,15 +849,16 @@ int_fast16_t AESECB_addData(AESECB_Handle handle,
  *
  *  @param  [in] operation      Pointer to ECB operation structure()
  *
- *  @retval #AESECB_STATUS_SUCCESS              In ::AESECB_RETURN_BEHAVIOR_BLOCKING and
- *                                              ::AESECB_RETURN_BEHAVIOR_POLLING, this means the ECB
- *                                              was generated successfully. In ::AESECB_RETURN_BEHAVIOR_CALLBACK,
- *                                              this means the operation started successfully.
- *  @retval #AESECB_STATUS_ERROR                The operation failed.
+ *  @retval #AESECB_STATUS_SUCCESS               In ::AESECB_RETURN_BEHAVIOR_BLOCKING and
+ *                                               ::AESECB_RETURN_BEHAVIOR_POLLING, this means the ECB output
+ *                                               was generated successfully. In ::AESECB_RETURN_BEHAVIOR_CALLBACK,
+ *                                               this means the operation started successfully.
+ *  @retval #AESECB_STATUS_ERROR                 The operation failed.
  *  @retval #AESECB_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESECB_STATUS_CANCELED              The operation was canceled.
+ *  @retval #AESECB_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
-int_fast16_t AESECB_finalize(AESECB_Handle handle,
-                             AESECB_Operation * operation);
+int_fast16_t AESECB_finalize(AESECB_Handle handle, AESECB_Operation *operation);
 
 /*!
  *  @brief Cancels an ongoing AESECB operation.

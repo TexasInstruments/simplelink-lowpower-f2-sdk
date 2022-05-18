@@ -96,9 +96,55 @@ typedef union
     GapScan_Evt_AdvRpt_t pAdvReport;
 }GapAdv_data_t;
 
+typedef struct {
+  /**
+   * Bits 0 to 4 indicate connectable, scannable, directed, scan response, and
+   * legacy respectively
+   */
+  uint8_t  evtType;
+  /// Public, random, public ID, random ID, or anonymous
+  uint8_t  addrType;
+  /// Address of the advertising device
+  uint8_t  addr[B_ADDR_LEN];
+  /// PHY of the primary advertising channel
+  uint8_t  primPhy;
+  /// PHY of the secondary advertising channel
+  uint8_t  secPhy;
+  /// SID (0x00-0x0f) of the advertising PDU. 0xFF means no ADI field in the PDU
+  uint8_t  advSid;
+  /// -127 dBm <= TX power <= 126 dBm
+  int8_t   txPower;
+  /// -127 dBm <= RSSI <= 20 dBm
+  int8_t   rssi;
+  /// Type of TargetA address in the directed advertising PDU
+  uint8_t  directAddrType;
+  /// TargetA address
+  uint8_t  directAddr[B_ADDR_LEN];
+  /// Periodic advertising interval. 0 means no periodic advertising.
+  uint16_t periodicAdvInt;
+  /// Length of the data
+  uint16_t dataLen;
+  /// Pointer to advertising or scan response data
+  uint8_t  *pData;
+} bleStk_GapScan_Evt_AdvRpt_t;
+
+// Structures/unions data types declarations
+typedef union
+{
+    uint8_t advHandle;
+    GapAdv_setTerm_t pSetTerm;
+    GapAdv_scanReqReceived_t pScanReqRcv;
+    GapAdv_truncData_t pTruncData;
+    GapScan_Evt_End_t pScanDis;
+    bleStk_GapScan_Evt_AdvRpt_t pAdvReport;
+}Gap_Evt_data_t;
+
 typedef void (*pfnBleStkAdvCB_t) (uint32_t event,
                                   GapAdv_data_t *pBuf,
                                   uint32_t *arg);
+typedef void (*bleStk_pfnGapScanCB_t) (uint32_t event,
+                                     Gap_Evt_data_t *pBuf,
+                                     uint32_t *arg);
 
 /*********************************************************************
  * MACROS
@@ -128,7 +174,16 @@ extern bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHan
                               GapAdv_eventMaskFlags_t eventMask, GapAdv_params_t *advParams,
                               uint16_t advDataLen ,uint8_t advData[],
                               uint16_t scanRespDataLen, uint8_t scanRespData[]);
-void bleStk_getDevAddr(uint8_t wantIA, uint8_t *pAddr);
+extern void bleStk_getDevAddr(uint8_t wantIA, uint8_t *pAddr);
+
+// Scan
+extern bStatus_t bleStk_scanInit(bleStk_pfnGapScanCB_t bleStk_bleApp_scanCB,
+                              GapScan_EventMask_t eventMask,
+                              uint8_t primPhys, uint8_t scanType, uint16_t scanInterval, uint16_t scanWindow,
+                              uint16_t advReportFields, uint8_t defaultScanPhy, uint8_t scanDupFilter,
+                              uint16_t scanFilterPduType,
+                              uint16_t scanMinConnInterval, uint16_t scanMaxConnInterval);
+status_t bleStk_GapScan_registerCb(bleStk_pfnGapScanCB_t cb, uint32_t * arg);
 
 #ifdef __cplusplus
 }

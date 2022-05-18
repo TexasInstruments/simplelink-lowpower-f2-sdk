@@ -200,6 +200,11 @@
                                     "_type": "HW_REG_OVERRIDE",
                                     "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1A ticks of 16\/24 us = 17.3 us).",
                                     "$": "0x6028,0x001A"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "TX: set intFreq = 0",
+                                    "$": "0x00000343"
                                 }
                             ]
                         },

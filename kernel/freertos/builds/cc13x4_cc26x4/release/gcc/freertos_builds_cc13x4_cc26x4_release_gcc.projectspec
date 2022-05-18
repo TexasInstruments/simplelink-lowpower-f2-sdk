@@ -7,7 +7,7 @@
         toolChain="GNU"
         outputType="staticLibrary"
         requiredVariables="FREERTOS_INSTALL_DIR"
-        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source  -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano -I${CG_TOOL_ROOT}/arm-none-eabi/include -DDeviceFamily_CC13X4_CC26X4 -mcpu=cortex-m33 -march=armv8-m.main -mthumb -std=c99 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -ffunction-sections -fdata-sections -fno-builtin-malloc -g -gstrict-dwarf -Wall --specs=nano.specs"
+        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source  -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano -I${CG_TOOL_ROOT}/arm-none-eabi/include -DDeviceFamily_CC13X4_CC26X4 -O3 -mcpu=cortex-m33 -march=armv8-m.main -mthumb -std=c99 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -ffunction-sections -fdata-sections -fno-builtin-malloc -g -gstrict-dwarf -Wall --specs=nano.specs"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
         description="A FreeRTOS release configuration project">

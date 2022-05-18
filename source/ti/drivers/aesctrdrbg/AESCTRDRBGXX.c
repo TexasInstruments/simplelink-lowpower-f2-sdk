@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,12 +46,14 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
 #include <ti/drivers/cryptoutils/utils/CryptoUtils.h>
 
-#if ((DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0) || \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1) || \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2) || \
-     (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4))
+#include <ti/devices/DeviceFamily.h>
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    #include <ti/drivers/aesctr/AESCTRCC23XX.h>
+#else
     #include <ti/drivers/aesctr/AESCTRCC26XX.h>
 #endif
+
 
 /* Forward declarations */
 static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment);
@@ -82,11 +84,16 @@ static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
                                              size_t additionalDataLength) {
     AESCTRDRBGXX_Object         *object;
     AESCTR_Operation            operation;
-    uint8_t tmp[AESCTRDRBG_MAX_SEED_LENGTH] = {0};
+    /*
+     * Buffer must be word aligned as some AESCTR implementations require
+     * word aligned I/O.
+     */
+    uint32_t buf32[(AESCTRDRBG_MAX_SEED_LENGTH+3)/4] = {0};
 
     object = handle->object;
 
-    /* We need to increment the counter here since regular AESCTR
+    /*
+     * We need to increment the counter here since regular AESCTR
      * only increments the counter after encrypting it while
      * AESCTRDRBG increments the counter before encrypting it.
      * We do not need to worry about the counter being 1 over afterwards
@@ -95,26 +102,28 @@ static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
      */
     AESCTRDRBGXX_addBigendCounter(object->counter, 1);
 
-    /* Wrap the memcpy below in a zero-length check. Do not remove it!
+    /*
+     * Wrap the memcpy below in a zero-length check. Do not remove it!
      * The explicit check is necessary for klocwork to stop emitting a critical
      * warning. Theoretically, memcpy with a length argument of 0 should do
      * nothing. However klocwork emits a warning that there is an out
-     * of bounds array access (underflow) on tmp if this check is not in place.
+     * of bounds array access (underflow) on buf32 if this check is not in place.
      */
     if (additionalDataLength > 0) {
-        /* Copy over any additional data and operate on tmp in place.
-         * This way we can have the case where additionalDataLength < seedLength.
-         * This is useful in AESCTRDRBG_getBytes() to avoid allocating a spare
-         * empty buffer.
+        /*
+         * Copy over any additional data and operate on buf32 in place. This way
+         * we can have the case where additionalDataLength < seedLength. This is
+         * useful in AESCTRDRBG_getBytes() to avoid allocating a spare empty
+         * buffer.
          */
-        memcpy(tmp,
+        memcpy(buf32,
                additionalData,
                additionalDataLength);
     }
 
     operation.key               = &object->key;
-    operation.input             = tmp;
-    operation.output            = tmp;
+    operation.input             = (uint8_t *)buf32;
+    operation.output            = (uint8_t *)buf32;
     operation.initialCounter    = object->counter;
     operation.inputLength       = object->key.u.plaintext.keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES;
 
@@ -124,18 +133,20 @@ static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
 
     /* Copy the left most keyLength bytes of the computed result */
     memcpy(object->keyingMaterial,
-           tmp,
+           buf32,
            object->key.u.plaintext.keyLength);
 
-    /* Copy new counter value as the right most 16 bytes of the
-     * computed result.
+    /*
+     * Copy new counter value as the right most 16 bytes of the computed result.
+     * The key length is always a word multiple number of bytes so we can divide
+     * by word size to determine the buf32 index.
      */
     memcpy(object->counter,
-           tmp + object->key.u.plaintext.keyLength,
+           &buf32[object->key.u.plaintext.keyLength / sizeof(uint32_t)],
            AESCTRDRBG_AES_BLOCK_SIZE_BYTES);
 
     /* Wipe the stack buffer */
-    memset(tmp, 0, object->seedLength);
+    memset(buf32, 0, object->seedLength);
 
     return AESCTRDRBG_STATUS_SUCCESS;
 }
@@ -240,7 +251,7 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
         return NULL;
     }
 
-    /* Initialise CryptoKey for later use */
+    /* Initialize CryptoKey for later use */
     CryptoKeyPlaintext_initKey(&object->key, object->keyingMaterial, params->keyLength);
 
     /* Zero-out counter and keyingMaterial */
@@ -386,8 +397,18 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle,
 
     if (status != AESCTR_STATUS_SUCCESS) {
         AESCTR_releaseLock(object->ctrHandle);
-        AESCTRDRBG_uninstantiate(handle);
-        return AESCTRDRBG_STATUS_UNINSTANTIATED;
+
+        if (status == AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED)
+        {
+            status = AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED;
+        }
+        else
+        {
+            AESCTRDRBG_uninstantiate(handle);
+            status = AESCTRDRBG_STATUS_UNINSTANTIATED;
+        }
+
+        return status;
     }
 
     /* Add the number of counter blocks we produced to the

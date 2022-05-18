@@ -42,16 +42,7 @@ let family   = Common.device2Family(system.deviceData, "UART2");
 
 /* Array of UART2 configurables that are common across device families */
 let config = [
-    {
-        name        : "dataDirection",
-        displayName : "Data Direction",
-        default     : 'Send and Receive',
-        options     : [
-            { name : 'Send and Receive' },
-            { name : 'Send Only' },
-            { name : 'Receive Only' }
-        ]
-    },
+    
 
     /* baudRates is only needed by MSP432P but exists for all devs to enable
      * more portable syscfg scripts.

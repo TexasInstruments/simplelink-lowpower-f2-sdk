@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@
 //*****************************************************************************
 extern const Graphics_Display_Functions g_sharpFxns;
 
-extern void SharpGrLib_sendToggleVCOMCommand();
+extern void SharpGrLib_sendToggleVCOMCommand(void);
 extern void SharpGrLib_init(SPI_Handle hSpi, uint32_t csPin);
 
 #endif // __SHARPLCD_H__

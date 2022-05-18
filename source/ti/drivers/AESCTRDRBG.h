@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -278,6 +278,7 @@
 #include <stdint.h>
 
 #include <ti/drivers/AESCTR.h>
+#include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 #ifdef __cplusplus
@@ -297,7 +298,7 @@ extern "C" {
  * #define AESCTRDRBGXYZ_STATUS_ERROR2    AESCTRDRBG_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCTRDRBG_STATUS_RESERVED        (-32)
+#define AESCTRDRBG_STATUS_RESERVED        AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -305,7 +306,7 @@ extern "C" {
  * Functions return #AESCTRDRBG_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCTRDRBG_STATUS_SUCCESS         (0)
+#define AESCTRDRBG_STATUS_SUCCESS         AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -313,7 +314,7 @@ extern "C" {
  * Functions return #AESCTRDRBG_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCTRDRBG_STATUS_ERROR           (-1)
+#define AESCTRDRBG_STATUS_ERROR           AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -323,7 +324,7 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE (-2)
+#define AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE  AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  * @brief   The AESCTRDRBG instance must be reseeded.
@@ -331,13 +332,22 @@ extern "C" {
  * An AESCTRDRBG instance may only service a limited number of bit
  * generation requests before reseeding with more entropy is required.
  */
-#define AESCTRDRBG_STATUS_RESEED_REQUIRED (-3)
+#define AESCTRDRBG_STATUS_RESEED_REQUIRED   (AES_STATUS_DRIVER_SPECIFIC_ERROR - 0)
 
 /*!
  * @brief   The AESCTRDRBG instance is uninstantiated. Close and reopen
  *          the instance.
  */
-#define AESCTRDRBG_STATUS_UNINSTANTIATED (-4)
+#define AESCTRDRBG_STATUS_UNINSTANTIATED    (AES_STATUS_DRIVER_SPECIFIC_ERROR - 1)
+
+/*!
+ * @brief   The operation does not support non-word-aligned input and/or output.
+ *
+ * AESCTR driver implementations used by AESCTRDRBG may have restrictions on the
+ * alignment of input/output data due to performance limitations of the
+ * hardware.
+ */
+#define AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED    (AES_STATUS_DRIVER_SPECIFIC_ERROR - 2)
 
 /*!
  * @brief   The AES block size in bytes.
@@ -404,13 +414,7 @@ typedef enum {
  *
  *  @sa     #AESCTRDRBG_init()
  */
-typedef struct {
-    /*! Pointer to a driver specific data object */
-    void               *object;
-
-    /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
-} AESCTRDRBG_Config;
+typedef AESCommon_Config AESCTRDRBG_Config;
 
 /*!
  *  @brief  A handle that is returned from an #AESCTRDRBG_open() call.
@@ -524,13 +528,15 @@ void AESCTRDRBG_close(AESCTRDRBG_Handle handle);
  *  @param  [in,out]    randomBytes Pointer to a \c CryptoKey object that should be already initialized
  *                                  to hold a plaintext key, provided with the length and the address
  *                                  of the plaintext key-material where the generated random bytes will
- *                                  be populated.
+ *                                  be populated. Some implementations may require key-material to be
+ *                                  word-aligned.
  *
  *  @retval #AESCTRDRBG_STATUS_SUCCESS              Random bytes generated.
  *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Random bytes not generated.
+ *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomBytes key material must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomBytes);
 
@@ -545,13 +551,15 @@ int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomByte
  *  @param  [in,out]    randomKey   Pointer to a \c CryptoKey object that should be already initialized
  *                                  to hold a plaintext key, provided with the length and the address
  *                                  of the plaintext key-material where the generated random bytes will
- *                                  be populated.
+ *                                  be populated. Some implementations may require key-material to be
+ *                                  word-aligned.
  *
  *  @retval #AESCTRDRBG_STATUS_SUCCESS              Key-material generated.
  *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error. Key-material not generated.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Key-material not generated.
  *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Key-material not generated.
  *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Key-material not generated.
+ *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomKey key material must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomKey);
 
@@ -567,7 +575,8 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
  *  @param  [in]        handle          An #AESCTRDRBG_Handle returned from #AESCTRDRBG_open()
  *
  *  @param  [out]       randomBytes     A pointer to an array that stores the random bytes
- *                                      output by this function.
+ *                                      output by this function. Some implementations may
+ *                                      require this array to be word-aligned.
  *
  *  @param  [in]        randomBytesSize The size in bytes of the random data required.
  *
@@ -576,6 +585,7 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Random bytes not generated.
+ *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomBytes array must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomBytes, size_t randomBytesSize);
 

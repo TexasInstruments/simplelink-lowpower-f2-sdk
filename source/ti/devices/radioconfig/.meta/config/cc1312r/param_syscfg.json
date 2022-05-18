@@ -80,12 +80,12 @@
                     "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth"
                 },
                 {
-                    "name": "2gfsk100kbpswmbusc",
-                    "displayName": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
-                },
-                {
                     "name": "2gfsk100kbpswmbust",
                     "displayName": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
+                },
+                {
+                    "name": "2gfsk100kbpswmbusc",
+                    "displayName": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
                 },
                 {
                     "name": "2gfsk50kbps12dev868wsun1a",
@@ -939,14 +939,14 @@
                 "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth"
             },
             {
-                "file": "setting_tc216.json",
-                "name": "2gfsk100kbpswmbusc",
-                "description": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
-            },
-            {
                 "file": "setting_tc210.json",
                 "name": "2gfsk100kbpswmbust",
                 "description": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
+            },
+            {
+                "file": "setting_tc216.json",
+                "name": "2gfsk100kbpswmbusc",
+                "description": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth"
             },
             {
                 "file": "setting_tc120.json",

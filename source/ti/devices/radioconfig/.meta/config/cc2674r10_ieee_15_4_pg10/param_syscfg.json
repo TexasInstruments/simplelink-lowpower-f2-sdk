@@ -7,7 +7,7 @@
             "options": [
                 {
                     "name": "ieee154",
-                    "displayName": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Pre-silicon settings)"
+                    "displayName": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Preview)"
                 },
                 {
                     "name": "ieee154_fpga",
@@ -140,7 +140,7 @@
             {
                 "file": "setting_ieee_802_15_4.json",
                 "name": "ieee154",
-                "description": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Pre-silicon settings)",
+                "description": "IEEE 802.15.4-2006, 250 kbps, OQPSK, DSSS = 1:8 (Preview)",
                 "options": "disable_high_pa"
             },
             {

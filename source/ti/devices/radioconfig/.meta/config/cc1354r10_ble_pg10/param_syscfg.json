@@ -7,7 +7,7 @@
             "options": [
                 {
                     "name": "bt5le1m",
-                    "displayName": "BLE, 1 Mbps, LE 1M (Pre-silicon settings)"
+                    "displayName": "BLE, 1 Mbps, LE 1M (Preview)"
                 }
             ],
             "default": "bt5le1m"
@@ -275,7 +275,7 @@
             {
                 "file": "setting_bt5_le_1m.json",
                 "name": "bt5le1m",
-                "description": "BLE, 1 Mbps, LE 1M (Pre-silicon settings)",
+                "description": "BLE, 1 Mbps, LE 1M (Preview)",
                 "options": "disable_high_pa"
             }
         ]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,13 +111,16 @@ var deviceWareOpts =
 var libBuilder = xdc.loadCapsule("ti/drivers/libBuilder.xs");
 
 /* List of files (besides *.c files) which need to be packaged with drivers */
-var packageFiles = [
-    "package.bld",
-    "./dpl",
-    "./startup",
-    "./posix",
-    "./NoRTOS.h"
-];
+var packageFiles = [];
+
+/* NoRTOS not supported on CC23XX yet */
+if (deviceWareOpts.cc26xxware || deviceWareOpts.cc32xxware) {
+    packageFiles.push("package.bld");
+    packageFiles.push("./dpl");
+    packageFiles.push("./startup");
+    packageFiles.push("./posix");
+    packageFiles.push("./NoRTOS.h");
+}
 
 /* Generate libraries for products which have been defined */
 if (deviceWareOpts.cc26xxware) {

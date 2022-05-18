@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,19 +67,20 @@ void resetISR(void);
 // Linker variables that marks the top and bottom of the stack.
 //
 //*****************************************************************************
-extern unsigned long __STACK_END;
 extern void *__stack;
+extern unsigned long __STACK_END;
 
 //*****************************************************************************
 //
 // The vector table in Flash. Note that the proper constructs must be placed
-// on this to ensure that it ends up at physical address 0x0000.0000.
+// on this to ensure that it ends up at physical address 0x0000.0000 or at the
+// start of the program if located at a start address other than 0.
 //
 //*****************************************************************************
 __attribute__ ((section(".resetVecs"))) __attribute__ ((used))
 static void (* const resetVectors[])(void) =
 {
-    (void (*)(void))((unsigned long)&__STACK_END),
+    (void (*)(void))((uint32_t)&__STACK_END),
     resetISR,                        // The reset handler
     nmiISR,                          // The NMI handler
     faultISR,                        // The hard fault handler
@@ -137,44 +138,59 @@ static void (* const resetVectors[])(void) =
 
 //*****************************************************************************
 //
+// Optimization is disabled for this inline function to avoid compiler
+// optimizations that use the stack.
+//
+//*****************************************************************************
+__attribute__((optnone))
+static inline void initializeStack(uint32_t *start, uint32_t *end)
+{
+    while (start < end)
+    {
+        *start++ = (uint32_t)0xa5a5a5a5;
+    }
+}
+
+
+//*****************************************************************************
+//
 // This function is called at reset entry early in the boot sequence.
 //
 //*****************************************************************************
 void localProgramStart(void)
 {
-    unsigned long *vtor = (unsigned long *)0xE000ED08;
+    uint32_t *vtor = (uint32_t *)0xE000ED08;
+    /* Used for disabling interrupts and as limit during stack init */
     uint32_t newBasePri;
 
-    /* do final trim of device */
+    /* Do final trim of device */
     SetupTrimDevice();
 
-    /* disable interrupts */
+    /* Disable interrupts */
     __asm volatile (
-        "mov %0, %1 \n\t"
-        "msr basepri, %0 \n\t"
-        "isb \n\t"
-        "dsb \n\t"
-        :"=r" (newBasePri) : "i" (configMAX_SYSCALL_INTERRUPT_PRIORITY) : "memory"
-    );
+        " mov %[aNewBasePri], %[aCfgMaxPri]\n"
+        " msr basepri, %[aNewBasePri] \n"
+        " isb \n"
+        " dsb \n"
+        : [aNewBasePri]"=r" (newBasePri)
+        : [aCfgMaxPri]"i" (configMAX_SYSCALL_INTERRUPT_PRIORITY)
+        : "memory");
+
 
 #if configENABLE_ISR_STACK_INIT
-    /* Initialize ISR stack to known value for Runtime Object View */
-    register uint32_t *top = (uint32_t *)&__stack;
-    register uint32_t *end = (uint32_t *)&newBasePri;
-    while (top < end) {
-        *top++ = (uint32_t)0xa5a5a5a5;
-    }
+    /* Initialize ISR stack to known value for Runtime Object View. */
+    initializeStack((uint32_t *)&__stack, (uint32_t *)&newBasePri);
 #endif
 
     /*
-     * set vector table base to point to above vectors in Flash; during
+     * Set vector table base to point to above vectors in Flash; during
      * driverlib interrupt initialization this table will be copied to RAM
      */
-    *vtor = (unsigned long)&resetVectors[0];
+    *vtor = (uint32_t)&resetVectors[0];
 
-    /* jump to the C initialization routine. */
-    __asm(" .global _c_int00\n"
-          " b.w     _c_int00");
+    /* Jump to the C initialization routine. */
+    __asm (" .global _c_int00\n"
+           " b.w     _c_int00");
 }
 
 //*****************************************************************************
@@ -184,7 +200,7 @@ void localProgramStart(void)
 // after which the application supplied entry routine is called.
 //
 //*****************************************************************************
-void resetISR(void)
+void __attribute__((naked)) resetISR(void)
 {
     /*
      * Set stack pointer based on the stack value stored in the vector table.
@@ -197,8 +213,7 @@ void resetISR(void)
         " movt r0, #:upper16:resetVectors\n"
         " ldr r0, [r0]\n"
         " mov sp, r0\n"
-        " b localProgramStart"
-        );
+        " b localProgramStart");
 }
 
 //*****************************************************************************
@@ -211,7 +226,8 @@ void resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -225,7 +241,8 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -239,7 +256,8 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }
 
@@ -253,6 +271,7 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while(1) {
+    while (1)
+    {
     }
 }

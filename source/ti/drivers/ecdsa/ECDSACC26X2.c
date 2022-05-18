@@ -95,9 +95,6 @@ static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_convertReturnValue(uint32_t pkaResult);
 
-/* Extern globals */
-extern const ECDSA_Params ECDSA_defaultParams;
-
 /* Static globals */
 static bool isInitialized = false;
 static uint32_t resultAddress;
@@ -861,16 +858,16 @@ void ECDSA_close(ECDSA_Handle handle) {
  *  ======== ECDSA_construct ========
  */
 ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params) {
-    ECDSA_Handle                  handle;
-    ECDSACC26X2_Object           *object;
-    uint_fast8_t                key;
+    ECDSA_Handle       handle;
+    ECDSACC26X2_Object *object;
+    uintptr_t          key;
 
     handle = (ECDSA_Handle)config;
     object = handle->object;
 
     /* If params are NULL, use defaults */
     if (params == NULL) {
-        params = (ECDSA_Params *)&ECDSA_defaultParams;
+        params = &ECDSA_defaultParams;
     }
 
     key = HwiP_disable();

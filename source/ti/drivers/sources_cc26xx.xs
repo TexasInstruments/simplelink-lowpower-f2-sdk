@@ -18,7 +18,8 @@ var cc26x1SrcList = commonSources.concat([
     "./aescmac/AESCMACCC26XX.c",
     "AESECB.c",
     "./aesecb/AESECBCC26XX.c",
-    "./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c",
+    "./cryptoutils/cryptokey/CryptoKeyPlaintext.c",
+    "./cryptoutils/ecc/ECCInitCC26X1.c",
     "./cryptoutils/ecc/ECCParamsCC26X1.c",
     "./cryptoutils/sharedresources/CryptoResourceCC26XX.c",
     "./cryptoutils/utils/CryptoUtils.c",
@@ -42,10 +43,13 @@ var cc26x1SrcList = commonSources.concat([
     "./pin/PINCC26XX.c",
     "./power/PowerCC26X2.c",
     "./power/PowerCC26X2_calibrateRCOSC.c",
+    "./power/PowerCC26X2_helpers.c",
+    "./power/PowerCC26X2_calibrateRCOSC_helpers.c",
     "./pwm/PWMTimerCC26XX.c",
+    "RNG.c",
+    "./rng/RNGCC26XX.c",
     "SHA2.c",
     "./sha2/SHA2CC26X1.c",
-    "./spi/SPICC26XXDMA.c",
     "./spi/SPICC26X2DMA.c",
     "Temperature.c",
     "./temperature/TemperatureCC26X2.c",
@@ -81,8 +85,10 @@ var cc26x1HdrList = commonHeaders.concat([
     "./aescmac/AESCMACCC26XX.h",
     "AESECB.h",
     "./aesecb/AESECBCC26XX.h",
+    "AESCommon.h",
     "./cryptoutils/cryptokey/CryptoKey.h",
     "./cryptoutils/cryptokey/CryptoKeyPlaintext.h",
+    "./cryptoutils/ecc/ECCInitCC26X1.h",
     "./cryptoutils/ecc/ECCParams.h",
     "./cryptoutils/sharedresources/CryptoResourceCC26XX.h",
     "./cryptoutils/utils/CryptoUtils.h",
@@ -112,9 +118,10 @@ var cc26x1HdrList = commonHeaders.concat([
     "./power/PowerCC26XX.h",
     "./power/PowerCC26X2.h",
     "./pwm/PWMTimerCC26XX.h",
+    "RNG.h",
+    "./rng/RNGCC26XX.h",
     "SHA2.h",
     "./sha2/SHA2CC26X1.h",
-    "./spi/SPICC26XXDMA.h",
     "./spi/SPICC26X2DMA.h",
     "Temperature.h",
     "./timer/TimerCC26XX.h",
@@ -145,7 +152,7 @@ var cc26x2SrcList = commonSources.concat([
     "./aesgcm/AESGCMCC26XX.c",
     "AESECB.c",
     "./aesecb/AESECBCC26XX.c",
-    "./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c",
+    "./cryptoutils/cryptokey/CryptoKeyPlaintext.c",
     "./cryptoutils/ecc/ECCParamsCC26X2.c",
     "./cryptoutils/sharedresources/CryptoResourceCC26XX.c",
     "./cryptoutils/utils/CryptoUtils.c",
@@ -174,10 +181,13 @@ var cc26x2SrcList = commonSources.concat([
     "./pin/PINCC26XX.c",
     "./power/PowerCC26X2.c",
     "./power/PowerCC26X2_calibrateRCOSC.c",
+    "./power/PowerCC26X2_helpers.c",
+    "./power/PowerCC26X2_calibrateRCOSC_helpers.c",
     "./pwm/PWMTimerCC26XX.c",
+    "RNG.c",
+    "./rng/RNGCC26XX.c",
     "SHA2.c",
     "./sha2/SHA2CC26X2.c",
-    "./spi/SPICC26XXDMA.c",
     "./spi/SPICC26X2DMA.c",
     "Temperature.c",
     "./temperature/TemperatureCC26X2.c",
@@ -214,6 +224,7 @@ var cc26x2HdrList = commonHeaders.concat([
     "./aesgcm/AESGCMCC26XX.h",
     "AESECB.h",
     "./aesecb/AESECBCC26XX.h",
+    "AESCommon.h",
     "./cryptoutils/cryptokey/CryptoKey.h",
     "./cryptoutils/cryptokey/CryptoKeyPlaintext.h",
     "./cryptoutils/ecc/ECCParams.h",
@@ -246,9 +257,10 @@ var cc26x2HdrList = commonHeaders.concat([
     "./power/PowerCC26XX.h",
     "./power/PowerCC26X2.h",
     "./pwm/PWMTimerCC26XX.h",
+    "RNG.h",
+    "./rng/RNGCC26XX.h",
     "SHA2.h",
     "./sha2/SHA2CC26X2.h",
-    "./spi/SPICC26XXDMA.h",
     "./spi/SPICC26X2DMA.h",
     "Temperature.h",
     "./temperature/TemperatureCC26X2.h",
@@ -280,7 +292,7 @@ var cc26x4SrcList = commonSources.concat([
     "./aesgcm/AESGCMCC26X4.c",
     "AESECB.c",
     "./aesecb/AESECBCC26XX.c",
-    "./cryptoutils/cryptokey/CryptoKeyPlaintextCC26XX.c",
+    "./cryptoutils/cryptokey/CryptoKeyPlaintext.c",
     "./cryptoutils/ecc/ECCParamsCC26X2.c",
     "./cryptoutils/sharedresources/CryptoResourceCC26XX.c",
     "./cryptoutils/utils/CryptoUtils.c",
@@ -309,6 +321,8 @@ var cc26x4SrcList = commonSources.concat([
     "./power/PowerCC26X2.c",
     "./power/PowerCC26X2_calibrateRCOSC.c",
     "./pwm/PWMTimerCC26XX.c",
+    "RNG.c",
+    "./rng/RNGCC26XX.c",
     "SHA2.c",
     "./sha2/SHA2CC26X2.c",
     "./spi/SPICC26X4DMA.c",
@@ -329,8 +343,13 @@ var cc26x4SrcList = commonSources.concat([
     "pdm/pdm2pcm_cc26x2_iar.asm"
 ]);
 
-var cc26x4SpeSrcList = [
+var cc26x4NonsecureSrcList = [
     "./nvs/flash/FlashCC26X4_ns.c",
+];
+
+var cc26x4SecureOnlySrcList = [
+    "./power/PowerCC26X2_helpers.c",
+    "./power/PowerCC26X2_calibrateRCOSC_helpers.c",
 ];
 
 var cc26x4HdrList = commonHeaders.concat([
@@ -351,6 +370,7 @@ var cc26x4HdrList = commonHeaders.concat([
     "./aesgcm/AESGCMCC26X4.h",
     "AESECB.h",
     "./aesecb/AESECBCC26XX.h",
+    "AESCommon.h",
     "./cryptoutils/cryptokey/CryptoKey.h",
     "./cryptoutils/cryptokey/CryptoKeyPlaintext.h",
     "./cryptoutils/ecc/ECCParams.h",
@@ -385,7 +405,10 @@ var cc26x4HdrList = commonHeaders.concat([
     "./itm/hw_cpu_itm.h",
     "./power/PowerCC26XX.h",
     "./power/PowerCC26X2.h",
+    "./power/PowerCC26X2_helpers.h",
     "./pwm/PWMTimerCC26XX.h",
+    "RNG.h",
+    "./rng/RNGCC26XX.h",
     "SHA2.h",
     "./sha2/SHA2CC26X2.h",
     "./spi/SPICC26X4DMA.h",
@@ -401,9 +424,9 @@ var cc26x4HdrList = commonHeaders.concat([
     "./watchdog/WatchdogCC26XX.h"
 ]);
 
-var cc26x4SecureFlashInterfaceList = [
+var cc26x4SecureInterfaceList = [
     "./nvs/flash/FlashCC26X4_ns.c",
     "./nvs/flash/FlashCC26X4_ns.h",
     "./nvs/flash/FlashCC26X4_s.c",
-    "./nvs/flash/FlashCC26X4_s.h"
+    "./nvs/flash/FlashCC26X4_s.h",
 ];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
 /** ============================================================================
  *  @file       ECDHCC26X1.h
  *
- *  @brief      ECDH driver implementation for the CC26XX family
+ *  @brief      ECDH driver implementation for the CC26X1 family
  *
  *  This file should only be included in the board file to fill the ECDH_config
  *  struct.
@@ -46,6 +46,7 @@
  *  | Curves Supported |
  *  |------------------|
  *  | NISTP256         |
+ *  | Curve25519       |
  *
  */
 
@@ -74,6 +75,34 @@ typedef struct {
     uint8_t    dummy;
 } ECDHCC26X1_HWAttrs;
 
+/*
+ * Performance of the ECC SW library is scaled via the window size parameter
+ * which defines the number of bits of the scalar that will be processed together
+ * during the execution of the scalar multiplication. A larger window size
+ * will have higher performance at the cost of increased memory consumption.
+ * A window size of 3 was selected for the best trade-off of performance and
+ * memory consumption.
+ *
+ * ---------------------------------------------------
+ * |             |    NIST P256    |     X25519      |
+ * | Window Size |  WorkZone Size  |  WorkZone Size  |
+ * |             |     (words)     |     (words)     |
+ * |-------------|-----------------|-----------------|
+ * |   2 or 3    |       171       |       198       |
+ * |      4      |       225       |       225       |
+ * |      5      |       333       |       333       |
+ * ---------------------------------------------------
+ */
+#define ECDH26X1_ECC_WINDOW_SIZE  3
+
+/*
+ * ECC Workzone size is based on worst case empirical measurement of ECDH
+ * operations on supported curves with the selected window size.
+ *    NIST P256  (win_size=3): 171 words
+ *    Curve25519 (win_size=3): 198 words
+ */
+#define ECDH26X1_ECC_WORKZONE_WORDS  198
+
 /*!
  *  @brief      ECDHCC26X1 Object
  *
@@ -82,9 +111,9 @@ typedef struct {
 typedef struct {
     bool                            isOpen;
     ECDH_CallbackFxn                callbackFxn;
-    ECDH_ReturnBehavior             returnBehavior;
+    ECDH_ReturnBehavior             returnBehavior; /* Note: Callback return behavior is not supported */
     ECC_State                       eccState;
-    uint32_t                        eccWorkZone[171];
+    uint32_t                        eccWorkZone[ECDH26X1_ECC_WORKZONE_WORDS];
 } ECDHCC26X1_Object;
 
 #ifdef __cplusplus

@@ -39,7 +39,7 @@
 
 const module = system.modules["/ti/dmm/dmm"].$static;
 const codeGen = system.getScript("/ti/dmm/dmm_code_gen.js");
-const lprfCommon = system.getScript("/ti/common/lprf_common.js");
+const easylinkUtil = system.getScript("/ti/easylink/easylink_common.js");
 
 const project = new codeGen.Project(module);
 
@@ -48,7 +48,7 @@ const project = new codeGen.Project(module);
  *  ======== ti_dmm_application_policy.c ========
  *  Configured DMM module definitions
  *
- *  DO NOT EDIT - This file is generated for the `lprfCommon.getDeviceOrLaunchPadName(false)`
+ *  DO NOT EDIT - This file is generated for the `easylinkUtil.getDeviceOrLaunchPadName(false)`
  *  by the SysConfig tool.
  */
 

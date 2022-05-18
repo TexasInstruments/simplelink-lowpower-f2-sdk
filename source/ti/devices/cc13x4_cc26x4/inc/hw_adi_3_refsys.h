@@ -451,6 +451,13 @@
 // Register: ADI_3_REFSYS_O_DCDCCTL3
 //
 //*****************************************************************************
+// Field:   [4:2] DCDC_DRV_DS
+//
+// Internal. Only to be used through TI provided API.
+#define ADI_3_REFSYS_DCDCCTL3_DCDC_DRV_DS_W                                  3
+#define ADI_3_REFSYS_DCDCCTL3_DCDC_DRV_DS_M                         0x0000001C
+#define ADI_3_REFSYS_DCDCCTL3_DCDC_DRV_DS_S                                  2
+
 // Field:   [1:0] VDDR_BOOST_COMP
 //
 // Internal. Only to be used through TI provided API.

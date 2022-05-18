@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,10 @@
 /*
  *  ======== QueueP.h ========
  */
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 typedef struct _QueueP_Elem {
     struct _QueueP_Elem *volatile next;

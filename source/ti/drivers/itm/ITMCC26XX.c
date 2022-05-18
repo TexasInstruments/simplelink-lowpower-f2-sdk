@@ -72,7 +72,7 @@ void ITM_clearPinMux(void)
 /*
  *  ======== ITMCC26XX_Flush ========
  */
-void ITMCC26XX_flush()
+void ITMCC26XX_flush(void)
 {
     ITMCC26XX_HWAttrs *hwAttrs = (ITMCC26XX_HWAttrs *)itmHwAttrs;
     /* Release the SWO pin from the ITM */

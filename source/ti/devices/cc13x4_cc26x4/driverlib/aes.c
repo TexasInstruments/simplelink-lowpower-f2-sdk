@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aes.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the AES functions of the crypto module
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -531,10 +529,8 @@ void AESReset(void)
     AESSetDataLength(0);
     AESSetAuthLength(0);
 
-
     /* Only CC26X4 and CC13X4 devices support continuation of CCM & GCM operations */
     AESSetBlockCounter(0);
-
 
     /* Only CC26X2, CC13X2, CC26X2F6, CC13X2F6, CC26X4, and CC13X4 devices have hash support */
     HWREG(CRYPTO_BASE + CRYPTO_O_HASHMODE) = 0;

@@ -134,7 +134,7 @@
     <files>
         <path reference="$PROJ_DIR$/Board.html">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/boards/LP_CC2652R7/Board.html</path>
         <path copyTo="$PROJ_DIR$/cc26x2x7_app_and_stack_agama.icf">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/project_zero/tirtos/iar/cc26x2x7_app_and_stack_agama.icf</path>
-        <path copyTo="$PROJ_DIR$/project_zero.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/project_zero/project_zero.syscfg</path>
+        <path copyTo="$PROJ_DIR$/project_zero.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/project_zero/tirtos/project_zero.syscfg</path>
         <path copyTo="$PROJ_DIR$/project_zero_app.cfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/project_zero/Tools/project_zero_app.cfg</path>
         <path copyTo="$PROJ_DIR$/README.html">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/project_zero/README.html</path>
         <group name="Application" build="true">
@@ -195,9 +195,6 @@
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/cc26xx/devinfoservice.c</path>
             <path reference="$PROJ_DIR$/Profiles/devinfoservice.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/dev_info/devinfoservice.h</path>
             <path reference="$PROJ_DIR$/Profiles/gatt_profile_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_profile_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gatt_uuid.c</path>
-            <path reference="$PROJ_DIR$/Profiles/gatt_uuid.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/inc/gatt_uuid.h</path>
-            <path reference="$PROJ_DIR$/Profiles/gattservapp_util.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/host/gattservapp_util.c</path>
             <path reference="$PROJ_DIR$/Profiles/led_service.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/project_zero/led_service.c</path>
             <path reference="$PROJ_DIR$/Profiles/led_service.h">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/project_zero/led_service.h</path>
         </group>

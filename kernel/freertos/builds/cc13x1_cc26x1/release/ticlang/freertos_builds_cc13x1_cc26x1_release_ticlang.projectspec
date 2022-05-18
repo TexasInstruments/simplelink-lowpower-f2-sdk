@@ -7,7 +7,7 @@
         toolChain="LLVM"
         outputType="staticLibrary"
         requiredVariables="FREERTOS_INSTALL_DIR"
-        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM3 -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source -I${CG_TOOL_ROOT}/include -Dccs -DDeviceFamily_CC13X1_CC26X1 -c -g -mcpu=cortex-m4 -mfloat-abi=soft"
+        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM3 -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source -I${CG_TOOL_ROOT}/include -Dccs -DDeviceFamily_CC13X1_CC26X1 -Oz -c -g -mcpu=cortex-m4 -mfloat-abi=soft"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
         description="A FreeRTOS release configuration project">

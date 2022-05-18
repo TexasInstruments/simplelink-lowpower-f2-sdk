@@ -60,7 +60,7 @@
 #include "inc/npi_tl.h"
 #include "inc/npi_tl_spi.h"
 #include <ti/drivers/SPI.h>
-#include <ti/drivers/spi/SPICC26XXDMA.h>
+#include <ti/drivers/spi/SPICC26X2DMA.h>
 
 // ****************************************************************************
 // defines

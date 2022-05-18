@@ -113,8 +113,6 @@
         <property name="configuroOptions" value=" --compileOptions &quot;${COMPILER_FLAGS} &quot;"/>
         <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../simple_peripheral.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
         <file path="../../Application/simple_peripheral.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/simple_peripheral.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
@@ -122,12 +120,6 @@
         <file path="../../Application/simple_peripheral_menu.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/simple_peripheral_menu.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
-        </file>
-        <file path="../../Tools/simple_peripheral_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
-        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
-        </file>
-        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
@@ -211,12 +203,6 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_profile_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gatt_uuid.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gattservapp_util.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/simple_profile/cc26xx/simple_gatt_profile.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/simple_profile/simple_gatt_profile.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
@@ -224,6 +210,14 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/rom/agama_r1/rom_init.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Startup">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
+        <file path="../../tirtos/simple_peripheral.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/simple_peripheral_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
+        </file>
+        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

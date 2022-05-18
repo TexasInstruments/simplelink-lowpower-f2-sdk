@@ -11,7 +11,7 @@ VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS
 CC = "$(CCS_ARMCOMPILER)/bin/armcl"
 AR = "$(CCS_ARMCOMPILER)/bin/armar"
 
-CFLAGS = -c -DDeviceFamily_CC13X1_CC26X1 -qq -pdsw225 -ms -g --endian=little -mv7M4 --float_support=vfplib --symdebug:dwarf -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/CCS/ARM_CM3" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/ccs" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(CCS_ARMCOMPILER)/include"
+CFLAGS = -O3 -c -DDeviceFamily_CC13X1_CC26X1 -qq -pdsw225 -ms -g --endian=little -mv7M4 --float_support=vfplib --symdebug:dwarf -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/CCS/ARM_CM3" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/ccs" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(CCS_ARMCOMPILER)/include"
 
 
 CFILES = \

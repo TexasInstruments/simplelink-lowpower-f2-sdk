@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ const design = inst.rfDesign;
 % let structs = "";
 % let support = "";
 %
-% const freqBands = mod.freqBands();
+% const freqBands = mod.getFreqBands();
 % for (const fb in freqBands) {
 %   const target = freqBands[fb];
 %   if (mod.isFreqBandSelected(inst, target)) {

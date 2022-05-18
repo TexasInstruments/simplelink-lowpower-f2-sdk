@@ -56,7 +56,7 @@
 #include DeviceFamily_constructPath(driverlib/sha2.h)
 #include DeviceFamily_constructPath(driverlib/prcm.h)
 
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4)
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
 #include DeviceFamily_constructPath(inc/hw_cpu_fpu.h)
 #endif
 
@@ -267,7 +267,7 @@ int_fast16_t SHA2_open()
      * the side effect from the SHA2ComputeFinalHash call of setting the CONTROL
      * special register. Lazy stacking is restored in SHA2_close().
      */
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4)
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
     fpccrRestore = HWREG(CPU_FPU_BASE + CPU_FPU_O_FPCCR);
     HWREG(CPU_FPU_BASE + CPU_FPU_O_FPCCR) = 0;
 #else
@@ -291,7 +291,7 @@ void SHA2_close()
     SHA2_object.isOpen = false;
 
     /* Restore the previous state of the FPCCR register. */
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4)
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
     HWREG(CPU_FPU_BASE + CPU_FPU_O_FPCCR) = fpccrRestore;
 #else
     HWREG(CPU_SCS_BASE + CPU_SCS_O_FPCCR) = fpccrRestore;

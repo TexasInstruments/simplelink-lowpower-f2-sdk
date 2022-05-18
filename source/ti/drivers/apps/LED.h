@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -373,7 +373,7 @@ extern LED_State LED_getState(LED_Handle ledHandle);
  *
  *  This function will initialize the LED driver.
  */
-extern void LED_init();
+extern void LED_init(void);
 
 /*!
  *  @brief  Function to open an instance of LED

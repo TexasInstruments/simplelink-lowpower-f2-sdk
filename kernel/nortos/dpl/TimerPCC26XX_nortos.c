@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -218,7 +218,7 @@ void TimerP_setNextTick(TimerP_Handle handle, uint32_t ticks)
  *  ======== TimerP_startup ========
  *  Here after call to main().  Called from BIOS_start().
  */
-void TimerP_startup()
+void TimerP_startup(void)
 {
     TimerP_Obj *obj;
 

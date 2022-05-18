@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -184,8 +184,8 @@ typedef struct DisplayUart_Object
 void DisplayUartMin_init(Display_Handle handle);
 void DisplayUartAnsi_init(Display_Handle handle);
 
-Display_Handle DisplayUartMin_open(Display_Handle, Display_Params * params);
-Display_Handle DisplayUartAnsi_open(Display_Handle, Display_Params * params);
+Display_Handle DisplayUartMin_open(Display_Handle handle, Display_Params * params);
+Display_Handle DisplayUartAnsi_open(Display_Handle handle, Display_Params * params);
 
 void DisplayUartMin_clear(Display_Handle handle);
 void DisplayUartAnsi_clear(Display_Handle handle);
@@ -202,8 +202,8 @@ void DisplayUartMin_vprintf(Display_Handle handle, uint8_t line,
 void DisplayUartAnsi_vprintf(Display_Handle handle, uint8_t line,
                              uint8_t column, const char *fmt, va_list va);
 
-void DisplayUartMin_close(Display_Handle);
-void DisplayUartAnsi_close(Display_Handle);
+void DisplayUartMin_close(Display_Handle handle);
+void DisplayUartAnsi_close(Display_Handle handle);
 
 int DisplayUartMin_control(Display_Handle handle, unsigned int cmd, void *arg);
 int DisplayUartAnsi_control(Display_Handle handle, unsigned int cmd, void *arg);

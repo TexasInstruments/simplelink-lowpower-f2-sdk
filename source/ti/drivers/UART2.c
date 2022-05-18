@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -608,6 +608,15 @@ int_fast16_t __attribute__((weak)) UART2_writeTimeout(UART2_Handle handle,
 
         if (object->writeCount == 0) {
             /* All data has been written to the TX buffer */
+            if (object->state.writeMode == UART2_Mode_BLOCKING) {
+                /* Wait until EOT is signaled. Pend twice because
+                UART2CC26X2_hwiIntFxn will post once for UDMA done,
+                and once for UART EOT */
+                HwiP_restore(key);
+                SemaphoreP_pend(&object->writeSem, SemaphoreP_WAIT_FOREVER);
+                SemaphoreP_pend(&object->writeSem, SemaphoreP_WAIT_FOREVER);
+                key = HwiP_disable();
+            }
             break;
         }
 
@@ -638,14 +647,28 @@ int_fast16_t __attribute__((weak)) UART2_writeTimeout(UART2_Handle handle,
  */
 void __attribute__((weak)) UART2_writeCancel(UART2_Handle handle)
 {
-    UART2_Object        *object = handle->object;
-    uintptr_t            key;
+    UART2_Object    *object = handle->object;
+    uintptr_t       key;
+    uint32_t        bytesRemaining;
 
     key = HwiP_disable();
 
     if (object->writeInUse && !object->state.txCancelled) {
         object->state.txCancelled = true;
+
+        /* Stop DMA transaction */
+        bytesRemaining = UART2Support_dmaStopTx(handle);
+
+        /* bytesWritten includes bytes commited to DMA transaction. Remove bytes remaining in transaction from count */
+        object->bytesWritten -= bytesRemaining;
+
         SemaphoreP_post(&object->writeSem);
+
+        /* Post one extra time if in blocking mode, as the write-function is
+           pending on this semaphore until EOT interrupt is received */
+        if (object->state.writeMode == UART2_Mode_BLOCKING) {
+            SemaphoreP_post(&object->writeSem);
+        }
 
         if (object->state.writeMode == UART2_Mode_CALLBACK) {
             object->writeInUse = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -335,7 +335,7 @@ struct Temperature_NotifyObj {
  *  It must be called before calling any other Temperature functions. Calling
  *  this function multiple times will only have an effect the first time.
  */
-void Temperature_init();
+void Temperature_init(void);
 
 /*!
  *  @brief Gets the current temperature in degrees C.

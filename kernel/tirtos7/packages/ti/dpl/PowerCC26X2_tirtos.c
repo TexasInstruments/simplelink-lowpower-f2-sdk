@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <ti/drivers/ITM.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26X2.h>
+#include <ti/drivers/power/PowerCC26X2_helpers.h>
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Swi.h>
@@ -69,7 +70,7 @@ void PowerCC26XX_standbyPolicy(void)
     CPUcpsid();
 
     /* check operating conditions, optimally choose DCDC versus GLDO */
-    SysCtrl_DCDC_VoltageConditionalControl();
+    PowerCC26X2_sysCtrlVoltageConditionalControl();
 
     /* query the declared constraints */
     constraints = Power_getConstraintMask();
@@ -155,10 +156,10 @@ void PowerCC26XX_standbyPolicy(void)
                  */
                 if ((constraints & (1 << PowerCC26XX_NEED_FLASH_IN_IDLE)) ||
                     (modeVIMS == VIMS_MODE_DISABLED)) {
-                    SysCtrlIdle(VIMS_ON_BUS_ON_MODE);
+                    PowerCC26X2_sysCtrlIdle(VIMS_ON_BUS_ON_MODE);
                 }
                 else {
-                    SysCtrlIdle(VIMS_ON_CPU_ON_MODE);
+                    PowerCC26X2_sysCtrlIdle(VIMS_ON_CPU_ON_MODE);
                 }
 
                 /* 7. Make sure MCU and AON are in sync after wakeup */
@@ -180,7 +181,7 @@ void PowerCC26XX_standbyPolicy(void)
 /*
  *  ======== PowerCC26XX_schedulerDisable ========
  */
-void PowerCC26XX_schedulerDisable()
+void PowerCC26XX_schedulerDisable(void)
 {
     PowerCC26XX_taskKey = Task_disable();
     PowerCC26XX_swiKey = Swi_disable();
@@ -189,7 +190,7 @@ void PowerCC26XX_schedulerDisable()
 /*
  *  ======== PowerCC26XX_schedulerRestore ========
  */
-void PowerCC26XX_schedulerRestore()
+void PowerCC26XX_schedulerRestore(void)
 {
     Swi_restore(PowerCC26XX_swiKey);
     Task_restore(PowerCC26XX_taskKey);

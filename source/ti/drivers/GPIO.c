@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,8 @@ void GPIO_setCallback(uint_least8_t index, GPIO_CallbackFxn callback)
      * Only update callbacks entry if different.
      * This allows the callbacks array to be in flash for static systems.
      */
-    if (GPIO_config.callbacks[index] != callback) {
+    if (index != GPIO_INVALID_INDEX && GPIO_config.callbacks[index] != callback)
+    {
         GPIO_config.callbacks[index] = callback;
     }
 }
@@ -66,7 +67,10 @@ GPIO_CallbackFxn GPIO_getCallback(uint_least8_t index)
  */
 void GPIO_setUserArg(uint_least8_t index, void* arg)
 {
-    GPIO_config.userArgs[index] = arg;
+    if (index != GPIO_INVALID_INDEX)
+    {
+        GPIO_config.userArgs[index] = arg;
+    }
 }
 
 /*
@@ -84,9 +88,12 @@ void* GPIO_getUserArg(uint_least8_t index)
 #if (DeviceFamily_ID != DeviceFamily_ID_CC3220)
 void GPIO_resetConfig(uint_least8_t index)
 {
-    GPIO_disableInt(index);
-    GPIO_setConfig(index, GPIO_config.configs[index]);
-    GPIO_setCallback(index, NULL);
-    GPIO_setUserArg(index, NULL);
+    if (index != GPIO_INVALID_INDEX)
+    {
+        GPIO_disableInt(index);
+        GPIO_setConfig(index, GPIO_config.configs[index]);
+        GPIO_setCallback(index, NULL);
+        GPIO_setUserArg(index, NULL);
+    }
 }
 #endif

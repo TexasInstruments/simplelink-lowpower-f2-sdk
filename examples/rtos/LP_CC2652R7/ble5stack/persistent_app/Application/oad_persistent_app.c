@@ -888,6 +888,7 @@ static uint8_t OadPersistApp_processL2CAPMsg(l2capSignalEvent_t *pMsg)
         // Wait until all PDU have been sent on cxn events
         Gap_RegisterConnEventCb(OadPersistApp_connEvtCB,
                                   GAP_CB_REGISTER,
+                                  GAP_CB_CONN_EVENT_ALL,
                                   OAD_getactiveCxnHandle());
 
         /* Set the flag so that the connection event callback will
@@ -1901,7 +1902,7 @@ static status_t OadPersistApp_stopAutoPhyChange(uint16_t connHandle)
   SIMPLEPERIPHERAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Stop connection event notice
-  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, connHandle);
+  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, GAP_CB_CONN_EVENT_ALL,connHandle);
 
   // Also update the phychange request status for active RSSI tracking connection
   connList[connIndex].phyCngRq = FALSE;

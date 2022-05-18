@@ -426,7 +426,7 @@
 //
 // Address
 //
-// AUX_SCE is allowed to uppdate this DDI half-word using SET or CLR access.
+// AUX_SCE is allowed to update this DDI half-word using SET or CLR access.
 #define AUX_SCE_NONSECDDIACC0_ADDR_W                                         6
 #define AUX_SCE_NONSECDDIACC0_ADDR_M                                0x003F0000
 #define AUX_SCE_NONSECDDIACC0_ADDR_S                                        16
@@ -461,7 +461,7 @@
 //
 // Address
 //
-// AUX_SCE is allowed to uppdate this DDI half-word using SET or CLR access.
+// AUX_SCE is allowed to update this DDI half-word using SET or CLR access.
 #define AUX_SCE_NONSECDDIACC1_ADDR_W                                         6
 #define AUX_SCE_NONSECDDIACC1_ADDR_M                                0x003F0000
 #define AUX_SCE_NONSECDDIACC1_ADDR_S                                        16
@@ -496,7 +496,7 @@
 //
 // Address
 //
-// AUX_SCE is allowed to uppdate this DDI half-word using SET or CLR access.
+// AUX_SCE is allowed to update this DDI half-word using SET or CLR access.
 #define AUX_SCE_NONSECDDIACC2_ADDR_W                                         6
 #define AUX_SCE_NONSECDDIACC2_ADDR_M                                0x003F0000
 #define AUX_SCE_NONSECDDIACC2_ADDR_S                                        16
@@ -531,7 +531,7 @@
 //
 // Address
 //
-// AUX_SCE is allowed to uppdate this DDI half-word using SET or CLR access.
+// AUX_SCE is allowed to update this DDI half-word using SET or CLR access.
 #define AUX_SCE_NONSECDDIACC3_ADDR_W                                         6
 #define AUX_SCE_NONSECDDIACC3_ADDR_M                                0x003F0000
 #define AUX_SCE_NONSECDDIACC3_ADDR_S                                        16

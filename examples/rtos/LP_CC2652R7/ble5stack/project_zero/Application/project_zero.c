@@ -894,6 +894,7 @@ static void ProjectZero_processL2CAPMsg(l2capSignalEvent_t *pMsg)
               // Wait until all PDU have been sent on cxn events
               Gap_RegisterConnEventCb(ProjectZero_connEvtCB,
                                         GAP_CB_REGISTER,
+                                        GAP_CB_CONN_EVENT_ALL,
                                         OAD_getactiveCxnHandle());
 
               /* Set the flag so that the connection event callback will

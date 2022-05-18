@@ -81,6 +81,9 @@ function reloadInstanceFromPhy(inst, ui, phyName, phyGroup, preserve) {
                 hidden = true;
             }
         }
+        if (inst.freqBand === "433") {
+            hidden = true;
+        }
         ui.highPA.hidden = hidden;
     }
 }
@@ -160,7 +163,7 @@ function updateTxPowerVisibility(inst, ui) {
         const otherFreqband = freqBand !== "433";
         ui.txPower433.hidden = inst.highPA || otherFreqband;
         if ("txPower433Hi" in inst) {
-            ui.txPower433Hi.hidden = !inst.highPA || otherFreqband;
+            ui.txPower433Hi.hidden = true;
         }
     }
 }
@@ -250,7 +253,7 @@ function highPaOnChange(inst, ui) {
     if ("phyType433" in inst) {
         ui.txPower433.hidden = inst.highPA || ui.phyType433.hidden;
         if ("txPower433Hi" in inst) {
-            ui.txPower433Hi.hidden = !inst.highPA || ui.phyType433.hidden;
+            ui.txPower433Hi.hidden = true;
         }
     }
 }

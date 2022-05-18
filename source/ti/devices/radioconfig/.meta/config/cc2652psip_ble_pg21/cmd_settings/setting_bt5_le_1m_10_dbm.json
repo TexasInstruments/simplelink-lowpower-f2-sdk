@@ -148,9 +148,14 @@
                                         "$": "0x38183C30"
                                     },
                                     {
-                                        "_type": "ADI_REG_OVERRIDE",
+                                        "_type": "ADI_HALFREG_OVERRIDE",
                                         "_comment": "Set VCTRIM to 0 for 20 dBm PA",
-                                        "$": "1,26,0x00"
+                                        "$": "1,26,0xF,0x0"
+                                    },
+                                    {
+                                        "_type": "ADI_HALFREG_OVERRIDE",
+                                        "_comment": "Set VCTRIM to 0 for 20 dBm PA",
+                                        "$": "1,27,0x7,0x0"
                                     },
                                     {
                                         "_type": "HW_REG_OVERRIDE",
@@ -443,7 +448,7 @@
                                     {
                                         "_type": "ELEMENT",
                                         "_comment": "Bluetooth 5: Set RTIM offset to 3 for high power PA",
-                                        "$": "0x00038783"
+                                        "$": "0x00030783"
                                     },
                                     {
                                         "_type": "ELEMENT",

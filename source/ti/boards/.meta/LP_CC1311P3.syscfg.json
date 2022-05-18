@@ -162,7 +162,7 @@
                 {
                     "number" : 27,
                     //"ball"   : "42",
-                    "name"   : "DIO29" /* RF 20 dBm PA */
+                    "name"   : "DIO29" /* RF Sub 1 GHz */
                 },
                 /*
                  * Header pin 28 is not connected by default. modification of the
@@ -172,7 +172,7 @@
                 {
                     "number" : 28,
                     //"ball"   : "43",
-                    "name"   : "DIO30" /* RF Sub 1 GHz */
+                    "name"   : "DIO30" /* RF 20 dBm PA */
                 },
                 {
                     "number" : 29,
@@ -374,8 +374,8 @@
             "description" : "RTC6608OU RF Antenna Switch",
             "longDescription" : "[__RichWave RTC6608OU__](http://www.richwave.com.tw/en/page_prd_new.aspx?Id=6) single-pole, dual throw (SPDT) antenna switch.",
             "signals": {
-                "HIGH_PA": {"type": "RF_HIGH_PA", "connection": 42},
-                "SUB1GHZ": {"type": "RF_SUB1GHZ", "connection": 43}
+                "HIGH_PA": {"type": "RF_HIGH_PA", "connection": 43},
+                "SUB1GHZ": {"type": "RF_SUB1GHZ", "connection": 42}
             }
         },
 

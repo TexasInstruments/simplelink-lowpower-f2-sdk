@@ -19,13 +19,13 @@
 #
 
 XDC_INSTALL_DIR        ?= /home/username/ti/xdctools_3_62_01_15_core
-SYSCONFIG_TOOL         ?= /home/username/ti/ccs1100/ccs/utils/sysconfig_1.10.0/sysconfig_cli.sh
+SYSCONFIG_TOOL         ?= /home/username/ti/ccs1120/ccs/utils/sysconfig_1.12.0/sysconfig_cli.sh
 
 FREERTOS_INSTALL_DIR   ?= /home/username/FreeRTOSv202104.00
 
-CCS_ARMCOMPILER        ?= /home/username/ti/ccs1100/ccs/tools/compiler/ti-cgt-arm_20.2.5.LTS
-TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1100/ccs/tools/compiler/ti-cgt-armllvm_1.3.0.LTS
-GCC_ARMCOMPILER        ?= /home/username/ti/ccs1100/ccs/tools/compiler/9.2019.q4.major
+CCS_ARMCOMPILER        ?= /home/username/ti/ccs1120/ccs/tools/compiler/ti-cgt-arm_20.2.5.LTS
+TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1120/ccs/tools/compiler/ti-cgt-armllvm_1.3.1.LTS
+GCC_ARMCOMPILER        ?= /home/username/ti/ccs1120/ccs/tools/compiler/9.2019.q4.major
 
 # The IAR compiler is not supported on Linux
 # IAR_ARMCOMPILER      ?=

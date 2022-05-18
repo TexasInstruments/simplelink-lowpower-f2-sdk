@@ -167,6 +167,12 @@ const boardSpecificCCFGSettings = {
         dioBootloaderBackdoor: 13,
         levelBootloaderBackdoor: "Active low"
     },
+    LP_CC2651R3SIPA_CCFG_SETTINGS: {
+        enableBootloader: true,
+        enableBootloaderBackdoor: true,
+        dioBootloaderBackdoor: 13,
+        levelBootloaderBackdoor: "Active low"
+    },
     LP_CC1354R10_RGZ_CCFG_SETTINGS: {
         enableBootloader: true,
         enableBootloaderBackdoor: true,
@@ -201,7 +207,7 @@ const boardSpecificCCFGSettings = {
         dioBootloaderBackdoor: 15,
         levelBootloaderBackdoor: "Active low"
     },
-    LP_EM_CC2653P10_CCFG_SETTINGS: {
+    LP_CC2653P10_CCFG_SETTINGS: {
         xoscCapArray: true,
         xoscCapArrayDelta: 0xC1,
         enableBootloader: true,
@@ -209,7 +215,6 @@ const boardSpecificCCFGSettings = {
         dioBootloaderBackdoor: 13,
         levelBootloaderBackdoor: "Active low"
     },
-
 };
 
 // Get the LaunchPad specific CCFG Settings

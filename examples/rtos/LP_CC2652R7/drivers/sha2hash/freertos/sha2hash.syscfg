@@ -45,8 +45,8 @@ var SHA2 = scripting.addModule("/ti/drivers/SHA2");
 
 var sha2 = SHA2.addInstance();
 
-/* ======== UART ======== */
-var UART = scripting.addModule("/ti/drivers/UART");
-var uart = UART.addInstance();
-uart.$hardware = system.deviceData.board.components.XDS110UART;
-uart.$name = "CONFIG_UART_0";
+/* ======== UART2 ======== */
+var UART2 = scripting.addModule("/ti/drivers/UART2");
+var uart2 = UART2.addInstance();
+uart2.$hardware = system.deviceData.board.components.XDS110UART;
+uart2.$name = "CONFIG_UART2_0";

@@ -30,16 +30,30 @@ The Board.html can also be found in your SDK installation:
 
 ## Example Usage
 
-Run the example.
+* Open a serial session (e.g. [`PuTTY`](http://www.putty.org/ "PuTTY's
+ Homepage"), etc.) to the appropriate COM port.
+ * The COM port can be determined via Device Manager in Windows or via
+ `ls /dev/tty*` in Linux.
 
-1. `CONFIG_GPIO_LED_0` is toggled when the temperature of the chip changes more
+The connection will have the following settings:
+```
+    Baud-rate:     115200
+    Data bits:          8
+    Stop bits:          1
+    Parity:          None
+    Flow Control:    None
+```
+
+* Run the example.
+
+* `CONFIG_GPIO_LED_0` is toggled when the temperature of the chip changes more
 than THRESHOLD_DELTA degrees C.
 
-2. `CONFIG_GPIO_LED_1` is turned on when the temperature is above
+* `CONFIG_GPIO_LED_1` is turned on when the temperature is above
 THRESHOLD_CUTOFF degrees C and turned off when the temperature falls below this
 threshold.
 
-3. The current temperature in degrees C is printed to the console once per
+* The current temperature in degrees C is printed to the console once per
 second.
 
 ## Application Design Details

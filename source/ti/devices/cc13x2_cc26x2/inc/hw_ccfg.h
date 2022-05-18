@@ -116,7 +116,7 @@
 //*****************************************************************************
 // Field: [31:24] DIO
 //
-// Unsigned integer, selecting the DIO to supply external 32kHz clock as
+// Unsigned integer, selecting the DIO to supply external 32 kHz clock as
 // SCLK_LF when MODE_CONF.SCLK_LF_OPTION is set to EXTERNAL. The selected DIO
 // will be marked as reserved by the pin driver (TI-RTOS environment) and hence
 // not selectable for other usage.
@@ -456,7 +456,7 @@
 // 24M                      24 MHz XOSC_HF. Not supported.
 // 48M                      48 MHz XOSC_HF
 // HPOSC                    Internal high precision oscillator.
-// TCXO                     External 48Mhz TCXO.
+// TCXO                     External 48 MHz TCXO.
 //                          Refer to
 //                          MODE_CONF_1.TCXO_MAX_START and
 //                          MODE_CONF_1.TCXO_TYPE bit fields for additional

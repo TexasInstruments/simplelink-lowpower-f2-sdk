@@ -1,12 +1,10 @@
 /******************************************************************************
 *  Filename:       aux_dac.h
-*  Revised:        2021-01-25 12:15:55 +0200 (mon., 25 jan 2021)
-*  Revision:       58927
 *
 *  Description:    Defines and prototypes for the AUX Digital-to-Analog
 *                  Converter
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

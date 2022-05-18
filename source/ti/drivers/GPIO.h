@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -268,7 +268,7 @@
 #include <ti/drivers/gpio/GPIOCC26XX.h>
 #elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
 #include <ti/drivers/gpio/GPIOCC32XX.h>
-#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23XX)
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
 #include <ti/drivers/gpio/GPIOCC23XX.h>
 #endif
 
@@ -281,8 +281,10 @@
 #include <intrinsics.h>
 #define GPIO_MASK_TO_PIN(pinmask)       (31 - __CLZ(pinmask))
 #elif defined(__TI_COMPILER_VERSION__)
+#include <arm_acle.h>
 #define GPIO_MASK_TO_PIN(pinmask)       (31 - __clz(pinmask))
 #elif defined(__GNUC__) && !defined(__TI_COMPILER_VERSION__)
+#include <arm_acle.h>
 #define GPIO_MASK_TO_PIN(pinmask)       (31 - __builtin_clz(pinmask))
 #endif
 
@@ -329,9 +331,9 @@ typedef uint32_t GPIO_PinConfig;
  * @brief Dummy value for "this pin is not assigned to a GPIO".
  *
  * Not for use in customer software. Some drivers use this value to manage the
- * behaviour of optional pins (e.g. UART flow control). The GPIO driver does not
- * check for this value; if you pass it to any driver functions you risk
- * hardfaults or memory corruption.
+ * behaviour of optional pins (e.g. UART flow control, SPI chip select). If you
+ * pass this value to any GPIO methods, it will return immediately and no
+ * register writes will be performed.
  */
 #define GPIO_INVALID_INDEX 0xFF
 
@@ -492,7 +494,7 @@ extern void GPIO_enableInt(uint_least8_t index);
  *          function can be called. This function must also be called before
  *          any other GPIO driver APIs.
  */
-extern void GPIO_init();
+extern void GPIO_init(void);
 
 /*!
  *  @brief      Reads the value of a GPIO pin

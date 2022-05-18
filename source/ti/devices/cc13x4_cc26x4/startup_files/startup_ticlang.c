@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       startup_ticlang.c
-*  Revised:        $Date: 2021-02-01 19:16:24 +0100 (Mon, 01 Feb 2021) $
-*  Revision:       $Revision: 17634 $
 *
 *  Description:    Startup code for CC13x4, CC26x4 device family for use with CCS.
 *

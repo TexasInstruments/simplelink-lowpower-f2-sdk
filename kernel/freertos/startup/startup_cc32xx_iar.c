@@ -137,7 +137,8 @@ int localProgramStart(void)
     memcpy(ramVectors, __vector_table, 16*4);
 
     /* Fill remaining vectors with default handler */
-    for (i=16; i < 195; i++) {
+    for (i = 16; i < 195; i++)
+    {
         ramVectors[i] = (unsigned long)defaultHandler;
     }
 
@@ -164,11 +165,10 @@ int __low_level_init(void)
      *  The first entry of the vector table is the address of the stack.
      */
     __asm(
-        "    mov32 r0, __vector_table\n"
-        "    ldr r0, [r0]\n"
-        "    mov sp, r0\n"
-        "    b localProgramStart"
-    );
+        " mov32 r0, __vector_table\n"
+        " ldr r0, [r0]\n"
+        " mov sp, r0\n"
+        " b localProgramStart");
 
     // This code is unreachable but the compiler expects a return statement
     return 1;
@@ -187,7 +187,7 @@ nmiISR(void)
     //
     // Enter an infinite loop.
     //
-    while(1)
+    while (1)
     {
     }
 }
@@ -205,7 +205,7 @@ faultISR(void)
     //
     // Enter an infinite loop.
     //
-    while(1)
+    while (1)
     {
     }
 }
@@ -225,7 +225,7 @@ busFaultHandler(void)
     //
     // Go into an infinite loop.
     //
-    while(1)
+    while (1)
     {
     }
 }
@@ -243,7 +243,7 @@ defaultHandler(void)
     //
     // Go into an infinite loop.
     //
-    while(1)
+    while (1)
     {
     }
 }

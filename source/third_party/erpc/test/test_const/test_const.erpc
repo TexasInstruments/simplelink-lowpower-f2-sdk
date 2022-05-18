@@ -1,0 +1,54 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+//Add data structures and function prototypes here
+//using Freescale's eRPC IDL language
+
+@output_dir("erpc_outputs")
+program test;
+
+import "../common/unit_test_common.erpc"
+
+enum numbers {one = 1, two, three, four}
+
+type MyInt = int32
+const MyInt ii = 5
+const int32 xx = ii + 3
+
+enum e_test { e_a, e_b, e_c = 20, e_d, e_f, e_g = 20, e_h }
+const int32 a = 3
+const float noDecimal = 4
+const float b = 3.14
+const string c = "feedbabe"
+const int32 x = 3 + 2 * 4
+const float d = b
+const float y = e_c
+
+
+const int32 count =  a + 2 * two + 5
+
+const float mass = 100
+const float accel = -9.8
+const float force = mass * accel
+const float work = a * force
+const float stress = work / 9 * y + 12.2 - d
+const float neg = -a
+const float order = 9 + 3 * 4
+
+const string nowAString = "hello"
+//const string cantDoThis = 4.3
+//const float itsAFloat = "string"
+const int32 castIt = 5000000000
+const string fromAnotherString = c
+
+interface EmptyInterface{
+
+}
+
+//const MyInt foo = "hello"
+

@@ -53,6 +53,7 @@ hide LE_ExtCreateConn
 hide llSetupConn
 hide llSetupNextMasterEvent
 hide llSetupNextSlaveEvent
+hide llRegisterConnEvtCallback
 hide GapAdv_prepareLoadByHandle
 hide GapAdv_loadByHandle
 hide gapProcessOSALMsg
@@ -66,6 +67,7 @@ hide gapProcessBLEEvents
 hide gapScan_processStartEndCb
 hide gapScan_filterDiscMode
 hide GAP_SetParamValue
+hide Gap_RegisterConnEventCb
 hide GATT_VerifyReadPermissions
 hide GATT_VerifyWritePermissions
 hide gattProcessReadByType
@@ -85,6 +87,7 @@ hide llConnExists
 hide llNextChanIndex
 hide llSendAdvSetEndEvent
 hide HCI_LE_SetHostChanClassificationCmd
+hide HCI_LE_SetPhyCmd
 hide LL_SetRandomAddress
 hide LL_SetAddressResolutionEnable
 hide LL_SetResolvablePrivateAddressTimeout

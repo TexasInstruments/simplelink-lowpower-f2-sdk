@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ static uintptr_t PowerCC26XX_swiKey;
 /*
  *  ======== PowerCC26XX_standbyPolicy ========
  */
-void PowerCC26XX_standbyPolicy()
+void PowerCC26XX_standbyPolicy(void)
 {
     bool justIdle = true;
     uint32_t constraints;
@@ -192,7 +192,7 @@ void PowerCC26XX_standbyPolicy()
 /*
  *  ======== PowerCC26XX_schedulerDisable ========
  */
-void PowerCC26XX_schedulerDisable()
+void PowerCC26XX_schedulerDisable(void)
 {
     PowerCC26XX_swiKey = SwiP_disable();
 }
@@ -200,7 +200,7 @@ void PowerCC26XX_schedulerDisable()
 /*
  *  ======== PowerCC26XX_schedulerRestore ========
  */
-void PowerCC26XX_schedulerRestore()
+void PowerCC26XX_schedulerRestore(void)
 {
     SwiP_restore(PowerCC26XX_swiKey);
 }

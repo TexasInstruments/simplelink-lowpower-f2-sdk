@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       aes.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    AES header file.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -541,7 +539,7 @@ __STATIC_INLINE void AESInvalidateKey(uint32_t keyStoreArea)
 __STATIC_INLINE void AESSelectAlgorithm(uint32_t algorithm)
 {
     ASSERT((algorithm == AES_ALGSEL_AES) ||
-           (algorithm == AES_ALGSEL_AES | AES_ALGSEL_TAG) ||
+           (algorithm == AES_ALGSEL_TAG) ||
            (algorithm == AES_ALGSEL_KEY_STORE));
 
     HWREG(CRYPTO_BASE + CRYPTO_O_ALGSEL) = algorithm;

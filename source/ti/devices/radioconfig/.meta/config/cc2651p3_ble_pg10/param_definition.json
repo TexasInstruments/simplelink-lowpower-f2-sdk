@@ -60,7 +60,7 @@
                         "Validation": {
                             "_type": "minmax",
                             "Min": "2360",
-                            "Max": "2500"
+                            "Max": "2510"
                         },
                         "Tooltip": "Frequency.",
                         "Row": "0",
@@ -87,9 +87,10 @@
                         "_type": "list",
                         "Access": "R",
                         "Label": "TX Power",
+                        "ClassName": "DALRfParTxPowerCC13xx",
                         "Unit": "dBm",
                         "ListValues": [],
-                        "DefValue": "5",
+                        "DefValue": "20",
                         "Tooltip": "TX Power",
                         "Row": "0",
                         "Dependencies": {
@@ -98,6 +99,33 @@
                                 "Type": "DT_EQUAL",
                                 "Group": "ContTx",
                                 "Parameter": "txPower"
+                            }
+                        }
+                    },
+                    {
+                        "_name": "txPowerHighPa",
+                        "_type": "bool",
+                        "Access": "R",
+                        "Label": "Enable high output power PA",
+                        "UrlHelp": ".\/..\/docs\/help\/tx_power_high_output_pa.html",
+                        "ClassName": "DALRfParTxPowerHighPa",
+                        "DefValue": "true",
+                        "CmdUpdate": "NO",
+                        "Tooltip": "Select either Normal or High Output Power mode.",
+                        "Row": "0",
+                        "Buddy": "txPower"
+                    },
+                    {
+                        "_name": "targetBoard",
+                        "_type": "list",
+                        "Visible": "NO",
+                        "CmdUpdate": "NO",
+                        "Dependencies": {
+                            "Dependency": {
+                                "_name": "targetBoardHighPA",
+                                "Type": "DT_CODE",
+                                "Group": "Main",
+                                "Parameter": "txPowerHighPa"
                             }
                         }
                     }
@@ -187,30 +215,12 @@
             },
             {
                 "_name": "PacketRx",
-                "Parameter": [
-                    {
-                        "_name": "accessAddress",
-                        "_type": "int",
-                        "Access": "R\/W",
-                        "DefValue": "0x8e89bed6"
-                    },
-                    {
-                        "_name": "packetLengthRx",
-                        "_type": "int",
-                        "Access": "R\/W",
-                        "Label": "Max Packet Length",
-                        "DefValue": "20",
-                        "Tooltip": "Packet Length",
-                        "Dependencies": {
-                            "Dependency": {
-                                "_name": "packetTxPacketLength",
-                                "Type": "DT_EQUAL",
-                                "Group": "PacketTx",
-                                "Parameter": "packetLengthTx"
-                            }
-                        }
-                    }
-                ]
+                "Parameter": {
+                    "_name": "accessAddress",
+                    "_type": "int",
+                    "Access": "R\/W",
+                    "DefValue": "0x8e89bed6"
+                }
             },
             {
                 "_name": "PacketView",
@@ -266,19 +276,6 @@
                         "Tooltip": "Advertising address (Device address)."
                     },
                     {
-                        "_name": "wBMSHeader",
-                        "_type": "composit",
-                        "Access": "R",
-                        "Option": {
-                            "_name": "rfCommand",
-                            "$": "CMD_PROP_TX_ADV"
-                        },
-                        "Label": "wBMS Header",
-                        "DefValue": "14 10 00",
-                        "CmdUpdate": "NO",
-                        "Tooltip": "Byte(1): Length Field. Byte(2): Length Field (bit 0), Frame Type(1-4), Security Enable (5-6), Framgement Number (7). Byte(3): Framgement Number (0), PS(1), PS Mode(2), One Hop(3), Hop Req(4), Fwd Pck(5), Netw. Update(6), FC Extention(7)"
-                    },
-                    {
                         "_name": "advData",
                         "_type": "composit",
                         "Access": "R",
@@ -293,57 +290,6 @@
                         "Access": "R",
                         "DefValue": "xx xx xx",
                         "Tooltip": "Cyclic redundancy check."
-                    },
-                    {
-                        "_name": "syncWord",
-                        "_type": "int",
-                        "Access": "R\/W",
-                        "Label": "Sync word",
-                        "DefValue": "0x930b51de",
-                        "Tooltip": "Sync word to transmit.",
-                        "Dependencies": {
-                            "Dependency": [
-                                {
-                                    "_name": "PacketRxSyncWord",
-                                    "Type": "DT_EQUAL",
-                                    "Group": "PacketRx",
-                                    "Parameter": "syncWord"
-                                },
-                                {
-                                    "_name": "syncWord",
-                                    "Type": "DT_CODE",
-                                    "Group": "PacketTx",
-                                    "Parameter": "syncWordLength"
-                                },
-                                {
-                                    "_name": "Preamble",
-                                    "Type": "DT_CODE",
-                                    "Group": "PacketView",
-                                    "Parameter": "preamble"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "_name": "packetLengthTx",
-                        "_type": "int",
-                        "Access": "R",
-                        "Label": "Packet Length",
-                        "DefValue": "20",
-                        "Validation": {
-                            "_type": "minmax",
-                            "Min": "0",
-                            "Max": "508"
-                        },
-                        "Tooltip": "Packet Length should be given as a decimal value.",
-                        "Dependencies": {
-                            "Dependency": {
-                                "_name": "packetInterval",
-                                "Type": "DT_CODE",
-                                "Group": "PacketTx",
-                                "Parameter": "packetInterval"
-                            }
-                        }
                     }
                 ]
             }

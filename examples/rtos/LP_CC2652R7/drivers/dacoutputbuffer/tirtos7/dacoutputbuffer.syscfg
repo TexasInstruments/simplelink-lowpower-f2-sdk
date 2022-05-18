@@ -50,10 +50,19 @@ var DAC2    = DAC.addInstance();
 DAC1.$name  = "CONFIG_DAC_0";
 DAC2.$name  = "CONFIG_DAC_1";
 
+if (board.match(/CC2651R3SIPA/)) {
+    DAC1.dac.dacPin.$assign = "DIO23";
+    DAC2.dac.dacPin.$assign = "DIO24";
+}
+
 /* ======== ADC ======== */
 var ADC     = scripting.addModule("/ti/drivers/ADC");
 var ADC1    = ADC.addInstance();
 ADC1.$name  = "CONFIG_ADC_0";
+
+if (board.match(/CC2651R3SIPA/)) {
+    ADC1.adc.adcPin.$assign = "DIO25";
+}
 
 /* ======== TIMER ======== */
 var Timer                  = scripting.addModule("/ti/drivers/Timer");

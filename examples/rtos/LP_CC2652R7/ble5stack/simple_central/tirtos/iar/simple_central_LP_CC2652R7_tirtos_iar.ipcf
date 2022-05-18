@@ -130,7 +130,7 @@
         <path reference="$PROJ_DIR$/Board.html">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/boards/LP_CC2652R7/Board.html</path>
         <path copyTo="$PROJ_DIR$/cc26x2x7_app_and_stack_agama.icf">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/simple_central/tirtos/iar/cc26x2x7_app_and_stack_agama.icf</path>
         <path copyTo="$PROJ_DIR$/README.html">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/simple_central/README.html</path>
-        <path copyTo="$PROJ_DIR$/simple_central.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/simple_central/simple_central.syscfg</path>
+        <path copyTo="$PROJ_DIR$/simple_central.syscfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/simple_central/tirtos/simple_central.syscfg</path>
         <path copyTo="$PROJ_DIR$/simple_central_app.cfg">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_CC2652R7/ble5stack/simple_central/Tools/simple_central_app.cfg</path>
         <group name="Application" build="true">
             <path reference="$PROJ_DIR$/Application/board_key.c">$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/common/cc26xx/board_key.c</path>

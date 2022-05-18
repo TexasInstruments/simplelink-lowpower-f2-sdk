@@ -96,7 +96,7 @@ uint32_t ClockP_tickPeriod = 1000;
 #endif
 
 void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1);
-void ClockP_doTick();
+void ClockP_doTick(uintptr_t arg);
 
 static void sleepTicks(uint32_t ticks);
 
@@ -359,7 +359,7 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
 /*
  *  ======== ClockP_doTick ========
  */
-void ClockP_doTick()
+void ClockP_doTick(uintptr_t arg)
 {
     SwiP_post(ClockP_module.swi);
 }

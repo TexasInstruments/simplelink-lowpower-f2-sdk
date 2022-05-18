@@ -1,0 +1,57 @@
+/*!
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+@include("myAlloc.h")
+@output_dir("erpc_outputs")
+@separateInterfaceOutput(false)
+program test;
+
+import "../common/unit_test_common.erpc"
+
+enum enumColor{red, green = 10, blue}
+
+struct C
+{
+    int32 m
+    int32 n
+}
+
+struct gapAdStructure_t
+{
+    uint32 length
+    uint8 adType
+    list<uint8> aData @length(length)
+}
+struct gapAdvertisingData_t
+{
+    uint8 cNumAdStructures
+    list<gapAdStructure_t> aAdStructures @length(cNumAdStructures)
+}
+
+struct listStruct
+{
+    list<int32> myList @length(len)
+    uint32 len
+}
+interface PointersService {
+    sendReceivedInt32(list<int32> listNumbers) -> list<int32>
+    sendReceived2Int32(list< list<int32> > listNumbers) -> list< list<int32> >
+//    receivedInt32Length(out list<int32> listNumbers @length(listSize1), inout list<int32> listNumbers2 @length(listSize2), out uint32 listSize1, inout uint32 listSize2) -> void
+//    receivedInt32Length2(out list<int32> listNumbers @length(listSize1) @max_length(10), inout list<int32> listNumbers2 @length(listSize2) @max_length(10), out uint32 listSize1, inout uint32 listSize2) -> void
+    sendReceivedEnum(list<enumColor> listColors) -> list<enumColor>
+    sendReceived2Enum(list< list<enumColor> > listColors) -> list< list<enumColor> >
+    sendReceivedStruct(list<C> listColors) -> list<C>
+    sendReceived2Struct(list< list<C> > listColors @retain) -> list< list<C> >
+    sendReceivedString(list<string> listNumbers) -> list<string>
+    sendReceived2String(list< list<string> > listNumbers) -> list< list<string> >
+    test_list_allDirection(list<uint32> a, in list<uint32> b, inout list<uint32> e) -> void
+    testLengthAnnotation(list<int32> myList @length(len), uint32 len) -> int32
+    testLengthAnnotationInStruct(listStruct s) -> int32
+    returnSentStructLengthAnnotation(listStruct s) -> listStruct
+    sendGapAdvertisingData(gapAdvertisingData_t ad) -> int32
+}

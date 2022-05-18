@@ -62,8 +62,6 @@
 #define NVMNW_O_ICLR                                                0x00000048
 
 // Event mode register. It is used to select whether each line is disabled, in
-// software mode (software clears the RIS) or in hardware mode (hardware clears
-// the RIS)
 #define NVMNW_O_EVT_MODE                                            0x000000E0
 
 // Hardware Version Description Register:
@@ -135,86 +133,11 @@
 // Command Data Register 15
 #define NVMNW_O_CMDDATA15                                           0x0000016C
 
-// Command Data Register 16
-#define NVMNW_O_CMDDATA16                                           0x00000170
-
-// Command Data Register 17
-#define NVMNW_O_CMDDATA17                                           0x00000174
-
-// Command Data Register 18
-#define NVMNW_O_CMDDATA18                                           0x00000178
-
-// Command Data Register 19
-#define NVMNW_O_CMDDATA19                                           0x0000017C
-
-// Command Data Register 20
-#define NVMNW_O_CMDDATA20                                           0x00000180
-
-// Command Data Register 21
-#define NVMNW_O_CMDDATA21                                           0x00000184
-
-// Command Data Register 22
-#define NVMNW_O_CMDDATA22                                           0x00000188
-
-// Command Data Register 23
-#define NVMNW_O_CMDDATA23                                           0x0000018C
-
-// Command Data Register 24
-#define NVMNW_O_CMDDATA24                                           0x00000190
-
-// Command Data Register 25
-#define NVMNW_O_CMDDATA25                                           0x00000194
-
-// Command Data Register 26
-#define NVMNW_O_CMDDATA26                                           0x00000198
-
-// Command Data Register 27
-#define NVMNW_O_CMDDATA27                                           0x0000019C
-
-// Command Data Register 28
-#define NVMNW_O_CMDDATA28                                           0x000001A0
-
-// Command Data Register 29
-#define NVMNW_O_CMDDATA29                                           0x000001A4
-
-// Command Data Register 30
-#define NVMNW_O_CMDDATA30                                           0x000001A8
-
-// Command Data Register 31
-#define NVMNW_O_CMDDATA31                                           0x000001AC
-
-// Command Data Register 0
-#define NVMNW_O_CMDDATAECC0                                         0x000001B0
-
-// Command Data Register 1
-#define NVMNW_O_CMDDATAECC1                                         0x000001B4
-
-// Command Data Register 2
-#define NVMNW_O_CMDDATAECC2                                         0x000001B8
-
-// Command Data Register 3
-#define NVMNW_O_CMDDATAECC3                                         0x000001BC
-
-// Command Data Register 4
-#define NVMNW_O_CMDDATAECC4                                         0x000001C0
-
-// Command Data Register 5
-#define NVMNW_O_CMDDATAECC5                                         0x000001C4
-
-// Command Data Register 6
-#define NVMNW_O_CMDDATAECC6                                         0x000001C8
-
-// Command Data Register 7
-#define NVMNW_O_CMDDATAECC7                                         0x000001CC
-
 // Command WriteErase Protect A Register
 #define NVMNW_O_CMDWEPROTA                                          0x000001D0
 
 // Command WriteErase Protect B Register
 #define NVMNW_O_CMDWEPROTB                                          0x000001D4
-
-// Command WriteErase Protect C Register
-#define NVMNW_O_CMDWEPROTC                                          0x000001D8
 
 // Command WriteErase Protect Non-Main
 #define NVMNW_O_CMDWEPROTNM                                         0x00000210
@@ -249,6 +172,9 @@
 // Global Info 1 Register
 #define NVMNW_O_GBLINFO1                                            0x000003F4
 
+// Global Info 2 Register
+#define NVMNW_O_GBLINFO2                                            0x000003F8
+
 // Bank Info 0 Register for bank 0.
 #define NVMNW_O_BANK0INFO0                                          0x00000400
 
@@ -260,24 +186,6 @@
 
 // Bank Info1 Register for bank 1.
 #define NVMNW_O_BANK1INFO1                                          0x00000414
-
-// Bank Info 0 Register for bank 2.
-#define NVMNW_O_BANK2INFO0                                          0x00000420
-
-// Bank Info1 Register for bank 2.
-#define NVMNW_O_BANK2INFO1                                          0x00000424
-
-// Bank Info 0 Register for bank 3.
-#define NVMNW_O_BANK3INFO0                                          0x00000430
-
-// Bank Info1 Register for bank 3.
-#define NVMNW_O_BANK3INFO1                                          0x00000434
-
-// Bank Info 0 Register for bank 4.
-#define NVMNW_O_BANK4INFO0                                          0x00000440
-
-// Bank Info1 Register for bank 4.
-#define NVMNW_O_BANK4INFO1                                          0x00000444
 
 // DFT Enable Register
 #define NVMNW_O_DFTEN                                               0x00000500
@@ -311,65 +219,11 @@
 // DFT Redundancy Data Register 3
 #define NVMNW_O_DFTDATARED3                                         0x0000054C
 
-// DFT Redundancy Data Register 4
-#define NVMNW_O_DFTDATARED4                                         0x00000550
-
-// DFT Redundancy Data Register 5
-#define NVMNW_O_DFTDATARED5                                         0x00000554
-
-// DFT Redundancy Data Register 6
-#define NVMNW_O_DFTDATARED6                                         0x00000558
-
-// DFT Redundancy Data Register 7
-#define NVMNW_O_DFTDATARED7                                         0x0000055C
-
 // DFT Pump Control Register
 #define NVMNW_O_DFTPUMPCTL                                          0x00000560
 
 // DFT Bank Control Register
 #define NVMNW_O_DFTBANKCTL                                          0x00000564
-
-// Allows control of the application of bank/pump trim values.
-#define NVMNW_O_TRIMCTL                                             0x00000600
-
-// Pump Trim 0 Register.
-#define NVMNW_O_PUMPTRIM0                                           0x00000610
-
-// Pump Trim 1 Register.
-#define NVMNW_O_PUMPTRIM1                                           0x00000614
-
-// Pump Trim 2 Register.
-#define NVMNW_O_PUMPTRIM2                                           0x00000618
-
-// Bank 0 Trim 0 Register.
-#define NVMNW_O_BANK0TRIM0                                          0x00000630
-
-// Bank 0 Trim 1 Register.
-#define NVMNW_O_BANK0TRIM1                                          0x00000634
-
-// Bank 1 Trim 0 Register.
-#define NVMNW_O_BANK1TRIM0                                          0x00000640
-
-// Bank 1 Trim 1 Register.
-#define NVMNW_O_BANK1TRIM1                                          0x00000644
-
-// Bank 2 Trim 0 Register.
-#define NVMNW_O_BANK2TRIM0                                          0x00000650
-
-// Bank 2 Trim 1 Register.
-#define NVMNW_O_BANK2TRIM1                                          0x00000654
-
-// Bank 3 Trim 0 Register.
-#define NVMNW_O_BANK3TRIM0                                          0x00000660
-
-// Bank 3 Trim 1 Register.
-#define NVMNW_O_BANK3TRIM1                                          0x00000664
-
-// Bank 4 Trim 0 Register.
-#define NVMNW_O_BANK4TRIM0                                          0x00000670
-
-// Bank 4 Trim 1 Register.
-#define NVMNW_O_BANK4TRIM1                                          0x00000674
 
 //*****************************************************************************
 //
@@ -589,8 +443,8 @@
 //*****************************************************************************
 // Field:     [0] VAL
 //
-// Flash Wrapper State Machine Command Execute
-// Initiates execution of the command specified in the FW_SMCMD_TYPE register.
+// Command Execute value
+// Initiates execution of the command specified in the CMDTYPE register.
 // ENUMs:
 // EXECUTE                  Command will execute or is executing in NoWrapper
 // NOEXECUTE                Command will not execute or is not executing in
@@ -631,6 +485,10 @@
 //
 // Command type
 // ENUMs:
+// BLANKVERIFY              Blank Verify - Check whether a flash word is in
+//                          the erased state.
+//                          This command may only be
+//                          used with CMDTYPE.SIZE = ONEWORD
 // CLEARSTATUS              Clear Status - Clear status bits in FW_SMSTAT
 //                          only.
 // MODECHANGE               Mode Change - Perform a mode change only, no other
@@ -643,6 +501,7 @@
 #define NVMNW_CMDTYPE_COMMAND_W                                              3
 #define NVMNW_CMDTYPE_COMMAND_M                                     0x00000007
 #define NVMNW_CMDTYPE_COMMAND_S                                              0
+#define NVMNW_CMDTYPE_COMMAND_BLANKVERIFY                           0x00000006
 #define NVMNW_CMDTYPE_COMMAND_CLEARSTATUS                           0x00000005
 #define NVMNW_CMDTYPE_COMMAND_MODECHANGE                            0x00000004
 #define NVMNW_CMDTYPE_COMMAND_READVERIFY                            0x00000003
@@ -657,8 +516,8 @@
 //*****************************************************************************
 // Field:    [21] DATAVEREN
 //
-// Enable invalid data verify.  This checks for 0->1 transitions in the memory
-// when
+// Enable invalid data verify.
+// This checks for 0->1 transitions in the memory when
 // a program operation is initiated.  If such a transition is found, the
 // program will
 // fail with an error without doing any programming.
@@ -695,6 +554,10 @@
 // Field:    [19] ERASEMASKDIS
 //
 // Disable use of erase mask for erase
+// Bit masking will not be used during erase verify.  If any sectors fail the
+// verify either before (prever) or after (postver) the operation, then all
+// specified
+// flash sectors will receive subsequent erase pulse.
 // ENUMs:
 // DISABLE                  Disable
 // ENABLE                   Enable
@@ -707,7 +570,11 @@
 
 // Field:    [18] PROGMASKDIS
 //
-// Disable use of program mask for programming
+// Disable use of program mask for programming.
+// Bit masking will not be used during program verify.  If any bits fail the
+// verify either before (prever) or after (postver) the operation, then all
+// specified
+// flash entries will receive subsequent program pulse.
 // ENUMs:
 // DISABLE                  Disable
 // ENABLE                   Enable
@@ -717,20 +584,6 @@
 #define NVMNW_CMDCTL_PROGMASKDIS_S                                          18
 #define NVMNW_CMDCTL_PROGMASKDIS_DISABLE                            0x00040000
 #define NVMNW_CMDCTL_PROGMASKDIS_ENABLE                             0x00000000
-
-// Field:    [17] ECCGENOVR
-//
-// Override hardware generation of ECC data for program.  Use data written to
-// FWSM_DATA_ECC.
-// ENUMs:
-// OVERRIDE                 Override
-// NOOVERRIDE               Do not override
-#define NVMNW_CMDCTL_ECCGENOVR                                      0x00020000
-#define NVMNW_CMDCTL_ECCGENOVR_BITN                                         17
-#define NVMNW_CMDCTL_ECCGENOVR_M                                    0x00020000
-#define NVMNW_CMDCTL_ECCGENOVR_S                                            17
-#define NVMNW_CMDCTL_ECCGENOVR_OVERRIDE                             0x00020000
-#define NVMNW_CMDCTL_ECCGENOVR_NOOVERRIDE                           0x00000000
 
 // Field:    [16] ADDRXLATEOVR
 //
@@ -764,8 +617,7 @@
 
 // Field:    [14] PREVEREN
 //
-// Enable verify before program or erase.  For program, bits already
-// programmed
+// Enable verify before program or erase.  For program, bits already programmed
 // to the requested value will be masked.  For erase, sectors already erased
 // will be
 // masked.
@@ -782,6 +634,9 @@
 // Field:  [12:9] REGIONSEL
 //
 // Bank Region
+// A specific region ID can be written to this field to indicate to which
+// region an
+// operation should be applied if CMDCTL.ADDRXLATEOVR is set.
 // ENUMs:
 // ENGR                     Engr Region
 // TRIM                     Trim Region
@@ -798,6 +653,8 @@
 // Field:     [4] BANKSEL
 //
 // Bank Select
+// A specific Bank ID can be written to this field to indicate to which bank an
+// operation should be applied if CMDCTL.ADDRXLATEOVR is set.
 // ENUMs:
 // BANK4                    Bank 4
 // BANK3                    Bank 3
@@ -822,12 +679,10 @@
 // ENUMs:
 // ERASEBNK                 Erase Bank
 // PGMMW                    Program Multiple Word
-// LEAKVER                  Leakage Verify Mode
 // ERASESECT                Erase Sector
 // ERASEVER                 Erase Verify Mode
 // PGMSW                    Program Single Word
 // PGMVER                   Program Verify Mode
-// NOOP                     No Operation
 // RDMARG1B                 Read Margin 1B Mode
 // RDMARG0B                 Read Margin 0B Mode
 // RDMARG1                  Read Margin 1 Mode
@@ -838,12 +693,10 @@
 #define NVMNW_CMDCTL_MODESEL_S                                               0
 #define NVMNW_CMDCTL_MODESEL_ERASEBNK                               0x0000000F
 #define NVMNW_CMDCTL_MODESEL_PGMMW                                  0x0000000E
-#define NVMNW_CMDCTL_MODESEL_LEAKVER                                0x0000000D
 #define NVMNW_CMDCTL_MODESEL_ERASESECT                              0x0000000C
 #define NVMNW_CMDCTL_MODESEL_ERASEVER                               0x0000000B
 #define NVMNW_CMDCTL_MODESEL_PGMSW                                  0x0000000A
 #define NVMNW_CMDCTL_MODESEL_PGMVER                                 0x00000009
-#define NVMNW_CMDCTL_MODESEL_NOOP                                   0x00000008
 #define NVMNW_CMDCTL_MODESEL_RDMARG1B                               0x00000007
 #define NVMNW_CMDCTL_MODESEL_RDMARG0B                               0x00000006
 #define NVMNW_CMDCTL_MODESEL_RDMARG1                                0x00000004
@@ -857,10 +710,7 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// Flash Wrapper State Machine Command Address
-// A 32-bit system address is placed in this register.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
+// Address value
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -875,19 +725,17 @@
 // Register: NVMNW_O_CMDBYTEN
 //
 //*****************************************************************************
-// Field:   [7:0] VAL
+// Field:  [15:0] VAL
 //
-// Flash Wrapper State Machine Command Program Mask
+// Command Byte Enable value.
 // A 1-bit per flash word byte value is placed in this register.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDBYTEN_VAL_W                                                 8
-#define NVMNW_CMDBYTEN_VAL_M                                        0x000000FF
+#define NVMNW_CMDBYTEN_VAL_W                                                16
+#define NVMNW_CMDBYTEN_VAL_M                                        0x0000FFFF
 #define NVMNW_CMDBYTEN_VAL_S                                                 0
-#define NVMNW_CMDBYTEN_VAL_MAXIMUM                                  0x0003FFFF
+#define NVMNW_CMDBYTEN_VAL_MAXIMUM                                  0x0000FFFF
 #define NVMNW_CMDBYTEN_VAL_MINIMUM                                  0x00000000
 
 //*****************************************************************************
@@ -895,16 +743,16 @@
 // Register: NVMNW_O_CMDDATAINDEX
 //
 //*****************************************************************************
-// Field:   [2:0] VAL
+// Field:   [1:0] VAL
 //
 // Data register index
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATAINDEX_VAL_W                                             3
-#define NVMNW_CMDDATAINDEX_VAL_M                                    0x00000007
+#define NVMNW_CMDDATAINDEX_VAL_W                                             2
+#define NVMNW_CMDDATAINDEX_VAL_M                                    0x00000003
 #define NVMNW_CMDDATAINDEX_VAL_S                                             0
-#define NVMNW_CMDDATAINDEX_VAL_MAXIMUM                              0x00000007
+#define NVMNW_CMDDATAINDEX_VAL_MAXIMUM                              0x00000003
 #define NVMNW_CMDDATAINDEX_VAL_MINIMUM                              0x00000000
 
 //*****************************************************************************
@@ -915,8 +763,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -934,8 +780,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -953,8 +797,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -972,8 +814,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -991,8 +831,7 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
+// T
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1010,8 +849,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1029,8 +866,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1048,8 +883,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1067,8 +900,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1086,8 +917,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1105,8 +934,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1124,8 +951,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1143,8 +968,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1162,8 +985,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1181,8 +1002,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1200,8 +1019,6 @@
 // Field:  [31:0] VAL
 //
 // A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1213,542 +1030,6 @@
 
 //*****************************************************************************
 //
-// Register: NVMNW_O_CMDDATA16
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA16_VAL_W                                               32
-#define NVMNW_CMDDATA16_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA16_VAL_S                                                0
-#define NVMNW_CMDDATA16_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA16_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA17
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA17_VAL_W                                               32
-#define NVMNW_CMDDATA17_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA17_VAL_S                                                0
-#define NVMNW_CMDDATA17_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA17_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA18
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA18_VAL_W                                               32
-#define NVMNW_CMDDATA18_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA18_VAL_S                                                0
-#define NVMNW_CMDDATA18_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA18_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA19
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA19_VAL_W                                               32
-#define NVMNW_CMDDATA19_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA19_VAL_S                                                0
-#define NVMNW_CMDDATA19_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA19_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA20
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA20_VAL_W                                               32
-#define NVMNW_CMDDATA20_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA20_VAL_S                                                0
-#define NVMNW_CMDDATA20_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA20_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA21
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA21_VAL_W                                               32
-#define NVMNW_CMDDATA21_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA21_VAL_S                                                0
-#define NVMNW_CMDDATA21_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA21_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA22
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA22_VAL_W                                               32
-#define NVMNW_CMDDATA22_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA22_VAL_S                                                0
-#define NVMNW_CMDDATA22_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA22_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA23
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA23_VAL_W                                               32
-#define NVMNW_CMDDATA23_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA23_VAL_S                                                0
-#define NVMNW_CMDDATA23_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA23_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA24
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA24_VAL_W                                               32
-#define NVMNW_CMDDATA24_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA24_VAL_S                                                0
-#define NVMNW_CMDDATA24_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA24_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA25
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA25_VAL_W                                               32
-#define NVMNW_CMDDATA25_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA25_VAL_S                                                0
-#define NVMNW_CMDDATA25_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA25_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA26
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA26_VAL_W                                               32
-#define NVMNW_CMDDATA26_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA26_VAL_S                                                0
-#define NVMNW_CMDDATA26_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA26_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA27
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA27_VAL_W                                               32
-#define NVMNW_CMDDATA27_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA27_VAL_S                                                0
-#define NVMNW_CMDDATA27_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA27_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA28
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA28_VAL_W                                               32
-#define NVMNW_CMDDATA28_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA28_VAL_S                                                0
-#define NVMNW_CMDDATA28_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA28_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA29
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA29_VAL_W                                               32
-#define NVMNW_CMDDATA29_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA29_VAL_S                                                0
-#define NVMNW_CMDDATA29_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA29_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA30
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA30_VAL_W                                               32
-#define NVMNW_CMDDATA30_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA30_VAL_S                                                0
-#define NVMNW_CMDDATA30_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA30_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATA31
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// A 32-bit data value is placed in this field.
-// This field is blocked for writes after being written to 1 and prior to
-// FW_SMCMT_STAT.DONE being set by the NoWrapper hardware.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDDATA31_VAL_W                                               32
-#define NVMNW_CMDDATA31_VAL_M                                       0xFFFFFFFF
-#define NVMNW_CMDDATA31_VAL_S                                                0
-#define NVMNW_CMDDATA31_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_CMDDATA31_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC0
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC0_VAL1_W                                             8
-#define NVMNW_CMDDATAECC0_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC0_VAL1_S                                             8
-#define NVMNW_CMDDATAECC0_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC0_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC0_VAL0_W                                             8
-#define NVMNW_CMDDATAECC0_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC0_VAL0_S                                             0
-#define NVMNW_CMDDATAECC0_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC0_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC1
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC1_VAL1_W                                             8
-#define NVMNW_CMDDATAECC1_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC1_VAL1_S                                             8
-#define NVMNW_CMDDATAECC1_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC1_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC1_VAL0_W                                             8
-#define NVMNW_CMDDATAECC1_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC1_VAL0_S                                             0
-#define NVMNW_CMDDATAECC1_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC1_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC2
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC2_VAL1_W                                             8
-#define NVMNW_CMDDATAECC2_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC2_VAL1_S                                             8
-#define NVMNW_CMDDATAECC2_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC2_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC2_VAL0_W                                             8
-#define NVMNW_CMDDATAECC2_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC2_VAL0_S                                             0
-#define NVMNW_CMDDATAECC2_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC2_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC3
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC3_VAL1_W                                             8
-#define NVMNW_CMDDATAECC3_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC3_VAL1_S                                             8
-#define NVMNW_CMDDATAECC3_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC3_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC3_VAL0_W                                             8
-#define NVMNW_CMDDATAECC3_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC3_VAL0_S                                             0
-#define NVMNW_CMDDATAECC3_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC3_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC4
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC4_VAL1_W                                             8
-#define NVMNW_CMDDATAECC4_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC4_VAL1_S                                             8
-#define NVMNW_CMDDATAECC4_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC4_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC4_VAL0_W                                             8
-#define NVMNW_CMDDATAECC4_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC4_VAL0_S                                             0
-#define NVMNW_CMDDATAECC4_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC4_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC5
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC5_VAL1_W                                             8
-#define NVMNW_CMDDATAECC5_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC5_VAL1_S                                             8
-#define NVMNW_CMDDATAECC5_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC5_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC5_VAL0_W                                             8
-#define NVMNW_CMDDATAECC5_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC5_VAL0_S                                             0
-#define NVMNW_CMDDATAECC5_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC5_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC6
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC6_VAL1_W                                             8
-#define NVMNW_CMDDATAECC6_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC6_VAL1_S                                             8
-#define NVMNW_CMDDATAECC6_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC6_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC6_VAL0_W                                             8
-#define NVMNW_CMDDATAECC6_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC6_VAL0_S                                             0
-#define NVMNW_CMDDATAECC6_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC6_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_CMDDATAECC7
-//
-//*****************************************************************************
-// Field:  [15:8] VAL1
-//
-// ECC data for bits 127:64 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC7_VAL1_W                                             8
-#define NVMNW_CMDDATAECC7_VAL1_M                                    0x0000FF00
-#define NVMNW_CMDDATAECC7_VAL1_S                                             8
-#define NVMNW_CMDDATAECC7_VAL1_MAXIMUM                              0x0000FF00
-#define NVMNW_CMDDATAECC7_VAL1_MINIMUM                              0x00000000
-
-// Field:   [7:0] VAL0
-//
-// ECC data for bits 63:0 of the data is placed here.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_CMDDATAECC7_VAL0_W                                             8
-#define NVMNW_CMDDATAECC7_VAL0_M                                    0x000000FF
-#define NVMNW_CMDDATAECC7_VAL0_S                                             0
-#define NVMNW_CMDDATAECC7_VAL0_MAXIMUM                              0x000000FF
-#define NVMNW_CMDDATAECC7_VAL0_MINIMUM                              0x00000000
-
-//*****************************************************************************
-//
 // Register: NVMNW_O_CMDWEPROTA
 //
 //*****************************************************************************
@@ -1756,17 +1037,15 @@
 //
 // Each bit protects 1 sector.
 //
-// bit [0]:	When 1, sector 0 of the flash memory will be protected from
+// bit [0]:When 1, sector 0 of the flash memory will be protected from program
+// and erase.
+// bit [1]:When 1, sector 1 of the flash memory will be protected from program
+// and erase.
+// :
+// :
+// bit [31]:When 1, sector 31 of the flash memory will be protected from
 // program
-// 		and erase.
-// bit [1]:	When 1, sector 1 of the flash memory will be protected from
-// program
-// 		and erase.
-// 	:
-// 	:
-// bit [31]:	When 1, sector 31 of the flash memory will be protected from
-// program
-// 		and erase.
+// and erase.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1783,19 +1062,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// Each bit protects a group of 8 sectors.
-//
-// bit [0]:	When 1, sectors 0-7 of the flash memory will be protected from
-// program
-// 		and erase.
-// bit [1]:	When 1, sectors 8-15 of the flash memory will be protected from
-// program
-// 		and erase.
-// 	:
-// 	:
-// bit [31]:	When 1, sectors 248-255 of the flash memory will be protected from
-// program
-// 		and erase.
+// Each bit protects a group of 8 sectors.  When a bit is 1, the associated 8
+// sectors
+// in the flash will be protected from program and erase.  A maximum of 256
+// sectors can be protected with this register.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
@@ -1807,59 +1077,31 @@
 
 //*****************************************************************************
 //
-// Register: NVMNW_O_CMDWEPROTC
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Each bit protects a group of 8 sectors.
-//
-// bit [0]:	When 1, sectors 256-263 of the main region will be protected from
-// program
-// 		and erase.
-// bit [1]:	When 1, sectors 264-271 of the main region will be protected from
-// program
-// 		and erase.
-// 	:
-// 	:
-// bit [31]:	When 1, sectors 504-511 of the main region will be protected from
-// program
-// 		and erase.
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDWEPROTC_VAL_W                                              32
-#define NVMNW_CMDWEPROTC_VAL_M                                      0xFFFFFFFF
-#define NVMNW_CMDWEPROTC_VAL_S                                               0
-#define NVMNW_CMDWEPROTC_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_CMDWEPROTC_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
 // Register: NVMNW_O_CMDWEPROTNM
 //
 //*****************************************************************************
-// Field:  [31:0] VAL
+// Field:     [0] VAL
 //
 // Each bit protects 1 sector.
 //
-// bit [0]:	When 1, sector 0 of the non-main region will be protected from
+// bit [0]:When 1, sector 0 of the non-main region will be protected from
 // program
-// 		and erase.
-// bit [1]:	When 1, sector 1 of the non-main region will be protected from
+// and erase.
+// bit [1]:When 1, sector 1 of the non-main region will be protected from
 // program
-// 		and erase.
-// 	:
-// 	:
-// bit [16]:	When 1, sector 15 of the non-main will be protected from program
-// 		and erase.
+// and erase.
+// :
+// :
+// bit [31]:When 1, sector 31 of the non-main will be protected from program
+// and erase.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDWEPROTNM_VAL_W                                             32
-#define NVMNW_CMDWEPROTNM_VAL_M                                     0xFFFFFFFF
+#define NVMNW_CMDWEPROTNM_VAL                                       0x00000001
+#define NVMNW_CMDWEPROTNM_VAL_BITN                                           0
+#define NVMNW_CMDWEPROTNM_VAL_M                                     0x00000001
 #define NVMNW_CMDWEPROTNM_VAL_S                                              0
-#define NVMNW_CMDWEPROTNM_VAL_MAXIMUM                               0xFFFFFFFF
+#define NVMNW_CMDWEPROTNM_VAL_MAXIMUM                               0x00000001
 #define NVMNW_CMDWEPROTNM_VAL_MINIMUM                               0x00000000
 
 //*****************************************************************************
@@ -1867,26 +1109,26 @@
 // Register: NVMNW_O_CMDWEPROTTR
 //
 //*****************************************************************************
-// Field:  [31:0] VAL
+// Field:     [0] VAL
 //
 // Each bit protects 1 sector.
 //
-// bit [0]:	When 1, sector 0 of the engr region will be protected from program
-// 		and erase.
-// bit [1]:	When 1, sector 1 of the engr region will be protected from program
-// 		and erase.
-// 	:
-// 	:
-// bit [16]:	When 1, sector 15 of the engr region will be protected from
-// program
-// 		and erase.
+// bit [0]:When 1, sector 0 of the engr region will be protected from program
+// and erase.
+// bit [1]:When 1, sector 1 of the engr region will be protected from program
+// and erase.
+// :
+// :
+// bit [31]:When 1, sector 31 of the engr region will be protected from program
+// and erase.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDWEPROTTR_VAL_W                                             32
-#define NVMNW_CMDWEPROTTR_VAL_M                                     0xFFFFFFFF
+#define NVMNW_CMDWEPROTTR_VAL                                       0x00000001
+#define NVMNW_CMDWEPROTTR_VAL_BITN                                           0
+#define NVMNW_CMDWEPROTTR_VAL_M                                     0x00000001
 #define NVMNW_CMDWEPROTTR_VAL_S                                              0
-#define NVMNW_CMDWEPROTTR_VAL_MAXIMUM                               0xFFFFFFFF
+#define NVMNW_CMDWEPROTTR_VAL_MAXIMUM                               0x00000001
 #define NVMNW_CMDWEPROTTR_VAL_MINIMUM                               0x00000000
 
 //*****************************************************************************
@@ -1894,26 +1136,26 @@
 // Register: NVMNW_O_CMDWEPROTEN
 //
 //*****************************************************************************
-// Field:  [31:0] VAL
+// Field:     [0] VAL
 //
 // Each bit protects 1 sector.
 //
-// bit [0]:	When 1, sector 0 of the engr region will be protected from program
-// 		and erase.
-// bit [1]:	When 1, sector 1 of the engr region will be protected from program
-// 		and erase.
-// 	:
-// 	:
-// bit [16]:	When 1, sector 15 of the engr region will be protected from
-// program
-// 		and erase.
+// bit [0]:When 1, sector 0 of the engr region will be protected from program
+// and erase.
+// bit [1]:When 1, sector 1 of the engr region will be protected from program
+// and erase.
+// :
+// :
+// bit [31]:When 1, sector 31 of the engr region will be protected from program
+// and erase.
 // ENUMs:
 // MAXIMUM                  Maximum value of VAL
 // MINIMUM                  Minimum value of VAL
-#define NVMNW_CMDWEPROTEN_VAL_W                                             32
-#define NVMNW_CMDWEPROTEN_VAL_M                                     0xFFFFFFFF
+#define NVMNW_CMDWEPROTEN_VAL                                       0x00000001
+#define NVMNW_CMDWEPROTEN_VAL_BITN                                           0
+#define NVMNW_CMDWEPROTEN_VAL_M                                     0x00000001
 #define NVMNW_CMDWEPROTEN_VAL_S                                              0
-#define NVMNW_CMDWEPROTEN_VAL_MAXIMUM                               0xFFFFFFFF
+#define NVMNW_CMDWEPROTEN_VAL_MAXIMUM                               0x00000001
 #define NVMNW_CMDWEPROTEN_VAL_MINIMUM                               0x00000000
 
 //*****************************************************************************
@@ -1923,7 +1165,7 @@
 //*****************************************************************************
 // Field:   [3:0] WAITSTATE
 //
-// Wait State setting for read verify
+// Wait State setting for program verify, erase verify and read verify
 // ENUMs:
 // MAXIMUM                  Maximum value
 // MINIMUM                  Minimum value
@@ -1940,8 +1182,14 @@
 //*****************************************************************************
 // Field:  [11:4] MAXPCNTVAL
 //
-// Override maximum pulse counter with this value.  Full max value will be
-// {4'h0, MAXPCNTVAL}
+// Override maximum pulse counter with this value.
+// If MAXPCNTOVR = 0, then this field is ignored.
+// If MAXPCNTOVR = 1 and MAXERSPCNTOVR = 0, then this value will be used
+// to override the max pulse count for both program and erase.  Full max value
+// will be {4'h0, MAXPCNTVAL} .
+// If MAXPCNTOVR = 1 and MAXERSPCNTOVR = 1, then this value will be used
+// to override the max pulse count for program only.  Full max value will be
+// {4'h0, MAXPCNTVAL}.
 // ENUMs:
 // MAXIMUM                  Maximum value
 // MINIMUM                  Minimum value
@@ -1953,12 +1201,14 @@
 
 // Field:     [0] MAXPCNTOVR
 //
-// Override hard-wired maximum pulse count for program or erase
-// Enumeration:
-// 0: Use hard-wired (default) maximum pulse count
-// 1: Use value from MAX_PCNT field as maximum pulse count
+// Override hard-wired maximum pulse count.  If MAXERSPCNTOVR
+// is not set, then setting this value alone will override the max pulse count
+// for
+// both program and erase.  If MAXERSPCNTOVR is set, then this bit will only
+// control the max pulse count setting for program.
+// By default, this bit is 0, and a hard-wired max pulse count is used.
 // ENUMs:
-// OVERRIDE                 Use value from MAX_PCNT_OVR field as maximum puse
+// OVERRIDE                 Use value from MAXPCNTVAL field as maximum puse
 //                          count
 // DEFAULT                  Use hard-wired (default) value for maximum pulse
 //                          count
@@ -2177,18 +1427,47 @@
 // Register: NVMNW_O_STATMODE
 //
 //*****************************************************************************
+// Field:    [17] BANK1TRDY
+//
+// Bank 1T Ready.
+// Bank(s) are ready for 1T access.  This is accomplished when the bank and
+// pump
+// have been trimmed.
+// ENUMs:
+// TRUE                     Ready
+// FALSE                    Not ready
+#define NVMNW_STATMODE_BANK1TRDY                                    0x00020000
+#define NVMNW_STATMODE_BANK1TRDY_BITN                                       17
+#define NVMNW_STATMODE_BANK1TRDY_M                                  0x00020000
+#define NVMNW_STATMODE_BANK1TRDY_S                                          17
+#define NVMNW_STATMODE_BANK1TRDY_TRUE                               0x00020000
+#define NVMNW_STATMODE_BANK1TRDY_FALSE                              0x00000000
+
+// Field:    [16] BANK2TRDY
+//
+// Bank 2T Ready.
+// Bank(s) are ready for 2T access.  This is accomplished when the pump has
+// fully driven power rails to the bank(s).
+// ENUMs:
+// TRUE                     Ready
+// FALSE                    Not ready
+#define NVMNW_STATMODE_BANK2TRDY                                    0x00010000
+#define NVMNW_STATMODE_BANK2TRDY_BITN                                       16
+#define NVMNW_STATMODE_BANK2TRDY_M                                  0x00010000
+#define NVMNW_STATMODE_BANK2TRDY_S                                          16
+#define NVMNW_STATMODE_BANK2TRDY_TRUE                               0x00010000
+#define NVMNW_STATMODE_BANK2TRDY_FALSE                              0x00000000
+
 // Field:  [11:8] BANKMODE
 //
 // Indicates mode of bank(s) that are not in READ mode
 // ENUMs:
 // ERASEBNK                 Erase Bank
 // PGMMW                    Program Multiple Word
-// LEAKVER                  Leakage Verify Mode
 // ERASESECT                Erase Sector
 // ERASEVER                 Erase Verify Mode
 // PGMSW                    Program Single Word
 // PGMVER                   Program Verify Mode
-// NOOP                     No Operation
 // RDMARG1B                 Read Margin 1B Mode
 // RDMARG0B                 Read Margin 0B Mode
 // RDMARG1                  Read Margin 1 Mode
@@ -2199,12 +1478,10 @@
 #define NVMNW_STATMODE_BANKMODE_S                                            8
 #define NVMNW_STATMODE_BANKMODE_ERASEBNK                            0x00000F00
 #define NVMNW_STATMODE_BANKMODE_PGMMW                               0x00000E00
-#define NVMNW_STATMODE_BANKMODE_LEAKVER                             0x00000D00
 #define NVMNW_STATMODE_BANKMODE_ERASESECT                           0x00000C00
 #define NVMNW_STATMODE_BANKMODE_ERASEVER                            0x00000B00
 #define NVMNW_STATMODE_BANKMODE_PGMSW                               0x00000A00
 #define NVMNW_STATMODE_BANKMODE_PGMVER                              0x00000900
-#define NVMNW_STATMODE_BANKMODE_NOOP                                0x00000800
 #define NVMNW_STATMODE_BANKMODE_RDMARG1B                            0x00000700
 #define NVMNW_STATMODE_BANKMODE_RDMARG0B                            0x00000600
 #define NVMNW_STATMODE_BANKMODE_RDMARG1                             0x00000400
@@ -2239,8 +1516,8 @@
 // Field: [18:16] NUMBANKS
 //
 // Number of banks instantiated
-// Minimum:	1
-// Maximum:	5
+// Minimum:1
+// Maximum:5
 // ENUMs:
 // MAXIMUM                  Maximum value
 // MINIMUM                  Minimum value
@@ -2310,14 +1587,31 @@
 
 //*****************************************************************************
 //
+// Register: NVMNW_O_GBLINFO2
+//
+//*****************************************************************************
+// Field:   [3:0] DATAREGISTERS
+//
+// Number of data registers present.
+// ENUMs:
+// MAXIMUM                  Maximum value of DATAREGISTERS
+// MINIMUM                  Minimum value of DATAREGISTERS
+#define NVMNW_GBLINFO2_DATAREGISTERS_W                                       4
+#define NVMNW_GBLINFO2_DATAREGISTERS_M                              0x0000000F
+#define NVMNW_GBLINFO2_DATAREGISTERS_S                                       0
+#define NVMNW_GBLINFO2_DATAREGISTERS_MAXIMUM                        0x00000008
+#define NVMNW_GBLINFO2_DATAREGISTERS_MINIMUM                        0x00000001
+
+//*****************************************************************************
+//
 // Register: NVMNW_O_BANK0INFO0
 //
 //*****************************************************************************
 // Field:  [11:0] MAINSIZE
 //
 // Main region size in sectors
-// Minimum:	0x8 (8)
-// Maximum:	0x200 (512)
+// Minimum:0x8 (8)
+// Maximum:0x200 (512)
 // ENUMs:
 // MAXSECTORS               Maximum value of MAINSIZE
 // MINSECTORS               Minimum value of MAINSIZE
@@ -2335,8 +1629,8 @@
 // Field: [23:16] ENGRSIZE
 //
 // Engr region size in sectors
-// Minimum:	0x0 (0)
-// Maximum:	0x10 (16)
+// Minimum:0x0 (0)
+// Maximum:0x10 (16)
 // ENUMs:
 // MAXSECTORS               Maximum value of ENGRSIZE
 // MINSECTORS               Minimum value of ENGRSIZE
@@ -2349,8 +1643,8 @@
 // Field:  [15:8] TRIMSIZE
 //
 // Trim region size in sectors
-// Minimum:	0x0 (0)
-// Maximum:	0x10 (16)
+// Minimum:0x0 (0)
+// Maximum:0x10 (16)
 // ENUMs:
 // MAXSECTORS               Maximum value of TRIMSIZE
 // MINSECTORS               Minimum value of TRIMSIZE
@@ -2363,8 +1657,8 @@
 // Field:   [7:0] NONMAINSIZE
 //
 // Non-main region size in sectors
-// Minimum:	0x0 (0)
-// Maximum:	0x10 (16)
+// Minimum:0x0 (0)
+// Maximum:0x10 (16)
 // ENUMs:
 // MAXSECTORS               Maximum value of NONMAINSIZE
 // MINSECTORS               Minimum value of NONMAINSIZE
@@ -2382,8 +1676,8 @@
 // Field:  [11:0] MAINSIZE
 //
 // Main region size in sectors
-// Minimum:	0x8 (8)
-// Maximum:	0x200 (512)
+// Minimum:0x8 (8)
+// Maximum:0x200 (512)
 // ENUMs:
 // MAXSECTORS               Maximum value of MAINSIZE
 // MINSECTORS               Minimum value of MAINSIZE
@@ -2401,8 +1695,8 @@
 // Field: [23:16] ENGRSIZE
 //
 // Engr region size in sectors
-// Minimum:	0x0 (0)
-// Maximum:	0x10 (16)
+// Minimum:0x0 (0)
+// Maximum:0x10 (16)
 // ENUMs:
 // MAXSECTORS               Maximum value of ENGRSIZE
 // MINSECTORS               Minimum value of ENGRSIZE
@@ -2438,191 +1732,12 @@
 
 //*****************************************************************************
 //
-// Register: NVMNW_O_BANK2INFO0
-//
-//*****************************************************************************
-// Field:  [11:0] MAINSIZE
-//
-// Main region size in sectors
-// Minimum:	0x8 (8)
-// Maximum:	0x200 (512)
-// ENUMs:
-// MAXSECTORS               Maximum value of MAINSIZE
-// MINSECTORS               Minimum value of MAINSIZE
-#define NVMNW_BANK2INFO0_MAINSIZE_W                                         12
-#define NVMNW_BANK2INFO0_MAINSIZE_M                                 0x00000FFF
-#define NVMNW_BANK2INFO0_MAINSIZE_S                                          0
-#define NVMNW_BANK2INFO0_MAINSIZE_MAXSECTORS                        0x00000200
-#define NVMNW_BANK2INFO0_MAINSIZE_MINSECTORS                        0x00000008
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK2INFO1
-//
-//*****************************************************************************
-// Field: [23:16] ENGRSIZE
-//
-// Engr region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of ENGRSIZE
-// MINSECTORS               Minimum value of ENGRSIZE
-#define NVMNW_BANK2INFO1_ENGRSIZE_W                                          8
-#define NVMNW_BANK2INFO1_ENGRSIZE_M                                 0x00FF0000
-#define NVMNW_BANK2INFO1_ENGRSIZE_S                                         16
-#define NVMNW_BANK2INFO1_ENGRSIZE_MAXSECTORS                        0x00200000
-#define NVMNW_BANK2INFO1_ENGRSIZE_MINSECTORS                        0x00000000
-
-// Field:  [15:8] TRIMSIZE
-//
-// Trim region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of TRIMSIZE
-// MINSECTORS               Minimum value of TRIMSIZE
-#define NVMNW_BANK2INFO1_TRIMSIZE_W                                          8
-#define NVMNW_BANK2INFO1_TRIMSIZE_M                                 0x0000FF00
-#define NVMNW_BANK2INFO1_TRIMSIZE_S                                          8
-#define NVMNW_BANK2INFO1_TRIMSIZE_MAXSECTORS                        0x00002000
-#define NVMNW_BANK2INFO1_TRIMSIZE_MINSECTORS                        0x00000000
-
-// Field:   [7:0] NONMAINSIZE
-//
-// Non-main region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of NONMAINSIZE
-// MINSECTORS               Minimum value of NONMAINSIZE
-#define NVMNW_BANK2INFO1_NONMAINSIZE_W                                       8
-#define NVMNW_BANK2INFO1_NONMAINSIZE_M                              0x000000FF
-#define NVMNW_BANK2INFO1_NONMAINSIZE_S                                       0
-#define NVMNW_BANK2INFO1_NONMAINSIZE_MAXSECTORS                     0x00000020
-#define NVMNW_BANK2INFO1_NONMAINSIZE_MINSECTORS                     0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK3INFO0
-//
-//*****************************************************************************
-// Field:  [11:0] MAINSIZE
-//
-// Main region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of MAINSIZE
-// MINSECTORS               Minimum value of MAINSIZE
-#define NVMNW_BANK3INFO0_MAINSIZE_W                                         12
-#define NVMNW_BANK3INFO0_MAINSIZE_M                                 0x00000FFF
-#define NVMNW_BANK3INFO0_MAINSIZE_S                                          0
-#define NVMNW_BANK3INFO0_MAINSIZE_MAXSECTORS                        0x00000200
-#define NVMNW_BANK3INFO0_MAINSIZE_MINSECTORS                        0x00000008
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK3INFO1
-//
-//*****************************************************************************
-// Field: [23:16] ENGRSIZE
-//
-// Engr region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of ENGRSIZE
-// MINSECTORS               Minimum value of ENGRSIZE
-#define NVMNW_BANK3INFO1_ENGRSIZE_W                                          8
-#define NVMNW_BANK3INFO1_ENGRSIZE_M                                 0x00FF0000
-#define NVMNW_BANK3INFO1_ENGRSIZE_S                                         16
-#define NVMNW_BANK3INFO1_ENGRSIZE_MAXSECTORS                        0x00200000
-#define NVMNW_BANK3INFO1_ENGRSIZE_MINSECTORS                        0x00000000
-
-// Field:  [15:8] TRIMSIZE
-//
-// Trim region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of TRIMSIZE
-// MINSECTORS               Minimum value of TRIMSIZE
-#define NVMNW_BANK3INFO1_TRIMSIZE_W                                          8
-#define NVMNW_BANK3INFO1_TRIMSIZE_M                                 0x0000FF00
-#define NVMNW_BANK3INFO1_TRIMSIZE_S                                          8
-#define NVMNW_BANK3INFO1_TRIMSIZE_MAXSECTORS                        0x00002000
-#define NVMNW_BANK3INFO1_TRIMSIZE_MINSECTORS                        0x00000000
-
-// Field:   [7:0] NONMAINSIZE
-//
-// Non-main region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of NONMAINSIZE
-// MINSECTORS               Minimum value of NONMAINSIZE
-#define NVMNW_BANK3INFO1_NONMAINSIZE_W                                       8
-#define NVMNW_BANK3INFO1_NONMAINSIZE_M                              0x000000FF
-#define NVMNW_BANK3INFO1_NONMAINSIZE_S                                       0
-#define NVMNW_BANK3INFO1_NONMAINSIZE_MAXSECTORS                     0x00000020
-#define NVMNW_BANK3INFO1_NONMAINSIZE_MINSECTORS                     0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK4INFO0
-//
-//*****************************************************************************
-// Field:  [11:0] MAINSIZE
-//
-// Main region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of MAINSIZE
-// MINSECTORS               Minimum value of MAINSIZE
-#define NVMNW_BANK4INFO0_MAINSIZE_W                                         12
-#define NVMNW_BANK4INFO0_MAINSIZE_M                                 0x00000FFF
-#define NVMNW_BANK4INFO0_MAINSIZE_S                                          0
-#define NVMNW_BANK4INFO0_MAINSIZE_MAXSECTORS                        0x00000200
-#define NVMNW_BANK4INFO0_MAINSIZE_MINSECTORS                        0x00000008
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK4INFO1
-//
-//*****************************************************************************
-// Field: [23:16] ENGRSIZE
-//
-// Engr region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of ENGRSIZE
-// MINSECTORS               Minimum value of ENGRSIZE
-#define NVMNW_BANK4INFO1_ENGRSIZE_W                                          8
-#define NVMNW_BANK4INFO1_ENGRSIZE_M                                 0x00FF0000
-#define NVMNW_BANK4INFO1_ENGRSIZE_S                                         16
-#define NVMNW_BANK4INFO1_ENGRSIZE_MAXSECTORS                        0x00200000
-#define NVMNW_BANK4INFO1_ENGRSIZE_MINSECTORS                        0x00000000
-
-// Field:  [15:8] TRIMSIZE
-//
-// Trim region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of TRIMSIZE
-// MINSECTORS               Minimum value of TRIMSIZE
-#define NVMNW_BANK4INFO1_TRIMSIZE_W                                          8
-#define NVMNW_BANK4INFO1_TRIMSIZE_M                                 0x0000FF00
-#define NVMNW_BANK4INFO1_TRIMSIZE_S                                          8
-#define NVMNW_BANK4INFO1_TRIMSIZE_MAXSECTORS                        0x00002000
-#define NVMNW_BANK4INFO1_TRIMSIZE_MINSECTORS                        0x00000000
-
-// Field:   [7:0] NONMAINSIZE
-//
-// Non-main region size in sectors
-// ENUMs:
-// MAXSECTORS               Maximum value of NONMAINSIZE
-// MINSECTORS               Minimum value of NONMAINSIZE
-#define NVMNW_BANK4INFO1_NONMAINSIZE_W                                       8
-#define NVMNW_BANK4INFO1_NONMAINSIZE_M                              0x000000FF
-#define NVMNW_BANK4INFO1_NONMAINSIZE_S                                       0
-#define NVMNW_BANK4INFO1_NONMAINSIZE_MAXSECTORS                     0x00000020
-#define NVMNW_BANK4INFO1_NONMAINSIZE_MINSECTORS                     0x00000000
-
-//*****************************************************************************
-//
 // Register: NVMNW_O_DFTEN
 //
 //*****************************************************************************
 // Field:     [0] ENABLE
 //
 // Enable Test Features
-// Enumeration:
-// 0x0:	Test features disabled
-// 0x1: Test features enabled
 // ENUMs:
 // ENABLED                  Command
 // DISABLED                 Command
@@ -2641,6 +1756,10 @@
 // Field: [31:28] DTBMUXSEL
 //
 // DTB Mux Select
+// This field will form the select for the primary DTB mux.  This mux selects
+// up to
+// 16 sets of 32-bit fields of internal signals to be present to the 32-bit DTB
+// output.
 // ENUMs:
 // MAXIMUM                  Maximum value
 // MINIMUM                  Minimum value
@@ -2734,7 +1853,7 @@
 
 // Field:    [12] DATAPATEN
 //
-// Enable data pattern.  Data pattern select in DATAPAT_SEL field will override
+// Enable data pattern.  Data pattern select in DATAPATSEL field will override
 // data
 // from CMDDATA registers for use as program or verify data.
 // ENUMs:
@@ -2809,7 +1928,12 @@
 // Field:     [2] AMX2TDIS
 //
 // 2T address mux disable control. When set to 1 2T address shifting is
-// disabled.
+// disabled.  This bit should only be enabled for reads.  Indeterminate
+// behavior
+// will result if this bit is set during program/erase.  Furthermore, only
+// reads done
+// via a READVERIFY command will be guaranteed to work properly.  Reads via
+// the FBAP port are not guaranteed to operate.
 // ENUMs:
 // DISABLE                  Disable
 // ENABLE                   Enable
@@ -2860,9 +1984,8 @@
 // Override Timer clock frequency using an ICG-based clock divide mechanism.
 // To divide the timer clock, pulses can be skipped based on settings in this
 // field.
-// Enumeration:
-// 0: No division on timer clock
-// 1-7: Divide timer clock by 2-8
+// By default, this field is 0, which corresponds to no division on the timer
+// clock.
 // ENUMs:
 // DIVIDEBY8                Divide timer clock by 8
 // DIVIDEBY7                Divide timer clock by 7
@@ -2889,10 +2012,10 @@
 // Program/Erase Pulse Time Value
 // If operation is a program, this value gets loaded into bits [15:0] of the
 // timer
-// when the PEPULSETIMEVAL_OVR field is set to 1.
+// when the PEPULSETIMEVALOVR field is set to 1.
 // If operation is an erase, this value gets loaded into bits [19:4] of the
 // timer
-// when the PEPULSETIMEVAL_OVR field is set to 1.
+// when the PEPULSETIMEVALOVR field is set to 1.
 // ENUMs:
 // MAXIMUM                  Maximum value
 // MINIMUM                  Minimum value
@@ -2905,9 +2028,11 @@
 // Field:     [8] PEPULSETIMEOVR
 //
 // Override Program/Erase Pulse Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use bits [31:16] of this register as time value
+// If set, this will force the program or erase pulse time to be overridden
+// with the
+// value in the PEPULSETIMEVAL field.  If not set, then a hard-coded value will
+// be
+// used for this pulse time.
 // ENUMs:
 // OVERRIDE                 Use value from the PE_PULSE_TIME field for time
 //                          value
@@ -2922,9 +2047,6 @@
 // Field:     [7] READMODETIME
 //
 // Read Mode Change Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -2938,9 +2060,6 @@
 // Field:     [6] PEVHOLDTIME
 //
 // Program/Erase Verify Hold Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -2954,9 +2073,6 @@
 // Field:     [5] PEVSETUPTIME
 //
 // Program/Erase Verify Setup Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -2970,9 +2086,6 @@
 // Field:     [4] PEVMODETIME
 //
 // Program/Erase Verify Mode Change Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -2986,9 +2099,6 @@
 // Field:     [3] PEHOLDTIME
 //
 // Program/Erase Hold Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -3002,9 +2112,6 @@
 // Field:     [2] PPVWORDLINETIME
 //
 // Program and Program Verify Wordline Switching Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -3018,9 +2125,6 @@
 // Field:     [1] PVHVSETUPTIME
 //
 // Program VHV Setup Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -3034,9 +2138,6 @@
 // Field:     [0] PESETUPTIME
 //
 // Program/Erase Setup Time
-// Enumeration:
-// 0: Use hard-wired time value
-// 1: Use 2x the hard-wired time value
 // ENUMs:
 // TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
 // FUNCTIONAL               Use hard-wired (Functional) timer value
@@ -3068,9 +2169,7 @@
 // Field:     [0] EXEZOVREN
 //
 // Enable override of EXECUTEZ
-// Enumeration:
-// 0: Override of EXECUTEZ disabled
-// 1: Override of EXECUTEZ enabled
+// Note that when this bit is set, NoWrapper has control of the bank pins.
 // ENUMs:
 // ENABLE                   Enable
 // DISABLE                  Disable
@@ -3180,54 +2279,6 @@
 
 //*****************************************************************************
 //
-// Register: NVMNW_O_DFTDATARED4
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED4_VAL_W                                              4
-#define NVMNW_DFTDATARED4_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED4_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED5
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED5_VAL_W                                              4
-#define NVMNW_DFTDATARED5_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED5_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED6
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED6_VAL_W                                              4
-#define NVMNW_DFTDATARED6_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED6_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED7
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED7_VAL_W                                              4
-#define NVMNW_DFTDATARED7_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED7_VAL_S                                              0
-
-//*****************************************************************************
-//
 // Register: NVMNW_O_DFTPUMPCTL
 //
 //*****************************************************************************
@@ -3298,7 +2349,6 @@
 // Field:     [8] TEZ
 //
 // When set, TEZ is asserted to the flash banks.  Which banks get the asserted
-//
 // signal is determined by the BANKSELECT field in CMDCTL.
 // 0x0 Do no assert TEZ
 // 0x1 Assert TEZ
@@ -3323,245 +2373,6 @@
 #define NVMNW_DFTBANKCTL_TCR_S                                               0
 #define NVMNW_DFTBANKCTL_TCR_MAXIMUM                                0x0000007F
 #define NVMNW_DFTBANKCTL_TCR_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_TRIMCTL
-//
-//*****************************************************************************
-// Field:     [0] ENABLE
-//
-// Indicate that Bank and Pump trim values are valid.
-// ENUMs:
-// VALID                    Trim data is valid
-// INVALID                  Trim data is not valid
-#define NVMNW_TRIMCTL_ENABLE                                        0x00000001
-#define NVMNW_TRIMCTL_ENABLE_BITN                                            0
-#define NVMNW_TRIMCTL_ENABLE_M                                      0x00000001
-#define NVMNW_TRIMCTL_ENABLE_S                                               0
-#define NVMNW_TRIMCTL_ENABLE_VALID                                  0x00000001
-#define NVMNW_TRIMCTL_ENABLE_INVALID                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_PUMPTRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_PUMPTRIM0_VAL_W                                               32
-#define NVMNW_PUMPTRIM0_VAL_M                                       0xFFFFFFFF
-#define NVMNW_PUMPTRIM0_VAL_S                                                0
-#define NVMNW_PUMPTRIM0_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_PUMPTRIM0_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_PUMPTRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_PUMPTRIM1_VAL_W                                               32
-#define NVMNW_PUMPTRIM1_VAL_M                                       0xFFFFFFFF
-#define NVMNW_PUMPTRIM1_VAL_S                                                0
-#define NVMNW_PUMPTRIM1_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_PUMPTRIM1_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_PUMPTRIM2
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_PUMPTRIM2_VAL_W                                               32
-#define NVMNW_PUMPTRIM2_VAL_M                                       0xFFFFFFFF
-#define NVMNW_PUMPTRIM2_VAL_S                                                0
-#define NVMNW_PUMPTRIM2_VAL_MAXIMUM                                 0xFFFFFFFF
-#define NVMNW_PUMPTRIM2_VAL_MINIMUM                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK0TRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK0TRIM0_VAL_W                                              32
-#define NVMNW_BANK0TRIM0_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK0TRIM0_VAL_S                                               0
-#define NVMNW_BANK0TRIM0_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_BANK0TRIM0_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK0TRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK0TRIM1_VAL_W                                              32
-#define NVMNW_BANK0TRIM1_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK0TRIM1_VAL_S                                               0
-#define NVMNW_BANK0TRIM1_VAL_MAXIMUM                                0x0FFFFFFF
-#define NVMNW_BANK0TRIM1_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK1TRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK1TRIM0_VAL_W                                              32
-#define NVMNW_BANK1TRIM0_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK1TRIM0_VAL_S                                               0
-#define NVMNW_BANK1TRIM0_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_BANK1TRIM0_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK1TRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK1TRIM1_VAL_W                                              32
-#define NVMNW_BANK1TRIM1_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK1TRIM1_VAL_S                                               0
-#define NVMNW_BANK1TRIM1_VAL_MAXIMUM                                0x0FFFFFFF
-#define NVMNW_BANK1TRIM1_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK2TRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK2TRIM0_VAL_W                                              32
-#define NVMNW_BANK2TRIM0_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK2TRIM0_VAL_S                                               0
-#define NVMNW_BANK2TRIM0_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_BANK2TRIM0_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK2TRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK2TRIM1_VAL_W                                              32
-#define NVMNW_BANK2TRIM1_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK2TRIM1_VAL_S                                               0
-#define NVMNW_BANK2TRIM1_VAL_MAXIMUM                                0x0FFFFFFF
-#define NVMNW_BANK2TRIM1_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK3TRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK3TRIM0_VAL_W                                              32
-#define NVMNW_BANK3TRIM0_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK3TRIM0_VAL_S                                               0
-#define NVMNW_BANK3TRIM0_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_BANK3TRIM0_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK3TRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK3TRIM1_VAL_W                                              32
-#define NVMNW_BANK3TRIM1_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK3TRIM1_VAL_S                                               0
-#define NVMNW_BANK3TRIM1_VAL_MAXIMUM                                0x0FFFFFFF
-#define NVMNW_BANK3TRIM1_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK4TRIM0
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK4TRIM0_VAL_W                                              32
-#define NVMNW_BANK4TRIM0_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK4TRIM0_VAL_S                                               0
-#define NVMNW_BANK4TRIM0_VAL_MAXIMUM                                0xFFFFFFFF
-#define NVMNW_BANK4TRIM0_VAL_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_BANK4TRIM1
-//
-//*****************************************************************************
-// Field:  [31:0] VAL
-//
-// Trim Data Value
-// ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
-#define NVMNW_BANK4TRIM1_VAL_W                                              32
-#define NVMNW_BANK4TRIM1_VAL_M                                      0xFFFFFFFF
-#define NVMNW_BANK4TRIM1_VAL_S                                               0
-#define NVMNW_BANK4TRIM1_VAL_MAXIMUM                                0x0FFFFFFF
-#define NVMNW_BANK4TRIM1_VAL_MINIMUM                                0x00000000
 
 
 #endif // __NVMNW__

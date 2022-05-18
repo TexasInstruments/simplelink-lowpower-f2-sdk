@@ -72,7 +72,7 @@ function getLibs(mod)
     if (family != "") {
         libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
 
-        if (!family.match(/cc.*4/)) {
+        if (!family.match(/cc.*4/) && !family.match(/cc23/)) {
 
             libs.push(libPath("ti/grlib", "grlib.a"));
 
@@ -106,6 +106,13 @@ function getLibs(mod)
                 linkOpts.deps.push("/third_party/fatfs");
                 break;
             }
+        }
+    }
+
+    if (system.modules["/ti/drivers/ECDH"] || system.modules["/ti/drivers/ECDSA"]) {
+        /* Add dependency on ECC library for Agama-Lite and Loki-Low */
+        if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/)) {
+            linkOpts.deps.push("/third_party/ecc");
         }
     }
 

@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       setup.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Setup file for CC13xx/CC26xx devices.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -332,7 +330,11 @@ TrimAfterColdResetWakeupFromShutDown(uint32_t ui32Fcfg1Revision)
     if ((( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDR_EXT_LOAD  ) == 0 ) &&
         (( ccfg_ModeConfReg & CCFG_MODE_CONF_VDDS_BOD_LEVEL ) != 0 )    )
     {
-        HWREGB( ADI3_BASE + ADI_3_REFSYS_O_DCDCCTL3 ) = ADI_3_REFSYS_DCDCCTL3_VDDR_BOOST_COMP_BOOST ;
+        // OR in VDDR_BOOST_COMP_BOOST and maintain the other register fields.
+        // On CC13X2, CC26X2, CC13X1 and CC26X1 devices, there are no other
+        // fields in this register. But on CC26X4 and CC13X4 devices, there is
+        // an additional trim field that must not be overwritten.
+        HWREGB( ADI3_BASE + ADI_3_REFSYS_O_DCDCCTL3 ) |= ADI_3_REFSYS_DCDCCTL3_VDDR_BOOST_COMP_BOOST ;
     }
 
     // Second part of trim done after cold reset and wakeup from shutdown:

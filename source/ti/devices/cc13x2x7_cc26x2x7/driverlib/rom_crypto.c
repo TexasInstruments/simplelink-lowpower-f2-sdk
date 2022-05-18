@@ -1,12 +1,10 @@
 /*******************************************************************************
 *  Filename:       rom_crypto.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    This is the implementation for the API to the ECC functions
 *                  built into ROM on the CC13x2/CC26x2.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

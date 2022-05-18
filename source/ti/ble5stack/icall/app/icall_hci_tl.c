@@ -1026,10 +1026,13 @@ static void HCI_TL_getMemStats(uint8_t memStatCmd, uint8_t* rspBuf, uint8_t *len
     }
     if (memStatCmd & GET_THREAD_STATS)
     {
+#ifndef TIRTOS7_SUPPORT
         uint8_t staticThreadNb = Task_Object_count(); // + 1 for the idle task.
+        Task_Handle tempHandle2;
+#endif // TIRTOS7_SUPPORT
         Task_Stat stats;
         uint8_t nbThoffset;
-        Task_Handle tempHandle, tempHandle2;
+        Task_Handle tempHandle;
         tempHandle = Task_Object_first();
 
         rspBuf[0] |= GET_THREAD_STATS;
@@ -1040,6 +1043,7 @@ static void HCI_TL_getMemStats(uint8_t memStatCmd, uint8_t* rspBuf, uint8_t *len
 
         do
         {
+#ifndef TIRTOS7_SUPPORT
             if(staticThreadNb)
             {
                 //Go through all static thread first
@@ -1067,7 +1071,7 @@ static void HCI_TL_getMemStats(uint8_t memStatCmd, uint8_t* rspBuf, uint8_t *len
                 staticThreadNb--;
                 continue;
             }
-
+#endif // TIRTOS7_SUPPORT
             // no more static thread, continue with dynamic thread.
             if ((tempHandle) && (rspIndex <= ( MAX_RSP_BUF - 8)))
             {
@@ -5768,6 +5772,7 @@ static uint8_t processExtMsgGAP(uint8_t cmdID, hciExtCmd_t *pCmd, uint8_t *pRspD
     {
       stat = Gap_RegisterConnEventCb(host_tl_connEvtCallback,
                                      pBuf[0],                         // action
+                                     pBuf[3],                         // event type
                                      BUILD_UINT16(pBuf[1], pBuf[2])); // connHandle
       break;
     }
@@ -6958,7 +6963,7 @@ static void host_tl_connEvtCallbackProcess(Gap_ConnEventRpt_t *pReport)
   data[index++] = LO_UINT16(HCI_EXT_GAP_BLE3_CONN_EVT_NOTICE);
   data[index++] = HI_UINT16(HCI_EXT_GAP_BLE3_CONN_EVT_NOTICE);
 #else
-  uint8_t data[17];
+  uint8_t data[24];
   data[index++] = LO_UINT16(HCI_EXT_GAP_CONN_EVT_NOTICE);
   data[index++] = HI_UINT16(HCI_EXT_GAP_CONN_EVT_NOTICE);
 #endif
@@ -6979,6 +6984,15 @@ static void host_tl_connEvtCallbackProcess(Gap_ConnEventRpt_t *pReport)
   data[index++] = BREAK_UINT32(pReport->nextTaskTime, 1);
   data[index++] = BREAK_UINT32(pReport->nextTaskTime, 2);
   data[index++] = BREAK_UINT32(pReport->nextTaskTime, 3);
+#ifndef BLE3_CMD
+  data[index++] = LO_UINT16(pReport->eventCounter);
+  data[index++] = HI_UINT16(pReport->eventCounter);
+  data[index++] = BREAK_UINT32(pReport->timeStamp, 0);
+  data[index++] = BREAK_UINT32(pReport->timeStamp, 1);
+  data[index++] = BREAK_UINT32(pReport->timeStamp, 2);
+  data[index++] = BREAK_UINT32(pReport->timeStamp, 3);
+  data[index++] = pReport->eventType;
+#endif
 
   // Send Connection Event information over transport layer
   HCI_TL_SendVSEvent(data, sizeof(data));

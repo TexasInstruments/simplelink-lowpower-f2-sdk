@@ -258,7 +258,7 @@
                 "_name": "CC26x1-R3EM-7ID",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -329,7 +329,7 @@
                 "_name": "CC26x1-R3EM-T7ID",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -400,7 +400,7 @@
                 "_name": "CC2651-P3EM-7XD24-PA24",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -471,7 +471,7 @@
                 "_name": "CC2651-P3EM-5XS24-PA24",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -837,7 +837,7 @@
                 "_name": "CC2651-P3EM-7XD24-PA24_20dBm",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -883,7 +883,7 @@
                 "_name": "CC2651-P3EM-5XS24-PA24_10dBm",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -904,12 +904,12 @@
                             {
                                 "_text": "7",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "14285F"
+                                "TxHighPa": "0x14285F"
                             },
                             {
                                 "_text": "6",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "144F2A"
+                                "TxHighPa": "0x144F2A"
                             }
                         ]
                     }

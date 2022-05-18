@@ -197,14 +197,6 @@
                                     "$": "0,61,0xF,0xC"
                                 }
                             ]
-                        },
-                        {
-                            "_name": "override_patable_14dbm.json",
-                            "Element32b": {
-                                "_type": "ADI_REG_OVERRIDE",
-                                "_comment": "Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)",
-                                "$": "0,12,0xF8"
-                            }
                         }
                     ]
                 }

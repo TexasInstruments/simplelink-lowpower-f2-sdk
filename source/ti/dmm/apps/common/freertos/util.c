@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2021, Texas Instruments Incorporated
+ Copyright (c) 2014-2022, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,15 @@
  */
 #define ICALL_TIMER_TASK_STACK_SIZE (512)
 #endif //ICALL_TIMER_TASK_STACK_SIZE
+
+#ifndef BLE_FREERTOS_MSG_Q_SIZE
+/**
+ * @internal
+ * BLE FREERTOS message queue size
+ */
+#define BLE_FREERTOS_MSG_Q_SIZE (40)
+#endif //BLE_FREERTOS_MSG_Q_SIZE
+
 #endif//FREERTOS
 
 
@@ -414,7 +423,7 @@ void Util_rescheduleClock(ClockP_Struct *pClock, uint32_t clockPeriod)
 #ifdef FREERTOS
 void Util_constructQueue(QueueHandle_t *pQueue)
 {
-   *pQueue = xQueueCreate(20, sizeof(uint8_t*));
+   *pQueue = xQueueCreate(BLE_FREERTOS_MSG_Q_SIZE, sizeof(uint8_t*));
 
    if (*pQueue == NULL)
    {

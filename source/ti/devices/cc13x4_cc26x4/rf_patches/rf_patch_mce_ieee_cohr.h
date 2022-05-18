@@ -3,7 +3,7 @@
 *
 *  Description: RF core patch for IEEE 802.15.4 support ("IEEE" API command set) in CC13x4 and CC26x4
 *
-*  Copyright (c) 2021, Texas Instruments Incorporated
+*  Copyright (c) 2021-2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without

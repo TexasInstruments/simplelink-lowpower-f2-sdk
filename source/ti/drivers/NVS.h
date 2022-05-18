@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@
  *  nvsRegion = NVS_open(config_NVS0, &nvsParams);
  *
  *  // write "Hello" to the base address of region 0, verify after write
- *  status = NVS_write(nvsRegion, 0, "Hello", strlen("Hello")+1, NVS_POST_VERIFY);
+ *  status = NVS_write(nvsRegion, 0, "Hello", strlen("Hello")+1, NVS_WRITE_POST_VERIFY);
  *
  *  // Close NVS region
  *  NVS_close(nvsRegion);
@@ -152,7 +152,7 @@
  *      }
  *
  *      // Write "Hello" to the base address of nvsRegion, verify after write
- *      status = NVS_write(nvsRegion, 0, "Hello", strlen("Hello")+1, NVS_POST_VERIFY);
+ *      status = NVS_write(nvsRegion, 0, "Hello", strlen("Hello")+1, NVS_WRITE_POST_VERIFY);
  *      if (status != NVS_STATUS_SUCCESS) {
  *          // Error handling code
  *      }
@@ -839,9 +839,9 @@ extern void NVS_unlock(NVS_Handle handle);
  *                                      and @p offset is not aligned on
  *                                      a sector boundary
  *  @retval  #NVS_STATUS_VERIFYBUFFER   If #NVS_WRITE_PRE_VERIFY or #NVS_WRITE_POST_VERIFY
- *                                      is requested but the verification buffer has not 
+ *                                      is requested but the verification buffer has not
  *                                      been configured.
- * 
+ *
  *  @remark  This call may lock a region to ensure atomic access to the region.
  */
 extern int_fast16_t NVS_write(NVS_Handle handle, size_t offset, void *buffer,

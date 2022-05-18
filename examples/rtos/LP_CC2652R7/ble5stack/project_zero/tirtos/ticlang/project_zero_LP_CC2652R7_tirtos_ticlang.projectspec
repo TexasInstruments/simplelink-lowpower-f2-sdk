@@ -72,7 +72,6 @@
         "
         linkerBuildOptions="
             --diag_wrap=off
-            -l${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/examples/rtos/LP_CC2652R7/ble5stack/project_zero/tirtos/ticlang/cc13x2x7_cc26x2x7_app.cmd
             --define=OAD_IMG_E=1
             --define=SECURITY
             --display_error_number
@@ -83,6 +82,7 @@
             --diag_suppress=10229-D
             --diag_suppress=16032-D
             -c
+            -l${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/examples/rtos/LP_CC2652R7/ble5stack/project_zero/tirtos/ticlang/cc13x2x7_cc26x2x7_app.cmd
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
             --define=FLASH_ROM_BUILD=2
@@ -113,17 +113,9 @@
         <property name="configuroOptions" value=" --compileOptions &quot;${COMPILER_FLAGS} &quot;"/>
         <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../project_zero.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
         <file path="../../Application/project_zero.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
         <file path="../../Application/project_zero.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
-        </file>
-        <file path="../../Tools/project_zero_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
-        </file>
-        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
-        </file>
-        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
@@ -189,12 +181,6 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_profile_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gatt_uuid.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/gatt_uuid.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gattservapp_util.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/project_zero/button_service.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/project_zero/button_service.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Profiles">
@@ -232,6 +218,14 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cc26xx/uartlog/UartLog.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Startup">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
+        <file path="../../tirtos/project_zero.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/project_zero_app.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Tools/ble_Debug.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
+        </file>
+        <file path="../../Tools/ble_Release.xscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

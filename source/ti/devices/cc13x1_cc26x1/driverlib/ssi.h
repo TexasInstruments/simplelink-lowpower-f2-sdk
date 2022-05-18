@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       ssi.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and macros for the SSI.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -161,7 +159,7 @@ extern "C"
 static bool
 SSIBaseValid(uint32_t ui32Base)
 {
-    return(ui32Base == SSI0_BASE || ui32Base == SSI1_BASE);
+    return(ui32Base == SSI0_BASE);
 }
 #endif
 

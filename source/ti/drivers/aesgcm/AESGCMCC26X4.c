@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -866,9 +866,8 @@ int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLeng
         return AESGCM_STATUS_ERROR;
     }
 
-    object->intermediateIV[0] = ((uint32_t *)iv)[0];
-    object->intermediateIV[1] = ((uint32_t *)iv)[1];
-    object->intermediateIV[2] = ((uint32_t *)iv)[2];
+    (void)memcpy(object->intermediateIV, iv, ivLength);
+
     /* Set initial counter value to 1.
      * Counter is interpreted as big-endian number of last 4 bytes of IV
      */

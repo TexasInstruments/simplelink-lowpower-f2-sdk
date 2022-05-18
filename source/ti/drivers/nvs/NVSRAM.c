@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ void NVSRAM_getAttrs(NVS_Handle handle, NVS_Attrs *attrs)
 /*
  *  ======== NVSRAM_init ========
  */
-void NVSRAM_init()
+void NVSRAM_init(void)
 {
     uintptr_t         key;
     SemaphoreP_Handle sem;

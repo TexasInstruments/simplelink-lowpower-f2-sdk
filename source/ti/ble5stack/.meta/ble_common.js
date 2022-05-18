@@ -440,7 +440,8 @@ const deviceToBoard = {
   CC2652R7: "LP_CC2652R7",
   CC1352P7: "LP_CC1352P7",
   CC2651P3: "LP_CC2651P3",
-  CC2651R3: "LP_CC2651R3"
+  CC2651R3: "LP_CC2651R3",
+  CC2651R3SIPA: "LP_CC2651R3SIPA"
 };
 
 // Settings for ti/devices/CCFG module
@@ -458,6 +459,7 @@ const bleCentralCCFGSettings = {
   LP_CC1352P7_4_CCFG_SETTINGS: {},
   LP_CC2651P3_CCFG_SETTINGS: {},
   LP_CC2651R3_CCFG_SETTINGS: {},
+  LP_CC2651R3SIPA_CCFG_SETTINGS: {},
   LP_CC2652RB_CCFG_SETTINGS: {
     srcClkLF: "Derived from HF XOSC"
   }
@@ -1175,6 +1177,11 @@ function getRadioScript(rfDesign, deviceId)
     {
         radioSettings = system.getScript("/ti/ble5stack/rf_config/"
             + "LP_CC2651R3_rf_defaults.js");
+    }
+    else if(deviceId === "CC2651R3SIPA")
+    {
+        radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+            + "LP_CC2651R3SIPA_rf_defaults.js");
     }
     return(radioSettings);
 }

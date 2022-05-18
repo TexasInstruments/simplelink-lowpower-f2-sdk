@@ -40,7 +40,7 @@ initialization is complete.
 
 ## Application Design Details
 
-* The `gpioButtonFxn0/1` functions are configured in the driver configuration
+* The `gpioButtonFxn0`/`gpioButtonFxn1` functions are configured in the driver configuration
 file. These functions are called in the context of the GPIO interrupt.
 
 * Not all boards have more than one button, so `CONFIG_GPIO_LED_1` may not be

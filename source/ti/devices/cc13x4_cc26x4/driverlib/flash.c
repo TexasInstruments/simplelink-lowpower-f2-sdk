@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       flash.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for on chip Flash.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -102,7 +100,7 @@
 const uint8_t g_pui8CcfgDefaultSec[] = {0xFF, 0xFF, 0xFF, 0xC5,
                                         0xFF, 0xFF, 0xFF, 0xFF,
                                         0xFF, 0xFF, 0xFF, 0xFF,
-                                        0xC5, 0xC5, 0xFF, 0xFF,
+                                        0xC5, 0xC5, 0xC5, 0xFF,
                                         0xC5, 0xC5, 0xC5, 0xFF,
                                         0xC5, 0xC5, 0xC5, 0xFF
                                        };

@@ -31,7 +31,8 @@ Information on pins and resources used is also present in both generated files.
 The following BoosterPack(s) are used with some driver examples.
 
 #### [__BOOSTXL-SHARP128 LCD & SD Card BoosterPack__][boostxl-sharp128]
-  * No modifications are needed.
+  * The SD_CS pin must be jumpered from BP.8 to BP.28 (DIO30) when using the SD
+    card
 
 #### [__BP-BASSENSORSMKII BoosterPack__][bp-bassensorsmkii]
   * No modifications are needed.

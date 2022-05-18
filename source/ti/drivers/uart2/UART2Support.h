@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,8 +96,11 @@ extern void UART2Support_dmaStopRx(UART2_Handle handle);
  *  @brief  Function to disable the TX DMA
  *
  *  @param[in]  handle    A UART2_Handle returned from UART2_open()
+ *
+ *  @return Returns the number of bytes that were not transacted
+ *
  */
-extern void UART2Support_dmaStopTx(UART2_Handle handle);
+extern uint32_t UART2Support_dmaStopTx(UART2_Handle handle);
 
 /*!
  *  @brief  Function to enable receive, receive timeout, and error interrupts

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,17 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/spi/SPICC26X2DMA.h>
+
+/* Headers required for intrinsics */
+#if defined(__TI_COMPILER_VERSION__)
+    #include <arm_acle.h>
+#elif defined(__GNUC__)
+    #include <arm_acle.h>
+#elif defined(__IAR_SYSTEMS_ICC__)
+    #include <intrinsics.h>
+#else
+    #error "Unsupported compiler"
+#endif
 
 #define MAX_DMA_TRANSFER_AMOUNT     (1024)
 
@@ -1183,22 +1194,15 @@ static void initIO(SPI_Handle handle)
         GPIO_setMux(hwAttrs->misoPin, hwAttrs->txPinMux);
         GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
 
-        /* Configure CSN callback for optional RETURN_PARTIAL slave mode */
-        if (object->csnPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
-            GPIO_setCallback(object->csnPin, csnCallback);
-            GPIO_setUserArg(object->csnPin, handle);
-        }
+        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
+        GPIO_setCallback(object->csnPin, csnCallback);
+        GPIO_setUserArg(object->csnPin, handle);
     }
     else {
         GPIO_setMux(hwAttrs->mosiPin, hwAttrs->txPinMux);
         GPIO_setMux(hwAttrs->misoPin, hwAttrs->rxPinMux);
         GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
-
-        /* Mux CS unless it is software-controlled */
-        if (object->csnPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
-        }
+        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
     }
 }
 
@@ -1214,11 +1218,7 @@ static void finalizeIO(SPI_Handle handle)
     GPIO_resetConfig(hwAttrs->mosiPin);
     GPIO_resetConfig(hwAttrs->misoPin);
     GPIO_resetConfig(hwAttrs->clkPin);
-
-    /* We always mux CS in slave mode, but as master it can be SW-controlled (and therefore unmuxed) */
-    if (object->mode == SSI_MODE_SLAVE || object->csnPin != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(object->csnPin);
-    }
+    GPIO_resetConfig(object->csnPin);
 }
 
 /*

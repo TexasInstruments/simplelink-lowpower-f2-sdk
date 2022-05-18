@@ -212,7 +212,9 @@ let tsortLib = system.getScript("tsort.syscfg.js");
  *  Each library group is specified by an object of the form:
  *     { name: "/ti/display",
  *       libs: ["/...", ...],
- *       deps: ["/ti/drivers", ...]
+ *       deps: ["/ti/drivers", ...],
+ *       // allowDuplicates is optional, defaults to false
+ *       allowDuplicates: true
  *     }
  *
  *  @param args - array of library groups and any user supplied "assertions"
@@ -299,6 +301,12 @@ function genList(args)
 
         /* add group to a groupMap (used for error checking) */
         if (groupMap[group.name] != null) {
+            if (group.allowDuplicates && groupMap[group.name].allowDuplicates) {
+                /* This module can be included multiple times safely
+                 * Both the original and new libGroups have duplicates enabled
+                 */
+                continue;
+            }
             console.log("warning: '" + group.name
                 + "' specified more than once; overriding previous value");
         }
@@ -313,7 +321,6 @@ function genList(args)
                 console.log("    cutting '" + start + "' -> '" + end + "'");
             }
             else {
-                console.log("    '" + start + "' -> '" + end + "'");
                 graph.mkNode(start).pointsTo(graph.mkNode(end));
             }
         }

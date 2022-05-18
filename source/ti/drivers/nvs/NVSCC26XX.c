@@ -157,7 +157,7 @@ void NVSCC26XX_getAttrs(NVS_Handle handle, NVS_Attrs *attrs)
 /*
  *  ======== NVSCC26XX_init ========
  */
-void NVSCC26XX_init()
+void NVSCC26XX_init(void)
 {
     unsigned int key;
     SemaphoreP_Handle sem;

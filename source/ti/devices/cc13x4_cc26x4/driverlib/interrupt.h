@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       interrupt.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the NVIC Interrupt Controller
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -152,12 +150,10 @@ extern "C"
 //!   - INT_AON_GPIO_EDGE
 //!   - INT_I2C_IRQ
 //!   - INT_RFC_CPE_1
-//!   - INT_PKA_IRQ
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
 //!   - INT_SSI0_COMB
-//!   - INT_SSI1_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -184,9 +180,11 @@ extern "C"
 //!   - INT_AUX_ADC_IRQ
 //!   - INT_TRNG_IRQ
 //!   - INT_OSC_COMB
-//!   - INT_AUX_TIMER2_EV0
-//!   - INT_UART1_COMB
 //!   - INT_BATMON_COMB
+//!   - INT_PKA_IRQ
+//!   - INT_SSI1_COMB
+//!   - INT_UART1_COMB
+//!   - INT_AUX_TIMER2_EV0
 //! \param pfnHandler is a pointer to the function to register as interrupt handler.
 //!
 //! \return None.
@@ -284,12 +282,10 @@ extern uint32_t IntPriorityGroupingGet(void);
 //!   - INT_AON_GPIO_EDGE
 //!   - INT_I2C_IRQ
 //!   - INT_RFC_CPE_1
-//!   - INT_PKA_IRQ
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
 //!   - INT_SSI0_COMB
-//!   - INT_SSI1_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -316,9 +312,11 @@ extern uint32_t IntPriorityGroupingGet(void);
 //!   - INT_AUX_ADC_IRQ
 //!   - INT_TRNG_IRQ
 //!   - INT_OSC_COMB
-//!   - INT_AUX_TIMER2_EV0
-//!   - INT_UART1_COMB
 //!   - INT_BATMON_COMB
+//!   - INT_PKA_IRQ
+//!   - INT_SSI1_COMB
+//!   - INT_UART1_COMB
+//!   - INT_AUX_TIMER2_EV0
 //! \param ui8Priority specifies the priority of the interrupt.
 //! - \ref INT_PRI_LEVEL0 : Highest priority.
 //! - \ref INT_PRI_LEVEL1
@@ -383,12 +381,10 @@ extern int32_t IntPriorityGet(uint32_t ui32Interrupt);
 //!   - INT_AON_GPIO_EDGE
 //!   - INT_I2C_IRQ
 //!   - INT_RFC_CPE_1
-//!   - INT_PKA_IRQ
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
 //!   - INT_SSI0_COMB
-//!   - INT_SSI1_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -415,9 +411,11 @@ extern int32_t IntPriorityGet(uint32_t ui32Interrupt);
 //!   - INT_AUX_ADC_IRQ
 //!   - INT_TRNG_IRQ
 //!   - INT_OSC_COMB
-//!   - INT_AUX_TIMER2_EV0
-//!   - INT_UART1_COMB
 //!   - INT_BATMON_COMB
+//!   - INT_PKA_IRQ
+//!   - INT_SSI1_COMB
+//!   - INT_UART1_COMB
+//!   - INT_AUX_TIMER2_EV0
 //!
 //! \return None
 //!
@@ -463,12 +461,10 @@ extern void IntDisable(uint32_t ui32Interrupt);
 //!   - INT_AON_GPIO_EDGE
 //!   - INT_I2C_IRQ
 //!   - INT_RFC_CPE_1
-//!   - INT_PKA_IRQ
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
 //!   - INT_SSI0_COMB
-//!   - INT_SSI1_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -495,9 +491,11 @@ extern void IntDisable(uint32_t ui32Interrupt);
 //!   - INT_AUX_ADC_IRQ
 //!   - INT_TRNG_IRQ
 //!   - INT_OSC_COMB
-//!   - INT_AUX_TIMER2_EV0
-//!   - INT_UART1_COMB
 //!   - INT_BATMON_COMB
+//!   - INT_PKA_IRQ
+//!   - INT_SSI1_COMB
+//!   - INT_UART1_COMB
+//!   - INT_AUX_TIMER2_EV0
 //!
 //! \return None
 //!

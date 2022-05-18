@@ -551,6 +551,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ti/drivers/AESCommon.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 #ifdef __cplusplus
@@ -569,15 +570,14 @@ extern "C" {
  * #define AESGCMXYZ_STATUS_ERROR2    AESGCM_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESGCM_STATUS_RESERVED        (-32)
-
+#define AESGCM_STATUS_RESERVED                AES_STATUS_RESERVED
 /*!
  * @brief   Successful status code.
  *
  * Functions return AESGCM_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESGCM_STATUS_SUCCESS         (0)
+#define AESGCM_STATUS_SUCCESS                 AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -585,7 +585,7 @@ extern "C" {
  * Functions return AESGCM_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESGCM_STATUS_ERROR           (-1)
+#define AESGCM_STATUS_ERROR                   AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -595,21 +595,21 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESGCM_STATUS_RESOURCE_UNAVAILABLE (-2)
+#define AESGCM_STATUS_RESOURCE_UNAVAILABLE    AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
- * @brief   An error status code returned if the MAC provided by the application for
+ *  @brief  The ongoing operation was canceled.
+ */
+#define AESGCM_STATUS_CANCELED                AES_STATUS_CANCELED
+
+/*!
+ *  @brief  An error status code returned if the MAC provided by the application for
  *  a decryption operation does not match the one calculated during the operation.
  *
  * This code is returned by AESGCM_oneStepDecrypt() or AESGCM_finalizeDecrypt() if the
  * verification of the MAC fails.
  */
-#define AESGCM_STATUS_MAC_INVALID (-3)
-
-/*!
- *  @brief  The ongoing operation was canceled.
- */
-#define AESGCM_STATUS_CANCELED (-4)
+#define AESGCM_STATUS_MAC_INVALID             AES_STATUS_MAC_INVALID
 
 /*!
  *  @brief  The operation requested is not supported on the target hardware.
@@ -617,7 +617,18 @@ extern "C" {
  *  This code is returned by AES GCM segmented data operations when attempting to
  *  use them on device families that do not support segmented operations.
  */
-#define AESGCM_STATUS_FEATURE_NOT_SUPPORTED (-5)
+#define AESGCM_STATUS_FEATURE_NOT_SUPPORTED   AES_STATUS_FEATURE_NOT_SUPPORTED
+
+/*!
+ *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
+ */
+#define AESGCM_STATUS_KEYSTORE_INVALID_ID     AES_STATUS_KEYSTORE_INVALID_ID
+
+/*!
+ *  @brief  The key store module returned a generic error. See key store documentation
+ *  for additional details.
+ */
+#define AESGCM_STATUS_KEYSTORE_GENERIC_ERROR  AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  *  @brief AESGCM Global configuration
@@ -630,14 +641,7 @@ extern "C" {
  *
  *  @sa     AESGCM_init()
  */
-typedef struct {
-    /*! Pointer to a driver specific data object */
-    void               *object;
-
-    /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
-} AESGCM_Config;
-
+typedef AESCommon_Config AESGCM_Config;
 /*!
  *  @brief  A handle that is returned from an AESGCM_open() call.
  */
@@ -665,17 +669,20 @@ typedef AESGCM_Config *AESGCM_Handle;
  *
  */
 typedef enum {
-    AESGCM_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
+    AESGCM_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
+                                            /*!< The function call will return immediately while the
                                              *   GCM operation goes on in the background. The registered
                                              *   callback function is called after the operation completes.
                                              *   The context the callback function is called (task, HWI, SWI)
                                              *   is implementation-dependent.
                                              */
-    AESGCM_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while the GCM operation goes
+    AESGCM_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
+                                            /*!< The function call will block while the GCM operation goes
                                              *   on in the background. GCM operation results are available
                                              *   after the function returns.
                                              */
-    AESGCM_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while GCM
+    AESGCM_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
+                                            /*!< The function call will continuously poll a flag while GCM
                                              *   operation goes on in the background. GCM operation results
                                              *   are available after the function returns.
                                              */

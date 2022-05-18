@@ -173,9 +173,9 @@
                                         "$": "0x000488A3"
                                     },
                                     {
-                                        "_type": "ELEMENT",
-                                        "_comment": "Set LNA IB offset factor to 0xF",
-                                        "$": "0x000F8883"
+                                        "_type": "ADI_HALFREG_OVERRIDE",
+                                        "_comment": "Rx: Set LNA Ib boost",
+                                        "$": "0,5,0xF,0x2"
                                     },
                                     {
                                         "_type": "ADI_HALFREG_OVERRIDE",
@@ -186,6 +186,11 @@
                                         "_type": "HW_REG_OVERRIDE",
                                         "_comment": "TX: Reduce analog ramping wait time",
                                         "$": "0x6028,0x001A"
+                                    },
+                                    {
+                                        "_type": "ELEMENT",
+                                        "_comment": "TX: set intFreq = 0",
+                                        "$": "0x00000343"
                                     }
                                 ]
                             },

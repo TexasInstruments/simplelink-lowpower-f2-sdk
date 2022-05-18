@@ -1000,6 +1000,20 @@ typedef enum
   GAP_CB_UNREGISTER //!> Unregister a callback
 } GAP_CB_Action_t;
 
+/**
+ * Connection Event type to register
+ */
+// Notes: This is a bitmask enum.
+//        When adding new events, make sure to add them to ll_common.h
+//        under Timesync events.
+typedef enum
+{
+  GAP_CB_EVENT_INVALID                   = 0x00,   //!< Invalid event type
+  GAP_CB_CONN_ESTABLISHED                = 0x01,   //!< Connection established, procedure 0
+  GAP_CB_PHY_UPDATE                      = 0x02,   //!< PHY was updated, procedure 1
+  GAP_CB_CONN_EVENT_ALL                  = 0xFF    //!< All connection Events
+} GAP_CB_Event_e;
+
 /** @} End GAP_Constants */
 
 /*-------------------------------------------------------------------
@@ -1311,6 +1325,9 @@ typedef struct
   GAP_ConnEvtTaskType_t nextTaskType;
   /// Time to next BLE task (in us). 0xFFFFFFFF if there is no next task.
   uint32_t              nextTaskTime;
+  uint16_t              eventCounter; // event Counter
+  uint32_t              timeStamp;    // timestamp (anchor point)
+  GAP_CB_Event_e        eventType;    // event type of the connection report.
 } Gap_ConnEventRpt_t;
 
 /**
@@ -1621,15 +1638,22 @@ extern uint8_t GAP_NumActiveConnections(void);
 * connection handles. In the case of unregistering, it does not matter what
 * connHandle or cb is passed in as whatever is currently registered will be
 * unregistered.
+* It it possible to register to certain type of connection event. The types
+* that are currently supported are: Connection established, PHY Update Request
+* Completed (without PHY change).
 *
 * @warning The application owns the memory pointed to by pReport in
 * @ref pfnGapConnEvtCB_t. That is, it is responsible for freeing this memory.
 *
 * @note The callback needs to be registered for each reconnection. It is not
 * retained across a disconnect / reconnect.
+* @note There is no need to unregister in order to change the type of connection
+* event registered. It can be changed with a new call.
 *
 * @param cb Function pointer to a callback.
 * @param action Register or unregister the callback.
+* @param event Connection Event type to register to.
+*              Supported event options: GAP_CB_CONN_ESTABLISHED, GAP_CB_PHY_UPDATE, GAP_CB_CONN_EVENT_ALL
 * @param connHandle if @ref LINKDB_CONNHANDLE_ALL, apply to all connections. <br>
 *        else, apply only for a specific connection.
 *
@@ -1641,6 +1665,7 @@ extern uint8_t GAP_NumActiveConnections(void);
 */
 extern bStatus_t Gap_RegisterConnEventCb(pfnGapConnEvtCB_t cb,
                                          GAP_CB_Action_t action,
+                                         GAP_CB_Event_e event,
                                          uint16_t connHandle);
 
 /*-------------------------------------------------------------------

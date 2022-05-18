@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,8 +58,15 @@
 #include DeviceFamily_constructPath(driverlib/uart.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 
-#if defined(__IAR_SYSTEMS_ICC__)
-#include <intrinsics.h>
+/* Headers required for intrinsics */
+#if defined(__TI_COMPILER_VERSION__)
+    #include <arm_acle.h>
+#elif defined(__GNUC__)
+    #include <arm_acle.h>
+#elif defined(__IAR_SYSTEMS_ICC__)
+    #include <intrinsics.h>
+#else
+    #error "Unsupported compiler"
 #endif
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -288,16 +295,11 @@ void UART2_close(UART2_Handle handle)
     /* Releases Power constraint if rx is enabled. */
     UART2_rxDisable(handle);
 
-    /*
-     *  Disable the UART.  Do not call driverlib function
-     *  UARTDisable() since it polls for BUSY bit to clear
-     *  before disabling the UART FIFO and module.
+    /* Disable UART. This function will wait until TX FIFO is empty before
+     * shutting down peripheral, otherwise the BUSY-bit will remain set and
+     * can cause the peripheral to get stuck.
      */
-    /* Disable UART FIFO */
-    HWREG(hwAttrs->baseAddr + UART_O_LCRH) &= ~(UART_LCRH_FEN);
-    /* Disable UART module */
-    HWREG(hwAttrs->baseAddr + UART_O_CTL) &= ~(UART_CTL_UARTEN | UART_CTL_TXE |
-                                      UART_CTL_RXE);
+    UARTDisable(hwAttrs->baseAddr);
 
     /* Deallocate pins */
     UART2CC26X2_finalizeIO(handle);
@@ -413,8 +415,6 @@ UART2_Handle UART2_open(uint_least8_t index, UART2_Params *params)
     object->readCount            = 0;
     object->writeSize            = 0;
     object->readSize             = 0;
-    object->nWriteTransfers      = 0;
-    object->nReadTransfers       = 0;
     object->rxStatus             = 0;
     object->txStatus             = 0;
     object->rxSize               = 0;
@@ -461,7 +461,7 @@ UART2_Handle UART2_open(uint_least8_t index, UART2_Params *params)
             &hwiParams);
 
     SemaphoreP_constructBinary(&(object->readSem), 0);
-    SemaphoreP_constructBinary(&(object->writeSem), 0);
+    SemaphoreP_construct(&(object->writeSem), 0, NULL);
 
     /* Timeout clock for reads and writes */
     ClockP_Params_init(&(clkParams));
@@ -690,12 +690,12 @@ void UART2Support_dmaStopRx(UART2_Handle handle)
  *  ======== UART2Support_dmaStopTx ========
  *  For mutual exclusion, must be called with HWI disabled.
  */
-void UART2Support_dmaStopTx(UART2_Handle handle)
+uint32_t UART2Support_dmaStopTx(UART2_Handle handle)
 {
     UART2CC26X2_Object        *object = handle->object;
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
     UDMACC26XX_HWAttrs  const *hwAttrsUdma = object->udmaHandle->hwAttrs;
-    uint32_t                   bytesRemaining;
+    uint32_t                   bytesRemaining = 0;
     uint32_t                   txCount;
     int                        consumed;
 
@@ -713,6 +713,8 @@ void UART2Support_dmaStopTx(UART2_Handle handle)
     }
 
     (void)consumed;
+
+    return (bytesRemaining);
 }
 
 /*
@@ -962,6 +964,11 @@ static void UART2CC26X2_hwiIntFxn(uintptr_t arg)
         }
 
         UARTIntDisable(hwAttrs->baseAddr, UART_INT_EOT);
+
+        if (object->state.writeMode == UART2_Mode_BLOCKING) {
+            /* Unblock write-function, which is waiting for EOT */
+            SemaphoreP_post(&object->writeSem);
+        }
     }
 }
 
@@ -997,16 +1004,14 @@ static void UART2CC26X2_initHw(UART2_Handle handle)
      * If Flow Control is enabled, configure hardware flow control
      * for CTS and/or RTS.
      */
-    if (UART2CC26X2_isFlowControlEnabled(hwAttrs) &&
-        (hwAttrs->ctsPin != GPIO_INVALID_INDEX)) {
+    if (UART2CC26X2_isFlowControlEnabled(hwAttrs) && (hwAttrs->ctsPin != GPIO_INVALID_INDEX)) {
         uartEnableCTS(hwAttrs->baseAddr);
     }
     else {
         uartDisableCTS(hwAttrs->baseAddr);
     }
 
-    if (UART2CC26X2_isFlowControlEnabled(hwAttrs) &&
-        (hwAttrs->rtsPin != GPIO_INVALID_INDEX)) {
+    if (UART2CC26X2_isFlowControlEnabled(hwAttrs) && (hwAttrs->rtsPin != GPIO_INVALID_INDEX)) {
         uartEnableRTS(hwAttrs->baseAddr);
     }
     else {
@@ -1040,21 +1045,13 @@ static void UART2CC26X2_initIO(UART2_Handle handle)
 {
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
-    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
-        GPIO_setMux(hwAttrs->txPin, hwAttrs->txPinMux);
-    }
-    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
-        GPIO_setMux(hwAttrs->rxPin, hwAttrs->rxPinMux);
-    }
+    GPIO_setMux(hwAttrs->txPin, hwAttrs->txPinMux);
+    GPIO_setMux(hwAttrs->rxPin, hwAttrs->rxPinMux);
 
     if (UART2CC26X2_isFlowControlEnabled(hwAttrs))
     {
-        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(hwAttrs->ctsPin, hwAttrs->ctsPinMux);
-        }
-        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(hwAttrs->rtsPin, hwAttrs->rtsPinMux);
-        }
+        GPIO_setMux(hwAttrs->ctsPin, hwAttrs->ctsPinMux);
+        GPIO_setMux(hwAttrs->rtsPin, hwAttrs->rtsPinMux);
     }
 }
 
@@ -1065,21 +1062,13 @@ static void UART2CC26X2_finalizeIO(UART2_Handle handle)
 {
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
-    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(hwAttrs->txPin);
-    }
-    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
-        GPIO_resetConfig(hwAttrs->rxPin);
-    }
+    GPIO_resetConfig(hwAttrs->txPin);
+    GPIO_resetConfig(hwAttrs->rxPin);
 
     if (UART2CC26X2_isFlowControlEnabled(hwAttrs))
     {
-        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
-            GPIO_resetConfig(hwAttrs->ctsPin);
-        }
-        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
-            GPIO_resetConfig(hwAttrs->rtsPin);
-        }
+        GPIO_resetConfig(hwAttrs->ctsPin);
+        GPIO_resetConfig(hwAttrs->rtsPin);
     }
 }
 
@@ -1154,4 +1143,9 @@ static void UART2CC26X2_writeTimeout(uintptr_t arg)
 
     object->state.writeTimedOut = true;
     SemaphoreP_post(&(object->writeSem));
+    /* Post one extra time if in blocking mode, as the write-function is
+       pending on this semaphore until EOT interrupt is received */
+    if (object->state.writeMode == UART2_Mode_BLOCKING) {
+        SemaphoreP_post(&(object->writeSem));
+    }
 }

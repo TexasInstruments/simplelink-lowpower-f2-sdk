@@ -35,7 +35,7 @@ XDCARGS= \
 #
 # Set XDCPATH to contain necessary repositories.
 #
-XDCPATH=$(XDC_INSTALL_DIR)/packages;$(CORESDK_INSTALL_DIR)/source;$(CORESDK_INSTALL_DIR)/kernel/tirtos/packages;$(CORESDK_INSTALL_DIR)/tfm_s/build/cc26x4_gnu/production_full/interface/include;$(CORESDK_INSTALL_DIR)/tfm_s/build/cc26x4_gnu/production_full/Release/export/tfm/inc
+XDCPATH=$(XDC_INSTALL_DIR)/packages;$(CORESDK_INSTALL_DIR)/source;$(CORESDK_INSTALL_DIR)/kernel/tirtos/packages;$(CORESDK_INSTALL_DIR)/tfm_s/build/cc26x4/production_full/interface/include;$(CORESDK_INSTALL_DIR)/tfm_s/build/cc26x4/production_full/Release/export/tfm/inc
 
 #
 # Set XDCOPTIONS.  Use -v for a verbose build.

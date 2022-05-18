@@ -385,7 +385,7 @@ int_fast16_t AESECB_setupDecrypt(AESECB_Handle handle, const CryptoKey *key)
 /*
  *  ======== AESECB_setupSegmentedOperation ========
  */
-int_fast16_t AESECB_setupSegmentedOperation(AESECB_Handle handle, const CryptoKey *key)
+static int_fast16_t AESECB_setupSegmentedOperation(AESECB_Handle handle, const CryptoKey *key)
 {
     DebugP_assert(handle);
 

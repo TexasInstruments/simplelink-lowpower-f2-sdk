@@ -1,12 +1,10 @@
 /******************************************************************************
 *  Filename:       cpu.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Instruction wrappers for special CPU instructions needed by
 *                  the drivers.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -386,9 +384,9 @@ void
 CPUdelay(uint32_t ui32Count)
 {
     // Loop the specified number of times
-    __asm("CPUdelay:\n"
+    __asm("CPUdel:\n"
           "    subs    r0, #1\n"
-          "    bne.n   CPUdelay\n"
+          "    bne.n   CPUdel\n"
           "    bx      lr");
 }
 #else

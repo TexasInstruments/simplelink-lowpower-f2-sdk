@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,11 @@ int _pthread_abstime2ticks(clockid_t clockId, const struct timespec *abstime,
         return (-1);
     }
 
-    clock_gettime(clockId, &curtime);
+    if (clock_gettime(clockId, &curtime) != 0) {
+        /* EINVAL */
+        return (-1);
+    }
+    
     secs = abstime->tv_sec - curtime.tv_sec;
 
     if ((abstime->tv_sec < curtime.tv_sec) ||

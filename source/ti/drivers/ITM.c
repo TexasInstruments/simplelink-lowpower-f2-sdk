@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -402,7 +402,7 @@ void ITM_enableSyncPackets(ITM_SyncPacketRate syncPacketRate)
 /*
  *  ======== ITM_flush ========
  */
-void __attribute__((weak)) ITM_flush()
+void __attribute__((weak)) ITM_flush(void)
 {
     /* This function is intentionally blank to save overhead in the power
      * policy. When ITM is enabled, the function will be strongly defined by

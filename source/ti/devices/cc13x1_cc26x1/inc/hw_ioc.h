@@ -369,6 +369,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO0
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -386,10 +388,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -439,10 +437,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -475,10 +469,6 @@
 #define IOC_IOCFG0_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG0_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG0_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG0_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG0_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG0_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG0_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG0_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -488,10 +478,6 @@
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG0_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG0_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG0_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG0_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG0_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG0_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG0_PORT_ID_UART0_TX                                 0x00000010
@@ -736,6 +722,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO1
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -753,10 +741,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -806,10 +790,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -842,10 +822,6 @@
 #define IOC_IOCFG1_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG1_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG1_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG1_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG1_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG1_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG1_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG1_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -855,10 +831,6 @@
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG1_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG1_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG1_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG1_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG1_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG1_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG1_PORT_ID_UART0_TX                                 0x00000010
@@ -1103,6 +1075,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO2
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -1120,10 +1094,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -1173,10 +1143,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -1209,10 +1175,6 @@
 #define IOC_IOCFG2_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG2_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG2_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG2_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG2_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG2_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG2_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG2_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -1222,10 +1184,6 @@
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG2_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG2_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG2_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG2_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG2_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG2_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG2_PORT_ID_UART0_TX                                 0x00000010
@@ -1470,6 +1428,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO3
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -1487,10 +1447,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -1540,10 +1496,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -1576,10 +1528,6 @@
 #define IOC_IOCFG3_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG3_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG3_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG3_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG3_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG3_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG3_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG3_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -1589,10 +1537,6 @@
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG3_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG3_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG3_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG3_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG3_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG3_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG3_PORT_ID_UART0_TX                                 0x00000010
@@ -1837,6 +1781,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO4
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -1854,10 +1800,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -1907,10 +1849,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -1943,10 +1881,6 @@
 #define IOC_IOCFG4_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG4_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG4_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG4_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG4_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG4_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG4_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG4_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -1956,10 +1890,6 @@
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG4_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG4_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG4_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG4_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG4_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG4_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG4_PORT_ID_UART0_TX                                 0x00000010
@@ -2204,6 +2134,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO5
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -2221,10 +2153,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -2274,10 +2202,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -2310,10 +2234,6 @@
 #define IOC_IOCFG5_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG5_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG5_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG5_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG5_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG5_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG5_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG5_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -2323,10 +2243,6 @@
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG5_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG5_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG5_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG5_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG5_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG5_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG5_PORT_ID_UART0_TX                                 0x00000010
@@ -2571,6 +2487,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO6
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -2588,10 +2506,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -2641,10 +2555,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -2677,10 +2587,6 @@
 #define IOC_IOCFG6_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG6_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG6_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG6_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG6_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG6_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG6_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG6_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -2690,10 +2596,6 @@
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG6_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG6_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG6_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG6_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG6_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG6_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG6_PORT_ID_UART0_TX                                 0x00000010
@@ -2938,6 +2840,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO7
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -2955,10 +2859,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -3008,10 +2908,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -3044,10 +2940,6 @@
 #define IOC_IOCFG7_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG7_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG7_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG7_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG7_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG7_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG7_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG7_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3057,10 +2949,6 @@
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG7_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG7_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG7_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG7_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG7_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG7_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG7_PORT_ID_UART0_TX                                 0x00000010
@@ -3305,6 +3193,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO8
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -3322,10 +3212,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -3375,10 +3261,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -3411,10 +3293,6 @@
 #define IOC_IOCFG8_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG8_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG8_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG8_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG8_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG8_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG8_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG8_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3424,10 +3302,6 @@
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG8_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG8_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG8_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG8_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG8_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG8_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG8_PORT_ID_UART0_TX                                 0x00000010
@@ -3672,6 +3546,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO9
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -3689,10 +3565,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -3742,10 +3614,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -3778,10 +3646,6 @@
 #define IOC_IOCFG9_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG9_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG9_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG9_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG9_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG9_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG9_PORT_ID_SSI1_RX                                  0x00000021
 #define IOC_IOCFG9_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3791,10 +3655,6 @@
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT2                              0x00000019
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT1                              0x00000018
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT0                              0x00000017
-#define IOC_IOCFG9_PORT_ID_UART1_RTS                                0x00000016
-#define IOC_IOCFG9_PORT_ID_UART1_CTS                                0x00000015
-#define IOC_IOCFG9_PORT_ID_UART1_TX                                 0x00000014
-#define IOC_IOCFG9_PORT_ID_UART1_RX                                 0x00000013
 #define IOC_IOCFG9_PORT_ID_UART0_RTS                                0x00000012
 #define IOC_IOCFG9_PORT_ID_UART0_CTS                                0x00000011
 #define IOC_IOCFG9_PORT_ID_UART0_TX                                 0x00000010
@@ -4039,6 +3899,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO10
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -4056,10 +3918,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4109,10 +3967,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -4145,10 +3999,6 @@
 #define IOC_IOCFG10_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG10_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG10_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG10_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG10_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG10_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG10_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG10_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -4158,10 +4008,6 @@
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG10_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG10_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG10_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG10_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG10_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG10_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG10_PORT_ID_UART0_TX                                0x00000010
@@ -4406,6 +4252,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO11
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -4423,10 +4271,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4476,10 +4320,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -4512,10 +4352,6 @@
 #define IOC_IOCFG11_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG11_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG11_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG11_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG11_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG11_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG11_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG11_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -4525,10 +4361,6 @@
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG11_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG11_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG11_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG11_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG11_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG11_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG11_PORT_ID_UART0_TX                                0x00000010
@@ -4773,6 +4605,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO12
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -4790,10 +4624,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4843,10 +4673,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -4879,10 +4705,6 @@
 #define IOC_IOCFG12_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG12_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG12_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG12_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG12_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG12_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG12_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG12_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -4892,10 +4714,6 @@
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG12_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG12_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG12_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG12_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG12_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG12_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG12_PORT_ID_UART0_TX                                0x00000010
@@ -5140,6 +4958,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO13
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -5157,10 +4977,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -5210,10 +5026,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -5246,10 +5058,6 @@
 #define IOC_IOCFG13_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG13_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG13_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG13_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG13_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG13_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG13_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG13_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5259,10 +5067,6 @@
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG13_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG13_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG13_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG13_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG13_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG13_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG13_PORT_ID_UART0_TX                                0x00000010
@@ -5507,6 +5311,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO14
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -5524,10 +5330,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -5577,10 +5379,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -5613,10 +5411,6 @@
 #define IOC_IOCFG14_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG14_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG14_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG14_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG14_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG14_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG14_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG14_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5626,10 +5420,6 @@
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG14_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG14_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG14_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG14_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG14_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG14_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG14_PORT_ID_UART0_TX                                0x00000010
@@ -5874,6 +5664,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO15
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -5891,10 +5683,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -5944,10 +5732,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -5980,10 +5764,6 @@
 #define IOC_IOCFG15_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG15_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG15_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG15_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG15_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG15_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG15_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG15_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5993,10 +5773,6 @@
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG15_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG15_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG15_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG15_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG15_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG15_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG15_PORT_ID_UART0_TX                                0x00000010
@@ -6241,6 +6017,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO16
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -6258,10 +6036,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -6311,10 +6085,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -6347,10 +6117,6 @@
 #define IOC_IOCFG16_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG16_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG16_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG16_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG16_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG16_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG16_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG16_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -6360,10 +6126,6 @@
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG16_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG16_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG16_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG16_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG16_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG16_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG16_PORT_ID_UART0_TX                                0x00000010
@@ -6608,6 +6370,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO17
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -6625,10 +6389,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -6678,10 +6438,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -6714,10 +6470,6 @@
 #define IOC_IOCFG17_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG17_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG17_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG17_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG17_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG17_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG17_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG17_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -6727,10 +6479,6 @@
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG17_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG17_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG17_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG17_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG17_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG17_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG17_PORT_ID_UART0_TX                                0x00000010
@@ -6975,6 +6723,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO18
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -6992,10 +6742,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -7045,10 +6791,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -7081,10 +6823,6 @@
 #define IOC_IOCFG18_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG18_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG18_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG18_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG18_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG18_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG18_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG18_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7094,10 +6832,6 @@
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG18_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG18_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG18_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG18_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG18_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG18_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG18_PORT_ID_UART0_TX                                0x00000010
@@ -7342,6 +7076,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO19
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -7359,10 +7095,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -7412,10 +7144,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -7448,10 +7176,6 @@
 #define IOC_IOCFG19_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG19_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG19_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG19_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG19_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG19_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG19_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG19_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7461,10 +7185,6 @@
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG19_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG19_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG19_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG19_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG19_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG19_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG19_PORT_ID_UART0_TX                                0x00000010
@@ -7709,6 +7429,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO20
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -7726,10 +7448,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -7779,10 +7497,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -7815,10 +7529,6 @@
 #define IOC_IOCFG20_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG20_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG20_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG20_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG20_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG20_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG20_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG20_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7828,10 +7538,6 @@
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG20_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG20_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG20_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG20_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG20_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG20_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG20_PORT_ID_UART0_TX                                0x00000010
@@ -8076,6 +7782,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO21
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -8093,10 +7801,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -8146,10 +7850,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -8182,10 +7882,6 @@
 #define IOC_IOCFG21_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG21_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG21_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG21_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG21_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG21_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG21_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG21_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -8195,10 +7891,6 @@
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG21_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG21_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG21_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG21_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG21_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG21_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG21_PORT_ID_UART0_TX                                0x00000010
@@ -8443,6 +8135,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO22
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -8460,10 +8154,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -8513,10 +8203,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -8549,10 +8235,6 @@
 #define IOC_IOCFG22_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG22_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG22_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG22_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG22_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG22_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG22_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG22_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -8562,10 +8244,6 @@
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG22_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG22_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG22_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG22_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG22_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG22_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG22_PORT_ID_UART0_TX                                0x00000010
@@ -8810,6 +8488,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO23
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -8827,10 +8507,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -8880,10 +8556,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -8916,10 +8588,6 @@
 #define IOC_IOCFG23_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG23_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG23_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG23_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG23_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG23_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG23_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG23_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -8929,10 +8597,6 @@
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG23_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG23_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG23_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG23_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG23_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG23_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG23_PORT_ID_UART0_TX                                0x00000010
@@ -9177,6 +8841,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO24
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -9194,10 +8860,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9247,10 +8909,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -9283,10 +8941,6 @@
 #define IOC_IOCFG24_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG24_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG24_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG24_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG24_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG24_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG24_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG24_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -9296,10 +8950,6 @@
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG24_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG24_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG24_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG24_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG24_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG24_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG24_PORT_ID_UART0_TX                                0x00000010
@@ -9544,6 +9194,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO25
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -9561,10 +9213,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9614,10 +9262,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -9650,10 +9294,6 @@
 #define IOC_IOCFG25_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG25_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG25_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG25_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG25_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG25_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG25_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG25_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -9663,10 +9303,6 @@
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG25_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG25_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG25_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG25_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG25_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG25_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG25_PORT_ID_UART0_TX                                0x00000010
@@ -9911,6 +9547,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO26
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -9928,10 +9566,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9981,10 +9615,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -10017,10 +9647,6 @@
 #define IOC_IOCFG26_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG26_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG26_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG26_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG26_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG26_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG26_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG26_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -10030,10 +9656,6 @@
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG26_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG26_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG26_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG26_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG26_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG26_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG26_PORT_ID_UART0_TX                                0x00000010
@@ -10278,6 +9900,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO27
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -10295,10 +9919,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -10348,10 +9968,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -10384,10 +10000,6 @@
 #define IOC_IOCFG27_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG27_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG27_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG27_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG27_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG27_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG27_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG27_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -10397,10 +10009,6 @@
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG27_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG27_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG27_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG27_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG27_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG27_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG27_PORT_ID_UART0_TX                                0x00000010
@@ -10645,6 +10253,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO28
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -10662,10 +10272,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -10715,10 +10321,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -10751,10 +10353,6 @@
 #define IOC_IOCFG28_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG28_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG28_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG28_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG28_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG28_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG28_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG28_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -10764,10 +10362,6 @@
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG28_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG28_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG28_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG28_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG28_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG28_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG28_PORT_ID_UART0_TX                                0x00000010
@@ -11012,6 +10606,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO29
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -11029,10 +10625,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11082,10 +10674,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -11118,10 +10706,6 @@
 #define IOC_IOCFG29_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG29_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG29_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG29_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG29_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG29_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG29_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG29_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11131,10 +10715,6 @@
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG29_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG29_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG29_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG29_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG29_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG29_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG29_PORT_ID_UART0_TX                                0x00000010
@@ -11379,6 +10959,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO30
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -11396,10 +10978,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11449,10 +11027,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -11485,10 +11059,6 @@
 #define IOC_IOCFG30_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG30_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG30_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG30_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG30_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG30_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG30_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG30_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11498,10 +11068,6 @@
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG30_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG30_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG30_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG30_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG30_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG30_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG30_PORT_ID_UART0_TX                                0x00000010
@@ -11746,6 +11312,8 @@
 // Field:   [5:0] PORT_ID
 //
 // Selects usage for DIO31
+// Note: This field should not be written other than the times when PORT_ID
+// value is specifically required to change.
 // ENUMs:
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
@@ -11763,10 +11331,6 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11816,10 +11380,6 @@
 //                          registers in the EVENT module, for example
 //                          EVENT:GPT0ACAPTSEL.EV, EVENT:UDMACH14BSEL.EV,
 //                          and so on
-// UART1_RTS                UART1 RTS
-// UART1_CTS                UART1 CTS
-// UART1_TX                 UART1 TX
-// UART1_RX                 UART1 RX
 // UART0_RTS                UART0 RTS
 // UART0_CTS                UART0 CTS
 // UART0_TX                 UART0 TX
@@ -11852,10 +11412,6 @@
 #define IOC_IOCFG31_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG31_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG31_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG31_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG31_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG31_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG31_PORT_ID_SSI1_RX                                 0x00000021
 #define IOC_IOCFG31_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11865,10 +11421,6 @@
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT2                             0x00000019
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT1                             0x00000018
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT0                             0x00000017
-#define IOC_IOCFG31_PORT_ID_UART1_RTS                               0x00000016
-#define IOC_IOCFG31_PORT_ID_UART1_CTS                               0x00000015
-#define IOC_IOCFG31_PORT_ID_UART1_TX                                0x00000014
-#define IOC_IOCFG31_PORT_ID_UART1_RX                                0x00000013
 #define IOC_IOCFG31_PORT_ID_UART0_RTS                               0x00000012
 #define IOC_IOCFG31_PORT_ID_UART0_CTS                               0x00000011
 #define IOC_IOCFG31_PORT_ID_UART0_TX                                0x00000010

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ void TimerP_getFreq(TimerP_Handle handle, TimerP_FreqHz *freq);
 uint32_t TimerP_getMaxTicks(TimerP_Handle handle);
 void TimerP_setThreshold(TimerP_Handle handle, uint32_t next, bool wrap);
 void TimerP_setNextTick(TimerP_Handle handle, uint32_t ticks);
-void TimerP_startup();
+void TimerP_startup(void);
 void TimerP_start(TimerP_Handle handle);
 void TimerP_stop(TimerP_Handle handle);
 void TimerP_setPeriod(TimerP_Handle handle, uint32_t period);

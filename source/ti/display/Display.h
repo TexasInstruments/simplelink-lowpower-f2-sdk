@@ -534,7 +534,7 @@ typedef void (*Display_vprintfFxn)(Display_Handle handle,
  *  @brief      A function pointer to a specific implementation of
  *              Display_close().
  */
-typedef void (*Display_closeFxn)(Display_Handle);
+typedef void (*Display_closeFxn)(Display_Handle handle);
 
 /*!
  *  @brief      A function pointer to a driver specific implementation of

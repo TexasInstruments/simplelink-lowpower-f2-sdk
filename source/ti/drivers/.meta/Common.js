@@ -89,6 +89,7 @@ exports = {
     genBoardDeclarations : genBoardDeclarations,
     genResourceComment: genResourceComment,
     findSignalTypes : findSignalTypes,
+    hexToBytes : hexToBytes,    /* helper function to convert hex-string to byte array */
 
     init: init
 };
@@ -1509,7 +1510,7 @@ function genBoardHeader(instances, mod, includeBanner=true)
     }
 
     /* Add configuration count define */
-    let displayName = instances[0].$module.displayName;
+    let displayName = mod.displayName;
     line = "#define CONFIG_TI_DRIVERS_" + displayName.toUpperCase() + "_COUNT";
     lines.push(line);
 
@@ -1690,4 +1691,16 @@ function findSignalTypes(hardware, signalTypes)
     }
 
     return (false);
+}
+
+/*
+ *  ======== hexToBytes ========
+ * Construct a byte array from hex-formatted string
+ * adds 0-padding if needed 
+*/ 
+function hexToBytes(hexStr, hexByteLen) {
+    hexStr = hexStr.padStart(hexByteLen*2, '0');
+    for (var bytes = [], c = 0; c < hexStr.length; c += 2)
+        bytes.push(parseInt(hexStr.substr(c, 2), 16));
+    return bytes;
 }

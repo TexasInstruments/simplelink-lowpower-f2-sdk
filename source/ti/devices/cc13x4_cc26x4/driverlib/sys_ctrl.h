@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       sys_ctrl.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Defines and prototypes for the System Controller.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -338,7 +336,7 @@ __STATIC_INLINE void
 SysCtrlAonSync(void)
 {
     // Sync the AON interface
-    HWREG(AON_RTC_BASE + AON_RTC_O_SYNC);
+    HWREG(AON_RTC_BASE + NONSECURE_OFFSET + AON_RTC_O_SYNC);
 }
 
 //*****************************************************************************
@@ -364,8 +362,8 @@ SysCtrlAonUpdate(void)
 {
     // Force a clock cycle on the AON interface to guarantee all registers are
     // in sync.
-    HWREG(AON_RTC_BASE + AON_RTC_O_SYNC) = 1;
-    HWREG(AON_RTC_BASE + AON_RTC_O_SYNC);
+    HWREG(AON_RTC_BASE + NONSECURE_OFFSET + AON_RTC_O_SYNC) = 1;
+    HWREG(AON_RTC_BASE + NONSECURE_OFFSET + AON_RTC_O_SYNC);
 }
 
 //*****************************************************************************

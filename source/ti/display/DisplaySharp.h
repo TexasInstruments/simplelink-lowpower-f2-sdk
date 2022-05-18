@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ typedef struct DisplaySharp_Object
 } DisplaySharp_Object, *DisplaySharp_Handle;
 
 void DisplaySharp_init(Display_Handle handle);
-Display_Handle DisplaySharp_open(Display_Handle,
+Display_Handle DisplaySharp_open(Display_Handle handle,
                                  Display_Params * params);
 void           DisplaySharp_clear(Display_Handle handle);
 void           DisplaySharp_clearLines(Display_Handle handle,
@@ -118,7 +118,7 @@ void           DisplaySharp_clearLines(Display_Handle handle,
 void           DisplaySharp_vprintf(Display_Handle handle, uint8_t line,
                                     uint8_t column, const char *fmt,
                                     va_list va);
-void DisplaySharp_close(Display_Handle);
+void DisplaySharp_close(Display_Handle handle);
 int DisplaySharp_control(Display_Handle handle, unsigned int cmd, void *arg);
 unsigned int   DisplaySharp_getType(void);
 #endif // ti_display_DisplaySharp__include

@@ -1,11 +1,9 @@
 /******************************************************************************
 *  Filename:       sys_ctrl.c
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    Driver for the System Control.
 *
-*  Copyright (c) 2015 - 2021, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -82,7 +80,7 @@
 void SysCtrlIdle(uint32_t vimsPdMode)
 {
     // Configure the VIMS mode
-    HWREG(PRCM_BASE + PRCM_O_PDCTL1VIMS) = vimsPdMode;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1VIMS) = vimsPdMode;
 
     // Always keep cache retention ON in IDLE
     PRCMCacheRetentionEnable();

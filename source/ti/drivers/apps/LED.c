@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2016-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -147,7 +147,7 @@ LED_State LED_getState(LED_Handle ledHandle)
 /*
  *  ======== LED_init ========
  */
-void LED_init()
+void LED_init(void)
 {
     /*
      * Must NOT call GPIO or PWM init here as the weak symbol may be used.
