@@ -45,7 +45,6 @@
  * - @sa OPENTHREAD_CONFIG_LOG_OUTPUT_DEBUG_UART
  * - @sa OPENTHREAD_CONFIG_LOG_OUTPUT_APP
  * - @sa OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED
- * - @sa OPENTHREAD_CONFIG_LOG_OUTPUT_NCP_SPINEL
  * - and others
  *
  * Note:
@@ -68,8 +67,6 @@
 #define OPENTHREAD_CONFIG_LOG_OUTPUT_APP 2
 /** Log output is handled by a platform defined function */
 #define OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED 3
-/** Log output for NCP goes to Spinel `STREAM_LOG` property (for CLI platform defined function is expected) */
-#define OPENTHREAD_CONFIG_LOG_OUTPUT_NCP_SPINEL 4
 
 /**
  * @def OPENTHREAD_CONFIG_LOG_LEVEL
@@ -107,89 +104,9 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_LOG_API
- *
- * Define to enable OpenThread API logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_API
-#define OPENTHREAD_CONFIG_LOG_API 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_MLE
- *
- * Define to enable MLE logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_MLE
-#define OPENTHREAD_CONFIG_LOG_MLE 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_ARP
- *
- * Define to enable EID-to-RLOC map logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_ARP
-#define OPENTHREAD_CONFIG_LOG_ARP 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_NETDATA
- *
- * Define to enable Network Data logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_NETDATA
-#define OPENTHREAD_CONFIG_LOG_NETDATA 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_ICMP
- *
- * Define to enable ICMPv6 logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_ICMP
-#define OPENTHREAD_CONFIG_LOG_ICMP 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_IP6
- *
- * Define to enable IPv6 logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_IP6
-#define OPENTHREAD_CONFIG_LOG_IP6 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_MAC
- *
- * Define to enable IEEE 802.15.4 MAC logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_MAC
-#define OPENTHREAD_CONFIG_LOG_MAC 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_MEM
- *
- * Define to enable memory logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_MEM
-#define OPENTHREAD_CONFIG_LOG_MEM 1
-#endif
-
-/**
  * @def OPENTHREAD_CONFIG_LOG_PKT_DUMP
  *
- * Define to enable log content of packets.
+ * Define to enable dump logs (of packets).
  *
  */
 #ifndef OPENTHREAD_CONFIG_LOG_PKT_DUMP
@@ -197,29 +114,9 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_LOG_NETDIAG
- *
- * Define to enable network diagnostic logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_NETDIAG
-#define OPENTHREAD_CONFIG_LOG_NETDIAG 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_PLATFORM
- *
- * Define to enable platform region logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_PLATFORM
-#define OPENTHREAD_CONFIG_LOG_PLATFORM 0
-#endif
-
-/**
  * @def OPENTHREAD_CONFIG_LOG_CLI
  *
- * Define to enable CLI logging.
+ * Define to enable CLI logging and `otLogCli()` OT function.
  *
  */
 #ifndef OPENTHREAD_CONFIG_LOG_CLI
@@ -227,45 +124,23 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_LOG_COAP
+ * @def OPENTHREAD_CONFIG_LOG_PLATFORM
  *
- * Define to enable COAP logging.
+ * Define to enable platform logging and `otLog{Level}Plat()` OT functions.
  *
  */
-#ifndef OPENTHREAD_CONFIG_LOG_COAP
-#define OPENTHREAD_CONFIG_LOG_COAP 1
+#ifndef OPENTHREAD_CONFIG_LOG_PLATFORM
+#define OPENTHREAD_CONFIG_LOG_PLATFORM 1
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_LOG_CORE
+ * @def OPENTHREAD_CONFIG_LOG_PREPEND_UPTIME
  *
- * Define to enable OpenThread Core logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_CORE
-#define OPENTHREAD_CONFIG_LOG_CORE 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_UTIL
- *
- * Define to enable OpenThread Utility module logging.
+ * Define as 1 to prepend the current uptime to all log messages.
  *
  */
-#ifndef OPENTHREAD_CONFIG_LOG_UTIL
-#define OPENTHREAD_CONFIG_LOG_UTIL 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_BBR
- *
- * Note: available since Thread 1.2.
- *
- * Define to enable Backbone Router (BBR) region logging.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_BBR
-#define OPENTHREAD_CONFIG_LOG_BBR 1
+#ifndef OPENTHREAD_CONFIG_LOG_PREPEND_UPTIME
+#define OPENTHREAD_CONFIG_LOG_PREPEND_UPTIME 0
 #endif
 
 /**
@@ -276,16 +151,6 @@
  */
 #ifndef OPENTHREAD_CONFIG_LOG_PREPEND_LEVEL
 #define OPENTHREAD_CONFIG_LOG_PREPEND_LEVEL 1
-#endif
-
-/**
- * @def OPENTHREAD_CONFIG_LOG_PREPEND_REGION
- *
- * Define to prepend the log region to all log messages.
- *
- */
-#ifndef OPENTHREAD_CONFIG_LOG_PREPEND_REGION
-#define OPENTHREAD_CONFIG_LOG_PREPEND_REGION 1
 #endif
 
 /**
@@ -310,13 +175,13 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_PLAT_LOG_FUNCTION
+ * @def OPENTHREAD_CONFIG_LOG_MAX_SIZE
  *
- * Defines the name of function/macro used for logging inside OpenThread, by default it is set to `otPlatLog()`.
+ * The maximum log string size (number of chars).
  *
  */
-#ifndef OPENTHREAD_CONFIG_PLAT_LOG_FUNCTION
-#define OPENTHREAD_CONFIG_PLAT_LOG_FUNCTION otPlatLog
+#ifndef OPENTHREAD_CONFIG_LOG_MAX_SIZE
+#define OPENTHREAD_CONFIG_LOG_MAX_SIZE 150
 #endif
 
 #endif // CONFIG_LOGGING_H_

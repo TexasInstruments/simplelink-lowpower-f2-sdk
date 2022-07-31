@@ -71,9 +71,9 @@
                     "link": "BOOSTXL_SHARP128_SPI"
                 },
                 "SELECT": {
-                    "displayName": "Sharp128 LCD SPI Slave Select",
-                    "description": "Sharp 128x128 LCD SPI slave select pin",
-                    "longDescription": "Sharp 128x128 LCD SPI slave select pin",
+                    "displayName": "Sharp128 LCD SPI Chip Select",
+                    "description": "Sharp 128x128 LCD SPI chip select pin",
+                    "longDescription": "Sharp 128x128 LCD SPI chip select pin",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
                         "SS": 6
@@ -122,9 +122,9 @@
                     "link": "BOOSTXL_SHARP128_SPI"
                 },
                 "SELECT": {
-                    "displayName": "BOOSTXL-SHARP128 SD SPI Slave Select",
-                    "description": "BOOSTXL-SHARP128 SD Card SPI slave select",
-                    "longDescription": "BOOSTXL-SHARP128 SD Card SPI slave select",
+                    "displayName": "BOOSTXL-SHARP128 SD SPI Chip Select",
+                    "description": "BOOSTXL-SHARP128 SD Card SPI chip select",
+                    "longDescription": "BOOSTXL-SHARP128 SD Card SPI chip select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
                         "SS": 8

@@ -38,9 +38,13 @@
 
 #include <stdint.h>
 
-#include <openthread/error.h>
-
+#include <openthread/platform/crypto.h>
+#include "common/error.hpp"
+#include "common/message.hpp"
+#include "common/type_traits.hpp"
 #include "crypto/aes_ecb.hpp"
+#include "crypto/storage.hpp"
+#include "mac/mac_types.hpp"
 
 namespace ot {
 namespace Crypto {
@@ -59,6 +63,28 @@ namespace Crypto {
 class AesCcm
 {
 public:
+    static constexpr uint8_t kMinTagLength = 4;                  ///< Minimum tag length (in bytes).
+    static constexpr uint8_t kMaxTagLength = AesEcb::kBlockSize; ///< Maximum tag length (in bytes).
+    static constexpr uint8_t kNonceSize    = 13;                 ///< Size of IEEE 802.15.4 Nonce (in bytes).
+
+    /**
+     * This enumeration type represent the encryption vs decryption mode.
+     *
+     */
+    enum Mode : uint8_t
+    {
+        kEncrypt, // Encryption mode.
+        kDecrypt, // Decryption mode.
+    };
+
+    /**
+     * This method sets the key.
+     *
+     * @param[in]  aKey    Crypto Key used in AES operation
+     *
+     */
+    void SetKey(const Key &aKey) { mEcb.SetKey(aKey); }
+
     /**
      * This method sets the key.
      *
@@ -69,23 +95,28 @@ public:
     void SetKey(const uint8_t *aKey, uint16_t aKeyLength);
 
     /**
+     * This method sets the key.
+     *
+     * @param[in]  aMacKey        Key Material for AES operation.
+     *
+     */
+    void SetKey(const Mac::KeyMaterial &aMacKey);
+
+    /**
      * This method initializes the AES CCM computation.
      *
      * @param[in]  aHeaderLength     Length of header in bytes.
      * @param[in]  aPlainTextLength  Length of plaintext in bytes.
-     * @param[in]  aTagLength        Length of tag in bytes.
+     * @param[in]  aTagLength        Length of tag in bytes (must be even and in `[kMinTagLength, kMaxTagLength]`).
      * @param[in]  aNonce            A pointer to the nonce.
      * @param[in]  aNonceLength      Length of nonce in bytes.
      *
-     * @retval OT_ERROR_NONE          Initialization was successful.
-     * @retval OT_ERROR_INVALID_ARGS  Initialization failed.
-     *
      */
-    otError Init(uint32_t    aHeaderLength,
-                 uint32_t    aPlainTextLength,
-                 uint8_t     aTagLength,
-                 const void *aNonce,
-                 uint8_t     aNonceLength);
+    void Init(uint32_t    aHeaderLength,
+              uint32_t    aPlainTextLength,
+              uint8_t     aTagLength,
+              const void *aNonce,
+              uint8_t     aNonceLength);
 
     /**
      * This method processes the header.
@@ -97,42 +128,88 @@ public:
     void Header(const void *aHeader, uint32_t aHeaderLength);
 
     /**
-     * This method processes the payload.
+     * This method processes the header.
      *
-     * @param[inout]  aPlainText   A pointer to the plaintext.
-     * @param[inout]  aCipherText  A pointer to the ciphertext.
-     * @param[in]     aLength      Payload length in bytes.
-     * @param[in]     aEncrypt     TRUE on encrypt and FALSE on decrypt.
+     * @tparam    ObjectType   The object type.
+     *
+     * @param[in] aObject      A reference to the object to add to header.
      *
      */
-    void Payload(void *aPlainText, void *aCipherText, uint32_t aLength, bool aEncrypt);
+    template <typename ObjectType> void Header(const ObjectType &aObject)
+    {
+        static_assert(!TypeTraits::IsPointer<ObjectType>::kValue, "ObjectType must not be a pointer");
+
+        Header(&aObject, sizeof(ObjectType));
+    }
+
+    /**
+     * This method processes the payload.
+     *
+     * @param[in,out]  aPlainText   A pointer to the plaintext.
+     * @param[in,out]  aCipherText  A pointer to the ciphertext.
+     * @param[in]      aLength      Payload length in bytes.
+     * @param[in]      aMode        Mode to indicate whether to encrypt (`kEncrypt`) or decrypt (`kDecrypt`).
+     *
+     */
+    void Payload(void *aPlainText, void *aCipherText, uint32_t aLength, Mode aMode);
+
+#if !OPENTHREAD_RADIO
+    /**
+     * This method processes the payload within a given message.
+     *
+     * This method encrypts/decrypts the payload content in place within the @p aMessage.
+     *
+     * @param[in,out]  aMessage     The message to read from and update.
+     * @param[in]      aOffset      The offset in @p aMessage to start of payload.
+     * @param[in]      aLength      Payload length in bytes.
+     * @param[in]      aMode        Mode to indicate whether to encrypt (`kEncrypt`) or decrypt (`kDecrypt`).
+     *
+     */
+    void Payload(Message &aMessage, uint16_t aOffset, uint16_t aLength, Mode aMode);
+#endif
+
+    /**
+     * This method returns the tag length in bytes.
+     *
+     * @returns The tag length in bytes.
+     *
+     */
+    uint8_t GetTagLength(void) const { return mTagLength; }
 
     /**
      * This method generates the tag.
      *
-     * @param[out]  aTag        A pointer to the tag.
-     * @param[out]  aTagLength  Length of the tag in bytes.
+     * @param[out]  aTag        A pointer to the tag (must have `GetTagLength()` bytes).
      *
      */
-    void Finalize(void *aTag, uint8_t *aTagLength);
+    void Finalize(void *aTag);
+
+    /**
+     * This static method generates IEEE 802.15.4 nonce byte sequence.
+     *
+     * @param[in]  aAddress        An extended address.
+     * @param[in]  aFrameCounter   A frame counter.
+     * @param[in]  aSecurityLevel  A security level.
+     * @param[out] aNonce          A buffer (with `kNonceSize` bytes) to place the generated nonce.
+     *
+     */
+    static void GenerateNonce(const Mac::ExtAddress &aAddress,
+                              uint32_t               aFrameCounter,
+                              uint8_t                aSecurityLevel,
+                              uint8_t *              aNonce);
 
 private:
-    enum
-    {
-        kTagLengthMin = 4,
-    };
-
     AesEcb   mEcb;
     uint8_t  mBlock[AesEcb::kBlockSize];
     uint8_t  mCtr[AesEcb::kBlockSize];
     uint8_t  mCtrPad[AesEcb::kBlockSize];
-    uint8_t  mNonceLength;
     uint32_t mHeaderLength;
     uint32_t mHeaderCur;
     uint32_t mPlainTextLength;
     uint32_t mPlainTextCur;
     uint16_t mBlockLength;
     uint16_t mCtrLength;
+    uint8_t  mNonceLength;
     uint8_t  mTagLength;
 };
 

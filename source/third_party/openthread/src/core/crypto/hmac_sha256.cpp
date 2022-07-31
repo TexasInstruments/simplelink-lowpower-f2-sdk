@@ -32,36 +32,52 @@
  */
 
 #include "hmac_sha256.hpp"
+#include "common/debug.hpp"
+#include "common/error.hpp"
+#include "common/message.hpp"
 
 namespace ot {
 namespace Crypto {
 
-HmacSha256::HmacSha256()
+HmacSha256::HmacSha256(void)
 {
-    const mbedtls_md_info_t *mdInfo = NULL;
-    mbedtls_md_init(&mContext);
-    mdInfo = mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
-    mbedtls_md_setup(&mContext, mdInfo, 1);
+    mContext.mContext     = mContextStorage;
+    mContext.mContextSize = sizeof(mContextStorage);
+
+    SuccessOrAssert(otPlatCryptoHmacSha256Init(&mContext));
 }
 
-HmacSha256::~HmacSha256()
+HmacSha256::~HmacSha256(void)
 {
-    mbedtls_md_free(&mContext);
+    SuccessOrAssert(otPlatCryptoHmacSha256Deinit(&mContext));
 }
 
-void HmacSha256::Start(const uint8_t *aKey, uint16_t aKeyLength)
+void HmacSha256::Start(const Key &aKey)
 {
-    mbedtls_md_hmac_starts(&mContext, aKey, aKeyLength);
+    SuccessOrAssert(otPlatCryptoHmacSha256Start(&mContext, &aKey));
 }
 
-void HmacSha256::Update(const uint8_t *aBuf, uint16_t aBufLength)
+void HmacSha256::Update(const void *aBuf, uint16_t aBufLength)
 {
-    mbedtls_md_hmac_update(&mContext, aBuf, aBufLength);
+    SuccessOrAssert(otPlatCryptoHmacSha256Update(&mContext, aBuf, aBufLength));
 }
 
-void HmacSha256::Finish(uint8_t aHash[kHashSize])
+void HmacSha256::Finish(Hash &aHash)
 {
-    mbedtls_md_hmac_finish(&mContext, aHash);
+    SuccessOrAssert(otPlatCryptoHmacSha256Finish(&mContext, aHash.m8, Hash::kSize));
+}
+
+void HmacSha256::Update(const Message &aMessage, uint16_t aOffset, uint16_t aLength)
+{
+    Message::Chunk chunk;
+
+    aMessage.GetFirstChunk(aOffset, aLength, chunk);
+
+    while (chunk.GetLength() > 0)
+    {
+        Update(chunk.GetBytes(), chunk.GetLength());
+        aMessage.GetNextChunk(aLength, chunk);
+    }
 }
 
 } // namespace Crypto

@@ -269,7 +269,7 @@
 // separately):
 //
 // 0: This claim tag bit is not implemented
-// 1: This claim tag bit is not implemented
+// 1: This claim tag bit is implemented
 //
 // The behavior when writing to this register is described in CLAIMSET.
 #define CPU_TPIU_CLAIMMASK_CLAIMMASK_W                                      32

@@ -59,9 +59,10 @@
 /* OpenThread public API Header files */
 #include <openthread/coap.h>
 #include <openthread/dataset.h>
-#include <openthread/platform/uart.h>
 #include <openthread/tasklet.h>
 #include <openthread/thread.h>
+
+#include <utils/uart.h>
 
 /* POSIX Header files */
 #include <sched.h>
@@ -180,11 +181,12 @@ const attrDesc_t coapAttr = {
 
 /* Holds the server setup state: 1 indicates CoAP server has been setup */
 static bool serverSetup = false;
-#if !TIOP_OAD
+
+#if !TIOP_OAD && TIOP_CUI
 static Button_Handle rightButtonHandle;
 /* String variable for copying over app lines to CUI */
 static char statusBuf[MAX_STATUS_LINE_VALUE_LEN];
-#endif /* TIOP_OAD */
+#endif
 
 /******************************************************************************
  Function Prototype
@@ -326,36 +328,6 @@ static otError setupCoapServer(otInstance *aInstance, const attrDesc_t *attr)
 exit:
     return error;
 }
-#if TIOP_OAD
-/**
- * @brief Handles the key press events.
- *
- * @param keysPressed identifies which keys were pressed
- * @return None
- */
-static void processKeyChangeCB(uint8_t keysPressed)
-{
-    if (keysPressed & KEYS_RIGHT)
-    {
-        app_postEvt(DoorLock_evtKeyRight);
-    }
-}
-#else
-/**
- * @brief Handles the key press events.
- *
- * @param _buttonHandle identifies which keys were pressed
- * @param _buttonEvents identifies the event that occurred on the key
- * @return None
- */
-void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
-{
-    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
-    {
-        app_postEvt(DoorLock_evtKeyRight);
-    }
-}
-#endif /* TIOP_OAD */
 
 /**
  * @brief Processes the OT stack events
@@ -491,6 +463,8 @@ static void processEvent(appEvent_e event)
         case DoorLock_evtNwkJoined:
         {
 #if TIOP_CUI
+            otNetworkKey networkKey;
+
             tiopCUIUpdateConnStatus(CUI_conn_joined);
 #else
             DISPUTILS_SERIALPRINTF( 1, 0, "Joined Nwk");
@@ -504,7 +478,8 @@ static void processEvent(appEvent_e event)
             tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
             tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
             tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-            tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+            otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+            tiopCUIUpdateNetworkKey(networkKey);
             tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
             OtRtosApi_unlock();
 #endif /* TIOP_CUI */
@@ -600,6 +575,7 @@ static void processEvent(appEvent_e event)
                 case OT_DEVICE_ROLE_ROUTER:
                 case OT_DEVICE_ROLE_LEADER:
                 {
+                    otNetworkKey networkKey;
                     tiopCUIUpdateConnStatus(CUI_conn_joined);
 
                     OtRtosApi_lock();
@@ -607,7 +583,8 @@ static void processEvent(appEvent_e event)
                     tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
                     tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
                     tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-                    tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+                    otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+                    tiopCUIUpdateNetworkKey(networkKey);
                     tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
                     OtRtosApi_unlock();
                     break;
@@ -681,6 +658,40 @@ void app_postEvt(appEvent_e event)
     assert(0 == ret);
     (void)ret;
 }
+
+#if TIOP_OAD
+/**
+ * @brief Handles the key press events.
+ *
+ * @param keysPressed identifies which keys were pressed
+ * @return None
+ */
+static void processKeyChangeCB(uint8_t keysPressed)
+{
+    if (keysPressed & KEYS_RIGHT)
+    {
+        app_postEvt(DoorLock_evtKeyRight);
+    }
+}
+#else
+
+#if TIOP_CUI
+/**
+ * @brief Handles the key press events.
+ *
+ * @param _buttonHandle identifies which keys were pressed
+ * @param _buttonEvents identifies the event that occurred on the key
+ * @return None
+ */
+void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
+{
+    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
+    {
+        app_postEvt(DoorLock_evtKeyRight);
+    }
+}
+#endif /* TIOP_CUI */
+#endif /* TIOP_OAD */
 
 #if TIOP_CUI
 /**
@@ -856,7 +867,7 @@ void *DoorLock_task(void *arg0)
     /* Open the processing queue in blocking read mode for the process loop */
     procQueueLoopDesc = mq_open(Doorlock_procQueueName, O_RDONLY, 0, NULL);
 
-#if TIOP_OAD
+#if TIOP_OAD && !TIOP_CUI
     KeysUtils_initialize(processKeyChangeCB);
 #endif /* TIOP_OAD */
 
@@ -883,8 +894,10 @@ void *DoorLock_task(void *arg0)
 #endif
 #endif /* !TIOP_POWER_MEASUREMENT */
 #else
+#if TIOP_CUI
     snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_CYAN "Doorlock State" CUI_COLOR_RESET "] " CUI_COLOR_WHITE"%s" CUI_COLOR_RESET, (char*)attrState);
     tiopCUIInit((char*)statusBuf, &rightButtonHandle);
+#endif
 #endif /* TIOP_OAD */
 
 #if !TIOP_CUI

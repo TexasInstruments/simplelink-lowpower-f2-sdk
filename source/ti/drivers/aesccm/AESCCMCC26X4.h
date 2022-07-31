@@ -94,7 +94,8 @@ extern "C" {
  *  AESCCM26X4 hardware attributes should be included in the board file
  *  and pointed to by the AESCCM_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC27xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -105,9 +106,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } AESCCMCC26X4_HWAttrs;
 
 /*!
@@ -115,32 +117,33 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    uint32_t                        intermediateIV[AES_IV_LENGTH_BYTES / 4];
-    uint32_t                        intermediateTag[AES_TAG_LENGTH_BYTES / 4];
-    uint32_t                        blockCounter;
-    uint32_t                        alignmentInfo;
-    uint32_t                        semaphoreTimeout;
-    AESCCM_CallbackFxn              callbackFxn;
-    AESCCM_OperationUnion           *operation;
-    size_t                          expectedAADLength;
-    size_t                          expectedPlaintextLength;
-    size_t                          actualAADLength;
-    size_t                          actualPlaintextLength;
-    CryptoKey                       key;
-    volatile int_fast16_t           returnStatus;
-    AESCCM_ReturnBehavior           returnBehavior;
-    AESCCM_OperationType            operationType;
+typedef struct
+{
+    uint32_t intermediateIV[AES_IV_LENGTH_BYTES / 4];
+    uint32_t intermediateTag[AES_TAG_LENGTH_BYTES / 4];
+    uint32_t blockCounter;
+    uint32_t alignmentInfo;
+    uint32_t semaphoreTimeout;
+    AESCCM_CallbackFxn callbackFxn;
+    AESCCM_OperationUnion *operation;
+    size_t expectedAADLength;
+    size_t expectedPlaintextLength;
+    size_t actualAADLength;
+    size_t actualPlaintextLength;
+    CryptoKey key;
+    volatile int_fast16_t returnStatus;
+    AESCCM_ReturnBehavior returnBehavior;
+    AESCCM_OperationType operationType;
     /* MAC and nonceLength are stored for configuring the AESCTL register */
-    uint8_t                         macLength;
-    uint8_t                         nonceLength;
+    uint8_t macLength;
+    uint8_t nonceLength;
     /* Track when to set gcm_ccm_continue or continue_aad bit */
-    bool                            continueAADOperation;
-    bool                            continueDataOperation;
-    bool                            isOpen;
-    volatile bool                   operationInProgress;
-    volatile bool                   hwBusy;
-    volatile bool                   cryptoResourceLocked;
+    bool continueAADOperation;
+    bool continueDataOperation;
+    bool isOpen;
+    volatile bool operationInProgress;
+    volatile bool hwBusy;
+    volatile bool cryptoResourceLocked;
 } AESCCMCC26X4_Object;
 
 #ifdef __cplusplus

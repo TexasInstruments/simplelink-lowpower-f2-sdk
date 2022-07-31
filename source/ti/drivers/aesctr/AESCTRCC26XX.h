@@ -87,7 +87,8 @@ extern "C" {
  *  AESCTR26XX hardware attributes should be included in the board file
  *  and pointed to by the AESCTR_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -98,9 +99,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } AESCTRCC26XX_HWAttrs;
 
 /*!
@@ -108,23 +110,24 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    uint32_t                counter[AES_BLOCK_SIZE / 4];
-    uint32_t                semaphoreTimeout;
-    AESCTR_CallbackFxn      callbackFxn;
-    AESCTR_OperationUnion   *operation;
-    const uint8_t           *input;
-    uint8_t                 *output;
-    size_t                  inputLength;
-    CryptoKey               key;
-    volatile int_fast16_t   returnStatus;
-    AESCTR_ReturnBehavior   returnBehavior;
-    AESCTR_OperationType    operationType;
-    bool                    isOpen;
-    bool                    threadSafe;
-    volatile bool           cryptoResourceLocked;
-    volatile bool           hwBusy;
-    volatile bool           operationInProgress;
+typedef struct
+{
+    uint32_t counter[AES_BLOCK_SIZE / 4];
+    uint32_t semaphoreTimeout;
+    AESCTR_CallbackFxn callbackFxn;
+    AESCTR_OperationUnion *operation;
+    const uint8_t *input;
+    uint8_t *output;
+    size_t inputLength;
+    CryptoKey key;
+    volatile int_fast16_t returnStatus;
+    AESCTR_ReturnBehavior returnBehavior;
+    AESCTR_OperationType operationType;
+    bool isOpen;
+    bool threadSafe;
+    volatile bool cryptoResourceLocked;
+    volatile bool hwBusy;
+    volatile bool operationInProgress;
 } AESCTRCC26XX_Object;
 
 /*!

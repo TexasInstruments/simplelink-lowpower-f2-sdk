@@ -38,39 +38,40 @@
 
 #include <openthread/commissioner.h>
 
+#include "cli/cli_output.hpp"
+
 #if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
 
 namespace ot {
 namespace Cli {
 
-class Interpreter;
-
 /**
- * This class implements the CLI CoAP Secure server and client.
+ * This class implements the Commissioner CLI interpreter.
  *
  */
-class Commissioner
+class Commissioner : private OutputWrapper
 {
 public:
+    typedef Utils::CmdLineParser::Arg Arg;
+
     /**
      * Constructor
      *
-     * @param[in]  aInterpreter  The CLI interpreter.
+     * @param[in]  aOutput The CLI console output context
      *
      */
-    explicit Commissioner(Interpreter &aInterpreter)
-        : mInterpreter(aInterpreter)
+    explicit Commissioner(Output &aOutput)
+        : OutputWrapper(aOutput)
     {
     }
 
     /**
      * This method interprets a list of CLI arguments.
      *
-     * @param[in]  aArgsLength  The number of elements in @p aArgs.
      * @param[in]  aArgs        An array of command line arguments.
      *
      */
-    otError Process(uint8_t aArgsLength, char *aArgs[]);
+    otError Process(Arg aArgs[]);
 
 private:
     enum
@@ -78,31 +79,20 @@ private:
         kDefaultJoinerTimeout = 120, ///< Default timeout for Joiners, in seconds.
     };
 
-    struct Command
-    {
-        const char *mName;
-        otError (Commissioner::*mCommand)(uint8_t aArgsLength, char *aArgs[]);
-    };
+    using Command = CommandEntry<Commissioner>;
 
-    otError ProcessHelp(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessAnnounce(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessEnergy(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessJoiner(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMgmtGet(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMgmtSet(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessPanId(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessProvisioningUrl(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessSessionId(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStart(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStop(uint8_t aArgsLength, char *aArgs[]);
+    template <CommandId kCommandId> otError Process(Arg aArgs[]);
 
     static void HandleStateChanged(otCommissionerState aState, void *aContext);
     void        HandleStateChanged(otCommissionerState aState);
 
-    static void HandleJoinerEvent(otCommissionerJoinerEvent aJoinerEvent,
+    static void HandleJoinerEvent(otCommissionerJoinerEvent aEvent,
+                                  const otJoinerInfo *      aJoinerInfo,
                                   const otExtAddress *      aJoinerId,
                                   void *                    aContext);
-    void        HandleJoinerEvent(otCommissionerJoinerEvent aJoinerEvent, const otExtAddress *aJoinerId);
+    void        HandleJoinerEvent(otCommissionerJoinerEvent aEvent,
+                                  const otJoinerInfo *      aJoinerInfo,
+                                  const otExtAddress *      aJoinerId);
 
     static void HandleEnergyReport(uint32_t       aChannelMask,
                                    const uint8_t *aEnergyList,
@@ -113,8 +103,7 @@ private:
     static void HandlePanIdConflict(uint16_t aPanId, uint32_t aChannelMask, void *aContext);
     void        HandlePanIdConflict(uint16_t aPanId, uint32_t aChannelMask);
 
-    static const Command sCommands[];
-    Interpreter &        mInterpreter;
+    static const char *StateToString(otCommissionerState aState);
 };
 
 } // namespace Cli

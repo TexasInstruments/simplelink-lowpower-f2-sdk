@@ -38,10 +38,14 @@
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/simple_profile/cc26xx</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/hal/src/target/cc2650/rom</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/devices/cc13x2x7_cc26x2x7</path>
+        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/tirtos/packages</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/posix/iar</path>
     </includePath>
 
     <defines>
+        <define>ICALL_NO_APP_EVENTS</define>
+        <define>CONFIG_ARM</define>
+        <define>SECURITY</define>
         <define>DeviceFamily_CC26X2X7</define>
         <define>FLASH_ROM_BUILD</define>
         <define>NVOCMP_NWSAMEITEM=1</define>
@@ -72,10 +76,7 @@
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/common/cc26xx</arg>
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/common/cc26xx/rcosc</arg>
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/drivers/nvs</arg>
-            <arg> --preinclude $PROJ_DIR$/autoconf.h</arg>
-            <arg> -DICALL_NO_APP_EVENTS</arg>
-            <arg> -DCONFIG_ARM</arg>
-            <arg> -DSECURITY</arg>
+            <arg>--preinclude $PROJ_DIR$/autoconf.h</arg>
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/mesh</arg>
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/mesh/ti/ble_wrapper</arg>
             <arg> -I$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/mesh/ti/kernel</arg>
@@ -166,7 +167,7 @@
     </preBuild>
 
     <postBuild>
-        <command>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/tools/ble5stack/oad/oad_postbuild.bat $TARGET_BPATH$ $PROJ_DIR$ $CONFIG_NAME$ $PROJ_FNAME$ $SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$ $EXE_DIR$ $TARGET_BNAME$</command>
+        <command>ielftool --ihex --verbose $TARGET_BPATH$.out $TARGET_BPATH$.hex</command>
     </postBuild>
 
     <files>

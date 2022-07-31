@@ -263,35 +263,34 @@ extern "C" {
 #endif
 
 /*! @internal Number of pixels in LCD display */
-#define LCD_PIXELS          8192
+#define LCD_PIXELS     8192
 /*! Number of bytes needed in LCD buffer */
-#define LCD_BYTES           1024
+#define LCD_BYTES      1024
 /*! Number of pixel columns */
-#define LCD_COLS            128
+#define LCD_COLS       128
 /*! First pixel on LCD x-axis */
-#define LCD_X_MIN           0
+#define LCD_X_MIN      0
 /*! Last pixel on LCD x-axis */
-#define LCD_X_MAX           (LCD_COLS-1)
+#define LCD_X_MAX      (LCD_COLS - 1)
 /*! Number of pixel rows */
-#define LCD_ROWS            64
+#define LCD_ROWS       64
 /*! First pixel on LCD y-axis */
-#define LCD_Y_MIN           0
+#define LCD_Y_MIN      0
 /*! Last pixel on LCD y-axis */
-#define LCD_Y_MAX           (LCD_ROWS-1)
+#define LCD_Y_MAX      (LCD_ROWS - 1)
 /*! @internal Number of pages */
-#define LCD_PAGES           8
+#define LCD_PAGES      8
 /*! Number of pixel rows per LCD page */
-#define LCD_PAGE_ROWS       8
+#define LCD_PAGE_ROWS  8
 /*! Space used for each character */
-#define LCD_CHAR_WIDTH      6
+#define LCD_CHAR_WIDTH 6
 /*! Actual font character width */
-#define LCD_FONT_WIDTH      5
-
+#define LCD_FONT_WIDTH 5
 
 /*!
-*  @brief      A handle that is returned from a LCD_open() call.
-*/
-typedef struct LCD_Config   *LCD_Handle;
+ *  @brief      A handle that is returned from a LCD_open() call.
+ */
+typedef struct LCD_Config *LCD_Handle;
 
 /*!
  *  @brief      LCD alignment enum
@@ -302,9 +301,9 @@ typedef struct LCD_Config   *LCD_Handle;
  */
 typedef enum LCD_Align
 {
-    LCD_ALIGN_LEFT,     /*!< Text is aligned to the left */
-    LCD_ALIGN_CENTER,   /*!< Text is aligned in the center */
-    LCD_ALIGN_RIGHT     /*!< Text is aligned to the right */
+    LCD_ALIGN_LEFT,   /*!< Text is aligned to the left */
+    LCD_ALIGN_CENTER, /*!< Text is aligned in the center */
+    LCD_ALIGN_RIGHT   /*!< Text is aligned to the right */
 } LCD_Align;
 
 /*!
@@ -337,7 +336,7 @@ typedef enum LCD_Page
 typedef enum LCD_X_Limit
 {
     LCD_X_FIRST = 0,
-    LCD_X_LAST = (LCD_COLS-1)
+    LCD_X_LAST  = (LCD_COLS - 1)
 } LCD_X_Limit;
 
 /*!
@@ -350,7 +349,7 @@ typedef enum LCD_X_Limit
 typedef enum LCD_Y_Limit
 {
     LCD_Y_FIRST = 0,
-    LCD_Y_LAST = (LCD_ROWS-1)
+    LCD_Y_LAST  = (LCD_ROWS - 1)
 } LCD_Y_Limit;
 
 /*!
@@ -362,11 +361,11 @@ typedef enum LCD_Y_Limit
  */
 typedef struct LCD_Params
 {
-     unsigned int       lcdWriteTimeout;    /*!< Timeout for write semaphore */
+    unsigned int lcdWriteTimeout; /*!< Timeout for write semaphore */
 
-     /* SPI parameters */
-     unsigned int       spiBitRate;         /*!< SPI bit rate in Hz */
-     SPI_FrameFormat    spiFrameFormat;     /*!< SPI frame format */
+    /* SPI parameters */
+    unsigned int spiBitRate;        /*!< SPI bit rate in Hz */
+    SPI_FrameFormat spiFrameFormat; /*!< SPI frame format */
 } LCD_Params;
 
 /*!
@@ -375,23 +374,23 @@ typedef struct LCD_Params
  */
 typedef struct LCD_Command
 {
-    char  displayStartLine;
-    char  adcSet;
-    char  outputMode;
-    char  displayType;
-    char  lcdBias;
-    char  powerControl;
-    char  boosterRadio0;
-    char  boosterRadio1;
-    char  contrastSet0;
-    char  contrastSet1;
-    char  contrastSet2;
-    char  staticIndicator0;
-    char  staticIndicator1;
-    char  displayEn;
-    char  setPage;
-    char  columnHi;
-    char  columnLo;
+    char displayStartLine;
+    char adcSet;
+    char outputMode;
+    char displayType;
+    char lcdBias;
+    char powerControl;
+    char boosterRadio0;
+    char boosterRadio1;
+    char contrastSet0;
+    char contrastSet1;
+    char contrastSet2;
+    char staticIndicator0;
+    char staticIndicator1;
+    char displayEn;
+    char setPage;
+    char columnHi;
+    char columnLo;
 } LCD_Command;
 
 /*!
@@ -407,9 +406,9 @@ typedef struct LCD_Command
  */
 typedef struct LCD_Buffer
 {
-    char                *pcBuffer;  /*!< Ptr to a buffer with data to be transmitted */
-    unsigned int        bufSize;    /*!< Size of the buffer */
-    SemaphoreP_Struct   bufMutex;   /*!< Semaphore associated with the buffer */
+    char *pcBuffer;             /*!< Ptr to a buffer with data to be transmitted */
+    unsigned int bufSize;       /*!< Size of the buffer */
+    SemaphoreP_Struct bufMutex; /*!< Semaphore associated with the buffer */
 } LCD_Buffer;
 
 /*!
@@ -420,13 +419,13 @@ typedef struct LCD_Buffer
 typedef struct LCD_Object
 {
     /* LCD control variables */
-    bool                 isOpen;            /* Has the obj been opened? */
-    SPI_Handle           spiHandle;         /* SPI handle used by the LCD */
-    unsigned int         lcdWriteTimeout;   /* Timeout for write semaphore */
-    SemaphoreP_Struct    lcdMutex;          /* Semaphore associated with the lcd */
-    LCD_Buffer           *lcdBuffers;       /* Pointer to the array
-                                               with lcd buffers */
-    uint8_t              nBuffers;          /* number of buffers availible */
+    bool isOpen;                  /* Has the obj been opened? */
+    SPI_Handle spiHandle;         /* SPI handle used by the LCD */
+    unsigned int lcdWriteTimeout; /* Timeout for write semaphore */
+    SemaphoreP_Struct lcdMutex;   /* Semaphore associated with the lcd */
+    LCD_Buffer *lcdBuffers;       /* Pointer to the array
+                                     with lcd buffers */
+    uint8_t nBuffers;             /* number of buffers availible */
 } LCD_Object;
 
 /*!
@@ -448,14 +447,14 @@ typedef struct LCD_HWAttrs
     /*! LCD initialization command */
     LCD_Command const *LCD_initCmd;
     /* LCD mode pin */
-    uint8_t           lcdModePin;
+    uint8_t lcdModePin;
     /* LCD reset pin */
-    uint8_t           lcdResetPin;
+    uint8_t lcdResetPin;
     /* LCD CSn pin */
-    uint8_t           lcdCsnPin;
+    uint8_t lcdCsnPin;
     /* Logical peripheral number indexed
        into the SPI_config table */
-    uint8_t           spiIndex;
+    uint8_t spiIndex;
 
 } LCD_HWAttrs;
 
@@ -466,10 +465,10 @@ typedef struct LCD_HWAttrs
  */
 typedef struct LCD_Config
 {
-  /*! Pointer to a driver specific data object */
-  LCD_Object            *object;
-  /*! Pointer to a driver specific hardware attributes structure */
-  LCD_HWAttrs   const   *hwAttrs;
+    /*! Pointer to a driver specific data object */
+    LCD_Object *object;
+    /*! Pointer to a driver specific hardware attributes structure */
+    LCD_HWAttrs const *hwAttrs;
 } LCD_Config;
 
 /*! @internal
@@ -480,8 +479,7 @@ typedef struct LCD_Config
  *
  *  @sa      LCD_Command
  */
-static const LCD_Command LCD_initCmd =
-{
+static const LCD_Command LCD_initCmd = {
     0x40, /*Display start line 0                    */
     0xA1, /*ADC reverse, 6 oclock viewing direction */
     0xC0, /*Normal COM0...COM63                     */
@@ -589,7 +587,12 @@ extern void LCD_Params_init(LCD_Params *params);
  *  @param  ucLine     The page to write. Must be a value from 0-7.
  *
  */
-extern void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str, unsigned int uiValue, unsigned char ucFormat, unsigned char ucLine);
+extern void LCD_writeLine(LCD_Handle handle,
+                          unsigned int bufIndex,
+                          char *str,
+                          unsigned int uiValue,
+                          unsigned char ucFormat,
+                          unsigned char ucLine);
 
 /*!
  *  @brief  Function that writes the specified buffer to the LCD display
@@ -643,8 +646,12 @@ extern void LCD_update(LCD_Handle handle, unsigned int bufIndex);
  *  @return None
  *
  */
-extern void LCD_updatePart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucXTo,
-                  LCD_Page iPageFrom, LCD_Page iPageTo);
+extern void LCD_updatePart(LCD_Handle handle,
+                           unsigned int bufIndex,
+                           unsigned char ucXFrom,
+                           unsigned char ucXTo,
+                           LCD_Page iPageFrom,
+                           LCD_Page iPageTo);
 
 /*!
  *  @brief  Function that empties the specified LCD buffer
@@ -727,8 +734,12 @@ extern void LCD_bufferClearPage(LCD_Handle handle, unsigned int bufIndex, LCD_Pa
  * @return   None
  *
  */
-extern void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucXTo,
-                   LCD_Page iPageFrom, LCD_Page iPageTo);
+extern void LCD_bufferClearPart(LCD_Handle handle,
+                                unsigned int bufIndex,
+                                unsigned char ucXFrom,
+                                unsigned char ucXTo,
+                                LCD_Page iPageFrom,
+                                LCD_Page iPageTo);
 
 /*!
  *  @brief  This function inverts the pixels (bits) in a given region of the
@@ -755,8 +766,12 @@ extern void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex, unsign
  *  @return None
  *
  */
-extern void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucYFrom,
-                    unsigned char ucXTo, unsigned char ucYTo);
+extern void LCD_bufferInvert(LCD_Handle handle,
+                             unsigned int bufIndex,
+                             unsigned char ucXFrom,
+                             unsigned char ucYFrom,
+                             unsigned char ucXTo,
+                             unsigned char ucYTo);
 
 /*!
  *  @brief  This function inverts a range of columns in the display buffer on a
@@ -790,8 +805,11 @@ extern void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned 
  *
  *  @return   None
  */
-extern void LCD_bufferInvertPage(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucXTo,
-                    LCD_Page iPage);
+extern void LCD_bufferInvertPage(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucXFrom,
+                                 unsigned char ucXTo,
+                                 LCD_Page iPage);
 
 /*!
  *  @brief  Function that writes a string to the specified buffer
@@ -823,7 +841,10 @@ extern void LCD_bufferInvertPage(LCD_Handle handle, unsigned int bufIndex, unsig
  *
  *
  */
-extern void LCD_bufferPrintString(LCD_Handle handle, unsigned int bufIndex, const char *pcStr, unsigned char ucX,
+extern void LCD_bufferPrintString(LCD_Handle handle,
+                                  unsigned int bufIndex,
+                                  const char *pcStr,
+                                  unsigned char ucX,
                                   LCD_Page iPage);
 
 /*!
@@ -862,8 +883,11 @@ extern void LCD_bufferPrintString(LCD_Handle handle, unsigned int bufIndex, cons
  *  @return   None
  *
  */
-extern void LCD_bufferPrintStringAligned(LCD_Handle handle, unsigned int bufIndex, const char *pcStr,
-                            LCD_Align iAlignment, LCD_Page iPage);
+extern void LCD_bufferPrintStringAligned(LCD_Handle handle,
+                                         unsigned int bufIndex,
+                                         const char *pcStr,
+                                         LCD_Align iAlignment,
+                                         LCD_Page iPage);
 
 /*!
  *  @brief  Function that writes an integer to the specified buffer
@@ -894,7 +918,10 @@ extern void LCD_bufferPrintStringAligned(LCD_Handle handle, unsigned int bufInde
  *                      @li @b LCD_PAGE7
  *
  */
-extern void LCD_bufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32Number, unsigned char ucX,
+extern void LCD_bufferPrintInt(LCD_Handle handle,
+                               unsigned int bufIndex,
+                               int i32Number,
+                               unsigned char ucX,
                                LCD_Page iPage);
 
 /*!
@@ -932,8 +959,11 @@ extern void LCD_bufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32
  *
  *  @return   None
  */
-extern void LCD_bufferPrintIntAligned(LCD_Handle handle, unsigned int bufIndex, int i32Number,
-                         LCD_Align iAlignment, LCD_Page iPage);
+extern void LCD_bufferPrintIntAligned(LCD_Handle handle,
+                                      unsigned int bufIndex,
+                                      int i32Number,
+                                      LCD_Align iAlignment,
+                                      LCD_Page iPage);
 
 /*!
  *  @brief  This function writes a number of data type float to the given buffer
@@ -971,8 +1001,12 @@ extern void LCD_bufferPrintIntAligned(LCD_Handle handle, unsigned int bufIndex, 
  *  @return None
  *
  */
-extern void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumber, unsigned char ucDecimals,
-                    unsigned char ucX, LCD_Page iPage);
+extern void LCD_bufferPrintFloat(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 float fNumber,
+                                 unsigned char ucDecimals,
+                                 unsigned char ucX,
+                                 LCD_Page iPage);
 
 /*!
  *  @brief  This function writes a float number to the given buffer as
@@ -1012,8 +1046,12 @@ extern void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float
  *  @return None
  *
  */
-extern void LCD_bufferPrintFloatAligned(LCD_Handle handle, unsigned int bufIndex, float fNumber, unsigned char ucDecimals,
-                           LCD_Align iAlignment, LCD_Page iPage);
+extern void LCD_bufferPrintFloatAligned(LCD_Handle handle,
+                                        unsigned int bufIndex,
+                                        float fNumber,
+                                        unsigned char ucDecimals,
+                                        LCD_Align iAlignment,
+                                        LCD_Page iPage);
 
 /*!
  *  @brief  This function draws a line in the specified buffer from
@@ -1041,8 +1079,12 @@ extern void LCD_bufferPrintFloatAligned(LCD_Handle handle, unsigned int bufIndex
  *  @return None
  *
  */
-extern void LCD_bufferSetLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucYFrom,
-                 unsigned char ucXTo, unsigned char ucYTo);
+extern void LCD_bufferSetLine(LCD_Handle handle,
+                              unsigned int bufIndex,
+                              unsigned char ucXFrom,
+                              unsigned char ucYFrom,
+                              unsigned char ucXTo,
+                              unsigned char ucYTo);
 
 /*!
  *  @brief  This function clears a line in the specified buffer from
@@ -1070,8 +1112,12 @@ extern void LCD_bufferSetLine(LCD_Handle handle, unsigned int bufIndex, unsigned
  *  @return None
  *
  */
-extern void LCD_bufferClearLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucYFrom,
-                   unsigned char ucXTo, unsigned char ucYTo);
+extern void LCD_bufferClearLine(LCD_Handle handle,
+                                unsigned int bufIndex,
+                                unsigned char ucXFrom,
+                                unsigned char ucYFrom,
+                                unsigned char ucXTo,
+                                unsigned char ucYTo);
 
 /*!
  *  @brief   This function draws a horizontal line from (@e ucXFrom,@e ucY) to
@@ -1096,8 +1142,11 @@ extern void LCD_bufferClearLine(LCD_Handle handle, unsigned int bufIndex, unsign
  *  @return  None
  *
  */
-extern void LCD_bufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucXTo,
-                  unsigned char ucY);
+extern void LCD_bufferSetHLine(LCD_Handle handle,
+                               unsigned int bufIndex,
+                               unsigned char ucXFrom,
+                               unsigned char ucXTo,
+                               unsigned char ucY);
 
 /*!
  *  @brief  This function clears a horizontal line from (@e ucXFrom,@e ucY) to
@@ -1122,8 +1171,11 @@ extern void LCD_bufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsigne
  *  @return None
  *
  */
-extern void LCD_bufferClearHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                    unsigned char ucXTo, unsigned char ucY);
+extern void LCD_bufferClearHLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucXFrom,
+                                 unsigned char ucXTo,
+                                 unsigned char ucY);
 
 /*!
  *  @brief  This function draws a vertical line from (ucX,ucYFrom) to
@@ -1148,8 +1200,11 @@ extern void LCD_bufferClearHLine(LCD_Handle handle, unsigned int bufIndex, unsig
  *  @return None
  *
  */
-extern void LCD_bufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX, unsigned char ucYFrom,
-                  unsigned char ucYTo);
+extern void LCD_bufferSetVLine(LCD_Handle handle,
+                               unsigned int bufIndex,
+                               unsigned char ucX,
+                               unsigned char ucYFrom,
+                               unsigned char ucYTo);
 
 /*!
  *  @brief  This function clears a vertical line from (@e ucX,@e ucYFrom) to
@@ -1174,8 +1229,11 @@ extern void LCD_bufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsigne
  *  @return  None
  *
  */
-extern void LCD_bufferClearVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX, unsigned char ucYFrom,
-                    unsigned char ucYTo);
+extern void LCD_bufferClearVLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucX,
+                                 unsigned char ucYFrom,
+                                 unsigned char ucYTo);
 
 /*!
  *  @brief  This function draws a horizontal arrow from (@e ucXFrom,@e ucY) to
@@ -1202,7 +1260,11 @@ extern void LCD_bufferClearVLine(LCD_Handle handle, unsigned int bufIndex, unsig
  *  @return None
  *
  */
-extern void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom, unsigned char ucXTo, unsigned char ucY);
+extern void LCD_bufferHArrow(LCD_Handle handle,
+                             unsigned int bufIndex,
+                             unsigned char ucXFrom,
+                             unsigned char ucXTo,
+                             unsigned char ucY);
 
 /*!
  *  @brief  This function draws a vertical arrow from (@e ucX,@e ucYFrom) to
@@ -1229,7 +1291,11 @@ extern void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned 
  *
  *  @return   None
  */
-extern void LCD_bufferVArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX, unsigned char ucYFrom, unsigned char ucYTo);
+extern void LCD_bufferVArrow(LCD_Handle handle,
+                             unsigned int bufIndex,
+                             unsigned char ucX,
+                             unsigned char ucYFrom,
+                             unsigned char ucYTo);
 
 /*!
  *  @brief  This function sets a pixel on (@e ucX,@e ucY).

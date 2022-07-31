@@ -1,0 +1,12 @@
+{
+    "targets": {
+        "Default": "target_launchxl-cc1312psip.json:LP_EM_CC1312PSIP",
+        "VirtualTarget": {
+            "_name": "LP_EM_CC1312PSIP",
+            "Target": [
+                "target_launchxl-cc1312psip.json",
+                "target_launchxl-cc1312psip_highPA.json"
+            ]
+        }
+    }
+}

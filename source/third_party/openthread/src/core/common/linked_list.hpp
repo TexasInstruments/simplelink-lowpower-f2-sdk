@@ -37,7 +37,10 @@
 #include "openthread-core-config.h"
 
 #include <stdio.h>
-#include <openthread/error.h>
+
+#include "common/const_cast.hpp"
+#include "common/error.hpp"
+#include "common/iterator_utils.hpp"
 
 namespace ot {
 
@@ -69,7 +72,7 @@ public:
     /**
      * This method gets the next entry in the linked list.
      *
-     * @returns A pointer to the next entry in the linked list or NULL if at the end of the list.
+     * @returns A pointer to the next entry in the linked list or `nullptr` if at the end of the list.
      *
      */
     const Type *GetNext(void) const { return static_cast<const Type *>(static_cast<const Type *>(this)->mNext); }
@@ -77,7 +80,7 @@ public:
     /**
      * This method gets the next entry in the linked list.
      *
-     * @returns A pointer to the next entry in the linked list or NULL if at the end of the list.
+     * @returns A pointer to the next entry in the linked list or `nullptr` if at the end of the list.
      *
      */
     Type *GetNext(void) { return static_cast<Type *>(static_cast<Type *>(this)->mNext); }
@@ -100,20 +103,23 @@ public:
  */
 template <typename Type> class LinkedList
 {
+    class Iterator;
+    class ConstIterator;
+
 public:
     /**
      * This constructor initializes the linked list.
      *
      */
     LinkedList(void)
-        : mHead(NULL)
+        : mHead(nullptr)
     {
     }
 
     /**
      * This method returns the entry at the head of the linked list
      *
-     * @returns Pointer to the entry at the head of the linked list, or NULL if list is empty.
+     * @returns Pointer to the entry at the head of the linked list, or `nullptr` if the list is empty.
      *
      */
     Type *GetHead(void) { return mHead; }
@@ -121,7 +127,7 @@ public:
     /**
      * This method returns the entry at the head of the linked list.
      *
-     * @returns Pointer to the entry at the head of the linked list, or NULL if list is empty.
+     * @returns Pointer to the entry at the head of the linked list, or `nullptr` if the list is empty.
      *
      */
     const Type *GetHead(void) const { return mHead; }
@@ -138,7 +144,7 @@ public:
      * This method clears the linked list.
      *
      */
-    void Clear(void) { mHead = NULL; }
+    void Clear(void) { mHead = nullptr; }
 
     /**
      * This method indicates whether the linked list is empty or not.
@@ -147,7 +153,7 @@ public:
      * @retval FALSE  If the linked list is not empty.
      *
      */
-    bool IsEmpty(void) const { return (mHead == NULL); }
+    bool IsEmpty(void) const { return (mHead == nullptr); }
 
     /**
      * This method pushes an entry at the head of the linked list.
@@ -179,14 +185,14 @@ public:
      *
      * @note This method does not change the popped entry itself, i.e., the popped entry next pointer stays as before.
      *
-     * @returns The entry that was popped if list is not empty, or NULL if list is empty.
+     * @returns The entry that was popped if the list is not empty, or `nullptr` if the list is empty.
      *
      */
     Type *Pop(void)
     {
         Type *entry = mHead;
 
-        if (mHead != NULL)
+        if (mHead != nullptr)
         {
             mHead = mHead->GetNext();
         }
@@ -199,17 +205,17 @@ public:
      *
      * @note This method does not change the popped entry itself, i.e., the popped entry next pointer stays as before.
      *
-     * @param[in] aPrevEntry  A pointer to a previous entry. If it is not NULL the entry after this will be popped,
-     *                        otherwise (if it is NULL) the entry at head of the list is popped.
+     * @param[in] aPrevEntry  A pointer to a previous entry. If it is not `nullptr` the entry after this will be popped,
+     *                        otherwise (if it is `nullptr`) the entry at the head of the list is popped.
      *
-     * @returns Pointer to the entry that was popped, or NULL if there is no entry to pop.
+     * @returns Pointer to the entry that was popped, or `nullptr` if there is no entry to pop.
      *
      */
     Type *PopAfter(Type *aPrevEntry)
     {
         Type *entry;
 
-        if (aPrevEntry == NULL)
+        if (aPrevEntry == nullptr)
         {
             entry = Pop();
         }
@@ -217,7 +223,7 @@ public:
         {
             entry = aPrevEntry->GetNext();
 
-            if (entry != NULL)
+            if (entry != nullptr)
             {
                 aPrevEntry->SetNext(entry->GetNext());
             }
@@ -235,20 +241,31 @@ public:
      * @retval FALSE  The linked list does not contain @p aEntry.
      *
      */
-    bool Contains(Type &aEntry) const
+    bool Contains(const Type &aEntry) const
     {
-        bool contains = false;
+        const Type *prev;
 
-        for (Type *cur = mHead; cur != NULL; cur = cur->GetNext())
-        {
-            if (cur == &aEntry)
-            {
-                contains = true;
-                break;
-            }
-        }
+        return Find(aEntry, prev) == kErrorNone;
+    }
 
-        return contains;
+    /**
+     * This template method indicates whether the linked list contains an entry matching a given entry indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in] aIndicator   An entry indicator to match against entries in the list.
+     *
+     * @retval TRUE   The linked list contains an entry matching @p aIndicator.
+     * @retval FALSE  The linked list contains no entry matching @p aIndicator.
+     *
+     */
+    template <typename Indicator> bool ContainsMatching(const Indicator &aIndicator) const
+    {
+        return FindMatching(aIndicator) != nullptr;
     }
 
     /**
@@ -256,17 +273,17 @@ public:
      *
      * @param[in] aEntry   A reference to an entry to add.
      *
-     * @retval OT_ERROR_NONE     The entry was successfully added at the head of the list.
-     * @retval OT_ERROR_ALREADY  The entry is already in the list.
+     * @retval kErrorNone     The entry was successfully added at the head of the list.
+     * @retval kErrorAlready  The entry is already in the list.
      *
      */
-    otError Add(Type &aEntry)
+    Error Add(Type &aEntry)
     {
-        otError error = OT_ERROR_NONE;
+        Error error = kErrorNone;
 
         if (Contains(aEntry))
         {
-            error = OT_ERROR_ALREADY;
+            error = kErrorAlready;
         }
         else
         {
@@ -279,34 +296,123 @@ public:
     /**
      * This method removes an entry from the linked list.
      *
-     * @note This method does not change the removed entry @p aEntry itself (it is `const`), i.e., the  entry next
+     * @note This method does not change the removed entry @p aEntry itself (it is `const`), i.e., the entry next
      * pointer of @p aEntry stays as before.
      *
      * @param[in] aEntry   A reference to an entry to remove.
      *
-     * @retval OT_ERROR_NONE       The entry was successfully removed from the list.
-     * @retval OT_ERROR_NOT_FOUND  Could not find the entry in the list.
+     * @retval kErrorNone      The entry was successfully removed from the list.
+     * @retval kErrorNotFound  Could not find the entry in the list.
      *
      */
-    otError Remove(const Type &aEntry)
+    Error Remove(const Type &aEntry)
     {
-        otError error = OT_ERROR_NOT_FOUND;
+        Type *prev;
+        Error error = Find(aEntry, prev);
 
-        if (mHead == &aEntry)
+        if (error == kErrorNone)
         {
-            Pop();
-            error = OT_ERROR_NONE;
+            PopAfter(prev);
         }
-        else if (mHead != NULL)
+
+        return error;
+    }
+
+    /**
+     * This template method removes an entry matching a given entry indicator from the linked list.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @note This method does not change the removed entry itself (which is returned in case of success), i.e., the
+     * entry next pointer stays as before.
+     *
+     *
+     * @param[in] aIndicator   An entry indicator to match against entries in the list.
+     *
+     * @returns A pointer to the removed matching entry if one could be found, or `nullptr` if no matching entry is
+     *          found.
+     *
+     */
+    template <typename Indicator> Type *RemoveMatching(const Indicator &aIndicator)
+    {
+        Type *prev;
+        Type *entry = FindMatching(aIndicator, prev);
+
+        if (entry != nullptr)
         {
-            for (Type *cur = mHead; cur->GetNext() != NULL; cur = cur->GetNext())
+            PopAfter(prev);
+        }
+
+        return entry;
+    }
+
+    /**
+     * This template method removes all entries in the list matching a given entry indicator from the list and adds
+     * them to a new list.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in] aIndicator   An entry indicator to match against entries in the list.
+     * @param[in] aRemovedList The list to add the removed entries to.
+     *
+     */
+    template <typename Indicator> void RemoveAllMatching(const Indicator &aIndicator, LinkedList &aRemovedList)
+    {
+        Type *entry;
+        Type *prev;
+        Type *next;
+
+        for (prev = nullptr, entry = GetHead(); entry != nullptr; entry = next)
+        {
+            next = entry->GetNext();
+
+            if (entry->Matches(aIndicator))
             {
-                if (cur->GetNext() == &aEntry)
-                {
-                    cur->SetNext(cur->GetNext()->GetNext());
-                    error = OT_ERROR_NONE;
-                    break;
-                }
+                PopAfter(prev);
+                aRemovedList.Push(*entry);
+
+                // When the entry is removed from the list
+                // we keep the `prev` pointer same as before.
+            }
+            else
+            {
+                prev = entry;
+            }
+        }
+    }
+
+    /**
+     * This method searches within the linked list to find an entry and if found returns a pointer to previous entry.
+     *
+     * @param[in]  aEntry      A reference to an entry to find.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when @p aEntry is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if @p aEntry is the head of the list. Otherwise it is
+     *                         updated to point to the previous entry before @p aEntry in the list.
+     *
+     * @retval kErrorNone      The entry was found in the list and @p aPrevEntry was updated successfully.
+     * @retval kErrorNotFound  The entry was not found in the list.
+     *
+     */
+    Error Find(const Type &aEntry, const Type *&aPrevEntry) const
+    {
+        Error error = kErrorNotFound;
+
+        aPrevEntry = nullptr;
+
+        for (const Type *entry = mHead; entry != nullptr; aPrevEntry = entry, entry = entry->GetNext())
+        {
+            if (entry == &aEntry)
+            {
+                error = kErrorNone;
+                break;
             }
         }
 
@@ -317,52 +423,188 @@ public:
      * This method searches within the linked list to find an entry and if found returns a pointer to previous entry.
      *
      * @param[in]  aEntry      A reference to an entry to find.
-     * @param[out] aPrevEntry  A pointer to output previous entry on success (when @p aEntry is found is the list).
-     *                         @p aPrevEntry is set to NULL if the @p aEntry is head of the list. Otherwise it
-     *                         is updated to point to previous entry before @p aEntry in the list.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when @p aEntry is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if @p aEntry is the head of the list. Otherwise it is
+     *                         updated to point to the previous entry before @p aEntry in the list.
      *
-     * @retval OT_ERROR_NONE       The entry was found in the list and @p aPrevEntry was updated successfully.
-     * @retval OT_ERROR_NOT_FOUND  The entry was not found in the list.
+     * @retval kErrorNone      The entry was found in the list and @p aPrevEntry was updated successfully.
+     * @retval kErrorNotFound  The entry was not found in the list.
      *
      */
-    otError Find(const Type &aEntry, Type *&aPrevEntry) const
+    Error Find(const Type &aEntry, Type *&aPrevEntry)
     {
-        otError error = OT_ERROR_NOT_FOUND;
+        return AsConst(this)->Find(aEntry, const_cast<const Type *&>(aPrevEntry));
+    }
 
-        if (mHead == &aEntry)
+    /**
+     * This template method searches within a given range of the linked list to find an entry matching a given
+     * indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aBegin      A pointer to the begin of the range.
+     * @param[in]  aEnd        A pointer to the end of the range, or `nullptr` to search all entries after @p aBegin.
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when a match is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if the matching entry is the head of the list.
+     *                         Otherwise it is updated to point to the previous entry before the matching entry in the
+     *                         list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator>
+    const Type *FindMatching(const Type *     aBegin,
+                             const Type *     aEnd,
+                             const Indicator &aIndicator,
+                             const Type *&    aPrevEntry) const
+    {
+        const Type *entry;
+
+        aPrevEntry = nullptr;
+
+        for (entry = aBegin; entry != aEnd; aPrevEntry = entry, entry = entry->GetNext())
         {
-            aPrevEntry = NULL;
-            error      = OT_ERROR_NONE;
-        }
-        else
-        {
-            for (Type *cur = mHead; cur->GetNext() != NULL; cur = cur->GetNext())
+            if (entry->Matches(aIndicator))
             {
-                if (cur->GetNext() == &aEntry)
-                {
-                    aPrevEntry = cur;
-                    error      = OT_ERROR_NONE;
-                    break;
-                }
+                break;
             }
         }
 
-        return error;
+        return entry;
+    }
+
+    /**
+     * This template method searches within a given range of the linked list to find an entry matching a given
+     * indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aBegin      A pointer to the begin of the range.
+     * @param[in]  aEnd        A pointer to the end of the range, or `nullptr` to search all entries after @p aBegin.
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when a match is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if the matching entry is the head of the list.
+     *                         Otherwise it is updated to point to the previous entry before the matching entry in the
+     *                         list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator>
+    Type *FindMatching(const Type *aBegin, const Type *aEnd, const Indicator &aIndicator, Type *&aPrevEntry)
+    {
+        return AsNonConst(FindMatching(aBegin, aEnd, aIndicator, const_cast<const Type *&>(aPrevEntry)));
+    }
+
+    /**
+     * This template method searches within the linked list to find an entry matching a given indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when a match is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if the matching entry is the head of the list.
+     *                         Otherwise it is updated to point to the previous entry before the matching entry in the
+     *                         list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator> const Type *FindMatching(const Indicator &aIndicator, const Type *&aPrevEntry) const
+    {
+        return FindMatching(mHead, nullptr, aIndicator, aPrevEntry);
+    }
+
+    /**
+     * This template method searches within the linked list to find an entry matching a given indicator, and if found
+     * returns a pointer to its previous entry in the list.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     * @param[out] aPrevEntry  A pointer to output the previous entry on success (when a match is found in the list).
+     *                         @p aPrevEntry is set to `nullptr` if the matching entry is the head of the list.
+     *                         Otherwise it is updated to point to the previous entry before the matching entry in the
+     *                         list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator> Type *FindMatching(const Indicator &aIndicator, Type *&aPrevEntry)
+    {
+        return AsNonConst(AsConst(this)->FindMatching(aIndicator, const_cast<const Type *&>(aPrevEntry)));
+    }
+
+    /**
+     * This template method searches within the linked list to find an entry matching a given indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator> const Type *FindMatching(const Indicator &aIndicator) const
+    {
+        const Type *prev;
+
+        return FindMatching(aIndicator, prev);
+    }
+
+    /**
+     * This template method searches within the linked list to find an entry matching a given indicator.
+     *
+     * The template type `Indicator` specifies the type of @p aIndicator object which is used to match against entries
+     * in the list. To check that an entry matches the given indicator, the `Matches()` method is invoked on each
+     * `Type` entry in the list. The `Matches()` method should be provided by `Type` class accordingly:
+     *
+     *     bool Type::Matches(const Indicator &aIndicator) const
+     *
+     * @param[in]  aIndicator  An indicator to match with entries in the list.
+     *
+     * @returns A pointer to the matching entry if one is found, or `nullptr` if no matching entry was found.
+     *
+     */
+    template <typename Indicator> Type *FindMatching(const Indicator &aIndicator)
+    {
+        return AsNonConst(AsConst(this)->FindMatching(aIndicator));
     }
 
     /**
      * This method returns the tail of the linked list (i.e., the last entry in the list).
      *
-     * @returns A pointer to tail entry in the linked list or NULL if list is empty.
+     * @returns A pointer to the tail entry in the linked list or `nullptr` if the list is empty.
      *
      */
     const Type *GetTail(void) const
     {
         const Type *tail = mHead;
 
-        if (tail != NULL)
+        if (tail != nullptr)
         {
-            while (tail->GetNext() != NULL)
+            while (tail->GetNext() != nullptr)
             {
                 tail = tail->GetNext();
             }
@@ -374,12 +616,52 @@ public:
     /**
      * This method returns the tail of the linked list (i.e., the last entry in the list).
      *
-     * @returns A pointer to tail entry in the linked list or NULL if list is empty.
+     * @returns A pointer to the tail entry in the linked list or `nullptr` if the list is empty.
      *
      */
-    Type *GetTail(void) { return const_cast<Type *>(const_cast<const LinkedList<Type> *>(this)->GetTail()); }
+    Type *GetTail(void) { return AsNonConst(AsConst(this)->GetTail()); }
+
+    // The following methods are intended to support range-based `for`
+    // loop iteration over the linked-list entries and should not be
+    // used directly.
+
+    Iterator begin(void) { return Iterator(GetHead()); }
+    Iterator end(void) { return Iterator(nullptr); }
+
+    ConstIterator begin(void) const { return ConstIterator(GetHead()); }
+    ConstIterator end(void) const { return ConstIterator(nullptr); }
 
 private:
+    class Iterator : public ItemPtrIterator<Type, Iterator>
+    {
+        friend class LinkedList;
+        friend class ItemPtrIterator<Type, Iterator>;
+
+        using ItemPtrIterator<Type, Iterator>::mItem;
+
+        explicit Iterator(Type *aItem)
+            : ItemPtrIterator<Type, Iterator>(aItem)
+        {
+        }
+
+        void Advance(void) { mItem = mItem->GetNext(); }
+    };
+
+    class ConstIterator : public ItemPtrIterator<const Type, ConstIterator>
+    {
+        friend class LinkedList;
+        friend class ItemPtrIterator<const Type, ConstIterator>;
+
+        using ItemPtrIterator<const Type, ConstIterator>::mItem;
+
+        explicit ConstIterator(const Type *aItem)
+            : ItemPtrIterator<const Type, ConstIterator>(aItem)
+        {
+        }
+
+        void Advance(void) { mItem = mItem->GetNext(); }
+    };
+
     Type *mHead;
 };
 

@@ -85,8 +85,6 @@
 #define Swi_Handle_label ti_sysbios_knl_Swi_Handle_label
 #define Swi_Handle_name ti_sysbios_knl_Swi_Handle_name
 #define Swi_Instance_init ti_sysbios_knl_Swi_Instance_init
-#define Swi_Object_count ti_sysbios_knl_Swi_Object_count
-#define Swi_Object_get ti_sysbios_knl_Swi_Object_get
 #define Swi_Object_first ti_sysbios_knl_Swi_Object_first
 #define Swi_Object_next ti_sysbios_knl_Swi_Object_next
 #define Swi_Object_sizeof ti_sysbios_knl_Swi_Object_sizeof
@@ -156,8 +154,6 @@
 #undef Swi_Handle_label
 #undef Swi_Handle_name
 #undef Swi_Instance_init
-#undef Swi_Object_count
-#undef Swi_Object_get
 #undef Swi_Object_first
 #undef Swi_Object_next
 #undef Swi_Object_sizeof

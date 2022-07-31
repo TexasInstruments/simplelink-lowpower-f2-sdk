@@ -303,7 +303,7 @@ extern "C" {
  * #define SHA2XYZ_STATUS_ERROR2    SHA2_STATUS_RESERVED - 2
  * @endcode
  */
-#define SHA2_STATUS_RESERVED        (-32)
+#define SHA2_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -311,7 +311,7 @@ extern "C" {
  * Functions return SHA2_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define SHA2_STATUS_SUCCESS         ((int_fast16_t) 0)
+#define SHA2_STATUS_SUCCESS ((int_fast16_t)0)
 
 /*!
  * @brief   Generic error status code.
@@ -319,7 +319,7 @@ extern "C" {
  * Functions return SHA2_STATUS_ERROR if the function was not executed
  * successfully and no more specific error is applicable.
  */
-#define SHA2_STATUS_ERROR           ((int_fast16_t) -1)
+#define SHA2_STATUS_ERROR ((int_fast16_t)-1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -329,18 +329,18 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define SHA2_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t) -2)
+#define SHA2_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t)-2)
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define SHA2_STATUS_CANCELED ((int_fast16_t) -3)
+#define SHA2_STATUS_CANCELED ((int_fast16_t)-3)
 
- /*!
-  *  @brief  The requested operation or configuration is not
-  *  supported by the device specific implementation.
-  */
- #define SHA2_STATUS_UNSUPPORTED ((int_fast16_t) -4)
+/*!
+ *  @brief  The requested operation or configuration is not
+ *  supported by the device specific implementation.
+ */
+#define SHA2_STATUS_UNSUPPORTED ((int_fast16_t)-4)
 
 /*!
  * @brief   The way in which SHA2 function calls return after performing an
@@ -363,28 +363,29 @@ extern "C" {
  * |SHA2_RETURN_BEHAVIOR_POLLING    | X     | X     | X     |
  *
  */
-typedef enum {
-    SHA2_RETURN_BEHAVIOR_CALLBACK = 1,      /*!< The function call will return immediately while the
-                                             *   SHA2 operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
-    SHA2_RETURN_BEHAVIOR_BLOCKING = 2,      /*!< The function call will block while the SHA2 operation goes
-                                             *   on in the background. SHA2 operation results are available
-                                             *   after the function returns.
-                                             */
-    SHA2_RETURN_BEHAVIOR_POLLING  = 4,      /*!< The function call will continuously poll a flag while the SHA2
-                                             *   operation goes on in the background. SHA2 operation results
-                                             *   are available after the function returns.
-                                             */
+typedef enum
+{
+    SHA2_RETURN_BEHAVIOR_CALLBACK = 1, /*!< The function call will return immediately while the
+                                        *   SHA2 operation goes on in the background. The registered
+                                        *   callback function is called after the operation completes.
+                                        *   The context the callback function is called (task, HWI, SWI)
+                                        *   is implementation-dependent.
+                                        */
+    SHA2_RETURN_BEHAVIOR_BLOCKING = 2, /*!< The function call will block while the SHA2 operation goes
+                                        *   on in the background. SHA2 operation results are available
+                                        *   after the function returns.
+                                        */
+    SHA2_RETURN_BEHAVIOR_POLLING  = 4, /*!< The function call will continuously poll a flag while the SHA2
+                                        *   operation goes on in the background. SHA2 operation results
+                                        *   are available after the function returns.
+                                        */
 } SHA2_ReturnBehavior;
-
 
 /*!
  *  @brief  Enum for the hash types supported by the driver.
  */
-typedef enum {
+typedef enum
+{
     SHA2_HASH_TYPE_224 = 0,
     SHA2_HASH_TYPE_256 = 1,
     SHA2_HASH_TYPE_384 = 2,
@@ -394,7 +395,8 @@ typedef enum {
 /*!
  *  @brief  Enum for the hash digest lengths in bytes supported by the driver.
  */
-typedef enum {
+typedef enum
+{
     SHA2_DIGEST_LENGTH_BYTES_224 = 28,
     SHA2_DIGEST_LENGTH_BYTES_256 = 32,
     SHA2_DIGEST_LENGTH_BYTES_384 = 48,
@@ -414,7 +416,8 @@ typedef enum {
  *  the segment lengths for all but the last segment
  *  must be multiples of the relevant block size.
  */
-typedef enum {
+typedef enum
+{
     SHA2_BLOCK_SIZE_BYTES_224 = 64,
     SHA2_BLOCK_SIZE_BYTES_256 = 64,
     SHA2_BLOCK_SIZE_BYTES_384 = 128,
@@ -432,18 +435,19 @@ typedef enum {
  *
  *  @sa     SHA2_init()
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } SHA2_Config;
 
 /*!
  *  @brief  A handle that is returned from an SHA2_open() call.
  */
-typedef SHA2_Config* SHA2_Handle;
+typedef SHA2_Config *SHA2_Handle;
 
 /*!
  *  @brief  The definition of a callback function used by the SHA2 driver
@@ -455,7 +459,7 @@ typedef SHA2_Config* SHA2_Handle;
  *                       Informs the application of why the callback function was
  *                       called.
  */
-typedef void (*SHA2_CallbackFxn) (SHA2_Handle handle, int_fast16_t returnStatus);
+typedef void (*SHA2_CallbackFxn)(SHA2_Handle handle, int_fast16_t returnStatus);
 
 /*!
  *  @brief  SHA2 Parameters
@@ -465,15 +469,16 @@ typedef void (*SHA2_CallbackFxn) (SHA2_Handle handle, int_fast16_t returnStatus)
  *
  *  @sa     SHA2_Params_init()
  */
-typedef struct {
-    SHA2_HashType           hashType;                   /*!< SHA2 variant to use. This determines the output digest
-                                                         *   length.
-                                                         */
-    SHA2_ReturnBehavior     returnBehavior;             /*!< Blocking, callback, or polling return behavior */
-    SHA2_CallbackFxn        callbackFxn;                /*!< Callback function pointer */
-    uint32_t                timeout;                    /*!< Timeout before the driver returns an error in
-                                                         *   ::SHA2_RETURN_BEHAVIOR_BLOCKING
-                                                         */
+typedef struct
+{
+    SHA2_HashType hashType;             /*!< SHA2 variant to use. This determines the output digest
+                                         *   length.
+                                         */
+    SHA2_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    SHA2_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                   /*!< Timeout before the driver returns an error in
+                                         *   ::SHA2_RETURN_BEHAVIOR_BLOCKING
+                                         */
 } SHA2_Params;
 
 /*!
@@ -614,7 +619,7 @@ int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key);
  *
  *  @sa     #SHA2_open(), #SHA2_reset(), #SHA2_finalize()
  */
-int_fast16_t SHA2_addData(SHA2_Handle handle, const void* data, size_t length);
+int_fast16_t SHA2_addData(SHA2_Handle handle, const void *data, size_t length);
 
 /*!
  *  @brief  Finishes a hash operation and writes the result to \a digest.
@@ -702,10 +707,7 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac);
  *
  *  @sa     #SHA2_open()
  */
-int_fast16_t SHA2_hashData(SHA2_Handle handle,
-                           const void* data,
-                           size_t dataLength,
-                           void *digest);
+int_fast16_t SHA2_hashData(SHA2_Handle handle, const void *data, size_t dataLength, void *digest);
 
 /*!
  *  @brief  Creates a keyed hash of @c data with @c key.
@@ -743,11 +745,7 @@ int_fast16_t SHA2_hashData(SHA2_Handle handle,
  *
  *  @sa     #SHA2_open()
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle,
-                       CryptoKey *key,
-                       const void *data,
-                       size_t dataLength,
-                       void *hmac);
+int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t dataLength, void *hmac);
 
 /*!
  *  @brief Clears internal buffers and aborts an ongoing SHA2 operation.

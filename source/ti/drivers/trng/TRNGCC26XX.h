@@ -88,13 +88,13 @@ extern "C" {
 #endif
 
 /*! @brief Minimum random samples for each entropy generation call */
-#define TRNGCC26XX_SAMPLES_PER_CYCLE_MIN        256
+#define TRNGCC26XX_SAMPLES_PER_CYCLE_MIN     256
 /*! @brief Default random samples for each entropy generation call
  *
  *  Set to generate 64 bits of randomness in 5ms with all FROs active. */
-#define TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT    240000
+#define TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT 240000
 /*! @brief Maximum random samples for each entropy generation call */
-#define TRNGCC26XX_SAMPLES_PER_CYCLE_MAX        16777216
+#define TRNGCC26XX_SAMPLES_PER_CYCLE_MAX     16777216
 
 /*! @brief Minimum number of bytes provided by the TRNG hardware in one go.
  *
@@ -104,8 +104,7 @@ extern "C" {
  *  back to the target buffer if the requested length is not
  *  a multiple of TRNGCC26XX_MIN_BYTES_PER_ITERATION.
  */
-#define TRNGCC26XX_MIN_BYTES_PER_ITERATION      (2 * sizeof(uint32_t))
-
+#define TRNGCC26XX_MIN_BYTES_PER_ITERATION (2 * sizeof(uint32_t))
 
 /*! @brief Default TRNGCC26XX entropy pool size in 64-bit elements
  *
@@ -116,7 +115,7 @@ extern "C" {
  *  recompiling the driver.
  */
 #ifndef TRNGCC26XX_ENTROPY_POOL_SIZE
-#define TRNGCC26XX_ENTROPY_POOL_SIZE (32 / sizeof(uint64_t))
+    #define TRNGCC26XX_ENTROPY_POOL_SIZE (32 / sizeof(uint64_t))
 #endif
 
 /*!
@@ -125,7 +124,8 @@ extern "C" {
  *  TRNG26X0 hardware attributes should be included in the board file
  *  and pointed to by the TRNG_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -136,21 +136,23 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
     /*! @brief TRNG SWI priority.
         The higher the number, the higher the priority.
         The minimum is 0 and the maximum is 15 by default.
-        The maximum can be reduced to save RAM by adding or modifying Swi.numPriorities in the kernel configuration file.
+        The maximum can be reduced to save RAM by adding or modifying Swi.numPriorities in the kernel configuration
+       file.
     */
-    uint32_t   swiPriority;
+    uint32_t swiPriority;
     /*! @brief TRNG Maximum Samples per Cycle.
         Changes the maximum number of randomness samples in each entropy generation cycle before dump and interrupt.
         The minimum is 2^8 (256) and the maximum is 2^24 (16777216).
         The default is 240000 - enough to generate 64 bits of randomness at 5MHz.
     */
-    uint32_t   samplesPerCycle;
+    uint32_t samplesPerCycle;
 } TRNGCC26XX_HWAttrs;
 
 /*! \cond Internal APIs */
@@ -158,26 +160,27 @@ typedef struct {
 /*!
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    List_Elem                       listElement;        /* Must start with a List_Elem
-                                                         * to allow casting of List_Elem
-                                                         * pointer returned by List APIs
-                                                         * to TRNGCC26XX_Object pointers.
-                                                         */
-    TRNG_Handle                     handle;
-    TRNG_CryptoKeyCallbackFxn       cryptoKeyCallbackFxn;
-    TRNG_RandomBytesCallbackFxn     randomBytesCallbackFxn;
-    uint32_t                        samplesPerCycle;
-    CryptoKey                       *entropyKey;
-    uint8_t                         *entropyBuffer;
-    uint32_t                        semaphoreTimeout;
-    size_t                          entropyGenerated;
-    size_t                          entropyRequested;
-    int_fast16_t                    returnStatus;
-    TRNG_ReturnBehavior             returnBehavior;
-    bool                            isOpen;
-    bool                            isEnqueued;
-    SemaphoreP_Struct               operationSemaphore;
+typedef struct
+{
+    List_Elem listElement; /* Must start with a List_Elem
+                            * to allow casting of List_Elem
+                            * pointer returned by List APIs
+                            * to TRNGCC26XX_Object pointers.
+                            */
+    TRNG_Handle handle;
+    TRNG_CryptoKeyCallbackFxn cryptoKeyCallbackFxn;
+    TRNG_RandomBytesCallbackFxn randomBytesCallbackFxn;
+    uint32_t samplesPerCycle;
+    CryptoKey *entropyKey;
+    uint8_t *entropyBuffer;
+    uint32_t semaphoreTimeout;
+    size_t entropyGenerated;
+    size_t entropyRequested;
+    int_fast16_t returnStatus;
+    TRNG_ReturnBehavior returnBehavior;
+    bool isOpen;
+    bool isEnqueued;
+    SemaphoreP_Struct operationSemaphore;
 } TRNGCC26XX_Object;
 
 /*! \endcond */

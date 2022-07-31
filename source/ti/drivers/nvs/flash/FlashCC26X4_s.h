@@ -36,8 +36,8 @@
  *
  *  @anchor ti_drivers_nvs_FlashCC26X4_s_Overview
  *  # Overview
- *      The Secure Flash Service is used to access the flash driver when using 
- *      SPE configuration. 
+ *      The Secure Flash Service is used to access the flash driver when using
+ *      SPE configuration.
  *
  *******************************************************************************
  */
@@ -57,14 +57,14 @@ extern "C" {
  * message types >= 16 are reserved for
  * non-standard message types begin here
  */
-#define TI_SP_MSG_TYPE_USER                16
+#define TI_SP_MSG_TYPE_USER 16
 
-#define FLASH_SP_MSG_TYPE_PROTECTION_GET         TI_SP_MSG_TYPE_USER + 0
-#define FLASH_SP_MSG_TYPE_SECTOR_ERASE           TI_SP_MSG_TYPE_USER + 1
-#define FLASH_SP_MSG_TYPE_PROGRAM                TI_SP_MSG_TYPE_USER + 2
-#define FLASH_SP_MSG_TYPE_PROGRAM_4X             TI_SP_MSG_TYPE_USER + 3
-#define FLASH_SP_MSG_TYPE_SECTOR_SIZE_GET        TI_SP_MSG_TYPE_USER + 4
-#define FLASH_SP_MSG_TYPE_FLASH_SIZE_GET         TI_SP_MSG_TYPE_USER + 5
+#define FLASH_SP_MSG_TYPE_PROTECTION_GET  TI_SP_MSG_TYPE_USER + 0
+#define FLASH_SP_MSG_TYPE_SECTOR_ERASE    TI_SP_MSG_TYPE_USER + 1
+#define FLASH_SP_MSG_TYPE_PROGRAM         TI_SP_MSG_TYPE_USER + 2
+#define FLASH_SP_MSG_TYPE_PROGRAM_4X      TI_SP_MSG_TYPE_USER + 3
+#define FLASH_SP_MSG_TYPE_SECTOR_SIZE_GET TI_SP_MSG_TYPE_USER + 4
+#define FLASH_SP_MSG_TYPE_FLASH_SIZE_GET  TI_SP_MSG_TYPE_USER + 5
 
 struct FlashCC26X4_s_program
 {

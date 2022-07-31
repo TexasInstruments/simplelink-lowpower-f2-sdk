@@ -258,7 +258,7 @@ extern "C" {
  * #define TemperatureXYZ_STATUS_ERROR2    Temperature_STATUS_RESERVED - 2
  * @endcode
  */
-#define Temperature_STATUS_RESERVED        (-32)
+#define Temperature_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -266,7 +266,7 @@ extern "C" {
  * Functions return Temperature_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define Temperature_STATUS_SUCCESS         (0)
+#define Temperature_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
@@ -274,8 +274,7 @@ extern "C" {
  * Functions return Temperature_STATUS_ERROR if the function was not executed
  * successfully.
  */
-#define Temperature_STATUS_ERROR           (-1)
-
+#define Temperature_STATUS_ERROR (-1)
 
 /* @cond
  *
@@ -304,10 +303,10 @@ typedef struct Temperature_NotifyObj Temperature_NotifyObj;
  *                                          inputs from within the notification
  *                                          callback.
  */
-typedef void (*Temperature_NotifyFxn) (int16_t currentTemperature,
-                                       int16_t thresholdTemperature,
-                                       uintptr_t clientArg,
-                                       Temperature_NotifyObj *notifyObject);
+typedef void (*Temperature_NotifyFxn)(int16_t currentTemperature,
+                                      int16_t thresholdTemperature,
+                                      uintptr_t clientArg,
+                                      Temperature_NotifyObj *notifyObject);
 
 /*!
  *  @brief Temperature notify object structure.
@@ -318,15 +317,15 @@ typedef void (*Temperature_NotifyFxn) (int16_t currentTemperature,
  *  or #Temperature_registerNotifyRange() will take care initializing the
  *  internal elements appropriately.
  */
-struct Temperature_NotifyObj {
-    List_Elem link;                     /*!< For placing on the notify list */
-    Temperature_NotifyFxn notifyFxn;    /*!< Application callback function */
-    int16_t thresholdHigh;              /*!< High threshold in degrees C */
-    int16_t thresholdLow;               /*!< Low threshold in degrees C */
-    uintptr_t clientArg;                /*!< Application provided arg */
-    bool isRegistered;                  /*!< Is the notification active */
+struct Temperature_NotifyObj
+{
+    List_Elem link;                  /*!< For placing on the notify list */
+    Temperature_NotifyFxn notifyFxn; /*!< Application callback function */
+    int16_t thresholdHigh;           /*!< High threshold in degrees C */
+    int16_t thresholdLow;            /*!< Low threshold in degrees C */
+    uintptr_t clientArg;             /*!< Application provided arg */
+    bool isRegistered;               /*!< Is the notification active */
 };
-
 
 /*!
  *  @brief This function initializes the Temperature driver.
@@ -445,7 +444,6 @@ int_fast16_t Temperature_registerNotifyRange(Temperature_NotifyObj *notifyObject
                                              Temperature_NotifyFxn notifyFxn,
                                              uintptr_t clientArg);
 
-
 /*!
  *  @brief Unregisters a currently registered notification.
  *
@@ -514,9 +512,7 @@ int16_t Temperature_getThresholdLow(Temperature_NotifyObj *notifyObject);
  *
  *  @pre Register @c notifyObject with #Temperature_registerNotifyRange()
  */
-void Temperature_getThresholdRange(Temperature_NotifyObj *notifyObject,
-                                   int16_t *thresholdHigh,
-                                   int16_t *thresholdLow);
+void Temperature_getThresholdRange(Temperature_NotifyObj *notifyObject, int16_t *thresholdHigh, int16_t *thresholdLow);
 
 /*!
  *  @brief Get the application-provided clientArg of a notification.
@@ -541,7 +537,6 @@ uintptr_t Temperature_getClientArg(Temperature_NotifyObj *notifyObject);
  *       #Temperature_registerNotifyLow(), or #Temperature_registerNotifyRange()
  */
 Temperature_NotifyFxn Temperature_getNotifyFxn(Temperature_NotifyObj *notifyObject);
-
 
 #ifdef __cplusplus
 }

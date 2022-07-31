@@ -285,7 +285,6 @@
 extern "C" {
 #endif
 
-
 /*!
  * Common AESCTRDRBG status code reservation offset.
  * AESCTRDRBG driver implementations should offset status codes with
@@ -298,7 +297,7 @@ extern "C" {
  * #define AESCTRDRBGXYZ_STATUS_ERROR2    AESCTRDRBG_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCTRDRBG_STATUS_RESERVED        AES_STATUS_RESERVED
+#define AESCTRDRBG_STATUS_RESERVED AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -306,7 +305,7 @@ extern "C" {
  * Functions return #AESCTRDRBG_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCTRDRBG_STATUS_SUCCESS         AES_STATUS_SUCCESS
+#define AESCTRDRBG_STATUS_SUCCESS AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -314,7 +313,7 @@ extern "C" {
  * Functions return #AESCTRDRBG_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCTRDRBG_STATUS_ERROR           AES_STATUS_ERROR
+#define AESCTRDRBG_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -324,7 +323,7 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE  AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  * @brief   The AESCTRDRBG instance must be reseeded.
@@ -332,13 +331,13 @@ extern "C" {
  * An AESCTRDRBG instance may only service a limited number of bit
  * generation requests before reseeding with more entropy is required.
  */
-#define AESCTRDRBG_STATUS_RESEED_REQUIRED   (AES_STATUS_DRIVER_SPECIFIC_ERROR - 0)
+#define AESCTRDRBG_STATUS_RESEED_REQUIRED (AES_STATUS_DRIVER_SPECIFIC_ERROR - 0)
 
 /*!
  * @brief   The AESCTRDRBG instance is uninstantiated. Close and reopen
  *          the instance.
  */
-#define AESCTRDRBG_STATUS_UNINSTANTIATED    (AES_STATUS_DRIVER_SPECIFIC_ERROR - 1)
+#define AESCTRDRBG_STATUS_UNINSTANTIATED (AES_STATUS_DRIVER_SPECIFIC_ERROR - 1)
 
 /*!
  * @brief   The operation does not support non-word-aligned input and/or output.
@@ -347,7 +346,7 @@ extern "C" {
  * alignment of input/output data due to performance limitations of the
  * hardware.
  */
-#define AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED    (AES_STATUS_DRIVER_SPECIFIC_ERROR - 2)
+#define AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED (AES_STATUS_DRIVER_SPECIFIC_ERROR - 2)
 
 /*!
  * @brief   The AES block size in bytes.
@@ -357,7 +356,8 @@ extern "C" {
 /*!
  * @brief   Length in bytes of the internal AES key used by an instance
  */
-typedef enum {
+typedef enum
+{
     AESCTRDRBG_AES_KEY_LENGTH_128 = 16,
     AESCTRDRBG_AES_KEY_LENGTH_256 = 32,
 } AESCTRDRBG_AES_KEY_LENGTH;
@@ -365,7 +365,8 @@ typedef enum {
 /*!
  * @brief   Length in bytes of seed used to instantiate or reseed instance
  */
-typedef enum {
+typedef enum
+{
     AESCTRDRBG_SEED_LENGTH_AES_128 = AESCTRDRBG_AES_KEY_LENGTH_128 + AESCTRDRBG_AES_BLOCK_SIZE_BYTES,
     AESCTRDRBG_SEED_LENGTH_AES_256 = AESCTRDRBG_AES_KEY_LENGTH_256 + AESCTRDRBG_AES_BLOCK_SIZE_BYTES,
 } AESCTRDRBG_SEED_LENGTH;
@@ -390,7 +391,8 @@ typedef enum {
  * |#AESCTRDRBG_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     /*!< The function call will block while AESCTRDRBG operation goes
      *   on in the background. AESCTRDRBG operation results are available
      *   after the function returns.
@@ -429,37 +431,38 @@ typedef AESCTRDRBG_Config *AESCTRDRBG_Handle;
  *
  *  @sa     #AESCTRDRBG_Params_init()
  */
-typedef struct {
-    AESCTRDRBG_AES_KEY_LENGTH   keyLength;                      /*!< Length of the internal AES key
-                                                                 *   of the driver instance.
-                                                                 */
-    uint32_t                    reseedInterval;                 /*!< Number of random number generation
-                                                                 *   requests before the application is
-                                                                 *   required to reseed the driver.
-                                                                 */
-    const void                  *seed;                          /*!< Entropy used to seed the internal
-                                                                 *   state of the driver. Must be one of
-                                                                 *   #AESCTRDRBG_SEED_LENGTH long depending
-                                                                 *   on \c keyLength.
-                                                                 */
-    const void                  *personalizationData;           /*!< Optional non-secret personalization
-                                                                 *   data to mix into the driver's internal
-                                                                 *   state.
-                                                                 */
-    size_t                      personalizationDataLength;      /*!< Length of the optional
-                                                                 *   \c personalizationData. Must satisfy
-                                                                 *   0 <= \c personalizationDataLength <= seed length.
-                                                                 */
-    AESCTRDRBG_ReturnBehavior   returnBehavior;                 /*!< Return behavior of the driver instance.
-                                                                 *   #AESCTRDRBG_RETURN_BEHAVIOR_POLLING is
-                                                                 *   strongly recommended unless requests
-                                                                 *   for > 500 bytes with AES-256 or
-                                                                 *   1250 bytes for AES-128 will be common
-                                                                 *   use cases for this driver instance.
-                                                                 */
-    void                        *custom;                        /*!< Custom argument used by driver
-                                                                 *   implementation
-                                                                 */
+typedef struct
+{
+    AESCTRDRBG_AES_KEY_LENGTH keyLength;      /*!< Length of the internal AES key
+                                               *   of the driver instance.
+                                               */
+    uint32_t reseedInterval;                  /*!< Number of random number generation
+                                               *   requests before the application is
+                                               *   required to reseed the driver.
+                                               */
+    const void *seed;                         /*!< Entropy used to seed the internal
+                                               *   state of the driver. Must be one of
+                                               *   #AESCTRDRBG_SEED_LENGTH long depending
+                                               *   on \c keyLength.
+                                               */
+    const void *personalizationData;          /*!< Optional non-secret personalization
+                                               *   data to mix into the driver's internal
+                                               *   state.
+                                               */
+    size_t personalizationDataLength;         /*!< Length of the optional
+                                               *   \c personalizationData. Must satisfy
+                                               *   0 <= \c personalizationDataLength <= seed length.
+                                               */
+    AESCTRDRBG_ReturnBehavior returnBehavior; /*!< Return behavior of the driver instance.
+                                               *   #AESCTRDRBG_RETURN_BEHAVIOR_POLLING is
+                                               *   strongly recommended unless requests
+                                               *   for > 500 bytes with AES-256 or
+                                               *   1250 bytes for AES-128 will be common
+                                               *   use cases for this driver instance.
+                                               */
+    void *custom;                             /*!< Custom argument used by driver
+                                               *   implementation
+                                               */
 } AESCTRDRBG_Params;
 
 /*!
@@ -534,8 +537,10 @@ void AESCTRDRBG_close(AESCTRDRBG_Handle handle);
  *  @retval #AESCTRDRBG_STATUS_SUCCESS              Random bytes generated.
  *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Random bytes not generated.
- *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not generated.
- *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Random bytes not generated.
+ *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not
+ * generated.
+ *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed.
+ * Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomBytes key material must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomBytes);
@@ -557,8 +562,10 @@ int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomByte
  *  @retval #AESCTRDRBG_STATUS_SUCCESS              Key-material generated.
  *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error. Key-material not generated.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Key-material not generated.
- *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Key-material not generated.
- *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Key-material not generated.
+ *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Key-material not
+ * generated.
+ *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed.
+ * Key-material not generated.
  *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomKey key material must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomKey);
@@ -583,8 +590,10 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
  *  @retval #AESCTRDRBG_STATUS_SUCCESS              Random bytes generated.
  *  @retval #AESCTRDRBG_STATUS_ERROR                Generic driver error. Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE The required hardware was unavailable. Random bytes not generated.
- *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not generated.
- *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed. Random bytes not generated.
+ *  @retval #AESCTRDRBG_STATUS_RESEED_REQUIRED      Reseed counter >= reseed limit. Reseed required. Random bytes not
+ * generated.
+ *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED       DRBG uninstantiated. Close and reopen the instance with fresh seed.
+ * Random bytes not generated.
  *  @retval #AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED  Pointer to \c randomBytes array must be word-aligned.
  */
 int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomBytes, size_t randomBytesSize);
@@ -606,7 +615,8 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomByt
  *  @retval #AESCTRDRBG_STATUS_SUCCESS                  Reseed successful. Reseed counter reset.
  *  @retval #AESCTRDRBG_STATUS_ERROR                    Reseed not successful. Reseed counter not reset.
  *  @retval #AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE     The requires hardware was unavailable.
- *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED           DRBG uninstantiated. Close and reopen the instance with fresh seed.
+ *  @retval #AESCTRDRBG_STATUS_UNINSTANTIATED           DRBG uninstantiated. Close and reopen the instance with fresh
+ * seed.
  */
 int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
                                const void *seed,

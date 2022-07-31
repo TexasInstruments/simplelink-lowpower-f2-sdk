@@ -107,4 +107,73 @@
 #define OPENTHREAD_CONFIG_PLATFORM_RADIO_COEX_ENABLE 0
 #endif
 
+/**
+ * @def OPENTHREAD_CONFIG_PLATFORM_RADIO_SPINEL_RX_FRAME_BUFFER_SIZE
+ *
+ * Specifies the rx frame buffer size used by `SpinelInterface` in RCP host (posix) code. This is applicable/used when
+ * `RadioSpinel` platform is used.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_PLATFORM_RADIO_SPINEL_RX_FRAME_BUFFER_SIZE
+#define OPENTHREAD_CONFIG_PLATFORM_RADIO_SPINEL_RX_FRAME_BUFFER_SIZE 8192
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_SUPPORT
+ *
+ * Define to 1 if you want to enable proprietary radio support as defined by platform.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_SUPPORT
+#define OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_SUPPORT 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_PSA_ITS_NVM_OFFSET
+ *
+ * Default NVM offset while using key refs. Platforms can override this definition based on implementation
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_PSA_ITS_NVM_OFFSET
+#define OPENTHREAD_CONFIG_PSA_ITS_NVM_OFFSET 0x20000
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+ *
+ * Define to 1 if you want to enable key ref usage support as defined by platform.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+#define OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE 0
+#endif
+
+#if OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_SUPPORT
+#if (!defined(OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_PAGE) || \
+     !defined(OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MIN) ||  \
+     !defined(OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MAX) ||  \
+     !defined(OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MASK))
+#error "Proprietary radio support requires\
+ OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_PAGE,\
+ OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MIN,\
+ OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MAX and\
+ OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_MASK\
+ to be defined by Platform."
+#endif
+
+#if OPENTHREAD_CONFIG_PLATFORM_RADIO_PROPRIETARY_CHANNEL_PAGE > 31
+#error "Maximum Proprietary Channel Page value currently supported is 31."
+#endif
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT
+ *
+ * The Uncertainty of the scheduling CSL of transmission by the parent, in ±10 us units.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT
+#define OPENTHREAD_CONFIG_PLATFORM_CSL_UNCERT UINT8_MAX
+#endif
+
 #endif // CONFIG_PLATFORM_H_

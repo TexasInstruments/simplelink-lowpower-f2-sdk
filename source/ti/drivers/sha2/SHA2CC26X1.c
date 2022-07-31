@@ -52,19 +52,17 @@
 #define HMAC_IPAD_BYTE 0x36
 
 /* Forward declarations */
-static void SHA2CC26X1_xorBufferWithByte(uint8_t *buffer,
-                                         size_t bufferLength,
-                                         uint8_t byte);
+static void SHA2CC26X1_xorBufferWithByte(uint8_t *buffer, size_t bufferLength, uint8_t byte);
 
 /*
  *  ======== SHA2CC26X1_xorBufferWithByte ========
  */
-static void SHA2CC26X1_xorBufferWithByte(uint8_t *buffer,
-                                         size_t bufferLength,
-                                         uint8_t byte) {
+static void SHA2CC26X1_xorBufferWithByte(uint8_t *buffer, size_t bufferLength, uint8_t byte)
+{
     size_t i;
 
-    for (i = 0; i < bufferLength; i++) {
+    for (i = 0; i < bufferLength; i++)
+    {
         buffer[i] = buffer[i] ^ byte;
     }
 }
@@ -72,23 +70,25 @@ static void SHA2CC26X1_xorBufferWithByte(uint8_t *buffer,
 /*
  *  ======== SHA2_init ========
  */
-void SHA2_init(void) {
-}
+void SHA2_init(void)
+{}
 
 /*
  *  ======== SHA2_construct ========
  */
-SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params) {
-    SHA2_Handle                 handle;
-    SHA2CC26X1_Object           *object;
-    uint_fast8_t                key;
+SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params)
+{
+    SHA2_Handle handle;
+    SHA2CC26X1_Object *object;
+    uint_fast8_t key;
 
-    handle = (SHA2_Config*)config;
+    handle = (SHA2_Config *)config;
     object = handle->object;
 
     key = HwiP_disable();
 
-    if (object->isOpen) {
+    if (object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
@@ -97,20 +97,22 @@ SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params) {
 
     HwiP_restore(key);
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &SHA2_defaultParams;
     }
 
     /* This implementation only supports SHA256 */
-    if (params->hashType != SHA2_HASH_TYPE_256) {
+    if (params->hashType != SHA2_HASH_TYPE_256)
+    {
 
         object->isOpen = false;
 
         return NULL;
     }
 
-    object->returnBehavior  = params->returnBehavior;
-    object->callbackFxn     = params->callbackFxn;
+    object->returnBehavior = params->returnBehavior;
+    object->callbackFxn    = params->callbackFxn;
 
     return handle;
 }
@@ -118,7 +120,8 @@ SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params) {
 /*
  *  ======== SHA2_close ========
  */
-void SHA2_close(SHA2_Handle handle) {
+void SHA2_close(SHA2_Handle handle)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
     /* If there is still an operation ongoing, abort it now. */
@@ -128,13 +131,13 @@ void SHA2_close(SHA2_Handle handle) {
 /*
  *  ======== SHA2CC26X1_addData ========
  */
-int_fast16_t SHA2CC26X1_addData(SHA2_Handle handle,
-                                const void* data,
-                                size_t length) {
+int_fast16_t SHA2CC26X1_addData(SHA2_Handle handle, const void *data, size_t length)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
     uint8_t status;
 
-    if (object->workzone.textLen[0] == 0) {
+    if (object->workzone.textLen[0] == 0)
+    {
         SHA256_init(&object->workzone);
     }
 
@@ -146,27 +149,30 @@ int_fast16_t SHA2CC26X1_addData(SHA2_Handle handle,
 /*
  *  ======== SHA2_addData ========
  */
-int_fast16_t SHA2_addData(SHA2_Handle handle, const void* data, size_t length) {
+int_fast16_t SHA2_addData(SHA2_Handle handle, const void *data, size_t length)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
     int_fast16_t returnStatus = SHA2CC26X1_addData(handle, data, length);
 
     /* If the application uses callback return behaviour, emulate it */
-    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) {
+    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK)
+    {
         object->callbackFxn(handle, returnStatus);
 
         return SHA2_STATUS_SUCCESS;
     }
-    else {
+    else
+    {
         return returnStatus;
     }
 }
 
-
 /*
  *  ======== SHA2CC26X1_finalize ========
  */
-int_fast16_t SHA2CC26X1_finalize(SHA2_Handle handle, void *digest) {
+int_fast16_t SHA2CC26X1_finalize(SHA2_Handle handle, void *digest)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
     uint8_t status;
 
@@ -178,22 +184,24 @@ int_fast16_t SHA2CC26X1_finalize(SHA2_Handle handle, void *digest) {
     return (status == SHA256_SUCCESS) ? SHA2_STATUS_SUCCESS : SHA2_STATUS_ERROR;
 }
 
-
 /*
  *  ======== SHA2_finalize ========
  */
-int_fast16_t SHA2_finalize(SHA2_Handle handle, void *digest) {
+int_fast16_t SHA2_finalize(SHA2_Handle handle, void *digest)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
-    int_fast16_t returnStatus =SHA2CC26X1_finalize(handle, digest);
+    int_fast16_t returnStatus = SHA2CC26X1_finalize(handle, digest);
 
     /* If the application uses callback return behaviour, emulate it */
-    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) {
+    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK)
+    {
         object->callbackFxn(handle, returnStatus);
 
         return SHA2_STATUS_SUCCESS;
     }
-    else {
+    else
+    {
         return returnStatus;
     }
 }
@@ -201,10 +209,8 @@ int_fast16_t SHA2_finalize(SHA2_Handle handle, void *digest) {
 /*
  *  ======== SHA2CC26X1_hashData ========
  */
-int_fast16_t SHA2CC26X1_hashData(SHA2_Handle handle,
-                           const void *data,
-                           size_t length,
-                           void *digest) {
+int_fast16_t SHA2CC26X1_hashData(SHA2_Handle handle, const void *data, size_t length, void *digest)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
     uint8_t status;
 
@@ -213,30 +219,26 @@ int_fast16_t SHA2CC26X1_hashData(SHA2_Handle handle,
     status = SHA256_full(&object->workzone, digest, (uint8_t *)data, length);
 
     return (status == SHA256_SUCCESS) ? SHA2_STATUS_SUCCESS : SHA2_STATUS_ERROR;
-
 }
 
 /*
  *  ======== SHA2_hashData ========
  */
-int_fast16_t SHA2_hashData(SHA2_Handle handle,
-                           const void *data,
-                           size_t length,
-                           void *digest) {
+int_fast16_t SHA2_hashData(SHA2_Handle handle, const void *data, size_t length, void *digest)
+{
     SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
-    int_fast16_t returnStatus = SHA2CC26X1_hashData(handle,
-                                                    data,
-                                                    length,
-                                                    digest);
+    int_fast16_t returnStatus = SHA2CC26X1_hashData(handle, data, length, digest);
 
     /* If the application uses callback return behaviour, emulate it */
-    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) {
+    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK)
+    {
         object->callbackFxn(handle, returnStatus);
 
         return SHA2_STATUS_SUCCESS;
     }
-    else {
+    else
+    {
         return returnStatus;
     }
 }
@@ -266,9 +268,10 @@ int_fast16_t SHA2_hashData(SHA2_Handle handle,
  *      - The intermediate output is saved by the SHA2 driver as usual in
  *        SHA2CC26X1_Object.workzone.state
  */
-int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key) {
+int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key)
+{
     uint8_t xorBuffer[SHA2_BLOCK_SIZE_BYTES_256];
-    SHA2CC26X1_Object *object = (SHA2CC26X1_Object*)handle->object;
+    SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
     size_t keyLength          = key->u.plaintext.keyLength;
     uint8_t *keyingMaterial   = key->u.plaintext.keyMaterial;
 
@@ -283,30 +286,25 @@ int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key) {
      * We filled the entire buffer with 0x00, we do not need to pad to the block
      * size.
      */
-    if (keyLength <= SHA2_BLOCK_SIZE_BYTES_256) {
+    if (keyLength <= SHA2_BLOCK_SIZE_BYTES_256)
+    {
         memcpy(xorBuffer, keyingMaterial, keyLength);
     }
-    else {
-        SHA2CC26X1_hashData(handle,
-                            keyingMaterial,
-                            keyLength,
-                            xorBuffer);
+    else
+    {
+        SHA2CC26X1_hashData(handle, keyingMaterial, keyLength, xorBuffer);
     }
 
     SHA256_init(&object->workzone);
 
     /* Compute k0 ^ opad */
-    SHA2CC26X1_xorBufferWithByte(xorBuffer,
-                                 SHA2_BLOCK_SIZE_BYTES_256,
-                                 HMAC_OPAD_BYTE);
+    SHA2CC26X1_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_OPAD_BYTE);
 
     /* Start a hash of k0 ^ opad.
      * The intermediate result will be stored in the object for later
      * use when the application calls SHA2_addData on its actual message.
      */
-    SHA2CC26X1_addData(handle,
-                       xorBuffer,
-                       SHA2_BLOCK_SIZE_BYTES_256);
+    SHA2CC26X1_addData(handle, xorBuffer, SHA2_BLOCK_SIZE_BYTES_256);
 
     /* Copy the intermediate state of H(k0 ^ opad) */
     memcpy(object->hmacDigest, object->workzone.state, SHA2_DIGEST_LENGTH_BYTES_256);
@@ -314,14 +312,10 @@ int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key) {
     /* Undo k0 ^ opad to reconstruct k0. Use the memory of k0 instead
      * of allocating a new copy on the stack to save RAM.
      */
-    SHA2CC26X1_xorBufferWithByte(xorBuffer,
-                                 SHA2_BLOCK_SIZE_BYTES_256,
-                                 HMAC_OPAD_BYTE);
+    SHA2CC26X1_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_OPAD_BYTE);
 
     /* Compute k0 ^ ipad. */
-    SHA2CC26X1_xorBufferWithByte(xorBuffer,
-                                 SHA2_BLOCK_SIZE_BYTES_256,
-                                 HMAC_IPAD_BYTE);
+    SHA2CC26X1_xorBufferWithByte(xorBuffer, SHA2_BLOCK_SIZE_BYTES_256, HMAC_IPAD_BYTE);
 
     /* Reset workzone to prepare to start a new hash */
     SHA256_init(&object->workzone);
@@ -329,9 +323,7 @@ int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key) {
     /* Start a hash of k0 ^ ipad.
      * Use top-level fxn to invoke callback if needed
      */
-    SHA2CC26X1_addData(handle,
-                       xorBuffer,
-                       SHA2_BLOCK_SIZE_BYTES_256);
+    SHA2CC26X1_addData(handle, xorBuffer, SHA2_BLOCK_SIZE_BYTES_256);
 
     return SHA2_STATUS_SUCCESS;
 }
@@ -342,12 +334,14 @@ int_fast16_t SHA2CC26X1_setupHmac(SHA2_Handle handle, CryptoKey *key) {
  *  avoid invoking the callback multiple times during compound operations such
  *  as SHA2_hmac()
  */
-int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key) {
-    SHA2CC26X1_Object *object = (SHA2CC26X1_Object*)handle->object;
+int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key)
+{
+    SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
     int_fast16_t returnStatus = SHA2CC26X1_setupHmac(handle, key);
 
-    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) {
+    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK)
+    {
         /* Call the callback function provided by the application. */
         object->callbackFxn(handle, SHA2_STATUS_SUCCESS);
     }
@@ -366,31 +360,27 @@ int_fast16_t SHA2_setupHmac(SHA2_Handle handle, CryptoKey *key) {
  *    includes k0 ^ opad.
  *  - It finalizes H(k0 ^ opad || H((k0 ^ ipad) || data))
  */
-int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac) {
-    SHA2CC26X1_Object *object = (SHA2CC26X1_Object*)handle->object;
+int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac)
+{
+    SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
     uint8_t tmpDigest[SHA2_DIGEST_LENGTH_BYTES_256];
 
     /* Finalize H((k0 ^ ipad) || data) */
     SHA2CC26X1_finalize(handle, tmpDigest);
 
-    memcpy(object->workzone.state,
-           object->hmacDigest,
-           SHA2_DIGEST_LENGTH_BYTES_256);
+    memcpy(object->workzone.state, object->hmacDigest, SHA2_DIGEST_LENGTH_BYTES_256);
 
     /* We already processed one block of input earlier */
     object->workzone.textLen[0] = SHA2_BLOCK_SIZE_BYTES_256;
 
     /* Add the temporary digest computed earlier to the current digest */
-    SHA2CC26X1_addData(handle,
-                       tmpDigest,
-                       SHA2_DIGEST_LENGTH_BYTES_256);
+    SHA2CC26X1_addData(handle, tmpDigest, SHA2_DIGEST_LENGTH_BYTES_256);
 
     /* Finalize H(k0 ^ opad || H((k0 ^ ipad) || data)) */
     SHA2_finalize(handle, hmac);
 
     return SHA2_STATUS_SUCCESS;
 }
-
 
 /*
  *  ======== SHA2_hmac ========
@@ -400,11 +390,8 @@ int_fast16_t SHA2_finalizeHmac(SHA2_Handle handle, void *hmac) {
  *  to concatenate intermediate results and the message, this function is not
  *  actually faster than an application using the segmented APIs.
  */
-int_fast16_t SHA2_hmac(SHA2_Handle handle,
-                       CryptoKey *key,
-                       const void* data,
-                       size_t size,
-                       void *hmac) {
+int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, size_t size, void *hmac)
+{
     SHA2CC26X1_setupHmac(handle, key);
 
     /* Add the input message to the hash */
@@ -418,7 +405,7 @@ int_fast16_t SHA2_hmac(SHA2_Handle handle,
  */
 void SHA2_reset(SHA2_Handle handle)
 {
-    SHA2CC26X1_Object *object = (SHA2CC26X1_Object*)handle->object;
+    SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
     SHA256_init(&object->workzone);
 }
@@ -426,20 +413,23 @@ void SHA2_reset(SHA2_Handle handle)
 /*
  *  ======== SHA2_cancelOperation ========
  */
-int_fast16_t SHA2_cancelOperation(SHA2_Handle handle) {
-    SHA2CC26X1_Object *object = (SHA2CC26X1_Object*)handle->object;
+int_fast16_t SHA2_cancelOperation(SHA2_Handle handle)
+{
+    SHA2CC26X1_Object *object = (SHA2CC26X1_Object *)handle->object;
 
-    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) {
+    if (object->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK)
+    {
         /* Call the callback function provided by the application. */
         object->callbackFxn(handle, SHA2_STATUS_CANCELED);
     }
-	
-	SHA256_init(&object->workzone);
+
+    SHA256_init(&object->workzone);
 
     return SHA2_STATUS_SUCCESS;
 }
 
-int_fast16_t SHA2_setHashType(SHA2_Handle handle, SHA2_HashType type) {
+int_fast16_t SHA2_setHashType(SHA2_Handle handle, SHA2_HashType type)
+{
     /* We only support SHA256. Trying to switch to any other hash type returns
      * an error.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,6 @@
 #ifndef ti_drivers_i2s_PDMCC26XX_I2S__include
 #define ti_drivers_i2s_PDMCC26XX_I2S__include
 
-#include <ti/drivers/pin/PINCC26XX.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
@@ -76,28 +75,28 @@ extern "C" {
 /*!
  *  At least three elements must exist for good flow in driver
  */
-#define PDMCC26XX_I2S_MIN_ALLOWED_QUEUE_SIZE        3
+#define PDMCC26XX_I2S_MIN_ALLOWED_QUEUE_SIZE 3
 
 /*!
  *  PDM block overhead size in number of bytes --> sizeof(PDMCC26XX_I2S_QueueNode)
  */
 #ifdef I2S_DEBUG
-#define I2S_BLOCK_OVERHEAD_IN_BYTES             16
-#else //I2S_DEBUG
-#define I2S_BLOCK_OVERHEAD_IN_BYTES             12
-#endif //I2S_DEBUG
+    #define I2S_BLOCK_OVERHEAD_IN_BYTES 16
+#else // I2S_DEBUG
+    #define I2S_BLOCK_OVERHEAD_IN_BYTES 12
+#endif // I2S_DEBUG
 
 /*! Return code when PDMCC26XX_I2S_control() was successful. */
-#define PDMCC26XX_I2S_CMD_SUCCESS              0
+#define PDMCC26XX_I2S_CMD_SUCCESS    0
 /*! Return code when a I2S command or function is undefined/not-implemented. */
-#define PDMCC26XX_I2S_CMD_UNDEFINED            -1
+#define PDMCC26XX_I2S_CMD_UNDEFINED  -1
 /*! Return code when PDMCC26XX_I2S_control() was unsuccessful. */
-#define PDMCC26XX_I2S_CMD_NO_SUCCESS           -2
+#define PDMCC26XX_I2S_CMD_NO_SUCCESS -2
 
 /*! Generic macro for disabled */
-#define PDMCC26XX_I2S_GENERIC_DISABLED              0
+#define PDMCC26XX_I2S_GENERIC_DISABLED 0
 /*! Generic macro for enabled */
-#define PDMCC26XX_I2S_GENERIC_ENABLED               1
+#define PDMCC26XX_I2S_GENERIC_ENABLED  1
 
 /*!
  *  @brief
@@ -119,12 +118,13 @@ typedef void (*PDMCC26XX_I2S_FreeFxn)(void *ptr, size_t memSize);
  *  The PDMCC26XX_I2S_Config structure contains a set of pointers used to characterize
  *  the PDMCC26XX_I2S driver implementation.
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void                        *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void                const   *hwAttrs;
+    void const *hwAttrs;
 } PDMCC26XX_I2S_Config;
 
 /*!
@@ -135,47 +135,49 @@ typedef PDMCC26XX_I2S_Config *PDMCC26XX_I2S_Handle;
 /*!
  *  @brief      Status codes that are set by the I2S driver.
  */
-typedef enum {
-    PDMCC26XX_I2S_STREAM_IDLE = 0,          /*!< Idle mode. Stream not started */
-    PDMCC26XX_I2S_STREAM_STARTED,           /*!< Stream started, no buffer yet available */
-    PDMCC26XX_I2S_STREAM_CANCELED,          /*!< Unused state. */
-    PDMCC26XX_I2S_STREAM_FAILED,            /*!< PDMCC26XX_I2S_startStream() called while stream
-                                             * is already running
-                                             */
-    PDMCC26XX_I2S_STREAM_ERROR,             /*!< No pointer available when one was expected,
-                                             * meaning the driver failed to provide new
-                                             * pointer and PDMCC26XX_I2S_stopStream() was not
-                                             * called
-                                             */
-    PDMCC26XX_I2S_STREAM_BUFFER_READY,      /*!< Buffer ready, either IN or OUT or
-                                             * both, whichever are expected
-                                             */
-    PDMCC26XX_I2S_STREAM_BUFFER_DROPPED,    /*!< A new buffer is ready but the old ones were not
-                                             * processed in time. The oldest buffer was dropped
-                                             * to provide space for newer data.
-                                             */
-    PDMCC26XX_I2S_STREAM_STOPPING,          /*!< PDMCC26XX_I2S_stopStream() is called, a
-                                             * graceful shutdown procedure is started
-                                             */
-    PDMCC26XX_I2S_STREAM_STOPPED,           /*!< Driver transitioned from Stopping to
-                                             * Stopped state during graceful shutdown. Now
-                                             * a pointer error is expected, and upon it a
-                                             * semaphore is set allowing
-                                             * PDMCC26XX_I2S_stopStream() to return
-                                             */
-    PDMCC26XX_I2S_STREAM_FAILED_TO_STOP     /*!< PDMCC26XX_I2S_stopStream() was called,
-                                             * but driver timed out trying to gracefully
-                                             * shutdown
-                                             */
+typedef enum
+{
+    PDMCC26XX_I2S_STREAM_IDLE = 0,       /*!< Idle mode. Stream not started */
+    PDMCC26XX_I2S_STREAM_STARTED,        /*!< Stream started, no buffer yet available */
+    PDMCC26XX_I2S_STREAM_CANCELED,       /*!< Unused state. */
+    PDMCC26XX_I2S_STREAM_FAILED,         /*!< PDMCC26XX_I2S_startStream() called while stream
+                                          * is already running
+                                          */
+    PDMCC26XX_I2S_STREAM_ERROR,          /*!< No pointer available when one was expected,
+                                          * meaning the driver failed to provide new
+                                          * pointer and PDMCC26XX_I2S_stopStream() was not
+                                          * called
+                                          */
+    PDMCC26XX_I2S_STREAM_BUFFER_READY,   /*!< Buffer ready, either IN or OUT or
+                                          * both, whichever are expected
+                                          */
+    PDMCC26XX_I2S_STREAM_BUFFER_DROPPED, /*!< A new buffer is ready but the old ones were not
+                                          * processed in time. The oldest buffer was dropped
+                                          * to provide space for newer data.
+                                          */
+    PDMCC26XX_I2S_STREAM_STOPPING,       /*!< PDMCC26XX_I2S_stopStream() is called, a
+                                          * graceful shutdown procedure is started
+                                          */
+    PDMCC26XX_I2S_STREAM_STOPPED,        /*!< Driver transitioned from Stopping to
+                                          * Stopped state during graceful shutdown. Now
+                                          * a pointer error is expected, and upon it a
+                                          * semaphore is set allowing
+                                          * PDMCC26XX_I2S_stopStream() to return
+                                          */
+    PDMCC26XX_I2S_STREAM_FAILED_TO_STOP  /*!< PDMCC26XX_I2S_stopStream() was called,
+                                          * but driver timed out trying to gracefully
+                                          * shutdown
+                                          */
 } PDMCC26XX_I2S_Status;
 
 /*!
  *  @brief
  *  Definitions for various PDMCC26XX_I2S modes of operation.
  */
-typedef enum {
-    PDMCC26XX_I2S_PDM       = 0,    /*!< PDMCC26XX_I2S in PDM microphone mode */
-    PDMCC26XX_I2S_I2S       = 1     /*!< PDMCC26XX_I2S in I2S mode */
+typedef enum
+{
+    PDMCC26XX_I2S_PDM = 0, /*!< PDMCC26XX_I2S in PDM microphone mode */
+    PDMCC26XX_I2S_I2S = 1  /*!< PDMCC26XX_I2S in I2S mode */
 } PDMCC26XX_I2S_Mode;
 
 /*!
@@ -186,7 +188,7 @@ typedef enum {
  *  For the driverlib which runs a modulo on the word period we can
  *  set the modulo to 0xFFFF to avoid issues with division by zero.
  */
-#define PDMCC26XX_I2S_DEFAULT_SAMPLE_STAMP_MOD      0x0000FFFF
+#define PDMCC26XX_I2S_DEFAULT_SAMPLE_STAMP_MOD 0x0000FFFF
 
 /*!
  *  Definitions for different I2S Word Clock phase settings.
@@ -201,15 +203,15 @@ typedef enum {
  *  PDMCC26XX_I2S_WordClockPhase_Dual               | 1     |
  *  PDMCC26XX_I2S_WordClockPhase_UserDefined        | 2     |
  */
-#define PDMCC26XX_I2S_WordClockPhase_Single         0
+#define PDMCC26XX_I2S_WordClockPhase_Single      0
 /*!
  *  \sa PDMCC26XX_I2S_WordClockPhase_Single
  */
-#define PDMCC26XX_I2S_WordClockPhase_Dual           1
+#define PDMCC26XX_I2S_WordClockPhase_Dual        1
 /*!
  *  \sa PDMCC26XX_I2S_WordClockPhase_Single
  */
-#define PDMCC26XX_I2S_WordClockPhase_UserDefined    2
+#define PDMCC26XX_I2S_WordClockPhase_UserDefined 2
 
 /*!
  *  Definitions to set sample edge
@@ -219,11 +221,11 @@ typedef enum {
  *  PDMCC26XX_I2S_SampleEdge_Negative       | 0     |
  *  PDMCC26XX_I2S_SampleEdge_Postive        | 1     |
  */
-#define PDMCC26XX_I2S_SampleEdge_Negative   0
+#define PDMCC26XX_I2S_SampleEdge_Negative 0
 /*!
  *  \sa PDMCC26XX_I2S_SampleEdge_Negative
  */
-#define PDMCC26XX_I2S_SampleEdge_Postive    1
+#define PDMCC26XX_I2S_SampleEdge_Postive  1
 
 /*!
  *  Definitions different I2S Word Clock source settings.
@@ -233,11 +235,11 @@ typedef enum {
  *  PDMCC26XX_I2S_WordClockSource_Ext       | 0     |
  *  PDMCC26XX_I2S_WordClockSource_Int       | 1     |
  */
-#define PDMCC26XX_I2S_WordClockSource_Ext       1
+#define PDMCC26XX_I2S_WordClockSource_Ext 1
 /*!
  *  \sa PDMCC26XX_I2S_WordClockSource_Ext
  */
-#define PDMCC26XX_I2S_WordClockSource_Int       2
+#define PDMCC26XX_I2S_WordClockSource_Int 2
 
 /*!
  *  Definitions different I2S Bit Clock source settings.
@@ -247,11 +249,11 @@ typedef enum {
  *  PDMCC26XX_I2S_BitClockSource_Ext        | 0     |
  *  PDMCC26XX_I2S_BitClockSource_Int        | 1     |
  */
-#define PDMCC26XX_I2S_BitClockSource_Ext       0
+#define PDMCC26XX_I2S_BitClockSource_Ext 0
 /*!
  *  \sa PDMCC26XX_I2S_BitClockSource_Ext
  */
-#define PDMCC26XX_I2S_BitClockSource_Int       1
+#define PDMCC26XX_I2S_BitClockSource_Int 1
 
 /*!
  *  Definitions to either invert I2S word or bit clock or not
@@ -261,11 +263,11 @@ typedef enum {
  *  PDMCC26XX_I2S_ClockSource_Normal        | 0     |
  *  PDMCC26XX_I2S_ClockSource_Inverted      | 1     |
  */
-#define PDMCC26XX_I2S_ClockSource_Normal    0
+#define PDMCC26XX_I2S_ClockSource_Normal   0
 /*!
  *  \sa PDMCC26XX_I2S_ClockSource_Normal
  */
-#define PDMCC26XX_I2S_ClockSource_Inverted  1
+#define PDMCC26XX_I2S_ClockSource_Inverted 1
 
 /*!
  *  PDMCC26XX_I2S Audio Data Pin Usage.
@@ -276,15 +278,15 @@ typedef enum {
  *  PDMCC26XX_I2S_ADUsageInput      | Input         |
  *  PDMCC26XX_I2S_ADUsageOutput     | Output        |
  */
-#define PDMCC26XX_I2S_ADUsageDisabled       0
+#define PDMCC26XX_I2S_ADUsageDisabled 0
 /*!
  *  \sa PDMCC26XX_I2S_ADUsageDisabled
  */
-#define PDMCC26XX_I2S_ADUsageInput          1
+#define PDMCC26XX_I2S_ADUsageInput    1
 /*!
  *  \sa PDMCC26XX_I2S_ADUsageDisabled
  */
-#define PDMCC26XX_I2S_ADUsageOutput         2
+#define PDMCC26XX_I2S_ADUsageOutput   2
 
 /*!
  *  PDMCC26XX_I2S Audio Channel Masks.
@@ -304,29 +306,29 @@ typedef enum {
  *  PDMCC26XX_I2S_DISABLED_MODE     | 0x00000000    | Use to disable                |
  *  PDMCC26XX_I2S_CHAN_CFG_MASK     | 0x000000FF    | Use to mask out invalid       |
  */
-#define PDMCC26XX_I2S_CHAN0_ACT           0x00000001
+#define PDMCC26XX_I2S_CHAN0_ACT     0x00000001
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN1_ACT           0x00000002
+#define PDMCC26XX_I2S_CHAN1_ACT     0x00000002
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN2_ACT           0x00000004
+#define PDMCC26XX_I2S_CHAN2_ACT     0x00000004
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN3_ACT           0x00000008
+#define PDMCC26XX_I2S_CHAN3_ACT     0x00000008
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN4_ACT           0x00000010
+#define PDMCC26XX_I2S_CHAN4_ACT     0x00000010
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN5_ACT           0x00000020
+#define PDMCC26XX_I2S_CHAN5_ACT     0x00000020
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN6_ACT           0x00000040
+#define PDMCC26XX_I2S_CHAN6_ACT     0x00000040
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN7_ACT           0x00000080
+#define PDMCC26XX_I2S_CHAN7_ACT     0x00000080
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_MONO_MODE           0x00000001
+#define PDMCC26XX_I2S_MONO_MODE     0x00000001
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_STEREO_MODE         0x00000003
+#define PDMCC26XX_I2S_STEREO_MODE   0x00000003
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_DISABLED_MODE       0x00000000
+#define PDMCC26XX_I2S_DISABLED_MODE 0x00000000
 /*! \sa PDMCC26XX_I2S_CHAN0_ACT */
-#define PDMCC26XX_I2S_CHAN_CFG_MASK       0x000000FF
+#define PDMCC26XX_I2S_CHAN_CFG_MASK 0x000000FF
 
 /*!
  *  PDMCC26XX_I2S data word length is used to determine how bits to transfer per word.
@@ -337,11 +339,11 @@ typedef enum {
  *  PDMCC26XX_I2S_WordLength16      | 16    | A typical transfer length is 16 bits  |
  *  PDMCC26XX_I2S_WordLengthMax     | 24    | Maximum transfer length is 24 bits    |
  */
-#define PDMCC26XX_I2S_WordLengthMin         8
+#define PDMCC26XX_I2S_WordLengthMin 8
 /*! \sa PDMCC26XX_I2S_WordLengthMin */
-#define PDMCC26XX_I2S_WordLength16          16
+#define PDMCC26XX_I2S_WordLength16  16
 /*! \sa PDMCC26XX_I2S_WordLengthMin */
-#define PDMCC26XX_I2S_WordLengthMax         24
+#define PDMCC26XX_I2S_WordLengthMax 24
 
 /*!
  *  PDMCC26XX_I2S Phase is set to select Dual or Single phase format
@@ -351,9 +353,9 @@ typedef enum {
  *  PDMCC26XX_I2S_SinglePhase       | 0     |
  *  PDMCC26XX_I2S_DualPhase         | 1     |
  */
-#define PDMCC26XX_I2S_SinglePhase           0
+#define PDMCC26XX_I2S_SinglePhase 0
 /*! \sa PDMCC26XX_I2S_SinglePhase */
-#define PDMCC26XX_I2S_DualPhase             1
+#define PDMCC26XX_I2S_DualPhase   1
 
 /*!
  *  PDMCC26XX_I2S Sample Edge is set to control what edge to sample and clock out
@@ -364,9 +366,9 @@ typedef enum {
  *  PDMCC26XX_I2S_NegativeEdge      | 0     |
  *  PDMCC26XX_I2S_PositiveEdge      | 1     |
  */
-#define PDMCC26XX_I2S_NegativeEdge          0
+#define PDMCC26XX_I2S_NegativeEdge 0
 /*! \sa PDMCC26XX_I2S_NegativeEdge */
-#define PDMCC26XX_I2S_PositiveEdge          1
+#define PDMCC26XX_I2S_PositiveEdge 1
 
 /*!
  *  PDMCC26XX_I2S data word size is used to determine how to configure the
@@ -380,9 +382,9 @@ typedef enum {
  *  PDMCC26XX_I2S_MemLen16bit: sample 16 bits per word
  *  PDMCC26XX_I2S_MemLen24bit: sample 24 bits per word
  */
-#define PDMCC26XX_I2S_MemLen16bit  0
+#define PDMCC26XX_I2S_MemLen16bit 0
 /*! \sa PDMCC26XX_I2S_MemLen16bit */
-#define PDMCC26XX_I2S_MemLen24bit  1
+#define PDMCC26XX_I2S_MemLen24bit 1
 
 /*!
  *  PDMCC26XX_I2S Data Delay, which translates into format (LJF, I2S/DSP, RJF).
@@ -402,13 +404,13 @@ typedef enum {
  *  PDMCC26XX_I2S_FormatRJFmin      | 2     | two periods data delay        |
  *  PDMCC26XX_I2S_FormatRJFmax      | 255   | 255 periods data delay        |
  */
-#define PDMCC26XX_I2S_FormatLJF                     0
+#define PDMCC26XX_I2S_FormatLJF       0
 /*! \sa PDMCC26XX_I2S_FormatLJF */
-#define PDMCC26XX_I2S_FormatI2SandDSP               1
+#define PDMCC26XX_I2S_FormatI2SandDSP 1
 /*! \sa PDMCC26XX_I2S_FormatLJF */
-#define PDMCC26XX_I2S_FormatRJFmin                  2
+#define PDMCC26XX_I2S_FormatRJFmin    2
 /*! \sa PDMCC26XX_I2S_FormatLJF */
-#define PDMCC26XX_I2S_FormatRJFmax                  255
+#define PDMCC26XX_I2S_FormatRJFmax    255
 
 /*! Number of samples (16 or 24 bits) per queue element buffer */
 typedef uint32_t PDMCC26XX_I2S_TransferSize;
@@ -437,23 +439,24 @@ typedef uint32_t PDMCC26XX_I2S_TransferSize;
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     /*! I2S Peripheral's interrupt vector */
-    uint8_t          intNum;
+    uint8_t intNum;
     /*! I2S Peripheral's interrupt priority */
-    uint8_t          intPriority;
+    uint8_t intPriority;
     /*! I2S Peripheral's power manager ID */
-    PowerCC26XX_Resource   powerMngrId;
+    PowerCC26XX_Resource powerMngrId;
     /*! I2S MCLK pin */
-    PIN_Id           mclkPin;
+    uint_least8_t mclkPin;
     /*! I2S BCLK pin */
-    PIN_Id           bclkPin;
+    uint_least8_t bclkPin;
     /*! I2S WCLK pin */
-    PIN_Id           wclkPin;
+    uint_least8_t wclkPin;
     /*! I2S AD0 pin */
-    PIN_Id           ad0Pin;
+    uint_least8_t ad0Pin;
     /*! I2S Peripheral's base address */
-    uint32_t         baseAddr;
+    uint32_t baseAddr;
 } PDMCC26XX_I2S_HWAttrs;
 
 /*!
@@ -476,27 +479,29 @@ typedef struct {
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     /*! I2S Word Clock divider override */
-    uint16_t    wclkDiv;
+    uint16_t wclkDiv;
     /*! I2S Sample Edge.
      *   0 - data and WCLK are sampled on the negative edge and clocked out on the positive edge.
      *   1 - data and WCLK are sampled on the positive edge and clocked out on the negative edge */
-    uint16_t    sampleOnPositiveEdge:1;
-    /*! I2S Word Clock Phase(PDMCC26XX_I2S_WordClockPhase_Dual, PDMCC26XX_I2S_WordClockPhase_Single or PDMCC26XX_I2S_WordClockPhase_UserDefined) */
-    uint16_t    wclkPhase:2;
+    uint16_t sampleOnPositiveEdge:1;
+    /*! I2S Word Clock Phase(PDMCC26XX_I2S_WordClockPhase_Dual, PDMCC26XX_I2S_WordClockPhase_Single or
+     * PDMCC26XX_I2S_WordClockPhase_UserDefined) */
+    uint16_t wclkPhase:2;
     /*! I2S Invert Word Clock (PDMCC26XX_I2S_ClockSource_Inverted or PDMCC26XX_I2S_ClockSource_Normal) */
-    uint16_t    wclkInverted:1;
+    uint16_t wclkInverted:1;
     /*! I2S Word Clock source (PDMCC26XX_I2S_WordClockSource_Ext or PDMCC26XX_I2S_WordClockSource_Int) */
-    uint16_t    wclkSource:2;
+    uint16_t wclkSource:2;
     /*! I2S Bit Clock divider override */
-    uint16_t    bclkDiv:10;
+    uint16_t bclkDiv:10;
     /*! Reserved bit field */
-    uint16_t    reserved:5;
+    uint16_t reserved:5;
     /*! I2S Bit Clock source (PDMCC26XX_I2S_BitClockSource_Ext or PDMCC26XX_I2S_BitClockSource_Int) */
-    uint16_t    bclkSource:1;
+    uint16_t bclkSource:1;
     /*! I2S Master Clock divider override */
-    uint16_t    mclkDiv:10;
+    uint16_t mclkDiv:10;
 } PDMCC26XX_I2S_AudioClockConfig;
 
 /*!
@@ -520,42 +525,45 @@ typedef struct {
  *  };
  *  @endcode
  */
-typedef union PDMCC26XX_I2S_AudioPinConfig {
-  /*! Can be used to set pin configurations in DriverLib*/
-  struct {
-    /*! Field that can be used to set pin configuration in DriverLib */
-    uint16_t    ad1;
-    /*! Field that can be used to set pin configuration in DriverLib */
-    uint16_t    ad0;
-  } driverLibParams;
-  /*! Used to configure various aspects of the I2S hardware during initialisation */
-  struct {
-    /*! I2S AD1 usage (0: Disabled, 1: Input, 2: Output) */
-    uint8_t     ad1Usage:2;
-    /*! I2S Enable Master clock output on pin (0: Disabled, 1: Enabled) */
-    uint8_t     enableMclkPin:1;
-    /*! Reserved bit field */
-    uint8_t     reserved:1;
-    /*! I2S AD1 number of channels (1 - 8). !Must match channel mask */
-    uint8_t     ad1NumOfChannels:4;
-    /*! I2S AD1 Channel Mask bitwise 0:Disabled, 1:Enabled) E.g. Mono: 0x01, Stereo: 0x03 */
-    uint8_t     ad1ChannelMask;
-    /*! I2S AD0 usage (0: Disabled, 1: Input, 2: Output) */
-    uint8_t     ad0Usage:2;
-    /*! I2S Enable Word clock output on pin (0: Disabled, 1: Enabled) */
-    uint8_t     enableWclkPin:1;
-    /*! I2S Enable Bit clock output on pin (0: Disabled, 1: Enabled) */
-    uint8_t     enableBclkPin:1;
-    /*! I2S AD0 number of channels (1 - 8). !Must match channel mask*/
-    uint8_t     ad0NumOfChannels:4;
-    /*! I2S AD0 Channel Mask bitwise(0:Disabled, 1:Enabled) E.g. Mono: 0x01, Stereo: 0x03 */
-    uint8_t     ad0ChannelMask;
-  } bitFields;
+typedef union PDMCC26XX_I2S_AudioPinConfig
+{
+    /*! Can be used to set pin configurations in DriverLib*/
+    struct
+    {
+        /*! Field that can be used to set pin configuration in DriverLib */
+        uint16_t ad1;
+        /*! Field that can be used to set pin configuration in DriverLib */
+        uint16_t ad0;
+    } driverLibParams;
+    /*! Used to configure various aspects of the I2S hardware during initialisation */
+    struct
+    {
+        /*! I2S AD1 usage (0: Disabled, 1: Input, 2: Output) */
+        uint8_t ad1Usage:2;
+        /*! I2S Enable Master clock output on pin (0: Disabled, 1: Enabled) */
+        uint8_t enableMclkPin:1;
+        /*! Reserved bit field */
+        uint8_t reserved:1;
+        /*! I2S AD1 number of channels (1 - 8). !Must match channel mask */
+        uint8_t ad1NumOfChannels:4;
+        /*! I2S AD1 Channel Mask bitwise 0:Disabled, 1:Enabled) E.g. Mono: 0x01, Stereo: 0x03 */
+        uint8_t ad1ChannelMask;
+        /*! I2S AD0 usage (0: Disabled, 1: Input, 2: Output) */
+        uint8_t ad0Usage:2;
+        /*! I2S Enable Word clock output on pin (0: Disabled, 1: Enabled) */
+        uint8_t enableWclkPin:1;
+        /*! I2S Enable Bit clock output on pin (0: Disabled, 1: Enabled) */
+        uint8_t enableBclkPin:1;
+        /*! I2S AD0 number of channels (1 - 8). !Must match channel mask*/
+        uint8_t ad0NumOfChannels:4;
+        /*! I2S AD0 Channel Mask bitwise(0:Disabled, 1:Enabled) E.g. Mono: 0x01, Stereo: 0x03 */
+        uint8_t ad0ChannelMask;
+    } bitFields;
 } PDMCC26XX_I2S_AudioPinConfig;
 /*! Mask to use with PDMCC26XX_I2S_AudioPinConfig.driverLibParams when calling
  * DriverLib.
  */
-#define PDMCC26XX_I2S_DIR_CHA_M     (I2S_LINE_MASK | I2S_CHAN_CFG_MASK)
+#define PDMCC26XX_I2S_DIR_CHA_M (I2S_LINE_MASK | I2S_CHAN_CFG_MASK)
 
 /*!
  *  @brief  PDMCC26XX_I2S Hardware configuration
@@ -573,28 +581,29 @@ typedef union PDMCC26XX_I2S_AudioPinConfig {
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     /*! Number of bits per word (8-24). Exact for single phase, max for dual phase */
-    uint8_t          wordLength:5;
+    uint8_t wordLength:5;
     /*! Sample edge. Data and Word clock is samples, and clocked out, on opposite edges of BCLK.
      *   0: NEG (Data is sample on the negative edge and clocked out on the positive edge)
      *   1: POS (Data is sample on the positive edge and clocked out on the negative edge)*/
-    uint8_t          sampleEdge:1;
+    uint8_t sampleEdge:1;
     /*! Selects dual- or single phase format (0: Single, 1: Dual) */
-    uint8_t          dualPhase:1;
+    uint8_t dualPhase:1;
     /*! Size of each word stored to or loaded from memory (0: 16, 1: 24) */
-    uint8_t          memLen:1;
+    uint8_t memLen:1;
     /*! Number of BCLK perids between a WCLK edge and MSB of the first word in a phase */
-    uint8_t          dataDelay;
+    uint8_t dataDelay;
 } PDMCC26XX_I2S_AudioFormatConfig;
-
 
 /*!
  *  @brief  PDMCC26XX_I2S Object
  *
  *  The application must not access any member variables of this structure!
  */
-typedef enum {
+typedef enum
+{
     /*!
      * PDMCC26XX_I2S_requestBuffer() blocks execution. This mode can only be used when called
      * within a Task context.
@@ -613,9 +622,10 @@ typedef enum {
  *  A ::PDMCC26XX_I2S_StreamNotification data structure is used with PDMCC26XX_I2S_CallbackFxn().
  *  Provides notification about available buffers and potential errors
  */
-typedef struct {
-    void      *arg;             /*!< Argument to be passed to the callback function */
-    PDMCC26XX_I2S_Status status;    /*!< Status code set by PDMCC26XX_I2S driver */
+typedef struct
+{
+    void *arg;                   /*!< Argument to be passed to the callback function */
+    PDMCC26XX_I2S_Status status; /*!< Status code set by PDMCC26XX_I2S driver */
 } PDMCC26XX_I2S_StreamNotification;
 
 /*!
@@ -635,10 +645,11 @@ typedef struct {
  *
  *  \sa PDMCC26XX_I2S_requestBuffer
  */
-typedef struct {
-    void      *bufferIn;        /*!< Pointer to requested In buffer */
-    void      *bufferHandleIn;  /*!< Pointer to requested In buffers handle */
-    PDMCC26XX_I2S_Status status;    /*!< Status code set by PDMCC26XX_I2S_requestBuffer */
+typedef struct
+{
+    void *bufferIn;              /*!< Pointer to requested In buffer */
+    void *bufferHandleIn;        /*!< Pointer to requested In buffers handle */
+    PDMCC26XX_I2S_Status status; /*!< Status code set by PDMCC26XX_I2S_requestBuffer */
 } PDMCC26XX_I2S_BufferRequest;
 
 /*!
@@ -648,8 +659,9 @@ typedef struct {
  *  bufferHandleIn and bufferHandleOut allows the driver to take back and
  *  reuse memory.
  */
-typedef struct {
-    void      *bufferHandleIn;    /*!< Pointer to requested In buffers handle that we now release */
+typedef struct
+{
+    void *bufferHandleIn; /*!< Pointer to requested In buffers handle that we now release */
 } PDMCC26XX_I2S_BufferRelease;
 
 /*!
@@ -658,28 +670,31 @@ typedef struct {
  *
  *  @param      PDMCC26XX_I2S_Handle          PDMCC26XX_I2S_Handle
  */
-typedef void        (*PDMCC26XX_I2S_CallbackFxn) (PDMCC26XX_I2S_Handle handle, PDMCC26XX_I2S_StreamNotification *notification);
+typedef void (*PDMCC26XX_I2S_CallbackFxn)(PDMCC26XX_I2S_Handle handle, PDMCC26XX_I2S_StreamNotification *notification);
 
 /*!
  *  @brief
  *  PDMCC26XX I2S Parameters are used when calling ::PDMCC26XX_I2S_open().
  */
-typedef struct {
-    uint8_t                             blockCount;             /*!< Number of PDM buffers the I2S driver can fill without the PDM driver processing them. Must be larger than 3. */
-    uint32_t                            requestTimeout;         /*!< Timeout for the request when in blocking mode */
-    PDMCC26XX_I2S_RequestMode           requestMode;            /*!< Blocking or Callback mode */
-    PDMCC26XX_I2S_TransferSize          blockSizeInSamples;     /*!< I2S DMA transfer size in number of samples. Each
-                                                                 * sample consumes either 16 or 24 bits per channel,
-                                                                 * set by ::PDMCC26XX_I2S_AudioFormatConfig.memLen. Number
-                                                                 * of channels are set in
-                                                                 * ::PDMCC26XX_I2S_AudioPinConfig.ad0NumOfChannels and
-                                                                 * ::PDMCC26XX_I2S_AudioPinConfig.ad1NumOfChannels
-                                                                 */
-    PDMCC26XX_I2S_CallbackFxn           callbackFxn;            /*!< Callback function pointer */
+typedef struct
+{
+    uint8_t blockCount; /*!< Number of PDM buffers the I2S driver can fill without the PDM driver processing them. Must
+                           be larger than 3. */
+    uint32_t requestTimeout;                       /*!< Timeout for the request when in blocking mode */
+    PDMCC26XX_I2S_RequestMode requestMode;         /*!< Blocking or Callback mode */
+    PDMCC26XX_I2S_TransferSize blockSizeInSamples; /*!< I2S DMA transfer size in number of samples. Each
+                                                    * sample consumes either 16 or 24 bits per channel,
+                                                    * set by ::PDMCC26XX_I2S_AudioFormatConfig.memLen. Number
+                                                    * of channels are set in
+                                                    * ::PDMCC26XX_I2S_AudioPinConfig.ad0NumOfChannels and
+                                                    * ::PDMCC26XX_I2S_AudioPinConfig.ad1NumOfChannels
+                                                    */
+    PDMCC26XX_I2S_CallbackFxn callbackFxn;         /*!< Callback function pointer */
 
-    PDMCC26XX_I2S_MallocFxn             mallocFxn;              /*!< Malloc function pointer */
-    PDMCC26XX_I2S_FreeFxn               freeFxn;                /*!< Free function pointer */
-    PDMCC26XX_I2S_StreamNotification    *currentStream;         /*!< Pointer to information about the current state of the stream */
+    PDMCC26XX_I2S_MallocFxn mallocFxn;               /*!< Malloc function pointer */
+    PDMCC26XX_I2S_FreeFxn freeFxn;                   /*!< Free function pointer */
+    PDMCC26XX_I2S_StreamNotification *currentStream; /*!< Pointer to information about the current state of the stream
+                                                      */
 } PDMCC26XX_I2S_Params;
 
 /*!
@@ -687,28 +702,30 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                                isOpen;                 /*!< Has the object been opened */
-    uint8_t                             blockCount;             /*!< Number of PDM buffers the I2S driver can fill without the PDM driver processing them. Must be larger than 3. */
-    uint16_t                            blockSizeInBytes;       /*!< Size of an individual PDM block buffer in bytes */
-    PDMCC26XX_I2S_RequestMode           requestMode;            /*!< Blocking or return mode */
-    uint32_t                            requestTimeout;         /*!< Timeout for the request when in blocking mode */
-    int32_t                             sampleRate;          /*!< I2S bit clock frequency in Hz. If negative, or not one of I2S_SAMPLE_RATE_16K/_24K/_32K/_48K then use user configured clock division.*/
-    PIN_Handle                          pinHandle;              /*!< PIN driver handle */
-    PDMCC26XX_I2S_TransferSize          blockSizeInSamples;     /*!< I2S DMA transfer size, determines the block size in number of samples. Each sample consumes either 16 or 24 bits,
-                                                                 *  set by ::PDMCC26XX_I2S_AudioFormatConfig.memLen
-                                                                 */
-    PDMCC26XX_I2S_CallbackFxn           callbackFxn;            /*!< Callback function pointer */
-    PDMCC26XX_I2S_MallocFxn             mallocFxn;              /*!< Malloc function pointer */
-    PDMCC26XX_I2S_FreeFxn               freeFxn;                /*!< Free function pointer */
-    PDMCC26XX_I2S_StreamNotification    *currentStream;         /*!< Ptr to information about the current transaction*/
-    PDMCC26XX_I2S_AudioFormatConfig     audioFmtCfg;            /*!< I2S audio format configuration */
-    PDMCC26XX_I2S_AudioPinConfig        audioPinCfg;            /*!< I2S pin configuration*/
-    HwiP_Struct hwi;                    /*!< Hwi object handle */
-    SemaphoreP_Struct                    blockComplete;          /*!< Notify complete PDMCC26XX_I2S block transfer */
-    SemaphoreP_Struct                    semStopping;            /*!< PDMCC26XX_I2S stopping sequence semaphore */
-    PIN_State                           pinState;               /*!< PIN driver state object */
-    PDMCC26XX_I2S_AudioClockConfig      audioClkCfg;            /*!< I2S clock division override and clock config */
+typedef struct
+{
+    bool isOpen;        /*!< Has the object been opened */
+    uint8_t blockCount; /*!< Number of PDM buffers the I2S driver can fill without the PDM driver processing them. Must
+                           be larger than 3. */
+    uint16_t blockSizeInBytes;                       /*!< Size of an individual PDM block buffer in bytes */
+    PDMCC26XX_I2S_RequestMode requestMode;           /*!< Blocking or return mode */
+    uint32_t requestTimeout;                         /*!< Timeout for the request when in blocking mode */
+    int32_t sampleRate;                              /*!< I2S bit clock frequency in Hz. If negative, or not one of
+                                                        I2S_SAMPLE_RATE_16K/_24K/_32K/_48K then use user configured clock division.*/
+    PDMCC26XX_I2S_TransferSize blockSizeInSamples;   /*!< I2S DMA transfer size, determines the block size in number of
+                                                      * samples. Each sample consumes either 16 or 24 bits,   set by
+                                                      * ::PDMCC26XX_I2S_AudioFormatConfig.memLen
+                                                      */
+    PDMCC26XX_I2S_CallbackFxn callbackFxn;           /*!< Callback function pointer */
+    PDMCC26XX_I2S_MallocFxn mallocFxn;               /*!< Malloc function pointer */
+    PDMCC26XX_I2S_FreeFxn freeFxn;                   /*!< Free function pointer */
+    PDMCC26XX_I2S_StreamNotification *currentStream; /*!< Ptr to information about the current transaction*/
+    PDMCC26XX_I2S_AudioFormatConfig audioFmtCfg;     /*!< I2S audio format configuration */
+    PDMCC26XX_I2S_AudioPinConfig audioPinCfg;        /*!< I2S pin configuration*/
+    HwiP_Struct hwi;                                 /*!< Hwi object handle */
+    SemaphoreP_Struct blockComplete;                 /*!< Notify complete PDMCC26XX_I2S block transfer */
+    SemaphoreP_Struct semStopping;                   /*!< PDMCC26XX_I2S stopping sequence semaphore */
+    PDMCC26XX_I2S_AudioClockConfig audioClkCfg;      /*!< I2S clock division override and clock config */
 } PDMCC26XX_I2S_Object;
 
 /*!
@@ -741,7 +758,7 @@ extern void PDMCC26XX_I2S_init(PDMCC26XX_I2S_Handle handle);
  *
  *  @sa     PDMCC26XX_I2S_close()
  */
-extern PDMCC26XX_I2S_Handle  PDMCC26XX_I2S_open(PDMCC26XX_I2S_Handle handle, PDMCC26XX_I2S_Params *params);
+extern PDMCC26XX_I2S_Handle PDMCC26XX_I2S_open(PDMCC26XX_I2S_Handle handle, PDMCC26XX_I2S_Params *params);
 
 /*!
  *  @brief  Function to close a given CC26XX I2S peripheral specified by the

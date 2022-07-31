@@ -45,7 +45,7 @@ LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     --threaded_lib \
     -fti_utils_build_linker.cmd.genlibs \
     "$(KERNEL_BUILD)/iar/freertos.lib" \
-    "$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib" \
+    ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib \
     --config ../../freertos/iar/cc13x2x7_cc26x2x7_freertos.icf \
     --map "$(NAME).map" \
     --silent \

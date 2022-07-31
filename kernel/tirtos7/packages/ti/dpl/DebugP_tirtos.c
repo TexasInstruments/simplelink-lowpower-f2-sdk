@@ -47,7 +47,8 @@
 void _DebugP_assert(int expression, const char *file, int line)
 {
 #ifndef ti_sysbios_runtime_Assert__include
-    if (!expression) {
+    if (!expression)
+    {
         xdc_runtime_Assert_raise__I(Module__MID, file, line, 0U);
     }
 #endif
@@ -87,6 +88,5 @@ void DebugP_log3(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3)
  */
 void DebugP_log4(const char *format, uintptr_t p1, uintptr_t p2, uintptr_t p3, uintptr_t p4)
 {
-    Log_print4(Diags_USER1, format, (xdc_IArg)p1,
-              (xdc_IArg)p2, (xdc_IArg)p3, (xdc_IArg)p4);
+    Log_print4(Diags_USER1, format, (xdc_IArg)p1, (xdc_IArg)p2, (xdc_IArg)p3, (xdc_IArg)p4);
 }

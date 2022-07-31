@@ -603,7 +603,7 @@ static void OadPersistApp_init(void)
   }
 
 #ifdef LED_DEBUG
-  // Configure the GPIO pins
+  // Configure the GPIO
   GPIO_setConfig(CONFIG_GPIO_RLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_HIGH);
   GPIO_setConfig(CONFIG_GPIO_GLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_HIGH);
 
@@ -622,7 +622,7 @@ static void OadPersistApp_init(void)
     // Task sleep is in # of ticks
     Task_sleep(10000);
   }
-  // Reset the GPIO pins to their default value
+  // Reset the GPIO to their default value
   GPIO_resetConfig(CONFIG_GPIO_RLED);
   GPIO_resetConfig(CONFIG_GPIO_GLED);
 #endif //LED_DEBUG

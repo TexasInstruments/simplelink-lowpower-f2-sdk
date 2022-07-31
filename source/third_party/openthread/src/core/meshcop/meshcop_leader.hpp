@@ -36,8 +36,11 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_FTD
+
 #include "coap/coap.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "net/udp6.hpp"
@@ -61,7 +64,7 @@ public:
     SteeringDataTlv          mSteeringData;
 } OT_TOOL_PACKED_END;
 
-class Leader : public InstanceLocator
+class Leader : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -77,22 +80,19 @@ public:
      *
      * @param[in]  aAddress   The IPv6 address of destination.
      *
-     * @retval OT_ERROR_NONE     Successfully send MGMT_DATASET_CHANGED message.
-     * @retval OT_ERROR_NO_BUFS  Insufficient buffers to generate a MGMT_DATASET_CHANGED message.
-     *
      */
-    otError SendDatasetChanged(const Ip6::Address &aAddress);
+    void SendDatasetChanged(const Ip6::Address &aAddress);
 
     /**
      * This method sets minimal delay timer.
      *
      * @param[in]  aDelayTimerMinimal The value of minimal delay timer (in ms).
      *
-     * @retval  OT_ERROR_NONE         Successfully set the minimal delay timer.
-     * @retval  OT_ERROR_INVALID_ARGS If @p aDelayTimerMinimal is not valid.
+     * @retval  kErrorNone         Successfully set the minimal delay timer.
+     * @retval  kErrorInvalidArgs  If @p aDelayTimerMinimal is not valid.
      *
      */
-    otError SetDelayTimerMinimal(uint32_t aDelayTimerMinimal);
+    Error SetDelayTimerMinimal(uint32_t aDelayTimerMinimal);
 
     /**
      * This method gets minimal delay timer.
@@ -109,23 +109,20 @@ public:
     void SetEmptyCommissionerData(void);
 
 private:
-    enum
-    {
-        kTimeoutLeaderPetition = 50, ///< TIMEOUT_LEAD_PET (seconds)
-    };
+    static constexpr uint32_t kTimeoutLeaderPetition = 50; // TIMEOUT_LEAD_PET (seconds)
 
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
 
     static void HandlePetition(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandlePetition(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
-    otError     SendPetitionResponse(const Coap::Message &   aRequest,
+    void        SendPetitionResponse(const Coap::Message &   aRequest,
                                      const Ip6::MessageInfo &aMessageInfo,
                                      StateTlv::State         aState);
 
     static void HandleKeepAlive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleKeepAlive(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
-    otError     SendKeepAliveResponse(const Coap::Message &   aRequest,
+    void        SendKeepAliveResponse(const Coap::Message &   aRequest,
                                       const Ip6::MessageInfo &aMessageInfo,
                                       StateTlv::State         aState);
 
@@ -145,5 +142,7 @@ private:
 
 } // namespace MeshCoP
 } // namespace ot
+
+#endif // OPENTHREAD_FTD
 
 #endif // MESHCOP_LEADER_HPP_

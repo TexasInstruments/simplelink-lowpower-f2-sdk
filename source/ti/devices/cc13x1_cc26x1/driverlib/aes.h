@@ -128,8 +128,6 @@ extern "C"
 #define AES_IV_LENGTH_BYTES             16
 #define AES_TAG_LENGTH_BYTES            16
 #define AES_128_KEY_LENGTH_BYTES        (128 / 8)
-#define AES_192_KEY_LENGTH_BYTES        (192 / 8)
-#define AES_256_KEY_LENGTH_BYTES        (256 / 8)
 
 #define AES_BLOCK_SIZE                  16
 
@@ -147,8 +145,6 @@ extern "C"
 //*****************************************************************************
 //
 // For 128-bit keys, all 8 key area locations from 0 to 7 are valid.
-// A 256-bit key requires two consecutive Key Area locations. The base key area
-// may be odd. Do not attempt to write a 256-bit key to AES_KEY_AREA_7.
 //
 //*****************************************************************************
 #define AES_KEY_AREA_0          0
@@ -350,25 +346,16 @@ extern uint32_t AESVerifyTag(const uint8_t *tag, uint32_t tagLength);
 //!
 //!     The crypto DMA transfers the key and function does not return until
 //!     the operation completes.
-//!     The keyStore can only contain valid keys of one \c aesKeyLength at
-//!     any one point in time. The keyStore cannot contain both 128-bit and
-//!     256-bit keys simultaneously. When a key of a different \c aesKeyLength
-//!     from the previous \c aesKeyLength is loaded, all previous keys are
-//!     invalidated.
 //!
 //! \param [in] aesKey Pointer to key. Does not need to be word-aligned.
 //!
-//! \param [in] aesKeyLength The key size in bytes. Currently, 128-bit, 192-bit,
-//!                          and 256-bit keys are supported.
+//! \param [in] aesKeyLength The key size in bytes.
+//!                          128-bit keys are supported.
 //! - \ref AES_128_KEY_LENGTH_BYTES
-//! - \ref AES_192_KEY_LENGTH_BYTES
-//! - \ref AES_256_KEY_LENGTH_BYTES
 //!
 //! \param [in] keyStoreArea The key store area to transfer the key to.
 //!                          When using 128-bit keys, only the specified key store
 //!                          area will be occupied.
-//!                          When using 256-bit or 192-bit keys, two consecutive key areas
-//!                          are used to store the key.
 //! - \ref AES_KEY_AREA_0
 //! - \ref AES_KEY_AREA_1
 //! - \ref AES_KEY_AREA_2
@@ -377,19 +364,6 @@ extern uint32_t AESVerifyTag(const uint8_t *tag, uint32_t tagLength);
 //! - \ref AES_KEY_AREA_5
 //! - \ref AES_KEY_AREA_6
 //! - \ref AES_KEY_AREA_7
-//!
-//!     When using 256-bit or 192-bit keys, the 8 \c keyStoreArea's are
-//!     split into four sets of two. Selecting any \c keyStoreArea automatically
-//!     occupies the second \c keyStoreArea of the tuples below:
-//!
-//! - (\ref AES_KEY_AREA_0, \ref AES_KEY_AREA_1)
-//! - (\ref AES_KEY_AREA_2, \ref AES_KEY_AREA_3)
-//! - (\ref AES_KEY_AREA_4, \ref AES_KEY_AREA_5)
-//! - (\ref AES_KEY_AREA_6, \ref AES_KEY_AREA_7)
-//!
-//!     For example: if \c keyStoreArea == \ref AES_KEY_AREA_2,
-//!     both \ref AES_KEY_AREA_2 and \ref AES_KEY_AREA_3 are occupied.
-//!     If \c keyStoreArea == \ref AES_KEY_AREA_5, both \ref AES_KEY_AREA_4 and \ref AES_KEY_AREA_5 are occupied.
 //!
 //! \return Returns a status code depending on the result of the transfer.
 //!         If there was an error in the read process itself, an error is
@@ -410,12 +384,7 @@ extern uint32_t AESWriteToKeyStore(const uint8_t *aesKey, uint32_t aesKeyLength,
 //!
 //!     The function polls until the transfer is complete.
 //!
-//! \param [in] keyStoreArea The key store area to transfer the key from. When using
-//!                          256-bit keys, either of the occupied key areas may be
-//!                          specified to load the key. There is no need to specify
-//!                          the length of the key here as the key store keeps track
-//!                          of how long a key associated with any valid key area is
-//!                          and where is starts.
+//! \param [in] keyStoreArea The key store area to transfer the key from.
 //! - \ref AES_KEY_AREA_0
 //! - \ref AES_KEY_AREA_1
 //! - \ref AES_KEY_AREA_2

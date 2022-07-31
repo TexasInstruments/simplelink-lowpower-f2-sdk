@@ -61,8 +61,8 @@ public:
      */
     enum Priority
     {
-        kPriorityLow  = 0, //< Indicates low/normal priority for a frame.
-        kPriorityHigh = 1, //< Indicates high priority for a frame.
+        kPriorityLow  = 0, ///< Indicates low/normal priority for a frame.
+        kPriorityHigh = 1, ///< Indicates high priority for a frame.
     };
 
     /**
@@ -92,14 +92,14 @@ public:
          *
          */
         WritePosition(void)
-            : mPosition(0)
-            , mSegmentHead(0)
+            : mPosition(nullptr)
+            , mSegmentHead(nullptr)
         {
         }
 
     private:
-        uint8_t *mPosition;    //< Pointer into buffer corresponding to saved write position.
-        uint8_t *mSegmentHead; //< Pointer to segment head.
+        uint8_t *mPosition;    // Pointer into buffer corresponding to saved write position.
+        uint8_t *mSegmentHead; // Pointer to segment head.
 
         friend class Buffer;
     };
@@ -222,7 +222,7 @@ public:
      * @retval OT_ERROR_NONE            Successfully added the message to the frame.
      * @retval OT_ERROR_NO_BUFS         Insufficient buffer space available to add the message.
      * @retval OT_ERROR_INVALID_STATE   `InFrameBegin()` has not been called earlier to start the frame.
-     * @retval OT_ERROR_INVALID_ARGS    If @p aMessage is NULL.
+     * @retval OT_ERROR_INVALID_ARGS    If @p aMessage is nullptr.
      *
      */
     otError InFrameFeedMessage(otMessage *aMessage);
@@ -383,13 +383,13 @@ public:
      * This method reads and copies bytes from the current output frame into a given buffer.
      *
      * The NCP buffer maintains a read offset for the current output frame being read. This method attempts to read
-     * the given number of bytes (@p aDataBufferLength) from the current frame and copies the bytes into the given
+     * the given number of bytes (@p aReadLength) from the current frame and copies the bytes into the given
      * data buffer (@p aDataBuffer). It also moves the read offset forward accordingly. If there are fewer bytes
      * remaining in current frame than the requested @p aReadLength, the available bytes are read/copied. This methods
      * returns the number of bytes read from frame and copied into @p aDataBuffer.
      *
-     * @param[in]  aDataBuffer          A pointer to a data buffer.
-     * @param[in]  aReadLength          Number of bytes to read.
+     * @param[in]   aReadLength          Number of bytes to read.
+     * @param[out]  aDataBuffer          A pointer to a data buffer.
      *
      * @returns The number of bytes read and copied into data buffer.
      *
@@ -405,7 +405,7 @@ public:
      *
      * When a frame is removed all its associated messages will be freed.
      *
-     * If the remove operation is successful, this method will invoke the `FrameRemovedCallback` (if not NULL) before
+     * If the remove operation is successful, this method will invoke the `FrameRemovedCallback` (if not nullptr) before
      * returning the success state.
      *
      * @retval OT_ERROR_NONE            Successfully removed the front frame.

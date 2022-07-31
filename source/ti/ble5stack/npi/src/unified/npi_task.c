@@ -236,8 +236,8 @@ static uint8_t npiTask_assertType;
 const NPI_Params NPI_defaultParams = {
     .stackSize          = 1024,
     .bufSize            = 530,
-    .mrdyPinID          = IOID_UNUSED,
-    .srdyPinID          = IOID_UNUSED,
+    .mrdyGpioIndex      = IOID_UNUSED,
+    .srdyGpioIndex      = IOID_UNUSED,
 #if defined(NPI_USE_UART)
     .portType           = NPI_SERIAL_TYPE_UART,
     .portBoardID        = 0,                     /* CC2650_UART0 */
@@ -504,12 +504,9 @@ uint8_t NPITask_Params_init(uint8_t portType, NPI_Params *params)
     *params = NPI_defaultParams;
 
 #if defined(NPI_USE_UART)
-    UART_Params_init(&params->portParams.uartParams);
-    params->portParams.uartParams.readDataMode = UART_DATA_BINARY;
-    params->portParams.uartParams.writeDataMode = UART_DATA_BINARY;
-    params->portParams.uartParams.readMode = UART_MODE_CALLBACK;
-    params->portParams.uartParams.writeMode = UART_MODE_CALLBACK;
-    params->portParams.uartParams.readEcho = UART_ECHO_OFF;
+    UART2_Params_init(&params->portParams.uartParams);
+    params->portParams.uartParams.readMode = UART2_Mode_CALLBACK;
+    params->portParams.uartParams.writeMode = UART2_Mode_CALLBACK;
 #elif defined(NPI_USE_SPI)
     SPI_Params_init(&params->portParams.spiParams);
     params->portParams.spiParams.mode = SPI_SLAVE;
@@ -577,8 +574,8 @@ uint8_t NPITask_open(NPI_Params *params)
 
     // Initialize Transport Layer
     transportParams.npiTLBufSize = params->bufSize;
-    transportParams.mrdyPinID = params->mrdyPinID;
-    transportParams.srdyPinID = params->srdyPinID;
+    transportParams.mrdyGpioIndex = params->mrdyGpioIndex;
+    transportParams.srdyGpioIndex = params->srdyGpioIndex;
     transportParams.portType = params->portType;
     transportParams.portBoardID = params->portBoardID;
     transportParams.portParams = params->portParams;

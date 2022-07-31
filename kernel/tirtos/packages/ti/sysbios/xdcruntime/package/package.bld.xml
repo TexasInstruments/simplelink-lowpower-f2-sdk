@@ -25,38 +25,14 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="lib/debug/ti.sysbios.xdcruntime.aem4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.oem4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.oem4f.dep" src="GateThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.oem4f.dep" src="GateProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.oem4f.dep" src="SemThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.oem4f.dep" src="SemProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.oem4f.dep" src="ThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.oem4f.dep" src="CacheSupport.c"/>
-        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4f.dep" src="GateThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om4f.dep" src="GateProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om4f.dep" src="SemThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4f.dep" src="SemProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4f.dep" src="ThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4f.dep" src="CacheSupport.c"/>
-        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4fg.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4fg.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4fg.dep" src="GateThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om4fg.dep" src="GateProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om4fg.dep" src="SemThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4fg.dep" src="SemProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4fg.dep" src="ThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4fg.dep" src="CacheSupport.c"/>
-        <srcFile name="lib/debug/ti.sysbios.xdcruntime.arm4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.orm4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.orm4f.dep" src="GateThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.orm4f.dep" src="GateProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.orm4f.dep" src="SemThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.orm4f.dep" src="SemProcessSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.orm4f.dep" src="ThreadSupport.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.orm4f.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.aem3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.oem3.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.oem3.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.oem3.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.oem3.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.oem3.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.oem3.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.oem3.dep" src="CacheSupport.c"/>
         <srcFile name="lib/debug/ti.sysbios.xdcruntime.aem4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.oem4.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.oem4.dep" src="GateThreadSupport.c"/>
@@ -65,6 +41,22 @@
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.oem4.dep" src="SemProcessSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.oem4.dep" src="ThreadSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.oem4.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.aem4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.oem4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.oem4f.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.oem4f.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.oem4f.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.oem4f.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.oem4f.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.oem4f.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om3.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om3.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om3.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om3.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om3.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om3.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om3.dep" src="CacheSupport.c"/>
         <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4.dep" src="GateThreadSupport.c"/>
@@ -73,6 +65,22 @@
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4.dep" src="SemProcessSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4.dep" src="ThreadSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4f.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om4f.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om4f.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4f.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4f.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4f.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am3g.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om3g.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om3g.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om3g.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om3g.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om3g.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om3g.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om3g.dep" src="CacheSupport.c"/>
         <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4g.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4g.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4g.dep" src="GateThreadSupport.c"/>
@@ -81,6 +89,22 @@
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4g.dep" src="SemProcessSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4g.dep" src="ThreadSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4g.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.am4fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.om4fg.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.om4fg.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.om4fg.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.om4fg.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.om4fg.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.om4fg.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.om4fg.dep" src="CacheSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.arm3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.orm3.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.orm3.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.orm3.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.orm3.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.orm3.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.orm3.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.orm3.dep" src="CacheSupport.c"/>
         <srcFile name="lib/debug/ti.sysbios.xdcruntime.arm4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.orm4.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.orm4.dep" src="GateThreadSupport.c"/>
@@ -89,71 +113,66 @@
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.orm4.dep" src="SemProcessSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.orm4.dep" src="ThreadSupport.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.orm4.dep" src="CacheSupport.c"/>
-        <srcFile name="package/rel/ti_sysbios_xdcruntime.tar.dep" src="package/rel/ti_sysbios_xdcruntime.xdc.inc"/>
+        <srcFile name="lib/debug/ti.sysbios.xdcruntime.arm4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/package/package_ti.sysbios.xdcruntime.orm4f.dep" src="package/package_ti.sysbios.xdcruntime.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateThreadSupport.orm4f.dep" src="GateThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/GateProcessSupport.orm4f.dep" src="GateProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemThreadSupport.orm4f.dep" src="SemThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/SemProcessSupport.orm4f.dep" src="SemProcessSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/ThreadSupport.orm4f.dep" src="ThreadSupport.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.xdcruntime/CacheSupport.orm4f.dep" src="CacheSupport.c"/>
+        <srcFile name="package/rel/ti_sysbios_xdcruntime.tar.gz.dep" src="package/rel/ti_sysbios_xdcruntime.xdc.inc"/>
     </makefiles>
     <targets>
-        <target name="ti.targets.arm.elf.M4F"
-            version="ti.targets.arm.elf.M4F{1,0,20.2,5"
-            rawVersion="20.2.5"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
-            isa="v7M4"
-            suffix="em4f"
-            rootDir="/scratch/xlibrary/.conan/data/ticodegen/20.2.5.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+        <target name="ti.targets.arm.elf.M3"
+            version="ti.targets.arm.elf.M3{1,0,20.2,4"
+            rawVersion="20.2.4"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="em3"
+            rootDir="/db/vendors/ti/arm/20.2.4.LTS"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
-            <model endian="little"
-                codeModel="thumb2"
-                dataModel="undefined"/>
-        </target>
-        <target name="ti.targets.arm.clang.M4F"
-            version="ti.targets.arm.clang.M4F{1,0,1.3,1"
-            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
-Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
-"
-            platform="ti.platforms.cortexM:MTL1_VSOC:1"
-            isa="v7M4"
-            suffix="m4f"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
-            os="undefined"
-            rts="ti.targets.arm.rtsarm">
-            <model endian="little"
-                codeModel="thumb2"
-                dataModel="undefined"/>
-        </target>
-        <target name="gnu.targets.arm.M4F"
-            version="gnu.targets.arm.M4F{1,0,9.2,1"
-            rawVersion="9.2.1"
-            platform="ti.platforms.tiva:TM4C1294NCPDT"
-            isa="v7M4"
-            suffix="m4fg"
-            rootDir="/scratch/xlibrary/.conan/data/arm-none-eabi-gcc/9.2019.q4.major-0/library-msp/ga/package/44fcf6b9a7fb86b2586303e3db40189d3b511830"
-            os="undefined"
-            rts="gnu.targets.arm.rtsv7M">
-            <model endian="little"
-                codeModel="thumb2"
-                dataModel="undefined"/>
-        </target>
-        <target name="iar.targets.arm.M4F"
-            version="iar.targets.arm.M4F{1,0,8.50,1"
-            rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
-            isa="v7M4"
-            suffix="rm4f"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
-            os="undefined"
-            rts="iar.targets.arm.rts">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.elf.M4"
-            version="ti.targets.arm.elf.M4{1,0,20.2,5"
-            rawVersion="20.2.5"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            version="ti.targets.arm.elf.M4{1,0,20.2,4"
+            rawVersion="20.2.4"
+            platform="ti.platforms.simplelink:CC3220SF:1"
             isa="v7M4"
             suffix="em4"
-            rootDir="/scratch/xlibrary/.conan/data/ticodegen/20.2.5.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/db/vendors/ti/arm/20.2.4.LTS"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.elf.M4F"
+            version="ti.targets.arm.elf.M4F{1,0,20.2,4"
+            rawVersion="20.2.4"
+            platform="ti.platforms.simplelink:CC2642:1"
+            isa="v7M4"
+            suffix="em4f"
+            rootDir="/db/vendors/ti/arm/20.2.4.LTS"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.clang.M3"
+            version="ti.targets.arm.clang.M3{1,0,1.3,0"
+            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
+Thread model: posix
+InstalledDir: /db/vendors/ti/arm/llvm/1.3.0.LTS/bin
+"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="m3"
+            rootDir="/db/vendors/ti/arm/llvm/1.3.0.LTS"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
@@ -161,17 +180,46 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.clang.M4"
-            version="ti.targets.arm.clang.M4{1,0,1.3,1"
-            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
+            version="ti.targets.arm.clang.M4{1,0,1.3,0"
+            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
 Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
+InstalledDir: /db/vendors/ti/arm/llvm/1.3.0.LTS/bin
 "
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            platform="ti.platforms.simplelink:CC3220SF:1"
             isa="v7M4"
             suffix="m4"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/db/vendors/ti/arm/llvm/1.3.0.LTS"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.clang.M4F"
+            version="ti.targets.arm.clang.M4F{1,0,1.3,0"
+            rawVersion="TI Arm Clang Compiler 1.3.0.LTSTarget: arm-ti-none-eabi
+Thread model: posix
+InstalledDir: /db/vendors/ti/arm/llvm/1.3.0.LTS/bin
+"
+            platform="ti.platforms.simplelink:CC2642:1"
+            isa="v7M4"
+            suffix="m4f"
+            rootDir="/db/vendors/ti/arm/llvm/1.3.0.LTS"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M3"
+            version="gnu.targets.arm.M3{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="m3g"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7M">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
@@ -179,12 +227,38 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <target name="gnu.targets.arm.M4"
             version="gnu.targets.arm.M4{1,0,9.2,1"
             rawVersion="9.2.1"
-            platform="ti.platforms.tiva:TM4C1294NCPDT"
+            platform="ti.platforms.simplelink:CC3220SF:1"
             isa="v7M4"
             suffix="m4g"
-            rootDir="/scratch/xlibrary/.conan/data/arm-none-eabi-gcc/9.2019.q4.major-0/library-msp/ga/package/44fcf6b9a7fb86b2586303e3db40189d3b511830"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
             os="undefined"
             rts="gnu.targets.arm.rtsv7M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M4F"
+            version="gnu.targets.arm.M4F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.simplelink:CC2642:1"
+            isa="v7M4"
+            suffix="m4fg"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M3"
+            version="iar.targets.arm.M3{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="rm3"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
@@ -192,10 +266,23 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <target name="iar.targets.arm.M4"
             version="iar.targets.arm.M4{1,0,8.50,1"
             rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            platform="ti.platforms.simplelink:CC3220SF:1"
             isa="v7M4"
             suffix="rm4"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M4F"
+            version="iar.targets.arm.M4F{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.simplelink:CC2642:1"
+            isa="v7M4"
+            suffix="rm4f"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -205,37 +292,53 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
     </targets>
     <libraries>
     <library name="lib/debug/ti.sysbios.xdcruntime"
-        pname="lib/debug/ti.sysbios.xdcruntime.aem4f"
+        pname="lib/debug/ti.sysbios.xdcruntime.aem3"
         profile="debug"
-        target="ti.targets.arm.elf.M4F"/>
-    <library name="lib/debug/ti.sysbios.xdcruntime"
-        pname="lib/debug/ti.sysbios.xdcruntime.am4f"
-        profile="debug"
-        target="ti.targets.arm.clang.M4F"/>
-    <library name="lib/debug/ti.sysbios.xdcruntime"
-        pname="lib/debug/ti.sysbios.xdcruntime.am4fg"
-        profile="debug"
-        target="gnu.targets.arm.M4F"/>
-    <library name="lib/debug/ti.sysbios.xdcruntime"
-        pname="lib/debug/ti.sysbios.xdcruntime.arm4f"
-        profile="debug"
-        target="iar.targets.arm.M4F"/>
+        target="ti.targets.arm.elf.M3"/>
     <library name="lib/debug/ti.sysbios.xdcruntime"
         pname="lib/debug/ti.sysbios.xdcruntime.aem4"
         profile="debug"
         target="ti.targets.arm.elf.M4"/>
     <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.aem4f"
+        profile="debug"
+        target="ti.targets.arm.elf.M4F"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.am3"
+        profile="debug"
+        target="ti.targets.arm.clang.M3"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
         pname="lib/debug/ti.sysbios.xdcruntime.am4"
         profile="debug"
         target="ti.targets.arm.clang.M4"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.am4f"
+        profile="debug"
+        target="ti.targets.arm.clang.M4F"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.am3g"
+        profile="debug"
+        target="gnu.targets.arm.M3"/>
     <library name="lib/debug/ti.sysbios.xdcruntime"
         pname="lib/debug/ti.sysbios.xdcruntime.am4g"
         profile="debug"
         target="gnu.targets.arm.M4"/>
     <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.am4fg"
+        profile="debug"
+        target="gnu.targets.arm.M4F"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.arm3"
+        profile="debug"
+        target="iar.targets.arm.M3"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
         pname="lib/debug/ti.sysbios.xdcruntime.arm4"
         profile="debug"
         target="iar.targets.arm.M4"/>
+    <library name="lib/debug/ti.sysbios.xdcruntime"
+        pname="lib/debug/ti.sysbios.xdcruntime.arm4f"
+        profile="debug"
+        target="iar.targets.arm.M4F"/>
     </libraries>
     <configurations>
     </configurations>
@@ -245,7 +348,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_sysbios_xdcruntime"
-        pname="ti_sysbios_xdcruntime.tar"
+        pname="../../..//../exports/ti_sysbios_xdcruntime.tar.gz"
         label="default"
         relScript="ti/sysbios/libFilter.xs">
         <file name="package/package.bld.xml"/>
@@ -253,7 +356,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <file name="package/package.xdc.inc"/>
         <file name="package.bld"/>
         <file name="package/package.cfg.xdc.inc"/>
-        <file name="lib/debug/ti.sysbios.xdcruntime.aem4f"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.aem3"/>
         <file name="package/package_ti.sysbios.xdcruntime.c"/>
         <file name="GateThreadSupport.c"/>
         <file name="GateProcessSupport.c"/>
@@ -261,13 +364,17 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <file name="SemProcessSupport.c"/>
         <file name="ThreadSupport.c"/>
         <file name="CacheSupport.c"/>
-        <file name="lib/debug/ti.sysbios.xdcruntime.am4f"/>
-        <file name="lib/debug/ti.sysbios.xdcruntime.am4fg"/>
-        <file name="lib/debug/ti.sysbios.xdcruntime.arm4f"/>
         <file name="lib/debug/ti.sysbios.xdcruntime.aem4"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.aem4f"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.am3"/>
         <file name="lib/debug/ti.sysbios.xdcruntime.am4"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.am4f"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.am3g"/>
         <file name="lib/debug/ti.sysbios.xdcruntime.am4g"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.am4fg"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.arm3"/>
         <file name="lib/debug/ti.sysbios.xdcruntime.arm4"/>
+        <file name="lib/debug/ti.sysbios.xdcruntime.arm4f"/>
     </release>
     </releases>
     <repositories>

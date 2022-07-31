@@ -38,6 +38,7 @@
 
 #include "common/locator.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "net/ip6_headers.hpp"
 
@@ -62,11 +63,8 @@ OT_TOOL_PACKED_BEGIN
 class OptionMpl : public OptionHeader
 {
 public:
-    enum
-    {
-        kType      = 0x6d, /* 01 1 01101 */
-        kMinLength = 2
-    };
+    static constexpr uint8_t kType      = 0x6d; // 01 1 01101
+    static constexpr uint8_t kMinLength = 2;
 
     /**
      * This method initializes the MPL header.
@@ -90,8 +88,9 @@ public:
 
     /**
      * MPL Seed Id lengths.
+     *
      */
-    enum SeedIdLength
+    enum SeedIdLength : uint8_t
     {
         kSeedIdLength0  = 0 << 6, ///< 0-byte MPL Seed Id Length.
         kSeedIdLength2  = 1 << 6, ///< 2-byte MPL Seed Id Length.
@@ -105,7 +104,7 @@ public:
      * @returns The MPL Seed Id Length value.
      *
      */
-    SeedIdLength GetSeedIdLength(void) { return static_cast<SeedIdLength>(mControl & kSeedIdLengthMask); }
+    SeedIdLength GetSeedIdLength(void) const { return static_cast<SeedIdLength>(mControl & kSeedIdLengthMask); }
 
     /**
      * This method sets the MPL Seed Id Length value.
@@ -172,11 +171,9 @@ public:
     void SetSeedId(uint16_t aSeedId) { mSeedId = HostSwap16(aSeedId); }
 
 private:
-    enum
-    {
-        kSeedIdLengthMask = 3 << 6,
-        kMaxFlag          = 1 << 5
-    };
+    static constexpr uint8_t kSeedIdLengthMask = 3 << 6;
+    static constexpr uint8_t kMaxFlag          = 1 << 5;
+
     uint8_t  mControl;
     uint8_t  mSequence;
     uint16_t mSeedId;
@@ -186,7 +183,7 @@ private:
  * This class implements MPL message processing.
  *
  */
-class Mpl : public InstanceLocator
+class Mpl : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -215,12 +212,14 @@ public:
      * @param[in]  aMessage    A reference to the message.
      * @param[in]  aAddress    A reference to the IPv6 Source Address.
      * @param[in]  aIsOutbound TRUE if this message was locally generated, FALSE otherwise.
+     * @param[out] aReceive    Set to FALSE if the MPL message is a duplicate and must not
+     *                         go through the receiving process again, untouched otherwise.
      *
-     * @retval OT_ERROR_NONE  Successfully processed the MPL option.
-     * @retval OT_ERROR_DROP  The MPL message is a duplicate and should be dropped.
+     * @retval kErrorNone  Successfully processed the MPL option.
+     * @retval kErrorDrop  The MPL message is a duplicate and should be dropped.
      *
      */
-    otError ProcessOption(Message &aMessage, const Address &aAddress, bool aIsOutbound);
+    Error ProcessOption(Message &aMessage, const Address &aAddress, bool aIsOutbound, bool &aReceive);
 
     /**
      * This method returns the MPL Seed Id value.
@@ -275,13 +274,10 @@ public:
 #endif // OPENTHREAD_FTD
 
 private:
-    enum
-    {
-        kNumSeedEntries      = OPENTHREAD_CONFIG_MPL_SEED_SET_ENTRIES,
-        kSeedEntryLifetime   = OPENTHREAD_CONFIG_MPL_SEED_SET_ENTRY_LIFETIME,
-        kSeedEntryLifetimeDt = 1000,
-        kDataMessageInterval = 64
-    };
+    static constexpr uint16_t kNumSeedEntries      = OPENTHREAD_CONFIG_MPL_SEED_SET_ENTRIES;
+    static constexpr uint32_t kSeedEntryLifetime   = OPENTHREAD_CONFIG_MPL_SEED_SET_ENTRY_LIFETIME;
+    static constexpr uint32_t kSeedEntryLifetimeDt = 1000;
+    static constexpr uint8_t  kDataMessageInterval = 64;
 
     struct SeedEntry
     {
@@ -293,7 +289,7 @@ private:
     static void HandleSeedSetTimer(Timer &aTimer);
     void        HandleSeedSetTimer(void);
 
-    otError UpdateSeedSet(uint16_t aSeedId, uint8_t aSequence);
+    Error UpdateSeedSet(uint16_t aSeedId, uint8_t aSequence);
 
     SeedEntry      mSeedSet[kNumSeedEntries];
     const Address *mMatchingAddress;
@@ -304,11 +300,11 @@ private:
 #if OPENTHREAD_FTD
     struct Metadata
     {
-        otError AppendTo(Message &aMessage) const { return aMessage.Append(this, sizeof(*this)); }
-        void    ReadFrom(const Message &aMessage);
-        void    RemoveFrom(Message &aMessage) const;
-        int     UpdateIn(Message &aMessage) const;
-        void    GenerateNextTransmissionTime(TimeMilli aCurrentTime, uint8_t aInterval);
+        Error AppendTo(Message &aMessage) const { return aMessage.Append(*this); }
+        void  ReadFrom(const Message &aMessage);
+        void  RemoveFrom(Message &aMessage) const;
+        void  UpdateIn(Message &aMessage) const;
+        void  GenerateNextTransmissionTime(TimeMilli aCurrentTime, uint8_t aInterval);
 
         TimeMilli mTransmissionTime;
         uint16_t  mSeedId;

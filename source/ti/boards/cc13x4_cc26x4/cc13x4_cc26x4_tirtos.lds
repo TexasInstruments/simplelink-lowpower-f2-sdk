@@ -38,7 +38,7 @@ MEMORY
     FLASH (RX)      : ORIGIN = 0x00000000, LENGTH = 0x000fffa8
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
-     * flash, 1024 bytes
+     * flash
      */
     FLASH_CCFG (RX) : ORIGIN = 0x50000000, LENGTH = 0x00000800
     SRAM (RWX)      : ORIGIN = 0x20000000, LENGTH = 0x00040000

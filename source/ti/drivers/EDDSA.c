@@ -49,46 +49,50 @@ extern const uint_least8_t EDDSA_count;
 
 const EDDSA_Params EDDSA_defaultParams = {
     .returnBehavior = EDDSA_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== EDDSA_Params_init ========
  */
-void EDDSA_Params_init(EDDSA_Params *params){
+void EDDSA_Params_init(EDDSA_Params *params)
+{
     *params = EDDSA_defaultParams;
 }
 
 /*
  *  ======== EDDSA_open ========
  */
-EDDSA_Handle EDDSA_open(uint_least8_t index, const EDDSA_Params *params) {
+EDDSA_Handle EDDSA_open(uint_least8_t index, const EDDSA_Params *params)
+{
     DebugP_assert(index < EDDSA_count);
 
-    EDDSA_Config *config = (EDDSA_Config*)&EDDSA_config[index];
-    return(EDDSA_construct(config, params));
+    EDDSA_Config *config = (EDDSA_Config *)&EDDSA_config[index];
+    return (EDDSA_construct(config, params));
 }
 
 /*
  *  ======== EDDSA_OperationGeneratePublicKey_init ========
  */
-void EDDSA_OperationGeneratePublicKey_init(EDDSA_OperationGeneratePublicKey
-                                           *operation){
+void EDDSA_OperationGeneratePublicKey_init(EDDSA_OperationGeneratePublicKey *operation)
+{
     memset(operation, 0x00, sizeof(EDDSA_OperationGeneratePublicKey));
 }
 
 /*
  *  ======== EDDSA_OperationSign_init ========
  */
-void EDDSA_OperationSign_init(EDDSA_OperationSign *operation){
+void EDDSA_OperationSign_init(EDDSA_OperationSign *operation)
+{
     memset(operation, 0x00, sizeof(EDDSA_OperationSign));
 }
 
 /*
  *  ======== EDDSA_OperationVerify_init ========
  */
-void EDDSA_OperationVerify_init(EDDSA_OperationVerify *operation){
+void EDDSA_OperationVerify_init(EDDSA_OperationVerify *operation)
+{
     memset(operation, 0x00, sizeof(EDDSA_OperationVerify));
 }

@@ -36,43 +36,37 @@
 #if OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE
 
 #include <mbedtls/debug.h>
-#include <openthread/ip6.h>
+#include <openthread/random_noncrypto.h>
 
 #include "cli/cli.hpp"
-#include "cli/cli_server.hpp"
+
 // header for place your x509 certificate and private key
 #include "x509_cert_key.hpp"
 
 namespace ot {
 namespace Cli {
 
-const struct CoapSecure::Command CoapSecure::sCommands[] = {
-    {"help", &CoapSecure::ProcessHelp},      {"connect", &CoapSecure::ProcessConnect},
-    {"delete", &CoapSecure::ProcessRequest}, {"disconnect", &CoapSecure::ProcessDisconnect},
-    {"get", &CoapSecure::ProcessRequest},    {"post", &CoapSecure::ProcessRequest},
-    {"put", &CoapSecure::ProcessRequest},    {"resource", &CoapSecure::ProcessResource},
-    {"start", &CoapSecure::ProcessStart},    {"stop", &CoapSecure::ProcessStop},
-#ifdef MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
-    {"psk", &CoapSecure::ProcessPsk},
-#endif
-#ifdef MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
-    {"x509", &CoapSecure::ProcessX509},
-#endif
-};
+constexpr CoapSecure::Command CoapSecure::sCommands[];
 
-CoapSecure::CoapSecure(Interpreter &aInterpreter)
-    : mInterpreter(aInterpreter)
+CoapSecure::CoapSecure(Output &aOutput)
+    : OutputWrapper(aOutput)
     , mShutdownFlag(false)
     , mUseCertificate(false)
     , mPskLength(0)
     , mPskIdLength(0)
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    , mBlockCount(1)
+#endif
 {
     memset(&mResource, 0, sizeof(mResource));
     memset(&mPsk, 0, sizeof(mPsk));
     memset(&mPskId, 0, sizeof(mPskId));
+    memset(&mUriPath, 0, sizeof(mUriPath));
+    strncpy(mResourceContent, "0", sizeof(mResourceContent));
+    mResourceContent[sizeof(mResourceContent) - 1] = '\0';
 }
 
-void CoapSecure::PrintPayload(otMessage *aMessage) const
+void CoapSecure::PrintPayload(otMessage *aMessage)
 {
     uint8_t  buf[kMaxBufferSize];
     uint16_t bytesToPrint;
@@ -81,100 +75,135 @@ void CoapSecure::PrintPayload(otMessage *aMessage) const
 
     if (length > 0)
     {
-        mInterpreter.mServer->OutputFormat(" with payload: ");
+        OutputFormat(" with payload: ");
 
         while (length > 0)
         {
             bytesToPrint = (length < sizeof(buf)) ? length : sizeof(buf);
             otMessageRead(aMessage, otMessageGetOffset(aMessage) + bytesPrinted, buf, bytesToPrint);
 
-            mInterpreter.OutputBytes(buf, static_cast<uint8_t>(bytesToPrint));
+            OutputBytes(buf, static_cast<uint8_t>(bytesToPrint));
 
             length -= bytesToPrint;
             bytesPrinted += bytesToPrint;
         }
     }
 
-    mInterpreter.mServer->OutputFormat("\r\n");
+    OutputLine("");
 }
 
-otError CoapSecure::ProcessHelp(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessHelp(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
     OT_UNUSED_VARIABLE(aArgs);
 
-    for (size_t i = 0; i < OT_ARRAY_LENGTH(sCommands); i++)
+    for (const Command &command : sCommands)
     {
-        mInterpreter.mServer->OutputFormat("%s\r\n", sCommands[i].mName);
+        OutputLine(command.mName);
     }
 
     return OT_ERROR_NONE;
 }
 
-otError CoapSecure::ProcessResource(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessResource(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
 
-    if (aArgsLength > 1)
+    if (!aArgs[0].IsEmpty())
     {
-        VerifyOrExit(strlen(aArgs[1]) < kMaxUriLength, error = OT_ERROR_INVALID_ARGS);
+        VerifyOrExit(aArgs[0].GetLength() < kMaxUriLength, error = OT_ERROR_INVALID_ARGS);
 
         mResource.mUriPath = mUriPath;
         mResource.mContext = this;
         mResource.mHandler = &CoapSecure::HandleRequest;
 
-        strncpy(mUriPath, aArgs[1], sizeof(mUriPath) - 1);
-        SuccessOrExit(error = otCoapSecureAddResource(mInterpreter.mInstance, &mResource));
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        mResource.mReceiveHook  = &CoapSecure::BlockwiseReceiveHook;
+        mResource.mTransmitHook = &CoapSecure::BlockwiseTransmitHook;
+
+        if (!aArgs[1].IsEmpty())
+        {
+            SuccessOrExit(error = aArgs[1].ParseAsUint32(mBlockCount));
+        }
+#endif
+
+        strncpy(mUriPath, aArgs[0].GetCString(), sizeof(mUriPath) - 1);
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        otCoapSecureAddBlockWiseResource(GetInstancePtr(), &mResource);
+#else
+        otCoapSecureAddResource(GetInstancePtr(), &mResource);
+#endif
     }
     else
     {
-        mInterpreter.mServer->OutputFormat("%s\r\n", mResource.mUriPath);
+        OutputLine("%s", mResource.mUriPath != nullptr ? mResource.mUriPath : "");
     }
-
-exit:
-    return OT_ERROR_NONE;
-}
-
-otError CoapSecure::ProcessStart(uint8_t aArgsLength, char *aArgs[])
-{
-    otError error;
-    bool    verifyPeerCert = true;
-
-    if (aArgsLength > 1)
-    {
-        if (strcmp(aArgs[1], "false") == 0)
-        {
-            verifyPeerCert = false;
-        }
-        else if (strcmp(aArgs[1], "true") != 0)
-        {
-            ExitNow(error = OT_ERROR_INVALID_ARGS);
-        }
-    }
-
-    otCoapSecureSetSslAuthMode(mInterpreter.mInstance, verifyPeerCert);
-    otCoapSecureSetClientConnectedCallback(mInterpreter.mInstance, &CoapSecure::HandleConnected, this);
-
-#if CLI_COAP_SECURE_USE_COAP_DEFAULT_HANDLER
-    otCoapSecureSetDefaultHandler(mInterpreter.mInstance, &CoapSecure::DefaultHandler, this);
-#endif
-
-    SuccessOrExit(error = otCoapSecureStart(mInterpreter.mInstance, OT_DEFAULT_COAP_SECURE_PORT));
 
 exit:
     return error;
 }
 
-otError CoapSecure::ProcessStop(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessSet(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
+    otError error = OT_ERROR_NONE;
+
+    if (!aArgs[0].IsEmpty())
+    {
+        VerifyOrExit(aArgs[0].GetLength() < sizeof(mResourceContent), error = OT_ERROR_INVALID_ARGS);
+        strncpy(mResourceContent, aArgs[0].GetCString(), sizeof(mResourceContent));
+        mResourceContent[sizeof(mResourceContent) - 1] = '\0';
+    }
+    else
+    {
+        OutputLine("%s", mResourceContent);
+    }
+
+exit:
+    return error;
+}
+
+otError CoapSecure::ProcessStart(Arg aArgs[])
+{
+    otError error          = OT_ERROR_NONE;
+    bool    verifyPeerCert = true;
+
+    if (!aArgs[0].IsEmpty())
+    {
+        if (aArgs[0] == "false")
+        {
+            verifyPeerCert = false;
+        }
+        else
+        {
+            VerifyOrExit(aArgs[0] == "true", error = OT_ERROR_INVALID_ARGS);
+        }
+    }
+
+    otCoapSecureSetSslAuthMode(GetInstancePtr(), verifyPeerCert);
+    otCoapSecureSetClientConnectedCallback(GetInstancePtr(), &CoapSecure::HandleConnected, this);
+
+#if CLI_COAP_SECURE_USE_COAP_DEFAULT_HANDLER
+    otCoapSecureSetDefaultHandler(GetInstancePtr(), &CoapSecure::DefaultHandler, this);
+#endif
+
+    error = otCoapSecureStart(GetInstancePtr(), OT_DEFAULT_COAP_SECURE_PORT);
+
+exit:
+    return error;
+}
+
+otError CoapSecure::ProcessStop(Arg aArgs[])
+{
     OT_UNUSED_VARIABLE(aArgs);
 
-    otCoapRemoveResource(mInterpreter.mInstance, &mResource);
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    otCoapRemoveBlockWiseResource(GetInstancePtr(), &mResource);
+#else
+    otCoapRemoveResource(GetInstancePtr(), &mResource);
+#endif
 
-    if (otCoapSecureIsConnectionActive(mInterpreter.mInstance))
+    if (otCoapSecureIsConnectionActive(GetInstancePtr()))
     {
-        otCoapSecureDisconnect(mInterpreter.mInstance);
+        otCoapSecureDisconnect(GetInstancePtr());
         mShutdownFlag = true;
     }
     else
@@ -185,119 +214,169 @@ otError CoapSecure::ProcessStop(uint8_t aArgsLength, char *aArgs[])
     return OT_ERROR_NONE;
 }
 
-otError CoapSecure::ProcessRequest(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessGet(Arg aArgs[])
 {
-    otError       error   = OT_ERROR_NONE;
-    otMessage *   message = NULL;
-    otMessageInfo messageInfo;
-    uint16_t      payloadLength = 0;
-    uint8_t       indexShifter  = 0;
+    return ProcessRequest(aArgs, OT_COAP_CODE_GET);
+}
+
+otError CoapSecure::ProcessPost(Arg aArgs[])
+{
+    return ProcessRequest(aArgs, OT_COAP_CODE_POST);
+}
+
+otError CoapSecure::ProcessPut(Arg aArgs[])
+{
+    return ProcessRequest(aArgs, OT_COAP_CODE_PUT);
+}
+
+otError CoapSecure::ProcessDelete(Arg aArgs[])
+{
+    return ProcessRequest(aArgs, OT_COAP_CODE_DELETE);
+}
+
+otError CoapSecure::ProcessRequest(Arg aArgs[], otCoapCode aCoapCode)
+{
+    otError    error         = OT_ERROR_NONE;
+    otMessage *message       = nullptr;
+    uint16_t   payloadLength = 0;
 
     // Default parameters
-    char         coapUri[kMaxUriLength] = "test";
-    otCoapType   coapType               = OT_COAP_TYPE_NON_CONFIRMABLE;
-    otCoapCode   coapCode               = OT_COAP_CODE_GET;
-    otIp6Address coapDestinationIp;
+    char       coapUri[kMaxUriLength];
+    otCoapType coapType = OT_COAP_TYPE_NON_CONFIRMABLE;
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    bool           coapBlock     = false;
+    otCoapBlockSzx coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_16;
+    BlockType      coapBlockType = (aCoapCode == OT_COAP_CODE_GET) ? kBlockType2 : kBlockType1;
+#endif
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
+    VerifyOrExit(!aArgs[0].IsEmpty(), error = OT_ERROR_INVALID_ARGS);
+    VerifyOrExit(aArgs[0].GetLength() < sizeof(coapUri), error = OT_ERROR_INVALID_ARGS);
+    strcpy(coapUri, aArgs[0].GetCString());
 
-    // CoAP-Code
-    if (strcmp(aArgs[0], "get") == 0)
+    if (!aArgs[1].IsEmpty())
     {
-        coapCode = OT_COAP_CODE_GET;
-    }
-    else if (strcmp(aArgs[0], "post") == 0)
-    {
-        coapCode = OT_COAP_CODE_POST;
-    }
-    else if (strcmp(aArgs[0], "put") == 0)
-    {
-        coapCode = OT_COAP_CODE_PUT;
-    }
-    else if (strcmp(aArgs[0], "delete") == 0)
-    {
-        coapCode = OT_COAP_CODE_DELETE;
-    }
-    else
-    {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
-    }
-
-    // Destination IPv6 address
-    if (aArgsLength > 1)
-    {
-        error = otIp6AddressFromString(aArgs[1], &coapDestinationIp);
-    }
-    else
-    {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
-    }
-
-    // Destination IPv6 address not need as client
-    // if no IPv6 is entered, so ignore it and go away
-    if (error == OT_ERROR_NONE)
-    {
-        indexShifter = 0;
-    }
-    else
-    {
-        indexShifter = 1;
-    }
-
-    // CoAP-URI
-    if (aArgsLength > (2 - indexShifter))
-    {
-        strncpy(coapUri, aArgs[2 - indexShifter], sizeof(coapUri) - 1);
-    }
-
-    // CoAP-Type
-    if (aArgsLength > (3 - indexShifter))
-    {
-        if (strcmp(aArgs[3 - indexShifter], "con") == 0)
+        if (aArgs[1] == "con")
         {
             coapType = OT_COAP_TYPE_CONFIRMABLE;
         }
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        else if (aArgs[1] == "block-16")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_16;
+        }
+        else if (aArgs[1] == "block-32")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_32;
+        }
+        else if (aArgs[1] == "block-64")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_64;
+        }
+        else if (aArgs[1] == "block-128")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_128;
+        }
+        else if (aArgs[1] == "block-256")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_256;
+        }
+        else if (aArgs[1] == "block-512")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_512;
+        }
+        else if (aArgs[1] == "block-1024")
+        {
+            coapType      = OT_COAP_TYPE_CONFIRMABLE;
+            coapBlock     = true;
+            coapBlockSize = OT_COAP_OPTION_BLOCK_SZX_1024;
+        }
+#endif // OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
     }
 
-    message = otCoapNewMessage(mInterpreter.mInstance, NULL);
-    VerifyOrExit(message != NULL, error = OT_ERROR_NO_BUFS);
+    message = otCoapNewMessage(GetInstancePtr(), nullptr);
+    VerifyOrExit(message != nullptr, error = OT_ERROR_NO_BUFS);
 
-    otCoapMessageInit(message, coapType, coapCode);
-    otCoapMessageGenerateToken(message, ot::Coap::Message::kDefaultTokenLength);
+    otCoapMessageInit(message, coapType, aCoapCode);
+    otCoapMessageGenerateToken(message, OT_COAP_DEFAULT_TOKEN_LENGTH);
     SuccessOrExit(error = otCoapMessageAppendUriPathOptions(message, coapUri));
 
-    if (aArgsLength > (4 - indexShifter))
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    if (coapBlock)
     {
-        payloadLength = static_cast<uint16_t>(strlen(aArgs[4 - indexShifter]));
-
-        if (payloadLength > 0)
+        if (coapBlockType == kBlockType1)
         {
-            SuccessOrExit(error = otCoapMessageSetPayloadMarker(message));
+            SuccessOrExit(error = otCoapMessageAppendBlock1Option(message, 0, true, coapBlockSize));
+        }
+        else
+        {
+            SuccessOrExit(error = otCoapMessageAppendBlock2Option(message, 0, false, coapBlockSize));
         }
     }
+#endif
 
-    // add payload
-    if (payloadLength > 0)
+    if (!aArgs[2].IsEmpty())
     {
-        SuccessOrExit(error = otMessageAppend(message, aArgs[4 - indexShifter], payloadLength));
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        if (coapBlock)
+        {
+            SuccessOrExit(error = aArgs[2].ParseAsUint32(mBlockCount));
+        }
+        else
+        {
+#endif
+            payloadLength = aArgs[2].GetLength();
+
+            if (payloadLength > 0)
+            {
+                SuccessOrExit(error = otCoapMessageSetPayloadMarker(message));
+            }
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        }
+#endif
     }
 
-    memset(&messageInfo, 0, sizeof(messageInfo));
-    messageInfo.mPeerAddr = coapDestinationIp;
-    messageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
-
-    if ((coapType == OT_COAP_TYPE_CONFIRMABLE) || (coapCode == OT_COAP_CODE_GET))
+    if (payloadLength > 0)
     {
-        error = otCoapSecureSendRequest(mInterpreter.mInstance, message, &CoapSecure::HandleResponse, this);
+        SuccessOrExit(error = otMessageAppend(message, aArgs[2].GetCString(), payloadLength));
+    }
+
+    if ((coapType == OT_COAP_TYPE_CONFIRMABLE) || (aCoapCode == OT_COAP_CODE_GET))
+    {
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        if (coapBlock)
+        {
+            error =
+                otCoapSecureSendRequestBlockWise(GetInstancePtr(), message, &CoapSecure::HandleResponse, this,
+                                                 &CoapSecure::BlockwiseTransmitHook, &CoapSecure::BlockwiseReceiveHook);
+        }
+        else
+        {
+#endif
+            error = otCoapSecureSendRequest(GetInstancePtr(), message, &CoapSecure::HandleResponse, this);
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        }
+#endif
     }
     else
     {
-        error = otCoapSecureSendRequest(mInterpreter.mInstance, message, NULL, NULL);
+        error = otCoapSecureSendRequest(GetInstancePtr(), message, nullptr, nullptr);
     }
 
 exit:
 
-    if ((error != OT_ERROR_NONE) && (message != NULL))
+    if ((error != OT_ERROR_NONE) && (message != nullptr))
     {
         otMessageFree(message);
     }
@@ -305,63 +384,54 @@ exit:
     return error;
 }
 
-otError CoapSecure::ProcessConnect(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessConnect(Arg aArgs[])
 {
     otError    error;
     otSockAddr sockaddr;
 
-    VerifyOrExit(aArgsLength > 1, error = OT_ERROR_INVALID_ARGS);
-
-    // Destination IPv6 address
     memset(&sockaddr, 0, sizeof(sockaddr));
-    SuccessOrExit(error = otIp6AddressFromString(aArgs[1], &sockaddr.mAddress));
+    SuccessOrExit(error = aArgs[0].ParseAsIp6Address(sockaddr.mAddress));
     sockaddr.mPort = OT_DEFAULT_COAP_SECURE_PORT;
 
-    // check for port specification
-    if (aArgsLength > 2)
+    if (!aArgs[1].IsEmpty())
     {
-        long value;
-
-        error = Interpreter::ParseLong(aArgs[2], value);
-        SuccessOrExit(error);
-        sockaddr.mPort = static_cast<uint16_t>(value);
+        SuccessOrExit(error = aArgs[1].ParseAsUint16(sockaddr.mPort));
     }
 
-    SuccessOrExit(error = otCoapSecureConnect(mInterpreter.mInstance, &sockaddr, &CoapSecure::HandleConnected, this));
+    SuccessOrExit(error = otCoapSecureConnect(GetInstancePtr(), &sockaddr, &CoapSecure::HandleConnected, this));
 
 exit:
     return error;
 }
 
-otError CoapSecure::ProcessDisconnect(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessDisconnect(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
     OT_UNUSED_VARIABLE(aArgs);
 
-    otCoapSecureDisconnect(mInterpreter.mInstance);
+    otCoapSecureDisconnect(GetInstancePtr());
 
     return OT_ERROR_NONE;
 }
 
 #ifdef MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
-otError CoapSecure::ProcessPsk(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessPsk(Arg aArgs[])
 {
-    otError error = OT_ERROR_NONE;
-    size_t  length;
+    otError  error = OT_ERROR_NONE;
+    uint16_t length;
 
-    VerifyOrExit(aArgsLength > 2, error = OT_ERROR_INVALID_ARGS);
+    VerifyOrExit(!aArgs[1].IsEmpty(), error = OT_ERROR_INVALID_ARGS);
 
-    length = strlen(aArgs[1]);
+    length = aArgs[0].GetLength();
     VerifyOrExit(length <= sizeof(mPsk), error = OT_ERROR_INVALID_ARGS);
     mPskLength = static_cast<uint8_t>(length);
-    memcpy(mPsk, aArgs[1], mPskLength);
+    memcpy(mPsk, aArgs[0].GetCString(), mPskLength);
 
-    length = strlen(aArgs[2]);
+    length = aArgs[1].GetLength();
     VerifyOrExit(length <= sizeof(mPskId), error = OT_ERROR_INVALID_ARGS);
     mPskIdLength = static_cast<uint8_t>(length);
-    memcpy(mPskId, aArgs[2], mPskIdLength);
+    memcpy(mPskId, aArgs[1].GetCString(), mPskIdLength);
 
-    otCoapSecureSetPsk(mInterpreter.mInstance, mPsk, mPskLength, mPskId, mPskIdLength);
+    otCoapSecureSetPsk(GetInstancePtr(), mPsk, mPskLength, mPskId, mPskIdLength);
     mUseCertificate = false;
 
 exit:
@@ -370,16 +440,16 @@ exit:
 #endif // MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
 
 #ifdef MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
-otError CoapSecure::ProcessX509(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::ProcessX509(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
     OT_UNUSED_VARIABLE(aArgs);
 
-    otCoapSecureSetCertificate(mInterpreter.mInstance, (const uint8_t *)OT_CLI_COAPS_X509_CERT,
-                               sizeof(OT_CLI_COAPS_X509_CERT), (const uint8_t *)OT_CLI_COAPS_PRIV_KEY,
+    otCoapSecureSetCertificate(GetInstancePtr(), reinterpret_cast<const uint8_t *>(OT_CLI_COAPS_X509_CERT),
+                               sizeof(OT_CLI_COAPS_X509_CERT), reinterpret_cast<const uint8_t *>(OT_CLI_COAPS_PRIV_KEY),
                                sizeof(OT_CLI_COAPS_PRIV_KEY));
 
-    otCoapSecureSetCaCertificateChain(mInterpreter.mInstance, (const uint8_t *)OT_CLI_COAPS_TRUSTED_ROOT_CERTIFICATE,
+    otCoapSecureSetCaCertificateChain(GetInstancePtr(),
+                                      reinterpret_cast<const uint8_t *>(OT_CLI_COAPS_TRUSTED_ROOT_CERTIFICATE),
                                       sizeof(OT_CLI_COAPS_TRUSTED_ROOT_CERTIFICATE));
     mUseCertificate = true;
 
@@ -387,34 +457,34 @@ otError CoapSecure::ProcessX509(uint8_t aArgsLength, char *aArgs[])
 }
 #endif
 
-otError CoapSecure::Process(uint8_t aArgsLength, char *aArgs[])
+otError CoapSecure::Process(Arg aArgs[])
 {
-    otError error = OT_ERROR_INVALID_COMMAND;
+    otError        error = OT_ERROR_INVALID_ARGS;
+    const Command *command;
 
-    if (aArgsLength < 1)
+    if (aArgs[0].IsEmpty())
     {
-        ProcessHelp(0, NULL);
-        error = OT_ERROR_INVALID_ARGS;
-    }
-    else
-    {
-        for (size_t i = 0; i < OT_ARRAY_LENGTH(sCommands); i++)
-        {
-            if (strcmp(aArgs[0], sCommands[i].mName) == 0)
-            {
-                error = (this->*sCommands[i].mCommand)(aArgsLength, aArgs);
-                break;
-            }
-        }
+        IgnoreError(ProcessHelp(aArgs));
+        ExitNow();
     }
 
+    command = BinarySearch::Find(aArgs[0].GetCString(), sCommands);
+    VerifyOrExit(command != nullptr, error = OT_ERROR_INVALID_COMMAND);
+
+    error = (this->*command->mHandler)(aArgs + 1);
+
+exit:
     return error;
 }
 
 void CoapSecure::Stop(void)
 {
-    otCoapRemoveResource(mInterpreter.mInstance, &mResource);
-    otCoapSecureStop(mInterpreter.mInstance);
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    otCoapRemoveBlockWiseResource(GetInstancePtr(), &mResource);
+#else
+    otCoapRemoveResource(GetInstancePtr(), &mResource);
+#endif
+    otCoapSecureStop(GetInstancePtr());
 }
 
 void CoapSecure::HandleConnected(bool aConnected, void *aContext)
@@ -426,11 +496,11 @@ void CoapSecure::HandleConnected(bool aConnected)
 {
     if (aConnected)
     {
-        mInterpreter.mServer->OutputFormat("coaps connected\r\n");
+        OutputLine("coaps connected");
     }
     else
     {
-        mInterpreter.mServer->OutputFormat("coaps disconnected\r\n");
+        OutputLine("coaps disconnected");
 
         if (mShutdownFlag)
         {
@@ -447,35 +517,47 @@ void CoapSecure::HandleRequest(void *aContext, otMessage *aMessage, const otMess
 
 void CoapSecure::HandleRequest(otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    otError    error             = OT_ERROR_NONE;
-    otMessage *responseMessage   = NULL;
-    otCoapCode responseCode      = OT_COAP_CODE_EMPTY;
-    char       responseContent[] = "helloWorld";
+    otError    error           = OT_ERROR_NONE;
+    otMessage *responseMessage = nullptr;
+    otCoapCode responseCode    = OT_COAP_CODE_EMPTY;
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    uint64_t             blockValue   = 0;
+    bool                 blockPresent = false;
+    otCoapOptionIterator iterator;
+#endif
 
-    mInterpreter.mServer->OutputFormat("coaps request from ");
-    mInterpreter.OutputIp6Address(aMessageInfo->mPeerAddr);
-    mInterpreter.mServer->OutputFormat(" ");
+    OutputFormat("coaps request from ");
+    OutputIp6Address(aMessageInfo->mPeerAddr);
+    OutputFormat(" ");
 
     switch (otCoapMessageGetCode(aMessage))
     {
     case OT_COAP_CODE_GET:
-        mInterpreter.mServer->OutputFormat("GET");
+        OutputFormat("GET");
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        SuccessOrExit(error = otCoapOptionIteratorInit(&iterator, aMessage));
+        if (otCoapOptionIteratorGetFirstOptionMatching(&iterator, OT_COAP_OPTION_BLOCK2) != nullptr)
+        {
+            SuccessOrExit(error = otCoapOptionIteratorGetOptionUintValue(&iterator, &blockValue));
+            blockPresent = true;
+        }
+#endif
         break;
 
     case OT_COAP_CODE_DELETE:
-        mInterpreter.mServer->OutputFormat("DELETE");
+        OutputFormat("DELETE");
         break;
 
     case OT_COAP_CODE_PUT:
-        mInterpreter.mServer->OutputFormat("PUT");
+        OutputFormat("PUT");
         break;
 
     case OT_COAP_CODE_POST:
-        mInterpreter.mServer->OutputFormat("POST");
+        OutputFormat("POST");
         break;
 
     default:
-        mInterpreter.mServer->OutputFormat("Undefined\r\n");
+        OutputLine("Undefined");
         return;
     }
 
@@ -493,39 +575,62 @@ void CoapSecure::HandleRequest(otMessage *aMessage, const otMessageInfo *aMessag
             responseCode = OT_COAP_CODE_VALID;
         }
 
-        responseMessage = otCoapNewMessage(mInterpreter.mInstance, NULL);
-        VerifyOrExit(responseMessage != NULL, error = OT_ERROR_NO_BUFS);
+        responseMessage = otCoapNewMessage(GetInstancePtr(), nullptr);
+        VerifyOrExit(responseMessage != nullptr, error = OT_ERROR_NO_BUFS);
 
         SuccessOrExit(
             error = otCoapMessageInitResponse(responseMessage, aMessage, OT_COAP_TYPE_ACKNOWLEDGMENT, responseCode));
 
         if (otCoapMessageGetCode(aMessage) == OT_COAP_CODE_GET)
         {
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+            if (blockPresent)
+            {
+                SuccessOrExit(error = otCoapMessageAppendBlock2Option(responseMessage,
+                                                                      static_cast<uint32_t>(blockValue >> 4), true,
+                                                                      static_cast<otCoapBlockSzx>(blockValue & 0x7)));
+            }
+#endif
             SuccessOrExit(error = otCoapMessageSetPayloadMarker(responseMessage));
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+            if (!blockPresent)
+            {
+#endif
+                SuccessOrExit(error = otMessageAppend(responseMessage, &mResourceContent,
+                                                      static_cast<uint16_t>(strlen(mResourceContent))));
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+            }
+#endif
         }
 
-        if (otCoapMessageGetCode(aMessage) == OT_COAP_CODE_GET)
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        if (blockPresent)
         {
-            SuccessOrExit(error = otMessageAppend(responseMessage, &responseContent, sizeof(responseContent)));
+            SuccessOrExit(error = otCoapSecureSendResponseBlockWise(GetInstancePtr(), responseMessage, aMessageInfo,
+                                                                    this, mResource.mTransmitHook));
         }
-
-        SuccessOrExit(error = otCoapSecureSendResponse(mInterpreter.mInstance, responseMessage, aMessageInfo));
+        else
+        {
+#endif
+            SuccessOrExit(error = otCoapSecureSendResponse(GetInstancePtr(), responseMessage, aMessageInfo));
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+        }
+#endif
     }
 
 exit:
 
     if (error != OT_ERROR_NONE)
     {
-        if (responseMessage != NULL)
+        if (responseMessage != nullptr)
         {
-            mInterpreter.mServer->OutputFormat("coaps send response error %d: %s\r\n", error,
-                                               otThreadErrorToString(error));
+            OutputLine("coaps send response error %d: %s", error, otThreadErrorToString(error));
             otMessageFree(responseMessage);
         }
     }
     else if (responseCode >= OT_COAP_CODE_RESPONSE_MIN)
     {
-        mInterpreter.mServer->OutputFormat("coaps response sent\r\n");
+        OutputLine("coaps response sent");
     }
 }
 
@@ -540,13 +645,12 @@ void CoapSecure::HandleResponse(otMessage *aMessage, const otMessageInfo *aMessa
 
     if (aError != OT_ERROR_NONE)
     {
-        mInterpreter.mServer->OutputFormat("coaps receive response error %d: %s\r\n", aError,
-                                           otThreadErrorToString(aError));
+        OutputLine("coaps receive response error %d: %s", aError, otThreadErrorToString(aError));
     }
     else
     {
-        mInterpreter.mServer->OutputFormat("coaps response from ");
-        mInterpreter.OutputIp6Address(aMessageInfo->mPeerAddr);
+        OutputFormat("coaps response from ");
+        OutputIp6Address(aMessageInfo->mPeerAddr);
 
         PrintPayload(aMessage);
     }
@@ -561,27 +665,97 @@ void CoapSecure::DefaultHandler(void *aContext, otMessage *aMessage, const otMes
 void CoapSecure::DefaultHandler(otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
     otError    error           = OT_ERROR_NONE;
-    otMessage *responseMessage = NULL;
+    otMessage *responseMessage = nullptr;
 
     if ((otCoapMessageGetType(aMessage) == OT_COAP_TYPE_CONFIRMABLE) ||
         (otCoapMessageGetCode(aMessage) == OT_COAP_CODE_GET))
     {
-        responseMessage = otCoapNewMessage(mInterpreter.mInstance, NULL);
-        VerifyOrExit(responseMessage != NULL, error = OT_ERROR_NO_BUFS);
+        responseMessage = otCoapNewMessage(GetInstancePtr(), nullptr);
+        VerifyOrExit(responseMessage != nullptr, error = OT_ERROR_NO_BUFS);
 
         SuccessOrExit(error = otCoapMessageInitResponse(responseMessage, aMessage, OT_COAP_TYPE_NON_CONFIRMABLE,
                                                         OT_COAP_CODE_NOT_FOUND));
 
-        SuccessOrExit(error = otCoapSecureSendResponse(mInterpreter.mInstance, responseMessage, aMessageInfo));
+        SuccessOrExit(error = otCoapSecureSendResponse(GetInstancePtr(), responseMessage, aMessageInfo));
     }
 
 exit:
-    if (error != OT_ERROR_NONE && responseMessage != NULL)
+    if (error != OT_ERROR_NONE && responseMessage != nullptr)
     {
         otMessageFree(responseMessage);
     }
 }
 #endif // CLI_COAP_SECURE_USE_COAP_DEFAULT_HANDLER
+
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+otError CoapSecure::BlockwiseReceiveHook(void *         aContext,
+                                         const uint8_t *aBlock,
+                                         uint32_t       aPosition,
+                                         uint16_t       aBlockLength,
+                                         bool           aMore,
+                                         uint32_t       aTotalLength)
+{
+    return static_cast<CoapSecure *>(aContext)->BlockwiseReceiveHook(aBlock, aPosition, aBlockLength, aMore,
+                                                                     aTotalLength);
+}
+
+otError CoapSecure::BlockwiseReceiveHook(const uint8_t *aBlock,
+                                         uint32_t       aPosition,
+                                         uint16_t       aBlockLength,
+                                         bool           aMore,
+                                         uint32_t       aTotalLength)
+{
+    OT_UNUSED_VARIABLE(aMore);
+    OT_UNUSED_VARIABLE(aTotalLength);
+
+    OutputLine("received block: Num %i Len %i", aPosition / aBlockLength, aBlockLength);
+
+    for (uint16_t i = 0; i < aBlockLength / 16; i++)
+    {
+        OutputBytesLine(&aBlock[i * 16], 16);
+    }
+
+    return OT_ERROR_NONE;
+}
+
+otError CoapSecure::BlockwiseTransmitHook(void *    aContext,
+                                          uint8_t * aBlock,
+                                          uint32_t  aPosition,
+                                          uint16_t *aBlockLength,
+                                          bool *    aMore)
+{
+    return static_cast<CoapSecure *>(aContext)->BlockwiseTransmitHook(aBlock, aPosition, aBlockLength, aMore);
+}
+
+otError CoapSecure::BlockwiseTransmitHook(uint8_t *aBlock, uint32_t aPosition, uint16_t *aBlockLength, bool *aMore)
+{
+    static uint32_t blockCount = 0;
+    OT_UNUSED_VARIABLE(aPosition);
+
+    // Send a random payload
+    otRandomNonCryptoFillBuffer(aBlock, *aBlockLength);
+
+    OutputLine("send block: Num %i Len %i", blockCount, *aBlockLength);
+
+    for (uint16_t i = 0; i < *aBlockLength / 16; i++)
+    {
+        OutputBytesLine(&aBlock[i * 16], 16);
+    }
+
+    if (blockCount == mBlockCount - 1)
+    {
+        blockCount = 0;
+        *aMore     = false;
+    }
+    else
+    {
+        *aMore = true;
+        blockCount++;
+    }
+
+    return OT_ERROR_NONE;
+}
+#endif // OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
 
 } // namespace Cli
 } // namespace ot

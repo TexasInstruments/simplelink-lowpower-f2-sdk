@@ -259,6 +259,9 @@
 // Internal
 #define FCFG1_O_SHDW_ANA_TRIM                                       0x000003FC
 
+// Oscillator configuration
+#define FCFG1_O_OSC_CONF1                                           0x00000408
+
 // Internal
 #define FCFG1_O_DAC_BIAS_CNF                                        0x0000040C
 
@@ -2787,6 +2790,49 @@
 #define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_W                                       6
 #define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_M                              0x0000003F
 #define FCFG1_SHDW_ANA_TRIM_TRIMTEMP_S                                       0
+
+//*****************************************************************************
+//
+// Register: FCFG1_O_OSC_CONF1
+//
+//*****************************************************************************
+// Field: [31:28] RCOSC_MF_BIAS_HTEMP
+//
+// Defines the MF_BIAS trim code to use for high temp.
+// Only valid if RCOSC_MF_SINGLE_TRIM_METHOD == 0
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_HTEMP_W                                4
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_HTEMP_M                       0xF0000000
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_HTEMP_S                               28
+
+// Field:    [27] RCOSC_MF_TEMP_DEPEND_MODE
+//
+// Defines whether dual trim was needed:
+//
+// 0: Dual trims needed on this chip
+// 1: Dual trims not needed on this chip
+#define FCFG1_OSC_CONF1_RCOSC_MF_TEMP_DEPEND_MODE                   0x08000000
+#define FCFG1_OSC_CONF1_RCOSC_MF_TEMP_DEPEND_MODE_BITN                      27
+#define FCFG1_OSC_CONF1_RCOSC_MF_TEMP_DEPEND_MODE_M                 0x08000000
+#define FCFG1_OSC_CONF1_RCOSC_MF_TEMP_DEPEND_MODE_S                         27
+
+// Field:    [26] RCOSC_MF_SINGLE_TRIM_METHOD
+//
+// Defines trim method used:
+//
+// 0: Dual trim method
+// 1: Single trim method
+#define FCFG1_OSC_CONF1_RCOSC_MF_SINGLE_TRIM_METHOD                 0x04000000
+#define FCFG1_OSC_CONF1_RCOSC_MF_SINGLE_TRIM_METHOD_BITN                    26
+#define FCFG1_OSC_CONF1_RCOSC_MF_SINGLE_TRIM_METHOD_M               0x04000000
+#define FCFG1_OSC_CONF1_RCOSC_MF_SINGLE_TRIM_METHOD_S                       26
+
+// Field:   [3:0] RCOSC_MF_BIAS_ADJ
+//
+// Value is written to DDI_0_OSC:RCOSCMFCTL.RCOSC_MF_BIAS_ADJ by boot FW while
+// in safezone.
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_ADJ_W                                  4
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_ADJ_M                         0x0000000F
+#define FCFG1_OSC_CONF1_RCOSC_MF_BIAS_ADJ_S                                  0
 
 //*****************************************************************************
 //

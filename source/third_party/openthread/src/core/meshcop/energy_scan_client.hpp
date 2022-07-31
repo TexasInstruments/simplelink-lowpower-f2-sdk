@@ -36,6 +36,8 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+
 #include <openthread/commissioner.h>
 
 #include "coap/coap.hpp"
@@ -69,17 +71,17 @@ public:
      * @param[in]  aCallback      A pointer to a function called on receiving an Energy Report message.
      * @param[in]  aContext       A pointer to application-specific context.
      *
-     * @retval OT_ERROR_NONE     Successfully enqueued the Energy Scan Query message.
-     * @retval OT_ERROR_NO_BUFS  Insufficient buffers to generate an Energy Scan Query message.
+     * @retval kErrorNone     Successfully enqueued the Energy Scan Query message.
+     * @retval kErrorNoBufs   Insufficient buffers to generate an Energy Scan Query message.
      *
      */
-    otError SendQuery(uint32_t                           aChannelMask,
-                      uint8_t                            aCount,
-                      uint16_t                           aPeriod,
-                      uint16_t                           aScanDuration,
-                      const Ip6::Address &               aAddress,
-                      otCommissionerEnergyReportCallback aCallback,
-                      void *                             aContext);
+    Error SendQuery(uint32_t                           aChannelMask,
+                    uint8_t                            aCount,
+                    uint16_t                           aPeriod,
+                    uint16_t                           aScanDuration,
+                    const Ip6::Address &               aAddress,
+                    otCommissionerEnergyReportCallback aCallback,
+                    void *                             aContext);
 
 private:
     static void HandleReport(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
@@ -96,5 +98,7 @@ private:
  */
 
 } // namespace ot
+
+#endif // OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
 
 #endif // ENERGY_SCAN_CLIENT_HPP_

@@ -51,7 +51,7 @@
  * INCLUDES
  */
 #include "UartLog.h"
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 #include <ti/sysbios/hal/Hwi.h>
 #include <xdc/runtime/System.h>
 #include <xdc/runtime/Timestamp.h>
@@ -100,7 +100,7 @@ typedef struct
  * LOCAL VARIABLES
  */
 #if defined(UARTLOG_ENABLE)
-static UART_Handle hUart = NULL;
+static UART2_Handle hUart = NULL;
 
 char uartLog_outBuf[UARTLOG_OUTBUF_LEN + 4];
 uartLog_EventRec uartLog_evBuf[UARTLOG_NUM_EVT_BUF];
@@ -130,7 +130,7 @@ static void uartLog_doPrint(uartLog_EventRec *er);
  *
  * @return  None.
  */
-void UartLog_doInit(UART_Handle handle)
+void UartLog_doInit(UART2_Handle handle)
 {
 #if defined(UARTLOG_ENABLE)
     hUart = handle;
@@ -312,7 +312,7 @@ static void uartLog_doPrint(uartLog_EventRec *er)
     bufPtr = uartLog_outBuf + strlen(uartLog_outBuf);
 
     /* Ouput everything till now and start over in the buffer. */
-    UART_write(hUart, uartLog_outBuf, (bufPtr - uartLog_outBuf));
+    UART2_write(hUart, uartLog_outBuf, (bufPtr - uartLog_outBuf), NULL);
     bufPtr = uartLog_outBuf;
 
     /* Log_write() event */
@@ -325,7 +325,7 @@ static void uartLog_doPrint(uartLog_EventRec *er)
     *bufPtr++ = '\r';
     *bufPtr++ = '\n';
 
-    UART_write(hUart, uartLog_outBuf, (bufPtr - uartLog_outBuf));
+    UART2_write(hUart, uartLog_outBuf, (bufPtr - uartLog_outBuf), NULL);
 }
 
 #endif

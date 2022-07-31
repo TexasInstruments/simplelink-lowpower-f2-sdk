@@ -45,7 +45,7 @@ The following BoosterPack(s) are used with some driver examples.
 
   * The TMP116's power pin is not compatible with this LaunchPad. Use one of
     the following modification(s) to enable the TMP116's usage with the
-    __i2ctmp116__ and __portable__ examples.
+    __i2ctmp__ and __portable__ examples.
 
     * Use a jumper wire to connect __`T_V+`__ to __`3V3`__.
 

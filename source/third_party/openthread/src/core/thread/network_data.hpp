@@ -40,12 +40,16 @@
 #include <openthread/server.h>
 
 #include "coap/coap.hpp"
+#include "common/clearable.hpp"
+#include "common/const_cast.hpp"
+#include "common/equatable.hpp"
 #include "common/locator.hpp"
 #include "common/timer.hpp"
 #include "net/udp6.hpp"
 #include "thread/lowpan.hpp"
 #include "thread/mle_router.hpp"
 #include "thread/network_data_tlvs.hpp"
+#include "thread/network_data_types.hpp"
 
 namespace ot {
 
@@ -74,6 +78,10 @@ namespace ot {
  */
 namespace NetworkData {
 
+namespace Service {
+class Manager;
+}
+
 /**
  * @addtogroup core-netdata-core
  *
@@ -84,10 +92,9 @@ namespace NetworkData {
  *
  */
 
-enum
-{
-    kIteratorInit = OT_NETWORK_DATA_ITERATOR_INIT, ///< Initializer for `Iterator` type.
-};
+class Leader;
+class Publisher;
+class MutableNetworkData;
 
 /**
  * This type represents a Iterator used to iterate through Network Data info (e.g., see `GetNextOnMeshPrefix()`)
@@ -95,235 +102,275 @@ enum
  */
 typedef otNetworkDataIterator Iterator;
 
-/**
- * This type represents an On Mesh Prefix (Border Router) configuration.
- *
- */
-typedef otBorderRouterConfig OnMeshPrefixConfig;
+constexpr Iterator kIteratorInit = OT_NETWORK_DATA_ITERATOR_INIT; ///< Initializer for `Iterator` type.
 
 /**
- * This type represents an External Route configuration.
- *
- */
-typedef otExternalRouteConfig ExternalRouteConfig;
-
-/**
- * This type represents a Service configuration.
- *
- */
-typedef otServiceConfig ServiceConfig;
-
-/**
- * This class implements Network Data processing.
+ * This class represents an immutable Network Data.
  *
  */
 class NetworkData : public InstanceLocator
 {
+    friend class Leader;
+    friend class Publisher;
+    friend class MutableNetworkData;
+    friend class Service::Manager;
+
 public:
-    enum
+    static constexpr uint8_t kMaxSize = 254; ///< Maximum size of Thread Network Data in bytes.
+
+    /**
+     * This constructor initializes the `NetworkData` from a given pointer to a buffer and length.
+     *
+     * @param[in] aInstance     A reference to the OpenThread instance.
+     * @param[in] aTlvs         A pointer to the buffer containing the TLVs.
+     * @param[in] aLength       The length (number of bytes) of @p aTlvs buffer.
+     *
+     */
+    explicit NetworkData(Instance &aInstance, const uint8_t *aTlvs = nullptr, uint8_t aLength = 0)
+        : InstanceLocator(aInstance)
+        , mTlvs(aTlvs)
+        , mLength(aLength)
     {
-        kMaxSize = 254, ///< Maximum size of Thread Network Data in bytes.
-    };
+    }
 
     /**
-     * This enumeration specifies the type of Network Data (local or leader).
+     * This constructor initializes the `NetworkData` from a range of TLVs (given as pair of start and end pointers).
+     *
+     * @param[in] aInstance     A reference to the OpenThread instance.
+     * @param[in] aStartTlv     A pointer to the start of the TLVs buffer.
+     * @param[in] aEndTlv       A pointer to the end of the TLVs buffer.
      *
      */
-    enum Type
+    NetworkData(Instance &aInstance, const NetworkDataTlv *aStartTlv, const NetworkDataTlv *aEndTlv)
+        : InstanceLocator(aInstance)
+        , mTlvs(reinterpret_cast<const uint8_t *>(aStartTlv))
+        , mLength(static_cast<uint8_t>(reinterpret_cast<const uint8_t *>(aEndTlv) -
+                                       reinterpret_cast<const uint8_t *>(aStartTlv)))
     {
-        kTypeLocal,  ///< Local Network Data.
-        kTypeLeader, ///< Leader Network Data.
-    };
+    }
 
     /**
-     * This constructor initializes the object.
+     * This method returns the length of `NetworkData` (number of bytes).
      *
-     * @param[in]  aInstance     A reference to the OpenThread instance.
-     * @param[in]  aType         Network data type
+     * @returns The length of `NetworkData` (number of bytes).
      *
      */
-    NetworkData(Instance &aInstance, Type aType);
+    uint8_t GetLength(void) const { return mLength; }
 
     /**
-     * This method clears the network data.
+     * This method returns a pointer to the start of the TLVs in `NetworkData`.
+     *
+     * @returns A pointer to the start of the TLVs.
      *
      */
-    void Clear(void);
+    const uint8_t *GetBytes(void) const { return mTlvs; }
 
     /**
-     * This method provides a full or stable copy of the Thread Network Data.
+     * This method provides full or stable copy of the Thread Network Data.
      *
-     * @param[in]     aStable      TRUE when copying the stable version, FALSE when copying the full version.
-     * @param[out]    aData        A pointer to the data buffer.
-     * @param[inout]  aDataLength  On entry, size of the data buffer pointed to by @p aData.
+     * @param[in]     aType        The Network Data type to copy, the full set or stable subset.
+     * @param[out]    aData        A pointer to the data buffer to copy the Network Data into.
+     * @param[in,out] aDataLength  On entry, size of the data buffer pointed to by @p aData.
      *                             On exit, number of copied bytes.
      *
-     * @retval OT_ERROR_NONE       Successfully copied full Thread Network Data.
-     * @retval OT_ERROR_NO_BUFS    Not enough space to fully copy Thread Network Data.
+     * @retval kErrorNone       Successfully copied Thread Network Data.
+     * @retval kErrorNoBufs     Not enough space in @p aData to fully copy Thread Network Data.
      *
      */
-    otError GetNetworkData(bool aStable, uint8_t *aData, uint8_t &aDataLength) const;
+    Error CopyNetworkData(Type aType, uint8_t *aData, uint8_t &aDataLength) const;
+
+    /**
+     * This method provides full or stable copy of the Thread Network Data.
+     *
+     * @param[in]    aType        The Network Data type to copy, the full set or stable subset.
+     * @param[out]   aNetworkData A reference to a `MutableNetworkData` to copy the Network Data into.
+     *
+     * @retval kErrorNone       Successfully copied Thread Network Data.
+     * @retval kErrorNoBufs     Not enough space in @p aNetworkData to fully copy Thread Network Data.
+     *
+     */
+    Error CopyNetworkData(Type aType, MutableNetworkData &aNetworkData) const;
 
     /**
      * This method provides the next On Mesh prefix in the Thread Network Data.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[out]    aConfig    A reference to a config variable where the On Mesh Prefix information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[out]     aConfig    A reference to a config variable where the On Mesh Prefix information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next On Mesh prefix.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent On Mesh prefix exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next On Mesh prefix.
+     * @retval kErrorNotFound   No subsequent On Mesh prefix exists in the Thread Network Data.
      *
      */
-    otError GetNextOnMeshPrefix(Iterator &aIterator, OnMeshPrefixConfig &aConfig) const;
+    Error GetNextOnMeshPrefix(Iterator &aIterator, OnMeshPrefixConfig &aConfig) const;
 
     /**
      * This method provides the next On Mesh prefix in the Thread Network Data for a given RLOC16.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[in]     aRloc16    The RLOC16 value.
-     * @param[out]    aConfig    A reference to a config variable where the On Mesh Prefix information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[in]      aRloc16    The RLOC16 value.
+     * @param[out]     aConfig    A reference to a config variable where the On Mesh Prefix information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next On Mesh prefix.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent On Mesh prefix exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next On Mesh prefix.
+     * @retval kErrorNotFound   No subsequent On Mesh prefix exists in the Thread Network Data.
      *
      */
-    otError GetNextOnMeshPrefix(Iterator &aIterator, uint16_t aRloc16, OnMeshPrefixConfig &aConfig) const;
+    Error GetNextOnMeshPrefix(Iterator &aIterator, uint16_t aRloc16, OnMeshPrefixConfig &aConfig) const;
 
     /**
      * This method provides the next external route in the Thread Network Data.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[out]    aConfig    A reference to a config variable where the external route information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[out]     aConfig    A reference to a config variable where the external route information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next external route.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent external route exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next external route.
+     * @retval kErrorNotFound   No subsequent external route exists in the Thread Network Data.
      *
      */
-    otError GetNextExternalRoute(Iterator &aIterator, ExternalRouteConfig &aConfig) const;
+    Error GetNextExternalRoute(Iterator &aIterator, ExternalRouteConfig &aConfig) const;
 
     /**
      * This method provides the next external route in the Thread Network Data for a given RLOC16.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[in]     aRloc16    The RLOC16 value.
-     * @param[out]    aConfig    A reference to a config variable where the external route information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[in]      aRloc16    The RLOC16 value.
+     * @param[out]     aConfig    A reference to a config variable where the external route information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next external route.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent external route exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next external route.
+     * @retval kErrorNotFound   No subsequent external route exists in the Thread Network Data.
      *
      */
-    otError GetNextExternalRoute(Iterator &aIterator, uint16_t aRloc16, ExternalRouteConfig &aConfig) const;
+    Error GetNextExternalRoute(Iterator &aIterator, uint16_t aRloc16, ExternalRouteConfig &aConfig) const;
 
     /**
      * This method provides the next service in the Thread Network Data.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[out]    aConfig    A reference to a config variable where the service information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[out]     aConfig    A reference to a config variable where the service information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next service.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent service exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next service.
+     * @retval kErrorNotFound   No subsequent service exists in the Thread Network Data.
      *
      */
-    otError GetNextService(Iterator &aIterator, ServiceConfig &aConfig) const;
+    Error GetNextService(Iterator &aIterator, ServiceConfig &aConfig) const;
 
     /**
      * This method provides the next service in the Thread Network Data for a given RLOC16.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[in]     aRloc16    The RLOC16 value.
-     * @param[out]    aConfig    A reference to a config variable where the service information will be placed.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[in]      aRloc16    The RLOC16 value.
+     * @param[out]     aConfig    A reference to a config variable where the service information will be placed.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next service.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent service exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next service.
+     * @retval kErrorNotFound   No subsequent service exists in the Thread Network Data.
      *
      */
-    otError GetNextService(Iterator &aIterator, uint16_t aRloc16, ServiceConfig &aConfig) const;
+    Error GetNextService(Iterator &aIterator, uint16_t aRloc16, ServiceConfig &aConfig) const;
 
     /**
-     * This method provides the next Service ID in the Thread Network Data for a given RLOC16.
+     * This method indicates whether or not the Thread Network Data contains a given on mesh prefix entry.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[in]     aRloc16    The RLOC16 value.
-     * @param[out]    aServiceId A reference to variable where the Service ID will be placed.
+     * @param[in]  aPrefix   The on mesh prefix config to check.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next service.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent service exists in the Thread Network Data.
+     * @retval TRUE  if Network Data contains an on mesh prefix matching @p aPrefix.
+     * @retval FALSE if Network Data does not contain an on mesh prefix matching @p aPrefix.
      *
      */
-    otError GetNextServiceId(Iterator &aIterator, uint16_t aRloc16, uint8_t &aServiceId) const;
+    bool ContainsOnMeshPrefix(const OnMeshPrefixConfig &aPrefix) const;
 
     /**
-     * This method indicates whether or not the Thread Network Data contains all of the on mesh prefix information
-     * in @p aCompare associated with @p aRloc16.
+     * This method indicates whether or not the Thread Network Data contains a given external route entry.
      *
-     * @param[in]  aCompare  The Network Data to use for the query.
-     * @param[in]  aRloc16   The RLOC16 to consider.
+     * @param[in]  aRoute   The external route config to check.
      *
-     * @returns TRUE if this object contains all on mesh prefix information in @p aCompare associated with @p aRloc16,
-     *          FALSE otherwise.
+     * @retval TRUE  if Network Data contains an external route matching @p aRoute.
+     * @retval FALSE if Network Data does not contain an external route matching @p aRoute.
      *
      */
-    bool ContainsOnMeshPrefixes(const NetworkData &aCompare, uint16_t aRloc16) const;
+    bool ContainsExternalRoute(const ExternalRouteConfig &aRoute) const;
 
     /**
-     * This method indicates whether or not the Thread Network Data contains all of the external route information
-     * in @p aCompare associated with @p aRloc16.
+     * This method indicates whether or not the Thread Network Data contains a given service entry.
      *
-     * @param[in]  aCompare  The Network Data to use for the query.
-     * @param[in]  aRloc16   The RLOC16 to consider.
+     * @param[in]  aService   The service config to check.
      *
-     * @returns TRUE if this object contains all external route information in @p aCompare associated with @p aRloc16,
-     *          FALSE otherwise.
+     * @retval TRUE  if Network Data contains a service matching @p aService.
+     * @retval FALSE if Network Data does not contain a service matching @p aService.
      *
      */
-    bool ContainsExternalRoutes(const NetworkData &aCompare, uint16_t aRloc16) const;
+    bool ContainsService(const ServiceConfig &aService) const;
 
     /**
-     * This method indicates whether or not the Thread Network Data contains all of the service information
-     * in @p aCompare associated with @p aRloc16.
+     * This method indicates whether or not the Thread Network Data contains all the on mesh prefixes, external
+     * routes, and service entries as in another given Network Data associated with a given RLOC16.
      *
-     * @param[in]  aCompare  The Network Data to use for the query.
-     * @param[in]  aRloc16   The RLOC16 to consider.
+     * @param[in] aCompare         The Network Data to compare with.
+     * @param[in] aRloc16          The RLOC16 to consider.
      *
-     * @returns TRUE if this object contains all service information in @p aCompare associated with @p aRloc16,
-     *          FALSE otherwise.
-     *
-     */
-    bool ContainsServices(const NetworkData &aCompare, uint16_t aRloc16) const;
-
-    /**
-     * This method indicates whether or not the Thread Network Data contains the service with given Service ID
-     * associated with @p aRloc16.
-     *
-     * @param[in]  aServiceId The Service ID to search for.
-     * @param[in]  aRloc16    The RLOC16 to consider.
-     *
-     * @returns TRUE if this object contains the service with given ID associated with @p aRloc16,
-     *          FALSE otherwise.
+     * @retval TRUE  if Network Data contains all the same entries as in @p aCompare for @p aRloc16.
+     * @retval FALSE if Network Data does not contains all the same entries as in @p aCompare for @p aRloc16.
      *
      */
-    bool ContainsService(uint8_t aServiceId, uint16_t aRloc16) const;
+    bool ContainsEntriesFrom(const NetworkData &aCompare, uint16_t aRloc16) const;
 
     /**
      * This method provides the next server RLOC16 in the Thread Network Data.
      *
-     * @param[inout]  aIterator  A reference to the Network Data iterator.
-     * @param[out]    aRloc16    The RLOC16 value.
+     * @param[in,out]  aIterator  A reference to the Network Data iterator.
+     * @param[out]     aRloc16    The RLOC16 value.
      *
-     * @retval OT_ERROR_NONE       Successfully found the next server.
-     * @retval OT_ERROR_NOT_FOUND  No subsequent server exists in the Thread Network Data.
+     * @retval kErrorNone       Successfully found the next server.
+     * @retval kErrorNotFound   No subsequent server exists in the Thread Network Data.
      *
      */
-    otError GetNextServer(Iterator &aIterator, uint16_t &aRloc16) const;
+    Error GetNextServer(Iterator &aIterator, uint16_t &aRloc16) const;
+
+    /**
+     * This method finds and returns the list of RLOCs of border routers providing external IPv6 connectivity.
+     *
+     * A border router is considered to provide external IPv6 connectivity if it has added at least one external route
+     * entry, or an on-mesh prefix with default-route and on-mesh flags set.
+     *
+     * This method should be used when the RLOC16s are present in the Network Data (when the Network Data contains the
+     * full set and not the stable subset).
+     *
+     * @param[in]      aRoleFilter   Indicates which devices to include (any role, router role only, or child only).
+     * @param[out]     aRlocs        Array to output the list of RLOCs.
+     * @param[in,out]  aRlocsLength  On entry, @p aRlocs array length (max number of elements).
+     *                               On exit, number RLOC16 entries added in @p aRlocs.
+     *
+     * @retval kErrorNone     Successfully found all RLOC16s and updated @p aRlocs and @p aRlocsLength.
+     * @retval kErrorNoBufs   Ran out of space in @p aRlocs array. @p aRlocs and @p aRlocsLength are still updated up
+     *                        to the maximum array length.
+     *
+     */
+    Error FindBorderRouters(RoleFilter aRoleFilter, uint16_t aRlocs[], uint8_t &aRlocsLength) const;
+
+    /**
+     * This method counts the number of border routers providing external IPv6 connectivity.
+     *
+     * A border router is considered to provide external IPv6 connectivity if it has added at least one external route
+     * entry, or an on-mesh prefix with default-route and on-mesh flags set.
+     *
+     * This method should be used when the RLOC16s are present in the Network Data (when the Network Data contains the
+     * full set and not the stable subset).
+     *
+     * @param[in] aRoleFilter   Indicates which RLOCs to include (any role, router only, or child only).
+     *
+     * @returns The number of border routers in Thread Network Data matching @p aRoleFilter.
+     *
+     */
+    uint8_t CountBorderRouters(RoleFilter aRoleFilter) const;
 
 protected:
     /**
-     * This method returns a pointer to the start of Network Data TLV sequence.
-     *
-     * @returns A pointer to the start of Network Data TLV sequence.
+     * This enumeration defines Service Data match mode.
      *
      */
-    NetworkDataTlv *GetTlvsStart(void) { return reinterpret_cast<NetworkDataTlv *>(mTlvs); }
+    enum ServiceMatchMode : uint8_t
+    {
+        kServicePrefixMatch, ///< Match the Service Data by prefix.
+        kServiceExactMatch,  ///< Match the full Service Data exactly.
+    };
 
     /**
      * This method returns a pointer to the start of Network Data TLV sequence.
@@ -339,494 +386,102 @@ protected:
      * @returns A pointer to the end of Network Data TLV sequence.
      *
      */
-    NetworkDataTlv *GetTlvsEnd(void) { return reinterpret_cast<NetworkDataTlv *>(mTlvs + mLength); }
-
-    /**
-     * This method returns a pointer to the end of Network Data TLV sequence.
-     *
-     * @returns A pointer to the end of Network Data TLV sequence.
-     *
-     */
     const NetworkDataTlv *GetTlvsEnd(void) const { return reinterpret_cast<const NetworkDataTlv *>(mTlvs + mLength); }
 
     /**
-     * This method returns a pointer to the Border Router TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Border Router TLV if one is found or NULL if no Border Router TLV exists.
-     *
-     */
-    static BorderRouterTlv *FindBorderRouter(PrefixTlv &aPrefix)
-    {
-        return const_cast<BorderRouterTlv *>(FindBorderRouter(const_cast<const PrefixTlv &>(aPrefix)));
-    }
-
-    /**
-     * This method returns a pointer to the Border Router TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Border Router TLV if one is found or NULL if no Border Router TLV exists.
-     *
-     */
-    static const BorderRouterTlv *FindBorderRouter(const PrefixTlv &aPrefix);
-
-    /**
-     * This method returns a pointer to the stable or non-stable Border Router TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     * @param[in]  aStable  TRUE to find a stable TLV, FALSE to find a TLV not marked as stable..
-     *
-     * @returns A pointer to the Border Router TLV if one is found or NULL if no Border Router TLV exists.
-     *
-     */
-    static BorderRouterTlv *FindBorderRouter(PrefixTlv &aPrefix, bool aStable)
-    {
-        return const_cast<BorderRouterTlv *>(FindBorderRouter(const_cast<const PrefixTlv &>(aPrefix), aStable));
-    }
-
-    /**
-     * This method returns a pointer to the stable or non-stable Border Router TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     * @param[in]  aStable  TRUE to find a stable TLV, FALSE to find a TLV not marked as stable..
-     *
-     * @returns A pointer to the Border Router TLV if one is found or NULL if no Border Router TLV exists.
-     *
-     */
-    static const BorderRouterTlv *FindBorderRouter(const PrefixTlv &aPrefix, bool aStable);
-
-    /**
-     * This method returns a pointer to the Has Route TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Has Route TLV if one is found or NULL if no Has Route TLV exists.
-     *
-     */
-    static HasRouteTlv *FindHasRoute(PrefixTlv &aPrefix)
-    {
-        return const_cast<HasRouteTlv *>(FindHasRoute(const_cast<const PrefixTlv &>(aPrefix)));
-    }
-
-    /**
-     * This method returns a pointer to the Has Route TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Has Route TLV if one is found or NULL if no Has Route TLV exists.
-     *
-     */
-    static const HasRouteTlv *FindHasRoute(const PrefixTlv &aPrefix);
-
-    /**
-     * This method returns a pointer to the stable or non-stable Has Route TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     * @param[in]  aStable  TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the Has Route TLV if one is found or NULL if no Has Route TLV exists.
-     *
-     */
-    static HasRouteTlv *FindHasRoute(PrefixTlv &aPrefix, bool aStable)
-    {
-        return const_cast<HasRouteTlv *>(FindHasRoute(const_cast<const PrefixTlv &>(aPrefix), aStable));
-    }
-
-    /**
-     * This method returns a pointer to the stable or non-stable Has Route TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     * @param[in]  aStable  TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the Has Route TLV if one is found or NULL if no Has Route TLV exists.
-     *
-     */
-    static const HasRouteTlv *FindHasRoute(const PrefixTlv &aPrefix, bool aStable);
-
-    /**
-     * This method returns a pointer to the Context TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Context TLV is one is found or NULL if no Context TLV exists.
-     *
-     */
-    static ContextTlv *FindContext(PrefixTlv &aPrefix)
-    {
-        return const_cast<ContextTlv *>(FindContext(const_cast<const PrefixTlv &>(aPrefix)));
-    }
-
-    /**
-     * This method returns a pointer to the Context TLV within a given Prefix TLV.
-     *
-     * @param[in]  aPrefix  A reference to the Prefix TLV.
-     *
-     * @returns A pointer to the Context TLV is one is found or NULL if no Context TLV exists.
-     *
-     */
-    static const ContextTlv *FindContext(const PrefixTlv &aPrefix);
-
-    /**
      * This method returns a pointer to a Prefix TLV.
      *
      * @param[in]  aPrefix        A pointer to an IPv6 prefix.
-     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix.
+     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix (in bits).
      *
-     * @returns A pointer to the Prefix TLV is one is found or NULL if no matching Prefix TLV exists.
-     *
-     */
-    PrefixTlv *FindPrefix(const uint8_t *aPrefix, uint8_t aPrefixLength)
-    {
-        return const_cast<PrefixTlv *>(const_cast<const NetworkData *>(this)->FindPrefix(aPrefix, aPrefixLength));
-    }
-
-    /**
-     * This method returns a pointer to a Prefix TLV.
-     *
-     * @param[in]  aPrefix        A pointer to an IPv6 prefix.
-     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix.
-     *
-     * @returns A pointer to the Prefix TLV is one is found or NULL if no matching Prefix TLV exists.
+     * @returns A pointer to the Prefix TLV if one is found or `nullptr` if no matching Prefix TLV exists.
      *
      */
     const PrefixTlv *FindPrefix(const uint8_t *aPrefix, uint8_t aPrefixLength) const;
 
     /**
-     * This method returns a pointer to a Prefix TLV in a specified tlvs buffer.
+     * This method returns a pointer to a Prefix TLV.
      *
-     * @param[in]  aPrefix        A pointer to an IPv6 prefix.
-     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix (in bits).
-     * @param[in]  aTlvs          A pointer to a specified tlvs buffer.
-     * @param[in]  aTlvsLength    The specified tlvs buffer length pointed to by @p aTlvs.
+     * @param[in]  aPrefix        An IPv6 prefix.
      *
-     * @returns A pointer to the Prefix TLV is one is found or NULL if no matching Prefix TLV exists.
+     * @returns A pointer to the Prefix TLV if one is found or `nullptr` if no matching Prefix TLV exists.
      *
      */
-    static PrefixTlv *FindPrefix(const uint8_t *aPrefix, uint8_t aPrefixLength, uint8_t *aTlvs, uint8_t aTlvsLength)
+    const PrefixTlv *FindPrefix(const Ip6::Prefix &aPrefix) const
     {
-        return const_cast<PrefixTlv *>(
-            FindPrefix(aPrefix, aPrefixLength, const_cast<const uint8_t *>(aTlvs), aTlvsLength));
-    }
-
-    /**
-     * This method returns a pointer to a Prefix TLV in a specified tlvs buffer.
-     *
-     * @param[in]  aPrefix        A pointer to an IPv6 prefix.
-     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix (in bits).
-     * @param[in]  aTlvs          A pointer to a specified tlvs buffer.
-     * @param[in]  aTlvsLength    The specified tlvs buffer length pointed to by @p aTlvs.
-     *
-     * @returns A pointer to the Prefix TLV is one is found or NULL if no matching Prefix TLV exists.
-     *
-     */
-    static const PrefixTlv *FindPrefix(const uint8_t *aPrefix,
-                                       uint8_t        aPrefixLength,
-                                       const uint8_t *aTlvs,
-                                       uint8_t        aTlvsLength);
-
-    /**
-     * This method returns a pointer to a matching Service TLV.
-     *
-     * @param[in]  aEnterpriseNumber  Enterprise Number.
-     * @param[in]  aServiceData       A pointer to a Service Data.
-     * @param[in]  aServiceDataLength The Service Data length pointed to by @p aServiceData.
-     *
-     * @returns A pointer to the Service TLV is one is found or NULL if no matching Service TLV exists.
-     *
-     */
-    ServiceTlv *FindService(uint32_t aEnterpriseNumber, const uint8_t *aServiceData, uint8_t aServiceDataLength)
-    {
-        return const_cast<ServiceTlv *>(
-            const_cast<const NetworkData *>(this)->FindService(aEnterpriseNumber, aServiceData, aServiceDataLength));
+        return FindPrefix(aPrefix.GetBytes(), aPrefix.GetLength());
     }
 
     /**
      * This method returns a pointer to a matching Service TLV.
      *
      * @param[in]  aEnterpriseNumber  Enterprise Number.
-     * @param[in]  aServiceData       A pointer to a Service Data.
-     * @param[in]  aServiceDataLength The Service Data length pointed to by @p aServiceData.
+     * @param[in]  aServiceData       A Service Data.
+     * @param[in]  aServiceMatchMode  The Service Data match mode.
      *
-     * @returns A pointer to the Service TLV is one is found or NULL if no matching Service TLV exists.
+     * @returns A pointer to the Service TLV if one is found or `nullptr` if no matching Service TLV exists.
      *
      */
-    const ServiceTlv *FindService(uint32_t       aEnterpriseNumber,
-                                  const uint8_t *aServiceData,
-                                  uint8_t        aServiceDataLength) const;
+    const ServiceTlv *FindService(uint32_t           aEnterpriseNumber,
+                                  const ServiceData &aServiceData,
+                                  ServiceMatchMode   aServiceMatchMode) const;
 
     /**
-     * This method returns a pointer to a Service TLV in a specified tlvs buffer.
+     * This method returns the next pointer to a matching Service TLV.
      *
+     * This method can be used to iterate over all Service TLVs that start with a given Service Data.
+     *
+     * @param[in]  aPrevServiceTlv    Set to `nullptr` to start from the beginning of the TLVs (finding the first
+     *                                matching Service TLV), or a pointer to the previous Service TLV returned from
+     *                                this method to iterate to the next matching Service TLV.
      * @param[in]  aEnterpriseNumber  Enterprise Number.
-     * @param[in]  aServiceData       A pointer to an Service Data.
-     * @param[in]  aServiceDataLength The Service Data length pointed to by @p aServiceData.
-     * @param[in]  aTlvs              A pointer to a specified tlvs buffer.
-     * @param[in]  aTlvsLength        The specified tlvs buffer length pointed to by @p aTlvs.
+     * @param[in]  aServiceData       A Service Data to match with Service TLVs.
+     * @param[in]  aServiceMatchMode  The Service Data match mode.
      *
-     * @returns A pointer to the Service TLV is one is found or NULL if no matching Service TLV exists.
+     * @returns A pointer to the next matching Service TLV if one is found or `nullptr` if it cannot be found.
      *
      */
-    static ServiceTlv *FindService(uint32_t       aEnterpriseNumber,
-                                   const uint8_t *aServiceData,
-                                   uint8_t        aServiceDataLength,
-                                   uint8_t *      aTlvs,
-                                   uint8_t        aTlvsLength)
-    {
-        return const_cast<ServiceTlv *>(FindService(aEnterpriseNumber, aServiceData, aServiceDataLength,
-                                                    const_cast<const uint8_t *>(aTlvs), aTlvsLength));
-    }
+    const ServiceTlv *FindNextService(const ServiceTlv * aPrevServiceTlv,
+                                      uint32_t           aEnterpriseNumber,
+                                      const ServiceData &aServiceData,
+                                      ServiceMatchMode   aServiceMatchMode) const;
 
     /**
-     * This method returns a pointer to a Service TLV in a specified tlvs buffer.
+     * This method returns the next pointer to a matching Thread Service TLV (with Thread Enterprise number).
      *
-     * @param[in]  aEnterpriseNumber  Enterprise Number.
-     * @param[in]  aServiceData       A pointer to an Service Data.
-     * @param[in]  aServiceDataLength The Service Data length pointed to by @p aServiceData.
-     * @param[in]  aTlvs              A pointer to a specified tlvs buffer.
-     * @param[in]  aTlvsLength        The specified tlvs buffer length pointed to by @p aTlvs.
+     * This method can be used to iterate over all Thread Service TLVs that start with a given Service Data.
      *
-     * @returns A pointer to the Service TLV is one is found or NULL if no matching Service TLV exists.
+     * @param[in]  aPrevServiceTlv    Set to `nullptr` to start from the beginning of the TLVs (finding the first
+     *                                matching Service TLV), or a pointer to the previous Service TLV returned from
+     *                                this method to iterate to the next matching Service TLV.
+     * @param[in]  aServiceData       A Service Data to match with Service TLVs.
+     * @param[in]  aServiceMatchMode  The Service Data match mode.
      *
-     */
-    static const ServiceTlv *FindService(uint32_t       aEnterpriseNumber,
-                                         const uint8_t *aServiceData,
-                                         uint8_t        aServiceDataLength,
-                                         const uint8_t *aTlvs,
-                                         uint8_t        aTlvsLength);
-
-    /**
-     * This method indicates whether there is space in Network Data to insert/append new info and grow it by a given
-     * number of bytes.
-     *
-     * @param[in]  aSize  The number of bytes to grow the Network Data.
-     *
-     * @retval TRUE   There is space to grow Network Data by @p aSize bytes.
-     * @retval FALSE  There is no space left to grow Network Data by @p aSize bytes.
+     * @returns A pointer to the next matching Thread Service TLV if one is found or `nullptr` if it cannot be found.
      *
      */
-    bool CanInsert(uint16_t aSize) const { return (mLength + aSize <= kMaxSize); }
-
-    /**
-     * This method grows the Network Data to append a TLV with a requested size.
-     *
-     * On success, the returned TLV is not initialized (i.e., the TLV Length field is not set) but the requested
-     * size for it (@p aTlvSize number of bytes) is reserved in the Network Data.
-     *
-     * @param[in]  aTlvSize  The size of TLV (total number of bytes including Type, Length, and Value fields)
-     *
-     * @returns A pointer to the TLV if there is space to grow Network Data, or NULL if no space to grow the Network
-     *          Data with requested @p aTlvSize number of bytes.
-     *
-     */
-    NetworkDataTlv *AppendTlv(uint16_t aTlvSize);
-
-    /**
-     * This method inserts bytes into the Network Data.
-     *
-     * @param[in]  aStart   A pointer to the beginning of the insertion.
-     * @param[in]  aLength  The number of bytes to insert.
-     *
-     */
-    void Insert(void *aStart, uint8_t aLength);
-
-    /**
-     * This method removes bytes from the Network Data.
-     *
-     * @param[in]  aRemoveStart   A pointer to the beginning of the removal.
-     * @param[in]  aRemoveLength  The number of bytes to remove.
-     *
-     */
-    void Remove(void *aRemoveStart, uint8_t aRemoveLength);
-
-    /**
-     * This method removes a TLV from the Network Data.
-     *
-     * @param[in]  aTlv   The TLV to remove.
-     *
-     */
-    void RemoveTlv(NetworkDataTlv *aTlv);
-
-    /**
-     * This method strips non-stable data from the Thread Network Data.
-     *
-     * @param[inout]  aData        A pointer to the Network Data to modify.
-     * @param[inout]  aDataLength  On entry, the size of the Network Data in bytes.  On exit, the size of the
-     *                             resulting Network Data in bytes.
-     *
-     */
-    static void RemoveTemporaryData(uint8_t *aData, uint8_t &aDataLength);
-
-    /**
-     * This method computes the number of IPv6 Prefix bits that match.
-     *
-     * @param[in]  a        A pointer to the first IPv6 Prefix.
-     * @param[in]  b        A pointer to the second IPv6 prefix.
-     * @param[in]  aLength  The maximum length in bits to compare.
-     *
-     * @returns The number of matching bits.
-     *
-     */
-    static int8_t PrefixMatch(const uint8_t *a, const uint8_t *b, uint8_t aLength);
+    const ServiceTlv *FindNextThreadService(const ServiceTlv * aPrevServiceTlv,
+                                            const ServiceData &aServiceData,
+                                            ServiceMatchMode   aServiceMatchMode) const;
 
     /**
      * This method sends a Server Data Notification message to the Leader.
      *
-     * @param[in]  aRloc16   The old RLOC16 value that was previously registered.
-     * @param[in]  aHandler  A function pointer that is called when the transaction ends.
-     * @param[in]  aContext  A pointer to arbitrary context information.
+     * @param[in]  aRloc16            The old RLOC16 value that was previously registered.
+     * @param[in]  aAppendNetDataTlv  Indicates whether or not to append Thread Network Data TLV to the message.
+     * @param[in]  aHandler           A function pointer that is called when the transaction ends.
+     * @param[in]  aContext           A pointer to arbitrary context information.
      *
-     * @retval OT_ERROR_NONE     Successfully enqueued the notification message.
-     * @retval OT_ERROR_NO_BUFS  Insufficient message buffers to generate the notification message.
-     *
-     */
-    otError SendServerDataNotification(uint16_t aRloc16, Coap::ResponseHandler aHandler, void *aContext);
-
-    /**
-     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aType   The TLV type to find.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
+     * @retval kErrorNone     Successfully enqueued the notification message.
+     * @retval kErrorNoBufs   Insufficient message buffers to generate the notification message.
      *
      */
-    static NetworkDataTlv *FindTlv(NetworkDataTlv *aStart, NetworkDataTlv *aEnd, NetworkDataTlv::Type aType)
-    {
-        return const_cast<NetworkDataTlv *>(
-            FindTlv(const_cast<const NetworkDataTlv *>(aStart), const_cast<const NetworkDataTlv *>(aEnd), aType));
-    }
-
-    /**
-     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aType   The TLV type to find.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    static const NetworkDataTlv *FindTlv(const NetworkDataTlv *aStart,
-                                         const NetworkDataTlv *aEnd,
-                                         NetworkDataTlv::Type  aType);
-
-    /**
-     * This static template method searches in a given sequence of TLVs to find the first TLV with a give template
-     * `TlvType`.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    template <typename TlvType> static TlvType *FindTlv(NetworkDataTlv *aStart, NetworkDataTlv *aEnd)
-    {
-        return static_cast<TlvType *>(FindTlv(aStart, aEnd, static_cast<NetworkDataTlv::Type>(TlvType::kType)));
-    }
-
-    /**
-     * This static template method searches in a given sequence of TLVs to find the first TLV with a give template
-     * `TlvType`.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    template <typename TlvType> static const TlvType *FindTlv(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd)
-    {
-        return static_cast<const TlvType *>(FindTlv(aStart, aEnd, static_cast<NetworkDataTlv::Type>(TlvType::kType)));
-    }
-
-    /**
-     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type and stable
-     * flag.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param [in] aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aType   The TLV type to find.
-     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    static NetworkDataTlv *FindTlv(NetworkDataTlv *     aStart,
-                                   NetworkDataTlv *     aEnd,
-                                   NetworkDataTlv::Type aType,
-                                   bool                 aStable)
-    {
-        return const_cast<NetworkDataTlv *>(FindTlv(const_cast<const NetworkDataTlv *>(aStart),
-                                                    const_cast<const NetworkDataTlv *>(aEnd), aType, aStable));
-    }
-
-    /**
-     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type and stable
-     * flag.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param [in] aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aType   The TLV type to find.
-     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    static const NetworkDataTlv *FindTlv(const NetworkDataTlv *aStart,
-                                         const NetworkDataTlv *aEnd,
-                                         NetworkDataTlv::Type  aType,
-                                         bool                  aStable);
-
-    /**
-     * This template static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type and
-     * stable flag.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param [in] aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    template <typename TlvType> static TlvType *FindTlv(NetworkDataTlv *aStart, NetworkDataTlv *aEnd, bool aStable)
-    {
-        return static_cast<TlvType *>(
-            FindTlv(aStart, aEnd, static_cast<NetworkDataTlv::Type>(TlvType::kType), aStable));
-    }
-
-    /**
-     * This template static method searches in a given sequence of TLVs to find the first TLV with a given TLV Type and
-     * stable flag.
-     *
-     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
-     * @param [in] aEnd    A pointer to the end of the sequence of TLVs.
-     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
-     *
-     * @returns A pointer to the TLV if found, or NULL if not found.
-     *
-     */
-    template <typename TlvType>
-    static const TlvType *FindTlv(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd, bool aStable)
-    {
-        return static_cast<const TlvType *>(
-            FindTlv(aStart, aEnd, static_cast<NetworkDataTlv::Type>(TlvType::kType), aStable));
-    }
-
-    uint8_t mTlvs[kMaxSize]; ///< The Network Data buffer.
-    uint8_t mLength;         ///< The number of valid bytes in @var mTlvs.
+    Error SendServerDataNotification(uint16_t              aRloc16,
+                                     bool                  aAppendNetDataTlv,
+                                     Coap::ResponseHandler aHandler,
+                                     void *                aContext) const;
 
 private:
-    enum
-    {
-        kDataResubmitDelay  = 300000, ///< DATA_RESUBMIT_DELAY (milliseconds) if the device itself is the server.
-        kProxyResubmitDelay = 5000,   ///< Resubmit delay (milliseconds) if deregister as the child server proxy.
-
-    };
-
     class NetworkDataIterator
     {
     public:
@@ -865,12 +520,9 @@ private:
         void MarkEntryAsNotNew(void) { SetEntryIndex(1); }
 
     private:
-        enum
-        {
-            kTlvPosition    = 0,
-            kSubTlvPosition = 1,
-            kEntryPosition  = 2,
-        };
+        static constexpr uint8_t kTlvPosition    = 0;
+        static constexpr uint8_t kSubTlvPosition = 1;
+        static constexpr uint8_t kEntryPosition  = 2;
 
         uint8_t GetTlvOffset(void) const { return mIteratorBuffer[kTlvPosition]; }
         uint8_t GetSubTlvOffset(void) const { return mIteratorBuffer[kSubTlvPosition]; }
@@ -900,15 +552,205 @@ private:
         ServiceConfig *      mService;
     };
 
-    otError Iterate(Iterator &aIterator, uint16_t aRloc16, Config &aConfig) const;
+    Error Iterate(Iterator &aIterator, uint16_t aRloc16, Config &aConfig) const;
 
-    static void RemoveTemporaryData(uint8_t *aData, uint8_t &aDataLength, PrefixTlv &aPrefix);
-    static void RemoveTemporaryData(uint8_t *aData, uint8_t &aDataLength, ServiceTlv &aService);
+    static bool MatchService(const ServiceTlv & aServiceTlv,
+                             uint32_t           aEnterpriseNumber,
+                             const ServiceData &aServiceData,
+                             ServiceMatchMode   aServiceMatchMode);
 
-    static void Remove(uint8_t *aData, uint8_t &aDataLength, uint8_t *aRemoveStart, uint8_t aRemoveLength);
-    static void RemoveTlv(uint8_t *aData, uint8_t &aDataLength, NetworkDataTlv *aTlv);
+    const uint8_t *mTlvs;
+    uint8_t        mLength;
+};
 
-    const Type mType;
+/**
+ * This class represents mutable Network Data.
+ *
+ */
+class MutableNetworkData : public NetworkData
+{
+    friend class NetworkData;
+    friend class Service::Manager;
+    friend class Publisher;
+
+public:
+    /**
+     * This constructor initializes the `MutableNetworkData`
+     *
+     * @param[in] aInstance     A reference to the OpenThread instance.
+     * @param[in] aTlvs         A pointer to the buffer to store the TLVs.
+     * @param[in] aLength       The current length of the Network Data.
+     * @param[in] aSize         Size of the buffer @p aTlvs (maximum length).
+     *
+     */
+    MutableNetworkData(Instance &aInstance, uint8_t *aTlvs, uint8_t aLength, uint8_t aSize)
+        : NetworkData(aInstance, aTlvs, aLength)
+        , mSize(aSize)
+    {
+    }
+
+    using NetworkData::GetBytes;
+    using NetworkData::GetLength;
+
+    /**
+     * This method returns the size of the buffer to store the mutable Network Data.
+     *
+     * @returns The size of the buffer.
+     *
+     */
+    uint8_t GetSize(void) const { return mSize; }
+
+    /**
+     * This method returns a pointer to start of the TLVs in `NetworkData`.
+     *
+     * @returns A pointer to start of the TLVs.
+     *
+     */
+    uint8_t *GetBytes(void) { return AsNonConst(AsConst(this)->GetBytes()); }
+
+    /**
+     * This method clears the network data.
+     *
+     */
+    void Clear(void) { mLength = 0; }
+
+protected:
+    /**
+     * This method sets the Network Data length.
+     *
+     * @param[in] aLength   The length.
+     *
+     */
+    void SetLength(uint8_t aLength) { mLength = aLength; }
+
+    using NetworkData::GetTlvsStart;
+
+    /**
+     * This method returns a pointer to the start of Network Data TLV sequence.
+     *
+     * @returns A pointer to the start of Network Data TLV sequence.
+     *
+     */
+    NetworkDataTlv *GetTlvsStart(void) { return AsNonConst(AsConst(this)->GetTlvsStart()); }
+
+    using NetworkData::GetTlvsEnd;
+
+    /**
+     * This method returns a pointer to the end of Network Data TLV sequence.
+     *
+     * @returns A pointer to the end of Network Data TLV sequence.
+     *
+     */
+    NetworkDataTlv *GetTlvsEnd(void) { return AsNonConst(AsConst(this)->GetTlvsEnd()); }
+
+    using NetworkData::FindPrefix;
+
+    /**
+     * This method returns a pointer to a Prefix TLV.
+     *
+     * @param[in]  aPrefix        A pointer to an IPv6 prefix.
+     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix (in bits).
+     *
+     * @returns A pointer to the Prefix TLV if one is found or `nullptr` if no matching Prefix TLV exists.
+     *
+     */
+    PrefixTlv *FindPrefix(const uint8_t *aPrefix, uint8_t aPrefixLength)
+    {
+        return AsNonConst(AsConst(this)->FindPrefix(aPrefix, aPrefixLength));
+    }
+
+    /**
+     * This method returns a pointer to a Prefix TLV.
+     *
+     * @param[in]  aPrefix        An IPv6 prefix.
+     *
+     * @returns A pointer to the Prefix TLV if one is found or `nullptr` if no matching Prefix TLV exists.
+     *
+     */
+    PrefixTlv *FindPrefix(const Ip6::Prefix &aPrefix) { return FindPrefix(aPrefix.GetBytes(), aPrefix.GetLength()); }
+
+    using NetworkData::FindService;
+
+    /**
+     * This method returns a pointer to a matching Service TLV.
+     *
+     * @param[in]  aEnterpriseNumber  Enterprise Number.
+     * @param[in]  aServiceData       A Service Data.
+     * @param[in]  aServiceMatchMode  The Service Data match mode.
+     *
+     * @returns A pointer to the Service TLV if one is found or `nullptr` if no matching Service TLV exists.
+     *
+     */
+    ServiceTlv *FindService(uint32_t           aEnterpriseNumber,
+                            const ServiceData &aServiceData,
+                            ServiceMatchMode   aServiceMatchMode)
+    {
+        return AsNonConst(AsConst(this)->FindService(aEnterpriseNumber, aServiceData, aServiceMatchMode));
+    }
+
+    /**
+     * This method indicates whether there is space in Network Data to insert/append new info and grow it by a given
+     * number of bytes.
+     *
+     * @param[in]  aSize  The number of bytes to grow the Network Data.
+     *
+     * @retval TRUE   There is space to grow Network Data by @p aSize bytes.
+     * @retval FALSE  There is no space left to grow Network Data by @p aSize bytes.
+     *
+     */
+    bool CanInsert(uint16_t aSize) const { return (mLength + aSize <= mSize); }
+
+    /**
+     * This method grows the Network Data to append a TLV with a requested size.
+     *
+     * On success, the returned TLV is not initialized (i.e., the TLV Length field is not set) but the requested
+     * size for it (@p aTlvSize number of bytes) is reserved in the Network Data.
+     *
+     * @param[in]  aTlvSize  The size of TLV (total number of bytes including Type, Length, and Value fields)
+     *
+     * @returns A pointer to the TLV if there is space to grow Network Data, or `nullptr` if no space to grow the
+     *          Network Data with requested @p aTlvSize number of bytes.
+     *
+     */
+    NetworkDataTlv *AppendTlv(uint16_t aTlvSize);
+
+    /**
+     * This method inserts bytes into the Network Data.
+     *
+     * @param[in]  aStart   A pointer to the beginning of the insertion.
+     * @param[in]  aLength  The number of bytes to insert.
+     *
+     */
+    void Insert(void *aStart, uint8_t aLength);
+
+    /**
+     * This method removes bytes from the Network Data.
+     *
+     * @param[in]  aRemoveStart   A pointer to the beginning of the removal.
+     * @param[in]  aRemoveLength  The number of bytes to remove.
+     *
+     */
+    void Remove(void *aRemoveStart, uint8_t aRemoveLength);
+
+    /**
+     * This method removes a TLV from the Network Data.
+     *
+     * @param[in]  aTlv   The TLV to remove.
+     *
+     */
+    void RemoveTlv(NetworkDataTlv *aTlv);
+
+    /**
+     * This method strips non-stable data from the Thread Network Data.
+     *
+     */
+    void RemoveTemporaryData(void);
+
+private:
+    void RemoveTemporaryDataIn(PrefixTlv &aPrefix);
+    void RemoveTemporaryDataIn(ServiceTlv &aService);
+
+    uint8_t mSize;
 };
 
 } // namespace NetworkData

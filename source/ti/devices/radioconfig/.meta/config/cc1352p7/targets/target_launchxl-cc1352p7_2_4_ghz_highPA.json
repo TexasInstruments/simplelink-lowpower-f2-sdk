@@ -25,7 +25,7 @@
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
         "RfDesign": "LP-CC1352P7-2_20dBm",
-        "DefaultCategory": "Settings",
+        "DefaultCategory": "Settings for Bluetooth Low Energy",
         "IoSettings": {
             "_name": "RF Switch",
             "IoPin": [
@@ -33,14 +33,14 @@
                     "_name": "DIO28",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
-                    "Tx": "Output high",
+                    "Tx": "Output low",
                     "Rx": "Output high"
                 },
                 {
                     "_name": "DIO29",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
-                    "Tx": "Output low",
+                    "Tx": "Output high",
                     "Rx": "Output low"
                 },
                 {

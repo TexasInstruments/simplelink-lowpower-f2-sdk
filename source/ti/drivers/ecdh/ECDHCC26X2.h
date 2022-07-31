@@ -124,9 +124,9 @@ extern "C" {
 #endif
 
 /* Exit the SWI and wait until an HWI call posts the SWI again */
-#define ECDHCC26X2_STATUS_FSM_RUN_PKA_OP       ECDH_STATUS_RESERVED - 0
+#define ECDHCC26X2_STATUS_FSM_RUN_PKA_OP ECDH_STATUS_RESERVED - 0
 /* Execute the next FSM state immediately without waiting for the next HWI */
-#define ECDHCC26X2_STATUS_FSM_RUN_FSM          ECDH_STATUS_RESERVED - 1
+#define ECDHCC26X2_STATUS_FSM_RUN_FSM    ECDH_STATUS_RESERVED - 1
 
 /*!
  *  @brief      ECDHCC26X2 states
@@ -137,7 +137,8 @@ extern "C" {
  *  The FSM controller will increment the state counter and iterate through
  *  states until it is told to stop or restart.
  */
-typedef enum {
+typedef enum
+{
     ECDHCC26X2_FSM_ERROR = 0,
 
     ECDHCC26X2_FSM_GEN_PUB_KEY_MULT_PRIVATE_KEY_BY_GENERATOR,
@@ -163,7 +164,8 @@ typedef enum {
  *  ECC26XX hardware attributes should be included in the board file
  *  and pointed to by the ECDH_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -174,9 +176,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } ECDHCC26X2_HWAttrs;
 
 /*!
@@ -184,18 +187,19 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                            isOpen;
-    bool                            operationInProgress;
-    bool                            operationCanceled;
-    int_fast16_t                    operationStatus;
-    ECDH_CallbackFxn                callbackFxn;
-    ECDH_ReturnBehavior             returnBehavior;
-    ECDH_Operation                  operation;
-    ECDH_OperationType              operationType;
-    ECDHCC26X2_FsmState             fsmState;
-    uint32_t                        semaphoreTimeout;
-    uint32_t                        resultAddress;
+typedef struct
+{
+    bool isOpen;
+    bool operationInProgress;
+    bool operationCanceled;
+    int_fast16_t operationStatus;
+    ECDH_CallbackFxn callbackFxn;
+    ECDH_ReturnBehavior returnBehavior;
+    ECDH_Operation operation;
+    ECDH_OperationType operationType;
+    ECDHCC26X2_FsmState fsmState;
+    uint32_t semaphoreTimeout;
+    uint32_t resultAddress;
 } ECDHCC26X2_Object;
 
 #ifdef __cplusplus

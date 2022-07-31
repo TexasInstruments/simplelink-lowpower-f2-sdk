@@ -2,7 +2,7 @@
  *  Do not modify this file; it is automatically 
  *  generated and any modifications will be overwritten.
  *
- * @(#) xdc-K04
+ * @(#) xdc-I08
  */
 import java.util.*;
 import org.mozilla.javascript.*;
@@ -11,7 +11,7 @@ import xdc.services.spec.Session;
 
 public class ti_uia_services
 {
-    static final String VERS = "@(#) xdc-K04\n";
+    static final String VERS = "@(#) xdc-I08\n";
 
     static final Proto.Elm $$T_Bool = Proto.Elm.newBool();
     static final Proto.Elm $$T_Num = Proto.Elm.newNum();
@@ -295,24 +295,60 @@ public class ti_uia_services
             sb.append("pkg.packageRepository = xdc.om['ti.uia.services$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
-            sb.append("'lib/release/ti.uia.services.aem4f',\n");
-            sb.append("'lib/release/ti.uia.services.am4f',\n");
-            sb.append("'lib/release/ti.uia.services.am4fg',\n");
-            sb.append("'lib/release/ti.uia.services.arm4f',\n");
+            sb.append("'lib/release/ti.uia.services.ae674',\n");
+            sb.append("'lib/release/ti.uia.services.ae66',\n");
+            sb.append("'lib/release/ti.uia.services.ae9',\n");
+            sb.append("'lib/release/ti.uia.services.aem3',\n");
             sb.append("'lib/release/ti.uia.services.aem4',\n");
+            sb.append("'lib/release/ti.uia.services.aem4f',\n");
+            sb.append("'lib/release/ti.uia.services.aer4ft',\n");
+            sb.append("'lib/release/ti.uia.services.aer5f',\n");
+            sb.append("'lib/release/ti.uia.services.aer5ft',\n");
+            sb.append("'lib/release/ti.uia.services.am3',\n");
             sb.append("'lib/release/ti.uia.services.am4',\n");
+            sb.append("'lib/release/ti.uia.services.am4f',\n");
+            sb.append("'lib/release/ti.uia.services.am33f',\n");
+            sb.append("'lib/release/ti.uia.services.am3g',\n");
             sb.append("'lib/release/ti.uia.services.am4g',\n");
+            sb.append("'lib/release/ti.uia.services.am4fg',\n");
+            sb.append("'lib/release/ti.uia.services.am33fg',\n");
+            sb.append("'lib/release/ti.uia.services.aa8fg',\n");
+            sb.append("'lib/release/ti.uia.services.aa9fg',\n");
+            sb.append("'lib/release/ti.uia.services.aa15fg',\n");
+            sb.append("'lib/release/ti.uia.services.aa53fg',\n");
+            sb.append("'lib/release/ti.uia.services.arm3',\n");
             sb.append("'lib/release/ti.uia.services.arm4',\n");
+            sb.append("'lib/release/ti.uia.services.arm4f',\n");
+            sb.append("'lib/release/ti.uia.services.arm33',\n");
+            sb.append("'lib/release/ti.uia.services.ae71',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
-            sb.append("['lib/release/ti.uia.services.aem4f', {target: 'ti.targets.arm.elf.M4F', suffix: 'em4f'}],\n");
-            sb.append("['lib/release/ti.uia.services.am4f', {target: 'ti.targets.arm.clang.M4F', suffix: 'm4f'}],\n");
-            sb.append("['lib/release/ti.uia.services.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
-            sb.append("['lib/release/ti.uia.services.arm4f', {target: 'iar.targets.arm.M4F', suffix: 'rm4f'}],\n");
+            sb.append("['lib/release/ti.uia.services.ae674', {target: 'ti.targets.elf.C674', suffix: 'e674'}],\n");
+            sb.append("['lib/release/ti.uia.services.ae66', {target: 'ti.targets.elf.C66', suffix: 'e66'}],\n");
+            sb.append("['lib/release/ti.uia.services.ae9', {target: 'ti.targets.arm.elf.Arm9', suffix: 'e9'}],\n");
+            sb.append("['lib/release/ti.uia.services.aem3', {target: 'ti.targets.arm.elf.M3', suffix: 'em3'}],\n");
             sb.append("['lib/release/ti.uia.services.aem4', {target: 'ti.targets.arm.elf.M4', suffix: 'em4'}],\n");
+            sb.append("['lib/release/ti.uia.services.aem4f', {target: 'ti.targets.arm.elf.M4F', suffix: 'em4f'}],\n");
+            sb.append("['lib/release/ti.uia.services.aer4ft', {target: 'ti.targets.arm.elf.R4Ft', suffix: 'er4ft'}],\n");
+            sb.append("['lib/release/ti.uia.services.aer5f', {target: 'ti.targets.arm.elf.R5F', suffix: 'er5f'}],\n");
+            sb.append("['lib/release/ti.uia.services.aer5ft', {target: 'ti.targets.arm.elf.R5Ft', suffix: 'er5ft'}],\n");
+            sb.append("['lib/release/ti.uia.services.am3', {target: 'ti.targets.arm.clang.M3', suffix: 'm3'}],\n");
             sb.append("['lib/release/ti.uia.services.am4', {target: 'ti.targets.arm.clang.M4', suffix: 'm4'}],\n");
+            sb.append("['lib/release/ti.uia.services.am4f', {target: 'ti.targets.arm.clang.M4F', suffix: 'm4f'}],\n");
+            sb.append("['lib/release/ti.uia.services.am33f', {target: 'ti.targets.arm.clang.M33F', suffix: 'm33f'}],\n");
+            sb.append("['lib/release/ti.uia.services.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
             sb.append("['lib/release/ti.uia.services.am4g', {target: 'gnu.targets.arm.M4', suffix: 'm4g'}],\n");
+            sb.append("['lib/release/ti.uia.services.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.am33fg', {target: 'gnu.targets.arm.M33F', suffix: 'm33fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.aa8fg', {target: 'gnu.targets.arm.A8F', suffix: 'a8fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.aa9fg', {target: 'gnu.targets.arm.A9F', suffix: 'a9fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.aa15fg', {target: 'gnu.targets.arm.A15F', suffix: 'a15fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.aa53fg', {target: 'gnu.targets.arm.A53F', suffix: 'a53fg'}],\n");
+            sb.append("['lib/release/ti.uia.services.arm3', {target: 'iar.targets.arm.M3', suffix: 'rm3'}],\n");
             sb.append("['lib/release/ti.uia.services.arm4', {target: 'iar.targets.arm.M4', suffix: 'rm4'}],\n");
+            sb.append("['lib/release/ti.uia.services.arm4f', {target: 'iar.targets.arm.M4F', suffix: 'rm4f'}],\n");
+            sb.append("['lib/release/ti.uia.services.arm33', {target: 'iar.targets.arm.M33', suffix: 'rm33'}],\n");
+            sb.append("['lib/release/ti.uia.services.ae71', {target: 'ti.targets.elf.C71', suffix: 'e71'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

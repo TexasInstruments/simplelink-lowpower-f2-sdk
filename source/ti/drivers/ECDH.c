@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,39 +49,42 @@ extern const uint_least8_t ECDH_count;
 
 const ECDH_Params ECDH_defaultParams = {
     .returnBehavior = ECDH_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== ECDH_open ========
  */
-ECDH_Handle ECDH_open(uint_least8_t index, const ECDH_Params *params) {
+__attribute__((weak)) ECDH_Handle ECDH_open(uint_least8_t index, const ECDH_Params *params)
+{
     DebugP_assert(index < ECDH_count);
 
-    ECDH_Config *config = (ECDH_Config*)&ECDH_config[index];
+    ECDH_Config *config = (ECDH_Config *)&ECDH_config[index];
     return ECDH_construct(config, params);
 }
 
 /*
  *  ======== ECDH_OperationGeneratePublicKey_init ========
  */
-void ECDH_OperationGeneratePublicKey_init(ECDH_OperationGeneratePublicKey *operation){
-    operation->curve = NULL;
-    operation->myPrivateKey = NULL;
-    operation->myPublicKey = NULL;
+void ECDH_OperationGeneratePublicKey_init(ECDH_OperationGeneratePublicKey *operation)
+{
+    operation->curve                 = NULL;
+    operation->myPrivateKey          = NULL;
+    operation->myPublicKey           = NULL;
     /* Default key material endianness is big endian*/
     operation->keyMaterialEndianness = ECDH_BIG_ENDIAN_KEY;
 }
 /*
  *  ======== ECDH_OperationComputeSharedSecret_init ========
  */
-void ECDH_OperationComputeSharedSecret_init(ECDH_OperationComputeSharedSecret *operation){
-    operation->curve = NULL;
-    operation->myPrivateKey = NULL;
-    operation->theirPublicKey = NULL;
-    operation->sharedSecret = NULL;
+void ECDH_OperationComputeSharedSecret_init(ECDH_OperationComputeSharedSecret *operation)
+{
+    operation->curve                 = NULL;
+    operation->myPrivateKey          = NULL;
+    operation->theirPublicKey        = NULL;
+    operation->sharedSecret          = NULL;
     /* Default key material endianness is big endian*/
     operation->keyMaterialEndianness = ECDH_BIG_ENDIAN_KEY;
 }

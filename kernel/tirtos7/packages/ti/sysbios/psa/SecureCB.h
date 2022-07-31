@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__IAR_SYSTEMS_ICC__)
 #ifndef __STATIC_INLINE
 #define __STATIC_INLINE static inline
 #endif
@@ -100,8 +100,7 @@ void SecureCB_init(void);
  *
  *  This API is only available to non-secure code
  */
-SecureCB_Handle SecureCB_construct(SecureCB_Object *scb, SecureCB_FuncPtr fxn,
-        SecureCB_Arg arg);
+SecureCB_Handle SecureCB_construct(SecureCB_Object *scb, SecureCB_FuncPtr fxn, SecureCB_Arg arg);
 
 /*
  *  ======== SecureCB_destruct ========

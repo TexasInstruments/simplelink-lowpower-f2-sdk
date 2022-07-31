@@ -38,11 +38,8 @@
 
 #include <stdint.h>
 
-#if (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
-#include "backbone_router/leader.hpp"
-#endif
-
 #include "coap/coap.hpp"
+#include "common/const_cast.hpp"
 #include "common/timer.hpp"
 #include "net/ip6_address.hpp"
 #include "thread/mle_router.hpp"
@@ -66,7 +63,7 @@ namespace NetworkData {
  * This class implements the Thread Network Data maintained by the Leader.
  *
  */
-class LeaderBase : public NetworkData
+class LeaderBase : public MutableNetworkData
 {
 public:
     /**
@@ -75,7 +72,11 @@ public:
      * @param[in]  aInstance     A reference to the OpenThread instance.
      *
      */
-    explicit LeaderBase(Instance &aInstance);
+    explicit LeaderBase(Instance &aInstance)
+        : MutableNetworkData(aInstance, mTlvBuffer, 0, sizeof(mTlvBuffer))
+    {
+        Reset();
+    }
 
     /**
      * This method reset the Thread Network Data.
@@ -84,20 +85,14 @@ public:
     void Reset(void);
 
     /**
-     * This method returns the Thread Network Data version.
+     * This method returns the Data Version value for a type (full set or stable subset).
      *
-     * @returns The Thread Network Data version.
+     * @param[in] aType   The Network Data type (full set or stable subset).
      *
-     */
-    uint8_t GetVersion(void) const { return mVersion; }
-
-    /**
-     * This method returns the Thread Network Data stable version.
-     *
-     * @returns The Thread Network Data stable version.
+     * @returns The Data Version value for @p aType.
      *
      */
-    uint8_t GetStableVersion(void) const { return mStableVersion; }
+    uint8_t GetVersion(Type aType) const { return (aType == kFullSet) ? mVersion : mStableVersion; }
 
     /**
      * This method retrieves the 6LoWPAN Context information based on a given IPv6 address.
@@ -105,11 +100,11 @@ public:
      * @param[in]   aAddress  A reference to an IPv6 address.
      * @param[out]  aContext  A reference to 6LoWPAN Context information.
      *
-     * @retval OT_ERROR_NONE       Successfully retrieved 6LoWPAN Context information.
-     * @retval OT_ERROR_NOT_FOUND  Could not find the 6LoWPAN Context information.
+     * @retval kErrorNone       Successfully retrieved 6LoWPAN Context information.
+     * @retval kErrorNotFound   Could not find the 6LoWPAN Context information.
      *
      */
-    otError GetContext(const Ip6::Address &aAddress, Lowpan::Context &aContext) const;
+    Error GetContext(const Ip6::Address &aAddress, Lowpan::Context &aContext) const;
 
     /**
      * This method retrieves the 6LoWPAN Context information based on a given Context ID.
@@ -117,11 +112,11 @@ public:
      * @param[in]   aContextId  The Context ID value.
      * @param[out]  aContext    A reference to the 6LoWPAN Context information.
      *
-     * @retval OT_ERROR_NONE       Successfully retrieved 6LoWPAN Context information.
-     * @retval OT_ERROR_NOT_FOUND  Could not find the 6LoWPAN Context information.
+     * @retval kErrorNone       Successfully retrieved 6LoWPAN Context information.
+     * @retval kErrorNotFound   Could not find the 6LoWPAN Context information.
      *
      */
-    otError GetContext(uint8_t aContextId, Lowpan::Context &aContext) const;
+    Error GetContext(uint8_t aContextId, Lowpan::Context &aContext) const;
 
     /**
      * This method indicates whether or not the given IPv6 address is on-mesh.
@@ -137,65 +132,51 @@ public:
     /**
      * This method performs a route lookup using the Network Data.
      *
-     * @param[in]   aSource       A reference to the IPv6 source address.
-     * @param[in]   aDestination  A reference to the IPv6 destination address.
-     * @param[out]  aPrefixMatch  A pointer to the longest prefix match length in bits.
-     * @param[out]  aRloc16       A pointer to the RLOC16 for the selected route.
+     * @param[in]   aSource             A reference to the IPv6 source address.
+     * @param[in]   aDestination        A reference to the IPv6 destination address.
+     * @param[out]  aPrefixMatchLength  A pointer to output the longest prefix match length in bits.
+     * @param[out]  aRloc16             A pointer to the RLOC16 for the selected route.
      *
-     * @retval OT_ERROR_NONE      Successfully found a route.
-     * @retval OT_ERROR_NO_ROUTE  No valid route was found.
+     * @retval kErrorNone      Successfully found a route.
+     * @retval kErrorNoRoute   No valid route was found.
      *
      */
-    otError RouteLookup(const Ip6::Address &aSource,
-                        const Ip6::Address &aDestination,
-                        uint8_t *           aPrefixMatch,
-                        uint16_t *          aRloc16) const;
+    Error RouteLookup(const Ip6::Address &aSource,
+                      const Ip6::Address &aDestination,
+                      uint8_t *           aPrefixMatchLength,
+                      uint16_t *          aRloc16) const;
 
     /**
      * This method is used by non-Leader devices to set newly received Network Data from the Leader.
      *
      * @param[in]  aVersion        The Version value.
      * @param[in]  aStableVersion  The Stable Version value.
-     * @param[in]  aStableOnly     TRUE if storing only the stable data, FALSE otherwise.
+     * @param[in]  aType           The Network Data type to set, the full set or stable subset.
      * @param[in]  aMessage        A reference to the MLE message.
      * @param[in]  aMessageOffset  The offset in @p aMessage for the Network Data TLV.
      *
-     * @retval OT_ERROR_NONE   Successfully set the network data.
-     * @retval OT_ERROR_PARSE  Network Data TLV in @p aMessage is not valid.
+     * @retval kErrorNone   Successfully set the network data.
+     * @retval kErrorParse  Network Data TLV in @p aMessage is not valid.
      *
      */
-    otError SetNetworkData(uint8_t        aVersion,
-                           uint8_t        aStableVersion,
-                           bool           aStableOnly,
-                           const Message &aMessage,
-                           uint16_t       aMessageOffset);
-
-    /**
-     * This method sends a Server Data Notification message to the Leader indicating an invalid RLOC16.
-     *
-     * @param[in]  aRloc16  The invalid RLOC16 to notify.
-     *
-     * @retval OT_ERROR_NONE     Successfully enqueued the notification message.
-     * @retval OT_ERROR_NO_BUFS  Insufficient message buffers to generate the notification message.
-     *
-     */
-    otError SendServerDataNotification(uint16_t aRloc16);
+    Error SetNetworkData(uint8_t        aVersion,
+                         uint8_t        aStableVersion,
+                         Type           aType,
+                         const Message &aMessage,
+                         uint16_t       aMessageOffset);
 
     /**
      * This method returns a pointer to the Commissioning Data.
      *
-     * @returns A pointer to the Commissioning Data or NULL if no Commissioning Data exists.
+     * @returns A pointer to the Commissioning Data or `nullptr` if no Commissioning Data exists.
      *
      */
-    CommissioningDataTlv *GetCommissioningData(void)
-    {
-        return const_cast<CommissioningDataTlv *>(const_cast<const LeaderBase *>(this)->GetCommissioningData());
-    }
+    CommissioningDataTlv *GetCommissioningData(void) { return AsNonConst(AsConst(this)->GetCommissioningData()); }
 
     /**
      * This method returns a pointer to the Commissioning Data.
      *
-     * @returns A pointer to the Commissioning Data or NULL if no Commissioning Data exists.
+     * @returns A pointer to the Commissioning Data or `nullptr` if no Commissioning Data exists.
      *
      */
     const CommissioningDataTlv *GetCommissioningData(void) const;
@@ -205,12 +186,12 @@ public:
      *
      * @param[in]  aType  The TLV type value.
      *
-     * @returns A pointer to the Commissioning Data Sub-TLV or NULL if no Sub-TLV exists.
+     * @returns A pointer to the Commissioning Data Sub-TLV or `nullptr` if no Sub-TLV exists.
      *
      */
     MeshCoP::Tlv *GetCommissioningDataSubTlv(MeshCoP::Tlv::Type aType)
     {
-        return const_cast<MeshCoP::Tlv *>(const_cast<const LeaderBase *>(this)->GetCommissioningDataSubTlv(aType));
+        return AsNonConst(AsConst(this)->GetCommissioningDataSubTlv(aType));
     }
 
     /**
@@ -218,7 +199,7 @@ public:
      *
      * @param[in]  aType  The TLV type value.
      *
-     * @returns A pointer to the Commissioning Data Sub-TLV or NULL if no Sub-TLV exists.
+     * @returns A pointer to the Commissioning Data Sub-TLV or `nullptr` if no Sub-TLV exists.
      *
      */
     const MeshCoP::Tlv *GetCommissioningDataSubTlv(MeshCoP::Tlv::Type aType) const;
@@ -239,70 +220,86 @@ public:
      * @param[in]  aValue        A pointer to the Commissioning Data value.
      * @param[in]  aValueLength  The length of @p aValue.
      *
-     * @retval OT_ERROR_NONE     Successfully added the Commissioning Data.
-     * @retval OT_ERROR_NO_BUFS  Insufficient space to add the Commissioning Data.
+     * @retval kErrorNone     Successfully added the Commissioning Data.
+     * @retval kErrorNoBufs   Insufficient space to add the Commissioning Data.
      *
      */
-    otError SetCommissioningData(const uint8_t *aValue, uint8_t aValueLength);
+    Error SetCommissioningData(const uint8_t *aValue, uint8_t aValueLength);
 
     /**
-     * This method gets the Rloc of Dhcp Agent of specified contextId.
+     * This method checks if the steering data includes a Joiner.
      *
-     * @param[in]  aContextId      A pointer to the Commissioning Data value.
-     * @param[out] aRloc16         The reference of which for output the Rloc16.
+     * @param[in]  aEui64             A reference to the Joiner's IEEE EUI-64.
      *
-     * @retval OT_ERROR_NONE       Successfully get the Rloc of Dhcp Agent.
-     * @retval OT_ERROR_NOT_FOUND  The specified @p aContextId could not be found.
+     * @retval kErrorNone          @p aEui64 is in the bloom filter.
+     * @retval kErrorInvalidState  No steering data present.
+     * @retval kErrorNotFound      @p aEui64 is not in the bloom filter.
      *
      */
-    otError GetRlocByContextId(uint8_t aContextId, uint16_t &aRloc16) const;
+    Error SteeringDataCheckJoiner(const Mac::ExtAddress &aEui64) const;
+
+    /**
+     * This method checks if the steering data includes a Joiner with a given discerner value.
+     *
+     * @param[in]  aDiscerner         A reference to the Joiner Discerner.
+     *
+     * @retval kErrorNone          @p aDiscerner is in the bloom filter.
+     * @retval kErrorInvalidState  No steering data present.
+     * @retval kErrorNotFound      @p aDiscerner is not in the bloom filter.
+     *
+     */
+    Error SteeringDataCheckJoiner(const MeshCoP::JoinerDiscerner &aDiscerner) const;
 
     /**
      * This method gets the Service ID for the specified service.
      *
      * @param[in]  aEnterpriseNumber  Enterprise Number (IANA-assigned) for Service TLV
-     * @param[in]  aServiceData       A pointer to the Service Data
-     * @param[in]  aServiceDataLength The length of @p aServiceData in bytes.
-     * @param[in]  aServerStable      The Stable flag value for Server TLV
+     * @param[in]  aServiceData       The Service Data.
+     * @param[in]  aServerStable      The Stable flag value for Server TLV.
      * @param[out] aServiceId         A reference where to put the Service ID.
      *
-     * @retval OT_ERROR_NONE       Successfully got the Service ID.
-     * @retval OT_ERROR_NOT_FOUND  The specified service was not found.
+     * @retval kErrorNone       Successfully got the Service ID.
+     * @retval kErrorNotFound   The specified service was not found.
      *
      */
-    otError GetServiceId(uint32_t       aEnterpriseNumber,
-                         const uint8_t *aServiceData,
-                         uint8_t        aServiceDataLength,
-                         bool           aServerStable,
-                         uint8_t &      aServiceId) const;
+    Error GetServiceId(uint32_t           aEnterpriseNumber,
+                       const ServiceData &aServiceData,
+                       bool               aServerStable,
+                       uint8_t &          aServiceId) const;
 
-#if (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
     /**
-     * This method gets the Primary Backbone Router (PBBR) in the Thread Network.
+     * This methods gets the preferred NAT64 prefix from network data.
      *
-     * @param[out]  aConfig      The Primary Backbone Router configuration.
+     * The returned prefix is the highest preference external route entry in Network Data with NAT64 flag set. If there
+     * are multiple such entries the first one is returned.
      *
-     * @retval OT_ERROR_NONE       Successfully got the Primary Backbone Router configuration.
-     * @retval OT_ERROR_NOT_FOUND  No Backbone Router Service in the Thread Network.
+     * @param[out] aConfig      A reference to an `ExternalRouteConfig` to return the prefix.
+     *
+     * @retval kErrorNone       Found the NAT64 prefix and updated @p aConfig.
+     * @retval kErrorNotFound   Could not find any NAT64 entry.
      *
      */
-    otError GetBackboneRouterPrimary(BackboneRouter::BackboneRouterConfig &aConfig) const;
-#endif
+    Error GetPreferredNat64Prefix(ExternalRouteConfig &aConfig) const;
 
 protected:
     uint8_t mStableVersion;
     uint8_t mVersion;
 
 private:
+    using FilterIndexes = MeshCoP::SteeringData::HashBitIndexes;
+
     const PrefixTlv *FindNextMatchingPrefix(const Ip6::Address &aAddress, const PrefixTlv *aPrevTlv) const;
 
-    otError RemoveCommissioningData(void);
+    void RemoveCommissioningData(void);
 
-    otError ExternalRouteLookup(uint8_t             aDomainId,
-                                const Ip6::Address &aDestination,
-                                uint8_t *           aPrefixMatch,
-                                uint16_t *          aRloc16) const;
-    otError DefaultRouteLookup(const PrefixTlv &aPrefix, uint16_t *aRloc16) const;
+    Error ExternalRouteLookup(uint8_t             aDomainId,
+                              const Ip6::Address &aDestination,
+                              uint8_t *           aPrefixMatchLength,
+                              uint16_t *          aRloc16) const;
+    Error DefaultRouteLookup(const PrefixTlv &aPrefix, uint16_t *aRloc16) const;
+    Error SteeringDataCheck(const FilterIndexes &aFilterIndexes) const;
+
+    uint8_t mTlvBuffer[kMaxSize];
 };
 
 /**
@@ -315,7 +312,11 @@ private:
 #if OPENTHREAD_MTD
 namespace ot {
 namespace NetworkData {
-typedef class LeaderBase Leader;
+class Leader : public LeaderBase
+{
+public:
+    using LeaderBase::LeaderBase;
+};
 } // namespace NetworkData
 } // namespace ot
 #elif OPENTHREAD_FTD

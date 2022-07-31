@@ -63,8 +63,9 @@
 #include <openthread/coap.h>
 #include <openthread/ip6.h>
 #include <openthread/link.h>
-#include <openthread/platform/uart.h>
 #include <openthread/thread.h>
+
+#include <utils/uart.h>
 
 /* driverlib specific header */
 #include <ti/devices/DeviceFamily.h>
@@ -220,13 +221,14 @@ const attrDesc_t coapAttr = {
     attrTemperature,
 };
 
-static Button_Handle rightButtonHandle;
-
 /* Holds the server setup state: 1 indicates CoAP server has been setup */
 static bool serverSetup;
 
+#if TIOP_CUI
 /* String variable for copying over app lines to CUI */
 static char statusBuf[MAX_STATUS_LINE_VALUE_LEN];
+static Button_Handle rightButtonHandle;
+#endif
 
 /******************************************************************************
  Function Prototype
@@ -468,21 +470,6 @@ exit:
 }
 
 /**
- * @brief Handles the key press events.
- *
- * @param _buttonHandle identifies which keys were pressed
- * @param _buttonEvents identifies the event that occurred on the key
- * @return None
- */
-void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
-{
-    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
-    {
-        TempSensor_postEvt(TempSensor_evtKeyRight);
-    }
-}
-
-/**
  * @brief Processes the OT stack events
  *
  * @param event             event identifier
@@ -584,6 +571,9 @@ static void processEvent(TempSensor_evt event)
 
         case TempSensor_evtNwkJoined:
         {
+#if TIOP_CUI
+            otNetworkKey networkKey;
+#endif /* TIOP_CUI */
             DISPUTILS_SERIALPRINTF( 1, 0, "Joined Nwk");
 
             (void)OtStack_setupNetwork();
@@ -593,7 +583,8 @@ static void processEvent(TempSensor_evt event)
             tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
             tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
             tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-            tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+            otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+            tiopCUIUpdateNetworkKey(networkKey);
             tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
             OtRtosApi_unlock();
 #endif /* TIOP_CUI */
@@ -666,6 +657,8 @@ static void processEvent(TempSensor_evt event)
                 case OT_DEVICE_ROLE_ROUTER:
                 case OT_DEVICE_ROLE_LEADER:
                 {
+                    otNetworkKey networkKey;
+
                     tiopCUIUpdateConnStatus(CUI_conn_joined);
 
                     OtRtosApi_lock();
@@ -673,7 +666,8 @@ static void processEvent(TempSensor_evt event)
                     tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
                     tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
                     tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-                    tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+                    otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+                    tiopCUIUpdateNetworkKey(networkKey);
                     tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
                     OtRtosApi_unlock();
                     break;
@@ -731,6 +725,21 @@ void TempSensor_postEvt(TempSensor_evt event)
 }
 
 #if TIOP_CUI
+/**
+ * @brief Handles the key press events.
+ *
+ * @param _buttonHandle identifies which keys were pressed
+ * @param _buttonEvents identifies the event that occurred on the key
+ * @return None
+ */
+void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
+{
+    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
+    {
+        TempSensor_postEvt(TempSensor_evtKeyRight);
+    }
+}
+
 /**
  * documented in tiop_ui.h
  */
@@ -857,8 +866,10 @@ void *TempSensor_task(void *arg0)
     otLinkSetPollPeriod(OtInstance_get(), TIOP_CONFIG_POLL_PERIOD);
     OtRtosApi_unlock();
 
+#if TIOP_CUI
     snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_RED "Temperature" CUI_COLOR_RESET "] " CUI_COLOR_WHITE "%s" CUI_COLOR_RESET " [" CUI_COLOR_RED "Poll Period" CUI_COLOR_RESET "] " CUI_COLOR_WHITE "%d", (char*)attrTemperature, TIOP_CONFIG_POLL_PERIOD);
     tiopCUIInit((char*)statusBuf, &rightButtonHandle);
+#endif
 
     DISPUTILS_SERIALPRINTF(0, 0, "Temperature Sensor init!");
 
@@ -912,4 +923,6 @@ void *TempSensor_task(void *arg0)
 
         processEvent(msg.evt);
     }
+
+    return NULL;
 }

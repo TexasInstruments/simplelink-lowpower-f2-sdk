@@ -38,520 +38,493 @@
 
 #include <openthread/dataset.h>
 #include <openthread/dataset_ftd.h>
+#include <openthread/dataset_updater.h>
 
 #include "cli/cli.hpp"
-#include "cli/cli_server.hpp"
 
 namespace ot {
 namespace Cli {
 
-const Dataset::Command Dataset::sCommands[] = {
-    {"help", &Dataset::ProcessHelp},
-    {"active", &Dataset::ProcessActive},
-    {"activetimestamp", &Dataset::ProcessActiveTimestamp},
-    {"channel", &Dataset::ProcessChannel},
-    {"channelmask", &Dataset::ProcessChannelMask},
-    {"clear", &Dataset::ProcessClear},
-    {"commit", &Dataset::ProcessCommit},
-    {"delay", &Dataset::ProcessDelay},
-    {"extpanid", &Dataset::ProcessExtPanId},
-    {"init", &Dataset::ProcessInit},
-    {"masterkey", &Dataset::ProcessMasterKey},
-    {"meshlocalprefix", &Dataset::ProcessMeshLocalPrefix},
-    {"mgmtgetcommand", &Dataset::ProcessMgmtGetCommand},
-    {"mgmtsetcommand", &Dataset::ProcessMgmtSetCommand},
-    {"networkname", &Dataset::ProcessNetworkName},
-    {"panid", &Dataset::ProcessPanId},
-    {"pending", &Dataset::ProcessPending},
-    {"pendingtimestamp", &Dataset::ProcessPendingTimestamp},
-    {"pskc", &Dataset::ProcessPskc},
-    {"securitypolicy", &Dataset::ProcessSecurityPolicy},
-};
-
 otOperationalDataset Dataset::sDataset;
-
-void Dataset::OutputBytes(const uint8_t *aBytes, uint8_t aLength)
-{
-    for (int i = 0; i < aLength; i++)
-    {
-        mInterpreter.mServer->OutputFormat("%02x", aBytes[i]);
-    }
-}
 
 otError Dataset::Print(otOperationalDataset &aDataset)
 {
     if (aDataset.mComponents.mIsPendingTimestampPresent)
     {
-        mInterpreter.mServer->OutputFormat("Pending Timestamp: %lu\r\n", aDataset.mPendingTimestamp);
+        OutputLine("Pending Timestamp: %lu", aDataset.mPendingTimestamp);
     }
 
     if (aDataset.mComponents.mIsActiveTimestampPresent)
     {
-        mInterpreter.mServer->OutputFormat("Active Timestamp: %lu\r\n", aDataset.mActiveTimestamp);
+        OutputLine("Active Timestamp: %lu", aDataset.mActiveTimestamp);
     }
 
     if (aDataset.mComponents.mIsChannelPresent)
     {
-        mInterpreter.mServer->OutputFormat("Channel: %d\r\n", aDataset.mChannel);
+        OutputLine("Channel: %d", aDataset.mChannel);
     }
 
     if (aDataset.mComponents.mIsChannelMaskPresent)
     {
-        mInterpreter.mServer->OutputFormat("Channel Mask: %08x\r\n", aDataset.mChannelMask);
+        OutputLine("Channel Mask: 0x%08x", aDataset.mChannelMask);
     }
 
     if (aDataset.mComponents.mIsDelayPresent)
     {
-        mInterpreter.mServer->OutputFormat("Delay: %d\r\n", aDataset.mDelay);
+        OutputLine("Delay: %d", aDataset.mDelay);
     }
 
     if (aDataset.mComponents.mIsExtendedPanIdPresent)
     {
-        mInterpreter.mServer->OutputFormat("Ext PAN ID: ");
-        OutputBytes(aDataset.mExtendedPanId.m8, sizeof(aDataset.mExtendedPanId));
-        mInterpreter.mServer->OutputFormat("\r\n");
+        OutputFormat("Ext PAN ID: ");
+        OutputBytesLine(aDataset.mExtendedPanId.m8);
     }
 
     if (aDataset.mComponents.mIsMeshLocalPrefixPresent)
     {
-        const uint8_t *prefix = aDataset.mMeshLocalPrefix.m8;
-        mInterpreter.mServer->OutputFormat(
-            "Mesh Local Prefix: %x:%x:%x:%x/64\r\n", (static_cast<uint16_t>(prefix[0]) << 8) | prefix[1],
-            (static_cast<uint16_t>(prefix[2]) << 8) | prefix[3], (static_cast<uint16_t>(prefix[4]) << 8) | prefix[5],
-            (static_cast<uint16_t>(prefix[6]) << 8) | prefix[7]);
+        OutputFormat("Mesh Local Prefix: ");
+        OutputIp6PrefixLine(aDataset.mMeshLocalPrefix);
     }
 
-    if (aDataset.mComponents.mIsMasterKeyPresent)
+    if (aDataset.mComponents.mIsNetworkKeyPresent)
     {
-        mInterpreter.mServer->OutputFormat("Master Key: ");
-        OutputBytes(aDataset.mMasterKey.m8, sizeof(aDataset.mMasterKey));
-        mInterpreter.mServer->OutputFormat("\r\n");
+        OutputFormat("Network Key: ");
+        OutputBytesLine(aDataset.mNetworkKey.m8);
     }
 
     if (aDataset.mComponents.mIsNetworkNamePresent)
     {
-        mInterpreter.mServer->OutputFormat("Network Name: ");
-        mInterpreter.mServer->OutputFormat("%.*s\r\n", static_cast<uint16_t>(sizeof(aDataset.mNetworkName)),
-                                           aDataset.mNetworkName.m8);
+        OutputFormat("Network Name: ");
+        OutputLine("%s", aDataset.mNetworkName.m8);
     }
 
     if (aDataset.mComponents.mIsPanIdPresent)
     {
-        mInterpreter.mServer->OutputFormat("PAN ID: 0x%04x\r\n", aDataset.mPanId);
+        OutputLine("PAN ID: 0x%04x", aDataset.mPanId);
     }
 
     if (aDataset.mComponents.mIsPskcPresent)
     {
-        mInterpreter.mServer->OutputFormat("PSKc: ");
-        OutputBytes(aDataset.mPskc.m8, sizeof(aDataset.mPskc.m8));
-        mInterpreter.mServer->OutputFormat("\r\n");
+        OutputFormat("PSKc: ");
+        OutputBytesLine(aDataset.mPskc.m8);
     }
 
     if (aDataset.mComponents.mIsSecurityPolicyPresent)
     {
-        mInterpreter.mServer->OutputFormat("Security Policy: %d, ", aDataset.mSecurityPolicy.mRotationTime);
-
-        if (aDataset.mSecurityPolicy.mFlags & OT_SECURITY_POLICY_OBTAIN_MASTER_KEY)
-        {
-            mInterpreter.mServer->OutputFormat("o");
-        }
-
-        if (aDataset.mSecurityPolicy.mFlags & OT_SECURITY_POLICY_NATIVE_COMMISSIONING)
-        {
-            mInterpreter.mServer->OutputFormat("n");
-        }
-
-        if (aDataset.mSecurityPolicy.mFlags & OT_SECURITY_POLICY_ROUTERS)
-        {
-            mInterpreter.mServer->OutputFormat("r");
-        }
-
-        if (aDataset.mSecurityPolicy.mFlags & OT_SECURITY_POLICY_EXTERNAL_COMMISSIONER)
-        {
-            mInterpreter.mServer->OutputFormat("c");
-        }
-
-        if (aDataset.mSecurityPolicy.mFlags & OT_SECURITY_POLICY_BEACONS)
-        {
-            mInterpreter.mServer->OutputFormat("b");
-        }
-
-        mInterpreter.mServer->OutputFormat("\r\n");
+        OutputFormat("Security Policy: ");
+        OutputSecurityPolicy(aDataset.mSecurityPolicy);
     }
 
     return OT_ERROR_NONE;
 }
 
-otError Dataset::Process(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("init")>(Arg aArgs[])
 {
-    otError error = OT_ERROR_INVALID_COMMAND;
+    otError error = OT_ERROR_INVALID_ARGS;
 
-    if (aArgsLength == 0)
+    if (aArgs[0] == "active")
     {
-        ExitNow(error = Print(sDataset));
+        error = otDatasetGetActive(GetInstancePtr(), &sDataset);
     }
-
-    for (size_t i = 0; i < OT_ARRAY_LENGTH(sCommands); i++)
+    else if (aArgs[0] == "pending")
     {
-        if (strcmp(aArgs[0], sCommands[i].mName) == 0)
-        {
-            error = (this->*sCommands[i].mCommand)(aArgsLength - 1, aArgs + 1);
-            break;
-        }
-    }
-
-exit:
-    return error;
-}
-
-otError Dataset::ProcessHelp(uint8_t aArgsLength, char *aArgs[])
-{
-    OT_UNUSED_VARIABLE(aArgsLength);
-    OT_UNUSED_VARIABLE(aArgs);
-
-    for (size_t i = 0; i < OT_ARRAY_LENGTH(sCommands); i++)
-    {
-        mInterpreter.mServer->OutputFormat("%s\r\n", sCommands[i].mName);
-    }
-
-    return OT_ERROR_NONE;
-}
-
-otError Dataset::ProcessInit(uint8_t aArgsLength, char *aArgs[])
-{
-    otError error = OT_ERROR_NONE;
-
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-
-    if (strcmp(aArgs[0], "active") == 0)
-    {
-        SuccessOrExit(error = otDatasetGetActive(mInterpreter.mInstance, &sDataset));
-    }
-    else if (strcmp(aArgs[0], "pending") == 0)
-    {
-        SuccessOrExit(error = otDatasetGetPending(mInterpreter.mInstance, &sDataset));
+        error = otDatasetGetPending(GetInstancePtr(), &sDataset);
     }
 #if OPENTHREAD_FTD
-    else if (strcmp(aArgs[0], "new") == 0)
+    else if (aArgs[0] == "new")
     {
-        SuccessOrExit(error = otDatasetCreateNewNetwork(mInterpreter.mInstance, &sDataset));
+        error = otDatasetCreateNewNetwork(GetInstancePtr(), &sDataset);
     }
 #endif
-    else
+    else if (aArgs[0] == "tlvs")
     {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
+        otOperationalDatasetTlvs datasetTlvs;
+        uint16_t                 size = sizeof(datasetTlvs.mTlvs);
+
+        SuccessOrExit(error = aArgs[1].ParseAsHexString(size, datasetTlvs.mTlvs));
+        datasetTlvs.mLength = static_cast<uint8_t>(size);
+
+        SuccessOrExit(error = otDatasetParseTlvs(&datasetTlvs, &sDataset));
     }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessActive(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("active")>(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
-    OT_UNUSED_VARIABLE(aArgs);
+    otError error = OT_ERROR_INVALID_ARGS;
 
-    otOperationalDataset dataset;
-    otError              error;
+    if (aArgs[0].IsEmpty())
+    {
+        otOperationalDataset dataset;
 
-    SuccessOrExit(error = otDatasetGetActive(mInterpreter.mInstance, &dataset));
-    error = Print(dataset);
+        SuccessOrExit(error = otDatasetGetActive(GetInstancePtr(), &dataset));
+        error = Print(dataset);
+    }
+    else if (aArgs[0] == "-x")
+    {
+        otOperationalDatasetTlvs dataset;
+
+        SuccessOrExit(error = otDatasetGetActiveTlvs(GetInstancePtr(), &dataset));
+        OutputBytesLine(dataset.mTlvs, dataset.mLength);
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessPending(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("pending")>(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
-    OT_UNUSED_VARIABLE(aArgs);
+    otError error = OT_ERROR_INVALID_ARGS;
 
-    otOperationalDataset dataset;
-    otError              error;
+    if (aArgs[0].IsEmpty())
+    {
+        otOperationalDataset dataset;
 
-    SuccessOrExit(error = otDatasetGetPending(mInterpreter.mInstance, &dataset));
-    error = Print(dataset);
+        SuccessOrExit(error = otDatasetGetPending(GetInstancePtr(), &dataset));
+        error = Print(dataset);
+    }
+    else if (aArgs[0] == "-x")
+    {
+        otOperationalDatasetTlvs dataset;
+
+        SuccessOrExit(error = otDatasetGetPendingTlvs(GetInstancePtr(), &dataset));
+        OutputBytesLine(dataset.mTlvs, dataset.mLength);
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessActiveTimestamp(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("activetimestamp")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mActiveTimestamp                      = static_cast<uint64_t>(value);
-    sDataset.mComponents.mIsActiveTimestampPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsActiveTimestampPresent)
+        {
+            OutputLine("%lu", sDataset.mActiveTimestamp);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsUint64(sDataset.mActiveTimestamp));
+        sDataset.mComponents.mIsActiveTimestampPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessChannel(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("channel")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mChannel                      = static_cast<uint16_t>(value);
-    sDataset.mComponents.mIsChannelPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsChannelPresent)
+        {
+            OutputLine("%d", sDataset.mChannel);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsUint16(sDataset.mChannel));
+        sDataset.mComponents.mIsChannelPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessChannelMask(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("channelmask")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mChannelMask                      = static_cast<uint32_t>(value);
-    sDataset.mComponents.mIsChannelMaskPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsChannelMaskPresent)
+        {
+            OutputLine("0x%08x", sDataset.mChannelMask);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsUint32(sDataset.mChannelMask));
+        sDataset.mComponents.mIsChannelMaskPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessClear(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("clear")>(Arg aArgs[])
 {
-    OT_UNUSED_VARIABLE(aArgsLength);
     OT_UNUSED_VARIABLE(aArgs);
 
     memset(&sDataset, 0, sizeof(sDataset));
     return OT_ERROR_NONE;
 }
 
-otError Dataset::ProcessCommit(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("commit")>(Arg aArgs[])
+{
+    otError error = OT_ERROR_INVALID_ARGS;
+
+    if (aArgs[0] == "active")
+    {
+        error = otDatasetSetActive(GetInstancePtr(), &sDataset);
+    }
+    else if (aArgs[0] == "pending")
+    {
+        error = otDatasetSetPending(GetInstancePtr(), &sDataset);
+    }
+
+    return error;
+}
+
+template <> otError Dataset::Process<Cmd("delay")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-
-    if (strcmp(aArgs[0], "active") == 0)
+    if (aArgs[0].IsEmpty())
     {
-        SuccessOrExit(error = otDatasetSetActive(mInterpreter.mInstance, &sDataset));
-    }
-    else if (strcmp(aArgs[0], "pending") == 0)
-    {
-        SuccessOrExit(error = otDatasetSetPending(mInterpreter.mInstance, &sDataset));
+        if (sDataset.mComponents.mIsDelayPresent)
+        {
+            OutputLine("%d", sDataset.mDelay);
+        }
     }
     else
     {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
+        SuccessOrExit(error = aArgs[0].ParseAsUint32(sDataset.mDelay));
+        sDataset.mComponents.mIsDelayPresent = true;
     }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessDelay(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("extpanid")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mDelay                      = static_cast<uint32_t>(value);
-    sDataset.mComponents.mIsDelayPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsExtendedPanIdPresent)
+        {
+            OutputBytesLine(sDataset.mExtendedPanId.m8);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsHexString(sDataset.mExtendedPanId.m8));
+        sDataset.mComponents.mIsExtendedPanIdPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessExtPanId(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("meshlocalprefix")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    uint8_t extPanId[OT_EXT_PAN_ID_SIZE];
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    VerifyOrExit(Interpreter::Hex2Bin(aArgs[0], extPanId, sizeof(extPanId)) >= 0, error = OT_ERROR_INVALID_ARGS);
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsMeshLocalPrefixPresent)
+        {
+            OutputFormat("Mesh Local Prefix: ");
+            OutputIp6PrefixLine(sDataset.mMeshLocalPrefix);
+        }
+    }
+    else
+    {
+        otIp6Address prefix;
 
-    memcpy(sDataset.mExtendedPanId.m8, extPanId, sizeof(sDataset.mExtendedPanId));
-    sDataset.mComponents.mIsExtendedPanIdPresent = true;
+        SuccessOrExit(error = aArgs[0].ParseAsIp6Address(prefix));
+
+        memcpy(sDataset.mMeshLocalPrefix.m8, prefix.mFields.m8, sizeof(sDataset.mMeshLocalPrefix.m8));
+        sDataset.mComponents.mIsMeshLocalPrefixPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessMasterKey(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("networkkey")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    uint8_t key[OT_MASTER_KEY_SIZE];
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    VerifyOrExit((Interpreter::Hex2Bin(aArgs[0], key, sizeof(key))) == OT_MASTER_KEY_SIZE,
-                 error = OT_ERROR_INVALID_ARGS);
-
-    memcpy(sDataset.mMasterKey.m8, key, sizeof(sDataset.mMasterKey));
-    sDataset.mComponents.mIsMasterKeyPresent = true;
-
-exit:
-    return error;
-}
-
-otError Dataset::ProcessMeshLocalPrefix(uint8_t aArgsLength, char *aArgs[])
-{
-    otError      error = OT_ERROR_NONE;
-    otIp6Address prefix;
-
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = otIp6AddressFromString(aArgs[0], &prefix));
-
-    memcpy(sDataset.mMeshLocalPrefix.m8, prefix.mFields.m8, sizeof(sDataset.mMeshLocalPrefix.m8));
-    sDataset.mComponents.mIsMeshLocalPrefixPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsNetworkKeyPresent)
+        {
+            OutputBytesLine(sDataset.mNetworkKey.m8);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsHexString(sDataset.mNetworkKey.m8));
+        sDataset.mComponents.mIsNetworkKeyPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessNetworkName(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("networkname")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    size_t  length;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    VerifyOrExit((length = strlen(aArgs[0])) <= OT_NETWORK_NAME_MAX_SIZE, error = OT_ERROR_INVALID_ARGS);
-
-    memset(&sDataset.mNetworkName, 0, sizeof(sDataset.mNetworkName));
-    memcpy(sDataset.mNetworkName.m8, aArgs[0], length);
-    sDataset.mComponents.mIsNetworkNamePresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsNetworkNamePresent)
+        {
+            OutputLine("%s", sDataset.mNetworkName.m8);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = otNetworkNameFromString(&sDataset.mNetworkName, aArgs[0].GetCString()));
+        sDataset.mComponents.mIsNetworkNamePresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessPanId(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("panid")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mPanId                      = static_cast<otPanId>(value);
-    sDataset.mComponents.mIsPanIdPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsPanIdPresent)
+        {
+            OutputLine("0x%04x", sDataset.mPanId);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsUint16(sDataset.mPanId));
+        sDataset.mComponents.mIsPanIdPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessPendingTimestamp(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("pendingtimestamp")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
-    long    value;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mPendingTimestamp                      = static_cast<uint64_t>(value);
-    sDataset.mComponents.mIsPendingTimestampPresent = true;
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsPendingTimestampPresent)
+        {
+            OutputLine("%lu", sDataset.mPendingTimestamp);
+        }
+    }
+    else
+    {
+        SuccessOrExit(error = aArgs[0].ParseAsUint64(sDataset.mPendingTimestamp));
+        sDataset.mComponents.mIsPendingTimestampPresent = true;
+    }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessMgmtSetCommand(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("mgmtsetcommand")>(Arg aArgs[])
 {
     otError              error = OT_ERROR_NONE;
     otOperationalDataset dataset;
     uint8_t              tlvs[128];
-    long                 value;
-    int                  length = 0;
-    otIp6Address         prefix;
-
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
+    uint8_t              tlvsLength = 0;
 
     memset(&dataset, 0, sizeof(dataset));
 
-    for (uint8_t index = 1; index < aArgsLength; index++)
+    for (Arg *arg = &aArgs[1]; !arg->IsEmpty(); arg++)
     {
-        if (strcmp(aArgs[index], "activetimestamp") == 0)
+        if (*arg == "activetimestamp")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsActiveTimestampPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mActiveTimestamp = static_cast<uint64_t>(value);
+            SuccessOrExit(error = arg->ParseAsUint64(dataset.mActiveTimestamp));
         }
-        else if (strcmp(aArgs[index], "pendingtimestamp") == 0)
+        else if (*arg == "pendingtimestamp")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsPendingTimestampPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mPendingTimestamp = static_cast<uint64_t>(value);
+            SuccessOrExit(error = arg->ParseAsUint64(dataset.mPendingTimestamp));
         }
-        else if (strcmp(aArgs[index], "masterkey") == 0)
+        else if (*arg == "networkkey")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
-            dataset.mComponents.mIsMasterKeyPresent = true;
-            VerifyOrExit((length = Interpreter::Hex2Bin(aArgs[index], dataset.mMasterKey.m8,
-                                                        sizeof(dataset.mMasterKey.m8))) == OT_MASTER_KEY_SIZE,
-                         error = OT_ERROR_INVALID_ARGS);
-            length = 0;
+            arg++;
+            dataset.mComponents.mIsNetworkKeyPresent = true;
+            SuccessOrExit(error = arg->ParseAsHexString(dataset.mNetworkKey.m8));
         }
-        else if (strcmp(aArgs[index], "networkname") == 0)
+        else if (*arg == "networkname")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsNetworkNamePresent = true;
-            VerifyOrExit((length = static_cast<int>(strlen(aArgs[index]))) <= OT_NETWORK_NAME_MAX_SIZE,
-                         error = OT_ERROR_INVALID_ARGS);
-            memset(&dataset.mNetworkName, 0, sizeof(sDataset.mNetworkName));
-            memcpy(dataset.mNetworkName.m8, aArgs[index], static_cast<size_t>(length));
-            length = 0;
+            VerifyOrExit(!arg->IsEmpty(), error = OT_ERROR_INVALID_ARGS);
+            SuccessOrExit(error = otNetworkNameFromString(&dataset.mNetworkName, arg->GetCString()));
         }
-        else if (strcmp(aArgs[index], "extpanid") == 0)
+        else if (*arg == "extpanid")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsExtendedPanIdPresent = true;
-            VerifyOrExit(
-                Interpreter::Hex2Bin(aArgs[index], dataset.mExtendedPanId.m8, sizeof(dataset.mExtendedPanId.m8)) >= 0,
-                error = OT_ERROR_INVALID_ARGS);
+            SuccessOrExit(error = arg->ParseAsHexString(dataset.mExtendedPanId.m8));
         }
-        else if (strcmp(aArgs[index], "localprefix") == 0)
+        else if (*arg == "localprefix")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            otIp6Address prefix;
+
+            arg++;
             dataset.mComponents.mIsMeshLocalPrefixPresent = true;
-            SuccessOrExit(error = otIp6AddressFromString(aArgs[index], &prefix));
+            SuccessOrExit(error = arg->ParseAsIp6Address(prefix));
             memcpy(dataset.mMeshLocalPrefix.m8, prefix.mFields.m8, sizeof(dataset.mMeshLocalPrefix.m8));
         }
-        else if (strcmp(aArgs[index], "delaytimer") == 0)
+        else if (*arg == "delaytimer")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsDelayPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mDelay = static_cast<uint32_t>(value);
+            SuccessOrExit(error = arg->ParseAsUint32(dataset.mDelay));
         }
-        else if (strcmp(aArgs[index], "panid") == 0)
+        else if (*arg == "panid")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsPanIdPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mPanId = static_cast<otPanId>(value);
+            SuccessOrExit(error = arg->ParseAsUint16(dataset.mPanId));
         }
-        else if (strcmp(aArgs[index], "channel") == 0)
+        else if (*arg == "channel")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsChannelPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mChannel = static_cast<uint16_t>(value);
+            SuccessOrExit(error = arg->ParseAsUint16(dataset.mChannel));
         }
-        else if (strcmp(aArgs[index], "channelmask") == 0)
+        else if (*arg == "channelmask")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
+            arg++;
             dataset.mComponents.mIsChannelMaskPresent = true;
-            SuccessOrExit(error = Interpreter::ParseLong(aArgs[index], value));
-            dataset.mChannelMask = static_cast<uint32_t>(value);
+            SuccessOrExit(error = arg->ParseAsUint32(dataset.mChannelMask));
         }
-        else if (strcmp(aArgs[index], "binary") == 0)
+        else if (*arg == "securitypolicy")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
-            length = static_cast<int>((strlen(aArgs[index]) + 1) / 2);
-            VerifyOrExit(static_cast<size_t>(length) <= sizeof(tlvs), error = OT_ERROR_NO_BUFS);
-            VerifyOrExit(Interpreter::Hex2Bin(aArgs[index], tlvs, static_cast<uint16_t>(length)) >= 0,
-                         error = OT_ERROR_INVALID_ARGS);
+            arg++;
+            SuccessOrExit(error = ParseSecurityPolicy(dataset.mSecurityPolicy, arg));
+            dataset.mComponents.mIsSecurityPolicyPresent = true;
+        }
+        else if (*arg == "-x")
+        {
+            uint16_t length;
+
+            arg++;
+            length = sizeof(tlvs);
+            SuccessOrExit(error = arg->ParseAsHexString(length, tlvs));
+            tlvsLength = static_cast<uint8_t>(length);
         }
         else
         {
@@ -559,93 +532,91 @@ otError Dataset::ProcessMgmtSetCommand(uint8_t aArgsLength, char *aArgs[])
         }
     }
 
-    if (strcmp(aArgs[0], "active") == 0)
+    if (aArgs[0] == "active")
     {
-        SuccessOrExit(
-            error = otDatasetSendMgmtActiveSet(mInterpreter.mInstance, &dataset, tlvs, static_cast<uint8_t>(length)));
+        error = otDatasetSendMgmtActiveSet(GetInstancePtr(), &dataset, tlvs, tlvsLength, /* aCallback */ nullptr,
+                                           /* aContext */ nullptr);
     }
-    else if (strcmp(aArgs[0], "pending") == 0)
+    else if (aArgs[0] == "pending")
     {
-        SuccessOrExit(
-            error = otDatasetSendMgmtPendingSet(mInterpreter.mInstance, &dataset, tlvs, static_cast<uint8_t>(length)));
+        error = otDatasetSendMgmtPendingSet(GetInstancePtr(), &dataset, tlvs, tlvsLength, /* aCallback */ nullptr,
+                                            /* aContext */ nullptr);
     }
     else
     {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
+        error = OT_ERROR_INVALID_ARGS;
     }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessMgmtGetCommand(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("mgmtgetcommand")>(Arg aArgs[])
 {
     otError                        error = OT_ERROR_NONE;
     otOperationalDatasetComponents datasetComponents;
     uint8_t                        tlvs[32];
-    long                           value;
-    int                            length            = 0;
+    uint8_t                        tlvsLength        = 0;
     bool                           destAddrSpecified = false;
     otIp6Address                   address;
 
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-
     memset(&datasetComponents, 0, sizeof(datasetComponents));
 
-    for (uint8_t index = 1; index < aArgsLength; index++)
+    for (Arg *arg = &aArgs[1]; !arg->IsEmpty(); arg++)
     {
-        VerifyOrExit(static_cast<size_t>(length) < sizeof(tlvs), error = OT_ERROR_NO_BUFS);
-
-        if (strcmp(aArgs[index], "activetimestamp") == 0)
+        if (*arg == "activetimestamp")
         {
             datasetComponents.mIsActiveTimestampPresent = true;
         }
-        else if (strcmp(aArgs[index], "pendingtimestamp") == 0)
+        else if (*arg == "pendingtimestamp")
         {
             datasetComponents.mIsPendingTimestampPresent = true;
         }
-        else if (strcmp(aArgs[index], "masterkey") == 0)
+        else if (*arg == "networkkey")
         {
-            datasetComponents.mIsMasterKeyPresent = true;
+            datasetComponents.mIsNetworkKeyPresent = true;
         }
-        else if (strcmp(aArgs[index], "networkname") == 0)
+        else if (*arg == "networkname")
         {
             datasetComponents.mIsNetworkNamePresent = true;
         }
-        else if (strcmp(aArgs[index], "extpanid") == 0)
+        else if (*arg == "extpanid")
         {
             datasetComponents.mIsExtendedPanIdPresent = true;
         }
-        else if (strcmp(aArgs[index], "localprefix") == 0)
+        else if (*arg == "localprefix")
         {
             datasetComponents.mIsMeshLocalPrefixPresent = true;
         }
-        else if (strcmp(aArgs[index], "delaytimer") == 0)
+        else if (*arg == "delaytimer")
         {
             datasetComponents.mIsDelayPresent = true;
         }
-        else if (strcmp(aArgs[index], "panid") == 0)
+        else if (*arg == "panid")
         {
             datasetComponents.mIsPanIdPresent = true;
         }
-        else if (strcmp(aArgs[index], "channel") == 0)
+        else if (*arg == "channel")
         {
             datasetComponents.mIsChannelPresent = true;
         }
-        else if (strcmp(aArgs[index], "binary") == 0)
+        else if (*arg == "securitypolicy")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
-            value = static_cast<long>(strlen(aArgs[index]) + 1) / 2;
-            VerifyOrExit(static_cast<size_t>(value) <= (sizeof(tlvs) - static_cast<size_t>(length)),
-                         error = OT_ERROR_NO_BUFS);
-            VerifyOrExit(Interpreter::Hex2Bin(aArgs[index], tlvs + length, static_cast<uint16_t>(value)) >= 0,
-                         error = OT_ERROR_INVALID_ARGS);
-            length += value;
+            datasetComponents.mIsSecurityPolicyPresent = true;
         }
-        else if (strcmp(aArgs[index], "address") == 0)
+        else if (*arg == "-x")
         {
-            VerifyOrExit(++index < aArgsLength, error = OT_ERROR_INVALID_ARGS);
-            SuccessOrExit(error = otIp6AddressFromString(aArgs[index], &address));
+            uint16_t length;
+
+            arg++;
+            length = sizeof(tlvs);
+            SuccessOrExit(error = arg->ParseAsHexString(length, tlvs));
+            tlvsLength = static_cast<uint8_t>(length);
+        }
+        else if (*arg == "address")
+        {
+            arg++;
+            SuccessOrExit(error = arg->ParseAsIp6Address(address));
             destAddrSpecified = true;
         }
         else
@@ -654,106 +625,338 @@ otError Dataset::ProcessMgmtGetCommand(uint8_t aArgsLength, char *aArgs[])
         }
     }
 
-    if (strcmp(aArgs[0], "active") == 0)
+    if (aArgs[0] == "active")
     {
-        SuccessOrExit(error = otDatasetSendMgmtActiveGet(mInterpreter.mInstance, &datasetComponents, tlvs,
-                                                         static_cast<uint8_t>(length),
-                                                         destAddrSpecified ? &address : NULL));
+        error = otDatasetSendMgmtActiveGet(GetInstancePtr(), &datasetComponents, tlvs, tlvsLength,
+                                           destAddrSpecified ? &address : nullptr);
     }
-    else if (strcmp(aArgs[0], "pending") == 0)
+    else if (aArgs[0] == "pending")
     {
-        SuccessOrExit(error = otDatasetSendMgmtPendingGet(mInterpreter.mInstance, &datasetComponents, tlvs,
-                                                          static_cast<uint8_t>(length),
-                                                          destAddrSpecified ? &address : NULL));
+        error = otDatasetSendMgmtPendingGet(GetInstancePtr(), &datasetComponents, tlvs, tlvsLength,
+                                            destAddrSpecified ? &address : nullptr);
     }
     else
     {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
+        error = OT_ERROR_INVALID_ARGS;
     }
 
 exit:
     return error;
 }
 
-otError Dataset::ProcessPskc(uint8_t aArgsLength, char *aArgs[])
+template <> otError Dataset::Process<Cmd("pskc")>(Arg aArgs[])
 {
     otError error = OT_ERROR_NONE;
 
-    if (aArgsLength == 1)
+    if (aArgs[0].IsEmpty())
     {
-        VerifyOrExit(Interpreter::Hex2Bin(aArgs[0], sDataset.mPskc.m8, sizeof(sDataset.mPskc)) ==
-                         sizeof(sDataset.mPskc),
-                     error = OT_ERROR_INVALID_ARGS);
-    }
-#if OPENTHREAD_FTD
-    else if (aArgsLength == 2 && !strcmp(aArgs[0], "-p"))
-    {
-        SuccessOrExit(
-            error = otDatasetGeneratePskc(
-                aArgs[1],
-                (sDataset.mComponents.mIsNetworkNamePresent
-                     ? &sDataset.mNetworkName
-                     : reinterpret_cast<const otNetworkName *>(otThreadGetNetworkName(mInterpreter.mInstance))),
-                (sDataset.mComponents.mIsExtendedPanIdPresent ? &sDataset.mExtendedPanId
-                                                              : otThreadGetExtendedPanId(mInterpreter.mInstance)),
-                &sDataset.mPskc));
-    }
-#endif
-    else
-    {
-        ExitNow(error = OT_ERROR_INVALID_ARGS);
-    }
-
-    sDataset.mComponents.mIsPskcPresent = true;
-
-exit:
-    return error;
-}
-
-otError Dataset::ProcessSecurityPolicy(uint8_t aArgsLength, char *aArgs[])
-{
-    otError error = OT_ERROR_NONE;
-    long    value;
-
-    VerifyOrExit(aArgsLength > 0, error = OT_ERROR_INVALID_ARGS);
-
-    SuccessOrExit(error = Interpreter::ParseLong(aArgs[0], value));
-    sDataset.mSecurityPolicy.mRotationTime = static_cast<uint16_t>(value);
-    sDataset.mSecurityPolicy.mFlags        = 0;
-
-    if (aArgsLength > 1)
-    {
-        for (char *arg = aArgs[1]; *arg != '\0'; arg++)
+        // sDataset holds the key as a literal string, we don't
+        // need to export it from PSA ITS.
+        if (sDataset.mComponents.mIsPskcPresent)
         {
-            switch (*arg)
-            {
-            case 'o':
-                sDataset.mSecurityPolicy.mFlags |= OT_SECURITY_POLICY_OBTAIN_MASTER_KEY;
-                break;
+            OutputBytesLine(sDataset.mPskc.m8);
+        }
+    }
+    else
+    {
+#if OPENTHREAD_FTD
+        if (aArgs[0] == "-p")
+        {
+            VerifyOrExit(!aArgs[1].IsEmpty(), error = OT_ERROR_INVALID_ARGS);
 
-            case 'n':
-                sDataset.mSecurityPolicy.mFlags |= OT_SECURITY_POLICY_NATIVE_COMMISSIONING;
-                break;
+            SuccessOrExit(
+                error = otDatasetGeneratePskc(
+                    aArgs[1].GetCString(),
+                    (sDataset.mComponents.mIsNetworkNamePresent
+                         ? &sDataset.mNetworkName
+                         : reinterpret_cast<const otNetworkName *>(otThreadGetNetworkName(GetInstancePtr()))),
+                    (sDataset.mComponents.mIsExtendedPanIdPresent ? &sDataset.mExtendedPanId
+                                                                  : otThreadGetExtendedPanId(GetInstancePtr())),
+                    &sDataset.mPskc));
+        }
+        else
+#endif
+        {
+            SuccessOrExit(error = aArgs[0].ParseAsHexString(sDataset.mPskc.m8));
+        }
 
-            case 'r':
-                sDataset.mSecurityPolicy.mFlags |= OT_SECURITY_POLICY_ROUTERS;
-                break;
+        sDataset.mComponents.mIsPskcPresent = true;
+    }
 
-            case 'c':
-                sDataset.mSecurityPolicy.mFlags |= OT_SECURITY_POLICY_EXTERNAL_COMMISSIONER;
-                break;
+exit:
+    return error;
+}
 
-            case 'b':
-                sDataset.mSecurityPolicy.mFlags |= OT_SECURITY_POLICY_BEACONS;
-                break;
+void Dataset::OutputSecurityPolicy(const otSecurityPolicy &aSecurityPolicy)
+{
+    OutputFormat("%d ", aSecurityPolicy.mRotationTime);
 
-            default:
-                ExitNow(error = OT_ERROR_INVALID_ARGS);
-            }
+    if (aSecurityPolicy.mObtainNetworkKeyEnabled)
+    {
+        OutputFormat("o");
+    }
+
+    if (aSecurityPolicy.mNativeCommissioningEnabled)
+    {
+        OutputFormat("n");
+    }
+
+    if (aSecurityPolicy.mRoutersEnabled)
+    {
+        OutputFormat("r");
+    }
+
+    if (aSecurityPolicy.mExternalCommissioningEnabled)
+    {
+        OutputFormat("c");
+    }
+
+    if (aSecurityPolicy.mCommercialCommissioningEnabled)
+    {
+        OutputFormat("C");
+    }
+
+    if (aSecurityPolicy.mAutonomousEnrollmentEnabled)
+    {
+        OutputFormat("e");
+    }
+
+    if (aSecurityPolicy.mNetworkKeyProvisioningEnabled)
+    {
+        OutputFormat("p");
+    }
+
+    if (aSecurityPolicy.mNonCcmRoutersEnabled)
+    {
+        OutputFormat("R");
+    }
+
+    OutputLine("");
+}
+
+otError Dataset::ParseSecurityPolicy(otSecurityPolicy &aSecurityPolicy, Arg *&aArgs)
+{
+    otError          error;
+    otSecurityPolicy policy;
+
+    memset(&policy, 0, sizeof(policy));
+
+    SuccessOrExit(error = aArgs->ParseAsUint16(policy.mRotationTime));
+    aArgs++;
+
+    VerifyOrExit(!aArgs->IsEmpty());
+
+    for (const char *flag = aArgs->GetCString(); *flag != '\0'; flag++)
+    {
+        switch (*flag)
+        {
+        case 'o':
+            policy.mObtainNetworkKeyEnabled = true;
+            break;
+
+        case 'n':
+            policy.mNativeCommissioningEnabled = true;
+            break;
+
+        case 'r':
+            policy.mRoutersEnabled = true;
+            break;
+
+        case 'c':
+            policy.mExternalCommissioningEnabled = true;
+            break;
+
+        case 'C':
+            policy.mCommercialCommissioningEnabled = true;
+            break;
+
+        case 'e':
+            policy.mAutonomousEnrollmentEnabled = true;
+            break;
+
+        case 'p':
+            policy.mNetworkKeyProvisioningEnabled = true;
+            break;
+
+        case 'R':
+            policy.mNonCcmRoutersEnabled = true;
+            break;
+
+        default:
+            ExitNow(error = OT_ERROR_INVALID_ARGS);
         }
     }
 
-    sDataset.mComponents.mIsSecurityPolicyPresent = true;
+    aArgs++;
+
+exit:
+    if (error == OT_ERROR_NONE)
+    {
+        aSecurityPolicy = policy;
+    }
+
+    return error;
+}
+
+template <> otError Dataset::Process<Cmd("securitypolicy")>(Arg aArgs[])
+{
+    otError error = OT_ERROR_NONE;
+
+    if (aArgs[0].IsEmpty())
+    {
+        if (sDataset.mComponents.mIsSecurityPolicyPresent)
+        {
+            OutputSecurityPolicy(sDataset.mSecurityPolicy);
+        }
+    }
+    else
+    {
+        Arg *arg = &aArgs[0];
+
+        SuccessOrExit(error = ParseSecurityPolicy(sDataset.mSecurityPolicy, arg));
+        sDataset.mComponents.mIsSecurityPolicyPresent = true;
+    }
+
+exit:
+    return error;
+}
+
+template <> otError Dataset::Process<Cmd("set")>(Arg aArgs[])
+{
+    otError                error = OT_ERROR_NONE;
+    MeshCoP::Dataset::Type datasetType;
+
+    if (aArgs[0] == "active")
+    {
+        datasetType = MeshCoP::Dataset::Type::kActive;
+    }
+    else if (aArgs[0] == "pending")
+    {
+        datasetType = MeshCoP::Dataset::Type::kPending;
+    }
+    else
+    {
+        ExitNow(error = OT_ERROR_INVALID_ARGS);
+    }
+
+    {
+        MeshCoP::Dataset       dataset;
+        MeshCoP::Dataset::Info datasetInfo;
+        uint16_t               tlvsLength = MeshCoP::Dataset::kMaxSize;
+
+        SuccessOrExit(error = aArgs[1].ParseAsHexString(tlvsLength, dataset.GetBytes()));
+        dataset.SetSize(tlvsLength);
+        VerifyOrExit(dataset.IsValid(), error = OT_ERROR_INVALID_ARGS);
+        dataset.ConvertTo(datasetInfo);
+
+        switch (datasetType)
+        {
+        case MeshCoP::Dataset::Type::kActive:
+            SuccessOrExit(error = otDatasetSetActive(GetInstancePtr(), &datasetInfo));
+            break;
+        case MeshCoP::Dataset::Type::kPending:
+            SuccessOrExit(error = otDatasetSetPending(GetInstancePtr(), &datasetInfo));
+            break;
+        }
+    }
+
+exit:
+    return error;
+}
+
+#if OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE && OPENTHREAD_FTD
+
+template <> otError Dataset::Process<Cmd("updater")>(Arg aArgs[])
+{
+    otError error = OT_ERROR_NONE;
+
+    if (aArgs[0].IsEmpty())
+    {
+        OutputEnabledDisabledStatus(otDatasetUpdaterIsUpdateOngoing(GetInstancePtr()));
+    }
+    else if (aArgs[0] == "start")
+    {
+        error = otDatasetUpdaterRequestUpdate(GetInstancePtr(), &sDataset, &Dataset::HandleDatasetUpdater, this);
+    }
+    else if (aArgs[0] == "cancel")
+    {
+        otDatasetUpdaterCancelUpdate(GetInstancePtr());
+    }
+    else
+    {
+        error = OT_ERROR_INVALID_ARGS;
+    }
+
+    return error;
+}
+
+void Dataset::HandleDatasetUpdater(otError aError, void *aContext)
+{
+    static_cast<Dataset *>(aContext)->HandleDatasetUpdater(aError);
+}
+
+void Dataset::HandleDatasetUpdater(otError aError)
+{
+    OutputLine("Dataset update complete: %s", otThreadErrorToString(aError));
+}
+
+#endif // OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE && OPENTHREAD_FTD
+
+otError Dataset::Process(Arg aArgs[])
+{
+#define CmdEntry(aCommandString)                               \
+    {                                                          \
+        aCommandString, &Dataset::Process<Cmd(aCommandString)> \
+    }
+
+    static constexpr Command kCommands[] = {
+        CmdEntry("active"),
+        CmdEntry("activetimestamp"),
+        CmdEntry("channel"),
+        CmdEntry("channelmask"),
+        CmdEntry("clear"),
+        CmdEntry("commit"),
+        CmdEntry("delay"),
+        CmdEntry("extpanid"),
+        CmdEntry("init"),
+        CmdEntry("meshlocalprefix"),
+        CmdEntry("mgmtgetcommand"),
+        CmdEntry("mgmtsetcommand"),
+        CmdEntry("networkkey"),
+        CmdEntry("networkname"),
+        CmdEntry("panid"),
+        CmdEntry("pending"),
+        CmdEntry("pendingtimestamp"),
+        CmdEntry("pskc"),
+        CmdEntry("securitypolicy"),
+        CmdEntry("set"),
+#if OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE && OPENTHREAD_FTD
+        CmdEntry("updater"),
+#endif
+    };
+
+#undef CmdEntry
+
+    static_assert(BinarySearch::IsSorted(kCommands), "kCommands is not sorted");
+
+    otError        error = OT_ERROR_INVALID_COMMAND;
+    const Command *command;
+
+    if (aArgs[0].IsEmpty())
+    {
+        ExitNow(error = Print(sDataset));
+    }
+
+    if (aArgs[0] == "help")
+    {
+        OutputCommandTable(kCommands);
+        ExitNow(error = OT_ERROR_NONE);
+    }
+
+    command = BinarySearch::Find(aArgs[0].GetCString(), kCommands);
+    VerifyOrExit(command != nullptr);
+
+    error = (this->*command->mHandler)(aArgs + 1);
 
 exit:
     return error;

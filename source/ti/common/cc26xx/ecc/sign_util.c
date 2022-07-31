@@ -346,6 +346,18 @@ uint8_t *computeSha2Hash(uint32_t imgStartAddr, uint8_t *SHABuff, uint16_t SHABu
         return NULL;
     }
 
+#ifdef BIM_DUAL_ONCHIP_IMAGE
+    /* ImgVld field can be changed for switching between valid images */
+    /* overwrite the imgVld field in read buffer to 0xFFFFFFFF (default) to allow re-verification of sign */
+    /* oad image tool calculated the sign over a fresh image where this value was 0xFFFFFFFF */
+    pImgHdr->fixedHdr.imgVld = 0xFFFFFFFF;
+
+    /* if sign is being calculated, it means the verifStatus field is not set to invalid */
+    /* overwrite the verifStatus in read buffer to 0xFF (default) to allow re-verification of sign */
+    /* oad image tool calculated the sign over a fresh image where this value was 0xFF */
+    pImgHdr->secInfoSeg.verifStat = 0xFF;
+#endif
+
     uint32_t addrRead = imgStartAddr + SHABuffLen;
     uint32_t secHdrLen = HDR_LEN_WITH_SECURITY_INFO;
 
@@ -403,6 +415,21 @@ uint8_t *computeSha2Hash(uint32_t imgStartAddr, uint8_t *SHABuff, uint16_t SHABu
 #else
     SHA256_final(&sha256_workzone, (uint8_t *)&finalHash);
 #endif /* DeviceFamily_CC26X2 || DeviceFamily_CC13X2 || DeviceFamily_CC13X2X7 || DeviceFamily_CC26X2X7 */
+
+    /* check that final hash is not all zeros */
+    uint8_t i, finalHashChk = 0;
+
+    for( i = 0; i < ECDSA_KEY_LEN; i++)
+    {
+        finalHashChk = finalHashChk | finalHash[i] ;
+    }
+
+    if(0 == finalHashChk)
+    {
+        return NULL;
+    }
+
+    /* final Hash is not all zeroes but a valid result */
     return(finalHash);
 }
 

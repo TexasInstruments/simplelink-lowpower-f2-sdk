@@ -48,18 +48,17 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /*!
  *  @brief  DAC voltage reference setting
  *
  *  The enum defines the DAC voltage reference that the module uses.
  */
-typedef enum {
+typedef enum
+{
     /*!< Use the Core Voltage Decoupling pin as the DAC's voltage reference source. */
     DAC_VREF_DCOUPL = AUXDAC_VREF_SEL_DCOUPL,
     /*!< Use the ADC reference voltage as the DAC's voltage reference source. */
@@ -74,15 +73,16 @@ typedef enum {
  *  driverlib macro definitions.
  *
  */
-typedef struct {
+typedef struct
+{
     /*!< Pin used for DAC output */
-    uint_least8_t       outputPin;
+    uint_least8_t outputPin;
     /*!< DAC voltage reference source */
-    DAC_VrefSource      dacVrefSource;
+    DAC_VrefSource dacVrefSource;
     /*!< Internal signal routed to COMPA_IN */
-    uint8_t             dacCompAInput;
+    uint8_t dacCompAInput;
     /*!< Flag to determine precharge state when DCOUPL has been selected as voltage reference */
-    bool                dacPrecharge;
+    bool dacPrecharge;
 } DACCC26XX_HWAttrs;
 
 /*!
@@ -90,20 +90,19 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     /*!< Flag to determine current state of the DAC's output */
-    bool                isEnabled;
+    bool isEnabled;
     /*!< Flag if the instance is in use */
-    bool                isOpen;
+    bool isOpen;
     /*!< Current DAC code set */
-    uint32_t            currCode;
+    uint32_t currCode;
     /*!< Minimum DAC output in uV */
-    uint32_t            dacOutputMin;
+    uint32_t dacOutputMin;
     /*!< Maximum DAC output in uV */
-    uint32_t            dacOutputMax;
+    uint32_t dacOutputMax;
 } DACCC26XX_Object;
-
-
 
 #ifdef __cplusplus
 }

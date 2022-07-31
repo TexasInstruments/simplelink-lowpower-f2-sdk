@@ -339,7 +339,7 @@ typedef enum {
    CHIP_TYPE_CUSTOM_1      =  7,    //!<  7 means that this is a CUSTOM_1 chip.
    CHIP_TYPE_CC2640R2      =  8,    //!<  8 means that this is a CC2640R2 chip.
    CHIP_TYPE_CC2642        =  9,    //!<  9 means that this is a CC2642 chip.
-   CHIP_TYPE_unused        =  10,   //!< 10 unused value
+   CHIP_TYPE_unused0       =  10,   //!< 10 unused value
    CHIP_TYPE_CC2652        =  11,   //!< 11 means that this is a CC2652 chip.
    CHIP_TYPE_CC1312        =  12,   //!< 12 means that this is a CC1312 chip.
    CHIP_TYPE_CC1352        =  13,   //!< 13 means that this is a CC1352 chip.
@@ -358,13 +358,13 @@ typedef enum {
    CHIP_TYPE_CC1352P7      =  26,   //!< 26 means that this is a CC1352P7 chip.
    CHIP_TYPE_CC2652R7      =  27,   //!< 27 means that this is a CC2652R7 chip.
    CHIP_TYPE_CC2652P7      =  28,   //!< 28 means that this is a CC2652P7 chip.
+   CHIP_TYPE_unused2       =  29,   //!< 29 unused value
    // Note: The following chip types are drafts only and for internal use at moment.
-   CHIP_TYPE_CC2652R5      =  29,   //!< 29 means that this is a CC2652R5 chip.
    CHIP_TYPE_CC1314R10     =  30,   //!< 30 means that this is a CC1314R10 chip.
    CHIP_TYPE_CC1354P10     =  31,   //!< 31 means that this is a CC1354P10 chip.
    CHIP_TYPE_CC1354R10     =  32,   //!< 32 means that this is a CC1354R10 chip.
-   CHIP_TYPE_CC2654P10     =  33,   //!< 33 means that this is a CC2654P10 chip.
-   CHIP_TYPE_CC2654R10     =  34,   //!< 34 means that this is a CC2654R10 chip.
+   CHIP_TYPE_CC2653P10     =  33,   //!< 33 means that this is a CC2653P10 chip.
+   CHIP_TYPE_unused3       =  34,   //!< 34 unused value
    CHIP_TYPE_CC2674P10     =  35,   //!< 35 means that this is a CC2674P10 chip.
    CHIP_TYPE_CC2674R10     =  36,   //!< 36 means that this is a CC2674R10 chip.
    CHIP_TYPE_CC2672R3      =  37,   //!< 37 means that this is a CC2672R3 chip.
@@ -511,6 +511,20 @@ __STATIC_INLINE bool
 ChipInfo_ChipFamilyIs_CC13x2x7_CC26x2x7( void )
 {
    return ( ChipInfo_GetChipFamily() == FAMILY_CC13x2x7_CC26x2x7 );
+}
+
+//*****************************************************************************
+//
+//! \brief Returns true if this chip is member of the CC13x4, CC26x4 family.
+//!
+//! \return
+//! Returns \c true if this chip is member of the CC13x4, CC26x4 family, \c false otherwise.
+//
+//*****************************************************************************
+__STATIC_INLINE bool
+ChipInfo_ChipFamilyIs_CC13x4_CC26x4( void )
+{
+   return ( ChipInfo_GetChipFamily() == FAMILY_CC13x4_CC26x4 );
 }
 
 //*****************************************************************************

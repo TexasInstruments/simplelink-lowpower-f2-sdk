@@ -55,14 +55,13 @@
 #define AES_NON_BLOCK_MULTIPLE_MASK 0x0F
 
 /* Forward declarations */
-static void AESCTR_hwiFxn (uintptr_t arg0);
+static void AESCTR_hwiFxn(uintptr_t arg0);
 static int_fast16_t AESCTR_startOneStepOperation(AESCTR_Handle handle,
                                                  AESCTR_OneStepOperation *operation,
                                                  AESCTR_OperationType operationType);
 static inline int_fast16_t AESCTR_waitForResult(AESCTRCC26XX_Object *object);
 static void AESCTR_cleanup(AESCTRCC26XX_Object *object);
-static void AESCTR_initCounter(AESCTRCC26XX_Object *object,
-                               const uint8_t *initialCounter);
+static void AESCTR_initCounter(AESCTRCC26XX_Object *object, const uint8_t *initialCounter);
 static int_fast16_t AESCTR_setOperationInProgress(AESCTRCC26XX_Object *object);
 
 /* Static globals */
@@ -71,10 +70,10 @@ static bool AESCTR_isInitialized = false;
 /*
  *  ======== AESCTR_hwiFxn ========
  */
-static void AESCTR_hwiFxn (uintptr_t arg0)
+static void AESCTR_hwiFxn(uintptr_t arg0)
 {
     AESCTRCC26XX_Object *object = ((AESCTR_Handle)arg0)->object;
-    uintptr_t interruptKey = HwiP_disable();
+    uintptr_t interruptKey      = HwiP_disable();
 
     /* Mark that we are done with the operation so that
      * AESCTR_cancelOperation knows not to try canceling.
@@ -127,8 +126,7 @@ static void AESCTR_hwiFxn (uintptr_t arg0)
     else /* AESCTR_RETURN_BEHAVIOR_CALLBACK */
     {
         /* Call the callback function provided by the application */
-        object->callbackFxn((AESCTR_Handle)arg0, object->returnStatus,
-                            object->operation, object->operationType);
+        object->callbackFxn((AESCTR_Handle)arg0, object->returnStatus, object->operation, object->operationType);
     }
 }
 
@@ -184,7 +182,7 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
     DebugP_assert(config);
     DebugP_assert(params);
 
-    AESCTR_Handle handle = config;
+    AESCTR_Handle handle        = config;
     AESCTRCC26XX_Object *object = handle->object;
 
     DebugP_assert(object);
@@ -194,7 +192,7 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
     if (!AESCTR_isInitialized || object->isOpen)
     {
         HwiP_restore(interruptKey);
-        return(NULL);
+        return (NULL);
     }
 
     object->isOpen = true;
@@ -207,11 +205,10 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
         params = (AESCTR_Params *)&AESCTR_defaultParams;
     }
 
-    DebugP_assert((params->returnBehavior != AESCTR_RETURN_BEHAVIOR_CALLBACK) ||
-                  (params->callbackFxn != NULL));
+    DebugP_assert((params->returnBehavior != AESCTR_RETURN_BEHAVIOR_CALLBACK) || (params->callbackFxn != NULL));
 
     object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
+    object->callbackFxn    = params->callbackFxn;
     if (params->returnBehavior == AESCTR_RETURN_BEHAVIOR_BLOCKING)
     {
         object->semaphoreTimeout = params->timeout;
@@ -220,16 +217,16 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
     {
         object->semaphoreTimeout = SemaphoreP_NO_WAIT;
     }
-    object->threadSafe = true;
+    object->threadSafe           = true;
     object->cryptoResourceLocked = false;
-    object->hwBusy = false;
-    object->operationInProgress = false;
+    object->hwBusy               = false;
+    object->operationInProgress  = false;
 
     /* Set power dependency - i.e. power up and enable clock for Crypto
      * (CryptoResourceCC26XX) module. */
     Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
 
-    return(handle);
+    return (handle);
 }
 
 /*
@@ -249,14 +246,13 @@ void AESCTR_close(AESCTR_Handle handle)
     Power_releaseDependency(PowerCC26XX_PERIPH_CRYPTO);
 }
 
-
 /*
  *  ======== AESCTR_processData ========
  */
 static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
 {
-    AESCTRCC26XX_Object *object = handle->object;
-    int_fast16_t status = AESCTR_STATUS_SUCCESS;
+    AESCTRCC26XX_Object *object         = handle->object;
+    int_fast16_t status                 = AESCTR_STATUS_SUCCESS;
     AESCTRCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     uint16_t keyLength;
     const uint8_t *keyData;
@@ -266,24 +262,20 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
     DebugP_assert(object->output);
 
     /* Only plaintext CryptoKeys are supported currently */
-    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) ||
-                  (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
 
     keyLength = object->key.u.plaintext.keyLength;
-    keyData = object->key.u.plaintext.keyMaterial;
+    keyData   = object->key.u.plaintext.keyMaterial;
 
     DebugP_assert(keyData);
-    DebugP_assert((keyLength == 16) ||
-                  (keyLength == 24) ||
-                  (keyLength == 32));
+    DebugP_assert((keyLength == 16) || (keyLength == 24) || (keyLength == 32));
 
     /* We need to set the HWI function and priority since the same physical
      * interrupt is shared by multiple drivers and they all need to coexist.
      * Whenever a driver starts an operation, it registers its HWI callback with
      * the OS.
      */
-    HwiP_setFunc(&CryptoResourceCC26XX_hwi, AESCTR_hwiFxn,
-                 (uintptr_t)handle);
+    HwiP_setFunc(&CryptoResourceCC26XX_hwi, AESCTR_hwiFxn, (uintptr_t)handle);
     HwiP_setPriority(INT_CRYPTO_RESULT_AVAIL_IRQ, hwAttrs->intPriority);
 
     /* Load the key from RAM or flash into the key store at a hardcoded and
@@ -338,8 +330,7 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
         /* Load counter value */
         AESSetInitializationVector(object->counter);
 
-        ctrlVal = CRYPTO_AESCTL_CTR |
-                  CRYPTO_AESCTL_CTR_WIDTH_128_BIT;
+        ctrlVal = CRYPTO_AESCTL_CTR | CRYPTO_AESCTL_CTR_WIDTH_128_BIT;
 
         if ((object->operationType & AESCTR_OP_MODE_MASK) == AESCTR_MODE_ENCRYPT)
         {
@@ -369,8 +360,7 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
         }
 
         /* Start the input/output DMA */
-        AESStartDMAOperation(object->input, object->inputLength,
-                             object->output, object->inputLength);
+        AESStartDMAOperation(object->input, object->inputLength, object->output, object->inputLength);
 
         status = AESCTR_waitForResult(object);
     }
@@ -392,7 +382,7 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
 static int_fast16_t AESCTR_setOperationInProgress(AESCTRCC26XX_Object *object)
 {
     uintptr_t interruptKey = HwiP_disable();
-    if(object->operationInProgress)
+    if (object->operationInProgress)
     {
         HwiP_restore(interruptKey);
         return AESCTR_STATUS_ERROR;
@@ -405,8 +395,7 @@ static int_fast16_t AESCTR_setOperationInProgress(AESCTRCC26XX_Object *object)
 /*
  *  ======== AESCTR_initCounter ========
  */
-static void AESCTR_initCounter(AESCTRCC26XX_Object *object,
-                               const uint8_t *initialCounter)
+static void AESCTR_initCounter(AESCTRCC26XX_Object *object, const uint8_t *initialCounter)
 {
     if (initialCounter != NULL)
     {
@@ -459,23 +448,22 @@ static int_fast16_t AESCTR_startOneStepOperation(AESCTR_Handle handle,
         object->cryptoResourceLocked = true;
     }
 
-    object->operation = (AESCTR_OperationUnion *)operation;
+    object->operation     = (AESCTR_OperationUnion *)operation;
     object->operationType = operationType;
     /* We will only change the returnStatus if there is an error or cancellation */
-    object->returnStatus = AESCTR_STATUS_SUCCESS;
+    object->returnStatus  = AESCTR_STATUS_SUCCESS;
 
     /* Make internal copy of operational params */
-    object->key = *(operation->key);
-    object->input = operation->input;
+    object->key         = *(operation->key);
+    object->input       = operation->input;
     object->inputLength = operation->inputLength;
-    object->output = operation->output;
+    object->output      = operation->output;
 
     AESCTR_initCounter(object, operation->initialCounter);
 
     status = AESCTR_processData(handle);
 
-    if ((status != AESCTR_STATUS_SUCCESS) &&
-        (object->cryptoResourceLocked))
+    if ((status != AESCTR_STATUS_SUCCESS) && (object->cryptoResourceLocked))
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
@@ -494,8 +482,7 @@ static inline int_fast16_t AESCTR_waitForResult(AESCTRCC26XX_Object *object)
     if (object->returnBehavior == AESCTR_RETURN_BEHAVIOR_POLLING)
     {
         /* Wait until the operation is complete and check for DMA errors */
-        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) &
-            AES_DMA_BUS_ERR)
+        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
         {
             object->returnStatus = AESCTR_STATUS_ERROR;
         }
@@ -526,8 +513,7 @@ static inline int_fast16_t AESCTR_waitForResult(AESCTRCC26XX_Object *object)
     }
     else if (object->returnBehavior == AESCTR_RETURN_BEHAVIOR_BLOCKING)
     {
-        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore,
-                        SemaphoreP_WAIT_FOREVER);
+        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
 
         status = object->returnStatus;
     }
@@ -555,7 +541,6 @@ int_fast16_t AESCTR_oneStepDecrypt(AESCTR_Handle handle, AESCTR_OneStepOperation
 {
     return AESCTR_startOneStepOperation(handle, operationStruct, AESCTR_OPERATION_TYPE_DECRYPT);
 }
-
 
 /*
  *  ======== AESCTR_setupSegmentedOperation ========
@@ -589,20 +574,16 @@ static int_fast16_t AESCTR_setupSegmentedOperation(AESCTRCC26XX_Object *object,
     return status;
 }
 
-
-
 /*
  *  ======== AESCTR_setupEncrypt ========
  */
-int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key,
-                                 const uint8_t *initialCounter)
+int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key, const uint8_t *initialCounter)
 {
     DebugP_assert(handle);
     AESCTRCC26XX_Object *object = handle->object;
     DebugP_assert(object);
 
-    int_fast16_t status = AESCTR_setupSegmentedOperation(object, key,
-                                                         initialCounter);
+    int_fast16_t status = AESCTR_setupSegmentedOperation(object, key, initialCounter);
 
     if (status == AESCTR_STATUS_SUCCESS)
     {
@@ -615,15 +596,13 @@ int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key,
 /*
  *  ======== AESCTR_setupDecrypt ========
  */
-int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key,
-                                 const uint8_t *initialCounter)
+int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key, const uint8_t *initialCounter)
 {
     DebugP_assert(handle);
     AESCTRCC26XX_Object *object = handle->object;
     DebugP_assert(object);
 
-    int_fast16_t status = AESCTR_setupSegmentedOperation(object, key,
-                                                         initialCounter);
+    int_fast16_t status = AESCTR_setupSegmentedOperation(object, key, initialCounter);
 
     if (status == AESCTR_STATUS_SUCCESS)
     {
@@ -636,8 +615,7 @@ int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key,
 /*
  *  ======== AESCTR_addData ========
  */
-int_fast16_t AESCTR_addData(AESCTR_Handle handle,
-                            AESCTR_SegmentedOperation *operation)
+int_fast16_t AESCTR_addData(AESCTR_Handle handle, AESCTR_SegmentedOperation *operation)
 {
     DebugP_assert(handle);
     DebugP_assert(operation);
@@ -659,8 +637,7 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle,
                   (object->operationType == AESCTR_OPERATION_TYPE_DECRYPT_SEGMENTED));
 
     /* Verify the input length is non-zero and a multiple of the block size */
-    if ((operation->inputLength == 0U) ||
-        (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
+    if ((operation->inputLength == 0U) || (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
     {
         return AESCTR_STATUS_ERROR;
     }
@@ -678,14 +655,13 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle,
     object->operation = (AESCTR_OperationUnion *)operation;
 
     /* Make internal copy of operational params */
-    object->input = operation->input;
+    object->input       = operation->input;
     object->inputLength = operation->inputLength;
-    object->output = operation->output;
+    object->output      = operation->output;
 
     status = AESCTR_processData(handle);
 
-    if ((status != AESCTR_STATUS_SUCCESS) &&
-        (object->cryptoResourceLocked))
+    if ((status != AESCTR_STATUS_SUCCESS) && (object->cryptoResourceLocked))
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
@@ -697,15 +673,14 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle,
 /*
  *  ======== AESCTR_finalize ========
  */
-int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
-                             AESCTR_SegmentedOperation *operation)
+int_fast16_t AESCTR_finalize(AESCTR_Handle handle, AESCTR_SegmentedOperation *operation)
 {
     DebugP_assert(handle);
     DebugP_assert(operation);
 
-    AESCTRCC26XX_Object *object = handle->object;
+    AESCTRCC26XX_Object *object        = handle->object;
     AESCTR_OperationType operationType = object->operationType;
-    int_fast16_t status = AESCTR_STATUS_ERROR;
+    int_fast16_t status                = AESCTR_STATUS_ERROR;
 
     /* Check for previous failure of segmented operation */
     if (object->returnStatus != AESCTR_STATUS_SUCCESS)
@@ -748,17 +723,16 @@ int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
         }
 
         object->operationType = operationType;
-        object->operation = (AESCTR_OperationUnion *)operation;
+        object->operation     = (AESCTR_OperationUnion *)operation;
 
         /* Make internal copy of operational params */
-        object->input = operation->input;
+        object->input       = operation->input;
         object->inputLength = operation->inputLength;
-        object->output = operation->output;
+        object->output      = operation->output;
 
         status = AESCTR_processData(handle);
 
-        if ((status != AESCTR_STATUS_SUCCESS) &&
-            (object->cryptoResourceLocked))
+        if ((status != AESCTR_STATUS_SUCCESS) && (object->cryptoResourceLocked))
         {
             CryptoResourceCC26XX_releaseLock();
             object->cryptoResourceLocked = false;
@@ -777,9 +751,7 @@ int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
         if (object->returnBehavior == AESCTR_RETURN_BEHAVIOR_CALLBACK)
         {
             /* Call the callback function provided by the application */
-            object->callbackFxn(handle, status,
-                                (AESCTR_OperationUnion *)operation,
-                                operationType);
+            object->callbackFxn(handle, status, (AESCTR_OperationUnion *)operation, operationType);
 
             /* Always return success in callback mode */
             status = AESCTR_STATUS_SUCCESS;
@@ -802,7 +774,7 @@ int_fast16_t AESCTR_cancelOperation(AESCTR_Handle handle)
     /* Check if the HW operation already completed or was never started */
     if (!object->hwBusy)
     {
-        object->returnStatus = AESCTR_STATUS_CANCELED;
+        object->returnStatus        = AESCTR_STATUS_CANCELED;
         object->operationInProgress = false;
 
         HwiP_restore(interruptKey);
@@ -830,8 +802,8 @@ int_fast16_t AESCTR_cancelOperation(AESCTR_Handle handle)
      */
     IntPendClear(INT_CRYPTO_RESULT_AVAIL_IRQ);
 
-    object->returnStatus = AESCTR_STATUS_CANCELED;
-    object->hwBusy = false;
+    object->returnStatus        = AESCTR_STATUS_CANCELED;
+    object->hwBusy              = false;
     object->operationInProgress = false;
 
     if (object->returnBehavior == AESCTR_RETURN_BEHAVIOR_BLOCKING)
@@ -842,8 +814,7 @@ int_fast16_t AESCTR_cancelOperation(AESCTR_Handle handle)
     else /* AESCTR_RETURN_BEHAVIOR_CALLBACK */
     {
         /* Call the callback function provided by the application. */
-        object->callbackFxn(handle, AESCTR_STATUS_CANCELED,
-                            object->operation, object->operationType);
+        object->callbackFxn(handle, AESCTR_STATUS_CANCELED, object->operation, object->operationType);
     }
 
     /* Cleanup posts the crypto access semaphore and must be done after the

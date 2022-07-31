@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,10 +67,9 @@ static int_fast16_t AESECB_startOperation(AESECB_Handle handle,
 static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
                                            AESECB_Operation *operation,
                                            AESECB_OperationType operationType);
-static int_fast16_t AESECB_setupSegmentedOperation(AESECB_Handle handle,
-                                                   const CryptoKey *key);
+static int_fast16_t AESECB_setupSegmentedOperation(AESECB_Handle handle, const CryptoKey *key);
 
-#define AES_NON_BLOCK_MULTIPLE_MASK                 0x0F
+#define AES_NON_BLOCK_MULTIPLE_MASK 0x0F
 
 /* Extern globals */
 extern const AESECB_Config AESECB_config[];
@@ -116,10 +115,7 @@ static void AESECB_hwiFxn(uintptr_t arg0)
     }
     else
     {
-        object->callbackFxn((AESECB_Handle)arg0,
-                            object->returnStatus,
-                            object->operation,
-                            object->operationType);
+        object->callbackFxn((AESECB_Handle)arg0, object->returnStatus, object->operation, object->operationType);
     }
 }
 
@@ -172,12 +168,11 @@ void AESECB_init(void)
 /*
  *  ======== AESECB_construct ========
  */
-AESECB_Handle AESECB_construct(AESECB_Config *config,
-                               const AESECB_Params *params)
+AESECB_Handle AESECB_construct(AESECB_Config *config, const AESECB_Params *params)
 {
-    AESECB_Handle       handle;
+    AESECB_Handle handle;
     AESECBCC26XX_Object *object;
-    uintptr_t           interruptKey;
+    uintptr_t interruptKey;
 
     handle = config;
     object = handle->object;
@@ -203,12 +198,13 @@ AESECB_Handle AESECB_construct(AESECB_Config *config,
 
     DebugP_assert(params->returnBehavior == AESECB_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn : true);
 
-    object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
-    object->semaphoreTimeout = params->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING ? params->timeout : SemaphoreP_NO_WAIT;
-    object->threadSafe = true;
-    object->hwBusy = false;
-    object->operationInProgress = false;
+    object->returnBehavior       = params->returnBehavior;
+    object->callbackFxn          = params->callbackFxn;
+    object->semaphoreTimeout     = params->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING ? params->timeout
+                                                                                             : SemaphoreP_NO_WAIT;
+    object->threadSafe           = true;
+    object->hwBusy               = false;
+    object->operationInProgress  = false;
     object->cryptoResourceLocked = false;
 
     /*
@@ -225,7 +221,7 @@ AESECB_Handle AESECB_construct(AESECB_Config *config,
  */
 void AESECB_close(AESECB_Handle handle)
 {
-    AESECBCC26XX_Object         *object;
+    AESECBCC26XX_Object *object;
 
     DebugP_assert(handle);
 
@@ -280,8 +276,7 @@ static int_fast16_t AESECB_waitForResult(AESECB_Handle handle)
     }
     else if (object->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING)
     {
-        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore,
-                        SemaphoreP_WAIT_FOREVER);
+        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
 
         result = object->returnStatus;
     }
@@ -304,6 +299,12 @@ static int_fast16_t AESECB_startOperation(AESECB_Handle handle,
     DebugP_assert(operation);
 
     AESECBCC26XX_Object *object = handle->object;
+
+    /* Verify the input length is non-zero and a multiple of the block size */
+    if ((operation->inputLength == 0U) || (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
+    {
+        return AESECB_STATUS_ERROR;
+    }
 
     uintptr_t interruptKey;
     interruptKey = HwiP_disable();
@@ -331,23 +332,17 @@ static int_fast16_t AESECB_startOperation(AESECB_Handle handle,
 /*
  *  ======== AESECB_oneStepEncrypt ========
  */
-int_fast16_t AESECB_oneStepEncrypt(AESECB_Handle handle,
-                                   AESECB_Operation *operationStruct)
+int_fast16_t AESECB_oneStepEncrypt(AESECB_Handle handle, AESECB_Operation *operation)
 {
-
-    return AESECB_startOperation(handle, operationStruct,
-                                 AESECB_OPERATION_TYPE_ENCRYPT);
+    return AESECB_startOperation(handle, operation, AESECB_OPERATION_TYPE_ENCRYPT);
 }
 
 /*
  *  ======== AESECB_oneStepDecrypt ========
  */
-int_fast16_t AESECB_oneStepDecrypt(AESECB_Handle handle,
-                                   AESECB_Operation *operationStruct)
+int_fast16_t AESECB_oneStepDecrypt(AESECB_Handle handle, AESECB_Operation *operation)
 {
-
-    return AESECB_startOperation(handle, operationStruct,
-                                 AESECB_OPERATION_TYPE_DECRYPT);
+    return AESECB_startOperation(handle, operation, AESECB_OPERATION_TYPE_DECRYPT);
 }
 
 /*
@@ -360,7 +355,7 @@ int_fast16_t AESECB_setupEncrypt(AESECB_Handle handle, const CryptoKey *key)
     if (result != AESECB_STATUS_ERROR)
     {
         AESECBCC26XX_Object *object = handle->object;
-        object->operationType = AESECB_OPERATION_TYPE_ENCRYPT_SEGMENTED;
+        object->operationType       = AESECB_OPERATION_TYPE_ENCRYPT_SEGMENTED;
     }
 
     return result;
@@ -376,7 +371,7 @@ int_fast16_t AESECB_setupDecrypt(AESECB_Handle handle, const CryptoKey *key)
     if (result != AESECB_STATUS_ERROR)
     {
         AESECBCC26XX_Object *object = handle->object;
-        object->operationType = AESECB_OPERATION_TYPE_DECRYPT_SEGMENTED;
+        object->operationType       = AESECB_OPERATION_TYPE_DECRYPT_SEGMENTED;
     }
 
     return result;
@@ -418,8 +413,7 @@ static int_fast16_t AESECB_setupSegmentedOperation(AESECB_Handle handle, const C
 /*
  *  ======== AESECB_addData ========
  */
-int_fast16_t AESECB_addData(AESECB_Handle handle,
-                            AESECB_Operation *operation)
+int_fast16_t AESECB_addData(AESECB_Handle handle, AESECB_Operation *operation)
 {
     DebugP_assert(handle);
     DebugP_assert(operation);
@@ -439,8 +433,7 @@ int_fast16_t AESECB_addData(AESECB_Handle handle,
                   object->operationType == AESECB_OPERATION_TYPE_ENCRYPT_SEGMENTED);
 
     /* Verify the input length is non-zero and a multiple of the block size */
-    if ((operation->inputLength == 0U) ||
-        (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
+    if ((operation->inputLength == 0U) || (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
     {
         return AESECB_STATUS_ERROR;
     }
@@ -463,12 +456,12 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
     DebugP_assert(handle);
     DebugP_assert(operation);
 
-    AESECBCC26XX_Object *object = handle->object;
+    AESECBCC26XX_Object *object         = handle->object;
     AESECBCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     SemaphoreP_Status resourceAcquired;
 
     /* Only plaintext CryptoKeys are supported for now */
-    uint16_t keyLength = object->key.u.plaintext.keyLength;
+    uint16_t keyLength      = object->key.u.plaintext.keyLength;
     uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
 
     /* Only plaintext keys are supported in the current implementation */
@@ -480,15 +473,13 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
      * should be checked in this function.
      */
     DebugP_assert(keyingMaterial);
-    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES ||
-                  keyLength == AES_192_KEY_LENGTH_BYTES ||
+    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES || keyLength == AES_192_KEY_LENGTH_BYTES ||
                   keyLength == AES_256_KEY_LENGTH_BYTES);
 
     if (object->threadSafe)
     {
         /* Try and obtain access to the crypto module */
-        resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore,
-                                           object->semaphoreTimeout);
+        resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore, object->semaphoreTimeout);
 
         if (resourceAcquired != SemaphoreP_OK)
         {
@@ -501,9 +492,9 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
     }
 
     object->operationType = operationType;
-    object->operation = operation;
+    object->operation     = operation;
     /* We will only change the returnStatus if there is an error */
-    object->returnStatus = AESECB_STATUS_SUCCESS;
+    object->returnStatus  = AESECB_STATUS_SUCCESS;
 
     /*
      * We need to set the HWI function and priority since the same physical
@@ -591,14 +582,15 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
     /* Set direction of operation. */
     AESSetCtrl((operationType == AESECB_OPERATION_TYPE_DECRYPT ||
                 operationType == AESECB_OPERATION_TYPE_DECRYPT_SEGMENTED ||
-                operationType == AESECB_OPERATION_TYPE_FINALIZE_DECRYPT_SEGMENTED) ? 0 : CRYPTO_AESCTL_DIR);
+                operationType == AESECB_OPERATION_TYPE_FINALIZE_DECRYPT_SEGMENTED)
+                   ? 0
+                   : CRYPTO_AESCTL_DIR);
 
     AESSetDataLength(operation->inputLength);
 
     object->hwBusy = true;
 
-    AESStartDMAOperation(operation->input, operation->inputLength,
-                         operation->output, operation->inputLength);
+    AESStartDMAOperation(operation->input, operation->inputLength, operation->output, operation->inputLength);
 
     return AESECB_waitForResult(handle);
 }
@@ -606,8 +598,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
 /*
  *  ======== AESECB_finalize ========
  */
-int_fast16_t AESECB_finalize(AESECB_Handle handle,
-                             AESECB_Operation *operation)
+int_fast16_t AESECB_finalize(AESECB_Handle handle, AESECB_Operation *operation)
 {
     /* Publicly accessible functions should check their inputs */
     DebugP_assert(handle);
@@ -668,10 +659,7 @@ int_fast16_t AESECB_finalize(AESECB_Handle handle,
         if (object->returnBehavior == AESECB_RETURN_BEHAVIOR_CALLBACK)
         {
             /* Invoke the application callback function */
-            object->callbackFxn(handle,
-                                result,
-                                operation,
-                                operationType);
+            object->callbackFxn(handle, result, operation, operationType);
 
             /* Always return success in callback mode */
             result = AESECB_STATUS_SUCCESS;
@@ -694,7 +682,7 @@ int_fast16_t AESECB_cancelOperation(AESECB_Handle handle)
     /* Check if the HW operation already completed */
     if (!object->hwBusy)
     {
-        object->returnStatus = AESECB_STATUS_CANCELED;
+        object->returnStatus        = AESECB_STATUS_CANCELED;
         object->operationInProgress = false;
 
         HwiP_restore(interruptKey);
@@ -722,8 +710,8 @@ int_fast16_t AESECB_cancelOperation(AESECB_Handle handle)
      */
     IntPendClear(INT_CRYPTO_RESULT_AVAIL_IRQ);
 
-    object->returnStatus = AESECB_STATUS_CANCELED;
-    object->hwBusy = false;
+    object->returnStatus        = AESECB_STATUS_CANCELED;
+    object->hwBusy              = false;
     object->operationInProgress = false;
 
     if (object->returnBehavior == AESECB_RETURN_BEHAVIOR_BLOCKING)
@@ -734,10 +722,7 @@ int_fast16_t AESECB_cancelOperation(AESECB_Handle handle)
     else /* AESECB_RETURN_BEHAVIOR_CALLBACK */
     {
         /* Call the callback function provided by the application */
-        object->callbackFxn(handle,
-                            AESECB_STATUS_CANCELED,
-                            object->operation,
-                            object->operationType);
+        object->callbackFxn(handle, AESECB_STATUS_CANCELED, object->operation, object->operationType);
     }
 
     /* Cleanup posts the crypto access semaphore and must be done after the

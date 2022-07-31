@@ -61,8 +61,15 @@
 
 #include "inc/npi_config.h"
 #include "inc/npi_tl_uart.h"
+#ifdef PTM_MODE
+#include <ti/drivers/UART2.h>
+#include <ti/drivers/uart2/UART2CC26X2.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/uart.h)
+#else
 #include <ti/drivers/UART.h>
 #include <ti/drivers/uart/UARTCC26XX.h>
+#endif // PTM_MODE
 
 // ****************************************************************************
 // defines
@@ -76,7 +83,11 @@
 // globals
 //*****************************************************************************
 //! \brief UART Handle for UART Driver
+#ifdef PTM_MODE
+static UART2_Handle uartHandle;
+#else
 static UART_Handle uartHandle;
+#endif // PTM_MODE
 
 //! \brief UART ISR Rx Buffer
 static Char isrRxBuf[UART_ISR_BUF_SIZE];
@@ -108,7 +119,11 @@ static Char* TransportTxBuf;
 static uint16 TransportTxLen = 0;
 
 //! \brief UART Object. Initialized in board specific files
+#ifdef PTM_MODE
+extern UART2CC26X2_Object uart2CC26X2Objects[];
+#else
 extern UARTCC26XX_Object uartCC26XXObjects[];
+#endif // PTM_MODE
 
 //*****************************************************************************
 // function prototypes
@@ -117,11 +132,19 @@ extern UARTCC26XX_Object uartCC26XXObjects[];
 //! \brief UART ISR function. Invoked upon specific threshold of UART RX FIFO size
 static uint16 NPITLUART_readIsrBuf(size_t size);
 
+#ifdef PTM_MODE
+//! \brief UART Callback invoked after UART write completion
+static void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status);
+
+//! \brief UART Callback invoked after readsize has been read or timeout
+static void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status);
+#else
 //! \brief UART Callback invoked after UART write completion
 static void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size);
 
 //! \brief UART Callback invoked after readsize has been read or timeout
 static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size);
+#endif // PTM_MODE
 
 // -----------------------------------------------------------------------------
 //! \brief      This routine initializes the transport layer and opens the port
@@ -136,12 +159,32 @@ static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size);
 // -----------------------------------------------------------------------------
 void NPITLUART_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack)
 {
-    UART_Params params;
-
     TransportRxBuf = tRxBuf;
     TransportTxBuf = tTxBuf;
     npiTransmitCB = npiCBack;
 
+#ifdef PTM_MODE
+    // Initialize the UART driver
+    UART2_Params params;
+    UART2_Params_init(&params);
+    params.readMode = UART2_Mode_CALLBACK;
+    params.writeMode = UART2_Mode_CALLBACK;
+    params.readCallback = NPITLUART_readCallBack;
+    params.writeCallback = NPITLUART_writeCallBack;
+    params.baudRate = NPI_UART_BR;
+    params.dataLength = UART2_DataLen_8;
+    params.stopBits = UART2_StopBits_1;
+
+    // Open / power on the UART.
+    uartHandle = UART2_open(CONFIG_DISPLAY_UART, &params);
+    if (uartHandle == NULL)
+    {
+      // An error occured, or indexed UART peripheral is already opened
+      HAL_ASSERT( HAL_ASSERT_CAUSE_UNEXPECTED_ERROR );
+    }
+#else
+
+    UART_Params params;
     // Initialize the UART driver
     UART_init();
 
@@ -169,7 +212,7 @@ void NPITLUART_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack)
 
     //Enable Partial Reads on all subsequent UART_read()
     UART_control(uartHandle, UARTCC26XX_CMD_RETURN_PARTIAL_ENABLE,  NULL);
-
+#endif // PTM_MODE
 
 #if (NPI_FLOW_CTRL == 0)
     // This call will start repeated Uart Reads when Power Savings is disabled
@@ -196,10 +239,18 @@ void NPITLUART_stopTransfer(void)
     // or that the FIFO has already been read for this UART_read()
     // In either case UART_readCancel will call the read CB function and it will
     // invoke npiTransmitCB with the appropriate number of bytes read
+#ifdef PTM_MODE
+    if (!UARTCharsAvail(((UART2CC26X2_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr))
+#else
     if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr))
+#endif // PTM_MODE
     {
         RxActive = FALSE;
+#ifdef PTM_MODE
+        UART2_readCancel(uartHandle);
+#else
         UART_readCancel(uartHandle);
+#endif // PTM_MODE
     }
 
     ICall_leaveCriticalSection(key);
@@ -239,7 +290,11 @@ void NPITLUART_handleMrdyEvent(void)
     {
         // Check to see if transport is successful. If not, reset TxLen to allow
         // another write to be processed
+#ifdef PTM_MODE
+        if ( UART2_write(uartHandle, TransportTxBuf, TransportTxLen, NULL)  != UART2_STATUS_SUCCESS )
+#else
         if ( UART_write(uartHandle, TransportTxBuf, TransportTxLen) == UART_ERROR )
+#endif // PTM_MODE
         {
           TxActive = FALSE;
           TransportTxLen = 0;
@@ -261,7 +316,11 @@ void NPITLUART_handleMrdyEvent(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
+#ifdef PTM_MODE
+static void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
+#else
 static void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
+#endif // PTM_MODE
 {
     ICall_CSState key;
     key = ICall_enterCriticalSection();
@@ -269,7 +328,11 @@ static void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 #if (NPI_FLOW_CTRL == 1)
     if ( !RxActive )
     {
+#ifdef PTM_MODE
+        UART2_readCancel(uartHandle);
+#else
         UART_readCancel(uartHandle);
+#endif // PTM_MODE
         if ( npiTransmitCB )
         {
             npiTransmitCB(TransportRxLen,TransportTxLen);
@@ -297,7 +360,11 @@ static void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
+#ifdef PTM_MODE
+static void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
+#else
 static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
+#endif // PTM_MODE
 {
     ICall_CSState key;
     key = ICall_enterCriticalSection();
@@ -321,8 +388,13 @@ static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
 #if (NPI_FLOW_CTRL == 1)
     // Read has been cancelled by transport layer, or bus timeout and no bytes in FIFO
     //    - do not invoke another read
+#ifdef PTM_MODE
+    if ( !UARTCharsAvail(((UART2CC26X2_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr) &&
+            mrdy_flag )
+#else
     if ( !UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr) &&
             mrdy_flag )
+#endif // PTM_MODE
     {
         RxActive = FALSE;
 
@@ -334,7 +406,11 @@ static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
     }
     else
     {
+#ifdef PTM_MODE
+        UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE, NULL);
+#else
         UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+#endif // PTM_MODE
     }
 #else
     if ( npiTransmitCB )
@@ -342,7 +418,11 @@ static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
         npiTransmitCB(size,0);
     }
     TransportRxLen = 0;
+#ifdef PTM_MODE
+    UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE, NULL);
+#else
     UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+#endif // PTM_MODE
 #endif // NPI_FLOW_CTRL = 1
 
     ICall_leaveCriticalSection(key);
@@ -387,7 +467,11 @@ void NPITLUART_readTransport(void)
 #endif // NPI_FLOW_CTRL = 1
 
     TransportRxLen = 0;
+#ifdef PTM_MODE
+    UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE, NULL);
+#else
     UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+#endif // PTM_MODE
 
     ICall_leaveCriticalSection(key);
 }
@@ -417,7 +501,11 @@ uint16 NPITLUART_writeTransport(uint16 len)
 #else
     // Check to see if transport is successful. If not, reset TxLen to allow
     // another write to be processed
+    #ifdef PTM_MODE
+    if(UART2_write(uartHandle, TransportTxBuf, TransportTxLen, NULL) != UART2_STATUS_SUCCESS)
+    #else
     if(UART_write(uartHandle, TransportTxBuf, TransportTxLen) == UART_ERROR )
+    #endif // PTM_MODE
     {
       TransportTxLen = 0;
     }

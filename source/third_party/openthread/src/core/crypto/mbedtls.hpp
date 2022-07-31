@@ -36,7 +36,26 @@
 
 #include "openthread-core-config.h"
 
+#include <mbedtls/version.h>
+
 #include <openthread/instance.h>
+
+#include "common/error.hpp"
+#include "common/non_copyable.hpp"
+
+/**
+ * Keep forward-compatibility with Mbed TLS 3.0.
+ *
+ * Direct access to fields of structures declared in public headers is no longer
+ * supported. In Mbed TLS 3, the layout of structures is not considered part of
+ * the stable API, and minor versions (3.1, 3.2, etc.) may add, remove, rename,
+ * reorder or change the type of structure fields.
+ */
+#if (MBEDTLS_VERSION_NUMBER < 0x03000000)
+#ifndef MBEDTLS_PRIVATE
+#define MBEDTLS_PRIVATE(member) member
+#endif
+#endif
 
 namespace ot {
 namespace Crypto {
@@ -52,7 +71,7 @@ namespace Crypto {
  * This class implements mbedTLS memory.
  *
  */
-class MbedTls
+class MbedTls : private NonCopyable
 {
 public:
     /**
@@ -62,9 +81,28 @@ public:
     MbedTls(void);
 
     /**
-     * This method converts from MbedTls error to OpenThread error.
+     * This method converts an mbed TLS error to OpenThread error.
+     *
+     * @param[in] aMbedTlsError  The mbed TLS error.
+     *
+     * @returns The mapped Error.
+     *
      */
-    static otError MapError(int rval);
+    static Error MapError(int aMbedTlsError);
+
+#if !OPENTHREAD_RADIO
+    /**
+     * This function fills a given buffer with cryptographically secure random bytes.
+     *
+     * @param[in]  aContext A pointer to arbitrary context.
+     * @param[out] aBuffer  A pointer to a buffer to fill with the random bytes.
+     * @param[in]  aSize    Size of buffer (number of bytes to fill).
+     *
+     * @retval kErrorNone   Successfully filled buffer with random values.
+     *
+     */
+    static int CryptoSecurePrng(void *aContext, unsigned char *aBuffer, size_t aSize);
+#endif
 };
 
 /**

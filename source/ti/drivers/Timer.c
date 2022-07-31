@@ -41,12 +41,10 @@
 #include <ti/drivers/timer/TimerSupport.h>
 
 /* Default Parameters */
-static const Timer_Params defaultParams = {
-    .timerMode     = Timer_ONESHOT_BLOCKING,
-    .periodUnits   = Timer_PERIOD_COUNTS,
-    .timerCallback = NULL,
-    .period        = (uint16_t) ~0
-};
+static const Timer_Params defaultParams = {.timerMode     = Timer_ONESHOT_BLOCKING,
+                                           .periodUnits   = Timer_PERIOD_COUNTS,
+                                           .timerCallback = NULL,
+                                           .period        = (uint16_t)~0};
 
 /*
  *  ======== Timer_init ========
@@ -68,31 +66,38 @@ void Timer_Params_init(Timer_Params *params)
  *  ======== Timer_setPeriod ========
  */
 int32_t Timer_setPeriod(Timer_Handle handle, Timer_PeriodUnits periodUnits, uint32_t period)
- {
-    Timer_Object        *object = handle->object;
-    ClockP_FreqHz        clockFreq;
+{
+    Timer_Object *object = handle->object;
+    ClockP_FreqHz clockFreq;
 
     ClockP_getCpuFreq(&clockFreq);
 
-    if (periodUnits == Timer_PERIOD_US) {
+    if (periodUnits == Timer_PERIOD_US)
+    {
         /* Checks if the calculated period will fit in 32-bits */
-        if (period >= ((uint32_t) ~0) / (clockFreq.lo / 1000000)) {
+        if (period >= ((uint32_t)~0) / (clockFreq.lo / 1000000))
+        {
             return (Timer_STATUS_ERROR);
         }
         period = period * (clockFreq.lo / 1000000);
     }
-    else if (periodUnits == Timer_PERIOD_HZ) {
+    else if (periodUnits == Timer_PERIOD_HZ)
+    {
         /* If period > clockFreq */
-        if ((period = clockFreq.lo / period) == 0) {
+        if ((period = clockFreq.lo / period) == 0)
+        {
             return (Timer_STATUS_ERROR);
         }
     }
 
     /* If using a half timer */
-    if (!TimerSupport_timerFullWidth(handle)) {
-        if (period > 0xFFFF) {
+    if (!TimerSupport_timerFullWidth(handle))
+    {
+        if (period > 0xFFFF)
+        {
             /* 24-bit resolution for the half timer */
-            if (period >= (1 << 24)) {
+            if (period >= (1 << 24))
+            {
                 return (Timer_STATUS_ERROR);
             }
         }
@@ -103,20 +108,21 @@ int32_t Timer_setPeriod(Timer_Handle handle, Timer_PeriodUnits periodUnits, uint
     TimerSupport_timerLoad(handle);
 
     return (Timer_STATUS_SUCCESS);
- }
+}
 
 /*
  *  ======== Timer_start ========
  */
 int32_t Timer_start(Timer_Handle handle)
 {
-    Timer_Object              *object = handle->object;
-    uintptr_t                  key;
+    Timer_Object *object = handle->object;
+    uintptr_t key;
 
     /* Check if timer is already running */
     key = HwiP_disable();
 
-    if (object->isRunning) {
+    if (object->isRunning)
+    {
         HwiP_restore(key);
         return (Timer_STATUS_ERROR);
     }
@@ -127,7 +133,8 @@ int32_t Timer_start(Timer_Handle handle)
 
     HwiP_restore(key);
 
-    if (object->mode == Timer_ONESHOT_BLOCKING) {
+    if (object->mode == Timer_ONESHOT_BLOCKING)
+    {
         /* Pend forever, ~0 */
         SemaphoreP_pend(object->semHandle, SemaphoreP_WAIT_FOREVER);
     }
@@ -140,16 +147,18 @@ int32_t Timer_start(Timer_Handle handle)
  */
 void Timer_stop(Timer_Handle handle)
 {
-    Timer_Object              *object = handle->object;
-    uintptr_t                  key;
-    bool                       flag = false;
+    Timer_Object *object = handle->object;
+    uintptr_t key;
+    bool flag = false;
 
     key = HwiP_disable();
 
-    if (object->isRunning) {
+    if (object->isRunning)
+    {
         object->isRunning = false;
         /* Post the Semaphore when called from the Hwi */
-        if (object->mode == Timer_ONESHOT_BLOCKING) {
+        if (object->mode == Timer_ONESHOT_BLOCKING)
+        {
             flag = true;
         }
         TimerSupport_timerDisable(handle);
@@ -157,7 +166,8 @@ void Timer_stop(Timer_Handle handle)
 
     HwiP_restore(key);
 
-    if (flag) {
+    if (flag)
+    {
         SemaphoreP_post(object->semHandle);
     }
 }

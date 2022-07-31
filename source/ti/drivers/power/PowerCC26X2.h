@@ -59,37 +59,38 @@
 #include <ti/drivers/Temperature.h>
 
 #include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*! The latency to reserve for resume from STANDBY (usec). */
-#define PowerCC26X2_RESUMETIMESTANDBY  750
+#define PowerCC26X2_RESUMETIMESTANDBY 750
 
 /*! The total latency to reserve for entry to and exit from STANDBY (usec). */
-#define PowerCC26X2_TOTALTIMESTANDBY   1000
+#define PowerCC26X2_TOTALTIMESTANDBY 1000
 
 /*! The initial delay when waking from STANDBY (usec). */
-#define PowerCC26X2_WAKEDELAYSTANDBY    240
+#define PowerCC26X2_WAKEDELAYSTANDBY 240
 
 /*! The initial wait time (usec) before checking if RCOSC_LF is stable. */
 #define PowerCC26X2_INITIALWAITRCOSC_LF 1000
 
 /*! The retry wait time (usec) when checking to see if RCOSC_LF is stable. */
-#define PowerCC26X2_RETRYWAITRCOSC_LF   1000
+#define PowerCC26X2_RETRYWAITRCOSC_LF 1000
 
 /*! The initial wait time (usec) before checking if XOSC_HF is stable. */
-#define PowerCC26X2_INITIALWAITXOSC_HF  50
+#define PowerCC26X2_INITIALWAITXOSC_HF 50
 
 /*! The retry wait time (usec) when checking to see if XOSC_HF is stable. */
-#define PowerCC26X2_RETRYWAITXOSC_HF    50
+#define PowerCC26X2_RETRYWAITXOSC_HF 50
 
 /*! The initial wait time (usec) before checking if XOSC_LF is stable. */
-#define PowerCC26X2_INITIALWAITXOSC_LF  10000
+#define PowerCC26X2_INITIALWAITXOSC_LF 10000
 
 /*! The retry wait time (usec) when checking to see if XOSC_LF is stable. */
-#define PowerCC26X2_RETRYWAITXOSC_LF    5000
+#define PowerCC26X2_RETRYWAITXOSC_LF 5000
 
 /* Power peripheral IDs.
  * See PowerCC26XX.h for peripheral IDs. Some are redefined here for compatibility.
@@ -99,34 +100,34 @@ extern "C" {
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-/*!< Resource ID: PKA Module */
-#define PowerCC26X2_PERIPH_PKA          PowerCC26XX_PERIPH_PKA
+    /*!< Resource ID: PKA Module */
+    #define PowerCC26X2_PERIPH_PKA PowerCC26XX_PERIPH_PKA
 
-/*!< Resource ID: UART1 */
-#define PowerCC26X2_PERIPH_UART1        PowerCC26XX_PERIPH_UART1
+    /*!< Resource ID: UART1 */
+    #define PowerCC26X2_PERIPH_UART1 PowerCC26XX_PERIPH_UART1
 
-/*!< Resource ID: SSI1 */
-#define PowerCC26X2_PERIPH_SSI1         PowerCC26XX_PERIPH_SSI1
+    /*!< Resource ID: SSI1 */
+    #define PowerCC26X2_PERIPH_SSI1 PowerCC26XX_PERIPH_SSI1
 
 #endif
 
 /* The peripherals below are only available on CC13X4 and CC26X4 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-/*!< Resource ID: UART2 */
-#define PowerCC26X2_PERIPH_UART2        PowerCC26XX_PERIPH_UART2
+    /*!< Resource ID: UART2 */
+    #define PowerCC26X2_PERIPH_UART2 PowerCC26XX_PERIPH_UART2
 
-/*!< Resource ID: UART3 */
-#define PowerCC26X2_PERIPH_UART3        PowerCC26XX_PERIPH_UART3
+    /*!< Resource ID: UART3 */
+    #define PowerCC26X2_PERIPH_UART3 PowerCC26XX_PERIPH_UART3
 
-/*!< Resource ID: SSI2 */
-#define PowerCC26X2_PERIPH_SSI2         PowerCC26XX_PERIPH_SSI2
+    /*!< Resource ID: SSI2 */
+    #define PowerCC26X2_PERIPH_SSI2 PowerCC26XX_PERIPH_SSI2
 
-/*!< Resource ID: SSI3 */
-#define PowerCC26X2_PERIPH_SSI3         PowerCC26XX_PERIPH_SSI3
+    /*!< Resource ID: SSI3 */
+    #define PowerCC26X2_PERIPH_SSI3 PowerCC26XX_PERIPH_SSI3
 
-/*!< Resource ID: I2C1 */
-#define PowerCC26X2_PERIPH_I2C1         PowerCC26XX_PERIPH_I2C1
+    /*!< Resource ID: I2C1 */
+    #define PowerCC26X2_PERIPH_I2C1 PowerCC26XX_PERIPH_I2C1
 
 #endif
 
@@ -147,14 +148,14 @@ extern "C" {
 /*
  *  Calibration stages
  */
-#define PowerCC26X2_SETUP_CALIBRATE     1
-#define PowerCC26X2_INITIATE_CALIBRATE  2
-#define PowerCC26X2_DO_CALIBRATE        3
+#define PowerCC26X2_SETUP_CALIBRATE    1
+#define PowerCC26X2_INITIATE_CALIBRATE 2
+#define PowerCC26X2_DO_CALIBRATE       3
 /* \endcond */
 
-
 /*! @brief Global configuration structure */
-typedef struct {
+typedef struct
+{
     /*!
      *  @brief The Power Policy's initialization function
      *
@@ -242,7 +243,8 @@ typedef struct {
  *  Power manager state structure. The application must not access any members
  *  of this structure!
  */
-typedef struct {
+typedef struct
+{
     List_List notifyList;           /*!< Event notification list */
     uint32_t constraintMask;        /*!< Aggregate constraints mask */
     ClockP_Struct clockObj;         /*!< Clock object for scheduling wakeups */
@@ -274,7 +276,8 @@ typedef struct {
     /*!< Array to maintain resource dependency reference counts */
     unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
-    Power_PolicyFxn policyFxn;   /*!< The Power policy function */
+    Power_PolicyFxn policyFxn; /*!< The Power policy function */
+    uint32_t lastResetReason;
 } PowerCC26X2_ModuleState;
 
 /*!
@@ -289,6 +292,22 @@ typedef struct {
  *  from HPOSC.
  */
 void PowerCC26X2_enableHposcRtcCompensation(void);
+
+/*!
+ * @brief Returns the reason for the most recent reset
+ *
+ * Returns one of the following values from sys_ctrl.h:
+ * RSTSRC_PWR_ON: Power-on reset
+ * RSTSRC_PIN_RESET: Pin reset
+ * RSTSRC_VDDS_LOSS: Brown-out from VDDS
+ * RSTSRC_VDDR_LOSS: Brown-out from VDDS
+ * RSTSRC_CLK_LOSS: Lost clock
+ * RSTSRC_SYSRESET: System reset (software or watchdog reset)
+ * RSTSRC_WARMRESET: Warm reset (usually by the debugger)
+ * RSTSRC_WAKEUP_FROM_SHUTDOWN: Waking from shutdown
+ * RSTSRC_WAKEUP_FROM_TCK_NOISE: Woken up by TCLK noise
+ */
+uint32_t PowerCC26X2_getResetReason(void);
 
 #ifdef __cplusplus
 }

@@ -46,9 +46,9 @@
 
 #include <ti/devices/DeviceFamily.h>
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-#include <ti/sysbios/family/arm/v8m/Hwi.h>
+    #include <ti/sysbios/family/arm/v8m/Hwi.h>
 #else
-#include <ti/sysbios/family/arm/m3/Hwi.h>
+    #include <ti/sysbios/family/arm/m3/Hwi.h>
 #endif
 
 /*
@@ -62,23 +62,22 @@ void HwiP_clearInterrupt(int interruptNum)
 /*
  *  ======== HwiP_construct ========
  */
-HwiP_Handle HwiP_construct(HwiP_Struct *hwiP, int interruptNum,
-        HwiP_Fxn hwiFxn, HwiP_Params *params)
+HwiP_Handle HwiP_construct(HwiP_Struct *hwiP, int interruptNum, HwiP_Fxn hwiFxn, HwiP_Params *params)
 {
-    Hwi_Handle  hwi;
-    Hwi_Params  hwiParams;
+    Hwi_Handle hwi;
+    Hwi_Params hwiParams;
 
-    if (params == NULL) {
-        hwi = Hwi_construct2((Hwi_Struct2 *)hwiP, interruptNum,
-                (Hwi_FuncPtr)hwiFxn, NULL);
+    if (params == NULL)
+    {
+        hwi = Hwi_construct2((Hwi_Struct2 *)hwiP, interruptNum, (Hwi_FuncPtr)hwiFxn, NULL);
     }
-    else {
+    else
+    {
         Hwi_Params_init(&hwiParams);
-        hwiParams.arg            = (xdc_UArg)(params->arg);
-        hwiParams.priority       = (int)params->priority;
-        hwiParams.enableInt      = params->enableInt;
-        hwi = Hwi_construct2((Hwi_Struct2 *)hwiP, interruptNum,
-                (Hwi_FuncPtr)hwiFxn, &hwiParams);
+        hwiParams.arg       = (xdc_UArg)(params->arg);
+        hwiParams.priority  = (int)params->priority;
+        hwiParams.enableInt = params->enableInt;
+        hwi                 = Hwi_construct2((Hwi_Struct2 *)hwiP, interruptNum, (Hwi_FuncPtr)hwiFxn, &hwiParams);
     }
 
     return ((HwiP_Handle)hwi);
@@ -87,23 +86,22 @@ HwiP_Handle HwiP_construct(HwiP_Struct *hwiP, int interruptNum,
 /*
  *  ======== HwiP_create ========
  */
-HwiP_Handle HwiP_create(int interruptNum, HwiP_Fxn hwiFxn,
-                        HwiP_Params *params)
+HwiP_Handle HwiP_create(int interruptNum, HwiP_Fxn hwiFxn, HwiP_Params *params)
 {
-    Hwi_Handle  handle;
-    Hwi_Params  hwiParams;
+    Hwi_Handle handle;
+    Hwi_Params hwiParams;
 
-    if (params == NULL) {
-        handle = Hwi_create(interruptNum, (Hwi_FuncPtr)hwiFxn, NULL,
-                Error_IGNORE);
+    if (params == NULL)
+    {
+        handle = Hwi_create(interruptNum, (Hwi_FuncPtr)hwiFxn, NULL, Error_IGNORE);
     }
-    else {
+    else
+    {
         Hwi_Params_init(&hwiParams);
-        hwiParams.arg            = (xdc_UArg)(params->arg);
-        hwiParams.priority       = (int)params->priority;
-        hwiParams.enableInt      = params->enableInt;
-        handle = Hwi_create(interruptNum, (Hwi_FuncPtr)hwiFxn,
-                      &hwiParams, Error_IGNORE);
+        hwiParams.arg       = (xdc_UArg)(params->arg);
+        hwiParams.priority  = (int)params->priority;
+        hwiParams.enableInt = params->enableInt;
+        handle              = Hwi_create(interruptNum, (Hwi_FuncPtr)hwiFxn, &hwiParams, Error_IGNORE);
     }
 
     return ((HwiP_Handle)handle);
@@ -163,7 +161,8 @@ bool HwiP_inISR(void)
     BIOS_ThreadType threadType;
 
     threadType = BIOS_getThreadType();
-    if (threadType == BIOS_ThreadType_Hwi) {
+    if (threadType == BIOS_ThreadType_Hwi)
+    {
         return (true);
     }
 
@@ -224,8 +223,8 @@ void HwiP_plug(int interruptNum, void *fxn)
  */
 void HwiP_Params_init(HwiP_Params *params)
 {
-    params->arg = 0;
-    params->priority = ~0;
+    params->arg       = 0;
+    params->priority  = ~0;
     params->enableInt = true;
 }
 

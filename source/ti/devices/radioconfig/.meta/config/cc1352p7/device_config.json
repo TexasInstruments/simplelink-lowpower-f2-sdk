@@ -43,7 +43,7 @@
             },
             {
                 "_file": "pasettings.json",
-                "$": ".\/..\/config\/cc1352p7\/targets"
+                "$": ".\/..\/config\/pa_tables\/cc13x2_cc26x2_r7"
             },
             {
                 "_file": "io_pin_definition.json",

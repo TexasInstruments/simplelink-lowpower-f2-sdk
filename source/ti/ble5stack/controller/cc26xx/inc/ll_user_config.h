@@ -168,6 +168,7 @@ typedef struct
   uint8                 privOverrideOffset;    // Privacy Override Offset
   coexUseCaseConfig_t   *coexUseCaseConfig;     // CoEx priority and RX request configuration
   uint8                 maxNumCteBufs;         // num of CTE samples buffers (each ~2.5KB) used for RF auto copy
+  uint8                 advReportIncChannel;   // include channel index in advertising report
 } llUserCfg_t;
 
 /*******************************************************************************

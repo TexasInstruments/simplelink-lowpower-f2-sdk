@@ -28,7 +28,7 @@
 
 /**
  * @file
- *   This file implements MAC types such as Address, Extended PAN Identifier, Network Name, etc.
+ *   This file implements MAC types.
  */
 
 #include "mac_types.hpp"
@@ -57,20 +57,19 @@ PanId GenerateRandomPanId(void)
 #if !OPENTHREAD_RADIO
 void ExtAddress::GenerateRandom(void)
 {
-    Random::Crypto::FillBuffer(m8, sizeof(ExtAddress));
+    IgnoreError(Random::Crypto::FillBuffer(m8, sizeof(ExtAddress)));
     SetGroup(false);
     SetLocal(true);
 }
 #endif
 
-bool ExtAddress::operator==(const ExtAddress &aOther) const
-{
-    return memcmp(m8, aOther.m8, sizeof(ExtAddress)) == 0;
-}
-
 ExtAddress::InfoString ExtAddress::ToString(void) const
 {
-    return InfoString("%02x%02x%02x%02x%02x%02x%02x%02x", m8[0], m8[1], m8[2], m8[3], m8[4], m8[5], m8[6], m8[7]);
+    InfoString string;
+
+    string.AppendHexBytes(m8, sizeof(ExtAddress));
+
+    return string;
 }
 
 void ExtAddress::CopyAddress(uint8_t *aDst, const uint8_t *aSrc, CopyByteOrder aByteOrder)
@@ -93,85 +92,255 @@ void ExtAddress::CopyAddress(uint8_t *aDst, const uint8_t *aSrc, CopyByteOrder a
 
 Address::InfoString Address::ToString(void) const
 {
-    return (mType == kTypeExtended) ? GetExtended().ToString()
-                                    : (mType == kTypeNone ? InfoString("None") : InfoString("0x%04x", GetShort()));
-}
+    InfoString string;
 
-bool ExtendedPanId::operator==(const ExtendedPanId &aOther) const
-{
-    return memcmp(m8, aOther.m8, sizeof(ExtendedPanId)) == 0;
-}
-
-ExtendedPanId::InfoString ExtendedPanId::ToString(void) const
-{
-    return InfoString("%02x%02x%02x%02x%02x%02x%02x%02x", m8[0], m8[1], m8[2], m8[3], m8[4], m8[5], m8[6], m8[7]);
-}
-
-uint8_t NameData::CopyTo(char *aBuffer, uint8_t aMaxSize) const
-{
-    uint8_t len = GetLength();
-
-    memset(aBuffer, 0, aMaxSize);
-
-    if (len > aMaxSize)
+    if (mType == kTypeExtended)
     {
-        len = aMaxSize;
+        string.AppendHexBytes(GetExtended().m8, sizeof(ExtAddress));
+    }
+    else if (mType == kTypeNone)
+    {
+        string.Append("None");
+    }
+    else
+    {
+        string.Append("0x%04x", GetShort());
     }
 
-    memcpy(aBuffer, GetBuffer(), len);
-
-    return len;
+    return string;
 }
 
-NameData NetworkName::GetAsData(void) const
-{
-    uint8_t len = static_cast<uint8_t>(StringLength(m8, kMaxSize + 1));
+#if OPENTHREAD_CONFIG_MULTI_RADIO
 
-    return NameData(m8, len);
+const RadioType RadioTypes::kAllRadioTypes[kNumRadioTypes] = {
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    kRadioTypeIeee802154,
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    kRadioTypeTrel,
+#endif
+};
+
+void RadioTypes::AddAll(void)
+{
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    Add(kRadioTypeIeee802154);
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    Add(kRadioTypeTrel);
+#endif
 }
 
-otError NetworkName::Set(const NameData &aNameData)
+RadioTypes::InfoString RadioTypes::ToString(void) const
 {
-    otError error  = OT_ERROR_NONE;
-    uint8_t newLen = static_cast<uint8_t>(StringLength(aNameData.GetBuffer(), aNameData.GetLength()));
+    InfoString string;
+    bool       addComma = false;
 
-    VerifyOrExit(newLen <= kMaxSize, error = OT_ERROR_INVALID_ARGS);
+    string.Append("{");
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    if (Contains(kRadioTypeIeee802154))
+    {
+        string.Append("%s%s", addComma ? ", " : " ", RadioTypeToString(kRadioTypeIeee802154));
+        addComma = true;
+    }
+#endif
 
-    // Ensure the new name does not match the current one.
-    VerifyOrExit(memcmp(m8, aNameData.GetBuffer(), newLen) || (m8[newLen] != '\0'), error = OT_ERROR_ALREADY);
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    if (Contains(kRadioTypeTrel))
+    {
+        string.Append("%s%s", addComma ? ", " : " ", RadioTypeToString(kRadioTypeTrel));
+        addComma = true;
+    }
+#endif
 
-    memcpy(m8, aNameData.GetBuffer(), newLen);
-    m8[newLen] = '\0';
+    OT_UNUSED_VARIABLE(addComma);
+
+    string.Append(" }");
+
+    return string;
+}
+
+const char *RadioTypeToString(RadioType aRadioType)
+{
+    const char *str = "unknown";
+
+    switch (aRadioType)
+    {
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    case kRadioTypeIeee802154:
+        str = "15.4";
+        break;
+#endif
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    case kRadioTypeTrel:
+        str = "trel";
+        break;
+#endif
+    }
+
+    return str;
+}
+
+uint32_t LinkFrameCounters::Get(RadioType aRadioType) const
+{
+    uint32_t counter = 0;
+
+    switch (aRadioType)
+    {
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    case kRadioTypeIeee802154:
+        counter = m154Counter;
+        break;
+#endif
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    case kRadioTypeTrel:
+        counter = mTrelCounter;
+        break;
+#endif
+    }
+
+    return counter;
+}
+
+void LinkFrameCounters::Set(RadioType aRadioType, uint32_t aCounter)
+{
+    switch (aRadioType)
+    {
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    case kRadioTypeIeee802154:
+        m154Counter = aCounter;
+        break;
+#endif
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    case kRadioTypeTrel:
+        mTrelCounter = aCounter;
+        break;
+#endif
+    }
+}
+
+#endif // OPENTHREAD_CONFIG_MULTI_RADIO
+
+uint32_t LinkFrameCounters::GetMaximum(void) const
+{
+    uint32_t counter = 0;
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    if (counter < m154Counter)
+    {
+        counter = m154Counter;
+    }
+#endif
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    if (counter < mTrelCounter)
+    {
+        counter = mTrelCounter;
+    }
+#endif
+
+    return counter;
+}
+
+void LinkFrameCounters::SetAll(uint32_t aCounter)
+{
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    m154Counter = aCounter;
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    mTrelCounter = aCounter;
+#endif
+}
+
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+KeyMaterial &KeyMaterial::operator=(const KeyMaterial &aOther)
+{
+    VerifyOrExit(GetKeyRef() != aOther.GetKeyRef());
+    DestroyKey();
+    SetKeyRef(aOther.GetKeyRef());
 
 exit:
-    return error;
+    return *this;
 }
+#endif
 
-#if (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
-NameData DomainName::GetAsData(void) const
+void KeyMaterial::Clear(void)
 {
-    uint8_t len = static_cast<uint8_t>(StringLength(m8, kMaxSize + 1));
-
-    return NameData(m8, len);
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    DestroyKey();
+    SetKeyRef(kInvalidKeyRef);
+#else
+    GetKey().Clear();
+#endif
 }
 
-otError DomainName::Set(const NameData &aNameData)
+void KeyMaterial::SetFrom(const Key &aKey, bool aIsExportable)
 {
-    otError error  = OT_ERROR_NONE;
-    uint8_t newLen = static_cast<uint8_t>(StringLength(aNameData.GetBuffer(), aNameData.GetLength()));
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    {
+        KeyRef keyRef = 0;
 
-    VerifyOrExit(newLen <= kMaxSize, error = OT_ERROR_INVALID_ARGS);
+        DestroyKey();
 
-    // Ensure the new name does not match the current one.
-    VerifyOrExit(memcmp(m8, aNameData.GetBuffer(), newLen) || (m8[newLen] != '\0'), error = OT_ERROR_ALREADY);
+        SuccessOrAssert(Crypto::Storage::ImportKey(keyRef, Crypto::Storage::kKeyTypeAes,
+                                                   Crypto::Storage::kKeyAlgorithmAesEcb,
+                                                   (aIsExportable ? Crypto::Storage::kUsageExport : 0) |
+                                                       Crypto::Storage::kUsageEncrypt | Crypto::Storage::kUsageDecrypt,
+                                                   Crypto::Storage::kTypeVolatile, aKey.GetBytes(), Key::kSize));
 
-    memcpy(m8, aNameData.GetBuffer(), newLen);
-    m8[newLen] = '\0';
-
-exit:
-    return error;
+        SetKeyRef(keyRef);
+    }
+#else
+    SetKey(aKey);
+    OT_UNUSED_VARIABLE(aIsExportable);
+#endif
 }
-#endif // (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
+
+void KeyMaterial::ExtractKey(Key &aKey)
+{
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    aKey.Clear();
+
+    if (Crypto::Storage::IsKeyRefValid(GetKeyRef()))
+    {
+        size_t keySize;
+
+        SuccessOrAssert(Crypto::Storage::ExportKey(GetKeyRef(), aKey.m8, Key::kSize, keySize));
+    }
+#else
+    aKey = GetKey();
+#endif
+}
+
+void KeyMaterial::ConvertToCryptoKey(Crypto::Key &aCryptoKey) const
+{
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    aCryptoKey.SetAsKeyRef(GetKeyRef());
+#else
+    aCryptoKey.Set(GetKey().GetBytes(), Key::kSize);
+#endif
+}
+
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+void KeyMaterial::DestroyKey(void)
+{
+    Crypto::Storage::DestroyKey(GetKeyRef());
+    SetKeyRef(kInvalidKeyRef);
+}
+#endif
+
+bool KeyMaterial::operator==(const KeyMaterial &aOther) const
+{
+    return
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+        (GetKeyRef() == aOther.GetKeyRef());
+#else
+        (GetKey() == aOther.GetKey());
+#endif
+}
 
 } // namespace Mac
 } // namespace ot

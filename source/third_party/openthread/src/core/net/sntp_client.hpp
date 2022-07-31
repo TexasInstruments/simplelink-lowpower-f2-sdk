@@ -31,9 +31,12 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_SNTP_CLIENT_ENABLE
+
 #include <openthread/sntp.h>
 
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "net/ip6.hpp"
 #include "net/netif.hpp"
@@ -66,20 +69,13 @@ public:
      * Defines supported SNTP modes.
      *
      */
-    enum Mode
+    enum Mode : uint8_t
     {
         kModeClient = 3,
         kModeServer = 4,
     };
 
-    /**
-     * Kiss code length.
-     *
-     */
-    enum
-    {
-        kKissCodeLength = 4, ///< Length of the kiss code in ASCII format
-    };
+    static constexpr uint8_t kKissCodeLength = 4; ///< Length of the kiss code in ASCII format
 
     /**
      * This method returns the flags field value.
@@ -362,53 +358,29 @@ public:
     }
 
 private:
-    /**
-     * Protocol Constants (RFC 5905).
-     *
-     */
-    enum
-    {
-        /**
-         * Current NTP version.
-         *
-         */
-        kNtpVersion = 4,
+    static constexpr uint8_t kNtpVersion    = 4;                      // Current NTP version.
+    static constexpr uint8_t kLeapOffset    = 6;                      // Leap Indicator field offset.
+    static constexpr uint8_t kLeapMask      = 0x03 << kLeapOffset;    // Leap Indicator field mask.
+    static constexpr uint8_t kVersionOffset = 3;                      // Version field offset.
+    static constexpr uint8_t kVersionMask   = 0x07 << kVersionOffset; // Version field mask.
+    static constexpr uint8_t kModeOffset    = 0;                      // Mode field offset.
+    static constexpr uint8_t kModeMask      = 0x07 << kModeOffset;    // Mode filed mask.
 
-        /**
-         * Flags offsets and masks.
-         *
-         */
-        kLeapOffset    = 6,                      ///< Leap Indicator field offset.
-        kLeapMask      = 0x03 << kLeapOffset,    ///< Leap Indicator field mask.
-        kVersionOffset = 3,                      ///< Version field offset.
-        kVersionMask   = 0x07 << kVersionOffset, ///< Version field mask.
-        kModeOffset    = 0,                      ///< Mode field offset.
-        kModeMask      = 0x07 << kModeOffset,    ///< Mode filed mask.
-    };
-
-    /**
-     * SNTP Header fields.
-     *
-     */
-    uint8_t  mFlags;                      ///< SNTP flags: LI Leap Indicator, VN Version Number and Mode.
-    uint8_t  mStratum;                    ///< Packet Stratum.
-    uint8_t  mPoll;                       ///< Maximum interval between successive messages, in log2 seconds.
-    uint8_t  mPrecision;                  ///< The precision of the system clock, in log2 seconds.
-    uint32_t mRootDelay;                  ///< Total round-trip delay to the reference clock, in NTP short format.
-    uint32_t mRootDispersion;             ///< Total dispersion to the reference clock.
-    uint32_t mReferenceId;                ///< ID identifying the particular server or reference clock.
-    uint32_t mReferenceTimestampSeconds;  ///< Time when the system clock was last set or corrected, in NTP
-                                          ///< timestamp format.
-    uint32_t mReferenceTimestampFraction; ///< Fraction part of above value.
-    uint32_t mOriginateTimestampSeconds;  ///< Time at the client when the request departed for the server, in NTP
-                                          ///< timestamp format.
-    uint32_t mOriginateTimestampFraction; ///< Fraction part of above value.
-    uint32_t mReceiveTimestampSeconds;    ///< Time at the server when the request arrived from the client, in NTP
-                                          ///< timestamp format.
-    uint32_t mReceiveTimestampFraction;   ///< Fraction part of above value.
-    uint32_t mTransmitTimestampSeconds;   ///< Time at the server when the response left for the client, in NTP
-                                          ///< timestamp format.
-    uint32_t mTransmitTimestampFraction;  ///< Fraction part of above value.
+    uint8_t  mFlags;                      // SNTP flags: LI Leap Indicator, VN Version Number and Mode.
+    uint8_t  mStratum;                    // Packet Stratum.
+    uint8_t  mPoll;                       // Maximum interval between successive messages, in log2 seconds.
+    uint8_t  mPrecision;                  // The precision of the system clock, in log2 seconds.
+    uint32_t mRootDelay;                  // Total round-trip delay to the reference clock, in NTP short format.
+    uint32_t mRootDispersion;             // Total dispersion to the reference clock.
+    uint32_t mReferenceId;                // ID identifying the particular server or reference clock.
+    uint32_t mReferenceTimestampSeconds;  // Time the system clock was last set or corrected (NTP format).
+    uint32_t mReferenceTimestampFraction; // Fraction part of above value.
+    uint32_t mOriginateTimestampSeconds;  // Time at the client when the request departed for the server (NTP format).
+    uint32_t mOriginateTimestampFraction; // Fraction part of above value.
+    uint32_t mReceiveTimestampSeconds;    // Time at the server when the request arrived from the client (NTP format).
+    uint32_t mReceiveTimestampFraction;   // Fraction part of above value.
+    uint32_t mTransmitTimestampSeconds;   // Time at the server when the response left for the client (NTP format).
+    uint32_t mTransmitTimestampFraction;  // Fraction part of above value.
 } OT_TOOL_PACKED_END;
 
 /**
@@ -440,11 +412,11 @@ public:
      *
      * @param[in]  aMessage  A reference to the message.
      *
-     * @retval OT_ERROR_NONE     Successfully appended the bytes.
-     * @retval OT_ERROR_NO_BUFS  Insufficient available buffers to grow the message.
+     * @retval kErrorNone    Successfully appended the bytes.
+     * @retval kErrorNoBufs  Insufficient available buffers to grow the message.
      *
      */
-    otError AppendTo(Message &aMessage) const { return aMessage.Append(this, sizeof(*this)); }
+    Error AppendTo(Message &aMessage) const { return aMessage.Append(*this); }
 
     /**
      * This method reads request data from the message.
@@ -454,9 +426,7 @@ public:
      */
     void ReadFrom(const Message &aMessage)
     {
-        uint16_t length = aMessage.Read(aMessage.GetLength() - sizeof(*this), sizeof(*this), this);
-        OT_ASSERT(length == sizeof(*this));
-        OT_UNUSED_VARIABLE(length);
+        SuccessOrAssert(aMessage.Read(aMessage.GetLength() - sizeof(*this), *this));
     }
 
     /**
@@ -464,13 +434,8 @@ public:
      *
      * @param[in]  aMessage  A reference to the message.
      *
-     * @returns The number of bytes updated.
-     *
      */
-    int UpdateIn(Message &aMessage) const
-    {
-        return aMessage.Write(aMessage.GetLength() - sizeof(*this), sizeof(*this), this);
-    }
+    void UpdateIn(Message &aMessage) const { aMessage.Write(aMessage.GetLength() - sizeof(*this), *this); }
 
 private:
     uint32_t              mTransmitTimestamp;   ///< Time at the client when the request departed for the server.
@@ -487,32 +452,32 @@ private:
  * This class implements SNTP client.
  *
  */
-class Client
+class Client : private NonCopyable
 {
 public:
     /**
      * This constructor initializes the object.
      *
-     * @param[in]  aNetif    A reference to the network interface that SNTP client should be assigned to.
+     * @param[in]  aInstance     A reference to the OpenThread instance.
      *
      */
-    explicit Client(Ip6::Netif &aNetif);
+    explicit Client(Instance &aInstance);
 
     /**
      * This method starts the SNTP client.
      *
-     * @retval OT_ERROR_NONE     Successfully started the SNTP client.
-     * @retval OT_ERROR_ALREADY  The socket is already open.
+     * @retval kErrorNone     Successfully started the SNTP client.
+     * @retval kErrorAlready  The socket is already open.
      */
-    otError Start(void);
+    Error Start(void);
 
     /**
      * This method stops the SNTP client.
      *
-     * @retval OT_ERROR_NONE  Successfully stopped the SNTP client.
+     * @retval kErrorNone  Successfully stopped the SNTP client.
      *
      */
-    otError Stop(void);
+    Error Stop(void);
 
     /**
      * This method returns the unix era number.
@@ -537,45 +502,27 @@ public:
      * @param[in]  aHandler  A function pointer that shall be called on response reception or time-out.
      * @param[in]  aContext  A pointer to arbitrary context information.
      *
-     * @retval OT_ERROR_NONE          Successfully sent SNTP query.
-     * @retval OT_ERROR_NO_BUFS       Failed to allocate retransmission data.
-     * @retval OT_ERROR_INVALID_ARGS  Invalid arguments supplied.
+     * @retval kErrorNone         Successfully sent SNTP query.
+     * @retval kErrorNoBufs       Failed to allocate retransmission data.
+     * @retval kErrorInvalidArgs  Invalid arguments supplied.
      *
      */
-    otError Query(const otSntpQuery *aQuery, otSntpResponseHandler aHandler, void *aContext);
+    Error Query(const otSntpQuery *aQuery, otSntpResponseHandler aHandler, void *aContext);
 
 private:
-    /**
-     * Protocol Constants (RFC 5905).
-     *
-     */
-    enum
-    {
-        /**
-         * Number of seconds between 1st January 1900 and 1st January 1970.
-         *
-         */
-        kTimeAt1970 = 2208988800UL,
-    };
+    static constexpr uint32_t kTimeAt1970 = 2208988800UL; // num seconds between 1st Jan 1900 and 1st Jan 1970.
 
-    /**
-     * Retransmission parameters.
-     *
-     */
-    enum
-    {
-        kResponseTimeout = OPENTHREAD_CONFIG_SNTP_CLIENT_RESPONSE_TIMEOUT,
-        kMaxRetransmit   = OPENTHREAD_CONFIG_SNTP_CLIENT_MAX_RETRANSMIT,
-    };
+    static constexpr uint32_t kResponseTimeout = OPENTHREAD_CONFIG_SNTP_CLIENT_RESPONSE_TIMEOUT;
+    static constexpr uint8_t  kMaxRetransmit   = OPENTHREAD_CONFIG_SNTP_CLIENT_MAX_RETRANSMIT;
 
     Message *NewMessage(const Header &aHeader);
     Message *CopyAndEnqueueMessage(const Message &aMessage, const QueryMetadata &aQueryMetadata);
     void     DequeueMessage(Message &aMessage);
-    otError  SendMessage(Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
-    otError  SendCopy(const Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
+    Error    SendMessage(Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
+    void     SendCopy(const Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
 
     Message *FindRelatedQuery(const Header &aResponseHeader, QueryMetadata &aQueryMetadata);
-    void FinalizeSntpTransaction(Message &aQuery, const QueryMetadata &aQueryMetadata, uint64_t aTime, otError aResult);
+    void FinalizeSntpTransaction(Message &aQuery, const QueryMetadata &aQueryMetadata, uint64_t aTime, Error aResult);
 
     static void HandleRetransmissionTimer(Timer &aTimer);
     void        HandleRetransmissionTimer(void);
@@ -583,7 +530,7 @@ private:
     static void HandleUdpReceive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleUdpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
 
-    Ip6::UdpSocket mSocket;
+    Ip6::Udp::Socket mSocket;
 
     MessageQueue mPendingQueries;
     TimerMilli   mRetransmissionTimer;
@@ -593,5 +540,7 @@ private:
 
 } // namespace Sntp
 } // namespace ot
+
+#endif // OPENTHREAD_CONFIG_SNTP_CLIENT_ENABLE
 
 #endif // SNTP_CLIENT_HPP_

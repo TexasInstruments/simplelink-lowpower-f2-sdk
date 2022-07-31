@@ -264,10 +264,10 @@ typedef struct otNetworkDiagTlv
 /**
  * This function gets the next Network Diagnostic TLV in the message.
  *
- * @param[in]     aMessage         A pointer to a message.
- * @param[inout]  aIterator        A pointer to the Network Diagnostic iterator context. To get the first
- *                                 Network Diagnostic TLV it should be set to OT_NETWORK_DIAGNOSTIC_ITERATOR_INIT.
- * @param[out]    aNetworkDiagTlv  A pointer to where the Network Diagnostic TLV information will be placed.
+ * @param[in]      aMessage         A pointer to a message.
+ * @param[in,out]  aIterator        A pointer to the Network Diagnostic iterator context. To get the first
+ *                                  Network Diagnostic TLV it should be set to OT_NETWORK_DIAGNOSTIC_ITERATOR_INIT.
+ * @param[out]     aNetworkDiagTlv  A pointer to where the Network Diagnostic TLV information will be placed.
  *
  * @retval OT_ERROR_NONE       Successfully found the next Network Diagnostic TLV.
  * @retval OT_ERROR_NOT_FOUND  No subsequent Network Diagnostic TLV exists in the message.
@@ -283,43 +283,40 @@ otError otThreadGetNextDiagnosticTlv(const otMessage *      aMessage,
 /**
  * This function pointer is called when Network Diagnostic Get response is received.
  *
+ * @param[in]  aError        The error when failed to get the response.
  * @param[in]  aMessage      A pointer to the message buffer containing the received Network Diagnostic
- *                           Get response payload.
- * @param[in]  aMessageInfo  A pointer to the message info for @p aMessage.
+ *                           Get response payload. Available only when @p aError is `OT_ERROR_NONE`.
+ * @param[in]  aMessageInfo  A pointer to the message info for @p aMessage. Available only when
+ *                           @p aError is `OT_ERROR_NONE`.
  * @param[in]  aContext      A pointer to application-specific context.
  *
  */
-typedef void (*otReceiveDiagnosticGetCallback)(otMessage *aMessage, const otMessageInfo *aMessageInfo, void *aContext);
-
-/**
- * This function registers a callback to provide received raw Network Diagnostic Get response payload.
- *
- * @param[in]  aInstance         A pointer to an OpenThread instance.
- * @param[in]  aCallback         A pointer to a function that is called when Network Diagnostic Get response
- *                               is received or NULL to disable the callback.
- * @param[in]  aCallbackContext  A pointer to application-specific context.
- *
- */
-void otThreadSetReceiveDiagnosticGetCallback(otInstance *                   aInstance,
-                                             otReceiveDiagnosticGetCallback aCallback,
-                                             void *                         aCallbackContext);
+typedef void (*otReceiveDiagnosticGetCallback)(otError              aError,
+                                               otMessage *          aMessage,
+                                               const otMessageInfo *aMessageInfo,
+                                               void *               aContext);
 
 /**
  * Send a Network Diagnostic Get request.
  *
- * @param[in]  aInstance      A pointer to an OpenThread instance.
- * @param[in]  aDestination   A pointer to destination address.
- * @param[in]  aTlvTypes      An array of Network Diagnostic TLV types.
- * @param[in]  aCount         Number of types in aTlvTypes.
+ * @param[in]  aInstance         A pointer to an OpenThread instance.
+ * @param[in]  aDestination      A pointer to destination address.
+ * @param[in]  aTlvTypes         An array of Network Diagnostic TLV types.
+ * @param[in]  aCount            Number of types in aTlvTypes.
+ * @param[in]  aCallback         A pointer to a function that is called when Network Diagnostic Get response
+ *                               is received or NULL to disable the callback.
+ * @param[in]  aCallbackContext  A pointer to application-specific context.
  *
  * @retval OT_ERROR_NONE    Successfully queued the DIAG_GET.req.
  * @retval OT_ERROR_NO_BUFS Insufficient message buffers available to send DIAG_GET.req.
  *
  */
-otError otThreadSendDiagnosticGet(otInstance *        aInstance,
-                                  const otIp6Address *aDestination,
-                                  const uint8_t       aTlvTypes[],
-                                  uint8_t             aCount);
+otError otThreadSendDiagnosticGet(otInstance *                   aInstance,
+                                  const otIp6Address *           aDestination,
+                                  const uint8_t                  aTlvTypes[],
+                                  uint8_t                        aCount,
+                                  otReceiveDiagnosticGetCallback aCallback,
+                                  void *                         aCallbackContext);
 
 /**
  * Send a Network Diagnostic Reset request.

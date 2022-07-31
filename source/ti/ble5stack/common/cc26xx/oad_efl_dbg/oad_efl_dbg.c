@@ -60,7 +60,7 @@
 #include <ti_drivers_config.h>
 #include "bcomdef.h"
 
-#include <ti/display/DisplayUart.h>
+#include <ti/display/DisplayUart2.h>
 #include <ti/display/AnsiColor.h>
 
 #include "oad_efl_dbg.h"

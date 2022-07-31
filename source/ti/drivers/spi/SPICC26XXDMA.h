@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021 Texas Instruments Incorporated
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -258,14 +258,15 @@
 
  *
  * # Supported Functions #
- * | Generic API function  | API function                   | Description                                                 |
- * |-----------------------|------------------------------- |-------------------------------------------------------------|
- * | SPI_init()            | SPICC26XXDMA_init()            | Initialize SPI driver                                       |
- * | SPI_open()            | SPICC26XXDMA_open()            | Initialize SPI HW and set system dependencies               |
- * | SPI_close()           | SPICC26XXDMA_close()           | Disable SPI and UDMA HW and release system dependencies     |
- * | SPI_control()         | SPICC26XXDMA_control()         | Configure an already opened SPI handle                      |
- * | SPI_transfer()        | SPICC26XXDMA_transfer()        | Start transfer from SPI                                     |
- * | SPI_transferCancel()  | SPICC26XXDMA_transferCancel()  | Cancel ongoing transfer from SPI                            |
+ * | Generic API function  | API function                   | Description |
+ * |-----------------------|-------------------------------
+ |-------------------------------------------------------------|
+ * | SPI_init()            | SPICC26XXDMA_init()            | Initialize SPI driver |
+ * | SPI_open()            | SPICC26XXDMA_open()            | Initialize SPI HW and set system dependencies |
+ * | SPI_close()           | SPICC26XXDMA_close()           | Disable SPI and UDMA HW and release system dependencies |
+ * | SPI_control()         | SPICC26XXDMA_control()         | Configure an already opened SPI handle |
+ * | SPI_transfer()        | SPICC26XXDMA_transfer()        | Start transfer from SPI |
+ * | SPI_transferCancel()  | SPICC26XXDMA_transferCancel()  | Cancel ongoing transfer from SPI |
  *
  *  @note All calls should go through the generic API
  *
@@ -413,7 +414,7 @@
  *      CONFIG_CSN_1   | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH   | PIN_PUSHPULL    // Ensure SPI slave 1 is not selected
  *  }
  *
- *  const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CC2650_SPICOUNT] = {
+ *  const SPICC26XXDMA_HWAttrsV1 spiCC26XXDMAHWAttrs[CONFIG_SPI_COUNT] = {
  *  {   // Use SPI0 module with default chip select on CONFIG_CSN_0
  *      .baseAddr = SSI0_BASE,
  *      .intNum = INT_SSI0,
@@ -628,7 +629,7 @@ extern "C" {
  *  SPICC26XXDMA_STATUS_* macros are command codes only defined in the
  *  SPICC26XXDMA.h driver implementation and need to:
  *  @code
- *  #include <ti/drivers/sdspi/SPICC26XXDMA.h>
+ *  #include <ti/drivers/spi/SPICC26XXDMA.h>
  *  @endcode
  *  @{
  */
@@ -642,7 +643,7 @@ extern "C" {
  *  SPICC26XXDMA_CMD_* macros are command codes only defined in the
  *  SPICC26XXDMA.h driver implementation and need to:
  *  @code
- *  #include <ti/drivers/sdspi/SPICC26XXDMA.h>
+ *  #include <ti/drivers/spi/SPICC26XXDMA.h>
  *  @endcode
  *  @{
  */
@@ -652,17 +653,17 @@ extern "C" {
  *
  * Enabling this command allows SPI_transfer to return partial data if the
  * master de-asserts the CS line before the expected number of frames were
- * recieved. This command @b arg is of type @a don't @a care and it returns
+ * received. This command @b arg is of type @a don't @a care and it returns
  * SPI_STATUS_SUCCESS or SPI_STATUS_ERROR.
  */
-#define SPICC26XXDMA_CMD_RETURN_PARTIAL_ENABLE  (SPI_CMD_RESERVED + 0)
+#define SPICC26XXDMA_CMD_RETURN_PARTIAL_ENABLE (SPI_CMD_RESERVED + 0)
 
 /*!
  * @brief Command used by SPI_control to disable partial return
  *
  * Disabling this command returns the SPICC26XXDMA to the default blocking
  * behavior where SPI_transfer blocks until all data bytes were received. With
- * this comand @b arg is @a don't @a care and it returns SPI_STATUS_SUCCESS.
+ * this command @b arg is @a don't @a care and it returns SPI_STATUS_SUCCESS.
  */
 #define SPICC26XXDMA_CMD_RETURN_PARTIAL_DISABLE (SPI_CMD_RESERVED + 1)
 
@@ -672,13 +673,13 @@ extern "C" {
  * This command specifies a chip select pin
  * With this command @b arg is of type @c PIN_Id and it return SPI_STATUS_SUCCESS
  */
-#define SPICC26XXDMA_CMD_SET_CSN_PIN            (SPI_CMD_RESERVED + 2)
+#define SPICC26XXDMA_CMD_SET_CSN_PIN (SPI_CMD_RESERVED + 2)
 /** @}*/
 
 /* BACKWARDS COMPATIBILITY */
-#define SPICC26XXDMA_RETURN_PARTIAL_ENABLE      SPICC26XXDMA_CMD_RETURN_PARTIAL_ENABLE
-#define SPICC26XXDMA_RETURN_PARTIAL_DISABLE     SPICC26XXDMA_CMD_RETURN_PARTIAL_DISABLE
-#define SPICC26XXDMA_SET_CSN_PIN                SPICC26XXDMA_CMD_SET_CSN_PIN
+#define SPICC26XXDMA_RETURN_PARTIAL_ENABLE  SPICC26XXDMA_CMD_RETURN_PARTIAL_ENABLE
+#define SPICC26XXDMA_RETURN_PARTIAL_DISABLE SPICC26XXDMA_CMD_RETURN_PARTIAL_DISABLE
+#define SPICC26XXDMA_SET_CSN_PIN            SPICC26XXDMA_CMD_SET_CSN_PIN
 /* END BACKWARDS COMPATIBILITY */
 
 /*!
@@ -697,7 +698,8 @@ extern const SPI_FxnTable SPICC26XXDMA_fxnTable;
  *  - SPICC26XXDMA_8bit:  txBuf and rxBuf are arrays of uint8_t elements
  *  - SPICC26XXDMA_16bit: txBuf and rxBuf are arrays of uint16_t elements
  */
-typedef enum {
+typedef enum
+{
     SPICC26XXDMA_8bit  = 0,
     SPICC26XXDMA_16bit = 1
 } SPICC26XXDMA_FrameSize;
@@ -756,11 +758,12 @@ typedef enum {
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     /*! SPI Peripheral's base address */
-    uint32_t         baseAddr;
+    uint32_t baseAddr;
     /*! SPI CC26XXDMA Peripheral's interrupt vector */
-    uint8_t          intNum;
+    uint8_t intNum;
     /*! @brief SPI CC26XXDMA Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits,
@@ -772,31 +775,33 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t          intPriority;
+    uint8_t intPriority;
     /*! @brief SPI SWI priority.
         The higher the number, the higher the priority.
         The minimum is 0 and the maximum is 15 by default.
-        The maximum can be reduced to save RAM by adding or modifying Swi.numPriorities in the kernel configuration file.
+        The maximum can be reduced to save RAM by adding or modifying Swi.numPriorities in the kernel configuration
+       file.
     */
-    uint32_t         swiPriority;
+    uint32_t swiPriority;
     /*! SPI Peripheral's power manager ID */
-    PowerCC26XX_Resource   powerMngrId;
+    PowerCC26XX_Resource powerMngrId;
     /*! Default TX value if txBuf == NULL */
-    uint16_t         defaultTxBufValue;
+    uint16_t defaultTxBufValue;
     /*! uDMA controlTable channel index */
-    uint32_t         rxChannelBitMask;
+    uint32_t rxChannelBitMask;
     /*! uDMA controlTable channel index */
-    uint32_t         txChannelBitMask;
+    uint32_t txChannelBitMask;
     /*! SPI MOSI pin */
-    PIN_Id           mosiPin;
+    PIN_Id mosiPin;
     /*! SPI MISO pin */
-    PIN_Id           misoPin;
+    PIN_Id misoPin;
     /*! SPI CLK pin */
-    PIN_Id           clkPin;
+    PIN_Id clkPin;
     /*! SPI CSN pin */
-    PIN_Id           csnPin;
+    PIN_Id csnPin;
 
     /*! Minimum transfer size for DMA based transfer */
     uint32_t minDmaTransferSize;
@@ -807,62 +812,61 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     /* SPI control variables */
-    SPI_TransferMode       transferMode;        /*!< Blocking or Callback mode */
-    unsigned int           transferTimeout;     /*!< Timeout for the transfer when in blocking mode */
-    SPI_CallbackFxn        transferCallbackFxn; /*!< Callback function pointer */
-    SPI_Mode               mode;                /*!< Master or Slave mode */
+    SPI_TransferMode transferMode;       /*!< Blocking or Callback mode */
+    unsigned int transferTimeout;        /*!< Timeout for the transfer when in blocking mode */
+    SPI_CallbackFxn transferCallbackFxn; /*!< Callback function pointer */
+    SPI_Mode mode;                       /*!< Master or Slave mode */
     /*! @brief SPI bit rate in Hz.
      *
      *  When the SPI is configured as SPI slave, the maximum bitrate is 4MHz.
      *
      *  When the SPI is configured as SPI master, the maximum bitrate is 12MHz.
      */
-    unsigned int           bitRate;
-    unsigned int           dataSize;            /*!< SPI data frame size in bits */
-    SPI_FrameFormat        frameFormat;         /*!< SPI frame format */
+    unsigned int bitRate;
+    unsigned int dataSize;       /*!< SPI data frame size in bits */
+    SPI_FrameFormat frameFormat; /*!< SPI frame format */
 
     /* SPI SYS/BIOS objects */
-    HwiP_Struct hwi;    /*!< Hwi object handle */
-    SwiP_Struct             swi;                 /*!< Swi object */
-    SemaphoreP_Struct       transferComplete;    /*!< Notify finished SPICC26XXDMA transfer */
+    HwiP_Struct hwi;                    /*!< Hwi object handle */
+    SwiP_Struct swi;                    /*!< Swi object */
+    SemaphoreP_Struct transferComplete; /*!< Notify finished SPICC26XXDMA transfer */
 
     /* SPI current transaction */
-    SPI_Transaction        *currentTransaction; /*!< Ptr to the current transaction*/
-    size_t                 amtDataXferred;      /*!< Number of frames transferred */
-    size_t                 currentXferAmt;      /*!< Size of current DMA transfer */
-    SPICC26XXDMA_FrameSize frameSize;           /*!< Data frame size variable */
+    SPI_Transaction *currentTransaction; /*!< Ptr to the current transaction*/
+    size_t amtDataXferred;               /*!< Number of frames transferred */
+    size_t currentXferAmt;               /*!< Size of current DMA transfer */
+    SPICC26XXDMA_FrameSize frameSize;    /*!< Data frame size variable */
 
     /* Support for dynamic CSN pin allocation */
-    PIN_Id                 csnPin;              /*!< SPI CSN pin */
+    PIN_Id csnPin; /*!< SPI CSN pin */
 
     /* PIN driver state object and handle */
-    PIN_State              pinState;
-    PIN_Handle             pinHandle;
+    PIN_State pinState;
+    PIN_Handle pinHandle;
 
     /* UDMA driver handle */
-    UDMACC26XX_Handle      udmaHandle;
+    UDMACC26XX_Handle udmaHandle;
 
     /* Optional slave mode features */
-    bool                   returnPartial;      /*!< Optional slave mode return partial on CSN deassert */
+    bool returnPartial; /*!< Optional slave mode return partial on CSN deassert */
 
     /* Scratch buffer of size uint16_t */
-    uint16_t               scratchBuf;
+    uint16_t scratchBuf;
 
     /* SPI pre- and post notification functions */
-    void                   *spiPreFxn;         /*!< SPI pre-notification function pointer */
-    void                   *spiPostFxn;        /*!< SPI post-notification function pointer */
-    Power_NotifyObj        spiPreObj;          /*!< SPI pre-notification object */
-    Power_NotifyObj        spiPostObj;         /*!< SPI post-notification object */
+    void *spiPreFxn;            /*!< SPI pre-notification function pointer */
+    void *spiPostFxn;           /*!< SPI post-notification function pointer */
+    Power_NotifyObj spiPreObj;  /*!< SPI pre-notification object */
+    Power_NotifyObj spiPostObj; /*!< SPI post-notification object */
 
-    volatile bool          spiPowerConstraint; /*!< SPI power constraint flag, guard to avoid power constraints getting out of sync */
+    volatile bool spiPowerConstraint; /*!< SPI power constraint flag, guard to avoid power constraints getting out of
+                                         sync */
 
-    bool                   isOpen;             /*!< Has the object been opened */
+    bool isOpen; /*!< Has the object been opened */
 } SPICC26XXDMA_Object, *SPICC26XXDMA_Handle;
-
-
-
 
 #ifdef __cplusplus
 }

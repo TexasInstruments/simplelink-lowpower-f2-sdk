@@ -62,12 +62,6 @@ using ot::Encoding::BigEndian::HostSwap32;
  *
  */
 
-enum
-{
-    kNumResetTlvTypes = 1,
-    kNumTlvTypes      = 18,
-};
-
 /**
  * This class implements MLE TLV generation and parsing.
  *
@@ -80,7 +74,7 @@ public:
      * MLE TLV Types.
      *
      */
-    enum Type
+    enum Type : uint8_t
     {
         kExtMacAddress   = OT_NETWORK_DIAGNOSTIC_TLV_EXT_ADDRESS,
         kAddress16       = OT_NETWORK_DIAGNOSTIC_TLV_SHORT_ADDRESS,
@@ -116,235 +110,56 @@ public:
      */
     void SetType(Type aType) { ot::Tlv::SetType(static_cast<uint8_t>(aType)); }
 
-    /**
-     * This static method reads the requested TLV out of @p aMessage.
-     *
-     * @param[in]   aMessage    A reference to the message.
-     * @param[in]   aType       The Type value to search for.
-     * @param[in]   aMaxLength  Maximum number of bytes to read.
-     * @param[out]  aTlv        A reference to the TLV that will be copied to.
-     *
-     * @retval OT_ERROR_NONE       Successfully copied the TLV.
-     * @retval OT_ERROR_NOT_FOUND  Could not find the TLV with Type @p aType.
-     *
-     */
-    static otError GetTlv(const Message &aMessage, Type aType, uint16_t aMaxLength, Tlv &aTlv)
-    {
-        return ot::Tlv::Get(aMessage, static_cast<uint8_t>(aType), aMaxLength, aTlv);
-    }
-
-    /**
-     * This static method obtains the offset of a TLV within @p aMessage.
-     *
-     * @param[in]   aMessage    A reference to the message.
-     * @param[in]   aType       The Type value to search for.
-     * @param[out]  aOffset     A reference to the offset of the TLV.
-     *
-     * @retval OT_ERROR_NONE       Successfully copied the TLV.
-     * @retval OT_ERROR_NOT_FOUND  Could not find the TLV with Type @p aType.
-     *
-     */
-    static otError GetOffset(const Message &aMessage, Type aType, uint16_t &aOffset)
-    {
-        return ot::Tlv::GetOffset(aMessage, static_cast<uint8_t>(aType), aOffset);
-    }
-
 } OT_TOOL_PACKED_END;
 
 /**
- * This class implements Extended Address TLV generation and parsing.
+ * This class defines Extended MAC Address TLV constants and types.
  *
  */
-OT_TOOL_PACKED_BEGIN
-class ExtMacAddressTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kExtMacAddress);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns a pointer to the Extended MAC Address.
-     *
-     * @returns A pointer to the Extended MAC Address.
-     *
-     */
-    const Mac::ExtAddress *GetMacAddr(void) const { return &mMacAddr; }
-
-    /**
-     * This method sets the Extended MAC Address.
-     *
-     * @param[in]  aAddress  A reference to the Extended MAC Address.
-     *
-     */
-    void SetMacAddr(const Mac::ExtAddress &aAddress) { mMacAddr = aAddress; }
-
-private:
-    Mac::ExtAddress mMacAddr;
-} OT_TOOL_PACKED_END;
+typedef SimpleTlvInfo<NetworkDiagnosticTlv::kExtMacAddress, Mac::ExtAddress> ExtMacAddressTlv;
 
 /**
- * This class implements Source Address TLV generation and parsing.
+ * This class defines Address16 TLV constants and types.
  *
  */
-OT_TOOL_PACKED_BEGIN
-class Address16Tlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kAddress16);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns the RLOC16 value.
-     *
-     * @returns The RLOC16 value.
-     *
-     */
-    uint16_t GetRloc16(void) const { return HostSwap16(mRloc16); }
-
-    /**
-     * This method sets the RLOC16 value.
-     *
-     * @param[in]  aRloc16  The RLOC16 value.
-     *
-     */
-    void SetRloc16(uint16_t aRloc16) { mRloc16 = HostSwap16(aRloc16); }
-
-private:
-    uint16_t mRloc16;
-} OT_TOOL_PACKED_END;
+typedef UintTlvInfo<NetworkDiagnosticTlv::kAddress16, uint16_t> Address16Tlv;
 
 /**
- * This class implements Mode TLV generation and parsing.
+ * This class defines Mode TLV constants and types.
  *
  */
-OT_TOOL_PACKED_BEGIN
-class ModeTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kMode);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns the Device Mode.
-     *
-     * @returns The Device Mode.
-     *
-     */
-    Mle::DeviceMode GetMode(void) const { return Mle::DeviceMode(mMode); }
-
-    /**
-     * This method sets the Device Mode
-     *
-     * @param[in]  aMode  The Device Mode
-     *
-     */
-    void SetMode(Mle::DeviceMode aMode) { mMode = aMode.Get(); }
-
-private:
-    uint8_t mMode;
-} OT_TOOL_PACKED_END;
+typedef UintTlvInfo<NetworkDiagnosticTlv::kMode, uint8_t> ModeTlv;
 
 /**
- * This class implements Timeout TLV generation and parsing.
+ * This class defines Timeout TLV constants and types.
  *
  */
-OT_TOOL_PACKED_BEGIN
-class TimeoutTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kTimeout);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
+typedef UintTlvInfo<NetworkDiagnosticTlv::kTimeout, uint32_t> TimeoutTlv;
 
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
+/**
+ * This class defines Battery Level TLV constants and types.
+ *
+ */
+typedef UintTlvInfo<NetworkDiagnosticTlv::kBatteryLevel, uint8_t> BatteryLevelTlv;
 
-    /**
-     * This method returns the Timeout value.
-     *
-     * @returns The Timeout value.
-     *
-     */
-    uint32_t GetTimeout(void) const { return HostSwap32(mTimeout); }
+/**
+ * This class defines Supply Voltage TLV constants and types.
+ *
+ */
+typedef UintTlvInfo<NetworkDiagnosticTlv::kSupplyVoltage, uint16_t> SupplyVoltageTlv;
 
-    /**
-     * This method sets the Timeout value.
-     *
-     * @param[in]  aTimeout  The Timeout value.
-     *
-     */
-    void SetTimeout(uint32_t aTimeout) { mTimeout = HostSwap32(aTimeout); }
-
-private:
-    uint32_t mTimeout;
-} OT_TOOL_PACKED_END;
+/**
+ * This class defines Max Child Timeout TLV constants and types.
+ *
+ */
+typedef UintTlvInfo<NetworkDiagnosticTlv::kMaxChildTimeout, uint32_t> MaxChildTimeoutTlv;
 
 /**
  * This class implements Connectivity TLV generation and parsing.
  *
  */
 OT_TOOL_PACKED_BEGIN
-class ConnectivityTlv : public NetworkDiagnosticTlv
+class ConnectivityTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kConnectivity>
 {
 public:
     /**
@@ -385,7 +200,7 @@ public:
      * @returns The Parent Priority value.
      *
      */
-    int8_t GetParentPriority(void) const { return (mParentPriority & kParentPriorityOffset) >> kParentPriorityOffset; }
+    int8_t GetParentPriority(void) const { return (mParentPriority & kParentPriorityMask) >> kParentPriorityOffset; }
 
     /**
      * This method sets the Parent Priority value.
@@ -545,11 +360,8 @@ public:
     void SetSedDatagramCount(uint8_t aSedDatagramCount) { mSedDatagramCount = aSedDatagramCount; }
 
 private:
-    enum
-    {
-        kParentPriorityOffset = 6,
-        kParentPriorityMask   = 3 << kParentPriorityOffset,
-    };
+    static constexpr uint8_t kParentPriorityOffset = 6;
+    static constexpr uint8_t kParentPriorityMask   = 3 << kParentPriorityOffset;
 
     uint8_t  mParentPriority;
     uint8_t  mLinkQuality3;
@@ -567,7 +379,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class RouteTlv : public NetworkDiagnosticTlv
+class RouteTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kRoute>
 {
 public:
     /**
@@ -716,15 +528,13 @@ public:
     }
 
 private:
-    enum
-    {
-        kLinkQualityOutOffset = 6,
-        kLinkQualityOutMask   = 3 << kLinkQualityOutOffset,
-        kLinkQualityInOffset  = 4,
-        kLinkQualityInMask    = 3 << kLinkQualityInOffset,
-        kRouteCostOffset      = 0,
-        kRouteCostMask        = 0xf << kRouteCostOffset,
-    };
+    static constexpr uint8_t kLinkQualityOutOffset = 6;
+    static constexpr uint8_t kLinkQualityOutMask   = 3 << kLinkQualityOutOffset;
+    static constexpr uint8_t kLinkQualityInOffset  = 4;
+    static constexpr uint8_t kLinkQualityInMask    = 3 << kLinkQualityInOffset;
+    static constexpr uint8_t kRouteCostOffset      = 0;
+    static constexpr uint8_t kRouteCostMask        = 0xf << kRouteCostOffset;
+
     uint8_t          mRouterIdSequence;
     Mle::RouterIdSet mRouterIdMask;
     uint8_t          mRouteData[Mle::kMaxRouterId + 1];
@@ -735,7 +545,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class LeaderDataTlv : public NetworkDiagnosticTlv
+class LeaderDataTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kLeaderData>
 {
 public:
     /**
@@ -850,7 +660,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class NetworkDataTlv : public NetworkDiagnosticTlv
+class NetworkDataTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kNetworkData>
 {
 public:
     /**
@@ -897,7 +707,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class Ip6AddressListTlv : public NetworkDiagnosticTlv
+class Ip6AddressListTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kIp6AddressList>
 {
 public:
     /**
@@ -917,7 +727,7 @@ public:
      * @retval FALSE  If the TLV does not appear to be well-formed.
      *
      */
-    bool IsValid(void) const { return !IsExtended() && (GetLength() % OT_IP6_ADDRESS_SIZE == 0); }
+    bool IsValid(void) const { return !IsExtended() && (GetLength() % sizeof(Ip6::Address) == 0); }
 
     /**
      * This method returns a pointer to the IPv6 address entry.
@@ -939,7 +749,7 @@ public:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class MacCountersTlv : public NetworkDiagnosticTlv
+class MacCountersTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kMacCounters>
 {
 public:
     /**
@@ -1126,100 +936,6 @@ private:
 } OT_TOOL_PACKED_END;
 
 /**
- * This class implements Battery Level TLV generation and parsing.
- *
- */
-OT_TOOL_PACKED_BEGIN
-class BatteryLevelTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kBatteryLevel);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns the Status value.
-     *
-     * @returns The Status value.
-     *
-     */
-    uint8_t GetBatteryLevel(void) const { return mBatteryLevel; }
-
-    /**
-     * This method sets the Status value.
-     *
-     * @param[in]  aStatus  The Status value.
-     *
-     */
-    void SetBatteryLevel(uint8_t aBatteryLevel) { mBatteryLevel = aBatteryLevel; }
-
-private:
-    uint8_t mBatteryLevel;
-} OT_TOOL_PACKED_END;
-
-/**
- * This class implements Supply Voltage TLV generation and parsing.
- *
- */
-OT_TOOL_PACKED_BEGIN
-class SupplyVoltageTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kSupplyVoltage);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns the Status value.
-     *
-     * @returns The Status value.
-     *
-     */
-    uint16_t GetSupplyVoltage(void) const { return mSupplyVoltage; }
-
-    /**
-     * This method sets the SupplyVoltage value.
-     *
-     * @param[in]  aSupplyVoltage  The SupplyVoltage value.
-     *
-     */
-    void SetSupplyVoltage(uint16_t aSupplyVoltage) { mSupplyVoltage = aSupplyVoltage; }
-
-private:
-    uint16_t mSupplyVoltage;
-} OT_TOOL_PACKED_END;
-
-/**
  * This class implements Child Table Entry generation and parsing.
  *
  */
@@ -1313,18 +1029,11 @@ public:
     }
 
 private:
-    /**
-     * Masks for fields.
-     *
-     */
-    enum
-    {
-        kTimeoutMask    = 0xf800,
-        kTimeoutOffset  = 11,
-        kReservedMask   = 0x0600,
-        kReservedOffset = 9,
-        kChildIdMask    = 0x1ff
-    };
+    static constexpr uint8_t  kTimeoutOffset  = 11;
+    static constexpr uint8_t  kReservedOffset = 9;
+    static constexpr uint16_t kTimeoutMask    = 0xf800;
+    static constexpr uint16_t kReservedMask   = 0x0600;
+    static constexpr uint16_t kChildIdMask    = 0x1ff;
 
     uint16_t mTimeoutRsvChildId;
     uint8_t  mMode;
@@ -1335,7 +1044,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class ChildTableTlv : public NetworkDiagnosticTlv
+class ChildTableTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kChildTable>
 {
 public:
     /**
@@ -1371,6 +1080,7 @@ public:
      * @param[in]  aIndex  The index into the Child Table list.
      *
      * @returns  A reference to the Child Table entry.
+     *
      */
     ChildTableEntry &GetEntry(uint16_t aIndex)
     {
@@ -1385,16 +1095,17 @@ public:
      * @param[in]   aOffset     The offset of the ChildTableTLV in aMessage.
      * @param[in]   aIndex      The index into the Child Table list.
      *
-     * @retval  OT_ERROR_NOT_FOUND  No such entry is found.
-     * @retval  OT_ERROR_NONE       Successfully read the entry.
+     * @retval  kErrorNotFound   No such entry is found.
+     * @retval  kErrorNone       Successfully read the entry.
+     *
      */
-    otError ReadEntry(ChildTableEntry &aEntry, const Message &aMessage, uint16_t aOffset, uint8_t aIndex) const
+    Error ReadEntry(ChildTableEntry &aEntry, const Message &aMessage, uint16_t aOffset, uint8_t aIndex) const
     {
-        return (aIndex < GetNumEntries() &&
-                aMessage.Read(aOffset + sizeof(ChildTableTlv) + (aIndex * sizeof(ChildTableEntry)),
-                              sizeof(ChildTableEntry), &aEntry) == sizeof(ChildTableEntry))
-                   ? OT_ERROR_NONE
-                   : OT_ERROR_INVALID_ARGS;
+        return ((aIndex < GetNumEntries()) &&
+                (aMessage.Read(aOffset + sizeof(ChildTableTlv) + (aIndex * sizeof(ChildTableEntry)), aEntry) ==
+                 kErrorNone))
+                   ? kErrorNone
+                   : kErrorInvalidArgs;
     }
 
 } OT_TOOL_PACKED_END;
@@ -1404,7 +1115,7 @@ public:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class ChannelPagesTlv : public NetworkDiagnosticTlv
+class ChannelPagesTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kChannelPages>
 {
 public:
     /**
@@ -1447,7 +1158,7 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class TypeListTlv : public NetworkDiagnosticTlv
+class TypeListTlv : public NetworkDiagnosticTlv, public TlvInfo<NetworkDiagnosticTlv::kTypeList>
 {
 public:
     /**
@@ -1459,53 +1170,6 @@ public:
         SetType(kTypeList);
         SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
     }
-} OT_TOOL_PACKED_END;
-
-/**
- * This class implements Max Child Timeout TLV generation and parsing.
- *
- */
-OT_TOOL_PACKED_BEGIN
-class MaxChildTimeoutTlv : public NetworkDiagnosticTlv
-{
-public:
-    /**
-     * This method initializes the TLV.
-     *
-     */
-    void Init(void)
-    {
-        SetType(kMaxChildTimeout);
-        SetLength(sizeof(*this) - sizeof(NetworkDiagnosticTlv));
-    }
-
-    /**
-     * This method indicates whether or not the TLV appears to be well-formed.
-     *
-     * @retval TRUE   If the TLV appears to be well-formed.
-     * @retval FALSE  If the TLV does not appear to be well-formed.
-     *
-     */
-    bool IsValid(void) const { return GetLength() >= sizeof(*this) - sizeof(NetworkDiagnosticTlv); }
-
-    /**
-     * This method returns the Timeout value.
-     *
-     * @returns The Timeout value.
-     *
-     */
-    uint32_t GetTimeout(void) const { return HostSwap32(mTimeout); }
-
-    /**
-     * This method sets the Timeout value.
-     *
-     * @param[in]  aTimeout  The Timeout value.
-     *
-     */
-    void SetTimeout(uint32_t aTimeout) { mTimeout = HostSwap32(aTimeout); }
-
-private:
-    uint32_t mTimeout;
 } OT_TOOL_PACKED_END;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,11 @@ define symbol CCFG_END__   = 0x500007FF;
 /* Define a memory region that covers the entire 4 GB addressable space */
 define memory mem with size = 4G;
 
-/* Define a region for the on-chip flash */
-define region FLASH_region   = mem:[from ROM_start__ to ROM_end__];
+/* Define a region for the on-chip flash
+ * Note there are some holes in this memory due to issues with
+ * first-sampling silicon.
+ */
+define region FLASH_region = [from 0x0 to 0x1BFFF] | [from 0x24000 to 0x5BFFF] | [from 0x64000 to 0x9BFFF] | [from 0xA4000 to 0xDBFFF] | [from 0xE4000 to 0xFFFFF];
 
 /* Define a region for the on-chip SRAM */
 define region RAM_region     = mem:[from RAM_start__ to RAM_end__];

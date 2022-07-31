@@ -1,0 +1,50 @@
+{
+    "cc13x1_cc26x1": [
+        "rf_patch_cpe_bt5",
+        "rf_patch_cpe_ieee_802_15_4",
+        "rf_patch_cpe_multi_protocol",
+        "rf_patch_cpe_prop",
+        "rf_patch_mce_bt5"
+    ],
+    "cc13x2x7_cc26x2x7": [
+        "rf_patch_cpe_bt5",
+        "rf_patch_cpe_ieee_802_15_4",
+        "rf_patch_cpe_ieee_coex",
+        "rf_patch_cpe_multi_bt5_coex",
+        "rf_patch_cpe_multi_protocol",
+        "rf_patch_cpe_multi_protocol_hid",
+        "rf_patch_cpe_multi_protocol_rtls",
+        "rf_patch_cpe_prop",
+        "rf_patch_mce_bt5",
+        "rf_patch_mce_genook",
+        "rf_patch_mce_iqdump",
+        "rf_patch_mce_wb_dsss",
+        "rf_patch_mce_wmbus_ctmode",
+        "rf_patch_mce_wmbus_smode",
+        "rf_patch_rfe_ble_coex",
+        "rf_patch_rfe_genook"
+    ],
+    "cc13x2_cc26x2": [
+        "rf_patch_cpe_bt5",
+        "rf_patch_cpe_ieee_802_15_4",
+        "rf_patch_cpe_ieee_coex",
+        "rf_patch_cpe_multi_bt5_coex",
+        "rf_patch_cpe_multi_protocol",
+        "rf_patch_cpe_multi_protocol_bt5_coex",
+        "rf_patch_cpe_multi_protocol_rtls",
+        "rf_patch_cpe_prop",
+        "rf_patch_mce_genook",
+        "rf_patch_mce_iqdump",
+        "rf_patch_mce_wb_dsss",
+        "rf_patch_mce_wmbus_ctmode",
+        "rf_patch_mce_wmbus_smode",
+        "rf_patch_rfe_ble_coex",
+        "rf_patch_rfe_genook"
+    ],
+    "cc13x4_cc26x4": [
+        "rf_patch_cpe_ieee_coex",
+        "rf_patch_cpe_multi",
+        "rf_patch_mce_ieee_cohr",
+        "rf_patch_rfe_ieee_cohr"
+    ]
+}

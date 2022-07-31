@@ -91,7 +91,6 @@
             },
             {
                 "_file": "categories.json",
-                "_phy": "prop",
                 "$": ".\/..\/config\/cc2651r3sipa_prop_pg11\/cmd_settings"
             },
             {
@@ -120,7 +119,6 @@
             },
             {
                 "_file": "dummy_file_overrides.json",
-                "_phy": "prop",
                 "$": ".\/..\/config\/cc2651r3sipa_prop_pg11\/overrides"
             },
             {

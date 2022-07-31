@@ -47,6 +47,12 @@
 #endif
 #include <openthread/message.h>
 #include <openthread/ncp.h>
+#if OPENTHREAD_CONFIG_MULTI_RADIO
+#include <openthread/multi_radio.h>
+#endif
+#if OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE
+#include <openthread/srp_client.h>
+#endif
 
 #include "changed_props_set.hpp"
 #include "common/instance.hpp"
@@ -55,7 +61,6 @@
 #include "lib/spinel/spinel_buffer.hpp"
 #include "lib/spinel/spinel_decoder.hpp"
 #include "lib/spinel/spinel_encoder.hpp"
-#include "utils/static_assert.hpp"
 
 namespace ot {
 namespace Ncp {
@@ -92,7 +97,7 @@ public:
      * @param[in]  aStreamId  A numeric identifier for the stream to write to.
      *                        If set to '0', will default to the debug stream.
      * @param[in]  aDataPtr   A pointer to the data to send on the stream.
-     *                        If aDataLen is non-zero, this param MUST NOT be NULL.
+     *                        If aDataLen is non-zero, this param MUST NOT be nullptr.
      * @param[in]  aDataLen   The number of bytes of data from aDataPtr to send.
      *
      * @retval OT_ERROR_NONE         The data was queued for delivery to the host.
@@ -267,6 +272,7 @@ protected:
     otError DecodeChannelMask(uint32_t &aChannelMask);
 
 #if OPENTHREAD_RADIO || OPENTHREAD_CONFIG_LINK_RAW_ENABLE
+    otError PackRadioFrame(otRadioFrame *aFrame, otError aError);
 
     static void LinkRawReceiveDone(otInstance *aInstance, otRadioFrame *aFrame, otError aError);
     void        LinkRawReceiveDone(otRadioFrame *aFrame, otError aError);
@@ -331,18 +337,59 @@ protected:
     void        HandleJoinerCallback(otError aError);
 #endif
 
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE
+    static void HandleLinkMetricsReport_Jump(const otIp6Address *       aSource,
+                                             const otLinkMetricsValues *aMetricsValues,
+                                             uint8_t                    aStatus,
+                                             void *                     aContext);
+
+    void HandleLinkMetricsReport(const otIp6Address *       aSource,
+                                 const otLinkMetricsValues *aMetricsValues,
+                                 uint8_t                    aStatus);
+
+    static void HandleLinkMetricsMgmtResponse_Jump(const otIp6Address *aSource, uint8_t aStatus, void *aContext);
+
+    void HandleLinkMetricsMgmtResponse(const otIp6Address *aSource, uint8_t aStatus);
+
+    static void HandleLinkMetricsEnhAckProbingIeReport_Jump(otShortAddress             aShortAddress,
+                                                            const otExtAddress *       aExtAddress,
+                                                            const otLinkMetricsValues *aMetricsValues,
+                                                            void *                     aContext);
+
+    void HandleLinkMetricsEnhAckProbingIeReport(otShortAddress             aShortAddress,
+                                                const otExtAddress *       aExtAddress,
+                                                const otLinkMetricsValues *aMetricsValues);
+#endif
+
+    static void HandleMlrRegResult_Jump(void *              aContext,
+                                        otError             aError,
+                                        uint8_t             aMlrStatus,
+                                        const otIp6Address *aFailedAddresses,
+                                        uint8_t             aFailedAddressNum);
+    void        HandleMlrRegResult(otError             aError,
+                                   uint8_t             aMlrStatus,
+                                   const otIp6Address *aFailedAddresses,
+                                   uint8_t             aFailedAddressNum);
+
     otError EncodeOperationalDataset(const otOperationalDataset &aDataset);
 
     otError DecodeOperationalDataset(otOperationalDataset &aDataset,
-                                     const uint8_t **      aTlvs             = NULL,
-                                     uint8_t *             aTlvsLength       = NULL,
-                                     const otIp6Address ** aDestIpAddress    = NULL,
+                                     const uint8_t **      aTlvs             = nullptr,
+                                     uint8_t *             aTlvsLength       = nullptr,
+                                     const otIp6Address ** aDestIpAddress    = nullptr,
                                      bool                  aAllowEmptyValues = false);
 
     otError EncodeNeighborInfo(const otNeighborInfo &aNeighborInfo);
+#if OPENTHREAD_CONFIG_MULTI_RADIO
+    otError EncodeNeighborMultiRadioInfo(uint32_t aSpinelRadioLink, const otRadioLinkInfo &aInfo);
+#endif
 
 #if OPENTHREAD_FTD
     otError EncodeChildInfo(const otChildInfo &aChildInfo);
+#endif
+
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE
+    otError EncodeLinkMetricsValues(const otLinkMetricsValues *aMetricsValues);
 #endif
 
 #if OPENTHREAD_CONFIG_UDP_FORWARD_ENABLE
@@ -354,6 +401,10 @@ protected:
     void HandleUdpForwardStream(otMessage *aMessage, uint16_t aPeerPort, otIp6Address &aPeerAddr, uint16_t aPort);
 #endif // OPENTHREAD_CONFIG_UDP_FORWARD_ENABLE
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
+
+#if OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE || OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE
+    otError DecodeLinkMetrics(otLinkMetrics *aMetrics, bool aAllowPduCount);
+#endif
 
     otError CommandHandler_NOOP(uint8_t aHeader);
     otError CommandHandler_RESET(uint8_t aHeader);
@@ -415,9 +466,9 @@ protected:
     otError HandlePropertySet_SPINEL_PROP_HOST_POWER_STATE(uint8_t aHeader);
 
 #if OPENTHREAD_CONFIG_DIAG_ENABLE
-    OT_STATIC_ASSERT(OPENTHREAD_CONFIG_DIAG_OUTPUT_BUFFER_SIZE <=
-                         OPENTHREAD_CONFIG_NCP_TX_BUFFER_SIZE - kSpinelCmdHeaderSize - kSpinelPropIdSize,
-                     "diag output buffer should be smaller than NCP UART tx buffer");
+    static_assert(OPENTHREAD_CONFIG_DIAG_OUTPUT_BUFFER_SIZE <=
+                      OPENTHREAD_CONFIG_NCP_TX_BUFFER_SIZE - kSpinelCmdHeaderSize - kSpinelPropIdSize,
+                  "diag output buffer should be smaller than NCP HDLC tx buffer");
 
     otError HandlePropertySet_SPINEL_PROP_NEST_STREAM_MFG(uint8_t aHeader);
 #endif
@@ -514,10 +565,7 @@ protected:
 protected:
     static NcpBase *       sNcpInstance;
     static spinel_status_t ThreadErrorToSpinelStatus(otError aError);
-    static uint8_t         LinkFlagsToFlagByte(bool aRxOnWhenIdle,
-                                               bool aSecureDataRequests,
-                                               bool aDeviceType,
-                                               bool aNetworkData);
+    static uint8_t         LinkFlagsToFlagByte(bool aRxOnWhenIdle, bool aDeviceType, bool aNetworkData);
     Instance *             mInstance;
     Spinel::Buffer         mTxFrameBuffer;
     Spinel::Encoder        mEncoder;
@@ -591,6 +639,29 @@ protected:
     uint32_t mOutboundInsecureIpFrameCounter; // Number of insecure outbound data/IP frames.
     uint32_t mDroppedOutboundIpFrameCounter;  // Number of dropped outbound data/IP frames.
     uint32_t mDroppedInboundIpFrameCounter;   // Number of dropped inbound data/IP frames.
+
+#if OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE
+    enum : uint8_t
+    {
+        kSrpClientMaxHostAddresses = OPENTHREAD_CONFIG_SRP_CLIENT_BUFFERS_MAX_HOST_ADDRESSES,
+    };
+
+    otError EncodeSrpClientHostInfo(const otSrpClientHostInfo &aHostInfo);
+    otError EncodeSrpClientServices(const otSrpClientService *aServices);
+
+    static void HandleSrpClientCallback(otError                    aError,
+                                        const otSrpClientHostInfo *aHostInfo,
+                                        const otSrpClientService * aServices,
+                                        const otSrpClientService * aRemovedServices,
+                                        void *                     aContext);
+    void        HandleSrpClientCallback(otError                    aError,
+                                        const otSrpClientHostInfo *aHostInfo,
+                                        const otSrpClientService * aServices,
+                                        const otSrpClientService * aRemovedServices);
+
+    bool mSrpClientCallbackEnabled;
+#endif // OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE
+
 #if OPENTHREAD_CONFIG_LEGACY_ENABLE
     const otNcpLegacyHandlers *mLegacyHandlers;
     uint8_t                    mLegacyUlaPrefix[OT_NCP_LEGACY_ULA_PREFIX_LENGTH];

@@ -5,7 +5,7 @@ include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 AR = "$(TICLANG_ARMCOMPILER)/bin/tiarmar"
 
-OBJECTS = third_party_mbedtls_repo_library_aes.obj third_party_mbedtls_repo_library_aesni.obj third_party_mbedtls_repo_library_arc4.obj third_party_mbedtls_repo_library_aria.obj third_party_mbedtls_repo_library_asn1parse.obj third_party_mbedtls_repo_library_asn1write.obj third_party_mbedtls_repo_library_base64.obj third_party_mbedtls_repo_library_bignum.obj third_party_mbedtls_repo_library_blowfish.obj third_party_mbedtls_repo_library_camellia.obj third_party_mbedtls_repo_library_ccm.obj third_party_mbedtls_repo_library_certs.obj third_party_mbedtls_repo_library_chacha20.obj third_party_mbedtls_repo_library_chachapoly.obj third_party_mbedtls_repo_library_cipher.obj third_party_mbedtls_repo_library_cipher_wrap.obj third_party_mbedtls_repo_library_cmac.obj third_party_mbedtls_repo_library_ctr_drbg.obj third_party_mbedtls_repo_library_debug.obj third_party_mbedtls_repo_library_des.obj third_party_mbedtls_repo_library_dhm.obj third_party_mbedtls_repo_library_ecdh.obj third_party_mbedtls_repo_library_ecdsa.obj third_party_mbedtls_repo_library_ecjpake.obj third_party_mbedtls_repo_library_ecp.obj third_party_mbedtls_repo_library_ecp_curves.obj third_party_mbedtls_repo_library_entropy.obj third_party_mbedtls_repo_library_entropy_poll.obj third_party_mbedtls_repo_library_error.obj third_party_mbedtls_repo_library_gcm.obj third_party_mbedtls_repo_library_havege.obj third_party_mbedtls_repo_library_hkdf.obj third_party_mbedtls_repo_library_hmac_drbg.obj third_party_mbedtls_repo_library_md.obj third_party_mbedtls_repo_library_md2.obj third_party_mbedtls_repo_library_md4.obj third_party_mbedtls_repo_library_md5.obj third_party_mbedtls_repo_library_md_wrap.obj third_party_mbedtls_repo_library_memory_buffer_alloc.obj third_party_mbedtls_repo_library_net_sockets.obj third_party_mbedtls_repo_library_nist_kw.obj third_party_mbedtls_repo_library_oid.obj third_party_mbedtls_repo_library_padlock.obj third_party_mbedtls_repo_library_pem.obj third_party_mbedtls_repo_library_pk.obj third_party_mbedtls_repo_library_pk_wrap.obj third_party_mbedtls_repo_library_pkcs11.obj third_party_mbedtls_repo_library_pkcs12.obj third_party_mbedtls_repo_library_pkcs5.obj third_party_mbedtls_repo_library_pkparse.obj third_party_mbedtls_repo_library_pkwrite.obj third_party_mbedtls_repo_library_platform.obj third_party_mbedtls_repo_library_platform_util.obj third_party_mbedtls_repo_library_poly1305.obj third_party_mbedtls_repo_library_ripemd160.obj third_party_mbedtls_repo_library_rsa.obj third_party_mbedtls_repo_library_rsa_internal.obj third_party_mbedtls_repo_library_sha1.obj third_party_mbedtls_repo_library_sha256.obj third_party_mbedtls_repo_library_sha512.obj third_party_mbedtls_repo_library_ssl_cache.obj third_party_mbedtls_repo_library_ssl_ciphersuites.obj third_party_mbedtls_repo_library_ssl_cli.obj third_party_mbedtls_repo_library_ssl_cookie.obj third_party_mbedtls_repo_library_ssl_srv.obj third_party_mbedtls_repo_library_ssl_ticket.obj third_party_mbedtls_repo_library_ssl_tls.obj third_party_mbedtls_repo_library_threading.obj third_party_mbedtls_repo_library_timing.obj third_party_mbedtls_repo_library_version.obj third_party_mbedtls_repo_library_version_features.obj third_party_mbedtls_repo_library_x509.obj third_party_mbedtls_repo_library_x509_create.obj third_party_mbedtls_repo_library_x509_crl.obj third_party_mbedtls_repo_library_x509_crt.obj third_party_mbedtls_repo_library_x509_csr.obj third_party_mbedtls_repo_library_x509write_crt.obj third_party_mbedtls_repo_library_x509write_csr.obj third_party_mbedtls_repo_library_xtea.obj
+OBJECTS = third_party_mbedtls_repo_library_aes.obj third_party_mbedtls_repo_library_aesni.obj third_party_mbedtls_repo_library_arc4.obj third_party_mbedtls_repo_library_aria.obj third_party_mbedtls_repo_library_asn1parse.obj third_party_mbedtls_repo_library_asn1write.obj third_party_mbedtls_repo_library_base64.obj third_party_mbedtls_repo_library_bignum.obj third_party_mbedtls_repo_library_blowfish.obj third_party_mbedtls_repo_library_camellia.obj third_party_mbedtls_repo_library_ccm.obj third_party_mbedtls_repo_library_certs.obj third_party_mbedtls_repo_library_chacha20.obj third_party_mbedtls_repo_library_chachapoly.obj third_party_mbedtls_repo_library_cipher.obj third_party_mbedtls_repo_library_cipher_wrap.obj third_party_mbedtls_repo_library_cmac.obj third_party_mbedtls_repo_library_constant_time.obj third_party_mbedtls_repo_library_ctr_drbg.obj third_party_mbedtls_repo_library_debug.obj third_party_mbedtls_repo_library_des.obj third_party_mbedtls_repo_library_dhm.obj third_party_mbedtls_repo_library_ecdh.obj third_party_mbedtls_repo_library_ecdsa.obj third_party_mbedtls_repo_library_ecjpake.obj third_party_mbedtls_repo_library_ecp.obj third_party_mbedtls_repo_library_ecp_curves.obj third_party_mbedtls_repo_library_entropy.obj third_party_mbedtls_repo_library_entropy_poll.obj third_party_mbedtls_repo_library_error.obj third_party_mbedtls_repo_library_gcm.obj third_party_mbedtls_repo_library_havege.obj third_party_mbedtls_repo_library_hkdf.obj third_party_mbedtls_repo_library_hmac_drbg.obj third_party_mbedtls_repo_library_md.obj third_party_mbedtls_repo_library_md2.obj third_party_mbedtls_repo_library_md4.obj third_party_mbedtls_repo_library_md5.obj third_party_mbedtls_repo_library_memory_buffer_alloc.obj third_party_mbedtls_repo_library_mps_reader.obj third_party_mbedtls_repo_library_mps_trace.obj third_party_mbedtls_repo_library_net_sockets.obj third_party_mbedtls_repo_library_nist_kw.obj third_party_mbedtls_repo_library_oid.obj third_party_mbedtls_repo_library_padlock.obj third_party_mbedtls_repo_library_pem.obj third_party_mbedtls_repo_library_pk.obj third_party_mbedtls_repo_library_pk_wrap.obj third_party_mbedtls_repo_library_pkcs11.obj third_party_mbedtls_repo_library_pkcs12.obj third_party_mbedtls_repo_library_pkcs5.obj third_party_mbedtls_repo_library_pkparse.obj third_party_mbedtls_repo_library_pkwrite.obj third_party_mbedtls_repo_library_platform.obj third_party_mbedtls_repo_library_platform_util.obj third_party_mbedtls_repo_library_poly1305.obj third_party_mbedtls_repo_library_psa_crypto.obj third_party_mbedtls_repo_library_psa_crypto_aead.obj third_party_mbedtls_repo_library_psa_crypto_cipher.obj third_party_mbedtls_repo_library_psa_crypto_client.obj third_party_mbedtls_repo_library_psa_crypto_driver_wrappers.obj third_party_mbedtls_repo_library_psa_crypto_ecp.obj third_party_mbedtls_repo_library_psa_crypto_hash.obj third_party_mbedtls_repo_library_psa_crypto_mac.obj third_party_mbedtls_repo_library_psa_crypto_rsa.obj third_party_mbedtls_repo_library_psa_crypto_se.obj third_party_mbedtls_repo_library_psa_crypto_slot_management.obj third_party_mbedtls_repo_library_psa_crypto_storage.obj third_party_mbedtls_repo_library_psa_its_file.obj third_party_mbedtls_repo_library_ripemd160.obj third_party_mbedtls_repo_library_rsa.obj third_party_mbedtls_repo_library_rsa_internal.obj third_party_mbedtls_repo_library_sha1.obj third_party_mbedtls_repo_library_sha256.obj third_party_mbedtls_repo_library_sha512.obj third_party_mbedtls_repo_library_ssl_cache.obj third_party_mbedtls_repo_library_ssl_ciphersuites.obj third_party_mbedtls_repo_library_ssl_cli.obj third_party_mbedtls_repo_library_ssl_cookie.obj third_party_mbedtls_repo_library_ssl_msg.obj third_party_mbedtls_repo_library_ssl_srv.obj third_party_mbedtls_repo_library_ssl_ticket.obj third_party_mbedtls_repo_library_ssl_tls.obj third_party_mbedtls_repo_library_ssl_tls13_keys.obj third_party_mbedtls_repo_library_threading.obj third_party_mbedtls_repo_library_timing.obj third_party_mbedtls_repo_library_version.obj third_party_mbedtls_repo_library_version_features.obj third_party_mbedtls_repo_library_x509.obj third_party_mbedtls_repo_library_x509_create.obj third_party_mbedtls_repo_library_x509_crl.obj third_party_mbedtls_repo_library_x509_crt.obj third_party_mbedtls_repo_library_x509_csr.obj third_party_mbedtls_repo_library_x509write_crt.obj third_party_mbedtls_repo_library_x509write_csr.obj third_party_mbedtls_repo_library_xtea.obj
 NAME = libmbedcrypto
 
 CFLAGS = -I../../.. \
@@ -104,6 +104,10 @@ third_party_mbedtls_repo_library_cmac.obj: OPENTHREAD_MAKE_PATH/third_party/mbed
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
+third_party_mbedtls_repo_library_constant_time.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/constant_time.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
 third_party_mbedtls_repo_library_ctr_drbg.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ctr_drbg.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
@@ -184,11 +188,15 @@ third_party_mbedtls_repo_library_md5.obj: OPENTHREAD_MAKE_PATH/third_party/mbedt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
-third_party_mbedtls_repo_library_md_wrap.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/md_wrap.c
+third_party_mbedtls_repo_library_memory_buffer_alloc.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/memory_buffer_alloc.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
-third_party_mbedtls_repo_library_memory_buffer_alloc.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/memory_buffer_alloc.c
+third_party_mbedtls_repo_library_mps_reader.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/mps_reader.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_mps_trace.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/mps_trace.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
@@ -252,6 +260,58 @@ third_party_mbedtls_repo_library_poly1305.obj: OPENTHREAD_MAKE_PATH/third_party/
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
+third_party_mbedtls_repo_library_psa_crypto.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_aead.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_aead.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_cipher.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_cipher.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_client.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_client.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_driver_wrappers.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_driver_wrappers.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_ecp.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_ecp.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_hash.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_hash.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_mac.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_mac.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_rsa.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_rsa.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_se.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_se.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_slot_management.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_slot_management.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_crypto_storage.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_crypto_storage.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_psa_its_file.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/psa_its_file.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
 third_party_mbedtls_repo_library_ripemd160.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ripemd160.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
@@ -292,6 +352,10 @@ third_party_mbedtls_repo_library_ssl_cookie.obj: OPENTHREAD_MAKE_PATH/third_part
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
+third_party_mbedtls_repo_library_ssl_msg.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ssl_msg.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
 third_party_mbedtls_repo_library_ssl_srv.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ssl_srv.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
@@ -301,6 +365,10 @@ third_party_mbedtls_repo_library_ssl_ticket.obj: OPENTHREAD_MAKE_PATH/third_part
 	@ $(CC) $(CFLAGS) -c $< -o $@
 
 third_party_mbedtls_repo_library_ssl_tls.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ssl_tls.c
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< -o $@
+
+third_party_mbedtls_repo_library_ssl_tls13_keys.obj: OPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/library/ssl_tls13_keys.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
 

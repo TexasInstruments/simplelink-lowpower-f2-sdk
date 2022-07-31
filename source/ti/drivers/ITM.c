@@ -46,19 +46,20 @@
 #include <string.h>
 
 /* Declare the ITM_Object type */
-typedef struct{
-    uint8_t numberOfClients;    /* Number of ITM_open calls */
-    uint8_t numDwtComparators;  /* Number of DWT comparators available */
-    uint32_t dwtCtrlRegister;   /* Shadow of the DWT CTRL register */
-    uint32_t fullFIFOInCycles;  /* Number of cycles needed to drain TPIU FIFO */
+typedef struct
+{
+    uint8_t numberOfClients;   /* Number of ITM_open calls */
+    uint8_t numDwtComparators; /* Number of DWT comparators available */
+    uint32_t dwtCtrlRegister;  /* Shadow of the DWT CTRL register */
+    uint32_t fullFIFOInCycles; /* Number of cycles needed to drain TPIU FIFO */
 } ITM_Object;
 
 /* Create an instance of the object and initialize it */
 static ITM_Object object = {
-    .numberOfClients = 0,
+    .numberOfClients   = 0,
     .numDwtComparators = 0,
-    .dwtCtrlRegister = 0,
-    .fullFIFOInCycles = 0,
+    .dwtCtrlRegister   = 0,
+    .fullFIFOInCycles  = 0,
 };
 
 /* This enables the device specific hwAttrs to be case as the generic ones
@@ -84,20 +85,20 @@ extern void ITM_clearPinMux(void);
  */
 bool ITM_open(void)
 {
-    ITM_HWAttrs *hwAttrs = (ITM_HWAttrs *)itmHwAttrs;
+    ITM_HWAttrs *hwAttrs  = (ITM_HWAttrs *)itmHwAttrs;
     uint32_t tpiuFifoSize = 0;
-    bool pinMuxStatus = false;
+    bool pinMuxStatus     = false;
     uintptr_t hwiKey;
 
     hwiKey = HwiP_disable();
 
-    if(object.numberOfClients == 0)
+    if (object.numberOfClients == 0)
     {
         /* Mux out the pins that will be used by the TPIU */
         pinMuxStatus = ITM_applyPinMux();
 
         /* If we couldn't acquire the pins, give up now */
-        if(pinMuxStatus == false)
+        if (pinMuxStatus == false)
         {
             HwiP_restore(hwiKey);
             return (bool)false;
@@ -111,14 +112,14 @@ bool ITM_open(void)
         HWREG(ITM_SCS_BASE_ADDR  + CPU_SCS_O_DEMCR) |= CPU_SCS_DEMCR_TRCENA_M;
 
         /* Unlock and Setup TPIU for SWO UART mode */
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_LAR) = ITM_LAR_UNLOCK;
-        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_SPPR) = hwAttrs->format;
+        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_LAR)   = ITM_LAR_UNLOCK;
+        HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_SPPR)  = hwAttrs->format;
         HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_CSPSR) = CPU_TPIU_CSPSR_ONE;
 
         /* Unlock and enable all ITM stimulus ports with default settings */
         HWREG(ITM_BASE_ADDR + CPU_ITM_O_LAR) = ITM_LAR_UNLOCK;
         HWREG(ITM_BASE_ADDR + CPU_ITM_O_TER) = hwAttrs->traceEnable;
-        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TPR)  = 0x0000000F;
+        HWREG(ITM_BASE_ADDR + CPU_ITM_O_TPR) = 0x0000000F;
 
         /* Program prescaler value which is calculated from syscfg */
         HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_ACPR) = hwAttrs->tpiuPrescaler;
@@ -130,10 +131,12 @@ bool ITM_open(void)
         HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_LAR) = ITM_LAR_UNLOCK;
 
         /* Store the number of DWT comparators */
-        object.numDwtComparators = (HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) & CPU_DWT_CTRL_NUMCOMP_M) >> CPU_DWT_CTRL_NUMCOMP_S;
+        object.numDwtComparators = (HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) & CPU_DWT_CTRL_NUMCOMP_M) >>
+                                    CPU_DWT_CTRL_NUMCOMP_S;
 
         /* Store the FIFO size of the TPIU, this will be used for flush */
-        tpiuFifoSize = (HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_DEVID) & CPU_TPIU_DEVID_FIFO_SIZE_M) >> CPU_TPIU_DEVID_FIFO_SIZE_S;
+        tpiuFifoSize = (HWREG(ITM_TPIU_BASE_ADDR + CPU_TPIU_O_DEVID) & CPU_TPIU_DEVID_FIFO_SIZE_M) >>
+                        CPU_TPIU_DEVID_FIFO_SIZE_S;
 
         /* FIFO size stored in the register as 2^FIFO_SIZE in bytes
          * 1. Calculate the power of 2 using left shifts.
@@ -143,7 +146,7 @@ bool ITM_open(void)
         tpiuFifoSize = (1 << (tpiuFifoSize - 2));
 
         /* Then multiply this by the length of the FIFO */
-        object.fullFIFOInCycles = tpiuFifoSize*(hwAttrs->fullPacketInCycles);
+        object.fullFIFOInCycles = tpiuFifoSize * (hwAttrs->fullPacketInCycles);
 
         /* Enable cycle counter, required to ensure proper flush */
         HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_CYCCNTENA_M;
@@ -171,7 +174,7 @@ void ITM_close(void)
     hwiKey = HwiP_disable();
 
     /* Protect against unbalanced number of open/close calls */
-    if(object.numberOfClients <= 0)
+    if (object.numberOfClients <= 0)
     {
         HwiP_restore(hwiKey);
         return;
@@ -243,7 +246,7 @@ void ITM_send8Atomic(uint8_t port, uint8_t value)
 /*
  *  ======== ITM_sendBufferAtomic ========
  */
-void ITM_sendBufferAtomic(const uint8_t port, const char* msg, size_t length)
+void ITM_sendBufferAtomic(const uint8_t port, const char *msg, size_t length)
 {
     uint32_t key;
     key = HwiP_disable();
@@ -252,13 +255,13 @@ void ITM_sendBufferAtomic(const uint8_t port, const char* msg, size_t length)
      * for large buffers. Users who are concerned about flash can consider
      * replacing this with a single for loop
      */
-    while(length > 3)
+    while (length > 3)
     {
         ITM_send32Polling(port, *((uint32_t *)msg));
         length -= 4;
         msg += 4;
     }
-    while(length > 1)
+    while (length > 1)
     {
         ITM_send16Polling(port, *((uint16_t *)msg));
         length -= 2;
@@ -278,7 +281,7 @@ void ITM_sendBufferAtomic(const uint8_t port, const char* msg, size_t length)
 void ITM_enableExceptionTrace(void)
 {
     /* Enable interrupt event tracing by the DWT */
-    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |=  CPU_DWT_CTRL_EXCTRCENA_M;
+    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_EXCTRCENA_M;
 }
 
 /*
@@ -287,7 +290,7 @@ void ITM_enableExceptionTrace(void)
 void ITM_disableExceptionTrace(void)
 {
     /* Disable interrupt event tracing by the DWT */
-    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) &=  ~(CPU_DWT_CTRL_EXCTRCENA_M);
+    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) &= ~(CPU_DWT_CTRL_EXCTRCENA_M);
 }
 
 /*
@@ -299,7 +302,7 @@ void ITM_enablePCSampling(bool prescale1024, uint8_t postReset)
     ITM_disablePCAndEventSampling();
 
     /* Setup sampling interval by setting reload down counter value */
-    if(prescale1024 == (bool)true)
+    if (prescale1024 == (bool)true)
     {
         /* Tap at bit 10 of system clock, this results in a prescale by 1024 */
         HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_CYCTAP_BIT10;
@@ -323,7 +326,7 @@ void ITM_enableEventCounter(bool prescale1024, uint8_t postReset)
     /* Clear the PC Sampling and Cycle Event bits */
     ITM_disablePCAndEventSampling();
     /* Setup sampling interval by setting reload down counter value */
-    if(prescale1024 == (bool)true)
+    if (prescale1024 == (bool)true)
     {
         /* Tap at bit 10 of system clock, this results in a prescale by 1024 */
         HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) |= CPU_DWT_CTRL_CYCTAP_BIT10;
@@ -344,8 +347,7 @@ void ITM_enableEventCounter(bool prescale1024, uint8_t postReset)
 void ITM_disablePCAndEventSampling(void)
 {
     /* Clear the PC Sampling and Cycle Event bits */
-    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) &= ~(CPU_DWT_CTRL_PCSAMPLEENA_M |      \
-                                              CPU_DWT_CTRL_CYCEVTENA_M);
+    HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CTRL) &= ~(CPU_DWT_CTRL_PCSAMPLEENA_M | CPU_DWT_CTRL_CYCEVTENA_M);
 }
 
 /*
@@ -354,17 +356,17 @@ void ITM_disablePCAndEventSampling(void)
 bool ITM_enableWatchpoint(ITM_WatchpointAction function, const uintptr_t address)
 {
 
-    uint8_t dwtIndex = 0;
+    uint8_t dwtIndex  = 0;
     bool dwtAvailable = false;
-    for (dwtIndex = 0; dwtIndex < object.numDwtComparators ; dwtIndex++)
+    for (dwtIndex = 0; dwtIndex < object.numDwtComparators; dwtIndex++)
     {
         uint32_t offset = 16 * dwtIndex;
         if (0 == HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_FUNCTION0 + offset))
         {
-            HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_COMP0 + offset) = address;
-            HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_MASK0 + offset) = 0;
+            HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_COMP0 + offset)     = address;
+            HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_MASK0 + offset)     = 0;
             HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_FUNCTION0 + offset) = function;
-            dwtAvailable = true;
+            dwtAvailable                                            = true;
         }
     }
     return dwtAvailable;
@@ -379,7 +381,7 @@ void ITM_enableTimestamps(ITM_TimeStampPrescaler tsPrescale, bool asyncMode)
     HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= ((tsPrescale << CPU_ITM_TCR_TSPRESCALE_S) & CPU_ITM_TCR_TSPRESCALE_M);
     HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_TSENA_M;
 
-    if(asyncMode == (bool)true)
+    if (asyncMode == (bool)true)
     {
         /* Asynchronous vs synchronous mode is controlled by the SWOENA bit */
         HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) |= CPU_ITM_TCR_SWOENA_M;
@@ -444,7 +446,8 @@ void ITM_commonFlush(void)
         ITM_send32Atomic(0, dummy);
 
         /* Wait until the ITM events has drained */
-        while (HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) & (1 << 23));
+        while (HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) & (1 << 23))
+            ;
 
         /* Flush TPIU FIFO
          * Now, the ITM is flushed, but the TPIU also has a FIFO to be empty
@@ -453,13 +456,14 @@ void ITM_commonFlush(void)
          * using its size and baudrate
          */
         uint32_t ticksNow = HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CYCCNT);
-        int32_t numTicks = 0;
+        int32_t numTicks  = 0;
         do
         {
             int32_t tmp = HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_CYCCNT) - ticksNow;
 
             /* Consider the case where the DWT timer has wrapped */
-            if (tmp < 0) {
+            if (tmp < 0)
+            {
                 tmp += 0xFFFFFFFF;
             }
 

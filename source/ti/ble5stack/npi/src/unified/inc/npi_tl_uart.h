@@ -93,7 +93,7 @@ typedef void (*npiCB_t)(uint16_t rxLen, uint16_t txLen);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-extern void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
+extern void NPITLUART_openTransport(uint8_t portID, UART2_Params *portParams,
                              	    npiCB_t npiCBack);
 
 // -----------------------------------------------------------------------------

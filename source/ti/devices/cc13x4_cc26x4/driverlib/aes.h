@@ -358,8 +358,8 @@ extern uint32_t AESVerifyTag(const uint8_t *tag, uint32_t tagLength);
 //!
 //! \param [in] aesKey Pointer to key. Does not need to be word-aligned.
 //!
-//! \param [in] aesKeyLength The key size in bytes. Currently, 128-bit, 192-bit,
-//!                          and 256-bit keys are supported.
+//! \param [in] aesKeyLength The key size in bytes.
+//!                          Currently, 128-bit, 192-bit, and 256-bit keys are supported.
 //! - \ref AES_128_KEY_LENGTH_BYTES
 //! - \ref AES_192_KEY_LENGTH_BYTES
 //! - \ref AES_256_KEY_LENGTH_BYTES
@@ -367,8 +367,8 @@ extern uint32_t AESVerifyTag(const uint8_t *tag, uint32_t tagLength);
 //! \param [in] keyStoreArea The key store area to transfer the key to.
 //!                          When using 128-bit keys, only the specified key store
 //!                          area will be occupied.
-//!                          When using 256-bit or 192-bit keys, two consecutive key areas
-//!                          are used to store the key.
+//!                          When using 256-bit or 192-bit keys, two consecutive
+//!                          key areas are used to store the key.
 //! - \ref AES_KEY_AREA_0
 //! - \ref AES_KEY_AREA_1
 //! - \ref AES_KEY_AREA_2
@@ -410,9 +410,9 @@ extern uint32_t AESWriteToKeyStore(const uint8_t *aesKey, uint32_t aesKeyLength,
 //!
 //!     The function polls until the transfer is complete.
 //!
-//! \param [in] keyStoreArea The key store area to transfer the key from. When using
-//!                          256-bit keys, either of the occupied key areas may be
-//!                          specified to load the key. There is no need to specify
+//! \param [in] keyStoreArea The key store area to transfer the key from.
+//!                          When using 256-bit keys, either of the occupied key areas
+//!                          may be specified to load the key. There is no need to specify
 //!                          the length of the key here as the key store keeps track
 //!                          of how long a key associated with any valid key area is
 //!                          and where is starts.

@@ -52,10 +52,10 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/family/arm/m3/Hwi.h>
-#include <ti/drivers/pin/PINCC26XX.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Swi.h>
 
+#include <ti/drivers/GPIO.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
 #include <ti_drivers_config.h>
@@ -128,20 +128,6 @@ static uint16 msgFragLen = 0;
 //! \brief Call back function in NPI Task for MRDY hardware interrupt
 static npiMrdyRtosCB_t taskMrdyCB = NULL;
 
-//! \brief PIN Config for Mrdy and Srdy signals
-static PIN_Config npiHandshakePinsCfg[] =
-{
-    MRDY_PIN | PIN_GPIO_OUTPUT_DIS | PIN_INPUT_EN | PIN_PULLUP,
-    SRDY_PIN | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
-
-//! \brief PIN State for Mrdy and Srdy signals
-static PIN_State npiHandshakePins;
-
-//! \brief PIN Handles for Mrdy and Srdy signals
-static PIN_Handle hNpiHandshakePins;
-
 //! \brief No way to detect whether positive or negative edge with PIN Driver
 //!             Use a flag to keep track of state
 static uint8 mrdy_state;
@@ -157,7 +143,7 @@ static void NPITL_transmissionCallBack(uint16 Rxlen, uint16 Txlen);
 
 #if (NPI_FLOW_CTRL == 1)
 //! \brief HWI interrupt function for MRDY
-static void NPITL_MRDYPinHwiFxn(PIN_Handle hPin, PIN_Id pinId);
+static void NPITL_MRDYPinHwiFxn(uint_least8_t index);
 #endif // NPI_FLOW_CTRL = 1
 
 // -----------------------------------------------------------------------------
@@ -187,15 +173,14 @@ void NPITL_initTL(npiRtosCB_t npiCBTx, npiRtosCB_t npiCBRx, npiRtosCB_t npiCBMrd
 #if (NPI_FLOW_CTRL == 1)
     SRDY_DISABLE();
 
-    // Initialize SRDY/MRDY. Enable int after callback registered
-    hNpiHandshakePins = PIN_open(&npiHandshakePins, npiHandshakePinsCfg);
-    PIN_registerIntCb(hNpiHandshakePins, NPITL_MRDYPinHwiFxn);
-    PIN_setConfig(hNpiHandshakePins, PIN_BM_IRQ, MRDY_PIN | PIN_IRQ_BOTHEDGES);
-
-    // Enable wakeup
-    PIN_setConfig(hNpiHandshakePins, PINCC26XX_BM_WAKEUP, MRDY_PIN | PINCC26XX_WAKEUP_NEGEDGE);
-
-    mrdy_state = PIN_getInputValue(MRDY_PIN);
+    // Initialize SRDY/MRDY
+    GPIO_setConfig(MRDY_PIN, GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_PULL_UP_INTERNAL | GPIO_CFG_STANDBY_WAKE_ON);
+    GPIO_setConfig(SRDY_PIN, GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_OUT_STR_HIGH | GPIO_CFG_OUT_HIGH);
+    // set callback
+    GPIO_setCallback(MRDY_PIN, NPITL_MRDYPinHwiFxn);
+    // Enable interrupt
+    GPIO_enableInt(MRDY_PIN);
+    mrdy_state = GPIO_read(MRDY_PIN);
 #endif // NPI_FLOW_CTRL = 1
 
     ICall_leaveCriticalSection(key);
@@ -211,7 +196,7 @@ void NPITL_initTL(npiRtosCB_t npiCBTx, npiRtosCB_t npiCBRx, npiRtosCB_t npiCBMrd
 bool NPITL_checkNpiBusy(void)
 {
 #if (NPI_FLOW_CTRL == 1)
-    return !PIN_getOutputValue(SRDY_PIN);
+    return !GPIO_read(SRDY_PIN);
 #else
     return npiTxActive;
 #endif // NPI_FLOW_CTRL = 1
@@ -270,7 +255,7 @@ void NPITL_handleMrdyEvent(void)
 
     // Check to make sure this event is not occurring during the next packet
     // transmission
-    if ( PIN_getInputValue(MRDY_PIN) == 0 ||
+    if ( GPIO_read(MRDY_PIN) == 0 ||
         (npiTxActive && mrdyPktStamp == txPktCount ) )
     {
         transportMrdyEvent();
@@ -287,16 +272,14 @@ void NPITL_handleMrdyEvent(void)
 //!             functionality can execute from this HWI context. Others
 //!             must be executed from task context hence the taskMrdyCB()
 //!
-//! \param[in]  hPin - PIN Handle
-//! \param[in]  pinId - ID of pin that triggered HWI
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITL_MRDYPinHwiFxn(PIN_Handle hPin, PIN_Id pinId)
+static void NPITL_MRDYPinHwiFxn(uint_least8_t index)
 {
-    // The pin driver does not currently support returning whether the int
+    // The gpio driver does not currently support returning whether the int
     // was neg or pos edge so we must use a variable to keep track of state.
-    // If the physical state of the pin was used then a very quick toggle of
+    // If the physical state of the gpio was used then a very quick toggle of
     // of MRDY could be missed.
     mrdy_state ^= 1;
 
@@ -316,9 +299,9 @@ static void NPITL_MRDYPinHwiFxn(PIN_Handle hPin, PIN_Id pinId)
 
     // Check the physical state of the pin to see if it matches the variable
     // state. If not then edge has been missed
-    if (mrdy_state != PIN_getInputValue(MRDY_PIN))
+    if (mrdy_state != GPIO_read(MRDY_PIN))
     {
-        mrdy_state = PIN_getInputValue(MRDY_PIN);
+        mrdy_state = GPIO_read(MRDY_PIN);
 
         if (mrdy_state == 0)
         {
@@ -375,7 +358,7 @@ static void NPITL_transmissionCallBack(uint16 Rxlen, uint16 Txlen)
 
 #if (NPI_FLOW_CTRL == 1)
     // Reset mrdy state in case of missed HWI
-    mrdy_state = PIN_getInputValue(MRDY_PIN);
+    mrdy_state = GPIO_read(MRDY_PIN);
 
     NPITL_relPM();
     SRDY_DISABLE();

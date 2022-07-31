@@ -38,36 +38,37 @@
 
 #if OPENTHREAD_CONFIG_COAP_API_ENABLE
 
-#include "coap/coap_message.hpp"
+#include <openthread/coap.h>
+
+#include "cli/cli_output.hpp"
 
 namespace ot {
 namespace Cli {
-
-class Interpreter;
 
 /**
  * This class implements the CLI CoAP server and client.
  *
  */
-class Coap
+class Coap : private OutputWrapper
 {
 public:
+    typedef Utils::CmdLineParser::Arg Arg;
+
     /**
      * Constructor
      *
-     * @param[in]  aInterpreter  The CLI interpreter.
+     * @param[in]  aOutput The CLI console output context
      *
      */
-    explicit Coap(Interpreter &aInterpreter);
+    explicit Coap(Output &aOutput);
 
     /**
      * This method interprets a list of CLI arguments.
      *
-     * @param[in]  aArgsLength  The number of elements in @p aArgs.
      * @param[in]  aArgs        An array of command line arguments.
      *
      */
-    otError Process(uint8_t aArgsLength, char *aArgs[]);
+    otError Process(Arg aArgs[]);
 
 private:
     enum
@@ -76,29 +77,29 @@ private:
         kMaxBufferSize = 16
     };
 
-    struct Command
-    {
-        const char *mName;
-        otError (Coap::*mCommand)(uint8_t aArgsLength, char *aArgs[]);
+    using Command = CommandEntry<Coap>;
+
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    enum BlockType : uint8_t{
+        kBlockType1,
+        kBlockType2,
     };
+#endif
+
+    template <CommandId kCommandId> otError Process(Arg aArgs[]);
 
 #if OPENTHREAD_CONFIG_COAP_OBSERVE_API_ENABLE
     otError CancelResourceSubscription(void);
     void    CancelSubscriber(void);
 #endif
 
-    void PrintPayload(otMessage *aMessage) const;
+    void PrintPayload(otMessage *aMessage);
 
-    otError ProcessHelp(uint8_t aArgsLength, char *aArgs[]);
 #if OPENTHREAD_CONFIG_COAP_OBSERVE_API_ENABLE
-    otError ProcessCancel(uint8_t aArgsLength, char *aArgs[]);
+    otError ProcessRequest(Arg aArgs[], otCoapCode aCoapCode, bool aCoapObserve = false);
+#else
+    otError        ProcessRequest(Arg aArgs[], otCoapCode aCoapCode);
 #endif
-    otError ProcessParameters(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessRequest(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessResource(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessSet(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStart(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStop(uint8_t aArgsLength, char *aArgs[]);
 
     static void HandleRequest(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleRequest(otMessage *aMessage, const otMessageInfo *aMessageInfo);
@@ -114,18 +115,36 @@ private:
     static void HandleResponse(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo, otError aError);
     void        HandleResponse(otMessage *aMessage, const otMessageInfo *aMessageInfo, otError aError);
 
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+
+    static otError BlockwiseReceiveHook(void *         aContext,
+                                        const uint8_t *aBlock,
+                                        uint32_t       aPosition,
+                                        uint16_t       aBlockLength,
+                                        bool           aMore,
+                                        uint32_t       aTotalLength);
+    otError        BlockwiseReceiveHook(const uint8_t *aBlock,
+                                        uint32_t       aPosition,
+                                        uint16_t       aBlockLength,
+                                        bool           aMore,
+                                        uint32_t       aTotalLength);
+    static otError BlockwiseTransmitHook(void *    aContext,
+                                         uint8_t * aBlock,
+                                         uint32_t  aPosition,
+                                         uint16_t *aBlockLength,
+                                         bool *    aMore);
+    otError        BlockwiseTransmitHook(uint8_t *aBlock, uint32_t aPosition, uint16_t *aBlockLength, bool *aMore);
+#endif
+
     const otCoapTxParameters *GetRequestTxParameters(void) const
     {
-        return mUseDefaultRequestTxParameters ? NULL : &mRequestTxParameters;
+        return mUseDefaultRequestTxParameters ? nullptr : &mRequestTxParameters;
     }
 
     const otCoapTxParameters *GetResponseTxParameters(void) const
     {
-        return mUseDefaultResponseTxParameters ? NULL : &mResponseTxParameters;
+        return mUseDefaultResponseTxParameters ? nullptr : &mResponseTxParameters;
     }
-
-    static const Command sCommands[];
-    Interpreter &        mInterpreter;
 
     bool mUseDefaultRequestTxParameters;
     bool mUseDefaultResponseTxParameters;
@@ -133,7 +152,11 @@ private:
     otCoapTxParameters mRequestTxParameters;
     otCoapTxParameters mResponseTxParameters;
 
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    otCoapBlockwiseResource mResource;
+#else
     otCoapResource mResource;
+#endif
 #if OPENTHREAD_CONFIG_COAP_OBSERVE_API_ENABLE
     otIp6Address mRequestAddr;
     otSockAddr   mSubscriberSock;
@@ -148,6 +171,9 @@ private:
     uint8_t  mRequestTokenLength;
     uint8_t  mSubscriberTokenLength;
     bool     mSubscriberConfirmableNotifications;
+#endif
+#if OPENTHREAD_CONFIG_COAP_BLOCKWISE_TRANSFER_ENABLE
+    uint32_t mBlockCount;
 #endif
 };
 

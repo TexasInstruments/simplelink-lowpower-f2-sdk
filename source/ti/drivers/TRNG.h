@@ -266,7 +266,7 @@ extern "C" {
  * #define TRNGXYZ_STATUS_ERROR2    TRNG_STATUS_RESERVED - 2
  * @endcode
  */
-#define TRNG_STATUS_RESERVED        (-32)
+#define TRNG_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -274,7 +274,7 @@ extern "C" {
  * Functions return TRNG_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define TRNG_STATUS_SUCCESS         (0)
+#define TRNG_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
@@ -282,7 +282,7 @@ extern "C" {
  * Functions return TRNG_STATUS_ERROR if the function was not executed
  * successfully.
  */
-#define TRNG_STATUS_ERROR           (-1)
+#define TRNG_STATUS_ERROR (-1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -295,16 +295,16 @@ extern "C" {
 #define TRNG_STATUS_RESOURCE_UNAVAILABLE (-2)
 
 /*!
-* @brief   Operation failed due to invalid inputs.
-*
-* Functions return TRNG_STATUS_INVALID_INPUTS if input validation fails.
-*/
-#define TRNG_STATUS_INVALID_INPUTS       (-3)
+ * @brief   Operation failed due to invalid inputs.
+ *
+ * Functions return TRNG_STATUS_INVALID_INPUTS if input validation fails.
+ */
+#define TRNG_STATUS_INVALID_INPUTS (-3)
 
 /*!
-* @brief  The ongoing operation was canceled.
-*/
-#define TRNG_STATUS_CANCELED             (-4)
+ * @brief  The ongoing operation was canceled.
+ */
+#define TRNG_STATUS_CANCELED (-4)
 
 /*!
  *  @brief TRNG Global configuration
@@ -317,18 +317,19 @@ extern "C" {
  *
  *  @sa     TRNG_init()
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } TRNG_Config;
 
 /*!
  *  @brief  A handle that is returned from a TRNG_open() call.
  */
-typedef TRNG_Config  *TRNG_Handle;
+typedef TRNG_Config *TRNG_Handle;
 
 /*!
  * @brief   The way in which TRNG function calls return after generating
@@ -351,21 +352,22 @@ typedef TRNG_Config  *TRNG_Handle;
  * |TRNG_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
-    TRNG_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
-                                             *   TRNG operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
-    TRNG_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while TRNG operation goes
-                                             *   on in the background. TRNG operation results are available
-                                             *   after the function returns.
-                                             */
-    TRNG_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while TRNG
-                                             *   operation goes on in the background. TRNG operation results
-                                             *   are available after the function returns.
-                                             */
+typedef enum
+{
+    TRNG_RETURN_BEHAVIOR_CALLBACK = 1, /*!< The function call will return immediately while the
+                                        *   TRNG operation goes on in the background. The registered
+                                        *   callback function is called after the operation completes.
+                                        *   The context the callback function is called (task, HWI, SWI)
+                                        *   is implementation-dependent.
+                                        */
+    TRNG_RETURN_BEHAVIOR_BLOCKING = 2, /*!< The function call will block while TRNG operation goes
+                                        *   on in the background. TRNG operation results are available
+                                        *   after the function returns.
+                                        */
+    TRNG_RETURN_BEHAVIOR_POLLING  = 4, /*!< The function call will continuously poll a flag while TRNG
+                                        *   operation goes on in the background. TRNG operation results
+                                        *   are available after the function returns.
+                                        */
 } TRNG_ReturnBehavior;
 
 /*!
@@ -381,9 +383,7 @@ typedef enum {
  *  @param  entropy     The CryptoKey that describes the location the generated
  *                      entropy will be copied to.
  */
-typedef void (*TRNG_CryptoKeyCallbackFxn) (TRNG_Handle handle,
-                                           int_fast16_t returnValue,
-                                           CryptoKey *entropy);
+typedef void (*TRNG_CryptoKeyCallbackFxn)(TRNG_Handle handle, int_fast16_t returnValue, CryptoKey *entropy);
 
 /*!
  *  @brief  The definition of a callback function used by the TRNG driver
@@ -398,10 +398,10 @@ typedef void (*TRNG_CryptoKeyCallbackFxn) (TRNG_Handle handle,
  *
  *  @param  randomBytesSize The size of the random data required.
  */
-typedef void (*TRNG_RandomBytesCallbackFxn) (TRNG_Handle handle,
-                                             int_fast16_t returnValue,
-                                             uint8_t *randomBytes,
-                                             size_t randomBytesSize);
+typedef void (*TRNG_RandomBytesCallbackFxn)(TRNG_Handle handle,
+                                            int_fast16_t returnValue,
+                                            uint8_t *randomBytes,
+                                            size_t randomBytesSize);
 
 /*!
  *  @brief  The definition of a callback function used by the TRNG driver
@@ -410,7 +410,6 @@ typedef void (*TRNG_RandomBytesCallbackFxn) (TRNG_Handle handle,
  *  @deprecated #TRNG_CallbackFxn will be replaced by #TRNG_CryptoKeyCallbackFxn
  */
 typedef TRNG_CryptoKeyCallbackFxn TRNG_CallbackFxn;
-
 
 /*!
  *  @brief  TRNG Parameters
@@ -424,18 +423,19 @@ typedef TRNG_CryptoKeyCallbackFxn TRNG_CallbackFxn;
  *
  *  @sa     TRNG_Params_init()
  */
-typedef struct {
-    TRNG_ReturnBehavior         returnBehavior;         /*!< Blocking, callback, or polling return behavior */
-    TRNG_CryptoKeyCallbackFxn   cryptoKeyCallbackFxn;   /*!< Callback function to use with TRNG_generateKey().
+typedef struct
+{
+    TRNG_ReturnBehavior returnBehavior;                 /*!< Blocking, callback, or polling return behavior */
+    TRNG_CryptoKeyCallbackFxn cryptoKeyCallbackFxn;     /*!< Callback function to use with TRNG_generateKey().
                                                          *  Set randomBytesCallbackFxn to NULL if using this.
                                                          */
     TRNG_RandomBytesCallbackFxn randomBytesCallbackFxn; /*!< Callback function to use with TRNG_getRandomBytes()
                                                          *  Set cryptoKeyCallbackFxn to NULL if using this.
                                                          */
-    uint32_t                    timeout;                /*!< Timeout before the driver returns an error in
+    uint32_t timeout;                                   /*!< Timeout before the driver returns an error in
                                                          *   ::TRNG_RETURN_BEHAVIOR_BLOCKING
                                                          */
-    void                        *custom;                /*!< Custom argument used by driver implementation */
+    void *custom;                                       /*!< Custom argument used by driver implementation */
 } TRNG_Params;
 
 /*!
@@ -552,7 +552,7 @@ int_fast16_t TRNG_generateEntropy(TRNG_Handle handle, CryptoKey *entropy);
  *  @retval #TRNG_STATUS_ERROR                 The operation failed.
  *  @retval #TRNG_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
  *  @retval #TRNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
-*/
+ */
 int_fast16_t TRNG_generateKey(TRNG_Handle handle, CryptoKey *entropy);
 
 /*!

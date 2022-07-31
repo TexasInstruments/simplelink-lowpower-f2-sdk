@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,59 +50,66 @@ extern const uint_least8_t AESCCM_count;
 
 const AESCCM_Params AESCCM_defaultParams = {
     .returnBehavior = AESCCM_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== AESCCM_Params_init ========
  */
-void AESCCM_Params_init(AESCCM_Params *params){
+void AESCCM_Params_init(AESCCM_Params *params)
+{
     *params = AESCCM_defaultParams;
 }
 
 /*
  *  ======== AESCCM_open ========
  */
-AESCCM_Handle AESCCM_open(uint_least8_t index, const AESCCM_Params *params) {
+__attribute__((weak)) AESCCM_Handle AESCCM_open(uint_least8_t index, const AESCCM_Params *params)
+{
     DebugP_assert(index < AESCCM_count);
 
-    AESCCM_Config *config = (AESCCM_Config*)&AESCCM_config[index];
+    AESCCM_Config *config = (AESCCM_Config *)&AESCCM_config[index];
     return AESCCM_construct(config, params);
 }
 
 /*
  *  ======== AESCCM_Operation_init ========
  */
-void AESCCM_Operation_init(AESCCM_Operation *operationStruct) {
+void AESCCM_Operation_init(AESCCM_Operation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCCM_Operation));
 }
 
 /*
  *  ======== AESCCM_OneStepOperation_init ========
  */
-void AESCCM_OneStepOperation_init(AESCCM_OneStepOperation *operationStruct) {
+void AESCCM_OneStepOperation_init(AESCCM_OneStepOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCCM_OneStepOperation));
 }
 
 /*
  *  ======== AESCCM_SegmentedAADOperation_init ========
  */
-void AESCCM_SegmentedAADOperation_init(AESCCM_SegmentedAADOperation *operationStruct) {
+void AESCCM_SegmentedAADOperation_init(AESCCM_SegmentedAADOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCCM_SegmentedAADOperation));
 }
 
 /*
  *  ======== AESCCM_SegmentedDataOperation_init ========
  */
-void AESCCM_SegmentedDataOperation_init(AESCCM_SegmentedDataOperation *operationStruct) {
+void AESCCM_SegmentedDataOperation_init(AESCCM_SegmentedDataOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCCM_SegmentedDataOperation));
 }
 
 /*
  *  ======== AESCCM_SegmentedFinalizeOperation_init ========
  */
-void AESCCM_SegmentedFinalizeOperation_init(AESCCM_SegmentedFinalizeOperation *operationStruct) {
+void AESCCM_SegmentedFinalizeOperation_init(AESCCM_SegmentedFinalizeOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCCM_SegmentedFinalizeOperation));
 }

@@ -38,6 +38,7 @@
 
 #include "coap/coap.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "mac/mac.hpp"
 #include "net/ip6_address.hpp"
@@ -49,7 +50,7 @@ namespace ot {
  * This class implements handling PANID Query Requests.
  *
  */
-class PanIdQueryServer : public InstanceLocator
+class PanIdQueryServer : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -59,10 +60,7 @@ public:
     explicit PanIdQueryServer(Instance &aInstance);
 
 private:
-    enum
-    {
-        kScanDelay = 1000, ///< SCAN_DELAY (milliseconds)
-    };
+    static constexpr uint32_t kScanDelay = 1000; ///< SCAN_DELAY (in msec)
 
     static void HandleQuery(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleQuery(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
@@ -75,7 +73,7 @@ private:
 
     static void HandleUdpReceive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
 
-    otError SendConflict(void);
+    void SendConflict(void);
 
     Ip6::Address mCommissioner;
     uint32_t     mChannelMask;

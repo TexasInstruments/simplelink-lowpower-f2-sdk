@@ -60,7 +60,7 @@
  *
  * With this command @b arg is of type @c DisplaySharpColor_t *.
  */
-#define DISPLAYSHARP_CMD_SET_COLORS  DISPLAY_CMD_RESERVED + 0
+#define DISPLAYSHARP_CMD_SET_COLORS DISPLAY_CMD_RESERVED + 0
 /** @}*/
 
 /*!
@@ -91,34 +91,29 @@ typedef struct DisplaySharp_HWAttrsV1
     uint32_t enablePin;
     uint16_t pixelHeight;
     uint16_t pixelWidth;
-    void    *displayBuf;
+    void *displayBuf;
 } DisplaySharp_HWAttrsV1;
 
-typedef uint8_t   DisplaySharp_Buf_96x96[96 * 96 / 8];
-typedef uint8_t   DisplaySharp_Buf_128x128[128 * 128 / 8];
+typedef uint8_t DisplaySharp_Buf_96x96[96 * 96 / 8];
+typedef uint8_t DisplaySharp_Buf_128x128[128 * 128 / 8];
 
 typedef struct DisplaySharp_Object
 {
-    Graphics_Context      g_sContext;
-    SPI_Handle            hSpi;
+    Graphics_Context g_sContext;
+    SPI_Handle hSpi;
     Display_LineClearMode lineClearMode;
-    Graphics_Display      g_sDisplay;
-    DisplaySharpColor_t   displayColor;
-    SemaphoreP_Handle     semLCD;
-    uint8_t              *displayBuffer;
+    Graphics_Display g_sDisplay;
+    DisplaySharpColor_t displayColor;
+    SemaphoreP_Handle semLCD;
+    uint8_t *displayBuffer;
 } DisplaySharp_Object, *DisplaySharp_Handle;
 
 void DisplaySharp_init(Display_Handle handle);
-Display_Handle DisplaySharp_open(Display_Handle handle,
-                                 Display_Params * params);
-void           DisplaySharp_clear(Display_Handle handle);
-void           DisplaySharp_clearLines(Display_Handle handle,
-                                       uint8_t fromLine,
-                                       uint8_t toLine);
-void           DisplaySharp_vprintf(Display_Handle handle, uint8_t line,
-                                    uint8_t column, const char *fmt,
-                                    va_list va);
+Display_Handle DisplaySharp_open(Display_Handle handle, Display_Params *params);
+void DisplaySharp_clear(Display_Handle handle);
+void DisplaySharp_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
+void DisplaySharp_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 void DisplaySharp_close(Display_Handle handle);
 int DisplaySharp_control(Display_Handle handle, unsigned int cmd, void *arg);
-unsigned int   DisplaySharp_getType(void);
+unsigned int DisplaySharp_getType(void);
 #endif // ti_display_DisplaySharp__include

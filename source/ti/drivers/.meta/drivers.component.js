@@ -207,7 +207,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             displayName: displayName,
             description: description,
             modules: [
-                // "/ti/display/Display",
+                "/ti/display/Display",
                 // "/ti/drivers/ADC",
                 // "/ti/drivers/ADCBuf",
                 "/ti/drivers/AESCBC",
@@ -230,7 +230,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/RNG",
                 // "/ti/drivers/SD",
                 // "/ti/drivers/SHA2",
-                // "/ti/drivers/SPI",
+                "/ti/drivers/SPI",
                 // "/ti/drivers/Temperature",
                 // "/ti/drivers/Timer",
                 // "/ti/drivers/UART",
@@ -271,7 +271,6 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/SD",
                 "/ti/drivers/SPI",
                 "/ti/drivers/Timer",
-                "/ti/drivers/UART",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],

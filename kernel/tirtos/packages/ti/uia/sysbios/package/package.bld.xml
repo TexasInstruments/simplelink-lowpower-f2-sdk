@@ -14,6 +14,10 @@
         <srcFile name="LoggerStreamer.c"/>
         <srcFile name="LoggerStreamer2.c"/>
         <srcFile name="LoggerIdle.c"/>
+        <srcFile name="IpcMP.c"/>
+        <srcFile name="TransportFile.c"/>
+        <srcFile name="TransportNdk.c"/>
+        <srcFile name="Adaptor.c"/>
     </sources>
     <configscripts>
     </configscripts>
@@ -21,111 +25,442 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="lib/release/ti.uia.sysbios.aem4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oem4f.dep" src="package/package_ti.uia.sysbios.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oem4f.dep" src="LoggerStreamer.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oem4f.dep" src="LoggerStreamer2.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oem4f.dep" src="LoggerIdle.c"/>
-        <srcFile name="lib/release/ti.uia.sysbios.am4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4f.dep" src="package/package_ti.uia.sysbios.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4f.dep" src="LoggerStreamer.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4f.dep" src="LoggerStreamer2.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4f.dep" src="LoggerIdle.c"/>
-        <srcFile name="lib/release/ti.uia.sysbios.am4fg.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4fg.dep" src="package/package_ti.uia.sysbios.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4fg.dep" src="LoggerStreamer.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4fg.dep" src="LoggerStreamer2.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4fg.dep" src="LoggerIdle.c"/>
-        <srcFile name="lib/release/ti.uia.sysbios.arm4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.orm4f.dep" src="package/package_ti.uia.sysbios.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.orm4f.dep" src="LoggerStreamer.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.orm4f.dep" src="LoggerStreamer2.c"/>
-        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.orm4f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.ae28FP.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oe28FP.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oe28FP.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oe28FP.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oe28FP.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.a28L.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.o28L.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.o28L.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.o28L.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.o28L.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.a28FP.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.o28FP.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.o28FP.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.o28FP.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.o28FP.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.ae674.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oe674.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oe674.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oe674.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oe674.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oe674.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oe674.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oe674.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oe674.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.ae66.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oe66.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oe66.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oe66.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oe66.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oe66.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oe66.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oe66.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oe66.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aearp32.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oearp32.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oearp32.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oearp32.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oearp32.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aearp32F.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oearp32F.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oearp32F.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oearp32F.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oearp32F.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.ae9.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oe9.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oe9.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oe9.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oe9.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oe9.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oe9.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oe9.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oe9.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aem3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oem3.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oem3.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oem3.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oem3.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oem3.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oem3.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oem3.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oem3.dep" src="LoggerIdle.c"/>
         <srcFile name="lib/release/ti.uia.sysbios.aem4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oem4.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oem4.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oem4.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oem4.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oem4.dep" src="Adaptor.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oem4.dep" src="LoggerStreamer.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oem4.dep" src="LoggerStreamer2.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oem4.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aem4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oem4f.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oem4f.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oem4f.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oem4f.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oem4f.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oem4f.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oem4f.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oem4f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aer4ft.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oer4ft.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oer4ft.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oer4ft.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oer4ft.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oer4ft.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oer4ft.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oer4ft.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oer4ft.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aer5f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oer5f.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oer5f.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oer5f.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oer5f.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oer5f.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oer5f.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oer5f.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oer5f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aer5ft.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oer5ft.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oer5ft.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oer5ft.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oer5ft.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oer5ft.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oer5ft.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oer5ft.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oer5ft.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om3.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om3.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om3.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om3.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om3.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om3.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om3.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om3.dep" src="LoggerIdle.c"/>
         <srcFile name="lib/release/ti.uia.sysbios.am4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om4.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om4.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om4.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om4.dep" src="Adaptor.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4.dep" src="LoggerStreamer.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4.dep" src="LoggerStreamer2.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4f.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om4f.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om4f.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om4f.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om4f.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4f.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4f.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am33f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om33f.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om33f.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om33f.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om33f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am3g.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om3g.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om3g.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om3g.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om3g.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om3g.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om3g.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om3g.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om3g.dep" src="LoggerIdle.c"/>
         <srcFile name="lib/release/ti.uia.sysbios.am4g.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4g.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om4g.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om4g.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om4g.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om4g.dep" src="Adaptor.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4g.dep" src="LoggerStreamer.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4g.dep" src="LoggerStreamer2.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4g.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am4fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om4fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.om4fg.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.om4fg.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.om4fg.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.om4fg.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om4fg.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om4fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om4fg.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.am33fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.om33fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.om33fg.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.om33fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.om33fg.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aa8fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oa8fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oa8fg.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oa8fg.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oa8fg.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oa8fg.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oa8fg.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oa8fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oa8fg.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aa9fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oa9fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oa9fg.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oa9fg.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oa9fg.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oa9fg.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oa9fg.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oa9fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oa9fg.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aa15fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oa15fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oa15fg.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oa15fg.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oa15fg.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oa15fg.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oa15fg.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oa15fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oa15fg.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.arm3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.orm3.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.orm3.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.orm3.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.orm3.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.orm3.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.orm3.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.orm3.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.orm3.dep" src="LoggerIdle.c"/>
         <srcFile name="lib/release/ti.uia.sysbios.arm4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.orm4.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.orm4.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.orm4.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.orm4.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.orm4.dep" src="Adaptor.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.orm4.dep" src="LoggerStreamer.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.orm4.dep" src="LoggerStreamer2.c"/>
         <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.orm4.dep" src="LoggerIdle.c"/>
-        <srcFile name="package/rel/ti_uia_sysbios.tar.dep" src="package/rel/ti_uia_sysbios.xdc.inc"/>
+        <srcFile name="lib/release/ti.uia.sysbios.arm4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.orm4f.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.orm4f.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.orm4f.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.orm4f.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.orm4f.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.orm4f.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.orm4f.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.orm4f.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.arm33.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.orm33.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.orm33.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.orm33.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.orm33.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.ae71.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oe71.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/IpcMP.oe71.dep" src="IpcMP.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportFile.oe71.dep" src="TransportFile.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/TransportNdk.oe71.dep" src="TransportNdk.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/Adaptor.oe71.dep" src="Adaptor.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer.oe71.dep" src="LoggerStreamer.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oe71.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerIdle.oe71.dep" src="LoggerIdle.c"/>
+        <srcFile name="lib/release/ti.uia.sysbios.aa53fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/package/package_ti.uia.sysbios.oa53fg.dep" src="package/package_ti.uia.sysbios.c"/>
+        <srcFile name="package/lib/lib/release/ti.uia.sysbios/LoggerStreamer2.oa53fg.dep" src="LoggerStreamer2.c"/>
+        <srcFile name="package/rel/ti_uia_sysbios.tar.gz.dep" src="package/rel/ti_uia_sysbios.xdc.inc"/>
     </makefiles>
     <targets>
-        <target name="ti.targets.arm.elf.M4F"
-            version="ti.targets.arm.elf.M4F{1,0,20.2,5"
-            rawVersion="20.2.5"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
-            isa="v7M4"
-            suffix="em4f"
-            rootDir="/scratch/xlibrary/.conan/data/ticodegen/20.2.5.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+        <target name="ti.targets.elf.C28_float"
+            version="ti.targets.elf.C28_float{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.tms320x28:TMS320F28377S:1"
+            isa="28FP"
+            suffix="e28FP"
+            rootDir="/db/vendors/ti/c28/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.rts2800">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="large"/>
+        </target>
+        <target name="ti.targets.C28_large"
+            version="ti.targets.C28_large{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.tms320x28:TMS320F28069:1"
+            isa="28"
+            suffix="28L"
+            rootDir="/db/vendors/ti/c28/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.rts2800">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="large"/>
+        </target>
+        <target name="ti.targets.C28_float"
+            version="ti.targets.C28_float{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.tms320x28:TMS320F28377S:1"
+            isa="28FP"
+            suffix="28FP"
+            rootDir="/db/vendors/ti/c28/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.rts2800">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="large"/>
+        </target>
+        <target name="ti.targets.elf.C674"
+            version="ti.targets.elf.C674{1,0,8.3,2"
+            rawVersion="8.3.2"
+            platform="ti.platforms.evmOMAPL138"
+            isa="674"
+            suffix="e674"
+            rootDir="/db/vendors/ti/c6x/8.3.2/Linux"
+            os="undefined"
+            rts="ti.targets.rts6000">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.elf.C66"
+            version="ti.targets.elf.C66{1,0,8.3,2"
+            rawVersion="8.3.2"
+            platform="ti.platforms.evm6678:core0"
+            isa="66"
+            suffix="e66"
+            rootDir="/db/vendors/ti/c6x/8.3.2/Linux"
+            os="undefined"
+            rts="ti.targets.rts6000">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arp32.elf.ARP32"
+            version="ti.targets.arp32.elf.ARP32{1,0,1.0,7"
+            rawVersion="1.0.7"
+            platform="ti.platforms.evmC6A8149"
+            isa="arp32"
+            suffix="earp32"
+            rootDir="/db/vendors/ti/arp32/1.0.7/Linux"
+            os="undefined"
+            rts="ti.targets.arp32.rts">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="far_aggregates"/>
+        </target>
+        <target name="ti.targets.arp32.elf.ARP32_far"
+            version="ti.targets.arp32.elf.ARP32_far{1,0,1.0,7"
+            rawVersion="1.0.7"
+            platform="ti.platforms.evmC6A8149"
+            isa="arp32"
+            suffix="earp32F"
+            rootDir="/db/vendors/ti/arp32/1.0.7/Linux"
+            os="undefined"
+            rts="ti.targets.arp32.rts">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="far"/>
+        </target>
+        <target name="ti.targets.arm.elf.Arm9"
+            version="ti.targets.arm.elf.Arm9{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.evmOMAPL138"
+            isa="v5T"
+            suffix="e9"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
-                codeModel="thumb2"
+                codeModel="undefined"
                 dataModel="undefined"/>
         </target>
-        <target name="ti.targets.arm.clang.M4F"
-            version="ti.targets.arm.clang.M4F{1,0,1.3,1"
-            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
-Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
-"
-            platform="ti.platforms.cortexM:MTL1_VSOC:1"
-            isa="v7M4"
-            suffix="m4f"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+        <target name="ti.targets.arm.elf.M3"
+            version="ti.targets.arm.elf.M3{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            isa="v7M"
+            suffix="em3"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
-            <model endian="little"
-                codeModel="thumb2"
-                dataModel="undefined"/>
-        </target>
-        <target name="gnu.targets.arm.M4F"
-            version="gnu.targets.arm.M4F{1,0,9.2,1"
-            rawVersion="9.2.1"
-            platform="ti.platforms.tiva:TM4C1294NCPDT"
-            isa="v7M4"
-            suffix="m4fg"
-            rootDir="/scratch/xlibrary/.conan/data/arm-none-eabi-gcc/9.2019.q4.major-0/library-msp/ga/package/44fcf6b9a7fb86b2586303e3db40189d3b511830"
-            os="undefined"
-            rts="gnu.targets.arm.rtsv7M">
-            <model endian="little"
-                codeModel="thumb2"
-                dataModel="undefined"/>
-        </target>
-        <target name="iar.targets.arm.M4F"
-            version="iar.targets.arm.M4F{1,0,8.50,1"
-            rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
-            isa="v7M4"
-            suffix="rm4f"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
-            os="undefined"
-            rts="iar.targets.arm.rts">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.elf.M4"
-            version="ti.targets.arm.elf.M4{1,0,20.2,5"
-            rawVersion="20.2.5"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            version="ti.targets.arm.elf.M4{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.simplelink:CC3200:1"
             isa="v7M4"
             suffix="em4"
-            rootDir="/scratch/xlibrary/.conan/data/ticodegen/20.2.5.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.elf.M4F"
+            version="ti.targets.arm.elf.M4F{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.msp432:MSP432P4111:1"
+            isa="v7M4"
+            suffix="em4f"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.elf.R4Ft"
+            version="ti.targets.arm.elf.R4Ft{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.cortexR:AWR16XX:1"
+            isa="v7R"
+            suffix="er4ft"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.elf.R5F"
+            version="ti.targets.arm.elf.R5F{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.cortexR:J7ES_MAIN:1"
+            isa="v7R"
+            suffix="er5f"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.elf.R5Ft"
+            version="ti.targets.arm.elf.R5Ft{1,0,20.2,0"
+            rawVersion="20.2.0"
+            platform="ti.platforms.cortexR:AM65X:1"
+            isa="v7R"
+            suffix="er5ft"
+            rootDir="/db/vendors/ti/arm/20.2.0.LTS/Linux"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.clang.M3"
+            version="ti.targets.arm.clang.M3{1,0,1.0,0"
+            rawVersion="TI Arm Clang Compiler 1.0.0-alpha.2.20200129.1725+3775ea230cd38c3ecf62bb320490487e0b914a84Target: arm-ti-none-eabi
+Thread model: posix
+InstalledDir: /db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129/bin
+"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            isa="v7M"
+            suffix="m3"
+            rootDir="/db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
             <model endian="little"
@@ -133,17 +468,62 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
                 dataModel="undefined"/>
         </target>
         <target name="ti.targets.arm.clang.M4"
-            version="ti.targets.arm.clang.M4{1,0,1.3,1"
-            rawVersion="TI Arm Clang Compiler 1.3.1.LTSTarget: arm-ti-none-eabi
+            version="ti.targets.arm.clang.M4{1,0,1.0,0"
+            rawVersion="TI Arm Clang Compiler 1.0.0-alpha.2.20200129.1725+3775ea230cd38c3ecf62bb320490487e0b914a84Target: arm-ti-none-eabi
 Thread model: posix
-InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c/bin
+InstalledDir: /db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129/bin
 "
             platform="ti.platforms.tiva:TM4C1294NCPDT:1"
             isa="v7M4"
             suffix="m4"
-            rootDir="/scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga/package/be241241e9d4718e5bab4eb33935bbb69606bb0c"
+            rootDir="/db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129"
             os="undefined"
             rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.clang.M4F"
+            version="ti.targets.arm.clang.M4F{1,0,1.0,0"
+            rawVersion="TI Arm Clang Compiler 1.0.0-alpha.2.20200129.1725+3775ea230cd38c3ecf62bb320490487e0b914a84Target: arm-ti-none-eabi
+Thread model: posix
+InstalledDir: /db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129/bin
+"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            isa="v7M4"
+            suffix="m4f"
+            rootDir="/db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.arm.clang.M33F"
+            version="ti.targets.arm.clang.M33F{1,0,1.0,0"
+            rawVersion="TI Arm Clang Compiler 1.0.0-alpha.2.20200129.1725+3775ea230cd38c3ecf62bb320490487e0b914a84Target: arm-ti-none-eabi
+Thread model: posix
+InstalledDir: /db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129/bin
+"
+            platform="ti.platforms.cortexM:MTL1_VSOC:1"
+            isa="v8M"
+            suffix="m33f"
+            rootDir="/db/vendors/ti/arm/llvm/1.0.0-alpha.2.20200129"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M3"
+            version="gnu.targets.arm.M3{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            isa="v7M"
+            suffix="m3g"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7M">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
@@ -151,12 +531,90 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <target name="gnu.targets.arm.M4"
             version="gnu.targets.arm.M4{1,0,9.2,1"
             rawVersion="9.2.1"
-            platform="ti.platforms.tiva:TM4C1294NCPDT"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
             isa="v7M4"
             suffix="m4g"
-            rootDir="/scratch/xlibrary/.conan/data/arm-none-eabi-gcc/9.2019.q4.major-0/library-msp/ga/package/44fcf6b9a7fb86b2586303e3db40189d3b511830"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
             os="undefined"
             rts="gnu.targets.arm.rtsv7M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M4F"
+            version="gnu.targets.arm.M4F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            isa="v7M4"
+            suffix="m4fg"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M33F"
+            version="gnu.targets.arm.M33F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.cortexM:MTL1_VSOC:1"
+            isa="v8M"
+            suffix="m33fg"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv8M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.A8F"
+            version="gnu.targets.arm.A8F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.beaglebone"
+            isa="v7A"
+            suffix="a8fg"
+            rootDir="/db/vendors/arm/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7A">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.A9F"
+            version="gnu.targets.arm.A9F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.sdp4430"
+            isa="v7A9"
+            suffix="a9fg"
+            rootDir="/db/vendors/arm/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7A">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.A15F"
+            version="gnu.targets.arm.A15F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.evmDRA7XX"
+            isa="v7A15"
+            suffix="a15fg"
+            rootDir="/db/vendors/arm/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7A">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M3"
+            version="iar.targets.arm.M3{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.tiva:TM4C1294NC:1"
+            isa="v7M"
+            suffix="rm3"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
@@ -164,50 +622,194 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <target name="iar.targets.arm.M4"
             version="iar.targets.arm.M4{1,0,8.50,1"
             rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            platform="ti.platforms.tiva:TM4C1294NC:1"
             isa="v7M4"
             suffix="rm4"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
                 codeModel="thumb2"
                 dataModel="undefined"/>
         </target>
+        <target name="iar.targets.arm.M4F"
+            version="iar.targets.arm.M4F{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.tiva:TM4C1294NC:1"
+            isa="v7M4"
+            suffix="rm4f"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M33"
+            version="iar.targets.arm.M33{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.cortexM:FVP_MPS2"
+            isa="v8M"
+            suffix="rm33"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="ti.targets.elf.C71"
+            version="ti.targets.elf.C71{1,0,1.0,0"
+            rawVersion="1.0.0"
+            platform="ti.platforms.tms320C7x:J721E:1"
+            isa="71"
+            suffix="e71"
+            rootDir="/db/vendors/ti/c7x/ti-cgt-c7000_1.0.0/Linux"
+            os="undefined"
+            rts="ti.targets.rts7000">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.A53F"
+            version="gnu.targets.arm.A53F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.cortexA:AM65X:1"
+            isa="v8A"
+            suffix="a53fg"
+            rootDir="/db/vendors/arm/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv8A">
+            <model endian="little"
+                codeModel="undefined"
+                dataModel="undefined"/>
+        </target>
     </targets>
     <libraries>
     <library name="lib/release/ti.uia.sysbios"
-        pname="lib/release/ti.uia.sysbios.aem4f"
+        pname="lib/release/ti.uia.sysbios.ae28FP"
         profile="release"
-        target="ti.targets.arm.elf.M4F"/>
+        target="ti.targets.elf.C28_float"/>
     <library name="lib/release/ti.uia.sysbios"
-        pname="lib/release/ti.uia.sysbios.am4f"
+        pname="lib/release/ti.uia.sysbios.a28L"
         profile="release"
-        target="ti.targets.arm.clang.M4F"/>
+        target="ti.targets.C28_large"/>
     <library name="lib/release/ti.uia.sysbios"
-        pname="lib/release/ti.uia.sysbios.am4fg"
+        pname="lib/release/ti.uia.sysbios.a28FP"
         profile="release"
-        target="gnu.targets.arm.M4F"/>
+        target="ti.targets.C28_float"/>
     <library name="lib/release/ti.uia.sysbios"
-        pname="lib/release/ti.uia.sysbios.arm4f"
+        pname="lib/release/ti.uia.sysbios.ae674"
         profile="release"
-        target="iar.targets.arm.M4F"/>
+        target="ti.targets.elf.C674"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.ae66"
+        profile="release"
+        target="ti.targets.elf.C66"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aearp32"
+        profile="release"
+        target="ti.targets.arp32.elf.ARP32"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aearp32F"
+        profile="release"
+        target="ti.targets.arp32.elf.ARP32_far"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.ae9"
+        profile="release"
+        target="ti.targets.arm.elf.Arm9"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aem3"
+        profile="release"
+        target="ti.targets.arm.elf.M3"/>
     <library name="lib/release/ti.uia.sysbios"
         pname="lib/release/ti.uia.sysbios.aem4"
         profile="release"
         target="ti.targets.arm.elf.M4"/>
     <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aem4f"
+        profile="release"
+        target="ti.targets.arm.elf.M4F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aer4ft"
+        profile="release"
+        target="ti.targets.arm.elf.R4Ft"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aer5f"
+        profile="release"
+        target="ti.targets.arm.elf.R5F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aer5ft"
+        profile="release"
+        target="ti.targets.arm.elf.R5Ft"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am3"
+        profile="release"
+        target="ti.targets.arm.clang.M3"/>
+    <library name="lib/release/ti.uia.sysbios"
         pname="lib/release/ti.uia.sysbios.am4"
         profile="release"
         target="ti.targets.arm.clang.M4"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am4f"
+        profile="release"
+        target="ti.targets.arm.clang.M4F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am33f"
+        profile="release"
+        target="ti.targets.arm.clang.M33F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am3g"
+        profile="release"
+        target="gnu.targets.arm.M3"/>
     <library name="lib/release/ti.uia.sysbios"
         pname="lib/release/ti.uia.sysbios.am4g"
         profile="release"
         target="gnu.targets.arm.M4"/>
     <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am4fg"
+        profile="release"
+        target="gnu.targets.arm.M4F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.am33fg"
+        profile="release"
+        target="gnu.targets.arm.M33F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aa8fg"
+        profile="release"
+        target="gnu.targets.arm.A8F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aa9fg"
+        profile="release"
+        target="gnu.targets.arm.A9F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aa15fg"
+        profile="release"
+        target="gnu.targets.arm.A15F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.arm3"
+        profile="release"
+        target="iar.targets.arm.M3"/>
+    <library name="lib/release/ti.uia.sysbios"
         pname="lib/release/ti.uia.sysbios.arm4"
         profile="release"
         target="iar.targets.arm.M4"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.arm4f"
+        profile="release"
+        target="iar.targets.arm.M4F"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.arm33"
+        profile="release"
+        target="iar.targets.arm.M33"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.ae71"
+        profile="release"
+        target="ti.targets.elf.C71"/>
+    <library name="lib/release/ti.uia.sysbios"
+        pname="lib/release/ti.uia.sysbios.aa53fg"
+        profile="release"
+        target="gnu.targets.arm.A53F"/>
     </libraries>
     <configurations>
     </configurations>
@@ -217,7 +819,7 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_uia_sysbios"
-        pname="ti_uia_sysbios.tar"
+        pname="../../../../exports/ti_uia_sysbios.tar.gz"
         label="default"
     >
         <file name="package/package.bld.xml"/>
@@ -232,18 +834,45 @@ InstalledDir: /scratch/xlibrary/.conan/data/tiarmllvm/1.3.1.LTS-0/library-msp/ga
         <file name="LoggerStreamer2.xml"/>
         <file name="java/package.jar"/>
         <file name="package/package.cfg.xdc.inc"/>
-        <file name="lib/release/ti.uia.sysbios.aem4f"/>
+        <file name="lib/release/ti.uia.sysbios.ae28FP"/>
         <file name="package/package_ti.uia.sysbios.c"/>
         <file name="LoggerStreamer.c"/>
         <file name="LoggerStreamer2.c"/>
         <file name="LoggerIdle.c"/>
-        <file name="lib/release/ti.uia.sysbios.am4f"/>
-        <file name="lib/release/ti.uia.sysbios.am4fg"/>
-        <file name="lib/release/ti.uia.sysbios.arm4f"/>
+        <file name="lib/release/ti.uia.sysbios.a28L"/>
+        <file name="lib/release/ti.uia.sysbios.a28FP"/>
+        <file name="lib/release/ti.uia.sysbios.ae674"/>
+        <file name="IpcMP.c"/>
+        <file name="TransportFile.c"/>
+        <file name="TransportNdk.c"/>
+        <file name="Adaptor.c"/>
+        <file name="lib/release/ti.uia.sysbios.ae66"/>
+        <file name="lib/release/ti.uia.sysbios.aearp32"/>
+        <file name="lib/release/ti.uia.sysbios.aearp32F"/>
+        <file name="lib/release/ti.uia.sysbios.ae9"/>
+        <file name="lib/release/ti.uia.sysbios.aem3"/>
         <file name="lib/release/ti.uia.sysbios.aem4"/>
+        <file name="lib/release/ti.uia.sysbios.aem4f"/>
+        <file name="lib/release/ti.uia.sysbios.aer4ft"/>
+        <file name="lib/release/ti.uia.sysbios.aer5f"/>
+        <file name="lib/release/ti.uia.sysbios.aer5ft"/>
+        <file name="lib/release/ti.uia.sysbios.am3"/>
         <file name="lib/release/ti.uia.sysbios.am4"/>
+        <file name="lib/release/ti.uia.sysbios.am4f"/>
+        <file name="lib/release/ti.uia.sysbios.am33f"/>
+        <file name="lib/release/ti.uia.sysbios.am3g"/>
         <file name="lib/release/ti.uia.sysbios.am4g"/>
+        <file name="lib/release/ti.uia.sysbios.am4fg"/>
+        <file name="lib/release/ti.uia.sysbios.am33fg"/>
+        <file name="lib/release/ti.uia.sysbios.aa8fg"/>
+        <file name="lib/release/ti.uia.sysbios.aa9fg"/>
+        <file name="lib/release/ti.uia.sysbios.aa15fg"/>
+        <file name="lib/release/ti.uia.sysbios.arm3"/>
         <file name="lib/release/ti.uia.sysbios.arm4"/>
+        <file name="lib/release/ti.uia.sysbios.arm4f"/>
+        <file name="lib/release/ti.uia.sysbios.arm33"/>
+        <file name="lib/release/ti.uia.sysbios.ae71"/>
+        <file name="lib/release/ti.uia.sysbios.aa53fg"/>
     </release>
     </releases>
     <repositories>

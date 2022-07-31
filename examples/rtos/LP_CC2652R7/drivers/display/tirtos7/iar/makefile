@@ -40,7 +40,7 @@ CFLAGS = -I../.. \
 LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos7/packages" \
     -fti_utils_build_linker.cmd.genlibs \
-    "$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib" \
+    ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib \
     --config ../../tirtos7/iar/cc13x2x7_cc26x2x7_tirtos7.icf \
     --map "$(NAME).map" \
     --silent \

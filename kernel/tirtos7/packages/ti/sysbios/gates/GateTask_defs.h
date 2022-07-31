@@ -67,8 +67,6 @@
 #define GateTask_Handle_label ti_sysbios_gates_GateTask_Handle_label
 #define GateTask_Handle_name ti_sysbios_gates_GateTask_Handle_name
 #define GateTask_Instance_init ti_sysbios_gates_GateTask_Instance_init
-#define GateTask_Object_count ti_sysbios_gates_GateTask_Object_count
-#define GateTask_Object_get ti_sysbios_gates_GateTask_Object_get
 #define GateTask_Object_first ti_sysbios_gates_GateTask_Object_first
 #define GateTask_Object_next ti_sysbios_gates_GateTask_Object_next
 #define GateTask_Object_sizeof ti_sysbios_gates_GateTask_Object_sizeof
@@ -119,8 +117,6 @@
 #undef GateTask_Handle_label
 #undef GateTask_Handle_name
 #undef GateTask_Instance_init
-#undef GateTask_Object_count
-#undef GateTask_Object_get
 #undef GateTask_Object_first
 #undef GateTask_Object_next
 #undef GateTask_Object_sizeof

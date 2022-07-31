@@ -288,19 +288,19 @@ static void AESGCM_getResult(AESGCM_Handle handle)
     if ((object->actualAADLength == object->expectedAADLength) &&
         (object->actualPlaintextLength == object->expectedPlaintextLength))
     {
-        uint8_t *mac = NULL;
+        uint8_t *mac      = NULL;
         uint8_t macLength = 0;
 
         if (object->operationType == AESGCM_OPERATION_TYPE_ENCRYPT ||
             object->operationType == AESGCM_OPERATION_TYPE_DECRYPT)
         {
-            mac = object->operation->oneStepOperation.mac;
+            mac       = object->operation->oneStepOperation.mac;
             macLength = object->operation->oneStepOperation.macLength;
         }
         else if (object->operationType == AESGCM_OP_TYPE_FINALIZE_ENCRYPT ||
                  object->operationType == AESGCM_OP_TYPE_FINALIZE_DECRYPT)
         {
-            mac = object->operation->segmentedFinalizeOperation.mac;
+            mac       = object->operation->segmentedFinalizeOperation.mac;
             macLength = object->operation->segmentedFinalizeOperation.macLength;
         }
 
@@ -385,8 +385,8 @@ AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *param
         return NULL;
     }
 
-    object->isOpen = true;
-    object->operationInProgress = false;
+    object->isOpen               = true;
+    object->operationInProgress  = false;
     object->cryptoResourceLocked = false;
 
     HwiP_restore(key);
@@ -400,7 +400,7 @@ AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *param
     DebugP_assert(params->returnBehavior == AESGCM_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn : true);
 
     object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
+    object->callbackFxn    = params->callbackFxn;
 
     if (params->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING)
     {
@@ -496,17 +496,17 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
             }
 
             object->operationType = operationType;
-            object->operation = (AESGCM_OperationUnion *)operation;
+            object->operation     = (AESGCM_OperationUnion *)operation;
 
             object->key = *(operation->key);
 
             /* Start processing from a clean slate */
             object->blockCounter = 0;
 
-            object->continueAADOperation = false;
+            object->continueAADOperation  = false;
             object->continueDataOperation = false;
 
-            object->actualAADLength = 0;
+            object->actualAADLength       = 0;
             object->actualPlaintextLength = 0;
 
             memset(object->intermediateTag, 0, sizeof(object->intermediateTag));
@@ -738,16 +738,16 @@ static int_fast16_t AESGCM_setupSegmentedOperation(AESGCM_Handle handle,
          * If the user doesn't provide the total lengths in the setupXXXX()
          * calls, they must provide the lengths in setLengths().
          */
-        object->expectedAADLength = aadLength;
+        object->expectedAADLength       = aadLength;
         object->expectedPlaintextLength = plaintextLength;
 
         /* Start processing from a clean slate */
         object->blockCounter = 0;
 
-        object->continueAADOperation = false;
+        object->continueAADOperation  = false;
         object->continueDataOperation = false;
 
-        object->actualAADLength = 0;
+        object->actualAADLength       = 0;
         object->actualPlaintextLength = 0;
 
         object->key = *(key);
@@ -830,7 +830,7 @@ int_fast16_t AESGCM_setLengths(AESGCM_Handle handle, size_t aadLength, size_t pl
         return AESGCM_STATUS_ERROR;
     }
 
-    object->expectedAADLength = aadLength;
+    object->expectedAADLength       = aadLength;
     object->expectedPlaintextLength = plaintextLength;
 
     return AESGCM_STATUS_SUCCESS;
@@ -861,7 +861,7 @@ int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLeng
                   object->operationType == AESGCM_OPERATION_TYPE_ENCRYPT);
 
     /* Only IVs with a length of 12 bytes are supported for now */
-    if (ivLength != 12)
+    if (ivLength != AESGCM_IV_LENGTH_BYTES)
     {
         return AESGCM_STATUS_ERROR;
     }
@@ -914,9 +914,8 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *o
      * The input length must be a non-zero multiple of an AES block size
      * unless you are dealing with the last chunk of AAD
      */
-    if (operation->aadLength == 0 ||
-        ((operation->aadLength & AES_NON_BLOCK_MULTIPLE_MASK) &&
-         object->actualAADLength + operation->aadLength != object->expectedAADLength))
+    if (operation->aadLength == 0 || ((operation->aadLength & AES_NON_BLOCK_MULTIPLE_MASK) &&
+                                      object->actualAADLength + operation->aadLength != object->expectedAADLength))
     {
         return AESGCM_STATUS_ERROR;
     }
@@ -930,12 +929,12 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *o
         return AESGCM_STATUS_ERROR;
     }
 
-    AESGCM_Mode direction = AESGCM_MODE_ENCRYPT;
+    AESGCM_Mode direction              = AESGCM_MODE_ENCRYPT;
     AESGCM_OperationType operationType = AESGCM_OP_TYPE_AAD_ENCRYPT;
 
     if (object->operationType == AESGCM_OPERATION_TYPE_DECRYPT || object->operationType == AESGCM_OP_TYPE_AAD_DECRYPT)
     {
-        direction = AESGCM_MODE_DECRYPT;
+        direction     = AESGCM_MODE_DECRYPT;
         operationType = AESGCM_OP_TYPE_AAD_DECRYPT;
     }
 
@@ -954,7 +953,7 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *o
     }
 
     object->operationType = operationType;
-    object->operation = (AESGCM_OperationUnion *)operation;
+    object->operation     = (AESGCM_OperationUnion *)operation;
 
     int_fast16_t result = AESGCM_addAADInternal(handle, operation->aad, operation->aadLength, direction);
 
@@ -985,7 +984,7 @@ static int_fast16_t AESGCM_addAADInternal(AESGCM_Handle handle, uint8_t *aad, si
      */
     DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
 
-    uint16_t keyLength = object->key.u.plaintext.keyLength;
+    uint16_t keyLength      = object->key.u.plaintext.keyLength;
     uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
 
     /*
@@ -994,8 +993,7 @@ static int_fast16_t AESGCM_addAADInternal(AESGCM_Handle handle, uint8_t *aad, si
      * should be checked in this function.
      */
     DebugP_assert(keyingMaterial);
-    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES ||
-                  keyLength == AES_192_KEY_LENGTH_BYTES ||
+    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES || keyLength == AES_192_KEY_LENGTH_BYTES ||
                   keyLength == AES_256_KEY_LENGTH_BYTES);
 
     AESGCMCC26X4_HWAttrs const *hwAttrs = handle->hwAttrs;
@@ -1113,7 +1111,7 @@ static int_fast16_t AESGCM_addAADInternal(AESGCM_Handle handle, uint8_t *aad, si
         /* Wait until the AAD transfer is complete and check for DMA errors */
         if (AESWaitForIRQFlags(AES_DMA_IN_DONE | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
         {
-            result = AESGCM_STATUS_ERROR;
+            result         = AESGCM_STATUS_ERROR;
             object->hwBusy = false;
 
             /* Reset the AESCTL register */
@@ -1224,14 +1222,13 @@ int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation 
         return AESGCM_STATUS_ERROR;
     }
 
-    AESGCM_Mode direction = AESGCM_MODE_ENCRYPT;
+    AESGCM_Mode direction              = AESGCM_MODE_ENCRYPT;
     AESGCM_OperationType operationType = AESGCM_OP_TYPE_DATA_ENCRYPT;
 
-    if (object->operationType == AESGCM_OPERATION_TYPE_DECRYPT ||
-        object->operationType == AESGCM_OP_TYPE_AAD_DECRYPT ||
+    if (object->operationType == AESGCM_OPERATION_TYPE_DECRYPT || object->operationType == AESGCM_OP_TYPE_AAD_DECRYPT ||
         object->operationType == AESGCM_OP_TYPE_DATA_DECRYPT)
     {
-        direction = AESGCM_MODE_DECRYPT;
+        direction     = AESGCM_MODE_DECRYPT;
         operationType = AESGCM_OP_TYPE_DATA_DECRYPT;
     }
 
@@ -1250,7 +1247,7 @@ int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation 
     }
 
     object->operationType = operationType;
-    object->operation = (AESGCM_OperationUnion *)operation;
+    object->operation     = (AESGCM_OperationUnion *)operation;
 
     int_fast16_t result = AESGCM_addDataInternal(handle,
                                                  operation->input,
@@ -1289,7 +1286,7 @@ static int_fast16_t AESGCM_addDataInternal(AESGCM_Handle handle,
      */
     DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
 
-    uint16_t keyLength = object->key.u.plaintext.keyLength;
+    uint16_t keyLength      = object->key.u.plaintext.keyLength;
     uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
 
     /*
@@ -1298,8 +1295,7 @@ static int_fast16_t AESGCM_addDataInternal(AESGCM_Handle handle,
      * should be checked in this function.
      */
     DebugP_assert(keyingMaterial);
-    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES ||
-                  keyLength == AES_192_KEY_LENGTH_BYTES ||
+    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES || keyLength == AES_192_KEY_LENGTH_BYTES ||
                   keyLength == AES_256_KEY_LENGTH_BYTES);
 
     AESGCMCC26X4_HWAttrs const *hwAttrs = handle->hwAttrs;
@@ -1456,7 +1452,7 @@ int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle, AESGCM_SegmentedFinali
         }
 
         object->operationType = AESGCM_OP_TYPE_FINALIZE_ENCRYPT;
-        object->operation = (AESGCM_OperationUnion *)operation;
+        object->operation     = (AESGCM_OperationUnion *)operation;
 
         result = AESGCM_addDataInternal(handle,
                                         operation->input,
@@ -1561,7 +1557,7 @@ int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle, AESGCM_SegmentedFinali
         }
 
         object->operationType = AESGCM_OP_TYPE_FINALIZE_DECRYPT;
-        object->operation = (AESGCM_OperationUnion *)operation;
+        object->operation     = (AESGCM_OperationUnion *)operation;
 
         result = AESGCM_addDataInternal(handle,
                                         operation->input,
@@ -1636,7 +1632,7 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
 
     if (!object->hwBusy)
     {
-        object->returnStatus = AESGCM_STATUS_CANCELED;
+        object->returnStatus        = AESGCM_STATUS_CANCELED;
         object->operationInProgress = false;
         HwiP_restore(key);
 
@@ -1656,9 +1652,9 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
     CryptoUtils_memset(object->intermediateTag, sizeof(object->intermediateTag), 0, sizeof(object->intermediateTag));
 
     uint8_t *outputBuffer = NULL;
-    size_t outputLength = 0;
-    uint8_t *mac = NULL;
-    uint8_t macLength = 0;
+    size_t outputLength   = 0;
+    uint8_t *mac          = NULL;
+    uint8_t macLength     = 0;
 
     /*
      * Clear the output buffer. In-progress one-step
@@ -1669,8 +1665,8 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
     {
         outputBuffer = object->operation->oneStepOperation.output;
         outputLength = object->operation->oneStepOperation.inputLength;
-        mac = object->operation->oneStepOperation.mac;
-        macLength = object->operation->oneStepOperation.macLength;
+        mac          = object->operation->oneStepOperation.mac;
+        macLength    = object->operation->oneStepOperation.macLength;
     }
     else if (object->operationType == AESGCM_OP_TYPE_DATA_ENCRYPT ||
              object->operationType == AESGCM_OP_TYPE_DATA_DECRYPT)
@@ -1687,8 +1683,8 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
     {
         outputBuffer = object->operation->segmentedFinalizeOperation.output;
         outputLength = object->operation->segmentedFinalizeOperation.inputLength;
-        mac = object->operation->segmentedFinalizeOperation.mac;
-        macLength = object->operation->segmentedFinalizeOperation.macLength;
+        mac          = object->operation->segmentedFinalizeOperation.mac;
+        macLength    = object->operation->segmentedFinalizeOperation.macLength;
     }
 
     bool clearedBuffer = true;
@@ -1719,8 +1715,7 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
     {
         if (object->operationType == AESGCM_OP_TYPE_DATA_ENCRYPT ||
             object->operationType == AESGCM_OP_TYPE_DATA_DECRYPT ||
-            object->operationType == AESGCM_OP_TYPE_AAD_ENCRYPT ||
-            object->operationType == AESGCM_OP_TYPE_AAD_DECRYPT)
+            object->operationType == AESGCM_OP_TYPE_AAD_ENCRYPT || object->operationType == AESGCM_OP_TYPE_AAD_DECRYPT)
         {
             /*
              * Attempting to clear the MAC during a non one-shot or finalize
@@ -1754,8 +1749,8 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
      * start another operation after canceling.
      */
     object->operationInProgress = false;
-    object->hwBusy = false;
-    object->returnStatus = AESGCM_STATUS_CANCELED;
+    object->hwBusy              = false;
+    object->returnStatus        = AESGCM_STATUS_CANCELED;
 
     if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING)
     {

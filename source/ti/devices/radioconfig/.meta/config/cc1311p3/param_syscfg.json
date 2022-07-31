@@ -397,7 +397,8 @@
                     "name": "txPower433",
                     "displayName": "TX Power (dBm)",
                     "description": "TX Power",
-                    "default": "14"
+                    "default": "14",
+                    "hidden": true
                 },
                 {
                     "name": "whitening",

@@ -33,173 +33,114 @@
 
 #include "border_agent.hpp"
 
+#if OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
+
 #include "coap/coap_message.hpp"
+#include "common/as_core_type.hpp"
+#include "common/heap.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
-#include "common/new.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/thread_netif.hpp"
 #include "thread/thread_tlvs.hpp"
-#include "thread/thread_uri_paths.hpp"
-
-#if OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
+#include "thread/uri_paths.hpp"
 
 namespace ot {
 namespace MeshCoP {
 
-class ForwardContext
+RegisterLogModule("BorderAgent");
+
+namespace {
+constexpr uint16_t kBorderAgentUdpPort = OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT; ///< UDP port of border agent service.
+}
+
+void BorderAgent::ForwardContext::Init(Instance &           aInstance,
+                                       const Coap::Message &aMessage,
+                                       bool                 aPetition,
+                                       bool                 aSeparate)
 {
-public:
-    /**
-     * This constructor initializes a forward context.
-     *
-     * @param[in]   aBorderAgent    A reference to the border agent.
-     * @param[in]   aHeader         A reference to the request header.
-     * @param[in]   aPetition       Whether this request is a petition.
-     * @param[in]   aSeparate       Whether this original request expects separate response.
-     *
-     */
-    ForwardContext(BorderAgent &aBorderAgent, const Coap::Message &aMessage, bool aPetition, bool aSeparate)
-        : mBorderAgent(aBorderAgent)
-        , mMessageId(aMessage.GetMessageId())
-        , mPetition(aPetition)
-        , mSeparate(aSeparate)
-        , mTokenLength(aMessage.GetTokenLength())
-        , mType(aMessage.GetType() >> Coap::Message::kTypeOffset)
+    InstanceLocatorInit::Init(aInstance);
+    mMessageId   = aMessage.GetMessageId();
+    mPetition    = aPetition;
+    mSeparate    = aSeparate;
+    mType        = aMessage.GetType();
+    mTokenLength = aMessage.GetTokenLength();
+    memcpy(mToken, aMessage.GetToken(), mTokenLength);
+}
+
+Error BorderAgent::ForwardContext::ToHeader(Coap::Message &aMessage, uint8_t aCode)
+{
+    if ((mType == Coap::kTypeNonConfirmable) || mSeparate)
     {
-        memcpy(mToken, aMessage.GetToken(), mTokenLength);
+        aMessage.Init(Coap::kTypeNonConfirmable, static_cast<Coap::Code>(aCode));
+    }
+    else
+    {
+        aMessage.Init(Coap::kTypeAck, static_cast<Coap::Code>(aCode));
     }
 
-    /**
-     * This method returns whether the request is a petition.
-     *
-     * @retval  true    This is a petition request.
-     * @retval  false   This is not a petition request.
-     *
-     */
-    bool IsPetition(void) const { return mPetition; }
-
-    /**
-     * This method returns the border agent sending this request.
-     *
-     * @returns A reference to the border agent sending this request.
-     *
-     */
-    BorderAgent &GetBorderAgent(void) { return mBorderAgent; }
-
-    /**
-     * This method returns the message id of the original request.
-     *
-     * @returns A message id of the original request.
-     *
-     */
-    uint16_t GetMessageId(void) const { return mMessageId; }
-
-    /**
-     * This method generate the response header according to the saved metadata.
-     *
-     * @param[out]  aHeader     A reference to the response header.
-     * @param[in]   aCode       The response code to fill in the response header.
-     *
-     * @retval OT_ERROR_NONE     Successfully generated the response header.
-     * @retval OT_ERROR_NO_BUFS  Insufficient message buffers available to generate the response header.
-     *
-     */
-    otError ToHeader(Coap::Message &aMessage, Coap::Message::Code aCode)
+    if (!mSeparate)
     {
-        if (mType == (OT_COAP_TYPE_NON_CONFIRMABLE >> Coap::Message::kTypeOffset) || mSeparate)
-        {
-            aMessage.Init(OT_COAP_TYPE_NON_CONFIRMABLE, aCode);
-        }
-        else
-        {
-            aMessage.Init(OT_COAP_TYPE_ACKNOWLEDGMENT, aCode);
-        }
-
-        if (!mSeparate)
-        {
-            aMessage.SetMessageId(mMessageId);
-        }
-
-        return aMessage.SetToken(mToken, mTokenLength);
+        aMessage.SetMessageId(mMessageId);
     }
 
-private:
-    enum
-    {
-        kMaxTokenLength = OT_COAP_MAX_TOKEN_LENGTH, ///< The max token size
-    };
-    BorderAgent &mBorderAgent;
-    uint16_t     mMessageId;              ///< The CoAP Message ID of the original request.
-    bool         mPetition : 1;           ///< Whether the forwarding request is leader petition.
-    bool         mSeparate : 1;           ///< Whether the original request expects separate response.
-    uint8_t      mTokenLength : 4;        ///< The CoAP Token Length of the original request.
-    uint8_t      mType : 2;               ///< The CoAP Type of the original request.
-    uint8_t      mToken[kMaxTokenLength]; ///< The CoAP Token of the original request.
-};
+    return aMessage.SetToken(mToken, mTokenLength);
+}
 
-static Coap::Message::Code CoapCodeFromError(otError aError)
+Coap::Message::Code BorderAgent::CoapCodeFromError(Error aError)
 {
     Coap::Message::Code code;
 
     switch (aError)
     {
-    case OT_ERROR_NONE:
-        code = OT_COAP_CODE_CHANGED;
+    case kErrorNone:
+        code = Coap::kCodeChanged;
         break;
 
-    case OT_ERROR_PARSE:
-        code = OT_COAP_CODE_BAD_REQUEST;
+    case kErrorParse:
+        code = Coap::kCodeBadRequest;
         break;
 
     default:
-        code = OT_COAP_CODE_INTERNAL_ERROR;
+        code = Coap::kCodeInternalError;
         break;
     }
 
     return code;
 }
 
-static void SendErrorMessage(Coap::CoapSecure &aCoapSecure, ForwardContext &aForwardContext, otError aError)
+void BorderAgent::SendErrorMessage(ForwardContext &aForwardContext, Error aError)
 {
-    otError        error   = OT_ERROR_NONE;
-    Coap::Message *message = NULL;
+    Error             error   = kErrorNone;
+    Coap::CoapSecure &coaps   = Get<Coap::CoapSecure>();
+    Coap::Message *   message = nullptr;
 
-    VerifyOrExit((message = NewMeshCoPMessage(aCoapSecure)) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = coaps.NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
     SuccessOrExit(error = aForwardContext.ToHeader(*message, CoapCodeFromError(aError)));
-    SuccessOrExit(error = aCoapSecure.SendMessage(*message, aCoapSecure.GetPeerAddress()));
+    SuccessOrExit(error = coaps.SendMessage(*message, coaps.GetMessageInfo()));
 
 exit:
-    if (error != OT_ERROR_NONE)
-    {
-        if (message != NULL)
-        {
-            message->Free();
-        }
-
-        otLogWarnMeshCoP("Failed to send error CoAP message: %s", otThreadErrorToString(error));
-    }
+    FreeMessageOnError(message, error);
+    LogError("send error CoAP message", error);
 }
 
-static void SendErrorMessage(Coap::CoapSecure &   aCoapSecure,
-                             const Coap::Message &aRequest,
-                             bool                 aSeparate,
-                             otError              aError)
+void BorderAgent::SendErrorMessage(const Coap::Message &aRequest, bool aSeparate, Error aError)
 {
-    otError        error   = OT_ERROR_NONE;
-    Coap::Message *message = NULL;
+    Error             error   = kErrorNone;
+    Coap::CoapSecure &coaps   = Get<Coap::CoapSecure>();
+    Coap::Message *   message = nullptr;
 
-    VerifyOrExit((message = NewMeshCoPMessage(aCoapSecure)) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = coaps.NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
     if (aRequest.IsNonConfirmable() || aSeparate)
     {
-        message->Init(OT_COAP_TYPE_NON_CONFIRMABLE, CoapCodeFromError(aError));
+        message->Init(Coap::kTypeNonConfirmable, CoapCodeFromError(aError));
     }
     else
     {
-        message->Init(OT_COAP_TYPE_ACKNOWLEDGMENT, CoapCodeFromError(aError));
+        message->Init(Coap::kTypeAck, CoapCodeFromError(aError));
     }
 
     if (!aSeparate)
@@ -207,81 +148,85 @@ static void SendErrorMessage(Coap::CoapSecure &   aCoapSecure,
         message->SetMessageId(aRequest.GetMessageId());
     }
 
-    SuccessOrExit(error = message->SetToken(aRequest.GetToken(), aRequest.GetTokenLength()));
+    SuccessOrExit(error = message->SetTokenFromMessage(aRequest));
 
-    SuccessOrExit(error = aCoapSecure.SendMessage(*message, aCoapSecure.GetPeerAddress()));
+    SuccessOrExit(error = coaps.SendMessage(*message, coaps.GetMessageInfo()));
 
 exit:
-    if (error != OT_ERROR_NONE)
-    {
-        if (message != NULL)
-        {
-            message->Free();
-        }
-
-        otLogWarnMeshCoP("Failed to send error CoAP message: %s", otThreadErrorToString(error));
-    }
+    FreeMessageOnError(message, error);
+    LogError("send error CoAP message", error);
 }
 
 void BorderAgent::HandleCoapResponse(void *               aContext,
                                      otMessage *          aMessage,
                                      const otMessageInfo *aMessageInfo,
-                                     otError              aResult)
+                                     Error                aResult)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
 
-    ForwardContext &     forwardContext = *static_cast<ForwardContext *>(aContext);
-    BorderAgent &        borderAgent    = forwardContext.GetBorderAgent();
-    Instance &           instance       = borderAgent.GetInstance();
-    const Coap::Message *response       = static_cast<const Coap::Message *>(aMessage);
-    Coap::Message *      message        = NULL;
-    otError              error;
+    ForwardContext &forwardContext = *static_cast<ForwardContext *>(aContext);
+
+    forwardContext.Get<BorderAgent>().HandleCoapResponse(forwardContext, AsCoapMessagePtr(aMessage), aResult);
+}
+
+void BorderAgent::HandleCoapResponse(ForwardContext &aForwardContext, const Coap::Message *aResponse, Error aResult)
+{
+    Coap::Message *message = nullptr;
+    Error          error;
 
     SuccessOrExit(error = aResult);
-    VerifyOrExit((message = NewMeshCoPMessage(instance.Get<Coap::CoapSecure>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Coap::CoapSecure>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    if (forwardContext.IsPetition() && response->GetCode() == OT_COAP_CODE_CHANGED)
+    if (aForwardContext.IsPetition() && aResponse->GetCode() == Coap::kCodeChanged)
     {
         uint8_t state;
 
-        SuccessOrExit(error = Tlv::ReadUint8Tlv(*response, Tlv::kState, state));
+        SuccessOrExit(error = Tlv::Find<StateTlv>(*aResponse, state));
 
         if (state == StateTlv::kAccept)
         {
             uint16_t sessionId;
 
-            SuccessOrExit(error = Tlv::ReadUint16Tlv(*response, Tlv::kCommissionerSessionId, sessionId));
+            SuccessOrExit(error = Tlv::Find<CommissionerSessionIdTlv>(*aResponse, sessionId));
 
-            instance.Get<Mle::MleRouter>().GetCommissionerAloc(borderAgent.mCommissionerAloc.GetAddress(), sessionId);
-            instance.Get<ThreadNetif>().AddUnicastAddress(borderAgent.mCommissionerAloc);
-            instance.Get<Ip6::Udp>().AddReceiver(borderAgent.mUdpReceiver);
+            IgnoreError(Get<Mle::MleRouter>().GetCommissionerAloc(mCommissionerAloc.GetAddress(), sessionId));
+            Get<ThreadNetif>().AddUnicastAddress(mCommissionerAloc);
+            IgnoreError(Get<Ip6::Udp>().AddReceiver(mUdpReceiver));
+
+            LogInfo("commissioner accepted: session ID=%d, ALOC=%s", sessionId,
+                    mCommissionerAloc.GetAddress().ToString().AsCString());
         }
     }
 
-    SuccessOrExit(error = forwardContext.ToHeader(*message, response->GetCode()));
+    SuccessOrExit(error = aForwardContext.ToHeader(*message, aResponse->GetCode()));
 
-    if (response->GetLength() > response->GetOffset())
+    if (aResponse->GetLength() > aResponse->GetOffset())
     {
         SuccessOrExit(error = message->SetPayloadMarker());
     }
 
-    SuccessOrExit(error = borderAgent.ForwardToCommissioner(*message, *response));
+    SuccessOrExit(error = ForwardToCommissioner(*message, *aResponse));
 
 exit:
-    if (error != OT_ERROR_NONE)
+
+    if (error != kErrorNone)
     {
-        if (message != NULL)
-        {
-            message->Free();
-        }
+        FreeMessage(message);
 
-        otLogWarnMeshCoP("Commissioner request[%hu] failed: %s", forwardContext.GetMessageId(),
-                         otThreadErrorToString(error));
+        LogWarn("Commissioner request[%hu] failed: %s", aForwardContext.GetMessageId(), ErrorToString(error));
 
-        SendErrorMessage(instance.Get<Coap::CoapSecure>(), forwardContext, error);
+        SendErrorMessage(aForwardContext, error);
     }
 
-    instance.HeapFree(&forwardContext);
+    Heap::Free(&aForwardContext);
+}
+
+template <Coap::Resource BorderAgent::*aResource>
+void BorderAgent::HandleRequest(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
+{
+    IgnoreError(static_cast<BorderAgent *>(aContext)->ForwardToLeader(
+        AsCoapMessage(aMessage), AsCoreType(aMessageInfo),
+        (static_cast<BorderAgent *>(aContext)->*aResource).GetUriPath(), false, false));
 }
 
 template <>
@@ -289,9 +234,8 @@ void BorderAgent::HandleRequest<&BorderAgent::mCommissionerPetition>(void *     
                                                                      otMessage *          aMessage,
                                                                      const otMessageInfo *aMessageInfo)
 {
-    static_cast<BorderAgent *>(aContext)->ForwardToLeader(*static_cast<Coap::Message *>(aMessage),
-                                                          *static_cast<const Ip6::MessageInfo *>(aMessageInfo),
-                                                          OT_URI_PATH_LEADER_PETITION, true, true);
+    IgnoreError(static_cast<BorderAgent *>(aContext)->ForwardToLeader(AsCoapMessage(aMessage), AsCoreType(aMessageInfo),
+                                                                      UriPath::kLeaderPetition, true, true));
 }
 
 template <>
@@ -299,8 +243,7 @@ void BorderAgent::HandleRequest<&BorderAgent::mCommissionerKeepAlive>(void *    
                                                                       otMessage *          aMessage,
                                                                       const otMessageInfo *aMessageInfo)
 {
-    static_cast<BorderAgent *>(aContext)->HandleKeepAlive(*static_cast<Coap::Message *>(aMessage),
-                                                          *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<BorderAgent *>(aContext)->HandleKeepAlive(AsCoapMessage(aMessage), AsCoreType(aMessageInfo));
 }
 
 template <>
@@ -309,7 +252,7 @@ void BorderAgent::HandleRequest<&BorderAgent::mRelayTransmit>(void *            
                                                               const otMessageInfo *aMessageInfo)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
-    static_cast<BorderAgent *>(aContext)->HandleRelayTransmit(*static_cast<Coap::Message *>(aMessage));
+    static_cast<BorderAgent *>(aContext)->HandleRelayTransmit(AsCoapMessage(aMessage));
 }
 
 template <>
@@ -318,7 +261,7 @@ void BorderAgent::HandleRequest<&BorderAgent::mRelayReceive>(void *             
                                                              const otMessageInfo *aMessageInfo)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
-    static_cast<BorderAgent *>(aContext)->HandleRelayReceive(*static_cast<Coap::Message *>(aMessage));
+    static_cast<BorderAgent *>(aContext)->HandleRelayReceive(AsCoapMessage(aMessage));
 }
 
 template <>
@@ -327,50 +270,40 @@ void BorderAgent::HandleRequest<&BorderAgent::mProxyTransmit>(void *            
                                                               const otMessageInfo *aMessageInfo)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
-    static_cast<BorderAgent *>(aContext)->HandleProxyTransmit(*static_cast<Coap::Message *>(aMessage));
+    static_cast<BorderAgent *>(aContext)->HandleProxyTransmit(AsCoapMessage(aMessage));
 }
 
 BorderAgent::BorderAgent(Instance &aInstance)
     : InstanceLocator(aInstance)
-    , mCommissionerPetition(OT_URI_PATH_COMMISSIONER_PETITION,
+    , mCommissionerPetition(UriPath::kCommissionerPetition,
                             BorderAgent::HandleRequest<&BorderAgent::mCommissionerPetition>,
                             this)
-    , mCommissionerKeepAlive(OT_URI_PATH_COMMISSIONER_KEEP_ALIVE,
+    , mCommissionerKeepAlive(UriPath::kCommissionerKeepAlive,
                              BorderAgent::HandleRequest<&BorderAgent::mCommissionerKeepAlive>,
                              this)
-    , mRelayTransmit(OT_URI_PATH_RELAY_TX, BorderAgent::HandleRequest<&BorderAgent::mRelayTransmit>, this)
-    , mRelayReceive(OT_URI_PATH_RELAY_RX, BorderAgent::HandleRequest<&BorderAgent::mRelayReceive>, this)
-    , mCommissionerGet(OT_URI_PATH_COMMISSIONER_GET, BorderAgent::HandleRequest<&BorderAgent::mCommissionerGet>, this)
-    , mCommissionerSet(OT_URI_PATH_COMMISSIONER_SET, BorderAgent::HandleRequest<&BorderAgent::mCommissionerSet>, this)
-    , mActiveGet(OT_URI_PATH_ACTIVE_GET, BorderAgent::HandleRequest<&BorderAgent::mActiveGet>, this)
-    , mActiveSet(OT_URI_PATH_ACTIVE_SET, BorderAgent::HandleRequest<&BorderAgent::mActiveSet>, this)
-    , mPendingGet(OT_URI_PATH_PENDING_GET, BorderAgent::HandleRequest<&BorderAgent::mPendingGet>, this)
-    , mPendingSet(OT_URI_PATH_PENDING_SET, BorderAgent::HandleRequest<&BorderAgent::mPendingSet>, this)
-    , mProxyTransmit(OT_URI_PATH_PROXY_TX, BorderAgent::HandleRequest<&BorderAgent::mProxyTransmit>, this)
+    , mRelayTransmit(UriPath::kRelayTx, BorderAgent::HandleRequest<&BorderAgent::mRelayTransmit>, this)
+    , mRelayReceive(UriPath::kRelayRx, BorderAgent::HandleRequest<&BorderAgent::mRelayReceive>, this)
+    , mCommissionerGet(UriPath::kCommissionerGet, BorderAgent::HandleRequest<&BorderAgent::mCommissionerGet>, this)
+    , mCommissionerSet(UriPath::kCommissionerSet, BorderAgent::HandleRequest<&BorderAgent::mCommissionerSet>, this)
+    , mActiveGet(UriPath::kActiveGet, BorderAgent::HandleRequest<&BorderAgent::mActiveGet>, this)
+    , mActiveSet(UriPath::kActiveSet, BorderAgent::HandleRequest<&BorderAgent::mActiveSet>, this)
+    , mPendingGet(UriPath::kPendingGet, BorderAgent::HandleRequest<&BorderAgent::mPendingGet>, this)
+    , mPendingSet(UriPath::kPendingSet, BorderAgent::HandleRequest<&BorderAgent::mPendingSet>, this)
+    , mProxyTransmit(UriPath::kProxyTx, BorderAgent::HandleRequest<&BorderAgent::mProxyTransmit>, this)
     , mUdpReceiver(BorderAgent::HandleUdpReceive, this)
-    , mTimer(aInstance, HandleTimeout, this)
-    , mState(OT_BORDER_AGENT_STATE_STOPPED)
-    , mNotifierCallback(aInstance, &BorderAgent::HandleStateChanged, this)
+    , mTimer(aInstance, HandleTimeout)
+    , mState(kStateStopped)
+    , mUdpProxyPort(0)
 {
-    mCommissionerAloc.Clear();
-    mCommissionerAloc.mPrefixLength       = 64;
-    mCommissionerAloc.mPreferred          = true;
-    mCommissionerAloc.mValid              = true;
-    mCommissionerAloc.mScopeOverride      = Ip6::Address::kRealmLocalScope;
-    mCommissionerAloc.mScopeOverrideValid = true;
+    mCommissionerAloc.InitAsThreadOriginRealmLocalScope();
 }
 
-void BorderAgent::HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags)
+void BorderAgent::HandleNotifierEvents(Events aEvents)
 {
-    aCallback.GetOwner<BorderAgent>().HandleStateChanged(aFlags);
-}
-
-void BorderAgent::HandleStateChanged(otChangedFlags aFlags)
-{
-    VerifyOrExit((aFlags & (OT_CHANGED_THREAD_ROLE | OT_CHANGED_COMMISSIONER_STATE)) != 0, OT_NOOP);
+    VerifyOrExit(aEvents.ContainsAny(kEventThreadRoleChanged | kEventCommissionerStateChanged));
 
 #if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
-    VerifyOrExit(Get<MeshCoP::Commissioner>().IsDisabled(), OT_NOOP);
+    VerifyOrExit(Get<Commissioner>().IsDisabled());
 #endif
 
     if (Get<Mle::MleRouter>().IsAttached())
@@ -388,58 +321,51 @@ exit:
 
 void BorderAgent::HandleProxyTransmit(const Coap::Message &aMessage)
 {
-    Message *        message = NULL;
-    Ip6::MessageInfo messageInfo;
-    uint16_t         offset;
-    otError          error;
+    Message *           message = nullptr;
+    Ip6::MessageInfo    messageInfo;
+    uint16_t            offset;
+    Error               error;
+    UdpEncapsulationTlv tlv;
 
-    {
-        UdpEncapsulationTlv tlv;
+    SuccessOrExit(error = Tlv::FindTlvOffset(aMessage, Tlv::kUdpEncapsulation, offset));
+    SuccessOrExit(error = aMessage.Read(offset, tlv));
 
-        SuccessOrExit(error = Tlv::GetOffset(aMessage, Tlv::kUdpEncapsulation, offset));
-        VerifyOrExit(aMessage.Read(offset, sizeof(tlv), &tlv) == sizeof(tlv), error = OT_ERROR_PARSE);
+    VerifyOrExit((message = Get<Ip6::Udp>().NewMessage(0)) != nullptr, error = kErrorNoBufs);
+    SuccessOrExit(error = message->SetLength(tlv.GetUdpLength()));
+    aMessage.CopyTo(offset + sizeof(tlv), 0, tlv.GetUdpLength(), *message);
 
-        VerifyOrExit((message = Get<Ip6::Udp>().NewMessage(0)) != NULL, error = OT_ERROR_NO_BUFS);
-        SuccessOrExit(error = message->SetLength(tlv.GetUdpLength()));
-        aMessage.CopyTo(offset + sizeof(tlv), 0, tlv.GetUdpLength(), *message);
+    VerifyOrExit(tlv.GetSourcePort() > 0 && tlv.GetDestinationPort() > 0, error = kErrorDrop);
 
-        messageInfo.SetSockPort(tlv.GetSourcePort() != 0 ? tlv.GetSourcePort() : Get<Ip6::Udp>().GetEphemeralPort());
-        messageInfo.SetSockAddr(mCommissionerAloc.GetAddress());
-        messageInfo.SetPeerPort(tlv.GetDestinationPort());
-    }
+    messageInfo.SetSockPort(tlv.GetSourcePort());
+    messageInfo.SetSockAddr(mCommissionerAloc.GetAddress());
+    messageInfo.SetPeerPort(tlv.GetDestinationPort());
 
-    SuccessOrExit(
-        error = Tlv::ReadTlv(aMessage, Tlv::kIPv6Address, messageInfo.GetPeerAddr().mFields.m8, sizeof(Ip6::Address)));
+    SuccessOrExit(error = Tlv::Find<Ip6AddressTlv>(aMessage, messageInfo.GetPeerAddr()));
 
     SuccessOrExit(error = Get<Ip6::Udp>().SendDatagram(*message, messageInfo, Ip6::kProtoUdp));
-    otLogInfoMeshCoP("Proxy transmit sent");
+    mUdpProxyPort = tlv.GetSourcePort();
+
+    LogInfo("Proxy transmit sent to %s", messageInfo.GetPeerAddr().ToString().AsCString());
 
 exit:
-    if (error != OT_ERROR_NONE)
-    {
-        otLogWarnMeshCoP("Failed to send proxy stream: %s", otThreadErrorToString(error));
-
-        if (message != NULL)
-        {
-            message->Free();
-        }
-    }
+    FreeMessageOnError(message, error);
+    LogError("send proxy stream", error);
 }
 
 bool BorderAgent::HandleUdpReceive(const Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
 {
-    otError        error;
-    Coap::Message *message = NULL;
+    Error          error;
+    Coap::Message *message = nullptr;
 
     VerifyOrExit(aMessageInfo.GetSockAddr() == mCommissionerAloc.GetAddress(),
-                 error = OT_ERROR_DESTINATION_ADDRESS_FILTERED);
+                 error = kErrorDestinationAddressFiltered);
 
-    VerifyOrExit(aMessage.GetLength() > 0, error = OT_ERROR_NONE);
+    VerifyOrExit(aMessage.GetLength() > 0, error = kErrorNone);
 
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::CoapSecure>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Coap::CoapSecure>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    message->Init(OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST);
-    SuccessOrExit(error = message->AppendUriPathOptions(OT_URI_PATH_PROXY_RX));
+    message->InitAsNonConfirmablePost();
+    SuccessOrExit(error = message->AppendUriPathOptions(UriPath::kProxyRx));
     SuccessOrExit(error = message->SetPayloadMarker());
 
     {
@@ -451,40 +377,36 @@ bool BorderAgent::HandleUdpReceive(const Message &aMessage, const Ip6::MessageIn
         tlv.SetSourcePort(aMessageInfo.GetPeerPort());
         tlv.SetDestinationPort(aMessageInfo.GetSockPort());
         tlv.SetUdpLength(udpLength);
-        SuccessOrExit(error = message->Append(&tlv, sizeof(tlv)));
+        SuccessOrExit(error = message->Append(tlv));
 
         offset = message->GetLength();
         SuccessOrExit(error = message->SetLength(offset + udpLength));
         aMessage.CopyTo(aMessage.GetOffset(), offset, udpLength, *message);
     }
 
-    SuccessOrExit(error = Tlv::AppendTlv(*message, Tlv::kIPv6Address, aMessageInfo.GetPeerAddr().mFields.m8,
-                                         sizeof(Ip6::Address)));
+    SuccessOrExit(error = Tlv::Append<Ip6AddressTlv>(*message, aMessageInfo.GetPeerAddr()));
 
-    SuccessOrExit(error = Get<Coap::CoapSecure>().SendMessage(*message, Get<Coap::CoapSecure>().GetPeerAddress()));
+    SuccessOrExit(error = Get<Coap::CoapSecure>().SendMessage(*message, Get<Coap::CoapSecure>().GetMessageInfo()));
 
-    otLogInfoMeshCoP("Sent to commissioner on %s", OT_URI_PATH_PROXY_RX);
+    LogInfo("Sent to commissioner on %s", UriPath::kProxyRx);
 
 exit:
-    if (message != NULL && error != OT_ERROR_NONE)
-    {
-        otLogWarnMeshCoP("Failed notify commissioner on %s", OT_URI_PATH_PROXY_RX);
-        message->Free();
-    }
+    FreeMessageOnError(message, error);
+    LogError("notify commissioner on ProxyRx (c/ur)", error);
 
-    return error != OT_ERROR_DESTINATION_ADDRESS_FILTERED;
+    return error != kErrorDestinationAddressFiltered;
 }
 
 void BorderAgent::HandleRelayReceive(const Coap::Message &aMessage)
 {
-    Coap::Message *message = NULL;
-    otError        error;
+    Coap::Message *message = nullptr;
+    Error          error;
 
-    VerifyOrExit(aMessage.IsNonConfirmable() && aMessage.GetCode() == OT_COAP_CODE_POST, error = OT_ERROR_DROP);
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::CoapSecure>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(aMessage.IsNonConfirmablePostRequest(), error = kErrorDrop);
+    VerifyOrExit((message = Get<Coap::CoapSecure>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    message->Init(OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST);
-    SuccessOrExit(error = message->AppendUriPathOptions(OT_URI_PATH_RELAY_RX));
+    message->InitAsNonConfirmablePost();
+    SuccessOrExit(error = message->AppendUriPathOptions(UriPath::kRelayRx));
 
     if (aMessage.GetLength() > aMessage.GetOffset())
     {
@@ -492,18 +414,15 @@ void BorderAgent::HandleRelayReceive(const Coap::Message &aMessage)
     }
 
     SuccessOrExit(error = ForwardToCommissioner(*message, aMessage));
-    otLogInfoMeshCoP("Sent to commissioner on %s", OT_URI_PATH_RELAY_RX);
+    LogInfo("Sent to commissioner on %s", UriPath::kRelayRx);
 
 exit:
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
+    FreeMessageOnError(message, error);
 }
 
-otError BorderAgent::ForwardToCommissioner(Coap::Message &aForwardMessage, const Message &aMessage)
+Error BorderAgent::ForwardToCommissioner(Coap::Message &aForwardMessage, const Message &aMessage)
 {
-    otError  error  = OT_ERROR_NONE;
+    Error    error  = kErrorNone;
     uint16_t offset = 0;
 
     offset = aForwardMessage.GetLength();
@@ -511,26 +430,22 @@ otError BorderAgent::ForwardToCommissioner(Coap::Message &aForwardMessage, const
     aMessage.CopyTo(aMessage.GetOffset(), offset, aMessage.GetLength() - aMessage.GetOffset(), aForwardMessage);
 
     SuccessOrExit(error =
-                      Get<Coap::CoapSecure>().SendMessage(aForwardMessage, Get<Coap::CoapSecure>().GetPeerAddress()));
+                      Get<Coap::CoapSecure>().SendMessage(aForwardMessage, Get<Coap::CoapSecure>().GetMessageInfo()));
 
-    otLogInfoMeshCoP("Sent to commissioner");
+    LogInfo("Sent to commissioner");
 
 exit:
-    if (error != OT_ERROR_NONE)
-    {
-        otLogWarnMeshCoP("Failed to send to commissioner: %s", otThreadErrorToString(error));
-    }
-
+    LogError("send to commissioner", error);
     return error;
 }
 
 void BorderAgent::HandleKeepAlive(const Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
 {
-    otError error;
+    Error error;
 
-    error = ForwardToLeader(aMessage, aMessageInfo, OT_URI_PATH_LEADER_KEEP_ALIVE, false, true);
+    error = ForwardToLeader(aMessage, aMessageInfo, UriPath::kLeaderKeepAlive, false, true);
 
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         mTimer.Start(kKeepAliveTimeout);
     }
@@ -538,72 +453,62 @@ void BorderAgent::HandleKeepAlive(const Coap::Message &aMessage, const Ip6::Mess
 
 void BorderAgent::HandleRelayTransmit(const Coap::Message &aMessage)
 {
-    otError          error = OT_ERROR_NONE;
+    Error            error = kErrorNone;
     uint16_t         joinerRouterRloc;
-    Coap::Message *  message = NULL;
-    Ip6::MessageInfo messageInfo;
+    Coap::Message *  message = nullptr;
+    Tmf::MessageInfo messageInfo(GetInstance());
     uint16_t         offset = 0;
 
-    VerifyOrExit(aMessage.IsNonConfirmable() && aMessage.GetCode() == OT_COAP_CODE_POST, OT_NOOP);
+    VerifyOrExit(aMessage.IsNonConfirmablePostRequest());
 
-    SuccessOrExit(error = Tlv::ReadUint16Tlv(aMessage, Tlv::kJoinerRouterLocator, joinerRouterRloc));
+    SuccessOrExit(error = Tlv::Find<JoinerRouterLocatorTlv>(aMessage, joinerRouterRloc));
 
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error = message->Init(OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST, OT_URI_PATH_RELAY_TX));
+    SuccessOrExit(error = message->InitAsNonConfirmablePost(UriPath::kRelayTx));
     SuccessOrExit(error = message->SetPayloadMarker());
 
     offset = message->GetLength();
     SuccessOrExit(error = message->SetLength(offset + aMessage.GetLength() - aMessage.GetOffset()));
     aMessage.CopyTo(aMessage.GetOffset(), offset, aMessage.GetLength() - aMessage.GetOffset(), *message);
 
-    messageInfo.SetSockPort(kCoapUdpPort);
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerPort(kCoapUdpPort);
-    messageInfo.SetPeerAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.GetPeerAddr().SetLocator(joinerRouterRloc);
+    messageInfo.SetSockAddrToRlocPeerAddrTo(joinerRouterRloc);
+    messageInfo.SetSockPortToTmf();
 
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
 
-    otLogInfoMeshCoP("Sent to joiner router request on %s", OT_URI_PATH_RELAY_TX);
+    LogInfo("Sent to joiner router request on %s", UriPath::kRelayTx);
 
 exit:
-    if (error != OT_ERROR_NONE)
-    {
-        otLogWarnMeshCoP("Failed to sent to joiner router request " OT_URI_PATH_RELAY_TX " %s",
-                         otThreadErrorToString(error));
-        if (message != NULL)
-        {
-            message->Free();
-        }
-    }
+    FreeMessageOnError(message, error);
+    LogError("send to joiner router request RelayTx (c/tx)", error);
 }
 
-otError BorderAgent::ForwardToLeader(const Coap::Message &   aMessage,
-                                     const Ip6::MessageInfo &aMessageInfo,
-                                     const char *            aPath,
-                                     bool                    aPetition,
-                                     bool                    aSeparate)
+Error BorderAgent::ForwardToLeader(const Coap::Message &   aMessage,
+                                   const Ip6::MessageInfo &aMessageInfo,
+                                   const char *            aPath,
+                                   bool                    aPetition,
+                                   bool                    aSeparate)
 {
-    otError          error          = OT_ERROR_NONE;
-    ForwardContext * forwardContext = NULL;
-    Ip6::MessageInfo messageInfo;
-    Coap::Message *  message = NULL;
+    Error            error          = kErrorNone;
+    ForwardContext * forwardContext = nullptr;
+    Tmf::MessageInfo messageInfo(GetInstance());
+    Coap::Message *  message = nullptr;
     uint16_t         offset  = 0;
 
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
     if (aSeparate)
     {
         SuccessOrExit(error = Get<Coap::CoapSecure>().SendAck(aMessage, aMessageInfo));
     }
 
-    forwardContext = static_cast<ForwardContext *>(GetInstance().HeapCAlloc(1, sizeof(ForwardContext)));
-    VerifyOrExit(forwardContext != NULL, error = OT_ERROR_NO_BUFS);
+    forwardContext = static_cast<ForwardContext *>(Heap::CAlloc(1, sizeof(ForwardContext)));
+    VerifyOrExit(forwardContext != nullptr, error = kErrorNoBufs);
 
-    forwardContext = new (forwardContext) ForwardContext(*this, aMessage, aPetition, aSeparate);
+    forwardContext->Init(GetInstance(), aMessage, aPetition, aSeparate);
 
-    SuccessOrExit(error = message->Init(OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST, aPath));
+    SuccessOrExit(error = message->InitAsConfirmablePost(aPath));
 
     // Payload of c/cg may be empty
     if (aMessage.GetLength() - aMessage.GetOffset() > 0)
@@ -615,64 +520,74 @@ otError BorderAgent::ForwardToLeader(const Coap::Message &   aMessage,
     SuccessOrExit(error = message->SetLength(offset + aMessage.GetLength() - aMessage.GetOffset()));
     aMessage.CopyTo(aMessage.GetOffset(), offset, aMessage.GetLength() - aMessage.GetOffset(), *message);
 
-    SuccessOrExit(error = Get<Mle::MleRouter>().GetLeaderAloc(messageInfo.GetPeerAddr()));
-    messageInfo.SetPeerPort(kCoapUdpPort);
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetSockPort(kCoapUdpPort);
+    SuccessOrExit(error = messageInfo.SetSockAddrToRlocPeerAddrToLeaderAloc());
+    messageInfo.SetSockPortToTmf();
 
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo, HandleCoapResponse, forwardContext));
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo, HandleCoapResponse, forwardContext));
 
     // HandleCoapResponse is responsible to free this forward context.
-    forwardContext = NULL;
+    forwardContext = nullptr;
 
-    otLogInfoMeshCoP("Forwarded request to leader on %s", aPath);
+    LogInfo("Forwarded request to leader on %s", aPath);
 
 exit:
-    if (error != OT_ERROR_NONE)
+    LogError("forward to leader", error);
+
+    if (error != kErrorNone)
     {
-        if (forwardContext != NULL)
+        if (forwardContext != nullptr)
         {
-            GetInstance().HeapFree(forwardContext);
+            Heap::Free(forwardContext);
         }
 
-        if (message != NULL)
-        {
-            message->Free();
-        }
-
-        otLogWarnMeshCoP("Failed to forward to leader: %s", otThreadErrorToString(error));
-
-        SendErrorMessage(Get<Coap::CoapSecure>(), aMessage, aSeparate, error);
+        FreeMessage(message);
+        SendErrorMessage(aMessage, aSeparate, error);
     }
 
     return error;
+}
+
+void BorderAgent::HandleConnected(bool aConnected, void *aContext)
+{
+    static_cast<BorderAgent *>(aContext)->HandleConnected(aConnected);
 }
 
 void BorderAgent::HandleConnected(bool aConnected)
 {
     if (aConnected)
     {
-        otLogInfoMeshCoP("Commissioner connected");
-        SetState(OT_BORDER_AGENT_STATE_ACTIVE);
+        LogInfo("Commissioner connected");
+        mState = kStateActive;
         mTimer.Start(kKeepAliveTimeout);
     }
     else
     {
-        otLogInfoMeshCoP("Commissioner disconnected");
+        LogInfo("Commissioner disconnected");
+        IgnoreError(Get<Ip6::Udp>().RemoveReceiver(mUdpReceiver));
         Get<ThreadNetif>().RemoveUnicastAddress(mCommissionerAloc);
-        SetState(OT_BORDER_AGENT_STATE_STARTED);
+        mState        = kStateStarted;
+        mUdpProxyPort = 0;
     }
 }
 
-otError BorderAgent::Start(void)
+uint16_t BorderAgent::GetUdpPort(void) const
 {
-    otError           error;
+    return Get<Coap::CoapSecure>().GetUdpPort();
+}
+
+void BorderAgent::Start(void)
+{
+    Error             error;
     Coap::CoapSecure &coaps = Get<Coap::CoapSecure>();
+    Pskc              pskc;
 
-    VerifyOrExit(mState == OT_BORDER_AGENT_STATE_STOPPED, error = OT_ERROR_ALREADY);
+    VerifyOrExit(mState == kStateStopped, error = kErrorNone);
 
+    Get<KeyManager>().GetPskc(pskc);
     SuccessOrExit(error = coaps.Start(kBorderAgentUdpPort));
-    SuccessOrExit(error = coaps.SetPsk(Get<KeyManager>().GetPskc().m8, OT_PSKC_MAX_SIZE));
+    SuccessOrExit(error = coaps.SetPsk(pskc.m8, Pskc::kSize));
+
+    pskc.Clear();
     coaps.SetConnectedCallback(HandleConnected, this);
 
     coaps.AddResource(mActiveGet);
@@ -686,17 +601,23 @@ otError BorderAgent::Start(void)
     coaps.AddResource(mProxyTransmit);
     coaps.AddResource(mRelayTransmit);
 
-    Get<Coap::Coap>().AddResource(mRelayReceive);
+    Get<Tmf::Agent>().AddResource(mRelayReceive);
 
-    SetState(OT_BORDER_AGENT_STATE_STARTED);
+    mState        = kStateStarted;
+    mUdpProxyPort = 0;
+
+    LogInfo("Border Agent start listening on port %d", kBorderAgentUdpPort);
 
 exit:
-    return error;
+    if (error != kErrorNone)
+    {
+        LogWarn("failed to start Border Agent on port %d: %s", kBorderAgentUdpPort, ErrorToString(error));
+    }
 }
 
 void BorderAgent::HandleTimeout(Timer &aTimer)
 {
-    aTimer.GetOwner<BorderAgent>().HandleTimeout();
+    aTimer.Get<BorderAgent>().HandleTimeout();
 }
 
 void BorderAgent::HandleTimeout(void)
@@ -704,16 +625,15 @@ void BorderAgent::HandleTimeout(void)
     if (Get<Coap::CoapSecure>().IsConnected())
     {
         Get<Coap::CoapSecure>().Disconnect();
-        otLogWarnMeshCoP("Reset commissioner session");
+        LogWarn("Reset commissioner session");
     }
 }
 
-otError BorderAgent::Stop(void)
+void BorderAgent::Stop(void)
 {
-    otError           error = OT_ERROR_NONE;
     Coap::CoapSecure &coaps = Get<Coap::CoapSecure>();
 
-    VerifyOrExit(mState != OT_BORDER_AGENT_STATE_STOPPED, error = OT_ERROR_ALREADY);
+    VerifyOrExit(mState != kStateStopped);
 
     mTimer.Stop();
 
@@ -728,30 +648,26 @@ otError BorderAgent::Stop(void)
     coaps.RemoveResource(mProxyTransmit);
     coaps.RemoveResource(mRelayTransmit);
 
-    Get<Coap::Coap>().RemoveResource(mRelayReceive);
+    Get<Tmf::Agent>().RemoveResource(mRelayReceive);
 
     coaps.Stop();
 
-    SetState(OT_BORDER_AGENT_STATE_STOPPED);
+    mState        = kStateStopped;
+    mUdpProxyPort = 0;
+
+    LogInfo("Border Agent stopped");
 
 exit:
-    return error;
-}
-
-void BorderAgent::SetState(otBorderAgentState aState)
-{
-    if (mState != aState)
-    {
-        mState = aState;
-    }
+    return;
 }
 
 void BorderAgent::ApplyMeshLocalPrefix(void)
 {
-    VerifyOrExit(mState == OT_BORDER_AGENT_STATE_ACTIVE, OT_NOOP);
+    VerifyOrExit(mState == kStateActive);
 
-    if (Get<ThreadNetif>().RemoveUnicastAddress(mCommissionerAloc) == OT_ERROR_NONE)
+    if (Get<ThreadNetif>().HasUnicastAddress(mCommissionerAloc))
     {
+        Get<ThreadNetif>().RemoveUnicastAddress(mCommissionerAloc);
         mCommissionerAloc.GetAddress().SetPrefix(Get<Mle::MleRouter>().GetMeshLocalPrefix());
         Get<ThreadNetif>().AddUnicastAddress(mCommissionerAloc);
     }

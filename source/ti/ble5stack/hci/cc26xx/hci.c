@@ -123,7 +123,7 @@ extern RF_Handle rfHandle;
 
 // Major Version (8 bits) . Minor Version (4 bits) . SubMinor Version (4 bits)
 #if defined( CC26X2 ) || defined(CC13X2) || defined(CC13X2P)
-#define HCI_REVISION                                 0x0225  // HCI Version BLE5 2.2.5
+#define HCI_REVISION                                 0x0226  // HCI Version BLE5 2.2.6
 #elif defined( CC26XX )
 #define HCI_REVISION                                 0x0111  // HCI Version BLE5 1.1.1
 #else // !CC26X2 && !CC13X2 && !CC26XX && !CC13XX
@@ -5207,7 +5207,7 @@ hciStatus_t HCI_EXT_CoexEnableCmd( uint8 enable )
   rtnParam[1] = HI_UINT16( HCI_EXT_COEX_ENABLE_EVENT );
 
   // status
-  rtnParam[2] = LL_EXT_CoexEnable( enable );
+  rtnParam[2] = MAP_LL_EXT_CoexEnable( enable );
 
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_COEX_ENABLE,
                                              sizeof(rtnParam),

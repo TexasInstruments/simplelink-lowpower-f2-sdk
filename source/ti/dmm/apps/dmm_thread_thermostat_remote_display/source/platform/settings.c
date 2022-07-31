@@ -90,7 +90,7 @@
 static NVINTF_nvFuncts_t sNvoctpFps = { 0 };
 
 /* settings API */
-void otPlatSettingsInit(otInstance *aInstance)
+void otPlatSettingsInit(otInstance *aInstance, const uint16_t *aSensitiveKeys, uint16_t aSensitiveKeysLength)
 {
     /* Load NVOCMP function pointers, extended API */
     NVOCMP_loadApiPtrsExt(&sNvoctpFps);

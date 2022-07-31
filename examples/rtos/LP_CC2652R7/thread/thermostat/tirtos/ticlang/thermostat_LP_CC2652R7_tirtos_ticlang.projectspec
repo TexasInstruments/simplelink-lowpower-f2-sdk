@@ -54,6 +54,7 @@
             -DOPENTHREAD_CONFIG_FILE=&apos;&quot;openthread-config-cc13x2_26x2-ftd.h&quot;&apos;
             -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE=&apos;&quot;openthread-core-cc13x2_26x2-config.h&quot;&apos;
             -DTIOP_CUI=1
+            -DCUI_POSIX=1
             -DBOARD_DISPLAY_USE_LCD=1
             -DDeviceFamily_CC13X2X7_CC26X2X7
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
@@ -66,7 +67,6 @@
             -mfpu=fpv4-sp-d16
         "
         linkerBuildOptions="
-            --reread_libs
             -Wl,-i${WORKSPACE_LOC}/libopenthread_ftd_cc13x2_26x2_ticlang/OptimizeSize
             -Wl,-i${WORKSPACE_LOC}/libopenthread_platform_utils_ftd_cc13x2_26x2_ticlang/OptimizeSize
             -Wl,-i${WORKSPACE_LOC}/libmbedcrypto_cc13x2_26x2_ticlang/OptimizeSize
@@ -77,6 +77,7 @@
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
+            --reread_libs
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib
             -Wl,-c
@@ -125,8 +126,6 @@
         <file path="../../platform/radio.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
         <file path="../../platform/uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
-        </file>
-        <file path="../../platform/debug_uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
         <file path="../../platform/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
         </file>
@@ -180,7 +179,7 @@
         </file>
         <file path="../../release.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../thermostat.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos/thermostat.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

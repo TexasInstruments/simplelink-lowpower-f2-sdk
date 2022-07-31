@@ -33,69 +33,62 @@
 
 #include "announce_begin_client.hpp"
 
+#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+
 #include "coap/coap_message.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/thread_netif.hpp"
-#include "thread/thread_uri_paths.hpp"
-
-#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+#include "thread/uri_paths.hpp"
 
 namespace ot {
+
+RegisterLogModule("MeshCoP");
 
 AnnounceBeginClient::AnnounceBeginClient(Instance &aInstance)
     : InstanceLocator(aInstance)
 {
 }
 
-otError AnnounceBeginClient::SendRequest(uint32_t            aChannelMask,
-                                         uint8_t             aCount,
-                                         uint16_t            aPeriod,
-                                         const Ip6::Address &aAddress)
+Error AnnounceBeginClient::SendRequest(uint32_t            aChannelMask,
+                                       uint8_t             aCount,
+                                       uint16_t            aPeriod,
+                                       const Ip6::Address &aAddress)
 {
-    otError                 error = OT_ERROR_NONE;
+    Error                   error = kErrorNone;
     MeshCoP::ChannelMaskTlv channelMask;
-    Ip6::MessageInfo        messageInfo;
-    Coap::Message *         message = NULL;
+    Tmf::MessageInfo        messageInfo(GetInstance());
+    Coap::Message *         message = nullptr;
 
-    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = OT_ERROR_INVALID_STATE);
-    VerifyOrExit((message = MeshCoP::NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = kErrorInvalidState);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error =
-                      message->Init(aAddress.IsMulticast() ? OT_COAP_TYPE_NON_CONFIRMABLE : OT_COAP_TYPE_CONFIRMABLE,
-                                    OT_COAP_CODE_POST, OT_URI_PATH_ANNOUNCE_BEGIN));
+    SuccessOrExit(error = message->InitAsPost(aAddress, UriPath::kAnnounceBegin));
     SuccessOrExit(error = message->SetPayloadMarker());
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kCommissionerSessionId,
-                                               Get<MeshCoP::Commissioner>().GetSessionId()));
+    SuccessOrExit(
+        error = Tlv::Append<MeshCoP::CommissionerSessionIdTlv>(*message, Get<MeshCoP::Commissioner>().GetSessionId()));
 
     channelMask.Init();
     channelMask.SetChannelMask(aChannelMask);
     SuccessOrExit(error = channelMask.AppendTo(*message));
 
-    SuccessOrExit(error = Tlv::AppendUint8Tlv(*message, MeshCoP::Tlv::kCount, aCount));
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kPeriod, aPeriod));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::CountTlv>(*message, aCount));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::PeriodTlv>(*message, aPeriod));
 
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerAddr(aAddress);
-    messageInfo.SetPeerPort(kCoapUdpPort);
+    messageInfo.SetSockAddrToRlocPeerAddrTo(aAddress);
 
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
 
-    otLogInfoMeshCoP("sent announce begin query");
+    LogInfo("sent announce begin query");
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
+    FreeMessageOnError(message, error);
     return error;
 }
 

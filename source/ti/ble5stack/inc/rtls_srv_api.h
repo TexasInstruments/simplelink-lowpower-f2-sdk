@@ -65,7 +65,7 @@ extern "C"
  */
 
 #include "bcomdef.h"
-#include <ti/drivers/PIN.h>
+#include <ti/drivers/GPIO.h>
 #include "ble_user_config.h"
 #include "hci.h"
 #include "ll.h"
@@ -544,9 +544,9 @@ extern bStatus_t RTLSSrv_setCteSampleAccuracy(uint16_t handle,
  *
  * @param mainAntenna - Antenna ID to be used as main receiving antenna
  *
- * @return PIN_Handle - handle for initialized pins
+ * @return      TRUE = success, FALSE = failure
  */
-extern PIN_Handle RTLSSrv_initAntArray(uint8_t mainAntenna);
+extern bStatus_t RTLSSrv_initAntArray(uint8_t mainAntenna);
 
 /**
  * RTLSSrv_processHciEvent

@@ -117,8 +117,6 @@
 #undef Timer_Handle_label
 #undef Timer_Handle_name
 #undef Timer_Instance_init
-#undef Timer_Object_count
-#undef Timer_Object_get
 #undef Timer_Object_first
 #undef Timer_Object_next
 #undef Timer_Object_sizeof
@@ -224,8 +222,6 @@
 #define Timer_Handle_label ti_sysbios_family_arm_lm4_Timer_Handle_label
 #define Timer_Handle_name ti_sysbios_family_arm_lm4_Timer_Handle_name
 #define Timer_Instance_init ti_sysbios_family_arm_lm4_Timer_Instance_init
-#define Timer_Object_count ti_sysbios_family_arm_lm4_Timer_Object_count
-#define Timer_Object_get ti_sysbios_family_arm_lm4_Timer_Object_get
 #define Timer_Object_first ti_sysbios_family_arm_lm4_Timer_Object_first
 #define Timer_Object_next ti_sysbios_family_arm_lm4_Timer_Object_next
 #define Timer_Object_sizeof ti_sysbios_family_arm_lm4_Timer_Object_sizeof

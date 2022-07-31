@@ -59,8 +59,10 @@
 #include "inc/npi_data.h"
 #include "inc/npi_util.h"
 #include "inc/npi_tl_uart.h"
-#include <ti/drivers/UART.h>
-#include <ti/drivers/uart/UARTCC26XX.h>
+#include <ti/drivers/UART2.h>
+#include <ti/drivers/uart2/UART2CC26X2.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/uart.h)
 
 // ****************************************************************************
 // defines
@@ -81,7 +83,7 @@
 // globals
 //*****************************************************************************
 //! \brief UART Handle for UART Driver
-static UART_Handle uartHandle;
+static UART2_Handle uartHandle;
 
 //! \brief UART ISR Rx Buffer
 static uint8_t isrRxBuf[UART_ISR_BUF_SIZE];
@@ -107,7 +109,7 @@ static uint16_t TransportRxLen = 0;
 static uint16_t TransportTxLen = 0;
 
 //! \brief UART Object. Initialized in board specific files
-extern UARTCC26XX_Object uartCC26XXObjects[];
+extern UART2CC26X2_Object uart2CC26X2Objects[];
 
 //! \brief NPI Transport Layer Buffer variables defined in npi_tl.c
 extern uint8_t *npiRxBuf;
@@ -122,10 +124,10 @@ extern uint16_t npiBufSize;
 static uint16_t NPITLUART_readIsrBuf(size_t size);
 
 //! \brief UART Callback invoked after UART write completion
-static void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size);
+static void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status);
 
 //! \brief UART Callback invoked after readsize has been read or timeout
-static void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size);
+static void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status);
 
 //! \brief Check for whether a complete and valid packet has been received
 static uint8_t NPITLUART_validPacketFound(void);
@@ -143,22 +145,24 @@ static uint8_t NPITLUART_calcFCS(uint8_t *buf, uint16_t len);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
+void NPITLUART_openTransport(uint8_t portID, UART2_Params *portParams,
                              npiCB_t npiCBack)
 {
     npiTransmitCB = npiCBack;
 
     // Initialize the UART driver
-    UART_init();
+    UART2_Params_init(portParams);
 
     // Add call backs UART parameters.
+    portParams->readMode = UART2_Mode_CALLBACK;
+    portParams->writeMode = UART2_Mode_CALLBACK;
     portParams->readCallback = NPITLUART_readCallBack;
     portParams->writeCallback = NPITLUART_writeCallBack;
+    portParams->baudRate = 460800;
 
     // Open / power on the UART.
-    uartHandle = UART_open(portID, portParams);
-    //Enable Partial Reads on all subsequent UART_read()
-    UART_control(uartHandle, UARTCC26XX_CMD_RETURN_PARTIAL_ENABLE,  NULL);
+    uartHandle = UART2_open(0, portParams);
+
 }
 
 // -----------------------------------------------------------------------------
@@ -168,7 +172,7 @@ void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
 // -----------------------------------------------------------------------------
 void NPITLUART_closeTransport(void)
 {
-    UART_close(uartHandle);
+    UART2_close(uartHandle);
 }
 
 #if (NPI_FLOW_CTRL == 1)
@@ -186,12 +190,12 @@ void NPITLUART_stopTransfer(void)
 
     // If we have no bytes in FIFO yet we must assume there was nothing to read
     // or that the FIFO has already been read for this UART_read()
-    // In either case UART_readCancel will call the read CB function and it will
+    // In either case UART2_readCancel will call the read CB function and it will
     // invoke npiTransmitCB with the appropriate number of bytes read
-    if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr))
+    if (!UARTCharsAvail(((UART2CC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr))
     {
         RxActive = FALSE;
-        UART_readCancel(uartHandle);
+        UART2_readCancel(uartHandle);
     }
 
     NPIUtil_ExitCS(key);
@@ -230,7 +234,7 @@ void NPITLUART_handleRemRdyEvent(void)
     {
         // Check to see if transport is successful. If not, reset TxLen to allow
         // another write to be processed
-        if (UART_write(uartHandle, npiTxBuf, TransportTxLen) == UART_ERROR)
+        if (UART2_write(uartHandle, npiTxBuf, TransportTxLen, NULL) != UART2_STATUS_SUCCESS)
         {
           TxActive = FALSE;
           TransportTxLen = 0;
@@ -250,7 +254,7 @@ void NPITLUART_handleRemRdyEvent(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
+static void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
 {
     _npiCSKey_t key;
     key = NPIUtil_EnterCS();
@@ -258,7 +262,7 @@ void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 #if (NPI_FLOW_CTRL == 1)
     if (!RxActive)
     {
-        UART_readCancel(uartHandle);
+        UART2_readCancel(uartHandle);
 
         if (npiTransmitCB)
         {
@@ -299,7 +303,7 @@ void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
+static void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
 {
 #if (NPI_FLOW_CTRL == 0)
     uint16_t packetSize;
@@ -322,7 +326,7 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
 #if (NPI_FLOW_CTRL == 1)
     // Read has been cancelled by transport layer, or bus timeout and no bytes in FIFO
     //    - do not invoke another read
-    if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr) &&
+    if (!UARTCharsAvail(((UART2CC26X2_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr) &&
             remRdy_flag)
     {
         RxActive = FALSE;
@@ -346,7 +350,7 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
     }
     else
     {
-        UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+        UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE, NULL);
     }
 #else
     while (NPITLUART_validPacketFound() == NPI_SUCCESS &&
@@ -389,7 +393,7 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
         memcpy(npiRxBuf,&npiRxBuf[sofIndex + 1],TransportRxLen);
     }
 
-    UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+    UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE,NULL);
 #endif // NPI_FLOW_CTRL = 1
 
     NPIUtil_ExitCS(key);
@@ -448,7 +452,7 @@ void NPITLUART_readTransport(void)
 #endif // NPI_FLOW_CTRL = 1
 
     TransportRxLen = 0;
-    UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
+    UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE,NULL);
 
     NPIUtil_ExitCS(key);
 }
@@ -480,7 +484,7 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
 #else
     // Check to see if transport is successful. If not, reset TxLen to allow
     // another write to be processed
-    if(UART_write(uartHandle, npiTxBuf, TransportTxLen) == UART_ERROR)
+    if(UART2_write(uartHandle, npiTxBuf, TransportTxLen, NULL) != UART2_STATUS_SUCCESS)
     {
       TransportTxLen = NPI_BUSY;
     }

@@ -165,14 +165,14 @@ ChipInfo_GetChipType( void )
             }
             break;
         case 0x9 :
-            if ( fcfg1Pa ) {
-                chipType = CHIP_TYPE_unused;
-            } else {
+            if ( ! fcfg1Pa ) {
                 chipType = CHIP_TYPE_CC2642;
             }
             break;
         case 0x8 :
-            chipType = CHIP_TYPE_CC1312;
+            if ( ! fcfg1Pa ) {
+                chipType = CHIP_TYPE_CC1312;
+            }
             break;
         }
     }

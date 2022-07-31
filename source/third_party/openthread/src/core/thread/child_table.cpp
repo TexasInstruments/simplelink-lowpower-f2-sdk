@@ -33,42 +33,27 @@
 
 #include "child_table.hpp"
 
+#if OPENTHREAD_FTD
+
 #include "common/code_utils.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
+#include "common/locator_getters.hpp"
 
 namespace ot {
 
-#if OPENTHREAD_FTD
-
 ChildTable::Iterator::Iterator(Instance &aInstance, Child::StateFilter aFilter)
     : InstanceLocator(aInstance)
+    , ItemPtrIterator(nullptr)
     , mFilter(aFilter)
-    , mStart(NULL)
-    , mChild(NULL)
-{
-    Reset();
-}
-
-ChildTable::Iterator::Iterator(Instance &aInstance, Child::StateFilter aFilter, Child *aStartingChild)
-    : InstanceLocator(aInstance)
-    , mFilter(aFilter)
-    , mStart(aStartingChild)
-    , mChild(NULL)
 {
     Reset();
 }
 
 void ChildTable::Iterator::Reset(void)
 {
-    if (mStart == NULL)
-    {
-        mStart = &Get<ChildTable>().mChildren[0];
-    }
+    mItem = &Get<ChildTable>().mChildren[0];
 
-    mChild = mStart;
-
-    if (!mChild->MatchesFilter(mFilter))
+    if (!mItem->MatchesFilter(mFilter))
     {
         Advance();
     }
@@ -76,23 +61,13 @@ void ChildTable::Iterator::Reset(void)
 
 void ChildTable::Iterator::Advance(void)
 {
-    ChildTable &childTable = Get<ChildTable>();
-    Child *     listStart  = &childTable.mChildren[0];
-    Child *     listEnd    = &childTable.mChildren[childTable.mMaxChildrenAllowed];
-
-    VerifyOrExit(mChild != NULL, OT_NOOP);
+    VerifyOrExit(mItem != nullptr);
 
     do
     {
-        mChild++;
-
-        if (mChild >= listEnd)
-        {
-            mChild = listStart;
-        }
-
-        VerifyOrExit(mChild != mStart, mChild = NULL);
-    } while (!mChild->MatchesFilter(mFilter));
+        mItem++;
+        VerifyOrExit(mItem < &Get<ChildTable>().mChildren[Get<ChildTable>().mMaxChildrenAllowed], mItem = nullptr);
+    } while (!mItem->MatchesFilter(mFilter));
 
 exit:
     return;
@@ -102,26 +77,26 @@ ChildTable::ChildTable(Instance &aInstance)
     : InstanceLocator(aInstance)
     , mMaxChildrenAllowed(kMaxChildren)
 {
-    for (Child *child = &mChildren[0]; child < OT_ARRAY_END(mChildren); child++)
+    for (Child &child : mChildren)
     {
-        child->Init(aInstance);
-        child->Clear();
+        child.Init(aInstance);
+        child.Clear();
     }
 }
 
 void ChildTable::Clear(void)
 {
-    for (Child *child = &mChildren[0]; child < OT_ARRAY_END(mChildren); child++)
+    for (Child &child : mChildren)
     {
-        child->Clear();
+        child.Clear();
     }
 }
 
 Child *ChildTable::GetChildAtIndex(uint16_t aChildIndex)
 {
-    Child *child = NULL;
+    Child *child = nullptr;
 
-    VerifyOrExit(aChildIndex < mMaxChildrenAllowed, OT_NOOP);
+    VerifyOrExit(aChildIndex < mMaxChildrenAllowed);
     child = &mChildren[aChildIndex];
 
 exit:
@@ -130,18 +105,28 @@ exit:
 
 Child *ChildTable::GetNewChild(void)
 {
-    Child *child = mChildren;
+    Child *child = FindChild(Child::AddressMatcher(Child::kInStateInvalid));
+
+    VerifyOrExit(child != nullptr);
+    child->Clear();
+
+exit:
+    return child;
+}
+
+const Child *ChildTable::FindChild(const Child::AddressMatcher &aMatcher) const
+{
+    const Child *child = mChildren;
 
     for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
     {
-        if (child->IsStateInvalid())
+        if (child->Matches(aMatcher))
         {
-            child->Clear();
             ExitNow();
         }
     }
 
-    child = NULL;
+    child = nullptr;
 
 exit:
     return child;
@@ -149,76 +134,22 @@ exit:
 
 Child *ChildTable::FindChild(uint16_t aRloc16, Child::StateFilter aFilter)
 {
-    Child *child = mChildren;
-
-    for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
-    {
-        if (child->MatchesFilter(aFilter) && (child->GetRloc16() == aRloc16))
-        {
-            ExitNow();
-        }
-    }
-
-    child = NULL;
-
-exit:
-    return child;
+    return FindChild(Child::AddressMatcher(aRloc16, aFilter));
 }
 
-Child *ChildTable::FindChild(const Mac::ExtAddress &aAddress, Child::StateFilter aFilter)
+Child *ChildTable::FindChild(const Mac::ExtAddress &aExtAddress, Child::StateFilter aFilter)
 {
-    Child *child = mChildren;
-
-    for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
-    {
-        if (child->MatchesFilter(aFilter) && (child->GetExtAddress() == aAddress))
-        {
-            ExitNow();
-        }
-    }
-
-    child = NULL;
-
-exit:
-    return child;
+    return FindChild(Child::AddressMatcher(aExtAddress, aFilter));
 }
 
-Child *ChildTable::FindChild(const Mac::Address &aAddress, Child::StateFilter aFilter)
+Child *ChildTable::FindChild(const Mac::Address &aMacAddress, Child::StateFilter aFilter)
 {
-    Child *child = NULL;
-
-    switch (aAddress.GetType())
-    {
-    case Mac::Address::kTypeShort:
-        child = FindChild(aAddress.GetShort(), aFilter);
-        break;
-
-    case Mac::Address::kTypeExtended:
-        child = FindChild(aAddress.GetExtended(), aFilter);
-        break;
-
-    default:
-        break;
-    }
-
-    return child;
+    return FindChild(Child::AddressMatcher(aMacAddress, aFilter));
 }
 
 bool ChildTable::HasChildren(Child::StateFilter aFilter) const
 {
-    bool         rval  = false;
-    const Child *child = mChildren;
-
-    for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
-    {
-        if (child->MatchesFilter(aFilter))
-        {
-            ExitNow(rval = true);
-        }
-    }
-
-exit:
-    return rval;
+    return (FindChild(Child::AddressMatcher(aFilter)) != nullptr);
 }
 
 uint16_t ChildTable::GetNumChildren(Child::StateFilter aFilter) const
@@ -237,12 +168,12 @@ uint16_t ChildTable::GetNumChildren(Child::StateFilter aFilter) const
     return numChildren;
 }
 
-otError ChildTable::SetMaxChildrenAllowed(uint16_t aMaxChildren)
+Error ChildTable::SetMaxChildrenAllowed(uint16_t aMaxChildren)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
-    VerifyOrExit(aMaxChildren > 0 && aMaxChildren <= kMaxChildren, error = OT_ERROR_INVALID_ARGS);
-    VerifyOrExit(!HasChildren(Child::kInStateAnyExceptInvalid), error = OT_ERROR_INVALID_STATE);
+    VerifyOrExit(aMaxChildren > 0 && aMaxChildren <= kMaxChildren, error = kErrorInvalidArgs);
+    VerifyOrExit(!HasChildren(Child::kInStateAnyExceptInvalid), error = kErrorInvalidState);
 
     mMaxChildrenAllowed = aMaxChildren;
 
@@ -250,6 +181,156 @@ exit:
     return error;
 }
 
-#endif // OPENTHREAD_FTD
+Error ChildTable::GetChildInfoById(uint16_t aChildId, Child::Info &aChildInfo)
+{
+    Error    error = kErrorNone;
+    Child *  child;
+    uint16_t rloc16;
+
+    if ((aChildId & ~Mle::kMaxChildId) != 0)
+    {
+        aChildId = Mle::Mle::ChildIdFromRloc16(aChildId);
+    }
+
+    rloc16 = Get<Mac::Mac>().GetShortAddress() | aChildId;
+    child  = FindChild(rloc16, Child::kInStateValidOrRestoring);
+    VerifyOrExit(child != nullptr, error = kErrorNotFound);
+
+    aChildInfo.SetFrom(*child);
+
+exit:
+    return error;
+}
+
+Error ChildTable::GetChildInfoByIndex(uint16_t aChildIndex, Child::Info &aChildInfo)
+{
+    Error  error = kErrorNone;
+    Child *child = nullptr;
+
+    child = GetChildAtIndex(aChildIndex);
+    VerifyOrExit((child != nullptr) && child->IsStateValidOrRestoring(), error = kErrorNotFound);
+
+    aChildInfo.SetFrom(*child);
+
+exit:
+    return error;
+}
+
+void ChildTable::Restore(void)
+{
+    Error    error          = kErrorNone;
+    bool     foundDuplicate = false;
+    uint16_t numChildren    = 0;
+
+    for (const Settings::ChildInfo &childInfo : Get<Settings>().IterateChildInfo())
+    {
+        Child *child;
+
+        child = FindChild(childInfo.GetExtAddress(), Child::kInStateAnyExceptInvalid);
+
+        if (child == nullptr)
+        {
+            VerifyOrExit((child = GetNewChild()) != nullptr, error = kErrorNoBufs);
+        }
+        else
+        {
+            foundDuplicate = true;
+        }
+
+        child->Clear();
+
+        child->SetExtAddress(childInfo.GetExtAddress());
+        child->GetLinkInfo().Clear();
+        child->SetRloc16(childInfo.GetRloc16());
+        child->SetTimeout(childInfo.GetTimeout());
+        child->SetDeviceMode(Mle::DeviceMode(childInfo.GetMode()));
+        child->SetState(Neighbor::kStateRestored);
+        child->SetLastHeard(TimerMilli::GetNow());
+        child->SetVersion(static_cast<uint8_t>(childInfo.GetVersion()));
+        Get<IndirectSender>().SetChildUseShortAddress(*child, true);
+        Get<NeighborTable>().Signal(NeighborTable::kChildAdded, *child);
+        numChildren++;
+    }
+
+exit:
+
+    if (foundDuplicate || (numChildren > GetMaxChildren()) || (error != kErrorNone))
+    {
+        // If there is any error, e.g., there are more saved children
+        // in non-volatile settings than could be restored or there are
+        // duplicate entries with same extended address, refresh the stored
+        // children info to ensure that the non-volatile settings remain
+        // consistent with the child table.
+
+        RefreshStoredChildren();
+    }
+}
+
+void ChildTable::RemoveStoredChild(const Child &aChild)
+{
+    for (Settings::ChildInfoIterator iter(GetInstance()); !iter.IsDone(); iter++)
+    {
+        if (iter.GetChildInfo().GetRloc16() == aChild.GetRloc16())
+        {
+            IgnoreError(iter.Delete());
+            break;
+        }
+    }
+}
+
+Error ChildTable::StoreChild(const Child &aChild)
+{
+    Settings::ChildInfo childInfo;
+
+    RemoveStoredChild(aChild);
+
+    childInfo.Init();
+    childInfo.SetExtAddress(aChild.GetExtAddress());
+    childInfo.SetTimeout(aChild.GetTimeout());
+    childInfo.SetRloc16(aChild.GetRloc16());
+    childInfo.SetMode(aChild.GetDeviceMode().Get());
+    childInfo.SetVersion(aChild.GetVersion());
+
+    return Get<Settings>().AddChildInfo(childInfo);
+}
+
+void ChildTable::RefreshStoredChildren(void)
+{
+    const Child *child = &mChildren[0];
+
+    SuccessOrExit(Get<Settings>().DeleteAllChildInfo());
+
+    for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
+    {
+        if (child->IsStateInvalid())
+        {
+            continue;
+        }
+
+        SuccessOrExit(StoreChild(*child));
+    }
+
+exit:
+    return;
+}
+
+bool ChildTable::HasSleepyChildWithAddress(const Ip6::Address &aIp6Address) const
+{
+    bool         hasChild = false;
+    const Child *child    = &mChildren[0];
+
+    for (uint16_t num = mMaxChildrenAllowed; num != 0; num--, child++)
+    {
+        if (child->IsStateValidOrRestoring() && !child->IsRxOnWhenIdle() && child->HasIp6Address(aIp6Address))
+        {
+            hasChild = true;
+            break;
+        }
+    }
+
+    return hasChild;
+}
 
 } // namespace ot
+
+#endif // OPENTHREAD_FTD

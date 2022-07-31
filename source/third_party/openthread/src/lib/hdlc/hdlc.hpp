@@ -39,6 +39,7 @@
 
 #include <openthread/error.h>
 
+#include "common/array.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
@@ -116,7 +117,7 @@ public:
 
 protected:
     FrameWritePointer(void)
-        : mWritePointer(NULL)
+        : mWritePointer(nullptr)
         , mRemainingLength(0)
     {
     }
@@ -217,7 +218,7 @@ public:
         mWritePointer    = mBuffer + kHeaderSize;
         mRemainingLength = kSize - kHeaderSize;
 
-        SetSkipLength(0);
+        IgnoreError(SetSkipLength(0));
     }
 
     /**
@@ -242,7 +243,7 @@ public:
     {
         otError error = OT_ERROR_NO_BUFS;
 
-        if (GetFrame() + aLength <= OT_ARRAY_END(mBuffer))
+        if (GetFrame() + aLength <= GetArrayEnd(mBuffer))
         {
             mWritePointer    = GetFrame() + aLength;
             mRemainingLength = static_cast<uint16_t>(mBuffer + kSize - mWritePointer);
@@ -273,7 +274,7 @@ public:
     {
         otError error = OT_ERROR_NO_BUFS;
 
-        if (mWriteFrameStart + kHeaderSize + aSkipLength <= OT_ARRAY_END(mBuffer))
+        if (mWriteFrameStart + kHeaderSize + aSkipLength <= GetArrayEnd(mBuffer))
         {
             Encoding::LittleEndian::WriteUint16(aSkipLength, mWriteFrameStart + kHeaderSkipLengthOffset);
             mWritePointer    = GetFrame();
@@ -322,7 +323,7 @@ public:
     {
         Encoding::LittleEndian::WriteUint16(GetSkipLength() + GetLength(), mWriteFrameStart + kHeaderTotalLengthOffset);
         mWriteFrameStart = mWritePointer;
-        SetSkipLength(0);
+        IgnoreError(SetSkipLength(0));
         mWritePointer    = GetFrame();
         mRemainingLength = static_cast<uint16_t>(mBuffer + kSize - mWritePointer);
     }
@@ -334,7 +335,7 @@ public:
      */
     void DiscardFrame(void)
     {
-        SetSkipLength(0);
+        IgnoreError(SetSkipLength(0));
 
         mWritePointer    = GetFrame();
         mRemainingLength = static_cast<uint16_t>(mBuffer + kSize - mWritePointer);
@@ -352,10 +353,11 @@ public:
     /**
      * This method iterates through previously saved frames in the buffer, getting a next frame in the queue.
      *
-     * @param[inout] aFrame   On entry, should point to a previous saved frame or NULL to get the first frame.
-     *                        On exit, the pointer variable is updated to next frame or set to NULL if there are none.
-     * @param[inout] aLength  On entry, should be a reference to the frame length of the previous saved frame.
-     *                        On exit, the reference is updated to the frame length (number of bytes) of next frame.
+     * @param[in,out] aFrame   On entry, should point to a previous saved frame or nullptr to get the first frame.
+     *                         On exit, the pointer variable is updated to next frame or set to nullptr if there are
+     *                         none.
+     * @param[in,out] aLength  On entry, should be a reference to the frame length of the previous saved frame.
+     *                         On exit, the reference is updated to the frame length (number of bytes) of next frame.
      *
      * @retval OT_ERROR_NONE       Updated @aFrame and @aLength successfully with the next saved frame.
      * @retval OT_ERROR_NOT_FOUND  No more saved frame in the buffer.
@@ -365,9 +367,9 @@ public:
     {
         otError error = OT_ERROR_NONE;
 
-        OT_ASSERT(aFrame == NULL || (mBuffer <= aFrame && aFrame < OT_ARRAY_END(mBuffer)));
+        OT_ASSERT(aFrame == nullptr || (mBuffer <= aFrame && aFrame < GetArrayEnd(mBuffer)));
 
-        aFrame = (aFrame == NULL) ? mBuffer : aFrame + aLength;
+        aFrame = (aFrame == nullptr) ? mBuffer : aFrame + aLength;
 
         if (aFrame != mWriteFrameStart)
         {
@@ -380,7 +382,7 @@ public:
         else
         {
             aLength = 0;
-            aFrame  = NULL;
+            aFrame  = nullptr;
             error   = OT_ERROR_NOT_FOUND;
         }
 
@@ -564,6 +566,12 @@ public:
      *
      */
     void Decode(const uint8_t *aData, uint16_t aLength);
+
+    /**
+     * This method resets internal states of the decoder.
+     *
+     */
+    void Reset(void);
 
 private:
     enum State

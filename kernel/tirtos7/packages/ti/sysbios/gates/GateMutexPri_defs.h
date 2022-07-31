@@ -68,8 +68,6 @@
 #define GateMutexPri_Handle_label ti_sysbios_gates_GateMutexPri_Handle_label
 #define GateMutexPri_Handle_name ti_sysbios_gates_GateMutexPri_Handle_name
 #define GateMutexPri_Instance_init ti_sysbios_gates_GateMutexPri_Instance_init
-#define GateMutexPri_Object_count ti_sysbios_gates_GateMutexPri_Object_count
-#define GateMutexPri_Object_get ti_sysbios_gates_GateMutexPri_Object_get
 #define GateMutexPri_Object_first ti_sysbios_gates_GateMutexPri_Object_first
 #define GateMutexPri_Object_next ti_sysbios_gates_GateMutexPri_Object_next
 #define GateMutexPri_Object_sizeof ti_sysbios_gates_GateMutexPri_Object_sizeof
@@ -125,8 +123,6 @@
 #undef GateMutexPri_Handle_label
 #undef GateMutexPri_Handle_name
 #undef GateMutexPri_Instance_init
-#undef GateMutexPri_Object_count
-#undef GateMutexPri_Object_get
 #undef GateMutexPri_Object_first
 #undef GateMutexPri_Object_next
 #undef GateMutexPri_Object_sizeof

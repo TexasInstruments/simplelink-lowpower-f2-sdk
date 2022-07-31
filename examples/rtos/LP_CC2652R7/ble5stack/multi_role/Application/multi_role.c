@@ -71,6 +71,7 @@ Target Device: cc13xx_cc26xx
 #include <intrinsics.h>
 #endif
 
+#include <ti/drivers/GPIO.h>
 #include <ti/drivers/utils/List.h>
 
 #include <icall.h>
@@ -2134,7 +2135,7 @@ static void multi_role_handleKeys(uint8_t keys)
   {
 #ifndef FREERTOS
     // Check if the key is still pressed
-    if (PIN_getInputValue(CONFIG_GPIO_BTN1) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN1) == 0)
     {
 #endif
       tbm_buttonLeft();
@@ -2146,7 +2147,7 @@ static void multi_role_handleKeys(uint8_t keys)
   {
     // Check if the key is still pressed
 #ifndef FREERTOS
-    rtnVal = PIN_getInputValue(CONFIG_GPIO_BTN2);
+    rtnVal = GPIO_read(CONFIG_GPIO_BTN2);
     if (rtnVal == 0)
     {
 #endif

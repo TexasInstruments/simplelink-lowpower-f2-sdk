@@ -36,7 +36,11 @@
 
 #include "openthread-core-config.h"
 
-#include <mbedtls/aes.h>
+#include <openthread/platform/crypto.h>
+
+#include "common/code_utils.hpp"
+#include "crypto/context_size.hpp"
+#include "crypto/storage.hpp"
 
 namespace ot {
 namespace Crypto {
@@ -55,31 +59,27 @@ namespace Crypto {
 class AesEcb
 {
 public:
-    enum
-    {
-        kBlockSize = 16, ///< AES-128 block size (bytes).
-    };
+    static constexpr uint8_t kBlockSize = 16; ///< AES-128 block size (bytes).
 
     /**
      * Constructor to initialize the mbedtls_aes_context.
      *
      */
-    AesEcb();
+    AesEcb(void);
 
     /**
      * Destructor to free the mbedtls_aes_context.
      *
      */
-    ~AesEcb();
+    ~AesEcb(void);
 
     /**
      * This method sets the key.
      *
-     * @param[in]  aKey        A pointer to the key.
-     * @param[in]  aKeyLength  The key length in bytes.
+     * @param[in]  aKey     Crypto Key used for ECB operation
      *
      */
-    void SetKey(const uint8_t *aKey, uint16_t aKeyLength);
+    void SetKey(const Key &aKey);
 
     /**
      * This method encrypts data.
@@ -91,7 +91,8 @@ public:
     void Encrypt(const uint8_t aInput[kBlockSize], uint8_t aOutput[kBlockSize]);
 
 private:
-    mbedtls_aes_context mContext;
+    otCryptoContext mContext;
+    OT_DEFINE_ALIGNED_VAR(mContextStorage, kAesContextSize, uint64_t);
 };
 
 /**

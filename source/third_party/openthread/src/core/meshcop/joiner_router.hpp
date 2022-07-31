@@ -36,10 +36,13 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_FTD
+
 #include "coap/coap.hpp"
 #include "coap/coap_message.hpp"
 #include "common/locator.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "common/notifier.hpp"
 #include "common/timer.hpp"
 #include "mac/mac_types.hpp"
@@ -51,8 +54,10 @@ namespace ot {
 
 namespace MeshCoP {
 
-class JoinerRouter : public InstanceLocator
+class JoinerRouter : public InstanceLocator, private NonCopyable
 {
+    friend class ot::Notifier;
+
 public:
     /**
      * This constructor initializes the Joiner Router object.
@@ -73,29 +78,25 @@ public:
     /**
      * This method sets the Joiner UDP Port.
      *
-     * @param[in]  The Joiner UDP Port number.
+     * @param[in]  aJoinerUdpPort  The Joiner UDP Port number.
      *
      */
     void SetJoinerUdpPort(uint16_t aJoinerUdpPort);
 
 private:
-    enum
-    {
-        kJoinerEntrustTxDelay = 50, ///< milliseconds
-    };
+    static constexpr uint32_t kJoinerEntrustTxDelay = 50; // in msec
 
     struct JoinerEntrustMetadata
     {
-        otError AppendTo(Message &aMessage) { return aMessage.Append(this, sizeof(*this)); }
-        void    ReadFrom(const Message &aMessage);
+        Error AppendTo(Message &aMessage) const { return aMessage.Append(*this); }
+        void  ReadFrom(const Message &aMessage);
 
         Ip6::MessageInfo mMessageInfo; // Message info of the message to send.
         TimeMilli        mSendTime;    // Time when the message shall be sent.
         Kek              mKek;         // KEK used by MAC layer to encode this message.
     };
 
-    static void HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags);
-    void        HandleStateChanged(otChangedFlags aFlags);
+    void HandleNotifierEvents(Events aEvents);
 
     static void HandleUdpReceive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleUdpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
@@ -106,32 +107,32 @@ private:
     static void HandleJoinerEntrustResponse(void *               aContext,
                                             otMessage *          aMessage,
                                             const otMessageInfo *aMessageInfo,
-                                            otError              aResult);
-    void HandleJoinerEntrustResponse(Coap::Message *aMessage, const Ip6::MessageInfo *aMessageInfo, otError aResult);
+                                            Error                aResult);
+    void HandleJoinerEntrustResponse(Coap::Message *aMessage, const Ip6::MessageInfo *aMessageInfo, Error aResult);
 
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
 
-    otError        DelaySendingJoinerEntrust(const Ip6::MessageInfo &aMessageInfo, const Kek &aKek);
+    void           Start(void);
+    void           DelaySendingJoinerEntrust(const Ip6::MessageInfo &aMessageInfo, const Kek &aKek);
     void           SendDelayedJoinerEntrust(void);
-    otError        SendJoinerEntrust(const Ip6::MessageInfo &aMessageInfo);
+    Error          SendJoinerEntrust(const Ip6::MessageInfo &aMessageInfo);
     Coap::Message *PrepareJoinerEntrustMessage(void);
 
-    Ip6::UdpSocket mSocket;
-    Coap::Resource mRelayTransmit;
+    Ip6::Udp::Socket mSocket;
+    Coap::Resource   mRelayTransmit;
 
     TimerMilli   mTimer;
     MessageQueue mDelayedJoinEnts;
 
-    Notifier::Callback mNotifierCallback;
-
     uint16_t mJoinerUdpPort;
 
     bool mIsJoinerPortConfigured : 1;
-    bool mExpectJoinEntRsp : 1;
 };
 
 } // namespace MeshCoP
 } // namespace ot
+
+#endif // OPENTHREAD_FTD
 
 #endif // JOINER_ROUTER_HPP_

@@ -68,8 +68,6 @@
 #define GateMutex_Handle_label ti_sysbios_gates_GateMutex_Handle_label
 #define GateMutex_Handle_name ti_sysbios_gates_GateMutex_Handle_name
 #define GateMutex_Instance_init ti_sysbios_gates_GateMutex_Instance_init
-#define GateMutex_Object_count ti_sysbios_gates_GateMutex_Object_count
-#define GateMutex_Object_get ti_sysbios_gates_GateMutex_Object_get
 #define GateMutex_Object_first ti_sysbios_gates_GateMutex_Object_first
 #define GateMutex_Object_next ti_sysbios_gates_GateMutex_Object_next
 #define GateMutex_Object_sizeof ti_sysbios_gates_GateMutex_Object_sizeof
@@ -124,8 +122,6 @@
 #undef GateMutex_Handle_label
 #undef GateMutex_Handle_name
 #undef GateMutex_Instance_init
-#undef GateMutex_Object_count
-#undef GateMutex_Object_get
 #undef GateMutex_Object_first
 #undef GateMutex_Object_next
 #undef GateMutex_Object_sizeof

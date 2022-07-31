@@ -36,8 +36,11 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_DHCP6_CLIENT_ENABLE
+
 #include "common/locator.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "common/trickle_timer.hpp"
 #include "mac/mac.hpp"
@@ -61,45 +64,10 @@ namespace Dhcp6 {
  */
 
 /**
- * Some constants
- *
- */
-enum
-{
-    kTrickleTimerImin = 1,
-    kTrickleTimerImax = 120,
-};
-
-/**
- * Status of IdentityAssociation
- *
- */
-enum IaStatus
-{
-    kIaStatusInvalid,
-    kIaStatusSolicit,
-    kIaStatusSoliciting,
-    kIaStatusSolicitReplied,
-};
-
-/**
- * This class implements IdentityAssociation.
- *
- */
-struct IdentityAssociation
-{
-    Ip6::NetifUnicastAddress mNetifAddress;      ///< the NetifAddress
-    uint32_t                 mPreferredLifetime; ///< The preferred lifetime.
-    uint32_t                 mValidLifetime;     ///< The valid lifetime.
-    uint16_t                 mPrefixAgentRloc;   ///< Rloc of Prefix Agent
-    uint8_t                  mStatus;            ///< Status of IdentityAssociation
-};
-
-/**
  * This class implements DHCPv6 Client.
  *
  */
-class Dhcp6Client : public InstanceLocator
+class Client : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -108,7 +76,7 @@ public:
      * @param[in]  aInstance     A reference to the OpenThread instance.
      *
      */
-    explicit Dhcp6Client(Instance &aInstance);
+    explicit Client(Instance &aInstance);
 
     /**
      * This method update addresses that shall be automatically created using DHCP.
@@ -118,51 +86,85 @@ public:
     void UpdateAddresses(void);
 
 private:
+    static constexpr uint32_t kTrickleTimerImin = 1;
+    static constexpr uint32_t kTrickleTimerImax = 120;
+
+    enum IaStatus : uint8_t
+    {
+        kIaStatusInvalid,
+        kIaStatusSolicit,
+        kIaStatusSoliciting,
+        kIaStatusSolicitReplied,
+    };
+
+    struct IdentityAssociation
+    {
+        Ip6::Netif::UnicastAddress mNetifAddress;
+        uint32_t                   mPreferredLifetime;
+        uint32_t                   mValidLifetime;
+        uint16_t                   mPrefixAgentRloc;
+        IaStatus                   mStatus;
+    };
+
     void Start(void);
     void Stop(void);
 
-    static bool MatchNetifAddressWithPrefix(const Ip6::NetifUnicastAddress &aAddress, const otIp6Prefix &aIp6Prefix);
+    static bool MatchNetifAddressWithPrefix(const Ip6::Netif::UnicastAddress &aNetifAddress,
+                                            const Ip6::Prefix &               aIp6Prefix);
 
-    otError Solicit(uint16_t aRloc16);
+    void Solicit(uint16_t aRloc16);
 
     void AddIdentityAssociation(uint16_t aRloc16, otIp6Prefix &aIp6Prefix);
     void RemoveIdentityAssociation(uint16_t aRloc16, otIp6Prefix &aIp6Prefix);
 
     bool ProcessNextIdentityAssociation(void);
 
-    otError AppendHeader(Message &aMessage);
-    otError AppendClientIdentifier(Message &aMessage);
-    otError AppendIaNa(Message &aMessage, uint16_t aRloc16);
-    otError AppendIaAddress(Message &aMessage, uint16_t aRloc16);
-    otError AppendElapsedTime(Message &aMessage);
-    otError AppendRapidCommit(Message &aMessage);
+    Error AppendHeader(Message &aMessage);
+    Error AppendClientIdentifier(Message &aMessage);
+    Error AppendIaNa(Message &aMessage, uint16_t aRloc16);
+    Error AppendIaAddress(Message &aMessage, uint16_t aRloc16);
+    Error AppendElapsedTime(Message &aMessage);
+    Error AppendRapidCommit(Message &aMessage);
 
     static void HandleUdpReceive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleUdpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
 
     void     ProcessReply(Message &aMessage);
     uint16_t FindOption(Message &aMessage, uint16_t aOffset, uint16_t aLength, Code aCode);
-    otError  ProcessServerIdentifier(Message &aMessage, uint16_t aOffset);
-    otError  ProcessClientIdentifier(Message &aMessage, uint16_t aOffset);
-    otError  ProcessIaNa(Message &aMessage, uint16_t aOffset);
-    otError  ProcessStatusCode(Message &aMessage, uint16_t aOffset);
-    otError  ProcessIaAddress(Message &aMessage, uint16_t aOffset);
+    Error    ProcessServerIdentifier(Message &aMessage, uint16_t aOffset);
+    Error    ProcessClientIdentifier(Message &aMessage, uint16_t aOffset);
+    Error    ProcessIaNa(Message &aMessage, uint16_t aOffset);
+    Error    ProcessStatusCode(Message &aMessage, uint16_t aOffset);
+    Error    ProcessIaAddress(Message &aMessage, uint16_t aOffset);
 
-    static bool HandleTrickleTimer(TrickleTimer &aTrickleTimer);
-    bool        HandleTrickleTimer(void);
+    static void HandleTrickleTimer(TrickleTimer &aTrickleTimer);
+    void        HandleTrickleTimer(void);
 
-    Ip6::UdpSocket mSocket;
+    Ip6::Udp::Socket mSocket;
 
     TrickleTimer mTrickleTimer;
 
-    uint8_t   mTransactionId[kTransactionIdSize];
-    TimeMilli mStartTime;
+    TransactionId mTransactionId;
+    TimeMilli     mStartTime;
 
     IdentityAssociation  mIdentityAssociations[OPENTHREAD_CONFIG_DHCP6_CLIENT_NUM_PREFIXES];
     IdentityAssociation *mIdentityAssociationCurrent;
 };
 
+/**
+ * @}
+ *
+ */
+
 } // namespace Dhcp6
 } // namespace ot
+
+#else // OPENTHREAD_CONFIG_DHCP6_CLIENT_ENABLE
+
+#if OPENTHREAD_ENABLE_DHCP6_MULTICAST_SOLICIT
+#error "OPENTHREAD_ENABLE_DHCP6_MULTICAST_SOLICIT requires OPENTHREAD_CONFIG_DHCP6_CLIENT_ENABLE to be also set."
+#endif
+
+#endif // OPENTHREAD_CONFIG_DHCP6_CLIENT_ENABLE
 
 #endif // DHCP6_CLIENT_HPP_

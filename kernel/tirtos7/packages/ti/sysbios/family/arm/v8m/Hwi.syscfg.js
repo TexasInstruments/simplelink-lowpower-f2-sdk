@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -137,7 +137,7 @@ function modules(mod)
 {
 //    console.log(Object.keys(mod));
 
-    let modArray = new Array(); 
+    let modArray = new Array();
 
     modArray.push({
         name      : "HwiHooks",
@@ -169,6 +169,21 @@ function enableExceptionChange(inst, ui)
     }
 }
 
+/*
+ *  ======== validate ========
+ */
+function validate(mod, validation)
+{
+    if (system.modules["/ti/sysbios/BIOS"].$static.psaEnabled) {
+        if (mod.resetVectorAddress == Settings.defaultResetVectorAddress) {
+            validation.logError("resetVectorAddress must be modified to match the SPE linker settings", mod);
+        }
+        if (mod.vectorTableAddress == Settings.defaultVectorTableAddress) {
+            validation.logError("vectorTableAddress must be configured to match the SPE linker settings", mod);
+        }
+    }
+}
+
 exports = {
     staticOnly: true,
     displayName: "Hwi",
@@ -176,6 +191,7 @@ exports = {
         name: "moduleGlobal",
         modules: modules,
         moduleInstances: moduleInstances,
+        validate: validate,
         config: [
             {
                 name: "numInterrupts",

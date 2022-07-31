@@ -59,8 +59,7 @@ public:
     /**
      * This method indicates whether this is an Active or Pending Dataset.
      *
-     * @retval Tlv::kActiveTimestamp when this is an Active Dataset.
-     * @retval Tlv::kPendingTimetamp when this is a Pending Dataset.
+     * @returns The Dataset type.
      *
      */
     Dataset::Type GetType(void) const { return mType; }
@@ -90,39 +89,58 @@ public:
     bool IsTimestampPresent(void) const { return mTimestampPresent; }
 
     /**
+     * This method returns a pointer to the Timestamp or `nullptr` when it is not present in the Dataset.
+     *
+     * @returns A pointer to the Timestamp or `nullptr` if timestamp is not present in the Dataset.
+     *
+     */
+    const Timestamp *GetTimestamp(void) const { return mTimestampPresent ? &mTimestamp : nullptr; }
+
+    /**
      * This method restores and retrieves the dataset from non-volatile memory.
      *
      * This method also sets the memory-cached timestamp for subsequent calls to `Compare()`.
      *
      * @param[out]  aDataset  Where to place the dataset.
      *
-     * @retval OT_ERROR_NONE       Successfully retrieved the dataset.
-     * @retval OT_ERROR_NOT_FOUND  There is no corresponding dataset stored in non-volatile memory.
+     * @retval kErrorNone      Successfully retrieved the dataset.
+     * @retval kErrorNotFound  There is no corresponding dataset stored in non-volatile memory.
      *
      */
-    otError Restore(Dataset &aDataset);
+    Error Restore(Dataset &aDataset);
 
     /**
      * This method retrieves the dataset from non-volatile memory.
      *
      * @param[out]  aDataset  Where to place the dataset.
      *
-     * @retval OT_ERROR_NONE       Successfully retrieved the dataset.
-     * @retval OT_ERROR_NOT_FOUND  There is no corresponding dataset stored in non-volatile memory.
+     * @retval kErrorNone      Successfully retrieved the dataset.
+     * @retval kErrorNotFound  There is no corresponding dataset stored in non-volatile memory.
      *
      */
-    otError Read(Dataset &aDataset) const;
+    Error Read(Dataset &aDataset) const;
+
+    /**
+     * This method retrieves the dataset from non-volatile memory.
+     *
+     * @param[out]  aDatasetInfo  Where to place the dataset as `Dataset::Info`.
+     *
+     * @retval kErrorNone      Successfully retrieved the dataset.
+     * @retval kErrorNotFound  There is no corresponding dataset stored in non-volatile memory.
+     *
+     */
+    Error Read(Dataset::Info &aDatasetInfo) const;
 
     /**
      * This method retrieves the dataset from non-volatile memory.
      *
      * @param[out]  aDataset  Where to place the dataset.
      *
-     * @retval OT_ERROR_NONE       Successfully retrieved the dataset.
-     * @retval OT_ERROR_NOT_FOUND  There is no corresponding dataset stored in non-volatile memory.
+     * @retval kErrorNone      Successfully retrieved the dataset.
+     * @retval kErrorNotFound  There is no corresponding dataset stored in non-volatile memory.
      *
      */
-    otError Read(otOperationalDataset &aDataset) const;
+    Error Read(otOperationalDatasetTlvs &aDataset) const;
 
     /**
      * This method returns the local time this dataset was last updated or restored.
@@ -135,34 +153,44 @@ public:
     /**
      * This method stores the dataset into non-volatile memory.
      *
-     * @retval OT_ERROR_NONE  Successfully stored the dataset.
+     * @param[in] aDatasetInfo     The Dataset to save as `Dataset::Info`.
+     *
+     * @retval kErrorNone             Successfully saved the dataset.
+     * @retval kErrorNotImplemented   The platform does not implement settings functionality.
      *
      */
-    otError Save(const otOperationalDataset &aDataset);
+    Error Save(const Dataset::Info &aDatasetInfo);
 
     /**
      * This method stores the dataset into non-volatile memory.
      *
-     * @retval OT_ERROR_NONE  Successfully stored the dataset.
+     * @param[in]  aDataset  The Dataset to save as `otOperationalDatasetTlvs`.
+     *
+     * @retval kErrorNone             Successfully saved the dataset.
+     * @retval kErrorNotImplemented   The platform does not implement settings functionality.
      *
      */
-    otError Save(const Dataset &aDataset);
+    Error Save(const otOperationalDatasetTlvs &aDataset);
 
     /**
-     * This method compares this dataset to another based on the timestamp.
+     * This method stores the dataset into non-volatile memory.
      *
-     * @param[in]  aCompare  A reference to the timestamp to compare.
+     * @param[in]  aDataset  The Dataset to save.
      *
-     * @retval -1  if @p aCompare is older than this dataset.
-     * @retval  0  if @p aCompare is equal to this dataset.
-     * @retval  1  if @p aCompare is newer than this dataset.
+     * @retval kErrorNone             Successfully saved the dataset.
+     * @retval kErrorNotImplemented   The platform does not implement settings functionality.
      *
      */
-    int Compare(const Timestamp *aCompare);
+    Error Save(const Dataset &aDataset);
 
 private:
     bool IsActive(void) const { return (mType == Dataset::kActive); }
     void SetTimestamp(const Dataset &aDataset);
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    void MoveKeysToSecureStorage(Dataset &aDataset) const;
+    void DestroySecurelyStoredKeys(void) const;
+    void EmplaceSecurelyStoredKeys(Dataset &aDataset) const;
+#endif
 
     Timestamp     mTimestamp;            ///< Active or Pending Timestamp
     TimeMilli     mUpdateTime;           ///< Local time last updated

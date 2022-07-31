@@ -31,13 +31,15 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_PLATFORM_FLASH_API_ENABLE
+
 #include <stdint.h>
 #include <string.h>
 
-#include <openthread/error.h>
 #include <openthread/platform/toolchain.h>
 
 #include "common/debug.hpp"
+#include "common/error.hpp"
 #include "common/locator.hpp"
 
 namespace ot {
@@ -53,7 +55,7 @@ public:
      * Constructor.
      *
      */
-    Flash(Instance &aInstance)
+    explicit Flash(Instance &aInstance)
         : InstanceLocator(aInstance)
     {
     }
@@ -67,21 +69,21 @@ public:
     /**
      * This method fetches the value identified by @p aKey.
      *
-     * @param[in]     aKey          The key associated with the requested value.
-     * @param[in]     aIndex        The index of the specific item to get.
-     * @param[out]    aValue        A pointer to where the value of the setting should be written.
-     *                              May be NULL if just testing for the presence or length of a key.
-     * @param[inout]  aValueLength  A pointer to the length of the value.
-     *                              When called, this should point to an integer containing the maximum bytes that
-     *                              can be written to @p aValue.
-     *                              At return, the actual length of the setting is written.
-     *                              May be NULL if performing a presence check.
+     * @param[in]      aKey          The key associated with the requested value.
+     * @param[in]      aIndex        The index of the specific item to get.
+     * @param[out]     aValue        A pointer to where the value of the setting should be written.
+     *                               May be `nullptr` if just testing for the presence or length of a key.
+     * @param[in,out]  aValueLength  A pointer to the length of the value.
+     *                               When called, this should point to an integer containing the maximum bytes that
+     *                               can be written to @p aValue.
+     *                               At return, the actual length of the setting is written.
+     *                               May be `nullptr` if performing a presence check.
      *
-     * @retval OT_ERROR_NONE        The value was fetched successfully.
-     * @retval OT_ERROR_NOT_FOUND   The key was not found.
+     * @retval kErrorNone       The value was fetched successfully.
+     * @retval kErrorNotFound   The key was not found.
      *
      */
-    otError Get(uint16_t aKey, int aIndex, uint8_t *aValue, uint16_t *aValueLength) const;
+    Error Get(uint16_t aKey, int aIndex, uint8_t *aValue, uint16_t *aValueLength) const;
 
     /**
      * This method sets or replaces the value identified by @p aKey.
@@ -91,28 +93,28 @@ public:
      *
      * @param[in]  aKey          The key associated with the value.
      * @param[in]  aValue        A pointer to where the new value of the setting should be read from.
-     *                           MUST NOT be NULL if @p aValueLength is non-zero.
+     *                           MUST NOT be `nullptr` if @p aValueLength is non-zero.
      * @param[in]  aValueLength  The length of the data pointed to by @p aValue. May be zero.
      *
-     * @retval OT_ERROR_NONE     The value was changed.
-     * @retval OT_ERROR_NO_BUFS  Not enough space to store the value.
+     * @retval kErrorNone     The value was changed.
+     * @retval kErrorNoBufs   Not enough space to store the value.
      *
      */
-    otError Set(uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
+    Error Set(uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
 
     /**
      * This method adds a value to @p aKey.
      *
      * @param[in]  aKey          The key associated with the value.
      * @param[in]  aValue        A pointer to where the new value of the setting should be read from.
-     *                           MUST NOT be NULL if @p aValueLength is non-zero.
+     *                           MUST NOT be `nullptr` if @p aValueLength is non-zero.
      * @param[in]  aValueLength  The length of the data pointed to by @p aValue. May be zero.
      *
-     * @retval OT_ERROR_NONE     The value was added.
-     * @retval OT_ERROR_NO_BUFS  Not enough space to store the value.
+     * @retval kErrorNone    The value was added.
+     * @retval kErrorNoBufs  Not enough space to store the value.
      *
      */
-    otError Add(uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
+    Error Add(uint16_t aKey, const uint8_t *aValue, uint16_t aValueLength);
 
     /**
      * This method removes a value from @p aKey.
@@ -122,11 +124,11 @@ public:
      * @param[in] aIndex  The index of the value to be removed.
      *                    If set to -1, all values for @p aKey will be removed.
      *
-     * @retval OT_ERROR_NONE       The given key and index was found and removed successfully.
-     * @retval OT_ERROR_NOT_FOUND  The given key or index was not found.
+     * @retval kErrorNone      The given key and index was found and removed successfully.
+     * @retval kErrorNotFound  The given key or index was not found.
      *
      */
-    otError Delete(uint16_t aKey, int aIndex);
+    Error Delete(uint16_t aKey, int aIndex);
 
     /**
      * This method removes all values.
@@ -135,10 +137,7 @@ public:
     void Wipe(void);
 
 private:
-    enum
-    {
-        kSwapMarkerSize = 4, // in bytes
-    };
+    static constexpr uint32_t kSwapMarkerSize = 4; // in bytes
 
     static const uint32_t sSwapActive   = 0xbe5cc5ee;
     static const uint32_t sSwapInactive = 0xbe5cc5ec;
@@ -159,7 +158,7 @@ private:
 
             mLength   = 0;
             mReserved = 0xffff;
-        };
+        }
 
         uint16_t GetKey(void) const { return mKey; }
         void     SetKey(uint16_t aKey) { mKey = aKey; }
@@ -184,14 +183,11 @@ private:
         void SetFirst(void) { mFlags &= ~kFlagFirst; }
 
     private:
-        enum
-        {
-            kFlagsInit       = 0xffff, ///< Flags initialize to all-ones.
-            kFlagAddBegin    = 1 << 0, ///< 0 indicates record write has started, 1 otherwise.
-            kFlagAddComplete = 1 << 1, ///< 0 indicates record write has completed, 1 otherwise.
-            kFlagDelete      = 1 << 2, ///< 0 indicates record was deleted, 1 otherwise.
-            kFlagFirst       = 1 << 3, ///< 0 indicates first record for key, 1 otherwise.
-        };
+        static constexpr uint16_t kFlagsInit       = 0xffff; // Flags initialize to all-ones.
+        static constexpr uint16_t kFlagAddBegin    = 1 << 0; // 0 indicates record write has started, 1 otherwise.
+        static constexpr uint16_t kFlagAddComplete = 1 << 1; // 0 indicates record write has completed, 1 otherwise.
+        static constexpr uint16_t kFlagDelete      = 1 << 2; // 0 indicates record was deleted, 1 otherwise.
+        static constexpr uint16_t kFlagFirst       = 1 << 3; // 0 indicates first record for key, 1 otherwise.
 
         uint16_t mKey;
         uint16_t mFlags;
@@ -212,18 +208,15 @@ private:
         }
 
     private:
-        enum
-        {
-            kMaxDataSize = 255,
-        };
+        static constexpr uint16_t kMaxDataSize = 255;
 
         uint8_t mData[kMaxDataSize];
     } OT_TOOL_PACKED_END;
 
-    otError Add(uint16_t aKey, bool aFirst, const uint8_t *aValue, uint16_t aValueLength);
-    bool    DoesValidRecordExist(uint32_t aOffset, uint16_t aKey) const;
-    void    SanitizeFreeSpace(void);
-    void    Swap(void);
+    Error Add(uint16_t aKey, bool aFirst, const uint8_t *aValue, uint16_t aValueLength);
+    bool  DoesValidRecordExist(uint32_t aOffset, uint16_t aKey) const;
+    void  SanitizeFreeSpace(void);
+    void  Swap(void);
 
     uint32_t mSwapSize;
     uint32_t mSwapUsed;
@@ -231,5 +224,7 @@ private:
 };
 
 } // namespace ot
+
+#endif // OPENTHREAD_CONFIG_PLATFORM_FLASH_API_ENABLE
 
 #endif // FLASH_HPP_

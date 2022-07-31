@@ -33,7 +33,7 @@
             },
             {
                 "_file": "pasettings.json",
-                "$": ".\/..\/config\/cc2652r\/targets"
+                "$": ".\/..\/config\/pa_tables\/cc13x2_cc26x2_r3"
             },
             {
                 "_file": "io_pin_definition.json",
@@ -66,10 +66,6 @@
                 "_file": "param_cmd_mapping.json",
                 "_phy": "prop",
                 "$": ".\/..\/config\/cc2652r_prop_pg21"
-            },
-            {
-                "_file": "easymode_settings.json",
-                "$": ".\/..\/config\/cc2652r"
             },
             {
                 "_file": "radio_par_definitions.json",

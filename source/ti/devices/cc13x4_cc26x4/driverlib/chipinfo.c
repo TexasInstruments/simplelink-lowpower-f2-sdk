@@ -149,12 +149,10 @@ ChipInfo_GetChipType( void )
                     if (( fcfg1UserId >> FCFG1_USER_ID_SEQUENCE_S ) & 1 ) {
                         chipType = CHIP_TYPE_CC2674P10;
                     } else {
-                        chipType = CHIP_TYPE_CC2654P10;
+                        chipType = CHIP_TYPE_CC2653P10;
                     }
                 } else if (( fcfg1UserId >> FCFG1_USER_ID_SEQUENCE_S ) & 1 ) {
                     chipType = CHIP_TYPE_CC2674R10;
-                } else {
-                    chipType = CHIP_TYPE_CC2654R10;
                 }
             }
             break;
@@ -179,8 +177,11 @@ ChipInfo_GetHwRevision( void )
 
     if ( chipFam == FAMILY_CC13x4_CC26x4 ) {
         switch ( fcfg1Rev ) {
-        case 0 : // CC13x4, CC26x4
+        case 0 : // CC13x4, CC26x4 - PG1.0
             hwRev = (HwRevision_t)(((uint32_t)HWREV_1_0 ) + minorHwRev );
+            break;
+        case 1 : // CC13x4, CC26x4 - PG2.0 (or later)
+            hwRev = (HwRevision_t)(((uint32_t)HWREV_2_0 ) + minorHwRev );
             break;
         }
     }

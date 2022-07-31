@@ -36,7 +36,9 @@
 
 #include "openthread-core-config.h"
 
+#include "common/locator.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 
 namespace ot {
 namespace Ip6 {
@@ -55,14 +57,16 @@ namespace Ip6 {
  * This class implements an IPv6 datagram filter.
  *
  */
-class Filter
+class Filter : public InstanceLocator, private NonCopyable
 {
 public:
     /**
      * This constructor initializes the Filter object.
      *
+     * @param[in]  aInstance  A reference to the OpenThread instance.
+     *
      */
-    Filter(void);
+    explicit Filter(Instance &aInstance);
 
     /**
      * This method indicates whether or not the IPv6 datagram passes the filter.
@@ -80,24 +84,24 @@ public:
      *
      * @param[in]  aPort  The port value.
      *
-     * @retval OT_ERROR_NONE         The port was successfully added to the allowed unsecure port list.
-     * @retval OT_ERROR_INVALID_ARGS The port is invalid (value 0 is reserved for internal use).
-     * @retval OT_ERROR_NO_BUFS      The unsecure port list is full.
+     * @retval kErrorNone         The port was successfully added to the allowed unsecure port list.
+     * @retval kErrorInvalidArgs  The port is invalid (value 0 is reserved for internal use).
+     * @retval kErrorNoBufs       The unsecure port list is full.
      *
      */
-    otError AddUnsecurePort(uint16_t aPort);
+    Error AddUnsecurePort(uint16_t aPort);
 
     /**
      * This method removes a port from the allowed unsecure port list.
      *
      * @param[in]  aPort  The port value.
      *
-     * @retval OT_ERROR_NONE         The port was successfully removed from the allowed unsecure port list.
-     * @retval OT_ERROR_INVALID_ARGS The port is invalid (value 0 is reserved for internal use).
-     * @retval OT_ERROR_NOT_FOUND    The port was not found in the unsecure port list.
+     * @retval kErrorNone         The port was successfully removed from the allowed unsecure port list.
+     * @retval kErrorInvalidArgs  The port is invalid (value 0 is reserved for internal use).
+     * @retval kErrorNotFound     The port was not found in the unsecure port list.
      *
      */
-    otError RemoveUnsecurePort(uint16_t aPort);
+    Error RemoveUnsecurePort(uint16_t aPort);
 
     /**
      * This method checks whether a port is in the unsecure port list.
@@ -127,21 +131,10 @@ public:
      */
     const uint16_t *GetUnsecurePorts(uint8_t &aNumEntries) const;
 
-    /**
-     * This method sets whether to allow native commissioner traffic.
-     *
-     * @param[in]   aAllow  Whether to allow native commissioner traffic.
-     *
-     */
-    void AllowNativeCommissioner(bool aAllow) { mAllowNativeCommissioner = aAllow; }
-
 private:
-    enum
-    {
-        kMaxUnsecurePorts = 2,
-    };
+    static constexpr uint16_t kMaxUnsecurePorts = 2;
+
     uint16_t mUnsecurePorts[kMaxUnsecurePorts];
-    bool     mAllowNativeCommissioner;
 };
 
 } // namespace Ip6

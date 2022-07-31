@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,27 +48,29 @@ extern const TRNG_Config TRNG_config[];
 extern const uint_least8_t TRNG_count;
 
 const TRNG_Params TRNG_defaultParams = {
-    .returnBehavior = TRNG_RETURN_BEHAVIOR_BLOCKING,
-    .cryptoKeyCallbackFxn = NULL,
+    .returnBehavior         = TRNG_RETURN_BEHAVIOR_BLOCKING,
+    .cryptoKeyCallbackFxn   = NULL,
     .randomBytesCallbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .timeout                = SemaphoreP_WAIT_FOREVER,
+    .custom                 = NULL,
 };
 
 /*
  *  ======== TRNG_Params_init ========
  */
-void TRNG_Params_init(TRNG_Params *params){
+void TRNG_Params_init(TRNG_Params *params)
+{
     *params = TRNG_defaultParams;
 }
 
 /*
  *  ======== TRNG_open ========
  */
-TRNG_Handle TRNG_open(uint_least8_t index, TRNG_Params *params) {
+__attribute__((weak)) TRNG_Handle TRNG_open(uint_least8_t index, TRNG_Params *params)
+{
     DebugP_assert(index <= TRNG_count);
 
-    TRNG_Config *config = (TRNG_Config*)&TRNG_config[index];
+    TRNG_Config *config = (TRNG_Config *)&TRNG_config[index];
 
     return TRNG_construct(config, params);
 }

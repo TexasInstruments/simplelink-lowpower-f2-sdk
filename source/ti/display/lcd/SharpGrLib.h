@@ -36,7 +36,6 @@
 //
 //*****************************************************************************
 
-
 #ifndef __SHARPLCD_H__
 #define __SHARPLCD_H__
 
@@ -51,22 +50,21 @@
 // Define LCD Screen Orientation Here
 #define LANDSCAPE
 
-//Maximum Colors in an image color palette
-#define MAX_PALETTE_COLORS                2
+// Maximum Colors in an image color palette
+#define MAX_PALETTE_COLORS 2
 
-#define SHARP_BLACK                       0x00
-#define SHARP_WHITE                       0xFF
+#define SHARP_BLACK 0x00
+#define SHARP_WHITE 0xFF
 
-#define SHARP_SEND_TOGGLE_VCOM_COMMAND    0x01
-#define SHARP_SKIP_TOGGLE_VCOM_COMMAND    0x00
+#define SHARP_SEND_TOGGLE_VCOM_COMMAND 0x01
+#define SHARP_SKIP_TOGGLE_VCOM_COMMAND 0x00
 
-#define SHARP_LCD_TRAILER_BYTE            0x00
+#define SHARP_LCD_TRAILER_BYTE 0x00
 
-#define SHARP_VCOM_TOGGLE_BIT             0x40
-#define SHARP_LCD_CMD_CHANGE_VCOM         0x00
-#define SHARP_LCD_CMD_CLEAR_SCREEN        0x20
-#define SHARP_LCD_CMD_WRITE_LINE          0x80
-
+#define SHARP_VCOM_TOGGLE_BIT      0x40
+#define SHARP_LCD_CMD_CHANGE_VCOM  0x00
+#define SHARP_LCD_CMD_CLEAR_SCREEN 0x20
+#define SHARP_LCD_CMD_WRITE_LINE   0x80
 
 //*****************************************************************************
 //
@@ -92,8 +90,7 @@
 //
 //*****************************************************************************
 
-#define DPYCOLORTRANSLATE(c)    ((c != 0) ? c = 1 : c) // Why not (!!c)?
-
+#define DPYCOLORTRANSLATE(c) ((c != 0) ? c = 1 : c) // Why not (!!c)?
 
 //*****************************************************************************
 //

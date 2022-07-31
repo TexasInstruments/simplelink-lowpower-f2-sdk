@@ -43,14 +43,19 @@
 
 #include "common/encoding.hpp"
 #include "common/locator.hpp"
+#include "common/log.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
+#include "common/time_ticker.hpp"
 #include "common/timer.hpp"
 #include "net/icmp6.hpp"
 #include "net/ip6_address.hpp"
 #include "net/ip6_headers.hpp"
 #include "net/ip6_mpl.hpp"
+#include "net/ip6_types.hpp"
 #include "net/netif.hpp"
 #include "net/socket.hpp"
+#include "net/tcp6.hpp"
 #include "net/udp6.hpp"
 
 namespace ot {
@@ -98,71 +103,13 @@ using ot::Encoding::BigEndian::HostSwap32;
  * This class implements the core IPv6 message processing.
  *
  */
-class Ip6 : public InstanceLocator
+class Ip6 : public InstanceLocator, private NonCopyable
 {
     friend class ot::Instance;
+    friend class ot::TimeTicker;
+    friend class Mpl;
 
 public:
-    enum
-    {
-        kDefaultHopLimit            = OPENTHREAD_CONFIG_IP6_HOP_LIMIT_DEFAULT,
-        kMaxDatagramLength          = OPENTHREAD_CONFIG_IP6_MAX_DATAGRAM_LENGTH,
-        kMaxAssembledDatagramLength = OPENTHREAD_CONFIG_IP6_MAX_ASSEMBLED_DATAGRAM,
-        kIp6ReassemblyTimeout       = OPENTHREAD_CONFIG_IP6_REASSEMBLY_TIMEOUT,
-        kMinimalMtu                 = 1280,
-        kStateUpdatePeriod          = 1000,
-    };
-
-    /**
-     * This method allocates a new message buffer from the buffer pool.
-     *
-     * @note If @p aSettings is 'NULL', the link layer security is enabled and the message priority is set to
-     *       OT_MESSAGE_PRIORITY_NORMAL by default.
-     *
-     * @param[in]  aReserved  The number of header bytes to reserve following the IPv6 header.
-     * @param[in]  aSettings  A pointer to the message settings or NULL to set default settings.
-     *
-     * @returns A pointer to the message or NULL if insufficient message buffers are available.
-     *
-     */
-    Message *NewMessage(uint16_t aReserved, const otMessageSettings *aSettings = NULL);
-
-    /**
-     * This method allocates a new message buffer from the buffer pool and writes the IPv6 datagram to the message.
-     *
-     * @note If @p aSettings is NULL, the link layer security is enabled and the message priority is obtained from
-     *       IPv6 message itself.
-     *       If @p aSettings is not NULL, the @p aSetting->mPriority is ignored and obtained from IPv6 message itself.
-     *
-     * @param[in]  aData        A pointer to the IPv6 datagram buffer.
-     * @param[in]  aDataLength  The size of the IPV6 datagram buffer pointed by @p aData.
-     * @param[in]  aSettings    A pointer to the message settings or NULL to set default settings.
-     *
-     * @returns A pointer to the message or NULL if malformed IPv6 header or insufficient message buffers are available.
-     *
-     */
-    Message *NewMessage(const uint8_t *aData, uint16_t aDataLength, const otMessageSettings *aSettings);
-
-    /**
-     * This method converts the message priority level to IPv6 DSCP value.
-     *
-     * @param[in]  aPriority  The message priority level.
-     *
-     * @returns The IPv6 DSCP value.
-     *
-     */
-    static uint8_t PriorityToDscp(uint8_t aPriority);
-
-    /**
-     * This method converts the IPv6 DSCP value to message priority level.
-     *
-     * @param[in]  aDscp  The IPv6 DSCP value.
-     *
-     * @returns The message priority level.
-     *
-     */
-    static uint8_t DscpToPriority(uint8_t aDscp);
-
     /**
      * This constructor initializes the object.
      *
@@ -172,34 +119,83 @@ public:
     explicit Ip6(Instance &aInstance);
 
     /**
+     * This method allocates a new message buffer from the buffer pool.
+     *
+     * @param[in]  aReserved  The number of header bytes to reserve following the IPv6 header.
+     * @param[in]  aSettings  The message settings.
+     *
+     * @returns A pointer to the message or `nullptr` if insufficient message buffers are available.
+     *
+     */
+    Message *NewMessage(uint16_t aReserved, const Message::Settings &aSettings = Message::Settings::GetDefault());
+
+    /**
+     * This method allocates a new message buffer from the buffer pool and writes the IPv6 datagram to the message.
+     *
+     * @param[in]  aData        A pointer to the IPv6 datagram buffer.
+     * @param[in]  aDataLength  The size of the IPV6 datagram buffer pointed by @p aData.
+     * @param[in]  aSettings    The message settings.
+     *
+     * @returns A pointer to the message or `nullptr` if malformed IPv6 header or insufficient message buffers are
+     * available.
+     *
+     */
+    Message *NewMessage(const uint8_t *aData, uint16_t aDataLength, const Message::Settings &aSettings);
+
+    /**
+     * This method allocates a new message buffer from the buffer pool and writes the IPv6 datagram to the message.
+     *
+     * @note The link layer security is enabled and the message priority is obtained from IPv6 message itself.
+     *
+     * @param[in]  aData        A pointer to the IPv6 datagram buffer.
+     * @param[in]  aDataLength  The size of the IPV6 datagram buffer pointed by @p aData.
+     *
+     * @returns A pointer to the message or `nullptr` if malformed IPv6 header or insufficient message buffers are
+     * available.
+     *
+     */
+    Message *NewMessage(const uint8_t *aData, uint16_t aDataLength);
+
+    /**
+     * This method converts the IPv6 DSCP value to message priority level.
+     *
+     * @param[in]  aDscp  The IPv6 DSCP value.
+     *
+     * @returns The message priority level.
+     *
+     */
+    static Message::Priority DscpToPriority(uint8_t aDscp);
+
+    /**
      * This method sends an IPv6 datagram.
      *
      * @param[in]  aMessage      A reference to the message.
      * @param[in]  aMessageInfo  A reference to the message info associated with @p aMessage.
      * @param[in]  aIpProto      The Internet Protocol value.
      *
-     * @retval OT_ERROR_NONE     Successfully enqueued the message into an output interface.
-     * @retval OT_ERROR_NO_BUFS  Insufficient available buffer to add the IPv6 headers.
+     * @retval kErrorNone     Successfully enqueued the message into an output interface.
+     * @retval kErrorNoBufs   Insufficient available buffer to add the IPv6 headers.
      *
      */
-    otError SendDatagram(Message &aMessage, MessageInfo &aMessageInfo, uint8_t aIpProto);
+    Error SendDatagram(Message &aMessage, MessageInfo &aMessageInfo, uint8_t aIpProto);
 
     /**
      * This method sends a raw IPv6 datagram with a fully formed IPv6 header.
      *
      * The caller transfers ownership of @p aMessage when making this call. OpenThread will free @p aMessage when
-     * processing is complete, including when a value other than `OT_ERROR_NONE` is returned.
+     * processing is complete, including when a value other than `kErrorNone` is returned.
      *
      * @param[in]  aMessage          A reference to the message.
+     * @param[in]  aFromHost         TRUE if the message is originated from the host, FALSE otherwise.
      *
-     * @retval OT_ERROR_NONE      Successfully processed the message.
-     * @retval OT_ERROR_DROP      Message was well-formed but not fully processed due to packet processing rules.
-     * @retval OT_ERROR_NO_BUFS   Could not allocate necessary message buffers when processing the datagram.
-     * @retval OT_ERROR_NO_ROUTE  No route to host.
-     * @retval OT_ERROR_PARSE     Encountered a malformed header when processing the message.
+     * @retval kErrorNone     Successfully processed the message.
+     * @retval kErrorDrop     Message was well-formed but not fully processed due to packet processing rules.
+     * @retval kErrorNoBufs   Could not allocate necessary message buffers when processing the datagram.
+     * @retval kErrorNoRoute  No route to host.
+     * @retval kErrorParse    Encountered a malformed header when processing the message.
      *
      */
-    otError SendRaw(Message &aMessage);
+    Error SendRaw(Message &aMessage, bool aFromHost);
 
     /**
      * This method processes a received IPv6 datagram.
@@ -207,50 +203,16 @@ public:
      * @param[in]  aMessage          A reference to the message.
      * @param[in]  aNetif            A pointer to the network interface that received the message.
      * @param[in]  aLinkMessageInfo  A pointer to link-specific message information.
-     * @param[in]  aFromNcpHost      TRUE if the message was submitted by the NCP host, FALSE otherwise.
+     * @param[in]  aFromHost         TRUE if the message is originated from the host, FALSE otherwise.
      *
-     * @retval OT_ERROR_NONE      Successfully processed the message.
-     * @retval OT_ERROR_DROP      Message was well-formed but not fully processed due to packet processing rules.
-     * @retval OT_ERROR_NO_BUFS   Could not allocate necessary message buffers when processing the datagram.
-     * @retval OT_ERROR_NO_ROUTE  No route to host.
-     * @retval OT_ERROR_PARSE     Encountered a malformed header when processing the message.
-     *
-     */
-    otError HandleDatagram(Message &aMessage, Netif *aNetif, const void *aLinkMessageInfo, bool aFromNcpHost);
-
-    /**
-     * This methods adds a full IPv6 packet to the transmit queue.
-     *
-     * @param aMessage A reference to the message.
-     */
-    void EnqueueDatagram(Message &aMessage);
-
-    /**
-     * This static method updates a checksum.
-     *
-     * @param[in]  aChecksum  The checksum value to update.
-     * @param[in]  aAddress   A reference to an IPv6 address.
-     *
-     * @returns The updated checksum.
+     * @retval kErrorNone     Successfully processed the message.
+     * @retval kErrorDrop     Message was well-formed but not fully processed due to packet processing rules.
+     * @retval kErrorNoBufs   Could not allocate necessary message buffers when processing the datagram.
+     * @retval kErrorNoRoute  No route to host.
+     * @retval kErrorParse    Encountered a malformed header when processing the message.
      *
      */
-    static uint16_t UpdateChecksum(uint16_t aChecksum, const Address &aAddress);
-
-    /**
-     * This static method computes the pseudoheader checksum.
-     *
-     * @param[in]  aSource       A reference to the IPv6 source address.
-     * @param[in]  aDestination  A reference to the IPv6 destination address.
-     * @param[in]  aLength       The IPv6 Payload Length value.
-     * @param[in]  aProto        The IPv6 Next Header value.
-     *
-     * @returns The pseudoheader checksum.
-     *
-     */
-    static uint16_t ComputePseudoheaderChecksum(const Address &aSource,
-                                                const Address &aDestination,
-                                                uint16_t       aLength,
-                                                uint8_t        aProto);
+    Error HandleDatagram(Message &aMessage, Netif *aNetif, const void *aLinkMessageInfo, bool aFromHost);
 
     /**
      * This method registers a callback to provide received raw IPv6 datagrams.
@@ -259,7 +221,7 @@ public:
      * the Thread control traffic filter setting.
      *
      * @param[in]  aCallback         A pointer to a function that is called when an IPv6 datagram is received
-     *                               or NULL to disable the callback.
+     *                               or `nullptr` to disable the callback.
      * @param[in]  aCallbackContext  A pointer to application-specific context.
      *
      * @sa IsReceiveIp6FilterEnabled
@@ -313,10 +275,10 @@ public:
      *
      * @param[in]  aMessageInfo  A reference to the message information.
      *
-     * @returns A pointer to the selected IPv6 source address or NULL if no source address was found.
+     * @returns A pointer to the selected IPv6 source address or `nullptr` if no source address was found.
      *
      */
-    const NetifUnicastAddress *SelectSourceAddress(MessageInfo &aMessageInfo);
+    const Netif::UnicastAddress *SelectSourceAddress(MessageInfo &aMessageInfo);
 
     /**
      * This method returns a reference to the send queue.
@@ -327,53 +289,72 @@ public:
     const PriorityQueue &GetSendQueue(void) const { return mSendQueue; }
 
     /**
-     * This static method converts an `IpProto` enumeration to a string.
+     * This static method converts an IP protocol number to a string.
      *
-     * @returns The string representation of an IP protocol enumeration.
+     * @param[in] aIpProto  An IP protocol number.
+     *
+     * @returns The string representation of @p aIpProto.
      *
      */
     static const char *IpProtoToString(uint8_t aIpProto);
 
+    /**
+     * This static method converts an IP header ECN value to a string.
+     *
+     * @param[in] aEcn   The 2-bit ECN value.
+     *
+     * @returns The string representation of @p aEcn.
+     *
+     */
+    static const char *EcnToString(Ecn aEcn);
+
 private:
-    enum
-    {
-        kDefaultIp6MessagePriority = Message::kPriorityNormal,
-    };
+    static constexpr uint8_t kDefaultHopLimit      = OPENTHREAD_CONFIG_IP6_HOP_LIMIT_DEFAULT;
+    static constexpr uint8_t kIp6ReassemblyTimeout = OPENTHREAD_CONFIG_IP6_REASSEMBLY_TIMEOUT;
+
+    static constexpr uint16_t kMinimalMtu = 1280;
 
     static void HandleSendQueue(Tasklet &aTasklet);
     void        HandleSendQueue(void);
 
-    static otError GetDatagramPriority(const uint8_t *aData, uint16_t aDataLen, uint8_t &aPriority);
+    static uint8_t PriorityToDscp(Message::Priority aPriority);
+    static Error   GetDatagramPriority(const uint8_t *aData, uint16_t aDataLen, Message::Priority &aPriority);
 
-    otError ProcessReceiveCallback(const Message &    aMessage,
-                                   const MessageInfo &aMessageInfo,
-                                   uint8_t            aIpProto,
-                                   bool               aFromNcpHost);
-    otError HandleExtensionHeaders(Message &    aMessage,
-                                   Netif *      aNetif,
-                                   MessageInfo &aMessageInfo,
-                                   Header &     aHeader,
-                                   uint8_t &    aNextHeader,
-                                   bool         aForward,
-                                   bool         aFromNcpHost,
-                                   bool         aReceive);
-    otError FragmentDatagram(Message &aMessage, uint8_t aIpProto);
-    otError HandleFragment(Message &aMessage, Netif *aNetif, MessageInfo &aMessageInfo, bool aFromNcpHost);
+    void  EnqueueDatagram(Message &aMessage);
+    Error ProcessReceiveCallback(Message &          aMessage,
+                                 const MessageInfo &aMessageInfo,
+                                 uint8_t            aIpProto,
+                                 bool               aFromHost,
+                                 bool               aAllowReceiveFilter,
+                                 Message::Ownership aMessageOwnership);
+    Error HandleExtensionHeaders(Message &    aMessage,
+                                 Netif *      aNetif,
+                                 MessageInfo &aMessageInfo,
+                                 Header &     aHeader,
+                                 uint8_t &    aNextHeader,
+                                 bool         aIsOutbound,
+                                 bool         aFromHost,
+                                 bool &       aReceive);
+    Error FragmentDatagram(Message &aMessage, uint8_t aIpProto);
+    Error HandleFragment(Message &aMessage, Netif *aNetif, MessageInfo &aMessageInfo, bool aFromHost);
 #if OPENTHREAD_CONFIG_IP6_FRAGMENTATION_ENABLE
-    void        CleanupFragmentationBuffer(void);
-    void        HandleUpdateTimer(void);
-    void        UpdateReassemblyList(void);
-    otError     SendIcmpError(Message &aMessage, IcmpHeader::Type aIcmpType, IcmpHeader::Code aIcmpCode);
-    static void HandleTimer(Timer &aTimer);
+    void CleanupFragmentationBuffer(void);
+    void HandleTimeTick(void);
+    void UpdateReassemblyList(void);
+    void SendIcmpError(Message &aMessage, Icmp::Header::Type aIcmpType, Icmp::Header::Code aIcmpCode);
 #endif
-    otError AddMplOption(Message &aMessage, Header &aHeader);
-    otError AddTunneledMplOption(Message &aMessage, Header &aHeader, MessageInfo &aMessageInfo);
-    otError InsertMplOption(Message &aMessage, Header &aHeader, MessageInfo &aMessageInfo);
-    otError RemoveMplOption(Message &aMessage);
-    otError HandleOptions(Message &aMessage, Header &aHeader, bool &aForward);
-    otError HandlePayload(Message &aMessage, MessageInfo &aMessageInfo, uint8_t aIpProto);
-    bool    ShouldForwardToThread(const MessageInfo &aMessageInfo) const;
-    bool    IsOnLink(const Address &aAddress) const;
+    Error AddMplOption(Message &aMessage, Header &aHeader);
+    Error AddTunneledMplOption(Message &aMessage, Header &aHeader, MessageInfo &aMessageInfo);
+    Error InsertMplOption(Message &aMessage, Header &aHeader, MessageInfo &aMessageInfo);
+    Error RemoveMplOption(Message &aMessage);
+    Error HandleOptions(Message &aMessage, Header &aHeader, bool aIsOutbound, bool &aReceive);
+    Error HandlePayload(Header &           aIp6Header,
+                        Message &          aMessage,
+                        MessageInfo &      aMessageInfo,
+                        uint8_t            aIpProto,
+                        Message::Ownership aMessageOwnership);
+    bool  ShouldForwardToThread(const MessageInfo &aMessageInfo, bool aFromHost) const;
+    bool  IsOnLink(const Address &aAddress) const;
 
     bool                 mForwardingEnabled;
     bool                 mIsReceiveIp6FilterEnabled;
@@ -387,8 +368,11 @@ private:
     Udp  mUdp;
     Mpl  mMpl;
 
+#if OPENTHREAD_CONFIG_TCP_ENABLE
+    Tcp mTcp;
+#endif
+
 #if OPENTHREAD_CONFIG_IP6_FRAGMENTATION_ENABLE
-    TimerMilli   mTimer;
     MessageQueue mReassemblyList;
 #endif
 };

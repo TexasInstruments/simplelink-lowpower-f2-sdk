@@ -43,7 +43,6 @@
 #include <xdc/runtime/Error.h>
 #include <ti/sysbios/gates/GateMutex.h>
 
-
 /*
  *  ======== MutexP_construct ========
  */

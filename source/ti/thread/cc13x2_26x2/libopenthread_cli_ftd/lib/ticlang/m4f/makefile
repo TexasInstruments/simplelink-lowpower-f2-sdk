@@ -5,7 +5,7 @@ include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 AR = "$(TICLANG_ARMCOMPILER)/bin/tiarmar"
 
-OBJECTS = src_cli_cli.obj src_cli_cli_coap.obj src_cli_cli_coap_secure.obj src_cli_cli_commissioner.obj src_cli_cli_console.obj src_cli_cli_dataset.obj src_cli_cli_joiner.obj src_cli_cli_server.obj src_cli_cli_uart.obj src_cli_cli_udp.obj
+OBJECTS = src_cli_cli.obj src_cli_cli_coap.obj src_cli_cli_coap_secure.obj src_cli_cli_commissioner.obj src_cli_cli_dataset.obj src_cli_cli_history.obj src_cli_cli_joiner.obj src_cli_cli_network_data.obj src_cli_cli_output.obj src_cli_cli_srp_client.obj src_cli_cli_srp_server.obj src_cli_cli_tcp.obj src_cli_cli_udp.obj
 NAME = libopenthread_cli_ftd
 
 CFLAGS = -I../../.. \
@@ -90,11 +90,11 @@ src_cli_cli_commissioner.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_commissioner.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_cli_cli_console.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_console.cpp
+src_cli_cli_dataset.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_dataset.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_cli_cli_dataset.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_dataset.cpp
+src_cli_cli_history.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_history.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
@@ -102,11 +102,23 @@ src_cli_cli_joiner.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_joiner.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_cli_cli_server.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_server.cpp
+src_cli_cli_network_data.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_network_data.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_cli_cli_uart.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_uart.cpp
+src_cli_cli_output.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_output.cpp
+	@ echo Building $@
+	@ $(CC) $(CPPFLAGS) -c $< -o $@
+
+src_cli_cli_srp_client.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_srp_client.cpp
+	@ echo Building $@
+	@ $(CC) $(CPPFLAGS) -c $< -o $@
+
+src_cli_cli_srp_server.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_srp_server.cpp
+	@ echo Building $@
+	@ $(CC) $(CPPFLAGS) -c $< -o $@
+
+src_cli_cli_tcp.obj: OPENTHREAD_MAKE_PATH/src/cli/cli_tcp.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 

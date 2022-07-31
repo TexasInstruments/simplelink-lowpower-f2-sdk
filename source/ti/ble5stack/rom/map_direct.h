@@ -1402,7 +1402,10 @@ extern uint8  MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue);
 /*******************************************************************************
  * Coex hooks
  */
-extern void  *MAP_llCoexGetParams(uint16 cmdNum);
+extern void MAP_llCoexSetParams(uint16 cmdNum, void *pCmdParams);
+extern void MAP_llCoexInit(uint8 enable);
+extern void MAP_llCoexUpdateCounters(uint8 grant);
+extern uint8 MAP_LL_EXT_CoexEnable(uint8 enable);
 
 /*******************************************************************************
  * Periodic Adv hooks
@@ -1458,6 +1461,7 @@ extern uint8 MAP_LE_SetConnectionlessIqSamplingEnable( uint16 syncHandle, uint8 
                                                        uint8 slotDurations, uint8 maxSampledCtes,
                                                        uint8 length, uint8 *pAntenna );
 
+extern uint8 MAP_llProcessScanRxFIFO_hook(void);
 extern uint8 MAP_llProcessExtScanRxFIFO_hook(void);
 extern void MAP_llProcessPeriodicScanSyncInfo( uint8 *pPkt, void *advEvent, uint32 timeStamp, uint8 phy );
 extern void MAP_llEndPeriodicScanTask( void *pPeriodicScan );

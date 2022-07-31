@@ -8,9 +8,9 @@
 # their respective locations, also serve as "switches" for disabling a build
 # using those cgtools. To disable a build using a specific cgtool, either set
 # the cgtool's variable to empty or delete/comment-out its definition:
-#     CCS_ARMCOMPILER ?=
+#     TICLANG_ARMCOMPILER ?=
 # or
-#     #CCS_ARMCOMPILER ?= ...
+#     #TICLANG_ARMCOMPILER ?= ...
 #
 # If a cgtool's *_ARMCOMPILER variable is set (non-empty), various sub-makes
 # in the installation will attempt to build with that cgtool.  This means
@@ -19,13 +19,12 @@
 #
 
 XDC_INSTALL_DIR        ?= /home/username/ti/xdctools_3_62_01_15_core
-SYSCONFIG_TOOL         ?= /home/username/ti/ccs1120/ccs/utils/sysconfig_1.12.0/sysconfig_cli.sh
+SYSCONFIG_TOOL         ?= /home/username/ti/ccs1120/ccs/utils/sysconfig_1.13.0/sysconfig_cli.sh
 
 FREERTOS_INSTALL_DIR   ?= /home/username/FreeRTOSv202104.00
 
-CCS_ARMCOMPILER        ?= /home/username/ti/ccs1120/ccs/tools/compiler/ti-cgt-arm_20.2.5.LTS
-TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1120/ccs/tools/compiler/ti-cgt-armllvm_1.3.1.LTS
-GCC_ARMCOMPILER        ?= /home/username/ti/ccs1120/ccs/tools/compiler/9.2019.q4.major
+TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1120/ccs/tools/compiler/ti-cgt-armllvm_2.1.0.LTS-0
+GCC_ARMCOMPILER        ?= /home/username/ti/ccs1120/ccs/tools/compiler/9.2019.q4.major-0
 
 # The IAR compiler is not supported on Linux
 # IAR_ARMCOMPILER      ?=

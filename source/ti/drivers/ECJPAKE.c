@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,59 +48,66 @@ extern const uint_least8_t ECJPAKE_count;
 
 const ECJPAKE_Params ECJPAKE_defaultParams = {
     .returnBehavior = ECJPAKE_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== ECJPAKE_Params_init ========
  */
-void ECJPAKE_Params_init(ECJPAKE_Params *params){
+void ECJPAKE_Params_init(ECJPAKE_Params *params)
+{
     *params = ECJPAKE_defaultParams;
 }
 
 /*
  *  ======== ECJPAKE_open ========
  */
-ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, ECJPAKE_Params *params) {
+__attribute__((weak)) ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, ECJPAKE_Params *params)
+{
     DebugP_assert(index < ECJPAKE_count);
 
-    ECJPAKE_Config *config = (ECJPAKE_Config*) &ECJPAKE_config[index];
+    ECJPAKE_Config *config = (ECJPAKE_Config *)&ECJPAKE_config[index];
     return ECJPAKE_construct(config, params);
 }
 
 /*
  *  ======== ECJPAKE_OperationRoundOneGenerateKeys_init ========
  */
-void ECJPAKE_OperationRoundOneGenerateKeys_init(ECJPAKE_OperationRoundOneGenerateKeys *operation){
+void ECJPAKE_OperationRoundOneGenerateKeys_init(ECJPAKE_OperationRoundOneGenerateKeys *operation)
+{
     memset(operation, 0x00, sizeof(ECJPAKE_OperationRoundOneGenerateKeys));
 }
 
 /*
  *  ======== ECJPAKE_OperationGenerateZKP_init ========
  */
-void ECJPAKE_OperationGenerateZKP_init(ECJPAKE_OperationGenerateZKP *operation){
+void ECJPAKE_OperationGenerateZKP_init(ECJPAKE_OperationGenerateZKP *operation)
+{
     memset(operation, 0x00, sizeof(ECJPAKE_OperationGenerateZKP));
 }
 
 /*
  *  ======== ECJPAKE_OperationVerifyZKP_init ========
  */
-void ECJPAKE_OperationVerifyZKP_init(ECJPAKE_OperationVerifyZKP *operation){
+void ECJPAKE_OperationVerifyZKP_init(ECJPAKE_OperationVerifyZKP *operation)
+{
     memset(operation, 0x00, sizeof(ECJPAKE_OperationVerifyZKP));
 }
 
 /*
  *  ======== ECJPAKE_OperationRoundTwoGenerateKeys_init ========
  */
-void ECJPAKE_OperationRoundTwoGenerateKeys_init(ECJPAKE_OperationRoundTwoGenerateKeys *operation){
+void ECJPAKE_OperationRoundTwoGenerateKeys_init(ECJPAKE_OperationRoundTwoGenerateKeys *operation)
+{
     memset(operation, 0x00, sizeof(ECJPAKE_OperationRoundTwoGenerateKeys));
 }
 
 /*
  *  ======== ECJPAKE_OperationComputeSharedSecret_init ========
  */
-void ECJPAKE_OperationComputeSharedSecret_init(ECJPAKE_OperationComputeSharedSecret *operation){
+void ECJPAKE_OperationComputeSharedSecret_init(ECJPAKE_OperationComputeSharedSecret *operation)
+{
     memset(operation, 0x00, sizeof(ECJPAKE_OperationComputeSharedSecret));
 }

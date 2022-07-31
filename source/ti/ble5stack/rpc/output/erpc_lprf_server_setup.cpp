@@ -30,7 +30,7 @@
 #include <erpc_crc16.h>
 
 #include <erpc_uart_simplelink_transport.h>
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 
 #define CONFIG_UART_PC              0
 

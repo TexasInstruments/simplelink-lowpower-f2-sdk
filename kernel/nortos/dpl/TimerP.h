@@ -38,28 +38,33 @@ typedef void (*TimerP_Fxn)(uintptr_t arg);
 
 #define TimerP_STRUCT_SIZE 60
 
-typedef enum {
+typedef enum
+{
     TimerP_Status_INUSE,
     TimerP_Status_FREE,
 } TimerP_Status;
 
-typedef enum {
+typedef enum
+{
     TimerP_StartMode_AUTO,
     TimerP_StartMode_USER,
 } TimerP_StartMode;
 
-typedef struct _TimerP_FreqHz {
+typedef struct _TimerP_FreqHz
+{
     uint32_t hi;
     uint32_t lo;
 } TimerP_FreqHz;
 
-typedef struct _TimerP_Params {
+typedef struct _TimerP_Params
+{
     TimerP_StartMode startMode;
     uintptr_t arg;
-    uint32_t period;    /* in microseconds */
+    uint32_t period; /* in microseconds */
 } TimerP_Params;
 
-typedef union _TimerP_Struct {
+typedef union _TimerP_Struct
+{
     uint64_t dummy;
     char data[TimerP_STRUCT_SIZE];
 } TimerP_Struct;

@@ -37,10 +37,13 @@
 #if (OPENTHREAD_MTD || OPENTHREAD_FTD) && OPENTHREAD_CONFIG_OTNS_ENABLE
 
 #include "common/debug.hpp"
-#include "common/locator-getters.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 
 namespace ot {
 namespace Utils {
+
+RegisterLogModule("Otns");
 
 const int kMaxStatusStringLength = 128;
 
@@ -79,6 +82,7 @@ void Otns::EmitStatus(const char *aFmt, ...)
     va_start(ap, aFmt);
 
     n = vsnprintf(statusStr, sizeof(statusStr), aFmt, ap);
+    OT_UNUSED_VARIABLE(n);
     OT_ASSERT(n >= 0);
 
     va_end(ap);
@@ -86,45 +90,122 @@ void Otns::EmitStatus(const char *aFmt, ...)
     otPlatOtnsStatus(statusStr);
 }
 
-void Otns::HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags)
+void Otns::HandleNotifierEvents(Events aEvents)
 {
-    aCallback.GetOwner<Otns>().HandleStateChanged(aFlags);
-}
-
-void Otns::HandleStateChanged(otChangedFlags aFlags)
-{
-    if ((aFlags & OT_CHANGED_THREAD_ROLE) != 0)
+    if (aEvents.Contains(kEventThreadRoleChanged))
     {
         EmitStatus("role=%d", Get<Mle::Mle>().GetRole());
     }
 
-    if ((aFlags & OT_CHANGED_THREAD_PARTITION_ID) != 0)
+    if (aEvents.Contains(kEventThreadPartitionIdChanged))
     {
         EmitStatus("parid=%x", Get<Mle::Mle>().GetLeaderData().GetPartitionId());
     }
 
-    if ((aFlags & OT_CHANGED_JOINER_STATE) != 0)
+#if OPENTHREAD_CONFIG_JOINER_ENABLE
+    if (aEvents.Contains(kEventJoinerStateChanged))
     {
         EmitStatus("joiner_state=%d", Get<MeshCoP::Joiner>().GetState());
     }
+#endif
 }
 
-void Otns::EmitNeighborChange(otNeighborTableEvent aEvent, Neighbor &aNeighbor)
+void Otns::EmitNeighborChange(NeighborTable::Event aEvent, const Neighbor &aNeighbor)
 {
     switch (aEvent)
     {
-    case OT_NEIGHBOR_TABLE_EVENT_ROUTER_ADDED:
+    case NeighborTable::kRouterAdded:
         EmitStatus("router_added=%s", aNeighbor.GetExtAddress().ToString().AsCString());
         break;
-    case OT_NEIGHBOR_TABLE_EVENT_ROUTER_REMOVED:
+    case NeighborTable::kRouterRemoved:
         EmitStatus("router_removed=%s", aNeighbor.GetExtAddress().ToString().AsCString());
         break;
-    case OT_NEIGHBOR_TABLE_EVENT_CHILD_ADDED:
+    case NeighborTable::kChildAdded:
         EmitStatus("child_added=%s", aNeighbor.GetExtAddress().ToString().AsCString());
         break;
-    case OT_NEIGHBOR_TABLE_EVENT_CHILD_REMOVED:
+    case NeighborTable::kChildRemoved:
         EmitStatus("child_removed=%s", aNeighbor.GetExtAddress().ToString().AsCString());
         break;
+    case NeighborTable::kChildModeChanged:
+        break;
+    }
+}
+
+void Otns::EmitTransmit(const Mac::TxFrame &aFrame)
+{
+    Mac::Address dst;
+    uint16_t     frameControlField = aFrame.GetFrameControlField();
+    uint8_t      channel           = aFrame.GetChannel();
+    uint8_t      sequence          = aFrame.GetSequence();
+
+    IgnoreError(aFrame.GetDstAddr(dst));
+
+    if (dst.IsShort())
+    {
+        EmitStatus("transmit=%d,%04x,%d,%04x", channel, frameControlField, sequence, dst.GetShort());
+    }
+    else if (dst.IsExtended())
+    {
+        EmitStatus("transmit=%d,%04x,%d,%s", channel, frameControlField, sequence, dst.ToString().AsCString());
+    }
+    else
+    {
+        EmitStatus("transmit=%d,%04x,%d", channel, frameControlField, sequence);
+    }
+}
+
+void Otns::EmitDeviceMode(Mle::DeviceMode aMode)
+{
+    EmitStatus("mode=%s%s%s", aMode.IsRxOnWhenIdle() ? "r" : "", aMode.IsFullThreadDevice() ? "d" : "",
+               (aMode.GetNetworkDataType() == NetworkData::kFullSet) ? "n" : "");
+}
+
+void Otns::EmitCoapSend(const Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
+{
+    char  uriPath[Coap::Message::kMaxReceivedUriPath + 1];
+    Error error;
+
+    SuccessOrExit(error = aMessage.ReadUriPathOptions(uriPath));
+
+    EmitStatus("coap=send,%d,%d,%d,%s,%s,%d", aMessage.GetMessageId(), aMessage.GetType(), aMessage.GetCode(), uriPath,
+               aMessageInfo.GetPeerAddr().ToString().AsCString(), aMessageInfo.GetPeerPort());
+exit:
+    if (error != kErrorNone)
+    {
+        LogWarn("EmitCoapSend failed: %s", ErrorToString(error));
+    }
+}
+
+void Otns::EmitCoapReceive(const Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
+{
+    char  uriPath[Coap::Message::kMaxReceivedUriPath + 1];
+    Error error = kErrorNone;
+
+    SuccessOrExit(error = aMessage.ReadUriPathOptions(uriPath));
+
+    EmitStatus("coap=recv,%d,%d,%d,%s,%s,%d", aMessage.GetMessageId(), aMessage.GetType(), aMessage.GetCode(), uriPath,
+               aMessageInfo.GetPeerAddr().ToString().AsCString(), aMessageInfo.GetPeerPort());
+exit:
+    if (error != kErrorNone)
+    {
+        LogWarn("EmitCoapReceive failed: %s", ErrorToString(error));
+    }
+}
+
+void Otns::EmitCoapSendFailure(Error aError, Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
+{
+    char  uriPath[Coap::Message::kMaxReceivedUriPath + 1];
+    Error error = kErrorNone;
+
+    SuccessOrExit(error = aMessage.ReadUriPathOptions(uriPath));
+
+    EmitStatus("coap=send_error,%d,%d,%d,%s,%s,%d,%s", aMessage.GetMessageId(), aMessage.GetType(), aMessage.GetCode(),
+               uriPath, aMessageInfo.GetPeerAddr().ToString().AsCString(), aMessageInfo.GetPeerPort(),
+               ErrorToString(aError));
+exit:
+    if (error != kErrorNone)
+    {
+        LogWarn("EmitCoapSendFailure failed: %s", ErrorToString(error));
     }
 }
 

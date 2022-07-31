@@ -1,4 +1,9 @@
 /*
+ *  Copyright 2021 by Texas Instruments Incorporated.
+ *
+ */
+
+/*
  *  ======== C28_float.h ========
  *  DO NOT MODIFY: This header is generated from stddef.xdt
  *
@@ -117,3 +122,8 @@
 #define  xdc_target__bitsPerChar 16U
 
 #endif  /* end multi-include guard */
+/*
+ *  @(#) ti.targets.elf; 1, 0, 0,; 7-28-2021 06:57:45; /db/ztree/library/trees/xdctargets/xdctargets-w20/src/ xlibrary
+
+ */
+

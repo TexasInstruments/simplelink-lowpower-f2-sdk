@@ -33,43 +33,38 @@
 #ifndef ANSI_COLOR_H_
 #define ANSI_COLOR_H_
 
-#define _ANSI_TERM_GET_OVERRIDE(_1, _2, _3, _4, _5, NAME, ...)    NAME
+#define _ANSI_TERM_GET_OVERRIDE(_1, _2, _3, _4, _5, NAME, ...) NAME
 
-#define _ANSI_TERM_CONCAT_COLOR5(a, b, c, d, e)                           \
-    "\x1b[" _ANSI_TERM_ ##  a ";" _ANSI_TERM_ ##  b ";" _ANSI_TERM_ ##  c \
-    ";" _ANSI_TERM_ ##  d ";" _ANSI_TERM_ ##  e  "m"
-#define _ANSI_TERM_CONCAT_COLOR4(a, b, c, d)                              \
-    "\x1b[" _ANSI_TERM_ ##  a ";" _ANSI_TERM_ ##  b ";" _ANSI_TERM_ ##  c \
-    ";" _ANSI_TERM_ ##  d "m"
-#define _ANSI_TERM_CONCAT_COLOR3(a, b, c) \
-    "\x1b[" _ANSI_TERM_ ##  a ";" _ANSI_TERM_ ##  b ";" _ANSI_TERM_ ##  c "m"
-#define _ANSI_TERM_CONCAT_COLOR2(a, b) \
-    "\x1b[" _ANSI_TERM_ ##  a ";" _ANSI_TERM_ ##  b                       "m"
-#define _ANSI_TERM_CONCAT_COLOR1(a) \
-    "\x1b[" _ANSI_TERM_ ##  a                                             "m"
+#define _ANSI_TERM_CONCAT_COLOR5(a, b, c, d, e) \
+    "\x1b[" _ANSI_TERM_##a ";" _ANSI_TERM_##b ";" _ANSI_TERM_##c ";" _ANSI_TERM_##d ";" _ANSI_TERM_##e "m"
+#define _ANSI_TERM_CONCAT_COLOR4(a, b, c, d) \
+    "\x1b[" _ANSI_TERM_##a ";" _ANSI_TERM_##b ";" _ANSI_TERM_##c ";" _ANSI_TERM_##d "m"
+#define _ANSI_TERM_CONCAT_COLOR3(a, b, c) "\x1b[" _ANSI_TERM_##a ";" _ANSI_TERM_##b ";" _ANSI_TERM_##c "m"
+#define _ANSI_TERM_CONCAT_COLOR2(a, b)    "\x1b[" _ANSI_TERM_##a ";" _ANSI_TERM_##b "m"
+#define _ANSI_TERM_CONCAT_COLOR1(a)       "\x1b[" _ANSI_TERM_##a "m"
 
-#define _ANSI_TERM_FG_BLACK          "30"
-#define _ANSI_TERM_FG_RED            "31"
-#define _ANSI_TERM_FG_GREEN          "32"
-#define _ANSI_TERM_FG_YELLOW         "33"
-#define _ANSI_TERM_FG_BLUE           "34"
-#define _ANSI_TERM_FG_MAGENTA        "35"
-#define _ANSI_TERM_FG_CYAN           "36"
-#define _ANSI_TERM_FG_WHITE          "37"
+#define _ANSI_TERM_FG_BLACK   "30"
+#define _ANSI_TERM_FG_RED     "31"
+#define _ANSI_TERM_FG_GREEN   "32"
+#define _ANSI_TERM_FG_YELLOW  "33"
+#define _ANSI_TERM_FG_BLUE    "34"
+#define _ANSI_TERM_FG_MAGENTA "35"
+#define _ANSI_TERM_FG_CYAN    "36"
+#define _ANSI_TERM_FG_WHITE   "37"
 
-#define _ANSI_TERM_BG_BLACK          "40"
-#define _ANSI_TERM_BG_RED            "41"
-#define _ANSI_TERM_BG_GREEN          "42"
-#define _ANSI_TERM_BG_YELLOW         "43"
-#define _ANSI_TERM_BG_BLUE           "44"
-#define _ANSI_TERM_BG_MAGENTA        "45"
-#define _ANSI_TERM_BG_CYAN           "46"
-#define _ANSI_TERM_BG_WHITE          "47"
+#define _ANSI_TERM_BG_BLACK   "40"
+#define _ANSI_TERM_BG_RED     "41"
+#define _ANSI_TERM_BG_GREEN   "42"
+#define _ANSI_TERM_BG_YELLOW  "43"
+#define _ANSI_TERM_BG_BLUE    "44"
+#define _ANSI_TERM_BG_MAGENTA "45"
+#define _ANSI_TERM_BG_CYAN    "46"
+#define _ANSI_TERM_BG_WHITE   "47"
 
-#define _ANSI_TERM_ATTR_RESET        "0"
-#define _ANSI_TERM_ATTR_BOLD         "1"
-#define _ANSI_TERM_ATTR_UNDERLINE    "4"
-#define _ANSI_TERM_ATTR_BLINK        "5"
+#define _ANSI_TERM_ATTR_RESET     "0"
+#define _ANSI_TERM_ATTR_BOLD      "1"
+#define _ANSI_TERM_ATTR_UNDERLINE "4"
+#define _ANSI_TERM_ATTR_BLINK     "5"
 
 /* @brief Returns an ANSI escape sequence for the chosen colors and style
  *
@@ -90,10 +85,13 @@
  * @param 5 - color or style
  *
  */
-#define ANSI_COLOR(...)                                                                                   \
-    _ANSI_TERM_GET_OVERRIDE(__VA_ARGS__,                                                                  \
-                            _ANSI_TERM_CONCAT_COLOR5, _ANSI_TERM_CONCAT_COLOR4, _ANSI_TERM_CONCAT_COLOR3, \
-                            _ANSI_TERM_CONCAT_COLOR2, _ANSI_TERM_CONCAT_COLOR1) (__VA_ARGS__)
-
+#define ANSI_COLOR(...)                               \
+    _ANSI_TERM_GET_OVERRIDE(__VA_ARGS__,              \
+                            _ANSI_TERM_CONCAT_COLOR5, \
+                            _ANSI_TERM_CONCAT_COLOR4, \
+                            _ANSI_TERM_CONCAT_COLOR3, \
+                            _ANSI_TERM_CONCAT_COLOR2, \
+                            _ANSI_TERM_CONCAT_COLOR1) \
+    (__VA_ARGS__)
 
 #endif /* ANSI_COLOR_H_ */

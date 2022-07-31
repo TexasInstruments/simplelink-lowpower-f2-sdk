@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,15 +52,14 @@
 #include <ti/drivers/spi/SPICC26XXDMA.h>
 #include <ti/drivers/dma/UDMACC26XX.h>
 
-
 #define MAX_DMA_TRANSFER_AMOUNT (1024)
 
 /* SPI test control register */
-#define SSI_O_TCR               0x00000080
-#define SSI_TCR_TESTFIFO_ENABLE        0x2
-#define SSI_TCR_TESTFIFO_DISABLE       0x0
+#define SSI_O_TCR                0x00000080
+#define SSI_TCR_TESTFIFO_ENABLE  0x2
+#define SSI_TCR_TESTFIFO_DISABLE 0x0
 /* SPI test data register */
-#define SSI_O_TDR               0x0000008C
+#define SSI_O_TDR                0x0000008C
 
 /* Local typedef only. Used to easily migrate hwattrs versions */
 typedef SPICC26XXDMA_HWAttrsV1 SPICC26XXDMA_HWAttrs;
@@ -72,12 +71,12 @@ ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi1TxControlTableEntry, UDMA_CHAN_SSI1_TX);
 ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi1RxControlTableEntry, UDMA_CHAN_SSI1_RX);
 
 /* SPICC26XXDMA functions */
-void         SPICC26XXDMA_close(SPI_Handle handle);
+void SPICC26XXDMA_close(SPI_Handle handle);
 int_fast16_t SPICC26XXDMA_control(SPI_Handle handle, uint_fast16_t cmd, void *arg);
-void         SPICC26XXDMA_init(SPI_Handle handle);
-SPI_Handle   SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params);
-bool         SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction);
-void         SPICC26XXDMA_transferCancel(SPI_Handle handle);
+void SPICC26XXDMA_init(SPI_Handle handle);
+SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params);
+bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction);
+void SPICC26XXDMA_transferCancel(SPI_Handle handle);
 
 /* SPICC26XXDMA internal functions */
 static void SPICC26XXDMA_transferCallback(SPI_Handle handle, SPI_Transaction *msg);
@@ -93,29 +92,27 @@ static inline bool txFifoEmpty(SPICC26XXDMA_HWAttrs const *hwAttrs);
 static int spiPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg);
 
 /* SPI function table for SPICC26XXDMA implementation */
-const SPI_FxnTable SPICC26XXDMA_fxnTable = {
-    SPICC26XXDMA_close,
-    SPICC26XXDMA_control,
-    SPICC26XXDMA_init,
-    SPICC26XXDMA_open,
-    SPICC26XXDMA_transfer,
-    SPICC26XXDMA_transferCancel
-};
+const SPI_FxnTable SPICC26XXDMA_fxnTable = {SPICC26XXDMA_close,
+                                            SPICC26XXDMA_control,
+                                            SPICC26XXDMA_init,
+                                            SPICC26XXDMA_open,
+                                            SPICC26XXDMA_transfer,
+                                            SPICC26XXDMA_transferCancel};
 
 /* Mapping SPI mode from generic driver to CC26XX driverlib */
 static const uint32_t mode[] = {
-    SSI_MODE_MASTER,    /* SPI_MASTER */
-    SSI_MODE_SLAVE      /* SPI_SLAVE */
+    SSI_MODE_MASTER, /* SPI_MASTER */
+    SSI_MODE_SLAVE   /* SPI_SLAVE */
 };
 
 /* Mapping SPI frame format from generic driver to CC26XX driverlib */
 static const uint32_t frameFormat[] = {
-    SSI_FRF_MOTO_MODE_0,    /* SPI_POLO_PHA0 */
-    SSI_FRF_MOTO_MODE_1,    /* SPI_POLO_PHA1 */
-    SSI_FRF_MOTO_MODE_2,    /* SPI_POL1_PHA0 */
-    SSI_FRF_MOTO_MODE_3,    /* SPI_POL1_PHA1 */
-    SSI_FRF_TI,             /* SPI_TI */
-    SSI_FRF_NMW             /* SPI_MW */
+    SSI_FRF_MOTO_MODE_0, /* SPI_POLO_PHA0 */
+    SSI_FRF_MOTO_MODE_1, /* SPI_POLO_PHA1 */
+    SSI_FRF_MOTO_MODE_2, /* SPI_POL1_PHA0 */
+    SSI_FRF_MOTO_MODE_3, /* SPI_POL1_PHA1 */
+    SSI_FRF_TI,          /* SPI_TI */
+    SSI_FRF_NMW          /* SPI_MW */
 };
 
 /*
@@ -124,8 +121,8 @@ static const uint32_t frameFormat[] = {
  * Table for an SPI DMA TX channel
  */
 static const unsigned long dmaTxConfig[] = {
-    UDMA_MODE_BASIC | UDMA_SIZE_8  | UDMA_SRC_INC_8  | UDMA_DST_INC_NONE | UDMA_ARB_4, /* 8bit  */
-    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_16 | UDMA_DST_INC_NONE | UDMA_ARB_4  /* 16bit */
+    UDMA_MODE_BASIC | UDMA_SIZE_8 | UDMA_SRC_INC_8 | UDMA_DST_INC_NONE | UDMA_ARB_4,  /* 8bit  */
+    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_16 | UDMA_DST_INC_NONE | UDMA_ARB_4 /* 16bit */
 };
 
 /*
@@ -134,8 +131,8 @@ static const unsigned long dmaTxConfig[] = {
  * Table for an SPI DMA RX channel
  */
 static const unsigned long dmaRxConfig[] = {
-    UDMA_MODE_BASIC | UDMA_SIZE_8  | UDMA_SRC_INC_NONE | UDMA_DST_INC_8  | UDMA_ARB_4, /* 8bit  */
-    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_NONE | UDMA_DST_INC_16 | UDMA_ARB_4  /* 16bit */
+    UDMA_MODE_BASIC | UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_8 | UDMA_ARB_4,  /* 8bit  */
+    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_NONE | UDMA_DST_INC_16 | UDMA_ARB_4 /* 16bit */
 };
 
 /*
@@ -143,25 +140,29 @@ static const unsigned long dmaRxConfig[] = {
  * (8bit or 16bit) transfer sizes when either txBuf or rxBuf are NULL
  */
 static const uint32_t dmaNullConfig[] = {
-    UDMA_MODE_BASIC | UDMA_SIZE_8  | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4, /* 8bit */
-    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4  /* 16bit */
+    UDMA_MODE_BASIC | UDMA_SIZE_8 | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4, /* 8bit */
+    UDMA_MODE_BASIC | UDMA_SIZE_16 | UDMA_SRC_INC_NONE | UDMA_DST_INC_NONE | UDMA_ARB_4 /* 16bit */
 };
 
 /*
  * Ensure safe setting of the standby disallow constraint.
  */
-static inline void threadSafeConstraintSet(uint32_t txBufAddr, SPICC26XXDMA_Object *object) {
-    unsigned int  key;
+static inline void threadSafeConstraintSet(uint32_t txBufAddr, SPICC26XXDMA_Object *object)
+{
+    unsigned int key;
 
     /* Disable interrupts */
     key = HwiP_disable();
 
-    if (!object->spiPowerConstraint) {
+    if (!object->spiPowerConstraint)
+    {
         /* Ensure flash is available if TX buffer is in flash. Flash starts
          * with 0x0..*/
-        if (((txBufAddr & 0xF0000000) == 0x0) && (txBufAddr)) {
+        if (((txBufAddr & 0xF0000000) == 0x0) && (txBufAddr))
+        {
             Power_setConstraint(PowerCC26XX_NEED_FLASH_IN_IDLE);
-            Power_setConstraint(PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING); }
+            Power_setConstraint(PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING);
+        }
         /* Set constraints to guarantee operation */
         Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
@@ -175,15 +176,18 @@ static inline void threadSafeConstraintSet(uint32_t txBufAddr, SPICC26XXDMA_Obje
 /*
  * Ensure safe releasing of the standby disallow constraint.
  */
-static inline void threadSafeConstraintRelease(uint32_t txBufAddr, SPICC26XXDMA_Object *object) {
-    unsigned int  key;
+static inline void threadSafeConstraintRelease(uint32_t txBufAddr, SPICC26XXDMA_Object *object)
+{
+    unsigned int key;
 
     /* Disable interrupts */
     key = HwiP_disable();
 
-    if (object->spiPowerConstraint) {
+    if (object->spiPowerConstraint)
+    {
         /* Release need flash if buffer was in flash. */
-        if (((txBufAddr & 0xF0000000) == 0x0) && (txBufAddr)) {
+        if (((txBufAddr & 0xF0000000) == 0x0) && (txBufAddr))
+        {
             Power_releaseConstraint(PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING);
             Power_releaseConstraint(PowerCC26XX_NEED_FLASH_IN_IDLE);
         }
@@ -200,50 +204,60 @@ static inline void threadSafeConstraintRelease(uint32_t txBufAddr, SPICC26XXDMA_
  *  ======== spiPollingTransfer ========
  */
 static inline void spiPollingTransfer(SPICC26XXDMA_Object *object,
-    SPICC26XXDMA_HWAttrsV1 const *hwAttrs, SPI_Transaction *transaction)
+                                      SPICC26XXDMA_HWAttrsV1 const *hwAttrs,
+                                      SPI_Transaction *transaction)
 {
-    uint8_t   increment;
-    uint32_t  dummyBuffer;
-    size_t    transferCount;
-    void     *rxBuf;
-    void     *txBuf;
+    uint8_t increment;
+    uint32_t dummyBuffer;
+    size_t transferCount;
+    void *rxBuf;
+    void *txBuf;
 
-    if (transaction->rxBuf) {
+    if (transaction->rxBuf)
+    {
         rxBuf = transaction->rxBuf;
     }
-    else {
+    else
+    {
         rxBuf = &(object->scratchBuf);
     }
 
-    if (transaction->txBuf) {
+    if (transaction->txBuf)
+    {
         txBuf = transaction->txBuf;
     }
-    else {
+    else
+    {
         object->scratchBuf = hwAttrs->defaultTxBufValue;
-        txBuf = &(object->scratchBuf);
+        txBuf              = &(object->scratchBuf);
     }
 
-    increment = (object->dataSize < 9) ? sizeof(uint8_t) : sizeof(uint16_t);
+    increment     = (object->dataSize < 9) ? sizeof(uint8_t) : sizeof(uint16_t);
     transferCount = transaction->count;
 
-    while (transferCount--) {
-        if (object->dataSize < 9) {
-            SSIDataPut(hwAttrs->baseAddr, *((uint8_t *) txBuf));
+    while (transferCount--)
+    {
+        if (object->dataSize < 9)
+        {
+            SSIDataPut(hwAttrs->baseAddr, *((uint8_t *)txBuf));
             SSIDataGet(hwAttrs->baseAddr, &dummyBuffer);
-            *((uint8_t *) rxBuf) = (uint8_t) dummyBuffer;
+            *((uint8_t *)rxBuf) = (uint8_t)dummyBuffer;
         }
-        else {
-            SSIDataPut(hwAttrs->baseAddr, *((uint16_t *) txBuf));
+        else
+        {
+            SSIDataPut(hwAttrs->baseAddr, *((uint16_t *)txBuf));
             SSIDataGet(hwAttrs->baseAddr, &dummyBuffer);
-            *((uint16_t *) rxBuf) = (uint16_t) dummyBuffer;
+            *((uint16_t *)rxBuf) = (uint16_t)dummyBuffer;
         }
 
         /* Only increment source & destination if buffers were provided */
-        if (transaction->rxBuf) {
-            rxBuf = (void *) (((uint32_t) rxBuf) + increment);
+        if (transaction->rxBuf)
+        {
+            rxBuf = (void *)(((uint32_t)rxBuf) + increment);
         }
-        if (transaction->txBuf) {
-            txBuf = (void *) (((uint32_t) txBuf) + increment);
+        if (transaction->txBuf)
+        {
+            txBuf = (void *)(((uint32_t)txBuf) + increment);
         }
     }
 
@@ -266,12 +280,12 @@ static inline void spiPollingTransfer(SPICC26XXDMA_Object *object,
  */
 void SPICC26XXDMA_close(SPI_Handle handle)
 {
-    SPICC26XXDMA_Object         *object;
-    SPICC26XXDMA_HWAttrs const  *hwAttrs;
+    SPICC26XXDMA_Object *object;
+    SPICC26XXDMA_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
-    object = handle->object;
+    object  = handle->object;
 
     /* Release the uDMA dependency and potentially power down uDMA. */
     UDMACC26XX_close(object->udmaHandle);
@@ -291,7 +305,8 @@ void SPICC26XXDMA_close(SPI_Handle handle)
     /* Release power dependency on SPI. */
     Power_releaseDependency(hwAttrs->powerMngrId);
 
-    if (object->transferMode == SPI_MODE_BLOCKING) {
+    if (object->transferMode == SPI_MODE_BLOCKING)
+    {
         SemaphoreP_destruct(&(object->transferComplete));
     }
 
@@ -324,27 +339,30 @@ void SPICC26XXDMA_close(SPI_Handle handle)
  */
 int_fast16_t SPICC26XXDMA_control(SPI_Handle handle, uint_fast16_t cmd, void *arg)
 {
-    SPICC26XXDMA_Object        *object;
+    SPICC26XXDMA_Object *object;
     SPICC26XXDMA_HWAttrs const *hwAttrs;
-    PIN_Config                  pinConfig;
-    PIN_Id                      pinId;
+    PIN_Config pinConfig;
+    PIN_Id pinId;
 
     /* Get the pointer to the object and hwAttr */
     hwAttrs = handle->hwAttrs;
-    object = handle->object;
+    object  = handle->object;
 
     /* Initialize return value*/
     int ret = SPI_STATUS_ERROR;
 
     /* Perform command */
-    switch(cmd) {
+    switch (cmd)
+    {
         case SPICC26XXDMA_CMD_RETURN_PARTIAL_ENABLE:
             /* Enable RETURN_PARTIAL if slave mode is enabled */
-            if(object->mode == SPI_SLAVE){
+            if (object->mode == SPI_SLAVE)
+            {
                 object->returnPartial = true;
-                ret = SPI_STATUS_SUCCESS;
+                ret                   = SPI_STATUS_SUCCESS;
             }
-            else{
+            else
+            {
                 /* Partial return not available in master mode. */
                 ret = SPI_STATUS_ERROR;
             }
@@ -353,26 +371,32 @@ int_fast16_t SPICC26XXDMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
         case SPICC26XXDMA_CMD_RETURN_PARTIAL_DISABLE:
             /* Disable RETURN_PARTIAL */
             object->returnPartial = false;
-            ret = SPI_STATUS_SUCCESS;
+            ret                   = SPI_STATUS_SUCCESS;
             break;
 
         case SPICC26XXDMA_CMD_SET_CSN_PIN:
-            pinId = ((*(PIN_Id *) arg));
+            pinId = ((*(PIN_Id *)arg));
 
             /* Configure CSN pin and remap PIN_ID to new CSN pin specified by
              * arg */
-            if (object->mode == SPI_SLAVE) {
+            if (object->mode == SPI_SLAVE)
+            {
                 pinConfig = PIN_INPUT_EN | PIN_PULLUP | pinId;
             }
-            else {
+            else
+            {
                 pinConfig = PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED | pinId;
             }
 
-            if (pinId != PIN_UNASSIGNED) {
+            if (pinId != PIN_UNASSIGNED)
+            {
                 /* Attempt to add the new pin */
-                if (PIN_add(object->pinHandle, pinConfig) == PIN_SUCCESS) {
+                if (PIN_add(object->pinHandle, pinConfig) == PIN_SUCCESS)
+                {
                     /* Configure pin mux */
-                    PINCC26XX_setMux(object->pinHandle, pinId,  (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS : IOC_PORT_MCU_SSI1_FSS));
+                    PINCC26XX_setMux(object->pinHandle,
+                                     pinId,
+                                     (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS : IOC_PORT_MCU_SSI1_FSS));
 
                     /* Remove old pin and revert to default setting specified
                      * in the board file */
@@ -385,7 +409,8 @@ int_fast16_t SPICC26XXDMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
                     ret = SPI_STATUS_SUCCESS;
                 }
             }
-            else {
+            else
+            {
                 /* We want to use software ctrl CSN. Hence, undo any prior
                  * hardware CS pin muxing Remove old pin and revert to default
                  * setting specified in the board file (implicitly sets IO
@@ -416,75 +441,76 @@ int_fast16_t SPICC26XXDMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
  *
  *  @pre    Function assumes that the handle and transaction is not NULL
  */
-static void SPICC26XXDMA_configDMA(SPICC26XXDMA_Object *object,
-    SPICC26XXDMA_HWAttrs const *hwAttrs)
+static void SPICC26XXDMA_configDMA(SPICC26XXDMA_Object *object, SPICC26XXDMA_HWAttrs const *hwAttrs)
 {
-    volatile tDMAControlTable       *dmaControlTableEntry;
-    uint16_t                        numberOfBytes;
+    volatile tDMAControlTable *dmaControlTableEntry;
+    uint16_t numberOfBytes;
 
     /*
      * The DMA has a max transfer amount of 1024.  If the transaction is
      * greater; we must transfer it in chunks.  object->amtDataXferred has
      * how much data has already been sent.
      */
-    if ((object->currentTransaction->count - object->amtDataXferred) >
-        MAX_DMA_TRANSFER_AMOUNT) {
+    if ((object->currentTransaction->count - object->amtDataXferred) > MAX_DMA_TRANSFER_AMOUNT)
+    {
         object->currentXferAmt = MAX_DMA_TRANSFER_AMOUNT;
     }
-    else {
-        object->currentXferAmt = (object->currentTransaction->count -
-            object->amtDataXferred);
+    else
+    {
+        object->currentXferAmt = (object->currentTransaction->count - object->amtDataXferred);
     }
 
     /* Calculate the number of bytes for the transfer */
-    numberOfBytes = ((uint16_t) object->currentXferAmt) << (object->frameSize);
+    numberOfBytes = ((uint16_t)object->currentXferAmt) << (object->frameSize);
 
     /* Setup RX side
      * Set pointer to Rx control table entry */
     dmaControlTableEntry = (hwAttrs->baseAddr == SSI0_BASE ? &dmaSpi0RxControlTableEntry : &dmaSpi1RxControlTableEntry);
-    if (object->currentTransaction->rxBuf) {
+    if (object->currentTransaction->rxBuf)
+    {
         dmaControlTableEntry->ui32Control = dmaRxConfig[object->frameSize];
 
         /*
-         * Add an offset for the amount of data transfered.  The offset is
+         * Add an offset for the amount of data transferred.  The offset is
          * calculated by: object->amtDataXferred * (object->frameSize + 1).
          * This accounts for 8 or 16-bit sized transfers.
          */
-        dmaControlTableEntry->pvDstEndAddr =
-            (void *)((uint32_t) object->currentTransaction->rxBuf +
-            ((uint32_t) object->amtDataXferred * (object->frameSize + 1)) +
-            numberOfBytes - 1);
+        dmaControlTableEntry->pvDstEndAddr = (void *)((uint32_t)object->currentTransaction->rxBuf +
+                                                      ((uint32_t)object->amtDataXferred * (object->frameSize + 1)) +
+                                                      numberOfBytes - 1);
     }
-    else {
-        dmaControlTableEntry->ui32Control = dmaNullConfig[object->frameSize];
-        dmaControlTableEntry->pvDstEndAddr = (void *) &(object->scratchBuf);
+    else
+    {
+        dmaControlTableEntry->ui32Control  = dmaNullConfig[object->frameSize];
+        dmaControlTableEntry->pvDstEndAddr = (void *)&(object->scratchBuf);
     }
     dmaControlTableEntry->pvSrcEndAddr = (void *)(hwAttrs->baseAddr + SSI_O_DR);
-    dmaControlTableEntry->ui32Control |= UDMACC26XX_SET_TRANSFER_SIZE((uint16_t) object->currentXferAmt);
+    dmaControlTableEntry->ui32Control |= UDMACC26XX_SET_TRANSFER_SIZE((uint16_t)object->currentXferAmt);
 
     /* Setup TX side
      * Set pointer to Tx control table entry */
     dmaControlTableEntry = (hwAttrs->baseAddr == SSI0_BASE ? &dmaSpi0TxControlTableEntry : &dmaSpi1TxControlTableEntry);
-    if (object->currentTransaction->txBuf) {
+    if (object->currentTransaction->txBuf)
+    {
         dmaControlTableEntry->ui32Control = dmaTxConfig[object->frameSize];
 
         /*
-         * Add an offset for the amount of data transfered.  The offset is
+         * Add an offset for the amount of data transferred.  The offset is
          * calculated by: object->amtDataXferred * (object->frameSize + 1).
          * This accounts for 8 or 16-bit sized transfers.
          */
-        dmaControlTableEntry->pvSrcEndAddr =
-            (void *)((uint32_t) object->currentTransaction->txBuf +
-            ((uint32_t) object->amtDataXferred * (object->frameSize + 1)) +
-            numberOfBytes - 1);
+        dmaControlTableEntry->pvSrcEndAddr = (void *)((uint32_t)object->currentTransaction->txBuf +
+                                                      ((uint32_t)object->amtDataXferred * (object->frameSize + 1)) +
+                                                      numberOfBytes - 1);
     }
-    else {
-        object->scratchBuf = hwAttrs->defaultTxBufValue;
-        dmaControlTableEntry->ui32Control = dmaNullConfig[object->frameSize];
-        dmaControlTableEntry->pvSrcEndAddr = (void *) &(object->scratchBuf);
+    else
+    {
+        object->scratchBuf                 = hwAttrs->defaultTxBufValue;
+        dmaControlTableEntry->ui32Control  = dmaNullConfig[object->frameSize];
+        dmaControlTableEntry->pvSrcEndAddr = (void *)&(object->scratchBuf);
     }
     dmaControlTableEntry->pvDstEndAddr = (void *)(hwAttrs->baseAddr + SSI_O_DR);
-    dmaControlTableEntry->ui32Control |= UDMACC26XX_SET_TRANSFER_SIZE((uint16_t) object->currentXferAmt);
+    dmaControlTableEntry->ui32Control |= UDMACC26XX_SET_TRANSFER_SIZE((uint16_t)object->currentXferAmt);
 
     /* Enable the channels */
     UDMACC26XX_channelEnable(object->udmaHandle, (hwAttrs->rxChannelBitMask) | (hwAttrs->txChannelBitMask));
@@ -498,33 +524,37 @@ static void SPICC26XXDMA_configDMA(SPICC26XXDMA_Object *object,
  *  ======== SPICC26XXDMA_hwiFxn ========
  *  HWI ISR for the SPI when we use the UDMA
  */
-static void SPICC26XXDMA_hwiFxn (uintptr_t arg) {
-    SPICC26XXDMA_Object        *object;
+static void SPICC26XXDMA_hwiFxn(uintptr_t arg)
+{
+    SPICC26XXDMA_Object *object;
     SPICC26XXDMA_HWAttrs const *hwAttrs;
-    uint32_t                    intStatus;
+    uint32_t intStatus;
 
     /* Get the pointer to the object and hwAttrs */
-    object = ((SPI_Handle)arg)->object;
+    object  = ((SPI_Handle)arg)->object;
     hwAttrs = ((SPI_Handle)arg)->hwAttrs;
 
     /* Get the interrupt status of the SPI controller
-    */
+     */
     intStatus = SSIIntStatus(hwAttrs->baseAddr, true);
     SSIIntClear(hwAttrs->baseAddr, intStatus);
 
     /* Error handling:
      * Overrun in the RX Fifo -> at least one sample in the shift
      * register has been discarded  */
-    if (intStatus & SSI_RXOR) {
+    if (intStatus & SSI_RXOR)
+    {
         /* disable the interrupt */
         SSIIntDisable(hwAttrs->baseAddr, SSI_RXOR);
 
         /* If the RX overrun occurred during a transfer */
-        if (object->currentTransaction) {
+        if (object->currentTransaction)
+        {
             /* Then cancel the ongoing transfer */
             SPICC26XXDMA_transferCancel((SPI_Handle)arg);
         }
-        else {
+        else
+        {
             /* Otherwise disable the SPI and DMA modules and flush FIFOs */
             SSIDisable(hwAttrs->baseAddr);
 
@@ -537,7 +567,8 @@ static void SPICC26XXDMA_hwiFxn (uintptr_t arg) {
             SPICC26XXDMA_flushFifos((SPI_Handle)arg);
         }
     }
-    else {
+    else
+    {
         /*
          * Determine if the TX DMA channel has completed... In SPI slave mode
          * this interrupt may occur immediately (without the RX DMA channel).
@@ -547,7 +578,8 @@ static void SPICC26XXDMA_hwiFxn (uintptr_t arg) {
          * dummy RX transfer to a scratch memory location which is then
          * discarded.
          */
-        if (UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->txChannelBitMask)) {
+        if (UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->txChannelBitMask))
+        {
             /* Disable SPI TX DMA and clear DMA done interrupt. */
             SSIDMADisable(hwAttrs->baseAddr, SSI_DMA_TX);
             UDMACC26XX_clearInterrupt(object->udmaHandle, hwAttrs->txChannelBitMask);
@@ -558,7 +590,8 @@ static void SPICC26XXDMA_hwiFxn (uintptr_t arg) {
          * interrupt occurrence depends on when the SPI master starts sending
          * data.
          */
-        if (UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->rxChannelBitMask)) {
+        if (UDMACC26XX_channelDone(object->udmaHandle, hwAttrs->rxChannelBitMask))
+        {
             /* Disable SPI RX DMA and clear DMA done interrupt. */
             SSIDMADisable(hwAttrs->baseAddr, SSI_DMA_RX);
             UDMACC26XX_clearInterrupt(object->udmaHandle, hwAttrs->rxChannelBitMask);
@@ -575,17 +608,19 @@ static void SPICC26XXDMA_hwiFxn (uintptr_t arg) {
  *  SWI function is called by the HWI after the DMA has finished one job, or
  *  is called by transferCancel.
  */
-static void SPICC26XXDMA_swiFxn (uintptr_t arg0, uintptr_t arg1) {
-    SPI_Transaction            *transaction;
-    SPICC26XXDMA_Object        *object;
+static void SPICC26XXDMA_swiFxn(uintptr_t arg0, uintptr_t arg1)
+{
+    SPI_Transaction *transaction;
+    SPICC26XXDMA_Object *object;
     SPICC26XXDMA_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = ((SPI_Handle) arg0)->object;
-    hwAttrs = ((SPI_Handle) arg0)->hwAttrs;
+    object  = ((SPI_Handle)arg0)->object;
+    hwAttrs = ((SPI_Handle)arg0)->hwAttrs;
 
     /* Check if there is an active transaction */
-    if (object->currentTransaction == NULL) {
+    if (object->currentTransaction == NULL)
+    {
         /* If the currentTransaction is NULL, this SWI was posted already by
          * either the ISR or transferCancel.  Do nothing and return.  There is
          * no need to disable interrupts and set up a temporary pointer for
@@ -596,16 +631,18 @@ static void SPICC26XXDMA_swiFxn (uintptr_t arg0, uintptr_t arg1) {
         return;
     }
 
-    if (object->currentTransaction->count - object->amtDataXferred >
-        MAX_DMA_TRANSFER_AMOUNT) {
+    if (object->currentTransaction->count - object->amtDataXferred > MAX_DMA_TRANSFER_AMOUNT)
+    {
         /* Data still remaining, configure another DMA transfer */
         object->amtDataXferred += object->currentXferAmt;
 
         SPICC26XXDMA_configDMA(object, hwAttrs);
     }
-    else {
+    else
+    {
         /* Transaction is complete */
-        if (object->currentTransaction->status == SPI_TRANSFER_STARTED) {
+        if (object->currentTransaction->status == SPI_TRANSFER_STARTED)
+        {
             object->currentTransaction->status = SPI_TRANSFER_COMPLETED;
         }
 
@@ -628,16 +665,18 @@ static void SPICC26XXDMA_swiFxn (uintptr_t arg0, uintptr_t arg1) {
 /*
  *  ======== SPICC26XXDMA_flushFifos ========
  */
-void SPICC26XXDMA_flushFifos(SPI_Handle handle) {
+static void SPICC26XXDMA_flushFifos(SPI_Handle handle)
+{
 
     /* Locals */
-    SPICC26XXDMA_HWAttrs const  *hwAttrs;
+    SPICC26XXDMA_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the hwAttrs */
     hwAttrs = handle->hwAttrs;
 
     /* Flush RX FIFO */
-    while(HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_RX_NOT_EMPTY) {
+    while (HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_RX_NOT_EMPTY)
+    {
         /* Read element from RX FIFO and discard */
         HWREG(hwAttrs->baseAddr + SSI_O_DR);
     }
@@ -646,7 +685,8 @@ void SPICC26XXDMA_flushFifos(SPI_Handle handle) {
     HWREG(hwAttrs->baseAddr + SSI_O_TCR) = SSI_TCR_TESTFIFO_ENABLE;
 
     /* Flush TX FIFO */
-    while(!(HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_TX_EMPTY)) {
+    while (!(HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_TX_EMPTY))
+    {
         /* Read element from TX FIFO and discard */
         HWREG(hwAttrs->baseAddr + SSI_O_TDR);
     }
@@ -667,7 +707,7 @@ void SPICC26XXDMA_flushFifos(SPI_Handle handle) {
  */
 void SPICC26XXDMA_init(SPI_Handle handle)
 {
-    SPICC26XXDMA_Object         *object;
+    SPICC26XXDMA_Object *object;
 
     /* Get the pointer to the object */
     object = handle->object;
@@ -704,23 +744,25 @@ void SPICC26XXDMA_init(SPI_Handle handle)
 SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
 {
     /* Use union to save on stack allocation */
-    union {
-        HwiP_Params              hwiParams;
-        SwiP_Params              swiParams;
+    union
+    {
+        HwiP_Params hwiParams;
+        SwiP_Params swiParams;
     } paramsUnion;
-    SPICC26XXDMA_Object        *object;
+    SPICC26XXDMA_Object *object;
     SPICC26XXDMA_HWAttrs const *hwAttrs;
-    unsigned int                key;
+    unsigned int key;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable preemption while checking if the SPI is open. */
     key = HwiP_disable();
 
     /* Check if the SPI is open already with the base addr. */
-    if (object->isOpen) {
+    if (object->isOpen)
+    {
         HwiP_restore(key);
 
         return (NULL);
@@ -758,7 +800,8 @@ SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
 
     /* Configure IOs after hardware has been initialized so that IOs aren't
      * toggled unnecessary and make sure it was successful */
-    if (!SPICC26XXDMA_initIO(handle)) {
+    if (!SPICC26XXDMA_initIO(handle))
+    {
         /* Trying to use SPI driver when some other driver or application
          * has already allocated these pins, error! */
 
@@ -775,13 +818,13 @@ SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
 
     /* Create the Hwi for this SPI peripheral. */
     HwiP_Params_init(&paramsUnion.hwiParams);
-    paramsUnion.hwiParams.arg = (uintptr_t) handle;
+    paramsUnion.hwiParams.arg      = (uintptr_t)handle;
     paramsUnion.hwiParams.priority = hwAttrs->intPriority;
-    HwiP_construct(&(object->hwi), (int) hwAttrs->intNum, SPICC26XXDMA_hwiFxn, &paramsUnion.hwiParams);
+    HwiP_construct(&(object->hwi), (int)hwAttrs->intNum, SPICC26XXDMA_hwiFxn, &paramsUnion.hwiParams);
 
     /* Create Swi object for this SPI peripheral */
     SwiP_Params_init(&paramsUnion.swiParams);
-    paramsUnion.swiParams.arg0 = (uintptr_t)handle;
+    paramsUnion.swiParams.arg0     = (uintptr_t)handle;
     paramsUnion.swiParams.priority = hwAttrs->swiPriority;
     SwiP_construct(&(object->swi), SPICC26XXDMA_swiFxn, &(paramsUnion.swiParams));
 
@@ -790,16 +833,21 @@ SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
 
     /* Configure PIN driver for CSN callback in optional RETURN_PARTIAL
      * slave mode */
-    if (object->mode == SPI_SLAVE) {
+    if (object->mode == SPI_SLAVE)
+    {
         PIN_registerIntCb(object->pinHandle, SPICC26XXDMA_csnCallback);
-        PIN_setUserArg(object->pinHandle, (uintptr_t) handle);
+        PIN_setUserArg(object->pinHandle, (uintptr_t)handle);
     }
 
     /* Register notification functions */
-    Power_registerNotify(&object->spiPostObj, PowerCC26XX_AWAKE_STANDBY, (Power_NotifyFxn)spiPostNotify, (uint32_t)handle);
+    Power_registerNotify(&object->spiPostObj,
+                         PowerCC26XX_AWAKE_STANDBY,
+                         (Power_NotifyFxn)spiPostNotify,
+                         (uint32_t)handle);
 
     /* Check the transfer mode */
-    if (object->transferMode == SPI_MODE_BLOCKING) {
+    if (object->transferMode == SPI_MODE_BLOCKING)
+    {
         /* Create a semaphore to block task execution for the duration of the
          * SPI transfer */
         SemaphoreP_constructBinary(&(object->transferComplete), 0);
@@ -807,7 +855,8 @@ SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
         /* Store internal callback function */
         object->transferCallbackFxn = SPICC26XXDMA_transferCallback;
     }
-    else {
+    else
+    {
         /* Check to see if a callback function was defined for async mode */
         DebugP_assert(params->transferCallbackFxn != NULL);
 
@@ -843,18 +892,18 @@ SPI_Handle SPICC26XXDMA_open(SPI_Handle handle, SPI_Params *params)
  */
 bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
 {
-    unsigned int                key;
-    uint8_t                     alignMask;
-    bool                        buffersAligned;
-    SPICC26XXDMA_Object         *object;
-    SPICC26XXDMA_HWAttrs const  *hwAttrs;
+    unsigned int key;
+    uint8_t alignMask;
+    bool buffersAligned;
+    SPICC26XXDMA_Object *object;
+    SPICC26XXDMA_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttr*/
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
-    if (transaction->count == 0 ||
-        (transaction->rxBuf == NULL && transaction->txBuf == NULL)) {
+    if (transaction->count == 0 || (transaction->rxBuf == NULL && transaction->txBuf == NULL))
+    {
         return (false);
     }
 
@@ -863,18 +912,20 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
      * alignMask is used to check if the RX/TX buffers addresses
      * are aligned to the frameSize.
      */
-    alignMask = (object->frameSize == SPICC26XXDMA_16bit) ? 0x1 : 0x0;
-    buffersAligned = ((((uint32_t) transaction->rxBuf & alignMask) == 0) &&
-                      (((uint32_t) transaction->txBuf & alignMask) == 0));
+    alignMask      = (object->frameSize == SPICC26XXDMA_16bit) ? 0x1 : 0x0;
+    buffersAligned = ((((uint32_t)transaction->rxBuf & alignMask) == 0) &&
+                      (((uint32_t)transaction->txBuf & alignMask) == 0));
 
-    if (!buffersAligned) {
+    if (!buffersAligned)
+    {
         return (false);
     }
 
     /* Disable preemption while checking if a transfer is in progress */
     key = HwiP_disable();
 
-    if (object->currentTransaction) {
+    if (object->currentTransaction)
+    {
         HwiP_restore(key);
 
         /* Flag that the transfer failed to start */
@@ -885,15 +936,16 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
     }
 
     /* Make sure to flag that a transaction is now active */
-    transaction->status = SPI_TRANSFER_STARTED;
+    transaction->status        = SPI_TRANSFER_STARTED;
     object->currentTransaction = transaction;
-    object->amtDataXferred = 0;
-    object->currentXferAmt = 0;
+    object->amtDataXferred     = 0;
+    object->currentXferAmt     = 0;
 
     HwiP_restore(key);
 
     /* In slave mode, optionally enable callback on CSN de-assert */
-    if (object->returnPartial) {
+    if (object->returnPartial)
+    {
         PIN_setInterrupt(object->pinHandle, object->csnPin | PIN_IRQ_POSEDGE);
     }
 
@@ -908,11 +960,9 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
      * Slaves not allowed to use polling unless timeout is disabled
      * Polling not allowed with returnPartial mode
      */
-    if (object->transferMode == SPI_MODE_BLOCKING &&
-        transaction->count < hwAttrs->minDmaTransferSize &&
-        object->returnPartial == false &&
-        (object->mode == SPI_MASTER ||
-        object->transferTimeout == SPI_WAIT_FOREVER)) {
+    if (object->transferMode == SPI_MODE_BLOCKING && transaction->count < hwAttrs->minDmaTransferSize &&
+        object->returnPartial == false && (object->mode == SPI_MASTER || object->transferTimeout == SPI_WAIT_FOREVER))
+    {
         HwiP_restore(key);
 
         spiPollingTransfer(object, hwAttrs, transaction);
@@ -925,7 +975,7 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
 
         /* Transaction completed; set status & mark SPI ready */
         object->currentTransaction->status = SPI_TRANSFER_COMPLETED;
-        object->currentTransaction = NULL;
+        object->currentTransaction         = NULL;
 
         return (true);
     }
@@ -936,12 +986,14 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
     /* Enable the RX overrun interrupt in the SSI module */
     SSIIntEnable(hwAttrs->baseAddr, SSI_RXOR);
 
-    if (object->transferMode == SPI_MODE_BLOCKING) {
-        if (SemaphoreP_OK != SemaphoreP_pend(&(object->transferComplete),
-                    object->transferTimeout)) {
+    if (object->transferMode == SPI_MODE_BLOCKING)
+    {
+        if (SemaphoreP_OK != SemaphoreP_pend(&(object->transferComplete), object->transferTimeout))
+        {
             /* Mark the transfer as failed. Otherwise
              * SPICC26XXDMA_transferCancel will set it to canceled. */
-            if (object->currentTransaction->status == SPI_TRANSFER_STARTED) {
+            if (object->currentTransaction->status == SPI_TRANSFER_STARTED)
+            {
                 object->currentTransaction->status = SPI_TRANSFER_FAILED;
             }
             /* Cancel the transfer, if we experience a timeout */
@@ -966,15 +1018,16 @@ bool SPICC26XXDMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
  *
  *  @param handle         The SPI_Handle for ongoing transaction.
  */
-void SPICC26XXDMA_transferCancel(SPI_Handle handle) {
-    SPICC26XXDMA_Object         *object;
-    SPICC26XXDMA_HWAttrs const  *hwAttrs;
-    SPI_Transaction             *transaction;
-    volatile tDMAControlTable   *dmaControlTableEntry;
-    int_fast32_t                tempCount;
+void SPICC26XXDMA_transferCancel(SPI_Handle handle)
+{
+    SPICC26XXDMA_Object *object;
+    SPICC26XXDMA_HWAttrs const *hwAttrs;
+    SPI_Transaction *transaction;
+    volatile tDMAControlTable *dmaControlTableEntry;
+    int_fast32_t tempCount;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable interrupts to ensure that this function is not interrupted. The
@@ -986,7 +1039,8 @@ void SPICC26XXDMA_transferCancel(SPI_Handle handle) {
     uint32_t key = HwiP_disable();
 
     /* Check if there is an active transaction */
-    if(object->currentTransaction == NULL) {
+    if (object->currentTransaction == NULL)
+    {
 
         /*
          * Disable the SPI peripheral in case the peripherals finite state
@@ -1023,7 +1077,8 @@ void SPICC26XXDMA_transferCancel(SPI_Handle handle) {
 
     /* Mark the transaction as failed if we didn't end up here due to a CSN
      * deassertion */
-    if (transaction->status == SPI_TRANSFER_STARTED) {
+    if (transaction->status == SPI_TRANSFER_STARTED)
+    {
         transaction->status = SPI_TRANSFER_CANCELED;
     }
 
@@ -1034,11 +1089,12 @@ void SPICC26XXDMA_transferCancel(SPI_Handle handle) {
      * rxChannel always finishes after txChannel so remaining bytes of the
      * rxChannel is used to update count */
     dmaControlTableEntry = (hwAttrs->baseAddr == SSI0_BASE ? &dmaSpi0RxControlTableEntry : &dmaSpi1RxControlTableEntry);
-    tempCount = (int_fast32_t)object->amtDataXferred + ((int_fast32_t)object->currentXferAmt -
-        (int_fast32_t)UDMACC26XX_GET_TRANSFER_SIZE(dmaControlTableEntry->ui32Control));
+    tempCount            = (int_fast32_t)object->amtDataXferred +
+                ((int_fast32_t)object->currentXferAmt -
+                 (int_fast32_t)UDMACC26XX_GET_TRANSFER_SIZE(dmaControlTableEntry->ui32Control));
     /* The DMA GET_TRANSFER_SIZE macro returns 1 or higher so we check for
      * unsigned underflow before writing the result */
-    if(tempCount > 0)
+    if (tempCount > 0)
     {
         transaction->count = (size_t)tempCount;
     }
@@ -1055,7 +1111,7 @@ void SPICC26XXDMA_transferCancel(SPI_Handle handle) {
  */
 static void SPICC26XXDMA_transferCallback(SPI_Handle handle, SPI_Transaction *msg)
 {
-    SPICC26XXDMA_Object         *object;
+    SPICC26XXDMA_Object *object;
 
     /* Get the pointer to the object */
     object = handle->object;
@@ -1072,12 +1128,12 @@ static void SPICC26XXDMA_transferCallback(SPI_Handle handle, SPI_Transaction *ms
  */
 static void SPICC26XXDMA_csnCallback(PIN_Handle handle, PIN_Id pinId)
 {
-    SPICC26XXDMA_Object        *object;
-    SPI_Handle              spiHandle;
-    PIN_Config              csnConfig;
+    SPICC26XXDMA_Object *object;
+    SPI_Handle spiHandle;
+    PIN_Config csnConfig;
 
     /* Get the pointer to the SPI object */
-    spiHandle = (SPI_Handle) PIN_getUserArg(handle);
+    spiHandle = (SPI_Handle)PIN_getUserArg(handle);
     object    = spiHandle->object;
 
     /* Get current CSN config */
@@ -1087,9 +1143,11 @@ static void SPICC26XXDMA_csnCallback(PIN_Handle handle, PIN_Id pinId)
     PIN_setInterrupt(handle, object->csnPin);
 
     /* Cancel transfer if POSEDGE interrupt */
-    if ((csnConfig & PIN_IRQ_POSEDGE) == PIN_IRQ_POSEDGE) {
+    if ((csnConfig & PIN_IRQ_POSEDGE) == PIN_IRQ_POSEDGE)
+    {
         /* Indicate why the transaction completed */
-        if ((object->currentTransaction != NULL) && (object->currentTransaction->status == SPI_TRANSFER_STARTED)) {
+        if ((object->currentTransaction != NULL) && (object->currentTransaction->status == SPI_TRANSFER_STARTED))
+        {
             object->currentTransaction->status = SPI_TRANSFER_CSN_DEASSERT;
         }
         /* Cancel the current transaction */
@@ -1098,19 +1156,20 @@ static void SPICC26XXDMA_csnCallback(PIN_Handle handle, PIN_Id pinId)
 }
 
 /*
-*  ======== SPICC26XXDMA_initHw ========
-*  This functions initializes the SPI hardware module.
-*
-*  @pre    Function assumes that the SPI handle is pointing to a hardware
-*          module which has already been opened.
-*/
-static void SPICC26XXDMA_initHw(SPI_Handle handle) {
-    SPICC26XXDMA_Object        *object;
+ *  ======== SPICC26XXDMA_initHw ========
+ *  This functions initializes the SPI hardware module.
+ *
+ *  @pre    Function assumes that the SPI handle is pointing to a hardware
+ *          module which has already been opened.
+ */
+static void SPICC26XXDMA_initHw(SPI_Handle handle)
+{
+    SPICC26XXDMA_Object *object;
     SPICC26XXDMA_HWAttrs const *hwAttrs;
-    ClockP_FreqHz               freq;
+    ClockP_FreqHz freq;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable SSI operation */
@@ -1122,79 +1181,114 @@ static void SPICC26XXDMA_initHw(SPI_Handle handle) {
 
     /* Set the SPI configuration */
     ClockP_getCpuFreq(&freq);
-    SSIConfigSetExpClk(hwAttrs->baseAddr, freq.lo, frameFormat[object->frameFormat],
-                       mode[object->mode], object->bitRate, object->dataSize);
+    SSIConfigSetExpClk(hwAttrs->baseAddr,
+                       freq.lo,
+                       frameFormat[object->frameFormat],
+                       mode[object->mode],
+                       object->bitRate,
+                       object->dataSize);
 }
 
 /*
-*  ======== SPICC26XXDMA_initIO ========
-*  This functions initializes the SPI IOs.
-*
-*  @pre    Function assumes that the SPI handle is pointing to a hardware
-*          module which has already been opened.
-*/
-static bool SPICC26XXDMA_initIO(SPI_Handle handle) {
-    SPICC26XXDMA_Object         *object;
-    SPICC26XXDMA_HWAttrs const  *hwAttrs;
-    PIN_Config                  spiPinTable[5];
+ *  ======== SPICC26XXDMA_initIO ========
+ *  This functions initializes the SPI IOs.
+ *
+ *  @pre    Function assumes that the SPI handle is pointing to a hardware
+ *          module which has already been opened.
+ */
+static bool SPICC26XXDMA_initIO(SPI_Handle handle)
+{
+    SPICC26XXDMA_Object *object;
+    SPICC26XXDMA_HWAttrs const *hwAttrs;
+    PIN_Config spiPinTable[5];
     uint32_t i = 0;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Configure IOs */
     /* Build local list of pins, allocate through PIN driver and map ports */
-    if (object->mode == SPI_SLAVE) {
-      /* Configure IOs for slave mode */
-      spiPinTable[i++] = hwAttrs->mosiPin | PIN_INPUT_EN;
-      spiPinTable[i++] = hwAttrs->misoPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-      spiPinTable[i++] = hwAttrs->clkPin  | PIN_INPUT_EN;
-      spiPinTable[i++] = object->csnPin   | PIN_INPUT_EN | PIN_PULLUP;
+    if (object->mode == SPI_SLAVE)
+    {
+        /* Configure IOs for slave mode */
+        spiPinTable[i++] = hwAttrs->mosiPin | PIN_INPUT_EN;
+        spiPinTable[i++] = hwAttrs->misoPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS |
+                           PIN_DRVSTR_MED;
+        spiPinTable[i++] = hwAttrs->clkPin | PIN_INPUT_EN;
+        spiPinTable[i++] = object->csnPin | PIN_INPUT_EN | PIN_PULLUP;
     }
-    else {
-      /* Configure IOs for master mode */
-      spiPinTable[i++] = hwAttrs->mosiPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-      spiPinTable[i++] = hwAttrs->misoPin | PIN_INPUT_EN | PIN_PULLDOWN;
+    else
+    {
+        /* Configure IOs for master mode */
+        spiPinTable[i++] = hwAttrs->mosiPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS |
+                           PIN_DRVSTR_MED;
+        spiPinTable[i++] = hwAttrs->misoPin | PIN_INPUT_EN | PIN_PULLDOWN;
 
-      /* Output low signal on SCLK until SPI module drives signal if clock
-       * polarity is configured to '0' Output high signal on SCLK until SPI
-       * module drives signal if clock polarity is configured to '1' */
-      if (object->frameFormat == SPI_POL0_PHA0 || object->frameFormat == SPI_POL0_PHA1) {
-          spiPinTable[i++] = hwAttrs->clkPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-      }
-      else {
-          spiPinTable[i++] = hwAttrs->clkPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-      }
+        /* Output low signal on SCLK until SPI module drives signal if clock
+         * polarity is configured to '0' Output high signal on SCLK until SPI
+         * module drives signal if clock polarity is configured to '1' */
+        if (object->frameFormat == SPI_POL0_PHA0 || object->frameFormat == SPI_POL0_PHA1)
+        {
+            spiPinTable[i++] = hwAttrs->clkPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS |
+                               PIN_DRVSTR_MED;
+        }
+        else
+        {
+            spiPinTable[i++] = hwAttrs->clkPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_INPUT_DIS |
+                               PIN_DRVSTR_MED;
+        }
 
-      /* If CSN isn't SW controlled, drive it high until SPI module drives
-       * signal to avoid glitches */
-      if(object->csnPin != PIN_UNASSIGNED) {
-          spiPinTable[i++] = object->csnPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-      }
+        /* If CSN isn't SW controlled, drive it high until SPI module drives
+         * signal to avoid glitches */
+        if (object->csnPin != PIN_UNASSIGNED)
+        {
+            spiPinTable[i++] = object->csnPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_INPUT_DIS |
+                               PIN_DRVSTR_MED;
+        }
     }
     spiPinTable[i++] = PIN_TERMINATE;
 
     /* Open and assign pins through pin driver */
-    if (!(object->pinHandle = PIN_open(&(object->pinState), spiPinTable))) {
+    if (!(object->pinHandle = PIN_open(&(object->pinState), spiPinTable)))
+    {
         return false;
     }
 
     /* Set IO muxing for the SPI pins */
-    if (mode[object->mode] == SSI_MODE_SLAVE) {
+    if (mode[object->mode] == SSI_MODE_SLAVE)
+    {
         /* Configure IOs for slave mode */
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->mosiPin, (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_RX  : IOC_PORT_MCU_SSI1_RX));
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->misoPin, (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_TX  : IOC_PORT_MCU_SSI1_TX));
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->clkPin,  (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_CLK : IOC_PORT_MCU_SSI1_CLK));
-        PINCC26XX_setMux(object->pinHandle, object->csnPin,   (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS : IOC_PORT_MCU_SSI1_FSS));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->mosiPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_RX : IOC_PORT_MCU_SSI1_RX));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->misoPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_TX : IOC_PORT_MCU_SSI1_TX));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->clkPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_CLK : IOC_PORT_MCU_SSI1_CLK));
+        PINCC26XX_setMux(object->pinHandle,
+                         object->csnPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS : IOC_PORT_MCU_SSI1_FSS));
     }
-    else {
+    else
+    {
         /* Configure IOs for master mode */
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->mosiPin, (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_TX  : IOC_PORT_MCU_SSI1_TX));
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->misoPin, (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_RX  : IOC_PORT_MCU_SSI1_RX));
-        PINCC26XX_setMux(object->pinHandle, hwAttrs->clkPin,  (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_CLK : IOC_PORT_MCU_SSI1_CLK));
-        if(object->csnPin != PIN_UNASSIGNED) {
-            PINCC26XX_setMux(object->pinHandle, object->csnPin, (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS  : IOC_PORT_MCU_SSI1_FSS));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->mosiPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_TX : IOC_PORT_MCU_SSI1_TX));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->misoPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_RX : IOC_PORT_MCU_SSI1_RX));
+        PINCC26XX_setMux(object->pinHandle,
+                         hwAttrs->clkPin,
+                         (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_CLK : IOC_PORT_MCU_SSI1_CLK));
+        if (object->csnPin != PIN_UNASSIGNED)
+        {
+            PINCC26XX_setMux(object->pinHandle,
+                             object->csnPin,
+                             (hwAttrs->baseAddr == SSI0_BASE ? IOC_PORT_MCU_SSI0_FSS : IOC_PORT_MCU_SSI1_FSS));
         }
     }
 
@@ -1214,7 +1308,7 @@ static int spiPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t c
     SPI_Handle spiHandle;
 
     /* Get the pointers to SPI objects */
-    spiHandle = (SPI_Handle) clientArg;
+    spiHandle = (SPI_Handle)clientArg;
 
     /* Reconfigure the hardware when returning from standby */
     SPICC26XXDMA_initHw(spiHandle);
@@ -1227,5 +1321,5 @@ static int spiPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t c
  */
 static inline bool txFifoEmpty(SPICC26XXDMA_HWAttrs const *hwAttrs)
 {
-    return(HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_SR_TFE);
+    return (HWREG(hwAttrs->baseAddr + SSI_O_SR) & SSI_SR_TFE);
 }

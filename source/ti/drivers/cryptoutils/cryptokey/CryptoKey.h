@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -92,12 +92,11 @@ extern "C" {
 
  */
 
-    /**
+/**
  *  @defgroup CryptoKey_CONTROL Status codes
  *  These CryptoKey macros are reservations for CryptoKey.h
  *  @{
  */
-
 
 /*!
  * Common CryptoKey_control status code reservation offset.
@@ -111,7 +110,7 @@ extern "C" {
  * #define CryptoKeyXYZ_STATUS_ERROR2    CryptoKey_STATUS_RESERVED - 2
  * @endcode
  */
-#define CryptoKey_STATUS_RESERVED        (-32)
+#define CryptoKey_STATUS_RESERVED (-32)
 
 /**
  *  @defgroup CryptoKey_STATUS Status Codes
@@ -126,7 +125,7 @@ extern "C" {
  * CryptoKey_control() returns CryptoKey_STATUS_SUCCESS if the control code was executed
  * successfully.
  */
-#define CryptoKey_STATUS_SUCCESS         (0)
+#define CryptoKey_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code
@@ -134,7 +133,7 @@ extern "C" {
  * CryptoKey_control() returns CryptoKey_STATUS_ERROR if the control code was not executed
  * successfully.
  */
-#define CryptoKey_STATUS_ERROR           (-1)
+#define CryptoKey_STATUS_ERROR (-1)
 
 /*!
  * @brief   Returned if the encoding of a CryptoKey is not a CryptoKey_Encoding value
@@ -142,8 +141,7 @@ extern "C" {
  * CryptoKey_control() returns CryptoKey_STATUS_ERROR if the control code was not executed
  * successfully.
  */
-#define CryptoKey_STATUS_UNDEFINED_ENCODING    (-2)
-
+#define CryptoKey_STATUS_UNDEFINED_ENCODING (-2)
 
 /** @}*/
 
@@ -154,10 +152,10 @@ extern "C" {
  *
  */
 typedef uint8_t CryptoKey_Encoding;
-static const CryptoKey_Encoding CryptoKey_PLAINTEXT             = 0x02U;
-static const CryptoKey_Encoding CryptoKey_BLANK_PLAINTEXT       = 0x04U;
-static const CryptoKey_Encoding CryptoKey_KEYSTORE              = 0x08U;
-static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE        = 0x10U;
+static const CryptoKey_Encoding CryptoKey_PLAINTEXT       = 0x02U;
+static const CryptoKey_Encoding CryptoKey_BLANK_PLAINTEXT = 0x04U;
+static const CryptoKey_Encoding CryptoKey_KEYSTORE        = 0x08U;
+static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE  = 0x10U;
 
 /*!
  *  @brief  Plaintext CryptoKey datastructure.
@@ -165,7 +163,8 @@ static const CryptoKey_Encoding CryptoKey_BLANK_KEYSTORE        = 0x10U;
  * This structure contains all the information necessary to access keying material stored
  * in plaintext form in flash or RAM.
  */
-typedef struct {
+typedef struct
+{
     uint8_t *keyMaterial;
     uint32_t keyLength;
 } CryptoKey_Plaintext;
@@ -176,8 +175,9 @@ typedef struct {
  * This structure contains all the information necessary to access keying material stored
  * in a dedicated key store or key database with memory access controls.
  */
-typedef struct {
-    void* keyStore;
+typedef struct
+{
+    void *keyStore;
     uint32_t keyLength;
     uint32_t keyIndex;
 } CryptoKey_KeyStore;
@@ -189,14 +189,15 @@ typedef struct {
  * - CryptoKey_Plaintext
  * - CryptoKey_KeyStore
  */
-typedef struct {
+typedef struct
+{
     CryptoKey_Encoding encoding;
-    union {
+    union
+    {
         CryptoKey_Plaintext plaintext;
         CryptoKey_KeyStore keyStore;
     } u;
 } CryptoKey;
-
 
 /*!
  * @brief  Structure that specifies the restrictions on a CryptoKey
@@ -251,6 +252,36 @@ int_fast16_t CryptoKey_markAsBlank(CryptoKey *keyHandle);
  *  @return Returns a status code
  */
 int_fast16_t CryptoKey_initSecurityPolicy(CryptoKey_SecurityPolicy *policy);
+
+/*!
+ *  @brief Function to verify a secure CryptoKey
+ *
+ *  This will check that the key type is valid and verify plaintext key material
+ *  is located in non-secure read-access memory.
+ *
+ *  @note This function may not be available in all implementations
+ *
+ *  @param [in]     secureKey   Pointer to a CryptoKey struct located in secure memory
+ *
+ *  @retval CryptoKey_STATUS_SUCCESS  Key passes all verification checks
+ *  @retval CryptoKey_STATUS_ERROR    Key fails any verification check
+ */
+int_fast16_t CryptoKey_verifySecureInputKey(CryptoKey *secureKey);
+
+/*!
+ *  @brief Function to verify a secure output CryptoKey
+ *
+ *  This will check that the key type is valid and verify plaintext key material
+ *  is located in non-secure RW-access memory.
+ *
+ *  @note This function may not be available in all implementations
+ *
+ *  @param [in]     secureKey   Pointer to a CryptoKey struct located in secure memory
+ *
+ *  @retval CryptoKey_STATUS_SUCCESS  Key passes all verification checks
+ *  @retval CryptoKey_STATUS_ERROR    Key fails any verification check
+ */
+int_fast16_t CryptoKey_verifySecureOutputKey(CryptoKey *secureKey);
 
 #ifdef __cplusplus
 }

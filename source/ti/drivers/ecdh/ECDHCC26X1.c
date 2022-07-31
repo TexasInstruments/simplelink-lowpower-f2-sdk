@@ -68,7 +68,9 @@ extern uint8_t ECCSW_X25519_commonKey(ECC_State *state,
 /*
  *  ======== ECDHCC26X1_getKeyResult ========
  */
-static void ECDHCC26X1_getKeyResult(const ECC_Param *x, const ECC_Param *y, CryptoKey *key,
+static void ECDHCC26X1_getKeyResult(const ECC_Param *x,
+                                    const ECC_Param *y,
+                                    CryptoKey *key,
                                     const ECCParams_CurveParams *curve,
                                     ECDH_KeyMaterialEndianness keyMaterialEndianness)
 {
@@ -79,16 +81,12 @@ static void ECDHCC26X1_getKeyResult(const ECC_Param *x, const ECC_Param *y, Cryp
      */
     if (keyMaterialEndianness == ECDH_BIG_ENDIAN_KEY)
     {
-        CryptoUtils_reverseCopy(&x->word[1],
-                                key->u.plaintext.keyMaterial + OCTET_STRING_OFFSET,
-                                curve->length);
+        CryptoUtils_reverseCopy(&x->word[1], key->u.plaintext.keyMaterial + OCTET_STRING_OFFSET, curve->length);
 
         if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
         {
             /* Y coordinate is not used. Zero it out. */
-            memset(key->u.plaintext.keyMaterial + curve->length + OCTET_STRING_OFFSET,
-                   0x00,
-                   curve->length);
+            memset(key->u.plaintext.keyMaterial + curve->length + OCTET_STRING_OFFSET, 0x00, curve->length);
         }
         else
         {
@@ -101,15 +99,11 @@ static void ECDHCC26X1_getKeyResult(const ECC_Param *x, const ECC_Param *y, Cryp
     }
     else
     {
-        memcpy(key->u.plaintext.keyMaterial,
-               &x->word[1],
-               curve->length);
+        memcpy(key->u.plaintext.keyMaterial, &x->word[1], curve->length);
 
         if (curve->curveType != ECCParams_CURVE_TYPE_MONTGOMERY)
         {
-            memcpy(key->u.plaintext.keyMaterial + curve->length,
-                    &y->word[1],
-                    curve->length);
+            memcpy(key->u.plaintext.keyMaterial + curve->length, &y->word[1], curve->length);
         }
     }
 
@@ -124,9 +118,7 @@ static void ECDHCC26X1_getKeyResultMontgomery(const ECC_Param *x, CryptoKey *key
 {
     /* Copy the X coordinate back to the CryptoKey buffer. No Y coordinate.
      * Montgomery X-only public key format is little-endian. */
-    memcpy(key->u.plaintext.keyMaterial,
-           &x->word[1],
-           curveLength);
+    memcpy(key->u.plaintext.keyMaterial, &x->word[1], curveLength);
 
     /* Mark the CryptoKey as non-empty */
     key->encoding = CryptoKey_PLAINTEXT;
@@ -136,8 +128,7 @@ static void ECDHCC26X1_getKeyResultMontgomery(const ECC_Param *x, CryptoKey *key
  *  ======== ECDH_init ========
  */
 void ECDH_init(void)
-{
-}
+{}
 
 /*
  *  ======== ECDH_Params_init ========
@@ -152,9 +143,9 @@ void ECDH_Params_init(ECDH_Params *params)
  */
 ECDH_Handle ECDH_construct(ECDH_Config *config, const ECDH_Params *params)
 {
-    ECDH_Handle                  handle;
-    ECDHCC26X1_Object           *object;
-    uint_fast8_t                key;
+    ECDH_Handle handle;
+    ECDHCC26X1_Object *object;
+    uint_fast8_t key;
 
     handle = (ECDH_Handle)config;
     object = handle->object;
@@ -184,7 +175,7 @@ ECDH_Handle ECDH_construct(ECDH_Config *config, const ECDH_Params *params)
     HwiP_restore(key);
 
     object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
+    object->callbackFxn    = params->callbackFxn;
 
     return handle;
 }
@@ -194,7 +185,7 @@ ECDH_Handle ECDH_construct(ECDH_Config *config, const ECDH_Params *params)
  */
 void ECDH_close(ECDH_Handle handle)
 {
-    ECDHCC26X1_Object         *object;
+    ECDHCC26X1_Object *object;
 
     /* Get the pointer to the object */
     object = handle->object;
@@ -222,16 +213,14 @@ static void ECDHCC26X1_formatX25519PrivateKey(uint32_t *myPrivateKey, ECDH_KeyMa
     myPrivateKey[7] |= 0x40000000UL;
 }
 
-
 /*
  *  ======== ECDH_generatePublicKey ========
  */
-int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
-                                    ECDH_OperationGeneratePublicKey *operation)
+int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle, ECDH_OperationGeneratePublicKey *operation)
 {
     ECDHCC26X1_Object *object = handle->object;
     int_fast16_t returnStatus = ECDH_STATUS_ERROR;
-    size_t curveLength = operation->curve->length;
+    size_t curveLength        = operation->curve->length;
     uint8_t eccStatus;
 
     /* Allocate local copies of the private and public keys because
@@ -260,7 +249,7 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
     }
 
     /*
-	 * Validate public key sizes to ensure X-only public key format if using Montgomery curves
+     * Validate public key sizes to ensure X-only public key format if using Montgomery curves
      * with little endian key representation. Other cases use both coordinates with additional
      * octet string offset byte when using big endian representation
      */
@@ -305,9 +294,7 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
     }
     else
     {
-        CryptoUtils_copyPad(operation->myPrivateKey->u.plaintext.keyMaterial,
-                            &privateKeyUnion.word[1],
-                            curveLength);
+        CryptoUtils_copyPad(operation->myPrivateKey->u.plaintext.keyMaterial, &privateKeyUnion.word[1], curveLength);
     }
 
     /* Assume Montgomery curve type is Curve25519 since ECC params for all other curves
@@ -317,9 +304,7 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
     {
         ECDHCC26X1_formatX25519PrivateKey(&privateKeyUnion.word[1], operation->keyMaterialEndianness);
 
-        ECCInitCC26X1_Curve25519(&(object->eccState),
-                                 ECDH26X1_ECC_WINDOW_SIZE,
-                                 object->eccWorkZone);
+        ECCInitCC26X1_Curve25519(&(object->eccState), ECDH26X1_ECC_WINDOW_SIZE, object->eccWorkZone);
 
         eccStatus = ECCSW_X25519_commonKey(&(object->eccState),
                                            privateKeyUnion.word,
@@ -332,8 +317,7 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
         ECC_initialize(&(object->eccState), object->eccWorkZone);
 
         /* Check if private key in [1, n-1] */
-        eccStatus = ECC_validatePrivateKey(&(object->eccState),
-                                           privateKeyUnion.word);
+        eccStatus = ECC_validatePrivateKey(&(object->eccState), privateKeyUnion.word);
 
         if (eccStatus == STATUS_PRIVATE_VALID)
         {
@@ -357,8 +341,11 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle,
         }
         else
         {
-            ECDHCC26X1_getKeyResult(&publicKeyUnionX, &publicKeyUnionY, operation->myPublicKey,
-                                    operation->curve, operation->keyMaterialEndianness);
+            ECDHCC26X1_getKeyResult(&publicKeyUnionX,
+                                    &publicKeyUnionY,
+                                    operation->myPublicKey,
+                                    operation->curve,
+                                    operation->keyMaterialEndianness);
         }
     }
 
@@ -372,7 +359,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
 {
     ECDHCC26X1_Object *object = handle->object;
     int_fast16_t returnStatus = ECDH_STATUS_ERROR;
-    size_t curveLength = operation->curve->length;
+    size_t curveLength        = operation->curve->length;
     uint8_t eccStatus;
 
     /* We need to allocate local copies of the private key, public key, and
@@ -387,9 +374,9 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
     ECC_Param sharedSecretUnionY;
 
     /* Prepend the word length - always 8 words for both P256 and Curve25519 */
-    privateKeyUnion.word[0] = 0x08;
-    publicKeyUnionX.word[0] = 0x08;
-    publicKeyUnionY.word[0] = 0x08;
+    privateKeyUnion.word[0]    = 0x08;
+    publicKeyUnionX.word[0]    = 0x08;
+    publicKeyUnionY.word[0]    = 0x08;
     sharedSecretUnionX.word[0] = 0x08;
     sharedSecretUnionY.word[0] = 0x08;
 
@@ -400,7 +387,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
     }
 
     /*
-	 * Validate public key sizes to ensure X-only public key format if using Montgomery curves
+     * Validate public key sizes to ensure X-only public key format if using Montgomery curves
      * with little endian key representation. Other cases use both coordinates with additional
      * octet string offset byte when using big endian representation
      */
@@ -425,7 +412,6 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
                 return ECDH_STATUS_INVALID_KEY_SIZE;
             }
         }
-
     }
     else /* Octet string format for any curve */
     {
@@ -439,7 +425,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
     }
 
     /*
-	 * Since we are receiving the private and public keys in octet string format,
+     * Since we are receiving the private and public keys in octet string format,
      * we need to convert them to little-endian form for use with the ECC in
      * ROM functions
      * If the private key is already in little-endian form, skip this conversion
@@ -451,34 +437,25 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
                                    &privateKeyUnion.word[1],
                                    curveLength);
 
-        CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial
-                                    	+ OCTET_STRING_OFFSET,
+        CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial + OCTET_STRING_OFFSET,
                                    &publicKeyUnionX.word[1],
                                    curveLength);
 
-        CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial
-                                    	+ curveLength
-                                        + OCTET_STRING_OFFSET,
+        CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial + curveLength +
+                                       OCTET_STRING_OFFSET,
                                    &publicKeyUnionY.word[1],
                                    curveLength);
     }
     else
     {
-        CryptoUtils_copyPad(operation->myPrivateKey->u.plaintext.keyMaterial,
-                            &privateKeyUnion.word[1],
-                            curveLength);
+        CryptoUtils_copyPad(operation->myPrivateKey->u.plaintext.keyMaterial, &privateKeyUnion.word[1], curveLength);
 
-        CryptoUtils_copyPad(operation->theirPublicKey->u.plaintext.keyMaterial,
-                            &publicKeyUnionX.word[1],
-                            curveLength);
+        CryptoUtils_copyPad(operation->theirPublicKey->u.plaintext.keyMaterial, &publicKeyUnionX.word[1], curveLength);
 
-        CryptoUtils_copyPad(operation->theirPublicKey->u.plaintext.keyMaterial
-                            	+ curveLength,
+        CryptoUtils_copyPad(operation->theirPublicKey->u.plaintext.keyMaterial + curveLength,
                             &publicKeyUnionY.word[1],
                             curveLength);
     }
-
-
 
     /* Assume Montgomery curve type is Curve25519 since ECC params for all other curves
      * such as NIST are provided as Weierstrass type.
@@ -487,9 +464,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
     {
         ECDHCC26X1_formatX25519PrivateKey(&privateKeyUnion.word[1], operation->keyMaterialEndianness);
 
-        ECCInitCC26X1_Curve25519(&(object->eccState),
-                                 ECDH26X1_ECC_WINDOW_SIZE,
-                                 object->eccWorkZone);
+        ECCInitCC26X1_Curve25519(&(object->eccState), ECDH26X1_ECC_WINDOW_SIZE, object->eccWorkZone);
 
         eccStatus = ECCSW_X25519_commonKey(&(object->eccState),
                                            privateKeyUnion.word,
@@ -501,9 +476,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
         /* Initialize ECC state for NIST P256 with a window size of 3 */
         ECC_initialize(&(object->eccState), object->eccWorkZone);
 
-        eccStatus = ECC_validatePublicKey(&(object->eccState),
-                                          publicKeyUnionX.word,
-                                          publicKeyUnionY.word);
+        eccStatus = ECC_validatePublicKey(&(object->eccState), publicKeyUnionX.word, publicKeyUnionY.word);
 
         if (eccStatus == STATUS_ECC_POINT_ON_CURVE)
         {
@@ -528,8 +501,11 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
         }
         else
         {
-            ECDHCC26X1_getKeyResult(&sharedSecretUnionX, &sharedSecretUnionY, operation->sharedSecret,
-                                    operation->curve,operation->keyMaterialEndianness);
+            ECDHCC26X1_getKeyResult(&sharedSecretUnionX,
+                                    &sharedSecretUnionY,
+                                    operation->sharedSecret,
+                                    operation->curve,
+                                    operation->keyMaterialEndianness);
         }
     }
 

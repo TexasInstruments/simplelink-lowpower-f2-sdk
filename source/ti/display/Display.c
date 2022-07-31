@@ -43,10 +43,10 @@
  * This must be done before DebugP.h is included.
  */
 #ifndef DebugP_ASSERT_ENABLED
-#define DebugP_ASSERT_ENABLED 0
+    #define DebugP_ASSERT_ENABLED 0
 #endif
 #ifndef DebugP_LOG_ENABLED
-#define DebugP_LOG_ENABLED 0
+    #define DebugP_LOG_ENABLED 0
 #endif
 
 #include <ti/drivers/dpl/DebugP.h>
@@ -75,7 +75,7 @@ extern const uint8_t Display_count;
  */
 /* Default Display parameters structure */
 const Display_Params Display_defaultParams = {
-    DISPLAY_CLEAR_BOTH,   /* Clear entire line before writing */
+    DISPLAY_CLEAR_BOTH, /* Clear entire line before writing */
 };
 
 /* -----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ Display_Handle Display_doOpen(uint32_t id, Display_Params *params)
     uint32_t i;
     for (i = 0; i < Display_count; i++)
     {
-        handle = (Display_Handle) & Display_config[i];
+        handle = (Display_Handle)&Display_config[i];
 
         /* Open if id matches, or if meta-type matches */
         if (id == i || (handle->fxnTablePtr->getTypeFxn() & id))
@@ -130,7 +130,6 @@ void Display_doParamsInit(Display_Params *params)
     *params = Display_defaultParams;
 }
 
-
 /*
  *  ======== Display_doClear ========
  */
@@ -144,7 +143,6 @@ void Display_doClear(Display_Handle handle)
 
     handle->fxnTablePtr->clearFxn(handle);
 }
-
 
 /*
  *  ======== Display_doClearLines ========
@@ -160,12 +158,10 @@ void Display_doClearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLin
     handle->fxnTablePtr->clearLinesFxn(handle, fromLine, toLine);
 }
 
-
 /*
  *  ======== Display_doPrintf ========
  */
-void Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column,
-                      const char *fmt, ...)
+void Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, ...)
 {
     if (NULL == handle)
     {
@@ -184,8 +180,7 @@ void Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column,
 /*
  *  ======== Display_doVprintf ========
  */
-void  Display_doVprintf(Display_Handle handle, uint8_t line, uint8_t column,
-        const char *fmt, va_list va)
+void Display_doVprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
     if (NULL == handle)
     {
@@ -246,7 +241,8 @@ void Display_doInit(void)
     int i;
 
     /* Call each driver's init function */
-    for (i = 0; i < Display_count; i++) {
-        Display_config[i].fxnTablePtr->initFxn((Display_Handle)&(Display_config[i]));
+    for (i = 0; i < Display_count; i++)
+    {
+        Display_config[i].fxnTablePtr->initFxn((Display_Handle) & (Display_config[i]));
     }
 }

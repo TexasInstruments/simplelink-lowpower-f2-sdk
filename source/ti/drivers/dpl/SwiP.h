@@ -57,7 +57,7 @@ extern "C" {
  *  BIOS 6.x: 52
  *  BIOS 7.x: 60
  */
-#define SwiP_STRUCT_SIZE   (60)
+#define SwiP_STRUCT_SIZE (60)
 
 /*!
  *  @brief    SemaphoreP structure.
@@ -65,9 +65,10 @@ extern "C" {
  *  Opaque structure that should be large enough to hold any of the
  *  RTOS specific SwiP objects.
  */
-typedef union SwiP_Struct {
-    uint32_t dummy;  /*!< Align object */
-    uint8_t  data[SwiP_STRUCT_SIZE];
+typedef union SwiP_Struct
+{
+    uint32_t dummy; /*!< Align object */
+    uint8_t data[SwiP_STRUCT_SIZE];
 } SwiP_Struct;
 
 /*!
@@ -75,14 +76,15 @@ typedef union SwiP_Struct {
  *
  *  A SwiP_Handle returned from the ::SwiP_create represents that instance.
  */
-typedef  void *SwiP_Handle;
+typedef void *SwiP_Handle;
 
 /*!
  *  @brief    Status codes for SwiP APIs
  *  TODO: See if we need more error codes.
  */
-typedef enum {
-    SwiP_OK = 0,
+typedef enum
+{
+    SwiP_OK      = 0,
     SwiP_FAILURE = -1
 } SwiP_Status;
 
@@ -109,11 +111,12 @@ typedef void (*SwiP_Fxn)(uintptr_t arg0, uintptr_t arg1);
  *  SwiP_inc functions also modify the trigger value. SwiP_or
  *  sets bits, and SwiP_andn clears bits.
  */
-typedef struct {
-    uintptr_t  arg0;      /*!< Argument passed into the SwiP function. */
-    uintptr_t  arg1;      /*!< Argument passed into the SwiP function. */
-    uint32_t   priority;  /*!< priority, 0 is min, 1, 2, ..., ~0 for max */
-    uint32_t   trigger;   /*!< Initial SwiP trigger value. */
+typedef struct
+{
+    uintptr_t arg0;    /*!< Argument passed into the SwiP function. */
+    uintptr_t arg1;    /*!< Argument passed into the SwiP function. */
+    uint32_t priority; /*!< priority, 0 is min, 1, 2, ..., ~0 for max */
+    uint32_t trigger;  /*!< Initial SwiP trigger value. */
 } SwiP_Params;
 
 /*!
@@ -128,8 +131,7 @@ typedef struct {
  *
  *  @return A SwiP_Handle on success or a NULL on an error
  */
-extern SwiP_Handle SwiP_construct(SwiP_Struct *swiP, SwiP_Fxn swiFxn,
-                               SwiP_Params *params);
+extern SwiP_Handle SwiP_construct(SwiP_Struct *swiP, SwiP_Fxn swiFxn, SwiP_Params *params);
 
 /*!
  *  @brief  Function to destruct a software interrupt object
@@ -162,8 +164,7 @@ extern void SwiP_Params_init(SwiP_Params *params);
  *
  *  @return A SwiP_Handle on success or a NULL on an error
  */
-extern SwiP_Handle SwiP_create(SwiP_Fxn swiFxn,
-                               SwiP_Params *params);
+extern SwiP_Handle SwiP_create(SwiP_Fxn swiFxn, SwiP_Params *params);
 
 /*!
  *  @brief  Function to delete a software interrupt object

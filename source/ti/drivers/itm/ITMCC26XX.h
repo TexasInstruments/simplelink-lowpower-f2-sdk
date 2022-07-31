@@ -55,9 +55,10 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct
+{
     ITM_BASE_HWATTRS
-    uint8_t          swoPin;    /*!< IOID number of SWO pin */
+    uint8_t swoPin; /*!< IOID number of SWO pin */
 } ITMCC26XX_HWAttrs;
 
 #ifdef __cplusplus

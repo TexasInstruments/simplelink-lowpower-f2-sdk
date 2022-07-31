@@ -79,16 +79,16 @@ void UDMACC26XX_hwiIntFxn(uintptr_t arg)
  */
 UDMACC26XX_Handle UDMACC26XX_open(void)
 {
-    HwiP_Params               hwiParams;
-    unsigned int             key;
-    UDMACC26XX_Object        *object;
+    HwiP_Params hwiParams;
+    unsigned int key;
+    UDMACC26XX_Object *object;
     UDMACC26XX_HWAttrs const *hwAttrs;
-    UDMACC26XX_Handle        handle;
+    UDMACC26XX_Handle handle;
 
     /* Get the pointer to the object and the hwAttrs */
-    handle = (UDMACC26XX_Handle)&(UDMACC26XX_config[0]);
+    handle  = (UDMACC26XX_Handle) & (UDMACC26XX_config[0]);
     hwAttrs = handle->hwAttrs;
-    object = handle->object;
+    object  = handle->object;
 
     /* Power up and enable clocks for uDMA. */
     Power_setDependency(hwAttrs->powerMngrId);
@@ -96,11 +96,12 @@ UDMACC26XX_Handle UDMACC26XX_open(void)
     /* Disable preemption while checking if the UDMACC26XX is open. */
     key = HwiP_disable();
 
-    if(!object->isOpen){
+    if (!object->isOpen)
+    {
         HwiP_Params_init(&hwiParams);
-        hwiParams.arg = (uintptr_t) handle;
+        hwiParams.arg      = (uintptr_t)handle;
         hwiParams.priority = hwAttrs->intPriority;
-        HwiP_construct(&(object->hwi), (int) hwAttrs->intNum, UDMACC26XX_hwiIntFxn, &hwiParams);
+        HwiP_construct(&(object->hwi), (int)hwAttrs->intNum, UDMACC26XX_hwiIntFxn, &hwiParams);
 
         /* make sure to mark the uDMA as opened */
         object->isOpen = true;
@@ -119,20 +120,22 @@ UDMACC26XX_Handle UDMACC26XX_open(void)
  */
 void UDMACC26XX_close(UDMACC26XX_Handle handle)
 {
-    unsigned int             key;
-    UDMACC26XX_Object        *object;
+    unsigned int key;
+    UDMACC26XX_Object *object;
     UDMACC26XX_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
-    object = handle->object;
+    object  = handle->object;
 
     /* Disable preemption while checking if the UDMACC26XX is open. */
     key = HwiP_disable();
 
     /* Only consider to take anything down if uDMA is initialized. */
-    if (object->isOpen) {
-        if (Power_getDependencyCount(hwAttrs->powerMngrId) == 1) {
+    if (object->isOpen)
+    {
+        if (Power_getDependencyCount(hwAttrs->powerMngrId) == 1)
+        {
             uDMADisable(hwAttrs->baseAddr);
             HwiP_destruct(&(object->hwi));
             object->isOpen = false;
@@ -159,7 +162,7 @@ static void UDMACC26XX_initHw(UDMACC26XX_Handle handle)
     UDMACC26XX_channelDisable(handle, 0xFFFFFFFF);
 
     /* Set the base for the channel control table. */
-    uDMAControlBaseSet(hwAttrs->baseAddr, (void *) UDMACC26XX_CONFIG_BASE);
+    uDMAControlBaseSet(hwAttrs->baseAddr, (void *)UDMACC26XX_CONFIG_BASE);
 
     /* Enable uDMA. */
     uDMAEnable(hwAttrs->baseAddr);

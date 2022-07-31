@@ -67,8 +67,6 @@
 #define GateHwi_Handle_label ti_sysbios_gates_GateHwi_Handle_label
 #define GateHwi_Handle_name ti_sysbios_gates_GateHwi_Handle_name
 #define GateHwi_Instance_init ti_sysbios_gates_GateHwi_Instance_init
-#define GateHwi_Object_count ti_sysbios_gates_GateHwi_Object_count
-#define GateHwi_Object_get ti_sysbios_gates_GateHwi_Object_get
 #define GateHwi_Object_first ti_sysbios_gates_GateHwi_Object_first
 #define GateHwi_Object_next ti_sysbios_gates_GateHwi_Object_next
 #define GateHwi_Object_sizeof ti_sysbios_gates_GateHwi_Object_sizeof
@@ -119,8 +117,6 @@
 #undef GateHwi_Handle_label
 #undef GateHwi_Handle_name
 #undef GateHwi_Instance_init
-#undef GateHwi_Object_count
-#undef GateHwi_Object_get
 #undef GateHwi_Object_first
 #undef GateHwi_Object_next
 #undef GateHwi_Object_sizeof

@@ -168,16 +168,24 @@ public class gnu_targets_arm_rtsv7M
             sb.append("pkg.packageRepository = xdc.om['gnu.targets.arm.rtsv7M$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
-            sb.append("'lib/gnu.targets.arm.rtsv7M.am4fg',\n");
-            sb.append("'lib/boot.am4fg',\n");
+            sb.append("'lib/gnu.targets.arm.rtsv7M.am0g',\n");
+            sb.append("'lib/boot.am0g',\n");
+            sb.append("'lib/gnu.targets.arm.rtsv7M.am3g',\n");
+            sb.append("'lib/boot.am3g',\n");
             sb.append("'lib/gnu.targets.arm.rtsv7M.am4g',\n");
             sb.append("'lib/boot.am4g',\n");
+            sb.append("'lib/gnu.targets.arm.rtsv7M.am4fg',\n");
+            sb.append("'lib/boot.am4fg',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
-            sb.append("['lib/gnu.targets.arm.rtsv7M.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
-            sb.append("['lib/boot.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
+            sb.append("['lib/gnu.targets.arm.rtsv7M.am0g', {target: 'gnu.targets.arm.M0', suffix: 'm0g'}],\n");
+            sb.append("['lib/boot.am0g', {target: 'gnu.targets.arm.M0', suffix: 'm0g'}],\n");
+            sb.append("['lib/gnu.targets.arm.rtsv7M.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
+            sb.append("['lib/boot.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
             sb.append("['lib/gnu.targets.arm.rtsv7M.am4g', {target: 'gnu.targets.arm.M4', suffix: 'm4g'}],\n");
             sb.append("['lib/boot.am4g', {target: 'gnu.targets.arm.M4', suffix: 'm4g'}],\n");
+            sb.append("['lib/gnu.targets.arm.rtsv7M.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
+            sb.append("['lib/boot.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

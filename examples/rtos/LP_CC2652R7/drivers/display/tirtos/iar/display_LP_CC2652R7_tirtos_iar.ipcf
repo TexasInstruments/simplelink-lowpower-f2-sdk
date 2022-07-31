@@ -45,10 +45,10 @@
     <linkerExtraOptions>
         <args>
             <arg>-L$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source</arg>
-            <arg>-L$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/tirtos/packages</arg>
+            <arg>-L$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/tirtos7/packages</arg>
             <arg>-f$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</arg>
             <arg>-f$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/tirtos/builds/cc13x2x7_cc26x2x7/release/iar/linker.cmd</arg>
-            <arg>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib</arg>
+            <arg>ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib</arg>
             <arg>--silent</arg>
             <arg>--cpu=Cortex-M4F</arg>
         </args>

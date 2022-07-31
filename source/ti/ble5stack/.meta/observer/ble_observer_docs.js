@@ -110,6 +110,12 @@ service UUID. \n
 __Note__: By defult, the service UUID is the TI Simple Profile UUID. \n
 __Default__: False (unchecked)`
 
+// Long description for the advReportChanNum configuration parameter
+const advReportChanNumLongDescription = `When enabled, the channel number which \
+the scanner received the advertising packet on, will be part of the advertising report.\n
+__Note__: This feature is only available for legacy advertising packet\n
+__Default__: False (unchecked)`
+
  // Exports the long descriptions for each configurable
 exports = {
     scanPHYLongDescription: scanPHYLongDescription,
@@ -118,5 +124,6 @@ exports = {
     scanWinLongDescription: scanWinLongDescription,
     scanDurationLongDescription: scanDurationLongDescription,
     advRptFieldsLongDescription: advRptFieldsLongDescription,
-    disDevBySerUuidLongDescription: disDevBySerUuidLongDescription
+    disDevBySerUuidLongDescription: disDevBySerUuidLongDescription,
+    advReportChanNumLongDescription: advReportChanNumLongDescription
 };

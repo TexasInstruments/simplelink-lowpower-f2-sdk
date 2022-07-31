@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,11 @@
 
 Timer_Struct ClockSupport_timerStruct;
 
+/* Clock TickMode needed to determine whether we are ticking dynamically or
+ * periodically and setting up the Timer instance accordingly.
+ */
+extern const Clock_TickMode Clock_tickMode;
+
 /*
  * ======== ClockSupport_init ========
  */
@@ -58,6 +63,13 @@ void ClockSupport_init(void)
     Timer_Params_init(&timerParams);
     timerParams.period = Clock_tickPeriod;
     timerParams.periodType = Timer_PeriodType_MICROSECS;
+
+    if (Clock_tickMode == Clock_TickMode_DYNAMIC) {
+        timerParams.runMode = Timer_RunMode_DYNAMIC;
+    }
+    else {
+        timerParams.runMode = Timer_RunMode_CONTINUOUS;
+    }
 
     Timer_construct(&ClockSupport_timerStruct, 0, (Timer_FuncPtr)Clock_tick,
         &timerParams, NULL);
@@ -134,4 +146,3 @@ void ClockSupport_getFreq(Types_FreqHz *freq)
 {
     Timer_getFreq(&ClockSupport_timerStruct, freq);
 }
-

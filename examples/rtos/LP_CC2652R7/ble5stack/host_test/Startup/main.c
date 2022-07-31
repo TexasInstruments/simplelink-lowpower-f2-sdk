@@ -127,24 +127,6 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
  * GLOBAL VARIABLES
  */
 
-#ifdef CC1350_LAUNCHXL
-#ifdef POWER_SAVING
-// Power Notify Object for wake-up callbacks
-Power_NotifyObj rFSwitchPowerNotifyObj;
-static uint8_t rFSwitchNotifyCb(uint8_t eventType, uint32_t *eventArg,
-                                uint32_t *clientArg);
-#endif //POWER_SAVING
-
-PIN_State  radCtrlState;
-PIN_Config radCtrlCfg[] =
-{
-  Board_DIO1_RFSW   | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW  | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* RF SW Switch defaults to 2.4GHz path*/
-  Board_DIO30_SWPWR | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* Power to the RF Switch */
-  PIN_TERMINATE
-};
-PIN_Handle radCtrlHandle;
-#endif //CC1350_LAUNCHXL
-
 /*******************************************************************************
  * EXTERNS
  */
@@ -190,17 +172,6 @@ int main()
   RegisterAssertCback(AssertHandler);
 
   Board_initGeneral();
-
-#ifdef CC1350_LAUNCHXL
-  // Enable 2.4GHz Radio
-  radCtrlHandle = PIN_open(&radCtrlState, radCtrlCfg);
-
-#ifdef POWER_SAVING
-  Power_registerNotify(&rFSwitchPowerNotifyObj,
-                       PowerCC26XX_ENTERING_STANDBY | PowerCC26XX_AWAKE_STANDBY,
-                       (Power_NotifyFxn) rFSwitchNotifyCb, NULL);
-#endif //POWER_SAVING
-#endif //CC1350_LAUNCHXL
 
 #if defined( USE_FPGA )
   // set RFC mode to support BLE
@@ -377,41 +348,6 @@ void smallErrorHook(Error_Block *eb)
 {
   for (;;);
 }
-
-#if defined (CC1350_LAUNCHXL) && defined (POWER_SAVING)
-/*******************************************************************************
- * @fn          rFSwitchNotifyCb
- *
- * @brief       Power driver callback to toggle RF switch on Power state
- *              transitions.
- *
- * input parameters
- *
- * @param   eventType - The state change.
- * @param   eventArg  - Not used.
- * @param   clientArg - Not used.
- *
- * @return  Power_NOTIFYDONE to indicate success.
- */
-static uint8_t rFSwitchNotifyCb(uint8_t eventType, uint32_t *eventArg,
-                                uint32_t *clientArg)
-{
-  if (eventType == PowerCC26XX_ENTERING_STANDBY)
-  {
-    // Power down RF Switch
-    PIN_setOutputValue(radCtrlHandle, Board_DIO30_SWPWR, 0);
-  }
-  else if (eventType == PowerCC26XX_AWAKE_STANDBY)
-  {
-    // Power up RF Switch
-    PIN_setOutputValue(radCtrlHandle, Board_DIO30_SWPWR, 1);
-  }
-
-  // Notification handled successfully
-  return Power_NOTIFYDONE;
-}
-#endif //CC1350_LAUNCHXL || POWER_SAVING
-
 
 /*******************************************************************************
  */

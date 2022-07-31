@@ -63,8 +63,6 @@
 #define Event_handle ti_sysbios_knl_Event_handle
 #define Event_struct ti_sysbios_knl_Event_struct
 #define Event_Instance_init ti_sysbios_knl_Event_Instance_init
-#define Event_Object_count ti_sysbios_knl_Event_Object_count
-#define Event_Object_get ti_sysbios_knl_Event_Object_get
 #define Event_Object_first ti_sysbios_knl_Event_Object_first
 #define Event_Object_next ti_sysbios_knl_Event_Object_next
 #define Event_Object_sizeof ti_sysbios_knl_Event_Object_sizeof
@@ -106,8 +104,6 @@
 #undef Event_handle
 #undef Event_struct
 #undef Event_Instance_init
-#undef Event_Object_count
-#undef Event_Object_get
 #undef Event_Object_first
 #undef Event_Object_next
 #undef Event_Object_sizeof

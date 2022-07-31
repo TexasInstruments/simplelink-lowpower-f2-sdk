@@ -73,7 +73,8 @@ extern "C" {
  *  ECDSACC26X1 hardware attributes should be included in the board file
  *  and pointed to by the ECDSA_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief TRNG Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -84,9 +85,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    trngIntPriority;
+    uint8_t trngIntPriority;
 } ECDSACC26X1_HWAttrs;
 
 /*!
@@ -94,11 +96,12 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                     isOpen;
-    ECDSA_ReturnBehavior     returnBehavior; /* Callback mode is not supported */
-    ECC_State                eccState;
-    uint32_t                 eccWorkZone[288];
+typedef struct
+{
+    bool isOpen;
+    ECDSA_ReturnBehavior returnBehavior; /* Callback mode is not supported */
+    ECC_State eccState;
+    uint32_t eccWorkZone[288];
 } ECDSACC26X1_Object;
 
 #ifdef __cplusplus

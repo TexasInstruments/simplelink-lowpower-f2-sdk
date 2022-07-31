@@ -45,10 +45,10 @@
 /*
  *  ======== SystemP_snprintf ========
  */
-int SystemP_snprintf(char *buf, size_t n, const char *format,...)
+int SystemP_snprintf(char *buf, size_t n, const char *format, ...)
 {
     va_list args;
-    int     ret;
+    int ret;
 
     va_start(args, format);
     ret = System_vsnprintf(buf, n, format, args);
@@ -62,7 +62,7 @@ int SystemP_snprintf(char *buf, size_t n, const char *format,...)
  */
 int SystemP_vsnprintf(char *buf, size_t n, const char *format, va_list va)
 {
-    int     ret;
+    int ret;
 
     ret = System_vsnprintf(buf, n, format, va);
     return (ret);

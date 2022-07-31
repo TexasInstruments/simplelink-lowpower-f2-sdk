@@ -43,7 +43,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,9 +50,10 @@ extern "C" {
 /*!
  *  @brief Indicates the endianess (byte order) of a multi-byte value.
  */
-typedef enum {
-    CryptoUtils_ENDIANESS_BIG = 0u,     /*!< MSB at lowest address. */
-    CryptoUtils_ENDIANESS_LITTLE = 1u,  /*!< LSB at highest address. */
+typedef enum
+{
+    CryptoUtils_ENDIANESS_BIG    = 0u, /*!< MSB at lowest address. */
+    CryptoUtils_ENDIANESS_LITTLE = 1u, /*!< LSB at highest address. */
 } CryptoUtils_Endianess;
 
 /*!
@@ -164,7 +164,7 @@ void CryptoUtils_memset(void *dest, size_t destSize, uint8_t val, size_t count);
  *  @param  buffer              Buffer containing the data to be reversed.
  *  @param  bufferByteLength    Length in bytes of @c buffer.
  */
-void CryptoUtils_reverseBufferBytewise(void * buffer, size_t bufferByteLength);
+void CryptoUtils_reverseBufferBytewise(void *buffer, size_t bufferByteLength);
 
 /**
  *  @brief Copies and pads an array of words.
@@ -182,9 +182,7 @@ void CryptoUtils_reverseBufferBytewise(void * buffer, size_t bufferByteLength);
  *
  *  @param sourceLength Length of the source array
  */
-void CryptoUtils_copyPad(const void *source,
-                         uint32_t *destination,
-                         size_t sourceLength);
+void CryptoUtils_copyPad(const void *source, uint32_t *destination, size_t sourceLength);
 
 /**
  *  @brief Reverses, copies, and pads an array of words.
@@ -202,9 +200,7 @@ void CryptoUtils_copyPad(const void *source,
  *
  *  @param sourceLength Length of the source array
  */
-void CryptoUtils_reverseCopyPad(const void *source,
-                                uint32_t *destination,
-                                size_t sourceLength);
+void CryptoUtils_reverseCopyPad(const void *source, uint32_t *destination, size_t sourceLength);
 
 /**
  *  @brief Reverses and copies an array of bytes.
@@ -218,9 +214,7 @@ void CryptoUtils_reverseCopyPad(const void *source,
  *
  *  @param sourceLength Length of the source array
  */
-void CryptoUtils_reverseCopy(const void *source,
-                             void *destination,
-                             size_t sourceLength);
+void CryptoUtils_reverseCopy(const void *source, void *destination, size_t sourceLength);
 
 /**
  *  @brief Checks if number is within the range [lowerLimit, upperLimit)

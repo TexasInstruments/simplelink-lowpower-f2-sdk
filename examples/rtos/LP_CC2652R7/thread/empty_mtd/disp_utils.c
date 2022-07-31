@@ -67,7 +67,7 @@
 
 /* OpenThread header files */
 #include "openthread-core-config.h"
-#include <openthread/config.h>
+#include <openthread/logging.h>
 #include <openthread/platform/logging.h>
 
 #include "disp_utils.h"

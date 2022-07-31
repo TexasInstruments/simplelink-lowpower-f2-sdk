@@ -39,10 +39,10 @@
  * This must be done before DebugP.h is included.
  */
 #ifndef DebugP_ASSERT_ENABLED
-#define DebugP_ASSERT_ENABLED 0
+    #define DebugP_ASSERT_ENABLED 0
 #endif
 #ifndef DebugP_LOG_ENABLED
-#define DebugP_LOG_ENABLED 0
+    #define DebugP_LOG_ENABLED 0
 #endif
 
 #include <ti/drivers/dpl/DebugP.h>
@@ -53,7 +53,7 @@
 #include <third_party/fatfs/ff.h>
 
 /* SDFatFS Specific Defines */
-#define DRIVE_NOT_MOUNTED    (~(0U))
+#define DRIVE_NOT_MOUNTED (~(0U))
 
 extern const SDFatFS_Config SDFatFS_config[];
 extern const uint_least8_t SDFatFS_count;
@@ -70,20 +70,18 @@ static SDFatFS_Handle sdFatFSHandles[FF_VOLUMES];
 /* FatFS function prototypes */
 DSTATUS SDFatFS_diskInitialize(BYTE drive);
 DRESULT SDFatFS_diskIOctrl(BYTE drive, BYTE ctrl, void *buffer);
-DRESULT SDFatFS_diskRead(BYTE drive, BYTE *buffer,
-    DWORD sector, UINT secCount);
+DRESULT SDFatFS_diskRead(BYTE drive, BYTE *buffer, DWORD sector, UINT secCount);
 DSTATUS SDFatFS_diskStatus(BYTE drive);
-DRESULT SDFatFS_diskWrite(BYTE drive, const BYTE *buffer,
-    DWORD sector, UINT secCount);
+DRESULT SDFatFS_diskWrite(BYTE drive, const BYTE *buffer, DWORD sector, UINT secCount);
 
 /*
  *  ======== SDFatFS_close ========
  */
 void SDFatFS_close(SDFatFS_Handle handle)
 {
-    TCHAR           path[3];
-    DRESULT         dresult;
-    FRESULT         fresult;
+    TCHAR path[3];
+    DRESULT dresult;
+    FRESULT fresult;
     SDFatFS_Object *obj = handle->object;
 
     /* Construct base directory path */
@@ -96,16 +94,20 @@ void SDFatFS_close(SDFatFS_Handle handle)
 
     /* Unmount the FatFs drive */
     fresult = f_mount(NULL, path, 0);
-    if (fresult != FR_OK) {
+    if (fresult != FR_OK)
+    {
         DebugP_log1("SDFatFS: Could not unmount FatFs volume @ drive"
-            " number %d", obj->driveNum);
+                    " number %d",
+                    obj->driveNum);
     }
 
     /* Unregister the disk_*() functions */
     dresult = disk_unregister(obj->driveNum);
-    if (dresult != RES_OK) {
+    if (dresult != RES_OK)
+    {
         DebugP_log1("SDFatFS: Error unregistering disk"
-            " functions @ drive number %d", obj->driveNum);
+                    " functions @ drive number %d",
+                    obj->driveNum);
     }
 
     obj->driveNum = DRIVE_NOT_MOUNTED;
@@ -117,14 +119,15 @@ void SDFatFS_close(SDFatFS_Handle handle)
  */
 DSTATUS SDFatFS_diskInitialize(BYTE drive)
 {
-    int_fast8_t     result;
+    int_fast8_t result;
     SDFatFS_Object *obj = sdFatFSHandles[drive]->object;
 
     result = SD_initialize(obj->sdHandle);
 
     /* Convert lower level driver status code */
-    if (result == SD_STATUS_SUCCESS) {
-        obj->diskState = ((DSTATUS) obj->diskState) & ~((DSTATUS)STA_NOINIT);
+    if (result == SD_STATUS_SUCCESS)
+    {
+        obj->diskState = ((DSTATUS)obj->diskState) & ~((DSTATUS)STA_NOINIT);
     }
 
     return (obj->diskState);
@@ -137,33 +140,31 @@ DSTATUS SDFatFS_diskInitialize(BYTE drive)
  */
 DRESULT SDFatFS_diskIOctrl(BYTE drive, BYTE ctrl, void *buffer)
 {
-    SDFatFS_Object *obj   = sdFatFSHandles[drive]->object;
-    DRESULT         fatfsRes = RES_ERROR;
+    SDFatFS_Object *obj = sdFatFSHandles[drive]->object;
+    DRESULT fatfsRes    = RES_ERROR;
 
-    switch (ctrl) {
+    switch (ctrl)
+    {
         case CTRL_SYNC:
             fatfsRes = RES_OK;
             break;
 
         case (BYTE)GET_SECTOR_COUNT:
-            *(uint32_t*)buffer = (uint32_t)SD_getNumSectors(obj->sdHandle);
+            *(uint32_t *)buffer = (uint32_t)SD_getNumSectors(obj->sdHandle);
 
-            DebugP_log1("SDFatFS: Disk IO control: sector count: %d",
-                *(uint32_t*)buffer);
+            DebugP_log1("SDFatFS: Disk IO control: sector count: %d", *(uint32_t *)buffer);
             fatfsRes = RES_OK;
             break;
 
         case (BYTE)GET_SECTOR_SIZE:
-            *(WORD*)buffer = (WORD)SD_getSectorSize(obj->sdHandle);
-            DebugP_log1("SDFatFS: Disk IO control: sector size: %d",
-                *(WORD*)buffer);
+            *(WORD *)buffer = (WORD)SD_getSectorSize(obj->sdHandle);
+            DebugP_log1("SDFatFS: Disk IO control: sector size: %d", *(WORD *)buffer);
             fatfsRes = RES_OK;
             break;
 
         case (BYTE)GET_BLOCK_SIZE:
-            *(WORD*)buffer = (WORD)SD_getSectorSize(obj->sdHandle);
-            DebugP_log1("SDFatFS: Disk IO control: block size: %d",
-                *(WORD*)buffer);
+            *(WORD *)buffer = (WORD)SD_getSectorSize(obj->sdHandle);
+            DebugP_log1("SDFatFS: Disk IO control: block size: %d", *(WORD *)buffer);
             fatfsRes = RES_OK;
             break;
 
@@ -180,23 +181,24 @@ DRESULT SDFatFS_diskIOctrl(BYTE drive, BYTE ctrl, void *buffer)
  *  Function to perform a disk read from the SDCard. This function is called by
  *  the FatFs module and must not be called by the application!
  */
-DRESULT SDFatFS_diskRead(BYTE drive, BYTE *buffer,
-    DWORD sector, UINT secCount)
+DRESULT SDFatFS_diskRead(BYTE drive, BYTE *buffer, DWORD sector, UINT secCount)
 {
-    int_fast32_t    result;
-    DRESULT         fatfsRes = RES_ERROR;
-    SDFatFS_Object *obj   = sdFatFSHandles[drive]->object;
+    int_fast32_t result;
+    DRESULT fatfsRes    = RES_ERROR;
+    SDFatFS_Object *obj = sdFatFSHandles[drive]->object;
 
     /* Return if disk not initialized */
-    if ((obj->diskState & (DSTATUS)STA_NOINIT) != 0) {
+    if ((obj->diskState & (DSTATUS)STA_NOINIT) != 0)
+    {
         fatfsRes = RES_PARERR;
     }
-    else {
-        result = SD_read(obj->sdHandle, (uint_least8_t *)buffer,
-            (int_least32_t)sector, (uint_least32_t)secCount);
+    else
+    {
+        result = SD_read(obj->sdHandle, (uint_least8_t *)buffer, (int_least32_t)sector, (uint_least32_t)secCount);
 
         /* Convert lower level driver status code */
-        if (result == SD_STATUS_SUCCESS) {
+        if (result == SD_STATUS_SUCCESS)
+        {
             fatfsRes = RES_OK;
         }
     }
@@ -214,30 +216,33 @@ DSTATUS SDFatFS_diskStatus(BYTE drive)
     return (((SDFatFS_Object *)sdFatFSHandles[drive]->object)->diskState);
 }
 
-
 #if (_READONLY == 0)
 /*
  *  ======== SDFatFS_diskWrite ========
  *  Function to perform a write to the SDCard. This function is called by
  *  the FatFs module and must not be called by the application!
  */
-DRESULT SDFatFS_diskWrite(BYTE drive, const BYTE *buffer, DWORD sector,
-    UINT secCount)
+DRESULT SDFatFS_diskWrite(BYTE drive, const BYTE *buffer, DWORD sector, UINT secCount)
 {
-    int_fast32_t    result;
-    DRESULT         fatfsRes = RES_ERROR;
+    int_fast32_t result;
+    DRESULT fatfsRes    = RES_ERROR;
     SDFatFS_Object *obj = sdFatFSHandles[drive]->object;
 
     /* Return if disk not initialized */
-    if ((obj->diskState & (DSTATUS)STA_NOINIT) != 0) {
+    if ((obj->diskState & (DSTATUS)STA_NOINIT) != 0)
+    {
         fatfsRes = RES_PARERR;
     }
-    else {
-        result = SD_write(obj->sdHandle, (const uint_least8_t *)buffer,
-            (int_least32_t)sector, (uint_least32_t)secCount);
+    else
+    {
+        result = SD_write(obj->sdHandle,
+                          (const uint_least8_t *)buffer,
+                          (int_least32_t)sector,
+                          (uint_least32_t)secCount);
 
         /* Convert lower level driver status code */
-        if (result == SD_STATUS_SUCCESS) {
+        if (result == SD_STATUS_SUCCESS)
+        {
             fatfsRes = RES_OK;
         }
     }
@@ -251,21 +256,23 @@ DRESULT SDFatFS_diskWrite(BYTE drive, const BYTE *buffer, DWORD sector,
  */
 void SDFatFS_init(void)
 {
-    uint_least8_t   i;
-    uint_fast32_t   key;
+    uint_least8_t i;
+    uint_fast32_t key;
     SDFatFS_Object *obj;
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Initialize each SDFatFS object */
-        for (i = 0; i < SDFatFS_count; i++) {
-            obj = ((SDFatFS_Handle)&(SDFatFS_config[i]))->object;
+        for (i = 0; i < SDFatFS_count; i++)
+        {
+            obj = ((SDFatFS_Handle) & (SDFatFS_config[i]))->object;
 
             obj->diskState = STA_NOINIT;
-            obj->driveNum = DRIVE_NOT_MOUNTED;
+            obj->driveNum  = DRIVE_NOT_MOUNTED;
         }
 
         /* Initialize the SD Driver */
@@ -275,7 +282,6 @@ void SDFatFS_init(void)
     HwiP_restore(key);
 }
 
-
 /*
  *  ======== SDFatFS_open ========
  *  Note: The index passed into this function must correspond directly
@@ -283,55 +289,62 @@ void SDFatFS_init(void)
  */
 SDFatFS_Handle SDFatFS_open(uint_least8_t idx, uint_least8_t drive)
 {
-    uintptr_t       key;
-    DRESULT         dresult;
-    FRESULT         fresult;
-    TCHAR           path[3];
-    SDFatFS_Handle  handle = NULL;
+    uintptr_t key;
+    DRESULT dresult;
+    FRESULT fresult;
+    TCHAR path[3];
+    SDFatFS_Handle handle = NULL;
     SDFatFS_Object *obj;
 
     /* Verify driver index and state */
-    if (isInitialized && (idx < SDFatFS_count)) {
+    if (isInitialized && (idx < SDFatFS_count))
+    {
         /* Get handle for this driver instance */
-        handle = (SDFatFS_Handle)&(SDFatFS_config[idx]);
-        obj = handle->object;
+        handle = (SDFatFS_Handle) & (SDFatFS_config[idx]);
+        obj    = handle->object;
 
         /* Determine if the device was already opened */
         key = HwiP_disable();
-        if (obj->driveNum != DRIVE_NOT_MOUNTED) {
+        if (obj->driveNum != DRIVE_NOT_MOUNTED)
+        {
             HwiP_restore(key);
             DebugP_log1("SDFatFS Drive %d already in use!", obj->driveNum);
             handle = NULL;
         }
-        else {
+        else
+        {
             obj->driveNum = drive;
             HwiP_restore(key);
 
             /* Open SD Driver */
             obj->sdHandle = SD_open(idx, NULL);
 
-            if (obj->sdHandle == NULL) {
+            if (obj->sdHandle == NULL)
+            {
                 obj->driveNum = DRIVE_NOT_MOUNTED;
                 /* Error occurred in lower level driver */
-                handle = NULL;
+                handle        = NULL;
             }
-            else {
+            else
+            {
 
                 /* Register FATFS Functions */
                 dresult = disk_register(obj->driveNum,
-                    SDFatFS_diskInitialize,
-                    SDFatFS_diskStatus,
-                    SDFatFS_diskRead,
-                    SDFatFS_diskWrite,
-                    SDFatFS_diskIOctrl);
+                                        SDFatFS_diskInitialize,
+                                        SDFatFS_diskStatus,
+                                        SDFatFS_diskRead,
+                                        SDFatFS_diskWrite,
+                                        SDFatFS_diskIOctrl);
 
                 /* Check for drive errors */
-                if (dresult != RES_OK) {
+                if (dresult != RES_OK)
+                {
                     DebugP_log0("SDFatFS: Disk functions not registered");
                     SDFatFS_close(handle);
                     handle = NULL;
                 }
-                else {
+                else
+                {
 
                     /* Construct base directory path */
                     path[0] = (TCHAR)'0' + obj->driveNum;
@@ -343,14 +356,15 @@ SDFatFS_Handle SDFatFS_open(uint_least8_t idx, uint_least8_t drive)
                      * not access the SDCard yet.
                      */
                     fresult = f_mount(&(obj->filesystem), path, 0);
-                    if (fresult != FR_OK) {
-                        DebugP_log1("SDFatFS: Drive %d not mounted",
-                                    obj->driveNum);
+                    if (fresult != FR_OK)
+                    {
+                        DebugP_log1("SDFatFS: Drive %d not mounted", obj->driveNum);
 
                         SDFatFS_close(handle);
                         handle = NULL;
                     }
-                    else {
+                    else
+                    {
 
                         /*
                          * Store the new sdfatfs handle for the input drive

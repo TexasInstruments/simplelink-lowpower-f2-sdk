@@ -61,6 +61,7 @@ uint8_t eccDebugKeys            =    `ble.eccDebugKeys`;
 % }
 uint8_t allowDebugKeys          =    `ble.allowDebugKeys`;
 uint8_t eraseBondWhileInConn    =    `ble.eraseBondWhileInConn`;
+uint8_t sameIrkAction           =    `ble.sameIrkOption`;
 
 void setBondManagerParameters()
 {
@@ -96,6 +97,7 @@ void setBondManagerParameters()
     GAPBondMgr_SetParameter(GAPBOND_ALLOW_DEBUG_KEYS, sizeof(uint8_t), &allowDebugKeys);
     // Set the Erase bond While in Active Connection Flag
     GAPBondMgr_SetParameter(GAPBOND_ERASE_BOND_IN_CONN, sizeof(uint8_t), &eraseBondWhileInConn);
+    GAPBondMgr_SetParameter(GAPBOND_SAME_IRK_OPTION, sizeof(uint8_t), &sameIrkAction);
 }
 
 %}

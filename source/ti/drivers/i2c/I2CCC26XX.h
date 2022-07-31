@@ -338,7 +338,8 @@ extern "C" {
  *  handle = I2C_open(CONFIG_I2C, &i2cParams);
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     uint8_t pinSDA;
     uint8_t pinSCL;
 } I2CCC26XX_I2CPinCfg;
@@ -387,11 +388,12 @@ typedef struct {
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     I2C_BASE_HWATTRS
 
     /* I2C peripheral's Power driver ID */
-    unsigned long       powerMngrId;
+    unsigned long powerMngrId;
 
     /*
      *  I2C Swi priority.
@@ -400,13 +402,13 @@ typedef struct {
      *  The maximum can be reduced to save RAM by adding or modifying
      *  Swi.numPriorities in the kernel configuration file.
      */
-    uint32_t            swiPriority;
+    uint32_t swiPriority;
     /* SDA pin index and mux */
-    uint8_t             sdaPin;
-    uint8_t             sdaPinMux;
+    uint8_t sdaPin;
+    uint8_t sdaPinMux;
     /* SCL pin index and mux */
-    uint8_t             sclPin;
-    uint8_t             sclPinMux;
+    uint8_t sclPin;
+    uint8_t sclPinMux;
 } I2CCC26XX_HWAttrsV1;
 
 /*!
@@ -414,22 +416,23 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     I2C_BASE_OBJECT
 
     /* Swi object */
-    SwiP_Struct        swi;
+    SwiP_Struct swi;
 
     /* Bitrate of the I2C module */
-    uint32_t           bitRate;
+    uint32_t bitRate;
 
     /* Pin indexes. We need to cache these because we might have custom pins */
-    uint8_t            sdaPin;
-    uint8_t            sclPin;
+    uint8_t sdaPin;
+    uint8_t sclPin;
 
     /* I2C power notification */
-    void              *i2cPostFxn;
-    Power_NotifyObj    i2cPostObj;
+    void *i2cPostFxn;
+    Power_NotifyObj i2cPostObj;
 } I2CCC26XX_Object;
 
 #ifdef __cplusplus

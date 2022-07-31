@@ -37,63 +37,82 @@
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/SemaphoreP.h>
 
-#include <ti/drivers/PIN.h>
 #include <ti/drivers/SPI.h>
+#include <ti/drivers/GPIO.h>
 #include <ti/display/lcd/LCDDogm1286.h>
 #include <ti/display/lcd/LCDDogm1286_util.h>
 
 /* macro to calculate minimum value */
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 /* Externs */
 extern const LCD_Config LCD_config;
 extern const SPI_Config SPI_config[];
-
-/* PIN driver state object */
-static PIN_State pinState;
-
-/* PIN driver handle */
-static PIN_Handle hPin;
 
 /* Used to check status and initialization */
 static int LCD_count = -1;
 
 /* Static LCD functions */
 static bool LCD_initHw(LCD_Handle handle);
-static void LCD_sendCommand(LCD_Handle handle, const char *pcCmd,
-    unsigned char ucLen);
-static void LCD_sendData(LCD_Handle handle, const char *pcData,
-    unsigned short usLen);
+static void LCD_sendCommand(LCD_Handle handle, const char *pcCmd, unsigned char ucLen);
+static void LCD_sendData(LCD_Handle handle, const char *pcData, unsigned short usLen);
 static void LCD_gotoXY(LCD_Handle handle, unsigned char ucX, unsigned char ucY);
-static bool LCD_sendArray(LCD_Handle handle, const char *pcData,
-    unsigned short usLen);
-static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucXFrom, unsigned char ucYFrom, unsigned char ucXTo,
-    unsigned char ucYTo, unsigned char ucDraw);
-static void LCD_doUpdate(LCD_Handle handle, unsigned int bufIndex,
-    bool blocking);
-static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex,
-    LCD_Page iPage, bool blocking);
-static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex,
-    const char *pcStr, unsigned char ucX, LCD_Page iPage, bool blocking);
-static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex,
-    int i32Number, unsigned char ucX, LCD_Page iPage, bool blocking);
-static void LCD_doBufferSetHLine(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucXFrom, unsigned char ucXTo, unsigned char ucY,
-    bool blocking);
-static void LCD_doBufferClearHLine(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucXFrom, unsigned char ucXTo, unsigned char ucY,
-    bool blocking);
-static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucX, unsigned char ucYFrom, unsigned char ucYTo,
-    bool blocking);
-static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucX, unsigned char ucYFrom, unsigned char ucYTo,
-    bool blocking);
-static void LCD_doBufferSetPx(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucX, unsigned char ucY, bool blocking);
-static void LCD_doBufferClearPx(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucX, unsigned char ucY, bool blocking);
+static bool LCD_sendArray(LCD_Handle handle, const char *pcData, unsigned short usLen);
+static void LCD_bufferLine(LCD_Handle handle,
+                           unsigned int bufIndex,
+                           unsigned char ucXFrom,
+                           unsigned char ucYFrom,
+                           unsigned char ucXTo,
+                           unsigned char ucYTo,
+                           unsigned char ucDraw);
+static void LCD_doUpdate(LCD_Handle handle, unsigned int bufIndex, bool blocking);
+static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex, LCD_Page iPage, bool blocking);
+static void LCD_doBufferPrintString(LCD_Handle handle,
+                                    unsigned int bufIndex,
+                                    const char *pcStr,
+                                    unsigned char ucX,
+                                    LCD_Page iPage,
+                                    bool blocking);
+static void LCD_doBufferPrintInt(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 int i32Number,
+                                 unsigned char ucX,
+                                 LCD_Page iPage,
+                                 bool blocking);
+static void LCD_doBufferSetHLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucXFrom,
+                                 unsigned char ucXTo,
+                                 unsigned char ucY,
+                                 bool blocking);
+static void LCD_doBufferClearHLine(LCD_Handle handle,
+                                   unsigned int bufIndex,
+                                   unsigned char ucXFrom,
+                                   unsigned char ucXTo,
+                                   unsigned char ucY,
+                                   bool blocking);
+static void LCD_doBufferSetVLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucX,
+                                 unsigned char ucYFrom,
+                                 unsigned char ucYTo,
+                                 bool blocking);
+static void LCD_doBufferClearVLine(LCD_Handle handle,
+                                   unsigned int bufIndex,
+                                   unsigned char ucX,
+                                   unsigned char ucYFrom,
+                                   unsigned char ucYTo,
+                                   bool blocking);
+static void LCD_doBufferSetPx(LCD_Handle handle,
+                              unsigned int bufIndex,
+                              unsigned char ucX,
+                              unsigned char ucY,
+                              bool blocking);
+static void LCD_doBufferClearPx(LCD_Handle handle,
+                                unsigned int bufIndex,
+                                unsigned char ucX,
+                                unsigned char ucY,
+                                bool blocking);
 
 /* Font data for 5x7 font */
 const char LCD_alphabet[] = {
@@ -675,8 +694,9 @@ void LCD_close(LCD_Handle handle)
     DebugP_assert((handle != NULL) && (LCD_count != -1));
 
     /* Get the pointers to the LCD object and buffer */
-    LCD_Object *object = handle->object;
-    LCD_Buffer *buffers = object->lcdBuffers;
+    LCD_Object *object         = handle->object;
+    LCD_Buffer *buffers        = object->lcdBuffers;
+    LCD_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* Destroy the semaphores */
     for (i = 0; i < object->nBuffers; i++)
@@ -687,8 +707,10 @@ void LCD_close(LCD_Handle handle)
     /* Close SPI */
     SPI_close(object->spiHandle);
 
-    /* Close pin driver and de-allocate pins */
-    PIN_close(hPin);
+    /* De-allocate pins */
+    GPIO_resetConfig(hwAttrs->lcdModePin);
+    GPIO_resetConfig(hwAttrs->lcdCsnPin);
+    GPIO_resetConfig(hwAttrs->lcdResetPin);
 
     /* Mark object as closed*/
     object->isOpen = false;
@@ -707,7 +729,7 @@ void LCD_init(void)
     }
     LCD_count++;
 
-    LCD_Handle handle = (LCD_Handle)&(LCD_config);
+    LCD_Handle handle = (LCD_Handle) & (LCD_config);
     LCD_Object *object;
 
     /* Get the pointer to the object */
@@ -725,25 +747,24 @@ void LCD_Params_init(LCD_Params *params)
     DebugP_assert(params != NULL);
 
     params->lcdWriteTimeout = SemaphoreP_WAIT_FOREVER;
-    params->spiBitRate = 1000000;
-    params->spiFrameFormat = SPI_POL0_PHA0;
+    params->spiBitRate      = 1000000;
+    params->spiFrameFormat  = SPI_POL0_PHA0;
 }
 
 /*
  *  ======== LCD_open ========
  */
-LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
-    LCD_Params *lcdParams)
+LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers, LCD_Params *lcdParams)
 {
     unsigned int key;
     LCD_Params defaultParams;
     LCD_Object *lcdObject;
     LCD_HWAttrs const *lcdHwAttrs;
     SPI_Handle spiHandle;
-    LCD_Handle handle = (LCD_Handle) &(LCD_config);
+    LCD_Handle handle = (LCD_Handle) & (LCD_config);
 
     /* Get the pointer to the object and hwAttrs. */
-    lcdObject = handle->object;
+    lcdObject  = handle->object;
     lcdHwAttrs = handle->hwAttrs;
 
     SPI_init(); /* must call SPI_init() before SPI_open() */
@@ -771,7 +792,7 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
     }
 
     /* If buffers are NULL, or nBuffers <= 0, return */
-    if((buffers == NULL) ||(nBuffers <= 0))
+    if ((buffers == NULL) || (nBuffers <= 0))
     {
         DebugP_log0("No buffer is availible for the LCD driver");
         return (NULL);
@@ -783,7 +804,7 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
      */
     SPI_Params spiParams;
     SPI_Params_init(&spiParams);
-    spiParams.bitRate = lcdParams->spiBitRate;
+    spiParams.bitRate     = lcdParams->spiBitRate;
     spiParams.frameFormat = lcdParams->spiFrameFormat;
 
     /* Try open the SPI */
@@ -794,10 +815,10 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
     }
 
     /* Initialize the LCD object */
-    lcdObject->spiHandle = spiHandle;
+    lcdObject->spiHandle       = spiHandle;
     lcdObject->lcdWriteTimeout = lcdParams->lcdWriteTimeout;
-    lcdObject->lcdBuffers = buffers;
-    lcdObject->nBuffers = nBuffers;
+    lcdObject->lcdBuffers      = buffers;
+    lcdObject->nBuffers        = nBuffers;
 
     /* Create a counting semaphore for each buffer */
     unsigned char i = 0;
@@ -813,15 +834,14 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
     SemaphoreP_construct(&lcdObject->lcdMutex, 1, &semParams);
 
     /* Configure the hardware module */
-    if(!LCD_initHw(handle))
+    if (!LCD_initHw(handle))
     {
         // Hw initialization failed
-       return (NULL);
+        return (NULL);
     }
 
     /* Send LCD init commands */
-    LCD_sendCommand(handle, (const char *) (lcdHwAttrs->LCD_initCmd),
-                    sizeof(LCD_Command));
+    LCD_sendCommand(handle, (const char *)(lcdHwAttrs->LCD_initCmd), sizeof(LCD_Command));
 
     DebugP_log0("LCD: LCD is opened");
     return (handle);
@@ -832,10 +852,14 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers,
  *  This function writes one line of the specified buffer
  *  and sends it to the display.
  */
-void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
-    unsigned int uiValue, unsigned char ucFormat, unsigned char ucLine)
+void LCD_writeLine(LCD_Handle handle,
+                   unsigned int bufIndex,
+                   char *str,
+                   unsigned int uiValue,
+                   unsigned char ucFormat,
+                   unsigned char ucLine)
 {
-    LCD_Page pageNo = (LCD_Page) (ucLine % LCD_PAGE_COUNT);
+    LCD_Page pageNo = (LCD_Page)(ucLine % LCD_PAGE_COUNT);
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
@@ -843,8 +867,7 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
     /* Do a check on buffer index */
     if (bufIndex >= object->nBuffers)
     {
-        DebugP_log1("The LCD driver has only %d buffers availible",
-            object->nBuffers);
+        DebugP_log1("The LCD driver has only %d buffers availible", object->nBuffers);
         return;
     }
 
@@ -868,7 +891,7 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
         unsigned char strLength;
 
         /* Check that there is a null termination in the string */
-        const char *end = (const char *) memchr(str, '\0', maxLen);
+        const char *end = (const char *)memchr(str, '\0', maxLen);
         if (end == NULL)
             strLength = maxLen;
         else
@@ -884,7 +907,7 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
         if ((strLength + 2 + ucNumOfDigits) > (LCD_COLS / LCD_CHAR_WIDTH))
         {
             DebugP_log1("LCD_writeLine does not support a string size larger than %d characters.",
-                    (LCD_COLS/LCD_CHAR_WIDTH));
+                        (LCD_COLS / LCD_CHAR_WIDTH));
             SemaphoreP_post(&object->lcdMutex);
             return;
         }
@@ -894,12 +917,12 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
 
         /* Pend on buffer semaphore */
         DebugP_log1("LCD_writeLine: pending on semaphore associated with buffer %p",
-                        (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                    (UArg)object->lcdBuffers[bufIndex].pcBuffer);
         if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer %p timed out, exiting LCD_writeLine.",
-                    (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                        (UArg)object->lcdBuffers[bufIndex].pcBuffer);
             SemaphoreP_post(&object->lcdMutex);
             return;
         }
@@ -908,20 +931,18 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
         LCD_doBufferClearPage(handle, bufIndex, pageNo, false);
 
         /* write buffer*/
-        LCD_doBufferPrintString(handle, bufIndex, (char*) buf, 0, pageNo,
-                false);
-
+        LCD_doBufferPrintString(handle, bufIndex, (char *)buf, 0, pageNo, false);
     }
     else
     {
         /* Pend on buffer semaphore */
         DebugP_log1("LCD_writeLine: pending on semaphore associated with buffer %p",
-                (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                    (UArg)object->lcdBuffers[bufIndex].pcBuffer);
         if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer %p timed out, exiting LCD_writeLine.",
-                                (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                        (UArg)object->lcdBuffers[bufIndex].pcBuffer);
             SemaphoreP_post(&object->lcdMutex);
             return;
         }
@@ -931,7 +952,6 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
 
         /* write buffer*/
         LCD_doBufferPrintString(handle, bufIndex, str, 0, pageNo, false);
-
     }
 
     /* Update LCD */
@@ -939,7 +959,7 @@ void LCD_writeLine(LCD_Handle handle, unsigned int bufIndex, char *str,
 
     /* Finished with buffer - post on semaphores*/
     DebugP_log1("LCD_writeLine: posting semaphore associated with buffer %p",
-                    (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                (UArg)object->lcdBuffers[bufIndex].pcBuffer);
     SemaphoreP_post(pSem);
     DebugP_log0("LCD_writeLine: posting LCD mutex.");
     SemaphoreP_post(&object->lcdMutex);
@@ -967,8 +987,12 @@ void LCD_update(LCD_Handle handle, unsigned int bufIndex)
  *  This function sends the specified part of the buffer
  *  to the corresponding part on the LCD.
  */
-void LCD_updatePart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                    unsigned char ucXTo, LCD_Page iPageFrom, LCD_Page iPageTo)
+void LCD_updatePart(LCD_Handle handle,
+                    unsigned int bufIndex,
+                    unsigned char ucXFrom,
+                    unsigned char ucXTo,
+                    LCD_Page iPageFrom,
+                    LCD_Page iPageTo)
 {
     unsigned char ucXRange, ucY, ucYOffset, ucYRange;
 
@@ -992,7 +1016,7 @@ void LCD_updatePart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXF
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Assuming ucXFrom <= ucXTo */
@@ -1002,13 +1026,11 @@ void LCD_updatePart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXF
     ucYRange = iPageTo - iPageFrom;
 
     /* Pend on buffer semaphore */
-    DebugP_log1("LCD_updatePart: pending on semaphore associated with buffer %p",
-            bufIndex);
+    DebugP_log1("LCD_updatePart: pending on semaphore associated with buffer %p", bufIndex);
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_updatePart.",
-                bufIndex);
+        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_updatePart.", bufIndex);
         SemaphoreP_post(&object->lcdMutex);
         return;
     }
@@ -1018,13 +1040,12 @@ void LCD_updatePart(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXF
     {
         ucYOffset = iPageFrom + ucY;
         LCD_gotoXY(handle, ucXFrom, ucYOffset);
-        LCD_sendData(handle, pcBuf + (ucYOffset * LCD_COLS) + ucXFrom,
-                ucXRange);
+        LCD_sendData(handle, pcBuf + (ucYOffset * LCD_COLS) + ucXFrom, ucXRange);
     }
 
     /* Finished with buffer - post on semaphores*/
     DebugP_log1("LCD_updatePart: posting semaphore associated with buffer %p",
-                    (UArg)object->lcdBuffers[bufIndex].pcBuffer);
+                (UArg)object->lcdBuffers[bufIndex].pcBuffer);
     SemaphoreP_post(pSem);
     DebugP_log0("LCD_updatePart: posting LCD mutex.");
     SemaphoreP_post(&object->lcdMutex);
@@ -1055,15 +1076,14 @@ void LCD_bufferClear(LCD_Handle handle, unsigned int bufIndex)
     unsigned int bufSize = object->lcdBuffers[bufIndex].bufSize;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore */
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferClear.",
-                bufIndex);
+        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferClear.", bufIndex);
 
         return;
     }
@@ -1075,7 +1095,6 @@ void LCD_bufferClear(LCD_Handle handle, unsigned int bufIndex)
 
     /* Finished with buffer - post on semaphore*/
     SemaphoreP_post(pSem);
-
 }
 
 /*
@@ -1087,8 +1106,7 @@ void LCD_bufferClearPage(LCD_Handle handle, unsigned int bufIndex, LCD_Page iPag
     /* Do a check on buffer index */
     if (bufIndex >= handle->object->nBuffers)
     {
-        DebugP_log1("The LCD driver has only %d buffers availible",
-            handle->object->nBuffers);
+        DebugP_log1("The LCD driver has only %d buffers availible", handle->object->nBuffers);
         return;
     }
 
@@ -1100,9 +1118,12 @@ void LCD_bufferClearPage(LCD_Handle handle, unsigned int bufIndex, LCD_Page iPag
  * ======== LCD_bufferClearPart ========
  * This function clears the pixels in a given piece of a page.
  */
-void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex,
-    unsigned char ucXFrom, unsigned char ucXTo, LCD_Page iPageFrom,
-    LCD_Page iPageTo)
+void LCD_bufferClearPart(LCD_Handle handle,
+                         unsigned int bufIndex,
+                         unsigned char ucXFrom,
+                         unsigned char ucXTo,
+                         LCD_Page iPageFrom,
+                         LCD_Page iPageTo)
 {
     unsigned char ucX, ucXRange, ucY, ucYRange;
     unsigned short usXFirstPos;
@@ -1118,7 +1139,7 @@ void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex,
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Assuming ucYFrom <= ucYTo */
@@ -1131,8 +1152,7 @@ void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex,
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferClearPart.",
-                bufIndex);
+        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferClearPart.", bufIndex);
 
         return;
     }
@@ -1156,8 +1176,12 @@ void LCD_bufferClearPart(LCD_Handle handle, unsigned int bufIndex,
  * This function inverts the pixels (bits) in a given region of the
  * a buffer.
  */
-void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                          unsigned char ucYFrom, unsigned char ucXTo, unsigned char ucYTo)
+void LCD_bufferInvert(LCD_Handle handle,
+                      unsigned int bufIndex,
+                      unsigned char ucXFrom,
+                      unsigned char ucYFrom,
+                      unsigned char ucXTo,
+                      unsigned char ucYTo)
 {
     unsigned char ucI, ucJ, ucPow;
     unsigned char ucFirstPage, ucLastPage, ucFirstPageMask, ucLastPageMask;
@@ -1173,16 +1197,16 @@ void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Find the first and last page to invert on */
     ucFirstPage = ucYFrom / LCD_PAGE_ROWS;
-    ucLastPage = ucYTo / LCD_PAGE_ROWS;
+    ucLastPage  = ucYTo / LCD_PAGE_ROWS;
 
     /* Find the bitmask to invert with on first page */
     ucFirstPageMask = 0xFF;
-    ucPow = 1;
+    ucPow           = 1;
 
     /* Generate invert bitmask for the first page */
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
@@ -1196,7 +1220,7 @@ void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
 
     /* Find the bitmask to invert with on the last page */
     ucLastPageMask = 0x00;
-    ucPow = 1;
+    ucPow          = 1;
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
     {
         if (ucYTo - ucLastPage * LCD_PAGE_ROWS >= ucI)
@@ -1216,8 +1240,7 @@ void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferInvert.",
-                bufIndex);
+        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferInvert.", bufIndex);
 
         return;
     }
@@ -1252,12 +1275,15 @@ void LCD_bufferInvert(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
  *  This function inverts a range of columns in the display buffer on a
  *  specified page.
  */
-void LCD_bufferInvertPage(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                             unsigned char ucXTo, LCD_Page iPage)
+void LCD_bufferInvertPage(LCD_Handle handle,
+                          unsigned int bufIndex,
+                          unsigned char ucXFrom,
+                          unsigned char ucXTo,
+                          LCD_Page iPage)
 {
     unsigned char ucI;
     unsigned short usFirstPos = iPage * LCD_COLS + ucXFrom;
-    unsigned char ucRange = ucXTo - ucXFrom;
+    unsigned char ucRange     = ucXTo - ucXFrom;
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
@@ -1270,15 +1296,14 @@ void LCD_bufferInvertPage(LCD_Handle handle, unsigned int bufIndex, unsigned cha
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore */
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferInvertPage.",
-                bufIndex);
+        DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_bufferInvertPage.", bufIndex);
 
         return;
     }
@@ -1297,8 +1322,11 @@ void LCD_bufferInvertPage(LCD_Handle handle, unsigned int bufIndex, unsigned cha
  *  ======== LCD_bufferPrintString ========
  *  This function writes a string to the specified buffer
  */
-void LCD_bufferPrintString(LCD_Handle handle, unsigned int bufIndex, const char *pcStr,
-                              unsigned char ucX, LCD_Page iPage)
+void LCD_bufferPrintString(LCD_Handle handle,
+                           unsigned int bufIndex,
+                           const char *pcStr,
+                           unsigned char ucX,
+                           LCD_Page iPage)
 {
 
     /* Do a check on buffer index */
@@ -1316,8 +1344,11 @@ void LCD_bufferPrintString(LCD_Handle handle, unsigned int bufIndex, const char 
  *  ======== LCD_bufferPrintStringAligned ========
  *  This function writes an aligned string to a buffer.
  */
-void LCD_bufferPrintStringAligned(LCD_Handle handle, unsigned int bufIndex, const char *pcStr,
-                                   LCD_Align iAlignment, LCD_Page iPage)
+void LCD_bufferPrintStringAligned(LCD_Handle handle,
+                                  unsigned int bufIndex,
+                                  const char *pcStr,
+                                  LCD_Align iAlignment,
+                                  LCD_Page iPage)
 {
     unsigned char ucX;
     unsigned char ucStrSize = LCD_getStringLength(pcStr);
@@ -1352,8 +1383,7 @@ void LCD_bufferPrintStringAligned(LCD_Handle handle, unsigned int bufIndex, cons
  *  ======== LCD_bufferPrintInt ========
  *  This function writes an integer to the specified buffer
  */
-void LCD_bufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32Number,
-                         unsigned char ucX, LCD_Page iPage)
+void LCD_bufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32Number, unsigned char ucX, LCD_Page iPage)
 {
 
     /* Do a check on buffer index */
@@ -1365,15 +1395,17 @@ void LCD_bufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32Number,
 
     /* Call print int function with use of semaphore */
     LCD_doBufferPrintInt(handle, bufIndex, i32Number, ucX, iPage, true);
-
 }
 
 /*
  *  ======== LCD_bufferPrintIntAligned ========
  *  This function writes an aligned integer to the specified buffer
  */
-void LCD_bufferPrintIntAligned(LCD_Handle handle, unsigned int bufIndex, int i32Number,
-                                       LCD_Align iAlignment, LCD_Page iPage)
+void LCD_bufferPrintIntAligned(LCD_Handle handle,
+                               unsigned int bufIndex,
+                               int i32Number,
+                               LCD_Align iAlignment,
+                               LCD_Page iPage)
 {
     unsigned char ucX;
     unsigned char ucStrSize = LCD_getIntLength(i32Number, 10);
@@ -1409,8 +1441,12 @@ void LCD_bufferPrintIntAligned(LCD_Handle handle, unsigned int bufIndex, int i32
  *  This function writes a floating point number to the specified
  *  buffer.
  */
-void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumber,
-    unsigned char ucDecimals, unsigned char ucX, LCD_Page iPage)
+void LCD_bufferPrintFloat(LCD_Handle handle,
+                          unsigned int bufIndex,
+                          float fNumber,
+                          unsigned char ucDecimals,
+                          unsigned char ucX,
+                          LCD_Page iPage)
 {
     unsigned char ucI, ucRoundUp, ucNumNeg;
     int8_t i8J;
@@ -1456,14 +1492,14 @@ void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumbe
     }
 
     /* Extract integer part */
-    i32intPart = (int) fNumber;
+    i32intPart = (int)fNumber;
 
     /* Storing (ucDecimals+1) decimals in an array */
     for (ucI = 0; ucI < ucDecimals + 1; ucI++)
     {
-        fNumber = fNumber * 10;
-        i32Tmpint = (int) fNumber;
-        i32Tmpint = i32Tmpint % 10;
+        fNumber           = fNumber * 10;
+        i32Tmpint         = (int)fNumber;
+        i32Tmpint         = i32Tmpint % 10;
         decimalArray[ucI] = i32Tmpint;
     }
 
@@ -1497,8 +1533,7 @@ void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumbe
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferPrintFloat.",
-                bufIndex);
+        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferPrintFloat.", bufIndex);
         return;
     }
 
@@ -1520,8 +1555,7 @@ void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumbe
     /* Print decimals */
     for (ucI = 0; ucI < ucDecimals; ucI++)
     {
-        LCD_doBufferPrintInt(handle, bufIndex, decimalArray[ucI], ucX, iPage,
-                false);
+        LCD_doBufferPrintInt(handle, bufIndex, decimalArray[ucI], ucX, iPage, false);
         ucX += LCD_CHAR_WIDTH;
     }
 
@@ -1534,8 +1568,12 @@ void LCD_bufferPrintFloat(LCD_Handle handle, unsigned int bufIndex, float fNumbe
  *  This function writes an aligned floating point number to the specified
  *  buffer.
  */
-void LCD_bufferPrintFloatAligned(LCD_Handle handle, unsigned int bufIndex, float fNumber,
-                                    unsigned char ucDecimals, LCD_Align iAlignment, LCD_Page iPage)
+void LCD_bufferPrintFloatAligned(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 float fNumber,
+                                 unsigned char ucDecimals,
+                                 LCD_Align iAlignment,
+                                 LCD_Page iPage)
 {
     unsigned char ucX;
     unsigned char ucStrSize = LCD_getFloatLength(fNumber, ucDecimals);
@@ -1570,8 +1608,12 @@ void LCD_bufferPrintFloatAligned(LCD_Handle handle, unsigned int bufIndex, float
  *  ======== LCD_bufferSetLine ========
  *  This function draws a line into the specified buffer.
  */
-void LCD_bufferSetLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                       unsigned char ucYFrom, unsigned char ucXTo, unsigned char ucYTo)
+void LCD_bufferSetLine(LCD_Handle handle,
+                       unsigned int bufIndex,
+                       unsigned char ucXFrom,
+                       unsigned char ucYFrom,
+                       unsigned char ucXTo,
+                       unsigned char ucYTo)
 {
 
     /* Do a check on buffer index */
@@ -1589,8 +1631,12 @@ void LCD_bufferSetLine(LCD_Handle handle, unsigned int bufIndex, unsigned char u
  *  ======== LCD_bufferClearLine ========
  *  This function clears a line intoo the specified buffer.
  */
-void LCD_bufferClearLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                          unsigned char ucYFrom, unsigned char ucXTo, unsigned char ucYTo)
+void LCD_bufferClearLine(LCD_Handle handle,
+                         unsigned int bufIndex,
+                         unsigned char ucXFrom,
+                         unsigned char ucYFrom,
+                         unsigned char ucXTo,
+                         unsigned char ucYTo)
 {
 
     /* Do a check on buffer index */
@@ -1608,8 +1654,11 @@ void LCD_bufferClearLine(LCD_Handle handle, unsigned int bufIndex, unsigned char
  *  ======== LCD_bufferSetHLine ========
  *  This function draws a horizontal line into the specified buffer.
  */
-void LCD_bufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                        unsigned char ucXTo, unsigned char ucY)
+void LCD_bufferSetHLine(LCD_Handle handle,
+                        unsigned int bufIndex,
+                        unsigned char ucXFrom,
+                        unsigned char ucXTo,
+                        unsigned char ucY)
 {
 
     /* Do a check on buffer index */
@@ -1621,15 +1670,17 @@ void LCD_bufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char 
 
     /* Call LCD_doBufferSetHLine with use of semaphore */
     LCD_doBufferSetHLine(handle, bufIndex, ucXFrom, ucXTo, ucY, true);
-
 }
 
 /*
  *  ======== LCD_bufferClearHLine ========
  *  This function clears a horizontal line from the specified buffer.
  */
-void LCD_bufferClearHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                          unsigned char ucXTo, unsigned char ucY)
+void LCD_bufferClearHLine(LCD_Handle handle,
+                          unsigned int bufIndex,
+                          unsigned char ucXFrom,
+                          unsigned char ucXTo,
+                          unsigned char ucY)
 {
 
     /* Do a check on buffer index */
@@ -1641,15 +1692,17 @@ void LCD_bufferClearHLine(LCD_Handle handle, unsigned int bufIndex, unsigned cha
 
     /* Call LCD_doBufferClearHLine with use of semaphore */
     LCD_doBufferClearHLine(handle, bufIndex, ucXFrom, ucXTo, ucY, true);
-
 }
 
 /*
  *  ======== LCD_bufferSetVLine ========
  *  This function draws a vertical line into the specified buffer.
  */
-void LCD_bufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                        unsigned char ucYFrom, unsigned char ucYTo)
+void LCD_bufferSetVLine(LCD_Handle handle,
+                        unsigned int bufIndex,
+                        unsigned char ucX,
+                        unsigned char ucYFrom,
+                        unsigned char ucYTo)
 {
 
     /* Do a check on buffer index */
@@ -1661,15 +1714,17 @@ void LCD_bufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char 
 
     /* Call LCD_doBufferSetVLine with use of semaphore */
     LCD_doBufferSetVLine(handle, bufIndex, ucX, ucYFrom, ucYTo, true);
-
 }
 
 /*
  *  ======== LCD_bufferClearVLine ========
  *  This function clears a vertical line from the specified buffer.
  */
-void LCD_bufferClearVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                          unsigned char ucYFrom, unsigned char ucYTo)
+void LCD_bufferClearVLine(LCD_Handle handle,
+                          unsigned int bufIndex,
+                          unsigned char ucX,
+                          unsigned char ucYFrom,
+                          unsigned char ucYTo)
 {
 
     /* Do a check on buffer index */
@@ -1681,15 +1736,17 @@ void LCD_bufferClearVLine(LCD_Handle handle, unsigned int bufIndex, unsigned cha
 
     /* Call LCD_doBufferClearVLine with use of semaphore */
     LCD_doBufferClearVLine(handle, bufIndex, ucX, ucYFrom, ucYTo, true);
-
 }
 
 /*
  *  ======== LCD_bufferHArrow ========
  *  This function draws a horizontal arrow to the specified buffer.
  */
-void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                      unsigned char ucXTo, unsigned char ucY)
+void LCD_bufferHArrow(LCD_Handle handle,
+                      unsigned int bufIndex,
+                      unsigned char ucXFrom,
+                      unsigned char ucXTo,
+                      unsigned char ucY)
 {
 
     /* Get pointer to the LCD object */
@@ -1709,8 +1766,7 @@ void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferHArrow.",
-                bufIndex);
+        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferHArrow.", bufIndex);
         return;
     }
 
@@ -1718,19 +1774,15 @@ void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
     {
         /* Draw left-to-right arrow */
         LCD_doBufferSetHLine(handle, bufIndex, ucXFrom, ucXTo, ucY, false);
-        LCD_doBufferSetVLine(handle, bufIndex, ucXTo - 1, ucY - 1, ucY + 1,
-                false);
-        LCD_doBufferSetVLine(handle, bufIndex, ucXTo - 2, ucY - 2, ucY + 2,
-                false);
+        LCD_doBufferSetVLine(handle, bufIndex, ucXTo - 1, ucY - 1, ucY + 1, false);
+        LCD_doBufferSetVLine(handle, bufIndex, ucXTo - 2, ucY - 2, ucY + 2, false);
     }
     else if (ucXTo < ucXFrom)
     {
         /* Draw right-to-left arrow */
         LCD_doBufferSetHLine(handle, bufIndex, ucXTo, ucXFrom, ucY, false);
-        LCD_doBufferSetVLine(handle, bufIndex, ucXTo + 1, ucY - 1, ucY + 1,
-                false);
-        LCD_doBufferSetVLine(handle, bufIndex, ucXTo + 2, ucY - 2, ucY + 2,
-                false);
+        LCD_doBufferSetVLine(handle, bufIndex, ucXTo + 1, ucY - 1, ucY + 1, false);
+        LCD_doBufferSetVLine(handle, bufIndex, ucXTo + 2, ucY - 2, ucY + 2, false);
     }
 
     /* Finished with buffer - post on semaphore*/
@@ -1741,8 +1793,11 @@ void LCD_bufferHArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
  *  ======== LCD_bufferVArrow ========
  *  This function draws a vertical arrow to the specified buffer.
  */
-void LCD_bufferVArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                      unsigned char ucYFrom, unsigned char ucYTo)
+void LCD_bufferVArrow(LCD_Handle handle,
+                      unsigned int bufIndex,
+                      unsigned char ucX,
+                      unsigned char ucYFrom,
+                      unsigned char ucYTo)
 {
 
     /* Get pointer to the LCD object */
@@ -1762,8 +1817,7 @@ void LCD_bufferVArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferVArrow.",
-                bufIndex);
+        DebugP_log1("Writing LCD buffer (%p) timed out, exiting LCD_bufferVArrow.", bufIndex);
         return;
     }
 
@@ -1784,7 +1838,7 @@ void LCD_bufferVArrow(LCD_Handle handle, unsigned int bufIndex, unsigned char uc
  */
 void LCD_bufferSetPx(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX, unsigned char ucY)
 {
-   /* Do a check on buffer index */
+    /* Do a check on buffer index */
     if (bufIndex >= handle->object->nBuffers)
     {
         DebugP_log1("The LCD driver has only %d buffers availible", handle->object->nBuffers);
@@ -1831,17 +1885,17 @@ void LCD_bufferCopy(LCD_Handle handle, unsigned int fromBufIndex, unsigned int t
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcFromBuffer = object->lcdBuffers[fromBufIndex].pcBuffer;
-    char *pcToBuffer = object->lcdBuffers[toBufIndex].pcBuffer;
+    char *pcFromBuffer          = object->lcdBuffers[fromBufIndex].pcBuffer;
+    char *pcToBuffer            = object->lcdBuffers[toBufIndex].pcBuffer;
     SemaphoreP_Struct *pSemFrom = &(object->lcdBuffers[fromBufIndex].bufMutex);
-    SemaphoreP_Struct *pSemTo = &(object->lcdBuffers[toBufIndex].bufMutex);
+    SemaphoreP_Struct *pSemTo   = &(object->lcdBuffers[toBufIndex].bufMutex);
 
     /* Get buffer sizes */
     unsigned int fromBufSize = object->lcdBuffers[fromBufIndex].bufSize;
-    unsigned int toBufSize = object->lcdBuffers[toBufIndex].bufSize;
+    unsigned int toBufSize   = object->lcdBuffers[toBufIndex].bufSize;
 
-    char *pcTmpToBuf = pcToBuffer;
-    char *pcTmpFromBuf = (char *) pcFromBuffer;
+    char *pcTmpToBuf   = pcToBuffer;
+    char *pcTmpFromBuf = (char *)pcFromBuffer;
     register unsigned short i;
 
     /* If buffers are the same, do nothing */
@@ -1861,16 +1915,14 @@ void LCD_bufferCopy(LCD_Handle handle, unsigned int fromBufIndex, unsigned int t
     if (SemaphoreP_OK != SemaphoreP_pend(pSemFrom, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Copying from LCD buffer (%p) timed out, exiting LCD_bufferCopy.",
-                fromBufIndex);
+        DebugP_log1("Copying from LCD buffer (%p) timed out, exiting LCD_bufferCopy.", fromBufIndex);
         return;
     }
     /* Pend on the semaphore*/
     if (SemaphoreP_OK != SemaphoreP_pend(pSemTo, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Copying to LCD buffer (%p) timed out, exiting LCD_bufferCopy.",
-                toBufIndex);
+        DebugP_log1("Copying to LCD buffer (%p) timed out, exiting LCD_bufferCopy.", toBufIndex);
         return;
     }
 
@@ -1907,32 +1959,21 @@ void LCD_setContrast(LCD_Handle handle, unsigned char ucContrast)
 static bool LCD_initHw(LCD_Handle handle)
 {
     /* Locals */
-    PIN_Config lcdPinTable[4];
     uint32_t i = 0;
     LCD_HWAttrs const *hwAttrs;
 
     /* get the pointer to the hwAttrs */
     hwAttrs = handle->hwAttrs;
 
-    /* Populate LCD pin table and initilize pins*/
-    lcdPinTable[i++] = hwAttrs->lcdModePin      | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL;
-    lcdPinTable[i++] = hwAttrs->lcdCsnPin       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL;
-    lcdPinTable[i++] = hwAttrs->lcdResetPin     | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW  | PIN_PUSHPULL;
-    lcdPinTable[i++] = PIN_TERMINATE;
-
-    /* Open and assign pins through pin driver*/
-    hPin = PIN_open(&pinState, lcdPinTable);
-    if(!hPin)
-    {
-        /* Pin allocation failed, pins may already be allocated */
-        return (false);
-    }
+    GPIO_setConfig(hwAttrs->lcdModePin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
+    GPIO_setConfig(hwAttrs->lcdCsnPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
+    GPIO_setConfig(hwAttrs->lcdResetPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_LOW);
 
     /* Delay ~100 ms for LCD to be powered up. */
     ClockP_usleep(100 * 1000);
 
     /* Clear reset (set high)*/
-    PIN_setOutputValue(hPin, hwAttrs->lcdResetPin, 1);
+    GPIO_write(hwAttrs->lcdResetPin, 1);
 
     return (true);
 }
@@ -1951,16 +1992,16 @@ static void LCD_sendCommand(LCD_Handle handle, const char *pcCmd, unsigned char 
     DebugP_assert(handle != NULL);
 
     /* Set LCD mode signal low (command) */
-    PIN_setOutputValue(hPin, hwAttrs->lcdModePin, 0);
+    GPIO_write(hwAttrs->lcdModePin, 0);
     /* Set LCD CSn low (spi active) */
-    PIN_setOutputValue(hPin, hwAttrs->lcdCsnPin, 0);
+    GPIO_write(hwAttrs->lcdCsnPin, 0);
 
     /* Do SPI transfer */
-    if (LCD_sendArray(handle, pcCmd, ucLen)) {
+    if (LCD_sendArray(handle, pcCmd, ucLen))
+    {
         /* Clear CSn */
-        PIN_setOutputValue(hPin, hwAttrs->lcdCsnPin, 1);
+        GPIO_write(hwAttrs->lcdCsnPin, 1);
     }
-
 }
 
 /*
@@ -1977,16 +2018,16 @@ static void LCD_sendData(LCD_Handle handle, const char *pcData, unsigned short u
     DebugP_assert(handle != NULL);
 
     /* Set LCD mode signal (data) */
-    PIN_setOutputValue(hPin, hwAttrs->lcdModePin, 1);
+    GPIO_write(hwAttrs->lcdModePin, 1);
     /* Set LCD CSn low (spi active) */
-    PIN_setOutputValue(hPin, hwAttrs->lcdCsnPin, 0);
+    GPIO_write(hwAttrs->lcdCsnPin, 0);
 
     /* Do SPI transfer */
-    if (LCD_sendArray(handle, pcData, usLen)) {
+    if (LCD_sendArray(handle, pcData, usLen))
+    {
         /* Clear CSn */
-        PIN_setOutputValue(hPin, hwAttrs->lcdCsnPin, 1);
+        GPIO_write(hwAttrs->lcdCsnPin, 1);
     }
-
 }
 
 /*
@@ -2001,15 +2042,14 @@ static void LCD_gotoXY(LCD_Handle handle, unsigned char ucX, unsigned char ucY)
 
     DebugP_assert(handle != NULL);
 
-    unsigned char cmd[] = { 0xB0, 0x10, 0x00 };
+    unsigned char cmd[] = {0xB0, 0x10, 0x00};
 
     /* Adding Y position, and X position (hi/lo nibble) to command array */
     cmd[0] = cmd[0] + ucY;
     cmd[2] = cmd[2] + (ucX & 0x0F);
     cmd[1] = cmd[1] + (ucX >> 4);
 
-    LCD_sendCommand(handle, (char *) cmd, 3);
-
+    LCD_sendCommand(handle, (char *)cmd, 3);
 }
 
 /*
@@ -2027,13 +2067,14 @@ static bool LCD_sendArray(LCD_Handle handle, const char *pcData, unsigned short 
 
     /* Do SPI transfer */
     SPI_Transaction spiTransaction;
-    spiTransaction.arg = NULL;
+    spiTransaction.arg   = NULL;
     spiTransaction.count = usLen;
     spiTransaction.txBuf = (void *)pcData;
     spiTransaction.rxBuf = NULL;
 
     bool ret = SPI_transfer(object->spiHandle, &spiTransaction);
-    if(ret == false){
+    if (ret == false)
+    {
         return false;
     }
 
@@ -2046,8 +2087,13 @@ static bool LCD_sendArray(LCD_Handle handle, const char *pcData, unsigned short 
  *  Local function. Draws or clears (based on @e ucDraw) a line from
  *  @e (ucXFrom,ucYFrom) to @e (ucXTo,ucYTo). Uses Bresenham's line algorithm.
  */
-static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                           unsigned char ucYFrom, unsigned char ucXTo, unsigned char ucYTo, unsigned char ucDraw)
+static void LCD_bufferLine(LCD_Handle handle,
+                           unsigned int bufIndex,
+                           unsigned char ucXFrom,
+                           unsigned char ucYFrom,
+                           unsigned char ucXTo,
+                           unsigned char ucYTo,
+                           unsigned char ucDraw)
 {
     signed char cX, cY, cDeltaY, cDeltaX, cD;
     signed char cXDir, cYDir;
@@ -2055,15 +2101,13 @@ static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex, unsigned ch
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
 
-    /* Get pointers to the buffer semaphore. */SemaphoreP_Struct *pSem =
-            &(object->lcdBuffers[bufIndex].bufMutex);
+    /* Get pointers to the buffer semaphore. */ SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore*/
     if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
     {
         /* Semaphore timed out, log and return. */
-        DebugP_log1("Writing LCD buffer (%p) timed out, action aborted.",
-                bufIndex);
+        DebugP_log1("Writing LCD buffer (%p) timed out, action aborted.", bufIndex);
         return;
     }
 
@@ -2072,13 +2116,11 @@ static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex, unsigned ch
         /* Vertical line */
         if (ucDraw)
         {
-            LCD_doBufferSetVLine(handle, bufIndex, ucXFrom, ucYFrom, ucYTo,
-                    false);
+            LCD_doBufferSetVLine(handle, bufIndex, ucXFrom, ucYFrom, ucYTo, false);
         }
         else
         {
-            LCD_doBufferClearVLine(handle, bufIndex, ucXFrom, ucYFrom, ucYTo,
-                    false);
+            LCD_doBufferClearVLine(handle, bufIndex, ucXFrom, ucYFrom, ucYTo, false);
         }
     }
     else if (ucYFrom == ucYTo)
@@ -2086,13 +2128,11 @@ static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex, unsigned ch
         /* Horizontal line */
         if (ucDraw)
         {
-            LCD_doBufferSetHLine(handle, bufIndex, ucXFrom, ucXTo, ucYFrom,
-                    false);
+            LCD_doBufferSetHLine(handle, bufIndex, ucXFrom, ucXTo, ucYFrom, false);
         }
         else
         {
-            LCD_doBufferClearHLine(handle, bufIndex, ucXFrom, ucXTo, ucYFrom,
-                    false);
+            LCD_doBufferClearHLine(handle, bufIndex, ucXFrom, ucXTo, ucYFrom, false);
         }
     }
     else
@@ -2105,8 +2145,8 @@ static void LCD_bufferLine(LCD_Handle handle, unsigned int bufIndex, unsigned ch
         cYDir = (ucYFrom > ucYTo) ? -1 : 1;
 
         /* Set start position and calculate X and Y delta */
-        cX = ucXFrom;
-        cY = ucYFrom;
+        cX      = ucXFrom;
+        cY      = ucYFrom;
         cDeltaY = ucYTo - ucYFrom;
         cDeltaX = ucXTo - ucXFrom;
 
@@ -2207,25 +2247,23 @@ static void LCD_doUpdate(LCD_Handle handle, unsigned int bufIndex, bool blocking
     }
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
     /* Pend on the semaphore if blocking option is set*/
-    if(blocking)
+    if (blocking)
     {
-        DebugP_log1("LCD_update: pending on semaphore associated with buffer %p",
-                    bufIndex);
+        DebugP_log1("LCD_update: pending on semaphore associated with buffer %p", bufIndex);
         if (SemaphoreP_OK != SemaphoreP_pend(pSem, object->lcdWriteTimeout))
         {
             /* Semaphore timed out, log and return. */
-            DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_update.",
-                            bufIndex);
+            DebugP_log1("Waiting for access to buffer (%p) timed out, exiting LCD_update.", bufIndex);
             SemaphoreP_post(&(object->lcdMutex));
             return;
         }
     }
 
     /* For each page */
-    for(ucPage = 0; ucPage < LCD_PAGE_COUNT; ucPage++)
+    for (ucPage = 0; ucPage < LCD_PAGE_COUNT; ucPage++)
     {
         /* Set LCD pointer to start of the correct page and send data */
         LCD_gotoXY(handle, 0, ucPage);
@@ -2233,7 +2271,7 @@ static void LCD_doUpdate(LCD_Handle handle, unsigned int bufIndex, bool blocking
     }
 
     /* Finished with buffer - post on semaphore*/
-    if(blocking)
+    if (blocking)
     {
         DebugP_log1("LCD_update: posting semaphore associated with buffer %p", (UArg)pcBuf);
         SemaphoreP_post(pSem);
@@ -2248,8 +2286,7 @@ static void LCD_doUpdate(LCD_Handle handle, unsigned int bufIndex, bool blocking
  *  If blocking is set to true, the task execution will be blocked until all
  *  buffer modifications have finished.
  */
-static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex,
-                                 LCD_Page iPage, bool blocking)
+static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex, LCD_Page iPage, bool blocking)
 {
     unsigned char ucIdx;
 
@@ -2257,7 +2294,7 @@ static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex,
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore if blocking option is set*/
@@ -2267,7 +2304,8 @@ static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex,
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferClearPage.", bufIndex);
+                        "LCD_bufferClearPage.",
+                        bufIndex);
             return;
         }
     }
@@ -2292,8 +2330,12 @@ static void LCD_doBufferClearPage(LCD_Handle handle, unsigned int bufIndex,
  *  buffer modifications have finished.
  *
  */
-static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, const char *pcStr,
-                                    unsigned char ucX, LCD_Page iPage, bool blocking)
+static void LCD_doBufferPrintString(LCD_Handle handle,
+                                    unsigned int bufIndex,
+                                    const char *pcStr,
+                                    unsigned char ucX,
+                                    LCD_Page iPage,
+                                    bool blocking)
 {
     DebugP_assert(handle != NULL);
 
@@ -2303,7 +2345,7 @@ static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, co
     SemaphoreP_Struct *pSem;
     LCD_Object *object;
 
-    unsigned char ucStrSize = LCD_getStringLength(pcStr);
+    unsigned char ucStrSize   = LCD_getStringLength(pcStr);
     unsigned short usFirstPos = iPage * LCD_COLS + ucX;
 
     /* Get pointer to the LCD object */
@@ -2311,7 +2353,7 @@ static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, co
 
     /* Get pointers to the buffer and its semaphore. */
     pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
-    pSem = &(object->lcdBuffers[bufIndex].bufMutex);
+    pSem  = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore if blocking option is set*/
     if (blocking)
@@ -2320,7 +2362,8 @@ static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, co
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferPrintString.", bufIndex);
+                        "LCD_bufferPrintString.",
+                        bufIndex);
             return;
         }
     }
@@ -2339,18 +2382,16 @@ static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, co
         else
         {
             /* Index to the beginning of the current letter in lcd_alphabet[] */
-            firstIndex = ((unsigned short) (pcStr[ucI]) - 33) * LCD_FONT_WIDTH;
+            firstIndex = ((unsigned short)(pcStr[ucI]) - 33) * LCD_FONT_WIDTH;
 
             /* Stores each vertical column of the current letter in the result */
             for (ucJ = 0; ucJ < LCD_FONT_WIDTH; ucJ++)
             {
-                *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * ucI + ucJ)) =
-                        LCD_alphabet[firstIndex + ucJ];
+                *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * ucI + ucJ)) = LCD_alphabet[firstIndex + ucJ];
             }
 
             /* Add a single pixel spacing after each letter */
-            *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * ucI + LCD_FONT_WIDTH)) =
-                    0x00;
+            *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * ucI + LCD_FONT_WIDTH)) = 0x00;
         }
     }
 
@@ -2368,8 +2409,12 @@ static void LCD_doBufferPrintString(LCD_Handle handle, unsigned int bufIndex, co
  *  buffer modifications have finished.
  *
  */
-static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i32Number,
-                                 unsigned char ucX, LCD_Page iPage, bool blocking)
+static void LCD_doBufferPrintInt(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 int i32Number,
+                                 unsigned char ucX,
+                                 LCD_Page iPage,
+                                 bool blocking)
 {
     DebugP_assert(handle != NULL);
 
@@ -2383,7 +2428,7 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
     object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* I number is negative: write a minus at the first position, increment
@@ -2392,10 +2437,9 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
     {
         for (ucJ = 0; ucJ < LCD_FONT_WIDTH; ucJ++)
         {
-            *(pcBuf + (usFirstPos + ucJ)) = LCD_alphabet[12 * LCD_FONT_WIDTH
-                    + ucJ];
+            *(pcBuf + (usFirstPos + ucJ)) = LCD_alphabet[12 * LCD_FONT_WIDTH + ucJ];
         }
-        *(pcBuf + (usFirstPos + LCD_FONT_WIDTH)) = 0x00;   // Spacing
+        *(pcBuf + (usFirstPos + LCD_FONT_WIDTH)) = 0x00; // Spacing
         usFirstPos += LCD_CHAR_WIDTH;
         i32Number *= (-1);
     }
@@ -2410,7 +2454,8 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                                     "LCD_bufferPrintInt.", bufIndex);
+                        "LCD_bufferPrintInt.",
+                        bufIndex);
             return;
         }
     }
@@ -2418,18 +2463,17 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
     /* For each digit (most significant first), write to buffer */
     for (cI = (ucNumOfDigits - 1); cI >= 0; cI--)
     {
-        i32Temp = i32Number / 10;
-        i32Digit = i32Number - i32Temp * 10;
+        i32Temp     = i32Number / 10;
+        i32Digit    = i32Number - i32Temp * 10;
         i32FirstIdx = (i32Digit + 15) * LCD_FONT_WIDTH;
         for (ucJ = 0; ucJ < LCD_FONT_WIDTH; ucJ++)
         {
-            *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * cI + ucJ)) =
-                    LCD_alphabet[i32FirstIdx + ucJ];
+            *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * cI + ucJ)) = LCD_alphabet[i32FirstIdx + ucJ];
         }
 
         /* character spacing */
         *(pcBuf + (usFirstPos + LCD_CHAR_WIDTH * cI + LCD_FONT_WIDTH)) = 0x00;
-        i32Number = i32Temp;
+        i32Number                                                      = i32Temp;
     }
 
     /* Finished with buffer - post on semaphore*/
@@ -2437,7 +2481,6 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
     {
         SemaphoreP_post(pSem);
     }
-
 }
 
 /*
@@ -2446,27 +2489,31 @@ static void LCD_doBufferPrintInt(LCD_Handle handle, unsigned int bufIndex, int i
  *  If blocking is set to true, the task execution will be blocked until all
  *  buffer modifications have finished.
  */
-static void LCD_doBufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucXFrom,
-                                 unsigned char ucXTo, unsigned char ucY, bool blocking)
+static void LCD_doBufferSetHLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucXFrom,
+                                 unsigned char ucXTo,
+                                 unsigned char ucY,
+                                 bool blocking)
 {
     unsigned char ucI;
-    unsigned char ucPage = ucY / LCD_PAGE_ROWS;
-    unsigned char bit = ucY % LCD_PAGE_ROWS;
+    unsigned char ucPage  = ucY / LCD_PAGE_ROWS;
+    unsigned char bit     = ucY % LCD_PAGE_ROWS;
     unsigned char bitmask = 1 << bit;
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Switch draw direction if ucXTo < ucXFrom */
     if (ucXTo < ucXFrom)
     {
         unsigned char ucTemp = ucXFrom;
-        ucXFrom = ucXTo;
-        ucXTo = ucTemp;
+        ucXFrom              = ucXTo;
+        ucXTo                = ucTemp;
     }
 
     /* Pend on the semaphore if blocking option is set*/
@@ -2476,7 +2523,8 @@ static void LCD_doBufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsig
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferSetHLine.", bufIndex);
+                        "LCD_bufferSetHLine.",
+                        bufIndex);
             return;
         }
     }
@@ -2501,27 +2549,31 @@ static void LCD_doBufferSetHLine(LCD_Handle handle, unsigned int bufIndex, unsig
  *  buffer modifications have finished.
  *
  */
-static void LCD_doBufferClearHLine(LCD_Handle handle, unsigned int bufIndex,
-                                   unsigned char ucXFrom, unsigned char ucXTo, unsigned char ucY, bool blocking)
+static void LCD_doBufferClearHLine(LCD_Handle handle,
+                                   unsigned int bufIndex,
+                                   unsigned char ucXFrom,
+                                   unsigned char ucXTo,
+                                   unsigned char ucY,
+                                   bool blocking)
 {
     unsigned char ucI;
-    unsigned char ucPage = ucY / LCD_PAGE_ROWS;
-    unsigned char ucBit = ucY % LCD_PAGE_ROWS;
+    unsigned char ucPage    = ucY / LCD_PAGE_ROWS;
+    unsigned char ucBit     = ucY % LCD_PAGE_ROWS;
     unsigned char ucBitmask = 1 << ucBit;
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Switch draw direction if ucXTo < ucXFrom */
     if (ucXTo < ucXFrom)
     {
         unsigned char ucTemp = ucXFrom;
-        ucXFrom = ucXTo;
-        ucXTo = ucTemp;
+        ucXFrom              = ucXTo;
+        ucXTo                = ucTemp;
     }
 
     /* Pend on the semaphore if blocking option is set*/
@@ -2531,7 +2583,8 @@ static void LCD_doBufferClearHLine(LCD_Handle handle, unsigned int bufIndex,
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferClearHLine.", bufIndex);
+                        "LCD_bufferClearHLine.",
+                        bufIndex);
             return;
         }
     }
@@ -2555,8 +2608,12 @@ static void LCD_doBufferClearHLine(LCD_Handle handle, unsigned int bufIndex,
  *  If blocking is set to true, the task execution will be blocked until all
  *  buffer modifications have finished.
  */
-static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                                 unsigned char ucYFrom, unsigned char ucYTo, bool blocking)
+static void LCD_doBufferSetVLine(LCD_Handle handle,
+                                 unsigned int bufIndex,
+                                 unsigned char ucX,
+                                 unsigned char ucYFrom,
+                                 unsigned char ucYTo,
+                                 bool blocking)
 {
     unsigned char ucI, ucPow;
     unsigned char ucPage, ucFirstPage, ucLastPage;
@@ -2566,16 +2623,16 @@ static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsig
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Calculate first and last LCD page */
     ucFirstPage = ucYFrom / LCD_PAGE_ROWS;
-    ucLastPage = ucYTo / LCD_PAGE_ROWS;
+    ucLastPage  = ucYTo / LCD_PAGE_ROWS;
 
     /*  Find the bitmask to use with the first page */
     ucFirstPageMask = 0xFF;
-    ucPow = 1;
+    ucPow           = 1;
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
     {
         if (ucYFrom - ucFirstPage * LCD_PAGE_ROWS > ucI)
@@ -2587,7 +2644,7 @@ static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsig
 
     /* Find the bitmask to use with the last page */
     ucLastPageMask = 0x00;
-    ucPow = 1;
+    ucPow          = 1;
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
     {
         if (ucYTo - ucLastPage * LCD_PAGE_ROWS >= ucI)
@@ -2611,7 +2668,8 @@ static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsig
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferSetVLine.", bufIndex);
+                        "LCD_bufferSetVLine.",
+                        bufIndex);
             return;
         }
     }
@@ -2637,8 +2695,12 @@ static void LCD_doBufferSetVLine(LCD_Handle handle, unsigned int bufIndex, unsig
  *  If blocking is set to true, the task execution will be blocked until all
  *  buffer modifications have finished.
  */
-static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                                   unsigned char ucYFrom, unsigned char ucYTo, bool blocking)
+static void LCD_doBufferClearVLine(LCD_Handle handle,
+                                   unsigned int bufIndex,
+                                   unsigned char ucX,
+                                   unsigned char ucYFrom,
+                                   unsigned char ucYTo,
+                                   bool blocking)
 {
     unsigned char ucI, ucPow;
     unsigned char ucPage, ucFirstPage, ucLastPage;
@@ -2648,16 +2710,16 @@ static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex, uns
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Calculate first and last LCD page */
     ucFirstPage = ucYFrom / LCD_PAGE_ROWS;
-    ucLastPage = ucYTo / LCD_PAGE_ROWS;
+    ucLastPage  = ucYTo / LCD_PAGE_ROWS;
 
     /* Find the bitmask to use with the first page */
     ucFirstPageMask = 0xFF;
-    ucPow = 1;
+    ucPow           = 1;
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
     {
         if (ucYFrom - ucFirstPage * LCD_PAGE_ROWS > ucI)
@@ -2669,7 +2731,7 @@ static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex, uns
 
     /* Find the bitmask to use with the last page */
     ucLastPageMask = 0x00;
-    ucPow = 1;
+    ucPow          = 1;
     for (ucI = 0; ucI < LCD_PAGE_ROWS; ucI++)
     {
         if (ucYTo - ucLastPage * LCD_PAGE_ROWS >= ucI)
@@ -2693,7 +2755,8 @@ static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex, uns
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferClearVLine.", bufIndex);
+                        "LCD_bufferClearVLine.",
+                        bufIndex);
             return;
         }
     }
@@ -2719,17 +2782,20 @@ static void LCD_doBufferClearVLine(LCD_Handle handle, unsigned int bufIndex, uns
  *  If blocking is set to true, the task execution will be blocked until all
  *  buffer modifications have finished.
  */
-static void LCD_doBufferSetPx(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                              unsigned char ucY, bool blocking)
+static void LCD_doBufferSetPx(LCD_Handle handle,
+                              unsigned int bufIndex,
+                              unsigned char ucX,
+                              unsigned char ucY,
+                              bool blocking)
 {
-    uint_fast8_t ucPage = ucY / LCD_PAGE_ROWS;
+    uint_fast8_t ucPage    = ucY / LCD_PAGE_ROWS;
     uint_fast8_t ucBitmask = 1 << (ucY % LCD_PAGE_ROWS);
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore*/
@@ -2739,7 +2805,8 @@ static void LCD_doBufferSetPx(LCD_Handle handle, unsigned int bufIndex, unsigned
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferSetPx.", bufIndex);
+                        "LCD_bufferSetPx.",
+                        bufIndex);
             return;
         }
     }
@@ -2761,17 +2828,20 @@ static void LCD_doBufferSetPx(LCD_Handle handle, unsigned int bufIndex, unsigned
  *  buffer modifications have finished.
  *
  */
-static void LCD_doBufferClearPx(LCD_Handle handle, unsigned int bufIndex, unsigned char ucX,
-                                unsigned char ucY, bool blocking)
+static void LCD_doBufferClearPx(LCD_Handle handle,
+                                unsigned int bufIndex,
+                                unsigned char ucX,
+                                unsigned char ucY,
+                                bool blocking)
 {
-    uint_fast8_t ucPage = ucY / LCD_PAGE_ROWS;
+    uint_fast8_t ucPage    = ucY / LCD_PAGE_ROWS;
     uint_fast8_t ucBitmask = 1 << (ucY % LCD_PAGE_ROWS);
 
     /* Get pointer to the LCD object */
     LCD_Object *object = handle->object;
 
     /* Get pointers to the buffer and its semaphore. */
-    char *pcBuf = object->lcdBuffers[bufIndex].pcBuffer;
+    char *pcBuf             = object->lcdBuffers[bufIndex].pcBuffer;
     SemaphoreP_Struct *pSem = &(object->lcdBuffers[bufIndex].bufMutex);
 
     /* Pend on the semaphore*/
@@ -2781,7 +2851,8 @@ static void LCD_doBufferClearPx(LCD_Handle handle, unsigned int bufIndex, unsign
         {
             /* Semaphore timed out, log and return. */
             DebugP_log1("Waiting for access to buffer (%p) timed out, exiting"
-                         "LCD_bufferClearPx.", bufIndex);
+                        "LCD_bufferClearPx.",
+                        bufIndex);
             return;
         }
     }

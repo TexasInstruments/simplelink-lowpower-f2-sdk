@@ -98,12 +98,3 @@ define exported symbol __primary_heap_start__ = __primary_heap_end__ - HEAPSIZE;
 define region RWRAM_region   = mem:[from RAM_start__   to __primary_heap_start__];
 place in RWRAM_region   { readwrite };
 initialize by copy { readwrite };
-
-/*
- * The USE_TIRTOS_ROM symbol is defined internally in the build flow (using
- * --config_def USE_TIRTOS_ROM=1) for TI-RTOS applications whose app.cfg file
- * specifies to use the ROM.
- */
-if (isdefinedsymbol(USE_TIRTOS_ROM)) {
-    include "TIRTOS_ROM.icf";
-}

@@ -44,14 +44,13 @@ extern const ADCBuf_Config ADCBuf_config[];
 extern const uint_least8_t ADCBuf_count;
 
 /* Default ADC parameters structure */
-const ADCBuf_Params ADCBuf_defaultParams = {
-    .returnMode         = ADCBuf_RETURN_MODE_BLOCKING,          /*!< Blocking mode */
-    .blockingTimeout    = 25000,                                /*!< Timeout of 25000 RTOS ticks */
-    .callbackFxn        = NULL,                                 /*!< No callback function */
-    .recurrenceMode     = ADCBuf_RECURRENCE_MODE_ONE_SHOT,      /*!< One-shot measurement */
-    .samplingFrequency  = 10000,                                /*!< Take samples at 10kHz */
-    .custom             = NULL
-};
+const ADCBuf_Params ADCBuf_defaultParams = {.returnMode      = ADCBuf_RETURN_MODE_BLOCKING, /*!< Blocking mode */
+                                            .blockingTimeout = 25000, /*!< Timeout of 25000 RTOS ticks */
+                                            .callbackFxn     = NULL,  /*!< No callback function */
+                                            .recurrenceMode = ADCBuf_RECURRENCE_MODE_ONE_SHOT, /*!< One-shot measurement
+                                                                                                */
+                                            .samplingFrequency = 10000, /*!< Take samples at 10kHz */
+                                            .custom            = NULL};
 
 static bool isInitialized = false;
 
@@ -81,11 +80,13 @@ void ADCBuf_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < ADCBuf_count; i++) {
+        for (i = 0; i < ADCBuf_count; i++)
+        {
             ADCBuf_config[i].fxnTablePtr->initFxn((ADCBuf_Handle) & (ADCBuf_config[i]));
         }
     }
@@ -101,14 +102,16 @@ ADCBuf_Handle ADCBuf_open(uint_least8_t index, ADCBuf_Params *params)
     ADCBuf_Handle handle = NULL;
 
     /* Verify driver index and state */
-    if (isInitialized && (index < ADCBuf_count)) {
+    if (isInitialized && (index < ADCBuf_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
+        if (params == NULL)
+        {
             params = (ADCBuf_Params *)&ADCBuf_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (ADCBuf_Handle)&(ADCBuf_config[index]);
+        handle = (ADCBuf_Handle) & (ADCBuf_config[index]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 
@@ -126,7 +129,7 @@ void ADCBuf_Params_init(ADCBuf_Params *params)
 /*
  *  ======== ADCBuf_convert ========
  */
-int_fast16_t ADCBuf_convert(ADCBuf_Handle handle, ADCBuf_Conversion conversions[],  uint_fast8_t channelCount)
+int_fast16_t ADCBuf_convert(ADCBuf_Handle handle, ADCBuf_Conversion conversions[], uint_fast8_t channelCount)
 {
     return (handle->fxnTablePtr->convertFxn(handle, conversions, channelCount));
 }
@@ -158,7 +161,15 @@ int_fast16_t ADCBuf_adjustRawValues(ADCBuf_Handle handle, void *sampleBuf, uint_
 /*
  *  ======== ADCBuf_convertAdjustedToMicroVolts ========
  */
-int_fast16_t ADCBuf_convertAdjustedToMicroVolts(ADCBuf_Handle handle, uint32_t  adcChan, void *adjustedSampleBuffer, uint32_t outputMicroVoltBuffer[], uint_fast16_t sampleCount)
+int_fast16_t ADCBuf_convertAdjustedToMicroVolts(ADCBuf_Handle handle,
+                                                uint32_t adcChan,
+                                                void *adjustedSampleBuffer,
+                                                uint32_t outputMicroVoltBuffer[],
+                                                uint_fast16_t sampleCount)
 {
-    return (handle->fxnTablePtr->convertAdjustedToMicroVoltsFxn(handle, adcChan, adjustedSampleBuffer, outputMicroVoltBuffer, sampleCount));
+    return (handle->fxnTablePtr->convertAdjustedToMicroVoltsFxn(handle,
+                                                                adcChan,
+                                                                adjustedSampleBuffer,
+                                                                outputMicroVoltBuffer,
+                                                                sampleCount));
 }

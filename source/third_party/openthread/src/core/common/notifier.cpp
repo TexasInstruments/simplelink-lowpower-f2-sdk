@@ -33,55 +33,40 @@
 
 #include "notifier.hpp"
 
+#include "border_router/routing_manager.hpp"
+#include "common/array.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 
 namespace ot {
 
-Notifier::Callback::Callback(Instance &aInstance, Handler aHandler, void *aOwner)
-    : OwnerLocator(aOwner)
-    , mHandler(aHandler)
-    , mNext(NULL)
-{
-    OT_ASSERT(aHandler != NULL);
-    aInstance.Get<Notifier>().RegisterCallback(*this);
-}
+RegisterLogModule("Notifier");
 
 Notifier::Notifier(Instance &aInstance)
     : InstanceLocator(aInstance)
-    , mFlagsToSignal(0)
-    , mSignaledFlags(0)
-    , mTask(aInstance, &Notifier::HandleStateChanged, this)
-    , mCallbacks()
+    , mTask(aInstance, Notifier::EmitEvents)
 {
-    for (unsigned int i = 0; i < kMaxExternalHandlers; i++)
+    for (ExternalCallback &callback : mExternalCallbacks)
     {
-        mExternalCallbacks[i].mHandler = NULL;
-        mExternalCallbacks[i].mContext = NULL;
+        callback.mHandler = nullptr;
+        callback.mContext = nullptr;
     }
 }
 
-void Notifier::RegisterCallback(Callback &aCallback)
+Error Notifier::RegisterCallback(otStateChangedCallback aCallback, void *aContext)
 {
-    mCallbacks.Push(aCallback);
-}
+    Error             error          = kErrorNone;
+    ExternalCallback *unusedCallback = nullptr;
 
-otError Notifier::RegisterCallback(otStateChangedCallback aCallback, void *aContext)
-{
-    otError           error          = OT_ERROR_NONE;
-    ExternalCallback *unusedCallback = NULL;
+    VerifyOrExit(aCallback != nullptr);
 
-    VerifyOrExit(aCallback != NULL, OT_NOOP);
-
-    for (unsigned int i = 0; i < kMaxExternalHandlers; i++)
+    for (ExternalCallback &callback : mExternalCallbacks)
     {
-        ExternalCallback &callback = mExternalCallbacks[i];
-
-        if (callback.mHandler == NULL)
+        if (callback.mHandler == nullptr)
         {
-            if (unusedCallback == NULL)
+            if (unusedCallback == nullptr)
             {
                 unusedCallback = &callback;
             }
@@ -89,10 +74,10 @@ otError Notifier::RegisterCallback(otStateChangedCallback aCallback, void *aCont
             continue;
         }
 
-        VerifyOrExit((callback.mHandler != aCallback) || (callback.mContext != aContext), error = OT_ERROR_ALREADY);
+        VerifyOrExit((callback.mHandler != aCallback) || (callback.mContext != aContext), error = kErrorAlready);
     }
 
-    VerifyOrExit(unusedCallback != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(unusedCallback != nullptr, error = kErrorNoBufs);
 
     unusedCallback->mHandler = aCallback;
     unusedCallback->mContext = aContext;
@@ -103,16 +88,14 @@ exit:
 
 void Notifier::RemoveCallback(otStateChangedCallback aCallback, void *aContext)
 {
-    VerifyOrExit(aCallback != NULL, OT_NOOP);
+    VerifyOrExit(aCallback != nullptr);
 
-    for (unsigned int i = 0; i < kMaxExternalHandlers; i++)
+    for (ExternalCallback &callback : mExternalCallbacks)
     {
-        ExternalCallback &callback = mExternalCallbacks[i];
-
         if ((callback.mHandler == aCallback) && (callback.mContext == aContext))
         {
-            callback.mHandler = NULL;
-            callback.mContext = NULL;
+            callback.mHandler = nullptr;
+            callback.mContext = nullptr;
         }
     }
 
@@ -120,48 +103,110 @@ exit:
     return;
 }
 
-void Notifier::Signal(otChangedFlags aFlags)
+void Notifier::Signal(Event aEvent)
 {
-    mFlagsToSignal |= aFlags;
-    mSignaledFlags |= aFlags;
+    mEventsToSignal.Add(aEvent);
+    mSignaledEvents.Add(aEvent);
     mTask.Post();
 }
 
-void Notifier::SignalIfFirst(otChangedFlags aFlags)
+void Notifier::SignalIfFirst(Event aEvent)
 {
-    if (!HasSignaled(aFlags))
+    if (!HasSignaled(aEvent))
     {
-        Signal(aFlags);
+        Signal(aEvent);
     }
 }
 
-void Notifier::HandleStateChanged(Tasklet &aTasklet)
+void Notifier::EmitEvents(Tasklet &aTasklet)
 {
-    aTasklet.GetOwner<Notifier>().HandleStateChanged();
+    aTasklet.Get<Notifier>().EmitEvents();
 }
 
-void Notifier::HandleStateChanged(void)
+void Notifier::EmitEvents(void)
 {
-    otChangedFlags flags = mFlagsToSignal;
+    Events events;
 
-    VerifyOrExit(flags != 0, OT_NOOP);
+    VerifyOrExit(!mEventsToSignal.IsEmpty());
 
-    mFlagsToSignal = 0;
+    // Note that the callbacks may signal new events, so we create a
+    // copy of `mEventsToSignal` and then clear it.
 
-    LogChangedFlags(flags);
+    events = mEventsToSignal;
+    mEventsToSignal.Clear();
 
-    for (Callback *callback = mCallbacks.GetHead(); callback != NULL; callback = callback->GetNext())
+    LogEvents(events);
+
+    // Emit events to core internal modules
+
+    Get<Mle::Mle>().HandleNotifierEvents(events);
+    Get<EnergyScanServer>().HandleNotifierEvents(events);
+#if OPENTHREAD_FTD
+    Get<MeshCoP::JoinerRouter>().HandleNotifierEvents(events);
+#if OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE
+    Get<BackboneRouter::Manager>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_CHILD_SUPERVISION_ENABLE
+    Get<Utils::ChildSupervisor>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE || OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE
+    Get<MeshCoP::DatasetUpdater>().HandleNotifierEvents(events);
+#endif
+#endif // OPENTHREAD_FTD
+#if OPENTHREAD_FTD || OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE || OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_ENABLE
+    Get<NetworkData::Notifier>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_ANNOUNCE_SENDER_ENABLE
+    Get<AnnounceSender>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
+    Get<MeshCoP::BorderAgent>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_MLR_ENABLE || (OPENTHREAD_FTD && OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE)
+    Get<MlrManager>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_DUA_ENABLE || (OPENTHREAD_FTD && OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE)
+    Get<DuaManager>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    Get<Trel::Link>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
+    Get<TimeSync>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_IP6_SLAAC_ENABLE
+    Get<Utils::Slaac>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_JAM_DETECTION_ENABLE
+    Get<Utils::JamDetector>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_OTNS_ENABLE
+    Get<Utils::Otns>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_HISTORY_TRACKER_ENABLE
+    Get<Utils::HistoryTracker>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_ENABLE_VENDOR_EXTENSION
+    Get<Extension::ExtensionBase>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
+    Get<BorderRouter::RoutingManager>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE
+    Get<Srp::Client>().HandleNotifierEvents(events);
+#endif
+#if OPENTHREAD_CONFIG_NETDATA_PUBLISHER_ENABLE
+    // The `NetworkData::Publisher` is notified last (e.g., after SRP
+    // client) to allow other modules to request changes to what is
+    // being published (if needed).
+    Get<NetworkData::Publisher>().HandleNotifierEvents(events);
+#endif
+
+    for (ExternalCallback &callback : mExternalCallbacks)
     {
-        callback->Invoke(flags);
-    }
-
-    for (unsigned int i = 0; i < kMaxExternalHandlers; i++)
-    {
-        ExternalCallback &callback = mExternalCallbacks[i];
-
-        if (callback.mHandler != NULL)
+        if (callback.mHandler != nullptr)
         {
-            callback.mHandler(flags, callback.mContext);
+            callback.mHandler(events.GetAsFlags(), callback.mContext);
         }
     }
 
@@ -171,31 +216,31 @@ exit:
 
 // LCOV_EXCL_START
 
-#if (OPENTHREAD_CONFIG_LOG_LEVEL >= OT_LOG_LEVEL_INFO) && (OPENTHREAD_CONFIG_LOG_CORE == 1)
+#if OT_SHOULD_LOG_AT(OT_LOG_LEVEL_INFO)
 
-void Notifier::LogChangedFlags(otChangedFlags aFlags) const
+void Notifier::LogEvents(Events aEvents) const
 {
-    otChangedFlags                 flags    = aFlags;
+    Events::Flags                  flags    = aEvents.GetAsFlags();
     bool                           addSpace = false;
     bool                           didLog   = false;
     String<kFlagsStringBufferSize> string;
 
-    for (uint8_t bit = 0; bit < sizeof(otChangedFlags) * CHAR_BIT; bit++)
+    for (uint8_t bit = 0; bit < sizeof(Events::Flags) * CHAR_BIT; bit++)
     {
-        VerifyOrExit(flags != 0, OT_NOOP);
+        VerifyOrExit(flags != 0);
 
         if (flags & (1 << bit))
         {
             if (string.GetLength() >= kFlagsStringLineLimit)
             {
-                otLogInfoCore("Notifier: StateChanged (0x%08x) %s%s ...", aFlags, didLog ? "... " : "[",
-                              string.AsCString());
+                LogInfo("StateChanged (0x%08x) %s%s ...", aEvents.GetAsFlags(), didLog ? "... " : "[",
+                        string.AsCString());
                 string.Clear();
                 didLog   = true;
                 addSpace = false;
             }
 
-            string.Append("%s%s", addSpace ? " " : "", FlagToString(1 << bit));
+            string.Append("%s%s", addSpace ? " " : "", EventToString(static_cast<Event>(1 << bit)));
             addSpace = true;
 
             flags ^= (1 << bit);
@@ -203,152 +248,73 @@ void Notifier::LogChangedFlags(otChangedFlags aFlags) const
     }
 
 exit:
-    otLogInfoCore("Notifier: StateChanged (0x%08x) %s%s] ", aFlags, didLog ? "... " : "[", string.AsCString());
+    LogInfo("StateChanged (0x%08x) %s%s]", aEvents.GetAsFlags(), didLog ? "... " : "[", string.AsCString());
 }
 
-const char *Notifier::FlagToString(otChangedFlags aFlag) const
+const char *Notifier::EventToString(Event aEvent) const
 {
     const char *retval = "(unknown)";
 
     // To ensure no clipping of flag names in the logs, the returned
     // strings from this method should have shorter length than
     // `kMaxFlagNameLength` value.
+    static const char *const kEventStrings[] = {
+        "Ip6+",              // kEventIp6AddressAdded                  (1 << 0)
+        "Ip6-",              // kEventIp6AddressRemoved                (1 << 1)
+        "Role",              // kEventThreadRoleChanged                (1 << 2)
+        "LLAddr",            // kEventThreadLinkLocalAddrChanged       (1 << 3)
+        "MLAddr",            // kEventThreadMeshLocalAddrChanged       (1 << 4)
+        "Rloc+",             // kEventThreadRlocAdded                  (1 << 5)
+        "Rloc-",             // kEventThreadRlocRemoved                (1 << 6)
+        "PartitionId",       // kEventThreadPartitionIdChanged         (1 << 7)
+        "KeySeqCntr",        // kEventThreadKeySeqCounterChanged       (1 << 8)
+        "NetData",           // kEventThreadNetdataChanged             (1 << 9)
+        "Child+",            // kEventThreadChildAdded                 (1 << 10)
+        "Child-",            // kEventThreadChildRemoved               (1 << 11)
+        "Ip6Mult+",          // kEventIp6MulticastSubscribed           (1 << 12)
+        "Ip6Mult-",          // kEventIp6MulticastUnsubscribed         (1 << 13)
+        "Channel",           // kEventThreadChannelChanged             (1 << 14)
+        "PanId",             // kEventThreadPanIdChanged               (1 << 15)
+        "NetName",           // kEventThreadNetworkNameChanged         (1 << 16)
+        "ExtPanId",          // kEventThreadExtPanIdChanged            (1 << 17)
+        "NetworkKey",        // kEventNetworkKeyChanged                (1 << 18)
+        "PSKc",              // kEventPskcChanged                      (1 << 19)
+        "SecPolicy",         // kEventSecurityPolicyChanged            (1 << 20)
+        "CMNewChan",         // kEventChannelManagerNewChannelChanged  (1 << 21)
+        "ChanMask",          // kEventSupportedChannelMaskChanged      (1 << 22)
+        "CommissionerState", // kEventCommissionerStateChanged         (1 << 23)
+        "NetifState",        // kEventThreadNetifStateChanged          (1 << 24)
+        "BbrState",          // kEventThreadBackboneRouterStateChanged (1 << 25)
+        "BbrLocal",          // kEventThreadBackboneRouterLocalChanged (1 << 26)
+        "JoinerState",       // kEventJoinerStateChanged               (1 << 27)
+        "ActDset",           // kEventActiveDatasetChanged             (1 << 28)
+        "PndDset",           // kEventPendingDatasetChanged            (1 << 29)
+    };
 
-    switch (aFlag)
+    for (uint8_t index = 0; index < GetArrayLength(kEventStrings); index++)
     {
-    case OT_CHANGED_IP6_ADDRESS_ADDED:
-        retval = "Ip6+";
-        break;
-
-    case OT_CHANGED_IP6_ADDRESS_REMOVED:
-        retval = "Ip6-";
-        break;
-
-    case OT_CHANGED_THREAD_ROLE:
-        retval = "Role";
-        break;
-
-    case OT_CHANGED_THREAD_LL_ADDR:
-        retval = "LLAddr";
-        break;
-
-    case OT_CHANGED_THREAD_ML_ADDR:
-        retval = "MLAddr";
-        break;
-
-    case OT_CHANGED_THREAD_RLOC_ADDED:
-        retval = "Rloc+";
-        break;
-
-    case OT_CHANGED_THREAD_RLOC_REMOVED:
-        retval = "Rloc-";
-        break;
-
-    case OT_CHANGED_THREAD_PARTITION_ID:
-        retval = "PartitionId";
-        break;
-
-    case OT_CHANGED_THREAD_KEY_SEQUENCE_COUNTER:
-        retval = "KeySeqCntr";
-        break;
-
-    case OT_CHANGED_THREAD_NETDATA:
-        retval = "NetData";
-        break;
-
-    case OT_CHANGED_THREAD_CHILD_ADDED:
-        retval = "Child+";
-        break;
-
-    case OT_CHANGED_THREAD_CHILD_REMOVED:
-        retval = "Child-";
-        break;
-
-    case OT_CHANGED_IP6_MULTICAST_SUBSCRIBED:
-        retval = "Ip6Mult+";
-        break;
-
-    case OT_CHANGED_IP6_MULTICAST_UNSUBSCRIBED:
-        retval = "Ip6Mult-";
-        break;
-
-    case OT_CHANGED_THREAD_CHANNEL:
-        retval = "Channel";
-        break;
-
-    case OT_CHANGED_THREAD_PANID:
-        retval = "PanId";
-        break;
-
-    case OT_CHANGED_THREAD_NETWORK_NAME:
-        retval = "NetName";
-        break;
-
-    case OT_CHANGED_THREAD_EXT_PANID:
-        retval = "ExtPanId";
-        break;
-
-    case OT_CHANGED_MASTER_KEY:
-        retval = "MstrKey";
-        break;
-
-    case OT_CHANGED_PSKC:
-        retval = "PSKc";
-        break;
-
-    case OT_CHANGED_SECURITY_POLICY:
-        retval = "SecPolicy";
-        break;
-
-    case OT_CHANGED_CHANNEL_MANAGER_NEW_CHANNEL:
-        retval = "CMNewChan";
-        break;
-
-    case OT_CHANGED_SUPPORTED_CHANNEL_MASK:
-        retval = "ChanMask";
-        break;
-
-    case OT_CHANGED_COMMISSIONER_STATE:
-        retval = "CommissionerState";
-        break;
-
-    case OT_CHANGED_THREAD_NETIF_STATE:
-        retval = "NetifState";
-        break;
-
-#if OPENTHREAD_FTD && OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE
-    case OT_CHANGED_THREAD_BACKBONE_ROUTER_STATE:
-        retval = "BbrState";
-        break;
-
-    case OT_CHANGED_THREAD_BACKBONE_ROUTER_LOCAL:
-        retval = "BbrLocal";
-        break;
-#endif
-
-    case OT_CHANGED_JOINER_STATE:
-        retval = "JoinerState";
-        break;
-
-    default:
-        break;
+        if (static_cast<uint32_t>(aEvent) == (1U << index))
+        {
+            retval = kEventStrings[index];
+            break;
+        }
     }
 
     return retval;
 }
 
-#else // #if (OPENTHREAD_CONFIG_LOG_LEVEL >= OT_LOG_LEVEL_INFO) && (OPENTHREAD_CONFIG_LOG_CORE == 1)
+#else // #if OT_SHOULD_LOG_AT( OT_LOG_LEVEL_INFO)
 
-void Notifier::LogChangedFlags(otChangedFlags) const
+void Notifier::LogEvents(Events) const
 {
 }
 
-const char *Notifier::FlagToString(otChangedFlags) const
+const char *Notifier::EventToString(Event) const
 {
     return "";
 }
 
-#endif // #if (OPENTHREAD_CONFIG_LOG_LEVEL >= OT_LOG_LEVEL_INFO) && (OPENTHREAD_CONFIG_LOG_CORE == 1)
+#endif // #if OT_SHOULD_LOG_AT( OT_LOG_LEVEL_INFO)
 
 // LCOV_EXCL_STOP
 

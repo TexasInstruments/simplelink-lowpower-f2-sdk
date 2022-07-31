@@ -70,11 +70,11 @@ var TRNG = scripting.addModule("/ti/drivers/TRNG");
 var trng = TRNG.addInstance();
 trng.$name = "CONFIG_TRNG_0";
 
-/* ======== UART ======== */
-var UART = scripting.addModule("/ti/drivers/UART");
-var uart = UART.addInstance();
-uart.$name = "CONFIG_UART_0";
-uart.uart.$assign = "UART0";
+/* ======== UART2 ======== */
+var UART2 = scripting.addModule("/ti/drivers/UART2");
+var uart2 = UART2.addInstance();
+uart2.$name = "CONFIG_UART_0";
+uart2.uart.$assign = "UART0";
 
 /* ======== GPIO ======== */
 var GPIO = scripting.addModule("/ti/drivers/GPIO");

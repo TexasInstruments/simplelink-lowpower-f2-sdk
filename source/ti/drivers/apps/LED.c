@@ -42,14 +42,14 @@
 /* Module Header */
 #include <ti/drivers/apps/LED.h>
 
-#define LED_PWMPERIOD_1MS       1000U /* Default PWM period is 1 ms*/
+#define LED_PWMPERIOD_1MS 1000U /* Default PWM period is 1 ms*/
 
 /* Default LED parameters structure */
 const LED_Params LED_defaultParams = {
-    .pwmPeriod   = LED_PWMPERIOD_1MS,      /* Default PWM period is 1 ms*/
-    .brightness  = LED_BRIGHTNESS_MAX,     /* Start at max brightness*/
-    .setState    = LED_STATE_OFF,          /* Set LED state to OFF*/
-    .blinkPeriod = 0                       /* No blinking*/
+    .pwmPeriod   = LED_PWMPERIOD_1MS,  /* Default PWM period is 1 ms*/
+    .brightness  = LED_BRIGHTNESS_MAX, /* Start at max brightness*/
+    .setState    = LED_STATE_OFF,      /* Set LED state to OFF*/
+    .blinkPeriod = 0                   /* No blinking*/
 };
 
 extern LED_Config LED_config[];
@@ -65,17 +65,16 @@ extern const uint_least8_t LED_count;
  */
 static void clockTimeoutHandler(uintptr_t arg)
 {
-    LED_Object * obj = ((LED_Handle)arg)->object;
+    LED_Object *obj = ((LED_Handle)arg)->object;
     ClockP_setTimeout(obj->clockHandle, obj->togglePeriod);
     ClockP_start(obj->clockHandle);
     LED_toggle((LED_Handle)arg);
 
     /* Handle blink counting */
-    if(obj->blinkCount != LED_BLINK_FOREVER &&
-       obj->blinkCount != 0)
+    if (obj->blinkCount != LED_BLINK_FOREVER && obj->blinkCount != 0)
     {
         obj->blinkCount--;
-        if(obj->blinkCount == 0)
+        if (obj->blinkCount == 0)
         {
             /* Hit the requested number of blinks */
             LED_stopBlinking((LED_Handle)arg);
@@ -93,17 +92,17 @@ static uint32_t msToTicks(uint32_t ms)
 {
     uint32_t ticks;
 
-    if(ms == 0)
+    if (ms == 0)
     {
-        return(0);
+        return (0);
     }
 
-    ticks = (ms * 1000)/ClockP_getSystemTickPeriod();
-    if(ticks == 0)
+    ticks = (ms * 1000) / ClockP_getSystemTickPeriod();
+    if (ticks == 0)
     {
         ticks = 1;
     }
-    return(ticks);
+    return (ticks);
 }
 
 /* API functions: */
@@ -124,10 +123,10 @@ void LED_close(LED_Handle ledHandle)
     obj->clockHandle = NULL;
 
     /* Close PWM handle if applicable */
-    if(obj->pwmHandle != NULL)
+    if (obj->pwmHandle != NULL)
     {
-       PWM_close(obj->pwmHandle);
-       obj->pwmHandle = NULL;
+        PWM_close(obj->pwmHandle);
+        obj->pwmHandle = NULL;
     }
 
     /* Set type to NONE to indicate the instance is closed */
@@ -141,7 +140,7 @@ LED_State LED_getState(LED_Handle ledHandle)
 {
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
-    return(obj->state);
+    return (obj->state);
 }
 
 /*
@@ -168,28 +167,28 @@ LED_Handle LED_open(uint_least8_t ledIndex, LED_Params *params)
     ClockP_Params clockParams;
 
     ledHandle = (LED_Handle)(&LED_config[ledIndex]);
-    obj = (LED_Object *)(LED_config[ledIndex].object);
-    hw = (LED_HWAttrs *)(LED_config[ledIndex].hwAttrs);
+    obj       = (LED_Object *)(LED_config[ledIndex].object);
+    hw        = (LED_HWAttrs *)(LED_config[ledIndex].hwAttrs);
 
     /* ledIndex cannot be more than number of available LEDs */
-    if((ledIndex >= LED_count))
+    if ((ledIndex >= LED_count))
     {
-        return(NULL);
+        return (NULL);
     }
 
     /* If params are NULL use defaults. */
-    if(params == NULL)
+    if (params == NULL)
     {
         params = (LED_Params *)&LED_defaultParams;
     }
 
     /* If we already have a ledType then the instance is already open */
-    if(obj->ledType != LED_NONE)
+    if (obj->ledType != LED_NONE)
     {
-        return(NULL);
+        return (NULL);
     }
 
-    if(hw->type == LED_PWM_CONTROLLED)
+    if (hw->type == LED_PWM_CONTROLLED)
     {
         obj->ledType = LED_PWM_CONTROLLED;
 
@@ -198,23 +197,22 @@ LED_Handle LED_open(uint_least8_t ledIndex, LED_Params *params)
 
         PWM_Params_init(&pwmParams);
         pwmParams.periodValue = params->pwmPeriod;
-        pwmParams.dutyUnits = PWM_DUTY_US;
+        pwmParams.dutyUnits   = PWM_DUTY_US;
         pwmParams.periodUnits = PWM_PERIOD_US;
-        pwmParams.dutyValue = 0;
+        pwmParams.dutyValue   = 0;
 
         /* Open the PWM instance */
         obj->pwmHandle = PWM_open(hw->index, &pwmParams);
-        if(NULL == obj->pwmHandle)
+        if (NULL == obj->pwmHandle)
         {
-            return(NULL);
+            return (NULL);
         }
 
         /* Handle params and start conditions */
         PWM_start(obj->pwmHandle);
-        if(params->setState != LED_STATE_OFF)
+        if (params->setState != LED_STATE_OFF)
         {
-            PWM_setDuty(obj->pwmHandle,
-                        params->pwmPeriod * params->brightness / 100);
+            PWM_setDuty(obj->pwmHandle, params->pwmPeriod * params->brightness / 100);
         }
     }
     else
@@ -223,23 +221,23 @@ LED_Handle LED_open(uint_least8_t ledIndex, LED_Params *params)
         GPIO_init();
         /* Store gpio index so we don't have to potentially read from flash */
         obj->gpioIndex = hw->index;
-        obj->ledType = LED_GPIO_CONTROLLED;
+        obj->ledType   = LED_GPIO_CONTROLLED;
     }
 
     /* Create the clock instance */
     ClockP_Params_init(&clockParams);
     clockParams.startFlag = false;
-    clockParams.arg = (uintptr_t)ledHandle;
-    clockParams.period = 0; // One shot clock
-    obj->clockHandle = ClockP_create(clockTimeoutHandler, 0, &clockParams);
-    if(NULL == obj->clockHandle)
+    clockParams.arg       = (uintptr_t)ledHandle;
+    clockParams.period    = 0; // One shot clock
+    obj->clockHandle      = ClockP_create(clockTimeoutHandler, 0, &clockParams);
+    if (NULL == obj->clockHandle)
     {
         /* Also close PWM if we opened one */
-        if(obj->pwmHandle != NULL)
+        if (obj->pwmHandle != NULL)
         {
             PWM_close(obj->pwmHandle);
         }
-        return(NULL);
+        return (NULL);
     }
 
     /* Update Object fields*/
@@ -258,9 +256,7 @@ LED_Handle LED_open(uint_least8_t ledIndex, LED_Params *params)
             break;
 
         case LED_STATE_BLINKING:
-            LED_startBlinking(ledHandle,
-                              (params->blinkPeriod)/2,
-                              LED_BLINK_FOREVER);
+            LED_startBlinking(ledHandle, (params->blinkPeriod) / 2, LED_BLINK_FOREVER);
             break;
 
         default:
@@ -268,7 +264,7 @@ LED_Handle LED_open(uint_least8_t ledIndex, LED_Params *params)
             break;
     }
 
-    return(ledHandle);
+    return (ledHandle);
 }
 
 /*
@@ -287,26 +283,26 @@ void LED_Params_init(LED_Params *params)
 bool LED_setBrightnessLevel(LED_Handle ledHandle, uint8_t level)
 {
     bool ret;
-    uint32_t duty = 0;
+    uint32_t duty   = 0;
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
     /* If in GPIO mode or a pwm handle was not provided, fail */
-    if(NULL == obj->pwmHandle)
+    if (NULL == obj->pwmHandle)
     {
-        return(false);
+        return (false);
     }
 
     /* Report false if brightness request is more than maximum(100%) level */
-    if(level > LED_BRIGHTNESS_MAX)
+    if (level > LED_BRIGHTNESS_MAX)
     {
-        return(false);
+        return (false);
     }
 
     /* Calculate duty based on requested level and set that */
-    duty = (obj->pwmPeriod * level)/100;
-    if(PWM_setDuty(obj->pwmHandle, duty) == PWM_STATUS_SUCCESS)
+    duty = (obj->pwmPeriod * level) / 100;
+    if (PWM_setDuty(obj->pwmHandle, duty) == PWM_STATUS_SUCCESS)
     {
-        ret = true;
+        ret             = true;
         obj->brightness = level;
     }
     else
@@ -314,7 +310,7 @@ bool LED_setBrightnessLevel(LED_Handle ledHandle, uint8_t level)
         ret = false;
     }
 
-    if(duty > 0)
+    if (duty > 0)
     {
         obj->rawState = LED_STATE_ON;
     }
@@ -323,7 +319,7 @@ bool LED_setBrightnessLevel(LED_Handle ledHandle, uint8_t level)
         obj->rawState = LED_STATE_OFF;
     }
 
-    return(ret);
+    return (ret);
 }
 
 /*
@@ -338,7 +334,7 @@ bool LED_setOff(LED_Handle ledHandle)
 
     obj->rawState = LED_STATE_OFF;
 
-    if(obj->ledType == LED_GPIO_CONTROLLED)
+    if (obj->ledType == LED_GPIO_CONTROLLED)
     {
         GPIO_write(obj->gpioIndex, LED_OFF);
     }
@@ -348,20 +344,20 @@ bool LED_setOff(LED_Handle ledHandle)
      * so that Toggle APIs can set same brightness while turning it On */
     else
     {
-        level = obj->brightness;
-        ret = LED_setBrightnessLevel(ledHandle, LED_BRIGHTNESS_MIN);
+        level           = obj->brightness;
+        ret             = LED_setBrightnessLevel(ledHandle, LED_BRIGHTNESS_MIN);
         obj->brightness = level;
     }
 
     /* Set LED state
      * If LED is blinking, which is a separate state(mix of ON + OFF), no need
      * to change state; rawState contains the actual ON or OFF state*/
-    if(obj->state != LED_STATE_BLINKING)
+    if (obj->state != LED_STATE_BLINKING)
     {
         obj->state = LED_STATE_OFF;
     }
 
-    return(ret);
+    return (ret);
 }
 
 /*
@@ -370,10 +366,10 @@ bool LED_setOff(LED_Handle ledHandle)
  */
 bool LED_setOn(LED_Handle ledHandle, uint8_t brightness)
 {
-    bool ret = true;
+    bool ret        = true;
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
-    if(obj->ledType == LED_GPIO_CONTROLLED)
+    if (obj->ledType == LED_GPIO_CONTROLLED)
     {
         GPIO_write(obj->gpioIndex, LED_ON);
     }
@@ -385,30 +381,28 @@ bool LED_setOn(LED_Handle ledHandle, uint8_t brightness)
     }
 
     /* Set LED state(conditional) and rawState(always)*/
-    if(ret == true)
+    if (ret == true)
     {
-        if(obj->state != LED_STATE_BLINKING)
+        if (obj->state != LED_STATE_BLINKING)
         {
             obj->state = LED_STATE_ON;
         }
 
-        obj->rawState  = LED_STATE_ON;
+        obj->rawState = LED_STATE_ON;
     }
 
-    return(ret);
+    return (ret);
 }
 
 /*
  *  ======== LED_startBlinking ========
  *  Starts blinking an LED with specified period and specified number of times
  */
-void LED_startBlinking(LED_Handle ledHandle,
-                       uint16_t blinkPeriod,
-                       uint16_t blinkCount)
+void LED_startBlinking(LED_Handle ledHandle, uint16_t blinkPeriod, uint16_t blinkCount)
 {
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
-    if(blinkPeriod == 0 || blinkCount == 0)
+    if (blinkPeriod == 0 || blinkCount == 0)
     {
         LED_stopBlinking(ledHandle);
     }
@@ -440,7 +434,7 @@ void LED_startBlinking(LED_Handle ledHandle,
             obj->blinkCount = 2 * blinkCount;
         }
 
-        obj->togglePeriod = msToTicks(blinkPeriod/2);
+        obj->togglePeriod = msToTicks(blinkPeriod / 2);
         ClockP_setTimeout(obj->clockHandle, obj->togglePeriod);
         ClockP_start(obj->clockHandle);
         obj->state = LED_STATE_BLINKING;
@@ -455,7 +449,7 @@ void LED_stopBlinking(LED_Handle ledHandle)
 {
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
-    if(obj->state == LED_STATE_BLINKING)
+    if (obj->state == LED_STATE_BLINKING)
     {
         /* Stop the clock*/
         ClockP_stop(obj->clockHandle);
@@ -478,11 +472,11 @@ void LED_toggle(LED_Handle ledHandle)
 {
     LED_Object *obj = (LED_Object *)(ledHandle->object);
 
-    if(obj->rawState == LED_STATE_ON)
+    if (obj->rawState == LED_STATE_ON)
     {
         LED_setOff(ledHandle);
     }
-    else if(obj->rawState == LED_STATE_OFF)
+    else if (obj->rawState == LED_STATE_OFF)
     {
         LED_setOn(ledHandle, obj->brightness);
     }
@@ -495,7 +489,7 @@ void LED_toggle(LED_Handle ledHandle)
 void LED_write(LED_Handle ledHandle, bool value)
 {
     LED_Object *obj = (LED_Object *)(ledHandle->object);
-    if(value)
+    if (value)
     {
         LED_setOn(ledHandle, obj->brightness);
     }

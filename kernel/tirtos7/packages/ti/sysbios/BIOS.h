@@ -177,7 +177,7 @@ extern "C" {
 #endif
 
 /* Current version number */
-#define ti_sysbios_BIOS_version (0x70000)
+#define ti_sysbios_BIOS_version (0x70100)
 
 /*!
  * @brief Current thread type definitions

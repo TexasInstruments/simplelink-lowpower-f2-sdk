@@ -38,6 +38,7 @@
 
 #include "coap/coap.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 #include "common/notifier.hpp"
 #include "common/timer.hpp"
 #include "net/ip6_address.hpp"
@@ -50,8 +51,10 @@ namespace ot {
  * This class implements handling Energy Scan Requests.
  *
  */
-class EnergyScanServer : public InstanceLocator
+class EnergyScanServer : public InstanceLocator, private NonCopyable
 {
+    friend class ot::Notifier;
+
 public:
     /**
      * This constructor initializes the object.
@@ -60,11 +63,8 @@ public:
     explicit EnergyScanServer(Instance &aInstance);
 
 private:
-    enum
-    {
-        kScanDelay   = 1000, ///< SCAN_DELAY (milliseconds)
-        kReportDelay = 500,  ///< Delay before sending a report (milliseconds)
-    };
+    static constexpr uint32_t kScanDelay   = 1000; ///< SCAN_DELAY (milliseconds)
+    static constexpr uint32_t kReportDelay = 500;  ///< Delay before sending a report (milliseconds)
 
     static void HandleRequest(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleRequest(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
@@ -75,10 +75,9 @@ private:
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
 
-    static void HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags);
-    void        HandleStateChanged(otChangedFlags aFlags);
+    void HandleNotifierEvents(Events aEvents);
 
-    otError SendReport(void);
+    void SendReport(void);
 
     Ip6::Address mCommissioner;
     uint32_t     mChannelMask;
@@ -92,8 +91,6 @@ private:
     uint8_t mScanResultsLength;
 
     TimerMilli mTimer;
-
-    Notifier::Callback mNotifierCallback;
 
     Coap::Resource mEnergyScan;
 };

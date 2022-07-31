@@ -3,15 +3,16 @@ SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../../../../..)
 
 include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
-DRIVERLIB_DIR = $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
+DRIVERLIB_CC13XX_CC26XX_INSTALL_DIR ?= $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
+TIPOSIX_INSTALL_DIR ?= $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
 FREERTOSPORT_DIR = $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
 
-VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/MemMang:$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source:$(FREERTOSPORT_DIR)/kernel/freertos/dpl:$(FREERTOSPORT_DIR)/kernel/freertos/startup
+VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/MemMang:$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source:$(FREERTOSPORT_DIR)/kernel/freertos/dpl:$(FREERTOSPORT_DIR)/kernel/freertos/startup:$(TIPOSIX_INSTALL_DIR)/source
 
 CC = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-gcc"
 AR = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-ar"
 
-CFLAGS = -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/gcc" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(DRIVERLIB_DIR)/source/third_party/CMSIS/Include" "-I$(GCC_ARMCOMPILER)/include" -O3 -c -DDeviceFamily_CC13X4_CC26X4 -Wunused -Wunknown-pragmas -g -ffunction-sections -fdata-sections -fno-builtin-malloc -mcpu=cortex-m33 -mthumb -std=c99 -mabi=aapcs -mfloat-abi=hard -mfpu=fpv5-sp-d16 --specs=nano.specs
+CFLAGS = -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure" "-I$(TIPOSIX_INSTALL_DIR)/source/ti/posix/gcc" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_CC13XX_CC26XX_INSTALL_DIR)/source" "-I$(DRIVERLIB_DIR)/source/third_party/CMSIS/Include" "-I$(GCC_ARMCOMPILER)/include" "-I$(TIPOSIX_INSTALL_DIR)/source" -O3 -c -DDeviceFamily_CC13X4_CC26X4 -Wunused -Wunknown-pragmas -g -ffunction-sections -fdata-sections -fno-builtin-malloc -mcpu=cortex-m33 -mthumb -std=c99 -mabi=aapcs -mfloat-abi=hard -mfpu=fpv5-sp-d16 --specs=nano.specs
 
 CFILES = \
     croutine.c \

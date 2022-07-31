@@ -46,21 +46,23 @@
 /*
  *  ======== SemaphoreP_construct ========
  */
-SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *semStruct,
-        unsigned int count, SemaphoreP_Params *params)
+SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *semStruct, unsigned int count, SemaphoreP_Params *params)
 {
     Semaphore_Params semParams;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         Semaphore_construct((Semaphore_Struct *)semStruct, count, NULL);
     }
-    else {
+    else
+    {
         Semaphore_Params_init(&semParams);
         /*
          * The default mode for TI-RTOS is counting, so only change if a binary
          * semaphore is requested.
          */
-        if (params->mode == SemaphoreP_Mode_BINARY) {
+        if (params->mode == SemaphoreP_Mode_BINARY)
+        {
             semParams.mode = Semaphore_Mode_BINARY;
         }
         Semaphore_construct((Semaphore_Struct *)semStruct, count, &semParams);
@@ -72,8 +74,7 @@ SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *semStruct,
 /*
  *  ======== SemaphoreP_constructBinary ========
  */
-SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *semStruct,
-        unsigned int count)
+SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *semStruct, unsigned int count)
 {
     Semaphore_Params semParams;
 
@@ -89,8 +90,9 @@ SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *semStruct,
 /*
  *  ======== SemaphoreP_constructBinaryCallback ========
  */
-SemaphoreP_Handle SemaphoreP_constructBinaryCallback(
-    SemaphoreP_Struct *semStruct, unsigned int count, void (*callback)(void))
+SemaphoreP_Handle SemaphoreP_constructBinaryCallback(SemaphoreP_Struct *semStruct,
+                                                     unsigned int count,
+                                                     void (*callback)(void))
 {
     return (SemaphoreP_constructBinary(semStruct, count));
 }
@@ -98,22 +100,24 @@ SemaphoreP_Handle SemaphoreP_constructBinaryCallback(
 /*
  *  ======== SemaphoreP_create ========
  */
-SemaphoreP_Handle SemaphoreP_create(unsigned int count,
-                                    SemaphoreP_Params *params)
+SemaphoreP_Handle SemaphoreP_create(unsigned int count, SemaphoreP_Params *params)
 {
-    Semaphore_Handle  handle;
-    Semaphore_Params  semaphoreParams;
+    Semaphore_Handle handle;
+    Semaphore_Params semaphoreParams;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         handle = Semaphore_create(count, NULL, Error_IGNORE);
     }
-    else {
+    else
+    {
         Semaphore_Params_init(&semaphoreParams);
         /*
          * The default mode for TI-RTOS is counting, so only change if a binary
          * semaphore is requested.
          */
-        if (params->mode == SemaphoreP_Mode_BINARY) {
+        if (params->mode == SemaphoreP_Mode_BINARY)
+        {
             semaphoreParams.mode = Semaphore_Mode_BINARY;
         }
         handle = Semaphore_create(count, &semaphoreParams, Error_IGNORE);
@@ -127,13 +131,13 @@ SemaphoreP_Handle SemaphoreP_create(unsigned int count,
  */
 SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count)
 {
-    Semaphore_Handle  handle;
-    Semaphore_Params  semaphoreParams;
+    Semaphore_Handle handle;
+    Semaphore_Params semaphoreParams;
 
     Semaphore_Params_init(&semaphoreParams);
 
     semaphoreParams.mode = Semaphore_Mode_BINARY;
-    handle = Semaphore_create(count, &semaphoreParams, Error_IGNORE);
+    handle               = Semaphore_create(count, &semaphoreParams, Error_IGNORE);
 
     return ((SemaphoreP_Handle)handle);
 }
@@ -141,8 +145,7 @@ SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count)
 /*
  *  ======== SemaphoreP_createBinaryCallback ========
  */
-SemaphoreP_Handle SemaphoreP_createBinaryCallback(unsigned int count,
-        void (*callback)(void))
+SemaphoreP_Handle SemaphoreP_createBinaryCallback(unsigned int count, void (*callback)(void))
 {
     return (SemaphoreP_createBinary(count));
 }
@@ -170,7 +173,7 @@ void SemaphoreP_destruct(SemaphoreP_Struct *semP)
  */
 void SemaphoreP_Params_init(SemaphoreP_Params *params)
 {
-    params->mode = SemaphoreP_Mode_COUNTING;
+    params->mode     = SemaphoreP_Mode_COUNTING;
     params->callback = NULL;
 }
 
@@ -182,7 +185,8 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
     Bool flag;
 
     flag = Semaphore_pend((Semaphore_Handle)handle, timeout);
-    if (FALSE == flag) {
+    if (FALSE == flag)
+    {
         return (SemaphoreP_TIMEOUT);
     }
 

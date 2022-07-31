@@ -39,6 +39,8 @@ The following BoosterPack(s) are used with some driver examples.
 #### [__CC3200 Audio BoosterPack__][cc3200audboost]
   * No modifications are needed.
 
+[device]: https://www.ti.com/product/CC2652RSIP
+[launchpad]: https://www.ti.com/tool/LP-CC2652RSIP
 [boostxl-sharp128]: http://www.ti.com/tool/boostxl-sharp128
 [bp-bassensorsmkii]: http://www.ti.com/tool/bp-bassensorsmkii
 [cc3200audboost]: http://www.ti.com/tool/CC3200AUDBOOST

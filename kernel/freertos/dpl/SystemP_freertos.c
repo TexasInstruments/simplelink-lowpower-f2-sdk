@@ -47,7 +47,7 @@
  * -----------------------------------------------------------------------------
  */
 #ifndef MIN
-#  define MIN(n, m)    (((n) > (m)) ? (m) : (n))
+    #define MIN(n, m) (((n) > (m)) ? (m) : (n))
 #endif
 
 /*
@@ -56,16 +56,17 @@
  *  plus 5 to accomodate the decimal point and 4 digits after the decimal
  *  point.
  */
-#define OUTMAX      ((32 + 2) / 3 + 5)
-#define PTRZPAD     8
-#define MAXARGS     5
+#define OUTMAX  ((32 + 2) / 3 + 5)
+#define PTRZPAD 8
+#define MAXARGS 5
 
 /* ----------------------------------------------------------------------------
  *   Type definitions
  * ----------------------------------------------------------------------------
  */
 /* ParseData */
-typedef struct ParseData {
+typedef struct ParseData
+{
     int width;
     bool lFlag;
     bool lJust;
@@ -80,7 +81,7 @@ typedef struct ParseData {
  *  Maximum sized (un)signed integer that we'll format.
  */
 typedef uint32_t UIntMax;
-typedef int32_t  IntMax;
+typedef int32_t IntMax;
 
 static int doPrint(char *buf, size_t n, const char *fmt, va_list va);
 static char *formatNum(char *ptr, UIntMax un, int zpad, int base);
@@ -89,10 +90,10 @@ static void putChar(char **bufp, char c, size_t *n);
 /*
  *  ======== SystemP_snprintf ========
  */
-int SystemP_snprintf(char *buf, size_t n, const char *format,...)
+int SystemP_snprintf(char *buf, size_t n, const char *format, ...)
 {
     va_list args;
-    int     ret;
+    int ret;
 
     va_start(args, format);
     ret = doPrint(buf, n, format, args);
@@ -104,10 +105,9 @@ int SystemP_snprintf(char *buf, size_t n, const char *format,...)
 /*
  *  ======== SystemP_snprintf_va ========
  */
-int SystemP_vsnprintf(char *buf, size_t n, const char *format,
-        va_list va)
+int SystemP_vsnprintf(char *buf, size_t n, const char *format, va_list va)
 {
-    int     ret;
+    int ret;
 
     ret = doPrint(buf, n, format, va);
     return (ret);
@@ -119,93 +119,113 @@ int SystemP_vsnprintf(char *buf, size_t n, const char *format,
 static int doPrint(char *buf, size_t n, const char *fmt, va_list va)
 {
     ParseData parse;
-    int     base;
-    char    c;
-    int     res = 0;
-    char    outbuf[OUTMAX];
+    int base;
+    char c;
+    int res = 0;
+    char outbuf[OUTMAX];
 
-    if (fmt == (char *)NULL) {
+    if (fmt == (char *)NULL)
+    {
         return (res);
     }
 
-    while ((c = *fmt++) != '\0') {
-        if (c != '%') {
+    while ((c = *fmt++) != '\0')
+    {
+        if (c != '%')
+        {
             putChar(&buf, c, &n);
             res++;
         }
-        else {
+        else
+        {
             c = *fmt++;
             /* check for - flag (pad on right) */
-            if (c == '-') {
+            if (c == '-')
+            {
                 parse.lJust = true;
-                c = *fmt++;
+                c           = *fmt++;
             }
-            else {
+            else
+            {
                 parse.lJust = false;
             }
             /* check for leading 0 pad */
-            if (c == '0') {
+            if (c == '0')
+            {
                 parse.zpad = 1;
-                c = *fmt++;
+                c          = *fmt++;
             }
-            else {
+            else
+            {
                 parse.zpad = 0;
             }
 
             /* allow optional field width/precision specification */
-            parse.width = 0;
+            parse.width  = 0;
             parse.precis = -1;
 
             /* note: dont use isdigit (very large for C30) */
-            if (c == '*') {
+            if (c == '*')
+            {
                 /* Width is specified in argument, not in format string */
                 parse.width = (int)va_arg(va, int);
 
                 c = *fmt++;
-                if (parse.width < 0) {
+                if (parse.width < 0)
+                {
                     parse.lJust = true;
                     parse.width = -parse.width;
                 }
             }
-            else {
-                while (c >= '0' && c <= '9') {
+            else
+            {
+                while (c >= '0' && c <= '9')
+                {
                     parse.width = parse.width * 10 + c - '0';
-                    c = *fmt++;
+                    c           = *fmt++;
                 }
             }
 
             /* allow optional field precision specification */
-            if (c == '.') {
+            if (c == '.')
+            {
                 parse.precis = 0;
-                c = *fmt++;
-                if (c == '*') {
+                c            = *fmt++;
+                if (c == '*')
+                {
                     /* Width specified in argument, not in format string */
                     parse.precis = (int)va_arg(va, int);
 
-                    if (parse.precis < 0) {
+                    if (parse.precis < 0)
+                    {
                         parse.precis = 0;
                     }
                     c = *fmt++;
                 }
-                else {
-                    while (c >= '0' && c <= '9') {
+                else
+                {
+                    while (c >= '0' && c <= '9')
+                    {
                         parse.precis = parse.precis * 10 + c - '0';
-                        c = *fmt++;
+                        c            = *fmt++;
                     }
                 }
             }
 
             /* setup for leading zero padding */
-            if (parse.zpad) {
+            if (parse.zpad)
+            {
                 parse.zpad = parse.width;
             }
 
             /* check for presence of l flag (e.g., %ld) */
-            if (c == 'l' || c == 'L') {
+            if (c == 'l' || c == 'L')
+            {
                 parse.lFlag = true;
-                c = *fmt++;
+                c           = *fmt++;
             }
-            else {
+            else
+            {
                 parse.lFlag = false;
             }
 
@@ -213,65 +233,73 @@ static int doPrint(char *buf, size_t n, const char *fmt, va_list va)
             parse.end = outbuf + OUTMAX;
             parse.len = 0;
 
-            if (c == 'd' || c == 'i') {
+            if (c == 'd' || c == 'i')
+            {
                 /* signed decimal */
                 IntMax val = (IntMax)va_arg(va, int32_t);
 
-                if (parse.precis > parse.zpad) {
+                if (parse.precis > parse.zpad)
+                {
                     parse.zpad = parse.precis;
                 }
                 parse.ptr = formatNum(parse.end, val, parse.zpad, -10);
                 parse.len = parse.end - parse.ptr;
             }
             /* use comma operator to optimize code generation! */
-            else if (((base = 10), (c == 'u')) ||       /* unsigned decimal */
-                     ((base = 16), (c == 'x')) ||       /* unsigned hex */
-                     ((base = 8),  (c == 'o'))) {       /* unsigned octal */
+            else if (((base = 10), (c == 'u')) || /* unsigned decimal */
+                     ((base = 16), (c == 'x')) || /* unsigned hex */
+                     ((base = 8), (c == 'o')))
+            { /* unsigned octal */
 
                 UIntMax val = (UIntMax)va_arg(va, uint32_t);
 
-                if (parse.precis > parse.zpad) {
+                if (parse.precis > parse.zpad)
+                {
                     parse.zpad = parse.precis;
                 }
                 parse.ptr = formatNum(parse.end, val, parse.zpad, base);
                 parse.len = parse.end - parse.ptr;
             }
-            else if ((base = 16), (c == 'p')) {
-                parse.zpad = PTRZPAD;                   /* ptrs are 0 padded */
-                parse.ptr = formatNum(
-                    parse.end,
-                    (UIntMax)va_arg(va, uint32_t),
-                    parse.zpad, base);
+            else if ((base = 16), (c == 'p'))
+            {
+                parse.zpad     = PTRZPAD; /* ptrs are 0 padded */
+                parse.ptr      = formatNum(parse.end, (UIntMax)va_arg(va, uint32_t), parse.zpad, base);
                 *(--parse.ptr) = '@';
-                parse.len = parse.end - parse.ptr;
+                parse.len      = parse.end - parse.ptr;
             }
-            else if (c == 'c') {
+            else if (c == 'c')
+            {
                 /* character */
                 *parse.ptr = (char)va_arg(va, int);
-                parse.len = 1;
+                parse.len  = 1;
             }
-            else if (c == 's') {
+            else if (c == 's')
+            {
                 /* string */
                 parse.ptr = (char *)va_arg(va, void *);
 
                 /* substitute (null) for NULL pointer */
-                if (parse.ptr == (char *)NULL) {
+                if (parse.ptr == (char *)NULL)
+                {
                     parse.ptr = "(null)";
                 }
                 parse.len = strlen(parse.ptr);
-                if (parse.precis != -1 && parse.precis < parse.len) {
+                if (parse.precis != -1 && parse.precis < parse.len)
+                {
                     parse.len = parse.precis;
                 }
             }
-            else if (c == 'f') {
+            else if (c == 'f')
+            {
                 double d, tmp;
                 bool negative = false;
                 uint32_t fract;
 
                 d = va_arg(va, double);
 
-                if (d < 0.0) {
-                    d = -d;
+                if (d < 0.0)
+                {
+                    d        = -d;
                     negative = true;
                     parse.zpad--;
                 }
@@ -283,23 +311,24 @@ static int doPrint(char *buf, size_t n, const char *fmt, va_list va)
                  *  See the description of that flag in the compiler's doc
                  *  for a further explanation.
                  */
-                tmp = (d - (int32_t)d) * 1e4;
+                tmp   = (d - (int32_t)d) * 1e4;
                 fract = (uint32_t)tmp;
 
-                parse.ptr = formatNum(parse.end, fract, 4, 10);
+                parse.ptr      = formatNum(parse.end, fract, 4, 10);
                 *(--parse.ptr) = '.';
 
                 parse.len = parse.end - parse.ptr;
                 /* format integer part (right to left!) */
-                parse.ptr = formatNum(parse.ptr, (int32_t)d,
-                        parse.zpad - parse.len, 10);
-                if (negative) {
+                parse.ptr = formatNum(parse.ptr, (int32_t)d, parse.zpad - parse.len, 10);
+                if (negative)
+                {
                     *(--parse.ptr) = '-';
                 }
 
                 parse.len = parse.end - parse.ptr;
             }
-            else {
+            else
+            {
                 putChar(&buf, c, &n);
                 res++;
                 continue;
@@ -308,36 +337,41 @@ static int doPrint(char *buf, size_t n, const char *fmt, va_list va)
             /* compute number of characters left in field */
             parse.width -= parse.len;
 
-            if (!parse.lJust) {
+            if (!parse.lJust)
+            {
                 /* pad with blanks on left */
-                while (--parse.width >= 0) {
+                while (--parse.width >= 0)
+                {
                     putChar(&buf, ' ', &n);
                     res++;
                 }
             }
 
             /* output number, character or string */
-            while (parse.len--) {
+            while (parse.len--)
+            {
                 putChar(&buf, *parse.ptr++, &n);
                 res++;
             }
             /* pad with blanks on right */
-            if (parse.lJust) {
-                while (--parse.width >= 0) {
+            if (parse.lJust)
+            {
+                while (--parse.width >= 0)
+                {
                     putChar(&buf, ' ', &n);
                     res++;
                 }
             }
         } /* if */
-    } /* while */
+    }     /* while */
 
-    if (buf) {
+    if (buf)
+    {
         *buf = '\0';
     }
 
     return (res);
 }
-
 
 /*
  *  ======== formatNum ========
@@ -358,16 +392,18 @@ static int doPrint(char *buf, size_t n, const char *fmt, va_list va)
  */
 static char *formatNum(char *ptr, UIntMax un, int zpad, int base)
 {
-    int i = 0;
+    int i     = 0;
     char sign = 0;
 
     UIntMax n;
     n = un;
 
-    if (base < 0) {
+    if (base < 0)
+    {
         /* handle signed long case */
         base = -base;
-        if ((IntMax)n < 0) {
+        if ((IntMax)n < 0)
+        {
             n = -(IntMax)n;
 
             /* account for sign '-': ok since zpad is signed */
@@ -377,20 +413,23 @@ static char *formatNum(char *ptr, UIntMax un, int zpad, int base)
     }
 
     /* compute digits in number from right to left */
-    do {
+    do
+    {
         *(--ptr) = "0123456789abcdef"[(int)(n % base)];
-        n = n / base;
+        n        = n / base;
         ++i;
     } while (n);
 
     /* pad with leading 0s on left */
-    while (i < zpad) {
+    while (i < zpad)
+    {
         *(--ptr) = '0';
         ++i;
     }
 
     /* add sign indicator */
-    if (sign) {
+    if (sign)
+    {
         *(--ptr) = sign;
     }
     return (ptr);
@@ -406,7 +445,8 @@ static char *formatNum(char *ptr, UIntMax un, int zpad, int base)
 static void putChar(char **bufp, char c, size_t *n)
 {
     /* if the size == 1, don't write so we can '\0' terminate buffer */
-    if ((*n) <= 1) {
+    if ((*n) <= 1)
+    {
         return;
     }
 

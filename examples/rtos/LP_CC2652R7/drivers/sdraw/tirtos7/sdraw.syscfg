@@ -69,7 +69,7 @@ if (board.match(/CC32/)) {
     sd.sdHost.dmaTxChannel.$assign = "UDMA_CH24";
     sd.sdHost.dmaRxChannel.$assign = "UDMA_CH23";
 }
-else if (board.match(/LP_CC2652PSIP/)) {
+else if (board.match(/LP_CC2652PSIP/) || board.match(/LP_EM_CC1312PSIP/)) {
     /* LP_CC2652PSIP does not have a DIO connected to BP.8 and needs to be
      * jumpered to BP.28 instead.
      */

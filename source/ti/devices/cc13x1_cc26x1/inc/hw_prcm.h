@@ -2047,11 +2047,9 @@
 //*****************************************************************************
 // Field:     [3] RFCULL
 //
-// 0: Retention for RFC ULL SRAM disabled
-// 1: Retention for RFC ULL SRAM enabled
-//
-// Memories controlled:
-// CPEULLRAM
+// RFC ULL  is not implemented.
+// Writing any other value than the reset value may result in undefined
+// behavior
 #define PRCM_RAMRETEN_RFCULL                                        0x00000008
 #define PRCM_RAMRETEN_RFCULL_BITN                                            3
 #define PRCM_RAMRETEN_RFCULL_M                                      0x00000008

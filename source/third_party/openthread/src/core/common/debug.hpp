@@ -41,13 +41,7 @@
 
 #if OPENTHREAD_CONFIG_ASSERT_ENABLE
 
-#if defined(OPENTHREAD_TARGET_DARWIN) || defined(OPENTHREAD_TARGET_LINUX)
-
-#include <assert.h>
-
-#define OT_ASSERT(cond) assert(cond)
-
-#elif OPENTHREAD_CONFIG_PLATFORM_ASSERT_MANAGEMENT
+#if OPENTHREAD_CONFIG_PLATFORM_ASSERT_MANAGEMENT
 
 #include "openthread/platform/misc.h"
 
@@ -71,7 +65,13 @@
         }                                          \
     } while (0)
 
-#else
+#elif defined(__APPLE__) || defined(__linux__)
+
+#include <assert.h>
+
+#define OT_ASSERT(cond) assert(cond)
+
+#else // OPENTHREAD_CONFIG_PLATFORM_ASSERT_MANAGEMENT
 
 #define OT_ASSERT(cond) \
     do                  \
@@ -86,10 +86,26 @@
 
 #endif // OPENTHREAD_CONFIG_PLATFORM_ASSERT_MANAGEMENT
 
-#else
+#else // OPENTHREAD_CONFIG_ASSERT_ENABLE
 
 #define OT_ASSERT(cond)
 
 #endif // OPENTHREAD_CONFIG_ASSERT_ENABLE
+
+/**
+ * This macro checks a given status (which is expected to be successful) against zero (0) which indicates success,
+ * and `OT_ASSERT()` if it is not.
+ *
+ * @param[in]  aStatus     A scalar status to be evaluated against zero (0).
+ *
+ */
+#define SuccessOrAssert(aStatus) \
+    do                           \
+    {                            \
+        if ((aStatus) != 0)      \
+        {                        \
+            OT_ASSERT(false);    \
+        }                        \
+    } while (false)
 
 #endif // DEBUG_HPP_

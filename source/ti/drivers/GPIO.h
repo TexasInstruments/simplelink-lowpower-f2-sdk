@@ -261,15 +261,15 @@
  * directly to device-specific configuration values, allowing efficient runtime
  * reconfiguration without the need for bit twiddling.
  */
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 \
-  || DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 \
-  || DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 \
-  || DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-#include <ti/drivers/gpio/GPIOCC26XX.h>
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #include <ti/drivers/gpio/GPIOCC26XX.h>
 #elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
-#include <ti/drivers/gpio/GPIOCC32XX.h>
+    #include <ti/drivers/gpio/GPIOCC32XX.h>
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-#include <ti/drivers/gpio/GPIOCC23XX.h>
+    #include <ti/drivers/gpio/GPIOCC23XX.h>
 #endif
 
 /* Generic functions for converting pin indexes to and from masks. Internal use
@@ -278,17 +278,17 @@
  * bit. PIN_TO_MASK is used for setting registers.
  */
 #if defined(__IAR_SYSTEMS_ICC__)
-#include <intrinsics.h>
-#define GPIO_MASK_TO_PIN(pinmask)       (31 - __CLZ(pinmask))
+    #include <intrinsics.h>
+    #define GPIO_MASK_TO_PIN(pinmask) (31 - __CLZ(pinmask))
 #elif defined(__TI_COMPILER_VERSION__)
-#include <arm_acle.h>
-#define GPIO_MASK_TO_PIN(pinmask)       (31 - __clz(pinmask))
+    #include <arm_acle.h>
+    #define GPIO_MASK_TO_PIN(pinmask) (31 - __clz(pinmask))
 #elif defined(__GNUC__) && !defined(__TI_COMPILER_VERSION__)
-#include <arm_acle.h>
-#define GPIO_MASK_TO_PIN(pinmask)       (31 - __builtin_clz(pinmask))
+    #include <arm_acle.h>
+    #define GPIO_MASK_TO_PIN(pinmask) (31 - __builtin_clz(pinmask))
 #endif
 
-#define GPIO_PIN_TO_MASK(pin)           (1 << (pin))
+#define GPIO_PIN_TO_MASK(pin) (1 << (pin))
 
 #ifdef __cplusplus
 extern "C" {
@@ -305,7 +305,7 @@ extern "C" {
  * GPI_setConfig() returns GPIO_STATUS_SUCCESS if the API was executed
  * successfully.
  */
-#define GPIO_STATUS_SUCCESS         (0)
+#define GPIO_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code returned by GPIO_setConfig().
@@ -313,7 +313,7 @@ extern "C" {
  * GPI_setConfig() returns GPIO_STATUS_ERROR if the API was not executed
  * successfully.
  */
-#define GPIO_STATUS_ERROR           (-1)
+#define GPIO_STATUS_ERROR (-1)
 /** @}*/
 
 /*!
@@ -344,69 +344,118 @@ typedef uint32_t GPIO_PinConfig;
 /** @name GPIO_PinConfig output pin configuration macros
  *  @{
  */
-#define GPIO_CFG_OUTPUT             GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL               /*!< @hideinitializer Pin is an output. Equivalent to OUT_STD. */
-#define GPIO_CFG_OUT_STD            GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL               /*!< @hideinitializer Output pin is actively driven high and low */
-#define GPIO_CFG_OUT_OD_NOPULL      GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL    /*!< @hideinitializer Output pin is Open Drain */
-#define GPIO_CFG_OUT_OD_PU          GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_UP_INTERNAL      /*!< @hideinitializer Output pin is Open Drain w/ pull up */
-#define GPIO_CFG_OUT_OD_PD          GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_DOWN_INTERNAL    /*!< @hideinitializer Output pin is Open Drain w/ pull dn */
+/*! @hideinitializer Pin is an output. Equivalent to OUT_STD. */
+#define GPIO_CFG_OUTPUT        GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+/*! @hideinitializer Output pin is actively driven high and low */
+#define GPIO_CFG_OUT_STD       GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+/*! @hideinitializer Output pin is Open Drain */
+#define GPIO_CFG_OUT_OD_NOPULL GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+/*! @hideinitializer Output pin is Open Drain w/ pull up */
+#define GPIO_CFG_OUT_OD_PU     GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_UP_INTERNAL
+/*! @hideinitializer Output pin is Open Drain w/ pull dn */
+#define GPIO_CFG_OUT_OD_PD     GPIO_CFG_OUTPUT_OPEN_DRAIN_INTERNAL | GPIO_CFG_PULL_DOWN_INTERNAL
 
-#define GPIO_CFG_OUT_STR_LOW        GPIO_CFG_DRVSTR_LOW_INTERNAL       /*!< @hideinitializer Set output pin strength to low */
-#define GPIO_CFG_OUT_STR_MED        GPIO_CFG_DRVSTR_MED_INTERNAL       /*!< @hideinitializer Set output pin strength to medium */
-#define GPIO_CFG_OUT_STR_HIGH       GPIO_CFG_DRVSTR_HIGH_INTERNAL      /*!< @hideinitializer Set output pin strength to high */
+/*! @hideinitializer Set output pin strength to low */
+#define GPIO_CFG_OUT_STR_LOW  GPIO_CFG_DRVSTR_LOW_INTERNAL
+/*! @hideinitializer Set output pin strength to medium */
+#define GPIO_CFG_OUT_STR_MED  GPIO_CFG_DRVSTR_MED_INTERNAL
+/*! @hideinitializer Set output pin strength to high */
+#define GPIO_CFG_OUT_STR_HIGH GPIO_CFG_DRVSTR_HIGH_INTERNAL
 
-#define GPIO_CFG_OUT_HIGH           GPIO_CFG_OUTPUT_DEFAULT_HIGH_INTERNAL      /*!< @hideinitializer Set pin's output to 1. */
-#define GPIO_CFG_OUT_LOW            GPIO_CFG_OUTPUT_DEFAULT_LOW_INTERNAL       /*!< @hideinitializer Set pin's output to 0. */
+/*! @hideinitializer Set pin's output to 1. */
+#define GPIO_CFG_OUT_HIGH GPIO_CFG_OUTPUT_DEFAULT_HIGH_INTERNAL
+/*! @hideinitializer Set pin's output to 0. */
+#define GPIO_CFG_OUT_LOW  GPIO_CFG_OUTPUT_DEFAULT_LOW_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig input pin configuration macros
  *  @{
  */
-#define GPIO_CFG_INPUT              GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL    /*!< @hideinitializer Pin is an input. */
-#define GPIO_CFG_IN_NOPULL          GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL    /*!< @hideinitializer Input pin with no internal PU/PD */
-#define GPIO_CFG_IN_PU              GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_UP_INTERNAL      /*!< @hideinitializer Input pin with internal PU */
-#define GPIO_CFG_IN_PD              GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_DOWN_INTERNAL    /*!< @hideinitializer Input pin with internal PD */
+/*! @hideinitializer Pin is an input. */
+#define GPIO_CFG_INPUT     GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+/*! @hideinitializer Input pin with no internal PU/PD */
+#define GPIO_CFG_IN_NOPULL GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+/*! @hideinitializer Input pin with internal PU */
+#define GPIO_CFG_IN_PU     GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_UP_INTERNAL
+/*! @hideinitializer Input pin with internal PD */
+#define GPIO_CFG_IN_PD     GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_PULL_DOWN_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig nondirectional pin configuration macros
  *  @{
  */
 /*! @hideinitializer Input and output are both disabled. Primarily useful for disabling muxed pins.  */
-#define GPIO_CFG_NO_DIR                 GPIO_CFG_NO_DIR_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
+#define GPIO_CFG_NO_DIR GPIO_CFG_NO_DIR_INTERNAL | GPIO_CFG_PULL_NONE_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig pin inversion configuration macros
  *  @{
  */
-#define GPIO_CFG_INVERT_OFF         GPIO_CFG_INVERT_OFF_INTERNAL    /*!< @hideinitializer Input/output values are normal (default) */
-#define GPIO_CFG_INVERT_ON          GPIO_CFG_INVERT_ON_INTERNAL     /*!< @hideinitializer Input/output values are inverted */
+/*! @hideinitializer Input/output values are normal (default) */
+#define GPIO_CFG_INVERT_OFF GPIO_CFG_INVERT_OFF_INTERNAL
+/*! @hideinitializer Input/output values are inverted */
+#define GPIO_CFG_INVERT_ON  GPIO_CFG_INVERT_ON_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig pin hysteresis configuration macros
  *  @{
  */
-#define GPIO_CFG_HYSTERESIS_OFF     GPIO_CFG_HYSTERESIS_OFF_INTERNAL    /*!< @hideinitializer Input hysteresis is disabled (default) */
-#define GPIO_CFG_HYSTERESIS_ON      GPIO_CFG_HYSTERESIS_ON_INTERNAL     /*!< @hideinitializer Input hysteresis is enabled */
+/*! @hideinitializer Input hysteresis is disabled (default) */
+#define GPIO_CFG_HYSTERESIS_OFF GPIO_CFG_HYSTERESIS_OFF_INTERNAL
+/*! @hideinitializer Input hysteresis is enabled */
+#define GPIO_CFG_HYSTERESIS_ON  GPIO_CFG_HYSTERESIS_ON_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig slew rate configuration macros
  *  @{
  */
-#define GPIO_CFG_SLEW_NORMAL        GPIO_CFG_SLEW_NORMAL_INTERNAL   /*!< @hideinitializer Output slew rate is unchanged (default) */
-#define GPIO_CFG_SLEW_REDUCED       GPIO_CFG_SLEW_REDUCED_INTERNAL  /*!< @hideinitializer Output slew rate is reduced */
+/*! @hideinitializer Output slew rate is unchanged (default) */
+#define GPIO_CFG_SLEW_NORMAL  GPIO_CFG_SLEW_NORMAL_INTERNAL
+/*! @hideinitializer Output slew rate is reduced */
+#define GPIO_CFG_SLEW_REDUCED GPIO_CFG_SLEW_REDUCED_INTERNAL
 /** @} */
 
 /** @name GPIO_PinConfig interrupt configuration macros
  *  @{
  */
-#define GPIO_CFG_IN_INT_NONE        GPIO_CFG_INT_NONE_INTERNAL        /*!< @hideinitializer No Interrupt (default) */
-#define GPIO_CFG_IN_INT_FALLING     GPIO_CFG_INT_FALLING_INTERNAL     /*!< @hideinitializer Interrupt on falling edge */
-#define GPIO_CFG_IN_INT_RISING      GPIO_CFG_INT_RISING_INTERNAL      /*!< @hideinitializer Interrupt on rising edge */
-#define GPIO_CFG_IN_INT_BOTH_EDGES  GPIO_CFG_INT_BOTH_EDGES_INTERNAL  /*!< @hideinitializer Interrupt on both edges */
-#define GPIO_CFG_IN_INT_LOW         GPIO_CFG_INT_LOW_INTERNAL         /*!< @hideinitializer Interrupt on low level */
-#define GPIO_CFG_IN_INT_HIGH        GPIO_CFG_INT_HIGH_INTERNAL        /*!< @hideinitializer Interrupt on high level */
+/*! @hideinitializer No Interrupt (default) */
+#define GPIO_CFG_IN_INT_NONE       GPIO_CFG_INT_NONE_INTERNAL
+/*! @hideinitializer Interrupt on falling edge */
+#define GPIO_CFG_IN_INT_FALLING    GPIO_CFG_INT_FALLING_INTERNAL
+/*! @hideinitializer Interrupt on rising edge */
+#define GPIO_CFG_IN_INT_RISING     GPIO_CFG_INT_RISING_INTERNAL
+/*! @hideinitializer Interrupt on both edges */
+#define GPIO_CFG_IN_INT_BOTH_EDGES GPIO_CFG_INT_BOTH_EDGES_INTERNAL
+/*! @hideinitializer Interrupt on low level */
+#define GPIO_CFG_IN_INT_LOW        GPIO_CFG_INT_LOW_INTERNAL
+/*! @hideinitializer Interrupt on high level */
+#define GPIO_CFG_IN_INT_HIGH       GPIO_CFG_INT_HIGH_INTERNAL
 
-#define GPIO_CFG_INT_DISABLE        GPIO_CFG_INT_DISABLE_INTERNAL     /*!< @hideinitializer Interrupt disabled (default) */
-#define GPIO_CFG_INT_ENABLE         GPIO_CFG_INT_ENABLE_INTERNAL      /*!< @hideinitializer Interrupt enabled */
+/*! @hideinitializer Interrupt disabled (default) */
+#define GPIO_CFG_INT_DISABLE GPIO_CFG_INT_DISABLE_INTERNAL
+/*! @hideinitializer Interrupt enabled */
+#define GPIO_CFG_INT_ENABLE  GPIO_CFG_INT_ENABLE_INTERNAL
+/** @} */
+
+/** @name GPIO_PinConfig power mode configuration macros
+ *  @brief For devices that support low power modes, standard GPIO interrupts
+ *  may be disabled in some modes. These defines allow configuring individual
+ *  pins as wake-up sources. The GPIO module's wake up configuration is always
+ *  enabled if it exists, so there is no module-level configuration.
+ *  See the device-specific header files for details.
+ *  @{
+ */
+/*! @hideinitializer This pin will not wake the device up */
+#define GPIO_CFG_STANDBY_WAKE_OFF GPIO_CFG_STANDBY_WAKE_OFF_INTERNAL
+/*! @hideinitializer A high value will wake the device from standby */
+#define GPIO_CFG_STANDBY_WAKE_ON  GPIO_CFG_STANDBY_WAKE_ON_INTERNAL
+
+/*! @hideinitializer This pin will not wake the device up */
+#define GPIO_CFG_SHUTDOWN_WAKE_OFF  GPIO_CFG_SHUTDOWN_WAKE_OFF_INTERNAL
+/*! @hideinitializer A high value will wake the device from shutdown */
+#define GPIO_CFG_SHUTDOWN_WAKE_HIGH GPIO_CFG_SHUTDOWN_WAKE_HIGH_INTERNAL
+/*! @hideinitializer A low value will wake the device from shutdown */
+#define GPIO_CFG_SHUTDOWN_WAKE_LOW  GPIO_CFG_SHUTDOWN_WAKE_LOW_INTERNAL
 /** @} */
 
 /** @name GPIO_Mux configuration macros
@@ -414,7 +463,8 @@ typedef uint32_t GPIO_PinConfig;
  *  device-specific GPIO driver.
  *  @{
  */
-#define GPIO_MUX_GPIO               GPIO_MUX_GPIO_INTERNAL  /*!< @hideinitializer Set this pin to be a GPIO (the default) */
+/*! @hideinitializer Set this pin to be a GPIO (the default) */
+#define GPIO_MUX_GPIO GPIO_MUX_GPIO_INTERNAL
 /** @} */
 /** @} end of GPIO_PinConfigSettings group */
 
@@ -441,10 +491,11 @@ typedef void (*GPIO_CallbackFxn)(uint_least8_t index);
  *  non-default value. The sentinel value of (~0) (the default value) is
  *  used to indicate that the lowest possible priority should be used.
  */
-typedef struct {
-    GPIO_PinConfig* configs;
-    GPIO_CallbackFxn* callbacks;
-    void** userArgs;
+typedef struct
+{
+    GPIO_PinConfig *configs;
+    GPIO_CallbackFxn *callbacks;
+    void **userArgs;
     uint32_t intPriority;
 } GPIO_Config;
 
@@ -652,7 +703,7 @@ extern uint32_t GPIO_getMux(uint_least8_t index);
  *  @param      index       GPIO index
  *  @param      arg         Pointer to a user object
  */
-void GPIO_setUserArg(uint_least8_t index, void* arg);
+void GPIO_setUserArg(uint_least8_t index, void *arg);
 
 /*!
  *  @brief      Get the user argument for a gpio pin
@@ -661,7 +712,7 @@ void GPIO_setUserArg(uint_least8_t index, void* arg);
  *
  *  @return     Pointer to a user object set by GPIO_setUserArg()
  */
-void* GPIO_getUserArg(uint_least8_t index);
+void *GPIO_getUserArg(uint_least8_t index);
 
 #ifdef __cplusplus
 }

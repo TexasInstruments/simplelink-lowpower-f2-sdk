@@ -33,4 +33,4 @@
  *  ======== ClockPCC26X2.h ========
  */
 
-#define ClockP_tickPeriod 10     /* ClockP tick period, in microseconds */
+#define ClockP_tickPeriod 10 /* ClockP tick period, in microseconds */

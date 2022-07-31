@@ -34,6 +34,7 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/i2s.h)
 #include DeviceFamily_constructPath(driverlib/prcm.h)
+#include DeviceFamily_constructPath(driverlib/ioc.h)
 
 #include <ti/drivers/dpl/DebugP.h>
 #include <ti/drivers/GPIO.h>
@@ -42,13 +43,13 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-#define I2S_CLOCK_DIVIDER_MAX                     1024U
-#define I2S_CLOCK_DIVIDER_MIN                     2U
-#define I2S_NB_CHANNELS_MAX                       8U
-#define I2S_RAW_CLOCK_48MHZ                       48000000U /* Clock if not divided (48 MHz) */
+#define I2S_CLOCK_DIVIDER_MAX 1024U
+#define I2S_CLOCK_DIVIDER_MIN 2U
+#define I2S_NB_CHANNELS_MAX   8U
+#define I2S_RAW_CLOCK_48MHZ   48000000U /* Clock if not divided (48 MHz) */
 
-#define I2S_MEMORY_LENGTH_16BITS_CC26XX           0U /* Internally used to set memory length to 16 bits */
-#define I2S_MEMORY_LENGTH_24BITS_CC26XX           1U /* Internally used to set memory length to 24 bits */
+#define I2S_MEMORY_LENGTH_16BITS_CC26XX 0U /* Internally used to set memory length to 16 bits */
+#define I2S_MEMORY_LENGTH_24BITS_CC26XX 1U /* Internally used to set memory length to 24 bits */
 
 /* Forward declarations */
 static bool initObject(I2S_Handle handle, I2S_Params *params);
@@ -67,7 +68,9 @@ static bool computeSCKDivider(I2S_Handle handle, const I2S_Params *params, uint1
 static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16_t *result);
 static uint8_t getNumberOfChannels(const uint8_t channelsList);
 static uint32_t getBitRate(I2S_Handle handle, const I2S_Params *params);
-static uint16_t computeMemoryStep(I2S_Handle handle, I2S_DataInterfaceUse expectedUseSD0, I2S_DataInterfaceUse expectedUseSD1);
+static uint16_t computeMemoryStep(I2S_Handle handle,
+                                  I2S_DataInterfaceUse expectedUseSD0,
+                                  I2S_DataInterfaceUse expectedUseSD1);
 static void updatePointer(I2S_Handle handle, I2SCC26XX_Interface *interface);
 
 /* Extern globals */
@@ -80,15 +83,18 @@ static bool isInitialized = (bool)false;
 /*
  *  ======== I2S_init ========
  */
-void I2S_init(void) {
+void I2S_init(void)
+{
     uint_least8_t i;
 
-    if (!isInitialized) {
+    if (!isInitialized)
+    {
         /* Call each instances' driver init function */
-        for (i = 0; i < I2S_count; i++) {
-            I2S_Handle handle = (I2S_Handle)&(I2S_config[i]);
+        for (i = 0; i < I2S_count; i++)
+        {
+            I2S_Handle handle        = (I2S_Handle) & (I2S_config[i]);
             I2SCC26XX_Object *object = (I2SCC26XX_Object *)handle->object;
-            object->isOpen = (bool)false;
+            object->isOpen           = (bool)false;
         }
 
         isInitialized = (bool)true;
@@ -98,26 +104,30 @@ void I2S_init(void) {
 /*
  *  ======== I2S_open ========
  */
-I2S_Handle I2S_open(uint_least8_t index, I2S_Params *params) {
-    I2S_Handle        handle;
+I2S_Handle I2S_open(uint_least8_t index, I2S_Params *params)
+{
+    I2S_Handle handle;
     I2SCC26XX_Object *object;
 
-    handle = (I2S_Handle)&(I2S_config[index]);
+    handle = (I2S_Handle) & (I2S_config[index]);
     object = handle->object;
 
     DebugP_assert(index < I2S_count);
 
     /* Check if module is initialized. */
-    if (!isInitialized ||  object->isOpen) {
-        handle =  NULL;
+    if (!isInitialized || object->isOpen)
+    {
+        handle = NULL;
     }
 
     /* Initialization of the I2S-object and verification of the parameters. */
-    else if (!initObject(handle, params)) {
+    else if (!initObject(handle, params))
+    {
         /* The parameters provided are not correct. */
         handle = NULL;
     }
-    else {
+    else
+    {
         /* Configure IOs, always succeeds */
         initIO(handle);
 
@@ -127,21 +137,24 @@ I2S_Handle I2S_open(uint_least8_t index, I2S_Params *params) {
         Power_setDependency(PowerCC26XX_PERIPH_I2S);
 
         /* Register notification functions */
-        Power_registerNotify(&object->i2sPostObj, PowerCC26XX_AWAKE_STANDBY, (Power_NotifyFxn)i2sPostNotify, (uintptr_t)handle);
+        Power_registerNotify(&object->i2sPostObj,
+                             PowerCC26XX_AWAKE_STANDBY,
+                             (Power_NotifyFxn)i2sPostNotify,
+                             (uintptr_t)handle);
 
         HwiP_Params hwiParams;
         I2SCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
 
         /* Register HW interrupt */
         HwiP_Params_init(&hwiParams);
-        hwiParams.arg = (uintptr_t)handle;
+        hwiParams.arg      = (uintptr_t)handle;
         hwiParams.priority = hwAttrs->intPriority;
         HwiP_construct(&(object->hwi), INT_I2S_IRQ, (HwiP_Fxn)I2S_hwiIntFxn, &hwiParams);
 
         HwiP_clearInterrupt(INT_I2S_IRQ);
     }
 
-   return handle;
+    return handle;
 }
 
 /*
@@ -156,11 +169,9 @@ void I2S_close(I2S_Handle handle)
     HwiP_destruct(&(object->hwi));
 
     /* Wait for end of started transactions */
-    while((I2SInPointerNextGet(I2S0_BASE)  != 0U) ||
-          (I2SOutPointerNextGet(I2S0_BASE) != 0U)){}
+    while ((I2SInPointerNextGet(I2S0_BASE) != 0U) || (I2SOutPointerNextGet(I2S0_BASE) != 0U)) {}
 
-    while((I2SInPointerGet(I2S0_BASE)  != 0U) ||
-          (I2SOutPointerGet(I2S0_BASE) != 0U)){}
+    while ((I2SInPointerGet(I2S0_BASE) != 0U) || (I2SOutPointerGet(I2S0_BASE) != 0U)) {}
 
     I2SInPointerSet(I2S0_BASE, 0U);
     I2SOutPointerSet(I2S0_BASE, 0U);
@@ -191,11 +202,12 @@ void I2S_close(I2S_Handle handle)
 /*
  *  ======== I2S_setReadQueueHead ========
  */
-void I2S_setReadQueueHead(I2S_Handle handle, I2S_Transaction *transaction){
+void I2S_setReadQueueHead(I2S_Handle handle, I2S_Transaction *transaction)
+{
 
     DebugP_assert(&transaction != 0x0);
 
-    I2SCC26XX_Object    *object = handle->object;
+    I2SCC26XX_Object *object       = handle->object;
     I2SCC26XX_Interface *interface = &object->read;
 
     interface->activeTransfer = transaction;
@@ -204,11 +216,12 @@ void I2S_setReadQueueHead(I2S_Handle handle, I2S_Transaction *transaction){
 /*
  *  ======== I2S_setWriteQueueHead ========
  */
-void I2S_setWriteQueueHead(I2S_Handle handle, I2S_Transaction *transaction){
+void I2S_setWriteQueueHead(I2S_Handle handle, I2S_Transaction *transaction)
+{
 
     DebugP_assert(&transaction != 0x0);
 
-    I2SCC26XX_Object    *object = handle->object;
+    I2SCC26XX_Object *object       = handle->object;
     I2SCC26XX_Interface *interface = &object->write;
 
     interface->activeTransfer = transaction;
@@ -217,7 +230,8 @@ void I2S_setWriteQueueHead(I2S_Handle handle, I2S_Transaction *transaction){
 /*
  *  ======== I2S_startClocks ========
  */
-void I2S_startClocks(I2S_Handle handle) {
+void I2S_startClocks(I2S_Handle handle)
+{
 
     Power_setConstraint(PowerCC26XX_SB_DISALLOW);
 
@@ -228,14 +242,14 @@ void I2S_startClocks(I2S_Handle handle) {
 /*
  *  ======== I2S_stopClocks ========
  */
-void I2S_stopClocks(I2S_Handle handle) {
+void I2S_stopClocks(I2S_Handle handle)
+{
 
     I2SIntClear(I2S0_BASE, I2S_INT_ALL);
 
-    I2SIntDisable(I2S0_BASE, (uint32_t)I2S_INT_TIMEOUT  |
-                             (uint32_t)I2S_INT_BUS_ERR  |
-                             (uint32_t)I2S_INT_WCLK_ERR |
-                             (uint32_t)I2S_INT_PTR_ERR);
+    I2SIntDisable(I2S0_BASE,
+                  (uint32_t)I2S_INT_TIMEOUT | (uint32_t)I2S_INT_BUS_ERR | (uint32_t)I2S_INT_WCLK_ERR |
+                      (uint32_t)I2S_INT_PTR_ERR);
 
     I2SStop(I2S0_BASE);
     I2SSampleStampDisable(I2S0_BASE);
@@ -249,18 +263,18 @@ void I2S_stopClocks(I2S_Handle handle) {
 /*
  *  ======== I2S_startRead ========
  */
-void I2S_startRead(I2S_Handle handle) {
+void I2S_startRead(I2S_Handle handle)
+{
     I2SCC26XX_Object *object = handle->object;
 
     /* If a read interface is activated */
-    if(object->read.memoryStep != 0){
+    if (object->read.memoryStep != 0)
+    {
 
         /* Enable I2S Hardware Interrupts */
-        I2SIntEnable(I2S0_BASE, (uint32_t)I2S_INT_DMA_IN   |
-                                (uint32_t)I2S_INT_TIMEOUT  |
-                                (uint32_t)I2S_INT_BUS_ERR  |
-                                (uint32_t)I2S_INT_WCLK_ERR |
-                                (uint32_t)I2S_INT_PTR_ERR);
+        I2SIntEnable(I2S0_BASE,
+                     (uint32_t)I2S_INT_DMA_IN | (uint32_t)I2S_INT_TIMEOUT | (uint32_t)I2S_INT_BUS_ERR |
+                         (uint32_t)I2S_INT_WCLK_ERR | (uint32_t)I2S_INT_PTR_ERR);
 
         /* At startup, INPTRNEXT must be written twice. The first value will be directly copy to INPTR */
         object->ptrUpdateFxn(handle, &object->read);
@@ -274,19 +288,19 @@ void I2S_startRead(I2S_Handle handle) {
 /*
  *  ======== I2S_startWrite ========
  */
-void I2S_startWrite(I2S_Handle handle) {
+void I2S_startWrite(I2S_Handle handle)
+{
 
     I2SCC26XX_Object *object = handle->object;
 
     /* If a write interface is activated */
-    if(object->write.memoryStep != 0){
+    if (object->write.memoryStep != 0)
+    {
 
         /* Enable I2S Hardware Interrupts */
-        I2SIntEnable(I2S0_BASE, (uint32_t)I2S_INT_DMA_OUT  |
-                                (uint32_t)I2S_INT_TIMEOUT  |
-                                (uint32_t)I2S_INT_BUS_ERR  |
-                                (uint32_t)I2S_INT_WCLK_ERR |
-                                (uint32_t)I2S_INT_PTR_ERR);
+        I2SIntEnable(I2S0_BASE,
+                     (uint32_t)I2S_INT_DMA_OUT | (uint32_t)I2S_INT_TIMEOUT | (uint32_t)I2S_INT_BUS_ERR |
+                         (uint32_t)I2S_INT_WCLK_ERR | (uint32_t)I2S_INT_PTR_ERR);
 
         /* At startup, OUTPTRNEXT must be written twice. The first value will be directly copy to OUTPTR */
         object->ptrUpdateFxn(handle, &object->write);
@@ -294,26 +308,27 @@ void I2S_startWrite(I2S_Handle handle) {
 
         /* Configuring sample stamp generator will trigger the audio stream to start */
         I2SSampleStampOutConfigure(I2S0_BASE, (HWREGH(I2S0_BASE + I2S_O_STMPWCNT) + object->startUpDelay));
-
     }
 }
 
 /*
  *  ======== I2S_stopRead ========
  */
-void I2S_stopRead(I2S_Handle handle) {
+void I2S_stopRead(I2S_Handle handle)
+{
 
     I2SCC26XX_Object *object = handle->object;
 
     /* If a read interface is activated */
-    if(object->read.memoryStep != 0){
+    if (object->read.memoryStep != 0)
+    {
 
         /* Disable DMA_IN interrupts: we do not need anymore to refresh IN_PTR */
         I2SIntDisable(I2S0_BASE, I2S_INT_DMA_IN);
 
         /* Wait for end of started transfers */
-        while(I2SInPointerNextGet(I2S0_BASE) != 0U){}
-        while(I2SInPointerGet(I2S0_BASE) != 0U){}
+        while (I2SInPointerNextGet(I2S0_BASE) != 0U) {}
+        while (I2SInPointerGet(I2S0_BASE) != 0U) {}
 
         I2SIntClear(I2S0_BASE, I2S_INT_DMA_IN);
         I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
@@ -327,19 +342,21 @@ void I2S_stopRead(I2S_Handle handle) {
 /*
  *  ======== I2S_stopWrite ========
  */
-void I2S_stopWrite(I2S_Handle handle) {
+void I2S_stopWrite(I2S_Handle handle)
+{
 
     I2SCC26XX_Object *object = handle->object;
 
     /* If a write interface is activated */
-    if(object->write.memoryStep != 0){
+    if (object->write.memoryStep != 0)
+    {
 
         /* Disable DMA_OUT interrupts: we do not need anymore to refresh OUT_PTR */
         I2SIntDisable(I2S0_BASE, I2S_INT_DMA_OUT);
 
         /* Wait for end of started transactions */
-        while(I2SOutPointerNextGet(I2S0_BASE) != 0U){}
-        while(I2SOutPointerGet(I2S0_BASE) != 0U){}
+        while (I2SOutPointerNextGet(I2S0_BASE) != 0U) {}
+        while (I2SOutPointerGet(I2S0_BASE) != 0U) {}
 
         I2SIntClear(I2S0_BASE, I2S_INT_DMA_OUT);
         I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
@@ -354,83 +371,101 @@ void I2S_stopWrite(I2S_Handle handle) {
  *  ======== I2S_hwiIntFxn ========
  *  Hwi function that processes I2S interrupts.
  */
-static void I2S_hwiIntFxn(uintptr_t arg) {
+static void I2S_hwiIntFxn(uintptr_t arg)
+{
 
-    I2S_Handle handle = (I2S_Handle)arg;
+    I2S_Handle handle        = (I2S_Handle)arg;
     I2SCC26XX_Object *object = handle->object;
-    uint16_t errStatus = 0U;
+    uint16_t errStatus       = 0U;
 
     uint32_t interruptStatus = I2SIntStatus(I2S0_BASE, (bool)true);
 
-    /* I2S_INT_PTR_ERR flag should be consider if and only if I2S_INT_DMA_IN or I2S_INT_DMA_OUT is raised at the same time */
-    if((((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) && ((((interruptStatus & (uint32_t)I2S_INT_DMA_IN)  != 0U)) ||
-                                                                  ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U)))) {
+    /* I2S_INT_PTR_ERR flag should be consider if and only if I2S_INT_DMA_IN or I2S_INT_DMA_OUT is raised at the same
+     * time */
+    if ((((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) &&
+         ((((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U)) ||
+          ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U))))
+    {
 
-        if((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U) {
+        if ((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U)
+        {
             /* Try to update IN_PTR */
             object->ptrUpdateFxn(handle, &object->read);
             /* Check if we could clear I2S_INT_DMA_IN flag */
             interruptStatus = I2SIntStatus(I2S0_BASE, (bool)true);
             /* I2S_INT_PTR_ERR is confirmed if we could not clear I2S_INT_DMA_IN flag */
-            if(((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) && ((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U)) {
+            if (((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) &&
+                ((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U))
+            {
                 I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
                 errStatus = errStatus | I2S_PTR_READ_ERROR;
             }
         }
 
-        if((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U) {
+        if ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U)
+        {
             /* Try to update OUT_PTR */
             object->ptrUpdateFxn(handle, &object->write);
             /* Check if we could clear I2S_INT_DMA_OUT flag */
             interruptStatus = I2SIntStatus(I2S0_BASE, (bool)true);
             /* I2S_INT_PTR_ERR is confirmed if we could not clear I2S_INT_DMA_OUT flag */
-            if(((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) && ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U)) {
+            if (((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) &&
+                ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U))
+            {
                 I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
                 errStatus = errStatus | I2S_PTR_WRITE_ERROR;
             }
         }
     }
-    else if((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U) {
+    else if ((interruptStatus & (uint32_t)I2S_INT_PTR_ERR) != 0U)
+    {
         /* I2S_INT_PTR_ERR must not be considered as no I2S_INT_DMA_xxx flag is set */
         I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
     }
 
-    if((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U) {
+    if ((interruptStatus & (uint32_t)I2S_INT_DMA_IN) != 0U)
+    {
         object->ptrUpdateFxn(handle, &object->read);
     }
 
-    if((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U) {
+    if ((interruptStatus & (uint32_t)I2S_INT_DMA_OUT) != 0U)
+    {
         object->ptrUpdateFxn(handle, &object->write);
     }
 
-    if((interruptStatus & (uint32_t)I2S_INT_TIMEOUT) != 0U) {
+    if ((interruptStatus & (uint32_t)I2S_INT_TIMEOUT) != 0U)
+    {
         I2SIntClear(I2S0_BASE, I2S_INT_TIMEOUT);
         errStatus = errStatus | I2S_TIMEOUT_ERROR;
     }
 
-    if((interruptStatus & (uint32_t)I2S_INT_BUS_ERR) != 0U) {
+    if ((interruptStatus & (uint32_t)I2S_INT_BUS_ERR) != 0U)
+    {
         I2SIntClear(I2S0_BASE, I2S_INT_BUS_ERR);
         errStatus = errStatus | I2S_BUS_ERROR;
     }
 
-    if((interruptStatus & (uint32_t)I2S_INT_WCLK_ERR) != 0U) {
+    if ((interruptStatus & (uint32_t)I2S_INT_WCLK_ERR) != 0U)
+    {
         I2SIntClear(I2S0_BASE, I2S_INT_WCLK_ERR);
         errStatus = errStatus | I2S_WS_ERROR;
     }
 
-    if(errStatus != 0U) {
+    if (errStatus != 0U)
+    {
         object->errorCallback(handle, errStatus, NULL);
     }
 }
 
 /*
-*  ======== initHw ========
-*  This functions initializes the I2S hardware module.
-*
-*  @pre    Function assumes that the I2S handle is pointing to a hardware
-*          module which has already been opened.
-*/
-static void initHw(I2S_Handle handle) {
+ *  ======== initHw ========
+ *  This functions initializes the I2S hardware module.
+ *
+ *  @pre    Function assumes that the I2S handle is pointing to a hardware
+ *          module which has already been opened.
+ */
+static void initHw(I2S_Handle handle)
+{
 
     /* Configure serial format. */
     configSerialFormat(handle);
@@ -443,84 +478,95 @@ static void initHw(I2S_Handle handle) {
 /*
  *  ======== updatePointer ========
  */
-static void updatePointer(I2S_Handle handle, I2SCC26XX_Interface *interface) {
+static void updatePointer(I2S_Handle handle, I2SCC26XX_Interface *interface)
+{
 
     I2S_Transaction *transaction = interface->activeTransfer;
 
-    if(transaction != NULL) {
+    if (transaction != NULL)
+    {
 
         /* Critical section to prevent any modification or deletion of the current transaction */
         uintptr_t key;
         key = HwiP_disable();
 
         /* Transaction */
-        if((transaction->bytesTransferred + interface->memoryStep) > transaction->bufSize){
+        if ((transaction->bytesTransferred + interface->memoryStep) > transaction->bufSize)
+        {
             /* The current transaction is over */
             I2S_Transaction *transactionFinished = transaction;
-            transaction = (I2S_Transaction*)List_next(&transactionFinished->queueElement);
-            interface->activeTransfer = transaction;
+            transaction                          = (I2S_Transaction *)List_next(&transactionFinished->queueElement);
+            interface->activeTransfer            = transaction;
 
-            transactionFinished->numberOfCompletions ++;
-            transactionFinished->untransferredBytes = transactionFinished->bufSize - transactionFinished->bytesTransferred;
+            transactionFinished->numberOfCompletions++;
+            transactionFinished->untransferredBytes = transactionFinished->bufSize -
+                                                      transactionFinished->bytesTransferred;
             transactionFinished->bytesTransferred = 0;
 
-            if(transaction != NULL){
+            if (transaction != NULL)
+            {
                 interface->pointerSet(I2S0_BASE, ((uint32_t)transaction->bufPtr + transaction->bytesTransferred));
                 transaction->bytesTransferred += interface->memoryStep;
                 interface->callback(handle, I2S_TRANSACTION_SUCCESS, transactionFinished);
             }
-            else {
+            else
+            {
                 /* Not anymore transaction */
                 interface->callback(handle, I2S_ALL_TRANSACTIONS_SUCCESS, transactionFinished);
 
                 /* If needed the interface must be stopped */
-                if(interface->activeTransfer != NULL){
+                if (interface->activeTransfer != NULL)
+                {
                     /* Application called I2S_setXxxxQueueHead()
                      *     -> new transfers can be executed next time */
                 }
-                else if((I2S_Transaction*)List_next(&transactionFinished->queueElement) != NULL){
+                else if ((I2S_Transaction *)List_next(&transactionFinished->queueElement) != NULL)
+                {
                     /* Application queued transactions after the transaction finished
                      *     -> activeTransfer must be modified and transfers can be executed next time */
-                    interface->activeTransfer = (I2S_Transaction*)List_next(&transactionFinished->queueElement);
+                    interface->activeTransfer = (I2S_Transaction *)List_next(&transactionFinished->queueElement);
                 }
-                else {
-                   /* Application did nothing, we need to stop the interface to avoid errors
-                    * However, we cannot spin here while the hardware stops, this is an ISR context!
-                    */
-                   if (interface->stopInterface == I2S_stopRead)
-                   {
-                       I2SIntDisable(I2S0_BASE, I2S_INT_DMA_IN);
+                else
+                {
+                    /* Application did nothing, we need to stop the interface to avoid errors
+                     * However, we cannot spin here while the hardware stops, this is an ISR context!
+                     */
+                    if (interface->stopInterface == I2S_stopRead)
+                    {
+                        I2SIntDisable(I2S0_BASE, I2S_INT_DMA_IN);
 
-                       I2SIntClear(I2S0_BASE, I2S_INT_DMA_IN);
-                       I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
+                        I2SIntClear(I2S0_BASE, I2S_INT_DMA_IN);
+                        I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
 
-                       I2SSampleStampInConfigure(I2S0_BASE, 0xFFFFU);
+                        I2SSampleStampInConfigure(I2S0_BASE, 0xFFFFU);
 
-                       I2SInPointerSet(I2S0_BASE, 0U);
-                   }
+                        I2SInPointerSet(I2S0_BASE, 0U);
+                    }
 
-                   if(interface->stopInterface == I2S_stopWrite)
-                   {
-                       I2SIntDisable(I2S0_BASE, I2S_INT_DMA_OUT);
+                    if (interface->stopInterface == I2S_stopWrite)
+                    {
+                        I2SIntDisable(I2S0_BASE, I2S_INT_DMA_OUT);
 
-                       I2SIntClear(I2S0_BASE, I2S_INT_DMA_OUT);
-                       I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
+                        I2SIntClear(I2S0_BASE, I2S_INT_DMA_OUT);
+                        I2SIntClear(I2S0_BASE, I2S_INT_PTR_ERR);
 
-                       I2SSampleStampOutConfigure(I2S0_BASE, 0xFFFFU);
+                        I2SSampleStampOutConfigure(I2S0_BASE, 0xFFFFU);
 
-                       I2SOutPointerSet(I2S0_BASE, 0U);
-                   }
+                        I2SOutPointerSet(I2S0_BASE, 0U);
+                    }
                 }
             }
         }
-        else {
+        else
+        {
             interface->pointerSet(I2S0_BASE, ((uint32_t)transaction->bufPtr + transaction->bytesTransferred));
             transaction->bytesTransferred += interface->memoryStep;
         }
 
         HwiP_restore(key);
     }
-    else {
+    else
+    {
         /* No element in the queue: do nothing */
     }
 }
@@ -528,11 +574,12 @@ static void updatePointer(I2S_Handle handle, I2SCC26XX_Interface *interface) {
 /*
  *  ======== initObject ========
  */
-static bool initObject(I2S_Handle handle, I2S_Params *params) {
+static bool initObject(I2S_Handle handle, I2S_Params *params)
+{
 
-    I2SCC26XX_Object          *object = handle->object;
-    I2SCC26XX_DataInterface   *SD0;
-    I2SCC26XX_DataInterface   *SD1;
+    I2SCC26XX_Object *object = handle->object;
+    I2SCC26XX_DataInterface *SD0;
+    I2SCC26XX_DataInterface *SD1;
 
     bool retVal = (bool)true;
 
@@ -540,31 +587,42 @@ static bool initObject(I2S_Handle handle, I2S_Params *params) {
     SD0 = &object->dataInterfaceSD0;
     SD1 = &object->dataInterfaceSD1;
 
-    if(params == NULL)  {
+    if (params == NULL)
+    {
         /* This module cannot be open if the user does not provide the expected pointers callback */
         /* So it is no point to try to load the default value here. */
         retVal = (bool)false;
     }
-    else {
-        object->moduleRole           = params->moduleRole;
-        object->invertWS             = params->invertWS;
-        object->samplingEdge         = params->samplingEdge;
-        object->beforeWordPadding    = params->beforeWordPadding;
-        object->afterWordPadding     = params->afterWordPadding;
-        object->phaseType            = params->phaseType;
-        object->bitsPerWord          = params->bitsPerWord;
-        object->startUpDelay         = params->startUpDelay;
+    else
+    {
+        object->moduleRole        = params->moduleRole;
+        object->invertWS          = params->invertWS;
+        object->samplingEdge      = params->samplingEdge;
+        object->beforeWordPadding = params->beforeWordPadding;
+        object->afterWordPadding  = params->afterWordPadding;
+        object->phaseType         = params->phaseType;
+        object->bitsPerWord       = params->bitsPerWord;
+        object->startUpDelay      = params->startUpDelay;
 
-        object->dataShift            = (params->trueI2sFormat)? 1: 0;
+        object->dataShift = (params->trueI2sFormat) ? 1 : 0;
 
-             if(params->memorySlotLength == I2S_MEMORY_LENGTH_16BITS)    {object->memorySlotLength = I2S_MEMORY_LENGTH_16BITS_CC26XX;}
-        else if(params->memorySlotLength == I2S_MEMORY_LENGTH_24BITS)    {object->memorySlotLength = I2S_MEMORY_LENGTH_24BITS_CC26XX;}
-        else                                                             {retVal = (bool)false;}
-        object->read.pointerSet      = I2SInPointerSet;
-        object->read.stopInterface   = I2S_stopRead;
-        object->write.pointerSet     = I2SOutPointerSet;
-        object->write.stopInterface  = I2S_stopWrite;
-        object->ptrUpdateFxn         = updatePointer;
+        if (params->memorySlotLength == I2S_MEMORY_LENGTH_16BITS)
+        {
+            object->memorySlotLength = I2S_MEMORY_LENGTH_16BITS_CC26XX;
+        }
+        else if (params->memorySlotLength == I2S_MEMORY_LENGTH_24BITS)
+        {
+            object->memorySlotLength = I2S_MEMORY_LENGTH_24BITS_CC26XX;
+        }
+        else
+        {
+            retVal = (bool)false;
+        }
+        object->read.pointerSet     = I2SInPointerSet;
+        object->read.stopInterface  = I2S_stopRead;
+        object->write.pointerSet    = I2SOutPointerSet;
+        object->write.stopInterface = I2S_stopWrite;
+        object->ptrUpdateFxn        = updatePointer;
 
         SD0->interfaceConfig      = params->SD0Use;
         SD0->channelsUsed         = params->SD0Channels;
@@ -573,54 +631,87 @@ static bool initObject(I2S_Handle handle, I2S_Params *params) {
         SD1->channelsUsed         = params->SD1Channels;
         SD1->numberOfChannelsUsed = getNumberOfChannels((uint8_t)SD1->channelsUsed);
 
-        if(params->MCLKDivider == 1U) {retVal = (bool)false;}
+        if (params->MCLKDivider == 1U)
+        {
+            retVal = (bool)false;
+        }
         object->MCLKDivider = params->MCLKDivider;
         uint16_t SCKDivider = 0U;
-        if (!computeSCKDivider(handle, params, &SCKDivider)) {retVal = (bool)false;}
+        if (!computeSCKDivider(handle, params, &SCKDivider))
+        {
+            retVal = (bool)false;
+        }
         object->SCKDivider = SCKDivider;
         uint16_t WSDivider = 0U;
-        if (!computeWSDivider(handle, params, &WSDivider)) {retVal = (bool)false;}
+        if (!computeWSDivider(handle, params, &WSDivider))
+        {
+            retVal = (bool)false;
+        }
         object->WSDivider = WSDivider;
 
-        object->read.memoryStep  = computeMemoryStep(handle, I2S_SD0_INPUT,  I2S_SD1_INPUT);
+        object->read.memoryStep  = computeMemoryStep(handle, I2S_SD0_INPUT, I2S_SD1_INPUT);
         object->write.memoryStep = computeMemoryStep(handle, I2S_SD0_OUTPUT, I2S_SD1_OUTPUT);
 
-        /* If the user set a fixed length of the buffers, we can optimize the runtime by setting the DMA buffer length */
-        if(params->fixedBufferLength == 0U){retVal = (bool)false;}
-        else{
-            if(params->fixedBufferLength != 1U)
+        /* If the user set a fixed length of the buffers, we can optimize the runtime by setting the DMA buffer length
+         */
+        if (params->fixedBufferLength == 0U)
+        {
+            retVal = (bool)false;
+        }
+        else
+        {
+            if (params->fixedBufferLength != 1U)
             {
-                uint16_t memoryStep = ((object->read.memoryStep > object->write.memoryStep)?object->read.memoryStep:object->write.memoryStep);
-                if(memoryStep != 0U){
+                uint16_t memoryStep = ((object->read.memoryStep > object->write.memoryStep) ? object->read.memoryStep
+                                                                                            : object->write.memoryStep);
+                if (memoryStep != 0U)
+                {
                     uint8_t dmaBuffSizeDivider = 1U;
-                    uint16_t dmaBuffSizeConfig = (uint16_t)(((((params->fixedBufferLength) / memoryStep ) * 2U) - 1U) / dmaBuffSizeDivider);
+                    uint16_t dmaBuffSizeConfig = (uint16_t)(((((params->fixedBufferLength) / memoryStep) * 2U) - 1U) /
+                                                            dmaBuffSizeDivider);
 
                     /* The value of the DMA buffer size is limited to 255 */
-                    while(dmaBuffSizeConfig > 255U) {
+                    while (dmaBuffSizeConfig > 255U)
+                    {
                         dmaBuffSizeDivider = dmaBuffSizeDivider * 2;
-                        dmaBuffSizeConfig = (uint16_t)(((((params->fixedBufferLength) / memoryStep ) * 2U) - 1U) / dmaBuffSizeDivider);
+                        dmaBuffSizeConfig  = (uint16_t)(((((params->fixedBufferLength) / memoryStep) * 2U) - 1U) /
+                                                       dmaBuffSizeDivider);
                     }
 
                     object->dmaBuffSizeConfig = (uint8_t)dmaBuffSizeConfig; /* dmaBuffSizeConfig < 255 */
 
-                    object->read.memoryStep  = (object->read.memoryStep!=0U)?  (uint16_t)(params->fixedBufferLength/dmaBuffSizeDivider) :0U;
-                    object->write.memoryStep = (object->write.memoryStep!=0U)? (uint16_t)(params->fixedBufferLength/dmaBuffSizeDivider) :0U;
+                    object->read.memoryStep  = (object->read.memoryStep != 0U)
+                                                   ? (uint16_t)(params->fixedBufferLength / dmaBuffSizeDivider)
+                                                   : 0U;
+                    object->write.memoryStep = (object->write.memoryStep != 0U)
+                                                   ? (uint16_t)(params->fixedBufferLength / dmaBuffSizeDivider)
+                                                   : 0U;
                 }
             }
-            else {
+            else
+            {
                 object->dmaBuffSizeConfig = 1U;
             }
         }
 
         object->read.callback = params->readCallback;
-        if((object->read.callback == NULL) && (object->read.memoryStep != 0U)) {retVal = (bool)false;}
+        if ((object->read.callback == NULL) && (object->read.memoryStep != 0U))
+        {
+            retVal = (bool)false;
+        }
         object->write.callback = params->writeCallback;
-        if((object->write.callback == NULL) && (object->write.memoryStep != 0U)) {retVal = (bool)false;}
+        if ((object->write.callback == NULL) && (object->write.memoryStep != 0U))
+        {
+            retVal = (bool)false;
+        }
         object->errorCallback = params->errorCallback;
-        if(object->errorCallback == NULL) {retVal = (bool)false;}
+        if (object->errorCallback == NULL)
+        {
+            retVal = (bool)false;
+        }
 
-        object->read.activeTransfer   = NULL;
-        object->write.activeTransfer  = NULL;
+        object->read.activeTransfer  = NULL;
+        object->write.activeTransfer = NULL;
     }
 
     return retVal;
@@ -631,7 +722,7 @@ static bool initObject(I2S_Handle handle, I2S_Params *params) {
  */
 static void initIO(I2S_Handle handle)
 {
-    I2SCC26XX_HWAttrs   const *hwAttrs;
+    I2SCC26XX_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
@@ -648,7 +739,7 @@ static void initIO(I2S_Handle handle)
  */
 static void finalizeIO(I2S_Handle handle)
 {
-    I2SCC26XX_HWAttrs   const *hwAttrs;
+    I2SCC26XX_HWAttrs const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
@@ -663,13 +754,16 @@ static void finalizeIO(I2S_Handle handle)
 /*
  *  ======== getNumberOfChannels ========
  */
-static uint8_t getNumberOfChannels(const uint8_t channelsList) {
+static uint8_t getNumberOfChannels(const uint8_t channelsList)
+{
 
-    uint8_t i = 0;
+    uint8_t i              = 0;
     uint8_t nbChannelsUsed = 0;
-    for(i=0; i<=(I2S_NB_CHANNELS_MAX-1U); i++) {
-        if(((channelsList >> i) & 1U) == 1U) {
-            nbChannelsUsed ++;
+    for (i = 0; i <= (I2S_NB_CHANNELS_MAX - 1U); i++)
+    {
+        if (((channelsList >> i) & 1U) == 1U)
+        {
+            nbChannelsUsed++;
         }
     }
     return nbChannelsUsed;
@@ -678,29 +772,34 @@ static uint8_t getNumberOfChannels(const uint8_t channelsList) {
 /*
  *  ======== computeSCKDivider ========
  */
-static bool computeSCKDivider(I2S_Handle handle, const I2S_Params *params, uint16_t *result){
+static bool computeSCKDivider(I2S_Handle handle, const I2S_Params *params, uint16_t *result)
+{
 
     uint32_t expectedBitRate = getBitRate(handle, params);
-    uint32_t freqDividerSCK = 0U;
+    uint32_t freqDividerSCK  = 0U;
 
     bool retVal = (bool)true;
 
     *result = 0;
 
-    if (expectedBitRate == 0U) {
+    if (expectedBitRate == 0U)
+    {
         retVal = (bool)false;
     }
-    else {
+    else
+    {
         /* We want to round the integer division: ROUND(a/b)=(a+b/2)/b */
-        freqDividerSCK = ((I2S_RAW_CLOCK_48MHZ + expectedBitRate/2) / expectedBitRate);
+        freqDividerSCK = ((I2S_RAW_CLOCK_48MHZ + expectedBitRate / 2) / expectedBitRate);
 
-        if ((freqDividerSCK < I2S_CLOCK_DIVIDER_MIN) || (freqDividerSCK > I2S_CLOCK_DIVIDER_MAX)) {
+        if ((freqDividerSCK < I2S_CLOCK_DIVIDER_MIN) || (freqDividerSCK > I2S_CLOCK_DIVIDER_MAX))
+        {
             retVal = (bool)false;
         }
-        else {
+        else
+        {
             /* If we reach this code it means we have freqDividerSCK <= 1024 */
             uint16_t u16FreqDividerSCK = (uint16_t)freqDividerSCK;
-            *result = u16FreqDividerSCK;
+            *result                    = u16FreqDividerSCK;
         }
     }
     return retVal;
@@ -709,34 +808,38 @@ static bool computeSCKDivider(I2S_Handle handle, const I2S_Params *params, uint1
 /*
  *  ======== computeWSDivider ========
  */
-static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16_t *result){
+static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16_t *result)
+{
 
-    I2SCC26XX_Object          const *object;
-    I2SCC26XX_DataInterface   const *SD0;
-    I2SCC26XX_DataInterface   const *SD1;
+    I2SCC26XX_Object const *object;
+    I2SCC26XX_DataInterface const *SD0;
+    I2SCC26XX_DataInterface const *SD1;
 
-    bool    retVal = (bool)true;
+    bool retVal            = (bool)true;
     uint8_t numbOfChannels = 0U;
 
     /* Get the pointer to the SD0 and SD1 interfaces*/
     object = handle->object;
-    SD0 = &object->dataInterfaceSD0;
-    SD1 = &object->dataInterfaceSD1;
+    SD0    = &object->dataInterfaceSD0;
+    SD1    = &object->dataInterfaceSD1;
 
     *result = 0x0000;
 
-    if(SD0->interfaceConfig) {
-        numbOfChannels = (numbOfChannels > SD0->numberOfChannelsUsed)? numbOfChannels : SD0->numberOfChannelsUsed;
+    if (SD0->interfaceConfig)
+    {
+        numbOfChannels = (numbOfChannels > SD0->numberOfChannelsUsed) ? numbOfChannels : SD0->numberOfChannelsUsed;
     }
-    if(SD1->interfaceConfig)  {
-        numbOfChannels = (numbOfChannels > SD1->numberOfChannelsUsed)? numbOfChannels : SD1->numberOfChannelsUsed;
+    if (SD1->interfaceConfig)
+    {
+        numbOfChannels = (numbOfChannels > SD1->numberOfChannelsUsed) ? numbOfChannels : SD1->numberOfChannelsUsed;
     }
 
-    uint16_t sampleLength  = 0U;
+    uint16_t sampleLength = 0U;
 
-    switch(object->phaseType) {
+    switch (object->phaseType)
+    {
 
-        case(I2S_PHASE_TYPE_DUAL) :
+        case (I2S_PHASE_TYPE_DUAL):
 
             /* In dual-phase format, each phase represents a channel and is divided into the three intervals:
              *
@@ -755,15 +858,17 @@ static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16
              * WS frequency = SCK frequency / (2 x WDIV[9:0])
              * Dual phase protocols don't accept more than two channels
              */
-            if (numbOfChannels <= 2U) {
+            if (numbOfChannels <= 2U)
+            {
                 *result = sampleLength;
             }
-            else {
+            else
+            {
                 retVal = (bool)false;
             }
-        break;
+            break;
 
-        case(I2S_PHASE_TYPE_SINGLE) :
+        case (I2S_PHASE_TYPE_SINGLE):
 
             /* In single phase format, from 1 to 8 sample words (channels) are transfered back-to-back using
              * a single phase. The phase is divided into the three intervals:
@@ -783,15 +888,17 @@ static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16
              * WS frequency = SCK frequency / (1 + PRCM:I2SWCLKDIV.WDIV[9:0])
              * Single phase protocols don't accept more than 8 channels
              */
-            if (numbOfChannels <= 8U) {
+            if (numbOfChannels <= 8U)
+            {
                 *result = sampleLength;
             }
-            else {
+            else
+            {
                 retVal = (bool)false;
             }
-        break;
+            break;
 
-        default :
+        default:
             retVal = (bool)false;
     }
     return retVal;
@@ -800,32 +907,35 @@ static bool computeWSDivider(I2S_Handle handle, const I2S_Params *params, uint16
 /*
  *  ======== getBitRate ========
  */
-static uint32_t getBitRate(I2S_Handle handle, const I2S_Params *params) {
+static uint32_t getBitRate(I2S_Handle handle, const I2S_Params *params)
+{
 
-    I2SCC26XX_Object          const *object;
-    I2SCC26XX_DataInterface   const *SD0;
-    I2SCC26XX_DataInterface   const *SD1;
-    uint32_t            dataLength = 0U;
+    I2SCC26XX_Object const *object;
+    I2SCC26XX_DataInterface const *SD0;
+    I2SCC26XX_DataInterface const *SD1;
+    uint32_t dataLength = 0U;
 
     /* Get the pointer to the SD0 and SD1 interfaces*/
     object = handle->object;
-    SD0 = &object->dataInterfaceSD0;
-    SD1 = &object->dataInterfaceSD1;
+    SD0    = &object->dataInterfaceSD0;
+    SD1    = &object->dataInterfaceSD1;
 
-    uint16_t sampleLength  = 0U;
-             sampleLength += object->beforeWordPadding;
-             sampleLength += object->bitsPerWord;
-             sampleLength += object->afterWordPadding;
+    uint16_t sampleLength = 0U;
+    sampleLength += object->beforeWordPadding;
+    sampleLength += object->bitsPerWord;
+    sampleLength += object->afterWordPadding;
 
     uint32_t samplePerChannelPerSecond = params->samplingFrequency;
-    uint8_t numbOfChannels = 0U;
-    if(SD0->interfaceConfig) {
-        uint8_t numbOfChannelsSD0 = (object->phaseType == I2S_PHASE_TYPE_DUAL)? 2U : SD0->numberOfChannelsUsed;
-        numbOfChannels = (numbOfChannelsSD0 > numbOfChannels)? numbOfChannelsSD0 : numbOfChannels;
+    uint8_t numbOfChannels             = 0U;
+    if (SD0->interfaceConfig)
+    {
+        uint8_t numbOfChannelsSD0 = (object->phaseType == I2S_PHASE_TYPE_DUAL) ? 2U : SD0->numberOfChannelsUsed;
+        numbOfChannels            = (numbOfChannelsSD0 > numbOfChannels) ? numbOfChannelsSD0 : numbOfChannels;
     }
-    if(SD1->interfaceConfig) {
-        uint8_t numbOfChannelsSD1 = (object->phaseType == I2S_PHASE_TYPE_DUAL)? 2U : SD1->numberOfChannelsUsed;
-        numbOfChannels = (numbOfChannelsSD1 > numbOfChannels)? numbOfChannelsSD1 : numbOfChannels;
+    if (SD1->interfaceConfig)
+    {
+        uint8_t numbOfChannelsSD1 = (object->phaseType == I2S_PHASE_TYPE_DUAL) ? 2U : SD1->numberOfChannelsUsed;
+        numbOfChannels            = (numbOfChannelsSD1 > numbOfChannels) ? numbOfChannelsSD1 : numbOfChannels;
     }
 
     /* No risk of overflow: highest possible value is 24 000 000 (any higher value has no sense) */
@@ -836,7 +946,8 @@ static uint32_t getBitRate(I2S_Handle handle, const I2S_Params *params) {
 /*
  *  ======== configSerialFormat ========
  */
-static void configSerialFormat(I2S_Handle handle) {
+static void configSerialFormat(I2S_Handle handle)
+{
 
     I2SCC26XX_Object const *object;
 
@@ -851,12 +962,13 @@ static void configSerialFormat(I2S_Handle handle) {
      */
 
     I2SFormatConfigure(I2S0_BASE,
-                      (object->beforeWordPadding + object->dataShift),
-                      (uint8_t)object->memorySlotLength,
-                      (uint8_t)object->samplingEdge,
-                      (bool)(object->phaseType == I2S_PHASE_TYPE_DUAL),
-                      ((object->phaseType == I2S_PHASE_TYPE_DUAL) ? (object->bitsPerWord + object->afterWordPadding) : object->bitsPerWord),
-                      (object->dmaBuffSizeConfig + 1));
+                       (object->beforeWordPadding + object->dataShift),
+                       (uint8_t)object->memorySlotLength,
+                       (uint8_t)object->samplingEdge,
+                       (bool)(object->phaseType == I2S_PHASE_TYPE_DUAL),
+                       ((object->phaseType == I2S_PHASE_TYPE_DUAL) ? (object->bitsPerWord + object->afterWordPadding)
+                                                                   : object->bitsPerWord),
+                       (object->dmaBuffSizeConfig + 1));
 
     /* To avoid false start-up triggers, I2S:STMPINTRIG and I2S:STMPOUTTRIG must
      * initially be equal to or higher than I2S:STMPWPER, which is set as
@@ -872,36 +984,41 @@ static void configSerialFormat(I2S_Handle handle) {
 /*
  *  ======== configChannels ========
  */
-static void configChannels(I2S_Handle handle) {
+static void configChannels(I2S_Handle handle)
+{
 
-    I2SCC26XX_Object          const *object;
-    I2SCC26XX_DataInterface   const *SD0;
-    I2SCC26XX_DataInterface   const *SD1;
+    I2SCC26XX_Object const *object;
+    I2SCC26XX_DataInterface const *SD0;
+    I2SCC26XX_DataInterface const *SD1;
 
     /* Get the pointer to the SD0 and SD1 interfaces*/
     object = handle->object;
-    SD0 = &object->dataInterfaceSD0;
-    SD1 = &object->dataInterfaceSD1;
+    SD0    = &object->dataInterfaceSD0;
+    SD1    = &object->dataInterfaceSD1;
 
-    I2SFrameConfigure(I2S0_BASE, (uint8_t)SD0->interfaceConfig, (uint8_t)SD0->channelsUsed,
-                                 (uint8_t)SD1->interfaceConfig, (uint8_t)SD1->channelsUsed);
+    I2SFrameConfigure(I2S0_BASE,
+                      (uint8_t)SD0->interfaceConfig,
+                      (uint8_t)SD0->channelsUsed,
+                      (uint8_t)SD1->interfaceConfig,
+                      (uint8_t)SD1->channelsUsed);
 }
 
 /*
  *  ======== configClocks ========
  */
-static void configClocks(I2S_Handle handle) {
+static void configClocks(I2S_Handle handle)
+{
 
     I2SCC26XX_Object const *object;
 
     /* Get the pointer to the object*/
     object = handle->object;
 
-    I2SWclkConfigure(I2S0_BASE, (bool)object->moduleRole,
-                                object->invertWS);
+    I2SWclkConfigure(I2S0_BASE, (bool)object->moduleRole, object->invertWS);
 
     /* Set internal audio clock source */
-    if(object->moduleRole) {
+    if (object->moduleRole)
+    {
 
         PRCMAudioClockInternalSource();
         PRCMAudioClockConfigOverride((uint8_t)object->samplingEdge,
@@ -912,7 +1029,8 @@ static void configClocks(I2S_Handle handle) {
     }
 
     /* Set external audio clock source */
-    else {
+    else
+    {
         PRCMAudioClockExternalSource();
     }
 }
@@ -920,7 +1038,8 @@ static void configClocks(I2S_Handle handle) {
 /*
  *  ======== enableClocks ========
  */
-static void enableClocks(I2S_Handle handle) {
+static void enableClocks(I2S_Handle handle)
+{
 
     I2SCC26XX_Object const *object;
 
@@ -947,31 +1066,37 @@ static void enableClocks(I2S_Handle handle) {
 /*
  *  ======== computeMemoryStep ========
  */
-static uint16_t computeMemoryStep(I2S_Handle handle, I2S_DataInterfaceUse expectedUseSD0, I2S_DataInterfaceUse expectedUseSD1) {
+static uint16_t computeMemoryStep(I2S_Handle handle,
+                                  I2S_DataInterfaceUse expectedUseSD0,
+                                  I2S_DataInterfaceUse expectedUseSD1)
+{
 
-    I2SCC26XX_Object    const *object;
-    uint8_t             numbOfChannels = 0;
-    uint8_t             sampleMemoryLength = 16;
-    uint16_t            memoryNeeded = 0;
-    I2SCC26XX_DataInterface   const *SD0;
-    I2SCC26XX_DataInterface   const *SD1;
+    I2SCC26XX_Object const *object;
+    uint8_t numbOfChannels     = 0;
+    uint8_t sampleMemoryLength = 16;
+    uint16_t memoryNeeded      = 0;
+    I2SCC26XX_DataInterface const *SD0;
+    I2SCC26XX_DataInterface const *SD1;
 
     const uint8_t byteLength = 8U;
 
     /* Get the pointer to the object*/
     object = handle->object;
-    SD0 = &object->dataInterfaceSD0;
-    SD1 = &object->dataInterfaceSD1;
+    SD0    = &object->dataInterfaceSD0;
+    SD1    = &object->dataInterfaceSD1;
 
-    if(SD0->interfaceConfig == expectedUseSD0) {
+    if (SD0->interfaceConfig == expectedUseSD0)
+    {
         numbOfChannels += SD0->numberOfChannelsUsed;
     }
 
-    if(SD1->interfaceConfig == expectedUseSD1) {
+    if (SD1->interfaceConfig == expectedUseSD1)
+    {
         numbOfChannels += SD1->numberOfChannelsUsed;
     }
 
-    if(object->memorySlotLength == I2S_MEMORY_LENGTH_24BITS_CC26XX) {
+    if (object->memorySlotLength == I2S_MEMORY_LENGTH_24BITS_CC26XX)
+    {
         sampleMemoryLength = 24;
     }
 
@@ -979,8 +1104,9 @@ static uint16_t computeMemoryStep(I2S_Handle handle, I2S_DataInterfaceUse expect
     memoryNeeded = (uint16_t)((uint16_t)numbOfChannels * (uint16_t)sampleMemoryLength * (uint16_t)2U);
 
     /* bits to byte conversion: we manage to have full bytes */
-    if((memoryNeeded % byteLength) != 0U) {
-       memoryNeeded += (byteLength - (memoryNeeded % byteLength));
+    if ((memoryNeeded % byteLength) != 0U)
+    {
+        memoryNeeded += (byteLength - (memoryNeeded % byteLength));
     }
     memoryNeeded = memoryNeeded / byteLength;
 
@@ -995,10 +1121,12 @@ static uint16_t computeMemoryStep(I2S_Handle handle, I2S_DataInterfaceUse expect
  *  @pre    Function assumes that the I2S handle (clientArg) is pointing to a
  *          hardware module which has already been opened.
  */
-static int i2sPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg) {
+static int i2sPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg)
+{
 
     /* Reconfigure the hardware if returning from sleep */
-    if (eventType == (uint32_t)PowerCC26XX_AWAKE_STANDBY) {
+    if (eventType == (uint32_t)PowerCC26XX_AWAKE_STANDBY)
+    {
         initHw((I2S_Handle)clientArg);
     }
 

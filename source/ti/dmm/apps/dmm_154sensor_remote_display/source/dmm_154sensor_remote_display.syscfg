@@ -36,9 +36,6 @@
  *  dmm_154sensor_remote_display.syscfg
  */
 
-/* ======== RTOS ======== */
-var RTOS = scripting.addModule("/ti/drivers/RTOS");
-
 /* ======== RF Design ======== */
 var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
 const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;

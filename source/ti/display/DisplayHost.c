@@ -54,10 +54,10 @@
  * ----------------------------------------------------------------------------
  */
 #if !defined(__IAR_SYSTEMS_ICC__)
-#define FWRITE(BUF, SIZE, HANDLE, STREAM) fwrite(BUF, SIZE, HANDLE, STREAM)
+    #define FWRITE(BUF, SIZE, HANDLE, STREAM) fwrite(BUF, SIZE, HANDLE, STREAM)
 #else
-#include <yfuns.h>
-#define FWRITE(BUF, SIZE, HANDLE, STREAM) __write(HANDLE, (unsigned char*) BUF,SIZE)
+    #include <yfuns.h>
+    #define FWRITE(BUF, SIZE, HANDLE, STREAM) __write(HANDLE, (unsigned char *)BUF, SIZE)
 #endif
 
 /* ----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ const Display_FxnTable DisplayHost_fxnTable = {
 };
 
 /* Semaphore to synchronize writes to display buffer */
-static SemaphoreP_Handle  writeSem;
+static SemaphoreP_Handle writeSem;
 
 /* ----------------------------------------------------------------------------
  *                                          Functions
@@ -93,23 +93,19 @@ static SemaphoreP_Handle  writeSem;
  *  ======== DisplayHost_clear ========
  */
 void DisplayHost_clear(Display_Handle handle)
-{
-}
+{}
 
 /*
  *  ======== DisplayHost_clearLines ========
  */
-void DisplayHost_clearLines(Display_Handle handle, uint8_t fromLine,
-                            uint8_t toLine)
-{
-}
+void DisplayHost_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine)
+{}
 
 /*
  *  ======== DisplayHost_close ========
  */
 void DisplayHost_close(Display_Handle handle)
-{
-}
+{}
 
 /*
  *  ======== DisplayHost_control ========
@@ -133,23 +129,26 @@ unsigned int DisplayHost_getType(void)
 void DisplayHost_init(Display_Handle handle)
 {
     SemaphoreP_Handle sem;
-    unsigned int      key;
+    unsigned int key;
 
     /* Speculatively create a binary semaphore for thread safety */
     sem = SemaphoreP_createBinary(1);
 
     key = HwiP_disable();
 
-    if (writeSem == NULL) {
+    if (writeSem == NULL)
+    {
         /* use the binary sem created above */
         writeSem = sem;
         HwiP_restore(key);
     }
-    else {
+    else
+    {
         /* open already called */
         HwiP_restore(key);
         /* delete unused Semaphore */
-        if (sem) {
+        if (sem)
+        {
             SemaphoreP_delete(sem);
         }
     }
@@ -160,9 +159,11 @@ void DisplayHost_init(Display_Handle handle)
  */
 Display_Handle DisplayHost_open(Display_Handle handle, Display_Params *params)
 {
-    if (writeSem == NULL) {
+    if (writeSem == NULL)
+    {
         DisplayHost_init(handle);
-        if (writeSem == NULL) {
+        if (writeSem == NULL)
+        {
             return (NULL);
         }
     }
@@ -173,16 +174,16 @@ Display_Handle DisplayHost_open(Display_Handle handle, Display_Params *params)
 /*
  *  ======== DisplayHost_vprintf ========
  */
-void DisplayHost_vprintf(Display_Handle handle, uint8_t line,
-                         uint8_t column, const char *fmt, va_list va)
+void DisplayHost_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
     DisplayHost_HWAttrs *hwAttrs = (DisplayHost_HWAttrs *)handle->hwAttrs;
-    int                  strSize;
-    char                *buf = hwAttrs->strBuf;
-    uint32_t             timeout = SemaphoreP_WAIT_FOREVER;
+    int strSize;
+    char *buf        = hwAttrs->strBuf;
+    uint32_t timeout = SemaphoreP_WAIT_FOREVER;
 
     /* Set timeout to 0 if we're in a Hwi, Swi, or main(). */
-    if (HwiP_inISR() || SwiP_inISR() || (HwiP_interruptsEnabled() == false)) {
+    if (HwiP_inISR() || SwiP_inISR() || (HwiP_interruptsEnabled() == false))
+    {
         timeout = 0;
     }
 
@@ -194,7 +195,7 @@ void DisplayHost_vprintf(Display_Handle handle, uint8_t line,
 
     SystemP_vsnprintf(buf, hwAttrs->strBufLen - 1, fmt, va);
 
-    strSize = strlen(hwAttrs->strBuf);
+    strSize                    = strlen(hwAttrs->strBuf);
     hwAttrs->strBuf[strSize++] = '\n';
 
     FWRITE(buf, strSize, 1, stdout);

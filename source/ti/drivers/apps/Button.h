@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- /*!***************************************************************************
+/*!***************************************************************************
  *  @file       Button.h
  *
  *  @brief      Button driver
@@ -187,14 +187,14 @@ typedef struct Button_Config
 
     /*! Pointer to a #Button_HWAttrs structure */
     void const *hwAttrs;
-}Button_Config;
+} Button_Config;
 
 /*!
  *  @brief    A handle that is returned from a Button_open() call.
  *
  *  User will use this handle to interact with a given button instance.
  */
-typedef struct Button_Config* Button_Handle;
+typedef struct Button_Config *Button_Handle;
 
 /*!
  *  @brief    Button State
@@ -206,27 +206,27 @@ typedef struct Button_Config* Button_Handle;
 typedef enum Button_State
 {
     /*! Edge detected, debouncing */
-    Button_PRESSING                     = 1,
+    Button_PRESSING             = 1,
     /*! Press verified, not detecting longpress */
-    Button_PRESSED                      = 2,
+    Button_PRESSED              = 2,
     /*! Press verified, waiting for longpress timeout. */
-    Button_LONGPRESSING                 = 3,
+    Button_LONGPRESSING         = 3,
     /*! Longpress verified, waiting for neg-edge */
-    Button_LONGPRESSED                  = 4,
+    Button_LONGPRESSED          = 4,
     /*! Neg-edge received, debouncing */
-    Button_RELEASING                    = 5,
+    Button_RELEASING            = 5,
     /*! Neg-edge received after long-press, debouncing. */
-    Button_RELEASING_LONG               = 6,
+    Button_RELEASING_LONG       = 6,
     /*! Button release verified. */
-    Button_RELEASED                     = 7,
+    Button_RELEASED             = 7,
     /*! EDGE detected doublepress */
-    Button_DBLPRESS_DETECTION           = 8,
+    Button_DBLPRESS_DETECTION   = 8,
     /*! EDGE detected doublepress */
-    Button_DBLPRESSING                  = 9,
+    Button_DBLPRESSING          = 9,
     /*! DOUBLE PRESS verified, waiting for neg edge */
-    Button_DBLPRESSED                   = 10,
+    Button_DBLPRESSED           = 10,
     /*! DOUBLE PRESS verified, waiting for neg edge k*/
-    Button_RELEASING_DBLPRESSED         = 11
+    Button_RELEASING_DBLPRESSED = 11
 } Button_State;
 
 /*!
@@ -238,20 +238,20 @@ typedef enum Button_State
 typedef enum Button_Events
 {
     /*! Button pressed down, may or may not subsequently have been released */
-    Button_EV_PRESSED        = 0x01,
+    Button_EV_PRESSED       = 0x01,
     /*! Button held down for more than tLongpress (ms) */
-    Button_EV_LONGPRESSED    = 0x02,
+    Button_EV_LONGPRESSED   = 0x02,
     /*! Button released after press or longpress */
-    Button_EV_RELEASED       = 0x04,
+    Button_EV_RELEASED      = 0x04,
     /*! Button was pressed and released, but was not a long press */
-    Button_EV_CLICKED        = 0x08,
+    Button_EV_CLICKED       = 0x08,
     /*!
      * Button was pressed and released, and held for longer than
      * longPressDuration (ms)
      */
-    Button_EV_LONGCLICKED    = 0x10,
+    Button_EV_LONGCLICKED   = 0x10,
     /*! Button was pressed when double click detection was active */
-    Button_EV_DOUBLECLICKED  = 0x20,
+    Button_EV_DOUBLECLICKED = 0x20,
 } Button_Events;
 
 /*! @brief Event subscription and notification mask type */
@@ -260,8 +260,7 @@ typedef uint8_t Button_EventMask;
 /*!
  *  @brief    A handler to receive button callbacks.
  */
-typedef void (*Button_Callback)(Button_Handle buttonHandle,
-                                Button_EventMask buttonEvents);
+typedef void (*Button_Callback)(Button_Handle buttonHandle, Button_EventMask buttonEvents);
 
 /*!
  *  @brief    Button Pull settings
@@ -272,8 +271,8 @@ typedef void (*Button_Callback)(Button_Handle buttonHandle,
 typedef enum Button_Pull
 {
     /* NOTE: DO NOT change the values of DOWN/UP from (0,1) */
-    Button_PULL_DOWN   = 0,     /*!< Button is PULLED DOWN. */
-    Button_PULL_UP     = 1,     /*!< Button is PULLED UP. */
+    Button_PULL_DOWN = 0, /*!< Button is PULLED DOWN. */
+    Button_PULL_UP   = 1, /*!< Button is PULLED UP. */
 } Button_Pull;
 
 /*!
@@ -284,13 +283,13 @@ typedef enum Button_Pull
 typedef struct Button_HWAttrs
 {
     /*! GPIO configuration index. */
-    uint_least8_t   gpioIndex;
+    uint_least8_t gpioIndex;
 
     /*! Whether the button is active high or active low. */
-    Button_Pull     pullMode;
+    Button_Pull pullMode;
 
     /*! True/False whether the pullup on the GPIO pin should be enabled */
-    uint32_t        internalPullEnabled;
+    uint32_t internalPullEnabled;
 } Button_HWAttrs;
 
 /*!
@@ -305,12 +304,12 @@ typedef struct Button_HWAttrs
 typedef struct Button_StateVariables
 {
     /*! Button state */
-    Button_State   state;
+    Button_State state;
     /*! Button pressed start time in milliseconds(ms) */
-    uint32_t       pressedStartTime;
+    uint32_t pressedStartTime;
     /*! Button pressed duration (ms) */
-    uint32_t       lastPressedDuration;
-}Button_StateVariables;
+    uint32_t lastPressedDuration;
+} Button_StateVariables;
 
 /*!
  *  @brief    Internal to Button module. Members should not be accessed
@@ -319,25 +318,25 @@ typedef struct Button_StateVariables
 typedef struct Button_Object
 {
     /*! Handle to clock used for timing */
-    ClockP_Handle          clockHandle;
+    ClockP_Handle clockHandle;
 
     /*! State variables for handling the debounce state machine */
-    Button_StateVariables  buttonStateVariables;
+    Button_StateVariables buttonStateVariables;
 
     /*! Event subscription mask for the button */
-    Button_EventMask       buttonEventMask;
+    Button_EventMask buttonEventMask;
 
     /*! Callback function for the button */
-    Button_Callback        buttonCallback;
+    Button_Callback buttonCallback;
 
     /*! Debounce duration for the button in milliseconds(ms) */
-    uint32_t               debounceDuration;
+    uint32_t debounceDuration;
 
     /*! Long press duration is milliseconds(ms) */
-    uint32_t               longPressDuration;
+    uint32_t longPressDuration;
 
     /*! Double press detection timeout is milliseconds(ms) */
-    uint32_t               doublePressDetectiontimeout;
+    uint32_t doublePressDetectiontimeout;
 } Button_Object;
 
 /*!
@@ -351,19 +350,19 @@ typedef struct Button_Object
 typedef struct Button_Params
 {
     /*! Debounce duration for the button in milliseconds(ms) */
-    uint32_t            debounceDuration;
+    uint32_t debounceDuration;
 
     /*! Long press duration is milliseconds(ms) */
-    uint32_t            longPressDuration;
+    uint32_t longPressDuration;
 
     /*! Double press detection timeout is milliseconds(ms) */
-    uint32_t            doublePressDetectiontimeout;
+    uint32_t doublePressDetectiontimeout;
 
     /*! Event subscription mask for the button */
-    Button_EventMask    buttonEventMask;
+    Button_EventMask buttonEventMask;
 
     /*! A #Button_Callback that is called when a masked event occurs. */
-    Button_Callback     buttonCallback;
+    Button_Callback buttonCallback;
 } Button_Params;
 
 /*!

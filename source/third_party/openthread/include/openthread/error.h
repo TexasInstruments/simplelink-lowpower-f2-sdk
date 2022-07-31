@@ -55,7 +55,7 @@ extern "C" {
  * This enumeration represents error codes used throughout OpenThread.
  *
  */
-typedef enum otError
+typedef enum OT_MUST_USE_RESULT otError
 {
     /**
      * No error.
@@ -164,7 +164,7 @@ typedef enum otError
     OT_ERROR_INVALID_SOURCE_ADDRESS = 20,
 
     /**
-     * Received a frame filtered by the address filter (whitelisted or blacklisted).
+     * Received a frame filtered by the address filter (allowlisted or denylisted).
      */
     OT_ERROR_ADDRESS_FILTERED = 21,
 
@@ -227,6 +227,17 @@ typedef enum otError
      * Input (CLI) command is invalid.
      */
     OT_ERROR_INVALID_COMMAND = 35,
+
+    /**
+     * Special error code used to indicate success/error status is pending and not yet known.
+     *
+     */
+    OT_ERROR_PENDING = 36,
+
+    /**
+     * Request rejected.
+     */
+    OT_ERROR_REJECTED = 37,
 
     /**
      * The number of defined errors.

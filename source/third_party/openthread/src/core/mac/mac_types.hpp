@@ -28,7 +28,7 @@
 
 /**
  * @file
- *   This file includes definitions for MAC types such as Address, Extended PAN Identifier, Network Name, etc.
+ *   This file includes definitions for MAC types.
  */
 
 #ifndef MAC_TYPES_HPP_
@@ -42,7 +42,12 @@
 #include <openthread/link.h>
 #include <openthread/thread.h>
 
+#include "common/as_core_type.hpp"
+#include "common/clearable.hpp"
+#include "common/data.hpp"
+#include "common/equatable.hpp"
 #include "common/string.hpp"
+#include "crypto/storage.hpp"
 
 namespace ot {
 namespace Mac {
@@ -54,24 +59,22 @@ namespace Mac {
  *
  */
 
-enum
-{
-    kShortAddrBroadcast = 0xffff,
-    kShortAddrInvalid   = 0xfffe,
-    kPanIdBroadcast     = 0xffff,
-};
-
 /**
  * This type represents the IEEE 802.15.4 PAN ID.
  *
  */
 typedef otPanId PanId;
 
+constexpr PanId kPanIdBroadcast = 0xffff; ///< Broadcast PAN ID.
+
 /**
  * This type represents the IEEE 802.15.4 Short Address.
  *
  */
 typedef otShortAddress ShortAddress;
+
+constexpr ShortAddress kShortAddrBroadcast = 0xffff; ///< Broadcast Short Address.
+constexpr ShortAddress kShortAddrInvalid   = 0xfffe; ///< Invalid Short Address.
 
 /**
  * This function generates a random IEEE 802.15.4 PAN ID.
@@ -86,13 +89,10 @@ PanId GenerateRandomPanId(void);
  *
  */
 OT_TOOL_PACKED_BEGIN
-class ExtAddress : public otExtAddress
+class ExtAddress : public otExtAddress, public Equatable<ExtAddress>, public Clearable<ExtAddress>
 {
 public:
-    enum
-    {
-        kInfoStringSize = 17, // Max chars for the info string (`ToString()`).
-    };
+    static constexpr uint16_t kInfoStringSize = 17; ///< Max chars for the info string (`ToString()`).
 
     /**
      * This type defines the fixed-length `String` object returned from `ToString()`.
@@ -104,17 +104,11 @@ public:
      * This enumeration type specifies the copy byte order when Extended Address is being copied to/from a buffer.
      *
      */
-    enum CopyByteOrder
+    enum CopyByteOrder : uint8_t
     {
-        kNormalByteOrder,  // Copy address bytes in normal order (as provided in array buffer).
-        kReverseByteOrder, // Copy address bytes in reverse byte order.
+        kNormalByteOrder,  ///< Copy address bytes in normal order (as provided in array buffer).
+        kReverseByteOrder, ///< Copy address bytes in reverse byte order.
     };
-
-    /**
-     * This method clears the Extended Address (sets all bytes to zero).
-     *
-     */
-    void Clear(void) { Fill(0); }
 
     /**
      * This method fills all bytes of address with a given byte value.
@@ -222,28 +216,6 @@ public:
     }
 
     /**
-     * This method evaluates whether or not the Extended Addresses match.
-     *
-     * @param[in]  aOther  The Extended Address to compare.
-     *
-     * @retval TRUE   If the Extended Addresses match.
-     * @retval FALSE  If the Extended Addresses do not match.
-     *
-     */
-    bool operator==(const ExtAddress &aOther) const;
-
-    /**
-     * This method evaluates whether or not the Extended Addresses match.
-     *
-     * @param[in]  aOther  The Extended Address to compare.
-     *
-     * @retval TRUE   If the Extended Addresses do not match.
-     * @retval FALSE  If the Extended Addresses match.
-     *
-     */
-    bool operator!=(const ExtAddress &aOther) const { return !(*this == aOther); }
-
-    /**
      * This method converts an address to a string.
      *
      * @returns An `InfoString` containing the string representation of the Extended Address.
@@ -252,13 +224,10 @@ public:
     InfoString ToString(void) const;
 
 private:
-    static void CopyAddress(uint8_t *aDst, const uint8_t *aSrc, CopyByteOrder aByteOrder);
+    static constexpr uint8_t kGroupFlag = (1 << 0);
+    static constexpr uint8_t kLocalFlag = (1 << 1);
 
-    enum
-    {
-        kGroupFlag = 1 << 0,
-        kLocalFlag = 1 << 1,
-    };
+    static void CopyAddress(uint8_t *aDst, const uint8_t *aSrc, CopyByteOrder aByteOrder);
 } OT_TOOL_PACKED_END;
 
 /**
@@ -278,7 +247,7 @@ public:
      * This enumeration specifies the IEEE 802.15.4 Address type.
      *
      */
-    enum Type
+    enum Type : uint8_t
     {
         kTypeNone,     ///< No address.
         kTypeShort,    ///< IEEE 802.15.4 Short Address.
@@ -443,17 +412,177 @@ private:
 };
 
 /**
- * This structure represents an IEEE 802.15.4 Extended PAN Identifier.
+ * This class represents a MAC key.
  *
  */
 OT_TOOL_PACKED_BEGIN
-class ExtendedPanId : public otExtendedPanId
+class Key : public otMacKey, public Equatable<Key>, public Clearable<Key>
 {
 public:
-    enum
+    static constexpr uint16_t kSize = OT_MAC_KEY_SIZE; ///< Key size in bytes.
+
+    /**
+     * This method gets a pointer to the bytes array containing the key
+     *
+     * @returns A pointer to the byte array containing the key.
+     *
+     */
+    const uint8_t *GetBytes(void) const { return m8; }
+
+} OT_TOOL_PACKED_END;
+
+/**
+ * This type represents a MAC Key Ref used by PSA.
+ *
+ */
+typedef otMacKeyRef KeyRef;
+
+/**
+ * This class represents a MAC Key Material.
+ *
+ */
+class KeyMaterial : public otMacKeyMaterial, public Unequatable<KeyMaterial>
+{
+public:
+    /**
+     * This constructor initializes a `KeyMaterial`.
+     *
+     */
+    KeyMaterial(void)
     {
-        kInfoStringSize = 17, // Max chars for the info string (`ToString()`).
-    };
+        GetKey().Clear();
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+        SetKeyRef(kInvalidKeyRef);
+#endif
+    }
+
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    /**
+     * This method overload `=` operator to assign the `KeyMaterial` from another one.
+     *
+     * If the `KeyMaterial` currently stores a valid and different `KeyRef`, the assignment of new value will ensure to
+     * delete the previous one before using the new `KeyRef` from @p aOther.
+     *
+     * @param[in] aOther  aOther  The other `KeyMaterial` instance to assign from.
+     *
+     * @returns A reference to the current `KeyMaterial`
+     *
+     */
+    KeyMaterial &operator=(const KeyMaterial &aOther);
+
+    KeyMaterial(const KeyMaterial &) = delete;
+#endif
+
+    /**
+     *  This method clears the `KeyMaterial`.
+     *
+     * Under `OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE`, if the `KeyMaterial` currently stores a valid previous
+     * `KeyRef`, the `Clear()` call will ensure to delete the previous `KeyRef` and set it to `kInvalidKeyRef`.
+     *
+     */
+    void Clear(void);
+
+#if !OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    /**
+     * This method gets the literal `Key`.
+     *
+     * @returns The literal `Key`
+     *
+     */
+    const Key &GetKey(void) const { return static_cast<const Key &>(mKeyMaterial.mKey); }
+
+#else
+    /**
+     * This method gets the stored `KeyRef`
+     *
+     * @returns The `KeyRef`
+     *
+     */
+    KeyRef GetKeyRef(void) const { return mKeyMaterial.mKeyRef; }
+#endif
+
+    /**
+     * This method sets the `KeyMaterial` from a given Key.
+     *
+     * If the `KeyMaterial` currently stores a valid `KeyRef`, the `SetFrom()` call will ensure to delete the previous
+     * one before creating and using a new `KeyRef` associated with the new `Key`.
+     *
+     * @param[in] aKey           A reference to the new key.
+     * @param[in] aIsExportable  Boolean indicating if the key is exportable (this is only applicable under
+     *                           `OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE` config).
+     *
+     */
+    void SetFrom(const Key &aKey, bool aIsExportable = false);
+
+    /**
+     * This method extracts the literal key from `KeyMaterial`
+     *
+     * @param[out] aKey  A reference to the output the key.
+     *
+     */
+    void ExtractKey(Key &aKey);
+
+    /**
+     * This method converts `KeyMaterial` to a `Crypto::Key`.
+     *
+     * @param[out]  aCryptoKey  A reference to a `Crypto::Key` to populate.
+     *
+     */
+    void ConvertToCryptoKey(Crypto::Key &aCryptoKey) const;
+
+    /**
+     * This method overloads operator `==` to evaluate whether or not two `KeyMaterial` instances are equal.
+     *
+     * @param[in]  aOther  The other `KeyMaterial` instance to compare with.
+     *
+     * @retval TRUE   If the two `KeyMaterial` instances are equal.
+     * @retval FALSE  If the two `KeyMaterial` instances are not equal.
+     *
+     */
+    bool operator==(const KeyMaterial &aOther) const;
+
+private:
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+    static constexpr KeyRef kInvalidKeyRef = Crypto::Storage::kInvalidKeyRef;
+
+    void DestroyKey(void);
+    void SetKeyRef(KeyRef aKeyRef) { mKeyMaterial.mKeyRef = aKeyRef; }
+#endif
+    Key &GetKey(void) { return static_cast<Key &>(mKeyMaterial.mKey); }
+    void SetKey(const Key &aKey) { mKeyMaterial.mKey = aKey; }
+};
+
+#if OPENTHREAD_CONFIG_MULTI_RADIO
+
+/**
+ * This enumeration defines the radio link types.
+ *
+ */
+enum RadioType : uint8_t
+{
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    kRadioTypeIeee802154, ///< IEEE 802.15.4 (2.4GHz) link type.
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    kRadioTypeTrel, ///< Thread Radio Encapsulation link type.
+#endif
+};
+
+/**
+ * This constant specifies the number of supported radio link types.
+ *
+ */
+constexpr uint8_t kNumRadioTypes = (((OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE) ? 1 : 0) +
+                                    ((OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE) ? 1 : 0));
+
+/**
+ * This class represents a set of radio links.
+ *
+ */
+class RadioTypes
+{
+public:
+    static constexpr uint16_t kInfoStringSize = 32; ///< Max chars for the info string (`ToString()`).
 
     /**
      * This type defines the fixed-length `String` object returned from `ToString()`.
@@ -462,198 +591,270 @@ public:
     typedef String<kInfoStringSize> InfoString;
 
     /**
-     * This method clears the Extended PAN Identifier (sets all bytes to zero).
+     * This static class variable defines an array containing all supported radio link types.
      *
      */
-    void Clear(void) { memset(this, 0, sizeof(*this)); }
+    static const RadioType kAllRadioTypes[kNumRadioTypes];
 
     /**
-     * This method evaluates whether or not the Extended PAN Identifiers match.
-     *
-     * @param[in]  aOther  The Extended PAN Id to compare.
-     *
-     * @retval TRUE   If the Extended PAN Identifiers match.
-     * @retval FALSE  If the Extended PAN Identifiers do not match.
+     * This constructor initializes a `RadioTypes` object as empty set
      *
      */
-    bool operator==(const ExtendedPanId &aOther) const;
-
-    /**
-     * This method evaluates whether or not the Extended PAN Identifiers match.
-     *
-     * @param[in]  aOther  The Extended PAN Id to compare.
-     *
-     * @retval TRUE   If the Extended Addresses do not match.
-     * @retval FALSE  If the Extended Addresses match.
-     *
-     */
-    bool operator!=(const ExtendedPanId &aOther) const { return !(*this == aOther); }
-
-    /**
-     * This method converts an address to a string.
-     *
-     * @returns An `InfoString` containing the string representation of the Extended PAN Identifier.
-     *
-     */
-    InfoString ToString(void) const;
-
-} OT_TOOL_PACKED_END;
-
-/**
- * This class represents a name string as data (pointer to a char buffer along with a length).
- *
- * @note The char array does NOT need to be null terminated.
- *
- */
-class NameData
-{
-public:
-    /**
-     * This constructor initializes the NameData object.
-     *
-     * @param[in] aBuffer   A pointer to a `char` buffer (does not need to be null terminated).
-     * @param[in] aLength   The length (number of chars) in the buffer.
-     *
-     */
-    NameData(const char *aBuffer, uint8_t aLength)
-        : mBuffer(aBuffer)
-        , mLength(aLength)
+    RadioTypes(void)
+        : mBitMask(0)
     {
     }
 
     /**
-     * This method returns the pointer to char buffer (not necessarily null terminated).
+     * This constructor initializes a `RadioTypes` object with a given bit-mask.
      *
-     * @returns The pointer to the char buffer.
+     * @param[in] aMask   A bit-mask representing the radio types (the first bit corresponds to radio type 0, and so on)
      *
      */
-    const char *GetBuffer(void) const { return mBuffer; }
+    explicit RadioTypes(uint8_t aMask)
+        : mBitMask(aMask)
+    {
+    }
 
     /**
-     * This method returns the length (number of chars in buffer).
-     *
-     * @returns The name length.
+     * This method clears the set.
      *
      */
-    uint8_t GetLength(void) const { return mLength; }
+    void Clear(void) { mBitMask = 0; }
 
     /**
-     * This method copies the name data into a given char buffer with a given size.
+     * This method indicates whether the set is empty or not
      *
-     * The given buffer is cleared (`memset` to zero) before copying the name into it. The copied string
-     * in @p aBuffer is NOT necessarily null terminated.
-     *
-     * @param[out] aBuffer   A pointer to a buffer where to copy the name into.
-     * @param[in]  aMaxSize  Size of @p aBuffer (maximum number of chars to write into @p aBuffer).
-     *
-     * @returns The actual number of chars copied into @p aBuffer.
+     * @returns TRUE if the set is empty, FALSE otherwise.
      *
      */
-    uint8_t CopyTo(char *aBuffer, uint8_t aMaxSize) const;
+    bool IsEmpty(void) const { return (mBitMask == 0); }
+
+    /**
+     *  This method indicates whether the set contains only a single radio type.
+     *
+     * @returns TRUE if the set contains a single radio type, FALSE otherwise.
+     *
+     */
+    bool ContainsSingleRadio(void) const { return !IsEmpty() && ((mBitMask & (mBitMask - 1)) == 0); }
+
+    /**
+     * This method indicates whether or not the set contains a given radio type.
+     *
+     * @param[in] aType  A radio link type.
+     *
+     * @returns TRUE if the set contains @p aType, FALSE otherwise.
+     *
+     */
+    bool Contains(RadioType aType) const { return ((mBitMask & BitFlag(aType)) != 0); }
+
+    /**
+     * This method adds a radio type to the set.
+     *
+     * @param[in] aType  A radio link type.
+     *
+     */
+    void Add(RadioType aType) { mBitMask |= BitFlag(aType); }
+
+    /**
+     * This method adds another radio types set to the current one.
+     *
+     * @param[in] aTypes   A radio link type set to add.
+     *
+     */
+    void Add(RadioTypes aTypes) { mBitMask |= aTypes.mBitMask; }
+
+    /**
+     * This method adds all radio types supported by device to the set.
+     *
+     */
+    void AddAll(void);
+
+    /**
+     * This method removes a given radio type from the set.
+     *
+     * @param[in] aType  A radio link type.
+     *
+     */
+    void Remove(RadioType aType) { mBitMask &= ~BitFlag(aType); }
+
+    /**
+     * This method gets the radio type set as a bitmask.
+     *
+     * The first bit in the mask corresponds to first radio type (radio type with value zero), and so on.
+     *
+     * @returns A bitmask representing the set of radio types.
+     *
+     */
+    uint8_t GetAsBitMask(void) const { return mBitMask; }
+
+    /**
+     * This method overloads operator `-` to return a new set which is the set difference between current set and
+     * a given set.
+     *
+     * @param[in] aOther  Another radio type set.
+     *
+     * @returns A new set which is set difference between current one and @p aOther.
+     *
+     */
+    RadioTypes operator-(const RadioTypes &aOther) const { return RadioTypes(mBitMask & ~aOther.mBitMask); }
+
+    /**
+     * This method converts the radio set to human-readable string.
+     *
+     * @return A string representation of the set of radio types.
+     *
+     */
+    InfoString ToString(void) const;
 
 private:
-    const char *mBuffer;
-    uint8_t     mLength;
+    static uint8_t BitFlag(RadioType aType) { return static_cast<uint8_t>(1U << static_cast<uint8_t>(aType)); }
+
+    uint8_t mBitMask;
 };
 
 /**
- * This structure represents an IEEE802.15.4 Network Name.
+ * This function converts a link type to a string
+ *
+ * @param[in] aRadioType  A link type value.
+ *
+ * @returns A string representation of the link type.
  *
  */
-class NetworkName : public otNetworkName
-{
-public:
-    enum
-    {
-        kMaxSize = OT_NETWORK_NAME_MAX_SIZE, // Maximum number of chars in Network Name (excludes null char).
-    };
+const char *RadioTypeToString(RadioType aRadioType);
 
-    /**
-     * This constructor initializes the IEEE802.15.4 Network Name as an empty string.
-     *
-     */
-    NetworkName(void) { m8[0] = '\0'; }
+#endif // OPENTHREAD_CONFIG_MULTI_RADIO
 
-    /**
-     * This method gets the IEEE802.15.4 Network Name as a null terminated C string.
-     *
-     * @returns The Network Name as a null terminated C string array.
-     *
-     */
-    const char *GetAsCString(void) const { return m8; }
-
-    /**
-     * This method gets the IEEE802.15.4 Network Name as NameData.
-     *
-     * @returns The Network Name as NameData.
-     *
-     */
-    NameData GetAsData(void) const;
-
-    /**
-     * This method sets the IEEE 802.15.4 Network Name.
-     *
-     * @param[in]  aNameData           A reference to name data.
-     *
-     * @retval OT_ERROR_NONE           Successfully set the IEEE 802.15.4 Network Name.
-     * @retval OT_ERROR_ALREADY        The name is already set to the same string.
-     * @retval OT_ERROR_INVALID_ARGS   Given name is too long.
-     *
-     */
-    otError Set(const NameData &aNameData);
-};
-
-#if (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
 /**
- * This structure represents a Thread Domain Name.
+ * This class represents Link Frame Counters for all supported radio links.
  *
  */
-class DomainName
+class LinkFrameCounters
 {
 public:
-    enum
+    /**
+     * This method resets all counters (set them all to zero).
+     *
+     */
+    void Reset(void) { SetAll(0); }
+
+#if OPENTHREAD_CONFIG_MULTI_RADIO
+
+    /**
+     * This method gets the link Frame Counter for a given radio link.
+     *
+     * @param[in] aRadioType  A radio link type.
+     *
+     * @returns The Link Frame Counter for radio link @p aRadioType.
+     *
+     */
+    uint32_t Get(RadioType aRadioType) const;
+
+    /**
+     * This method sets the Link Frame Counter for a given radio link.
+     *
+     * @param[in] aRadioType  A radio link type.
+     * @param[in] aCounter    The new counter value.
+     *
+     */
+    void Set(RadioType aRadioType, uint32_t aCounter);
+
+#else
+
+    /**
+     * This method gets the Link Frame Counter value.
+     *
+     * @return The Link Frame Counter value.
+     *
+     */
+    uint32_t Get(void) const
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
     {
-        kMaxSize = 16, // Maximum number of chars in Domain Name (excludes null char).
-    };
+        return m154Counter;
+    }
+#elif OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    {
+        return mTrelCounter;
+    }
+#endif
 
     /**
-     * This constructor initializes the Thread Domain Name as an empty string.
+     * This method sets the Link Frame Counter for a given radio link.
+     *
+     * @param[in] aCounter    The new counter value.
      *
      */
-    DomainName(void) { m8[0] = '\0'; }
+    void Set(uint32_t aCounter)
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    {
+        m154Counter = aCounter;
+    }
+#elif OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    {
+        mTrelCounter = aCounter;
+    }
+#endif
+
+#endif // OPENTHREAD_CONFIG_MULTI_RADIO
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    /**
+     * This method gets the Link Frame Counter for 802.15.4 radio link.
+     *
+     * @returns The Link Frame Counter for 802.15.4 radio link.
+     *
+     */
+    uint32_t Get154(void) const { return m154Counter; }
 
     /**
-     * This method gets the Thread Domain Name as a null terminated C string.
+     * This method sets the Link Frame Counter for 802.15.4 radio link.
      *
-     * @returns The Domain Name as a null terminated C string array.
+     * @param[in] aCounter   The new counter value.
      *
      */
-    const char *GetAsCString(void) const { return m8; }
+    void Set154(uint32_t aCounter) { m154Counter = aCounter; }
+#endif
+
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    /**
+     * This method gets the Link Frame Counter for TREL radio link.
+     *
+     * @returns The Link Frame Counter for TREL radio link.
+     *
+     */
+    uint32_t GetTrel(void) const { return mTrelCounter; }
 
     /**
-     * This method gets the Thread Domain Name as NameData.
-     *
-     * @returns The Domain Name as NameData.
+     * This method increments the Link Frame Counter for TREL radio link.
      *
      */
-    NameData GetAsData(void) const;
+    void IncrementTrel(void) { mTrelCounter++; }
+#endif
 
     /**
-     * This method sets the Thread Domain Name.
+     * This method gets the maximum Link Frame Counter among all supported radio links.
      *
-     * @param[in]  aNameData           A reference to name data.
-     *
-     * @retval OT_ERROR_NONE           Successfully set the Thread Domain Name.
-     * @retval OT_ERROR_ALREADY        The name is already set to the same string.
-     * @retval OT_ERROR_INVALID_ARGS   Given name is too long.
+     * @return The maximum Link frame Counter among all supported radio links.
      *
      */
-    otError Set(const NameData &aNameData);
+    uint32_t GetMaximum(void) const;
+
+    /**
+     * This method sets the Link Frame Counter value for all radio links.
+     *
+     * @param[in]  aCounter  The Link Frame Counter value.
+     *
+     */
+    void SetAll(uint32_t aCounter);
 
 private:
-    char m8[kMaxSize + 1]; ///< Byte values.
+#if OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
+    uint32_t m154Counter;
+#endif
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    uint32_t mTrelCounter;
+#endif
 };
-#endif // (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
 
 /**
  * @}
@@ -661,6 +862,10 @@ private:
  */
 
 } // namespace Mac
+
+DefineCoreType(otExtAddress, Mac::ExtAddress);
+DefineCoreType(otMacKey, Mac::Key);
+
 } // namespace ot
 
 #endif // MAC_TYPES_HPP_

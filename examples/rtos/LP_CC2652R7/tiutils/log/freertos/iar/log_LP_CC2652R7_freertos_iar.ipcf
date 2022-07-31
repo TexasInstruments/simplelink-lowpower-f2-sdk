@@ -54,7 +54,7 @@
             <arg>--threaded_lib</arg>
             <arg>-f$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</arg>
             <arg>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2x7_cc26x2x7/release/iar/freertos.lib</arg>
-            <arg>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib</arg>
+            <arg>ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/iar/driverlib.lib</arg>
             <arg>--silent</arg>
             <arg>--cpu=Cortex-M4F</arg>
         </args>

@@ -37,15 +37,14 @@
 /*
  *  ======== StructRingBuf_construct ========
  */
-void StructRingBuf_construct(StructRingBuf_Handle object, void *bufPtr,
-    size_t bufSize, size_t structSize)
+void StructRingBuf_construct(StructRingBuf_Handle object, void *bufPtr, size_t bufSize, size_t structSize)
 {
-    object->buffer = bufPtr;
-    object->length = bufSize;
-    object->count = 0;
-    object->head = bufSize - 1;
-    object->tail = 0;
-    object->maxCount = 0;
+    object->buffer     = bufPtr;
+    object->length     = bufSize;
+    object->count      = 0;
+    object->head       = bufSize - 1;
+    object->tail       = 0;
+    object->maxCount   = 0;
     object->structSize = structSize;
 }
 
@@ -58,7 +57,8 @@ int StructRingBuf_get(StructRingBuf_Handle object, void *data)
 
     key = HwiP_disable();
 
-    if (!object->count) {
+    if (!object->count)
+    {
         HwiP_restore(key);
         return -1;
     }
@@ -116,16 +116,16 @@ int StructRingBuf_put(StructRingBuf_Handle object, const void *data)
 
     key = HwiP_disable();
 
-    if (object->count != object->length) {
+    if (object->count != object->length)
+    {
         next = (object->head + 1) % object->length;
         memcpy(&object->buffer[object->structSize * next], data, object->structSize);
         object->head = next;
         object->count++;
-        object->maxCount = (object->count > object->maxCount) ?
-                            object->count :
-                            object->maxCount;
+        object->maxCount = (object->count > object->maxCount) ? object->count : object->maxCount;
     }
-    else {
+    else
+    {
 
         HwiP_restore(key);
         return (-1);

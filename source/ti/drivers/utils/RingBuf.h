@@ -41,13 +41,14 @@
 extern "C" {
 #endif
 
-typedef struct {
-    unsigned char      *buffer;
-    size_t              length;
-    size_t              count;
-    size_t              head;
-    size_t              tail;
-    size_t              maxCount;
+typedef struct
+{
+    unsigned char *buffer;
+    size_t length;
+    size_t count;
+    size_t head;
+    size_t tail;
+    size_t maxCount;
 } RingBuf_Object, *RingBuf_Handle;
 
 /*!
@@ -61,8 +62,7 @@ typedef struct {
  *
  *  @param  bufSize The size of bufPtr in number of unsigned chars.
  */
-void RingBuf_construct(RingBuf_Handle object, unsigned char *bufPtr,
-    size_t bufSize);
+void RingBuf_construct(RingBuf_Handle object, unsigned char *bufPtr, size_t bufSize);
 
 /*!
  *  @brief  Flush all the data from the buffer.
@@ -263,7 +263,6 @@ static inline size_t RingBuf_space(RingBuf_Handle object)
 {
     return (object->length - object->count);
 }
-
 
 #ifdef __cplusplus
 }

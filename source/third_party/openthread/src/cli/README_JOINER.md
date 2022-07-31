@@ -7,8 +7,10 @@ See [README_COMMISSIONING.md](README_COMMISSIONING.md).
 ## Command List
 
 - [help](#help)
+- [discerner](#discerner)
 - [id](#id)
 - [start](#start)
+- [state](#state)
 - [stop](#stop)
 
 ## Command Details
@@ -17,14 +19,33 @@ See [README_COMMISSIONING.md](README_COMMISSIONING.md).
 
 Usage: `joiner help`
 
-Print dataset help menu.
+Print joiner help menu.
 
 ```bash
 > joiner help
 help
 id
 start
+state
 stop
+Done
+```
+
+### discerner
+
+Usage: `joiner discerner [discerner]`
+
+Print or set the Joiner Discerner. Note this value takes the place of the place of EUI-64 during the joiner session of Thread commissioning.
+
+- discerner: `clear` to clear discerner, `number/length` to set discerner
+
+```bash
+> joiner discerner 0xabc/12
+Done
+> joiner discerner
+0xabc/12
+Done
+> joiner discerner clear
 Done
 ```
 
@@ -53,6 +74,25 @@ This command will cause the device to start the Joiner process.
 
 ```bash
 > joiner start J01NM3
+Done
+```
+
+### state
+
+Usage: `joiner state`
+
+Print the Joiner state.
+
+- Idle
+- Discover
+- Connecting
+- Connected
+- Entrust
+- Joined
+
+```bash
+> joiner state
+Idle
 Done
 ```
 

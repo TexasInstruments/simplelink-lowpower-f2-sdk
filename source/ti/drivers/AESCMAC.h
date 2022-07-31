@@ -256,8 +256,8 @@
  *
  *  // Add first segment of data.
  *  operation.input       = input;
- *  operation.inputLength = initialSegmentSize;  // Must be a non-zero multiple of the block size (16-bytes) unless finalizing.
- *  result = AESCMAC_addData(handle, &operation);
+ *  operation.inputLength = initialSegmentSize;  // Must be a non-zero multiple of the block size (16-bytes) unless
+ * finalizing. result = AESCMAC_addData(handle, &operation);
  *
  *  if (result != AESCMAC_STATUS_SUCCESS) {
  *      // handle error
@@ -463,7 +463,8 @@
  *  }
  *
  *  operation.input        = plaintext;
- *  operation.inputLength  = AES_BLOCK_SIZE;   // Must be a non-zero multiple of the block size (16-bytes) unless finalizing.
+ *  operation.inputLength  = AES_BLOCK_SIZE;   // Must be a non-zero multiple of the block size (16-bytes) unless
+ * finalizing.
  *  // Note: MAC pointer only needs to be set when finalizing operation.
  *
  *  retVal = AESCMAC_addData(handle, &operation);
@@ -520,7 +521,7 @@ extern "C" {
  * #define AESCMACXYZ_STATUS_ERROR2    AESCMAC_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCMAC_STATUS_RESERVED              AES_STATUS_RESERVED
+#define AESCMAC_STATUS_RESERVED AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -528,7 +529,7 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCMAC_STATUS_SUCCESS               AES_STATUS_SUCCESS
+#define AESCMAC_STATUS_SUCCESS AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -536,7 +537,7 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCMAC_STATUS_ERROR                 AES_STATUS_ERROR
+#define AESCMAC_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -546,7 +547,7 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCMAC_STATUS_RESOURCE_UNAVAILABLE  AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESCMAC_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  * @brief   The MAC verification failed.
@@ -554,23 +555,23 @@ extern "C" {
  * Functions return #AESCMAC_STATUS_MAC_INVALID if the MAC computed
  * for the provided (key, message) pair did not match the MAC provided.
  */
-#define AESCMAC_STATUS_MAC_INVALID           AES_STATUS_MAC_INVALID
+#define AESCMAC_STATUS_MAC_INVALID AES_STATUS_MAC_INVALID
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCMAC_STATUS_CANCELED              AES_STATUS_CANCELED
+#define AESCMAC_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
-#define AESCMAC_STATUS_KEYSTORE_INVALID_ID       AES_STATUS_KEYSTORE_INVALID_ID
+#define AESCMAC_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
 
 /*!
  *  @brief  The key store module returned a generic error. See key store documentation
  *  for additional details.
  */
-#define AESCMAC_STATUS_KEYSTORE_GENERIC_ERROR    AES_STATUS_KEYSTORE_GENERIC_ERROR
+#define AESCMAC_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  * @brief   The operation does not support non-word-aligned input.
@@ -578,7 +579,7 @@ extern "C" {
  * AESCMAC driver implementations may have restrictions on the alignment of
  * input data due to performance limitations of the hardware.
  */
-#define AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
+#define AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  *  @brief CMAC Global configuration
@@ -618,26 +619,26 @@ typedef AESCMAC_Config *AESCMAC_Handle;
  * |AESCMAC_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     AESCMAC_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
-                                            /*!< The function call will return immediately while the
-                                             * MAC operation goes on in the background. The registered
-                                             * callback function is called after the operation completes.
-                                             * The context the callback function is called (task, HWI, SWI)
-                                             * is implementation-dependent.
-                                             */
+    /*!< The function call will return immediately while the
+     * MAC operation goes on in the background. The registered
+     * callback function is called after the operation completes.
+     * The context the callback function is called (task, HWI, SWI)
+     * is implementation-dependent.
+     */
     AESCMAC_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
-                                            /*!< The function call will block while the MAC operation goes
-                                             * on in the background. MAC operation results are available
-                                             * after the function returns.
-                                             */
+    /*!< The function call will block while the MAC operation goes
+     * on in the background. MAC operation results are available
+     * after the function returns.
+     */
     AESCMAC_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
-                                            /*!< The function call will continuously poll a flag while MAC
-                                             * operation goes on in the background. MAC operation results
-                                             * are available after the function returns.
-                                             */
+    /*!< The function call will continuously poll a flag while MAC
+     * operation goes on in the background. MAC operation results
+     * are available after the function returns.
+     */
 } AESCMAC_ReturnBehavior;
-
 
 /*!
  *  @brief  Defines the operation modes for the AESCMAC driver.
@@ -648,47 +649,50 @@ typedef enum {
  *  #AESCMAC_construct. The operational mode persists throughout
  *  the existance of the driver instance.
  */
-typedef enum {
-    AESCMAC_OPMODE_CMAC    = 1,    /*!< CMAC operational mode */
-    AESCMAC_OPMODE_CBCMAC  = 2,    /*!< CBC-MAC operational mode */
+typedef enum
+{
+    AESCMAC_OPMODE_CMAC   = 1, /*!< CMAC operational mode */
+    AESCMAC_OPMODE_CBCMAC = 2, /*!< CBC-MAC operational mode */
 } AESCMAC_OperationalMode;
 
 /*!
  *  @brief  Struct containing the parameters required for signing or verifying a message.
  */
-typedef struct {
-    uint8_t *input;         /*!< - Sign: Pointer to the input message to
-                             *     be authenticated.
-                             *   - Verify: Pointer to the input message to be
-                             *     verified.
-                             */
-    uint8_t *mac;           /*!< - Sign: Pointer to the output buffer to write
-                             *     the generated MAC. Buffer size must be
-                             *     at least equal to @a macLength.
-                             *   - Verify: Pointer to the input MAC to be
-                             *     used for verification.
-                             */
-    size_t  inputLength;    /*!< Length of the input message in bytes.
-                             *   May be zero for CMAC but must be non-zero for CBC-MAC.
-                             *   See function descriptions for further restrictions.
-                             *   Max length supported may be limited depending on the return behavior.
-                             */
-    size_t  macLength;      /*!< Length of the MAC in bytes.
-                             *   Must be <= 16. A length of < 8 is not recommended and
-                             *   should severely restrict MAC recomputation attempts.
-                             *   See appendix A of NIST SP800-38b for more information.
-                             */
+typedef struct
+{
+    uint8_t *input;     /*!< - Sign: Pointer to the input message to
+                         *     be authenticated.
+                         *   - Verify: Pointer to the input message to be
+                         *     verified.
+                         */
+    uint8_t *mac;       /*!< - Sign: Pointer to the output buffer to write
+                         *     the generated MAC. Buffer size must be
+                         *     at least equal to @a macLength.
+                         *   - Verify: Pointer to the input MAC to be
+                         *     used for verification.
+                         */
+    size_t inputLength; /*!< Length of the input message in bytes.
+                         *   May be zero for CMAC but must be non-zero for CBC-MAC.
+                         *   See function descriptions for further restrictions.
+                         *   Max length supported may be limited depending on the return behavior.
+                         */
+    size_t macLength;   /*!< Length of the MAC in bytes.
+                         *   Must be <= 16. A length of < 8 is not recommended and
+                         *   should severely restrict MAC recomputation attempts.
+                         *   See appendix A of NIST SP800-38b for more information.
+                         */
 } AESCMAC_Operation;
 
 /*!
  *  @brief  Mask for the operation code.
  */
-#define AESCMAC_OP_CODE_MASK    0x0F /* bits 0-3 */
+#define AESCMAC_OP_CODE_MASK 0x0F /* bits 0-3 */
 
 /*!
  *  @brief  Enum for the operation codes supported by the driver.
  */
-typedef enum {
+typedef enum
+{
     AESCMAC_OP_CODE_ONE_STEP = 0,
     AESCMAC_OP_CODE_SEGMENTED,
     AESCMAC_OP_CODE_FINALIZE
@@ -698,17 +702,18 @@ typedef enum {
  *  @brief  Flag indicating a sign operation. If this bit is not set, then it
  *          is a verify operation.
  */
-#define AESCMAC_OP_FLAG_SIGN    0x10 /* bit 4 */
+#define AESCMAC_OP_FLAG_SIGN 0x10 /* bit 4 */
 
 /*!
  *  @brief  Mask for all valid operation flags.
  */
-#define AESCMAC_OP_FLAGS_MASK   (AESCMAC_OP_FLAG_SIGN | AESCMAC_OP_FLAG_VERIFY)
+#define AESCMAC_OP_FLAGS_MASK (AESCMAC_OP_FLAG_SIGN | AESCMAC_OP_FLAG_VERIFY)
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
+typedef enum
+{
     AESCMAC_OP_TYPE_SIGN             = AESCMAC_OP_CODE_ONE_STEP | AESCMAC_OP_FLAG_SIGN,
     AESCMAC_OP_TYPE_VERIFY           = AESCMAC_OP_CODE_ONE_STEP,
     AESCMAC_OP_TYPE_SEGMENTED_SIGN   = AESCMAC_OP_CODE_SEGMENTED | AESCMAC_OP_FLAG_SIGN,
@@ -744,19 +749,18 @@ typedef void (*AESCMAC_CallbackFxn)(AESCMAC_Handle handle,
  *
  *  @sa     #AESCMAC_Params_init()
  */
-typedef struct {
-    AESCMAC_ReturnBehavior  returnBehavior;   /*!< Blocking, callback, or polling return behavior */
-    AESCMAC_OperationalMode operationalMode;  /*!< CMAC or CBC-MAC operational mode */
-    AESCMAC_CallbackFxn     callbackFxn;      /*!< Callback function pointer */
-    uint32_t                timeout;          /*!< Timeout before the driver returns an error in
-                                               *   ::AESCMAC_RETURN_BEHAVIOR_BLOCKING
-                                               */
-    void                    *custom;          /*!< Custom argument used by driver
-                                               *   implementation
-                                               */
+typedef struct
+{
+    AESCMAC_ReturnBehavior returnBehavior;   /*!< Blocking, callback, or polling return behavior */
+    AESCMAC_OperationalMode operationalMode; /*!< CMAC or CBC-MAC operational mode */
+    AESCMAC_CallbackFxn callbackFxn;         /*!< Callback function pointer */
+    uint32_t timeout;                        /*!< Timeout before the driver returns an error in
+                                              *   ::AESCMAC_RETURN_BEHAVIOR_BLOCKING
+                                              */
+    void *custom;                            /*!< Custom argument used by driver
+                                              *   implementation
+                                              */
 } AESCMAC_Params;
-
-
 
 /*!
  *  @brief  Default #AESCMAC_Params structure
@@ -910,8 +914,7 @@ int_fast16_t AESCMAC_setupVerify(AESCMAC_Handle handle, const CryptoKey *key);
  *
  *  @post   #AESCMAC_addData() or #AESCMAC_finalize()
  */
-int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
-                             AESCMAC_Operation *operation);
+int_fast16_t AESCMAC_addData(AESCMAC_Handle handle, AESCMAC_Operation *operation);
 
 /*!
  *  @brief  Finalizes the current segmented operation
@@ -951,9 +954,7 @@ int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
  *                                        This return value is only valid for verify operations.
  *  @retval #AESCMAC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input buffer was not word-aligned.
  */
-int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
-                              AESCMAC_Operation *operation);
-
+int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle, AESCMAC_Operation *operation);
 
 /*!
  *  @brief  Performs a AESCMAC signature in one call
@@ -984,9 +985,7 @@ int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
  *
  *  @sa     #AESCMAC_oneStepVerify()
  */
-int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle,
-                                 AESCMAC_Operation *operation,
-                                 CryptoKey *key);
+int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle, AESCMAC_Operation *operation, CryptoKey *key);
 
 /*!
  *  @brief  Performs a AESCMAC verification in one call
@@ -1019,9 +1018,7 @@ int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle,
  *
  *  @sa     AESCMAC_oneStepSign()
  */
-int_fast16_t AESCMAC_oneStepVerify(AESCMAC_Handle handle,
-                                   AESCMAC_Operation *operation,
-                                   CryptoKey *key);
+int_fast16_t AESCMAC_oneStepVerify(AESCMAC_Handle handle, AESCMAC_Operation *operation, CryptoKey *key);
 
 /*!
  *  @brief Cancels an ongoing AESCMAC operation.

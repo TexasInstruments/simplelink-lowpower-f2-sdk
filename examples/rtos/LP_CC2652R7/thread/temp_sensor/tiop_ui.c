@@ -55,10 +55,8 @@
 #include "ti_drivers_config.h"
 #include "tiop_app_defs.h"
 
-#if !TIOP_POWER_MEASUREMENT
 static LED_Handle redLedHandle;
 static LED_Handle greenLedHandle;
-#endif /* !TIOP_POWER_MEASUREMENT */
 
 static CUI_clientHandle_t clientHandle;
 
@@ -75,7 +73,7 @@ static uint8_t          display_channel;
 static otShortAddress   shortAddr;
 static otExtAddress     extAddress;
 static otExtendedPanId  extPanId;
-static otMasterKey      masterkey;
+static otNetworkKey      networkKey;
 static const char *     nwkName;
 
 CUI_SUB_MENU(appMenuConfig, "<     CONFIG     >", 2, appMainMenu)
@@ -105,20 +103,14 @@ CUI_MAIN_MENU_END
  */
 void tiopCUIInit(char* appString, Button_Handle* rightButtonHandle)
 {
-    CUI_params_t cuiParams;
-    Button_Params bparams;
-    Button_Handle btnHandle;
-
-#if BOARD_DISPLAY_USE_UART
-    LED_Params ledParams;
-#endif /* BOARD_DISPLAY_USE_UART */
+    Button_Handle       btnHandle;
+    Button_Params       bparams;
+    CUI_clientParams_t  clientParams;
+    CUI_params_t        cuiParams;
+    LED_Params          ledParams;
 
     CUI_paramsInit(&cuiParams);
-#if !TIOP_CUI
-    cuiParams.manageUart = false;
-#endif /* TIOP_CUI */
     CUI_init(&cuiParams);
-    CUI_clientParams_t clientParams;
     CUI_clientParamsInit(&clientParams);
     clientParams.maxStatusLines = 7;
 
@@ -159,16 +151,11 @@ void tiopCUIInit(char* appString, Button_Handle* rightButtonHandle)
     Button_close(btnHandle);
 #endif /* TIOP_OAD */
 
-#if BOARD_DISPLAY_USE_UART
     LED_Params_init(&ledParams);
-#endif /* BOARD_DISPLAY_USE_UART */
 
-#if !TIOP_POWER_MEASUREMENT
     greenLedHandle = LED_open(CONFIG_LED_GREEN, &ledParams);
     redLedHandle = LED_open(CONFIG_LED_RED, &ledParams);
-#endif /* !TIOP_POWER_MEASUREMENT */
 
-#if TIOP_CUI
     CUI_statusLineResourceRequest(clientHandle, "Device Info", false, &deviceInfoLine);
     CUI_statusLineResourceRequest(clientHandle, "   Nwk Info", false, &nwkInfoLine1);
     CUI_statusLineResourceRequest(clientHandle, "   Nwk Info", false, &nwkInfoLine2);
@@ -185,16 +172,16 @@ void tiopCUIInit(char* appString, Button_Handle* rightButtonHandle)
     OtRtosApi_unlock();
 
     nwkName = TIOP_CONFIG_NETWORK_NAME;
-    /* Set master key using a byte-swap assignment */
-    for (int i = 0; i < OT_MASTER_KEY_SIZE/2; i++)
+    /* Set network key using a byte-swap assignment */
+    for (int i = 0; i < OT_NETWORK_KEY_SIZE/2; i++)
     {
-        masterkey.m8[OT_MASTER_KEY_SIZE - i - 1] =
-                ((TIOP_CONFIG_MASTER_KEY_L >> (8*i)) & 0xFF);
+        networkKey.m8[OT_NETWORK_KEY_SIZE - i - 1] =
+                ((TIOP_CONFIG_NETWORK_KEY_L >> (8*i)) & 0xFF);
     }
-    for (int i = OT_MASTER_KEY_SIZE/2; i < OT_MASTER_KEY_SIZE; i++)
+    for (int i = OT_NETWORK_KEY_SIZE/2; i < OT_MAC_KEY_SIZE; i++)
     {
-        masterkey.m8[OT_MASTER_KEY_SIZE - i - 1] =
-                ((TIOP_CONFIG_MASTER_KEY_U >> (8*(i-(OT_MASTER_KEY_SIZE/2)))) & 0xFF);
+        networkKey.m8[OT_NETWORK_KEY_SIZE - i - 1] =
+                ((TIOP_CONFIG_NETWORK_KEY_U >> (8*(i-(OT_NETWORK_KEY_SIZE/2)))) & 0xFF);
     }
     /* Set extended PAN ID using a byte-swap assignment */
     for (int i = 0; i < OT_EXT_PAN_ID_SIZE; i++)
@@ -208,7 +195,7 @@ void tiopCUIInit(char* appString, Button_Handle* rightButtonHandle)
     //Update Nwk Info Line1
     tiopCUIUpdateNwkName(nwkName);
     //Update Nwk Info Line 2
-    tiopCUIUpdateMasterkey(masterkey);
+    tiopCUIUpdateNetworkKey(networkKey);
     //Update Nwk Info Line 3
     tiopCUIUpdatePANID(panid);
     //Update Conn Info Line
@@ -217,7 +204,6 @@ void tiopCUIInit(char* appString, Button_Handle* rightButtonHandle)
     tiopCUIUpdateApp(appString);
 
     CUI_registerMenu(clientHandle, &appMainMenu);
-#endif /* TIOP_CUI */
 
     //Update Role Info Line
     tiopCUIUpdateRole(OT_DEVICE_ROLE_DISABLED);
@@ -271,17 +257,17 @@ void tiopCUIUpdateExtPANID(otExtendedPanId extPan)
 /**
  * documented in tiop_ui.h
  */
-void tiopCUIUpdateMasterkey(otMasterKey key)
+void tiopCUIUpdateNetworkKey(otNetworkKey key)
 {
-    masterkey = key;
+    networkKey = key;
     CUI_statusLinePrintf(
         clientHandle, nwkInfoLine2,
-        "[" CUI_COLOR_MAGENTA "Masterkey" CUI_COLOR_RESET"] 0x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-        masterkey.m8[0], masterkey.m8[1], masterkey.m8[2],
-        masterkey.m8[3], masterkey.m8[4], masterkey.m8[5],
-        masterkey.m8[6], masterkey.m8[7], masterkey.m8[8],
-        masterkey.m8[9], masterkey.m8[10], masterkey.m8[11],
-        masterkey.m8[12], masterkey.m8[13], masterkey.m8[14], masterkey.m8[15]);
+        "[" CUI_COLOR_MAGENTA "networkKey" CUI_COLOR_RESET"] 0x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+        networkKey.m8[0], networkKey.m8[1], networkKey.m8[2],
+        networkKey.m8[3], networkKey.m8[4], networkKey.m8[5],
+        networkKey.m8[6], networkKey.m8[7], networkKey.m8[8],
+        networkKey.m8[9], networkKey.m8[10], networkKey.m8[11],
+        networkKey.m8[12], networkKey.m8[13], networkKey.m8[14], networkKey.m8[15]);
 }
 
 /**
@@ -331,72 +317,52 @@ void tiopCUIUpdateRole(otDeviceRole role)
     {
         case OT_DEVICE_ROLE_DISABLED:
         {
-#if TIOP_CUI
             CUI_statusLinePrintf(
                 clientHandle, deviceRoleLine,
                 "["CUI_COLOR_RED "Device Role" CUI_COLOR_RESET "] Disabled");
-#endif /* TIOP_CUI */
 
-#if !TIOP_POWER_MEASUREMENT
             LED_setOff(greenLedHandle);
             LED_setOff(redLedHandle);
-#endif /* !TIOP_POWER_MEASUREMENT */
             break;
         }
         case OT_DEVICE_ROLE_DETACHED:
         {
-#if TIOP_CUI
             CUI_statusLinePrintf(
                 clientHandle, deviceRoleLine,
                 "["CUI_COLOR_RED "Device Role" CUI_COLOR_RESET "] Detached");
-#endif /* TIOP_CUI */
 
-#if !TIOP_POWER_MEASUREMENT
             LED_setOff(greenLedHandle);
             LED_setOn(redLedHandle, LED_BRIGHTNESS_MAX);
-#endif /* !TIOP_POWER_MEASUREMENT */
             break;
         }
         case OT_DEVICE_ROLE_CHILD:
         {
-#if TIOP_CUI
             CUI_statusLinePrintf(
                 clientHandle, deviceRoleLine,
                 "["CUI_COLOR_RED "Device Role" CUI_COLOR_RESET "] Child");
-#endif /* TIOP_CUI */
 
-#if !TIOP_POWER_MEASUREMENT
             LED_setOn(greenLedHandle, LED_BRIGHTNESS_MAX);
             LED_setOff(redLedHandle);
-#endif /* !TIOP_POWER_MEASUREMENT */
             break;
         }
         case OT_DEVICE_ROLE_ROUTER:
         {
-#if TIOP_CUI
             CUI_statusLinePrintf(
                 clientHandle, deviceRoleLine,
                 "["CUI_COLOR_RED "Device Role" CUI_COLOR_RESET "] Router");
-#endif /* TIOP_CUI */
 
-#if !TIOP_POWER_MEASUREMENT
             LED_setOn(greenLedHandle, LED_BRIGHTNESS_MAX);
             LED_setOff(redLedHandle);
-#endif /* !TIOP_POWER_MEASUREMENT */
             break;
         }
         case OT_DEVICE_ROLE_LEADER:
         {
-#if TIOP_CUI
             CUI_statusLinePrintf(
                 clientHandle, deviceRoleLine,
                 "["CUI_COLOR_RED "Device Role" CUI_COLOR_RESET "] Leader");
-#endif /* TIOP_CUI */
 
-#if !TIOP_POWER_MEASUREMENT
             LED_setOn(greenLedHandle, LED_BRIGHTNESS_MAX);
             LED_setOn(redLedHandle, LED_BRIGHTNESS_MAX);
-#endif /* !TIOP_POWER_MEASUREMENT */
             break;
         }
     }

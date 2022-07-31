@@ -88,7 +88,7 @@ extern "C"
 #include <bcomdef.h>
 #include <ti/sysbios/hal/Hwi.h>
 #include <ti/sysbios/knl/Swi.h>
-#include <ti/drivers/PIN.h>
+#include <ti/drivers/GPIO.h>
 #if !defined(DeviceFamily_CC26X1)
 #include <driverlib/rf_bt5_iq_autocopy.h>
 #else
@@ -378,9 +378,9 @@ void urtls_freeConn(uint8_t sessionId, uint8_t numHandles);
  *
  * @param   mainAntenna - Antenna ID to be used as main receiving antenna
  *
- * @return  PIN_Handle - handle for initialized pins
+ * @return      TRUE = success, FALSE = failure
  */
-PIN_Handle urtls_initAntArray(uint8_t mainAntenna);
+bStatus_t urtls_initAntArray(uint8_t mainAntenna);
 
 /*********************************************************************
  * @fn      urtls_setConnCteReceiveParams

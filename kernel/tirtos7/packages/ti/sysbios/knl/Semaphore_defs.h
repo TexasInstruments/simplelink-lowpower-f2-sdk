@@ -73,8 +73,6 @@
 #define Semaphore_handle ti_sysbios_knl_Semaphore_handle
 #define Semaphore_struct ti_sysbios_knl_Semaphore_struct
 #define Semaphore_Instance_init ti_sysbios_knl_Semaphore_Instance_init
-#define Semaphore_Object_count ti_sysbios_knl_Semaphore_Object_count
-#define Semaphore_Object_get ti_sysbios_knl_Semaphore_Object_get
 #define Semaphore_Object_first ti_sysbios_knl_Semaphore_Object_first
 #define Semaphore_Object_next ti_sysbios_knl_Semaphore_Object_next
 #define Semaphore_Object_sizeof ti_sysbios_knl_Semaphore_Object_sizeof
@@ -127,8 +125,6 @@
 #undef Semaphore_handle
 #undef Semaphore_struct
 #undef Semaphore_Instance_init
-#undef Semaphore_Object_count
-#undef Semaphore_Object_get
 #undef Semaphore_Object_first
 #undef Semaphore_Object_next
 #undef Semaphore_Object_sizeof

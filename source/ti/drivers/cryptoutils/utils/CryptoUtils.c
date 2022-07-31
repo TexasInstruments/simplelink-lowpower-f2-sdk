@@ -44,7 +44,6 @@
     #define CRYPTOUTILS_NOINLINE
 #endif
 
-
 #define CryptoUtils_LIMIT_MASK (0xFFFFFFFEu)
 
 /*
@@ -54,22 +53,23 @@
 #define CryptoUtils_LIMIT_ZERO 0xFFFFFFFEu
 #define CryptoUtils_LIMIT_ONE  0xFFFFFFFFu
 
-const uint8_t * CryptoUtils_limitZero = (uint8_t *) CryptoUtils_LIMIT_ZERO;
-const uint8_t * CryptoUtils_limitOne  = (uint8_t *) CryptoUtils_LIMIT_ONE;
+const uint8_t *CryptoUtils_limitZero = (uint8_t *)CryptoUtils_LIMIT_ZERO;
+const uint8_t *CryptoUtils_limitOne  = (uint8_t *)CryptoUtils_LIMIT_ONE;
 
 /*
  *  ======== CryptoUtils_buffersMatch ========
  */
 #if defined(__IAR_SYSTEMS_ICC__)
-#pragma inline=never
+    #pragma inline = never
 #elif defined(__TI_COMPILER_VERSION__) && !defined(__cplusplus)
-#pragma FUNC_CANNOT_INLINE (CryptoUtils_buffersMatch)
+    #pragma FUNC_CANNOT_INLINE(CryptoUtils_buffersMatch)
 #elif defined(__TI_COMPILER_VERSION__)
-#pragma FUNC_CANNOT_INLINE
+    #pragma FUNC_CANNOT_INLINE
 #endif
 CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatch(const volatile void *volatile buffer0,
                                                    const volatile void *volatile buffer1,
-                                                   size_t bufferByteLength) {
+                                                   size_t bufferByteLength)
+{
     volatile uint8_t tempResult = 0;
     uint8_t byte0;
     uint8_t byte1;
@@ -80,7 +80,8 @@ CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatch(const volatile void *volatile
      * There is no branch based on the content of the buffers here to avoid
      * timing attacks.
      */
-    for (i = 0; i < bufferByteLength; i++) {
+    for (i = 0; i < bufferByteLength; i++)
+    {
         byte0 = ((uint8_t *)buffer0)[i];
         byte1 = ((uint8_t *)buffer1)[i];
 
@@ -94,15 +95,16 @@ CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatch(const volatile void *volatile
  *  ======== CryptoUtils_buffersMatchWordAligned ========
  */
 #if defined(__IAR_SYSTEMS_ICC__)
-#pragma inline=never
+    #pragma inline = never
 #elif defined(__TI_COMPILER_VERSION__) && !defined(__cplusplus)
-#pragma FUNC_CANNOT_INLINE (CryptoUtils_buffersMatchWordAligned)
+    #pragma FUNC_CANNOT_INLINE(CryptoUtils_buffersMatchWordAligned)
 #elif defined(__TI_COMPILER_VERSION__)
-#pragma FUNC_CANNOT_INLINE
+    #pragma FUNC_CANNOT_INLINE
 #endif
 CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatchWordAligned(const volatile uint32_t *volatile buffer0,
                                                               const volatile uint32_t *volatile buffer1,
-                                                              size_t bufferByteLength) {
+                                                              size_t bufferByteLength)
+{
     volatile uint32_t tempResult = 0;
     uint32_t word0;
     uint32_t word1;
@@ -111,7 +113,8 @@ CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatchWordAligned(const volatile uin
     /* We could skip the branch and just set tempResult equal to the
      * statement below for the same effect but this is more explicit.
      */
-    if (bufferByteLength % sizeof(uint32_t) != 0) {
+    if (bufferByteLength % sizeof(uint32_t) != 0)
+    {
         return false;
     }
 
@@ -120,7 +123,8 @@ CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatchWordAligned(const volatile uin
      * There is no branch based on the content of the buffers here to avoid
      * timing attacks.
      */
-    for (i = 0; i < bufferByteLength / sizeof(uint32_t); i++) {
+    for (i = 0; i < bufferByteLength / sizeof(uint32_t); i++)
+    {
         word0 = buffer0[i];
         word1 = buffer1[i];
 
@@ -133,14 +137,16 @@ CRYPTOUTILS_NOINLINE bool CryptoUtils_buffersMatchWordAligned(const volatile uin
 /*
  *  ======== CryptoUtils_reverseBufferBytewise ========
  */
-void CryptoUtils_reverseBufferBytewise(void * buffer, size_t bufferByteLength) {
-    uint8_t *bufferLow = buffer;
+void CryptoUtils_reverseBufferBytewise(void *buffer, size_t bufferByteLength)
+{
+    uint8_t *bufferLow  = buffer;
     uint8_t *bufferHigh = bufferLow + bufferByteLength - 1;
     uint8_t tmp;
 
-    while (bufferLow < bufferHigh) {
-        tmp = *bufferLow;
-        *bufferLow = *bufferHigh;
+    while (bufferLow < bufferHigh)
+    {
+        tmp         = *bufferLow;
+        *bufferLow  = *bufferHigh;
         *bufferHigh = tmp;
         bufferLow++;
         bufferHigh--;
@@ -150,11 +156,13 @@ void CryptoUtils_reverseBufferBytewise(void * buffer, size_t bufferByteLength) {
 /*
  *  ======== CryptoUtils_isBufferAllZeros ========
  */
-bool CryptoUtils_isBufferAllZeros(const void *buffer, size_t bufferByteLength) {
+bool CryptoUtils_isBufferAllZeros(const void *buffer, size_t bufferByteLength)
+{
     uint32_t i;
     uint8_t bufferBits = 0;
 
-    for (i = 0; i < bufferByteLength; i++) {
+    for (i = 0; i < bufferByteLength; i++)
+    {
         bufferBits |= ((uint8_t *)buffer)[i];
     }
 
@@ -164,13 +172,15 @@ bool CryptoUtils_isBufferAllZeros(const void *buffer, size_t bufferByteLength) {
 /*
  *  ======== CryptoUtils_memset ========
  */
-void CryptoUtils_memset(void *dest, size_t destSize, uint8_t val, size_t count) {
+void CryptoUtils_memset(void *dest, size_t destSize, uint8_t val, size_t count)
+{
     DebugP_assert(dest);
     DebugP_assert(count <= destSize);
 
-    volatile uint8_t * volatile p = (volatile uint8_t *)dest;
+    volatile uint8_t *volatile p = (volatile uint8_t *)dest;
 
-    while (destSize-- && count--) {
+    while (destSize-- && count--)
+    {
         *p++ = val;
     }
 }
@@ -178,18 +188,17 @@ void CryptoUtils_memset(void *dest, size_t destSize, uint8_t val, size_t count) 
 /*
  *  ======== CryptoUtils_copyPad ========
  */
-void CryptoUtils_copyPad(const void *source,
-                         uint32_t *destination,
-                         size_t sourceLength) {
+void CryptoUtils_copyPad(const void *source, uint32_t *destination, size_t sourceLength)
+{
     uint32_t i;
     uint8_t remainder;
     uint32_t temp;
     uint8_t *tempBytePointer;
     const uint8_t *sourceBytePointer;
 
-    remainder = sourceLength % sizeof(uint32_t);
-    temp = 0;
-    tempBytePointer = (uint8_t *)&temp;
+    remainder         = sourceLength % sizeof(uint32_t);
+    temp              = 0;
+    tempBytePointer   = (uint8_t *)&temp;
     sourceBytePointer = (uint8_t *)source;
 
     /* Copy source to destination starting at the end of source and the
@@ -198,15 +207,16 @@ void CryptoUtils_copyPad(const void *source,
      * time since the PKA_RAM requires word-aligned reads and writes.
      */
 
-    for (i = 0; i < sourceLength / sizeof(uint32_t); i++) {
-            uint32_t sourceOffset = sizeof(uint32_t) * i;
+    for (i = 0; i < sourceLength / sizeof(uint32_t); i++)
+    {
+        uint32_t sourceOffset = sizeof(uint32_t) * i;
 
-            tempBytePointer[0] = sourceBytePointer[sourceOffset + 0];
-            tempBytePointer[1] = sourceBytePointer[sourceOffset + 1];
-            tempBytePointer[2] = sourceBytePointer[sourceOffset + 2];
-            tempBytePointer[3] = sourceBytePointer[sourceOffset + 3];
+        tempBytePointer[0] = sourceBytePointer[sourceOffset + 0];
+        tempBytePointer[1] = sourceBytePointer[sourceOffset + 1];
+        tempBytePointer[2] = sourceBytePointer[sourceOffset + 2];
+        tempBytePointer[3] = sourceBytePointer[sourceOffset + 3];
 
-            *(destination + i) = temp;
+        *(destination + i) = temp;
     }
 
     /* Reset to 0 so we do not have to zero-out individual bytes */
@@ -215,7 +225,8 @@ void CryptoUtils_copyPad(const void *source,
     /* If sourceLength is not a word-multiple, we need to copy over the
      * remaining bytes and zero pad the word we are writing to PKA_RAM.
      */
-    if (remainder == 1) {
+    if (remainder == 1)
+    {
 
         tempBytePointer[0] = sourceBytePointer[0];
 
@@ -224,14 +235,16 @@ void CryptoUtils_copyPad(const void *source,
          */
         *(destination + i) = temp;
     }
-    else if (remainder == 2) {
+    else if (remainder == 2)
+    {
 
         tempBytePointer[0] = sourceBytePointer[0];
         tempBytePointer[1] = sourceBytePointer[1];
 
-       *(destination + i) = temp;
+        *(destination + i) = temp;
     }
-    else if (remainder == 3) {
+    else if (remainder == 3)
+    {
 
         tempBytePointer[0] = sourceBytePointer[0];
         tempBytePointer[1] = sourceBytePointer[1];
@@ -239,24 +252,22 @@ void CryptoUtils_copyPad(const void *source,
 
         *(destination + i) = temp;
     }
-
 }
 
 /*
  *  ======== CryptoUtils_reverseCopyPad ========
  */
-void CryptoUtils_reverseCopyPad(const void *source,
-                                uint32_t *destination,
-                                size_t sourceLength) {
+void CryptoUtils_reverseCopyPad(const void *source, uint32_t *destination, size_t sourceLength)
+{
     uint32_t i;
     uint8_t remainder;
     uint32_t temp;
     uint8_t *tempBytePointer;
     const uint8_t *sourceBytePointer;
 
-    remainder = sourceLength % sizeof(uint32_t);
-    temp = 0;
-    tempBytePointer = (uint8_t *)&temp;
+    remainder         = sourceLength % sizeof(uint32_t);
+    temp              = 0;
+    tempBytePointer   = (uint8_t *)&temp;
     sourceBytePointer = (uint8_t *)source;
 
     /* Copy source to destination starting at the end of source and the
@@ -265,15 +276,16 @@ void CryptoUtils_reverseCopyPad(const void *source,
      * time since the PKA_RAM requires word-aligned reads and writes.
      */
 
-    for (i = 0; i < sourceLength / sizeof(uint32_t); i++) {
-            uint32_t sourceOffset = sourceLength - 1 - sizeof(uint32_t) * i;
+    for (i = 0; i < sourceLength / sizeof(uint32_t); i++)
+    {
+        uint32_t sourceOffset = sourceLength - 1 - sizeof(uint32_t) * i;
 
-            tempBytePointer[3] = sourceBytePointer[sourceOffset - 3];
-            tempBytePointer[2] = sourceBytePointer[sourceOffset - 2];
-            tempBytePointer[1] = sourceBytePointer[sourceOffset - 1];
-            tempBytePointer[0] = sourceBytePointer[sourceOffset - 0];
+        tempBytePointer[3] = sourceBytePointer[sourceOffset - 3];
+        tempBytePointer[2] = sourceBytePointer[sourceOffset - 2];
+        tempBytePointer[1] = sourceBytePointer[sourceOffset - 1];
+        tempBytePointer[0] = sourceBytePointer[sourceOffset - 0];
 
-            *(destination + i) = temp;
+        *(destination + i) = temp;
     }
 
     /* Reset to 0 so we do not have to zero-out individual bytes */
@@ -282,7 +294,8 @@ void CryptoUtils_reverseCopyPad(const void *source,
     /* If sourceLength is not a word-multiple, we need to copy over the
      * remaining bytes and zero pad the word we are writing to PKA_RAM.
      */
-    if (remainder == 1) {
+    if (remainder == 1)
+    {
 
         tempBytePointer[0] = sourceBytePointer[0];
 
@@ -291,14 +304,16 @@ void CryptoUtils_reverseCopyPad(const void *source,
          */
         *(destination + i) = temp;
     }
-    else if (remainder == 2) {
+    else if (remainder == 2)
+    {
 
         tempBytePointer[0] = sourceBytePointer[1];
         tempBytePointer[1] = sourceBytePointer[0];
 
-       *(destination + i) = temp;
+        *(destination + i) = temp;
     }
-    else if (remainder == 3) {
+    else if (remainder == 3)
+    {
 
         tempBytePointer[0] = sourceBytePointer[2];
         tempBytePointer[1] = sourceBytePointer[1];
@@ -311,9 +326,7 @@ void CryptoUtils_reverseCopyPad(const void *source,
 /*
  *  ======== CryptoUtils_reverseCopy ========
  */
-void CryptoUtils_reverseCopy(const void *source,
-                             void *destination,
-                             size_t sourceLength)
+void CryptoUtils_reverseCopy(const void *source, void *destination, size_t sourceLength)
 {
     /*
      * If destination address is word-aligned and source length is a word-multiple,
@@ -321,14 +334,12 @@ void CryptoUtils_reverseCopy(const void *source,
      */
     if ((((uint32_t)destination | sourceLength) & 0x3) == 0)
     {
-        CryptoUtils_reverseCopyPad(source,
-                                   (uint32_t*)destination,
-                                   sourceLength);
+        CryptoUtils_reverseCopyPad(source, (uint32_t *)destination, sourceLength);
     }
     else
     {
         const uint8_t *sourceBytePtr = (const uint8_t *)source;
-        uint8_t *dstBytePtr = (uint8_t *)destination + sourceLength - 1;
+        uint8_t *dstBytePtr          = (uint8_t *)destination + sourceLength - 1;
 
         /*
          * Copy source to destination starting at the end of source and the
@@ -342,10 +353,12 @@ void CryptoUtils_reverseCopy(const void *source,
 }
 
 /* limitValue must be either CryptoUtils_LIMIT_ZERO or CryptoUtils_LIMIT_ONE */
-static int16_t CryptoUtils_convertLimitValueToInt(const void *limitValue) {
+static int16_t CryptoUtils_convertLimitValueToInt(const void *limitValue)
+{
     int16_t value = 0;
 
-    if (limitValue == CryptoUtils_limitOne) {
+    if (limitValue == CryptoUtils_limitOne)
+    {
         value = 1;
     }
 
@@ -360,35 +373,47 @@ static int16_t CryptoUtils_convertLimitValueToInt(const void *limitValue) {
  *
  * All pointer parameters must be non-NULL.
  */
-static int16_t CryptoUtils_diffAtOffset(const uint8_t number1[], const uint8_t number2[],
-                                        size_t offset, size_t lsbOffset) {
+static int16_t CryptoUtils_diffAtOffset(const uint8_t number1[],
+                                        const uint8_t number2[],
+                                        size_t offset,
+                                        size_t lsbOffset)
+{
 
     int16_t diff;
 
     /* Look at number2 first, as it will be more common for number2 to be one of the limit values. */
-    if (number2 == CryptoUtils_limitZero) {
+    if (number2 == CryptoUtils_limitZero)
+    {
         diff = (int16_t)number1[offset];
     }
-    else if (number2 == CryptoUtils_limitOne) {
-        if (offset == lsbOffset) {
+    else if (number2 == CryptoUtils_limitOne)
+    {
+        if (offset == lsbOffset)
+        {
             diff = (int16_t)number1[offset] - 1;
         }
-        else {
+        else
+        {
             diff = (int16_t)number1[offset];
         }
     }
-    else if (number1 == CryptoUtils_limitZero) {
+    else if (number1 == CryptoUtils_limitZero)
+    {
         diff = 0 - (int16_t)number1[offset];
     }
-    else if (number1 == CryptoUtils_limitOne){
-        if (offset == lsbOffset) {
+    else if (number1 == CryptoUtils_limitOne)
+    {
+        if (offset == lsbOffset)
+        {
             diff = 1 - (int16_t)number1[offset];
         }
-        else {
+        else
+        {
             diff = 0 - (int16_t)number1[offset];
         }
     }
-    else {
+    else
+    {
         diff = (int16_t)number1[offset] - (int16_t)number2[offset];
     }
 
@@ -396,7 +421,8 @@ static int16_t CryptoUtils_diffAtOffset(const uint8_t number1[], const uint8_t n
 }
 
 /* Uses a timing constant algorithm to return 0 if value is 0 and return 1 otherwise. */
-static uint16_t CryptoUtils_valueNonZeroTimingConstantCheck(int16_t value) {
+static uint16_t CryptoUtils_valueNonZeroTimingConstantCheck(int16_t value)
+{
     uint16_t valueNonZero;
 
     /* Mask and shift bits such that if any bit in value is '1' then the
@@ -420,8 +446,11 @@ static uint16_t CryptoUtils_valueNonZeroTimingConstantCheck(int16_t value) {
  *
  * All pointer parameters must be non-NULL.
  */
-static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t number2[],
-                                          size_t byteLength, CryptoUtils_Endianess endianess) {
+static int16_t CryptoUtils_compareNumbers(const uint8_t number1[],
+                                          const uint8_t number2[],
+                                          size_t byteLength,
+                                          CryptoUtils_Endianess endianess)
+{
     int16_t result = 0x0;
     int16_t diff;
     uint16_t diffNonZero;
@@ -439,18 +468,22 @@ static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t
      * This is not expected, but is handled for completeness.
      */
     if (((number1Address & CryptoUtils_LIMIT_MASK) == CryptoUtils_LIMIT_MASK) &&
-       ((number2Address & CryptoUtils_LIMIT_MASK) == CryptoUtils_LIMIT_MASK)) {
+        ((number2Address & CryptoUtils_LIMIT_MASK) == CryptoUtils_LIMIT_MASK))
+    {
 
         result = CryptoUtils_convertLimitValueToInt(number1) - CryptoUtils_convertLimitValueToInt(number2);
     }
-    else if (number1 != number2) {
-        if (endianess == CryptoUtils_ENDIANESS_BIG) {
+    else if (number1 != number2)
+    {
+        if (endianess == CryptoUtils_ENDIANESS_BIG)
+        {
             i = 0u;
-            while (i < byteLength) {
-                diff = CryptoUtils_diffAtOffset(number1, number2, i, byteLength-1);
+            while (i < byteLength)
+            {
+                diff = CryptoUtils_diffAtOffset(number1, number2, i, byteLength - 1);
 
                 /* Update result only if result was not known and is thus currently set to 0. */
-                result = (int16_t)((uint16_t) result | (resultUnknown & (uint16_t)diff));
+                result = (int16_t)((uint16_t)result | (resultUnknown & (uint16_t)diff));
 
                 /*
                  * Determine if result is now known and update resultUnknown
@@ -467,9 +500,11 @@ static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t
                 i++;
             }
         }
-        else {
+        else
+        {
             i = byteLength;
-            while (i > 0u) {
+            while (i > 0u)
+            {
                 i--;
 
                 diff = CryptoUtils_diffAtOffset(number1, number2, i, 0);
@@ -490,7 +525,8 @@ static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t
             }
         }
     }
-    else {
+    else
+    {
         result = 0;
     }
 
@@ -500,8 +536,12 @@ static int16_t CryptoUtils_compareNumbers(const uint8_t number1[], const uint8_t
 /*
  *  ======== CryptoUtils_isNumberInRange ========
  */
-bool CryptoUtils_isNumberInRange(const void *number, size_t bitLength, CryptoUtils_Endianess endianess,
-                                 const void *lowerLimit, const void *upperLimit) {
+bool CryptoUtils_isNumberInRange(const void *number,
+                                 size_t bitLength,
+                                 CryptoUtils_Endianess endianess,
+                                 const void *lowerLimit,
+                                 const void *upperLimit)
+{
     int16_t upperResult;
     int16_t lowerResult;
     bool inUpperLimit = true;
@@ -510,19 +550,23 @@ bool CryptoUtils_isNumberInRange(const void *number, size_t bitLength, CryptoUti
 
     byteLength = (bitLength + 7u) >> 3u;
 
-    if (upperLimit != NULL) {
+    if (upperLimit != NULL)
+    {
         upperResult = CryptoUtils_compareNumbers(number, upperLimit, byteLength, endianess);
-        if (upperResult >= 0) {
+        if (upperResult >= 0)
+        {
             inUpperLimit = false;
         }
     }
 
-    if (lowerLimit != NULL) {
+    if (lowerLimit != NULL)
+    {
         lowerResult = CryptoUtils_compareNumbers(number, lowerLimit, byteLength, endianess);
-        if (lowerResult < 0) {
+        if (lowerResult < 0)
+        {
             inLowerLimit = false;
         }
     }
 
-    return(inUpperLimit && inLowerLimit);
+    return (inUpperLimit && inLowerLimit);
 }

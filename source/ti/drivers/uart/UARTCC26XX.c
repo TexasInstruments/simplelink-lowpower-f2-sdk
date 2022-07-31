@@ -52,20 +52,16 @@
 #include DeviceFamily_constructPath(driverlib/aon_ioc.h)
 
 /* UARTCC26XX functions */
-void         UARTCC26XX_close(UART_Handle handle);
-int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd,
-                               void *arg);
-void         UARTCC26XX_init(UART_Handle handle);
-UART_Handle  UARTCC26XX_open(UART_Handle handle, UART_Params *params);
+void UARTCC26XX_close(UART_Handle handle);
+int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd, void *arg);
+void UARTCC26XX_init(UART_Handle handle);
+UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params);
 int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size);
-int_fast32_t UARTCC26XX_readPolling(UART_Handle handle, void *buf,
-                                   size_t size);
-void         UARTCC26XX_readCancel(UART_Handle handle);
-int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
-                            size_t size);
-int_fast32_t UARTCC26XX_writePolling(UART_Handle handle, const void *buf,
-                                   size_t size);
-void         UARTCC26XX_writeCancel(UART_Handle handle);
+int_fast32_t UARTCC26XX_readPolling(UART_Handle handle, void *buf, size_t size);
+void UARTCC26XX_readCancel(UART_Handle handle);
+int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer, size_t size);
+int_fast32_t UARTCC26XX_writePolling(UART_Handle handle, const void *buf, size_t size);
+void UARTCC26XX_writeCancel(UART_Handle handle);
 
 /* UARTCC26XX internal functions */
 static void UARTCC26XX_initHw(UART_Handle handle);
@@ -74,18 +70,16 @@ static void UARTCC26XX_finalizeIO(UART_Handle handle);
 static int uartPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg);
 
 /* UART function table for UARTCC26XX implementation */
-const UART_FxnTable UARTCC26XX_fxnTable = {
-    UARTCC26XX_close,
-    UARTCC26XX_control,
-    UARTCC26XX_init,
-    UARTCC26XX_open,
-    UARTCC26XX_read,
-    UARTCC26XX_readPolling,
-    UARTCC26XX_readCancel,
-    UARTCC26XX_write,
-    UARTCC26XX_writePolling,
-    UARTCC26XX_writeCancel
-};
+const UART_FxnTable UARTCC26XX_fxnTable = {UARTCC26XX_close,
+                                           UARTCC26XX_control,
+                                           UARTCC26XX_init,
+                                           UARTCC26XX_open,
+                                           UARTCC26XX_read,
+                                           UARTCC26XX_readPolling,
+                                           UARTCC26XX_readCancel,
+                                           UARTCC26XX_write,
+                                           UARTCC26XX_writePolling,
+                                           UARTCC26XX_writeCancel};
 
 static const uint32_t dataLength[] = {
     UART_CONFIG_WLEN_5, /* UART_LEN_5 */
@@ -95,16 +89,16 @@ static const uint32_t dataLength[] = {
 };
 
 static const uint32_t stopBits[] = {
-    UART_CONFIG_STOP_ONE,   /* UART_STOP_ONE */
-    UART_CONFIG_STOP_TWO    /* UART_STOP_TWO */
+    UART_CONFIG_STOP_ONE, /* UART_STOP_ONE */
+    UART_CONFIG_STOP_TWO  /* UART_STOP_TWO */
 };
 
 static const uint32_t parityType[] = {
-    UART_CONFIG_PAR_NONE,   /* UART_PAR_NONE */
-    UART_CONFIG_PAR_EVEN,   /* UART_PAR_EVEN */
-    UART_CONFIG_PAR_ODD,    /* UART_PAR_ODD */
-    UART_CONFIG_PAR_ZERO,   /* UART_PAR_ZERO */
-    UART_CONFIG_PAR_ONE     /* UART_PAR_ONE */
+    UART_CONFIG_PAR_NONE, /* UART_PAR_NONE */
+    UART_CONFIG_PAR_EVEN, /* UART_PAR_EVEN */
+    UART_CONFIG_PAR_ODD,  /* UART_PAR_ODD */
+    UART_CONFIG_PAR_ZERO, /* UART_PAR_ZERO */
+    UART_CONFIG_PAR_ONE   /* UART_PAR_ONE */
 };
 
 /* Array for mapping of FIFO threshold defines selected by board files to:   */
@@ -144,12 +138,12 @@ static const uint8_t rxFifoThreshold[6] = {
 /* Index 0 handles backward compatibility with legacy board files that     */
 /* don't select any FIFO thresholds.                                       */
 static const uint8_t txFifoBytes[6] = {
-     4,   /* UARTCC26XX_FIFO_THRESHOLD_DEFAULT */
-     4,   /* UARTCC26XX_FIFO_THRESHOLD_1_8     */
-     8,   /* UARTCC26XX_FIFO_THRESHOLD_2_8     */
-    16,   /* UARTCC26XX_FIFO_THRESHOLD_4_8     */
-    24,   /* UARTCC26XX_FIFO_THRESHOLD_6_8     */
-    28    /* UARTCC26XX_FIFO_THRESHOLD_7_8     */
+    4,  /* UARTCC26XX_FIFO_THRESHOLD_DEFAULT */
+    4,  /* UARTCC26XX_FIFO_THRESHOLD_1_8     */
+    8,  /* UARTCC26XX_FIFO_THRESHOLD_2_8     */
+    16, /* UARTCC26XX_FIFO_THRESHOLD_4_8     */
+    24, /* UARTCC26XX_FIFO_THRESHOLD_6_8     */
+    28  /* UARTCC26XX_FIFO_THRESHOLD_7_8     */
 };
 
 /* Array for mapping of FIFO threshold defines selected by board files to: */
@@ -159,43 +153,46 @@ static const uint8_t txFifoBytes[6] = {
 /* Index 0 handles backward compatibility with legacy board files that     */
 /* don't select any FIFO thresholds.                                       */
 static const uint8_t rxFifoBytes[6] = {
-    16,   /* UARTCC26XX_FIFO_THRESHOLD_DEFAULT */
-     4,   /* UARTCC26XX_FIFO_THRESHOLD_1_8     */
-     8,   /* UARTCC26XX_FIFO_THRESHOLD_2_8     */
-    16,   /* UARTCC26XX_FIFO_THRESHOLD_4_8     */
-    24,   /* UARTCC26XX_FIFO_THRESHOLD_6_8     */
-    28    /* UARTCC26XX_FIFO_THRESHOLD_7_8     */
+    16, /* UARTCC26XX_FIFO_THRESHOLD_DEFAULT */
+    4,  /* UARTCC26XX_FIFO_THRESHOLD_1_8     */
+    8,  /* UARTCC26XX_FIFO_THRESHOLD_2_8     */
+    16, /* UARTCC26XX_FIFO_THRESHOLD_4_8     */
+    24, /* UARTCC26XX_FIFO_THRESHOLD_6_8     */
+    28  /* UARTCC26XX_FIFO_THRESHOLD_7_8     */
 };
 
 /*
  *  ================================= Macro ====================================
  *  TODO: Move me
  */
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
-#define UNIT_DIV_ROUNDUP(x,d) ((x + ((d) - 1)) / (d))
+#define MIN(a, b)              (((a) < (b)) ? (a) : (b))
+#define MAX(a, b)              (((a) > (b)) ? (a) : (b))
+#define UNIT_DIV_ROUNDUP(x, d) ((x + ((d)-1)) / (d))
 
-#define READ_DONE  0x1  /* Mask to trigger Swi on a read complete */
-#define WRITE_DONE 0x2  /* Mask to trigger Swi on a write complete */
+#define READ_DONE  0x1 /* Mask to trigger Swi on a read complete */
+#define WRITE_DONE 0x2 /* Mask to trigger Swi on a write complete */
 
 /*
  * Function for checking whether flow control is enabled.
  */
-static inline bool isFlowControlEnabled(UARTCC26XX_HWAttrsV2 const  *hwAttrs) {
+static inline bool isFlowControlEnabled(UARTCC26XX_HWAttrsV2 const *hwAttrs)
+{
     return ((hwAttrs->ctsPin != GPIO_INVALID_INDEX) && (hwAttrs->rtsPin != GPIO_INVALID_INDEX));
 }
 
 /*
  * Ensure safe setting of the standby disallow constraint.
  */
-static inline void threadSafeStdbyDisSet(volatile bool *pConstraint) {
-    unsigned int  key;
+static inline void threadSafeStdbyDisSet(volatile bool *pConstraint)
+{
+    unsigned int key;
 
     /* Disable interrupts */
     key = HwiP_disable();
 
     /* Only act if the current constraint is not previously set */
-    if (!*pConstraint) {
+    if (!*pConstraint)
+    {
         /* Set constraints to guarantee operation */
         Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
         *pConstraint = true;
@@ -208,13 +205,15 @@ static inline void threadSafeStdbyDisSet(volatile bool *pConstraint) {
 /*
  * Ensure safe releasing of the standby disallow constraint.
  */
-static inline void threadSafeStdbyDisRelease(volatile bool *pConstraint) {
-    unsigned int  key;
+static inline void threadSafeStdbyDisRelease(volatile bool *pConstraint)
+{
+    unsigned int key;
 
     /* Disable interrupts */
     key = HwiP_disable();
 
-    if (*pConstraint) {
+    if (*pConstraint)
+    {
         /* release constraint since operation is done */
         Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
         *pConstraint = false;
@@ -232,8 +231,7 @@ static void writeSemCallback(UART_Handle handle, void *buffer, size_t count)
 {
     UARTCC26XX_Object *object = handle->object;
 
-    DebugP_log1("UART:(%p) posting write semaphore",
-                ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
+    DebugP_log1("UART:(%p) posting write semaphore", ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
 
     SemaphoreP_post(&(object->writeSem));
 }
@@ -246,8 +244,7 @@ static void readSemCallback(UART_Handle handle, void *buffer, size_t count)
 {
     UARTCC26XX_Object *object = handle->object;
 
-    DebugP_log1("UART:(%p) posting read semaphore",
-                ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
+    DebugP_log1("UART:(%p) posting read semaphore", ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
 
     SemaphoreP_post(&(object->readSem));
 }
@@ -258,22 +255,23 @@ static void readSemCallback(UART_Handle handle, void *buffer, size_t count)
  */
 static int32_t writeData(UART_Handle handle, int32_t size)
 {
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Send characters until FIFO is full or done. */
-    while (size) {
+    while (size)
+    {
         /* Send the next character and increment counts. */
-        if (!UARTCharPutNonBlocking(hwAttrs->baseAddr, *(unsigned char *)(object->writeBuf))) {
+        if (!UARTCharPutNonBlocking(hwAttrs->baseAddr, *(unsigned char *)(object->writeBuf)))
+        {
             /* Character was not sent */
             break;
         }
-        DebugP_log2("UART:(%p) Wrote character 0x%x",
-                   hwAttrs->baseAddr, *(unsigned char *)object->writeBuf);
+        DebugP_log2("UART:(%p) Wrote character 0x%x", hwAttrs->baseAddr, *(unsigned char *)object->writeBuf);
         object->writeBuf = (unsigned char *)object->writeBuf + 1;
         size--;
         object->writeCount++;
@@ -288,23 +286,23 @@ static int32_t writeData(UART_Handle handle, int32_t size)
  */
 static int32_t readData(UART_Handle handle, int32_t size)
 {
-    int32_t                         readIn;
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    int32_t readIn;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Receive chars until empty or done. */
-    while (size && (readIn = (int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1) {
+    while (size && (readIn = (int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1)
+    {
 
-        DebugP_log2("UART:(%p) Read character 0x%x",
-                                 hwAttrs->baseAddr, (uint8_t)readIn);
+        DebugP_log2("UART:(%p) Read character 0x%x", hwAttrs->baseAddr, (uint8_t)readIn);
 
         /* Update status. */
         *((unsigned char *)object->readBuf) = (uint8_t)readIn;
-        object->readBuf = (unsigned char *)object->readBuf + 1;
+        object->readBuf                     = (unsigned char *)object->readBuf + 1;
         object->readCount++;
         size--;
     }
@@ -318,19 +316,19 @@ static int32_t readData(UART_Handle handle, int32_t size)
  */
 static int32_t readData2RingBuf(UART_Handle handle, int32_t size)
 {
-    int32_t                         readIn;
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const      *hwAttrs;
+    int32_t readIn;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Fill up RingBuf */
-    while (size && (readIn = (int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1) {
+    while (size && (readIn = (int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1)
+    {
 
-        DebugP_log2("UART:(%p) Read character 0x%x",
-                                 hwAttrs->baseAddr, (uint8_t)readIn);
+        DebugP_log2("UART:(%p) Read character 0x%x", hwAttrs->baseAddr, (uint8_t)readIn);
 
         size--;
         RingBuf_put(&object->ringBuffer, (unsigned char)readIn);
@@ -338,7 +336,6 @@ static int32_t readData2RingBuf(UART_Handle handle, int32_t size)
 
     return (size);
 }
-
 
 /*
  *  ======== startTxFifoEmptyClk ========
@@ -350,13 +347,13 @@ static int32_t readData2RingBuf(UART_Handle handle, int32_t size)
  */
 static void startTxFifoEmptyClk(UART_Handle handle, unsigned int numOfDataInFifo)
 {
-    UARTCC26XX_Object           *object;
+    UARTCC26XX_Object *object;
 
     /* Get the pointer to the object and hwAttrs */
     object = handle->object;
 
     /* Ensure that the clock is stopped so we can set a new timeout */
-    ClockP_stop((ClockP_Handle) &(object->txFifoEmptyClk));
+    ClockP_stop((ClockP_Handle) & (object->txFifoEmptyClk));
 
     /* No more to write, but data is not shifted out properly yet.
      *   1. Compute appropriate wait time for FIFO to empty out
@@ -366,15 +363,18 @@ static void startTxFifoEmptyClk(UART_Handle handle, unsigned int numOfDataInFifo
      *       - 1000000 so we get 1 us resolution
      *       - 100 (100us) for margin
      */
-    unsigned int writeTimeoutUs = (numOfDataInFifo*(1+5+(object->dataLength)+(object->stopBits+1))*1000000)/object->baudRate + 100;
+    unsigned int writeTimeoutUs = (numOfDataInFifo * (1 + 5 + (object->dataLength) + (object->stopBits + 1)) *
+                                   1000000) /
+                                      object->baudRate +
+                                  100;
     /*   2. Configure clock object to trigger when FIFO is empty
      *       - +1 in case clock module due to tick in less than one ClockP_getSystemTickPeriod()
      *       - UNIT_DIV_ROUNDUP to avoid fractional part being truncated during division
      */
 
-    ClockP_setTimeout((ClockP_Handle) &(object->txFifoEmptyClk),
-                     (1 + UNIT_DIV_ROUNDUP(writeTimeoutUs, ClockP_getSystemTickPeriod())));
-    ClockP_start((ClockP_Handle) &(object->txFifoEmptyClk));
+    ClockP_setTimeout((ClockP_Handle) & (object->txFifoEmptyClk),
+                      (1 + UNIT_DIV_ROUNDUP(writeTimeoutUs, ClockP_getSystemTickPeriod())));
+    ClockP_start((ClockP_Handle) & (object->txFifoEmptyClk));
 }
 
 /*
@@ -389,23 +389,24 @@ static void startTxFifoEmptyClk(UART_Handle handle, unsigned int numOfDataInFifo
  */
 static void writeFinishedDoCallback(UART_Handle handle)
 {
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /*   Function verifies that the FIFO is empty via BUSY flag */
     /*   If not yet ready start the periodic timer and wait another period*/
     /*   Return.. */
-    if(UARTBusy(hwAttrs->baseAddr)){
+    if (UARTBusy(hwAttrs->baseAddr))
+    {
         /* The UART is still busy.
          * Wait 500 us before checking again or 1 tick period if the
          * ClockP_getSystemTickPeriod() is larger than 500 us.
          */
-        ClockP_setTimeout((ClockP_Handle) &(object->txFifoEmptyClk), MAX((500/ClockP_getSystemTickPeriod()),1));
-        ClockP_start((ClockP_Handle) &(object->txFifoEmptyClk));
+        ClockP_setTimeout((ClockP_Handle) & (object->txFifoEmptyClk), MAX((500 / ClockP_getSystemTickPeriod()), 1));
+        ClockP_start((ClockP_Handle) & (object->txFifoEmptyClk));
         return;
     }
 
@@ -425,7 +426,7 @@ static void writeFinishedDoCallback(UART_Handle handle)
  *  @param object         Pointer to UART object
  *  @param hwAttrs        Pointer to UART hwAttrs
  */
-static void writeTxFifoFlush(UARTCC26XX_Object  *object, UARTCC26XX_HWAttrsV2 const  *hwAttrs)
+static void writeTxFifoFlush(UARTCC26XX_Object *object, UARTCC26XX_HWAttrsV2 const *hwAttrs)
 {
     unsigned int key;
 
@@ -447,12 +448,16 @@ static void writeTxFifoFlush(UARTCC26XX_Object  *object, UARTCC26XX_HWAttrsV2 co
      *              Must be handled at TX FIFO empty clock timeout:
      *                - the timeout/finish function must check the status
      */
-    if(object->writeMode == UART_MODE_CALLBACK) {
+    if (object->writeMode == UART_MODE_CALLBACK)
+    {
         /* Wait until the TX FIFO is empty. CALLBACK mode can be used from
          * hwi/swi context, so we cannot use semaphore..
          */
-        while(UARTBusy(hwAttrs->baseAddr));
-    } else { /* i.e. UART_MODE_BLOCKING */
+        while (UARTBusy(hwAttrs->baseAddr))
+            ;
+    }
+    else
+    { /* i.e. UART_MODE_BLOCKING */
         /* Pend on semaphore again..(this time forever since we are flushing
          * TX FIFO and nothing should be able to stop it..
          */
@@ -461,12 +466,15 @@ static void writeTxFifoFlush(UARTCC26XX_Object  *object, UARTCC26XX_HWAttrsV2 co
     /* 5. Revert to active pins before returning */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
     GPIO_setMux(hwAttrs->txPin, (hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_TX : IOC_PORT_MCU_UART1_TX));
-    if(isFlowControlEnabled(hwAttrs)) {
-        GPIO_setMux(hwAttrs->ctsPin, (hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_CTS : IOC_PORT_MCU_UART1_CTS));
+    if (isFlowControlEnabled(hwAttrs))
+    {
+        GPIO_setMux(hwAttrs->ctsPin,
+                    (hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_CTS : IOC_PORT_MCU_UART1_CTS));
     }
 #else
     GPIO_setMux(hwAttrs->txPin, IOC_PORT_MCU_UART0_TX);
-    if(isFlowControlEnabled(hwAttrs)) {
+    if (isFlowControlEnabled(hwAttrs))
+    {
         GPIO_setMux(hwAttrs->ctsPin, IOC_PORT_MCU_UART0_CTS);
     }
 #endif
@@ -492,31 +500,32 @@ static void writeTxFifoFlush(UARTCC26XX_Object  *object, UARTCC26XX_HWAttrsV2 co
  */
 void UARTCC26XX_hwiIntFxn(uintptr_t arg)
 {
-    unsigned long               intStatus;
-    unsigned long               errStatus = UART_OK;
-    UARTCC26XX_Object           *object;
+    unsigned long intStatus;
+    unsigned long errStatus = UART_OK;
+    UARTCC26XX_Object *object;
     UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = ((UART_Handle)arg)->object;
+    object  = ((UART_Handle)arg)->object;
     hwAttrs = ((UART_Handle)arg)->hwAttrs;
 
     /* Clear interrupts */
     intStatus = UARTIntStatus(hwAttrs->baseAddr, true);
     UARTIntClear(hwAttrs->baseAddr, intStatus);
 
-    DebugP_log2("UART:(%p) Interrupt with mask 0x%x",
-                             hwAttrs->baseAddr, intStatus);
+    DebugP_log2("UART:(%p) Interrupt with mask 0x%x", hwAttrs->baseAddr, intStatus);
 
     /* Record readSize */
-    int32_t readSize = object->readSize;
+    int32_t readSize         = object->readSize;
     int32_t readSize_ringBuf = object->ringBuffer.length - object->ringBuffer.count;
 
     /* Basic error handling */
-    if (intStatus & (UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE)) {
+    if (intStatus & (UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE))
+    {
 
         /* If overrun, the error bit is set immediately */
-        if (intStatus & UART_INT_OE) {
+        if (intStatus & UART_INT_OE)
+        {
             /* check receive status register */
             errStatus = UARTRxErrorGet(hwAttrs->baseAddr);
             UARTRxErrorClear(hwAttrs->baseAddr);
@@ -527,19 +536,22 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
             bytesToRead = MIN((UARTCC26XX_FIFO_SIZE - bytesToRead), readSize_ringBuf);
             readData2RingBuf((UART_Handle)arg, bytesToRead);
         }
-        else {
+        else
+        {
             /*
              * else, for break, framing and par. error bits are at error index
              * (we would like to keep the "surviving" bits)
              */
             /* Only if UART_read is active */
-            while(object->readSize > 0) {
+            while (object->readSize > 0)
+            {
                 /* read one data */
                 readData((UART_Handle)arg, 1);
                 /* check receive status register if byte is OK */
                 errStatus = UARTRxErrorGet(hwAttrs->baseAddr);
                 UARTRxErrorClear(hwAttrs->baseAddr);
-                if(errStatus != 0) {
+                if (errStatus != 0)
+                {
                     /*
                      * last read was not including data, reset data vars
                      * (i.e. upd readBuf pointer, decr readCount)
@@ -549,7 +561,8 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
                     /* the FIFO index with error is reached, stop reading */
                     break;
                 }
-                else {
+                else
+                {
                     /* current read was not the problem update readSize */
                     object->readSize--;
                 }
@@ -557,7 +570,8 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
 
             /* If we managed to read out all bytes when checking for errors, make sure to post the Swi
              * and read remaining data into the ring buffer */
-            if (!object->readSize) {
+            if (!object->readSize)
+            {
                 /* Read succeeded. */
                 SwiP_or(&(object->swi), READ_DONE);
                 /* Read any remaining data in the FIFO into the ring buffer. */
@@ -572,20 +586,25 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
         UARTCC26XX_readCancel((UART_Handle)arg);
 
         /* Notify application of error */
-        if (hwAttrs->errorFxn) {
+        if (hwAttrs->errorFxn)
+        {
             hwAttrs->errorFxn((UART_Handle)arg, errStatus);
         }
     }
-    else {
+    else
+    {
         /* Receive Timeout */
-        if(intStatus & UART_INT_RT) {
+        if (intStatus & UART_INT_RT)
+        {
             /* if UART_read is active */
-            if (readSize) {
+            if (readSize)
+            {
                 /* Read data from FIFO. */
                 object->readSize = readData((UART_Handle)arg, readSize);
 
                 /* If return partial is set */
-                if(object->readRetPartial) {
+                if (object->readRetPartial)
+                {
                     /* Partial read accepted, read succeeded by def, set
                      * readSize to allow callback to trigger new _read()
                      */
@@ -594,23 +613,29 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
                     SwiP_or(&(object->swi), READ_DONE);
                 }
                 /* else - return when all bytes have arrived */
-                else {
+                else
+                {
                     /* If all bytes are read */
-                    if(!object->readSize) {
+                    if (!object->readSize)
+                    {
                         /* Read succeeded */
                         SwiP_or(&(object->swi), READ_DONE);
                     }
                 }
             }
-            else {
+            else
+            {
                 /* not during UART_read, put in RingBuf */
                 readData2RingBuf((UART_Handle)arg, readSize_ringBuf);
             }
         }
-        else {
+        else
+        {
             /* RX interrupt, since CTS is handled by HW */
-            if (intStatus & UART_INT_RX) {
-                if (readSize) {
+            if (intStatus & UART_INT_RX)
+            {
+                if (readSize)
+                {
                     /* if UART_read is active */
 
                     /* Read whatever is less of:
@@ -619,7 +644,7 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
                      * since RT timeout will only trigger if FIFO is not empty.
                      */
                     size_t readFifoThresholdBytes = rxFifoBytes[hwAttrs->rxIntFifoThr];
-                    size_t bytesToRead = MIN(readFifoThresholdBytes - 1, object->readSize);
+                    size_t bytesToRead            = MIN(readFifoThresholdBytes - 1, object->readSize);
 
                     /* Do read, all bytes we request to read, are present in FIFO */
                     readData((UART_Handle)arg, bytesToRead);
@@ -630,7 +655,8 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
                     object->readSize -= bytesToRead;
 
                     /* If all bytes are read */
-                    if (!object->readSize) {
+                    if (!object->readSize)
+                    {
                         /* Read succeeded. */
                         SwiP_or(&(object->swi), READ_DONE);
 
@@ -638,7 +664,8 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
                         readData2RingBuf((UART_Handle)arg, readSize_ringBuf);
                     }
                 }
-                else {
+                else
+                {
                     /* not during UART_read, put all in RingBuf */
                     readData2RingBuf((UART_Handle)arg, readSize_ringBuf);
                 }
@@ -647,20 +674,22 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
     }
 
     /* Write if there are characters to be written. */
-    if ((intStatus & UART_INT_TX) && object->writeSize) {
+    if ((intStatus & UART_INT_TX) && object->writeSize)
+    {
         /* Using writtenLast=writeSize before last write
          *(since writeSize=0 when the last finishes)
          */
         uint32_t writtenLast = object->writeSize;
-        object->writeSize = writeData((UART_Handle)arg, object->writeSize);
-        if(!object->writeSize) {
+        object->writeSize    = writeData((UART_Handle)arg, object->writeSize);
+        if (!object->writeSize)
+        {
             /* No more to write, but data is not shifted out properly yet.
              * Start TX FIFO Empty clock, which will trigger the txFifoEmptyClk
              * function.
              * The number of bytes left in the TX FIFO when the TX FIFO threshold
              * interrupt occurs are added to writtenLast.
              */
-             startTxFifoEmptyClk((UART_Handle)arg, (writtenLast + txFifoBytes[hwAttrs->txIntFifoThr]));
+            startTxFifoEmptyClk((UART_Handle)arg, (writtenLast + txFifoBytes[hwAttrs->txIntFifoThr]));
         }
     }
 }
@@ -672,15 +701,16 @@ void UARTCC26XX_hwiIntFxn(uintptr_t arg)
  */
 void UARTCC26XX_swiIntFxn(uintptr_t arg0, uintptr_t arg1)
 {
-    UARTCC26XX_Object          *object;
+    UARTCC26XX_Object *object;
     UARTCC26XX_HWAttrsV2 const *hwAttrs;
-    uint32_t                    trigger = SwiP_getTrigger();
+    uint32_t trigger = SwiP_getTrigger();
 
     /* Get the pointer to the object and hwAttrs */
-    object = ((UART_Handle)arg0)->object;
+    object  = ((UART_Handle)arg0)->object;
     hwAttrs = (UARTCC26XX_HWAttrsV2 const *)(((UART_Handle)arg0)->hwAttrs);
 
-    if (trigger & READ_DONE) {
+    if (trigger & READ_DONE)
+    {
         /* Release power constraint. */
         threadSafeStdbyDisRelease(&(object->uartRxPowerConstraint));
 
@@ -688,14 +718,13 @@ void UARTCC26XX_swiIntFxn(uintptr_t arg0, uintptr_t arg1)
         object->readBuf = (unsigned char *)object->readBuf - object->readCount;
 
         /* Do Callback */
-        object->readCallback((UART_Handle)arg0, object->readBuf,
-                         object->readCount);
+        object->readCallback((UART_Handle)arg0, object->readBuf, object->readCount);
 
-        DebugP_log2("UART:(%p) Read finished, %d bytes read",
-                hwAttrs->baseAddr, object->readCount);
+        DebugP_log2("UART:(%p) Read finished, %d bytes read", hwAttrs->baseAddr, object->readCount);
     }
 
-    if (trigger & WRITE_DONE) {
+    if (trigger & WRITE_DONE)
+    {
         /* Release constraint since transaction is done */
         threadSafeStdbyDisRelease(&(object->uartTxPowerConstraint));
 
@@ -709,10 +738,8 @@ void UARTCC26XX_swiIntFxn(uintptr_t arg0, uintptr_t arg1)
         object->writeBuf = (unsigned char *)object->writeBuf - object->writeCount;
 
         /* Make callback */
-        object->writeCallback((UART_Handle)arg0, (uint8_t*)object->writeBuf,
-                              object->writeCount);
-        DebugP_log2("UART:(%p) Write finished, %d bytes written",
-                hwAttrs->baseAddr, object->writeCount);
+        object->writeCallback((UART_Handle)arg0, (uint8_t *)object->writeBuf, object->writeCount);
+        DebugP_log2("UART:(%p) Write finished, %d bytes written", hwAttrs->baseAddr, object->writeCount);
     }
 }
 
@@ -726,10 +753,10 @@ void UARTCC26XX_swiIntFxn(uintptr_t arg0, uintptr_t arg1)
  */
 void UARTCC26XX_init(UART_Handle handle)
 {
-    UARTCC26XX_Object           *object;
+    UARTCC26XX_Object *object;
 
     /* Get the pointer to the object */
-    object = handle->object;
+    object         = handle->object;
     object->opened = false;
 }
 
@@ -757,25 +784,27 @@ void UARTCC26XX_init(UART_Handle handle)
  */
 UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
 {
-    unsigned int                    key;
+    unsigned int key;
     /* Use union to save on stack allocation */
-    union {
-        HwiP_Params                  hwiParams;
-        SwiP_Params                  swiParams;
-        ClockP_Params                clkParams;
+    union
+    {
+        HwiP_Params hwiParams;
+        SwiP_Params swiParams;
+        ClockP_Params clkParams;
     } paramsUnion;
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable preemption while checking if the UART is open. */
     key = HwiP_disable();
 
     /* Check if the UART is open already with the base addr. */
-    if (object->opened == true) {
+    if (object->opened == true)
+    {
         HwiP_restore(key);
 
         DebugP_log1("UART:(%p) already in use.", hwAttrs->baseAddr);
@@ -786,10 +815,8 @@ UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
     HwiP_restore(key);
 
     /* Check that a callback is set */
-    DebugP_assert(params->readMode != UART_MODE_CALLBACK ||
-                  params->readCallback != NULL);
-    DebugP_assert(params->writeMode != UART_MODE_CALLBACK ||
-                  params->writeCallback != NULL);
+    DebugP_assert(params->readMode != UART_MODE_CALLBACK || params->readCallback != NULL);
+    DebugP_assert(params->writeMode != UART_MODE_CALLBACK || params->writeCallback != NULL);
 
     /* Initialize the UART object */
     object->readMode       = params->readMode;
@@ -807,13 +834,13 @@ UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
     object->parityType     = params->parityType;
 
     /* Set UART transaction variables to defaults. */
-    object->writeBuf = NULL;
-    object->readBuf = NULL;
-    object->writeCount = 0;
-    object->readCount = 0;
-    object->writeSize = 0;
-    object->readSize = 0;
-    object->writeCR = false;
+    object->writeBuf       = NULL;
+    object->readBuf        = NULL;
+    object->writeCount     = 0;
+    object->readCount      = 0;
+    object->writeSize      = 0;
+    object->readSize       = 0;
+    object->writeCR        = false;
     object->readRetPartial = false;
 
     object->uartRxPowerConstraint = false;
@@ -830,27 +857,28 @@ UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
 
     /* Create Hwi object for this UART peripheral. */
     HwiP_Params_init(&(paramsUnion.hwiParams));
-    paramsUnion.hwiParams.arg = (uintptr_t)handle;
+    paramsUnion.hwiParams.arg      = (uintptr_t)handle;
     paramsUnion.hwiParams.priority = hwAttrs->intPriority;
-    HwiP_construct(&(object->hwi), hwAttrs->intNum, UARTCC26XX_hwiIntFxn,
-                  &(paramsUnion.hwiParams));
+    HwiP_construct(&(object->hwi), hwAttrs->intNum, UARTCC26XX_hwiIntFxn, &(paramsUnion.hwiParams));
 
     /* Create Swi object for this UART peripheral */
     SwiP_Params_init(&(paramsUnion.swiParams));
-    paramsUnion.swiParams.arg0 = (uintptr_t)handle;
+    paramsUnion.swiParams.arg0     = (uintptr_t)handle;
     paramsUnion.swiParams.priority = hwAttrs->swiPriority;
     SwiP_construct(&(object->swi), UARTCC26XX_swiIntFxn, &(paramsUnion.swiParams));
 
     /* Initialize semaphore */
 
     /* If write mode is blocking create a semaphore and set callback. */
-    if (object->writeMode == UART_MODE_BLOCKING) {
+    if (object->writeMode == UART_MODE_BLOCKING)
+    {
         SemaphoreP_constructBinary(&(object->writeSem), 0);
         object->writeCallback = &writeSemCallback;
     }
 
     /* If read mode is blocking create a semaphore and set callback. */
-    if (object->readMode == UART_MODE_BLOCKING) {
+    if (object->readMode == UART_MODE_BLOCKING)
+    {
         SemaphoreP_constructBinary(&(object->readSem), 0);
         object->readCallback = &readSemCallback;
     }
@@ -859,16 +887,17 @@ UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
     ClockP_Params_init(&paramsUnion.clkParams);
     paramsUnion.clkParams.period    = 0;
     paramsUnion.clkParams.startFlag = false;
-    paramsUnion.clkParams.arg       = (uintptr_t) handle;
-    ClockP_construct(&(object->txFifoEmptyClk),
-                    (ClockP_Fxn) &writeFinishedDoCallback,
-                    10, &(paramsUnion.clkParams));
+    paramsUnion.clkParams.arg       = (uintptr_t)handle;
+    ClockP_construct(&(object->txFifoEmptyClk), (ClockP_Fxn)&writeFinishedDoCallback, 10, &(paramsUnion.clkParams));
 
     /* Create circular buffer object to be used for read buffering */
     RingBuf_construct(&object->ringBuffer, hwAttrs->ringBufPtr, hwAttrs->ringBufSize);
 
     /* Register notification function */
-    Power_registerNotify(&object->uartPostObj, PowerCC26XX_AWAKE_STANDBY, (Power_NotifyFxn)uartPostNotify, (uint32_t)handle);
+    Power_registerNotify(&object->uartPostObj,
+                         PowerCC26XX_AWAKE_STANDBY,
+                         (Power_NotifyFxn)uartPostNotify,
+                         (uint32_t)handle);
 
     /* UART opened successfully */
     DebugP_log1("UART:(%p) opened", hwAttrs->baseAddr);
@@ -893,17 +922,17 @@ UART_Handle UARTCC26XX_open(UART_Handle handle, UART_Params *params)
  */
 void UARTCC26XX_close(UART_Handle handle)
 {
-    UARTCC26XX_Object            *object;
-    UARTCC26XX_HWAttrsV2 const   *hwAttrs;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable all UART module interrupts. */
-    UARTIntDisable(hwAttrs->baseAddr, UART_INT_OE | UART_INT_BE | UART_INT_PE |
-                                      UART_INT_FE | UART_INT_RT | UART_INT_TX |
-                                      UART_INT_RX | UART_INT_CTS);
+    UARTIntDisable(hwAttrs->baseAddr,
+                   UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE | UART_INT_RT | UART_INT_TX | UART_INT_RX |
+                       UART_INT_CTS);
 
     /* Mark the module as available */
     object->opened = false;
@@ -915,8 +944,7 @@ void UARTCC26XX_close(UART_Handle handle)
     /* Disable UART FIFO */
     HWREG(hwAttrs->baseAddr + UART_O_LCRH) &= ~(UART_LCRH_FEN);
     /* Disable UART module */
-    HWREG(hwAttrs->baseAddr + UART_O_CTL) &= ~(UART_CTL_UARTEN | UART_CTL_TXE |
-                                      UART_CTL_RXE);
+    HWREG(hwAttrs->baseAddr + UART_O_CTL) &= ~(UART_CTL_UARTEN | UART_CTL_TXE | UART_CTL_RXE);
 
     /* Deallocate pins */
     UARTCC26XX_finalizeIO(handle);
@@ -927,10 +955,12 @@ void UARTCC26XX_close(UART_Handle handle)
     /* Destruct the SYS/BIOS objects. */
     HwiP_destruct(&(object->hwi));
     SwiP_destruct(&(object->swi));
-    if (object->writeMode == UART_MODE_BLOCKING) {
+    if (object->writeMode == UART_MODE_BLOCKING)
+    {
         SemaphoreP_destruct(&(object->writeSem));
     }
-    if (object->readMode == UART_MODE_BLOCKING) {
+    if (object->readMode == UART_MODE_BLOCKING)
+    {
         SemaphoreP_destruct(&(object->readSem));
     }
     ClockP_destruct(&(object->txFifoEmptyClk));
@@ -940,7 +970,6 @@ void UARTCC26XX_close(UART_Handle handle)
 
     DebugP_log1("UART:(%p) closed", hwAttrs->baseAddr);
 }
-
 
 /*!
  *  @brief  Function for setting control parameters of the UART
@@ -961,13 +990,12 @@ void UARTCC26XX_close(UART_Handle handle)
  *
  *  @return ::UART_STATUS_SUCCESS if success, or error code if error.
  */
-int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd,
-        void *arg)
+int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd, void *arg)
 {
     /* Locals */
-    UARTCC26XX_Object            *object;
-    UARTCC26XX_HWAttrsV2 const   *hwAttrs;
-    unsigned int                 key;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
+    unsigned int key;
 
     /* Get the pointer to the object and hwAttrs */
     object = handle->object;
@@ -975,19 +1003,19 @@ int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd,
     /* Initialize return value*/
     int ret = UART_STATUS_UNDEFINEDCMD;
     /* Do command*/
-    switch(cmd)
+    switch (cmd)
     {
         case UARTCC26XX_CMD_RETURN_PARTIAL_ENABLE:
             /* Enable RETURN_PARTIAL */
             object->readRetPartial = true;
-            ret = UART_STATUS_SUCCESS;
-        break;
+            ret                    = UART_STATUS_SUCCESS;
+            break;
 
         case UARTCC26XX_CMD_RETURN_PARTIAL_DISABLE:
             /* Disable RETURN_PARTIAL */
             object->readRetPartial = false;
-            ret = UART_STATUS_SUCCESS;
-        break;
+            ret                    = UART_STATUS_SUCCESS;
+            break;
 
         case UARTCC26XX_CMD_RX_FIFO_FLUSH:
             /* Flush RX FIFO */
@@ -997,24 +1025,25 @@ int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd,
             key = HwiP_disable();
 
             /* Read RX FIFO until empty */
-            while (((int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1);
+            while (((int32_t)UARTCharGetNonBlocking(hwAttrs->baseAddr)) != -1)
+                ;
 
             /* Reset RingBuf */
             object->ringBuffer.count = 0;
-            object->ringBuffer.head = object->ringBuffer.length - 1;
-            object->ringBuffer.tail = 0;
+            object->ringBuffer.head  = object->ringBuffer.length - 1;
+            object->ringBuffer.tail  = 0;
 
             /* Set size = 0 to prevent reading and restore interrupts. */
             object->readSize = 0;
             HwiP_restore(key);
 
             ret = UART_STATUS_SUCCESS;
-        break;
+            break;
 
         default:
             /* This command is not defined */
             ret = UART_STATUS_UNDEFINEDCMD;
-        break;
+            break;
     }
 
     /* Return */
@@ -1050,26 +1079,26 @@ int_fast16_t UARTCC26XX_control(UART_Handle handle, uint_fast16_t cmd,
  *          UART_ERROR on an error.
  *
  */
-int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
-        size_t size)
+int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer, size_t size)
 {
-    unsigned int                    key;
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    unsigned int key;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Check that there is data to write */
     DebugP_assert(size != 0);
 
     /* Disable preemption while checking if the UART is in use. */
-    key = HwiP_disable();
+    key                  = HwiP_disable();
     /* The UART TX is disabled after a successful write, if it is
      * still active another write is in progress, reject. */
     uint32_t writeActive = HWREG(hwAttrs->baseAddr + UART_O_CTL) & (UART_CTL_TXE);
-    if (!object->opened || writeActive) {
+    if (!object->opened || writeActive)
+    {
         HwiP_restore(key);
         DebugP_log1("UART:(%p) Could not write data, uart closed or in use.",
                     ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
@@ -1078,13 +1107,13 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
     }
 
     /* Stop the txFifoEmpty clock in case it was running due to a previous write operation */
-    ClockP_stop((ClockP_Handle) &(object->txFifoEmptyClk));
+    ClockP_stop((ClockP_Handle) & (object->txFifoEmptyClk));
 
     /* Update the status of the UART module */
     object->status = UART_OK;
 
     /* Save the data to be written and restore interrupts. */
-    object->writeBuf = buffer;
+    object->writeBuf   = buffer;
     object->writeCount = 0;
 
     /* Enable TX */
@@ -1097,16 +1126,18 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
 
     uint32_t writtenLast = size;
     /* Fill up TX FIFO */
-    if (!(object->writeSize = writeData(handle, size))) {
+    if (!(object->writeSize = writeData(handle, size)))
+    {
         /* No more data to transmit - Write is finished but all bytes
-        *  may not have been shifted out. */
+         *  may not have been shifted out. */
         startTxFifoEmptyClk((UART_Handle)handle, writtenLast);
 
         /* If writeMode is blocking, block and get the status. */
-        if (object->writeMode == UART_MODE_BLOCKING) {
+        if (object->writeMode == UART_MODE_BLOCKING)
+        {
             /* Pend on semaphore and wait for Hwi to finish. */
-            if (SemaphoreP_OK != SemaphoreP_pend(&(object->writeSem),
-                        object->writeTimeout)) {
+            if (SemaphoreP_OK != SemaphoreP_pend(&(object->writeSem), object->writeTimeout))
+            {
                 /* Reset writeSize */
                 object->writeSize = 0;
 
@@ -1120,15 +1151,17 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
                 threadSafeStdbyDisRelease(&(object->uartTxPowerConstraint));
 
                 DebugP_log2("UART:(%p) Write timed out, %d bytes written",
-                           ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
-                           object->writeCount);
+                            ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
+                            object->writeCount);
 
                 /* Return UART_ERROR to indicate something went wrong, object->status set to UART_TIMED_OUT*/
                 return UART_ERROR;
             }
             return (object->writeCount);
         }
-    } else {
+    }
+    else
+    {
 
         key = HwiP_disable();
 
@@ -1138,10 +1171,11 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
         HwiP_restore(key);
 
         /* If writeMode is blocking, block and get the status. */
-        if (object->writeMode == UART_MODE_BLOCKING) {
+        if (object->writeMode == UART_MODE_BLOCKING)
+        {
             /* Pend on semaphore and wait for Hwi to finish. */
-            if (SemaphoreP_OK != SemaphoreP_pend(&(object->writeSem),
-                        object->writeTimeout)) {
+            if (SemaphoreP_OK != SemaphoreP_pend(&(object->writeSem), object->writeTimeout))
+            {
                 /* Semaphore timed out, make the write empty and log the write. */
 
                 /* Starting a timer to enable the posting of semaphore used in writeTxFifoFlush.
@@ -1163,8 +1197,8 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
                 threadSafeStdbyDisRelease(&(object->uartTxPowerConstraint));
 
                 DebugP_log2("UART:(%p) Write timed out, %d bytes written",
-                           ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
-                           object->writeCount);
+                            ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
+                            object->writeCount);
 
                 /* Return UART_ERROR to indicate something went wrong (object->status set to UART_TIMED_OUT)*/
                 return UART_ERROR;
@@ -1193,8 +1227,7 @@ int_fast32_t UARTCC26XX_write(UART_Handle handle, const void *buffer,
  *
  *  @return Always ::UART_ERROR
  */
-int_fast32_t UARTCC26XX_writePolling(UART_Handle handle, const void *buf,
-        size_t size)
+int_fast32_t UARTCC26XX_writePolling(UART_Handle handle, const void *buf, size_t size)
 {
     /* Not supported */
     return (UART_ERROR);
@@ -1211,21 +1244,20 @@ int_fast32_t UARTCC26XX_writePolling(UART_Handle handle, const void *buf,
  */
 void UARTCC26XX_writeCancel(UART_Handle handle)
 {
-    unsigned int                    key;
-    UARTCC26XX_Object               *object;
-    UARTCC26XX_HWAttrsV2 const     *hwAttrs;
+    unsigned int key;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable interrupts to avoid writing data while changing state. */
     key = HwiP_disable();
 
     /* Return if there is nothing to write and TX FIFO is empty. */
-    if (!object->writeSize &&
-        !UARTBusy(hwAttrs->baseAddr) &&
-        !(HWREG(hwAttrs->baseAddr + UART_O_CTL) & (UART_CTL_TXE))) {
+    if (!object->writeSize && !UARTBusy(hwAttrs->baseAddr) && !(HWREG(hwAttrs->baseAddr + UART_O_CTL) & (UART_CTL_TXE)))
+    {
         HwiP_restore(key);
         return;
     }
@@ -1236,14 +1268,15 @@ void UARTCC26XX_writeCancel(UART_Handle handle)
      * operation were not canceled resulting in two callbacks for
      * the same operation.
      */
-    ClockP_stop((ClockP_Handle) &(object->txFifoEmptyClk));
+    ClockP_stop((ClockP_Handle) & (object->txFifoEmptyClk));
 
     /* Set size = 0 to prevent writing and restore interrupts. */
     object->writeSize = 0;
     HwiP_restore(key);
 
     /* If flow control is enabled, a workaround for flushing the fifo is needed..*/
-    if (isFlowControlEnabled(hwAttrs)) {
+    if (isFlowControlEnabled(hwAttrs))
+    {
         writeTxFifoFlush(object, hwAttrs);
     }
 
@@ -1262,13 +1295,12 @@ void UARTCC26XX_writeCancel(UART_Handle handle)
 
     /* Reset the write buffer so we can pass it back */
     object->writeBuf = (unsigned char *)object->writeBuf - object->writeCount;
-    object->writeCallback(handle, (uint8_t*)object->writeBuf,
-                          object->writeCount);
+    object->writeCallback(handle, (uint8_t *)object->writeBuf, object->writeCount);
 
     DebugP_log2("UART:(%p) Write canceled, "
-                            "%d bytes written",
-             ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
-               object->writeCount);
+                "%d bytes written",
+                ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
+                object->writeCount);
 }
 
 /*!
@@ -1284,7 +1316,7 @@ void UARTCC26XX_writeCancel(UART_Handle handle)
  *
  *  @param  *buffer  Pointer to read buffer
  *
-*  @param  size  Number of bytes to read. If ::UARTCC26XX_CMD_RETURN_PARTIAL_ENABLE
+ *  @param  size  Number of bytes to read. If ::UARTCC26XX_CMD_RETURN_PARTIAL_ENABLE
  *                has been set, the read will
  *                return if the reception is inactive for a 32-bit period
  *                (i.e. before all bytes are received).
@@ -1295,25 +1327,27 @@ void UARTCC26XX_writeCancel(UART_Handle handle)
  */
 int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
 {
-    unsigned char                    readIn;
-    UARTCC26XX_Object                *object;
-    UARTCC26XX_HWAttrsV2 const       *hwAttrs;
-    size_t                           objectReadSize;
-    unsigned int                     key;
+    unsigned char readIn;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
+    size_t objectReadSize;
+    unsigned int key;
 
     /* Get the pointer to the object */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
-    if (!object->opened) {
+    if (!object->opened)
+    {
         DebugP_log1("UART:(%p) not opened.", hwAttrs->baseAddr);
         return (UART_ERROR);
     }
 
-    if (object->readSize) {
+    if (object->readSize)
+    {
         /* Previous read is not done, return */
         DebugP_log1("UART:(%p) Could not read data, uart in use.",
-             ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
+                    ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr);
 
         return (UART_ERROR);
     }
@@ -1325,17 +1359,19 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
     object->status = UART_OK;
 
     /* Save the data to be read and restore interrupts. */
-    object->readBuf = buffer;
+    object->readBuf   = buffer;
     object->readCount = 0;
 
     /* Read from RingBuf as much as is available */
-    while (objectReadSize) {
+    while (objectReadSize)
+    {
         int rdCount;
 
         /* Disable interrupts while reading from the ring buffer */
-        key = HwiP_disable();
+        key     = HwiP_disable();
         rdCount = RingBuf_get(&object->ringBuffer, &readIn);
-        if (rdCount < 0) {
+        if (rdCount < 0)
+        {
             /* RingBuf is empty, need to read from FIFO */
             object->readSize = objectReadSize;
 
@@ -1343,8 +1379,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
             HWREG(hwAttrs->baseAddr + UART_O_CTL) |= UART_CTL_RXE;
 
             /* Enable RX interrupts */
-            UARTIntEnable(hwAttrs->baseAddr, UART_INT_RX | UART_INT_RT |
-                    UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE);
+            UARTIntEnable(hwAttrs->baseAddr,
+                          UART_INT_RX | UART_INT_RT | UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE);
 
             HwiP_restore(key);
 
@@ -1352,7 +1388,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
             threadSafeStdbyDisSet(&(object->uartRxPowerConstraint));
 
             /* If readMode is blocking, block and get the status. */
-            if (object->readMode == UART_MODE_BLOCKING) {
+            if (object->readMode == UART_MODE_BLOCKING)
+            {
                 /*
                  *  Check for return partial case before waiting on the
                  *  semaphore.  It's possible that no more data will come
@@ -1360,8 +1397,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
                  */
                 key = HwiP_disable();
 
-                if ((object->readRetPartial) && (object->readCount)
-                        && (object->readSize)) {
+                if ((object->readRetPartial) && (object->readCount) && (object->readSize))
+                {
                     /* Return partial enabled and some data has been read */
                     /* Reset readSize to allow next UART_read() */
                     object->readSize = 0;
@@ -1376,8 +1413,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
                 HwiP_restore(key);
 
                 /* Pend on semaphore and wait for Hwi to finish. */
-                if (SemaphoreP_OK != SemaphoreP_pend(&(object->readSem),
-                            object->readTimeout)) {
+                if (SemaphoreP_OK != SemaphoreP_pend(&(object->readSem), object->readTimeout))
+                {
 
                     /*
                      *  If the ISR posts the semaphore here, the count will be
@@ -1387,8 +1424,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
                     /* Semaphore timed out, make the read empty and log the read. */
                     object->readSize = 0;
 
-                    if (SemaphoreP_OK != SemaphoreP_pend(&(object->readSem),
-                                SemaphoreP_NO_WAIT)) {
+                    if (SemaphoreP_OK != SemaphoreP_pend(&(object->readSem), SemaphoreP_NO_WAIT))
+                    {
                         /*
                          *  Release constraint since transaction timed out,
                          *  allowed to enter standby
@@ -1396,15 +1433,14 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
                         threadSafeStdbyDisRelease(&(object->uartRxPowerConstraint));
 
                         /* Reset the read buffer so we can pass it back */
-                        object->readBuf = (unsigned char *)object->readBuf -
-                                object->readCount;
+                        object->readBuf = (unsigned char *)object->readBuf - object->readCount;
 
                         /* Set status to TIMED_OUT */
                         object->status = UART_TIMED_OUT;
 
                         DebugP_log2("UART:(%p) Read timed out, %d bytes read",
-                                ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
-                                object->readCount);
+                                    ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
+                                    object->readCount);
                     }
                 }
 
@@ -1421,8 +1457,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
             key = HwiP_disable();
 
             /* readMode is callback */
-            if ((object->readRetPartial) && (object->readCount)
-                    && (object->readSize)) {
+            if ((object->readRetPartial) && (object->readCount) && (object->readSize))
+            {
                 /* Return partial enabled and some data has been read */
                 /* Reset readSize to allow next UART_read() */
                 object->readSize = 0;
@@ -1431,7 +1467,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
                 /* Read succeeded */
                 SwiP_or(&(object->swi), READ_DONE);
             }
-            else {
+            else
+            {
                 HwiP_restore(key);
             }
 
@@ -1442,7 +1479,7 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
 
         /* save data to receive buffer */
         *((unsigned char *)object->readBuf) = (uint8_t)readIn;
-        object->readBuf = (unsigned char *)object->readBuf + 1;
+        object->readBuf                     = (unsigned char *)object->readBuf + 1;
         object->readCount++;
         objectReadSize--;
     }
@@ -1452,7 +1489,8 @@ int_fast32_t UARTCC26XX_read(UART_Handle handle, void *buffer, size_t size)
     object->readBuf = (unsigned char *)object->readBuf - object->readCount;
 
     /* Do Callback */
-    if (object->readMode == UART_MODE_CALLBACK) {
+    if (object->readMode == UART_MODE_CALLBACK)
+    {
         object->readCallback(handle, object->readBuf, object->readCount);
     }
 
@@ -1482,26 +1520,27 @@ int_fast32_t UARTCC26XX_readPolling(UART_Handle handle, void *buf, size_t size)
  */
 void UARTCC26XX_readCancel(UART_Handle handle)
 {
-    unsigned int                 key;
-    UARTCC26XX_Object            *object;
-    UARTCC26XX_HWAttrsV2 const  *hwAttrs;
+    unsigned int key;
+    UARTCC26XX_Object *object;
+    UARTCC26XX_HWAttrsV2 const *hwAttrs;
 
     /* Get the pointer to the object */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable interrupts to avoid reading data while changing state. */
     key = HwiP_disable();
 
     /* Disable RX interrupts */
-    UARTIntDisable(hwAttrs->baseAddr, UART_INT_OE | UART_INT_BE | UART_INT_PE |
-                                      UART_INT_FE | UART_INT_RT | UART_INT_RX);
+    UARTIntDisable(hwAttrs->baseAddr,
+                   UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE | UART_INT_RT | UART_INT_RX);
 
     /* Release constraint since transaction is done */
     threadSafeStdbyDisRelease(&(object->uartRxPowerConstraint));
 
     /* Return if there is no read. */
-    if (!object->readSize) {
+    if (!object->readSize)
+    {
         HwiP_restore(key);
         return;
     }
@@ -1518,9 +1557,9 @@ void UARTCC26XX_readCancel(UART_Handle handle)
     object->readCallback(handle, object->readBuf, object->readCount);
 
     DebugP_log2("UART:(%p) Read canceled, "
-                            "%d bytes read",
-             ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
-               object->readCount);
+                "%d bytes read",
+                ((UARTCC26XX_HWAttrsV2 const *)(handle->hwAttrs))->baseAddr,
+                object->readCount);
 }
 
 /*
@@ -1530,45 +1569,40 @@ void UARTCC26XX_readCancel(UART_Handle handle)
  *  @pre    Function assumes that the UART handle is pointing to a hardware
  *          module which has already been opened.
  */
-static void UARTCC26XX_initHw(UART_Handle handle) {
+static void UARTCC26XX_initHw(UART_Handle handle)
+{
     UARTCC26XX_Object *object;
     UARTCC26XX_HWAttrsV2 const *hwAttrs;
     ClockP_FreqHz freq;
 
     /* Get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Disable UART function. */
     UARTDisable(hwAttrs->baseAddr);
 
     /* Disable all UART module interrupts. */
-    UARTIntDisable(hwAttrs->baseAddr, UART_INT_OE | UART_INT_BE | UART_INT_PE |
-                                      UART_INT_FE | UART_INT_RT | UART_INT_TX |
-                                      UART_INT_RX | UART_INT_CTS);
+    UARTIntDisable(hwAttrs->baseAddr,
+                   UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE | UART_INT_RT | UART_INT_TX | UART_INT_RX |
+                       UART_INT_CTS);
 
     /* Clear all UART interrupts */
-    UARTIntClear(hwAttrs->baseAddr, UART_INT_OE | UART_INT_BE | UART_INT_PE |
-                                    UART_INT_FE | UART_INT_RT | UART_INT_TX |
-                                    UART_INT_RX | UART_INT_CTS);
+    UARTIntClear(hwAttrs->baseAddr,
+                 UART_INT_OE | UART_INT_BE | UART_INT_PE | UART_INT_FE | UART_INT_RT | UART_INT_TX | UART_INT_RX |
+                     UART_INT_CTS);
 
     /* Set TX interrupt FIFO level and RX interrupt FIFO level */
-    UARTFIFOLevelSet(hwAttrs->baseAddr, txFifoThreshold[hwAttrs->txIntFifoThr],
-                                        rxFifoThreshold[hwAttrs->rxIntFifoThr]);
+    UARTFIFOLevelSet(hwAttrs->baseAddr, txFifoThreshold[hwAttrs->txIntFifoThr], rxFifoThreshold[hwAttrs->rxIntFifoThr]);
 
     /* Configure frame format and baudrate */
     ClockP_getCpuFreq(&freq);
     UARTConfigSetExpClk(hwAttrs->baseAddr,
                         freq.lo,
                         object->baudRate,
-                       (dataLength[object->dataLength] |
-                        stopBits[object->stopBits] |
-                        parityType[object->parityType]));
+                        (dataLength[object->dataLength] | stopBits[object->stopBits] | parityType[object->parityType]));
 
-    DebugP_log3("UART:(%p) CPU freq: %d; UART baudrate to %d",
-                                hwAttrs->baseAddr,
-                                freq.lo,
-                                object->baudRate);
+    DebugP_log3("UART:(%p) CPU freq: %d; UART baudrate to %d", hwAttrs->baseAddr, freq.lo, object->baudRate);
 
     /* Enable UART FIFOs */
     HWREG(hwAttrs->baseAddr + UART_O_LCRH) |= UART_LCRH_FEN;
@@ -1577,7 +1611,8 @@ static void UARTCC26XX_initHw(UART_Handle handle) {
     HWREG(hwAttrs->baseAddr + UART_O_CTL) |= UART_CTL_UARTEN;
 
     /* If Flow Control is enabled, configure hardware controlled flow control */
-    if(isFlowControlEnabled(hwAttrs)) {
+    if (isFlowControlEnabled(hwAttrs))
+    {
         HWREG(hwAttrs->baseAddr + UART_O_CTL) |= (UART_CTL_CTSEN | UART_CTL_RTSEN);
     }
 }
@@ -1589,43 +1624,51 @@ static void UARTCC26XX_initHw(UART_Handle handle) {
  *  @pre    Function assumes that the UART handle is pointing to a hardware
  *          module which has already been opened.
  */
-static void UARTCC26XX_initIO(UART_Handle handle) {
+static void UARTCC26XX_initIO(UART_Handle handle)
+{
     /* Locals */
     UARTCC26XX_HWAttrsV2 const *hwAttrs = handle->hwAttrs;
 
     /* Set IO muxing for the UART pins */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
-    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->txPin != GPIO_INVALID_INDEX)
+    {
         GPIO_setMux(hwAttrs->txPin, hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_TX : IOC_PORT_MCU_UART1_TX);
     }
-    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->rxPin != GPIO_INVALID_INDEX)
+    {
         GPIO_setMux(hwAttrs->rxPin, hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_RX : IOC_PORT_MCU_UART1_RX);
     }
     if (isFlowControlEnabled(hwAttrs))
     {
-        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(
-                hwAttrs->ctsPin, hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_CTS : IOC_PORT_MCU_UART1_CTS
-            );
+        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX)
+        {
+            GPIO_setMux(hwAttrs->ctsPin,
+                        hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_CTS : IOC_PORT_MCU_UART1_CTS);
         }
-        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
-            GPIO_setMux(
-                hwAttrs->rtsPin, hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_RTS : IOC_PORT_MCU_UART1_RTS
-            );
+        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX)
+        {
+            GPIO_setMux(hwAttrs->rtsPin,
+                        hwAttrs->baseAddr == UART0_BASE ? IOC_PORT_MCU_UART0_RTS : IOC_PORT_MCU_UART1_RTS);
         }
     }
 #else
-    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->txPin != GPIO_INVALID_INDEX)
+    {
         GPIO_setMux(hwAttrs->txPin, IOC_PORT_MCU_UART0_TX);
     }
-    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->rxPin != GPIO_INVALID_INDEX)
+    {
         GPIO_setMux(hwAttrs->rxPin, IOC_PORT_MCU_UART0_RX);
     }
-    if (isFlowControlEnabled(hwAttrs)) {
-        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
+    if (isFlowControlEnabled(hwAttrs))
+    {
+        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX)
+        {
             GPIO_setMux(hwAttrs->ctsPin, IOC_PORT_MCU_UART0_CTS);
         }
-        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
+        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX)
+        {
             GPIO_setMux(hwAttrs->rtsPin, IOC_PORT_MCU_UART0_RTS);
         }
     }
@@ -1636,19 +1679,23 @@ static void UARTCC26XX_finalizeIO(UART_Handle handle)
 {
     UARTCC26XX_HWAttrsV2 const *hwAttrs = handle->hwAttrs;
 
-    if (hwAttrs->txPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->txPin != GPIO_INVALID_INDEX)
+    {
         GPIO_resetConfig(hwAttrs->txPin);
     }
-    if (hwAttrs->rxPin != GPIO_INVALID_INDEX) {
+    if (hwAttrs->rxPin != GPIO_INVALID_INDEX)
+    {
         GPIO_resetConfig(hwAttrs->rxPin);
     }
 
     if (isFlowControlEnabled(hwAttrs))
     {
-        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX) {
+        if (hwAttrs->ctsPin != GPIO_INVALID_INDEX)
+        {
             GPIO_resetConfig(hwAttrs->ctsPin);
         }
-        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX) {
+        if (hwAttrs->rtsPin != GPIO_INVALID_INDEX)
+        {
             GPIO_resetConfig(hwAttrs->rtsPin);
         }
     }
@@ -1665,8 +1712,9 @@ static void UARTCC26XX_finalizeIO(UART_Handle handle)
 static int uartPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg)
 {
     /* Reconfigure the hardware if returning from sleep */
-    if (eventType == PowerCC26XX_AWAKE_STANDBY) {
-        UARTCC26XX_initHw((UART_Handle) clientArg);
+    if (eventType == PowerCC26XX_AWAKE_STANDBY)
+    {
+        UARTCC26XX_initHw((UART_Handle)clientArg);
     }
     return Power_NOTIFYDONE;
 }

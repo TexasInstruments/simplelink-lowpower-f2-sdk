@@ -106,9 +106,9 @@ extern "C" {
 #endif
 
 /* Exit the SWI and wait until an HWI call posts the SWI again */
-#define ECDSACC26X2_STATUS_FSM_RUN_PKA_OP       ECDSA_STATUS_RESERVED - 0
+#define ECDSACC26X2_STATUS_FSM_RUN_PKA_OP ECDSA_STATUS_RESERVED - 0
 /* Execute the next FSM state immediately without waiting for the next HWI */
-#define ECDSACC26X2_STATUS_FSM_RUN_FSM          ECDSA_STATUS_RESERVED - 1
+#define ECDSACC26X2_STATUS_FSM_RUN_FSM    ECDSA_STATUS_RESERVED - 1
 
 /*!
  *  @brief      ECDSACC26X2 Sign and Verify states
@@ -119,7 +119,8 @@ extern "C" {
  *  The FSM controller will increment the state counter and iterate through
  *  states until it is told to stop or restart.
  */
-typedef enum {
+typedef enum
+{
     ECDSACC26X2_FSM_ERROR = 0,
 
     ECDSACC26X2_FSM_SIGN_COMPUTE_R,
@@ -169,7 +170,7 @@ typedef enum {
  *  pointer is stored in the object at the beginning of the transaction.
  *  This way, unused state machines are removed at link time.
  */
-typedef int_fast16_t (*ECDSACC26X2_stateMachineFxn) (ECDSA_Handle handle);
+typedef int_fast16_t (*ECDSACC26X2_stateMachineFxn)(ECDSA_Handle handle);
 
 /*!
  *  @brief      ECDSACC26X2 Hardware Attributes
@@ -177,7 +178,8 @@ typedef int_fast16_t (*ECDSACC26X2_stateMachineFxn) (ECDSA_Handle handle);
  *  ECDSACC26X2 hardware attributes should be included in the board file
  *  and pointed to by the ECDSA_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief PKA Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -188,10 +190,11 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
-    uint8_t    trngIntPriority;
+    uint8_t intPriority;
+    uint8_t trngIntPriority;
 } ECDSACC26X2_HWAttrs;
 
 /*!
@@ -199,26 +202,27 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    TRNG_Config                     trngConfig;
-    TRNGCC26XX_Object               trngObject;
-    TRNGCC26XX_HWAttrs              trngHwAttrs;
-    TRNG_Handle                     trngHandle;
-    bool                            isOpen;
-    bool                            operationInProgress;
-    bool                            operationCanceled;
-    int_fast16_t                    operationStatus;
-    ECDSA_Operation                 operation;
-    ECDSA_OperationType             operationType;
-    ECDSA_CallbackFxn               callbackFxn;
-    ECDSACC26X2_stateMachineFxn     fsmFxn;
-    ECDSA_ReturnBehavior            returnBehavior;
-    ECDSACC26X2_FsmState            fsmState;
-    uint32_t                        semaphoreTimeout;
-    uint32_t                        resultAddress;
-    uint32_t                       *scratchNumber1;
-    uint32_t                       *scratchNumber2;
-    CryptoKey                       pmsnKey;
+typedef struct
+{
+    TRNG_Config trngConfig;
+    TRNGCC26XX_Object trngObject;
+    TRNGCC26XX_HWAttrs trngHwAttrs;
+    TRNG_Handle trngHandle;
+    bool isOpen;
+    bool operationInProgress;
+    bool operationCanceled;
+    int_fast16_t operationStatus;
+    ECDSA_Operation operation;
+    ECDSA_OperationType operationType;
+    ECDSA_CallbackFxn callbackFxn;
+    ECDSACC26X2_stateMachineFxn fsmFxn;
+    ECDSA_ReturnBehavior returnBehavior;
+    ECDSACC26X2_FsmState fsmState;
+    uint32_t semaphoreTimeout;
+    uint32_t resultAddress;
+    uint32_t *scratchNumber1;
+    uint32_t *scratchNumber2;
+    CryptoKey pmsnKey;
 } ECDSACC26X2_Object;
 
 #ifdef __cplusplus

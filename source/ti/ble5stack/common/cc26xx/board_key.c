@@ -59,7 +59,8 @@
 #include <ti/sysbios/family/arm/m3/Hwi.h>
 #endif
 
-#include <ti/drivers/pin/PINCC26XX.h>
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/gpio/GPIOCC26XX.h>
 
 #ifdef USE_ICALL
 #include <icall.h>
@@ -83,8 +84,7 @@ typedef void* UArg;
  * LOCAL FUNCTIONS
  */
 static void Board_keyChangeHandler(UArg a0);
-static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId);
-
+static void GPIO_Board_keyCallback(uint_least8_t index);
 /*******************************************************************************
  * EXTERNAL VARIABLES
  */
@@ -109,31 +109,6 @@ HwiP_Struct callbackHwiKeys;
 Hwi_Struct callbackHwiKeys;
 #endif
 
-// PIN configuration structure to set all KEY pins as inputs with pullups enabled
-PIN_Config keyPinsCfg[] =
-{
-#if defined(CC26X2R1_LAUNCHXL) || defined(CC2652RB_LAUNCHXL) || defined(CC13X2R1_LAUNCHXL) || \
-    defined (CC13X2P1_LAUNCHXL) || defined (CC13X2P_2_LAUNCHXL) || defined (CC13X2P_4_LAUNCHXL) || \
-    defined (CC2652PSIP_LP) || defined (CC2652RSIP_LP) || defined (CC2652R7_LP) || defined (CC1352P7_1_LP) || \
-    defined (CC1352P7_4_LP) || defined (CC2651P3_LP) || defined (CC2651R3_LP)
-    CONFIG_GPIO_BTN1   | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    CONFIG_GPIO_BTN2   | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-#elif defined(CC2650_LAUNCHXL) || defined(CC2640R2_LAUNCHXL) || defined(CC1350_LAUNCHXL)
-    Board_BTN1          | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    Board_BTN2          | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-#elif defined(CC2650DK_7ID)  || defined(CC1350DK_7XD)
-    Board_KEY_SELECT    | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    Board_KEY_UP        | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    Board_KEY_DOWN      | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    Board_KEY_LEFT      | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-    Board_KEY_RIGHT     | PIN_GPIO_OUTPUT_DIS  | PIN_INPUT_EN  |  PIN_PULLUP,
-#endif
-    PIN_TERMINATE
-};
-
-PIN_State  keyPins;
-PIN_Handle hKeyPins;
-
 /*********************************************************************
  * PUBLIC FUNCTIONS
  */
@@ -148,46 +123,15 @@ PIN_Handle hKeyPins;
  */
 void Board_initKeys(keysPressedCB_t appKeyCB)
 {
-  // Initialize KEY pins. Enable int after callback registered
-  hKeyPins = PIN_open(&keyPins, keyPinsCfg);
-  PIN_registerIntCb(hKeyPins, Board_keyCallback);
-
-#if defined(CC26X2R1_LAUNCHXL) || defined(CC2652RB_LAUNCHXL) || defined(CC13X2R1_LAUNCHXL) || \
-    defined (CC13X2P1_LAUNCHXL) || defined (CC13X2P_2_LAUNCHXL) || defined (CC13X2P_4_LAUNCHXL) || \
-    defined (CC2652PSIP_LP) || defined (CC2652RSIP_LP) || defined (CC2652R7_LP) || defined (CC1352P7_1_LP) || \
-    defined (CC1352P7_4_LP) || defined (CC2651P3_LP) || defined (CC2651R3_LP)
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, CONFIG_GPIO_BTN1 | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, CONFIG_GPIO_BTN2 | PIN_IRQ_NEGEDGE);
-#elif defined(CC2650_LAUNCHXL) || defined(CC2640R2_LAUNCHXL) || defined(CC1350_LAUNCHXL)
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_BTN1        | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_BTN2        | PIN_IRQ_NEGEDGE);
-#elif defined(CC2650DK_7ID)  || defined(CC1350DK_7XD)
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_KEY_SELECT  | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_KEY_UP      | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_KEY_DOWN    | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_KEY_LEFT    | PIN_IRQ_NEGEDGE);
-  PIN_setConfig(hKeyPins, PIN_BM_IRQ, Board_KEY_RIGHT   | PIN_IRQ_NEGEDGE);
-#endif
-
-#ifdef POWER_SAVING
-  //Enable wakeup
-#if defined(CC26X2R1_LAUNCHXL) || defined(CC2652RB_LAUNCHXL) || defined(CC13X2R1_LAUNCHXL) || \
-    defined (CC13X2P1_LAUNCHXL) || defined (CC13X2P_2_LAUNCHXL) || defined (CC13X2P_4_LAUNCHXL) || \
-    defined (CC2652PSIP_LP) || defined (CC2652RSIP_LP) || defined (CC2652R7_LP) || defined (CC1352P7_1_LP) || \
-    defined (CC1352P7_4_LP) || defined (CC2651P3_LP) || defined (CC2651R3_LP)
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, CONFIG_GPIO_BTN1 | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, CONFIG_GPIO_BTN2 | PINCC26XX_WAKEUP_NEGEDGE);
-#elif defined(CC2650_LAUNCHXL) || defined(CC2640R2_LAUNCHXL) || defined(CC1350_LAUNCHXL)
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_BTN1        | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_BTN2        | PINCC26XX_WAKEUP_NEGEDGE);
-#elif defined(CC2650DK_7ID)  || defined(CC1350DK_7XD)
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_KEY_SELECT | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_KEY_UP | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_KEY_DOWN | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_KEY_LEFT | PINCC26XX_WAKEUP_NEGEDGE);
-  PIN_setConfig(hKeyPins, PINCC26XX_BM_WAKEUP, Board_KEY_RIGHT | PINCC26XX_WAKEUP_NEGEDGE);
-#endif
-#endif //POWER_SAVING
+  // Initialize GPIO
+  GPIO_setConfig(CONFIG_GPIO_BTN1, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING);
+  GPIO_setConfig(CONFIG_GPIO_BTN2, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING);
+  // Set callback function
+  GPIO_setCallback(CONFIG_GPIO_BTN1, GPIO_Board_keyCallback);
+  GPIO_setCallback(CONFIG_GPIO_BTN2, GPIO_Board_keyCallback);
+  // Enable interrupt
+  GPIO_enableInt(CONFIG_GPIO_BTN1);
+  GPIO_enableInt(CONFIG_GPIO_BTN2);
 
   // Setup keycallback for keys
   Util_constructClock(&keyChangeClock, Board_keyChangeHandler,
@@ -195,70 +139,35 @@ void Board_initKeys(keysPressedCB_t appKeyCB)
 
   // Set the application callback
   appKeyChangeHandler = appKeyCB;
+#ifdef POWER_SAVING
+  //Enable wakeup - store current configure in temporary variable and update pinConfig
+  GPIO_PinConfig currConfig;
+  GPIO_getConfig(CONFIG_GPIO_BTN1, &currConfig);
+  GPIO_setConfig(CONFIG_GPIO_BTN1, currConfig | GPIO_CFG_STANDBY_WAKE_ON);
+  GPIO_setConfig(CONFIG_GPIO_BTN2, currConfig | GPIO_CFG_STANDBY_WAKE_ON);
+#endif
 }
 
 /*********************************************************************
- * @fn      Board_keyCallback
+ * @fn      GPIO_Board_keyCallback
  *
- * @brief   Interrupt handler for Keys
+ * @brief   Interrupt handler for Keys for GPIO++ module
  *
  * @param   none
  *
  * @return  none
  */
-static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId)
+static void GPIO_Board_keyCallback(uint_least8_t index)
 {
   keysPressed = 0;
-#if defined(CC26X2R1_LAUNCHXL) || defined(CC2652RB_LAUNCHXL) || defined(CC13X2R1_LAUNCHXL) || \
-    defined (CC13X2P1_LAUNCHXL) || defined (CC13X2P_2_LAUNCHXL) || defined (CC13X2P_4_LAUNCHXL) || \
-    defined (CC2652PSIP_LP) || defined (CC2652RSIP_LP) || defined (CC2652R7_LP) || defined (CC1352P7_1_LP) || \
-    defined (CC1352P7_4_LP) || defined (CC2651P3_LP) || defined (CC2651R3_LP)
-  if ( PIN_getInputValue(CONFIG_GPIO_BTN1) == 0 )
+  if ( GPIO_read(CONFIG_GPIO_BTN1) == 0 )
   {
     keysPressed |= KEY_LEFT;
   }
-
-  if ( PIN_getInputValue(CONFIG_GPIO_BTN2) == 0 )
+  if ( GPIO_read(CONFIG_GPIO_BTN2) == 0 )
   {
     keysPressed |= KEY_RIGHT;
   }
-#elif defined(CC2650_LAUNCHXL) || defined(CC2640R2_LAUNCHXL) || defined(CC1350_LAUNCHXL)
-  if ( PIN_getInputValue(Board_BTN1) == 0 )
-  {
-    keysPressed |= KEY_LEFT;
-  }
-
-  if ( PIN_getInputValue(Board_BTN2) == 0 )
-  {
-    keysPressed |= KEY_RIGHT;
-  }
-#elif defined(CC2650DK_7ID)  || defined(CC1350DK_7XD)
-  if ( PIN_getInputValue(Board_KEY_SELECT) == 0 )
-  {
-    keysPressed |= KEY_SELECT;
-  }
-
-  if ( PIN_getInputValue(Board_KEY_UP) == 0 )
-  {
-    keysPressed |= KEY_UP;
-  }
-
-  if ( PIN_getInputValue(Board_KEY_DOWN) == 0 )
-  {
-    keysPressed |= KEY_DOWN;
-  }
-
-  if ( PIN_getInputValue(Board_KEY_LEFT) == 0 )
-  {
-    keysPressed |= KEY_LEFT;
-  }
-
-  if ( PIN_getInputValue(Board_KEY_RIGHT) == 0 )
-  {
-    keysPressed |= KEY_RIGHT;
-  }
-#endif
-
   Util_startClock(&keyChangeClock);
 }
 

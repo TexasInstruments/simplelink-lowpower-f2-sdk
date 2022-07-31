@@ -122,8 +122,6 @@
 #undef Hwi_Handle_label
 #undef Hwi_Handle_name
 #undef Hwi_Instance_init
-#undef Hwi_Object_count
-#undef Hwi_Object_get
 #undef Hwi_Object_first
 #undef Hwi_Object_next
 #undef Hwi_Object_sizeof
@@ -263,8 +261,6 @@
 #define Hwi_Handle_label ti_sysbios_family_arm_v8m_Hwi_Handle_label
 #define Hwi_Handle_name ti_sysbios_family_arm_v8m_Hwi_Handle_name
 #define Hwi_Instance_init ti_sysbios_family_arm_v8m_Hwi_Instance_init
-#define Hwi_Object_count ti_sysbios_family_arm_v8m_Hwi_Object_count
-#define Hwi_Object_get ti_sysbios_family_arm_v8m_Hwi_Object_get
 #define Hwi_Object_first ti_sysbios_family_arm_v8m_Hwi_Object_first
 #define Hwi_Object_next ti_sysbios_family_arm_v8m_Hwi_Object_next
 #define Hwi_Object_sizeof ti_sysbios_family_arm_v8m_Hwi_Object_sizeof

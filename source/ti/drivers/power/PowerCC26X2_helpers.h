@@ -41,6 +41,7 @@
 /* Functions implemented in PowerCC26X2_helpers.c */
 void PowerCC26X2_oscCtlClearXtal(void);
 void PowerCC26X2_pmctlDisableJtag(void);
+void PowerCC26X2_sysctrlShutdownWithAbort(void);
 void PowerCC26X2_prcmEnableCacheRetention(void);
 void PowerCC26X2_oschfSwitchToRcosc(void);
 uint32_t PowerCC26X2_oscClockSourceGet(uint32_t ui32SrcClk);
@@ -50,9 +51,12 @@ bool PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock(void);
 void PowerCC26X2_enableTCXOQual(void);
 void PowerCC26X2_disableTCXOQual(void);
 void PowerCC26X2_switchToTCXO(void);
+void PowerCC26X2_turnOnXosc(void);
 void PowerCC26X2_sysCtrlStandby(bool retainCache);
 void PowerCC26X2_sysCtrlVoltageConditionalControl(void);
 void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMode);
+void PowerCC26X2_setSECDMADependency(uint32_t setActive);
+uint32_t PowerCC26X2_sysCtrlGetResetSource(void);
 
 /* Functions implemented in PowerCC26X2_calibrateRCOSC_helpers.c */
 void PowerCC26X2_updateSubSecInc(bool firstLF);

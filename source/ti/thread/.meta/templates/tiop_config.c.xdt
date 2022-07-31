@@ -94,7 +94,7 @@ void TIOP_init(otInstance * aInstance)
 
     otLinkModeConfig linkMode = {0};
     otExtendedPanId extPanID;
-    otMasterKey aKey;
+    otNetworkKey aKey;
 
     /* Set link mode */
     linkMode.mRxOnWhenIdle       = TIOP_CONFIG_LINK_MODE_R;
@@ -129,18 +129,18 @@ void TIOP_init(otInstance * aInstance)
         err = otThreadSetExtendedPanId(aInstance, &extPanID);
         assert(err == OT_ERROR_NONE);
 
-        /* Set master key*/
-        for (i = 0; i < OT_MASTER_KEY_SIZE/2; i++)
+        /* Set network key*/
+        for (i = 0; i < OT_NETWORK_KEY_SIZE/2; i++)
         {
-            aKey.m8[OT_MASTER_KEY_SIZE - i - 1] =
-                    ((TIOP_CONFIG_MASTER_KEY_L >> (8*i)) & 0xFF);
+            aKey.m8[OT_NETWORK_KEY_SIZE - i - 1] =
+                    ((TIOP_CONFIG_NETWORK_KEY_L >> (8*i)) & 0xFF);
         }
-        for (i = OT_MASTER_KEY_SIZE/2; i < OT_MASTER_KEY_SIZE; i++)
+        for (i = OT_NETWORK_KEY_SIZE/2; i < OT_MAC_KEY_SIZE; i++)
         {
-            aKey.m8[OT_MASTER_KEY_SIZE - i - 1] =
-                    ((TIOP_CONFIG_MASTER_KEY_U >> (8*(i-(OT_MASTER_KEY_SIZE/2)))) & 0xFF);
+            aKey.m8[OT_NETWORK_KEY_SIZE - i - 1] =
+                    ((TIOP_CONFIG_NETWORK_KEY_U >> (8*(i-(OT_NETWORK_KEY_SIZE/2)))) & 0xFF);
         }
-        err = otThreadSetMasterKey(aInstance, (const otMasterKey *) (&aKey));
+        err = otThreadSetNetworkKey(aInstance, (const otNetworkKey *) (&aKey));
         assert(err == OT_ERROR_NONE);
 
         /* Set network name */

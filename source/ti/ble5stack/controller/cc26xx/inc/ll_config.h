@@ -205,6 +205,9 @@ extern "C"
 #define EXTENDED_STACK_SETTINGS         0
 #endif
 
+#ifndef ADV_RPT_INC_CHANNEL
+#define ADV_RPT_INC_CHANNEL             0
+#endif
 
 // Max Data Size
 // Note: When greater than 27, fragmenation is used.

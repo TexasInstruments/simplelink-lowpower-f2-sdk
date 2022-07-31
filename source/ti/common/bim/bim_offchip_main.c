@@ -66,7 +66,7 @@
 #include <intrinsics.h>
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG_BIM
 #include "common/cc26xx/debug/led_debug.h"
 #endif
 
@@ -459,7 +459,7 @@ static int8_t checkImagesExtFlash(void)
             * catering only for contiguous image's, so image length will be calculate
             * by subtracting the image end address by image start address.
             */
-#ifdef DEBUG
+#ifdef DEBUG_BIM
             imgFxdHdr.len = imgFxdHdr.imgEndAddr - startAddr + 1;
 #endif
 
@@ -594,12 +594,12 @@ static uint8_t checkImagesIntFlash(uint8_t flashPageNum)
 
 
 
-/* If DEBUG is enabled, skip the crc checking and updating the crc status.
+/* If DEBUG_BIM is enabled, skip the crc checking and updating the crc status.
  * as crc wouldn't have been calculated at the first place. Instead, directly
  * jump to the entry point of the image.
- * If DEBUG is disabled, do crc checks as below, before executing the image.
+ * If DEBUG_BIM is disabled, do crc checks as below, before executing the image.
  */
-#ifndef DEBUG
+#ifndef DEBUG_BIM
                 uint8_t  crcstat = CRC_VALID;
 
                 /* Calculate the CRC over the data buffer and update status */
@@ -626,7 +626,7 @@ static uint8_t checkImagesIntFlash(uint8_t flashPageNum)
                    }
 #endif
 
-#ifndef DEBUG
+#ifndef DEBUG_BIM
                 }
 #endif
 
@@ -741,7 +741,7 @@ static bool Bim_revertFactoryImage(void)
  */
 static void Bim_checkImages(void)
 {
-#ifndef DEBUG
+#ifndef DEBUG_BIM
 
     /* Find executable on offchip flash; Validate it before copying to internal flash
      * and then execute it */
@@ -755,7 +755,7 @@ static void Bim_checkImages(void)
      * or on-chip flash. Try to revert to Factory image */
     Bim_revertFactoryImage();
 
-#else /* ifdef DEBUG */
+#else /* ifdef DEBUG_BIM */
 
     int8_t retVal = 0;
 
@@ -1208,7 +1208,7 @@ int main(void)
         response = isLastMetaData(0);
     }
 
-#ifdef DEBUG
+#ifdef DEBUG_BIM
 
     powerUpGpio();
     if(response != EMPTY_METADATA)
@@ -1223,7 +1223,7 @@ int main(void)
     }
     powerDownGpio();
 
-#endif /* DEBUG */
+#endif /* DEBUG_BIM */
 
     extFlashClose();
 

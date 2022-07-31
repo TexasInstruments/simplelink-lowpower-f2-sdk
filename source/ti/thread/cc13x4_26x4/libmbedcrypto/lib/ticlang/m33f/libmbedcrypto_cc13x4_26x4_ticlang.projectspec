@@ -84,6 +84,8 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/cmac.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/constant_time.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ctr_drbg.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/debug.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
@@ -124,9 +126,11 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/md5.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/md_wrap.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/memory_buffer_alloc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/mps_reader.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/mps_trace.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/net_sockets.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
@@ -158,6 +162,32 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/poly1305.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_aead.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_cipher.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_client.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_driver_wrappers.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_ecp.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_hash.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_mac.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_rsa.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_se.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_slot_management.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_crypto_storage.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/psa_its_file.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ripemd160.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/rsa.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
@@ -178,11 +208,15 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_cookie.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_msg.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_srv.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_ticket.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_tls.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/ssl_tls13_keys.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/library/threading.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="third_party/mbedtls/repo/library">
         </file>

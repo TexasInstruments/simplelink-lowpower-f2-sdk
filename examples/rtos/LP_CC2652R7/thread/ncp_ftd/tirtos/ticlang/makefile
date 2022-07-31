@@ -11,8 +11,8 @@ CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 LNK = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 
 SYSCFG_CMD_STUB = $(SYSCONFIG_TOOL) --compiler ticlang --product $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/.metadata/product.json
-SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../ncp_ftd.syscfg)
-SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../ncp_ftd.syscfg)
+SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../tirtos/ncp_ftd.syscfg)
+SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../tirtos/ncp_ftd.syscfg)
 
 ifeq ($(OS),Windows_NT)
 	SYSCFG_FILES = $(subst \,/,$(SYSCFG_REF_FILES) $(SYSCFG_GEN_FILES))
@@ -22,7 +22,7 @@ endif
 SYSCFG_C_FILES = $(filter %.c,$(SYSCFG_FILES))
 SYSCFG_H_FILES = $(filter %.h,$(SYSCFG_FILES))
 
-OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_debug_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj platform_spi_periph.obj ncp.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
+OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj ncp.obj platform_spi_periph.obj platform_ncp.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
 CONFIGPKG = ncp_ftd
 
 NAME = ncp_ftd
@@ -48,7 +48,7 @@ CFLAGS = -I../.. \
     -IOPENTHREAD_MAKE_PATH/src/core \
     -IOPENTHREAD_MAKE_PATH/src \
     -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
-    -IC:/.conan/7561cd/1/external/source \
+    -IC:/.conan/e89868/1/external/source \
     -I${PROJECT_ROOT}/platform/crypto \
     -DOPENTHREAD_FTD=1 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/config" \
@@ -67,7 +67,6 @@ CFLAGS = -I../.. \
 
 LFLAGS = "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ncp_ftd/lib/ticlang/m4f" \
     -Wl,-llibopenthread_ncp_ftd.a \
-    --reread_libs \
     "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/lib/ticlang/m4f" \
     "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_platform_utils_ftd/lib/ticlang/m4f" \
     "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libmbedcrypto/lib/ticlang/m4f" \
@@ -76,8 +75,9 @@ LFLAGS = "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc1
     -Wl,-llibmbedcrypto.a \
     -l${PROJECT_BUILD_DIR}/syscfg/ti_utils_build_linker.cmd.genlibs \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    -LC:/.conan/7561cd/1/external/source \
+    -LC:/.conan/e89868/1/external/source \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
+    --reread_libs \
     -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib \
     ../../tirtos/ticlang/cc13x2x7_cc26x2x7_tirtos.cmd \
     "-Wl,-m,$(NAME).map" \
@@ -100,7 +100,7 @@ $(CONFIGPKG)/linker.cmd: ../../release.cfg cflags.opt
 $(SYSCFG_FILES): syscfg
 	@ echo generation complete
 
-syscfg: ../../ncp_ftd.syscfg
+syscfg: ../../tirtos/ncp_ftd.syscfg
 	@ echo Generating configuration files...
 	@ $(SYSCFG_CMD_STUB) --output $(@D) $<
 
@@ -148,10 +148,6 @@ platform_uart.obj: ../../platform/uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 
-platform_debug_uart.obj: ../../platform/debug_uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
-	@ echo Building $@
-	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
-
 platform_nv_crc.obj: ../../platform/nv/crc.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
@@ -160,11 +156,15 @@ platform_nv_nvocmp.obj: ../../platform/nv/nvocmp.c $(SYSCFG_H_FILES) $(CONFIGPKG
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 
+ncp.obj: ../../ncp.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
+	@ echo Building $@
+	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
+
 platform_spi_periph.obj: ../../platform/spi_periph.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 
-ncp.obj: ../../ncp.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
+platform_ncp.obj: ../../platform/ncp.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 

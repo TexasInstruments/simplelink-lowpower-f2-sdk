@@ -18,7 +18,7 @@
 - C
   - OpenThread uses and enforces the ISO9899:1999 (aka ISO C99, C99) C language standard as the minimum.
 - C++
-  - OpenThread uses and enforces the ISO14882:2003 (aka ISO C++03, C++03) C++ language standard as the minimum.
+  - OpenThread uses and enforces the ISO14882:2011 (aka ISO C++11, C++11) C++ language standard as the minimum.
 - Extensions
   - Wherever possible, toolchain-specific (e.g GCC/GNU) extensions or the use of later standards shall be avoided or shall be leveraged through toolchain-compatibility preprocessor macros.
 
@@ -116,7 +116,7 @@
 
 - OpenThread uses `script/make-pretty` to reformat code and enforce code format and style. `script/make-pretty check` build target is included in OpenThread's continuous integration and must pass before a pull request is merged.
 
-- `script/make-pretty` requires [clang-format v6.0.0](http://releases.llvm.org/download.html#6.0.0) for C/C++ and [yapf v0.29.0](https://github.com/google/yapf) for Python.
+- `script/make-pretty` requires [clang-format v9.0.0](https://releases.llvm.org/download.html#9.0.0) for C/C++ and [yapf v0.31.0](https://github.com/google/yapf) for Python.
 
 ### File Names
 
@@ -176,6 +176,14 @@
   - Describes the purpose, function, and influence of each parameter as well as whether it is an input, an output, or both.
   - Describes the return value, if present, and the expected range or constraints of it.
 
+If your description is longer than 120 characters, continue the comment on the next line:
+
+```
+ * @brief
+ *   Records the history of different events, for example RX and TX messages or network info changes. All tracked
+ *   entries are timestamped.
+```
+
 # Python
 
 ## Standards
@@ -188,4 +196,4 @@
 
 ## Format and Style
 
-- All code should adhere to [Google Python Style Guide](http://google.github.io/styleguide/pyguide.html).
+- All code should adhere to [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) except maximum line length being 119.

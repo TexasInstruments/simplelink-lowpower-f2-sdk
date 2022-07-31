@@ -50,22 +50,25 @@ HwiP_Struct CryptoResourceCC26XX_hwi;
 
 static bool isInitialized = false;
 
-static void errorSpin(uintptr_t arg) {
-    while(1);
+static void errorSpin(uintptr_t arg)
+{
+    while (1) {}
 }
 
-void CryptoResourceCC26XX_constructRTOSObjects(void) {
+void CryptoResourceCC26XX_constructRTOSObjects(void)
+{
     HwiP_Params hwiParams;
     uint_fast8_t key;
 
     key = HwiP_disable();
 
-    if (!isInitialized){
+    if (!isInitialized)
+    {
         /* Construct the common Hwi with a dummy ISR function. This should not matter as the function is set
          * whenever we start an operation after pending on CryptoResourceCC26XX_accessSemaphore
          */
         HwiP_Params_init(&hwiParams);
-        hwiParams.priority = ~0;
+        hwiParams.priority  = ~0;
         hwiParams.enableInt = false;
         HwiP_construct(&(CryptoResourceCC26XX_hwi), INT_CRYPTO_RESULT_AVAIL_IRQ, errorSpin, &hwiParams);
 
@@ -78,16 +81,17 @@ void CryptoResourceCC26XX_constructRTOSObjects(void) {
     HwiP_restore(key);
 }
 
-bool CryptoResourceCC26XX_acquireLock(uint32_t timeout) {
+bool CryptoResourceCC26XX_acquireLock(uint32_t timeout)
+{
     SemaphoreP_Status resourceAcquired;
 
     /* Try and obtain access to the crypto module */
-    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore,
-                                       timeout);
+    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore, timeout);
 
     return resourceAcquired == SemaphoreP_OK;
 }
 
-void CryptoResourceCC26XX_releaseLock(void) {
+void CryptoResourceCC26XX_releaseLock(void)
+{
     SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 }

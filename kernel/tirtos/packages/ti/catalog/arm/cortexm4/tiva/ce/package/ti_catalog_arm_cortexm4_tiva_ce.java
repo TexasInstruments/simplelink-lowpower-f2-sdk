@@ -2,7 +2,7 @@
  *  Do not modify this file; it is automatically 
  *  generated and any modifications will be overwritten.
  *
- * @(#) xdc-K04
+ * @(#) xdc-I08
  */
 import java.util.*;
 import org.mozilla.javascript.*;
@@ -11,7 +11,7 @@ import xdc.services.spec.Session;
 
 public class ti_catalog_arm_cortexm4_tiva_ce
 {
-    static final String VERS = "@(#) xdc-K04\n";
+    static final String VERS = "@(#) xdc-I08\n";
 
     static final Proto.Elm $$T_Bool = Proto.Elm.newBool();
     static final Proto.Elm $$T_Num = Proto.Elm.newNum();
@@ -409,24 +409,32 @@ public class ti_catalog_arm_cortexm4_tiva_ce
             sb.append("pkg.packageRepository = xdc.om['ti.catalog.arm.cortexm4.tiva.ce$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
+            sb.append("'lib/Boot.aem3',\n");
+            sb.append("'lib/Boot.aem4',\n");
             sb.append("'lib/Boot.aem4f',\n");
             sb.append("'lib/Boot.am4f',\n");
-            sb.append("'lib/Boot.am4fg',\n");
-            sb.append("'lib/Boot.arm4f',\n");
-            sb.append("'lib/Boot.aem4',\n");
             sb.append("'lib/Boot.am4',\n");
+            sb.append("'lib/Boot.am3',\n");
+            sb.append("'lib/Boot.am3g',\n");
             sb.append("'lib/Boot.am4g',\n");
+            sb.append("'lib/Boot.am4fg',\n");
+            sb.append("'lib/Boot.arm3',\n");
             sb.append("'lib/Boot.arm4',\n");
+            sb.append("'lib/Boot.arm4f',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
+            sb.append("['lib/Boot.aem3', {target: 'ti.targets.arm.elf.M3', suffix: 'em3'}],\n");
+            sb.append("['lib/Boot.aem4', {target: 'ti.targets.arm.elf.M4', suffix: 'em4'}],\n");
             sb.append("['lib/Boot.aem4f', {target: 'ti.targets.arm.elf.M4F', suffix: 'em4f'}],\n");
             sb.append("['lib/Boot.am4f', {target: 'ti.targets.arm.clang.M4F', suffix: 'm4f'}],\n");
-            sb.append("['lib/Boot.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
-            sb.append("['lib/Boot.arm4f', {target: 'iar.targets.arm.M4F', suffix: 'rm4f'}],\n");
-            sb.append("['lib/Boot.aem4', {target: 'ti.targets.arm.elf.M4', suffix: 'em4'}],\n");
             sb.append("['lib/Boot.am4', {target: 'ti.targets.arm.clang.M4', suffix: 'm4'}],\n");
+            sb.append("['lib/Boot.am3', {target: 'ti.targets.arm.clang.M3', suffix: 'm3'}],\n");
+            sb.append("['lib/Boot.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
             sb.append("['lib/Boot.am4g', {target: 'gnu.targets.arm.M4', suffix: 'm4g'}],\n");
+            sb.append("['lib/Boot.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
+            sb.append("['lib/Boot.arm3', {target: 'iar.targets.arm.M3', suffix: 'rm3'}],\n");
             sb.append("['lib/Boot.arm4', {target: 'iar.targets.arm.M4', suffix: 'rm4'}],\n");
+            sb.append("['lib/Boot.arm4f', {target: 'iar.targets.arm.M4F', suffix: 'rm4f'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

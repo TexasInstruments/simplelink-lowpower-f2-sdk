@@ -556,6 +556,26 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
  */
 #define COPY_DONE                    0xFC
 
+#ifdef BIM_DUAL_ONCHIP_IMAGE
+/*!
+* Flagimg verification status indicating the successful sign verification
+* and is the current image executing/to be executed
+*/
+#define VERIFY_PASS_CURRENT                  0xFE
+
+/*!
+* Flagimg verification status indicating the successful sign verification
+* and is not the current image executing/to be executed
+*/
+#define VERIFY_PASS_NOT_CURRENT                  0xFC
+
+/*!
+* Flagimg verification status indicating the failed sign verification or
+* security version check failed
+*/
+#define VERIFY_FAIL                  0xF8
+
+#else
 /*!
 * Flagimg verification status indicating the successful sign verification
 */
@@ -565,6 +585,8 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 * Flagimg verification status indicating the failed sign verification
 */
 #define VERIFY_FAIL                  0xFC
+
+#endif // BIM_DUAL_ONCHIP_IMAGE
 
 /*!
  * Length of image external flash image header

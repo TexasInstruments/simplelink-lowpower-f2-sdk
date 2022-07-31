@@ -226,7 +226,8 @@
                 {
                     "number" : 18,
                     "ball"   : "17",
-                    "name"   : "DIO11"
+                    "name"   : "DIO11",
+                    "preferredType": ["SPI_SS"]
                 },
                 {
                     "number" : 17,
@@ -265,7 +266,6 @@
             ]
         }
     ],
-
     "components": {
         "LED_RED": {
             "displayName" : "LaunchPad LED Red",
@@ -304,8 +304,8 @@
 
         "BTN-1": {
             "displayName" : "LaunchPad Button BTN-1 (Left)",
-            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -319,8 +319,8 @@
         },
         "BTN-2": {
             "displayName" : "LaunchPad Button BTN-2 (Right)",
-            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -341,7 +341,7 @@
             "link": "BTN-2"
         },
 
-        "LP_SPI": {
+        "LP_SPI_BUS": {
             "displayName" : "LaunchPad SPI Bus",
             "description" : "Standard BoosterPack header SPI",
             "longDescription" : "Standard BoosterPack header SPI",
@@ -350,6 +350,26 @@
                 "SCLK"    : "16",
                 "MOSI"    : "15",
                 "MISO"    : "14"
+            }
+        },
+
+        "LP_SPI": {
+            "displayName" : "LaunchPad SPI Bus with Chip Select",
+            "description" : "Standard BoosterPack header SPI with Chip Select",
+            "longDescription" : "Standard BoosterPack header SPI with Chip Select",
+            "definition"  : "/ti/boards/components/spiDevice.json",
+            "subComponents": {
+                "SPI": {
+                    "link": "LP_SPI_BUS"
+                },
+                "SELECT": {
+                    "displayName" : "LaunchPad SPI Bus Chip Select",
+                    "description" : "Standard BoosterPack header SPI Chip Select",
+                    "longDescription" : "Standard BoosterPack header SPI Chip Select",
+                    "connections" : {
+                        "SS": "17"
+                    }
+                }
             }
         },
 
@@ -363,15 +383,15 @@
             },
             "subComponents": {
                 "SPI": {
-                    "link": "LP_SPI"
+                    "link": "LP_SPI_BUS"
                 },
                 "SELECT": {
-                    "displayName" : "MX25R8035F SPI Flash Slave Select",
-                    "description" : "MX25R8035F SPI Flash slave select",
-                    "longDescription" : "MX25R8035F SPI flash slave select",
+                    "displayName" : "MX25R8035F SPI Flash Chip Select",
+                    "description" : "MX25R8035F SPI Flash Chip Select",
+                    "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
-                        "SS": 30
+                        "SS": "30"
                     }
                 }
             }
@@ -395,30 +415,17 @@
             "longDescription": "LaunchPad SensorTag I2C bus",
             "definition": "/ti/boards/components/i2c.json",
             "connections": {
-                "SDA": 10,
-                "SCL": 9
-            }
-        },
-
-        "LPSTK_SPI": {
-            "displayName": "LaunchPad SensorTag SPI Bus",
-            "description": "LaunchPad SensorTag SPI Bus",
-            "longDescription": "LaunchPad SensorTag SPI Bus",
-            "definition"  : "/ti/boards/components/spiBus.json",
-            "connections": {
-                /* 7:  BoosterPack standard: SPI CLK */
-                "SCLK"    : 7,
-                /* 15: BoosterPack standard: SPI MOSI */
-                "MOSI"   : 15,
-                /* 14: BoosterPack standard: SPI MISO */
-                "MISO"   : 14
+                "SDA": "10",
+                "SCL": "9"
             }
         },
 
         "LED_B": {
             "displayName": "Blue LED",
             "definition": "/ti/boards/components/led_dimmable.json",
-            "connections": { "OUTPUT": 8 }
+            "connections": {
+                "OUTPUT": 8
+            }
         },
 
         "OPT3001": {
@@ -427,8 +434,8 @@
             "description": "Digital ambient light sensor (ALS) with high-precision human-eye response",
             "longDescription": "The [__OPT3001__](http://www.ti.com/product/OPT3001) is a sensor that measures the intensity of visible light. The spectral response of the sensor tightly matches the photopic response of the human eye and includes significant infrared rejection.",
             "settings": {
-                "address":  68,   /* 0x44 */
-                "maxSpeed": 2600  /* 2600 kbit/s */
+                "address":  "68",   /* 0x44 */
+                "maxSpeed": "2600"  /* 2600 kbit/s */
             },
             "subComponents": {
                 "I2C": {
@@ -445,7 +452,7 @@
                             "settings": {
                                 "pull": "Pull Up"
                             },
-                            "connection": 40 /* DIO_27 */
+                            "connection": "40" /* DIO_27 */
                         }
                     }
                 }
@@ -458,8 +465,8 @@
             "description": "Ultra-low-power, digital humidity sensor with temperature sensor in WCSP",
             "longDescription": "The [__HDC2080__](http://www.ti.com/product/HDC2080) is an integrated humidity and temperature sensor that provides high accuracy measurements with very low power consumption, in a small DFN package.",
             "settings": {
-                "address":  65,  /* 0x41 */
-                "maxSpeed": 400  /* 400 kbit/s */
+                "address":  "65",  /* 0x41 */
+                "maxSpeed": "400"  /* 400 kbit/s */
             },
             "subComponents": {
                 "I2C": {
@@ -476,7 +483,7 @@
                             "settings": {
                                 "pull": "None"
                             },
-                            "connection": 38 /* DIO_25 */
+                            "connection": "38" /* DIO_25 */
                         }
                     }
                 }
@@ -494,7 +501,9 @@
                     "displayName": "DRV5055 Analog Output",
                     "description": "DRV5055 analog output",
                     "longDescription": "DRV5055 analog output",
-                    "connections" : { "INPUT": 2 }
+                    "connections": {
+                        "INPUT": "2"
+                    }
                 }
             }
         },
@@ -506,14 +515,16 @@
             "longDescription": "The [__ADXL362__](https://www.analog.com/en/products/adxl362.html) is an ultralow power, 3-axis MEMS accelerometer that consumes less than 2 μA at a 100 Hz output data rate and 270 nA when in motion triggered wake-up mode.",
             "subComponents": {
                 "SPI": {
-                    "link": "LPSTK_SPI"
+                    "link": "LP_SPI_BUS"
                 },
                 "SELECT": {
                     "displayName": "ADXL362 Accelerometer SPI Chip Select",
                     "description": "ADXL362 Accelerometer SPI chip select",
                     "longDescription": "ADXL362 Accelerometer SPI chip select",
-                    "definition"  : "/ti/boards/components/spiSelect.json",
-                    "connections" : { "SS": 18 }
+                    "definition" : "/ti/boards/components/spiSelect.json",
+                    "connections": {
+                        "SS": "18"
+                    }
                 },
                 "ACC_INT1": {
                     "type": "SENSOR_INT",
@@ -526,7 +537,7 @@
                             "settings": {
                                 "pull": "None"
                             },
-                            "connection": 43 /* DIO_30 */
+                            "connection": "43" /* DIO_30 */
                         }
                     }
                 }

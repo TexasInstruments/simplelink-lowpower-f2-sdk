@@ -41,7 +41,6 @@
     if (instances == 0) { return; }
 
     let baudRate     = 0;
-    let uartIndex;
     let uart2Index;
     let spiIndex;
     let lcdPowerIndex;
@@ -49,12 +48,10 @@
     let lcdChipSelectIndex;
 
     let host = false;
-    let uart = false;
     let uart2 = false;
     let lcd = false;
 
     let hostInstance = 0;
-    let uartInstance = 0;
     let uart2Instance = 0;
     let lcdInstance = 0;
 
@@ -76,28 +73,15 @@
             };
         }
         else if (inst.displayType == "UART") {
-            if (inst.useUART2) {
-                uart2 = true;
-                uart2Instance = i;
-                uart2Index = inst.uart.$name;
-                instAttrs[instances[i].$name] = {
-                    object: "displayUart2Object",
-                    hwAttrs: "displayUart2HWAttrs",
-                    fxnTablePtr: (inst.enableANSI == true) ?
-                        "DisplayUart2Ansi_fxnTable" : "DisplayUart2Min_fxnTable"
-                };
-            }
-            else {
-                uart = true;
-                uartInstance = i;
-                uartIndex = inst.uart.$name;
-                instAttrs[instances[i].$name] = {
-                    object: "displayUartObject",
-                    hwAttrs: "displayUartHWAttrs",
-                    fxnTablePtr: (inst.enableANSI == true) ?
-                        "DisplayUartAnsi_fxnTable" : "DisplayUartMin_fxnTable"
-                };
-            }
+            uart2 = true;
+            uart2Instance = i;
+            uart2Index = inst.uart.$name;
+            instAttrs[instances[i].$name] = {
+                object: "displayUart2Object",
+                hwAttrs: "displayUart2HWAttrs",
+                fxnTablePtr: (inst.enableANSI == true) ?
+                    "DisplayUart2Ansi_fxnTable" : "DisplayUart2Min_fxnTable"
+            };
 
             baudRate          = inst.baudRate;
             mutexTimeout      = inst.mutexTimeout;
@@ -133,9 +117,6 @@
  */
 
 #include <ti/display/Display.h>
-% if (uart) {
-#include <ti/display/DisplayUart.h>
-% }
 % if (uart2) {
 #include <ti/display/DisplayUart2.h>
 % }
@@ -148,29 +129,20 @@
 
 #define `countDef` `instances.length`
 
-% if (uart) {
-#define Display_UARTBUFFERSIZE `instances[uartInstance].uartBufferSize`
-static char displayUARTBuffer[Display_UARTBUFFERSIZE];
 
-% }
 % if (uart2) {
 #define Display_UART2BUFFERSIZE `instances[uart2Instance].uartBufferSize`
 static char displayUART2Buffer[Display_UART2BUFFERSIZE];
-
 % }
 % if (host) {
 #define Display_HOSTBUFFERSIZE `instances[hostInstance].maxPrintLength`
 static char displayHostBuffer[Display_HOSTBUFFERSIZE];
-
 % }
 % if (lcd) {
 #define Display_LCDSIZE `instances[lcdInstance].lcdSize`
 static uint_least8_t displayLCDBuffer[Display_LCDSIZE * Display_LCDSIZE / 8];
+% }
 
-% }
-% if (uart) {
-DisplayUart_Object displayUartObject;
-% }
 % if (uart2) {
 DisplayUart2_Object displayUart2Object;
 % }
@@ -181,16 +153,6 @@ DisplayHost_Object displayHostObject;
 DisplaySharp_Object displayLcdObject;
 % }
 
-% if (uart) {
-const DisplayUart_HWAttrs displayUartHWAttrs = {
-    .uartIdx      = `uartIndex`,
-    .baudRate     = `baudRate`,
-    .mutexTimeout = `mutexTimeoutInitializer`,
-    .strBuf       = displayUARTBuffer,
-    .strBufLen    = Display_UARTBUFFERSIZE
-};
-
-% }
 % if (uart2) {
 const DisplayUart2_HWAttrs displayUart2HWAttrs = {
     .uartIdx      = `uart2Index`,

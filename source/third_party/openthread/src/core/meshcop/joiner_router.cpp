@@ -31,71 +31,70 @@
  *   This file implements the Joiner Router role.
  */
 
-#if OPENTHREAD_FTD
-
 #include "joiner_router.hpp"
+
+#if OPENTHREAD_FTD
 
 #include <stdio.h>
 
+#include "common/as_core_type.hpp"
 #include "common/code_utils.hpp"
 #include "common/encoding.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/mle.hpp"
 #include "thread/thread_netif.hpp"
-#include "thread/thread_uri_paths.hpp"
-
-using ot::Encoding::BigEndian::HostSwap16;
+#include "thread/uri_paths.hpp"
 
 namespace ot {
 namespace MeshCoP {
 
+RegisterLogModule("JoinerRouter");
+
 JoinerRouter::JoinerRouter(Instance &aInstance)
     : InstanceLocator(aInstance)
-    , mSocket(aInstance.Get<Ip6::Udp>())
-    , mRelayTransmit(OT_URI_PATH_RELAY_TX, &JoinerRouter::HandleRelayTransmit, this)
-    , mTimer(aInstance, &JoinerRouter::HandleTimer, this)
-    , mNotifierCallback(aInstance, &JoinerRouter::HandleStateChanged, this)
+    , mSocket(aInstance)
+    , mRelayTransmit(UriPath::kRelayTx, &JoinerRouter::HandleRelayTransmit, this)
+    , mTimer(aInstance, JoinerRouter::HandleTimer)
     , mJoinerUdpPort(0)
     , mIsJoinerPortConfigured(false)
-    , mExpectJoinEntRsp(false)
 {
-    Get<Coap::Coap>().AddResource(mRelayTransmit);
+    Get<Tmf::Agent>().AddResource(mRelayTransmit);
 }
 
-void JoinerRouter::HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags)
+void JoinerRouter::HandleNotifierEvents(Events aEvents)
 {
-    aCallback.GetOwner<JoinerRouter>().HandleStateChanged(aFlags);
+    if (aEvents.Contains(kEventThreadNetdataChanged))
+    {
+        Start();
+    }
 }
 
-void JoinerRouter::HandleStateChanged(otChangedFlags aFlags)
+void JoinerRouter::Start(void)
 {
-    VerifyOrExit(Get<Mle::MleRouter>().IsFullThreadDevice(), OT_NOOP);
-    VerifyOrExit(aFlags & OT_CHANGED_THREAD_NETDATA, OT_NOOP);
+    VerifyOrExit(Get<Mle::MleRouter>().IsFullThreadDevice());
 
     if (Get<NetworkData::Leader>().IsJoiningEnabled())
     {
-        Ip6::SockAddr sockaddr;
+        uint16_t port = GetJoinerUdpPort();
 
-        VerifyOrExit(!mSocket.IsBound(), OT_NOOP);
+        VerifyOrExit(!mSocket.IsBound());
 
-        sockaddr.mPort = GetJoinerUdpPort();
-
-        mSocket.Open(&JoinerRouter::HandleUdpReceive, this);
-        mSocket.Bind(sockaddr);
-        Get<Ip6::Filter>().AddUnsecurePort(sockaddr.mPort);
-        otLogInfoMeshCoP("Joiner Router: start");
+        IgnoreError(mSocket.Open(&JoinerRouter::HandleUdpReceive, this));
+        IgnoreError(mSocket.Bind(port));
+        IgnoreError(Get<Ip6::Filter>().AddUnsecurePort(port));
+        LogInfo("Joiner Router: start");
     }
     else
     {
-        VerifyOrExit(mSocket.IsBound(), OT_NOOP);
+        VerifyOrExit(mSocket.IsBound());
 
-        Get<Ip6::Filter>().RemoveUnsecurePort(mSocket.GetSockName().mPort);
+        IgnoreError(Get<Ip6::Filter>().RemoveUnsecurePort(mSocket.GetSockName().mPort));
 
-        mSocket.Close();
+        IgnoreError(mSocket.Close());
     }
 
 exit:
@@ -109,9 +108,8 @@ uint16_t JoinerRouter::GetJoinerUdpPort(void)
 
     VerifyOrExit(!mIsJoinerPortConfigured, rval = mJoinerUdpPort);
 
-    joinerUdpPort = static_cast<const JoinerUdpPortTlv *>(
-        Get<NetworkData::Leader>().GetCommissioningDataSubTlv(Tlv::kJoinerUdpPort));
-    VerifyOrExit(joinerUdpPort != NULL, OT_NOOP);
+    joinerUdpPort = As<JoinerUdpPortTlv>(Get<NetworkData::Leader>().GetCommissioningDataSubTlv(Tlv::kJoinerUdpPort));
+    VerifyOrExit(joinerUdpPort != nullptr);
 
     rval = joinerUdpPort->GetUdpPort();
 
@@ -123,92 +121,82 @@ void JoinerRouter::SetJoinerUdpPort(uint16_t aJoinerUdpPort)
 {
     mJoinerUdpPort          = aJoinerUdpPort;
     mIsJoinerPortConfigured = true;
-    HandleStateChanged(OT_CHANGED_THREAD_NETDATA);
+    Start();
 }
 
 void JoinerRouter::HandleUdpReceive(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    static_cast<JoinerRouter *>(aContext)->HandleUdpReceive(*static_cast<Message *>(aMessage),
-                                                            *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<JoinerRouter *>(aContext)->HandleUdpReceive(AsCoreType(aMessage), AsCoreType(aMessageInfo));
 }
 
 void JoinerRouter::HandleUdpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
 {
-    otError          error;
-    Coap::Message *  message = NULL;
-    Ip6::MessageInfo messageInfo;
+    Error            error;
+    Coap::Message *  message = nullptr;
+    Tmf::MessageInfo messageInfo(GetInstance());
     ExtendedTlv      tlv;
     uint16_t         borderAgentRloc;
     uint16_t         offset;
 
-    otLogInfoMeshCoP("JoinerRouter::HandleUdpReceive");
+    LogInfo("JoinerRouter::HandleUdpReceive");
 
     SuccessOrExit(error = GetBorderAgentRloc(Get<ThreadNetif>(), borderAgentRloc));
 
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error = message->Init(OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_POST, OT_URI_PATH_RELAY_RX));
+    SuccessOrExit(error = message->InitAsNonConfirmablePost(UriPath::kRelayRx));
     SuccessOrExit(error = message->SetPayloadMarker());
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, Tlv::kJoinerUdpPort, aMessageInfo.GetPeerPort()));
-    SuccessOrExit(error = Tlv::AppendTlv(*message, Tlv::kJoinerIid, aMessageInfo.GetPeerAddr().mFields.m8 + 8,
-                                         Ip6::Address::kInterfaceIdentifierSize));
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, Tlv::kJoinerRouterLocator, Get<Mle::MleRouter>().GetRloc16()));
+    SuccessOrExit(error = Tlv::Append<JoinerUdpPortTlv>(*message, aMessageInfo.GetPeerPort()));
+    SuccessOrExit(error = Tlv::Append<JoinerIidTlv>(*message, aMessageInfo.GetPeerAddr().GetIid()));
+    SuccessOrExit(error = Tlv::Append<JoinerRouterLocatorTlv>(*message, Get<Mle::MleRouter>().GetRloc16()));
 
     tlv.SetType(Tlv::kJoinerDtlsEncapsulation);
     tlv.SetLength(aMessage.GetLength() - aMessage.GetOffset());
-    SuccessOrExit(error = message->Append(&tlv, sizeof(tlv)));
+    SuccessOrExit(error = message->Append(tlv));
     offset = message->GetLength();
     SuccessOrExit(error = message->SetLength(offset + tlv.GetLength()));
     aMessage.CopyTo(aMessage.GetOffset(), offset, tlv.GetLength(), *message);
 
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.GetPeerAddr().SetLocator(borderAgentRloc);
-    messageInfo.SetPeerPort(kCoapUdpPort);
+    messageInfo.SetSockAddrToRlocPeerAddrTo(borderAgentRloc);
 
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
 
-    otLogInfoMeshCoP("Sent relay rx");
+    LogInfo("Sent relay rx");
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
+    FreeMessageOnError(message, error);
 }
 
 void JoinerRouter::HandleRelayTransmit(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    static_cast<JoinerRouter *>(aContext)->HandleRelayTransmit(*static_cast<Coap::Message *>(aMessage),
-                                                               *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<JoinerRouter *>(aContext)->HandleRelayTransmit(AsCoapMessage(aMessage), AsCoreType(aMessageInfo));
 }
 
 void JoinerRouter::HandleRelayTransmit(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
 
-    otError           error;
-    uint16_t          joinerPort;
-    uint8_t           joinerIid[Ip6::Address::kInterfaceIdentifierSize];
-    Kek               kek;
-    uint16_t          offset;
-    uint16_t          length;
-    Message *         message  = NULL;
-    otMessageSettings settings = {false, static_cast<otMessagePriority>(kMeshCoPMessagePriority)};
-    Ip6::MessageInfo  messageInfo;
+    Error                    error;
+    uint16_t                 joinerPort;
+    Ip6::InterfaceIdentifier joinerIid;
+    Kek                      kek;
+    uint16_t                 offset;
+    uint16_t                 length;
+    Message *                message = nullptr;
+    Message::Settings        settings(Message::kNoLinkSecurity, Message::kPriorityNet);
+    Ip6::MessageInfo         messageInfo;
 
-    VerifyOrExit(aMessage.IsNonConfirmable() && aMessage.GetCode() == OT_COAP_CODE_POST, error = OT_ERROR_DROP);
+    VerifyOrExit(aMessage.IsNonConfirmablePostRequest(), error = kErrorDrop);
 
-    otLogInfoMeshCoP("Received relay transmit");
+    LogInfo("Received relay transmit");
 
-    SuccessOrExit(error = Tlv::ReadUint16Tlv(aMessage, Tlv::kJoinerUdpPort, joinerPort));
-    SuccessOrExit(error = Tlv::ReadTlv(aMessage, Tlv::kJoinerIid, joinerIid, sizeof(joinerIid)));
+    SuccessOrExit(error = Tlv::Find<JoinerUdpPortTlv>(aMessage, joinerPort));
+    SuccessOrExit(error = Tlv::Find<JoinerIidTlv>(aMessage, joinerIid));
 
-    SuccessOrExit(error = Tlv::GetValueOffset(aMessage, Tlv::kJoinerDtlsEncapsulation, offset, length));
+    SuccessOrExit(error = Tlv::FindTlvValueOffset(aMessage, Tlv::kJoinerDtlsEncapsulation, offset, length));
 
-    VerifyOrExit((message = mSocket.NewMessage(0, &settings)) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = mSocket.NewMessage(0, settings)) != nullptr, error = kErrorNoBufs);
 
     SuccessOrExit(error = message->SetLength(length));
     aMessage.CopyTo(offset, 0, length, *message);
@@ -218,30 +206,27 @@ void JoinerRouter::HandleRelayTransmit(Coap::Message &aMessage, const Ip6::Messa
 
     SuccessOrExit(error = mSocket.SendTo(*message, messageInfo));
 
-    if (Tlv::ReadTlv(aMessage, Tlv::kJoinerRouterKek, &kek, sizeof(kek)) == OT_ERROR_NONE)
+    if (Tlv::Find<JoinerRouterKekTlv>(aMessage, kek) == kErrorNone)
     {
-        otLogInfoMeshCoP("Received kek");
+        LogInfo("Received kek");
 
         DelaySendingJoinerEntrust(messageInfo, kek);
     }
 
 exit:
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
+    FreeMessageOnError(message, error);
 }
 
-otError JoinerRouter::DelaySendingJoinerEntrust(const Ip6::MessageInfo &aMessageInfo, const Kek &aKek)
+void JoinerRouter::DelaySendingJoinerEntrust(const Ip6::MessageInfo &aMessageInfo, const Kek &aKek)
 {
-    otError               error   = OT_ERROR_NONE;
-    Message *             message = Get<MessagePool>().New(Message::kTypeOther, 0);
+    Error                 error   = kErrorNone;
+    Message *             message = Get<MessagePool>().Allocate(Message::kTypeOther);
     JoinerEntrustMetadata metadata;
 
-    VerifyOrExit(message != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(message != nullptr, error = kErrorNoBufs);
 
     metadata.mMessageInfo = aMessageInfo;
-    metadata.mMessageInfo.SetPeerPort(kCoapUdpPort);
+    metadata.mMessageInfo.SetPeerPort(Tmf::kUdpPort);
     metadata.mSendTime = TimerMilli::GetNow() + kJoinerEntrustTxDelay;
     metadata.mKek      = aKek;
 
@@ -255,18 +240,13 @@ otError JoinerRouter::DelaySendingJoinerEntrust(const Ip6::MessageInfo &aMessage
     }
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
-    return error;
+    FreeMessageOnError(message, error);
+    LogError("schedule joiner entrust", error);
 }
 
 void JoinerRouter::HandleTimer(Timer &aTimer)
 {
-    aTimer.GetOwner<JoinerRouter>().HandleTimer();
+    aTimer.Get<JoinerRouter>().HandleTimer();
 }
 
 void JoinerRouter::HandleTimer(void)
@@ -279,16 +259,10 @@ void JoinerRouter::SendDelayedJoinerEntrust(void)
     JoinerEntrustMetadata metadata;
     Message *             message = mDelayedJoinEnts.GetHead();
 
-    VerifyOrExit(message != NULL, OT_NOOP);
-    VerifyOrExit(!mTimer.IsRunning(), OT_NOOP);
+    VerifyOrExit(message != nullptr);
+    VerifyOrExit(!mTimer.IsRunning());
 
     metadata.ReadFrom(*message);
-
-    // The message can be sent during CoAP transaction if KEK did not
-    // change (i.e., retransmission). Otherweise, we wait for Joiner
-    // Entrust Response before handling any other pending delayed
-    // Jointer Entrust message.
-    VerifyOrExit(!mExpectJoinEntRsp || (Get<KeyManager>().GetKek() == metadata.mKek), OT_NOOP);
 
     if (TimerMilli::GetNow() < metadata.mSendTime)
     {
@@ -296,12 +270,11 @@ void JoinerRouter::SendDelayedJoinerEntrust(void)
     }
     else
     {
-        mDelayedJoinEnts.Dequeue(*message);
-        message->Free();
+        mDelayedJoinEnts.DequeueAndFree(*message);
 
         Get<KeyManager>().SetKek(metadata.mKek);
 
-        if (SendJoinerEntrust(metadata.mMessageInfo) != OT_ERROR_NONE)
+        if (SendJoinerEntrust(metadata.mMessageInfo) != kErrorNone)
         {
             mTimer.Start(0);
         }
@@ -311,66 +284,56 @@ exit:
     return;
 }
 
-otError JoinerRouter::SendJoinerEntrust(const Ip6::MessageInfo &aMessageInfo)
+Error JoinerRouter::SendJoinerEntrust(const Ip6::MessageInfo &aMessageInfo)
 {
-    otError        error = OT_ERROR_NONE;
+    Error          error = kErrorNone;
     Coap::Message *message;
 
     message = PrepareJoinerEntrustMessage();
-    VerifyOrExit(message != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(message != nullptr, error = kErrorNoBufs);
 
-    Get<Coap::Coap>().AbortTransaction(&JoinerRouter::HandleJoinerEntrustResponse, this);
+    IgnoreError(Get<Tmf::Agent>().AbortTransaction(&JoinerRouter::HandleJoinerEntrustResponse, this));
 
-    otLogInfoMeshCoP("Sending JOIN_ENT.ntf");
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, aMessageInfo,
+    LogInfo("Sending JOIN_ENT.ntf");
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, aMessageInfo,
                                                         &JoinerRouter::HandleJoinerEntrustResponse, this));
 
-    otLogInfoMeshCoP("Sent joiner entrust length = %d", message->GetLength());
-    otLogCertMeshCoP("[THCI] direction=send | type=JOIN_ENT.ntf");
-
-    mExpectJoinEntRsp = true;
+    LogInfo("Sent joiner entrust length = %d", message->GetLength());
+    LogCert("[THCI] direction=send | type=JOIN_ENT.ntf");
 
 exit:
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
+    FreeMessageOnError(message, error);
     return error;
 }
 
 Coap::Message *JoinerRouter::PrepareJoinerEntrustMessage(void)
 {
-    otError        error;
-    Coap::Message *message = NULL;
-    Dataset        dataset(Dataset::kActive);
-
+    Error          error;
+    Coap::Message *message = nullptr;
+    Dataset        dataset;
     NetworkNameTlv networkName;
     const Tlv *    tlv;
+    NetworkKey     networkKey;
 
-    VerifyOrExit((message = NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    message->Init(OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
-    SuccessOrExit(error = message->AppendUriPathOptions(OT_URI_PATH_JOINER_ENTRUST));
+    message->InitAsConfirmablePost();
+    SuccessOrExit(error = message->AppendUriPathOptions(UriPath::kJoinerEntrust));
     SuccessOrExit(error = message->SetPayloadMarker());
     message->SetSubType(Message::kSubTypeJoinerEntrust);
 
-    SuccessOrExit(error = Tlv::AppendTlv(*message, Tlv::kNetworkMasterKey, Get<KeyManager>().GetMasterKey().m8,
-                                         sizeof(MasterKey)));
-
-    SuccessOrExit(error = Tlv::AppendTlv(*message, Tlv::kMeshLocalPrefix, Get<Mle::MleRouter>().GetMeshLocalPrefix().m8,
-                                         sizeof(otMeshLocalPrefix)));
-
-    SuccessOrExit(error = Tlv::AppendTlv(*message, Tlv::kExtendedPanId, Get<Mac::Mac>().GetExtendedPanId().m8,
-                                         sizeof(Mac::ExtendedPanId)));
+    Get<KeyManager>().GetNetworkKey(networkKey);
+    SuccessOrExit(error = Tlv::Append<NetworkKeyTlv>(*message, networkKey));
+    SuccessOrExit(error = Tlv::Append<MeshLocalPrefixTlv>(*message, Get<Mle::MleRouter>().GetMeshLocalPrefix()));
+    SuccessOrExit(error = Tlv::Append<ExtendedPanIdTlv>(*message, Get<ExtendedPanIdManager>().GetExtPanId()));
 
     networkName.Init();
-    networkName.SetNetworkName(Get<Mac::Mac>().GetNetworkName().GetAsData());
+    networkName.SetNetworkName(Get<NetworkNameManager>().GetNetworkName().GetAsData());
     SuccessOrExit(error = networkName.AppendTo(*message));
 
-    Get<ActiveDataset>().Read(dataset);
+    IgnoreError(Get<ActiveDatasetManager>().Read(dataset));
 
-    if ((tlv = dataset.GetTlv<ActiveTimestampTlv>()) != NULL)
+    if ((tlv = dataset.GetTlv<ActiveTimestampTlv>()) != nullptr)
     {
         SuccessOrExit(error = tlv->AppendTo(*message));
     }
@@ -381,7 +344,7 @@ Coap::Message *JoinerRouter::PrepareJoinerEntrustMessage(void)
         SuccessOrExit(error = activeTimestamp.AppendTo(*message));
     }
 
-    if ((tlv = dataset.GetTlv<ChannelMaskTlv>()) != NULL)
+    if ((tlv = dataset.GetTlv<ChannelMaskTlv>()) != nullptr)
     {
         SuccessOrExit(error = tlv->AppendTo(*message));
     }
@@ -392,7 +355,7 @@ Coap::Message *JoinerRouter::PrepareJoinerEntrustMessage(void)
         SuccessOrExit(error = channelMask.AppendTo(*message));
     }
 
-    if ((tlv = dataset.GetTlv<PskcTlv>()) != NULL)
+    if ((tlv = dataset.GetTlv<PskcTlv>()) != nullptr)
     {
         SuccessOrExit(error = tlv->AppendTo(*message));
     }
@@ -403,7 +366,7 @@ Coap::Message *JoinerRouter::PrepareJoinerEntrustMessage(void)
         SuccessOrExit(error = pskc.AppendTo(*message));
     }
 
-    if ((tlv = dataset.GetTlv<SecurityPolicyTlv>()) != NULL)
+    if ((tlv = dataset.GetTlv<SecurityPolicyTlv>()) != nullptr)
     {
         SuccessOrExit(error = tlv->AppendTo(*message));
     }
@@ -414,44 +377,36 @@ Coap::Message *JoinerRouter::PrepareJoinerEntrustMessage(void)
         SuccessOrExit(error = securityPolicy.AppendTo(*message));
     }
 
-    SuccessOrExit(
-        error = Tlv::AppendUint32Tlv(*message, Tlv::kNetworkKeySequence, Get<KeyManager>().GetCurrentKeySequence()));
+    SuccessOrExit(error = Tlv::Append<NetworkKeySequenceTlv>(*message, Get<KeyManager>().GetCurrentKeySequence()));
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-        message = NULL;
-    }
-
+    FreeAndNullMessageOnError(message, error);
     return message;
 }
 
 void JoinerRouter::HandleJoinerEntrustResponse(void *               aContext,
                                                otMessage *          aMessage,
                                                const otMessageInfo *aMessageInfo,
-                                               otError              aResult)
+                                               Error                aResult)
 {
-    static_cast<JoinerRouter *>(aContext)->HandleJoinerEntrustResponse(
-        static_cast<Coap::Message *>(aMessage), static_cast<const Ip6::MessageInfo *>(aMessageInfo), aResult);
+    static_cast<JoinerRouter *>(aContext)->HandleJoinerEntrustResponse(AsCoapMessagePtr(aMessage),
+                                                                       AsCoreTypePtr(aMessageInfo), aResult);
 }
 
 void JoinerRouter::HandleJoinerEntrustResponse(Coap::Message *         aMessage,
                                                const Ip6::MessageInfo *aMessageInfo,
-                                               otError                 aResult)
+                                               Error                   aResult)
 {
     OT_UNUSED_VARIABLE(aMessageInfo);
 
-    mExpectJoinEntRsp = false;
     SendDelayedJoinerEntrust();
 
-    VerifyOrExit(aResult == OT_ERROR_NONE && aMessage != NULL, OT_NOOP);
+    VerifyOrExit(aResult == kErrorNone && aMessage != nullptr);
 
-    VerifyOrExit(aMessage->GetCode() == OT_COAP_CODE_CHANGED, OT_NOOP);
+    VerifyOrExit(aMessage->GetCode() == Coap::kCodeChanged);
 
-    otLogInfoMeshCoP("Receive joiner entrust response");
-    otLogCertMeshCoP("[THCI] direction=recv | type=JOIN_ENT.rsp");
+    LogInfo("Receive joiner entrust response");
+    LogCert("[THCI] direction=recv | type=JOIN_ENT.rsp");
 
 exit:
     return;
@@ -462,7 +417,7 @@ void JoinerRouter::JoinerEntrustMetadata::ReadFrom(const Message &aMessage)
     uint16_t length = aMessage.GetLength();
 
     OT_ASSERT(length >= sizeof(*this));
-    aMessage.Read(length - sizeof(*this), sizeof(*this), this);
+    IgnoreError(aMessage.Read(length - sizeof(*this), *this));
 }
 
 } // namespace MeshCoP

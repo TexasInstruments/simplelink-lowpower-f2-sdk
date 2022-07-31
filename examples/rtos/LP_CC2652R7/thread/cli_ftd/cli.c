@@ -71,6 +71,14 @@
 #include "task_config.h"
 #include "ti_drivers_config.h"
 
+/**
+ * This function initializes the CLI app.
+ *
+ * @param[in]  aInstance  The OpenThread instance structure.
+ *
+ */
+extern void otAppCliInit(otInstance *aInstance);
+
 #if TIOP_OAD
 /* OAD required Header files */
 #include "oad_image_header.h"
@@ -187,7 +195,7 @@ void *cli_task(void *arg0)
 #endif /* !TIOP_POWER_MEASUREMENT */
 
     OtRtosApi_lock();
-    otCliUartInit(OtInstance_get());
+    otAppCliInit(OtInstance_get());
     OtRtosApi_unlock();
 
     while (1)
@@ -198,24 +206,13 @@ void *cli_task(void *arg0)
     }
 }
 
-/*
- * Provide, if required an "otPlatLog()" function
- *
- * This function is used by the OpenThread stack, be very careful logging
- * application data with it.
- */
 #if OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_APP
 void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, ...)
 {
-    OT_UNUSED_VARIABLE(aLogLevel);
-    OT_UNUSED_VARIABLE(aLogRegion);
-    OT_UNUSED_VARIABLE(aFormat);
-
     va_list ap;
+
     va_start(ap, aFormat);
-    /* This is a callback from OpenThread, do not lock the API here */
     otCliPlatLogv(aLogLevel, aLogRegion, aFormat, ap);
     va_end(ap);
 }
 #endif
-

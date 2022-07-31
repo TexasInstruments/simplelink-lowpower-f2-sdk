@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,20 @@ e.g ../../mysource/app_override.h
 
 The SDK contains two example files, one for each custom override. The files can be found in 
 "source/ti/devices/radioconfig" and contain further details.
+`;
+
+const patchDescription = `
+TI recommends to keep this option at the default value unless you are following provided steps to alter the radio 
+behavior for your application. The default patch selection is tied to the provided characterized settings, and modifying
+this option may result in unknown behavior.
+
+The **RF patch selection** feature allows developers to select specific RF patches within the SimpleLink SDK.
+The RF patches are found relative to the SDK's device directory,
+./source/ti/devices/&lt;device&nbsp;family&gt;/rf_patches.
+
+**Please note**: An RF patch is provided as a pair of .c and .h files and it is important that the base names of 
+the two files are identical, otherwise a build error will occur. After adding or removing a patch (file pair) in 
+the SDK source directory, the patch list must be refreshed by clicking the Update button.
 `;
 
 const codeExportDocs = [
@@ -132,5 +146,6 @@ const codeExportDocs = [
 ];
 
 exports = {
-    codeExportDocs: codeExportDocs
+    codeExportDocs: codeExportDocs,
+    getPatchDescription: () => patchDescription
 };

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/build.dtd -->
-<package name="ti.catalog.arm" version="1, 0, 1" producerId="undefined">
+<package name="ti.catalog.arm" version="1, 0, 1" producerId="/db/ztree/library/trees/platform/platform-z19/src/">
     <units>
         <interface name="IOMAP2x3x"/>
         <interface name="IOMAP3xxx"/>
@@ -55,7 +55,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_catalog_arm.tar.dep" src="package/rel/ti_catalog_arm.xdc.inc"/>
+        <srcFile name="package/rel/ti_catalog_arm.zip.dep" src="package/rel/ti_catalog_arm.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -69,9 +69,9 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_catalog_arm"
-        pname="ti_catalog_arm.tar"
+        pname="../../..//../exports/ti_catalog_arm.zip"
         label="default"
-    >
+        relScript="/db/ztree/library/trees/platform/platform-z19/src/tisb/release/copyright/copyright.rel">
         <file name="package/package.bld.xml"/>
         <file name="package/build.cfg"/>
         <file name="package/package.xdc.inc"/>

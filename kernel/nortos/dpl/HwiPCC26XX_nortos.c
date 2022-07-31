@@ -48,19 +48,21 @@
 #include DeviceFamily_constructPath(driverlib/rom.h)
 
 // TODO: Replace once defines available in driverlib
-#if (DeviceFamily_ID == DeviceFamily_ID_CC13X4 || DeviceFamily_ID == DeviceFamily_ID_CC26X4)
-#define CPU_SCS_ICSR_VECTACTIVE_M 0x000001FF
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #define CPU_SCS_ICSR_VECTACTIVE_M 0x000001FF
 #else
-#include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
+    #include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
 #endif
 
-typedef struct _HwiP_Obj {
+typedef struct _HwiP_Obj
+{
     uint32_t intNum;
     HwiP_Fxn fxn;
     uintptr_t arg;
 } HwiP_Obj;
 
-typedef struct _Hwi_NVIC {
+typedef struct _Hwi_NVIC
+{
     uint32_t RES_00;
     uint32_t ICTR;
     uint32_t RES_08;
@@ -138,12 +140,9 @@ typedef struct _Hwi_NVIC {
 
 static Hwi_NVIC *Hwi_nvic = (Hwi_NVIC *)0xE000E000;
 
-static HwiP_Obj* HwiP_dispatchTable[NUM_INTERRUPTS] = {
-    0
-};
+static HwiP_Obj *HwiP_dispatchTable[NUM_INTERRUPTS] = {0};
 
 int HwiP_swiPIntNum = INT_PENDSV;
-
 
 /*
  *  ======== HwiP_enable ========
@@ -166,7 +165,8 @@ uintptr_t HwiP_disable(void)
  */
 void HwiP_restore(uintptr_t alreadyDisabled)
 {
-    if (!alreadyDisabled) {
+    if (!alreadyDisabled)
+    {
         IntMasterEnable();
     }
 }
@@ -215,8 +215,9 @@ static void HwiP_dispatch(void)
 {
     /* Determine which interrupt has fired */
     uint32_t intNum = (Hwi_nvic->ICSR & 0x000000ff);
-    HwiP_Obj* obj = HwiP_dispatchTable[intNum];
-    if (obj) {
+    HwiP_Obj *obj   = HwiP_dispatchTable[intNum];
+    if (obj)
+    {
         (obj->fxn)(obj->arg);
     }
 }
@@ -244,39 +245,43 @@ bool HwiP_interruptsEnabled(void)
 /*
  *  ======== HwiP_construct ========
  */
-HwiP_Handle HwiP_construct(HwiP_Struct *handle, int interruptNum,
-                           HwiP_Fxn hwiFxn, HwiP_Params *params)
+HwiP_Handle HwiP_construct(HwiP_Struct *handle, int interruptNum, HwiP_Fxn hwiFxn, HwiP_Params *params)
 {
     HwiP_Params defaultParams;
     HwiP_Obj *obj = (HwiP_Obj *)handle;
 
-    if (handle != NULL) {
-        if (params == NULL) {
+    if (handle != NULL)
+    {
+        if (params == NULL)
+        {
             params = &defaultParams;
             HwiP_Params_init(&defaultParams);
         }
 
-        if ((params->priority & 0xFF) == 0xFF) {
+        if ((params->priority & 0xFF) == 0xFF)
+        {
             /* SwiP_nortos.c uses INT_PRI_LEVEL7 as its scheduler */
             params->priority = INT_PRI_LEVEL6;
         }
 
-        if (interruptNum != HwiP_swiPIntNum &&
-            params->priority == INT_PRI_LEVEL7) {
+        if (interruptNum != HwiP_swiPIntNum && params->priority == INT_PRI_LEVEL7)
+        {
             DebugP_log0("HwiP_construct: can't use reserved INT_PRI_LEVEL7");
 
             handle = NULL;
         }
-        else {
+        else
+        {
             HwiP_dispatchTable[interruptNum] = obj;
-            obj->fxn = hwiFxn;
-            obj->arg = params->arg;
-            obj->intNum = (uint32_t)interruptNum;
+            obj->fxn                         = hwiFxn;
+            obj->arg                         = params->arg;
+            obj->intNum                      = (uint32_t)interruptNum;
 
             IntRegister((uint32_t)interruptNum, HwiP_dispatch);
             IntPrioritySet((uint32_t)interruptNum, (uint8_t)params->priority);
 
-            if (params->enableInt) {
+            if (params->enableInt)
+            {
                 IntEnable((uint32_t)interruptNum);
             }
         }
@@ -301,10 +306,11 @@ HwiP_Handle HwiP_create(int interruptNum, HwiP_Fxn hwiFxn, HwiP_Params *params)
      * that construct failed with non-NULL pointer and that we need to
      * free the handle.
      */
-    if (handle != NULL) {
-        retHandle = HwiP_construct((HwiP_Struct *)handle, interruptNum, hwiFxn,
-                                   params);
-        if (retHandle == NULL) {
+    if (handle != NULL)
+    {
+        retHandle = HwiP_construct((HwiP_Struct *)handle, interruptNum, hwiFxn, params);
+        if (retHandle == NULL)
+        {
             free(handle);
             handle = NULL;
         }
@@ -318,9 +324,10 @@ HwiP_Handle HwiP_create(int interruptNum, HwiP_Fxn hwiFxn, HwiP_Params *params)
  */
 void HwiP_Params_init(HwiP_Params *params)
 {
-    if (params != NULL) {
-        params->arg = 0;
-        params->priority = (~0);
+    if (params != NULL)
+    {
+        params->arg       = 0;
+        params->priority  = (~0);
         params->enableInt = true;
     }
 }
@@ -363,10 +370,12 @@ bool HwiP_inISR(void)
 {
     bool stat;
 
-    if ((Hwi_nvic->ICSR & CPU_SCS_ICSR_VECTACTIVE_M) == 0) {
+    if ((Hwi_nvic->ICSR & CPU_SCS_ICSR_VECTACTIVE_M) == 0)
+    {
         stat = false;
     }
-    else {
+    else
+    {
         stat = true;
     }
 
@@ -378,8 +387,9 @@ bool HwiP_inISR(void)
  */
 bool HwiP_inSwi(void)
 {
-    uint32_t intNum  = Hwi_nvic->ICSR & 0x000000ff;
-    if (intNum == HwiP_swiPIntNum) {
+    uint32_t intNum = Hwi_nvic->ICSR & 0x000000ff;
+    if (intNum == HwiP_swiPIntNum)
+    {
         /* Currently in a Swi */
         return (true);
     }

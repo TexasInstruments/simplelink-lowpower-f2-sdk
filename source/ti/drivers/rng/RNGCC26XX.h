@@ -63,12 +63,13 @@ extern "C" {
  *
  *  \note The application must not access any member variables of this structure!
  */
-typedef struct {
-    TRNG_Config                 trngConfig;
-    TRNGCC26XX_Object           trngObject;
-    RNG_Params                  rngParams;
-    volatile bool               operationInProgress;
-    bool                        operationCanceled;
+typedef struct
+{
+    TRNG_Config trngConfig;
+    TRNGCC26XX_Object trngObject;
+    RNG_Params rngParams;
+    volatile bool operationInProgress;
+    bool operationCanceled;
 } RNGCC26XX_Object;
 
 /*! \endcond */

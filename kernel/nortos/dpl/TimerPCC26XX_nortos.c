@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,32 +45,32 @@
 
 #define COMPARE_MARGIN 4
 
-#define MAX_SKIP  (0x7E9000000000)    /* 32400 seconds (9 hours) */
+#define MAX_SKIP   (0x7E9000000000) /* 32400 seconds (9 hours) */
 #define TIMER_FREQ 65536
 
-typedef struct _TimerP_Obj {
-    TimerP_StartMode        startMode;
-    uint32_t                period;
-    uintptr_t               arg;
-    HwiP_Fxn                tickFxn;
-    TimerP_FreqHz           frequency;
-    uint64_t                period64;
-    uint64_t                savedCurrCount;
-    uint64_t                prevThreshold;
-    uint64_t                nextThreshold;
+typedef struct _TimerP_Obj
+{
+    TimerP_StartMode startMode;
+    uint32_t period;
+    uintptr_t arg;
+    HwiP_Fxn tickFxn;
+    TimerP_FreqHz frequency;
+    uint64_t period64;
+    uint64_t savedCurrCount;
+    uint64_t prevThreshold;
+    uint64_t nextThreshold;
 } TimerP_Obj;
 
 static bool TimerP_initialized = false;
 static TimerP_Obj *TimerP_handle;
 static HwiP_Struct TimerP_hwiStruct;
-//static unsigned int TimerP_availMask = 0x7;
+// static unsigned int TimerP_availMask = 0x7;
 
 static TimerP_Params TimerP_defaultParams = {
     .startMode = TimerP_StartMode_AUTO,
-    .arg = 0,
-    .period = 10,
+    .arg       = 0,
+    .period    = 10,
 };
-
 
 /*
  *  ======== TimerP_Params_init ========
@@ -89,16 +89,17 @@ TimerP_Handle TimerP_construct(TimerP_Struct *handle, TimerP_Fxn timerFxn, Timer
     TimerP_Obj *obj = (TimerP_Obj *)handle;
     uintptr_t hwiKey;
 
-    if (handle != NULL) {
+    if (handle != NULL)
+    {
         hwiKey = HwiP_disable();
 
-        if (!TimerP_initialized) {
+        if (!TimerP_initialized)
+        {
             HwiP_Params hwiParams;
 
             HwiP_Params_init(&hwiParams);
             hwiParams.priority = INT_PRI_LEVEL4;
-            HwiP_construct(&TimerP_hwiStruct, INT_AON_RTC_COMB,
-                           TimerP_dynamicStub, &hwiParams);
+            HwiP_construct(&TimerP_hwiStruct, INT_AON_RTC_COMB, TimerP_dynamicStub, &hwiParams);
 
             TimerP_handle = (TimerP_Obj *)handle;
 
@@ -107,20 +108,21 @@ TimerP_Handle TimerP_construct(TimerP_Struct *handle, TimerP_Fxn timerFxn, Timer
 
         HwiP_restore(hwiKey);
 
-        if (params == NULL) {
+        if (params == NULL)
+        {
             params = (TimerP_Params *)&TimerP_defaultParams;
         }
 
-        obj->startMode = params->startMode;
-        obj->arg = params->arg;
-        obj->tickFxn = timerFxn;
-        obj->frequency.lo = TIMER_FREQ;
-        obj->frequency.hi = 0;
-        obj->period = (0x100000000UL * params->period) / 1000000U;
-        obj->period64 = obj->period;
+        obj->startMode      = params->startMode;
+        obj->arg            = params->arg;
+        obj->tickFxn        = timerFxn;
+        obj->frequency.lo   = TIMER_FREQ;
+        obj->frequency.hi   = 0;
+        obj->period         = (0x100000000UL * params->period) / 1000000U;
+        obj->period64       = obj->period;
         obj->savedCurrCount = 0;
-        obj->prevThreshold = obj->period;
-        obj->nextThreshold = obj->period;
+        obj->prevThreshold  = obj->period;
+        obj->nextThreshold  = obj->period;
 
         TimerP_startup();
     }
@@ -155,10 +157,12 @@ uint32_t TimerP_getMaxTicks(TimerP_Handle handle)
     temp = (uint64_t)(MAX_SKIP) / obj->period64;
 
     /* clip value to Clock tick count limit of 32-bits */
-    if (temp > 0xFFFFFFFF) {
+    if (temp > 0xFFFFFFFF)
+    {
         ticks = 0xFFFFFFFF;
     }
-    else {
+    else
+    {
         ticks = (uint32_t)temp;
     }
 
@@ -177,12 +181,15 @@ void TimerP_setThreshold(TimerP_Handle handle, uint32_t next, bool wrap)
 
     /* else if next is too soon, set at least one RTC tick in future */
     /* assume next never be more than half the maximum 32 bit count value */
-    if ((next - now) > (uint32_t)0x80000000) {
+    if ((next - now) > (uint32_t)0x80000000)
+    {
         /* now is past next */
         next = now + COMPARE_MARGIN;
     }
-    else if ((now + COMPARE_MARGIN - next) < (uint32_t)0x80000000) {
-        if (next < now + COMPARE_MARGIN) {
+    else if ((now + COMPARE_MARGIN - next) < (uint32_t)0x80000000)
+    {
+        if (next < now + COMPARE_MARGIN)
+        {
             next = now + COMPARE_MARGIN;
         }
     }
@@ -197,7 +204,7 @@ void TimerP_setThreshold(TimerP_Handle handle, uint32_t next, bool wrap)
 void TimerP_setNextTick(TimerP_Handle handle, uint32_t ticks)
 {
     TimerP_Obj *obj = (TimerP_Obj *)handle;
-    bool wrap = false;
+    bool wrap       = false;
     uint32_t next;
     uint64_t newThreshold;
 
@@ -224,8 +231,10 @@ void TimerP_startup(void)
 
     obj = TimerP_handle;
     /* if timer was statically created/constructed */
-    if (obj != NULL) {
-        if (obj->startMode == TimerP_StartMode_AUTO) {
+    if (obj != NULL)
+    {
+        if (obj->startMode == TimerP_StartMode_AUTO)
+        {
             TimerP_start(obj);
         }
     }
@@ -255,20 +264,28 @@ void TimerP_start(TimerP_Handle handle)
      * set the compare register to the counter start value plus one period.
      * For a very small period round up to interrupt upon 4th RTC tick
      */
-    if (obj->period < 0x40000) {
-        compare = 0x4;    /* 4 * 15.5us ~= 62us */
+    if (obj->period < 0x40000)
+    {
+        compare = 0x4; /* 4 * 15.5us ~= 62us */
     }
     /* else, interrupt on first period expiration */
-    else {
+    else
+    {
         compare = obj->period >> 16;
     }
+
+    /* Add current time to compare-value, in case it is not 0 */
+    compare += AONRTCCurrentCompareValueGet();
+
+    /* Clear events on channel 0 */
+    AONRTCEventClear(AON_RTC_CH0);
 
     /* set the compare value at the RTC */
     AONRTCCompareValueSet(AON_RTC_CH0, compare);
 
     /* enable compare channel 0 */
     AONEventMcuWakeUpSet(AON_EVENT_MCU_WU0, AON_EVENT_RTC0);
-    AONRTCEventClear(AON_RTC_CH0);
+
     AONRTCChannelEnable(AON_RTC_CH0);
 
     HwiP_restore(key);
@@ -279,7 +296,7 @@ void TimerP_start(TimerP_Handle handle)
  */
 void TimerP_stop(TimerP_Handle handle)
 {
-    TimerP_Obj *obj = (TimerP_Obj *)handle;
+    TimerP_Obj *obj     = (TimerP_Obj *)handle;
     /* not implemented for this timer */
     obj->savedCurrCount = 0;
 }
@@ -294,7 +311,7 @@ void TimerP_stop(TimerP_Handle handle)
 void TimerP_setPeriod(TimerP_Handle handle, uint32_t period)
 {
     TimerP_Obj *obj = (TimerP_Obj *)handle;
-    obj->period = period;
+    obj->period     = period;
 }
 
 /*
@@ -302,7 +319,7 @@ void TimerP_setPeriod(TimerP_Handle handle, uint32_t period)
  */
 uint64_t TimerP_getCount64(TimerP_Handle handle)
 {
-    return(AONRTCCurrent64BitValueGet());
+    return (AONRTCCurrent64BitValueGet());
 }
 
 /*
@@ -344,12 +361,13 @@ uint32_t TimerP_getCurrentTick(TimerP_Handle handle, bool saveFlag)
 
     tick = currCount / obj->period64;
 
-    if (saveFlag != 0) {
+    if (saveFlag != 0)
+    {
         /*
          * to avoid accumulating drift, make currCount be an integer
          * multiple of timer periods
          */
-        currCount = tick * obj->period64;
+        currCount           = tick * obj->period64;
         obj->savedCurrCount = currCount;
     }
 

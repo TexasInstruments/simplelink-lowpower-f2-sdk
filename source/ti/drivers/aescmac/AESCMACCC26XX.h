@@ -91,7 +91,8 @@ extern "C" {
  *  AESCMAC26XX hardware attributes should be included in the board file
  *  and pointed to by the AESCMAC_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC26XX uses three of the priority bits, meaning ~0 has the same
@@ -106,7 +107,7 @@ typedef struct {
         HWI's with priority 0 ignore the HWI dispatcher to support zero-latency
         interrupts, thus invalidating the critical sections in this driver.
     */
-    uint8_t  intPriority;
+    uint8_t intPriority;
 } AESCMACCC26XX_HWAttrs;
 
 /*!
@@ -114,22 +115,23 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    uint32_t                 intermediateTag[AES_TAG_LENGTH_BYTES / 4];
-    uint32_t                 buffer[AES_BLOCK_SIZE / 4];
-    uint32_t                 semaphoreTimeout;
-    AESCMAC_CallbackFxn      callbackFxn;
-    AESCMAC_Operation        *operation;
-    CryptoKey                key;
-    volatile int_fast16_t    returnStatus;
-    AESCMAC_ReturnBehavior   returnBehavior;
-    AESCMAC_OperationType    operationType;
-    AESCMAC_OperationalMode  operationalMode;
-    bool                     isOpen;
-    bool                     threadSafe;
-    volatile bool            cryptoResourceLocked;
-    volatile bool            hwBusy;
-    volatile bool            operationInProgress;
+typedef struct
+{
+    uint32_t intermediateTag[AES_TAG_LENGTH_BYTES / 4];
+    uint32_t buffer[AES_BLOCK_SIZE / 4];
+    uint32_t semaphoreTimeout;
+    AESCMAC_CallbackFxn callbackFxn;
+    AESCMAC_Operation *operation;
+    CryptoKey key;
+    volatile int_fast16_t returnStatus;
+    AESCMAC_ReturnBehavior returnBehavior;
+    AESCMAC_OperationType operationType;
+    AESCMAC_OperationalMode operationalMode;
+    bool isOpen;
+    bool threadSafe;
+    volatile bool cryptoResourceLocked;
+    volatile bool hwBusy;
+    volatile bool operationInProgress;
 } AESCMACCC26XX_Object;
 
 /*!

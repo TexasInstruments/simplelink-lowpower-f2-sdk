@@ -67,8 +67,6 @@
 #define HeapMultiBuf_Handle_label ti_sysbios_heaps_HeapMultiBuf_Handle_label
 #define HeapMultiBuf_Handle_name ti_sysbios_heaps_HeapMultiBuf_Handle_name
 #define HeapMultiBuf_Instance_init ti_sysbios_heaps_HeapMultiBuf_Instance_init
-#define HeapMultiBuf_Object_count ti_sysbios_heaps_HeapMultiBuf_Object_count
-#define HeapMultiBuf_Object_get ti_sysbios_heaps_HeapMultiBuf_Object_get
 #define HeapMultiBuf_Object_first ti_sysbios_heaps_HeapMultiBuf_Object_first
 #define HeapMultiBuf_Object_next ti_sysbios_heaps_HeapMultiBuf_Object_next
 #define HeapMultiBuf_Object_sizeof ti_sysbios_heaps_HeapMultiBuf_Object_sizeof
@@ -123,8 +121,6 @@
 #undef HeapMultiBuf_Handle_label
 #undef HeapMultiBuf_Handle_name
 #undef HeapMultiBuf_Instance_init
-#undef HeapMultiBuf_Object_count
-#undef HeapMultiBuf_Object_get
 #undef HeapMultiBuf_Object_first
 #undef HeapMultiBuf_Object_next
 #undef HeapMultiBuf_Object_sizeof

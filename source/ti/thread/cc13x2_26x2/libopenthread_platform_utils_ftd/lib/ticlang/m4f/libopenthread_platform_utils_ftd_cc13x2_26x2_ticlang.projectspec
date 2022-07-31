@@ -62,11 +62,17 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/encoding.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/mac_frame.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/link_metrics.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/link_metrics.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/debug_uart.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/mac_frame.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/mac_frame.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms/utils/uart.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="examples/platforms/utils">
         </file>
     </project>
 </projectSpec>

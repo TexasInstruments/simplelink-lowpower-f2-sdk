@@ -55,6 +55,7 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/BIOS.h>
 
+#include <ti/drivers/GPIO.h>
 #include <icall.h>
 #include "hal_assert.h"
 #include "bcomdef.h"
@@ -130,7 +131,7 @@ int main()
 
   Board_initGeneral();
 
-  if(!PIN_getInputValue(CONFIG_GPIO_BTN1))
+  if(!GPIO_read(CONFIG_GPIO_BTN1))
   {
      markSwitchFactoryImg();
   }

@@ -3,16 +3,17 @@ SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../../../../..)
 
 include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
-DRIVERLIB_DIR = $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
+DRIVERLIB_CC13XX_CC26XX_INSTALL_DIR ?= $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
+TIPOSIX_INSTALL_DIR ?= $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
 FREERTOSPORT_DIR = $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)
 
-VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/MemMang:$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source:$(FREERTOSPORT_DIR)/kernel/freertos/dpl:$(FREERTOSPORT_DIR)/kernel/freertos/startup
+VPATH = $(FREERTOS_INSTALL_DIR)/FreeRTOS/Source:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure:$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/MemMang:$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source:$(FREERTOSPORT_DIR)/kernel/freertos/dpl:$(FREERTOSPORT_DIR)/kernel/freertos/startup:$(TIPOSIX_INSTALL_DIR)/source
 
 CC = "$(IAR_ARMCOMPILER)/bin/iccarm"
 ASM = "$(IAR_ARMCOMPILER)/bin/iasmarm"
 AR = "$(IAR_ARMCOMPILER)/bin/iarchive"
 
-CFLAGS = -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure" "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/iar" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_DIR)/source" "-I$(IAR_ARMCOMPILER)/include" -DDeviceFamily_CC13X4_CC26X4 -Dewarm  --debug --silent --aeabi --cpu=Cortex-M33.fp --fpu=FPv5_sp --diag_suppress=Pa050,Go005 --endian=little -e --thumb
+CFLAGS = -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure" "-I$(TIPOSIX_INSTALL_DIR)/source/ti/posix/iar" "-I$(FREERTOSPORT_DIR)/source" "-I$(DRIVERLIB_CC13XX_CC26XX_INSTALL_DIR)/source" "-I$(IAR_ARMCOMPILER)/include" "-I$(TIPOSIX_INSTALL_DIR)/source" -DDeviceFamily_CC13X4_CC26X4 -Dewarm  --debug --silent --aeabi --cpu=Cortex-M33.fp --fpu=FPv5_sp --diag_suppress=Pa050,Go005 --endian=little -e --thumb
 
 AFLAGS = -I.. "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" -S --cpu Cortex-M33.fp --fpu FPv5_sp --endian little --thumb
 

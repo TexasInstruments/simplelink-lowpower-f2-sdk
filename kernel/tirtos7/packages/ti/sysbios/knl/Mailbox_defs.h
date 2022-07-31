@@ -62,8 +62,6 @@
 #define Mailbox_handle ti_sysbios_knl_Mailbox_handle
 #define Mailbox_struct ti_sysbios_knl_Mailbox_struct
 #define Mailbox_Instance_init ti_sysbios_knl_Mailbox_Instance_init
-#define Mailbox_Object_count ti_sysbios_knl_Mailbox_Object_count
-#define Mailbox_Object_get ti_sysbios_knl_Mailbox_Object_get
 #define Mailbox_Object_first ti_sysbios_knl_Mailbox_Object_first
 #define Mailbox_Object_next ti_sysbios_knl_Mailbox_Object_next
 #define Mailbox_Object_sizeof ti_sysbios_knl_Mailbox_Object_sizeof
@@ -104,8 +102,6 @@
 #undef Mailbox_handle
 #undef Mailbox_struct
 #undef Mailbox_Instance_init
-#undef Mailbox_Object_count
-#undef Mailbox_Object_get
 #undef Mailbox_Object_first
 #undef Mailbox_Object_next
 #undef Mailbox_Object_sizeof

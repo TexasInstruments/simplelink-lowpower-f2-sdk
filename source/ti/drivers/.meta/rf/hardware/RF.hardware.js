@@ -44,8 +44,8 @@ const antennaSwitch = {
             "description": "XMSSJJ3G0PA-054 RF Antenna Switch",
             "longDescription": "[__Murata XMSSJJ3G0PA-054__](https://www.murata.com/en-us/products/rfswitch/antennaswmod) single-pole, dual throw (SP2T) antenna switch.",
             "signals": {
-                "5_DBM_PA":  {"type": ["RF_5_DBM_PA"], "connection": 14, "dio": "DIO_0"},
-                "10_DBM_PA": {"type": ["RF_10_DBM_PA"], "connection": 15, "dio": "DIO_3"}
+                "STANDARD_PA": {"type": ["RF_STANDARD_PA"], "connection": 14, "dio": "DIO_0"},
+                "HIGH_PA": {"type": ["RF_HIGH_PA"], "connection": 15, "dio": "DIO_3"}
             }
         }
     },

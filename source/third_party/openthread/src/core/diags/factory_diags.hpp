@@ -36,18 +36,20 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_DIAG_ENABLE
+
 #include <string.h>
 
 #include <openthread/platform/radio.h>
 
+#include "common/error.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 
 namespace ot {
 namespace FactoryDiags {
 
-#if OPENTHREAD_CONFIG_DIAG_ENABLE
-
-class Diags : public InstanceLocator
+class Diags : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -61,7 +63,7 @@ public:
     /**
      * This method processes a factory diagnostics command line.
      *
-     * @param[in]   aString        A NULL-terminated input string.
+     * @param[in]   aString        A null-terminated input string.
      * @param[out]  aOutput        The diagnostics execution result.
      * @param[in]   aOutputMaxLen  The output buffer size.
      *
@@ -76,12 +78,12 @@ public:
      * @param[out]  aOutput        The diagnostics execution result.
      * @param[in]   aOutputMaxLen  The output buffer size.
      *
-     * @retval  OT_ERROR_INVALID_ARGS       The command is supported but invalid arguments provided.
-     * @retval  OT_ERROR_NONE               The command is successfully process.
-     * @retval  OT_ERROR_NOT_IMPLEMENTED    The command is not supported.
+     * @retval  kErrorInvalidArgs       The command is supported but invalid arguments provided.
+     * @retval  kErrorNone              The command is successfully process.
+     * @retval  kErrorNotImplemented    The command is not supported.
      *
      */
-    otError ProcessCmd(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessCmd(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
 
     /**
      * This method indicates whether or not the factory diagnostics mode is enabled.
@@ -101,29 +103,31 @@ public:
     /**
      * The radio driver calls this method to notify OpenThread diagnostics module of a received frame.
      *
-     * @param[in]  aFrame  A pointer to the received frame or NULL if the receive operation failed.
-     * @param[in]  aError  OT_ERROR_NONE when successfully received a frame,
-     *                     OT_ERROR_ABORT when reception was aborted and a frame was not received,
-     *                     OT_ERROR_NO_BUFS when a frame could not be received due to lack of rx buffer space.
+     * @param[in]  aFrame  A pointer to the received frame or `nullptr` if the receive operation failed.
+     * @param[in]  aError  kErrorNone when successfully received a frame,
+     *                     kErrorAbort when reception was aborted and a frame was not received,
+     *                     kErrorNoBufs when a frame could not be received due to lack of rx buffer space.
      *
      */
-    void ReceiveDone(otRadioFrame *aFrame, otError aError);
+    void ReceiveDone(otRadioFrame *aFrame, Error aError);
 
     /**
      * The radio driver calls this method to notify OpenThread diagnostics module that the transmission has completed.
      *
-     * @param[in]  aError  OT_ERROR_NONE when the frame was transmitted,
-     *                     OT_ERROR_CHANNEL_ACCESS_FAILURE tx could not take place due to activity on channel,
-     *                     OT_ERROR_ABORT when transmission was aborted for other reasons.
+     * @param[in]  aError  kErrorNone when the frame was transmitted,
+     *                     kErrorChannelAccessFailure tx could not take place due to activity on channel,
+     *                     kErrorAbort when transmission was aborted for other reasons.
      *
      */
-    void TransmitDone(otError aError);
+    void TransmitDone(Error aError);
 
 private:
+    static constexpr uint8_t kMaxArgs = OPENTHREAD_CONFIG_DIAG_CMD_LINE_ARGS_MAX;
+
     struct Command
     {
         const char *mName;
-        otError (Diags::*mCommand)(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+        Error (Diags::*mCommand)(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
     };
 
     struct Stats
@@ -138,23 +142,27 @@ private:
         uint8_t  mLastLqi;
     };
 
-    otError ProcessChannel(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessPower(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessRadio(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessRepeat(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessSend(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessStart(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessStats(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
-    otError ProcessStop(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ParseCmd(char *aString, uint8_t &aArgsLength, char *aArgs[]);
+    Error ProcessChannel(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessPower(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessRadio(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessRepeat(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessSend(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessStart(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessStats(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+    Error ProcessStop(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+#if OPENTHREAD_RADIO && !OPENTHREAD_RADIO_CLI
+    Error ProcessEcho(uint8_t aArgsLength, char *aArgs[], char *aOutput, size_t aOutputMaxLen);
+#endif
 
     void TransmitPacket(void);
 
-    static void    AppendErrorResult(otError aError, char *aOutput, size_t aOutputMaxLen);
-    static otError ParseLong(char *aString, long &aLong);
+    static void  AppendErrorResult(Error aError, char *aOutput, size_t aOutputMaxLen);
+    static Error ParseLong(char *aString, long &aLong);
 
     static const struct Command sCommands[];
 
-#if !OPENTHREAD_RADIO
+#if OPENTHREAD_FTD || OPENTHREAD_MTD || (OPENTHREAD_RADIO && OPENTHREAD_RADIO_CLI)
     Stats mStats;
 
     otRadioFrame *mTxPacket;
@@ -164,12 +172,13 @@ private:
     int8_t        mTxPower;
     uint8_t       mTxLen;
     bool          mRepeatActive;
+    bool          mDiagSendOn;
 #endif
 };
 
-#endif // #if OPENTHREAD_CONFIG_DIAG_ENABLE
-
 } // namespace FactoryDiags
 } // namespace ot
+
+#endif // #if OPENTHREAD_CONFIG_DIAG_ENABLE
 
 #endif // FACTORY_DIAGS_HPP_

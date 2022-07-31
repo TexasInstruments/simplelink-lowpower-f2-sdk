@@ -49,7 +49,7 @@
 #include <stddef.h>
 
 #include <utils/code_utils.h>
-#include <openthread/platform/uart.h>
+#include <utils/uart.h>
 
 #include <ti/drivers/UART2.h>
 

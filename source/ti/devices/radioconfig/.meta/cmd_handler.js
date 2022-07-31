@@ -167,6 +167,12 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
     // Names of commands used by setting
     const CmdUsed = [];
 
+    // Store for manual patches
+    let ManualPatch = {};
+    if (phyName in CmdHandlerCache) {
+        ManualPatch = CmdHandlerCache[phyName].getManualPatch();
+    }
+
     // Storage for TX power value for high PA (DBm)
     const TxPowerHi = {
         dbm: "",
@@ -1041,6 +1047,21 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
     }
 
     /*!
+     *  ======== setManualPatch ========
+     *  Set manual patch. This overrides the patch of the PHY.
+     *
+     *  @param cpe - CPE patch
+     *  @param rfe - RFE patch
+     *  @param mce - MCE patch
+     *
+     */
+    function setManualPatch(cpe, rfe, mce) {
+        ManualPatch.cpe = cpe;
+        ManualPatch.rfe = rfe;
+        ManualPatch.mce = mce;
+    }
+
+    /*!
      *  ======== getPatchInfo ========
      *  Extract patch information from the database
      *
@@ -1061,7 +1082,11 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             ret.mode = patches.Define;
         }
 
-        if ("Cpe" in patches) {
+        if (ManualPatch.cpe) {
+            ret.cpe = ManualPatch.cpe;
+        }
+        else if ("Cpe" in patches) {
+            // Use patches from the setting
             if (protocol === "multi") {
                 ret.cpe = "rf_patch_cpe_multi_protocol";
             }
@@ -1076,11 +1101,17 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             }
         }
 
-        if ("Mce" in patches) {
+        if (ManualPatch.mce) {
+            ret.mce = ManualPatch.mce;
+        }
+        else if ("Mce" in patches) {
             ret.mce = patches.Mce;
         }
 
-        if ("Rfe" in patches) {
+        if (ManualPatch.rfe) {
+            ret.rfe = ManualPatch.rfe;
+        }
+        else if ("Rfe" in patches) {
             if (protocol === "coex_ble") {
                 ret.rfe = "rf_patch_rfe_ble_coex";
             }
@@ -1340,8 +1371,7 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         const keys = [];
         const displayNames = [];
         const freq = getFrequency();
-        const freq433 = freq > Common.FreqHigher169 && freq < Common.FreqHigher433;
-        const freq169 = freq <= Common.FreqHigher169;
+        const ui = inst.$uiState;
 
         function pushKeys(cfg) {
             const name = cfg.name;
@@ -1363,49 +1393,21 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
 
         // Generate summary
         let summary = "";
-        let useHighPA = false;
 
         const usedCmds = getUsedCommands(inst);
 
         _.each(keys, (key) => {
-            const displayName = displayNames[key];
-            let value = inst[key];
-
-            // Filter on High PA
-            if (key === "highPA") {
-                useHighPA = value;
-            }
-
-            // Ensure only the relevant "txPower" configurable is displayed
-            if (key === "txPower2400" && !UseTxPower2400) {
-                return true;
-            }
-
-            if ((key === "txPower") && (useHighPA || freq433 || freq169 || UseTxPower2400)) {
-                return true;
-            }
-
-            if ((key === "txPowerHi") && (!useHighPA || freq433 || freq169)) {
-                return true;
-            }
-
-            if ((key === "txPower433") && (useHighPA || !freq433)) {
-                return true;
-            }
-
-            if ((key === "txPower169") && (useHighPA || !freq169)) {
-                return true;
-            }
-
-            // Ignore modulation and loDivider (invisible)
-            if (key === "loDivider" || key === "modulation") {
-                return true;
+            // Parameter summary skipped for hidden configurables
+            if (ui[key].hidden) {
+                return;
             }
 
             // Ignore RF parameters that are not supported by an RF command
             if (!isParameterUsed(key, usedCmds)) {
-                return true;
+                return;
             }
+
+            let value = inst[key];
 
             // Overwrite with calculates values where applicable
             if (key === "carrierFrequency") {
@@ -1426,10 +1428,8 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             }
 
             // Append generated line
+            const displayName = displayNames[key];
             summary += "// " + displayName + ": " + value + "\n";
-
-            // Continue _.each iteration
-            return true;
         });
 
         if (summary === "") {
@@ -2049,6 +2049,8 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         getRfData: getRfData,
         getParameterSummary: getParameterSummary,
         getCommandMap: getCommandMap,
+        setManualPatch: setManualPatch,
+        getManualPatch: () => ManualPatch,
         getPatchInfo: getPatchInfo,
         generatePatchCode: generatePatchCode,
         generateRfCmdCode: generateRfCmdCode,

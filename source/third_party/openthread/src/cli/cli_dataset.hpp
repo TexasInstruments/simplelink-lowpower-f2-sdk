@@ -40,66 +40,49 @@
 
 #include <openthread/dataset.h>
 
+#include "cli/cli_output.hpp"
+
 namespace ot {
 namespace Cli {
-
-class Interpreter;
 
 /**
  * This class implements the Dataset CLI interpreter.
  *
  */
-class Dataset
+class Dataset : private OutputWrapper
 {
 public:
-    explicit Dataset(Interpreter &aInterpreter)
-        : mInterpreter(aInterpreter)
+    typedef Utils::CmdLineParser::Arg Arg;
+
+    explicit Dataset(Output &aOutput)
+        : OutputWrapper(aOutput)
     {
     }
 
     /**
      * This method interprets a list of CLI arguments.
      *
-     * @param[in]  aArgsLength  The number of elements in @p aArgs.
      * @param[in]  aArgs        An array of command line arguments.
      *
      */
-    otError Process(uint8_t aArgsLength, char *aArgs[]);
+    otError Process(Arg aArgs[]);
 
 private:
-    struct Command
-    {
-        const char *mName;
-        otError (Dataset::*mCommand)(uint8_t aArgsLength, char *aArgs[]);
-    };
+    using Command = CommandEntry<Dataset>;
 
-    void    OutputBytes(const uint8_t *aBytes, uint8_t aLength);
+    template <CommandId kCommandId> otError Process(Arg aArgs[]);
+
     otError Print(otOperationalDataset &aDataset);
 
-    otError ProcessHelp(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessActive(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessActiveTimestamp(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessChannel(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessChannelMask(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessClear(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessCommit(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessDelay(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessExtPanId(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessInit(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMasterKey(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMeshLocalPrefix(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessNetworkName(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessPanId(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessPending(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessPendingTimestamp(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMgmtSetCommand(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessMgmtGetCommand(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessPskc(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessSecurityPolicy(uint8_t aArgsLength, char *aArgs[]);
+#if OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE && OPENTHREAD_FTD
+    otError     ProcessUpdater(Arg aArgs[]);
+    static void HandleDatasetUpdater(otError aError, void *aContext);
+    void        HandleDatasetUpdater(otError aError);
+#endif
 
-    Interpreter &mInterpreter;
+    void    OutputSecurityPolicy(const otSecurityPolicy &aSecurityPolicy);
+    otError ParseSecurityPolicy(otSecurityPolicy &aSecurityPolicy, Arg *&aArgs);
 
-    static const Command        sCommands[];
     static otOperationalDataset sDataset;
 };
 

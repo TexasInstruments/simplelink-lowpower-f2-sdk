@@ -51,9 +51,8 @@
 #include DeviceFamily_constructPath(inc/hw_crypto.h)
 #include DeviceFamily_constructPath(driverlib/aes.h)
 
-
 /* Forward declarations */
-static void AESGCM_hwiFxn (uintptr_t arg0);
+static void AESGCM_hwiFxn(uintptr_t arg0);
 static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
                                           AESGCM_Operation *operation,
                                           AESGCM_OperationType operationType);
@@ -63,16 +62,17 @@ static void AESGCM_cleanup(AESGCM_Handle handle);
 /* Static globals */
 static bool isInitialized = false;
 
-
 /*
  *  ======== AESGCM_hwiFxn ========
  */
-static void AESGCM_hwiFxn (uintptr_t arg0) {
+static void AESGCM_hwiFxn(uintptr_t arg0)
+{
     AESGCMCC26XX_Object *object = ((AESGCM_Handle)arg0)->object;
     uint32_t key;
 
     key = HwiP_disable();
-    if (!object->operationCanceled) {
+    if (!object->operationCanceled)
+    {
 
         /* Mark that we are done with the operation so that AESGCM_cancelOperation
          * knows not to try canceling.
@@ -81,13 +81,15 @@ static void AESGCM_hwiFxn (uintptr_t arg0) {
 
         HwiP_restore(key);
     }
-    else {
+    else
+    {
         HwiP_restore(key);
         return;
     }
 
     /* Propagate the DMA error from driverlib to the application */
-    if (AESIntStatusRaw() & AES_DMA_BUS_ERR) {
+    if (AESIntStatusRaw() & AES_DMA_BUS_ERR)
+    {
         object->returnStatus = AESGCM_STATUS_ERROR;
     }
 
@@ -99,11 +101,13 @@ static void AESGCM_hwiFxn (uintptr_t arg0) {
      */
     AESGCM_cleanup((AESGCM_Handle)arg0);
 
-    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         /* Unblock the pending task to signal that the operation is complete. */
         SemaphoreP_post(&CryptoResourceCC26XX_operationSemaphore);
     }
-    else {
+    else
+    {
         /* Call the callback function provided by the application.
          */
         object->callbackFxn((AESGCM_Handle)arg0,
@@ -116,19 +120,22 @@ static void AESGCM_hwiFxn (uintptr_t arg0) {
 /*
  *  ======== AESGCM_cleanup ========
  */
-static void AESGCM_cleanup(AESGCM_Handle handle) {
+static void AESGCM_cleanup(AESGCM_Handle handle)
+{
     AESGCMCC26XX_Object *object = handle->object;
 
     /* We need to copy / verify the MAC now so that it is not clobbered when we
      * release the CryptoResourceCC26XX_accessSemaphore semaphore.
      */
-    if (object->operationType == AESGCM_OPERATION_TYPE_ENCRYPT) {
+    if (object->operationType == AESGCM_OPERATION_TYPE_ENCRYPT)
+    {
         /* If we are encrypting and authenticating a message, we only want to
          * copy the MAC to the target buffer
          */
         AESReadTag(object->operation->mac, object->operation->macLength);
     }
-    else {
+    else
+    {
         uint8_t computedTag[AES_BLOCK_SIZE];
         /* If we are decrypting and verifying a message, we must now verify that
          * the provided MAC matches the one calculated in the decryption
@@ -136,9 +143,7 @@ static void AESGCM_cleanup(AESGCM_Handle handle) {
          */
         AESReadTag(computedTag, object->operation->macLength);
 
-        bool macValid = CryptoUtils_buffersMatch(computedTag,
-                                                 object->operation->mac,
-                                                 object->operation->macLength);
+        bool macValid = CryptoUtils_buffersMatch(computedTag, object->operation->mac, object->operation->macLength);
 
         object->returnStatus = macValid ? object->returnStatus : AESGCM_STATUS_MAC_INVALID;
     }
@@ -168,7 +173,8 @@ static void AESGCM_cleanup(AESGCM_Handle handle) {
 /*
  *  ======== AESGCM_init ========
  */
-void AESGCM_init(void) {
+void AESGCM_init(void)
+{
     CryptoResourceCC26XX_constructRTOSObjects();
 
     isInitialized = true;
@@ -177,17 +183,19 @@ void AESGCM_init(void) {
 /*
  *  ======== AESGCM_construct ========
  */
-AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *params) {
-    AESGCM_Handle               handle;
-    AESGCMCC26XX_Object        *object;
-    uint_fast8_t                key;
+AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *params)
+{
+    AESGCM_Handle handle;
+    AESGCMCC26XX_Object *object;
+    uint_fast8_t key;
 
     handle = (AESGCM_Handle)config;
     object = handle->object;
 
     key = HwiP_disable();
 
-    if (!isInitialized ||  object->isOpen) {
+    if (!isInitialized || object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
@@ -197,15 +205,17 @@ AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *param
     HwiP_restore(key);
 
     /* If params are NULL, use defaults */
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = (AESGCM_Params *)&AESGCM_defaultParams;
     }
 
     DebugP_assert(params->returnBehavior == AESGCM_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn : true);
 
-    object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
-    object->semaphoreTimeout = params->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING ? params->timeout : SemaphoreP_NO_WAIT;
+    object->returnBehavior   = params->returnBehavior;
+    object->callbackFxn      = params->callbackFxn;
+    object->semaphoreTimeout = params->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING ? params->timeout
+                                                                                         : SemaphoreP_NO_WAIT;
 
     /* Set power dependency - i.e. power up and enable clock for Crypto (CryptoResourceCC26XX) module. */
     Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
@@ -216,8 +226,9 @@ AESGCM_Handle AESGCM_construct(AESGCM_Config *config, const AESGCM_Params *param
 /*
  *  ======== AESGCM_close ========
  */
-void AESGCM_close(AESGCM_Handle handle) {
-    AESGCMCC26XX_Object         *object;
+void AESGCM_close(AESGCM_Handle handle)
+{
+    AESGCMCC26XX_Object *object;
 
     DebugP_assert(handle);
 
@@ -236,7 +247,8 @@ void AESGCM_close(AESGCM_Handle handle) {
  */
 static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
                                           AESGCM_Operation *operation,
-                                          AESGCM_OperationType operationType) {
+                                          AESGCM_OperationType operationType)
+{
     DebugP_assert(handle);
     DebugP_assert(operation);
 
@@ -244,20 +256,21 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     DebugP_assert(!operation->ivInternallyGenerated);
 
     /* Only IVs of length 12 are supported for now */
-    DebugP_assert(operation->iv && (operation->ivLength == 12));
+    DebugP_assert(operation->iv && (operation->ivLength == AESGCM_IV_LENGTH_BYTES));
     DebugP_assert((operation->aad && operation->aadLength) || (operation->input && operation->inputLength));
     DebugP_assert(operation->mac && (operation->macLength <= 16));
 
     DebugP_assert(operationType == AESGCM_OPERATION_TYPE_DECRYPT || operationType == AESGCM_OPERATION_TYPE_ENCRYPT);
 
-    AESGCMCC26XX_Object *object = handle->object;
+    AESGCMCC26XX_Object *object         = handle->object;
     AESGCMCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     SemaphoreP_Status resourceAcquired;
     uint32_t aesCtrl;
     uint32_t iv[4];
 
     /* Only IVs with a length of 12 bytes are supported for now */
-    if (operation->ivLength != 12) {
+    if (operation->ivLength != AESGCM_IV_LENGTH_BYTES)
+    {
         return AESGCM_STATUS_ERROR;
     }
 
@@ -265,21 +278,21 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     DebugP_assert(operation->key);
     DebugP_assert(operation->key->encoding == CryptoKey_PLAINTEXT);
 
-    uint16_t keyLength = operation->key->u.plaintext.keyLength;
+    uint16_t keyLength      = operation->key->u.plaintext.keyLength;
     uint8_t *keyingMaterial = operation->key->u.plaintext.keyMaterial;
 
     /* Try and obtain access to the crypto module */
-    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore,
-                                       object->semaphoreTimeout);
+    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore, object->semaphoreTimeout);
 
-    if (resourceAcquired != SemaphoreP_OK) {
+    if (resourceAcquired != SemaphoreP_OK)
+    {
         return AESGCM_STATUS_RESOURCE_UNAVAILABLE;
     }
 
-    object->operationType = operationType;
-    object->operation = operation;
+    object->operationType     = operationType;
+    object->operation         = operation;
     /* We will only change the returnStatus if there is an error */
-    object->returnStatus = AESGCM_STATUS_SUCCESS;
+    object->returnStatus      = AESGCM_STATUS_SUCCESS;
     object->operationCanceled = false;
 
     /* We need to set the HWI function and priority since the same physical interrupt is shared by multiple
@@ -290,7 +303,8 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     HwiP_setPriority(INT_CRYPTO_RESULT_AVAIL_IRQ, hwAttrs->intPriority);
 
     /* Load the key from RAM or flash into the key store at a hardcoded and reserved location */
-    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS) {
+    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
+    {
         /* Release the CRYPTO mutex */
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 
@@ -307,7 +321,8 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     AESSelectAlgorithm(AES_ALGSEL_AES);
 
     /* Load the key from the key store into the internal register banks of the AES sub-module */
-    if (AESReadFromKeyStore(AES_KEY_AREA_6) != AES_SUCCESS) {
+    if (AESReadFromKeyStore(AES_KEY_AREA_6) != AES_SUCCESS)
+    {
         /* Since plaintext keys use two reserved (by convention) slots in the keystore,
          * the slots must be invalidated to prevent its re-use without reloading
          * the key material again.
@@ -344,31 +359,29 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
      * Unlike CCM, GCM CTR only increments the 32-bit counter at the end of the IV not
      * the entire 16-byte IV itself.
      */
-    aesCtrl = CRYPTO_AESCTL_GCM_M |
-              CRYPTO_AESCTL_CTR |
-              CRYPTO_AESCTL_SAVE_CONTEXT |
-              CRYPTO_AESCTL_CTR_WIDTH_32_BIT;
+    aesCtrl = CRYPTO_AESCTL_GCM_M | CRYPTO_AESCTL_CTR | CRYPTO_AESCTL_SAVE_CONTEXT | CRYPTO_AESCTL_CTR_WIDTH_32_BIT;
     aesCtrl |= (operationType == AESGCM_OPERATION_TYPE_ENCRYPT) ? CRYPTO_AESCTL_DIR : 0;
     AESSetCtrl(aesCtrl);
 
     AESSetDataLength(operation->inputLength);
     AESSetAuthLength(operation->aadLength);
 
-    if (operation->aadLength) {
+    if (operation->aadLength)
+    {
         /* If aadLength were 0, AESWaitForIRQFlags() would never return as the AES_DMA_IN_DONE flag
          * would never trigger.
          */
-        AESStartDMAOperation(operation->aad, operation->aadLength,  NULL, 0);
+        AESStartDMAOperation(operation->aad, operation->aadLength, NULL, 0);
         AESWaitForIRQFlags(AES_DMA_IN_DONE | AES_DMA_BUS_ERR);
     }
 
     /* If we are in AESGCM_RETURN_BEHAVIOR_POLLING, we do not want an interrupt to trigger. */
-    if (object->returnBehavior != AESGCM_RETURN_BEHAVIOR_POLLING) {
+    if (object->returnBehavior != AESGCM_RETURN_BEHAVIOR_POLLING)
+    {
         IntEnable(INT_CRYPTO_RESULT_AVAIL_IRQ);
     }
 
     AESStartDMAOperation(operation->input, operation->inputLength, operation->output, operation->inputLength);
-
 
     return AESGCM_waitForResult(handle);
 }
@@ -376,14 +389,17 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
 /*
  *  ======== AESGCM_waitForResult ========
  */
-static int_fast16_t AESGCM_waitForResult(AESGCM_Handle handle) {
+static int_fast16_t AESGCM_waitForResult(AESGCM_Handle handle)
+{
     AESGCMCC26XX_Object *object = handle->object;
 
     object->operationInProgress = true;
 
-    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_POLLING) {
+    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_POLLING)
+    {
         /* Wait until the operation is complete and check for DMA errors. */
-        if(AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR){
+        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
+        {
             object->returnStatus = AESGCM_STATUS_ERROR;
         }
 
@@ -401,12 +417,14 @@ static int_fast16_t AESGCM_waitForResult(AESGCM_Handle handle) {
 
         return object->returnStatus;
     }
-    else if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING) {
+    else if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
 
         return object->returnStatus;
     }
-    else {
+    else
+    {
         return AESGCM_STATUS_SUCCESS;
     }
 }
@@ -414,7 +432,8 @@ static int_fast16_t AESGCM_waitForResult(AESGCM_Handle handle) {
 /*
  *  ======== AESGCM_oneStepEncrypt ========
  */
-int_fast16_t AESGCM_oneStepEncrypt(AESGCM_Handle handle, AESGCM_Operation *operationStruct) {
+int_fast16_t AESGCM_oneStepEncrypt(AESGCM_Handle handle, AESGCM_Operation *operationStruct)
+{
 
     return AESGCM_startOperation(handle, operationStruct, AESGCM_OPERATION_TYPE_ENCRYPT);
 }
@@ -422,7 +441,8 @@ int_fast16_t AESGCM_oneStepEncrypt(AESGCM_Handle handle, AESGCM_Operation *opera
 /*
  *  ======== AESGCM_oneStepDecrypt ========
  */
-int_fast16_t AESGCM_oneStepDecrypt(AESGCM_Handle handle, AESGCM_Operation *operationStruct) {
+int_fast16_t AESGCM_oneStepDecrypt(AESGCM_Handle handle, AESGCM_Operation *operationStruct)
+{
 
     return AESGCM_startOperation(handle, operationStruct, AESGCM_OPERATION_TYPE_DECRYPT);
 }
@@ -433,7 +453,8 @@ int_fast16_t AESGCM_oneStepDecrypt(AESGCM_Handle handle, AESGCM_Operation *opera
 int_fast16_t AESGCM_setupEncrypt(AESGCM_Handle handle,
                                  const CryptoKey *key,
                                  size_t totalAADLength,
-                                 size_t totalPlaintextLength) {
+                                 size_t totalPlaintextLength)
+{
 
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
@@ -445,7 +466,8 @@ int_fast16_t AESGCM_setupEncrypt(AESGCM_Handle handle,
 int_fast16_t AESGCM_setupDecrypt(AESGCM_Handle handle,
                                  const CryptoKey *key,
                                  size_t totalAADLength,
-                                 size_t totalPlaintextLength) {
+                                 size_t totalPlaintextLength)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -453,7 +475,8 @@ int_fast16_t AESGCM_setupDecrypt(AESGCM_Handle handle,
 /*
  *  ======== AESGCM_setLengths ========
  */
-int_fast16_t AESGCM_setLengths(AESGCM_Handle handle, size_t aadLength, size_t plaintextLength) {
+int_fast16_t AESGCM_setLengths(AESGCM_Handle handle, size_t aadLength, size_t plaintextLength)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -461,7 +484,8 @@ int_fast16_t AESGCM_setLengths(AESGCM_Handle handle, size_t aadLength, size_t pl
 /*
  *  ======== AESGCM_setIV ========
  */
-int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLength) {
+int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLength)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -469,7 +493,8 @@ int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLeng
 /*
  *  ======== AESGCM_generateIV ========
  */
-int_fast16_t AESGCM_generateIV(AESGCM_Handle handle, uint8_t *iv, size_t ivSize, size_t* ivLength) {
+int_fast16_t AESGCM_generateIV(AESGCM_Handle handle, uint8_t *iv, size_t ivSize, size_t *ivLength)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -477,7 +502,8 @@ int_fast16_t AESGCM_generateIV(AESGCM_Handle handle, uint8_t *iv, size_t ivSize,
 /*
  *  ======== AESGCM_addAAD ========
  */
-int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *operation) {
+int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *operation)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -485,7 +511,8 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *o
 /*
  *  ======== AESGCM_addData ========
  */
-int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation *operation) {
+int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation *operation)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -493,7 +520,8 @@ int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation 
 /*
  *  ======== AESGCM_finalizeEncrypt ========
  */
-int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation) {
+int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -501,7 +529,8 @@ int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle, AESGCM_SegmentedFinali
 /*
  *  ======== AESGCM_finalizeDecrypt ========
  */
-int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation) {
+int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation)
+{
     /* Segmented operations aren't supported by the HW on this device */
     return AESGCM_STATUS_FEATURE_NOT_SUPPORTED;
 }
@@ -509,13 +538,15 @@ int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle, AESGCM_SegmentedFinali
 /*
  *  ======== AESGCM_cancelOperation ========
  */
-int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle) {
-    AESGCMCC26XX_Object *object         = handle->object;
+int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle)
+{
+    AESGCMCC26XX_Object *object = handle->object;
     uint32_t key;
 
     key = HwiP_disable();
 
-    if (!object->operationInProgress) {
+    if (!object->operationInProgress)
+    {
         HwiP_restore(key);
         return AESGCM_STATUS_ERROR;
     }
@@ -531,7 +562,7 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle) {
     Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
     object->operationCanceled = true;
-    object->returnStatus = AESGCM_STATUS_CANCELED;
+    object->returnStatus      = AESGCM_STATUS_CANCELED;
 
     HwiP_restore(key);
 
@@ -541,12 +572,13 @@ int_fast16_t AESGCM_cancelOperation(AESGCM_Handle handle) {
      */
     SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 
-
-    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == AESGCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         /* Unblock the pending task to signal that the operation is complete. */
         SemaphoreP_post(&CryptoResourceCC26XX_operationSemaphore);
     }
-    else {
+    else
+    {
         /* Call the callback function provided by the application. */
         object->callbackFxn(handle,
                             AESGCM_STATUS_CANCELED,

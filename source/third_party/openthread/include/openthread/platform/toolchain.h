@@ -64,6 +64,24 @@ extern "C" {
 #endif
 
 /**
+ * @def OT_MUST_USE_RESULT
+ *
+ * Compiler-specific indication that a class or enum must be used when it is
+ * the return value of a function.
+ *
+ * @note This is currently only available with clang (C++17 implements it
+ *       as attribute [[nodiscard]]).
+ * @note To suppress the 'unused-result' warning/error, please use the
+ *       '-Wno-unused-result' compiler option.
+ *
+ */
+#if defined(__clang__) && (__clang_major__ >= 4 || (__clang_major__ >= 3 && __clang_minor__ >= 9))
+#define OT_MUST_USE_RESULT __attribute__((warn_unused_result))
+#else
+#define OT_MUST_USE_RESULT
+#endif
+
+/**
  * @def OT_TOOL_PACKED_BEGIN
  *
  * Compiler-specific indication that a class or struct must be byte packed.
@@ -229,6 +247,33 @@ extern "C" {
 #endif
 
 #endif
+#endif
+
+#ifdef __APPLE__
+#define OT_APPLE_IGNORE_GNU_FOLDING_CONSTANT(...)                                               \
+    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wgnu-folding-constant\"") \
+        __VA_ARGS__ _Pragma("GCC diagnostic pop")
+#else
+#define OT_APPLE_IGNORE_GNU_FOLDING_CONSTANT(...) __VA_ARGS__
+#endif
+
+/**
+ * @def OT_FALL_THROUGH
+ *
+ * Suppress fall through warning in specific compiler.
+ *
+ */
+#if defined(__cplusplus) && (__cplusplus >= 201703L)
+#define OT_FALL_THROUGH [[fallthrough]]
+#elif defined(__clang__)
+#define OT_FALL_THROUGH [[clang::fallthrough]]
+#elif defined(__GNUC__) && (__GNUC__ >= 7)
+#define OT_FALL_THROUGH __attribute__((fallthrough))
+#else
+#define OT_FALL_THROUGH \
+    do                  \
+    {                   \
+    } while (false) /* fallthrough */
 #endif
 
 /**

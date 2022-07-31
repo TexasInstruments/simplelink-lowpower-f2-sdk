@@ -47,6 +47,7 @@
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/examples/platforms
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/include
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/third_party/mbedtls/repo/include
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -I${PROJECT_ROOT}/platform/crypto
@@ -55,6 +56,7 @@
             -DOPENTHREAD_CONFIG_FILE=&apos;&quot;openthread-config-cc13x2_26x2-mtd.h&quot;&apos;
             -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE=&apos;&quot;openthread-core-cc13x2_26x2-config.h&quot;&apos;
             -DTIOP_CUI=1
+            -DCUI_POSIX=1
             -DBOARD_DISPLAY_USE_LCD=1
             -DDeviceFamily_CC13X2X7_CC26X2X7
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
@@ -142,8 +144,6 @@
         </file>
         <file path="../../platform/uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
-        <file path="../../platform/debug_uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
-        </file>
         <file path="../../platform/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
         </file>
         <file path="../../platform/nv/crc.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
@@ -192,7 +192,7 @@
         </file>
         <file path="../../release.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../shade.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos/shade.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

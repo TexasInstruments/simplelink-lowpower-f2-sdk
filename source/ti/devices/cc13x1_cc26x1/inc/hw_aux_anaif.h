@@ -372,9 +372,6 @@
 // 0: Disable DAC.
 // 1: Enable DAC.
 //
-// The Sensor Controller must not use the DAC when AUX_SYSIF:OPMODEREQ.REQ
-// equals PDA.
-//
 // The System CPU must not use the DAC when AUX_SYSIF:OPMODEREQ.REQ equals PDA
 // in Standby TI-RTOS power mode. The System CPU must set
 // AUX_SYSIF:PEROPRATE.ANAIF_DAC_OP_RATE to BUS_RATE to use the DAC in Active

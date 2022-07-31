@@ -89,12 +89,14 @@ void SD_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < SD_count; i++) {
-            SD_config[i].fxnTablePtr->initFxn((SD_Handle)&(SD_config[i]));
+        for (i = 0; i < SD_count; i++)
+        {
+            SD_config[i].fxnTablePtr->initFxn((SD_Handle) & (SD_config[i]));
         }
     }
 
@@ -117,14 +119,16 @@ SD_Handle SD_open(uint_least8_t index, SD_Params *params)
     SD_Handle handle = NULL;
 
     /* Verify driver index and state */
-    if (isInitialized && (index < SD_count)) {
+    if (isInitialized && (index < SD_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (SD_Params *) &SD_defaultParams;
+        if (params == NULL)
+        {
+            params = (SD_Params *)&SD_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (SD_Handle)&(SD_config[index]);
+        handle = (SD_Handle) & (SD_config[index]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 
@@ -142,8 +146,7 @@ void SD_Params_init(SD_Params *params)
 /*
  *  ======== SD_read ========
  */
-int_fast16_t SD_read(SD_Handle handle, void *buf,
-    int_fast32_t sector, uint_fast32_t secCount)
+int_fast16_t SD_read(SD_Handle handle, void *buf, int_fast32_t sector, uint_fast32_t secCount)
 {
     return (handle->fxnTablePtr->readFxn(handle, buf, sector, secCount));
 }
@@ -151,8 +154,7 @@ int_fast16_t SD_read(SD_Handle handle, void *buf,
 /*
  *  ======== SD_write ========
  */
-int_fast16_t SD_write(SD_Handle handle, const void *buf,
-    int_fast32_t sector, uint_fast32_t secCount)
+int_fast16_t SD_write(SD_Handle handle, const void *buf, int_fast32_t sector, uint_fast32_t secCount)
 {
     return (handle->fxnTablePtr->writeFxn(handle, buf, sector, secCount));
 }

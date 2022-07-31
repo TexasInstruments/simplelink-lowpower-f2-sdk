@@ -51,13 +51,12 @@
  * -----------------------------------------------------------------------------
  */
 // Timeout of semaphore that controls exclusive to the LCD (infinite)
-#define ACCESS_TIMEOUT    SemaphoreP_WAIT_FOREVER
+#define ACCESS_TIMEOUT SemaphoreP_WAIT_FOREVER
 
 /* -----------------------------------------------------------------------------
  *   Type definitions
  * -----------------------------------------------------------------------------
  */
-
 
 /* -----------------------------------------------------------------------------
  *                           Local variables
@@ -87,8 +86,7 @@ const Display_FxnTable DisplaySharp_fxnTable = {
  * @return      void
  */
 void DisplaySharp_init(Display_Handle Display_config)
-{
-}
+{}
 
 /*!
  * @fn          DisplaySharp_open
@@ -105,19 +103,19 @@ void DisplaySharp_init(Display_Handle Display_config)
  *
  * @return      Pointer to Display_Config struct
  */
-Display_Handle DisplaySharp_open(Display_Handle hDisplay,
-                                 Display_Params *params)
+Display_Handle DisplaySharp_open(Display_Handle hDisplay, Display_Params *params)
 {
     DisplaySharp_HWAttrsV1 *hwAttrs = (DisplaySharp_HWAttrsV1 *)hDisplay->hwAttrs;
-    DisplaySharp_Object  *object  = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object     = (DisplaySharp_Object *)hDisplay->object;
 
-    GPIO_init();    /* It is OK to call GPIO_init() and SPI_init() multiple times. */
+    GPIO_init(); /* It is OK to call GPIO_init() and SPI_init() multiple times. */
     SPI_init();
 
     object->lineClearMode = params->lineClearMode;
 
     GPIO_setConfig(hwAttrs->csPin, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
-    if (hwAttrs->powerPin != (uint32_t)-1) {
+    if (hwAttrs->powerPin != (uint32_t)-1)
+    {
         GPIO_setConfig(hwAttrs->powerPin, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH);
     }
     GPIO_setConfig(hwAttrs->enablePin, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_HIGH);
@@ -150,12 +148,12 @@ Display_Handle DisplaySharp_open(Display_Handle hDisplay,
     // Initialize the GrLib back-end transport
     SharpGrLib_init(object->hSpi, hwAttrs->csPin);
 
-    object->displayBuffer = hwAttrs->displayBuf;
-    object->g_sDisplay.size          = sizeof(struct Graphics_Display);
-    object->g_sDisplay.pFxns         = &g_sharpFxns;
-    object->g_sDisplay.displayData   = object->displayBuffer;
-    object->g_sDisplay.heigth        = hwAttrs->pixelHeight;
-    object->g_sDisplay.width         = hwAttrs->pixelWidth;
+    object->displayBuffer          = hwAttrs->displayBuf;
+    object->g_sDisplay.size        = sizeof(struct Graphics_Display);
+    object->g_sDisplay.pFxns       = &g_sharpFxns;
+    object->g_sDisplay.displayData = object->displayBuffer;
+    object->g_sDisplay.heigth      = hwAttrs->pixelHeight;
+    object->g_sDisplay.width       = hwAttrs->pixelWidth;
 
     // Graphics library init
     Graphics_initContext(&object->g_sContext, &object->g_sDisplay, &g_sharpFxns);
@@ -175,7 +173,6 @@ Display_Handle DisplaySharp_open(Display_Handle hDisplay,
     return hDisplay;
 }
 
-
 /*!
  * @fn          DisplaySharp_clear
  *
@@ -187,7 +184,7 @@ Display_Handle DisplaySharp_open(Display_Handle hDisplay,
  */
 void DisplaySharp_clear(Display_Handle hDisplay)
 {
-    DisplaySharp_Object *object = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object = (DisplaySharp_Object *)hDisplay->object;
 
     // Grab LCD
     if (SemaphoreP_pend(object->semLCD, ACCESS_TIMEOUT) == SemaphoreP_OK)
@@ -200,7 +197,6 @@ void DisplaySharp_clear(Display_Handle hDisplay)
     }
 }
 
-
 /*!
  * @fn          DisplaySharp_clearLines
  *
@@ -212,10 +208,9 @@ void DisplaySharp_clear(Display_Handle hDisplay)
  *
  * @return      void
  */
-void DisplaySharp_clearLines(Display_Handle hDisplay,
-                             uint8_t lineFrom, uint8_t lineTo)
+void DisplaySharp_clearLines(Display_Handle hDisplay, uint8_t lineFrom, uint8_t lineTo)
 {
-    DisplaySharp_Object *object = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object = (DisplaySharp_Object *)hDisplay->object;
 
     if (lineTo <= lineFrom)
     {
@@ -235,7 +230,6 @@ void DisplaySharp_clearLines(Display_Handle hDisplay,
     Graphics_flushBuffer(&object->g_sContext);
 }
 
-
 /*!
  * @fn          DisplaySharp_put5
  *
@@ -249,14 +243,13 @@ void DisplaySharp_clearLines(Display_Handle hDisplay,
  *
  * @return      void
  */
-void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line,
-                          uint8_t column, const char *fmt, va_list va)
+void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
-    DisplaySharp_Object *object = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object = (DisplaySharp_Object *)hDisplay->object;
 
     uint8_t xp, yp, clearStartX, clearEndX;
 
-    char    dispStr[23];
+    char dispStr[23];
 
     // Grab LCD
     if (SemaphoreP_pend(object->semLCD, ACCESS_TIMEOUT) == SemaphoreP_OK)
@@ -267,19 +260,19 @@ void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line,
 
         switch (object->lineClearMode)
         {
-        case DISPLAY_CLEAR_LEFT:
-            clearStartX = 0;
-            break;
-        case DISPLAY_CLEAR_RIGHT:
-            clearEndX = object->g_sContext.clipRegion.xMax;
-            break;
-        case DISPLAY_CLEAR_BOTH:
-            clearStartX = 0;
-            clearEndX   = object->g_sContext.clipRegion.xMax;
-            break;
-        case DISPLAY_CLEAR_NONE:
-        default:
-            break;
+            case DISPLAY_CLEAR_LEFT:
+                clearStartX = 0;
+                break;
+            case DISPLAY_CLEAR_RIGHT:
+                clearEndX = object->g_sContext.clipRegion.xMax;
+                break;
+            case DISPLAY_CLEAR_BOTH:
+                clearStartX = 0;
+                clearEndX   = object->g_sContext.clipRegion.xMax;
+                break;
+            case DISPLAY_CLEAR_NONE:
+            default:
+                break;
         }
 
         if (clearStartX != clearEndX)
@@ -299,12 +292,7 @@ void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line,
         SystemP_vsnprintf(dispStr, sizeof(dispStr), fmt, va);
 
         // Draw a text on the display
-        Graphics_drawString(&object->g_sContext,
-                           (int8_t *)dispStr,
-                           AUTO_STRING_LENGTH,
-                           xp,
-                           yp,
-                           OPAQUE_TEXT);
+        Graphics_drawString(&object->g_sContext, (int8_t *)dispStr, AUTO_STRING_LENGTH, xp, yp, OPAQUE_TEXT);
 
         Graphics_flushBuffer(&object->g_sContext);
 
@@ -312,7 +300,6 @@ void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line,
         SemaphoreP_post(object->semLCD);
     }
 }
-
 
 /*!
  * @fn          DisplaySharp_close
@@ -326,7 +313,7 @@ void DisplaySharp_vprintf(Display_Handle hDisplay, uint8_t line,
 void DisplaySharp_close(Display_Handle hDisplay)
 {
     DisplaySharp_HWAttrsV1 *hwAttrs = (DisplaySharp_HWAttrsV1 *)hDisplay->hwAttrs;
-    DisplaySharp_Object  *object  = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object     = (DisplaySharp_Object *)hDisplay->object;
 
     // Grab LCD
     if (SemaphoreP_pend(object->semLCD, ACCESS_TIMEOUT) == SemaphoreP_OK)
@@ -364,13 +351,13 @@ void DisplaySharp_close(Display_Handle hDisplay)
 int DisplaySharp_control(Display_Handle hDisplay, unsigned int cmd, void *arg)
 {
     DisplaySharp_HWAttrsV1 *hwAttrs = (DisplaySharp_HWAttrsV1 *)hDisplay->hwAttrs;
-    DisplaySharp_Object  *object  = (DisplaySharp_Object  *)hDisplay->object;
+    DisplaySharp_Object *object     = (DisplaySharp_Object *)hDisplay->object;
 
     /* Initialize return value */
     int ret = DISPLAY_STATUS_ERROR;
 
     /* Perform command */
-    switch(cmd)
+    switch (cmd)
     {
         case DISPLAY_CMD_TRANSPORT_CLOSE:
             // Grab LCD
@@ -382,7 +369,7 @@ int DisplaySharp_control(Display_Handle hDisplay, unsigned int cmd, void *arg)
                     SPI_close(object->hSpi);
                     SharpGrLib_init(NULL, 0);
                     object->hSpi = NULL;
-                    ret = DISPLAY_STATUS_SUCCESS;
+                    ret          = DISPLAY_STATUS_SUCCESS;
                 }
                 // Release LCD
                 SemaphoreP_post(object->semLCD);
@@ -399,7 +386,7 @@ int DisplaySharp_control(Display_Handle hDisplay, unsigned int cmd, void *arg)
                     SPI_Params spiParams;
                     SPI_Params_init(&spiParams);
                     spiParams.bitRate = 4000000;
-                    object->hSpi = SPI_open(hwAttrs->spiIndex, &spiParams);
+                    object->hSpi      = SPI_open(hwAttrs->spiIndex, &spiParams);
                     SharpGrLib_init(object->hSpi, hwAttrs->csPin);
                     ret = DISPLAY_STATUS_SUCCESS;
                 }

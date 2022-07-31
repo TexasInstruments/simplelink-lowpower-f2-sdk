@@ -46,31 +46,24 @@ extern const Display_FxnTable DisplayDogm1286_fxnTable;
 typedef struct DisplayDogm1286_HWAttrs
 {
     LCD_Handle lcdHandle;
-    PIN_Id     powerPin;
+    uint_least8_t powerPin;
 } DisplayDogm1286_HWAttrs;
-
 
 typedef struct DisplayDogm1286_Object
 {
-    PIN_State             pinState;
-    PIN_Handle            hPins;
-    LCD_Handle            hLcd;
+    LCD_Handle hLcd;
     Display_LineClearMode lineClearMode;
-    SemaphoreP_Struct     lcdMutex;
-    char                  lcdBuffer0[1024];
-    LCD_Buffer            lcdBuffers[1];
+    SemaphoreP_Struct lcdMutex;
+    char lcdBuffer0[1024];
+    LCD_Buffer lcdBuffers[1];
 } DisplayDogm1286_Object, *DisplayDogm1286_Handle;
 
 void DisplayDogm1286_init(Display_Handle handle);
-Display_Handle DisplayDogm1286_open(Display_Handle handle,
-                                    Display_Params * params);
+Display_Handle DisplayDogm1286_open(Display_Handle handle, Display_Params *params);
 void DisplayDogm1286_clear(Display_Handle handle);
-void DisplayDogm1286_clearLines(Display_Handle handle,
-                                uint8_t fromLine,
-                                uint8_t toLine);
-void DisplayDogm1286_vprintf(Display_Handle handle, uint8_t line,
-                             uint8_t column, const char *fmt, va_list va);
+void DisplayDogm1286_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
+void DisplayDogm1286_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 void DisplayDogm1286_close(Display_Handle handle);
 int DisplayDogm1286_control(Display_Handle handle, unsigned int cmd, void *arg);
-unsigned int   DisplayDogm1286_getType(void);
+unsigned int DisplayDogm1286_getType(void);
 #endif // ti_display_DisplayDogm1286__include

@@ -349,7 +349,7 @@ extern "C" {
  * #define EDDSAXYZ_STATUS_ERROR2    EDDSA_STATUS_RESERVED - 2
  * @endcode
  */
-#define EDDSA_STATUS_RESERVED        (-32)
+#define EDDSA_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -357,7 +357,7 @@ extern "C" {
  * Functions return EDDSA_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define EDDSA_STATUS_SUCCESS         (0)
+#define EDDSA_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
@@ -365,64 +365,64 @@ extern "C" {
  * Functions return EDDSA_STATUS_ERROR if the function was not executed
  * successfully.
  */
-#define EDDSA_STATUS_ERROR           (-1)
+#define EDDSA_STATUS_ERROR (-1)
 
- /*!
-  *  @brief  The ongoing operation was canceled.
-  */
+/*!
+ *  @brief  The ongoing operation was canceled.
+ */
 #define EDDSA_STATUS_CANCELED (-2)
 
- /*!
-  * @brief   An error status code returned if the hash hardware or software
-  * resource is currently unavailable.
-  *
-  * EDDSA driver implementations may have hardware or software limitations on
-  * how many clients can simultaneously perform operations. This status code is
-  * returned if the mutual exclusion mechanism signals that an operation cannot
-  * currently be performed because the hash module is unavailable.
-  */
+/*!
+ * @brief   An error status code returned if the hash hardware or software
+ * resource is currently unavailable.
+ *
+ * EDDSA driver implementations may have hardware or software limitations on
+ * how many clients can simultaneously perform operations. This status code is
+ * returned if the mutual exclusion mechanism signals that an operation cannot
+ * currently be performed because the hash module is unavailable.
+ */
 #define EDDSA_STATUS_HASH_UNAVAILABLE (-3)
 
- /*!
-  * @brief   An error status code returned if the public-key accelerator
-  * hardware or software resource is currently unavailable.
-  *
-  * EDDSA driver implementations may have hardware or software limitations on
-  * how many clients can simultaneously perform operations. This status code is
-  * returned if the mutual exclusion mechanism signals that an operation cannot
-  * currently be performed because the PKA module is unavailable.
-  */
+/*!
+ * @brief   An error status code returned if the public-key accelerator
+ * hardware or software resource is currently unavailable.
+ *
+ * EDDSA driver implementations may have hardware or software limitations on
+ * how many clients can simultaneously perform operations. This status code is
+ * returned if the mutual exclusion mechanism signals that an operation cannot
+ * currently be performed because the PKA module is unavailable.
+ */
 #define EDDSA_STATUS_PKA_UNAVAILABLE (-4)
 
- /*!
-  * @brief   The generated public key was the point at infinity.
-  *
-  * The point at infinity is not a valid public key, try
-  * EDDSA_generatePublicKey again.
-  */
+/*!
+ * @brief   The generated public key was the point at infinity.
+ *
+ * The point at infinity is not a valid public key, try
+ * EDDSA_generatePublicKey again.
+ */
 #define EDDSA_STATUS_POINT_AT_INFINITY (-5)
 
- /*!
-  * @brief   The private key was not 32 bytes long.
-  *
-  * Ed25519 expects a 32 byte private key.
-  */
+/*!
+ * @brief   The private key was not 32 bytes long.
+ *
+ * Ed25519 expects a 32 byte private key.
+ */
 #define EDDSA_STATUS_INVALID_PRIVATE_KEY_SIZE (-6)
 
- /*!
-  * @brief   The public key was not 32 bytes long.
-  *
-  * Ed25519 expects a 32 byte public key. This is the compressed representation
-  * of a point on curve Ed25519.
-  */
+/*!
+ * @brief   The public key was not 32 bytes long.
+ *
+ * Ed25519 expects a 32 byte public key. This is the compressed representation
+ * of a point on curve Ed25519.
+ */
 #define EDDSA_STATUS_INVALID_PUBLIC_KEY_SIZE (-7)
 
- /*!
-  * @brief   The public key was not a valid point on curve Ed25519.
-  *
-  * Ed25519 expects a valid public key. This is the compressed representation
-  * of a point on curve Ed25519.
-  */
+/*!
+ * @brief   The public key was not a valid point on curve Ed25519.
+ *
+ * Ed25519 expects a valid public key. This is the compressed representation
+ * of a point on curve Ed25519.
+ */
 #define EDDSA_STATUS_PUBLIC_KEY_NOT_ON_CURVE (-8)
 
 /*!
@@ -433,11 +433,11 @@ extern "C" {
  */
 #define EDDSA_STATUS_INVALID_R_SIZE (-9)
 
- /*!
-  * @brief   The Ed25519 signature component S was not 32 bytes long.
-  *
-  * Signature component S must be 32 bytes long, representing a scalar.
-  */
+/*!
+ * @brief   The Ed25519 signature component S was not 32 bytes long.
+ *
+ * Signature component S must be 32 bytes long, representing a scalar.
+ */
 #define EDDSA_STATUS_INVALID_S_SIZE (-10)
 
 /*!
@@ -473,12 +473,12 @@ extern "C" {
  */
 #define EDDSA_STATUS_KEYSTORE_GENERIC_FAILURE (-14)
 
- /*!
-  * @brief   The SHA2 module returned an error while hashing.
-  *
-  * The SHA2 module did not successfully hash a required value.
-  */
- #define EDDSA_STATUS_SHA2_HASH_FAILURE (-15)
+/*!
+ * @brief   The SHA2 module returned an error while hashing.
+ *
+ * The SHA2 module did not successfully hash a required value.
+ */
+#define EDDSA_STATUS_SHA2_HASH_FAILURE (-15)
 
 /*!
  *  @brief EDDSA Global configuration
@@ -491,12 +491,13 @@ extern "C" {
  *
  *  @sa     EDDSA_init()
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } EDDSA_Config;
 
 /*!
@@ -526,7 +527,8 @@ typedef EDDSA_Config *EDDSA_Handle;
  * |EDDSA_RETURN_BEHAVIOR_POLLING   | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     EDDSA_RETURN_BEHAVIOR_CALLBACK = 1,
     /*!< The function call will return immediately while the EDDSA operation
      *   goes on in the background. The registered callback function is called
@@ -540,7 +542,7 @@ typedef enum {
      *   returns.
      */
 
-    EDDSA_RETURN_BEHAVIOR_POLLING  = 4,
+    EDDSA_RETURN_BEHAVIOR_POLLING = 4,
     /*!< The function call will continuously poll a flag while EDDSA operation
      *   goes on in the background. EDDSA operation results are available after
      *   the function returns.
@@ -552,16 +554,17 @@ typedef enum {
  *  @brief  Struct containing the parameters required for generating an EdDSA
  *  private-public keypair.
  */
-typedef struct {
-    const ECCParams_CurveParams     *curve;
+typedef struct
+{
+    const ECCParams_CurveParams *curve;
     /*!< A pointer to the elliptic curve parameters */
 
-    const CryptoKey                 *myPrivateKey;
+    const CryptoKey *myPrivateKey;
     /*!< A pointer to the randomly generated randomly private key "k" in little
      *   endian. Must be 32 bytes for Ed25519.
      */
 
-    CryptoKey                       *myPublicKey;
+    CryptoKey *myPublicKey;
     /*!< A pointer public EdDSA key A = s*B in compressed public key format.
      *   Must be 32 bytes for Ed25519.
      */
@@ -572,34 +575,35 @@ typedef struct {
  *  @brief  Struct containing the parameters required for generating an EdDSA
  *  digital signature.
  */
-typedef struct {
-    const ECCParams_CurveParams     *curve;
+typedef struct
+{
+    const ECCParams_CurveParams *curve;
     /*!< A pointer to the elliptic curve parameters */
 
-    const CryptoKey                 *myPrivateKey;
+    const CryptoKey *myPrivateKey;
     /*!< A pointer to the randomly generated private key "k" in little endian.
      *   Must be 32 bytes for Ed25519.
      */
 
-    const CryptoKey                 *myPublicKey;
+    const CryptoKey *myPublicKey;
     /*!< A pointer public EdDSA key A = s*B in compressed public key format.
      *   Must be 32 bytes for Ed25519.
      */
 
-    const uint8_t                   *preHashedMessage;
+    const uint8_t *preHashedMessage;
     /*!< A pointer to the  (prehashed) message in little endian. In the
      *   PureEdDSA scheme, the prehash function is the identity, PH(M) = M.
      */
 
-    size_t                          preHashedMessageLength;
+    size_t preHashedMessageLength;
     /*!< Length of the message buffer in bytes. */
 
-    uint8_t                         *R;
+    uint8_t *R;
     /*!< Signature component R = r*B in little endian.
      *   Must be 32 bytes for Ed25519.
      */
 
-    uint8_t                         *S;
+    uint8_t *S;
     /*!< Signature component S = r + x*s mod n in little endian.
      *   Must be 32 bytes for Ed25519.
      */
@@ -610,30 +614,31 @@ typedef struct {
  *  @brief  Struct containing the parameters required for verifying an EdDSA
  *          digital signature.
  */
-typedef struct {
-    const ECCParams_CurveParams     *curve;
+typedef struct
+{
+    const ECCParams_CurveParams *curve;
     /*!< A pointer to the elliptic curve parameters */
 
-    const CryptoKey                 *theirPublicKey;
+    const CryptoKey *theirPublicKey;
     /*!< A pointer to the signer's public EdDSA key A = s*B in compressed
      *   public key format. Must be 32  bytes for Ed25519 and a valid point on
      *   Ed25519.
      */
 
-    const uint8_t                   *preHashedMessage;
+    const uint8_t *preHashedMessage;
     /*!< A pointer to the (prehashed) message in little endian. In the
      *   PureEdDSA scheme, the prehash function is the identity, PH(M) = M.
      */
 
-    size_t                          preHashedMessageLength;
+    size_t preHashedMessageLength;
     /*!< Length of the message buffer in bytes. */
 
-    const uint8_t                   *R;
+    const uint8_t *R;
     /*!< Signature component R to verify in little endian.
      *   Must be 32 bytes for Ed25519.
      */
 
-    const uint8_t                   *S;
+    const uint8_t *S;
     /*!< Signature component S to verify in little endian.
      * Must be 32 bytes for Ed25519.
      */
@@ -643,22 +648,24 @@ typedef struct {
 /*!
  *  @brief  Union containing pointers to all supported operation structs.
  */
-typedef union {
+typedef union
+{
     /*!< A pointer to an EDDSA_OperationGeneratePublicKey struct */
-    EDDSA_OperationGeneratePublicKey   *generatePublicKey;
+    EDDSA_OperationGeneratePublicKey *generatePublicKey;
     /*!< A pointer to an EDDSA_OperationSign struct */
-    EDDSA_OperationSign                *sign;
+    EDDSA_OperationSign *sign;
     /*!< A pointer to an EDDSA_OperationVerify struct */
-    EDDSA_OperationVerify              *verify;
+    EDDSA_OperationVerify *verify;
 } EDDSA_Operation;
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
+typedef enum
+{
     EDDSA_OPERATION_TYPE_GENERATE_PUBLIC_KEY = 1,
-    EDDSA_OPERATION_TYPE_SIGN = 2,
-    EDDSA_OPERATION_TYPE_VERIFY = 3,
+    EDDSA_OPERATION_TYPE_SIGN                = 2,
+    EDDSA_OPERATION_TYPE_VERIFY              = 3,
 } EDDSA_OperationType;
 
 /*!
@@ -680,10 +687,10 @@ typedef enum {
  *  @param  operationType This parameter determined which operation the
  *          callback refers to and which type to access through \c operation.
  */
-typedef void (*EDDSA_CallbackFxn) (EDDSA_Handle handle,
-                                   int_fast16_t returnStatus,
-                                   EDDSA_Operation operation,
-                                   EDDSA_OperationType operationType);
+typedef void (*EDDSA_CallbackFxn)(EDDSA_Handle handle,
+                                  int_fast16_t returnStatus,
+                                  EDDSA_Operation operation,
+                                  EDDSA_OperationType operationType);
 
 /*!
  *  @brief  EDDSA Parameters
@@ -693,18 +700,18 @@ typedef void (*EDDSA_CallbackFxn) (EDDSA_Handle handle,
  *
  *  @sa     EDDSA_Params_init()
  */
-typedef struct {
-    EDDSA_ReturnBehavior    returnBehavior;
+typedef struct
+{
+    EDDSA_ReturnBehavior returnBehavior;
     /*!< Blocking, callback, or polling return behavior */
 
-    EDDSA_CallbackFxn       callbackFxn;
+    EDDSA_CallbackFxn callbackFxn;
     /*!< Callback function pointer */
 
-    uint32_t                timeout;
+    uint32_t timeout;
     /*!< Timeout in system ticks before the operation fails and returns */
 
-
-    void                   *custom;
+    void *custom;
     /*!< Custom argument used by driver implementation */
 
 } EDDSA_Params;
@@ -772,8 +779,7 @@ void EDDSA_Params_init(EDDSA_Params *params);
  *
  *  Defaults to all zeros.
  */
-void EDDSA_OperationGeneratePublicKey_init(EDDSA_OperationGeneratePublicKey
-                                           *operation);
+void EDDSA_OperationGeneratePublicKey_init(EDDSA_OperationGeneratePublicKey *operation);
 
 /*!
  *  @brief  Function to initialize an EDDSA_OperationSign struct to its
@@ -834,8 +840,7 @@ void EDDSA_OperationVerify_init(EDDSA_OperationVerify *operation);
  *                                                  error state when storing
  *                                                  the public or private key.
  */
-int_fast16_t EDDSA_generatePublicKey(EDDSA_Handle handle,
-                                     EDDSA_OperationGeneratePublicKey *operation);
+int_fast16_t EDDSA_generatePublicKey(EDDSA_Handle handle, EDDSA_OperationGeneratePublicKey *operation);
 
 /*!
  *  @brief Generates an EdDSA signature.
@@ -915,8 +920,7 @@ int_fast16_t EDDSA_sign(EDDSA_Handle handle, EDDSA_OperationSign *operation);
  *                                                  error state when retrieving
  *                                                  the public or private key.
  */
-int_fast16_t EDDSA_verify(EDDSA_Handle handle,
-                          EDDSA_OperationVerify *operation);
+int_fast16_t EDDSA_verify(EDDSA_Handle handle, EDDSA_OperationVerify *operation);
 
 /*!
  *  @deprecated This function will be deprecated in the 3Q20 SDK release. The

@@ -44,20 +44,19 @@
 extern const RNG_Config RNG_config[];
 extern const uint_least8_t RNG_count;
 
-const RNG_Params RNG_defaultParams = {
-    .returnBehavior = RNG_RETURN_BEHAVIOR_BLOCKING,
-    .cryptoKeyCallbackFxn = NULL,
-    .randomBitsCallbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER
-};
+const RNG_Params RNG_defaultParams = {.returnBehavior        = RNG_RETURN_BEHAVIOR_BLOCKING,
+                                      .cryptoKeyCallbackFxn  = NULL,
+                                      .randomBitsCallbackFxn = NULL,
+                                      .timeout               = SemaphoreP_WAIT_FOREVER};
 
 /*
  *  ======== RNG_open ========
  */
-RNG_Handle RNG_open(uint_least8_t index, const RNG_Params *params) {
+RNG_Handle RNG_open(uint_least8_t index, const RNG_Params *params)
+{
     DebugP_assert(index <= RNG_count);
 
-    const RNG_Config *config = (const RNG_Config*) &RNG_config[index];
+    const RNG_Config *config = (const RNG_Config *)&RNG_config[index];
 
     return RNG_construct(config, params);
 }

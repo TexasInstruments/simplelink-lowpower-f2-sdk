@@ -52,8 +52,7 @@
  *
  *  @return     A zero status on success.
  */
-__attribute__((noinline))
-static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
+__attribute__((noinline)) static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
 {
     struct FlashCC26X4_s_program flashProgramSecureArgs;
 
@@ -63,7 +62,8 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
     /* set default PSA Status */
     psa_status_t psaStatus = PSA_ERROR_PROGRAMMER_ERROR;
 
-    switch (msg->type) {
+    switch (msg->type)
+    {
 
         case FLASH_SP_MSG_TYPE_PROTECTION_GET:
             if ((msg->in_size[0] == sizeof(uint32_t)) && (msg->out_size[0] == sizeof(uint32_t)))
@@ -72,8 +72,7 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
 
                 /* Non-secure callers have negative client ID */
                 /* validate the sectorAddress to be read is Non-secure */
-                if ((msg->client_id < 0) &&
-                   (!cmse_has_unpriv_nonsecure_read_access((void *)sectorAddress, 0x4)))
+                if ((msg->client_id < 0) && (!cmse_has_unpriv_nonsecure_read_access((void *)sectorAddress, 0x4)))
                 {
                     break;
                 }
@@ -88,11 +87,11 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
             if ((msg->in_size[0] == sizeof(uint32_t)) && (msg->out_size[0] == sizeof(uint32_t)))
             {
                 psa_read(msg->handle, 0, &sectorAddress, sizeof(uint32_t));
-                
+
                 /* Non-secure callers have negative client ID */
                 /* validate the sectorAddress to be erased is Non-secure */
                 if ((msg->client_id < 0) &&
-                   (!cmse_has_unpriv_nonsecure_rw_access((void *)sectorAddress, FlashSectorSizeGet())))
+                    (!cmse_has_unpriv_nonsecure_rw_access((void *)sectorAddress, FlashSectorSizeGet())))
                 {
                     break;
                 }
@@ -107,18 +106,22 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
             if ((msg->in_size[0] == sizeof(flashProgramSecureArgs)) && (msg->out_size[0] == sizeof(uint32_t)))
             {
                 psa_read(msg->handle, 0, &flashProgramSecureArgs, sizeof(flashProgramSecureArgs));
-                
+
                 /* Non-secure callers have negative client ID */
                 /* check the dataBuffer address to ensure its not secure memory */
                 /* check the sectorAddress to esnure the destination is not secure memory */
                 if ((msg->client_id < 0) &&
-                   ((!cmse_has_unpriv_nonsecure_read_access(flashProgramSecureArgs.dataBuffer, flashProgramSecureArgs.count)) ||
-                    (!cmse_has_unpriv_nonsecure_rw_access((void *)flashProgramSecureArgs.sectorAddress, flashProgramSecureArgs.count))))
+                    ((!cmse_has_unpriv_nonsecure_read_access(flashProgramSecureArgs.dataBuffer,
+                                                             flashProgramSecureArgs.count)) ||
+                     (!cmse_has_unpriv_nonsecure_rw_access((void *)flashProgramSecureArgs.sectorAddress,
+                                                           flashProgramSecureArgs.count))))
                 {
                     break;
                 }
 
-                output = FlashProgram((uint8_t *)flashProgramSecureArgs.dataBuffer, flashProgramSecureArgs.sectorAddress, flashProgramSecureArgs.count);
+                output = FlashProgram((uint8_t *)flashProgramSecureArgs.dataBuffer,
+                                      flashProgramSecureArgs.sectorAddress,
+                                      flashProgramSecureArgs.count);
                 psa_write(msg->handle, 0, &output, msg->out_size[0]);
                 psaStatus = PSA_SUCCESS;
             }
@@ -133,13 +136,17 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
                 /* check the dataBuffer address to ensure its not secure memory */
                 /* check the sectorAddress to esnure the destination is not secure memory */
                 if ((msg->client_id < 0) &&
-                   ((!cmse_has_unpriv_nonsecure_read_access(flashProgramSecureArgs.dataBuffer, flashProgramSecureArgs.count)) ||
-                    (!cmse_has_unpriv_nonsecure_rw_access((void *)flashProgramSecureArgs.sectorAddress, flashProgramSecureArgs.count))))
+                    ((!cmse_has_unpriv_nonsecure_read_access(flashProgramSecureArgs.dataBuffer,
+                                                             flashProgramSecureArgs.count)) ||
+                     (!cmse_has_unpriv_nonsecure_rw_access((void *)flashProgramSecureArgs.sectorAddress,
+                                                           flashProgramSecureArgs.count))))
                 {
                     break;
                 }
 
-                output = FlashProgram4X((uint8_t *)flashProgramSecureArgs.dataBuffer, flashProgramSecureArgs.sectorAddress, flashProgramSecureArgs.count);
+                output = FlashProgram4X((uint8_t *)flashProgramSecureArgs.dataBuffer,
+                                        flashProgramSecureArgs.sectorAddress,
+                                        flashProgramSecureArgs.count);
                 psa_write(msg->handle, 0, &output, msg->out_size[0]);
                 psaStatus = PSA_SUCCESS;
             }
@@ -153,7 +160,7 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
                 psaStatus = PSA_SUCCESS;
             }
             break;
-        
+
         case FLASH_SP_MSG_TYPE_FLASH_SIZE_GET:
             if ((msg->out_size[0] == sizeof(uint32_t)))
             {
@@ -170,7 +177,6 @@ static psa_status_t FlashCC26X4_s_processPsaMsg(psa_msg_t *msg)
 
     return (psaStatus);
 }
-
 
 /*!
  *  @brief      Main Secure Flash Service Loop

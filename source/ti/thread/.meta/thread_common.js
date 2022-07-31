@@ -54,8 +54,8 @@ const PAN_ID_LEN = 2;
 /* Extended PAN ID length (bytes) */
 const EXT_PAN_ID_LEN = 8;
 
-/* Master key length (bytes) */
-const MASTER_KEY_LEN = 16;
+/* Network key length (bytes) */
+const NETWORK_KEY_LEN = 16;
 
 /* Network name (UTF-8) max length (bytes) */
 const NETWORK_NAME_MAX_LEN = 16;
@@ -306,7 +306,7 @@ exports = {
     EXT_ADDR_LEN: EXT_ADDR_LEN,
     PAN_ID_LEN: PAN_ID_LEN,
     EXT_PAN_ID_LEN: EXT_PAN_ID_LEN,
-    MASTER_KEY_LEN: MASTER_KEY_LEN,
+    NETWORK_KEY_LEN: NETWORK_KEY_LEN,
     NETWORK_NAME_MAX_LEN: NETWORK_NAME_MAX_LEN,
     getDeviceOrLaunchPadName: getDeviceOrLaunchPadName,
     ccfgSettings: ccfgSettings,

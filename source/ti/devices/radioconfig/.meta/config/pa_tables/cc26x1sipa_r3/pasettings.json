@@ -4,7 +4,7 @@
             "_name": "CC2651RSIPA-EM",
             "FrequencyRange": {
                 "Min": "2360",
-                "Max": "2500",
+                "Max": "2510",
                 "PaSettingTable": {
                     "PaSetting": [
                         {

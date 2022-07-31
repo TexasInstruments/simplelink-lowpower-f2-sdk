@@ -35,11 +35,10 @@
 
 #include <ti/drivers/DAC.h>
 
-
 /* Default DAC parameters structure */
 const DAC_Params DAC_defaultParams = {
-    .initCode          = 0,           /* initial DAC code */
-    .custom            = NULL,        /* customParams */
+    .initCode = 0,    /* initial DAC code */
+    .custom   = NULL, /* customParams */
 };
 
 /*

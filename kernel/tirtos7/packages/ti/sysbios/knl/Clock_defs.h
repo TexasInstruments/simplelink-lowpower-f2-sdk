@@ -97,8 +97,6 @@
 #define Clock_handle ti_sysbios_knl_Clock_handle
 #define Clock_struct ti_sysbios_knl_Clock_struct
 #define Clock_Instance_init ti_sysbios_knl_Clock_Instance_init
-#define Clock_Object_count ti_sysbios_knl_Clock_Object_count
-#define Clock_Object_get ti_sysbios_knl_Clock_Object_get
 #define Clock_Object_first ti_sysbios_knl_Clock_Object_first
 #define Clock_Object_next ti_sysbios_knl_Clock_Object_next
 #define Clock_Object_sizeof ti_sysbios_knl_Clock_Object_sizeof
@@ -178,8 +176,6 @@
 #undef Clock_handle
 #undef Clock_struct
 #undef Clock_Instance_init
-#undef Clock_Object_count
-#undef Clock_Object_get
 #undef Clock_Object_first
 #undef Clock_Object_next
 #undef Clock_Object_sizeof

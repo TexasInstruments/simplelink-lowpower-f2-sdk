@@ -43,9 +43,9 @@
 
 #include <ti/devices/DeviceFamily.h>
 
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 ||\
-     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 ||\
-     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 ||\
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
     #include <ti/drivers/TRNG.h>
@@ -61,11 +61,12 @@ static uint32_t state[STATE_SIZE_IN_WORDS];
 /*
  *  ======== Random_seedAutomatic ========
  */
-int_fast16_t Random_seedAutomatic(void) {
+int_fast16_t Random_seedAutomatic(void)
+{
 
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 ||\
-     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 ||\
-     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 ||\
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
     TRNGCC26XX_Object object = {0};
@@ -79,16 +80,13 @@ int_fast16_t Random_seedAutomatic(void) {
      */
     const TRNGCC26XX_HWAttrs hwAttrs = {
         .samplesPerCycle = TRNGCC26XX_SAMPLES_PER_CYCLE_MIN,
-        .intPriority = ~0,
+        .intPriority     = ~0,
     };
 
     /* Allocate TRNG instance on the stack since we will not need it
      * hereafter. This also helps avoid problems with hardcoded indexes.
      */
-    TRNG_Config config = {
-        .object = &object,
-        .hwAttrs = &hwAttrs
-    };
+    TRNG_Config config = {.object = &object, .hwAttrs = &hwAttrs};
 
     params.returnBehavior = TRNG_RETURN_BEHAVIOR_POLLING;
 
@@ -96,19 +94,19 @@ int_fast16_t Random_seedAutomatic(void) {
 
     TRNG_Handle handle = TRNG_construct(&config, &params);
 
-    if (!handle) {
+    if (!handle)
+    {
         return Random_STATUS_ERROR;
     }
 
-    CryptoKeyPlaintext_initBlankKey(&seedKey,
-                                    (uint8_t *)state,
-                                    sizeof(state));
+    CryptoKeyPlaintext_initBlankKey(&seedKey, (uint8_t *)state, sizeof(state));
 
     status = TRNG_generateEntropy(handle, &seedKey);
 
     TRNG_close(handle);
 
-    if (status != TRNG_STATUS_SUCCESS) {
+    if (status != TRNG_STATUS_SUCCESS)
+    {
         return Random_STATUS_ERROR;
     }
 
@@ -129,7 +127,8 @@ int_fast16_t Random_seedAutomatic(void) {
 /*
  *  ======== Random_seedManual ========
  */
-void Random_seedManual(uint8_t seed[Random_SEED_LENGTH]) {
+void Random_seedManual(uint8_t seed[Random_SEED_LENGTH])
+{
     uintptr_t key;
 
     key = HwiP_disable();
@@ -142,7 +141,8 @@ void Random_seedManual(uint8_t seed[Random_SEED_LENGTH]) {
 /*
  *  ======== Random_getNumber ========
  */
-uint32_t Random_getNumber(void) {
+uint32_t Random_getNumber(void)
+{
     uintptr_t key;
     uint32_t s;
     uint32_t v;
@@ -159,7 +159,7 @@ uint32_t Random_getNumber(void) {
     state[3] = state[2];
     state[2] = state[1];
     state[1] = state[0];
-    s = state[0];
+    s        = state[0];
 
     v ^= s;
     v ^= s << 4;
@@ -178,17 +178,17 @@ uint32_t Random_getNumber(void) {
 /*
  *  ======== Random_getBytes ========
  */
-void Random_getBytes(void *buffer, size_t bufferSize) {
+void Random_getBytes(void *buffer, size_t bufferSize)
+{
     uint32_t i;
     uint32_t randomNumber;
 
-    for (i = 0; i < bufferSize / sizeof(uint32_t); i++){
+    for (i = 0; i < bufferSize / sizeof(uint32_t); i++)
+    {
         ((uint32_t *)buffer)[i] = Random_getNumber();
     }
 
     randomNumber = Random_getNumber();
 
-    memcpy((uint32_t *)buffer + bufferSize / sizeof(uint32_t),
-           &randomNumber,
-           bufferSize % sizeof(uint32_t));
+    memcpy((uint32_t *)buffer + bufferSize / sizeof(uint32_t), &randomNumber, bufferSize % sizeof(uint32_t));
 }

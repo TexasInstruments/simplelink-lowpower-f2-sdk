@@ -65,7 +65,7 @@ GPIO_CallbackFxn GPIO_getCallback(uint_least8_t index)
 /*
  *  ======== GPIO_setUserArg ========
  */
-void GPIO_setUserArg(uint_least8_t index, void* arg)
+void GPIO_setUserArg(uint_least8_t index, void *arg)
 {
     if (index != GPIO_INVALID_INDEX)
     {
@@ -76,7 +76,7 @@ void GPIO_setUserArg(uint_least8_t index, void* arg)
 /*
  *  ======== GPIO_getUserArg ========
  */
-void* GPIO_getUserArg(uint_least8_t index)
+void *GPIO_getUserArg(uint_least8_t index)
 {
     return GPIO_config.userArgs[index];
 }

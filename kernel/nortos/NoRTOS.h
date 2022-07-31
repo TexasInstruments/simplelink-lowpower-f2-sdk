@@ -153,7 +153,8 @@
  *  changed should be set and given to the NoRTOS framework by calling
  *  NoRTOS_setConfig().
  */
-typedef struct _NoRTOS_Config {
+typedef struct _NoRTOS_Config
+{
     /*! Function that is called when a TI Driver "suspends" its operation */
     void (*idleCallback)(void);
 

@@ -217,6 +217,15 @@ __Default__: False (unchecked)\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/html/\
 ble-stack-5.x/gapbondmngr-cc13x2_26x2.html#gapbondmgr-and-snv)\n`
 
+// Long description for the sameIrkOption configuration parameter
+const sameIrkOptionLongDescription = `The action that the device takes after \
+receiving IRK that already exsits in the resolivng list.\n
+__Default__: Update bond record\n
+Options |
+--- |
+Update bond record |
+Terminate link |\n`
+
  // Exports the long descriptions for each configurable
  exports = {
     maxBondsLongDescription: maxBondsLongDescription,
@@ -235,5 +244,6 @@ ble-stack-5.x/gapbondmngr-cc13x2_26x2.html#gapbondmgr-and-snv)\n`
     keyDistListLongDescription: keyDistListLongDescription,
     eccDebugKeysLongDescription: eccDebugKeysLongDescription,
 	allowDebugKeysLongDescription: allowDebugKeysLongDescription,
-    eraseBondWhileInConnLongDescription: eraseBondWhileInConnLongDescription
+    eraseBondWhileInConnLongDescription: eraseBondWhileInConnLongDescription,
+    sameIrkOptionLongDescription: sameIrkOptionLongDescription
 };

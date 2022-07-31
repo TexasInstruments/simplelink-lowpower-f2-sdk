@@ -55,7 +55,7 @@ const AESECB      = scripting.addModule("/ti/drivers/AESECB");
 const AESECB1     = AESECB.addInstance();
 const ECDH        = scripting.addModule("/ti/drivers/ECDH");
 const ECDH1       = ECDH.addInstance();
-const GPIO        = scripting.addModule("/ti/drivers/PIN");
+const GPIO        = scripting.addModule("/ti/drivers/GPIO");
 const GPIO1       = GPIO.addInstance();
 const GPIO2       = GPIO.addInstance();
 const GPIO3       = GPIO.addInstance();
@@ -65,10 +65,6 @@ const NVS1        = NVS.addInstance();
 const NVS2        = NVS.addInstance();
 const Power       = scripting.addModule("/ti/drivers/Power");
 const RF          = scripting.addModule("/ti/drivers/RF");
-/* ======== RTOS(TIRTOS) ======== */
-if (system.getRTOS() === "tirtos") {
-    const RTOS = scripting.addModule("/ti/drivers/RTOS");
-}
 const TRNG        = scripting.addModule("/ti/drivers/TRNG");
 const TRNG1       = TRNG.addInstance();
 
@@ -76,11 +72,10 @@ const TRNG1       = TRNG.addInstance();
 displayUART.$hardware = system.deviceData.board.components.XDS110UART;
 displayUART.enableANSI = true;
 displayUART.uartBufferSize = 128;
-displayUART.useUART2 = false;
-displayUART.uart.txPinInstance.outputState = "High";
+displayUART.uart.txPinInstance.initialOutputState = "High";
 displayUART.uart.$name = "CONFIG_DISPLAY_UART";
-displayUART.uart.txPinInstance.$name = "CONFIG_PIN_UART_TX";
-displayUART.uart.rxPinInstance.$name = "CONFIG_PIN_UART_RX";
+displayUART.uart.txPinInstance.$name = "CONFIG_GPIO_UART_TX";
+displayUART.uart.rxPinInstance.$name = "CONFIG_GPIO_UART_RX";
 
 /* ======== GPIO ======== */
 
@@ -94,11 +89,11 @@ GPIO2.$name             = "CONFIG_GPIO_BTN2";
 
 GPIO3.$hardware         = system.deviceData.board.components.LED_RED;
 GPIO3.mode              = "Output";
-GPIO3.$name             = "CONFIG_PIN_RLED";
+GPIO3.$name             = "CONFIG_GPIO_RLED";
 
 GPIO4.$hardware         = system.deviceData.board.components.LED_GREEN;
 GPIO4.mode              = "Output";
-GPIO4.$name             = "CONFIG_PIN_GLED";
+GPIO4.$name             = "CONFIG_GPIO_GLED";
 
 /* ======== RF ======== */
 /* if an antenna component exists, assign it to the rf instance */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,45 +50,50 @@ extern const uint_least8_t AESCBC_count;
 
 const AESCBC_Params AESCBC_defaultParams = {
     .returnBehavior = AESCBC_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== AESCBC_Params_init ========
  */
-void AESCBC_Params_init(AESCBC_Params *params){
+void AESCBC_Params_init(AESCBC_Params *params)
+{
     *params = AESCBC_defaultParams;
 }
 
 /*
  *  ======== AESCBC_Operation_init ========
  */
-void AESCBC_Operation_init(AESCBC_Operation *operationStruct) {
+void AESCBC_Operation_init(AESCBC_Operation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCBC_Operation));
 }
 
 /*
  *  ======== AESCBC_OneStepOperation_init ========
  */
-void AESCBC_OneStepOperation_init(AESCBC_OneStepOperation *operationStruct) {
+void AESCBC_OneStepOperation_init(AESCBC_OneStepOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCBC_OneStepOperation));
 }
 
 /*
  *  ======== AESCBC_SegmentedOperation_init ========
  */
-void AESCBC_SegmentedOperation_init(AESCBC_SegmentedOperation *operationStruct) {
+void AESCBC_SegmentedOperation_init(AESCBC_SegmentedOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESCBC_SegmentedOperation));
 }
 
 /*
  *  ======== AESCBC_open ========
  */
-AESCBC_Handle AESCBC_open(uint_least8_t index, const AESCBC_Params *params) {
+__attribute__((weak)) AESCBC_Handle AESCBC_open(uint_least8_t index, const AESCBC_Params *params)
+{
     DebugP_assert(index < AESCBC_count);
 
-    AESCBC_Config *config = (AESCBC_Config*)&AESCBC_config[index];
+    AESCBC_Config *config = (AESCBC_Config *)&AESCBC_config[index];
     return AESCBC_construct(config, params);
 }

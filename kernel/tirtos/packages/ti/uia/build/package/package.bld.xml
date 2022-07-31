@@ -11,7 +11,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_uia_build.tar.dep" src="package/rel/ti_uia_build.xdc.inc"/>
+        <srcFile name="package/rel/ti_uia_build.tar.gz.dep" src="package/rel/ti_uia_build.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -25,7 +25,7 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_uia_build"
-        pname="ti_uia_build.tar"
+        pname="../../../../exports/ti_uia_build.tar.gz"
         label="default"
     >
         <file name="package/package.bld.xml"/>

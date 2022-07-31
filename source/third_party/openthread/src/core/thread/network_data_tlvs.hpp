@@ -38,9 +38,12 @@
 
 #include <openthread/netdata.h>
 
+#include "common/const_cast.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
+#include "common/equatable.hpp"
 #include "net/ip6_address.hpp"
+#include "thread/network_data_types.hpp"
 
 namespace ot {
 namespace NetworkData {
@@ -58,6 +61,68 @@ using ot::Encoding::BigEndian::HostSwap32;
  *
  */
 
+class NetworkDataTlv;
+
+/**
+ * This template method casts a `NetworkDataTlv` pointer to a given subclass `TlvType` pointer.
+ *
+ * @tparam TlvType  The TLV type to cast into. MUST be a subclass of `NetworkDataTlv`.
+ *
+ * @param[in] aTlv   A pointer to a `NetworkDataTlv` to convert/cast to a `TlvType`.
+ *
+ * @returns A `TlvType` pointer to `aTlv`.
+ *
+ */
+template <class TlvType> TlvType *As(NetworkDataTlv *aTlv)
+{
+    return static_cast<TlvType *>(aTlv);
+}
+
+/**
+ * This template method casts a `NetworkDataTlv` pointer to a given subclass `TlvType` pointer.
+ *
+ * @tparam TlvType  The TLV type to cast into. MUST be a subclass of `NetworkDataTlv`.
+ *
+ * @param[in] aTlv   A pointer to a `NetworkDataTlv` to convert/cast to a `TlvType`.
+ *
+ * @returns A `TlvType` pointer to `aTlv`.
+ *
+ */
+template <class TlvType> const TlvType *As(const NetworkDataTlv *aTlv)
+{
+    return static_cast<const TlvType *>(aTlv);
+}
+
+/**
+ * This template method casts a `NetworkDataTlv` reference to a given subclass `TlvType` reference.
+ *
+ * @tparam TlvType  The TLV type to cast into. MUST be a subclass of `NetworkDataTlv`.
+ *
+ * @param[in] aTlv   A reference to a `NetworkDataTlv` to convert/cast to a `TlvType`.
+ *
+ * @returns A `TlvType` reference to `aTlv`.
+ *
+ */
+template <class TlvType> TlvType &As(NetworkDataTlv &aTlv)
+{
+    return static_cast<TlvType &>(aTlv);
+}
+
+/**
+ * This template method casts a `NetworkDataTlv` reference to a given subclass `TlvType` reference.
+ *
+ * @tparam TlvType  The TLV type to cast into. MUST be a subclass of `NetworkDataTlv`.
+ *
+ * @param[in] aTlv   A reference to a `NetworkDataTlv` to convert/cast to a `TlvType`.
+ *
+ * @returns A `TlvType` reference to `aTlv`.
+ *
+ */
+template <class TlvType> const TlvType &As(const NetworkDataTlv &aTlv)
+{
+    return static_cast<const TlvType &>(aTlv);
+}
+
 /**
  * This class implements Thread Network Data TLV generation and parsing.
  *
@@ -67,20 +132,10 @@ class NetworkDataTlv
 {
 public:
     /**
-     * This method initializes TLV.
-     *
-     */
-    void Init(void)
-    {
-        mType   = 0;
-        mLength = 0;
-    }
-
-    /**
      * Thread Network Data Type values.
      *
      */
-    enum Type
+    enum Type : uint8_t
     {
         kTypeHasRoute          = 0, ///< Has Route TLV
         kTypePrefix            = 1, ///< Prefix TLV
@@ -90,6 +145,16 @@ public:
         kTypeService           = 5, ///< Service TLV
         kTypeServer            = 6, ///< Server TLV
     };
+
+    /**
+     * This method initializes the TLV.
+     *
+     */
+    void Init(void)
+    {
+        mType   = 0;
+        mLength = 0;
+    }
 
     /**
      * This method returns the Type value.
@@ -207,13 +272,141 @@ public:
      */
     void SetStable(void) { mType |= kStableMask; }
 
-private:
-    enum
+    /**
+     * This static method searches in a given sequence of TLVs to find the first TLV with a given type.
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aType   The TLV type to find.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    static NetworkDataTlv *Find(NetworkDataTlv *aStart, NetworkDataTlv *aEnd, Type aType)
     {
-        kTypeOffset = 1,
-        kTypeMask   = 0x7f << kTypeOffset,
-        kStableMask = 1 << 0,
-    };
+        return AsNonConst(Find(AsConst(aStart), AsConst(aEnd), aType));
+    }
+
+    /**
+     * This static method searches in a given sequence of TLVs to find the first TLV with a given type.
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aType   The TLV type to find.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    static const NetworkDataTlv *Find(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd, Type aType);
+
+    /**
+     * This template static method searches in a given sequence of TLVs to find the first TLV with a given type.
+     *
+     * @tparam     TlvType The TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename TlvType> static TlvType *Find(NetworkDataTlv *aStart, NetworkDataTlv *aEnd)
+    {
+        return As<TlvType>(Find(aStart, aEnd, TlvType::kType));
+    }
+
+    /**
+     * This template static method searches in a given sequence of TLVs to find the first TLV with a given type.
+     *
+     * @tparam     TlvType The TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename TlvType> static const TlvType *Find(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd)
+    {
+        return As<TlvType>(Find(aStart, aEnd, TlvType::kType));
+    }
+
+    /**
+     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV type and stable
+     * flag.
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aType   The TLV type to find.
+     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    static NetworkDataTlv *Find(NetworkDataTlv *aStart, NetworkDataTlv *aEnd, Type aType, bool aStable)
+    {
+        return AsNonConst(Find(AsConst(aStart), AsConst(aEnd), aType, aStable));
+    }
+
+    /**
+     * This static method searches in a given sequence of TLVs to find the first TLV with a given TLV type and stable
+     * flag.
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aType   The TLV type to find.
+     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    static const NetworkDataTlv *Find(const NetworkDataTlv *aStart,
+                                      const NetworkDataTlv *aEnd,
+                                      Type                  aType,
+                                      bool                  aStable);
+
+    /**
+     * This template static method searches in a given sequence of TLVs to find the first TLV with a given TLV type and
+     * stable flag.
+     *
+     * @tparam     TlvType The TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename TlvType> static TlvType *Find(NetworkDataTlv *aStart, NetworkDataTlv *aEnd, bool aStable)
+    {
+        return As<TlvType>(Find(aStart, aEnd, TlvType::kType, aStable));
+    }
+
+    /**
+     * This template static method searches in a given sequence of TLVs to find the first TLV with a given TLV type and
+     * stable flag.
+     *
+     * @tparam     TlvType The TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStart  A pointer to the start of the sequence of TLVs to search within.
+     * @param[in]  aEnd    A pointer to the end of the sequence of TLVs.
+     * @param[in]  aStable TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename TlvType>
+    static const TlvType *Find(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd, bool aStable)
+    {
+        return As<TlvType>(Find(aStart, aEnd, TlvType::kType, aStable));
+    }
+
+private:
+    static constexpr uint8_t kTypeOffset = 1;
+    static constexpr uint8_t kTypeMask   = 0x7f << kTypeOffset;
+    static constexpr uint8_t kStableMask = 1 << 0;
+
     uint8_t mType;
     uint8_t mLength;
 } OT_TOOL_PACKED_END;
@@ -223,8 +416,10 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class HasRouteEntry
+class HasRouteEntry : public Equatable<HasRouteEntry>
 {
+    friend class ExternalRouteConfig;
+
 public:
     /**
      * This method initializes the header.
@@ -257,20 +452,32 @@ public:
      * @returns The preference value.
      *
      */
-    int8_t GetPreference(void) const { return static_cast<int8_t>(mFlags) >> kPreferenceOffset; }
+    int8_t GetPreference(void) const { return PreferenceFromFlags(GetFlags()); }
 
     /**
-     * This method sets the Preference value.
+     * This method gets the Flags value.
      *
-     * @param[in]  aPrf  The Preference value.
+     * @returns The Flags value.
      *
      */
-    void SetPreference(int8_t aPrf)
-    {
-        OT_ASSERT((aPrf == OT_ROUTE_PREFERENCE_LOW) || (aPrf == OT_ROUTE_PREFERENCE_MED) ||
-                  (aPrf == OT_ROUTE_PREFERENCE_HIGH));
-        mFlags = (mFlags & ~kPreferenceMask) | ((static_cast<uint8_t>(aPrf) << kPreferenceOffset) & kPreferenceMask);
-    }
+    uint8_t GetFlags(void) const { return mFlags; }
+
+    /**
+     * This method sets the Flags value.
+     *
+     * @param[in]  aFlags  The Flags value.
+     *
+     */
+    void SetFlags(uint8_t aFlags) { mFlags = aFlags; }
+
+    /**
+     * This method indicates whether or not the NAT64 flag is set.
+     *
+     * @retval TRUE   If the NAT64 flag is set.
+     * @retval FALSE  If the NAT64 flag is not set.
+     *
+     */
+    bool IsNat64(void) const { return (mFlags & kNat64Flag) != 0; }
 
     /**
      * This method returns a pointer to the next HasRouteEntry.
@@ -289,25 +496,30 @@ public:
     const HasRouteEntry *GetNext(void) const { return (this + 1); }
 
     /**
-     * This method indicates whether two entries fully match.
+     * This static method returns an updated flags bitmask by removing the preference bits (sets them to zero) from a
+     * given flags bitmask.
      *
-     * @param[in]  aOtherEntry  Another entry to compare with it.
+     * @param[in] aFlags  The flags bitmask.
      *
-     * @retval TRUE  The two entries are equal.
-     * @retval FALSE The two entries are not equal.
+     * @returns An updated version @p aFlags with preference bits cleared.
      *
      */
-    bool operator==(const HasRouteEntry &aOtherEntry) const
-    {
-        return (memcmp(this, &aOtherEntry, sizeof(HasRouteEntry)) == 0);
-    }
+    static uint8_t FlagsWithoutPreference(uint8_t aFlags) { return (aFlags & ~kPreferenceMask); }
+
+    /**
+     * This static method gets the preference field from a flags bitmask.
+     *
+     * @param[in] aFlags  The flags.
+     *
+     * @returns The preference field from the @p aFlags.
+     *
+     */
+    static int8_t PreferenceFromFlags(uint8_t aFlags) { return RoutePreferenceFromValue(aFlags >> kPreferenceOffset); }
 
 private:
-    enum
-    {
-        kPreferenceOffset = 6,
-        kPreferenceMask   = 3 << kPreferenceOffset,
-    };
+    static constexpr uint8_t kPreferenceOffset = 6;
+    static constexpr uint8_t kPreferenceMask   = 3 << kPreferenceOffset;
+    static constexpr uint8_t kNat64Flag        = 1 << 5;
 
     uint16_t mRloc;
     uint8_t  mFlags;
@@ -321,10 +533,7 @@ OT_TOOL_PACKED_BEGIN
 class HasRouteTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypeHasRoute, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypeHasRoute; ///< The TLV Type.
 
     /**
      * This method initializes the TLV.
@@ -346,29 +555,29 @@ public:
     uint8_t GetNumEntries(void) const { return GetLength() / sizeof(HasRouteEntry); }
 
     /**
-     * This method returns a pointer to the i'th HasRoute entry.
+     * This method returns a pointer to the HasRoute entry at a given index.
      *
-     * @param[in]  i  An index.
+     * @param[in]  aIndex  An index.
      *
-     * @returns A pointer to the i'th HasRoute entry.
+     * @returns A pointer to the HasRoute entry at @p aIndex.
      *
      */
-    HasRouteEntry *GetEntry(uint8_t i)
+    HasRouteEntry *GetEntry(uint8_t aIndex)
     {
-        return reinterpret_cast<HasRouteEntry *>(GetValue() + (i * sizeof(HasRouteEntry)));
+        return reinterpret_cast<HasRouteEntry *>(GetValue() + (aIndex * sizeof(HasRouteEntry)));
     }
 
     /**
-     * This method returns a pointer to the i'th HasRoute entry.
+     * This method returns a pointer to the HasRoute entry at a given index.
      *
-     * @param[in]  i  An index.
+     * @param[in]  aIndex  An index.
      *
-     * @returns A pointer to the i'th HasRoute entry.
+     * @returns A pointer to the HasRoute entry at @p aIndex.
      *
      */
-    const HasRouteEntry *GetEntry(uint8_t i) const
+    const HasRouteEntry *GetEntry(uint8_t aIndex) const
     {
-        return reinterpret_cast<const HasRouteEntry *>(GetValue() + (i * sizeof(HasRouteEntry)));
+        return reinterpret_cast<const HasRouteEntry *>(GetValue() + (aIndex * sizeof(HasRouteEntry)));
     }
 
     /**
@@ -423,10 +632,7 @@ OT_TOOL_PACKED_BEGIN
 class PrefixTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypePrefix, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypePrefix; ///< The TLV Type.
 
     /**
      * This method initializes the TLV.
@@ -442,8 +648,20 @@ public:
         SetType(kTypePrefix);
         mDomainId     = aDomainId;
         mPrefixLength = aPrefixLength;
-        memcpy(GetPrefix(), aPrefix, BitVectorBytes(aPrefixLength));
+        memcpy(GetPrefix(), aPrefix, Ip6::Prefix::SizeForLength(aPrefixLength));
         SetSubTlvsLength(0);
+    }
+
+    /**
+     * This method initializes the TLV.
+     *
+     * @param[in]  aDomainId      The Domain ID.
+     * @param[in]  aPrefix        The Prefix.
+     *
+     */
+    void Init(uint8_t aDomainId, const Ip6::Prefix aPrefix)
+    {
+        Init(aDomainId, aPrefix.GetLength(), aPrefix.GetBytes());
     }
 
     /**
@@ -456,8 +674,8 @@ public:
     bool IsValid(void) const
     {
         return ((GetLength() >= sizeof(*this) - sizeof(NetworkDataTlv)) &&
-                (GetLength() >= BitVectorBytes(mPrefixLength) + sizeof(*this) - sizeof(NetworkDataTlv)) &&
-                (BitVectorBytes(mPrefixLength) <= sizeof(Ip6::Address)));
+                (GetLength() >= Ip6::Prefix::SizeForLength(mPrefixLength) + sizeof(*this) - sizeof(NetworkDataTlv)) &&
+                (Ip6::Prefix::SizeForLength(mPrefixLength) <= sizeof(Ip6::Address)));
     }
 
     /**
@@ -493,6 +711,42 @@ public:
     const uint8_t *GetPrefix(void) const { return reinterpret_cast<const uint8_t *>(this) + sizeof(*this); }
 
     /**
+     * This method copies the Prefix from TLV into a given `Ip6::Prefix`.
+     *
+     * @param[out] aPrefix  An `Ip6::Prefix` to copy the Prefix from TLV into.
+     *
+     */
+    void CopyPrefixTo(Ip6::Prefix &aPrefix) const { aPrefix.Set(GetPrefix(), GetPrefixLength()); }
+
+    /**
+     * This method indicates whether the Prefix from TLV is equal to a given `Ip6::Prefix`.
+     *
+     * @param[in] aPrefix  A Prefix to compare with.
+     *
+     * @retval TRUE   The TLV's Prefix is equal to @p aPrefix.
+     * @retval FALSE  The TLV's Prefix is not equal to @p aPrefix.
+     *
+     */
+    bool IsEqual(Ip6::Prefix &aPrefix) const { return aPrefix.IsEqual(GetPrefix(), GetPrefixLength()); }
+
+    /**
+     * This method indicates whether the Prefix from TLV is equal to a given Prefix.
+     *
+     * @param[in]  aPrefix        A pointer to an IPv6 prefix to compare with.
+     * @param[in]  aPrefixLength  The prefix length pointed to by @p aPrefix (in bits).
+     *
+     * @retval TRUE   The TLV's Prefix is equal to @p aPrefix.
+     * @retval FALSE  The TLV's Prefix is not equal @p aPrefix.
+     *
+     */
+    bool IsEqual(const uint8_t *aPrefix, uint8_t aPrefixLength) const
+    {
+        return (aPrefixLength == mPrefixLength) &&
+               (Ip6::Prefix::MatchLength(GetPrefix(), aPrefix, Ip6::Prefix::SizeForLength(aPrefixLength)) >=
+                mPrefixLength);
+    }
+
+    /**
      * This method returns a pointer to the Sub-TLVs.
      *
      * @returns A pointer to the Sub-TLVs.
@@ -500,7 +754,7 @@ public:
      */
     NetworkDataTlv *GetSubTlvs(void)
     {
-        return reinterpret_cast<NetworkDataTlv *>(GetPrefix() + BitVectorBytes(mPrefixLength));
+        return reinterpret_cast<NetworkDataTlv *>(GetPrefix() + Ip6::Prefix::SizeForLength(mPrefixLength));
     }
 
     /**
@@ -511,7 +765,7 @@ public:
      */
     const NetworkDataTlv *GetSubTlvs(void) const
     {
-        return reinterpret_cast<const NetworkDataTlv *>(GetPrefix() + BitVectorBytes(mPrefixLength));
+        return reinterpret_cast<const NetworkDataTlv *>(GetPrefix() + Ip6::Prefix::SizeForLength(mPrefixLength));
     }
 
     /**
@@ -522,7 +776,7 @@ public:
      */
     uint8_t GetSubTlvsLength(void) const
     {
-        return GetLength() - (sizeof(*this) - sizeof(NetworkDataTlv) + BitVectorBytes(mPrefixLength));
+        return GetLength() - (sizeof(*this) - sizeof(NetworkDataTlv) + Ip6::Prefix::SizeForLength(mPrefixLength));
     }
 
     /**
@@ -533,8 +787,109 @@ public:
      */
     void SetSubTlvsLength(uint8_t aLength)
     {
-        SetLength(sizeof(*this) - sizeof(NetworkDataTlv) + BitVectorBytes(mPrefixLength) + aLength);
+        SetLength(sizeof(*this) - sizeof(NetworkDataTlv) + Ip6::Prefix::SizeForLength(mPrefixLength) + aLength);
     }
+
+    /**
+     * This template method searches in the sub-TLVs to find the first one matching a given TLV type.
+     *
+     * @tparam     SubTlvType    The sub-TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename SubTlvType> SubTlvType *FindSubTlv(void)
+    {
+        return As<SubTlvType>(FindSubTlv(SubTlvType::kType));
+    }
+
+    /**
+     * This template method searches in the sub-TLVs to find the first one matching a given TLV Type.
+     *
+     * @tparam     SubTlvType   The sub-TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename SubTlvType> const SubTlvType *FindSubTlv(void) const
+    {
+        return As<SubTlvType>(FindSubTlv(SubTlvType::kType));
+    }
+
+    /**
+     * This template method searches in the sub-TLVs to find the first one matching a given TLV type and stable flag.
+     *
+     * @tparam     SubTlvType    The sub-TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStable       TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename SubTlvType> SubTlvType *FindSubTlv(bool aStable)
+    {
+        return As<SubTlvType>(FindSubTlv(static_cast<Type>(SubTlvType::kType), aStable));
+    }
+
+    /**
+     * This template method searches in the sub-TLVs to find the first one matching a given TLV type and stable flag.
+     *
+     * @tparam     SubTlvType   The sub-TLV type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStable      TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    template <typename SubTlvType> const SubTlvType *FindSubTlv(bool aStable) const
+    {
+        return As<SubTlvType>(FindSubTlv(static_cast<Type>(SubTlvType::kType), aStable));
+    }
+
+    /**
+     * This method searches in the sub-TLVs to find the first one matching a given TLV type.
+     *
+     * @param[in]  aType        The sub-TLV type to search for.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    NetworkDataTlv *FindSubTlv(Type aType) { return AsNonConst(AsConst(this)->FindSubTlv(aType)); }
+
+    /**
+     * This method searches in the sub-TLVs to find the first one matching a given TLV type.
+     *
+     * @param[in]  aType        The sub-TLV type to search for.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    const NetworkDataTlv *FindSubTlv(Type aType) const;
+
+    /**
+     * This method searches in the sub-TLVs to find the first one matching a given TLV type and stable flag.
+     *
+     * @param[in]  aType        The sub-TLV type to search for.
+     * @param[in]  aStable      TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    NetworkDataTlv *FindSubTlv(Type aType, bool aStable)
+    {
+        return AsNonConst(AsConst(this)->FindSubTlv(aType, aStable));
+    }
+
+    /**
+     * This method searches in the sub-TLVs to find the first one matching a given TLV type and stable flag.
+     *
+     * @param[in]  aType        The sub-TLV type to search for.
+     * @param[in]  aStable      TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the TLV if found, or `nullptr` if not found.
+     *
+     */
+    const NetworkDataTlv *FindSubTlv(Type aType, bool aStable) const;
 
     /**
      * This static method calculates the total size (number of bytes) of a Prefix TLV with a given Prefix Length value.
@@ -547,7 +902,10 @@ public:
      * @returns    The size (number of bytes) of the Prefix TLV.
      *
      */
-    static uint16_t CalculateSize(uint8_t aPrefixLength) { return sizeof(PrefixTlv) + BitVectorBytes(aPrefixLength); }
+    static uint16_t CalculateSize(uint8_t aPrefixLength)
+    {
+        return sizeof(PrefixTlv) + Ip6::Prefix::SizeForLength(aPrefixLength);
+    }
 
 private:
     uint8_t mDomainId;
@@ -559,23 +917,11 @@ private:
  *
  */
 OT_TOOL_PACKED_BEGIN
-class BorderRouterEntry
+class BorderRouterEntry : public Equatable<BorderRouterEntry>
 {
-public:
-    enum
-    {
-        kPreferenceOffset = 14,
-        kPreferenceMask   = 3 << kPreferenceOffset,
-        kPreferredFlag    = 1 << 13,
-        kSlaacFlag        = 1 << 12,
-        kDhcpFlag         = 1 << 11,
-        kConfigureFlag    = 1 << 10,
-        kDefaultRouteFlag = 1 << 9,
-        kOnMeshFlag       = 1 << 8,
-        kNdDnsFlag        = 1 << 7,
-        kDpFlag           = 1 << 6,
-    };
+    friend class OnMeshPrefixConfig;
 
+public:
     /**
      * This method initializes the TLV.
      *
@@ -607,7 +953,7 @@ public:
      * @returns The Flags value.
      *
      */
-    uint16_t GetFlags(void) const { return HostSwap16(mFlags) & ~kPreferenceMask; }
+    uint16_t GetFlags(void) const { return HostSwap16(mFlags); }
 
     /**
      * This method sets the Flags value.
@@ -615,10 +961,7 @@ public:
      * @param[in]  aFlags  The Flags value.
      *
      */
-    void SetFlags(uint16_t aFlags)
-    {
-        mFlags = HostSwap16((HostSwap16(mFlags) & kPreferenceMask) | (aFlags & ~kPreferenceMask));
-    }
+    void SetFlags(uint16_t aFlags) { mFlags = HostSwap16(aFlags); }
 
     /**
      * This method returns the Preference value.
@@ -626,21 +969,7 @@ public:
      * @returns the Preference value.
      *
      */
-    int8_t GetPreference(void) const
-    {
-        return static_cast<int8_t>(static_cast<int16_t>(HostSwap16(mFlags)) >> kPreferenceOffset);
-    }
-
-    /**
-     * This method sets the Preference value.
-     *
-     * @param[in]  aPrf  The Preference value.
-     *
-     */
-    void SetPreference(int8_t aPrf)
-    {
-        mFlags = HostSwap16(GetFlags() | ((static_cast<uint16_t>(aPrf) << kPreferenceOffset) & kPreferenceMask));
-    }
+    int8_t GetPreference(void) const { return PreferenceFromFlags(GetFlags()); }
 
     /**
      * This method indicates whether or not the Preferred flag is set.
@@ -731,20 +1060,41 @@ public:
     const BorderRouterEntry *GetNext(void) const { return (this + 1); }
 
     /**
-     * This method indicates whether two entries fully match.
+     * This static method returns an updated flags bitmask by removing the preference bits (sets them to zero) from a
+     * given flags bitmask.
      *
-     * @param[in]  aOtherEntry  Another entry to compare with it.
+     * @param[in] aFlags  The flags bitmask.
      *
-     * @retval TRUE  The two entries are equal.
-     * @retval FALSE The two entries are not equal.
+     * @returns An updated version @p aFlags with preference bits cleared.
      *
      */
-    bool operator==(const BorderRouterEntry &aOtherEntry) const
+    static uint16_t FlagsWithoutPreference(uint16_t aFlags) { return (aFlags & ~kPreferenceMask); }
+
+    /**
+     * This static method gets the preference field from a flags bitmask.
+     *
+     * @param[in] aFlags  The flags.
+     *
+     * @returns The preference field from the @p aFlags.
+     *
+     */
+    static int8_t PreferenceFromFlags(uint16_t aFlags)
     {
-        return (memcmp(this, &aOtherEntry, sizeof(BorderRouterEntry)) == 0);
+        return RoutePreferenceFromValue(static_cast<uint8_t>(aFlags >> kPreferenceOffset));
     }
 
 private:
+    static constexpr uint8_t  kPreferenceOffset = 14;
+    static constexpr uint16_t kPreferenceMask   = 3 << kPreferenceOffset;
+    static constexpr uint16_t kPreferredFlag    = 1 << 13;
+    static constexpr uint16_t kSlaacFlag        = 1 << 12;
+    static constexpr uint16_t kDhcpFlag         = 1 << 11;
+    static constexpr uint16_t kConfigureFlag    = 1 << 10;
+    static constexpr uint16_t kDefaultRouteFlag = 1 << 9;
+    static constexpr uint16_t kOnMeshFlag       = 1 << 8;
+    static constexpr uint16_t kNdDnsFlag        = 1 << 7;
+    static constexpr uint16_t kDpFlag           = 1 << 6;
+
     uint16_t mRloc;
     uint16_t mFlags;
 } OT_TOOL_PACKED_END;
@@ -757,10 +1107,7 @@ OT_TOOL_PACKED_BEGIN
 class BorderRouterTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypeBorderRouter, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypeBorderRouter; ///< The TLV Type.
 
     /**
      * This method initializes the TLV.
@@ -782,29 +1129,29 @@ public:
     uint8_t GetNumEntries(void) const { return GetLength() / sizeof(BorderRouterEntry); }
 
     /**
-     * This method returns a pointer to the i'th Border Router entry.
+     * This method returns a pointer to the Border Router entry at a given index
      *
-     * @param[in]  i  The index.
+     * @param[in]  aIndex  The index.
      *
-     * @returns A pointer to the i'th Border Router entry.
+     * @returns A pointer to the Border Router entry at @p aIndex.
      *
      */
-    BorderRouterEntry *GetEntry(uint8_t i)
+    BorderRouterEntry *GetEntry(uint8_t aIndex)
     {
-        return reinterpret_cast<BorderRouterEntry *>(GetValue() + (i * sizeof(BorderRouterEntry)));
+        return reinterpret_cast<BorderRouterEntry *>(GetValue() + (aIndex * sizeof(BorderRouterEntry)));
     }
 
     /**
-     * This method returns a pointer to the i'th Border Router entry.
+     * This method returns a pointer to the Border Router entry at a given index.
      *
-     * @param[in]  i  The index.
+     * @param[in]  aIndex  The index.
      *
-     * @returns A pointer to the i'th Border Router entry.
+     * @returns A pointer to the Border Router entry at @p aIndex
      *
      */
-    const BorderRouterEntry *GetEntry(uint8_t i) const
+    const BorderRouterEntry *GetEntry(uint8_t aIndex) const
     {
-        return reinterpret_cast<const BorderRouterEntry *>(GetValue() + (i * sizeof(BorderRouterEntry)));
+        return reinterpret_cast<const BorderRouterEntry *>(GetValue() + (aIndex * sizeof(BorderRouterEntry)));
     }
 
     /**
@@ -862,25 +1209,22 @@ OT_TOOL_PACKED_BEGIN
 class ContextTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypeContext, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypeContext; ///< The TLV Type.
 
     /**
      * This method initializes the Context TLV.
      *
-     * @param[in]  aConextId   The Context ID value.
-     * @param[in]  aLength     The Context Length value.
+     * @param[in]  aContextId      The Context ID value.
+     * @param[in]  aContextLength  The Context Length value.
      *
      */
-    void Init(uint8_t aContextId, uint8_t aConextLength)
+    void Init(uint8_t aContextId, uint8_t aContextLength)
     {
         NetworkDataTlv::Init();
         SetType(kTypeContext);
         SetLength(sizeof(ContextTlv) - sizeof(NetworkDataTlv));
         mFlags         = ((aContextId << kContextIdOffset) & kContextIdMask);
-        mContextLength = aConextLength;
+        mContextLength = aContextLength;
     }
 
     /**
@@ -921,12 +1265,10 @@ public:
     uint8_t GetContextLength(void) const { return mContextLength; }
 
 private:
-    enum
-    {
-        kCompressFlag    = 1 << 4,
-        kContextIdOffset = 0,
-        kContextIdMask   = 0xf << kContextIdOffset,
-    };
+    static constexpr uint8_t kCompressFlag    = 1 << 4;
+    static constexpr uint8_t kContextIdOffset = 0;
+    static constexpr uint8_t kContextIdMask   = 0xf << kContextIdOffset;
+
     uint8_t mFlags;
     uint8_t mContextLength;
 } OT_TOOL_PACKED_END;
@@ -939,10 +1281,7 @@ OT_TOOL_PACKED_BEGIN
 class CommissioningDataTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypeCommissioningData, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypeCommissioningData; ///< The TLV Type.
 
     /**
      * This method initializes the TLV.
@@ -964,12 +1303,9 @@ OT_TOOL_PACKED_BEGIN
 class ServiceTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType                      = kTypeService, ///< The TLV Type.
-        kThreadEnterpriseNumber    = 44970,        ///< Thread enterprise number.
-        kServiceDataBackboneRouter = 0x01,         ///< const THREAD_SERVICE_DATA_BBR
-    };
+    static constexpr Type kType = kTypeService; ///< The TLV Type.
+
+    static constexpr uint32_t kThreadEnterpriseNumber = 44970; ///< Thread enterprise number.
 
     /**
      * This method initializes the TLV.
@@ -977,31 +1313,9 @@ public:
      * @param[in]  aServiceId          The Service Id value.
      * @param[in]  aEnterpriseNumber   The Enterprise Number.
      * @param[in]  aServiceData        The Service Data.
-     * @param[in]  aServiceDataLength  The Service Data length (number of bytes).
      *
      */
-    void Init(uint8_t aServiceId, uint32_t aEnterpriseNumber, const uint8_t *aServiceData, uint8_t aServiceDataLength)
-    {
-        NetworkDataTlv::Init();
-        SetType(kTypeService);
-
-        mFlagsServiceId = (aEnterpriseNumber == kThreadEnterpriseNumber) ? kThreadEnterpriseFlag : 0;
-        mFlagsServiceId |= (aServiceId & kServiceIdMask);
-
-        if (aEnterpriseNumber != kThreadEnterpriseNumber)
-        {
-            mShared.mEnterpriseNumber = HostSwap32(aEnterpriseNumber);
-            mServiceDataLength        = aServiceDataLength;
-            memcpy(&mServiceDataLength + sizeof(uint8_t), aServiceData, aServiceDataLength);
-        }
-        else
-        {
-            mShared.mServiceDataLengthThreadEnterprise = aServiceDataLength;
-            memcpy(&mShared.mServiceDataLengthThreadEnterprise + sizeof(uint8_t), aServiceData, aServiceDataLength);
-        }
-
-        SetLength(GetFieldsLength());
-    }
+    void Init(uint8_t aServiceId, uint32_t aEnterpriseNumber, const ServiceData &aServiceData);
 
     /**
      * This method indicates whether or not the TLV appears to be well-formed.
@@ -1041,6 +1355,17 @@ public:
     }
 
     /**
+     * This method gets the Service Data.
+     *
+     * @param[out] aServiceData   A reference to a`ServiceData` to return the data.
+     *
+     */
+    void GetServiceData(ServiceData &aServiceData) const
+    {
+        aServiceData.Init(GetServiceData(), GetServiceDataLength());
+    }
+
+    /**
      * This method gets Service Data length.
      *
      * @returns length of the Service Data field in bytes.
@@ -1049,30 +1374,6 @@ public:
     uint8_t GetServiceDataLength(void) const
     {
         return IsThreadEnterprise() ? mShared.mServiceDataLengthThreadEnterprise : mServiceDataLength;
-    }
-
-    /**
-     * This method returns a pointer to the Service Data.
-     *
-     * @returns A pointer to the Service Data.
-     *
-     */
-    uint8_t *GetServiceData(void)
-    {
-        return (IsThreadEnterprise() ? &mShared.mServiceDataLengthThreadEnterprise : &mServiceDataLength) +
-               sizeof(uint8_t);
-    }
-
-    /**
-     * This method returns a pointer to the Service Data.
-     *
-     * @returns A pointer to the Service Data.
-     *
-     */
-    const uint8_t *GetServiceData(void) const
-    {
-        return (IsThreadEnterprise() ? &mShared.mServiceDataLengthThreadEnterprise : &mServiceDataLength) +
-               sizeof(uint8_t);
     }
 
     /**
@@ -1132,6 +1433,12 @@ public:
 private:
     bool IsThreadEnterprise(void) const { return (mFlagsServiceId & kThreadEnterpriseFlag) != 0; }
 
+    const uint8_t *GetServiceData(void) const
+    {
+        return (IsThreadEnterprise() ? &mShared.mServiceDataLengthThreadEnterprise : &mServiceDataLength) +
+               sizeof(uint8_t);
+    }
+
     uint8_t GetFieldsLength(void) const
     {
         // Returns the length of TLV value's common fields (flags, enterprise
@@ -1140,12 +1447,9 @@ private:
         return kMinLength + (IsThreadEnterprise() ? 0 : sizeof(uint32_t)) + GetServiceDataLength();
     }
 
-    enum
-    {
-        kThreadEnterpriseFlag = (1 << 7),
-        kServiceIdMask        = 0xf,
-        kMinLength            = sizeof(uint8_t) + sizeof(uint8_t), // Flags and Service Data length.
-    };
+    static constexpr uint8_t kThreadEnterpriseFlag = (1 << 7);
+    static constexpr uint8_t kServiceIdMask        = 0xf;
+    static constexpr uint8_t kMinLength            = sizeof(uint8_t) + sizeof(uint8_t); // Flags & Service Data length.
 
     // When `kThreadEnterpriseFlag is set in the `mFlagsServiceId`, the
     // `mEnterpriseNumber` field is elided and `mFlagsServiceId` is
@@ -1170,26 +1474,22 @@ OT_TOOL_PACKED_BEGIN
 class ServerTlv : public NetworkDataTlv
 {
 public:
-    enum
-    {
-        kType = kTypeServer, ///< The TLV Type.
-    };
+    static constexpr Type kType = kTypeServer; ///< The TLV Type.
 
     /**
      * This method initializes the Server TLV.
      *
      * @param[in] aServer16          The Server16 value.
      * @param[in] aServerData        The Server Data.
-     * @param[in] aServerDataLength  Server Data length in bytes.
      *
      */
-    void Init(uint16_t aServer16, const uint8_t *aServerData, uint8_t aServerDataLength)
+    void Init(uint16_t aServer16, const ServerData &aServerData)
     {
         NetworkDataTlv::Init();
         SetType(kTypeServer);
         SetServer16(aServer16);
-        memcpy(reinterpret_cast<uint8_t *>(this) + sizeof(*this), aServerData, aServerDataLength);
-        SetLength(sizeof(*this) - sizeof(NetworkDataTlv) + aServerDataLength);
+        aServerData.CopyBytesTo(GetServerData());
+        SetLength(sizeof(*this) - sizeof(NetworkDataTlv) + aServerData.GetLength());
     }
 
     /**
@@ -1218,12 +1518,12 @@ public:
     void SetServer16(uint16_t aServer16) { mServer16 = HostSwap16(aServer16); }
 
     /**
-     * This method returns the Server Data.
+     * This method gets the Server Data.
      *
-     * @returns A pointer to the Server Data.
+     * @param[out] aServerData   A reference to a`ServerData` to return the data.
      *
      */
-    const uint8_t *GetServerData(void) const { return reinterpret_cast<const uint8_t *>(this) + sizeof(*this); }
+    void GetServerData(ServerData &aServerData) const { aServerData.Init(GetServerData(), GetServerDataLength()); }
 
     /**
      * This method returns the Server Data length in bytes.
@@ -1260,69 +1560,99 @@ public:
     static uint16_t CalculateSize(uint8_t aServerDataLength) { return sizeof(ServerTlv) + aServerDataLength; }
 
 private:
+    const uint8_t *GetServerData(void) const { return reinterpret_cast<const uint8_t *>(this) + sizeof(*this); }
+    uint8_t *      GetServerData(void) { return AsNonConst(AsConst(this)->GetServerData()); }
+
     uint16_t mServer16;
 } OT_TOOL_PACKED_END;
 
-OT_TOOL_PACKED_BEGIN
-class BackboneRouterServerData
+/**
+ * This class represents a Network Data TLV iterator.
+ *
+ */
+class TlvIterator
 {
 public:
     /**
-     * This method returns the sequence number of Backbone Router.
+     * This constructor initializes the `TlvIterator` to iterate over a given sequence of TLVs.
      *
-     * @returns  The sequence number of the Backbone Router.
-     *
-     */
-    uint8_t GetSequenceNumber(void) const { return mSequenceNumber; }
-
-    /**
-     * This method sets the sequence number of Backbone Router.
-     *
-     * @param[in]  aSequenceNumber  The sequence number of Backbone Router.
+     * @param[in] aStart  A pointer to the start of the TLV sequence.
+     * @param[in] aEnd    A pointer to the end of the TLV sequence.
      *
      */
-    void SetSequenceNumber(uint8_t aSequenceNumber) { mSequenceNumber = aSequenceNumber; }
-
-    /**
-     * This method returns the Registration Delay (in seconds) of Backbone Router.
-     *
-     * @returns The BBR Registration Delay (in seconds) of Backbone Router.
-     *
-     */
-    uint16_t GetReregistrationDelay(void) const { return HostSwap16(mReregistrationDelay); }
-
-    /**
-     * This method sets the Registration Delay (in seconds) of Backbone Router.
-     *
-     * @param[in]  aReregistrationDelay  The Registration Delay (in seconds) of Backbone Router.
-     *
-     */
-    void SetReregistrationDelay(uint16_t aReregistrationDelay)
+    TlvIterator(const NetworkDataTlv *aStart, const NetworkDataTlv *aEnd)
+        : mStart(aStart)
+        , mEnd(aEnd)
     {
-        mReregistrationDelay = HostSwap16(aReregistrationDelay);
     }
 
     /**
-     * This method returns the multicast listener report timeout (in seconds) of Backbone Router.
+     * This constructor initializes the `TlvIterator` to iterate over TLVs from a given buffer.
      *
-     * @returns The multicast listener report timeout (in seconds) of Backbone Router.
+     * @param[in] aBuffer   A pointer to a buffer containing the TLVs.
+     * @param[in] aLength   The length (number of bytes) of @p aBuffer.
      *
      */
-    uint32_t GetMlrTimeout(void) const { return HostSwap32(mMlrTimeout); }
+    TlvIterator(const uint8_t *aBuffer, uint8_t aLength)
+        : TlvIterator(reinterpret_cast<const NetworkDataTlv *>(aBuffer),
+                      reinterpret_cast<const NetworkDataTlv *>(aBuffer + aLength))
+    {
+    }
 
     /**
-     * This method sets multicast listener report timeout (in seconds) of Backbone Router.
+     * This constructor initializes the `TlvIterator` to iterate over sub-TLVs of a given Prefix TLV.
      *
-     * @param[in]  aMlrTimeout  The multicast listener report timeout (in seconds) of Backbone Router.
+     * @param[in] aPrefixTlv   A Prefix TLV to iterate over its sub-TLVs.
      *
      */
-    void SetMlrTimeout(uint32_t aMlrTimeout) { mMlrTimeout = HostSwap32(aMlrTimeout); }
+    explicit TlvIterator(const PrefixTlv &aPrefixTlv)
+        : TlvIterator(aPrefixTlv.GetSubTlvs(), aPrefixTlv.GetNext())
+    {
+    }
+
+    /**
+     * This constructor initializes the `TlvIterator` to iterate over sub-TLVs of a given Service TLV.
+     *
+     * @param[in] aServiceTlv   A Service TLV to iterate over its sub-TLVs.
+     *
+     */
+    explicit TlvIterator(const ServiceTlv &aServiceTlv)
+        : TlvIterator(aServiceTlv.GetSubTlvs(), aServiceTlv.GetNext())
+    {
+    }
+
+    /**
+     * This template method iterates to the next TLV with a given type.
+     *
+     * @tparam  TlvType The TLV Type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @returns A pointer to the next TLV, or `nullptr` if it can not be found.
+     *
+     */
+    template <typename TlvType> const TlvType *Iterate(void) { return As<TlvType>(Iterate(TlvType::kType)); }
+
+    /**
+     * This template method iterates to the next TLV with a given type and stable flag.
+     *
+     * @tparam  TlvType The TLV Type to search for (MUST be a sub-class of `NetworkDataTlv`).
+     *
+     * @param[in]  aStable      TRUE to find a stable TLV, FALSE to find a TLV not marked as stable.
+     *
+     * @returns A pointer to the next TLV, or `nullptr` if it can not be found.
+     *
+     */
+    template <typename TlvType> const TlvType *Iterate(bool aStable)
+    {
+        return As<TlvType>(Iterate(TlvType::kType, aStable));
+    }
 
 private:
-    uint8_t  mSequenceNumber;
-    uint16_t mReregistrationDelay;
-    uint32_t mMlrTimeout;
-} OT_TOOL_PACKED_END;
+    const NetworkDataTlv *Iterate(NetworkDataTlv::Type aType);
+    const NetworkDataTlv *Iterate(NetworkDataTlv::Type aType, bool aStable);
+
+    const NetworkDataTlv *mStart;
+    const NetworkDataTlv *mEnd;
+};
 
 /**
  * @}

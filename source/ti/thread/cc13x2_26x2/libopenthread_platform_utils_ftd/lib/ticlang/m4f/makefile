@@ -5,7 +5,7 @@ include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 AR = "$(TICLANG_ARMCOMPILER)/bin/tiarmar"
 
-OBJECTS = examples_platforms_utils_debug_uart.obj examples_platforms_utils_mac_frame.obj
+OBJECTS = examples_platforms_utils_link_metrics.obj examples_platforms_utils_debug_uart.obj examples_platforms_utils_mac_frame.obj
 NAME = libopenthread_platform_utils_ftd
 
 CFLAGS = -I../../.. \
@@ -77,6 +77,10 @@ all: $(NAME).a
 examples_platforms_utils_debug_uart.obj: OPENTHREAD_MAKE_PATH/examples/platforms/utils/debug_uart.c
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< -o $@
+
+examples_platforms_utils_link_metrics.obj: OPENTHREAD_MAKE_PATH/examples/platforms/utils/link_metrics.cpp
+	@ echo Building $@
+	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
 examples_platforms_utils_mac_frame.obj: OPENTHREAD_MAKE_PATH/examples/platforms/utils/mac_frame.cpp
 	@ echo Building $@

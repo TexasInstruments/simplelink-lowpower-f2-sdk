@@ -48,7 +48,7 @@
         "
         linkerBuildOptions="
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
-            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
             -l${GENERATED_LIBRARIES}

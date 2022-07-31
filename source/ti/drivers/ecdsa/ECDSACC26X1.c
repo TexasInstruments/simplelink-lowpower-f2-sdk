@@ -57,42 +57,45 @@
 /*
  *  ======== ECDSA_init ========
  */
-void ECDSA_init(void) {
-}
-
+void ECDSA_init(void)
+{}
 
 /*
  *  ======== ECDSA_close ========
  */
-void ECDSA_close(ECDSA_Handle handle) {
+void ECDSA_close(ECDSA_Handle handle)
+{
     ECDSACC26X1_Object *object = handle->object;
 
     /* Mark the module as available */
     object->isOpen = false;
 }
 
-
 /*
  *  ======== ECDSA_construct ========
  */
-ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params) {
-    ECDSA_Handle handle         = (ECDSA_Handle)config;
-    ECDSACC26X1_Object *object  = handle->object;
+ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params)
+{
+    ECDSA_Handle handle        = (ECDSA_Handle)config;
+    ECDSACC26X1_Object *object = handle->object;
     uintptr_t key;
 
     /* If params are NULL, use defaults */
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &ECDSA_defaultParams;
     }
 
     /* Since CC26X1 ECC is a pure SW implementation, callback return behavior is not supported */
-    if (params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) {
+    if (params->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK)
+    {
         return NULL;
     }
 
     key = HwiP_disable();
 
-    if (object->isOpen) {
+    if (object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
@@ -109,16 +112,16 @@ ECDSA_Handle ECDSA_construct(ECDSA_Config *config, const ECDSA_Params *params) {
     return handle;
 }
 
-
 /*
  *  ======== ECDSA_sign ========
  */
-int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
-    ECDSACC26X1_Object *object          = handle->object;
-    ECDSACC26X1_HWAttrs const *hwAttrs  = handle->hwAttrs;
-    int_fast16_t returnStatus           = ECDSA_STATUS_ERROR;
-    uint8_t eccStatus                   = STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER;
-    TRNGCC26XX_Object trngObject        = {0};
+int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
+{
+    ECDSACC26X1_Object *object         = handle->object;
+    ECDSACC26X1_HWAttrs const *hwAttrs = handle->hwAttrs;
+    int_fast16_t returnStatus          = ECDSA_STATUS_ERROR;
+    uint8_t eccStatus                  = STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER;
+    TRNGCC26XX_Object trngObject       = {0};
     TRNGCC26XX_HWAttrs trngHwAttrs;
     TRNG_Config trngConfig;
     TRNG_Handle trngHandle;
@@ -142,10 +145,10 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
      * and copy that in. That is a significant amount of data.
      */
     privateKeyUnion.word[0] = 0x08;
-    pmsnUnion.word[0] = 0x08;
-    hashUnion.word[0] = 0x08;
-    rUnion.word[0] = 0x08;
-    sUnion.word[0] = 0x08;
+    pmsnUnion.word[0]       = 0x08;
+    hashUnion.word[0]       = 0x08;
+    rUnion.word[0]          = 0x08;
+    sUnion.word[0]          = 0x08;
 
     /* We want to store the PMSN locally in SRAM */
     CryptoKeyPlaintext_initBlankKey(&pmsnKey,
@@ -165,46 +168,46 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
 
     TRNG_Params_init(&trngParams);
 
-    if (object->returnBehavior == ECDSA_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == ECDSA_RETURN_BEHAVIOR_BLOCKING)
+    {
         trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_BLOCKING;
     }
-    else {
+    else
+    {
         trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_POLLING;
     }
 
     trngHandle = TRNG_construct(&trngConfig, &trngParams);
 
-    if (trngHandle == NULL) {
+    if (trngHandle == NULL)
+    {
         return ECDSA_STATUS_ERROR;
     }
 
     /* Generate the PMSN. If it is not in range [1, n-1], generate another
      * one.
      */
-    do {
+    do
+    {
         trngStatus = TRNG_generateEntropy(trngHandle, &pmsnKey);
 
-        if (trngStatus != TRNG_STATUS_SUCCESS) {
+        if (trngStatus != TRNG_STATUS_SUCCESS)
+        {
             TRNG_close(trngHandle);
             return ECDSA_STATUS_ERROR;
         }
 
         /* Check if pmsn in [1, n-1] */
-        eccStatus = ECC_validatePrivateKey(&(object->eccState),
-                                           pmsnUnion.word);
+        eccStatus = ECC_validatePrivateKey(&(object->eccState), pmsnUnion.word);
     } while (eccStatus != STATUS_PRIVATE_VALID);
 
     TRNG_close(trngHandle);
-
-
 
     /* Since we are receiving the private and public keys in octet string format,
      * we need to convert them to little-endian form for use with the ECC in
      * ROM functions
      */
-    CryptoUtils_reverseCopyPad(operation->hash,
-                               &hashUnion.word[1],
-                               ECC_NISTP256_PARAM_LENGTH_BYTES);
+    CryptoUtils_reverseCopyPad(operation->hash, &hashUnion.word[1], ECC_NISTP256_PARAM_LENGTH_BYTES);
 
     CryptoUtils_reverseCopyPad(operation->myPrivateKey->u.plaintext.keyMaterial,
                                &privateKeyUnion.word[1],
@@ -218,20 +221,17 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
                                sUnion.word);
 
     /* Check the ECC in ROM return code and set the driver status accordingly */
-    if (eccStatus == STATUS_ECDSA_SIGN_OK) {
+    if (eccStatus == STATUS_ECDSA_SIGN_OK)
+    {
         returnStatus = ECDSA_STATUS_SUCCESS;
     }
 
     /* Now that we have created r and s, we need to copy them back and reverse
      * them since the ECC in ROM implementation provides little-endian values.
      */
-    CryptoUtils_reverseCopy(&rUnion.word[1],
-                            operation->r,
-                            ECC_NISTP256_PARAM_LENGTH_BYTES);
+    CryptoUtils_reverseCopy(&rUnion.word[1], operation->r, ECC_NISTP256_PARAM_LENGTH_BYTES);
 
-    CryptoUtils_reverseCopy(&sUnion.word[1],
-                            operation->s,
-                            ECC_NISTP256_PARAM_LENGTH_BYTES);
+    CryptoUtils_reverseCopy(&sUnion.word[1], operation->s, ECC_NISTP256_PARAM_LENGTH_BYTES);
 
     return returnStatus;
 }
@@ -239,14 +239,16 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation) {
 /*
  *  ======== ECDSA_verify ========
  */
-int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation) {
+int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
+{
     ECDSACC26X1_Object *object = handle->object;
-    int_fast16_t returnStatus = ECDSA_STATUS_ERROR;
+    int_fast16_t returnStatus  = ECDSA_STATUS_ERROR;
     uint8_t eccStatus;
 
     /* Validate key sizes to make sure octet string format is used */
     if (operation->theirPublicKey->u.plaintext.keyLength != 2 * operation->curve->length + OCTET_STRING_OFFSET ||
-        operation->theirPublicKey->u.plaintext.keyMaterial[0] != 0x04) {
+        operation->theirPublicKey->u.plaintext.keyMaterial[0] != 0x04)
+    {
         return ECDSA_STATUS_INVALID_KEY_SIZE;
     }
 
@@ -267,45 +269,33 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
      */
     publicKeyUnionX.word[0] = 0x08;
     publicKeyUnionY.word[0] = 0x08;
-    hashUnion.word[0] = 0x08;
-    rUnion.word[0] = 0x08;
-    sUnion.word[0] = 0x08;
-
+    hashUnion.word[0]       = 0x08;
+    rUnion.word[0]          = 0x08;
+    sUnion.word[0]          = 0x08;
 
     /* Since we are receiving the private and public keys in octet string format,
      * we need to convert them to little-endian form for use with the ECC in
      * ROM functions
      */
-    CryptoUtils_reverseCopyPad(operation->hash,
-                               &hashUnion.word[1],
+    CryptoUtils_reverseCopyPad(operation->hash, &hashUnion.word[1], ECC_NISTP256_PARAM_LENGTH_BYTES);
+
+    CryptoUtils_reverseCopyPad(operation->r, &rUnion.word[1], ECC_NISTP256_PARAM_LENGTH_BYTES);
+
+    CryptoUtils_reverseCopyPad(operation->s, &sUnion.word[1], ECC_NISTP256_PARAM_LENGTH_BYTES);
+
+    CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial + OCTET_STRING_OFFSET,
+                               &publicKeyUnionX.word[1],
                                ECC_NISTP256_PARAM_LENGTH_BYTES);
 
-    CryptoUtils_reverseCopyPad(operation->r,
-                               &rUnion.word[1],
-                               ECC_NISTP256_PARAM_LENGTH_BYTES);
-
-    CryptoUtils_reverseCopyPad(operation->s,
-                               &sUnion.word[1],
-                               ECC_NISTP256_PARAM_LENGTH_BYTES);
-
-    CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial
-                                + OCTET_STRING_OFFSET,
-                                &publicKeyUnionX.word[1],
-                                ECC_NISTP256_PARAM_LENGTH_BYTES);
-
-    CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial
-                                + ECC_NISTP256_PARAM_LENGTH_BYTES
-                                + OCTET_STRING_OFFSET,
+    CryptoUtils_reverseCopyPad(operation->theirPublicKey->u.plaintext.keyMaterial + ECC_NISTP256_PARAM_LENGTH_BYTES +
+                                   OCTET_STRING_OFFSET,
                                &publicKeyUnionY.word[1],
                                ECC_NISTP256_PARAM_LENGTH_BYTES);
 
+    eccStatus = ECC_validatePublicKey(&(object->eccState), publicKeyUnionX.word, publicKeyUnionY.word);
 
-    eccStatus = ECC_validatePublicKey(&(object->eccState),
-                                      publicKeyUnionX.word,
-                                      publicKeyUnionY.word);
-
-
-    if (eccStatus == STATUS_ECC_POINT_ON_CURVE) {
+    if (eccStatus == STATUS_ECC_POINT_ON_CURVE)
+    {
 
         eccStatus = ECC_ECDSA_verify(&(object->eccState),
                                      publicKeyUnionX.word,
@@ -315,11 +305,13 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
                                      sUnion.word);
 
         /* Check the ECC in ROM return code and set the driver status accordingly */
-        if (eccStatus == STATUS_ECDSA_VALID_SIGNATURE) {
+        if (eccStatus == STATUS_ECDSA_VALID_SIGNATURE)
+        {
             returnStatus = ECDSA_STATUS_SUCCESS;
         }
     }
-    else {
+    else
+    {
         returnStatus = ECDSA_STATUS_ERROR;
     }
 

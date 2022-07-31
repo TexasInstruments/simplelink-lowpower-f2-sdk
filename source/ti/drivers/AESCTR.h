@@ -355,8 +355,8 @@
  *  }
  *
  *  operation.input        = plaintext + AES_BLOCK_SIZE;
- *  operation.inputLength  = sizeof(plaintext) - AES_BLOCK_SIZE;  // Non-block multiple length permitted during finalization.
- *  operation.output       = ciphertext + AES_BLOCK_SIZE;
+ *  operation.inputLength  = sizeof(plaintext) - AES_BLOCK_SIZE;  // Non-block multiple length permitted during
+ * finalization. operation.output       = ciphertext + AES_BLOCK_SIZE;
  *
  *  retVal = AESCTR_finalize(handle, &operation);
  *
@@ -389,7 +389,6 @@
 extern "C" {
 #endif
 
-
 /*!
  * Common AESCTR status code reservation offset.
  * AESCTR driver implementations should offset status codes with
@@ -402,7 +401,7 @@ extern "C" {
  * #define AESCTRXYZ_STATUS_ERROR2    AESCTR_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCTR_STATUS_RESERVED  AES_STATUS_RESERVED
+#define AESCTR_STATUS_RESERVED AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -410,7 +409,7 @@ extern "C" {
  * Functions return #AESCTR_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCTR_STATUS_SUCCESS   AES_STATUS_SUCCESS
+#define AESCTR_STATUS_SUCCESS AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -418,7 +417,7 @@ extern "C" {
  * Functions return #AESCTR_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCTR_STATUS_ERROR     AES_STATUS_ERROR
+#define AESCTR_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -428,28 +427,28 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCTR_STATUS_RESOURCE_UNAVAILABLE   AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESCTR_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCTR_STATUS_CANCELED               AES_STATUS_CANCELED
+#define AESCTR_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
  * @brief   The operation requested is not supported.
  */
-#define AESCTR_STATUS_FEATURE_NOT_SUPPORTED  AES_STATUS_FEATURE_NOT_SUPPORTED
+#define AESCTR_STATUS_FEATURE_NOT_SUPPORTED AES_STATUS_FEATURE_NOT_SUPPORTED
 
 /*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
-#define AESCTR_STATUS_KEYSTORE_INVALID_ID      AES_STATUS_KEYSTORE_INVALID_ID
+#define AESCTR_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
 
 /*!
  *  @brief  The key store module returned a generic error. See key store documentation
  *  for additional details.
  */
-#define AESCTR_STATUS_KEYSTORE_GENERIC_ERROR   AES_STATUS_KEYSTORE_GENERIC_ERROR
+#define AESCTR_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  * @brief   The operation does not support non-word-aligned input and/or output.
@@ -457,8 +456,7 @@ extern "C" {
  * AESCTR driver implementations may have restrictions on the alignment of
  * input/output data due to performance limitations of the hardware.
  */
-#define AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
-
+#define AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  * @brief   The way in which CTR function calls return after performing an
@@ -481,24 +479,25 @@ extern "C" {
  * |AESCTR_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     AESCTR_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
-                                            /*!< The function call will return immediately while the
-                                             *   CTR operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
+    /*!< The function call will return immediately while the
+     *   CTR operation goes on in the background. The registered
+     *   callback function is called after the operation completes.
+     *   The context the callback function is called (task, HWI, SWI)
+     *   is implementation-dependent.
+     */
     AESCTR_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
-                                            /*!< The function call will block while the CTR operation goes
-                                             *   on in the background. CTR operation results are available
-                                             *   after the function returns.
-                                             */
+    /*!< The function call will block while the CTR operation goes
+     *   on in the background. CTR operation results are available
+     *   after the function returns.
+     */
     AESCTR_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
-                                            /*!< The function call will continuously poll a flag while CTR
-                                             *   operation goes on in the background. CTR operation results
-                                             *   are available after the function returns.
-                                             */
+    /*!< The function call will continuously poll a flag while CTR
+     *   operation goes on in the background. CTR operation results
+     *   are available after the function returns.
+     */
 } AESCTR_ReturnBehavior;
 
 /*!
@@ -508,33 +507,34 @@ typedef enum {
  *  The driver may access it at any point during the operation. It must remain
  *  in scope for the entire duration of the operation.
  */
-typedef struct {
-    const CryptoKey          *key;              /*!< Pointer to a previously initialized CryptoKey. */
-    const uint8_t            *input;            /*!<
-                                                 *   - Encryption: The plaintext buffer to be
-                                                 *     encrypted in the CTR operation.
-                                                 *   - Decryption: The ciphertext to be decrypted.
-                                                 */
-    uint8_t                  *output;           /*!<
-                                                 *   - Encryption: The output ciphertext buffer that
-                                                 *     the encrypted plaintext is copied to.
-                                                 *   - Decryption: The plaintext derived from the
-                                                 *     decrypted ciphertext is copied here.
-                                                 *   Size of the output buffer must be greater than
-                                                 *   or equal to the inputLength.
-                                                 */
-    const uint8_t            *initialCounter;   /*!< A buffer containing an initial counter. Under
-                                                 *   the same key, each counter value may only be
-                                                 *   used to encrypt or decrypt a single input
-                                                 *   block. If NULL, zero will be used for the
-                                                 *   initial counter value. The buffer's size must
-                                                 *   be at least 16-bytes.
-                                                 */
-    size_t                   inputLength;       /*!< Length of the input in bytes. An equal number
-                                                 *   of bytes will be output by the operation.
-                                                 *   Max length supported may be limited depending on
-                                                 *   the return behavior.
-                                                 */
+typedef struct
+{
+    const CryptoKey *key;          /*!< Pointer to a previously initialized CryptoKey. */
+    const uint8_t *input;          /*!<
+                                    *   - Encryption: The plaintext buffer to be
+                                    *     encrypted in the CTR operation.
+                                    *   - Decryption: The ciphertext to be decrypted.
+                                    */
+    uint8_t *output;               /*!<
+                                    *   - Encryption: The output ciphertext buffer that
+                                    *     the encrypted plaintext is copied to.
+                                    *   - Decryption: The plaintext derived from the
+                                    *     decrypted ciphertext is copied here.
+                                    *   Size of the output buffer must be greater than
+                                    *   or equal to the inputLength.
+                                    */
+    const uint8_t *initialCounter; /*!< A buffer containing an initial counter. Under
+                                    *   the same key, each counter value may only be
+                                    *   used to encrypt or decrypt a single input
+                                    *   block. If NULL, zero will be used for the
+                                    *   initial counter value. The buffer's size must
+                                    *   be at least 16-bytes.
+                                    */
+    size_t inputLength;            /*!< Length of the input in bytes. An equal number
+                                    *   of bytes will be output by the operation.
+                                    *   Max length supported may be limited depending on
+                                    *   the return behavior.
+                                    */
 } AESCTR_OneStepOperation;
 
 /*!
@@ -546,27 +546,28 @@ typedef struct {
  *  The driver may access it at any point during the operation. It must remain
  *  in scope for the entire duration of the operation.
  */
-typedef struct {
-    const uint8_t            *input;        /*!<
-                                             *   - Encryption: The plaintext buffer to be
-                                             *     encrypted in the CTR operation.
-                                             *   - Decryption: The ciphertext to be decrypted.
-                                             */
-    uint8_t                  *output;       /*!<
-                                             *   - Encryption: The output ciphertext buffer that
-                                             *     the encrypted plaintext is copied to.
-                                             *   - Decryption: The plaintext derived from the
-                                             *     decrypted ciphertext is copied here.
-                                             *   Size of the output buffer must be greater than
-                                             *   or equal to the inputLength.
-                                             */
-    size_t                   inputLength;   /*!< Length of the input in bytes. An equal number
-                                             *   of bytes will be output by the operation. Must
-                                             *   be a non-zero multiple of block size (16-bytes) when
-                                             *   calling #AESCTR_addData(). May be zero when calling
-                                             *   #AESCTR_finalize() to finalize a segmented
-                                             *   operation without additional data.
-                                             */
+typedef struct
+{
+    const uint8_t *input; /*!<
+                           *   - Encryption: The plaintext buffer to be
+                           *     encrypted in the CTR operation.
+                           *   - Decryption: The ciphertext to be decrypted.
+                           */
+    uint8_t *output;      /*!<
+                           *   - Encryption: The output ciphertext buffer that
+                           *     the encrypted plaintext is copied to.
+                           *   - Decryption: The plaintext derived from the
+                           *     decrypted ciphertext is copied here.
+                           *   Size of the output buffer must be greater than
+                           *   or equal to the inputLength.
+                           */
+    size_t inputLength;   /*!< Length of the input in bytes. An equal number
+                           *   of bytes will be output by the operation. Must
+                           *   be a non-zero multiple of block size (16-bytes) when
+                           *   calling #AESCTR_addData(). May be zero when calling
+                           *   #AESCTR_finalize() to finalize a segmented
+                           *   operation without additional data.
+                           */
 } AESCTR_SegmentedOperation;
 
 /**
@@ -581,16 +582,17 @@ typedef AESCTR_OneStepOperation AESCTR_Operation;
  *  @brief Union containing a reference to a one-step and segmented operation
  *         structure.
  */
-typedef union {
-    AESCTR_OneStepOperation   oneStepOperation;   /* One-step operation element of the operation union */
+typedef union
+{
+    AESCTR_OneStepOperation oneStepOperation;     /* One-step operation element of the operation union */
     AESCTR_SegmentedOperation segmentedOperation; /* Segmented operation element of the operation union */
 } AESCTR_OperationUnion;
-
 
 /*!
  *  @brief  Enum for the direction of the CTR operation.
  */
-typedef enum {
+typedef enum
+{
     AESCTR_MODE_ENCRYPT = 1,
     AESCTR_MODE_DECRYPT = 2,
 } AESCTR_Mode;
@@ -598,33 +600,34 @@ typedef enum {
 /*!
  *  @brief  Mask for the operation mode.
  */
-#define AESCTR_OP_MODE_MASK  0x0F
+#define AESCTR_OP_MODE_MASK 0x0F
 
 /*!
  *  @brief  Flag indicating a segmented operation.
  */
-#define AESCTR_OP_FLAG_SEGMENTED     0x10 /* bit 4 */
+#define AESCTR_OP_FLAG_SEGMENTED 0x10 /* bit 4 */
 
 /*!
  *  @brief  Flag indicating a finalize operation.
  */
-#define AESCTR_OP_FLAG_FINALIZE      0x20 /* bit 5 */
+#define AESCTR_OP_FLAG_FINALIZE 0x20 /* bit 5 */
 
 /*!
  *  @brief  Mask for all valid operation flags.
  */
-#define AESCTR_OP_FLAGS_MASK   (AESCTR_OP_FLAG_SEGMENTED | AESCTR_OP_FLAG_FINALIZE)
+#define AESCTR_OP_FLAGS_MASK (AESCTR_OP_FLAG_SEGMENTED | AESCTR_OP_FLAG_FINALIZE)
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
-    AESCTR_OPERATION_TYPE_ENCRYPT = AESCTR_MODE_ENCRYPT,
-    AESCTR_OPERATION_TYPE_DECRYPT = AESCTR_MODE_DECRYPT,
+typedef enum
+{
+    AESCTR_OPERATION_TYPE_ENCRYPT           = AESCTR_MODE_ENCRYPT,
+    AESCTR_OPERATION_TYPE_DECRYPT           = AESCTR_MODE_DECRYPT,
     AESCTR_OPERATION_TYPE_ENCRYPT_SEGMENTED = (AESCTR_MODE_ENCRYPT | AESCTR_OP_FLAG_SEGMENTED),
     AESCTR_OPERATION_TYPE_DECRYPT_SEGMENTED = (AESCTR_MODE_DECRYPT | AESCTR_OP_FLAG_SEGMENTED),
-    AESCTR_OPERATION_TYPE_ENCRYPT_FINALIZE = (AESCTR_MODE_ENCRYPT | AESCTR_OP_FLAG_FINALIZE),
-    AESCTR_OPERATION_TYPE_DECRYPT_FINALIZE = (AESCTR_MODE_DECRYPT | AESCTR_OP_FLAG_FINALIZE),
+    AESCTR_OPERATION_TYPE_ENCRYPT_FINALIZE  = (AESCTR_MODE_ENCRYPT | AESCTR_OP_FLAG_FINALIZE),
+    AESCTR_OPERATION_TYPE_DECRYPT_FINALIZE  = (AESCTR_MODE_DECRYPT | AESCTR_OP_FLAG_FINALIZE),
 } AESCTR_OperationType;
 
 /*!
@@ -673,15 +676,16 @@ typedef void (*AESCTR_CallbackFxn)(AESCTR_Handle handle,
  *
  *  @sa     #AESCTR_Params_init()
  */
-typedef struct {
-    AESCTR_ReturnBehavior   returnBehavior;  /*!< Blocking, callback, or polling return behavior */
-    AESCTR_CallbackFxn      callbackFxn;     /*!< Callback function pointer */
-    uint32_t                timeout;         /*!< Timeout before the driver returns an error in
-                                              *   ::AESCTR_RETURN_BEHAVIOR_BLOCKING
-                                              */
-    void                    *custom;         /*!< Custom argument used by driver
-                                              *   implementation
-                                              */
+typedef struct
+{
+    AESCTR_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    AESCTR_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                     /*!< Timeout before the driver returns an error in
+                                           *   ::AESCTR_RETURN_BEHAVIOR_BLOCKING
+                                           */
+    void *custom;                         /*!< Custom argument used by driver
+                                           *   implementation
+                                           */
 } AESCTR_Params;
 
 /*!
@@ -763,8 +767,7 @@ void AESCTR_close(AESCTR_Handle handle);
  *
  *  @post   #AESCTR_addData()
  */
-int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key,
-                                 const uint8_t *initialCounter);
+int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key, const uint8_t *initialCounter);
 
 /*!
  *  @brief  Function to prepare a segmented AESCTR decryption operation.
@@ -784,8 +787,7 @@ int_fast16_t AESCTR_setupEncrypt(AESCTR_Handle handle, const CryptoKey *key,
  *
  *  @post   #AESCTR_addData()
  */
-int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key,
-                                 const uint8_t *initialCounter);
+int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key, const uint8_t *initialCounter);
 
 /*!
  *  @brief  Encrypts or decrypts a segment of @a data with a @a length
@@ -813,8 +815,7 @@ int_fast16_t AESCTR_setupDecrypt(AESCTR_Handle handle, const CryptoKey *key,
  *
  *  @post   #AESCTR_addData() or #AESCTR_finalize()
  */
-int_fast16_t AESCTR_addData(AESCTR_Handle handle,
-                            AESCTR_SegmentedOperation *operation);
+int_fast16_t AESCTR_addData(AESCTR_Handle handle, AESCTR_SegmentedOperation *operation);
 
 /*!
  *  @brief  Finalize the AES operation. If new data needs to be added,
@@ -841,9 +842,7 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle,
  *                                                  Try again later.
  *  @retval #AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
-int_fast16_t AESCTR_finalize(AESCTR_Handle handle,
-                             AESCTR_SegmentedOperation *operation);
-
+int_fast16_t AESCTR_finalize(AESCTR_Handle handle, AESCTR_SegmentedOperation *operation);
 
 /*!
  *  @brief  Function to initialize an #AESCTR_Operation struct to its defaults (all zeroes)
@@ -871,7 +870,6 @@ void AESCTR_OneStepOperation_init(AESCTR_OneStepOperation *operation);
  *                           initialization
  */
 void AESCTR_SegmentedOperation_init(AESCTR_SegmentedOperation *operation);
-
 
 /*!
  *  @brief  Function to perform an AESCTR encryption operation in one call.

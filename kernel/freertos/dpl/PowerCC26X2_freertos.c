@@ -82,7 +82,8 @@ void PowerCC26XX_standbyPolicy(void)
 
     /* final check with FreeRTOS to make sure still OK to go to sleep... */
     eSleep = eTaskConfirmSleepModeStatus();
-    if (eSleep == eAbortSleep ) {
+    if (eSleep == eAbortSleep)
+    {
         CPUcpsie();
         return;
     }
@@ -94,8 +95,8 @@ void PowerCC26XX_standbyPolicy(void)
     constraints = Power_getConstraintMask();
 
     /* do quick check to see if only WFI allowed; if yes, do it now */
-    if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) ==
-        (1 << PowerCC26XX_DISALLOW_STANDBY)) {
+    if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == (1 << PowerCC26XX_DISALLOW_STANDBY))
+    {
 
         /* Flush any remaining log messages in the ITM */
         ITM_flush();
@@ -107,41 +108,43 @@ void PowerCC26XX_standbyPolicy(void)
     /*
      *  check if any sleep modes are allowed for automatic activation
      */
-    else {
+    else
+    {
         /* check if allowed to go to standby */
-        if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == 0) {
+        if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == 0)
+        {
 
             /* check how many ClockP ticks until next scheduled wakeup */
             ticks = ClockP_getTicksUntilInterrupt();
-            time = ticks * ClockP_tickPeriod;          /* convert to usec */
+            time  = ticks * ClockP_tickPeriod; /* convert to usec */
 
             /* check soonest wake time pending for FreeRTOS */
             ticksOS = PowerCC26X2_idleTimeOS;
-            timeOS = ticksOS * FREERTOS_TICKPERIOD_US; /* convert to usec */
+            timeOS  = ticksOS * FREERTOS_TICKPERIOD_US; /* convert to usec */
 
             /* get soonest wake time and corresponding ClockP timeout */
-            if (time < timeOS) {
-                soonest = time;   /* soonest is ClockP timeout */
+            if (time < timeOS)
+            {
+                soonest = time; /* soonest is ClockP timeout */
                 timeout = ticks;
             }
-            else {
-                soonest = timeOS; /* soonest is OS timeout */
+            else
+            {
+                soonest = timeOS;                     /* soonest is OS timeout */
                 timeout = timeOS / ClockP_tickPeriod; /* calc ClockP ticks */
             }
 
             /* check soonest time vs STANDBY latency */
-            if (soonest > Power_getTransitionLatency(PowerCC26XX_STANDBY,
-                Power_TOTAL)) {
+            if (soonest > Power_getTransitionLatency(PowerCC26XX_STANDBY, Power_TOTAL))
+            {
 
                 /* stop FreeRTOS ticks */
                 SysTickDisable();
 
                 /* schedule the early wakeup event */
                 timeout -= PowerCC26X2_WAKEDELAYSTANDBY / ClockP_tickPeriod;
-                ClockP_setTimeout(ClockP_handle((ClockP_Struct *)
-                    &PowerCC26X2_module.clockObj), timeout);
-                ClockP_start(ClockP_handle((ClockP_Struct *)
-                    &PowerCC26X2_module.clockObj));
+                ClockP_setTimeout(ClockP_handle((ClockP_Struct *)&PowerCC26X2_module.clockObj), timeout);
+                ClockP_start(ClockP_handle((ClockP_Struct *)&PowerCC26X2_module.clockObj));
 
                 /* save ClockP tick count before sleep */
                 ticksBefore = ClockP_getSystemTicks();
@@ -155,8 +158,7 @@ void PowerCC26XX_standbyPolicy(void)
                 /* Restore ITM settings */
                 ITM_restore();
 
-                ClockP_stop(ClockP_handle((ClockP_Struct *)
-                    &PowerCC26X2_module.clockObj));
+                ClockP_stop(ClockP_handle((ClockP_Struct *)&PowerCC26X2_module.clockObj));
 
                 /* get ClockP tick count after sleep */
                 ticksAfter = ClockP_getSystemTicks();

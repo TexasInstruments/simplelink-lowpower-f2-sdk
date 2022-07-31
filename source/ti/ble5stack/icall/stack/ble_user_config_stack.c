@@ -148,6 +148,7 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     llUserConfig.maxWlElems    = stackConfig->maxWhiteListElems;
     llUserConfig.maxRlElems    = stackConfig->maxResolvListElems;
     llUserConfig.maxNumCteBufs = stackConfig->maxNumCteBuffers;
+    llUserConfig.advReportIncChannel = stackConfig->advReportIncChannel;
 
     // Copy the RF_mode Object
     memcpy(&rfMode, &RF_modeBle, sizeof(RF_Mode));

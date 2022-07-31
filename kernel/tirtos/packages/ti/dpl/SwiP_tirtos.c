@@ -33,7 +33,6 @@
  *  ======== SwiP_tirtos.c ========
  */
 
-
 #include <ti/drivers/dpl/SwiP.h>
 
 #include <stdint.h>
@@ -51,36 +50,38 @@
  */
 void SwiP_Params_init(SwiP_Params *params)
 {
-    params->arg0 = 0U;
-    params->arg1 = 0U;
-    params->trigger = 0U;
+    params->arg0     = 0U;
+    params->arg1     = 0U;
+    params->trigger  = 0U;
     params->priority = ~0U;
 }
 
 /*
  *  ======== SwiP_construct ========
  */
-SwiP_Handle SwiP_construct(SwiP_Struct *handle, SwiP_Fxn swiFxn,
-        SwiP_Params *params)
+SwiP_Handle SwiP_construct(SwiP_Struct *handle, SwiP_Fxn swiFxn, SwiP_Params *params)
 {
-    Swi_Handle   swi;
-    Swi_Params   swiParams;
+    Swi_Handle swi;
+    Swi_Params swiParams;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         swi = Swi_construct2((Swi_Struct2 *)handle, swiFxn, NULL);
     }
-    else {
-        if ((params->priority >= Swi_numPriorities) && (params->priority != ~(0U))) {
+    else
+    {
+        if ((params->priority >= Swi_numPriorities) && (params->priority != ~(0U)))
+        {
             /* Swi_construct2() will not return NULL on priority error */
             return (NULL);
         }
         Swi_Params_init(&swiParams);
 
-        swiParams.arg0 = params->arg0;
-        swiParams.arg1 = params->arg1;
-        swiParams.trigger = params->trigger;
+        swiParams.arg0     = params->arg0;
+        swiParams.arg1     = params->arg1;
+        swiParams.trigger  = params->trigger;
         swiParams.priority = params->priority;
-        swi = Swi_construct2((Swi_Struct2 *)handle, swiFxn, &swiParams);
+        swi                = Swi_construct2((Swi_Struct2 *)handle, swiFxn, &swiParams);
     }
 
     return ((SwiP_Handle)swi);
@@ -91,23 +92,26 @@ SwiP_Handle SwiP_construct(SwiP_Struct *handle, SwiP_Fxn swiFxn,
  */
 SwiP_Handle SwiP_create(SwiP_Fxn swiFxn, SwiP_Params *params)
 {
-    Swi_Handle   handle;
-    Swi_Params   swiParams;
+    Swi_Handle handle;
+    Swi_Params swiParams;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         handle = Swi_create(swiFxn, NULL, Error_IGNORE);
     }
-    else {
-        if ((params->priority >= Swi_numPriorities) && (params->priority != ~(0U))) {
+    else
+    {
+        if ((params->priority >= Swi_numPriorities) && (params->priority != ~(0U)))
+        {
             /* Swi_create() only asserts params is within range */
             return (NULL);
         }
         Swi_Params_init(&swiParams);
-        swiParams.arg0 = params->arg0;
-        swiParams.arg1 = params->arg1;
-        swiParams.trigger = params->trigger;
+        swiParams.arg0     = params->arg0;
+        swiParams.arg1     = params->arg1;
+        swiParams.trigger  = params->trigger;
         swiParams.priority = params->priority;
-        handle = Swi_create(swiFxn, &swiParams, Error_IGNORE);
+        handle             = Swi_create(swiFxn, &swiParams, Error_IGNORE);
     }
 
     return ((SwiP_Handle)handle);
@@ -186,7 +190,8 @@ bool SwiP_inISR(void)
     BIOS_ThreadType threadType;
 
     threadType = BIOS_getThreadType();
-    if (threadType == BIOS_ThreadType_Swi) {
+    if (threadType == BIOS_ThreadType_Swi)
+    {
         return (true);
     }
 
@@ -222,7 +227,8 @@ void SwiP_restore(uintptr_t key)
  */
 void SwiP_setPriority(SwiP_Handle handle, uint32_t priority)
 {
-    if ((priority < Swi_numPriorities) || (priority == ~(0U))) {
+    if ((priority < Swi_numPriorities) || (priority == ~(0U)))
+    {
         Swi_setPri((Swi_Handle)handle, priority);
     }
 }

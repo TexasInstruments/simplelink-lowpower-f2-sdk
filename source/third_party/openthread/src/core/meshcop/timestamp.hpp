@@ -41,7 +41,9 @@
 
 #include <openthread/platform/toolchain.h>
 
+#include "common/clearable.hpp"
 #include "common/encoding.hpp"
+#include "common/random.hpp"
 
 namespace ot {
 namespace MeshCoP {
@@ -54,27 +56,9 @@ using ot::Encoding::BigEndian::HostSwap32;
  *
  */
 OT_TOOL_PACKED_BEGIN
-class Timestamp
+class Timestamp : public Clearable<Timestamp>
 {
 public:
-    /**
-     * This method initializes the Timestamp
-     *
-     */
-    void Init(void) { memset(this, 0, sizeof(*this)); }
-
-    /**
-     * This method compares this timestamp to another.
-     *
-     * @param[in]  aCompare  A reference to the timestamp to compare.
-     *
-     * @retval -1  if @p aCompare is less than this timestamp.
-     * @retval  0  if @p aCompare is equal to this timestamp.
-     * @retval  1  if @p aCompare is greater than this timestamp.
-     *
-     */
-    int Compare(const Timestamp &aCompare) const;
-
     /**
      * This method returns the Seconds value.
      *
@@ -137,14 +121,34 @@ public:
                             ((aAuthoritative << kAuthoritativeOffset) & kAuthoritativeMask));
     }
 
+    /**
+     * This method increments the timestamp by a random number of ticks [0, 32767].
+     *
+     */
+    void AdvanceRandomTicks(void);
+
+    /**
+     * This static method compares two timestamps.
+     *
+     * Either one or both @p aFirst or @p aSecond can be `nullptr`. A non-null timestamp is considered greater than
+     * a null one. If both are null, they are considered as equal.
+     *
+     * @param[in]  aFirst   A pointer to the first timestamp to compare (can be nullptr).
+     * @param[in]  aSecond  A pointer to the second timestamp to compare (can be nullptr).
+     *
+     * @retval -1  if @p aFirst is less than @p aSecond (`aFirst < aSecond`).
+     * @retval  0  if @p aFirst is equal to @p aSecond (`aFirst == aSecond`).
+     * @retval  1  if @p aFirst is greater than @p aSecond (`aFirst > aSecond`).
+     *
+     */
+    static int Compare(const Timestamp *aFirst, const Timestamp *aSecond);
+
 private:
-    enum
-    {
-        kTicksOffset         = 1,
-        kTicksMask           = 0x7fff << kTicksOffset,
-        kAuthoritativeOffset = 0,
-        kAuthoritativeMask   = 1 << kAuthoritativeOffset,
-    };
+    static constexpr uint8_t  kTicksOffset         = 1;
+    static constexpr uint16_t kTicksMask           = 0x7fff << kTicksOffset;
+    static constexpr uint16_t kMaxRandomTicks      = 0x7fff;
+    static constexpr uint8_t  kAuthoritativeOffset = 0;
+    static constexpr uint16_t kAuthoritativeMask   = 1 << kAuthoritativeOffset;
 
     uint16_t mSeconds16; // bits 32-47
     uint32_t mSeconds32; // bits 0-31

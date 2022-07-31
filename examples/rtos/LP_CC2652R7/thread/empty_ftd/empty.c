@@ -54,20 +54,18 @@
 #include <stdio.h>
 
 /* POSIX Header files */
-#include <sched.h>
 #include <pthread.h>
-#include <unistd.h>
 #include <mqueue.h>
-
-/* RTOS Header files */
-#include <ti/drivers/GPIO.h>
 
 /* OpenThread public API Header files */
 #include <openthread/dataset.h>
 #include <openthread/platform/logging.h>
-#include <openthread/platform/uart.h>
 #include <openthread/tasklet.h>
 #include <openthread/thread.h>
+#if TIOP_POWER_MEASUREMENT
+#include <openthread/udp.h>
+#include <utils/code_utils.h>
+#endif
 
 /* OpenThread Internal/Example Header files */
 #include "otsupport/otrtosapi.h"
@@ -77,7 +75,6 @@
 #include "ti_drivers_config.h"
 
 #include "empty.h"
-#include "tiop_ui.h"
 
 #include "disp_utils.h"
 #include "otstack.h"
@@ -86,26 +83,19 @@
 #include "task_config.h"
 #include "tiop_config.h"
 
-#if BOARD_DISPLAY_USE_UART
-/* CUI Header file */
+#if TIOP_CUI
 #include "cui.h"
-#endif /* BOARD_DISPLAY_USE_UART */
-
-/******************************************************************************
- Constants and definitions
- *****************************************************************************/
+#include "tiop_ui.h"
+#endif
 
 /**
  * @brief Size of the message queue for `Empty_procQueue`
  *
- * There are 5/8 events that can be raised, it is unlikely that they will all be
- * raised at the same time. Add one buffer queue element.
+ * There are 5 events that can be raised with 4 optional events based on
+ * configuration, it is unlikely that they will all be raised at the same time,
+ * but add one buffer queue element.
  */
-#if TIOP_CUI
-#define EMPTY_PROC_QUEUE_MAX_MSG     (9)
-#else
-#define EMPTY_PROC_QUEUE_MAX_MSG     (6)
-#endif /* TIOP_CUI */
+#define EMPTY_PROC_QUEUE_MAX_MSG (10)
 
 struct Empty_procQueueMsg {
     Empty_evt evt;
@@ -122,12 +112,11 @@ static mqd_t Empty_procQueueDesc;
 /* OpenThread Stack thread call stack */
 static char stack[TASK_CONFIG_EMPTY_TASK_STACK_SIZE];
 
-#if !TIOP_OAD
+#if TIOP_CUI
 /* String variable for copying over app lines to CUI */
-static char statusBuf[MAX_STATUS_LINE_VALUE_LEN];
-#endif /* TIOP_OAD */
-
+static char statusBuf[MAX_STATUS_LINE_VALUE_LEN] = "[" CUI_COLOR_CYAN "Empty State" CUI_COLOR_RESET "] ";
 static Button_Handle rightButtonHandle;
+#endif
 
 /******************************************************************************
  Function Prototype
@@ -141,6 +130,92 @@ void *empty_task(void *arg0);
 /******************************************************************************
  Local Functions
  *****************************************************************************/
+
+/*
+ * These functions enable power measurement tests of the OpenThread stack. The
+ * timer causes the device to transmit application data every
+ * `TIOP_POWER_MEASUREMENT_DATA_INTERVAL` milliseconds. This takes advantage of
+ * RFC 863 and the link local all nodes multicast address.
+ */
+#if TIOP_POWER_MEASUREMENT
+#ifndef TIOP_POWER_MEASUREMENT_DATA_INTERVAL
+#define TIOP_POWER_MEASUREMENT_DATA_INTERVAL 1000
+#endif
+
+static timer_t dataTimerID;
+
+static void dataTimeoutCB(union sigval val)
+{
+    Empty_postEvt(Empty_evtPowerMeasumentReport);
+    (void) val;
+}
+
+static void configureDataTimer(void)
+{
+    struct sigevent event =
+    {
+        .sigev_notify_function = dataTimeoutCB,
+        .sigev_notify          = SIGEV_SIGNAL,
+    };
+
+    timer_create(CLOCK_MONOTONIC, &event, &dataTimerID);
+}
+
+static void startDataTimer(void)
+{
+    struct itimerspec newTime  = {0};
+    struct itimerspec zeroTime = {0};
+    struct itimerspec currTime;
+
+    newTime.it_value.tv_sec  = (TIOP_POWER_MEASUREMENT_DATA_INTERVAL / 1000U);
+    newTime.it_value.tv_nsec = ((TIOP_POWER_MEASUREMENT_DATA_INTERVAL % 1000U) * 1000000U);
+
+    newTime.it_interval.tv_sec  = (TIOP_POWER_MEASUREMENT_DATA_INTERVAL / 1000U);
+    newTime.it_interval.tv_nsec = ((TIOP_POWER_MEASUREMENT_DATA_INTERVAL % 1000U) * 1000000U);
+
+    /* Disarm timer if currently armed */
+    timer_gettime(dataTimerID, &currTime);
+    if ((currTime.it_value.tv_sec != 0) || (currTime.it_value.tv_nsec != 0))
+    {
+        timer_settime(dataTimerID, 0, &zeroTime, NULL);
+    }
+
+    /* Arm timer */
+    timer_settime(dataTimerID, 0, &newTime, NULL);
+}
+
+static void emptyPowerMeasurementData(void)
+{
+    otError        error          = OT_ERROR_NONE;
+    otMessageInfo  messageInfo    = {0};
+    otMessage     *requestMessage = NULL;
+    const char     report[]       = "Power Measurement";
+
+    OtRtosApi_lock();
+    requestMessage = otUdpNewMessage(OtInstance_get(), NULL);
+    error = otMessageAppend(requestMessage, report, sizeof(report));
+    OtRtosApi_unlock();
+    otEXPECT_ACTION(requestMessage != NULL, error = OT_ERROR_NO_BUFS);
+
+    OtRtosApi_lock();
+    error = otIp6AddressFromString("ff02::1", &(messageInfo.mPeerAddr));
+    messageInfo.mPeerPort = 9; // RFC 863: discard protocol
+    OtRtosApi_unlock();
+    otEXPECT(OT_ERROR_NONE == error);
+
+    OtRtosApi_lock();
+    error = otUdpSendDatagram(OtInstance_get(), requestMessage, &messageInfo);
+    OtRtosApi_unlock();
+
+exit:
+    if (error != OT_ERROR_NONE && requestMessage != NULL)
+    {
+        OtRtosApi_lock();
+        otMessageFree(requestMessage);
+        OtRtosApi_unlock();
+    }
+}
+#endif /* TIOP_POWER_MEASUREMENT */
 
 /**
  * @brief Processes the OT stack events
@@ -188,21 +263,6 @@ static void processOtStackEvents(uint8_t event, void *aContext)
     }
 }
 
-/**
- * @brief Handles the key press events.
- *
- * @param _buttonHandle identifies which keys were pressed
- * @param _buttonEvents identifies the event that occurred on the key
- * @return None
- */
-void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
-{
-    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
-    {
-        Empty_postEvt(Empty_evtKeyRight);
-    }
-}
-
 
 /**
  * @brief Processes the events.
@@ -213,22 +273,12 @@ static void processEvent(Empty_evt event)
 {
     switch (event)
     {
-        case Empty_evtNwkSetup:
-        {
-            //CoAP set up here
-            break;
-        }
-
         case Empty_evtKeyRight:
         {
             if ((!otDatasetIsCommissioned(OtInstance_get())) &&
                 (OtStack_joinState() != OT_STACK_EVENT_NWK_JOIN_IN_PROGRESS))
             {
-#if TIOP_CUI
-                tiopCUIUpdateConnStatus(CUI_conn_joining);
-#endif /* TIOP_CUI */
                 DISPUTILS_SERIALPRINTF(1, 0, "Joining Nwk ...");
-
                 OtStack_joinConfiguredNetwork();
             }
             break;
@@ -237,34 +287,45 @@ static void processEvent(Empty_evt event)
         case Empty_evtNwkJoined:
         {
             DISPUTILS_SERIALPRINTF( 1, 0, "Joined Nwk");
-
             (void)OtStack_setupNetwork();
-#if TIOP_CUI
-            OtRtosApi_lock();
-            tiopCUIUpdatePANID(otLinkGetPanId(OtInstance_get()));
-            tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
-            tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
-            tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-            tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
-            tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
-            OtRtosApi_unlock();
-#endif /* TIOP_CUI */
             break;
         }
 
         case Empty_evtNwkJoinFailure:
         {
-#if TIOP_CUI
-            tiopCUIUpdateConnStatus(CUI_conn_join_fail);
-#endif /* TIOP_CUI */
             DISPUTILS_SERIALPRINTF(1, 0, "Join Failure");
             break;
         }
+#if TIOP_POWER_MEASUREMENT
+        case Empty_evtPowerMeasumentReport:
+        {
+            emptyPowerMeasurementData();
+            break;
+        }
+
+        case Empty_evtNwkSetup:
+        {
+            startDataTimer();
+            break;
+        }
+#endif /* TIOP_POWER_MEASUREMENT */
+        default:
+        {
+            break;
+        }
+    }
 
 #if TIOP_CUI
-        case Empty_evtProcessMenuUpdate:
+    /* Update the UI */
+    switch (event)
+    {
+        case Empty_evtKeyRight:
         {
-            CUI_processMenuUpdate();
+            if ((!otDatasetIsCommissioned(OtInstance_get())) &&
+                (OtStack_joinState() != OT_STACK_EVENT_NWK_JOIN_IN_PROGRESS))
+            {
+                tiopCUIUpdateConnStatus(CUI_conn_joining);
+            }
             break;
         }
 
@@ -287,21 +348,41 @@ static void processEvent(Empty_evt event)
                 break;
             }
         }
-#endif /* TIOP_CUI */
+
+        case Empty_evtNwkJoined:
+        {
+            otNetworkKey networkKey;
+            OtRtosApi_lock();
+            tiopCUIUpdatePANID(otLinkGetPanId(OtInstance_get()));
+            tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
+            tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
+            tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
+            otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+            tiopCUIUpdateNetworkKey(networkKey);
+            tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
+            OtRtosApi_unlock();
+            break;
+        }
+
+        case Empty_evtNwkJoinFailure:
+        {
+            tiopCUIUpdateConnStatus(CUI_conn_join_fail);
+            break;
+        }
+
+        case Empty_evtProcessMenuUpdate:
+        {
+            CUI_processMenuUpdate();
+            break;
+        }
 
         case Empty_evtDevRoleChanged:
         {
             OtRtosApi_lock();
             otDeviceRole role = otThreadGetDeviceRole(OtInstance_get());
             OtRtosApi_unlock();
-#ifndef TIOP_POWER_MEASUREMENT
 
-            /* This function handles LEDs as well as CUI updates. In future
-             * it's role may be reduced and need to be folded into the
-             * following `#if TIOP_CUI`.
-             */
             tiopCUIUpdateRole(role);
-#if TIOP_CUI
             switch (role)
             {
                 case OT_DEVICE_ROLE_DISABLED:
@@ -312,6 +393,7 @@ static void processEvent(Empty_evt event)
                 case OT_DEVICE_ROLE_ROUTER:
                 case OT_DEVICE_ROLE_LEADER:
                 {
+                    otNetworkKey networkKey;
                     tiopCUIUpdateConnStatus(CUI_conn_joined);
 
                     OtRtosApi_lock();
@@ -319,7 +401,8 @@ static void processEvent(Empty_evt event)
                     tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
                     tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
                     tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-                    tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+                    otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+                    tiopCUIUpdateNetworkKey(networkKey);
                     tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
                     OtRtosApi_unlock();
                     break;
@@ -330,8 +413,6 @@ static void processEvent(Empty_evt event)
                     break;
                 }
             }
-#endif /* TIOP_CUI */
-#endif /* !TIOP_POWER_MEASUREMENT */
         }
 
         default:
@@ -339,24 +420,12 @@ static void processEvent(Empty_evt event)
             break;
         }
     }
+#endif /* TIOP_CUI */
 }
 
 /******************************************************************************
  External Functions
  *****************************************************************************/
-
-#if (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_APP)
-/**
- * Documented in openthread/platform/logging.h.
- */
-void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, ...)
-{
-    (void)aLogLevel;
-    (void)aLogRegion;
-    (void)aFormat;
-    /* Do nothing. */
-}
-#endif
 
 /**
  * Documented in openthread/platform/uart.h.
@@ -387,7 +456,23 @@ void Empty_postEvt(Empty_evt event)
     (void)ret;
 }
 
+
 #if TIOP_CUI
+/**
+ * @brief Handles the key press events.
+ *
+ * @param _buttonHandle identifies which keys were pressed
+ * @param _buttonEvents identifies the event that occurred on the key
+ * @return None
+ */
+void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
+{
+    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
+    {
+        Empty_postEvt(Empty_evtKeyRight);
+    }
+}
+
 /**
  * documented in tiop_ui.h
  */
@@ -480,9 +565,6 @@ void empty_taskCreate(void)
 void *empty_task(void *arg0)
 {
     struct mq_attr attr;
-#if !TIOP_CONFIG_SET_NW_ID
-    bool           commissioned;
-#endif /* !TIOP_CONFIG_SET_NW_ID */
     mqd_t          procQueueLoopDesc;
 
     attr.mq_curmsgs = 0;
@@ -506,38 +588,46 @@ void *empty_task(void *arg0)
 
     OtStack_registerCallback(processOtStackEvents);
 
-    snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_CYAN "Empty State" CUI_COLOR_RESET "] ");
-    tiopCUIInit((char*)statusBuf, &rightButtonHandle);
+#if TIOP_CUI
+    tiopCUIInit(statusBuf, &rightButtonHandle);
+#endif /* TIOP_CUI */
 
     DISPUTILS_SERIALPRINTF(0, 0, "Empty Example initialized! Have fun!");
 
-#if !TIOP_CONFIG_SET_NW_ID
-    OtRtosApi_lock();
-    commissioned = otDatasetIsCommissioned(OtInstance_get());
-    OtRtosApi_unlock();
-
-    if (false == commissioned)
+#if TIOP_CONFIG_SET_NW_ID
+    OtStack_setupInterfaceAndNetwork();
+#else
     {
-        otExtAddress extAddress;
+        bool commissioned;
 
         OtRtosApi_lock();
-        otLinkGetFactoryAssignedIeeeEui64(OtInstance_get(), &extAddress);
+        commissioned = otDatasetIsCommissioned(OtInstance_get());
         OtRtosApi_unlock();
 
-        DISPUTILS_SERIALPRINTF(2, 0, "pskd: %s", TIOP_CONFIG_PSKD);
-        DISPUTILS_SERIALPRINTF(3, 0, "EUI64: 0x%02x%02x%02x%02x%02x%02x%02x%02x",
-                               extAddress.m8[0], extAddress.m8[1], extAddress.m8[2],
-                               extAddress.m8[3], extAddress.m8[4], extAddress.m8[5],
-                               extAddress.m8[6], extAddress.m8[7]);
+        if (commissioned)
+        {
+            OtStack_setupInterfaceAndNetwork();
+        }
+        else
+        {
+            otExtAddress extAddress;
 
+            OtRtosApi_lock();
+            otLinkGetFactoryAssignedIeeeEui64(OtInstance_get(), &extAddress);
+            OtRtosApi_unlock();
+
+            DISPUTILS_SERIALPRINTF(2, 0, "pskd: %s", TIOP_CONFIG_PSKD);
+            DISPUTILS_SERIALPRINTF(3, 0, "EUI64: 0x%02x%02x%02x%02x%02x%02x%02x%02x",
+                                   extAddress.m8[0], extAddress.m8[1], extAddress.m8[2],
+                                   extAddress.m8[3], extAddress.m8[4], extAddress.m8[5],
+                                   extAddress.m8[6], extAddress.m8[7]);
+
+        }
     }
-    else
-    {
-        OtStack_setupInterfaceAndNetwork();
-    }
-#else
-    OtStack_setupInterfaceAndNetwork();
 #endif /* !TIOP_CONFIG_SET_NW_ID */
+#if TIOP_POWER_MEASUREMENT
+    configureDataTimer();
+#endif
     while (1)
     {
         struct Empty_procQueueMsg msg;

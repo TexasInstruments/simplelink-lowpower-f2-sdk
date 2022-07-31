@@ -28,7 +28,7 @@
 
 /**
  * @file
- *   This file wraps the calls to platform OTNS abstrations.
+ *   This file wraps the calls to platform OTNS abstractions.
  */
 
 #ifndef UTILS_OTNS_HPP_
@@ -42,10 +42,14 @@
 #include <openthread/thread_ftd.h>
 #include <openthread/platform/otns.h>
 
+#include "coap/coap_message.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 #include "common/notifier.hpp"
+#include "mac/mac_frame.hpp"
 #include "mac/mac_types.hpp"
 #include "net/ip6_address.hpp"
+#include "thread/neighbor_table.hpp"
 #include "thread/topology.hpp"
 
 namespace ot {
@@ -55,8 +59,10 @@ namespace Utils {
  * This class implements the OTNS Stub that interacts with OTNS.
  *
  */
-class Otns : public InstanceLocator
+class Otns : public InstanceLocator, private NonCopyable
 {
+    friend class ot::Notifier;
+
 public:
     /**
      * This constructor initializes the object.
@@ -66,7 +72,6 @@ public:
      */
     explicit Otns(Instance &aInstance)
         : InstanceLocator(aInstance)
-        , mNotifierCallback(aInstance, &Otns::HandleStateChanged, this)
     {
     }
 
@@ -121,15 +126,55 @@ public:
      * @param[in]  aNeighbor  The neighbor that is added or removed.
      *
      */
-    static void EmitNeighborChange(otNeighborTableEvent aEvent, Neighbor &aNeighbor);
+    static void EmitNeighborChange(NeighborTable::Event aEvent, const Neighbor &aNeighbor);
+
+    /**
+     * This function emits a transmit event to OTNS.
+     *
+     * @param[in]  aFrame  The frame of the transmission.
+     *
+     */
+    static void EmitTransmit(const Mac::TxFrame &aFrame);
+
+    /**
+     * This function emits the device mode to OTNS.
+     *
+     * @param[in] aMode The device mode.
+     *
+     */
+    static void EmitDeviceMode(Mle::DeviceMode aMode);
+
+    /**
+     * This function emits the sending COAP message info to OTNS.
+     *
+     * @param[in] aMessage      The sending COAP message.
+     * @param[in] aMessageInfo  The message info.
+     *
+     */
+    static void EmitCoapSend(const Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
+
+    /**
+     * This function emits the COAP message sending failure to OTNS.
+     *
+     * @param[in] aError        The error in sending the COAP message.
+     * @param[in] aMessage      The COAP message failed to send.
+     * @param[in] aMessageInfo  The message info.
+     *
+     */
+    static void EmitCoapSendFailure(Error aError, Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
+
+    /**
+     * This function emits the received COAP message info to OTNS.
+     *
+     * @param[in] aMessage      The received COAP message.
+     * @param[in] aMessageInfo  The message info.
+     *
+     */
+    static void EmitCoapReceive(const Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);
 
 private:
     static void EmitStatus(const char *aFmt, ...);
-
-    static void HandleStateChanged(Notifier::Callback &aCallback, otChangedFlags aFlags);
-    void        HandleStateChanged(otChangedFlags aFlags);
-
-    Notifier::Callback mNotifierCallback;
+    void        HandleNotifierEvents(Events aEvents);
 };
 
 } // namespace Utils

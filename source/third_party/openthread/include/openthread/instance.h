@@ -46,6 +46,16 @@ extern "C" {
 #endif
 
 /**
+ * The OpenThread API monotonic version number.
+ *
+ * This number MUST increase by one each time the contents of public OpenThread API include headers change.
+ *
+ * @note This number versions both OpenThread platform and user APIs.
+ *
+ */
+#define OPENTHREAD_API_VERSION (204)
+
+/**
  * @addtogroup api-instance
  *
  * @brief
@@ -68,9 +78,9 @@ typedef struct otInstance otInstance;
  *
  * This function is available and can only be used when support for multiple OpenThread instances is enabled.
  *
- * @param[in]    aInstanceBuffer      The buffer for OpenThread to use for allocating the otInstance structure.
- * @param[inout] aInstanceBufferSize  On input, the size of aInstanceBuffer. On output, if not enough space for
- *                                    otInstance, the number of bytes required for otInstance.
+ * @param[in]     aInstanceBuffer      The buffer for OpenThread to use for allocating the otInstance structure.
+ * @param[in,out] aInstanceBufferSize  On input, the size of aInstanceBuffer. On output, if not enough space for
+ *                                     otInstance, the number of bytes required for otInstance.
  *
  * @returns  A pointer to the new OpenThread instance.
  *
@@ -117,6 +127,40 @@ bool otInstanceIsInitialized(otInstance *aInstance);
 void otInstanceFinalize(otInstance *aInstance);
 
 /**
+ * This function returns the current instance uptime (in msec).
+ *
+ * This function requires `OPENTHREAD_CONFIG_UPTIME_ENABLE` to be enabled.
+ *
+ * The uptime is given as number of milliseconds since OpenThread instance was initialized.
+ *
+ * @param[in] aInstance A pointer to an OpenThread instance.
+ *
+ * @returns The uptime (number of milliseconds).
+ *
+ */
+uint64_t otInstanceGetUptime(otInstance *aInstance);
+
+#define OT_UPTIME_STRING_SIZE 24 ///< Recommended size for string representation of uptime.
+
+/**
+ * This function returns the current instance uptime as a human-readable string.
+ *
+ * This function requires `OPENTHREAD_CONFIG_UPTIME_ENABLE` to be enabled.
+ *
+ * The string follows the format "<hh>:<mm>:<ss>.<mmmm>" for hours, minutes, seconds and millisecond (if uptime is
+ * shorter than one day) or "<dd>d.<hh>:<mm>:<ss>.<mmmm>" (if longer than a day).
+ *
+ * If the resulting string does not fit in @p aBuffer (within its @p aSize characters), the string will be truncated
+ * but the outputted string is always null-terminated.
+ *
+ * @param[in]  aInstance A pointer to an OpenThread instance.
+ * @param[out] aBuffer   A pointer to a char array to output the string.
+ * @param[in]  aSize     The size of @p aBuffer (in bytes). Recommended to use `OT_UPTIME_STRING_SIZE`.
+ *
+ */
+void otInstanceGetUptimeAsString(otInstance *aInstance, char *aBuffer, uint16_t aSize);
+
+/**
  * This enumeration defines flags that are passed as part of `otStateChangedCallback`.
  *
  */
@@ -140,7 +184,7 @@ enum
     OT_CHANGED_THREAD_PANID                 = 1 << 15, ///< Thread network PAN Id changed
     OT_CHANGED_THREAD_NETWORK_NAME          = 1 << 16, ///< Thread network name changed
     OT_CHANGED_THREAD_EXT_PANID             = 1 << 17, ///< Thread network extended PAN ID changed
-    OT_CHANGED_MASTER_KEY                   = 1 << 18, ///< Master key changed
+    OT_CHANGED_NETWORK_KEY                  = 1 << 18, ///< Network key changed
     OT_CHANGED_PSKC                         = 1 << 19, ///< PSKc changed
     OT_CHANGED_SECURITY_POLICY              = 1 << 20, ///< Security Policy changed
     OT_CHANGED_CHANNEL_MANAGER_NEW_CHANNEL  = 1 << 21, ///< Channel Manager new pending Thread channel changed
@@ -150,6 +194,8 @@ enum
     OT_CHANGED_THREAD_BACKBONE_ROUTER_STATE = 1 << 25, ///< Backbone Router state changed
     OT_CHANGED_THREAD_BACKBONE_ROUTER_LOCAL = 1 << 26, ///< Local Backbone Router configuration changed
     OT_CHANGED_JOINER_STATE                 = 1 << 27, ///< Joiner state changed
+    OT_CHANGED_ACTIVE_DATASET               = 1 << 28, ///< Active Operational Dataset changed
+    OT_CHANGED_PENDING_DATASET              = 1 << 29, ///< Pending Operational Dataset changed
 };
 
 /**
@@ -198,16 +244,30 @@ void otRemoveStateChangeCallback(otInstance *aInstance, otStateChangedCallback a
  * The reset process ensures that all the OpenThread state/info (stored in volatile memory) is erased. Note that the
  * `otPlatformReset` does not erase any persistent state/info saved in non-volatile memory.
  *
- * @param[in]  aInstance A pointer to an OpenThread instance.
+ * @param[in]  aInstance  A pointer to an OpenThread instance.
+ *
  */
 void otInstanceReset(otInstance *aInstance);
 
 /**
  * This method deletes all the settings stored on non-volatile memory, and then triggers platform reset.
  *
- * @param[in]  aInstance A pointer to an OpenThread instance.
+ * @param[in]  aInstance  A pointer to an OpenThread instance.
+ *
  */
 void otInstanceFactoryReset(otInstance *aInstance);
+
+/**
+ * This method resets the internal states of the OpenThread radio stack.
+ *
+ * Callbacks and configurations are preserved.
+ *
+ * This API is only available under radio builds (`OPENTHREAD_RADIO = 1`).
+ *
+ * @param[in]  aInstance  A pointer to an OpenThread instance.
+ *
+ */
+void otInstanceResetRadioStack(otInstance *aInstance);
 
 /**
  * This function erases all the OpenThread persistent info (network settings) stored on non-volatile memory.

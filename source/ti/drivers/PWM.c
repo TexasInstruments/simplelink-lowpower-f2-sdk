@@ -45,12 +45,12 @@ __attribute__((weak)) extern const uint_least8_t PWM_count;
 
 /* Default PWM parameters structure */
 const PWM_Params PWM_defaultParams = {
-    .periodUnits = PWM_PERIOD_HZ,             /* Period is defined in Hz */
-    .periodValue = 1e6,                       /* 1MHz */
-    .dutyUnits   = PWM_DUTY_FRACTION,         /* Duty is fraction of period */
-    .dutyValue   = 0,                         /* 0% duty cycle */
-    .idleLevel   = PWM_IDLE_LOW,              /* Low idle level */
-    .custom      = NULL                       /* No custom params */
+    .periodUnits = PWM_PERIOD_HZ,     /* Period is defined in Hz */
+    .periodValue = 1e6,               /* 1MHz */
+    .dutyUnits   = PWM_DUTY_FRACTION, /* Duty is fraction of period */
+    .dutyValue   = 0,                 /* 0% duty cycle */
+    .idleLevel   = PWM_IDLE_LOW,      /* Low idle level */
+    .custom      = NULL               /* No custom params */
 };
 
 static bool isInitialized = false;
@@ -81,12 +81,14 @@ void PWM_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < PWM_count; i++) {
-            PWM_config[i].fxnTablePtr->initFxn((PWM_Handle) &(PWM_config[i]));
+        for (i = 0; i < PWM_count; i++)
+        {
+            PWM_config[i].fxnTablePtr->initFxn((PWM_Handle) & (PWM_config[i]));
         }
     }
 
@@ -100,14 +102,16 @@ PWM_Handle PWM_open(uint_least8_t index, PWM_Params *params)
 {
     PWM_Handle handle = NULL;
 
-    if (isInitialized && (index < PWM_count)) {
+    if (isInitialized && (index < PWM_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (PWM_Params *) &PWM_defaultParams;
+        if (params == NULL)
+        {
+            params = (PWM_Params *)&PWM_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (PWM_Handle) &(PWM_config[index]);
+        handle = (PWM_Handle) & (PWM_config[index]);
 
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
@@ -128,7 +132,7 @@ void PWM_Params_init(PWM_Params *params)
  */
 int_fast16_t PWM_setDuty(PWM_Handle handle, uint32_t duty)
 {
-    return(handle->fxnTablePtr->setDutyFxn(handle, duty));
+    return (handle->fxnTablePtr->setDutyFxn(handle, duty));
 }
 
 /*
@@ -136,14 +140,14 @@ int_fast16_t PWM_setDuty(PWM_Handle handle, uint32_t duty)
  */
 int_fast16_t PWM_setPeriod(PWM_Handle handle, uint32_t period)
 {
-    return(handle->fxnTablePtr->setPeriodFxn(handle, period));
+    return (handle->fxnTablePtr->setPeriodFxn(handle, period));
 }
 /*
  *  ======== PWM_setDutyandPeriod ========
  */
 int_fast16_t PWM_setDutyAndPeriod(PWM_Handle handle, uint32_t duty, uint32_t period)
 {
-    return(handle->fxnTablePtr->setDutyAndPeriodFxn(handle, duty, period));
+    return (handle->fxnTablePtr->setDutyAndPeriodFxn(handle, duty, period));
 }
 
 /*

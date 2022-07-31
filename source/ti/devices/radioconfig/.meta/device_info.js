@@ -39,10 +39,13 @@
 "use strict";
 
 // Module version
-const RADIO_CONFIG_VERSION = "1.13";
+const RADIO_CONFIG_VERSION = "1.14";
 
 // Common utility functions
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
+
+// Patch information file
+const PatchInfo = system.getScript("/ti/devices/radioconfig/config/patch_info.json");
 
 // Global path to Radio configuration root
 const ConfigPath = Common.basePath + "config/";
@@ -62,6 +65,7 @@ const DevNameMap = {
     // BAW
     CC2652RB1FRGZ: "cc2652rb",
     // SIP
+    CC1312PSIP: "cc1312psip",
     CC2652R1FSIP: "cc2652rsip",
     CC2652P1FSIP: "cc2652psip",
     // Device class 7
@@ -98,6 +102,7 @@ const DeviceSupported = DeviceName !== "none";
 
 // True if High PA device
 const HighPaDevice = DeviceName.includes("cc1352p")
+    || DeviceName.includes("cc1312psip")
     || DeviceName.includes("cc2652p")
     || DeviceName.includes("cc2672p")
     || DeviceName.includes("cc1311p")
@@ -147,7 +152,10 @@ exports = {
     getPaSettingsPath: () => getFilePath("pasettings.json"),
     getFrontEndFile: (phy) => getFullPathPhy("frontend_settings.json", phy),
     getCmdMapping: (phy) => getFullPathPhy("param_cmd_mapping.json", phy),
-    hasHighPaSupport: () => DevInfo.highPaSupport
+    hasHighPaSupport: () => DevInfo.highPaSupport,
+    getDeviceFamily: getDeviceFamily,
+    setPatchInfo: setPatchInfo,
+    getPatchInfo: getPatchInfo
 };
 
 /*!
@@ -317,4 +325,58 @@ function addPhyGroup(phy) {
     DevInfo.phy = phy;
     phyInfo.config = loadConfiguration(phy);
     phyInfo.settings = createSettingMap(phy);
+}
+
+/*
+ * ======== getDeviceFamily ========
+ * Return the device family of the current device.
+ *
+ */
+function getDeviceFamily() {
+    let devFamily;
+
+    if (Common.isDeviceClass3()) {
+        devFamily = "cc13x1_cc26x1";
+    }
+    else if (Common.isDeviceClass7()) {
+        devFamily = "cc13x2x7_cc26x2x7";
+    }
+    else if (Common.isDeviceClass10()) {
+        devFamily = "cc13x4_cc26x4";
+    }
+    else if (Common.isDeviceStandard()) {
+        devFamily = "cc13x2_cc26x2";
+    }
+    else {
+        return null;
+    }
+    return devFamily;
+}
+
+/*
+ * ======== getPatchInfo ========
+ * Return the patch list for the current device.
+ *
+ */
+function getPatchInfo() {
+    const devFamily = getDeviceFamily();
+
+    if (devFamily) {
+        return PatchInfo[devFamily];
+    }
+    return [];
+}
+
+/*
+ * ======== setPatchInfo ========
+ * Update the current patch information
+ *
+ *  @param patches - List of current patches in the SDK
+ */
+function setPatchInfo(patches) {
+    const devFamily = getDeviceFamily();
+
+    if (devFamily) {
+        PatchInfo[devFamily] = patches;
+    }
 }

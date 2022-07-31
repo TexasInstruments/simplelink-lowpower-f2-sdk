@@ -2,7 +2,7 @@
  *  Do not modify this file; it is automatically 
  *  generated and any modifications will be overwritten.
  *
- * @(#) xdc-K04
+ * @(#) xdc-I08
  */
 
 #ifndef ti_catalog__

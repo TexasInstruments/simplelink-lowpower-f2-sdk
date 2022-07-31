@@ -79,6 +79,9 @@
 // Configuration register for flash read wait cycles
 #define FCFG2_O_RD_WAIT_CFG                                         0x0000002C
 
+// Configuration register for flash verify wait cycles
+#define FCFG2_O_CFG_CMD                                             0x00000030
+
 //*****************************************************************************
 //
 // Register: FCFG2_O_B0_TRIM_CFG_3
@@ -416,6 +419,25 @@
 #define FCFG2_RD_WAIT_CFG_WAIT1T_W                                           4
 #define FCFG2_RD_WAIT_CFG_WAIT1T_M                                  0x0000000F
 #define FCFG2_RD_WAIT_CFG_WAIT1T_S                                           0
+
+//*****************************************************************************
+//
+// Register: FCFG2_O_CFG_CMD
+//
+//*****************************************************************************
+// Field:   [7:4] WAITSTATE1T
+//
+// Configuration value written to NVMNW:CFGCMD.WAITSTATE by ROM boot FW
+#define FCFG2_CFG_CMD_WAITSTATE1T_W                                          4
+#define FCFG2_CFG_CMD_WAITSTATE1T_M                                 0x000000F0
+#define FCFG2_CFG_CMD_WAITSTATE1T_S                                          4
+
+// Field:   [3:0] WAITSTATE2T
+//
+// Configuration value written to NVMNW:CFGCMD.WAITSTATE by flash API in ROM
+#define FCFG2_CFG_CMD_WAITSTATE2T_W                                          4
+#define FCFG2_CFG_CMD_WAITSTATE2T_M                                 0x0000000F
+#define FCFG2_CFG_CMD_WAITSTATE2T_S                                          0
 
 
 #endif // __FCFG2__

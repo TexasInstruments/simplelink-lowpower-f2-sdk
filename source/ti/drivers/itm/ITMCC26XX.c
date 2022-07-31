@@ -68,7 +68,6 @@ void ITM_clearPinMux(void)
     GPIO_resetConfig(hwAttrs->swoPin);
 }
 
-
 /*
  *  ======== ITMCC26XX_Flush ========
  */

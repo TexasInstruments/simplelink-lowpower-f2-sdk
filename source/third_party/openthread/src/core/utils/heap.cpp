@@ -34,6 +34,8 @@
 
 #include "heap.hpp"
 
+#if !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
+
 #include <string.h>
 
 #include "common/code_utils.hpp"
@@ -61,12 +63,12 @@ Heap::Heap(void)
 
 void *Heap::CAlloc(size_t aCount, size_t aSize)
 {
-    void *   ret  = NULL;
-    Block *  prev = NULL;
-    Block *  curr = NULL;
+    void *   ret  = nullptr;
+    Block *  prev = nullptr;
+    Block *  curr = nullptr;
     uint16_t size = static_cast<uint16_t>(aCount * aSize);
 
-    VerifyOrExit(size, OT_NOOP);
+    VerifyOrExit(size);
 
     size += kAlignSize - 1 - kBlockRemainderSize;
     size &= ~(kAlignSize - 1);
@@ -81,7 +83,7 @@ void *Heap::CAlloc(size_t aCount, size_t aSize)
         curr = &BlockNext(*curr);
     }
 
-    VerifyOrExit(curr->IsFree(), OT_NOOP);
+    VerifyOrExit(curr->IsFree());
 
     prev->SetNext(curr->GetNext());
 
@@ -144,7 +146,7 @@ Block &Heap::BlockPrev(const Block &aBlock)
 
 void Heap::Free(void *aPointer)
 {
-    if (aPointer == NULL)
+    if (aPointer == nullptr)
     {
         return;
     }
@@ -217,3 +219,5 @@ void Heap::Free(void *aPointer)
 
 } // namespace Utils
 } // namespace ot
+
+#endif // !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE

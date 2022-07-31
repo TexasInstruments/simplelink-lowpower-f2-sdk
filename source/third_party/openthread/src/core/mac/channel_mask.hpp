@@ -39,9 +39,9 @@
 #include <limits.h>
 #include <openthread/platform/radio.h>
 
+#include "common/equatable.hpp"
 #include "common/string.hpp"
 #include "radio/radio.hpp"
-#include "utils/static_assert.hpp"
 
 namespace ot {
 namespace Mac {
@@ -62,14 +62,16 @@ namespace Mac {
  * It is a wrapper class around a `uint32_t` bit vector representing a set of channels.
  *
  */
-class ChannelMask
+class ChannelMask : public Unequatable<ChannelMask>
 {
 public:
-    enum
-    {
-        kChannelIteratorFirst = 0xff, ///< Value to pass in `GetNextChannel()` to get the first channel in the mask.
-        kInfoStringSize       = 45,   ///< Recommended buffer size to use with `ToString()`.
-    };
+    /**
+     * This constant specifies the value to pass in `GetNextChannel()` to get the first channel in the mask.
+     *
+     */
+    static constexpr uint8_t kChannelIteratorFirst = 0xff;
+
+    static constexpr uint16_t kInfoStringSize = 45; ///< Recommended buffer size to use with `ToString()`.
 
     /**
      * This type defines the fixed-length `String` object returned from `ToString()`.
@@ -198,15 +200,15 @@ public:
      * This method can be used to iterate over all channels in the channel mask. To get the first channel (channel with
      * lowest number) in the mask the @p aChannel should be set to `kChannelIteratorFirst`.
      *
-     * @param[inout] aChannel        A reference to a `uint8_t`.
+     * @param[in,out] aChannel       A reference to a `uint8_t`.
      *                               On entry it should contain the previous channel or `kChannelIteratorFirst`.
      *                               On exit it contains the next channel.
      *
-     * @retval  OT_ERROR_NONE        Got the next channel, @p aChannel updated successfully.
-     * @retval  OT_ERROR_NOT_FOUND   No next channel in the channel mask (note: @p aChannel may be changed).
+     * @retval  kErrorNone       Got the next channel, @p aChannel updated successfully.
+     * @retval  kErrorNotFound   No next channel in the channel mask (note: @p aChannel may be changed).
      *
      */
-    otError GetNextChannel(uint8_t &aChannel) const;
+    Error GetNextChannel(uint8_t &aChannel) const;
 
     /**
      * This method randomly chooses a channel from the channel mask.
@@ -227,16 +229,6 @@ public:
     bool operator==(const ChannelMask &aAnother) const { return (mMask == aAnother.mMask); }
 
     /**
-     * This method overloads `!=` operator to indicate whether two masks are different.
-     *
-     * @param[in] aAnother     A reference to another mask to compare with the current one.
-     *
-     * @returns TRUE if the two masks are different, FALSE otherwise.
-     *
-     */
-    bool operator!=(const ChannelMask &aAnother) const { return !(*this == aAnother); }
-
-    /**
      * This method converts the channel mask into a human-readable string.
      *
      * Examples of possible output:
@@ -252,8 +244,8 @@ public:
     InfoString ToString(void) const;
 
 private:
-    OT_STATIC_ASSERT((Radio::kChannelMin < 32) && (Radio::kChannelMax < 32),
-                     "The channel number is larger than 32. `ChannelMask` uses 32 bit mask.");
+    static_assert((Radio::kChannelMin < 32) && (Radio::kChannelMax < 32),
+                  "The channel number is larger than 32. `ChannelMask` uses 32 bit mask.");
     uint32_t mMask;
 };
 

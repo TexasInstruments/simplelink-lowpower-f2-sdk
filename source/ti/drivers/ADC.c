@@ -44,10 +44,7 @@ extern const ADC_Config ADC_config[];
 extern const uint_least8_t ADC_count;
 
 /* Default ADC parameters structure */
-const ADC_Params ADC_defaultParams = {
-    .custom = NULL,
-    .isProtected = true
-};
+const ADC_Params ADC_defaultParams = {.custom = NULL, .isProtected = true};
 
 static bool isInitialized = false;
 
@@ -78,9 +75,7 @@ int_fast16_t ADC_convert(ADC_Handle handle, uint16_t *value)
 /*
  *  ======== ADC_convertChain ========
  */
-int_fast16_t ADC_convertChain(ADC_Handle *handleList,
-                              uint16_t *dataBuffer,
-                              uint8_t channelCount)
+int_fast16_t ADC_convertChain(ADC_Handle *handleList, uint16_t *dataBuffer, uint8_t channelCount)
 {
     return (handleList[0]->fxnTablePtr->convertChainFxn(handleList, dataBuffer, channelCount));
 }
@@ -103,12 +98,14 @@ void ADC_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < ADC_count; i++) {
-            ADC_config[i].fxnTablePtr->initFxn((ADC_Handle)&(ADC_config[i]));
+        for (i = 0; i < ADC_count; i++)
+        {
+            ADC_config[i].fxnTablePtr->initFxn((ADC_Handle) & (ADC_config[i]));
         }
     }
 
@@ -122,14 +119,16 @@ ADC_Handle ADC_open(uint_least8_t index, ADC_Params *params)
 {
     ADC_Handle handle = NULL;
 
-    if (isInitialized && (index < ADC_count)) {
+    if (isInitialized && (index < ADC_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (ADC_Params *) &ADC_defaultParams;
+        if (params == NULL)
+        {
+            params = (ADC_Params *)&ADC_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (ADC_Handle) &(ADC_config[index]);
+        handle = (ADC_Handle) & (ADC_config[index]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 

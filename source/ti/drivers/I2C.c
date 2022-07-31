@@ -45,10 +45,10 @@
 
 /* Default I2C parameters structure */
 const I2C_Params I2C_defaultParams = {
-    I2C_MODE_BLOCKING,  /* transferMode */
-    NULL,               /* transferCallbackFxn */
-    I2C_100kHz,         /* bitRate */
-    NULL                /* custom */
+    I2C_MODE_BLOCKING, /* transferMode */
+    NULL,              /* transferCallbackFxn */
+    I2C_100kHz,        /* bitRate */
+    NULL               /* custom */
 };
 
 /*
@@ -56,14 +56,15 @@ const I2C_Params I2C_defaultParams = {
  */
 void I2C_cancel(I2C_Handle handle)
 {
-    I2C_Object        *object = handle->object;
+    I2C_Object *object         = handle->object;
     I2C_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uintptr_t          key;
+    uintptr_t key;
 
     key = HwiP_disable();
 
     /* Return if no transfer in progress */
-    if (!object->headPtr) {
+    if (!object->headPtr)
+    {
         HwiP_restore(key);
         return;
     }
@@ -99,10 +100,12 @@ bool I2C_transfer(I2C_Handle handle, I2C_Transaction *transaction)
 {
     int_fast16_t result = (I2C_transferTimeout(handle, transaction, I2C_WAIT_FOREVER));
 
-    if (result == I2C_STATUS_SUCCESS) {
+    if (result == I2C_STATUS_SUCCESS)
+    {
         return (true);
     }
-    else {
+    else
+    {
         return (false);
     }
 }
@@ -112,13 +115,14 @@ bool I2C_transfer(I2C_Handle handle, I2C_Transaction *transaction)
  */
 int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction, uint32_t timeout)
 {
-    I2C_Object        *object = handle->object;
+    I2C_Object *object         = handle->object;
     I2C_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uintptr_t          key;
-    int_fast16_t       ret;
+    uintptr_t key;
+    int_fast16_t ret;
 
     /* Check if anything needs to be written or read */
-    if ((!transaction->writeCount) && (!transaction->readCount)) {
+    if ((!transaction->writeCount) && (!transaction->readCount))
+    {
         transaction->status = I2C_STATUS_INVALID_TRANS;
         /* Nothing to write or read */
         return (transaction->status);
@@ -127,17 +131,20 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
     key = HwiP_disable();
 
     /* If callback mode, determine if transfer in progress */
-    if (object->transferMode == I2C_MODE_CALLBACK && object->headPtr) {
+    if (object->transferMode == I2C_MODE_CALLBACK && object->headPtr)
+    {
         /*
          * Queued transactions are being canceled. Can't allow additional
          * transactions to be queued.
          */
-        if (object->headPtr->status == I2C_STATUS_CANCEL) {
+        if (object->headPtr->status == I2C_STATUS_CANCEL)
+        {
             transaction->status = I2C_STATUS_INVALID_TRANS;
-            ret = transaction->status;
+            ret                 = transaction->status;
         }
         /* Transfer in progress */
-        else {
+        else
+        {
             /*
              * Update the message pointed by the tailPtr to point to the next
              * message in the queue
@@ -167,11 +174,12 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
     HwiP_restore(key);
 
     /* Get the lock for this I2C handle */
-    if (SemaphoreP_pend(&(object->mutex), SemaphoreP_NO_WAIT)
-        == SemaphoreP_TIMEOUT) {
+    if (SemaphoreP_pend(&(object->mutex), SemaphoreP_NO_WAIT) == SemaphoreP_TIMEOUT)
+    {
 
         /* We were unable to get the mutex in CALLBACK mode */
-        if (object->transferMode == I2C_MODE_CALLBACK) {
+        if (object->transferMode == I2C_MODE_CALLBACK)
+        {
             /*
              * Recursively call transfer() and attempt to place transaction
              * on the queue. This may only occur if a thread is preempted
@@ -182,19 +190,21 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
 
         /* Wait for the I2C lock. If it times-out before we retrieve it, then
          * return false to cancel the transaction. */
-        if(SemaphoreP_pend(&(object->mutex), timeout) == SemaphoreP_TIMEOUT) {
+        if (SemaphoreP_pend(&(object->mutex), timeout) == SemaphoreP_TIMEOUT)
+        {
             transaction->status = I2C_STATUS_TIMEOUT;
             return (I2C_STATUS_TIMEOUT);
         }
     }
 
-    if (object->transferMode == I2C_MODE_BLOCKING) {
-       /*
-        * In the case of a timeout, It is possible for the timed-out transaction
-        * to call the hwi function and post the object->transferComplete Semaphore
-        * To clear this, we simply do a NO_WAIT pend on (binary)
-        * object->transferComplete, so that it resets the Semaphore count.
-        */
+    if (object->transferMode == I2C_MODE_BLOCKING)
+    {
+        /*
+         * In the case of a timeout, It is possible for the timed-out transaction
+         * to call the hwi function and post the object->transferComplete Semaphore
+         * To clear this, we simply do a NO_WAIT pend on (binary)
+         * object->transferComplete, so that it resets the Semaphore count.
+         */
         SemaphoreP_pend(&(object->transferComplete), SemaphoreP_NO_WAIT);
     }
 
@@ -208,14 +218,16 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
     ret = I2CSupport_primeTransfer(handle, transaction);
     HwiP_enableInterrupt(hwAttrs->intNum);
 
-    if (ret != I2C_STATUS_SUCCESS) {
+    if (ret != I2C_STATUS_SUCCESS)
+    {
         /* Release disallow constraint. */
         I2CSupport_powerRelConstraint();
     }
-    else if (object->transferMode == I2C_MODE_BLOCKING) {
+    else if (object->transferMode == I2C_MODE_BLOCKING)
+    {
         /* Wait for the primed transfer to complete */
-        if (SemaphoreP_pend(&(object->transferComplete), timeout)
-            == SemaphoreP_TIMEOUT) {
+        if (SemaphoreP_pend(&(object->transferComplete), timeout) == SemaphoreP_TIMEOUT)
+        {
 
             key = HwiP_disable();
 
@@ -225,7 +237,8 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
              * will preemptively consume the semaphore on the next initiated
              * transfer.
              */
-            if (object->headPtr) {
+            if (object->headPtr)
+            {
                 /*
                  * It's okay to call cancel here since this is blocking mode.
                  * Cancel will generate a STOP condition and immediately
@@ -244,12 +257,12 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
                  *  This may block forever if the slave holds the clock line--
                  *  rendering the I2C bus un-usable.
                  */
-                SemaphoreP_pend(&(object->transferComplete),
-                    SemaphoreP_WAIT_FOREVER);
+                SemaphoreP_pend(&(object->transferComplete), SemaphoreP_WAIT_FOREVER);
 
                 transaction->status = I2C_STATUS_TIMEOUT;
             }
-            else {
+            else
+            {
                 HwiP_restore(key);
             }
         }

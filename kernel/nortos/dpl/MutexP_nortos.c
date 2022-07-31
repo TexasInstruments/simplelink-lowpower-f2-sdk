@@ -39,7 +39,8 @@
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/MutexP.h>
 
-typedef struct _MutexP_Config {
+typedef struct _MutexP_Config
+{
     uint32_t dummy;
 } MutexP_Config;
 
@@ -58,7 +59,7 @@ MutexP_Handle MutexP_create(MutexP_Params *params)
 {
     MutexP_Config *pMutex;
 
-    //dynamically allocating memory for the mutex struct
+    // dynamically allocating memory for the mutex struct
     pMutex = (MutexP_Config *)malloc(sizeof(MutexP_Config));
 
     pMutex = (MutexP_Config *)MutexP_construct((MutexP_Struct *)pMutex, params);
@@ -70,15 +71,15 @@ MutexP_Handle MutexP_create(MutexP_Params *params)
  *  ======== MutexP_destruct ========
  */
 void MutexP_destruct(MutexP_Struct *handle)
-{
-}
+{}
 
 /*
  *  ======== MutexP_delete ========
  */
 void MutexP_delete(MutexP_Handle handle)
 {
-    if (handle != NULL) {
+    if (handle != NULL)
+    {
         MutexP_destruct((MutexP_Struct *)handle);
         free(handle);
     }

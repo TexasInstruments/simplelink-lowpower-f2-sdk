@@ -50,19 +50,21 @@ static TickType_t ticksToWait = portMAX_DELAY;
 
 void ClockP_callbackFxn(uintptr_t arg);
 
-typedef struct ClockP_FreeRTOSObj {
-    TimerHandle_t    timer;
-    ClockP_Fxn       fxn;
-    uintptr_t        arg;
-    uint32_t         timeout;      /* Timeout set by API */
-    uint32_t         curTimeout;   /* Either timeout or period */
-    uint32_t         period;
+typedef struct ClockP_FreeRTOSObj
+{
+    TimerHandle_t timer;
+    ClockP_Fxn fxn;
+    uintptr_t arg;
+    uint32_t timeout;    /* Timeout set by API */
+    uint32_t curTimeout; /* Either timeout or period */
+    uint32_t period;
 } ClockP_FreeRTOSObj;
 
 #if (configSUPPORT_STATIC_ALLOCATION == 1)
-typedef struct ClockP_StaticFreeRTOSObj {
+typedef struct ClockP_StaticFreeRTOSObj
+{
     ClockP_FreeRTOSObj clockObj;
-    StaticTimer_t      staticTimer;
+    StaticTimer_t staticTimer;
 } ClockP_StaticFreeRTOSObj;
 #endif
 
@@ -73,7 +75,7 @@ static bool setClockObjTimeout(ClockP_Handle pObj);
  */
 void ClockP_callbackFxn(uintptr_t arg)
 {
-    TimerHandle_t       handle = (TimerHandle_t)arg;
+    TimerHandle_t handle = (TimerHandle_t)arg;
     ClockP_FreeRTOSObj *obj;
 
     obj = (ClockP_FreeRTOSObj *)pvTimerGetTimerID(handle);
@@ -83,7 +85,8 @@ void ClockP_callbackFxn(uintptr_t arg)
      *  passed to ClockP_create() we need to change the FreeRTOS timer's
      *  period to the ClockP object's period.
      */
-    if ((obj->period != 0) && (obj->curTimeout != obj->period)) {
+    if ((obj->period != 0) && (obj->curTimeout != obj->period))
+    {
         obj->curTimeout = obj->period;
 
         /* Set the xTimer timeout to the new value */
@@ -96,22 +99,22 @@ void ClockP_callbackFxn(uintptr_t arg)
 /*
  *  ======== ClockP_construct ========
  */
-ClockP_Handle ClockP_construct(ClockP_Struct *clockP, ClockP_Fxn clockFxn,
-     uint32_t timeout, ClockP_Params *params)
+ClockP_Handle ClockP_construct(ClockP_Struct *clockP, ClockP_Fxn clockFxn, uint32_t timeout, ClockP_Params *params)
 {
     ClockP_FreeRTOSObj *pObj = NULL;
 
 #if (configSUPPORT_STATIC_ALLOCATION == 1)
-    ClockP_StaticFreeRTOSObj * statObj = (ClockP_StaticFreeRTOSObj *)clockP;
-    StaticTimer_t *    staticTimer = (StaticTimer_t *)&statObj->staticTimer;
-    TickType_t         initialTimeout = timeout;
-    ClockP_Params      defaultParams;
-    TimerHandle_t      tHandle;
-    UBaseType_t        autoReload;
+    ClockP_StaticFreeRTOSObj *statObj = (ClockP_StaticFreeRTOSObj *)clockP;
+    StaticTimer_t *staticTimer        = (StaticTimer_t *)&statObj->staticTimer;
+    TickType_t initialTimeout         = timeout;
+    ClockP_Params defaultParams;
+    TimerHandle_t tHandle;
+    UBaseType_t autoReload;
 
     pObj = (ClockP_FreeRTOSObj *)&statObj->clockObj;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &defaultParams;
         ClockP_Params_init(&defaultParams);
     }
@@ -123,25 +126,32 @@ ClockP_Handle ClockP_construct(ClockP_Struct *clockP, ClockP_Fxn clockFxn,
      *  of 0.  If timeout is 0, assume that ClockP_setTimeout() will be
      *  called to change it, and create the timer with a non-zero timeout.
      */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         initialTimeout = (TickType_t)0xFFFFFFFF;
     }
 
-    tHandle = xTimerCreateStatic(NULL, initialTimeout, autoReload,
-            (void *)pObj, (TimerCallbackFunction_t)ClockP_callbackFxn,
-            staticTimer);
+    tHandle = xTimerCreateStatic(NULL,
+                                 initialTimeout,
+                                 autoReload,
+                                 (void *)pObj,
+                                 (TimerCallbackFunction_t)ClockP_callbackFxn,
+                                 staticTimer);
 
-    if (tHandle == NULL) {
+    if (tHandle == NULL)
+    {
         pObj = NULL;
     }
-    else {
-        pObj->timer = tHandle;
-        pObj->fxn = clockFxn;
-        pObj->arg = params->arg;
+    else
+    {
+        pObj->timer   = tHandle;
+        pObj->fxn     = clockFxn;
+        pObj->arg     = params->arg;
         pObj->timeout = timeout;
-        pObj->period = params->period;
+        pObj->period  = params->period;
 
-        if (params->startFlag) {
+        if (params->startFlag)
+        {
             /* Just returns if timeout is 0 */
             ClockP_start((ClockP_Handle)pObj);
         }
@@ -154,21 +164,22 @@ ClockP_Handle ClockP_construct(ClockP_Struct *clockP, ClockP_Fxn clockFxn,
 /*
  *  ======== ClockP_create ========
  */
-ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout,
-        ClockP_Params *params)
+ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout, ClockP_Params *params)
 {
-    ClockP_Params       defaultParams;
+    ClockP_Params defaultParams;
     ClockP_FreeRTOSObj *pObj;
-    UBaseType_t         autoReload;
-    TimerHandle_t       handle = NULL;
-    TickType_t          initialTimeout = timeout;
+    UBaseType_t autoReload;
+    TimerHandle_t handle      = NULL;
+    TickType_t initialTimeout = timeout;
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &defaultParams;
         ClockP_Params_init(&defaultParams);
     }
 
-    if ((pObj = pvPortMalloc(sizeof(ClockP_FreeRTOSObj))) == NULL) {
+    if ((pObj = pvPortMalloc(sizeof(ClockP_FreeRTOSObj))) == NULL)
+    {
         return (NULL);
     }
 
@@ -179,25 +190,27 @@ ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout,
      *  of 0.  If timeout is 0, assume that ClockP_setTimeout() will be
      *  called to change it, and create the timer with a non-zero timeout.
      */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         initialTimeout = (TickType_t)0xFFFFFFFF;
     }
 
-    handle = xTimerCreate(NULL, initialTimeout, autoReload,
-            (void *)pObj, (TimerCallbackFunction_t)ClockP_callbackFxn);
+    handle = xTimerCreate(NULL, initialTimeout, autoReload, (void *)pObj, (TimerCallbackFunction_t)ClockP_callbackFxn);
 
-    if (handle == NULL) {
+    if (handle == NULL)
+    {
         vPortFree(pObj);
         return (NULL);
     }
 
-    pObj->timer = handle;
-    pObj->fxn = clockFxn;
-    pObj->arg = params->arg;
+    pObj->timer   = handle;
+    pObj->fxn     = clockFxn;
+    pObj->arg     = params->arg;
     pObj->timeout = timeout;
-    pObj->period = params->period;
+    pObj->period  = params->period;
 
-    if (params->startFlag) {
+    if (params->startFlag)
+    {
         /* Just returns if timeout is 0 */
         ClockP_start((ClockP_Handle)pObj);
     }
@@ -217,7 +230,8 @@ void ClockP_delete(ClockP_Handle handle)
 
     configASSERT(status == pdPASS);
 
-    if (status == pdPASS) {
+    if (status == pdPASS)
+    {
         vPortFree(pObj);
     }
 }
@@ -225,9 +239,8 @@ void ClockP_delete(ClockP_Handle handle)
 /*
  *  ======== ClockP_destruct ========
  */
-void ClockP_destruct(ClockP_Struct * clockP)
-{
-}
+void ClockP_destruct(ClockP_Struct *clockP)
+{}
 
 /*
  *  ======== ClockP_getCpuFreq ========
@@ -235,7 +248,7 @@ void ClockP_destruct(ClockP_Struct * clockP)
 void ClockP_getCpuFreq(ClockP_FreqHz *freq)
 {
     /* return configCPU_CLOCK_HZ, as defined in FreeRTOSConfig.h */
-    freq->lo = (uint32_t) configCPU_CLOCK_HZ;
+    freq->lo = (uint32_t)configCPU_CLOCK_HZ;
     freq->hi = 0;
 }
 
@@ -254,10 +267,12 @@ uint32_t ClockP_getSystemTicks(void)
 {
     uint32_t ticks;
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         ticks = (uint32_t)xTaskGetTickCountFromISR();
     }
-    else {
+    else
+    {
         ticks = (uint32_t)xTaskGetTickCount();
     }
 
@@ -270,7 +285,7 @@ uint32_t ClockP_getSystemTicks(void)
 uint32_t ClockP_getTimeout(ClockP_Handle handle)
 {
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
-    TickType_t          remainingTime;
+    TickType_t remainingTime;
 
     /*
      *  Calculate the time that remains before the timer expires.
@@ -290,7 +305,8 @@ bool ClockP_isActive(ClockP_Handle handle)
 {
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
 
-    if (xTimerIsTimerActive(pObj->timer) != pdFALSE) {
+    if (xTimerIsTimerActive(pObj->timer) != pdFALSE)
+    {
         return (true);
     }
 
@@ -302,9 +318,9 @@ bool ClockP_isActive(ClockP_Handle handle)
  */
 void ClockP_Params_init(ClockP_Params *params)
 {
-    params->arg = (uintptr_t)0;
+    params->arg       = (uintptr_t)0;
     params->startFlag = false;
-    params->period = 0;
+    params->period    = 0;
 }
 
 /*
@@ -330,11 +346,13 @@ void ClockP_setPeriod(ClockP_Handle handle, uint32_t period)
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
     BaseType_t status;
 
-    if (HwiP_inISR()) {
-        status = xTimerChangePeriodFromISR(pObj->timer, (TickType_t) period, NULL);
+    if (HwiP_inISR())
+    {
+        status = xTimerChangePeriodFromISR(pObj->timer, (TickType_t)period, NULL);
     }
-    else {
-        status = xTimerChangePeriod(pObj->timer, (TickType_t) period, ticksToWait);
+    else
+    {
+        status = xTimerChangePeriod(pObj->timer, (TickType_t)period, ticksToWait);
     }
 
     configASSERT(status == pdPASS);
@@ -349,7 +367,8 @@ void ClockP_start(ClockP_Handle handle)
 {
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
 
-    if (pObj->timeout == 0) {
+    if (pObj->timeout == 0)
+    {
         return;
     }
 
@@ -381,10 +400,12 @@ void ClockP_stop(ClockP_Handle handle)
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
     BaseType_t status;
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xTimerStopFromISR(pObj->timer, NULL);
     }
-    else {
+    else
+    {
         status = xTimerStop(pObj->timer, ticksToWait);
     }
     configASSERT(status == pdPASS);
@@ -397,10 +418,12 @@ void ClockP_sleep(uint32_t sec)
 {
     TickType_t xDelay;
 
-    if (sec > 0xFFFFFFFF / configTICK_RATE_HZ) {
+    if (sec > 0xFFFFFFFF / configTICK_RATE_HZ)
+    {
         xDelay = 0xFFFFFFFF;
     }
-    else {
+    else
+    {
         xDelay = sec * configTICK_RATE_HZ;
     }
 
@@ -426,18 +449,21 @@ void ClockP_usleep(uint32_t usec)
 static bool setClockObjTimeout(ClockP_Handle handle)
 {
     ClockP_FreeRTOSObj *pObj = (ClockP_FreeRTOSObj *)handle;
-    BaseType_t          status;
+    BaseType_t status;
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xTimerChangePeriodFromISR(pObj->timer, (TickType_t)pObj->curTimeout, NULL);
     }
-    else {
+    else
+    {
         status = xTimerChangePeriod(pObj->timer, (TickType_t)pObj->curTimeout, ticksToWait);
     }
 
     configASSERT(status == pdPASS);
 
-    if (status == pdPASS) {
+    if (status == pdPASS)
+    {
         return (true);
     }
 

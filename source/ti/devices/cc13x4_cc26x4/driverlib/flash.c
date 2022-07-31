@@ -36,6 +36,7 @@
 
 #include "../inc/hw_types.h"
 #include "../inc/hw_ccfg.h"
+#include "../inc/hw_fcfg2.h"
 #include "flash.h"
 #include "chipinfo.h"
 
@@ -81,8 +82,6 @@
 #define CCFG_OFFSET_SECT_PROT  CCFG_O_CCFG_WEPROT_31_0_BY2K
 #define CCFG_SIZE_SECURITY     0x00000018
 #define CCFG_SIZE_SECT_PROT    0x00000004
-
-#define FLASH_2T_WAITSTATE_VAL      (0x5)
 
 //*****************************************************************************
 //

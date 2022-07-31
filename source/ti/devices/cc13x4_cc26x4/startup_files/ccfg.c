@@ -2,9 +2,9 @@
 *  Filename:       ccfg.c
 *
 *  Description:    Customer Configuration for:
-*                  CC13x4, CC26x4 device family (HW rev 1).
+*                  CC13x4, CC26x4 device family.
 *
-*  Copyright (C) 2020-2021, Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2020-2022, Texas Instruments Incorporated - http://www.ti.com/
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions are met:
@@ -165,10 +165,6 @@
 #endif
 #endif
 
-#ifndef SET_CCFG_MODE_CONF_VDDR_CAP
-#define SET_CCFG_MODE_CONF_VDDR_CAP                     0x3A       // Unsigned 8-bit integer representing the min. decoupling capacitance on VDDR in units of 100nF
-#endif
-
 #ifndef SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC
 #define SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC           0x1        // Temperature compensation on VDDR sleep trim disabled (default)
 // #define SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC        0x0        // Temperature compensation on VDDR sleep trim enabled
@@ -240,8 +236,8 @@
 //#####################################
 
 #ifndef SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE
-#define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE           0x00       // Disable unlocking of TI FA option.
-// #define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE        0xC5       // Enable unlocking of TI FA option with the unlock code
+#define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE           0x00       // Disable unlocking of TI FA option
+// #define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE        0xC5       // Enable unlocking of TI FA option with the unlock key
 #endif
 
 #ifndef SET_CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE
@@ -272,6 +268,27 @@
 #ifndef SET_CCFG_CCFG_TAP_DAP_1_AON_TAP_ENABLE
 #define SET_CCFG_CCFG_TAP_DAP_1_AON_TAP_ENABLE          0x00       // Access disabled
 // #define SET_CCFG_CCFG_TAP_DAP_1_AON_TAP_ENABLE       0xC5       // Access enabled if also enabled in FCFG
+#endif
+
+#ifndef SET_CCFG_CCFG_TI_OPTIONS_C_FA_DIS
+// #define SET_CCFG_CCFG_TI_OPTIONS_C_FA_DIS            0x00       // Enable customer key CKEY0-3 to be XOR'ed with TI FA option unlock key
+#define SET_CCFG_CCFG_TI_OPTIONS_C_FA_DIS               0xC5       // Disable customer key CKEY0-3 to be XOR'ed with TI FA option unlock key
+#endif
+
+#ifndef SET_CCFG_CKEY0
+#define SET_CCFG_CKEY0                                  0xFFFFFFFF // Bits [31:0]
+#endif
+
+#ifndef SET_CCFG_CKEY1
+#define SET_CCFG_CKEY1                                  0xFFFFFFFF // Bits [63:32]
+#endif
+
+#ifndef SET_CCFG_CKEY2
+#define SET_CCFG_CKEY2                                  0xFFFFFFFF // Bits [95:64]
+#endif
+
+#ifndef SET_CCFG_CKEY3
+#define SET_CCFG_CKEY3                                  0xFFFFFFFF // Bits [127:96]
 #endif
 
 //#####################################
@@ -464,7 +481,7 @@
 // CCFG values that should not be modified.
 //
 //*****************************************************************************
-#define SET_CCFG_SIZE_AND_DIS_FLAGS_SIZE_OF_CCFG        0x006C
+#define SET_CCFG_SIZE_AND_DIS_FLAGS_SIZE_OF_CCFG        0x007C
 #define SET_CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS       (CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS_M >> CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS_S)
 
 #if ( CCFG_FORCE_VDDR_HH )
@@ -472,8 +489,6 @@
 #else
 #define SET_CCFG_MODE_CONF_VDDR_EXT_LOAD                0x1
 #endif
-
-#define SET_CCFG_BUS_CFG                                0xFFFFFFFF
 
 #define SET_CCFG_MODE_CONF_RTC_COMP                     0x1
 #define SET_CCFG_MODE_CONF_HF_COMP                      0x1
@@ -487,6 +502,8 @@
 #define SET_CCFG_VOLT_LOAD_1_VDDR_EXT_TP105             0xFF
 #define SET_CCFG_VOLT_LOAD_1_VDDR_EXT_TP85              0xFF
 #define SET_CCFG_VOLT_LOAD_1_VDDR_EXT_TP65              0xFF
+
+#define SET_CCFG_RESERVED0                              0xFFFFFFFF
 
 //*****************************************************************************
 //
@@ -514,8 +531,7 @@
      ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_FREQ                     )) << CCFG_MODE_CONF_XOSC_FREQ_S                     ) | ~CCFG_MODE_CONF_XOSC_FREQ_M                     ) & \
      ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAP_MOD                  )) << CCFG_MODE_CONF_XOSC_CAP_MOD_S                  ) | ~CCFG_MODE_CONF_XOSC_CAP_MOD_M                  ) & \
      ((((uint32_t)( SET_CCFG_MODE_CONF_HF_COMP                       )) << CCFG_MODE_CONF_HF_COMP_S                       ) | ~CCFG_MODE_CONF_HF_COMP_M                       ) & \
-     ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA           )) << CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_S           ) | ~CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_M           ) & \
-     ((((uint32_t)( SET_CCFG_MODE_CONF_VDDR_CAP                      )) << CCFG_MODE_CONF_VDDR_CAP_S                      ) | ~CCFG_MODE_CONF_VDDR_CAP_M                      ) )
+     ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA           )) << CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_S           ) | ~CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_M           ) )
 
 #define DEFAULT_CCFG_MODE_CONF_1         ( \
      ((((uint32_t)( SET_CCFG_MODE_CONF_1_TCXO_TYPE                   )) << CCFG_MODE_CONF_1_TCXO_TYPE_S                   ) | ~CCFG_MODE_CONF_1_TCXO_TYPE_M                   ) & \
@@ -563,7 +579,8 @@
 
 #define DEFAULT_CCFG_CCFG_TI_OPTIONS     ( \
      ((((uint32_t)( SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE            )) << CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE_S            ) | ~CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE_M            ) & \
-     ((((uint32_t)( SET_CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE         )) << CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE_S         ) | ~CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE_M         ) )
+     ((((uint32_t)( SET_CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE         )) << CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE_S         ) | ~CCFG_CCFG_TI_OPTIONS_IDAU_CFG_ENABLE_M         ) & \
+     ((((uint32_t)( SET_CCFG_CCFG_TI_OPTIONS_C_FA_DIS                )) << CCFG_CCFG_TI_OPTIONS_C_FA_DIS_S                ) | ~CCFG_CCFG_TI_OPTIONS_C_FA_DIS_M                ) )
 
 #define DEFAULT_CCFG_CCFG_TAP_DAP_0      ( \
      ((((uint32_t)( SET_CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE           )) << CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE_S           ) | ~CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE_M           ) & \
@@ -594,7 +611,7 @@
      ((((uint32_t)( SET_CCFG_SRAM_CFG_MEM_SEL                        )) << CCFG_SRAM_CFG_MEM_SEL_S                        ) | ~CCFG_SRAM_CFG_MEM_SEL_M                        ) & \
      ((((uint32_t)( SET_CCFG_SRAM_CFG_PARITY_DIS                     )) << CCFG_SRAM_CFG_PARITY_DIS_S                     ) | ~CCFG_SRAM_CFG_PARITY_DIS_M                     ) )
 
-#define DEFAULT_CCFG_BUS_CFG        SET_CCFG_BUS_CFG
+#define DEFAULT_CCFG_RESERVED0      SET_CCFG_RESERVED0
 
 #define DEFAULT_CCFG_CPU_LOCK_CFG ( \
      ((((uint32_t)( SET_CCFG_CPU_LOCK_CFG_LOCKNSVTOR                 )) << CCFG_CPU_LOCK_CFG_LOCKNSVTOR_N_S               ) | ~CCFG_CPU_LOCK_CFG_LOCKNSVTOR_N_M               ) & \
@@ -609,6 +626,11 @@
      ((((uint32_t)( SET_CCFG_DEB_AUTH_CFG_INTSPIDEN                  )) << CCFG_DEB_AUTH_CFG_INTSPIDEN_S                  ) | ~CCFG_DEB_AUTH_CFG_INTSPIDEN_M                  ) & \
      ((((uint32_t)( SET_CCFG_DEB_AUTH_CFG_SPIDENSEL                  )) << CCFG_DEB_AUTH_CFG_SPIDENSEL_S                  ) | ~CCFG_DEB_AUTH_CFG_SPIDENSEL_M                  ) )
 
+#define DEFAULT_CCFG_CKEY0      SET_CCFG_CKEY0
+#define DEFAULT_CCFG_CKEY1      SET_CCFG_CKEY1
+#define DEFAULT_CCFG_CKEY2      SET_CCFG_CKEY2
+#define DEFAULT_CCFG_CKEY3      SET_CCFG_CKEY3
+
 //*****************************************************************************
 //
 // Customer Configuration Area in Lock Page
@@ -620,6 +642,8 @@ __root const ccfg_t __ccfg @ ".ccfg" =
 #pragma DATA_SECTION(__ccfg, ".ccfg")
 #pragma RETAIN(__ccfg)
 const ccfg_t __ccfg =
+#elif defined(__llvm__)
+const ccfg_t __ccfg __attribute__((section(".ccfg"), retain)) =
 #else
 const ccfg_t __ccfg __attribute__((section(".ccfg"))) __attribute__((used)) =
 #endif
@@ -648,9 +672,13 @@ const ccfg_t __ccfg __attribute__((section(".ccfg"))) __attribute__((used)) =
     DEFAULT_CCFG_TRUSTZONE_FLASH_CFG    , // 0x50000054
     DEFAULT_CCFG_TRUSTZONE_SRAM_CFG     , // 0x50000058
     DEFAULT_CCFG_SRAM_CFG               , // 0x5000005C
-    DEFAULT_CCFG_BUS_CFG                , // 0x50000060
+    DEFAULT_CCFG_RESERVED0              , // 0x50000060
     DEFAULT_CCFG_CPU_LOCK_CFG           , // 0x50000064
     DEFAULT_CCFG_DEB_AUTH_CFG           , // 0x50000068
+    DEFAULT_CCFG_CKEY0                  , // 0x5000006C
+    DEFAULT_CCFG_CKEY1                  , // 0x50000070
+    DEFAULT_CCFG_CKEY2                  , // 0x50000074
+    DEFAULT_CCFG_CKEY3                  , // 0x50000078
 };
 
 #endif // __CCFC_C__

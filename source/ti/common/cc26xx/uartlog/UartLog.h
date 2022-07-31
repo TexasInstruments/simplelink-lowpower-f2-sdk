@@ -69,7 +69,7 @@ extern "C"
 /*********************************************************************
  * INCLUDES
  */
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 
 /*********************************************************************
  * CONSTANTS
@@ -172,7 +172,7 @@ extern "C"
  *
  * @return  None.
  */
-void UartLog_doInit(UART_Handle handle);
+void UartLog_doInit(UART2_Handle handle);
 
 void UartLog_log(char *file,
                  int line,

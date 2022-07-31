@@ -104,7 +104,8 @@ extern "C" {
  *  SysConfig is used, this struct will be automatically created when the
  *  Temperature module is used in SysConfig.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief  Temperature sensor's interrupt priority.
      *
      *  The interrupt line is shared between the temperature sensor and the
@@ -124,7 +125,6 @@ typedef struct {
      */
     uint8_t intPriority;
 } TemperatureCC26X2_Config;
-
 
 #ifdef __cplusplus
 }

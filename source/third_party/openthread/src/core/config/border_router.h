@@ -55,4 +55,44 @@
 #define OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE 0
 #endif
 
+/**
+ * @def OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
+ *
+ * Define to 1 to enable Border Routing support.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
+#define OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE
+ *
+ * Define to 1 to enable Border Routing Vicarious Router Solicitation.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE
+#define OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE 1
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE
+ *
+ * Define to 1 to enable Border Routing NAT64 support.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE
+#define OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT
+ *
+ * Specifies the Border Agent UDP port, and use 0 for ephemeral port.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT
+#define OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT 0
+#endif
+
 #endif // CONFIG_BORDER_ROUTER_H_

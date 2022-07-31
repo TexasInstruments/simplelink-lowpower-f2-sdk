@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ extern "C" {
  * Function return ECCParams_STATUS_SUCCESS if the control code was executed
  * successfully.
  */
-#define ECCParams_STATUS_SUCCESS         (0)
+#define ECCParams_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
@@ -66,7 +66,7 @@ extern "C" {
  * Functions return ECCParams_STATUS_ERROR if the control code was not executed
  * successfully.
  */
-#define ECCParams_STATUS_ERROR           (-1)
+#define ECCParams_STATUS_ERROR (-1)
 
 /*!
  *  @brief Enumeration of curve equations supported.
@@ -96,36 +96,86 @@ extern "C" {
  */
 typedef uint32_t ECCParams_CurveType;
 
-#define ECCParams_CURVE_TYPE_NONE 0U
+#define ECCParams_CURVE_TYPE_NONE                  0U
 #define ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3 1U
 #define ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_GEN 2U
-#define ECCParams_CURVE_TYPE_MONTGOMERY 3U
-#define ECCParams_CURVE_TYPE_EDWARDS 4U
+#define ECCParams_CURVE_TYPE_MONTGOMERY            3U
+#define ECCParams_CURVE_TYPE_EDWARDS               4U
 
 /*!
+ *  @brief Enumeration of ECC curve names supported by Secure Processing
+ *         Environment (SPE).
+ */
+typedef enum
+{
+    /*
+     * WARNING: Do not alter the order or contents of this enum without updating
+     * the corresponding curveParamTable array in ECCParamCC26X4_s.c
+     */
+    ECCParams_SecureCurve_NISTP224 = 0,
+    ECCParams_SecureCurve_NISTP256,
+    ECCParams_SecureCurve_NISTP384,
+    ECCParams_SecureCurve_NISTP521,
+    ECCParams_SecureCurve_BrainpoolP256R1,
+    ECCParams_SecureCurve_BrainpoolP384R1,
+    ECCParams_SecureCurve_BrainpoolP512R1,
+    ECCParams_SecureCurve_Curve25519,
+    ECCParams_SecureCurve_Ed25519,
+    ECCParams_SecureCurve_Wei25519,
+    ECCParams_SecureCurve_COUNT /* This element denotes the max enum value and is not a valid curve */
+} ECCParams_SecureCurve;
+
+/*
+ * ECCParams_CurveParams have different struct members depending on the context
+ * of the build (Secure-only, Non-secure, or Secure)
+ */
+#if (SPE_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+
+/*!
+ *  @brief A structure containing the parameters of an elliptic curve.
  *
- *  @brief A structure containing the parameters of an elliptic curve in short Weierstrass form.
- *
- *  Elliptical Curve Cryptography (ECC) prime curve.
- *
- *  The equation used to define the curve is expressed in the short Weierstrass
- *  form y^3 = x^2 + a*x + b
- *
+ *  Elliptical Curve Cryptography (ECC) prime curve parameters.
  */
 
-typedef struct ECCParams_CurveParams {
-    const ECCParams_CurveType   curveType;
-    const uint8_t               *prime;
-    const uint8_t               *a;
-    const uint8_t               *b;
-    const uint8_t               *order;
-    uint8_t                     cofactor;
-    const size_t                length;
-    const uint8_t               *generatorX;
-    const uint8_t               *generatorY;
+typedef struct ECCParams_CurveParams
+{
+    const ECCParams_CurveType curveType;
+    const uint8_t *prime;
+    const uint8_t *a;
+    const uint8_t *b;
+    const uint8_t *order;
+    const uint8_t cofactor;
+    const size_t length;
+    const uint8_t *generatorX;
+    const uint8_t *generatorY;
 } ECCParams_CurveParams;
 
+#else
 
+/*!
+ *  @brief A structure containing the curve name to reference elliptic curve
+ *         parameters stored in secure memory.
+ */
+typedef struct ECCParams_CurveParams
+{
+    ECCParams_SecureCurve secureCurve;
+} ECCParams_CurveParams;
+
+#endif /* (SPE_ENABLED == 0) || defined(TFM_PSA_API) */
+
+#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+
+/*!
+ *  @brief A structure containing the curve name to reference elliptic curve
+ *         parameters stored in secure memory.
+ */
+/* This must match the ECCParams_CurveParams struct definition directly above */
+typedef struct ECCParams_ns_CurveParams
+{
+    ECCParams_SecureCurve secureCurve;
+} ECCParams_ns_CurveParams;
+
+#endif /* defined(TFM_PSA_API) */
 
 /* Short Weierstrass curves */
 
@@ -205,29 +255,30 @@ extern const ECCParams_CurveParams ECCParams_Ed25519;
 
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
 
-/*!
- *  @defgroup nistp256_params NIST P256 curve params to be used with ECC SW library
- *  Note: CC26X1 uses NIST P256 curve params defined in driverlib/rom_ecc.h
- *  @{
- */
+    /*!
+     *  @defgroup nistp256_params NIST P256 curve params to be used with ECC SW library
+     *  Note: CC26X1 uses NIST P256 curve params defined in driverlib/rom_ecc.h
+     *  @{
+     */
 
-/*!
- *  @brief Length of NIST P256 curve parameters in bytes
- */
-#define ECCParams_NISTP256_LENGTH 32
+    /*!
+     *  @brief Length of NIST P256 curve parameters in bytes
+     */
+    #define ECCParams_NISTP256_LENGTH 32
 
-/*!
- *  @brief Length in bytes of NISTP256 curve parameters including the prepended
- *  length word.
- */
-#define ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES   (ECCParams_NISTP256_LENGTH + ECC_LENGTH_PREFIX_BYTES)
+    /*!
+     *  @brief Length in bytes of NISTP256 curve parameters including the prepended
+     *  length word.
+     */
+    #define ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES (ECCParams_NISTP256_LENGTH + ECC_LENGTH_PREFIX_BYTES)
 
 /*!
  *  @brief Union to access ECC_NISTP256 curve params in bytes or words.
  */
-typedef union {
-    uint8_t     byte[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES];
-    uint32_t    word[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
+typedef union
+{
+    uint8_t byte[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES];
+    uint32_t word[ECC_NISTP256_PARAM_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
 } ECC_NISTP256_Param;
 
 /*!
@@ -277,7 +328,7 @@ extern const ECC_NISTP256_Param ECC_NISTP256_a_mont;
  */
 extern const ECC_NISTP256_Param ECC_NISTP256_b_mont;
 
-/*! @} */ /* end of nistp256_params */
+    /*! @} */ /* end of nistp256_params */
 
 #endif /* DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 */
 
@@ -295,14 +346,15 @@ extern const ECC_NISTP256_Param ECC_NISTP256_b_mont;
  *  @brief Length in bytes of Curve25519 curve parameters including the prepended
  *  length word.
  */
-#define ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES   (ECCParams_CURVE25519_LENGTH + ECC_LENGTH_PREFIX_BYTES)
+#define ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES (ECCParams_CURVE25519_LENGTH + ECC_LENGTH_PREFIX_BYTES)
 
 /*!
  *  @brief Union to access ECC_Curve25519 curve params in bytes or words.
  */
-typedef union {
-    uint8_t   byte[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES];
-    uint32_t  word[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
+typedef union
+{
+    uint8_t byte[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES];
+    uint32_t word[ECC_CURVE25519_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
 } ECC_Curve25519_Param;
 
 /*!
@@ -338,7 +390,6 @@ extern const ECC_Curve25519_Param ECC_Curve25519_b;
 extern const ECC_Curve25519_Param ECC_Curve25519_order;
 
 /*! @} */ /* end of curve25519_params */
-
 
 /* Utility functions */
 

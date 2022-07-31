@@ -856,14 +856,10 @@
 // software compatibility KEYWRITTENAREA will  be reset when writing to this
 // register.
 // ENUMs:
-// 256_BIT                  Not supported
-// 192_BIT                  Not supported
 // 128_BIT                  128 bits
 #define CRYPTO_KEYSIZE_SIZE_W                                                2
 #define CRYPTO_KEYSIZE_SIZE_M                                       0x00000003
 #define CRYPTO_KEYSIZE_SIZE_S                                                0
-#define CRYPTO_KEYSIZE_SIZE_256_BIT                                 0x00000003
-#define CRYPTO_KEYSIZE_SIZE_192_BIT                                 0x00000002
 #define CRYPTO_KEYSIZE_SIZE_128_BIT                                 0x00000001
 
 //*****************************************************************************
@@ -1293,24 +1289,22 @@
 //
 // Bits [60:0] of the crypto length registers AESDATALEN1 and AESDATALEN0 store
 // the cryptographic data length in bytes for all modes. Once processing with
-// this context is started, this length decrements to zero. Data lengths up to
+// this context starts, this length decrements to zero. Data lengths up to
 // (2^61 - 1) bytes are allowed.
-// For GCM, any value up to 2^36 - 32 bytes can be used. This is because a
-// 32-bit counter mode is used; the maximum number of 128-bit blocks is 2^32 -
-// 2, resulting in a maximum number of bytes of 2^36 - 32.
-// Writing to this register triggers the engine to start using this context.
-// This is valid for all modes except GCM and CCM.
-// Note: For the combined modes (GCM and CCM), this length does not include the
-// authentication only data; the authentication length is specified in the
-// AESAUTHLEN.LEN.
-// All modes must have a length > 0. For the combined modes, it is allowed to
-// have one of the lengths equal to zero.
+//
+// A write to this register triggers the engine to start using this context.
+// This is valid for all modes except CCM. For the combined modes (CCM), this
+// length does not include the authentication only data; the authentication
+// length is specified in the AESAUTHLEN.LEN. All modes must have a length > 0.
+// For the combined modes, it is allowed to have one of the lengths equal to
+// zero.
+//
 // For the basic encryption modes (ECB/CBC/CTR) it is allowed to program zero
-// to the length field; in that case the length is assumed infinite.
-// All data must be byte (8-bit) aligned for stream cipher modes; bit aligned
-// data streams are not supported by the Crypto peripheral. For block cipher
-// modes, the data length must be programmed in multiples of the block cipher
-// size, 16 bytes.
+// to the length field; in that case the length is assumed infinite. All data
+// must be byte (8-bit) aligned for stream cipher modes; bit aligned data
+// streams are not supported by the Crypto peripheral. For block cipher modes,
+// the data length must be programmed in multiples of the block cipher size, 16
+// bytes.
 #define CRYPTO_AESDATALEN1_LEN_MSW_W                                        29
 #define CRYPTO_AESDATALEN1_LEN_MSW_M                                0x1FFFFFFF
 #define CRYPTO_AESDATALEN1_LEN_MSW_S                                         0
@@ -1339,7 +1333,7 @@
 // Field:  [31:0] DATA
 //
 // Data register 0 for output block data from the Crypto peripheral.
-// These bits = AES Output Data[31:0] of {127:0]
+// These bits = AES Output Data[31:0] of [127:0]
 //
 // For normal operations, this register is not used, since data input and
 // output is transferred from and to the AES engine via DMA.
@@ -1351,8 +1345,8 @@
 // full block) should be read before the core will move the next block to the
 // data output buffer. To empty the data output buffer, AESCTL.OUTPUT_RDY must
 // be written.
-// For the modes with authentication (CBC-MAC, GCM and CCM), the invalid
-// (message) bytes/words can be written with any data.
+// For the modes with authentication (CBC-MAC and CCM), the invalid (message)
+// bytes/words can be written with any data.
 //
 // Note: The AAD / authentication only data is not copied to the output buffer
 // but only used for authentication.
@@ -1382,14 +1376,13 @@
 // allowed to write only the words with valid data. Next AES operation is
 // triggered by writing to AESCTL.INPUT_RDY.
 //
-// Note: AES typically operates on 128 bits block multiple input data. The CTR,
-// GCM and CCM modes form an exception. The last block of a CTR-mode message
-// may contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits.
-// For GCM/CCM, the last block of both AAD and message data may contain less
-// than 128 bits (refer to [NIST 800-38D]). The Crypto peripheral automatically
-// pads or masks misaligned ending data blocks with zeroes for GCM, CCM and
-// CBC-MAC. For CTR mode, the remaining data in an unaligned data block is
-// ignored.
+// Note: AES typically operates on 128 bits block multiple input data. The CTR
+// and CCM modes form an exception. The last block of a CTR-mode message may
+// contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits. For
+// CCM, the last block of both AAD and message data may contain less than 128
+// bits (refer to [NIST 800-38D]). The Crypto peripheral automatically pads or
+// masks misaligned ending data blocks with zeroes for CCM and CBC-MAC. For CTR
+// mode, the remaining data in an unaligned data block is ignored.
 #define CRYPTO_AESDATAIN0_DATA_W                                            32
 #define CRYPTO_AESDATAIN0_DATA_M                                    0xFFFFFFFF
 #define CRYPTO_AESDATAIN0_DATA_S                                             0
@@ -1414,8 +1407,8 @@
 // full block) should be read before the core will move the next block to the
 // data output buffer. To empty the data output buffer, AESCTL.OUTPUT_RDY must
 // be written.
-// For the modes with authentication (CBC-MAC, GCM and CCM), the invalid
-// (message) bytes/words can be written with any data.
+// For the modes with authentication (CBC-MAC and CCM), the invalid (message)
+// bytes/words can be written with any data.
 //
 // Note: The AAD / authentication only data is not copied to the output buffer
 // but only used for authentication.
@@ -1445,14 +1438,13 @@
 // allowed to write only the words with valid data. Next AES operation is
 // triggered by writing to AESCTL.INPUT_RDY.
 //
-// Note: AES typically operates on 128 bits block multiple input data. The CTR,
-// GCM and CCM modes form an exception. The last block of a CTR-mode message
-// may contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits.
-// For GCM/CCM, the last block of both AAD and message data may contain less
-// than 128 bits (refer to [NIST 800-38D]). The Crypto peripheral automatically
-// pads or masks misaligned ending data blocks with zeroes for GCM, CCM and
-// CBC-MAC. For CTR mode, the remaining data in an unaligned data block is
-// ignored.
+// Note: AES typically operates on 128 bits block multiple input data. The CTR
+// and CCM modes form an exception. The last block of a CTR-mode message may
+// contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits. For
+// CCM, the last block of both AAD and message data may contain less than 128
+// bits (refer to [NIST 800-38D]). The Crypto peripheral automatically pads or
+// masks misaligned ending data blocks with zeroes for CCM and CBC-MAC. For CTR
+// mode, the remaining data in an unaligned data block is ignored.
 #define CRYPTO_AESDATAIN1_DATA_W                                            32
 #define CRYPTO_AESDATAIN1_DATA_M                                    0xFFFFFFFF
 #define CRYPTO_AESDATAIN1_DATA_S                                             0
@@ -1477,8 +1469,8 @@
 // full block) should be read before the core will move the next block to the
 // data output buffer. To empty the data output buffer, AESCTL.OUTPUT_RDY must
 // be written.
-// For the modes with authentication (CBC-MAC, GCM and CCM), the invalid
-// (message) bytes/words can be written with any data.
+// For the modes with authentication (CBC-MAC and CCM), the invalid (message)
+// bytes/words can be written with any data.
 //
 // Note: The AAD / authentication only data is not copied to the output buffer
 // but only used for authentication.
@@ -1508,14 +1500,13 @@
 // allowed to write only the words with valid data. Next AES operation is
 // triggered by writing to AESCTL.INPUT_RDY.
 //
-// Note: AES typically operates on 128 bits block multiple input data. The CTR,
-// GCM and CCM modes form an exception. The last block of a CTR-mode message
-// may contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits.
-// For GCM/CCM, the last block of both AAD and message data may contain less
-// than 128 bits (refer to [NIST 800-38D]). The Crypto peripheral automatically
-// pads or masks misaligned ending data blocks with zeroes for GCM, CCM and
-// CBC-MAC. For CTR mode, the remaining data in an unaligned data block is
-// ignored.
+// Note: AES typically operates on 128 bits block multiple input data. The CTR
+// and CCM modes form an exception. The last block of a CTR-mode message may
+// contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits. For
+// CCM, the last block of both AAD and message data may contain less than 128
+// bits (refer to [NIST 800-38D]). The Crypto peripheral automatically pads or
+// masks misaligned ending data blocks with zeroes for CCM and CBC-MAC. For CTR
+// mode, the remaining data in an unaligned data block is ignored.
 #define CRYPTO_AESDATAIN2_DATA_W                                            32
 #define CRYPTO_AESDATAIN2_DATA_M                                    0xFFFFFFFF
 #define CRYPTO_AESDATAIN2_DATA_S                                             0
@@ -1540,8 +1531,8 @@
 // full block) should be read before the core will move the next block to the
 // data output buffer. To empty the data output buffer, AESCTL.OUTPUT_RDY must
 // be written.
-// For the modes with authentication (CBC-MAC, GCM and CCM), the invalid
-// (message) bytes/words can be written with any data.
+// For the modes with authentication (CBC-MAC and CCM), the invalid (message)
+// bytes/words can be written with any data.
 //
 // Note: The AAD / authentication only data is not copied to the output buffer
 // but only used for authentication.
@@ -1571,14 +1562,13 @@
 // allowed to write only the words with valid data. Next AES operation is
 // triggered by writing to AESCTL.INPUT_RDY.
 //
-// Note: AES typically operates on 128 bits block multiple input data. The CTR,
-// GCM and CCM modes form an exception. The last block of a CTR-mode message
-// may contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits.
-// For GCM/CCM, the last block of both AAD and message data may contain less
-// than 128 bits (refer to [NIST 800-38D]). The Crypto peripheral automatically
-// pads or masks misaligned ending data blocks with zeroes for GCM, CCM and
-// CBC-MAC. For CTR mode, the remaining data in an unaligned data block is
-// ignored.
+// Note: AES typically operates on 128 bits block multiple input data. The CTR
+// and CCM modes form an exception. The last block of a CTR-mode message may
+// contain less than 128 bits (refer to [NIST 800-38A]): 0 < n <= 128 bits. For
+// CCM, the last block of both AAD and message data may contain less than 128
+// bits (refer to [NIST 800-38D]). The Crypto peripheral automatically pads or
+// masks misaligned ending data blocks with zeroes for CCM and CBC-MAC. For CTR
+// mode, the remaining data in an unaligned data block is ignored.
 #define CRYPTO_AESDATAIN3_DATA_W                                            32
 #define CRYPTO_AESDATAIN3_DATA_M                                    0xFFFFFFFF
 #define CRYPTO_AESDATAIN3_DATA_S                                             0

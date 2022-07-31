@@ -12,7 +12,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_uia_scripts_ndk.tar.dep" src="package/rel/ti_uia_scripts_ndk.xdc.inc"/>
+        <srcFile name="package/rel/ti_uia_scripts_ndk.tar.gz.dep" src="package/rel/ti_uia_scripts_ndk.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -26,7 +26,7 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_uia_scripts_ndk"
-        pname="ti_uia_scripts_ndk.tar"
+        pname="../../../../../exports/ti_uia_scripts_ndk.tar.gz"
         label="default"
     >
         <file name="package/package.bld.xml"/>

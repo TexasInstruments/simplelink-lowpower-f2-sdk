@@ -72,7 +72,7 @@ extern "C" {
  *  BIOS 7.x: 40
  *  FreeRTOS: 80
  */
-#define MutexP_STRUCT_SIZE   (80)
+#define MutexP_STRUCT_SIZE (80)
 
 /*!
  *  @brief    MutexP structure.
@@ -80,17 +80,19 @@ extern "C" {
  *  Opaque structure that should be large enough to hold any of the
  *  RTOS specific MutexP objects.
  */
-typedef union MutexP_Struct {
-    uint32_t dummy;  /*!< Align object */
-    uint8_t  data[MutexP_STRUCT_SIZE];
+typedef union MutexP_Struct
+{
+    uint32_t dummy; /*!< Align object */
+    uint8_t data[MutexP_STRUCT_SIZE];
 } MutexP_Struct;
 
 /*!
  *  @brief    Status codes for MutexP APIs
  */
-typedef enum {
+typedef enum
+{
     /*! API completed successfully */
-    MutexP_OK = 0,
+    MutexP_OK      = 0,
     /*! API failed */
     MutexP_FAILURE = -1
 } MutexP_Status;
@@ -113,10 +115,10 @@ typedef void *MutexP_Handle;
  *  sets the fields manually. The MutexP default parameters are noted in
  *  ::MutexP_Params_init.
  */
-typedef struct {
+typedef struct
+{
     void (*callback)(void); /*!< Callback while waiting for mutex unlock */
 } MutexP_Params;
-
 
 /*!
  *  @brief  Function to construct a mutex.
@@ -129,8 +131,7 @@ typedef struct {
  *
  *  @return A MutexP_Handle on success or a NULL on an error
  */
-extern MutexP_Handle MutexP_construct(MutexP_Struct *handle,
-        MutexP_Params *params);
+extern MutexP_Handle MutexP_construct(MutexP_Struct *handle, MutexP_Params *params);
 
 /*!
  *  @brief  Function to destruct a mutex object

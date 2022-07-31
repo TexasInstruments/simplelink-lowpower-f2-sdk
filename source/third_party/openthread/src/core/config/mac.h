@@ -66,11 +66,11 @@
  *
  * The default maximum number of retries allowed after a transmission failure for direct transmissions.
  *
- * Equivalent to macMaxFrameRetries, default value is 3.
+ * Equivalent to macMaxFrameRetries, default value is 15.
  *
  */
 #ifndef OPENTHREAD_CONFIG_MAC_DEFAULT_MAX_FRAME_RETRIES_DIRECT
-#define OPENTHREAD_CONFIG_MAC_DEFAULT_MAX_FRAME_RETRIES_DIRECT 3
+#define OPENTHREAD_CONFIG_MAC_DEFAULT_MAX_FRAME_RETRIES_DIRECT 15
 #endif
 
 /**
@@ -83,6 +83,66 @@
  */
 #ifndef OPENTHREAD_CONFIG_MAC_DEFAULT_MAX_FRAME_RETRIES_INDIRECT
 #define OPENTHREAD_CONFIG_MAC_DEFAULT_MAX_FRAME_RETRIES_INDIRECT 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_ADD_DELAY_ON_NO_ACK_ERROR_BEFORE_RETRY
+ *
+ * Define as 1 to add random backoff delay in between frame transmission retries when the previous attempt resulted in
+ * no-ack error.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_ADD_DELAY_ON_NO_ACK_ERROR_BEFORE_RETRY
+#define OPENTHREAD_CONFIG_MAC_ADD_DELAY_ON_NO_ACK_ERROR_BEFORE_RETRY 1
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_RETX_DELAY_MIN_BACKOFF_EXPONENT
+ *
+ * Specifies the minimum backoff exponent to start with when adding random delay in between frame transmission
+ * retries on no-ack error. It is applicable only when `OPENTHREAD_CONFIG_MAC_ADD_DELAY_ON_NO_ACK_ERROR_BEFORE_RETRY`
+ * is enabled.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_RETX_DELAY_MIN_BACKOFF_EXPONENT
+#define OPENTHREAD_CONFIG_MAC_RETX_DELAY_MIN_BACKOFF_EXPONENT 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_RETX_DELAY_MAX_BACKOFF_EXPONENT
+ *
+ * Specifies the maximum backoff exponent when adding random delay in between frame transmission retries on no-ack
+ * error. It is applicable only when `OPENTHREAD_CONFIG_MAC_ADD_DELAY_ON_NO_ACK_ERROR_BEFORE_RETRY` is enabled.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_RETX_DELAY_MAX_BACKOFF_EXPONENT
+#define OPENTHREAD_CONFIG_MAC_RETX_DELAY_MAX_BACKOFF_EXPONENT 5
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_ENABLE
+ *
+ * Define as 1 to enable collision avoidance delay feature, which adds a delay wait time after a successful frame tx
+ * to a neighbor which is expected to forward the frame. This delay is applied before the next direct frame tx (towards
+ * any neighbor) on an FTD.
+ *
+ * The delay interval is specified by `OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_INTERVAL` (in milliseconds).
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_ENABLE
+#define OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_ENABLE 1
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_INTERVAL
+ *
+ * Specifies the collision avoidance delay interval in milliseconds. This is added after a successful frame tx to a
+ * neighbor that is expected to forward the frame (when `OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_ENABLE` is
+ * enabled).
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_INTERVAL
+#define OPENTHREAD_CONFIG_MAC_COLLISION_AVOIDANCE_DELAY_INTERVAL 8
 #endif
 
 /**
@@ -137,6 +197,16 @@
  */
 #ifndef OPENTHREAD_CONFIG_MAC_MAX_TX_ATTEMPTS_INDIRECT_POLLS
 #define OPENTHREAD_CONFIG_MAC_MAX_TX_ATTEMPTS_INDIRECT_POLLS 4
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_REQUEST_AHEAD_US
+ *
+ * Define how many microseconds ahead should MAC deliver CSL frame to SubMac.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_REQUEST_AHEAD_US
+#define OPENTHREAD_CONFIG_MAC_CSL_REQUEST_AHEAD_US 2000
 #endif
 
 /**
@@ -212,12 +282,13 @@
  * Define as 1 to support IEEE 802.15.4-2015 Header IE (Information Element) generation and parsing, it must be set
  * to support following features:
  *    1. Time synchronization service feature (i.e., OPENTHREAD_CONFIG_TIME_SYNC_ENABLE is set).
+ *    2. Thread 1.2.
  *
  * @note If it's enabled, platform must support interrupt context and concurrent access AES.
  *
  */
 #ifndef OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT
-#if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE
+#if OPENTHREAD_CONFIG_TIME_SYNC_ENABLE || (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
 #define OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT 1
 #else
 #define OPENTHREAD_CONFIG_MAC_HEADER_IE_SUPPORT 0
@@ -252,6 +323,180 @@
  */
 #ifndef OPENTHREAD_CONFIG_MAC_RETX_POLL_PERIOD
 #define OPENTHREAD_CONFIG_MAC_RETX_POLL_PERIOD 1000
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_ACK_TIMEOUT_ENABLE
+ *
+ * Define to 1 to enable software ACK timeout logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_ACK_TIMEOUT_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_ACK_TIMEOUT_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_RETRANSMIT_ENABLE
+ *
+ * Define to 1 to enable software retransmission logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_RETRANSMIT_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_RETRANSMIT_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_CSMA_BACKOFF_ENABLE
+ *
+ * Define to 1 to enable software CSMA-CA backoff logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_CSMA_BACKOFF_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_CSMA_BACKOFF_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_SECURITY_ENABLE
+ *
+ * Define to 1 to enable software transmission security logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_SECURITY_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_SECURITY_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_TIMING_ENABLE
+ *
+ * Define to 1 to enable software transmission target time logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_TIMING_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_TX_TIMING_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE
+ *
+ * Define to 1 to enable software reception target time logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_RX_TIMING_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SOFTWARE_ENERGY_SCAN_ENABLE
+ *
+ * Define to 1 to enable software energy scanning logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SOFTWARE_ENERGY_SCAN_ENABLE
+#define OPENTHREAD_CONFIG_MAC_SOFTWARE_ENERGY_SCAN_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE
+ *
+ * Define to 1 to enable csl transmitter logic.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE
+#define OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
+ *
+ * This setting configures the CSL receiver feature in Thread 1.2.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
+#define OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_AUTO_SYNC_ENABLE
+ *
+ * This setting configures CSL auto synchronization based on data poll mechanism in Thread 1.2.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_AUTO_SYNC_ENABLE
+#define OPENTHREAD_CONFIG_MAC_CSL_AUTO_SYNC_ENABLE OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_MIN_PERIOD
+ *
+ * This setting configures the minimum CSL period that could be used, in units of milliseconds.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_MIN_PERIOD
+#define OPENTHREAD_CONFIG_MAC_CSL_MIN_PERIOD 10
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_MAX_TIMEOUT
+ *
+ * This setting configures the maximum CSL timeout that could be used, in units of seconds.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_MAX_TIMEOUT
+#define OPENTHREAD_CONFIG_MAC_CSL_MAX_TIMEOUT 10000
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_CSL_TIMEOUT
+ *
+ * The default CSL timeout in seconds.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_CSL_TIMEOUT
+#define OPENTHREAD_CONFIG_CSL_TIMEOUT 100
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_CSL_DEBUG_ENABLE
+ *
+ * CSL receiver debug option. When this option is enabled, a CSL receiver wouldn't actually sleep in CSL state so it
+ * can still receive packets from the CSL transmitter.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_CSL_DEBUG_ENABLE
+#define OPENTHREAD_CONFIG_MAC_CSL_DEBUG_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD
+ *
+ * Reception scheduling and ramp up time needed for the CSL receiver to be ready, in units of microseconds.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD
+#define OPENTHREAD_CONFIG_CSL_RECEIVE_TIME_AHEAD 320
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
+ *
+ * The minimum CSL receive window (in microseconds) required to receive an IEEE 802.15.4 frame.
+ * - Maximum frame size with preamble: 6*2+127*2 symbols
+ * - AIFS: 12 symbols
+ * - Maximum ACK size with preamble: 6*2+33*2 symbols
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON
+#define OPENTHREAD_CONFIG_CSL_MIN_RECEIVE_ON 356 * 16
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_MAC_SCAN_DURATION
+ *
+ * This setting configures the default scan duration in milliseconds.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_MAC_SCAN_DURATION
+#define OPENTHREAD_CONFIG_MAC_SCAN_DURATION 300
 #endif
 
 #endif // CONFIG_MAC_H_

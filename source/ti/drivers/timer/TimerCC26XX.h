@@ -53,8 +53,7 @@
 #include <ti/drivers/timer/GPTimerCC26XX.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*!
@@ -68,10 +67,11 @@ extern "C"
  *  two half width timers per single timer peripheral. A 16-bit timer on this
  *  device has an 8-bit prescaler.
  */
-typedef enum {
-    TimerCC26XX_timer16A = 0x0001,    /*!< Half width timer A */
-    TimerCC26XX_timer16B = 0x0002,    /*!< Half width timer B */
-    TimerCC26XX_timer32  = 0x0003,    /*!< Full width timer   */
+typedef enum
+{
+    TimerCC26XX_timer16A = 0x0001, /*!< Half width timer A */
+    TimerCC26XX_timer16B = 0x0002, /*!< Half width timer B */
+    TimerCC26XX_timer32  = 0x0003, /*!< Full width timer   */
 } TimerCC26XX_SubTimer;
 
 /*!
@@ -99,11 +99,12 @@ typedef enum {
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     TIMER_BASE_HWATTRS
 
     /*! #GPTimerCC26XX_Config unit index (0A, 0B, 1A..) */
-    uint8_t              gpTimerUnit;
+    uint8_t gpTimerUnit;
 
     /*! Specifies a full-width timer or half-width timer. */
     TimerCC26XX_SubTimer subTimer;
@@ -115,14 +116,15 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     TIMER_BASE_OBJECT
 
     /* GPTimer handle used by Timer interface */
-    GPTimerCC26XX_Handle   gptHandle;
+    GPTimerCC26XX_Handle gptHandle;
 
     /* Flag to show GPTimer is open */
-    bool                   isOpen;
+    bool isOpen;
 
 } TimerCC26XX_Object;
 

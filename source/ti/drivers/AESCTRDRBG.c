@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,28 +49,30 @@ extern const AESCTRDRBG_Config AESCTRDRBG_config[];
 extern const uint_least8_t AESCTRDRBG_count;
 
 const AESCTRDRBG_Params AESCTRDRBG_defaultParams = {
-    .keyLength = AESCTRDRBG_AES_KEY_LENGTH_128,
-    .reseedInterval = 10000,
-    .seed = NULL,
-    .personalizationData = NULL,
+    .keyLength                 = AESCTRDRBG_AES_KEY_LENGTH_128,
+    .reseedInterval            = 10000,
+    .seed                      = NULL,
+    .personalizationData       = NULL,
     .personalizationDataLength = 0,
-    .returnBehavior = AESCTRDRBG_RETURN_BEHAVIOR_POLLING,
-    .custom = NULL,
+    .returnBehavior            = AESCTRDRBG_RETURN_BEHAVIOR_POLLING,
+    .custom                    = NULL,
 };
 
 /*
  *  ======== AESCTRDRBG_open ========
  */
-AESCTRDRBG_Handle AESCTRDRBG_open(uint_least8_t index, const AESCTRDRBG_Params *params) {
+__attribute__((weak)) AESCTRDRBG_Handle AESCTRDRBG_open(uint_least8_t index, const AESCTRDRBG_Params *params)
+{
     DebugP_assert(index < AESCTRDRBG_count);
 
-    AESCTRDRBG_Config *config = (AESCTRDRBG_Config*)&AESCTRDRBG_config[index];
+    AESCTRDRBG_Config *config = (AESCTRDRBG_Config *)&AESCTRDRBG_config[index];
     return AESCTRDRBG_construct(config, params);
 }
 
 /*
  *  ======== AESCTRDRBG_Params_init ========
  */
-void AESCTRDRBG_Params_init(AESCTRDRBG_Params *params){
+void AESCTRDRBG_Params_init(AESCTRDRBG_Params *params)
+{
     *params = AESCTRDRBG_defaultParams;
 }

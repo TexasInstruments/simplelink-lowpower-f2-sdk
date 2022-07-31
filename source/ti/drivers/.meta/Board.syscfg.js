@@ -72,12 +72,16 @@ function getLibs(mod)
     if (family != "") {
         libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
 
-        if (!family.match(/cc.*4/) && !family.match(/cc23/)) {
+        if (!family.match(/cc23/)) {
 
-            libs.push(libPath("ti/grlib", "grlib.a"));
+            if (!family.match(/(cc.*4)/)) {
+                libs.push(libPath("ti/grlib", "grlib.a"));
+            }
 
             if (rtos == "tirtos" || rtos == "tirtos7") {
-                libs.push(libPath("ti/dpl","dpl_" + family + ".a"));
+                if (!family.match(/cc.*4/)) {
+                    libs.push(libPath("ti/dpl","dpl_" + family + ".a"));
+                }
             }
             else if (rtos == "nortos") {
                 libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
@@ -139,12 +143,13 @@ function modules(mod)
         hidden    : true
     });
 
-    /* this module is only really needed for BIOS 7.x, a noop for others */
-    reqs.push({
-        name      : "DPL",
-        moduleName: "/ti/dpl/Settings",
-        hidden    : true
-    });
+    if (system.getRTOS() === "tirtos7") {
+        reqs.push({
+            name      : "DPL",
+            moduleName: "/ti/dpl/Settings",
+            hidden    : true
+        });
+    }
 
     if (system.deviceData.board && system.deviceData.board.components) {
 

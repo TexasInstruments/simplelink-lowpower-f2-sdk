@@ -40,6 +40,7 @@
 
 #include "coap/coap.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "common/notifier.hpp"
 
 namespace ot {
@@ -49,8 +50,10 @@ namespace NetworkData {
  * This class implements the SVR_DATA.ntf transmission logic.
  *
  */
-class Notifier : public InstanceLocator
+class Notifier : public InstanceLocator, private NonCopyable
 {
+    friend class ot::Notifier;
+
 public:
     /**
      * Constructor.
@@ -58,7 +61,7 @@ public:
      * @param[in] aInstance  The OpenThread instance.
      *
      */
-    Notifier(Instance &aInstance);
+    explicit Notifier(Instance &aInstance);
 
     /**
      * Call this method to inform the notifier that new server data is available.
@@ -67,15 +70,11 @@ public:
     void HandleServerDataUpdated(void);
 
 private:
-    enum
-    {
-        kDelayNoBufs                = 1000,   ///< milliseconds
-        kDelayRemoveStaleChildren   = 5000,   ///< milliseconds
-        kDelaySynchronizeServerData = 300000, ///< milliseconds
-    };
+    static constexpr uint32_t kDelayNoBufs                = 1000;   // in msec
+    static constexpr uint32_t kDelayRemoveStaleChildren   = 5000;   // in msec
+    static constexpr uint32_t kDelaySynchronizeServerData = 300000; // in msec
 
-    static void HandleStateChanged(ot::Notifier::Callback &aCallback, otChangedFlags aFlags);
-    void        HandleStateChanged(otChangedFlags aFlags);
+    void HandleNotifierEvents(Events aEvents);
 
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
@@ -83,15 +82,14 @@ private:
     static void HandleCoapResponse(void *               aContext,
                                    otMessage *          aMessage,
                                    const otMessageInfo *aMessageInfo,
-                                   otError              aResult);
-    void        HandleCoapResponse(otError aResult);
+                                   Error                aResult);
+    void        HandleCoapResponse(Error aResult);
 
     void SynchronizeServerData(void);
 
-    ot::Notifier::Callback mNotifierCallback;
-    TimerMilli             mTimer;
-    uint32_t               mNextDelay;
-    bool                   mWaitingForResponse;
+    TimerMilli mTimer;
+    uint32_t   mNextDelay;
+    bool       mWaitingForResponse;
 };
 
 } // namespace NetworkData

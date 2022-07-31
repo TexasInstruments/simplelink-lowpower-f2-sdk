@@ -75,62 +75,61 @@ extern void *__stack;
 //*****************************************************************************
 #pragma RETAIN(resetVectors)
 #pragma DATA_SECTION(resetVectors, ".resetVecs")
-void (* const resetVectors[])(void) =
-{
+void (*const resetVectors[])(void) = {
     (void (*)(void))((unsigned long)&__STACK_END),
-    resetISR,                        // The reset handler
-    nmiISR,                          // The NMI handler
-    faultISR,                        // The hard fault handler
-    intDefaultHandler,               // The MPU fault handler
-    busFaultHandler,                 // The bus fault handler
-    intDefaultHandler,               // The usage fault handler
-    intDefaultHandler,               // Reserved
-    intDefaultHandler,               // Reserved
-    intDefaultHandler,               // Reserved
-    intDefaultHandler,               // Reserved
-    vPortSVCHandler,                 // SVCall handler
-    intDefaultHandler,               // Debug monitor handler
-    intDefaultHandler,               // Reserved
-    xPortPendSVHandler,              // The PendSV handler
-    xPortSysTickHandler,             // The SysTick handler
-    intDefaultHandler,               // 16 AON edge detect
-    intDefaultHandler,               // 17 I2C
-    intDefaultHandler,               // 18 RF Core Command & Packet Engine 1
-    intDefaultHandler,               // 19 PKA Interrupt event
-    intDefaultHandler,               // 20 AON RTC
-    intDefaultHandler,               // 21 UART0 Rx and Tx
-    intDefaultHandler,               // 22 AUX software event 0
-    intDefaultHandler,               // 23 SSI0 Rx and Tx
-    intDefaultHandler,               // 24 SSI1 Rx and Tx
-    intDefaultHandler,               // 25 RF Core Command & Packet Engine 0
-    intDefaultHandler,               // 26 RF Core Hardware
-    intDefaultHandler,               // 27 RF Core Command Acknowledge
-    intDefaultHandler,               // 28 I2S
-    intDefaultHandler,               // 29 AUX software event 1
-    intDefaultHandler,               // 30 Watchdog timer
-    intDefaultHandler,               // 31 Timer 0 subtimer A
-    intDefaultHandler,               // 32 Timer 0 subtimer B
-    intDefaultHandler,               // 33 Timer 1 subtimer A
-    intDefaultHandler,               // 34 Timer 1 subtimer B
-    intDefaultHandler,               // 35 Timer 2 subtimer A
-    intDefaultHandler,               // 36 Timer 2 subtimer B
-    intDefaultHandler,               // 37 Timer 3 subtimer A
-    intDefaultHandler,               // 38 Timer 3 subtimer B
-    intDefaultHandler,               // 39 Crypto Core Result available
-    intDefaultHandler,               // 40 uDMA Software
-    intDefaultHandler,               // 41 uDMA Error
-    intDefaultHandler,               // 42 Flash controller
-    intDefaultHandler,               // 43 Software Event 0
-    intDefaultHandler,               // 44 AUX combined event
-    intDefaultHandler,               // 45 AON programmable 0
-    intDefaultHandler,               // 46 Dynamic source (Default: PRCM)
-    intDefaultHandler,               // 47 AUX Comparator A
-    intDefaultHandler,               // 48 AUX ADC interrupts
-    intDefaultHandler,               // 49 TRNG event
-    intDefaultHandler,               // 50 Combined event from Osc control
-    intDefaultHandler,               // 51 AUX Timer2 event 0
-    intDefaultHandler,               // 52 UART1 combined interrupt
-    intDefaultHandler                // 53 Combined event from battery monitor
+    resetISR,            // The reset handler
+    nmiISR,              // The NMI handler
+    faultISR,            // The hard fault handler
+    intDefaultHandler,   // The MPU fault handler
+    busFaultHandler,     // The bus fault handler
+    intDefaultHandler,   // The usage fault handler
+    intDefaultHandler,   // Reserved
+    intDefaultHandler,   // Reserved
+    intDefaultHandler,   // Reserved
+    intDefaultHandler,   // Reserved
+    vPortSVCHandler,     // SVCall handler
+    intDefaultHandler,   // Debug monitor handler
+    intDefaultHandler,   // Reserved
+    xPortPendSVHandler,  // The PendSV handler
+    xPortSysTickHandler, // The SysTick handler
+    intDefaultHandler,   // 16 AON edge detect
+    intDefaultHandler,   // 17 I2C
+    intDefaultHandler,   // 18 RF Core Command & Packet Engine 1
+    intDefaultHandler,   // 19 PKA Interrupt event
+    intDefaultHandler,   // 20 AON RTC
+    intDefaultHandler,   // 21 UART0 Rx and Tx
+    intDefaultHandler,   // 22 AUX software event 0
+    intDefaultHandler,   // 23 SSI0 Rx and Tx
+    intDefaultHandler,   // 24 SSI1 Rx and Tx
+    intDefaultHandler,   // 25 RF Core Command & Packet Engine 0
+    intDefaultHandler,   // 26 RF Core Hardware
+    intDefaultHandler,   // 27 RF Core Command Acknowledge
+    intDefaultHandler,   // 28 I2S
+    intDefaultHandler,   // 29 AUX software event 1
+    intDefaultHandler,   // 30 Watchdog timer
+    intDefaultHandler,   // 31 Timer 0 subtimer A
+    intDefaultHandler,   // 32 Timer 0 subtimer B
+    intDefaultHandler,   // 33 Timer 1 subtimer A
+    intDefaultHandler,   // 34 Timer 1 subtimer B
+    intDefaultHandler,   // 35 Timer 2 subtimer A
+    intDefaultHandler,   // 36 Timer 2 subtimer B
+    intDefaultHandler,   // 37 Timer 3 subtimer A
+    intDefaultHandler,   // 38 Timer 3 subtimer B
+    intDefaultHandler,   // 39 Crypto Core Result available
+    intDefaultHandler,   // 40 uDMA Software
+    intDefaultHandler,   // 41 uDMA Error
+    intDefaultHandler,   // 42 Flash controller
+    intDefaultHandler,   // 43 Software Event 0
+    intDefaultHandler,   // 44 AUX combined event
+    intDefaultHandler,   // 45 AON programmable 0
+    intDefaultHandler,   // 46 Dynamic source (Default: PRCM)
+    intDefaultHandler,   // 47 AUX Comparator A
+    intDefaultHandler,   // 48 AUX ADC interrupts
+    intDefaultHandler,   // 49 TRNG event
+    intDefaultHandler,   // 50 Combined event from Osc control
+    intDefaultHandler,   // 51 AUX Timer2 event 0
+    intDefaultHandler,   // 52 UART1 combined interrupt
+    intDefaultHandler    // 53 Combined event from battery monitor
 };
 
 //*****************************************************************************
@@ -207,9 +206,7 @@ void resetISR(void)
 static void nmiISR(void)
 {
     /* Enter an infinite loop. */
-    while (1)
-    {
-    }
+    while (1) {}
 }
 
 //*****************************************************************************
@@ -222,9 +219,7 @@ static void nmiISR(void)
 static void faultISR(void)
 {
     /* Enter an infinite loop. */
-    while (1)
-    {
-    }
+    while (1) {}
 }
 
 //*****************************************************************************
@@ -237,9 +232,7 @@ static void faultISR(void)
 static void busFaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while (1)
-    {
-    }
+    while (1) {}
 }
 
 //*****************************************************************************
@@ -252,7 +245,5 @@ static void busFaultHandler(void)
 static void intDefaultHandler(void)
 {
     /* Enter an infinite loop. */
-    while (1)
-    {
-    }
+    while (1) {}
 }

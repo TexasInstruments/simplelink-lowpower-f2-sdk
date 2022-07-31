@@ -38,7 +38,7 @@
              -lti/grlib/lib/ticlang/m4f/grlib.a
              -lthird_party/spiffs/lib/ticlang/m4f/spiffs_cc26xx.a
              -lti/drivers/lib/ticlang/m4f/drivers_cc26x2x7.a
-            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
             -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib

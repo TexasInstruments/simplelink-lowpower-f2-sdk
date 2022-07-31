@@ -11,8 +11,8 @@ CC = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-gcc"
 LNK = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-gcc"
 
 SYSCFG_CMD_STUB = $(SYSCONFIG_TOOL) --compiler gcc --product $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/.metadata/product.json
-SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../cli_ftd.syscfg)
-SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../cli_ftd.syscfg)
+SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../tirtos/cli_ftd.syscfg)
+SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../tirtos/cli_ftd.syscfg)
 
 ifeq ($(OS),Windows_NT)
 	SYSCFG_FILES = $(subst \,/,$(SYSCFG_REF_FILES) $(SYSCFG_GEN_FILES))
@@ -22,7 +22,7 @@ endif
 SYSCFG_C_FILES = $(filter %.c,$(SYSCFG_FILES))
 SYSCFG_H_FILES = $(filter %.h,$(SYSCFG_FILES))
 
-OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_debug_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj cli.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
+OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj cli.obj platform_cli_uart.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
 CONFIGPKG = cli_ftd
 
 NAME = cli_ftd
@@ -48,15 +48,15 @@ CFLAGS = -I../.. \
     -IOPENTHREAD_MAKE_PATH/examples/platforms \
     -IOPENTHREAD_MAKE_PATH/include \
     -IOPENTHREAD_MAKE_PATH/src/core \
+    -IOPENTHREAD_MAKE_PATH/src \
     -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
-    -IC:/.conan/7561cd/1/external/source \
+    -IC:/.conan/e89868/1/external/source \
     -I${PROJECT_ROOT}/platform/crypto \
     -DOPENTHREAD_FTD=1 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/config" \
     -DOPENTHREAD_CONFIG_FILE='"openthread-config-cc13x2_26x2-ftd.h"' \
     -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE='"openthread-core-cc13x2_26x2-config.h"' \
     -DTIOP_ENABLE_UART=1 \
-    -IOPENTHREAD_MAKE_PATH/src \
     -DDeviceFamily_CC13X2X7_CC26X2X7 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2_cc26x2" \
@@ -64,6 +64,52 @@ CFLAGS = -I../.. \
     -mcpu=cortex-m4 \
     -march=armv7e-m \
     -mthumb \
+    -mfloat-abi=hard \
+    -mfpu=fpv4-sp-d16 \
+    -gstrict-dwarf \
+    -Wall \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/include/newlib-nano" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/include" \
+    "-I$(GCC_ARMCOMPILER)/arm-none-eabi/include"
+
+CPPFLAGS = -I../.. \
+    -I. \
+    -fdata-sections \
+    -ffunction-sections \
+    -Os \
+    -g \
+    -std=c99 \
+    -fno-exceptions \
+    -fno-rtti \
+    -fno-common \
+    -DHAVE_CONFIG_H \
+    -DBoard_EXCLUDE_NVS_EXTERNAL_FLASH \
+    -DNVOCMP_POSIX_MUTEX \
+    -DNVOCMP_NVPAGES=2 \
+    -DNDEBUG \
+    -DBOARD_DISPLAY_USE_UART=1 \
+    -DMBEDTLS_CONFIG_FILE='"mbedtls-config-cc13x2_26x2.h"' \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libmbedcrypto/config" \
+    -IOPENTHREAD_MAKE_PATH/examples/platforms \
+    -IOPENTHREAD_MAKE_PATH/include \
+    -IOPENTHREAD_MAKE_PATH/src/core \
+    -IOPENTHREAD_MAKE_PATH/src \
+    -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
+    -IC:/.conan/e89868/1/external/source \
+    -I${PROJECT_ROOT}/platform/crypto \
+    -DOPENTHREAD_FTD=1 \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/config" \
+    -DOPENTHREAD_CONFIG_FILE='"openthread-config-cc13x2_26x2-ftd.h"' \
+    -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE='"openthread-core-cc13x2_26x2-config.h"' \
+    -DTIOP_ENABLE_UART=1 \
+    -DDeviceFamily_CC13X2X7_CC26X2X7 \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2_cc26x2" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/gcc" \
+    -mcpu=cortex-m4 \
+    -march=armv7e-m \
+    -mthumb \
+    -std=c++11 \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16 \
     -gstrict-dwarf \
@@ -87,7 +133,7 @@ LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_
     "-Wl,-Map,$(NAME).map" \
     -l${PROJECT_BUILD_DIR}/syscfg/ti_utils_build_linker.cmd.genlibs \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    -LC:/.conan/7561cd/1/external/source \
+    -LC:/.conan/e89868/1/external/source \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
     "-Wl,-T,$(NAME)/linker.cmd" \
     -l:ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/gcc/driverlib.lib \
@@ -117,7 +163,7 @@ $(CONFIGPKG)/linker.cmd: ../../release.cfg cflags.opt
 $(SYSCFG_FILES): syscfg
 	@ echo generation complete
 
-syscfg: ../../cli_ftd.syscfg
+syscfg: ../../tirtos/cli_ftd.syscfg
 	@ echo Generating configuration files...
 	@ $(SYSCFG_CMD_STUB) --output $(@D) $<
 
@@ -165,10 +211,6 @@ platform_uart.obj: ../../platform/uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) $< -c @$(CONFIGPKG)/compiler.opt -o $@
 
-platform_debug_uart.obj: ../../platform/debug_uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
-	@ echo Building $@
-	@ $(CC) $(CFLAGS) $< -c @$(CONFIGPKG)/compiler.opt -o $@
-
 platform_nv_crc.obj: ../../platform/nv/crc.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) $< -c @$(CONFIGPKG)/compiler.opt -o $@
@@ -208,6 +250,10 @@ platform_crypto_ecjpake_alt.obj: ../../platform/crypto/ecjpake_alt.c $(SYSCFG_H_
 platform_crypto_crypto_misc.obj: ../../platform/crypto/crypto_misc.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) $< -c @$(CONFIGPKG)/compiler.opt -o $@
+
+platform_cli_uart.obj: ../../platform/cli_uart.cpp $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
+	@ echo Building $@
+	@ $(CC) $(CPPFLAGS) $< -c @$(CONFIGPKG)/compiler.opt -o $@
 
 $(NAME).out: $(OBJECTS) $(CONFIGPKG)/linker.cmd
 	@ echo linking $@

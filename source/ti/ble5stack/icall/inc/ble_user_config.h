@@ -253,6 +253,10 @@ extern "C"
 #define MAX_NUM_CTE_BUFS               1  // one CTE samples buffer of ~2.5KB used for RF auto copy
 #endif
 
+#ifndef ADV_RPT_INC_CHANNEL
+#define ADV_RPT_INC_CHANNEL            0
+#endif
+
 // Inactivity timeout in us
 #ifndef RF_INACTIVITY_TIMEOUT
   #if defined(DEBUG_SW_TRACE) || defined(USE_FPGA)
@@ -509,6 +513,7 @@ typedef struct
   uint32_t                    extStackSettings; // | reserved | use CC2652RB | MasterGuard |
                                                 // |   31..2  |       1      |      0      |
   uint8                       maxNumCteBuffers;
+  uint8                       advReportIncChannel;
 } stackSpecific_t;
 
 #else /* !(ICALL_JT) */

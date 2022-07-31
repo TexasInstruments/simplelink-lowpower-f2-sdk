@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,16 @@ const CmdHandler = Common.getScript("cmd_handler.js");
 // Documentation
 const CodeExportDocs = Common.getScript("code_export_param_docs.js");
 
+// Path to external applications (relative to location of SDK product file)
+const ExtPath = "./../source/ti/devices/radioconfig/.meta/ext_app/";
+
 // Protocol support
 const hasProp = Common.HAS_PROP;
 const hasBle = Common.HAS_BLE;
 const hasIeee = Common.HAS_IEEE_15_4;
+
+// Custom RF patch only on Windows
+const isWindows = system.getOS() === "win";
 
 // Storage for generated variable names, used by code generation template
 const symNames = {
@@ -142,7 +148,7 @@ const config = [
     {
         name: "paExport",
         displayName: "PA Table Export Method",
-        description: "Select how PA table is to be exported",
+        description: "Select how PA table is to be exported.",
         default: "active",
         options: PaOptions
     },
@@ -150,44 +156,104 @@ const config = [
     {
         name: "useConst",
         displayName: "Make Generated RF Commands Constant",
-        description: "Use 'const' qualifier for RF Core commands",
+        description: "Use 'const' qualifier for RF Core commands.",
         default: false
     },
     // Use multi-protocol
     {
         name: "useMulti",
         displayName: "Use Multi-Protocol Patch",
-        description: "Use multi-protocol versus single-protocol patches",
-        hidden: Common.isDeviceClass10(),
+        description: "Use multi-protocol versus single-protocol patches.",
+        hidden: Common.isDeviceClass10() || Common.isDeviceClass3(),
         default: false
     },
     // Stack specific override
     {
         name: "stackOverride",
         displayName: "Stack Override File",
-        description: "Path to a file that contains stack specific overrides",
+        description: "Path to a file that contains stack specific overrides.",
         default: ""
     },
     // Stack specific override macro
     {
         name: "stackOverrideMacro",
         displayName: "Stack Override Macro",
-        description: "Macro to use for including stack overrides",
+        description: "Macro to use for including stack overrides.",
         default: ""
     },
     // App specific override
     {
         name: "appOverride",
         displayName: "Application Override File",
-        description: "Path to a file that contains application specific overrides",
+        description: "Path to a file that contains application specific overrides.",
         default: ""
     },
     // App specific override macro
     {
         name: "appOverrideMacro",
         displayName: "Application Override Macro",
-        description: "Macro to use for including application overrides",
+        description: "Macro to use for including application overrides.",
         default: ""
+    },
+    {
+        displayName: "RF Patches",
+        longDescription: CodeExportDocs.getPatchDescription(),
+        collapsed: true,
+        config: [
+            // Button for updating the patch list
+            {
+                name: "patchUpdate",
+                displayName: "Patch List",
+                buttonText: "Update",
+                description: "Update the list of available patches.",
+                hidden: !isWindows,
+                onLaunch: (inst) => {
+                    const deviceFamily = DevInfo.getDeviceFamily();
+                    return {
+                        command: ExtPath + "get_patches.bat",
+                        args: ["$comFile", deviceFamily],
+                        initialData: ""
+                    };
+                },
+                onComplete: (inst, ui, result) => {
+                    const files = result.data.trim().split("\n");
+                    const patches = [];
+                    files.forEach((file) => {
+                        patches.push(file.replace(".h", "").trim());
+                    });
+                    DevInfo.setPatchInfo(patches);
+                }
+            },
+            // CPE patch
+            {
+                name: "cpePatch",
+                displayName: "CPE Patch",
+                description: "Automatic or manual CPE patch selection.",
+                default: "Automatic",
+                onChange: onPatchChanged,
+                options: (inst) => getPatchOptions("cpe")
+            },
+            // MCE patch
+            {
+                name: "mcePatch",
+                displayName: "MCE Patch",
+                description: "Automatic or manual MCE patch selection.",
+                default: "Automatic",
+                readOnly: true,
+                onChange: onPatchChanged,
+                options: (inst) => getPatchOptions("mce")
+            },
+            // RFE patch
+            {
+                name: "rfePatch",
+                displayName: "RFE Patch",
+                description: "Automatic or manual RFE patch selection.",
+                default: "Automatic",
+                readOnly: true,
+                onChange: onPatchChanged,
+                options: (inst) => getPatchOptions("rfe")
+            }
+        ]
     },
     // RF Command Symbols category
     cmdSymbolsCat,
@@ -217,7 +283,7 @@ const config = [
             {
                 name: "overrides",
                 displayName: "Overrides Table Symbol Name",
-                description: "Use multi-protocol rather than individual protocol patches",
+                description: "Use multi-protocol rather than individual protocol patches.",
                 default: symNames.overrides
             }
         ]
@@ -542,6 +608,21 @@ function onCmdFormatChanged(inst) {
 }
 
 /*!
+ * ======== onPatchChanged ========
+ * Invoked when a patch selection changes
+ *
+ * @param inst - active instance
+ * @param ui - active UI
+ */
+function onPatchChanged(inst, ui) {
+    const ch = CmdHandler.get(inst.phyGroup, inst.phyType);
+    const cpe = inst.cpePatch === "Automatic" ? null : inst.cpePatch;
+    const rfe = inst.rfePatch === "Automatic" ? null : inst.rfePatch;
+    const mce = inst.mcePatch === "Automatic" ? null : inst.mcePatch;
+    ch.setManualPatch(cpe, rfe, mce);
+}
+
+/*!
  * ======== getDefaultValue ========
  * Get default value of a configurable
  *
@@ -606,6 +687,29 @@ function getPaOptions() {
 }
 
 /*!
+ * ======== getPatchOptions ========
+ * Get patch selection options
+ *
+ * @param filter - cpe, rfe or mce
+ */
+function getPatchOptions(filter) {
+    const opts = [{
+        name: "Automatic"
+    }];
+    const patches = DevInfo.getPatchInfo();
+
+    for (const patch of patches) {
+        if (patch.includes(filter)) {
+            const opt = {
+                name: patch
+            };
+            opts.push(opt);
+        }
+    }
+    return opts;
+}
+
+/*!
  * ======== checkDuplicateSymbols ========
  * Check if symbols are duplicated
  *
@@ -632,8 +736,8 @@ function checkDuplicateSymbols(myInst, validation) {
                         hasLegacy = true;
                     }
                     else {
-                        Common.logError(validation, myInst, "symGenMethod",
-                            "Legacy mode code generation can only be applied to one PHY.");
+                        // eslint-disable-next-line max-len
+                        Common.logError(validation, myInst, "symGenMethod", "Legacy mode code generation can only be applied to one PHY.");
                         return false;
                     }
                     return true;
@@ -754,6 +858,11 @@ function validate(inst, validation) {
 
     // Verify application override file path name and application override macro name
     validateCustomOverride(inst, validation, "appOverride", "appOverrideMacro");
+
+    // Verify patch name
+    if (!Common.isCName(inst.cpePatch)) {
+        Common.logError(validation, inst, "cpePatch", "'" + inst.cpePatch + "' is not a valid patch name");
+    }
 }
 
 /*!
@@ -772,10 +881,11 @@ function validateCustomOverride(inst, validation, path, macro) {
     if (filePath !== "") {
         // Check that the file has the extension .h and is a combination of letters, digits and '_'
         // The path may be of the pattern /dir/file.h or ../../file.h
+        // eslint-disable-next-line prefer-regex-literals
         const pathRegEx = RegExp(/^(\.\.\/)*([a-zA-Z0-9_]+\/)*([a-zA-Z0-9_]+)+\.h$/);
         if (!pathRegEx.test(filePath)) {
-            Common.logError(validation, inst, path,
-                "File name must have extension .h and contain only alphanumeric and underscore letters. "
+            // eslint-disable-next-line max-len
+            Common.logError(validation, inst, path, "File name must have extension .h and contain only alphanumeric and underscore letters. "
                 + "UNIX relative path format expected.");
         }
 

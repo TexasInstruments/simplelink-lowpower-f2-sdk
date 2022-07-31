@@ -42,7 +42,7 @@ const Common = system.getScript("/ti/thread/thread_common.js");
 /* Description text for configurables */
 const setNetworkLongDescription = `Specify whether to set the network \
 parameters directly via SysConfig. This includes the PAN ID, Extended PAN ID, \
-Master Key, and Network Name.
+Network Key, and Network Name.
 
 SysConfig overrides the default network values from OpenThread. If this is \
 not desired, leave this unchecked.
@@ -79,13 +79,13 @@ Extended PAN ID.
 
 **Default Ext PAN ID:** 0xdead00beef00cafe`;
 
-const masterKeyDescription = `The ${Common.MASTER_KEY_LEN * 8} bit Thread \
-Master Key.`;
+const networkKeyDescription = `The ${Common.NETWORK_KEY_LEN * 8} bit Thread \
+Network Key.`;
 
-const masterKeyLongDescription = `The ${Common.MASTER_KEY_LEN * 8} bit \
-Thread Master Key.
+const networkKeyLongDescription = `The ${Common.NETWORK_KEY_LEN * 8} bit \
+Thread Network Key.
 
-**Default MasterKey:** 0x00112233445566778899AABBCCDDEEFF`;
+**Default NetworkKey:** 0x00112233445566778899AABBCCDDEEFF`;
 
 const networkNameDescription = `The network name for the Thread network \
 (max length of ${Common.NETWORK_NAME_MAX_LEN - 1} bytes).`;
@@ -127,10 +127,10 @@ const networkModule = {
             default: "0xdead00beef00cafe"
         },
         {
-            name: "masterKey",
-            displayName: "Thread Master Key",
-            description: masterKeyDescription,
-            longDescription: masterKeyLongDescription,
+            name: "networkKey",
+            displayName: "Thread Network Key",
+            description: networkKeyDescription,
+            longDescription: networkKeyLongDescription,
             default: "0x00112233445566778899AABBCCDDEEFF"
         },
         {
@@ -149,7 +149,7 @@ function onSetNetworkChange(inst, ui)
 {
     ui.panID.hidden = !inst.setNetwork;
     ui.extPanID.hidden = !inst.setNetwork;
-    ui.masterKey.hidden = !inst.setNetwork;
+    ui.networkKey.hidden = !inst.setNetwork;
     ui.networkName.hidden = !inst.setNetwork;
 }
 
@@ -195,15 +195,15 @@ function validate(inst, validation)
         );
     }
 
-    /* Validate Master Key */
-    const masterKeyReg = new RegExp(
-        "^0x[0-9A-Fa-f]{" + Common.MASTER_KEY_LEN * 2 + "}$", "g"
+    /* Validate Network Key */
+    const networkKeyReg = new RegExp(
+        "^0x[0-9A-Fa-f]{" + Common.NETWORK_KEY_LEN * 2 + "}$", "g"
     );
-    if(masterKeyReg.test(inst.masterKey) === false)
+    if(networkKeyReg.test(inst.networkKey) === false)
     {
         validation.logError(
-            "Master Key must be a valid hexidecimal number (0x...) of length "
-            + Common.MASTER_KEY_LEN * 8 + " bits", inst, "masterKey"
+            "Network Key must be a valid hexidecimal number (0x...) of length "
+            + Common.NETWORK_KEY_LEN * 8 + " bits", inst, "networkKey"
         );
     }
 

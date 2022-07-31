@@ -49,22 +49,25 @@ HwiP_Struct PKAResourceCC26XX_hwi;
 
 static bool isInitialized = false;
 
-static void errorSpin(uintptr_t arg) {
-    while(1);
+static void errorSpin(uintptr_t arg)
+{
+    while (1) {}
 }
 
-void PKAResourceCC26XX_constructRTOSObjects(void) {
+void PKAResourceCC26XX_constructRTOSObjects(void)
+{
     HwiP_Params hwiParams;
     uint_fast8_t key;
 
     key = HwiP_disable();
 
-    if (!isInitialized){
+    if (!isInitialized)
+    {
         /* Construct the common Hwi with a dummy ISR function. This should not matter as the function is set
          * whenever we start an operation after pending on PKAResourceCC26XX_accessSemaphore
          */
         HwiP_Params_init(&hwiParams);
-        hwiParams.priority = ~0;
+        hwiParams.priority  = ~0;
         hwiParams.enableInt = false;
         HwiP_construct(&(PKAResourceCC26XX_hwi), INT_PKA_IRQ, errorSpin, &hwiParams);
 

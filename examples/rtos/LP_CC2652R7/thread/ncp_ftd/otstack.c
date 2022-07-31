@@ -479,11 +479,13 @@ void *OtStack_task(void *arg0)
     OtStack_instance = otInstanceInitSingle();
     assert(OtStack_instance);
 
+#if !OPENTHREAD_RADIO
     /* Set the SysCfg params if the dataset has not been commissioned. */
     if (!otDatasetIsCommissioned(OtInstance_get()))
     {
         TIOP_init(OtInstance_get());
     }
+#endif /* !OPENTHREAD_RADIO */
 
     /* allow the application to lock the API */
     OtRtosApi_unlock();
@@ -524,7 +526,7 @@ void *OtStack_task(void *arg0)
 
             case OtStack_procQueueCmd_uart:
             {
-#if OPENTHREAD_CONFIG_NCP_UART_ENABLE || TIOP_ENABLE_UART
+#if OPENTHREAD_CONFIG_NCP_HDLC_ENABLE || TIOP_ENABLE_UART
                 platformUartProcess(msg.arg);
 #endif
                 break;

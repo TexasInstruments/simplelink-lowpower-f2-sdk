@@ -146,16 +146,14 @@ extern "C" {
 /** @}*/
 
 /*! Base address for the DMA control table, must be 1024 bytes aligned */
-#if !defined(UDMACC26XX_CONFIG_BASE) && \
-    (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
+#if !defined(UDMACC26XX_CONFIG_BASE) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
     /* On CC13X2, CC13X2X7, CC26X2, and CC26X2X7 devices, the uDMA table needs
      * to be offset a few kB since the ROM area of SRAM is placed at the start
      * of SRAM on those devices.
      */
     #define UDMACC26XX_CONFIG_BASE 0x20001800
-#elif !defined(UDMACC26XX_CONFIG_BASE) && \
-      (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
-       DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+#elif !defined(UDMACC26XX_CONFIG_BASE) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+                                           DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
     /* Since there is no ROM area of SRAM on the CC13X1, CC26X1, CC13X4, and
      * CC26X4 devices, we can move the uDMA table closer to the start of SRAM.
      * This improves the linker efficiency when using dynamically sized heaps.
@@ -166,23 +164,26 @@ extern "C" {
 #endif
 
 /*! Make sure DMA control table base address is 1024 bytes aligned */
-#if(UDMACC26XX_CONFIG_BASE & 0x3FF)
+#if (UDMACC26XX_CONFIG_BASE & 0x3FF)
     #error "Base address for DMA control table 'UDMACC26XX_CONFIG_BASE' must be 1024 bytes aligned."
 #endif
 
 /*! Compiler specific macros to allocate DMA control table entries */
 #if defined(__IAR_SYSTEMS_ICC__)
-#define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX) \
-__no_init static volatile tDMAControlTable ENTRY_NAME @ UDMACC26XX_CONFIG_BASE + CHANNEL_INDEX * sizeof(tDMAControlTable)
+    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                     \
+        __no_init static volatile tDMAControlTable ENTRY_NAME @UDMACC26XX_CONFIG_BASE + \
+            CHANNEL_INDEX * sizeof(tDMAControlTable)
 #elif defined(__TI_COMPILER_VERSION__) || defined(__clang__)
-#define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX) \
-static volatile tDMAControlTable ENTRY_NAME __attribute__((retain, location(\
-    UDMACC26XX_CONFIG_BASE + CHANNEL_INDEX * sizeof(tDMAControlTable))))
+    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX) \
+        static volatile tDMAControlTable ENTRY_NAME                 \
+            __attribute__((retain, location(UDMACC26XX_CONFIG_BASE + CHANNEL_INDEX * sizeof(tDMAControlTable))))
 #elif defined(__GNUC__)
-#define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX) \
-    extern int UDMACC26XX_ ## ENTRY_NAME ## _is_placed; __attribute__ ((section("."#ENTRY_NAME))) static volatile tDMAControlTable ENTRY_NAME = {&UDMACC26XX_ ## ENTRY_NAME ## _is_placed}
+    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                               \
+        extern int UDMACC26XX_##ENTRY_NAME##_is_placed;                                           \
+        __attribute__((section("." #ENTRY_NAME))) static volatile tDMAControlTable ENTRY_NAME = { \
+            &UDMACC26XX_##ENTRY_NAME##_is_placed}
 #else
-#error "don't know how to define ALLOCATE_CONTROL_TABLE_ENTRY for this toolchain"
+    #error "don't know how to define ALLOCATE_CONTROL_TABLE_ENTRY for this toolchain"
 #endif
 
 /*! Sets the DMA transfer size in number of items */
@@ -193,18 +194,20 @@ static volatile tDMAControlTable ENTRY_NAME __attribute__((retain, location(\
 /*!
  *  @brief  UDMACC26XX object
  */
-typedef struct {
-    bool             isOpen;           /*!< Flag for open/close status */
-    HwiP_Struct hwi;  /*!< Embedded Hwi Object */
+typedef struct
+{
+    bool isOpen;     /*!< Flag for open/close status */
+    HwiP_Struct hwi; /*!< Embedded Hwi Object */
 } UDMACC26XX_Object;
 
 /*!
  *  @brief  UDMACC26XX hardware attributes
  */
-typedef struct {
-    uint32_t        baseAddr;    /*!< Base adddress for UDMACC26XX */
-    PowerCC26XX_Resource  powerMngrId; /*!< UDMACC26XX Peripheral's power manager ID */
-    uint8_t         intNum;      /*!< UDMACC26XX error interrupt number */
+typedef struct
+{
+    uint32_t baseAddr;                /*!< Base adddress for UDMACC26XX */
+    PowerCC26XX_Resource powerMngrId; /*!< UDMACC26XX Peripheral's power manager ID */
+    uint8_t intNum;                   /*!< UDMACC26XX error interrupt number */
     /*! @brief UDMACC26XX error interrupt priority.
      *  intPriority is the DMA peripheral's interrupt priority, as
      *  defined by the underlying OS.  It is passed unmodified to the
@@ -224,17 +227,19 @@ typedef struct {
      *
      *  Setting the priority to 0 is not supported by this driver.
      *
-     *  HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+     *  HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+     * critical sections in this driver.
      */
-    uint8_t         intPriority;
+    uint8_t intPriority;
 } UDMACC26XX_HWAttrs;
 
 /*!
  *  @brief      UDMACC26XX Global configuration
  */
-typedef struct {
-    void              *object;            /*!< Pointer to UDMACC26XX object */
-    void const        *hwAttrs;           /*!< Pointer to hardware attribute */
+typedef struct
+{
+    void *object;        /*!< Pointer to UDMACC26XX object */
+    void const *hwAttrs; /*!< Pointer to hardware attribute */
 } UDMACC26XX_Config;
 
 /*!
@@ -259,7 +264,7 @@ extern void UDMACC26XX_hwiIntFxn(uintptr_t callbacks);
  */
 __STATIC_INLINE void UDMACC26XX_init(UDMACC26XX_Handle handle)
 {
-    UDMACC26XX_Object           *object;
+    UDMACC26XX_Object *object;
 
     /* Get the pointer to the object */
     object = (UDMACC26XX_Object *)(handle->object);
@@ -413,8 +418,7 @@ __STATIC_INLINE void UDMACC26XX_channelDisable(UDMACC26XX_Handle handle, uint32_
  *
  *  @sa     UDMACC26XX_channelEnable
  */
-__STATIC_INLINE void UDMACC26XX_disableAttribute(UDMACC26XX_Handle handle,
-    uint32_t channelNum, uint32_t attr)
+__STATIC_INLINE void UDMACC26XX_disableAttribute(UDMACC26XX_Handle handle, uint32_t channelNum, uint32_t attr)
 {
     UDMACC26XX_HWAttrs const *hwAttrs;
 

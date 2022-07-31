@@ -72,7 +72,7 @@ CPPFLAGS = -I../.. \
 LFLAGS = -Wl,-T,../../tirtos/gcc/cc13x2x7_cc26x2x7_tirtos.lds \
     "-Wl,-Map,$(NAME).map" \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
+    "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos7/packages" \
     ti_utils_build_linker.cmd.genlibs \
     "-Wl,-T,$(NAME)/linker.cmd" \
     -l:ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/gcc/driverlib.lib \

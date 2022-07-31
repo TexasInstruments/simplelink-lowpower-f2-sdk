@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -299,73 +299,73 @@ extern "C" {
 /*!
  * @brief   Successful status code returned by UART2 APIs.
  */
-#define UART2_STATUS_SUCCESS         (0)
+#define UART2_STATUS_SUCCESS (0)
 
 /*!
  * @brief  A  read timeout occurred (not an error).
  */
-#define UART2_STATUS_SREADTIMEOUT    (1)
+#define UART2_STATUS_SREADTIMEOUT (1)
 
 /*!
  * @brief  A framing error occurred.
  */
-#define UART2_STATUS_EFRAMING        (-1)
+#define UART2_STATUS_EFRAMING (-1)
 
 /*!
  * @brief  A parity error occurred.
  */
-#define UART2_STATUS_EPARITY         (-2)
+#define UART2_STATUS_EPARITY (-2)
 
 /*!
  * @brief  A break error occurred.
  */
-#define UART2_STATUS_EBREAK          (-4)
+#define UART2_STATUS_EBREAK (-4)
 
 /*!
  * @brief  A FIFO overrun occurred.
  */
-#define UART2_STATUS_EOVERRUN        (-8)
+#define UART2_STATUS_EOVERRUN (-8)
 
 /*!
  * @brief  The UART is currently in use.
  */
-#define UART2_STATUS_EINUSE          (-9)
+#define UART2_STATUS_EINUSE (-9)
 
 /*!
  * @brief  An invalid argument or UART2_Params field was passed to UART2 API.
  */
-#define UART2_STATUS_EINVALID        (-10)
+#define UART2_STATUS_EINVALID (-10)
 
 /*!
  * @brief  General failure status returned by UART2 API.
  */
-#define UART2_STATUS_EFAIL           (-11)
+#define UART2_STATUS_EFAIL (-11)
 
 /*!
  * @brief  A memory allocation failure occurred.
  */
-#define UART2_STATUS_EMEMORY         (-12)
+#define UART2_STATUS_EMEMORY (-12)
 
 /*!
  * @brief  A timeout occurred for a blocking UART2_read or UART2_write call.
  */
-#define UART2_STATUS_ETIMEOUT        (-13)
+#define UART2_STATUS_ETIMEOUT (-13)
 
 /*!
  * @brief  A UART2_write() or UART2_read() operation was cancelled.
  */
-#define UART2_STATUS_ECANCELLED      (-14)
+#define UART2_STATUS_ECANCELLED (-14)
 
 /*!
  * @brief  A UART2_write() or UART2_read() called on a device not opened.
  */
-#define UART2_STATUS_ENOTOPEN        (-15)
+#define UART2_STATUS_ENOTOPEN (-15)
 
 /*!
  * @brief  A UART2_write() or UART2_read() in UART2_Mode_NONBLOCKING would
  *         have blocked.
  */
-#define UART2_STATUS_EAGAIN         (-16)
+#define UART2_STATUS_EAGAIN (-16)
 
 /** @}*/
 
@@ -381,12 +381,12 @@ extern "C" {
 /*!
  * @brief   A break has occurred.
  */
-#define UART2_EVENT_BREAK   (0x04)
+#define UART2_EVENT_BREAK (0x04)
 
 /*!
  * @brief   A parity error has occurred.
  */
-#define UART2_EVENT_PARITY  (0x02)
+#define UART2_EVENT_PARITY (0x02)
 
 /*!
  * @brief   A framing error has occurred.
@@ -412,12 +412,12 @@ extern "C" {
 /*!
  *  @brief    Wait forever define
  */
-#define UART2_WAIT_FOREVER           (~(0U))
+#define UART2_WAIT_FOREVER (~(0U))
 
 /*!
  *  @brief      A handle that is returned from a UART2_open() call.
  */
-typedef struct UART2_Config_   *UART2_Handle;
+typedef struct UART2_Config_ *UART2_Handle;
 
 /*!
  *  @brief      The definition of a callback function used by the UART2 driver
@@ -436,8 +436,7 @@ typedef struct UART2_Config_   *UART2_Handle;
  *  @param[in]  status                  A UART2_STATUS code indicating
  *                                      success or failure of the transfer.
  */
-typedef void (*UART2_Callback) (UART2_Handle handle, void *buf, size_t count,
-            void *userArg, int_fast16_t status);
+typedef void (*UART2_Callback)(UART2_Handle handle, void *buf, size_t count, void *userArg, int_fast16_t status);
 
 /*!
  *  @brief      The definition of a callback function used by the UART driver.
@@ -460,35 +459,35 @@ typedef void (*UART2_Callback) (UART2_Handle handle, void *buf, size_t count,
  *  @param[in]  status                  A UART2_STATUS code indicating
  *                                      success or failure of the transfer.
  */
-typedef void (*UART2_EventCallback) (UART2_Handle handle, uint32_t event,
-        uint32_t data, void *userArg);
+typedef void (*UART2_EventCallback)(UART2_Handle handle, uint32_t event, uint32_t data, void *userArg);
 
 /*!
  *  @brief      UART2 mode settings
  *
  *  This enum defines the read and write modes for the configured UART.
  */
-typedef enum {
+typedef enum
+{
     /*!
-      *  UART2_write() will block the calling task until all of the data can be
-      *  accepted by the device driver. UART2_read() will block until some data
-      *  becomes available.
-      */
+     *  UART2_write() will block the calling task until all of the data can be
+     *  accepted by the device driver. UART2_read() will block until some data
+     *  becomes available.
+     */
     UART2_Mode_BLOCKING,
 
     /*!
-      *  Non-blocking, UART2_write() or UART2_read() will return immediately.
-      *  When the transfer has finished, the callback function is called
-      *  from either the caller's context or from an interrupt context.
-      */
+     *  Non-blocking, UART2_write() or UART2_read() will return immediately.
+     *  When the transfer has finished, the callback function is called
+     *  from either the caller's context or from an interrupt context.
+     */
     UART2_Mode_CALLBACK,
 
     /*!
-      *  Non-blocking, UART2_write() or UART2_read() will return immediately.
-      *  UART2_write() will copy as much data into the transmit buffer as space
-      *  allows. UART2_read() will copy as much data from the receive buffer
-      *  as is immediately available.
-      */
+     *  Non-blocking, UART2_write() or UART2_read() will return immediately.
+     *  UART2_write() will copy as much data into the transmit buffer as space
+     *  allows. UART2_read() will copy as much data from the receive buffer
+     *  as is immediately available.
+     */
     UART2_Mode_NONBLOCKING,
     /*! @cond NODOC */
     /* Added for backwards compatibility. */
@@ -511,7 +510,8 @@ typedef enum {
  *  clock cycles.  This mode can be used when the exact number of bytes to
  *  be read is not known.
  */
-typedef enum {
+typedef enum
+{
     /*! Unblock/callback when buffer is full. */
     UART2_ReadReturnMode_FULL,
 
@@ -524,11 +524,12 @@ typedef enum {
  *
  *  This enumeration defines the UART data lengths.
  */
-typedef enum {
-    UART2_DataLen_5 = 0,  /*!< Data length is 5 bits */
-    UART2_DataLen_6 = 1,  /*!< Data length is 6 bits */
-    UART2_DataLen_7 = 2,  /*!< Data length is 7 bits */
-    UART2_DataLen_8 = 3   /*!< Data length is 8 bits */
+typedef enum
+{
+    UART2_DataLen_5 = 0, /*!< Data length is 5 bits */
+    UART2_DataLen_6 = 1, /*!< Data length is 6 bits */
+    UART2_DataLen_7 = 2, /*!< Data length is 7 bits */
+    UART2_DataLen_8 = 3  /*!< Data length is 8 bits */
 } UART2_DataLen;
 
 /*!
@@ -536,9 +537,10 @@ typedef enum {
  *
  *  This enumeration defines the UART2 stop bits.
  */
-typedef enum {
-    UART2_StopBits_1 = 0,  /*!< One stop bit */
-    UART2_StopBits_2 = 1   /*!< Two stop bits */
+typedef enum
+{
+    UART2_StopBits_1 = 0, /*!< One stop bit */
+    UART2_StopBits_2 = 1  /*!< Two stop bits */
 } UART2_StopBits;
 
 /*!
@@ -546,12 +548,13 @@ typedef enum {
  *
  *  This enumeration defines the UART2 parity types.
  */
-typedef enum {
-    UART2_Parity_NONE = 0,  /*!< No parity */
-    UART2_Parity_EVEN = 1,  /*!< Parity bit is even */
-    UART2_Parity_ODD  = 2,  /*!< Parity bit is odd */
-    UART2_Parity_ZERO = 3,  /*!< Parity bit is always zero */
-    UART2_Parity_ONE  = 4   /*!< Parity bit is always one */
+typedef enum
+{
+    UART2_Parity_NONE = 0, /*!< No parity */
+    UART2_Parity_EVEN = 1, /*!< Parity bit is even */
+    UART2_Parity_ODD  = 2, /*!< Parity bit is odd */
+    UART2_Parity_ZERO = 3, /*!< Parity bit is always zero */
+    UART2_Parity_ONE  = 4  /*!< Parity bit is always one */
 } UART2_Parity;
 
 /*!
@@ -562,80 +565,83 @@ typedef enum {
  *
  *  @sa       UART2_Params_init()
  */
-typedef struct {
-    UART2_Mode      readMode;        /*!< Mode for all read calls */
-    UART2_Mode      writeMode;       /*!< Mode for all write calls */
-    UART2_Callback  readCallback;    /*!< Pointer to read callback function for callback mode. */
-    UART2_Callback  writeCallback;   /*!< Pointer to write callback function for callback mode. */
-    UART2_EventCallback  eventCallback; /*!< Pointer to event callback function. */
-    uint32_t        eventMask;       /*!< mask of events that the application is interested in */
-    UART2_ReadReturnMode readReturnMode;  /*!< Receive return mode */
-    uint32_t        baudRate;        /*!< Baud rate for UART */
-    UART2_DataLen   dataLength;      /*!< Data length for UART */
-    UART2_StopBits  stopBits;        /*!< Stop bits for UART */
-    UART2_Parity    parityType;      /*!< Parity bit type for UART */
-    void           *userArg;         /*!< User supplied argument for callback functions */
+typedef struct
+{
+    UART2_Mode readMode;                 /*!< Mode for all read calls */
+    UART2_Mode writeMode;                /*!< Mode for all write calls */
+    UART2_Callback readCallback;         /*!< Pointer to read callback function for callback mode. */
+    UART2_Callback writeCallback;        /*!< Pointer to write callback function for callback mode. */
+    UART2_EventCallback eventCallback;   /*!< Pointer to event callback function. */
+    uint32_t eventMask;                  /*!< Mask of events that the application is interested in */
+    UART2_ReadReturnMode readReturnMode; /*!< Receive return mode */
+    uint32_t baudRate;                   /*!< Baud rate for UART */
+    UART2_DataLen dataLength;            /*!< Data length for UART */
+    UART2_StopBits stopBits;             /*!< Stop bits for UART */
+    UART2_Parity parityType;             /*!< Parity bit type for UART */
+    void *userArg;                       /*!< User supplied argument for callback functions */
 } UART2_Params;
 
 /*! @cond NODOC */
-#define UART2_BASE_OBJECT \
-    /* UART2 state variable */ \
-    struct { \
-        uint32_t         overrunCount;     /* total count of overruns */ \
-        bool             opened:1;         /* Has the obj been opened */ \
-        UART2_Mode       readMode;         /* Mode for read calls */ \
-        UART2_Mode       writeMode;        /* Mode for write calls */ \
-        UART2_ReadReturnMode readReturnMode:1; /* RX return mode (partial/full) */ \
-        bool             txEnabled:1;      /* Flag set if ongoing transmit */ \
-        bool             rxEnabled:1;      /* Flag set if ongoing receive */ \
-        bool             rxCancelled:1;    /* Has the TX been canceled */ \
-        bool             txCancelled:1;    /* Has the TX been canceled */ \
-        bool             readTimedOut:1;   /* Has read timed out */ \
-        bool             writeTimedOut:1;  /* Has write timed out */ \
-        bool             overrunActive:1;  /* Is a RX overrun active */ \
-        bool             inReadCallback:1; /* To avoid stack overflow */ \
-        bool             readCallbackPending:1; /* To avoid stack overflow */ \
-        bool             inWriteCallback:1; /* To avoid stack overflow */ \
-        bool             writeCallbackPending:1; /* To avoid stack overflow */ \
-    } state; \
-    \
-    HwiP_Struct          hwi;              /* Hwi object for interrupts */ \
-    uint32_t             baudRate;         /* Baud rate for UART */ \
-    UART2_DataLen        dataLength;       /* Data length for UART */ \
-    UART2_StopBits       stopBits;         /* Stop bits for UART */ \
-    UART2_Parity         parityType;       /* Parity bit type for UART */ \
-    int32_t              rxStatus;         /* RX status */ \
-    int32_t              txStatus;         /* TX status */ \
-    UART2_EventCallback  eventCallback;    /* User supplied event callback */ \
-    uint32_t             eventMask;        /* User supplied event mask */ \
-    void                *userArg;          /* User supplied arg for callbacks */ \
-    \
-    /* UART read variables */ \
-    RingBuf_Object       rxBuffer;         /* Receive ring buffer */ \
-    bool                 readInUse;        /* Is a read() active */ \
-    unsigned char       *readBuf;          /* Buffer data pointer */ \
-    size_t               readSize;         /* Number of bytes to read */ \
-    size_t               readCount;        /* Number of bytes left to read */ \
-    size_t               rxSize;           /* # of bytes to read in DMA xfer */ \
-    size_t               bytesRead;        /* Number of bytes read */ \
-    SemaphoreP_Struct    readSem;          /* UART read semaphore */ \
-    ClockP_Struct        readTimeoutClk;   /* Clock object to for timeouts */ \
-    UART2_Callback       readCallback;     /* Pointer to read callback */ \
-    \
-    /* UART write variables */ \
-    RingBuf_Object       txBuffer;         /* Transmit ring buffer */ \
-    volatile bool        writeInUse;       /* Flag to show ongoing write */ \
-    const unsigned char *writeBuf;         /* Buffer data pointer */ \
-    size_t               writeSize;        /* Number of bytes to write*/ \
-    size_t               writeCount;       /* Number of bytes left to write */ \
-    size_t               txSize;           /* # of bytes to write with DMA */ \
-    size_t               bytesWritten;     /* Number of bytes written */ \
-    SemaphoreP_Struct    writeSem;         /* UART write semaphore*/ \
-    ClockP_Struct        writeTimeoutClk;  /* Clock object to for timeouts */ \
-    UART2_Callback       writeCallback;    /* Pointer to write callback */ \
-    \
-    /* For Power management */ \
-    unsigned int         powerMgrId;       /* Determined from base address */ \
+#define UART2_BASE_OBJECT                                                               \
+    /* UART2 state variable */                                                          \
+    struct                                                                              \
+    {                                                                                   \
+        uint32_t overrunCount;               /* Total count of overruns */              \
+        UART2_Mode readMode;                 /* Mode for read calls */                  \
+        UART2_Mode writeMode;                /* Mode for write calls */                 \
+        UART2_ReadReturnMode readReturnMode; /* RX return mode (partial/full) */        \
+        bool opened;                         /* Has the obj been opened */              \
+        bool txEnabled;                      /* Flag set if ongoing transmit */         \
+        bool rxEnabled;                      /* Flag set if ongoing receive */          \
+        bool rxCancelled;                    /* Has the TX been canceled */             \
+        bool txCancelled;                    /* Has the TX been canceled */             \
+        bool readTimedOut;                   /* Has read timed out */                   \
+        bool writeTimedOut;                  /* Has write timed out */                  \
+        bool overrunActive;                  /* Is a RX overrun active */               \
+        bool inReadCallback;                 /* To avoid stack overflow */              \
+        bool readCallbackPending;            /* To avoid stack overflow */              \
+        bool inWriteCallback;                /* To avoid stack overflow */              \
+        bool writeCallbackPending;           /* To avoid stack overflow */              \
+        bool rxTimeOut;                      /* Has RX timeout occured in peripheral */ \
+    } state;                                                                            \
+                                                                                        \
+    HwiP_Struct hwi;                   /* Hwi object for interrupts */                  \
+    uint32_t baudRate;                 /* Baud rate for UART */                         \
+    UART2_DataLen dataLength;          /* Data length for UART */                       \
+    UART2_StopBits stopBits;           /* Stop bits for UART */                         \
+    UART2_Parity parityType;           /* Parity bit type for UART */                   \
+    int32_t rxStatus;                  /* RX status */                                  \
+    int32_t txStatus;                  /* TX status */                                  \
+    UART2_EventCallback eventCallback; /* User supplied event callback */               \
+    uint32_t eventMask;                /* User supplied event mask */                   \
+    void *userArg;                     /* User supplied arg for callbacks */            \
+                                                                                        \
+    /* UART read variables */                                                           \
+    RingBuf_Object rxBuffer;      /* Receive ring buffer */                             \
+    bool readInUse;               /* Is a read() active */                              \
+    unsigned char *readBuf;       /* Buffer data pointer */                             \
+    size_t readSize;              /* Number of bytes to read */                         \
+    size_t readCount;             /* Number of bytes left to read */                    \
+    size_t rxSize;                /* # of bytes to read in DMA xfer */                  \
+    size_t bytesRead;             /* Number of bytes read */                            \
+    SemaphoreP_Struct readSem;    /* UART read semaphore */                             \
+    ClockP_Struct readTimeoutClk; /* Clock object to for timeouts */                    \
+    UART2_Callback readCallback;  /* Pointer to read callback */                        \
+                                                                                        \
+    /* UART write variables */                                                          \
+    RingBuf_Object txBuffer;       /* Transmit ring buffer */                           \
+    volatile bool writeInUse;      /* Flag to show ongoing write */                     \
+    const unsigned char *writeBuf; /* Buffer data pointer */                            \
+    size_t writeSize;              /* Number of bytes to write*/                        \
+    size_t writeCount;             /* Number of bytes left to write */                  \
+    size_t txSize;                 /* # of bytes to write with DMA */                   \
+    size_t bytesWritten;           /* Number of bytes written */                        \
+    SemaphoreP_Struct writeSem;    /* UART write semaphore*/                            \
+    ClockP_Struct writeTimeoutClk; /* Clock object to for timeouts */                   \
+    UART2_Callback writeCallback;  /* Pointer to write callback */                      \
+                                                                                        \
+    /* For Power management */                                                          \
+    unsigned int powerMgrId; /* Determined from base address */                         \
 /*! @endcond */
 
 /*!
@@ -643,44 +649,46 @@ typedef struct {
  *  UART2 Object. Applications must not access any member variables of
  *  this structure!
  */
-typedef struct {
+typedef struct
+{
     UART2_BASE_OBJECT
 } UART2_Object;
 /*! @endcond */
 
 /*! @cond NODOC */
-#define UART2_BASE_HWATTRS \
-    /*! UART Peripheral's base address */ \
-    uint32_t        baseAddr; \
-    /*! UART Peripheral's interrupt vector */ \
-    int             intNum; \
-    /*! UART Peripheral's interrupt priority */ \
-    uint8_t         intPriority; \
-    /*! Pointer to an application RX buffer */ \
-    unsigned char  *rxBufPtr; \
-    /*! Size of rxBufPtr */ \
-    size_t          rxBufSize; \
-    /*! Pointer to an application TX buffer */ \
-    unsigned char  *txBufPtr; \
-    /*! Size of txBufPtr */ \
-    size_t          txBufSize; \
-    /*! Hardware flow control setting */ \
-    uint32_t        flowControl; \
-    /*! UART RX pin assignment */ \
-    uint32_t        rxPin; \
-    /*! UART TX pin assignment */ \
-    uint32_t        txPin; \
-    /*! UART clear to send (CTS) pin assignment */ \
-    uint32_t        ctsPin; \
+#define UART2_BASE_HWATTRS                           \
+    /*! UART Peripheral's base address */            \
+    uint32_t baseAddr;                               \
+    /*! UART Peripheral's interrupt vector */        \
+    int intNum;                                      \
+    /*! UART Peripheral's interrupt priority */      \
+    uint8_t intPriority;                             \
+    /*! Pointer to an application RX buffer */       \
+    unsigned char *rxBufPtr;                         \
+    /*! Size of rxBufPtr */                          \
+    size_t rxBufSize;                                \
+    /*! Pointer to an application TX buffer */       \
+    unsigned char *txBufPtr;                         \
+    /*! Size of txBufPtr */                          \
+    size_t txBufSize;                                \
+    /*! Hardware flow control setting */             \
+    uint32_t flowControl;                            \
+    /*! UART RX pin assignment */                    \
+    uint32_t rxPin;                                  \
+    /*! UART TX pin assignment */                    \
+    uint32_t txPin;                                  \
+    /*! UART clear to send (CTS) pin assignment */   \
+    uint32_t ctsPin;                                 \
     /*! UART request to send (RTS) pin assignment */ \
-    uint32_t        rtsPin; \
+    uint32_t rtsPin;                                 \
 /*! @endcond */
 
 /*!
  *  @cond NODOC
  *  UART2 HWAttrs.
  */
-typedef struct {
+typedef struct
+{
     UART2_BASE_HWATTRS
 } UART2_HWAttrs;
 /*! @endcond */
@@ -692,12 +700,13 @@ typedef struct {
  *  the UART2 driver implementation.
  *
  */
-typedef struct UART2_Config_ {
+typedef struct UART2_Config_
+{
     /*! Pointer to a driver specific data object */
-    void                *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void          const *hwAttrs;
+    void const *hwAttrs;
 } UART2_Config;
 
 extern const UART2_Config UART2_config[];
@@ -851,12 +860,11 @@ extern void UART2_Params_init(UART2_Params *params);
  *                                   canceled by a call to UART2_readCancel()
  *                                   before any data could be received.
  */
-extern int_fast16_t UART2_read(UART2_Handle handle, void *buffer, size_t size,
-        size_t *bytesRead);
+extern int_fast16_t UART2_read(UART2_Handle handle, void *buffer, size_t size, size_t *bytesRead);
 
 /*! @cond NODOC */
-extern int_fast16_t __attribute__((weak)) UART2_readFull(UART2_Handle handle,
-        void *buffer, size_t size, size_t *bytesRead);
+extern int_fast16_t __attribute__((weak))
+UART2_readFull(UART2_Handle handle, void *buffer, size_t size, size_t *bytesRead);
 /*! @endcond */
 
 /*!
@@ -938,8 +946,11 @@ extern int_fast16_t __attribute__((weak)) UART2_readFull(UART2_Handle handle,
  *                                   before any data could be received.
  *  @retval #UART2_STATUS_ETIMEOUT   The read operation timed out.
  */
-extern int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer,
-        size_t size, size_t *bytesRead, uint32_t timeout);
+extern int_fast16_t UART2_readTimeout(UART2_Handle handle,
+                                      void *buffer,
+                                      size_t size,
+                                      size_t *bytesRead,
+                                      uint32_t timeout);
 
 /*!
  *  @brief  Function that cancels a UART2_read() function call.
@@ -1019,8 +1030,7 @@ extern void UART2_readCancel(UART2_Handle handle);
  *  @retval #UART2_STATUS_EINUSE  Another write to the UART is currently
  *                                ongoing.
  */
-extern int_fast16_t UART2_write(UART2_Handle handle, const void *buffer,
-        size_t size, size_t *bytesWritten);
+extern int_fast16_t UART2_write(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten);
 
 /*!
  *  @brief  Function that disables collecting of RX data into the circular
@@ -1118,8 +1128,11 @@ extern void UART2_rxEnable(UART2_Handle handle);
  *                                ongoing.
  *  @retval #UART2_STATUS_ETIMEOUT The write operation timed out.
  */
-extern int_fast16_t UART2_writeTimeout(UART2_Handle handle, const void *buffer,
-        size_t size, size_t *bytesWritten, uint32_t timeout);
+extern int_fast16_t UART2_writeTimeout(UART2_Handle handle,
+                                       const void *buffer,
+                                       size_t size,
+                                       size_t *bytesWritten,
+                                       uint32_t timeout);
 
 /*!
  *  @brief  Function that cancels a UART2_write() function call.

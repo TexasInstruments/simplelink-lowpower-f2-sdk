@@ -117,13 +117,13 @@ extern void tiopCUIUpdateChannel(uint8_t ch);
 extern void tiopCUIUpdateShortAddr(otShortAddress s);
 
 /**
- * @brief Update masterkey CUI output
+ * @brief Update networkKey CUI output
  *
- * @param key contains the masterkey for the network
+ * @param key contains the networkKey for the network
  *
  * @return None
  */
-extern void tiopCUIUpdateMasterkey(otMasterKey key);
+extern void tiopCUIUpdateNetworkKey(otNetworkKey key);
 
 /**
  * @brief Update Extended panid CUI output

@@ -30,7 +30,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include <stdint.h>
 
 /* Kernel services */
@@ -47,9 +46,9 @@
 #include DeviceFamily_constructPath(driverlib/aux_dac.h)
 #include DeviceFamily_constructPath(driverlib/aux_smph.h)
 
-#define DAC_CLOCK_FREQ_24MHZ        0U
-#define MICROVOLTS_PER_MILLIVOLT    1000
-#define CALIBRATION_VDDS            3000
+#define DAC_CLOCK_FREQ_24MHZ     0U
+#define MICROVOLTS_PER_MILLIVOLT 1000
+#define CALIBRATION_VDDS         3000
 
 /* Forward declarations */
 static int_fast16_t DAC_setRange(DAC_Handle handle);
@@ -62,15 +61,15 @@ extern const uint_least8_t ADC_count;
 extern const uint_least8_t CONFIG_ADC_AUX_CONST;
 
 /* Static Globals */
-static bool isInitialized = (bool)false;
+static bool isInitialized   = (bool)false;
 static uint16_t dacInstance = 0;
 static SemaphoreP_Struct dacSemaphore;
-
 
 /*
  *  ======== DAC_init ========
  */
-void DAC_init(void) {
+void DAC_init(void)
+{
 
     isInitialized = (bool)true;
 }
@@ -78,27 +77,30 @@ void DAC_init(void) {
 /*
  *  ======== DAC_open ========
  */
-DAC_Handle DAC_open(uint_least8_t index, DAC_Params *params) {
+DAC_Handle DAC_open(uint_least8_t index, DAC_Params *params)
+{
 
-    DAC_Handle              handle;
-    DACCC26XX_Object        *object;
-    DACCC26XX_HWAttrs       const *hwAttrs;
+    DAC_Handle handle;
+    DACCC26XX_Object *object;
+    DACCC26XX_HWAttrs const *hwAttrs;
 
     /* Get handle and the object */
-    handle = (DAC_Handle)&(DAC_config[index]);
-    object = handle->object;
+    handle  = (DAC_Handle) & (DAC_config[index]);
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* Determine if the driver was already opened */
     uint32_t key = HwiP_disable();
 
-    if (!isInitialized || object->isOpen) {
+    if (!isInitialized || object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
 
     /* If this is the first handle requested, set up the semaphore as well */
-    if (dacInstance == 0) {
+    if (dacInstance == 0)
+    {
         /* Setup semaphore */
         SemaphoreP_constructBinary(&dacSemaphore, 1);
     }
@@ -108,10 +110,12 @@ DAC_Handle DAC_open(uint_least8_t index, DAC_Params *params) {
     object->isOpen = (bool)true;
     HwiP_restore(key);
 
-    if (params != NULL) {
+    if (params != NULL)
+    {
         object->currCode = params->initCode;
     }
-    else {
+    else
+    {
         object->currCode = 0;
     }
 
@@ -123,23 +127,28 @@ DAC_Handle DAC_open(uint_least8_t index, DAC_Params *params) {
 /*
  *  ======== DAC_close ========
  */
-void DAC_close(DAC_Handle handle) {
-    DACCC26XX_Object *object = handle->object;
+void DAC_close(DAC_Handle handle)
+{
+    DACCC26XX_Object *object         = handle->object;
     DACCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     uint32_t key = HwiP_disable();
 
-    if (object->isOpen) {
+    if (object->isOpen)
+    {
         /* Check that the DAC is no longer in use. If it is, disable DAC's output. */
-        if (object->isEnabled) {
+        if (object->isEnabled)
+        {
             DAC_disable(handle);
         }
         dacInstance--;
-        if (dacInstance == 0) {
+        if (dacInstance == 0)
+        {
             SemaphoreP_destruct(&dacSemaphore);
         }
     }
-    else {
+    else
+    {
         HwiP_restore(key);
         return;
     }
@@ -155,11 +164,12 @@ void DAC_close(DAC_Handle handle) {
 /*
  *  ======== DAC_setVoltage ========
  */
-int_fast16_t DAC_setVoltage(DAC_Handle handle, uint32_t uVoltOutput) {
+int_fast16_t DAC_setVoltage(DAC_Handle handle, uint32_t uVoltOutput)
+{
 
-    DACCC26XX_Object     *object = handle->object;
-    int_fast16_t          status = DAC_STATUS_ERROR;
-    uint32_t              code;
+    DACCC26XX_Object *object = handle->object;
+    int_fast16_t status      = DAC_STATUS_ERROR;
+    uint32_t code;
 
     /* Get the object */
     object = handle->object;
@@ -167,16 +177,19 @@ int_fast16_t DAC_setVoltage(DAC_Handle handle, uint32_t uVoltOutput) {
     /* Verify that the DAC's output is enabled for the handle. This is necessary given that
      * the DAC's output range depends on the voltage reference source.
      */
-    if (object->isEnabled) {
+    if (object->isEnabled)
+    {
         /* Check that the value is within the DAC's voltage range. */
-        if ((uVoltOutput >= object->dacOutputMin) && (uVoltOutput <= object->dacOutputMax)) {
-            code =  AUXDACCalcCode(uVoltOutput, object->dacOutputMin, object->dacOutputMax);
+        if ((uVoltOutput >= object->dacOutputMin) && (uVoltOutput <= object->dacOutputMax))
+        {
+            code = AUXDACCalcCode(uVoltOutput, object->dacOutputMin, object->dacOutputMax);
             AUXDACSetCode((uint8_t)code);
             object->currCode = code;
-            status = DAC_STATUS_SUCCESS;
+            status           = DAC_STATUS_SUCCESS;
         }
-        else {
-            status =  DAC_STATUS_INVALID;
+        else
+        {
+            status = DAC_STATUS_INVALID;
         }
     }
 
@@ -186,27 +199,30 @@ int_fast16_t DAC_setVoltage(DAC_Handle handle, uint32_t uVoltOutput) {
 /*
  *  ======== DAC_setCode ========
  */
-int_fast16_t DAC_setCode(DAC_Handle handle, uint32_t code) {
+int_fast16_t DAC_setCode(DAC_Handle handle, uint32_t code)
+{
 
-    DACCC26XX_Object        *object;
-    int_fast16_t             status = DAC_STATUS_ERROR;
+    DACCC26XX_Object *object;
+    int_fast16_t status = DAC_STATUS_ERROR;
 
     /* Get the object */
     object = handle->object;
 
     /* Verify that the DAC is currently enabled. */
-    if (object->isEnabled) {
+    if (object->isEnabled)
+    {
         AUXDACSetCode((uint8_t)code);
         object->currCode = code;
-        status = DAC_STATUS_SUCCESS;
+        status           = DAC_STATUS_SUCCESS;
     }
-    else {
+    else
+    {
         /* Even if the DAC is not enabled for this handle, update the DAC code in the object
          * so that once the DAC is enabled for the handle, this value will be set and the output
          * voltage will depend on the selected voltage reference source.
          */
         object->currCode = code;
-        status = DAC_STATUS_SUCCESS;
+        status           = DAC_STATUS_SUCCESS;
     }
     return status;
 }
@@ -214,11 +230,12 @@ int_fast16_t DAC_setCode(DAC_Handle handle, uint32_t code) {
 /*
  *  ======== DAC_enable ========
  */
-int_fast16_t DAC_enable(DAC_Handle handle) {
+int_fast16_t DAC_enable(DAC_Handle handle)
+{
 
-    DACCC26XX_Object        *object;
-    DACCC26XX_HWAttrs       const *hwAttrs;
-    int_fast16_t            status = DAC_STATUS_ERROR;
+    DACCC26XX_Object *object;
+    DACCC26XX_HWAttrs const *hwAttrs;
+    int_fast16_t status = DAC_STATUS_ERROR;
 
     /* Get handle */
     hwAttrs = handle->hwAttrs;
@@ -229,14 +246,16 @@ int_fast16_t DAC_enable(DAC_Handle handle) {
     /* Give control of the peripheral to this DAC handle. Return error if the peripheral has been
      * enabled by another handle.
      */
-    if (SemaphoreP_pend(&dacSemaphore, SemaphoreP_NO_WAIT) != SemaphoreP_OK) {
+    if (SemaphoreP_pend(&dacSemaphore, SemaphoreP_NO_WAIT) != SemaphoreP_OK)
+    {
         object->isEnabled = (bool)false;
-        status = DAC_STATUS_INUSE;
+        status            = DAC_STATUS_INUSE;
         return status;
     }
 
     /* Acquire the DAC HW semaphore. Return an error if the HW semaphore is not available. */
-    if (!AUXSMPHTryAcquire(AUX_SMPH_4)) {
+    if (!AUXSMPHTryAcquire(AUX_SMPH_4))
+    {
         object->isEnabled = (bool)false;
         SemaphoreP_post(&dacSemaphore);
         status = DAC_STATUS_INUSE;
@@ -247,15 +266,18 @@ int_fast16_t DAC_enable(DAC_Handle handle) {
     AUXDACSetVref((uint8_t)hwAttrs->dacVrefSource);
 
     /* Check the precharge status if DCOUPL has been selected as the voltage reference source. */
-    if ((hwAttrs->dacVrefSource == AUXDAC_VREF_SEL_DCOUPL) && (hwAttrs->dacPrecharge)) {
+    if ((hwAttrs->dacVrefSource == AUXDAC_VREF_SEL_DCOUPL) && (hwAttrs->dacPrecharge))
+    {
         AUXDACEnablePreCharge();
     }
-    else {
+    else
+    {
         AUXDACDisablePreCharge();
     }
 
     /* Determine DAC's output range */
-    if(DAC_setRange(handle) != DAC_STATUS_SUCCESS) {
+    if (DAC_setRange(handle) != DAC_STATUS_SUCCESS)
+    {
         object->isEnabled = (bool)false;
         SemaphoreP_post(&dacSemaphore);
         return status;
@@ -284,15 +306,17 @@ int_fast16_t DAC_enable(DAC_Handle handle) {
 /*
  *  ======== DAC_disable ========
  */
-int_fast16_t DAC_disable(DAC_Handle handle) {
+int_fast16_t DAC_disable(DAC_Handle handle)
+{
 
-    DACCC26XX_Object        *object;
-    int_fast16_t             status = DAC_STATUS_ERROR;
+    DACCC26XX_Object *object;
+    int_fast16_t status = DAC_STATUS_ERROR;
 
     /* Get the object */
     object = handle->object;
 
-    if (object->isEnabled) {
+    if (object->isEnabled)
+    {
         /* Disable the DAC's sample clock, the DAC's output buffer, the DAC, and disconnect output. */
         AUXDACDisable();
 
@@ -307,7 +331,7 @@ int_fast16_t DAC_disable(DAC_Handle handle) {
 
         /* Keep track of the DAC's current state as disabled. */
         object->isEnabled = (bool)false;
-        status = DAC_STATUS_SUCCESS;
+        status            = DAC_STATUS_SUCCESS;
     }
 
     return status;
@@ -316,21 +340,23 @@ int_fast16_t DAC_disable(DAC_Handle handle) {
 /*
  *  ======== DAC_setRange ========
  */
-static int_fast16_t DAC_setRange(DAC_Handle handle) {
+static int_fast16_t DAC_setRange(DAC_Handle handle)
+{
 
-    DACCC26XX_Object        *object;
-    DACCC26XX_HWAttrs       const *hwAttrs;
-    ADC_Handle              auxadcHandle;
-    ADC_Params              auxadcParams;
-    int_fast16_t            status = DAC_STATUS_ERROR;
-    uint16_t                vdds;
-    uint32_t                vddsMicroVolt;
+    DACCC26XX_Object *object;
+    DACCC26XX_HWAttrs const *hwAttrs;
+    ADC_Handle auxadcHandle;
+    ADC_Params auxadcParams;
+    int_fast16_t status = DAC_STATUS_ERROR;
+    uint16_t vdds;
+    uint32_t vddsMicroVolt;
 
     /* Get handle and the object */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
-    if (hwAttrs->dacVrefSource == AUXDAC_VREF_SEL_VDDS) {
+    if (hwAttrs->dacVrefSource == AUXDAC_VREF_SEL_VDDS)
+    {
         /* Create and initialize auxiliary ADC handle.
          * To account for VDDS variations, it's necessary to measure VDDS with the ADC peripheral.
          * This is done in such a way that access to the single ADC peripheral between the
@@ -342,12 +368,14 @@ static int_fast16_t DAC_setRange(DAC_Handle handle) {
         /* Open auxiliary ADC handle */
         ADC_Params_init(&auxadcParams);
         auxadcHandle = ADC_open(CONFIG_ADC_AUX_CONST, &auxadcParams);
-        if (auxadcHandle == NULL) {
+        if (auxadcHandle == NULL)
+        {
             return status;
         }
 
         /* Measure VDDS using 12-bit ADC */
-        if (ADC_convert(auxadcHandle, &vdds) != ADC_STATUS_SUCCESS) {
+        if (ADC_convert(auxadcHandle, &vdds) != ADC_STATUS_SUCCESS)
+        {
             return status;
         }
         vddsMicroVolt = ADC_convertToMicroVolts(auxadcHandle, vdds);
@@ -359,16 +387,18 @@ static int_fast16_t DAC_setRange(DAC_Handle handle) {
          * Calibration values for VDDS are measured at 3.0 V, so it's necessary to scale to the actual VDDS.
          */
         object->dacOutputMin = AUXDACCalcMin() * MICROVOLTS_PER_MILLIVOLT;
-        object->dacOutputMax = ((AUXDACCalcMax() * (vddsMicroVolt / MICROVOLTS_PER_MILLIVOLT)) / CALIBRATION_VDDS) * MICROVOLTS_PER_MILLIVOLT;
+        object->dacOutputMax = ((AUXDACCalcMax() * (vddsMicroVolt / MICROVOLTS_PER_MILLIVOLT)) / CALIBRATION_VDDS) *
+                               MICROVOLTS_PER_MILLIVOLT;
 
         status = DAC_STATUS_SUCCESS;
     }
-    else {
+    else
+    {
         /* Calculate DAC's output range for the particular handle and scale it to microvolts.
          * No need to measure VDDS since it was not selected as the voltage reference source.
          */
-        object->dacOutputMin  =  AUXDACCalcMin() * MICROVOLTS_PER_MILLIVOLT;
-        object->dacOutputMax  =  AUXDACCalcMax() * MICROVOLTS_PER_MILLIVOLT;
+        object->dacOutputMin = AUXDACCalcMin() * MICROVOLTS_PER_MILLIVOLT;
+        object->dacOutputMax = AUXDACCalcMax() * MICROVOLTS_PER_MILLIVOLT;
 
         status = DAC_STATUS_SUCCESS;
     }

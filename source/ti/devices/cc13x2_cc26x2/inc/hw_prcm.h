@@ -247,7 +247,7 @@
 // Memory Retention Control
 #define PRCM_O_RAMRETEN                                             0x00000224
 
-// Oscillator Interrupt Mask
+// Oscillator Interrupt Mask Control
 #define PRCM_O_OSCIMSC                                              0x00000290
 
 // Oscillator Raw Interrupt Status
@@ -340,9 +340,8 @@
 // The bit will have no effect before the following requirements are met:
 // 1. PDCTL1.CPU_ON = 0
 // 2. PDCTL1.VIMS_MODE = x0
-// 3. SECDMACLKGDS.DMA_CLK_EN = 0 and S.CRYPTO_CLK_EN] = 0 and
-// SECDMACLKGR.DMA_AM_CLK_EN = 0 (Note: Settings must be loaded with
-// CLKLOADCTL.LOAD)
+// 3. SECDMACLKGDS.DMA_CLK_EN = 0 and SECDMACLKGR.DMA_AM_CLK_EN = 0 (Note:
+// Settings must be loaded with CLKLOADCTL.LOAD)
 // 4. SECDMACLKGDS.CRYPTO_CLK_EN = 0 and  SECDMACLKGR.CRYPTO_AM_CLK_EN = 0
 // (Note: Settings must be loaded with CLKLOADCTL.LOAD)
 // 5. I2SCLKGDS.CLK_EN = 0 and I2SCLKGR.AM_CLK_EN = 0 (Note: Settings must be
@@ -2330,8 +2329,18 @@
 //*****************************************************************************
 // Field:     [7] HFSRCPENDRIS
 //
-// 0: HFSRCPEND has not been qualified
-// 1: HFSRCPEND has been qualified since last clear
+// SCLK_HF source switch pending interrupt.
+//
+// After a write to DDI_0_OSC:CTL0.SCLK_HF_SRC_SEL leads to a SCLK_HF source
+// change request, then the requested SCLK_HF source will be enabled and
+// qualified. When the new source is ready to be used as a clock source, then
+// the interrupt HSSRCPENDRIS will go high. When the Flash allows SCLK_HF
+// source switching to take place after flash memory read access is disabled.
+// At this time the actual SCLK_HF clock source switch will be performed, and
+// the interrupt status HSSRCPENDRIS will go low.
+//
+// 0: Indicates SCLK_HF source is not ready to be switched
+// 1: Indicates SCLK_HF source is ready to be switched
 //
 // Interrupt is qualified regardless of OSCIMSC.HFSRCPENDIM setting. The order
 // of qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2345,8 +2354,18 @@
 
 // Field:     [6] LFSRCDONERIS
 //
-// 0: LFSRCDONE has not been qualified
-// 1: LFSRCDONE has been qualified since last clear
+// SCLK_LF source switch done.
+//
+// The DDI_0_OSC:CTL0.SCLK_LF_SRC_SEL  register field is used to request that
+// the SCLK_LF source shall be changed. After an SCLK_LF clock source change is
+// requested, the new source may need to be enabled and qualified before
+// switching of clock source can be done. The interrupt LFRSRCDONERIS goes high
+// to indicate that the SCLK_LF clock source switching has been performed.
+// LFRSRCDONERIS will go low again when the next clock source change is
+// requested by writing to DDI_0_OSC:CTL0.SCLK_LF_SRC_SEL .
+//
+// 0: Indicates SCLK_LF source switch has not completed
+// 1: Indicates SCLK_LF source switch has completed
 //
 // Interrupt is qualified regardless of OSCIMSC.LFSRCDONEIM setting. The order
 // of qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2360,8 +2379,15 @@
 
 // Field:     [5] XOSCDLFRIS
 //
+// The XOSCDLFRIS interrupt indicates when the XOSC_HF oscillator is ready to
+// be used as a derived low-frequency clock source for SCLK_LF or ACLK_REF.
+// When XOSCDLFRIS is high, XOSC_HF  will be used as source for SCLK_LF when
+// selected. When none of the system clocks have XOSC_HF selected as clock
+// source, the XOSC_HF source is automatically disabled and the XOSCDLFRIS
+// interrupt status will go low.
+//
 // 0: XOSCDLF has not been qualified
-// 1: XOSCDLF has been qualified since last clear.
+// 1: XOSCDLF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.XOSCDLFIM setting. The order of
 // qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2375,8 +2401,17 @@
 
 // Field:     [4] XOSCLFRIS
 //
+// The XOSCLFRIS interrupt indicates when the output of the XOSC_LF oscillator
+// has been qualified with respect to frequency. The XOSCLFRIS interrupt status
+// goes high when the XOSC_LF oscillator is ready to be used as a clock source.
+// After the clock qualification is successful, XOSCLFRIS interrupt status
+// remains high, and further qualification is turned off until the XOSC_LF
+// oscillator is disabled. XOSCLFRIS interrupt status will go low only at
+// initial power-on, or after the XOSC_LF oscillator has been disabled when
+// being deselected as a clock source.
+//
 // 0: XOSCLF has not been qualified
-// 1: XOSCLF has been qualified since last clear.
+// 1: XOSCLF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.XOSCLFIM setting. The order of
 // qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2390,8 +2425,19 @@
 
 // Field:     [3] RCOSCDLFRIS
 //
+// The RCOSCDLFRIS interrupt indicates when the RCOSC_HF oscillator is ready to
+// be used as a derived low-frequency clock source for SCLK_LF or ACLK_REF.
+// When RCOSCDLFRIS is high, RCOSC_HF will be used as source for SCLK_LF when
+// selected. When none of the system clocks have RCOSC_HF selected as clock
+// source, the RCOSC_HF source is automatically disabled and the RCOSCDLFRIS
+// interrupt status will go low.
+// If the SCLK_LF or ACLK_REF source is changed from RCOSC_HF derived to
+// XOSC_HF derived low-frequency clock and the new source has not been
+// qualified, then the clock will remain running on the original source. The
+// RCOSCDLFRIS interrupt will then remain high.
+//
 // 0: RCOSCDLF has not been qualified
-// 1: RCOSCDLF has been qualified since last clear.
+// 1: RCOSCDLF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.RCOSCDLFIM setting. The order
 // of qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2405,8 +2451,18 @@
 
 // Field:     [2] RCOSCLFRIS
 //
+// The RCOSCLFRIS interrupt indicates when the output of the RCOSC_LF
+// oscillator has been qualified with respect to frequency. The RCOSCLFRIS
+// interrupt status goes high when the RCOSC_LF oscillator is ready to be used
+// as a clock source.
+// After the clock qualification is successful, RCOSCLFRIS interrupt status
+// remains high, and further qualification is turned off until the RCOSC_LF
+// oscillator is disabled. RCOSCLFRIS interrupt status will go low only at
+// initial power-on, or after the RCOSC_LF oscillator has been disabled when
+// being deselected as a clock source.
+//
 // 0: RCOSCLF has not been qualified
-// 1: RCOSCLF has been qualified since last clear.
+// 1: RCOSCLF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.RCOSCLFIM setting. The order of
 // qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2420,8 +2476,16 @@
 
 // Field:     [1] XOSCHFRIS
 //
-// 0: XOSCHF has not been qualified
-// 1: XOSCHF has been qualified since last clear.
+// The XOSCHFRIS interrupt indicates when the XOSC_HF oscillator has been
+// qualified for use as a clock source. XOSCHFRIS is also used in TCXO mode
+// (when DDI_0_OSC:XOSCHFCTL.TCXO_MODE is 1).
+// When the XOSCHFRIS interrupt is high, the oscillator is qualified and will
+// be used as a clock source when selected. The XOSCHFRIS interrupt goes low
+// when the oscillator is disabled after being deselected as a clock source.
+//
+//
+// 0: XOSC_HF has not been qualified
+// 1: XOSC_HF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.XOSCHFIM setting. The order of
 // qualifying raw interrupt and enable of interrupt mask is indifferent for
@@ -2435,8 +2499,14 @@
 
 // Field:     [0] RCOSCHFRIS
 //
-// 0: RCOSCHF has not been qualified
-// 1: RCOSCHF has been qualified since last clear.
+// The RCOSCHFRIS interrupt indicates when the RCOSC_HF oscillator has been
+// qualified for use as a clock source When the RCOSCHFRIS interrupt is high,
+// the oscillator is qualified and will be used as a clock source when
+// selected. The RCOSCHFRIS interrupt goes low when the oscillator is disabled
+// after being deselected as a clock source.
+//
+// 0: RCOSC_HF has not been qualified
+// 1: RCOSC_HF has been qualified
 //
 // Interrupt is qualified regardless of OSCIMSC.RCOSCHFIM setting. The order of
 // qualifying raw interrupt and enable of interrupt mask is indifferent for

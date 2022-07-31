@@ -129,8 +129,6 @@
 #define Task_struct ti_sysbios_knl_Task_struct
 #define Task_Handle_name ti_sysbios_knl_Task_Handle_name
 #define Task_Instance_init ti_sysbios_knl_Task_Instance_init
-#define Task_Object_count ti_sysbios_knl_Task_Object_count
-#define Task_Object_get ti_sysbios_knl_Task_Object_get
 #define Task_Object_first ti_sysbios_knl_Task_Object_first
 #define Task_Object_next ti_sysbios_knl_Task_Object_next
 #define Task_Object_sizeof ti_sysbios_knl_Task_Object_sizeof
@@ -249,8 +247,6 @@
 #undef Task_struct
 #undef Task_Handle_name
 #undef Task_Instance_init
-#undef Task_Object_count
-#undef Task_Object_get
 #undef Task_Object_first
 #undef Task_Object_next
 #undef Task_Object_sizeof

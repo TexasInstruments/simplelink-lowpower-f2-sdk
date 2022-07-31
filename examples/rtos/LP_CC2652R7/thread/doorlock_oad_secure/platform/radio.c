@@ -95,6 +95,19 @@
  */
 #define PLATFORM_RADIO_TX_TEST_UNMODULATED_WORD 0xFFFF
 
+/* The Rx Queue entry element size for the length field */
+#define TIOP_RADIO_MAC_RX_PKT_LEN_SIZE (1)
+
+/* The Rx Queue entry element size for the optional PHY Header field */
+#ifndef TIOP_RADIO_USE_CSF
+    #define TIOP_RADIO_MAC_RX_PHR_SIZE (0)
+#else
+    #define TIOP_RADIO_MAC_RX_PHR_SIZE (1)
+#endif
+
+/* The Rx Queue entry ID for the start of the MAC payload */
+#define TIOP_RADIO_MAC_RX_PAYLOAD_IDX (TIOP_RADIO_MAC_RX_PKT_LEN_SIZE + TIOP_RADIO_MAC_RX_PHR_SIZE)
+
 /* forward declaration for startTransmit */
 static RF_CmdHandle startTransmit(RF_Handle aRfHandle);
 
@@ -143,7 +156,10 @@ struct tx_power_max
 /*
  * Radio command structures that run on the CM0.
  */
-#ifdef SUPPORT_HIGH_PA
+#if defined(SUPPORT_HIGH_PA) \
+    || defined(LP_CC2653P10) \
+    || defined(LP_EM_CC1354P10_1) \
+    || defined(LP_EM_CC1354P10_6)
 static volatile rfc_CMD_RADIO_SETUP_PA_t     sRadioSetupCmd;
 #else
 static volatile rfc_CMD_RADIO_SETUP_t        sRadioSetupCmd;
@@ -332,6 +348,11 @@ static void rfCoreInitReceiveParams(void)
     sReceiveCmd.condition.rule                = COND_NEVER;
 
     sReceiveCmd.rxConfig.bAutoFlushCrc        = 1;
+
+#ifdef TIOP_RADIO_USE_CSF
+    sReceiveCmd.rxConfig.bAutoFlushIgn        = 1;
+    sReceiveCmd.rxConfig.bIncludePhyHdr       = 1;
+#endif
     sReceiveCmd.rxConfig.bAppendCorrCrc       = 1;
     sReceiveCmd.rxConfig.bAppendRssi          = 1;
     sReceiveCmd.rxConfig.bAppendSrcInd        = 1;
@@ -1017,10 +1038,6 @@ static otError rfCoreSetTransmitPower(int8_t aPower)
     else
     {
         rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
-        otEXPECT_ACTION((sReceiveCmd.status != PENDING
-                && sReceiveCmd.status != ACTIVE
-                && sReceiveCmd.status != IEEE_SUSPENDED),
-                        retval = OT_ERROR_FAILED);
 
         otEXPECT_ACTION(RF_StatSuccess == RF_setTxPower(sRfHandle, newValue),
                         retval = OT_ERROR_FAILED);
@@ -1335,10 +1352,6 @@ otError otPlatRadioEnergyScan(otInstance *aInstance, uint8_t aScanChannel,
             sState = platformRadio_phyState_EdScan;
             /* abort receive */
             rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
-            otEXPECT_ACTION((sReceiveCmd.status != PENDING
-                             && sReceiveCmd.status != ACTIVE
-                             && sReceiveCmd.status != IEEE_SUSPENDED),
-                            error = OT_ERROR_FAILED);
             /* fall through */
         }
 
@@ -1436,10 +1449,6 @@ otError otPlatRadioReceive(otInstance *aInstance, uint8_t aChannel)
         else
         {
             rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
-            otEXPECT_ACTION((sReceiveCmd.status != PENDING
-                        && sReceiveCmd.status != ACTIVE
-                        && sReceiveCmd.status != IEEE_SUSPENDED),
-                     error = OT_ERROR_FAILED);
 
             sReceiveCmd.channel = aChannel;
             /* allow the transmit power helper function to manage the characterized
@@ -1472,10 +1481,6 @@ otError otPlatRadioSleep(otInstance *aInstance)
     else if (sState == platformRadio_phyState_Receive)
     {
         rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
-        otEXPECT_ACTION((sReceiveCmd.status != PENDING
-                             && sReceiveCmd.status != ACTIVE
-                             && sReceiveCmd.status != IEEE_SUSPENDED),
-                        error = OT_ERROR_FAILED);
 
         sState = platformRadio_phyState_Sleep;
 
@@ -1489,7 +1494,6 @@ otError otPlatRadioSleep(otInstance *aInstance)
         error = OT_ERROR_NONE;
     }
 
-exit:
     return error;
 }
 
@@ -1564,19 +1568,14 @@ void otPlatRadioEnableSrcMatch(otInstance *aInstance, bool aEnable)
 {
     (void)aInstance;
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
+    /* verify that we have a running or backgrounded rx command */
+    if  (rfCoreModifyRxAutoPend(sRfHandle, aEnable)
+            != RF_StatCmdDoneSuccess)
     {
-        /* we have a running or backgrounded rx command */
-        otEXPECT(rfCoreModifyRxAutoPend(sRfHandle, aEnable)
-                == RF_StatCmdDoneSuccess);
-    }
-    else
-    {
-        /* if we are promiscuous, then frame filtering should be disabled */
+        /* if we are promiscuous, then auto pend should be disabled */
         sReceiveCmd.frameFiltOpt.autoPendEn = aEnable ? 1 : 0;
     }
 
-exit:
     return;
 }
 
@@ -1600,14 +1599,9 @@ otError otPlatRadioAddSrcMatchShortEntry(otInstance *aInstance,
         sSrcMatchShortData.shortAddrEnt[idx].panId = sReceiveCmd.localPanID;
     }
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
-    {
-        /* we have a running or backgrounded rx command */
-        otEXPECT_ACTION(rfCoreModifySourceMatchEntry(sRfHandle, idx,
-                    platformRadio_address_short, true) == RF_StatCmdDoneSuccess,
-                error = OT_ERROR_FAILED);
-    }
-    else
+    /* attempt to modify running or backgrounded rx command */
+    if (rfCoreModifySourceMatchEntry(sRfHandle, idx,
+            platformRadio_address_short, true) != RF_StatCmdDoneSuccess)
     {
         /* we are not running, so we must update the values ourselves */
         sSrcMatchShortData.srcPendEn[idx / 32] |= (1 << (idx % 32));
@@ -1631,14 +1625,9 @@ otError otPlatRadioClearSrcMatchShortEntry(otInstance *aInstance,
             != PLATFORM_RADIO_SRC_MATCH_NONE,
             error = OT_ERROR_NO_ADDRESS);
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
-    {
-        /* we have a running or backgrounded rx command */
-        otEXPECT_ACTION(rfCoreModifySourceMatchEntry(sRfHandle, idx,
-                    platformRadio_address_short, false) == RF_StatCmdDoneSuccess,
-                error = OT_ERROR_FAILED);
-    }
-    else
+    /* verify that we have a running or backgrounded rx command */
+    if (rfCoreModifySourceMatchEntry(sRfHandle, idx,
+            platformRadio_address_short, false) != RF_StatCmdDoneSuccess)
     {
         /* we are not running, so we must update the values ourselves */
         sSrcMatchShortData.srcPendEn[idx / 32] &= ~(1 << (idx % 32));
@@ -1670,14 +1659,9 @@ otError otPlatRadioAddSrcMatchExtEntry(otInstance *aInstance,
         sSrcMatchExtData.extAddrEnt[idx] = *((uint64_t *)aExtAddress);
     }
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
-    {
-        /* we have a running or backgrounded rx command */
-        otEXPECT_ACTION(rfCoreModifySourceMatchEntry(sRfHandle, idx,
-                    platformRadio_address_ext, true) == RF_StatCmdDoneSuccess,
-                error = OT_ERROR_FAILED);
-    }
-    else
+    /* verify that we have a running or backgrounded rx command */
+    if (rfCoreModifySourceMatchEntry(sRfHandle, idx,
+            platformRadio_address_ext, true) != RF_StatCmdDoneSuccess)
     {
         /* we are not running, so we must update the values ourselves */
         sSrcMatchExtData.srcPendEn[idx / 32] |= (1 << (idx % 32));
@@ -1702,14 +1686,9 @@ otError otPlatRadioClearSrcMatchExtEntry(otInstance *aInstance,
     otEXPECT_ACTION(idx = rfCoreFindExtSrcMatchIdx(local_addr)
             != PLATFORM_RADIO_SRC_MATCH_NONE, error = OT_ERROR_NO_ADDRESS);
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
-    {
-        /* we have a running or backgrounded rx command */
-        otEXPECT_ACTION(rfCoreModifySourceMatchEntry(sRfHandle, idx,
-                    platformRadio_address_ext, false) == RF_StatCmdDoneSuccess,
-                error = OT_ERROR_FAILED);
-    }
-    else
+    /* verify that we have a running or backgrounded rx command */
+    if(rfCoreModifySourceMatchEntry(sRfHandle, idx,
+                    platformRadio_address_ext, false) != RF_StatCmdDoneSuccess)
     {
         /* we are not running, so we must update the values ourselves */
         sSrcMatchExtData.srcPendEn[idx / 32] &= ~(1 << (idx % 32));
@@ -1791,21 +1770,15 @@ void otPlatRadioSetPromiscuous(otInstance *aInstance, bool aEnable)
 {
     (void)aInstance;
 
-    if (sReceiveCmd.status == ACTIVE || sReceiveCmd.status == IEEE_SUSPENDED)
-    {
-        /* we have a running or backgrounded rx command */
-        /* if we are promiscuous, then frame filtering should be disabled */
-        otEXPECT(rfCoreModifyRxFrameFilter(sRfHandle, !aEnable)
-                == RF_StatCmdDoneSuccess);
-        /* XXX should we dump any queued messages ? */
-    }
-    else
+    /* verify that we have a running or backgrounded rx command */
+    /* if we are promiscuous, then frame filtering should be disabled */
+    if (rfCoreModifyRxFrameFilter(sRfHandle, !aEnable)
+                != RF_StatCmdDoneSuccess)
     {
         /* if we are promiscuous, then frame filtering should be disabled */
         sReceiveCmd.frameFiltOpt.frameFiltEn = aEnable ? 0 : 1;
     }
 
-exit:
     return;
 }
 
@@ -2063,7 +2036,9 @@ static otError populateReceiveFrame(struct rx_queue_info *p)
     /* extract things from the payload */
     payload = &(p->curEntry->data);
     len     = payload[0] & 0x0ff;
-    infoIdx = len + 1 - sizeof(struct rfPktAdditionalInfo);
+
+    infoIdx = len + TIOP_RADIO_MAC_RX_PKT_LEN_SIZE - sizeof(struct rfPktAdditionalInfo);
+
     aInfo = (struct rfPktAdditionalInfo*)&(payload[infoIdx]);
 
     crcCorr = (rfc_ieeeRxCorrCrc_t *)&aInfo->crcCorr;
@@ -2088,10 +2063,10 @@ static otError populateReceiveFrame(struct rx_queue_info *p)
 #endif
 
     /*remove additional info len from pkt size */
-    len -= 5;
+    len -= (5 + TIOP_RADIO_MAC_RX_PHR_SIZE);
 
     p->receiveFrame.mLength             = len;
-    p->receiveFrame.mPsdu               = &(payload[1]);
+    p->receiveFrame.mPsdu               = &(payload[TIOP_RADIO_MAC_RX_PAYLOAD_IDX]);
     p->receiveFrame.mChannel            = sReceiveCmd.channel;
     p->receiveFrame.mInfo.mRxInfo.mRssi = aInfo->rssi;
     p->receiveFrame.mInfo.mRxInfo.mLqi  = crcCorr->status.corr;

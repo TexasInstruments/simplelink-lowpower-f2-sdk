@@ -49,31 +49,32 @@
  * -----------------------------------------------------------------------------
  */
 #ifndef MIN
-#  define MIN(n, m)    (((n) > (m)) ? (m) : (n))
+    #define MIN(n, m) (((n) > (m)) ? (m) : (n))
 #endif
 
-#define DISPLAY_UART_ESC_INITIAL            "\x1b\x63"    /* Reset terminal */                \
-                                            "\x1b[2J"     /* Clear screen   */                \
-                                            "\x1b[10r"    /* Scrolling region from line 10 */ \
-                                            "\x1b[11;1H"  /* Set initial cursor to line 11 */
+#define DISPLAY_UART_ESC_INITIAL                     \
+    "\x1b\x63"   /* Reset terminal */                \
+    "\x1b[2J"    /* Clear screen   */                \
+    "\x1b[10r"   /* Scrolling region from line 10 */ \
+    "\x1b[11;1H" /* Set initial cursor to line 11 */
 
-#define DISPLAY_UART_ESC_MOVEPOS_FMT        "\x1b\x37"    /* Save cursor position */ \
-                                            "\x1b[10r"    /* Retransmit scroll    */ \
-                                            "\x1b[%d;%dH" /* Move cursor fmt str  */
+#define DISPLAY_UART_ESC_MOVEPOS_FMT         \
+    "\x1b\x37"    /* Save cursor position */ \
+    "\x1b[10r"    /* Retransmit scroll    */ \
+    "\x1b[%d;%dH" /* Move cursor fmt str  */
 
-#define DISPLAY_UART_ESC_RESTOREPOS         "\x1b\x38"    /* Restore saved cursor pos */
+#define DISPLAY_UART_ESC_RESTOREPOS "\x1b\x38" /* Restore saved cursor pos */
 
-#define DISPLAY_UART_ESC_CLEAR_SCREEN       "\x1b[2J"     /* Clear screen       */
-#define DISPLAY_UART_ESC_CLEAR_CUR_LEFT     "\x1b[1K"     /* Clear cursor left  */
-#define DISPLAY_UART_ESC_CLEAR_CUR_RIGHT    "\x1b[0K"     /* Clear cursor right */
-#define DISPLAY_UART_ESC_CLEAR_BOTH         "\x1b[2K"     /* Clear line         */
-#define DISPLAY_UART_ESC_CLEARSEQ_LEN       4
+#define DISPLAY_UART_ESC_CLEAR_SCREEN    "\x1b[2J" /* Clear screen       */
+#define DISPLAY_UART_ESC_CLEAR_CUR_LEFT  "\x1b[1K" /* Clear cursor left  */
+#define DISPLAY_UART_ESC_CLEAR_CUR_RIGHT "\x1b[0K" /* Clear cursor right */
+#define DISPLAY_UART_ESC_CLEAR_BOTH      "\x1b[2K" /* Clear line         */
+#define DISPLAY_UART_ESC_CLEARSEQ_LEN    4
 
 /* -----------------------------------------------------------------------------
  *   Type definitions
  * -----------------------------------------------------------------------------
  */
-
 
 /* -----------------------------------------------------------------------------
  *                           Local variables
@@ -108,7 +109,7 @@ const Display_FxnTable DisplayUart2Ansi_fxnTable = {
  * -----------------------------------------------------------------------------
  */
 
- /*!
+/*!
  * @fn          DisplayUart2Min_init
  *
  * @brief       Does nothing.
@@ -116,10 +117,9 @@ const Display_FxnTable DisplayUart2Ansi_fxnTable = {
  * @return      void
  */
 void DisplayUart2Min_init(Display_Handle handle)
-{
-}
+{}
 
- /*!
+/*!
  * @fn          DisplayUart2Ansi_init
  *
  * @brief       Does nothing.
@@ -127,10 +127,9 @@ void DisplayUart2Min_init(Display_Handle handle)
  * @return      void
  */
 void DisplayUart2Ansi_init(Display_Handle handle)
-{
-}
+{}
 
- /*!
+/*!
  * @fn          DisplayUart2Min_open
  *
  * @brief       Initialize the UART transport
@@ -143,11 +142,10 @@ void DisplayUart2Ansi_init(Display_Handle handle)
  *
  * @return      Pointer to Display_Config struct
  */
-Display_Handle DisplayUart2Min_open(Display_Handle hDisplay,
-                                Display_Params *params)
+Display_Handle DisplayUart2Min_open(Display_Handle hDisplay, Display_Params *params)
 {
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
 
     UART2_Params uartParams;
     UART2_Params_init(&uartParams);
@@ -169,7 +167,7 @@ Display_Handle DisplayUart2Min_open(Display_Handle hDisplay,
     return hDisplay;
 }
 
- /*!
+/*!
  * @fn          DisplayUart2Ansi_open
  *
  * @brief       Initialize the UART transport
@@ -182,11 +180,10 @@ Display_Handle DisplayUart2Min_open(Display_Handle hDisplay,
  *
  * @return      Pointer to Display_Config struct
  */
-Display_Handle DisplayUart2Ansi_open(Display_Handle hDisplay,
-                                     Display_Params *params)
+Display_Handle DisplayUart2Ansi_open(Display_Handle hDisplay, Display_Params *params)
 {
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
 
     UART2_Params uartParams;
     UART2_Params_init(&uartParams);
@@ -207,16 +204,23 @@ Display_Handle DisplayUart2Ansi_open(Display_Handle hDisplay,
 
     switch (params->lineClearMode)
     {
-        case DISPLAY_CLEAR_BOTH:  object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_BOTH; break;
-        case DISPLAY_CLEAR_LEFT:  object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_CUR_LEFT; break;
-        case DISPLAY_CLEAR_RIGHT: object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_CUR_RIGHT; break;
+        case DISPLAY_CLEAR_BOTH:
+            object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_BOTH;
+            break;
+        case DISPLAY_CLEAR_LEFT:
+            object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_CUR_LEFT;
+            break;
+        case DISPLAY_CLEAR_RIGHT:
+            object->lineClearSeq = DISPLAY_UART_ESC_CLEAR_CUR_RIGHT;
+            break;
         default: /* fall-through */
-        case DISPLAY_CLEAR_NONE: object->lineClearSeq = NULL; break;
+        case DISPLAY_CLEAR_NONE:
+            object->lineClearSeq = NULL;
+            break;
     }
 
     /* Send VT100 initial config to terminal */
-    UART2_write(object->hUart, DISPLAY_UART_ESC_INITIAL, sizeof DISPLAY_UART_ESC_INITIAL - 1,
-                NULL);
+    UART2_write(object->hUart, DISPLAY_UART_ESC_INITIAL, sizeof DISPLAY_UART_ESC_INITIAL - 1, NULL);
 
     return hDisplay;
 }
@@ -231,8 +235,7 @@ Display_Handle DisplayUart2Ansi_open(Display_Handle hDisplay,
  * @return      void
  */
 void DisplayUart2Min_clear(Display_Handle hDisplay)
-{
-}
+{}
 
 /*!
  * @fn          DisplayUart2Ansi_clear
@@ -245,7 +248,7 @@ void DisplayUart2Min_clear(Display_Handle hDisplay)
  */
 void DisplayUart2Ansi_clear(Display_Handle hDisplay)
 {
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
 
     if (SemaphoreP_pend(object->mutex, hwAttrs->mutexTimeout) == SemaphoreP_OK)
@@ -266,10 +269,8 @@ void DisplayUart2Ansi_clear(Display_Handle hDisplay)
  *
  * @return      void
  */
-void DisplayUart2Min_clearLines(Display_Handle hDisplay,
-                               uint8_t lineFrom, uint8_t lineTo)
-{
-}
+void DisplayUart2Min_clearLines(Display_Handle hDisplay, uint8_t lineFrom, uint8_t lineTo)
+{}
 
 /*!
  * @fn          DisplayUart2Ansi_clearLines
@@ -282,14 +283,13 @@ void DisplayUart2Min_clearLines(Display_Handle hDisplay,
  *
  * @return      void
  */
-void DisplayUart2Ansi_clearLines(Display_Handle hDisplay,
-                                uint8_t lineFrom, uint8_t lineTo)
+void DisplayUart2Ansi_clearLines(Display_Handle hDisplay, uint8_t lineFrom, uint8_t lineTo)
 {
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
 
-    uint32_t      strSize = 0;
-    uint32_t      curLine = 0;
+    uint32_t strSize                      = 0;
+    uint32_t curLine                      = 0;
     const uint8_t uartClearLineMoveDown[] = "\x1b[2K\x1b\x45";
 
     if (lineTo <= lineFrom)
@@ -299,18 +299,17 @@ void DisplayUart2Ansi_clearLines(Display_Handle hDisplay,
 
     if (SemaphoreP_pend(object->mutex, hwAttrs->mutexTimeout) == SemaphoreP_OK)
     {
-        strSize += SystemP_snprintf(hwAttrs->strBuf, hwAttrs->strBufLen,
-                                   DISPLAY_UART_ESC_MOVEPOS_FMT, lineFrom + 1, 0);
+        strSize += SystemP_snprintf(hwAttrs->strBuf, hwAttrs->strBufLen, DISPLAY_UART_ESC_MOVEPOS_FMT, lineFrom + 1, 0);
 
         for (curLine = lineFrom + 1; curLine < lineTo + 2; curLine++)
         {
             memcpy(hwAttrs->strBuf + strSize, uartClearLineMoveDown, sizeof uartClearLineMoveDown - 1);
             strSize += sizeof uartClearLineMoveDown - 1;
 
-            if (hwAttrs->strBufLen - strSize < sizeof DISPLAY_UART_ESC_RESTOREPOS - 1 + sizeof uartClearLineMoveDown - 1)
+            if (hwAttrs->strBufLen - strSize <
+                sizeof DISPLAY_UART_ESC_RESTOREPOS - 1 + sizeof uartClearLineMoveDown - 1)
             {
-                UART2_write(object->hUart, hwAttrs->strBuf, strSize,
-                        NULL);
+                UART2_write(object->hUart, hwAttrs->strBuf, strSize, NULL);
                 strSize = 0;
             }
         }
@@ -322,7 +321,6 @@ void DisplayUart2Ansi_clearLines(Display_Handle hDisplay,
         SemaphoreP_post(object->mutex);
     }
 }
-
 
 /*!
  * @fn          DisplayUart2Min_vprintf
@@ -337,10 +335,9 @@ void DisplayUart2Ansi_clearLines(Display_Handle hDisplay,
  *
  * @return      void
  */
-void DisplayUart2Min_vprintf(Display_Handle hDisplay, uint8_t line,
-                             uint8_t column, const char *fmt, va_list va)
+void DisplayUart2Min_vprintf(Display_Handle hDisplay, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
 
     uint32_t strSize = 0;
@@ -349,7 +346,7 @@ void DisplayUart2Min_vprintf(Display_Handle hDisplay, uint8_t line,
     {
         SystemP_vsnprintf(hwAttrs->strBuf, hwAttrs->strBufLen - 2, fmt, va);
 
-        strSize = strlen(hwAttrs->strBuf);
+        strSize                    = strlen(hwAttrs->strBuf);
         hwAttrs->strBuf[strSize++] = '\r';
         hwAttrs->strBuf[strSize++] = '\n';
 
@@ -371,15 +368,14 @@ void DisplayUart2Min_vprintf(Display_Handle hDisplay, uint8_t line,
  *
  * @return      void
  */
-void DisplayUart2Ansi_vprintf(Display_Handle hDisplay, uint8_t line,
-                             uint8_t column, const char *fmt, va_list va)
+void DisplayUart2Ansi_vprintf(Display_Handle hDisplay, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
-    DisplayUart2_Object  *object  = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object   = (DisplayUart2_Object *)hDisplay->object;
     DisplayUart2_HWAttrs *hwAttrs = (DisplayUart2_HWAttrs *)hDisplay->hwAttrs;
 
-    uint32_t       strSize = 0;
+    uint32_t strSize = 0;
 
-    char          *strBuf = hwAttrs->strBuf;
+    char *strBuf          = hwAttrs->strBuf;
     const uint16_t bufLen = hwAttrs->strBufLen;
 
     if (SemaphoreP_pend(object->mutex, hwAttrs->mutexTimeout) == SemaphoreP_OK)
@@ -387,8 +383,11 @@ void DisplayUart2Ansi_vprintf(Display_Handle hDisplay, uint8_t line,
         if (line != DisplayUart2_SCROLLING)
         {
             /* Add cursor movement escape sequence */
-            strSize += SystemP_snprintf(strBuf + strSize, bufLen - strSize - 2,
-                                        DISPLAY_UART_ESC_MOVEPOS_FMT, line + 1, column + 1);
+            strSize += SystemP_snprintf(strBuf + strSize,
+                                        bufLen - strSize - 2,
+                                        DISPLAY_UART_ESC_MOVEPOS_FMT,
+                                        line + 1,
+                                        column + 1);
 
             /* Add line clearing escape sequence */
             if (object->lineClearSeq)
@@ -427,7 +426,7 @@ void DisplayUart2Ansi_vprintf(Display_Handle hDisplay, uint8_t line,
  */
 void DisplayUart2Min_close(Display_Handle hDisplay)
 {
-    DisplayUart2_Object *object = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object = (DisplayUart2_Object *)hDisplay->object;
 
     UART2_close(object->hUart);
     object->hUart = NULL;
@@ -447,7 +446,7 @@ void DisplayUart2Min_close(Display_Handle hDisplay)
  */
 void DisplayUart2Ansi_close(Display_Handle hDisplay)
 {
-    DisplayUart2_Object *object = (DisplayUart2_Object  *)hDisplay->object;
+    DisplayUart2_Object *object = (DisplayUart2_Object *)hDisplay->object;
 
     UART2_close(object->hUart);
     object->hUart = NULL;

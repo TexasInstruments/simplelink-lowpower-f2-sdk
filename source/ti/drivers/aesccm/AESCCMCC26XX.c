@@ -59,9 +59,8 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/smph.h)
 
-
 /* Forward declarations */
-static void AESCCM_hwiFxn (uintptr_t arg0);
+static void AESCCM_hwiFxn(uintptr_t arg0);
 static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
                                           AESCCM_Operation *operation,
                                           AESCCM_OperationType operationType);
@@ -74,12 +73,14 @@ static bool isInitialized = false;
 /*
  *  ======== AESCCM_hwiFxn ========
  */
-static void AESCCM_hwiFxn (uintptr_t arg0) {
+static void AESCCM_hwiFxn(uintptr_t arg0)
+{
     AESCCMCC26XX_Object *object = ((AESCCM_Handle)arg0)->object;
     uint32_t key;
 
     key = HwiP_disable();
-    if (!object->operationCanceled) {
+    if (!object->operationCanceled)
+    {
 
         /* Mark that we are done with the operation so that AESCCM_cancelOperation
          * knows not to try canceling.
@@ -88,13 +89,15 @@ static void AESCCM_hwiFxn (uintptr_t arg0) {
 
         HwiP_restore(key);
     }
-    else {
+    else
+    {
         HwiP_restore(key);
         return;
     }
 
     /* Propagate the DMA error from driverlib to the application */
-    if (AESIntStatusRaw() & AES_DMA_BUS_ERR) {
+    if (AESIntStatusRaw() & AES_DMA_BUS_ERR)
+    {
         object->returnStatus = AESCCM_STATUS_ERROR;
     }
 
@@ -106,11 +109,13 @@ static void AESCCM_hwiFxn (uintptr_t arg0) {
      */
     AESCCM_cleanup((AESCCM_Handle)arg0);
 
-    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         /* Unblock the pending task to signal that the operation is complete. */
         SemaphoreP_post(&CryptoResourceCC26XX_operationSemaphore);
     }
-    else {
+    else
+    {
         /* Call the callback function provided by the application.
          */
         object->callbackFxn((AESCCM_Handle)arg0,
@@ -120,19 +125,22 @@ static void AESCCM_hwiFxn (uintptr_t arg0) {
     }
 }
 
-static void AESCCM_cleanup(AESCCM_Handle handle) {
+static void AESCCM_cleanup(AESCCM_Handle handle)
+{
     AESCCMCC26XX_Object *object = handle->object;
 
     /* We need to copy / verify the MAC now so that it is not clobbered when we
      * release the CryptoResourceCC26XX_accessSemaphore semaphore.
      */
-    if (object->operationType == AESCCM_OPERATION_TYPE_ENCRYPT) {
+    if (object->operationType == AESCCM_OPERATION_TYPE_ENCRYPT)
+    {
         /* If we are encrypting and authenticating a message, we only want to
          * copy the MAC to the target buffer
          */
         AESReadTag(object->operation->mac, object->operation->macLength);
     }
-    else {
+    else
+    {
         uint8_t computedTag[AES_BLOCK_SIZE];
         /* If we are decrypting and verifying a message, we must now verify that
          * the provided MAC matches the one calculated in the decryption
@@ -140,9 +148,7 @@ static void AESCCM_cleanup(AESCCM_Handle handle) {
          */
         AESReadTag(computedTag, object->operation->macLength);
 
-        bool macValid = CryptoUtils_buffersMatch(computedTag,
-                                                 object->operation->mac,
-                                                 object->operation->macLength);
+        bool macValid = CryptoUtils_buffersMatch(computedTag, object->operation->mac, object->operation->macLength);
 
         object->returnStatus = macValid ? object->returnStatus : AESCCM_STATUS_MAC_INVALID;
     }
@@ -172,7 +178,8 @@ static void AESCCM_cleanup(AESCCM_Handle handle) {
 /*
  *  ======== AESCCM_init ========
  */
-void AESCCM_init(void) {
+void AESCCM_init(void)
+{
     CryptoResourceCC26XX_constructRTOSObjects();
 
     isInitialized = true;
@@ -181,17 +188,19 @@ void AESCCM_init(void) {
 /*
  *  ======== AESCCM_construct ========
  */
-AESCCM_Handle AESCCM_construct(AESCCM_Config *config, const AESCCM_Params *params) {
-    AESCCM_Handle               handle;
-    AESCCMCC26XX_Object        *object;
-    uint_fast8_t                key;
+AESCCM_Handle AESCCM_construct(AESCCM_Config *config, const AESCCM_Params *params)
+{
+    AESCCM_Handle handle;
+    AESCCMCC26XX_Object *object;
+    uint_fast8_t key;
 
     handle = (AESCCM_Handle)config;
     object = handle->object;
 
     key = HwiP_disable();
 
-    if (!isInitialized ||  object->isOpen) {
+    if (!isInitialized || object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
@@ -201,15 +210,17 @@ AESCCM_Handle AESCCM_construct(AESCCM_Config *config, const AESCCM_Params *param
     HwiP_restore(key);
 
     /* If params are NULL, use defaults */
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = (AESCCM_Params *)&AESCCM_defaultParams;
     }
 
     DebugP_assert(params->returnBehavior == AESCCM_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn : true);
 
-    object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
-    object->semaphoreTimeout = params->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING ? params->timeout : SemaphoreP_NO_WAIT;
+    object->returnBehavior   = params->returnBehavior;
+    object->callbackFxn      = params->callbackFxn;
+    object->semaphoreTimeout = params->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING ? params->timeout
+                                                                                         : SemaphoreP_NO_WAIT;
 
     /* Set power dependency - i.e. power up and enable clock for Crypto (CryptoResourceCC26XX) module. */
     Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
@@ -220,8 +231,9 @@ AESCCM_Handle AESCCM_construct(AESCCM_Config *config, const AESCCM_Params *param
 /*
  *  ======== AESCCM_close ========
  */
-void AESCCM_close(AESCCM_Handle handle) {
-    AESCCMCC26XX_Object         *object;
+void AESCCM_close(AESCCM_Handle handle)
+{
+    AESCCMCC26XX_Object *object;
 
     DebugP_assert(handle);
 
@@ -240,7 +252,8 @@ void AESCCM_close(AESCCM_Handle handle) {
  */
 static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
                                           AESCCM_Operation *operation,
-                                          AESCCM_OperationType operationType) {
+                                          AESCCM_OperationType operationType)
+{
     DebugP_assert(handle);
     DebugP_assert(operation);
 
@@ -251,10 +264,9 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
     DebugP_assert((operation->aad && operation->aadLength) || (operation->input && operation->inputLength));
     DebugP_assert(operation->mac && (operation->macLength <= 16));
 
-    DebugP_assert(operationType == AESCCM_OPERATION_TYPE_DECRYPT ||
-                  operationType == AESCCM_OPERATION_TYPE_ENCRYPT);
+    DebugP_assert(operationType == AESCCM_OPERATION_TYPE_DECRYPT || operationType == AESCCM_OPERATION_TYPE_ENCRYPT);
 
-    AESCCMCC26XX_Object *object = handle->object;
+    AESCCMCC26XX_Object *object         = handle->object;
     AESCCMCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     SemaphoreP_Status resourceAcquired;
 
@@ -262,21 +274,21 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
     DebugP_assert(operation->key);
     DebugP_assert(operation->key->encoding == CryptoKey_PLAINTEXT);
 
-    uint16_t keyLength = operation->key->u.plaintext.keyLength;
+    uint16_t keyLength      = operation->key->u.plaintext.keyLength;
     uint8_t *keyingMaterial = operation->key->u.plaintext.keyMaterial;
 
     /* Try and obtain access to the crypto module */
-    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore,
-                                       object->semaphoreTimeout);
+    resourceAcquired = SemaphoreP_pend(&CryptoResourceCC26XX_accessSemaphore, object->semaphoreTimeout);
 
-    if (resourceAcquired != SemaphoreP_OK) {
+    if (resourceAcquired != SemaphoreP_OK)
+    {
         return AESCCM_STATUS_RESOURCE_UNAVAILABLE;
     }
 
-    object->operationType = operationType;
-    object->operation = operation;
+    object->operationType     = operationType;
+    object->operation         = operation;
     /* We will only change the returnStatus if there is an error */
-    object->returnStatus = AESCCM_STATUS_SUCCESS;
+    object->returnStatus      = AESCCM_STATUS_SUCCESS;
     object->operationCanceled = false;
 
     /* We need to set the HWI function and priority since the same physical interrupt is shared by multiple
@@ -287,7 +299,8 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
     HwiP_setPriority(INT_CRYPTO_RESULT_AVAIL_IRQ, hwAttrs->intPriority);
 
     /* Load the key from RAM or flash into the key store at a hardcoded and reserved location */
-    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS) {
+    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
+    {
         /* Release the CRYPTO mutex */
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 
@@ -304,7 +317,8 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
     AESSelectAlgorithm(AES_ALGSEL_AES);
 
     /* Load the key from the key store into the internal register banks of the AES sub-module */
-    if (AESReadFromKeyStore(AES_KEY_AREA_6) != AES_SUCCESS) {
+    if (AESReadFromKeyStore(AES_KEY_AREA_6) != AES_SUCCESS)
+    {
         /* Since plaintext keys use two reserved (by convention) slots in the keystore,
          * the slots must be invalidated to prevent its re-use without reloading
          * the key material again.
@@ -331,21 +345,22 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
     AESSetDataLength(operation->inputLength);
     AESSetAuthLength(operation->aadLength);
 
-    if (operation->aadLength) {
+    if (operation->aadLength)
+    {
         /* If aadLength were 0, AESWaitForIRQFlags() would never return as the AES_DMA_IN_DONE flag
          * would never trigger.
          */
-        AESStartDMAOperation(operation->aad, operation->aadLength,  NULL, 0);
+        AESStartDMAOperation(operation->aad, operation->aadLength, NULL, 0);
         AESWaitForIRQFlags(AES_DMA_IN_DONE | AES_DMA_BUS_ERR);
     }
 
     /* If we are in AESCCM_RETURN_BEHAVIOR_POLLING, we do not want an interrupt to trigger. */
-    if (object->returnBehavior != AESCCM_RETURN_BEHAVIOR_POLLING) {
+    if (object->returnBehavior != AESCCM_RETURN_BEHAVIOR_POLLING)
+    {
         IntEnable(INT_CRYPTO_RESULT_AVAIL_IRQ);
     }
 
     AESStartDMAOperation(operation->input, operation->inputLength, operation->output, operation->inputLength);
-
 
     return AESCCM_waitForResult(handle);
 }
@@ -353,14 +368,17 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
 /*
  *  ======== AESCCM_waitForResult ========
  */
-static int_fast16_t AESCCM_waitForResult(AESCCM_Handle handle) {
+static int_fast16_t AESCCM_waitForResult(AESCCM_Handle handle)
+{
     AESCCMCC26XX_Object *object = handle->object;
 
     object->operationInProgress = true;
 
-    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_POLLING) {
+    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_POLLING)
+    {
         /* Wait until the operation is complete and check for DMA errors. */
-        if(AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR){
+        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
+        {
             object->returnStatus = AESCCM_STATUS_ERROR;
         }
 
@@ -378,12 +396,14 @@ static int_fast16_t AESCCM_waitForResult(AESCCM_Handle handle) {
 
         return object->returnStatus;
     }
-    else if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING) {
+    else if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
 
         return object->returnStatus;
     }
-    else {
+    else
+    {
         return AESCCM_STATUS_SUCCESS;
     }
 }
@@ -391,7 +411,8 @@ static int_fast16_t AESCCM_waitForResult(AESCCM_Handle handle) {
 /*
  *  ======== AESCCM_oneStepEncrypt ========
  */
-int_fast16_t AESCCM_oneStepEncrypt(AESCCM_Handle handle, AESCCM_Operation *operationStruct) {
+int_fast16_t AESCCM_oneStepEncrypt(AESCCM_Handle handle, AESCCM_Operation *operationStruct)
+{
 
     return AESCCM_startOperation(handle, operationStruct, AESCCM_OPERATION_TYPE_ENCRYPT);
 }
@@ -399,7 +420,8 @@ int_fast16_t AESCCM_oneStepEncrypt(AESCCM_Handle handle, AESCCM_Operation *opera
 /*
  *  ======== AESCCM_oneStepDecrypt ========
  */
-int_fast16_t AESCCM_oneStepDecrypt(AESCCM_Handle handle, AESCCM_Operation *operationStruct) {
+int_fast16_t AESCCM_oneStepDecrypt(AESCCM_Handle handle, AESCCM_Operation *operationStruct)
+{
 
     return AESCCM_startOperation(handle, operationStruct, AESCCM_OPERATION_TYPE_DECRYPT);
 }
@@ -415,7 +437,7 @@ int_fast16_t AESCCM_setupEncrypt(AESCCM_Handle handle,
 {
 
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
@@ -428,94 +450,84 @@ int_fast16_t AESCCM_setupDecrypt(AESCCM_Handle handle,
                                  size_t macLength)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_setLengths ========
  */
-int_fast16_t AESCCM_setLengths(AESCCM_Handle handle,
-                               size_t aadLength,
-                               size_t plaintextLength,
-                               size_t macLength)
+int_fast16_t AESCCM_setLengths(AESCCM_Handle handle, size_t aadLength, size_t plaintextLength, size_t macLength)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_setNonce ========
  */
-int_fast16_t AESCCM_setNonce(AESCCM_Handle handle,
-                             const uint8_t *nonce,
-                             size_t nonceLength)
+int_fast16_t AESCCM_setNonce(AESCCM_Handle handle, const uint8_t *nonce, size_t nonceLength)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_generateNonce ========
  */
-int_fast16_t AESCCM_generateNonce(AESCCM_Handle handle,
-                                  uint8_t *nonce,
-                                  size_t nonceSize,
-                                  size_t* nonceLength)
+int_fast16_t AESCCM_generateNonce(AESCCM_Handle handle, uint8_t *nonce, size_t nonceSize, size_t *nonceLength)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_addAAD ========
  */
-int_fast16_t AESCCM_addAAD(AESCCM_Handle handle,
-                           AESCCM_SegmentedAADOperation *operation)
+int_fast16_t AESCCM_addAAD(AESCCM_Handle handle, AESCCM_SegmentedAADOperation *operation)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_addData ========
  */
-int_fast16_t AESCCM_addData(AESCCM_Handle handle,
-                            AESCCM_SegmentedDataOperation *operation)
+int_fast16_t AESCCM_addData(AESCCM_Handle handle, AESCCM_SegmentedDataOperation *operation)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_finalizeEncrypt ========
  */
-int_fast16_t AESCCM_finalizeEncrypt(AESCCM_Handle handle,
-                                    AESCCM_SegmentedFinalizeOperation *operation)
+int_fast16_t AESCCM_finalizeEncrypt(AESCCM_Handle handle, AESCCM_SegmentedFinalizeOperation *operation)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_finalizeDecrypt ========
  */
-int_fast16_t AESCCM_finalizeDecrypt(AESCCM_Handle handle,
-                                    AESCCM_SegmentedFinalizeOperation *operation)
+int_fast16_t AESCCM_finalizeDecrypt(AESCCM_Handle handle, AESCCM_SegmentedFinalizeOperation *operation)
 {
     /* Segmented operations aren't supported by the HW on this device */
-    return(AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
 }
 
 /*
  *  ======== AESCCM_cancelOperation ========
  */
-int_fast16_t AESCCM_cancelOperation(AESCCM_Handle handle) {
-    AESCCMCC26XX_Object *object         = handle->object;
+int_fast16_t AESCCM_cancelOperation(AESCCM_Handle handle)
+{
+    AESCCMCC26XX_Object *object = handle->object;
     uint32_t key;
 
     key = HwiP_disable();
 
-    if (!object->operationInProgress) {
+    if (!object->operationInProgress)
+    {
         HwiP_restore(key);
         return AESCCM_STATUS_ERROR;
     }
@@ -531,7 +543,7 @@ int_fast16_t AESCCM_cancelOperation(AESCCM_Handle handle) {
     Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
     object->operationCanceled = true;
-    object->returnStatus = AESCCM_STATUS_CANCELED;
+    object->returnStatus      = AESCCM_STATUS_CANCELED;
 
     HwiP_restore(key);
 
@@ -541,12 +553,13 @@ int_fast16_t AESCCM_cancelOperation(AESCCM_Handle handle) {
      */
     SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 
-
-    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == AESCCM_RETURN_BEHAVIOR_BLOCKING)
+    {
         /* Unblock the pending task to signal that the operation is complete. */
         SemaphoreP_post(&CryptoResourceCC26XX_operationSemaphore);
     }
-    else {
+    else
+    {
         /* Call the callback function provided by the application. */
         object->callbackFxn(handle,
                             AESCCM_STATUS_CANCELED,

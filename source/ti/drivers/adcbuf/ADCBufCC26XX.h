@@ -120,32 +120,36 @@
  * virtual channel entries in the ADCBufCC26XX_adcChannelLut table in the board
  * file.
  *
- * | DIO    | CC26xx 7x7 AUXIO CompBInput   | CC13xx 7x7 AUXIO CompBInput   | CC26xx 5x5 AUXIO CompBInput   | CC13xx 5x5 AUXIO CompBInput   | CC26xx 4x4 AUXIO CompBInput   | CC13xx 4x4 AUXIO CompBInput
+ * | DIO    | CC26xx 7x7 AUXIO CompBInput   | CC13xx 7x7 AUXIO CompBInput   | CC26xx 5x5 AUXIO CompBInput   | CC13xx 5x5
+ *AUXIO CompBInput   | CC26xx 4x4 AUXIO CompBInput   | CC13xx 4x4 AUXIO CompBInput
  * |--------|-------------------------------|-------------------------------|-------------------------------|-------------------------------|-------------------------------|-----------------------------
- * | 0      | No                            | No                            | No                            | No                            | No                            | No
- * | 1      | No                            | No                            | No                            | No                            | No                            | No
- * | 2      | No                            | No                            | No                            | No                            | No                            | No
- * | 3      | No                            | No                            | No                            | No                            | No                            | No
- * | 4      | No                            | No                            | No                            | No                            | No                            | No
- * | 5      | No                            | No                            | No                            | No                            | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7
- * | 6      | No                            | No                            | No                            | No                            | ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO6
- * | 7      | No                            | No                            | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO5           | ADC_COMPB_IN_AUXIO5
- * | 8      | No                            | No                            | ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4
- * | 9      | No                            | No                            | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3
- * | 10     | No                            | No                            | ADC_COMPB_IN_AUXIO5           | ADC_COMPB_IN_AUXIO5           | No                            | No
- * | 11     | No                            | No                            | ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3           | No                            | No
- * | 12     | No                            | No                            | ADC_COMPB_IN_AUXIO2           | ADC_COMPB_IN_AUXIO2           | No                            | No
- * | 13     | No                            | No                            | ADC_COMPB_IN_AUXIO1           | ADC_COMPB_IN_AUXIO1           | No                            | No
- * | 14     | No                            | No                            | ADC_COMPB_IN_AUXIO0           | ADC_COMPB_IN_AUXIO0           | No                            | No
- * | 15-22  | No                            | No                            | No                            | No                            | No                            | No
- * | 23     | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7           | No                            | No                            | No                            | No
- * | 24     | ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO6           | No                            | No                            | No                            | No
- * | 25     | ADC_COMPB_IN_AUXIO5           | ADC_COMPB_IN_AUXIO5           | No                            | No                            | No                            | No
- * | 26     | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4           | No                            | No                            | No                            | No
- * | 27     | ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3           | No                            | No                            | No                            | No
- * | 28     | ADC_COMPB_IN_AUXIO2           | ADC_COMPB_IN_AUXIO2           | No                            | No                            | No                            | No
- * | 29     | ADC_COMPB_IN_AUXIO1           | ADC_COMPB_IN_AUXIO1           | No                            | No                            | No                            | No
- * | 30     | ADC_COMPB_IN_AUXIO0           | ADC_COMPB_IN_AUXIO0           | No                            | No                            | No                            | No
+ * | 0      | No                            | No                            | No                            | No | No |
+ *No | 1      | No                            | No                            | No                            | No | No
+ *| No | 2      | No                            | No                            | No                            | No |
+ *No                            | No | 3      | No                            | No                            | No | No
+ *| No                            | No | 4      | No                            | No                            | No |
+ *No                            | No                            | No | 5      | No                            | No | No
+ *| No                            | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7 | 6      | No | No | No | No |
+ *ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO6 | 7      | No                            | No |
+ *ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO5           | ADC_COMPB_IN_AUXIO5 |
+ *8      | No                            | No                            | ADC_COMPB_IN_AUXIO6           |
+ *ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4 | 9      | No | No |
+ *ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3 |
+ *10     | No                            | No                            | ADC_COMPB_IN_AUXIO5           |
+ *ADC_COMPB_IN_AUXIO5           | No                            | No | 11     | No                            | No |
+ *ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3           | No                            | No | 12     | No | No
+ *| ADC_COMPB_IN_AUXIO2           | ADC_COMPB_IN_AUXIO2           | No                            | No | 13     | No |
+ *No                            | ADC_COMPB_IN_AUXIO1           | ADC_COMPB_IN_AUXIO1           | No | No | 14     | No
+ *| No                            | ADC_COMPB_IN_AUXIO0           | ADC_COMPB_IN_AUXIO0           | No | No | 15-22  |
+ *No                            | No                            | No                            | No | No | No | 23 |
+ *ADC_COMPB_IN_AUXIO7           | ADC_COMPB_IN_AUXIO7           | No                            | No | No | No | 24 |
+ *ADC_COMPB_IN_AUXIO6           | ADC_COMPB_IN_AUXIO6           | No                            | No | No | No | 25 |
+ *ADC_COMPB_IN_AUXIO5           | ADC_COMPB_IN_AUXIO5           | No                            | No | No | No | 26 |
+ *ADC_COMPB_IN_AUXIO4           | ADC_COMPB_IN_AUXIO4           | No                            | No | No | No | 27 |
+ *ADC_COMPB_IN_AUXIO3           | ADC_COMPB_IN_AUXIO3           | No                            | No | No | No | 28 |
+ *ADC_COMPB_IN_AUXIO2           | ADC_COMPB_IN_AUXIO2           | No                            | No | No | No | 29 |
+ *ADC_COMPB_IN_AUXIO1           | ADC_COMPB_IN_AUXIO1           | No                            | No | No | No | 30 |
+ *ADC_COMPB_IN_AUXIO0           | ADC_COMPB_IN_AUXIO0           | No                            | No | No | No
  *
  * # Supported Internal Signals #
  * Below is a table of internal signals that can be measured using the ADC.
@@ -385,9 +389,9 @@ extern "C" {
 /*!
  *  @brief Resolution in bits of the CC26XX ADC
  */
-#define ADCBufCC26XX_RESOLUTION            12
+#define ADCBufCC26XX_RESOLUTION 12
 
-#define ADCBufCC26XX_BYTES_PER_SAMPLE      2
+#define ADCBufCC26XX_BYTES_PER_SAMPLE 2
 
 /*
  * =============================================================================
@@ -397,7 +401,6 @@ extern "C" {
 
 /* ADCBuf function table pointer */
 extern const ADCBuf_FxnTable ADCBufCC26XX_fxnTable;
-
 
 /*
  * =============================================================================
@@ -420,7 +423,8 @@ extern const ADCBuf_FxnTable ADCBufCC26XX_fxnTable;
  *  conversions and uses less power. The minimum sample time for full precision
  *  in ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS is dependent on the input load.
  */
-typedef enum {
+typedef enum
+{
     ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS,
     ADCBufCC26XX_SAMPING_MODE_ASYNCHRONOUS
 } ADCBufCC26XX_Sampling_Mode;
@@ -435,22 +439,22 @@ typedef enum {
  *  In ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS mode, this enum specifies the
  *  sampling times available.
  */
-typedef enum {
-    ADCBufCC26XX_SAMPLING_DURATION_2P7_US    = AUXADC_SAMPLE_TIME_2P7_US,
-    ADCBufCC26XX_SAMPLING_DURATION_5P3_US    = AUXADC_SAMPLE_TIME_5P3_US,
-    ADCBufCC26XX_SAMPLING_DURATION_10P6_US   = AUXADC_SAMPLE_TIME_10P6_US,
-    ADCBufCC26XX_SAMPLING_DURATION_21P3_US   = AUXADC_SAMPLE_TIME_21P3_US,
-    ADCBufCC26XX_SAMPLING_DURATION_42P6_US   = AUXADC_SAMPLE_TIME_42P6_US,
-    ADCBufCC26XX_SAMPLING_DURATION_85P3_US   = AUXADC_SAMPLE_TIME_85P3_US,
-    ADCBufCC26XX_SAMPLING_DURATION_170_US    = AUXADC_SAMPLE_TIME_170_US,
-    ADCBufCC26XX_SAMPLING_DURATION_341_US    = AUXADC_SAMPLE_TIME_341_US,
-    ADCBufCC26XX_SAMPLING_DURATION_682_US    = AUXADC_SAMPLE_TIME_682_US,
-    ADCBufCC26XX_SAMPLING_DURATION_1P37_MS   = AUXADC_SAMPLE_TIME_1P37_MS,
-    ADCBufCC26XX_SAMPLING_DURATION_2P73_MS   = AUXADC_SAMPLE_TIME_2P73_MS,
-    ADCBufCC26XX_SAMPLING_DURATION_5P46_MS   = AUXADC_SAMPLE_TIME_5P46_MS,
-    ADCBufCC26XX_SAMPLING_DURATION_10P9_MS   = AUXADC_SAMPLE_TIME_10P9_MS
+typedef enum
+{
+    ADCBufCC26XX_SAMPLING_DURATION_2P7_US  = AUXADC_SAMPLE_TIME_2P7_US,
+    ADCBufCC26XX_SAMPLING_DURATION_5P3_US  = AUXADC_SAMPLE_TIME_5P3_US,
+    ADCBufCC26XX_SAMPLING_DURATION_10P6_US = AUXADC_SAMPLE_TIME_10P6_US,
+    ADCBufCC26XX_SAMPLING_DURATION_21P3_US = AUXADC_SAMPLE_TIME_21P3_US,
+    ADCBufCC26XX_SAMPLING_DURATION_42P6_US = AUXADC_SAMPLE_TIME_42P6_US,
+    ADCBufCC26XX_SAMPLING_DURATION_85P3_US = AUXADC_SAMPLE_TIME_85P3_US,
+    ADCBufCC26XX_SAMPLING_DURATION_170_US  = AUXADC_SAMPLE_TIME_170_US,
+    ADCBufCC26XX_SAMPLING_DURATION_341_US  = AUXADC_SAMPLE_TIME_341_US,
+    ADCBufCC26XX_SAMPLING_DURATION_682_US  = AUXADC_SAMPLE_TIME_682_US,
+    ADCBufCC26XX_SAMPLING_DURATION_1P37_MS = AUXADC_SAMPLE_TIME_1P37_MS,
+    ADCBufCC26XX_SAMPLING_DURATION_2P73_MS = AUXADC_SAMPLE_TIME_2P73_MS,
+    ADCBufCC26XX_SAMPLING_DURATION_5P46_MS = AUXADC_SAMPLE_TIME_5P46_MS,
+    ADCBufCC26XX_SAMPLING_DURATION_10P9_MS = AUXADC_SAMPLE_TIME_10P9_MS
 } ADCBufCC26XX_Sampling_Duration;
-
 
 /*!
  *  @brief  Specifies whether the internal reference of the ADC is sourced from
@@ -484,12 +488,11 @@ typedef enum {
  *              fixed mode with input scaling enabled, the input should never
  *              exceed VDDS as per the data sheet.
  */
-typedef enum {
-    ADCBufCC26XX_FIXED_REFERENCE       = AUXADC_REF_FIXED,
-    ADCBufCC26XX_VDDS_REFERENCE        = AUXADC_REF_VDDS_REL
+typedef enum
+{
+    ADCBufCC26XX_FIXED_REFERENCE = AUXADC_REF_FIXED,
+    ADCBufCC26XX_VDDS_REFERENCE  = AUXADC_REF_VDDS_REL
 } ADCBufCC26XX_Reference_Source;
-
-
 
 /*
  * =============================================================================
@@ -497,7 +500,7 @@ typedef enum {
  * =============================================================================
  */
 
- /*!
+/*!
  *  @brief  Table entry that maps a virtual adc channel to a dio and its
  *          corresponding internal analogue signal
  *
@@ -505,9 +508,10 @@ typedef enum {
  *  driverlib define corresponding to the desired non-dio signal and dio is set
  *  to PIN_UNASSIGNED.
  */
-typedef struct{
-    uint8_t dio;            /*!< DIO that this virtual channel is mapped to */
-    uint8_t compBInput;     /*!< CompBInput that this virtual channel is mapped to */
+typedef struct
+{
+    uint8_t dio;        /*!< DIO that this virtual channel is mapped to */
+    uint8_t compBInput; /*!< CompBInput that this virtual channel is mapped to */
 } ADCBufCC26XX_AdcChannelLutEntry;
 
 /*!
@@ -518,15 +522,16 @@ typedef struct{
  *  ADCBuf_Params::custom. Alternatively, these values can be set using the
  *  control function after calling ADCBuf_open().
  */
-typedef struct{
+typedef struct
+{
     /*! Amount of time the ADC spends sampling the analogue input */
-    ADCBufCC26XX_Sampling_Duration     samplingDuration;
+    ADCBufCC26XX_Sampling_Duration samplingDuration;
     /*! Specifies whether the ADC spends a fixed amount of time sampling or the
      *  entire time since the last conversion */
-    ADCBufCC26XX_Sampling_Mode         samplingMode;
+    ADCBufCC26XX_Sampling_Mode samplingMode;
     /*! Specifies whether the internal reference of the ADC is sourced from the
      *  battery voltage or a fixed internal source */
-    ADCBufCC26XX_Reference_Source      refSource;
+    ADCBufCC26XX_Reference_Source refSource;
     /*!
      *  Disable input scaling. Input scaling scales an external analogue
      *  signal between 0 and 4.3V to an internal signal of 0 to ~1.4785V.
@@ -542,7 +547,7 @@ typedef struct{
      *  | Enabled                   | VDDS (Battery voltage level)          |
      *  | Disabled                  | 1.4785V                               |
      */
-    bool                                inputScalingEnabled;
+    bool inputScalingEnabled;
 } ADCBufCC26XX_ParamsExtension;
 
 /*!
@@ -565,14 +570,15 @@ typedef struct{
  *  };
  *  @endcode
  */
-typedef struct{
+typedef struct
+{
     /*! @brief ADC SWI priority.
         The higher the number, the higher the priority.
         The minimum is 0 and the maximum is 15 by default.
         The maximum can be reduced to save RAM by adding or modifying
         Swi.numPriorities in the kernel configuration file.
     */
-    uint32_t            swiPriority;
+    uint32_t swiPriority;
     /*! @brief ADC peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits,
@@ -587,76 +593,75 @@ typedef struct{
         HWI's with priority 0 ignore the HWI dispatcher to support zero-latency
         interrupts, thus invalidating the critical sections in this driver.
     */
-    uint8_t             intPriority;
+    uint8_t intPriority;
     /*! Pointer to a table of ADCBufCC26XX_AdcChannelLutEntry's mapping internal
      *  CompBInput to DIO */
-    ADCBufCC26XX_AdcChannelLutEntry  const *adcChannelLut;
+    ADCBufCC26XX_AdcChannelLutEntry const *adcChannelLut;
 } ADCBufCC26XX_HWAttrs;
-
-
 
 /*!
  *  @brief      ADCBufCC26XX Object
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct{
+typedef struct
+{
     /* ADC control variables */
     /*!< Has the obj been opened */
-    bool                            isOpen;
+    bool isOpen;
     /*!< Is the ADC currently doing conversions */
-    bool                            conversionInProgress;
+    bool conversionInProgress;
     /*!< Is the analogue input scaled */
-    bool                            inputScalingEnabled;
+    bool inputScalingEnabled;
     /*!< Should the driver keep the ADC semaphore after a conversion */
-    bool                            keepADCSemaphore;
+    bool keepADCSemaphore;
     /*!< Does the driver currently possess the ADC semaphore */
-    bool                            adcSemaphoreInPossession;
+    bool adcSemaphoreInPossession;
     /*!< The current virtual channel the ADCBuf driver is sampling on */
-    uint8_t                         currentChannel;
+    uint8_t currentChannel;
     /*!< Reference source for the ADC to use */
-    ADCBufCC26XX_Reference_Source   refSource;
+    ADCBufCC26XX_Reference_Source refSource;
     /*!< Synchronous or asynchronous sampling mode */
-    ADCBufCC26XX_Sampling_Mode      samplingMode;
+    ADCBufCC26XX_Sampling_Mode samplingMode;
     /*!< Time the ADC spends sampling in ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS */
-   ADCBufCC26XX_Sampling_Duration   samplingDuration;
-   /*!< Pointer to callback function */
-    ADCBuf_Callback                 callbackFxn;
+    ADCBufCC26XX_Sampling_Duration samplingDuration;
+    /*!< Pointer to callback function */
+    ADCBuf_Callback callbackFxn;
     /*!< Should we convert continuously or one-shot */
-    ADCBuf_Recurrence_Mode          recurrenceMode;
+    ADCBuf_Recurrence_Mode recurrenceMode;
     /*!< Mode for all conversions */
-    ADCBuf_Return_Mode              returnMode;
+    ADCBuf_Return_Mode returnMode;
     /*!< The last complete sample buffer used by the DMA */
-    uint16_t                        *activeSampleBuffer;
+    uint16_t *activeSampleBuffer;
 
     /* ADC SYS/BIOS objects */
     /*!< Hwi object */
-    HwiP_Struct                      hwi;
+    HwiP_Struct hwi;
     /*!< Swi object */
-    SwiP_Struct                      swi;
+    SwiP_Struct swi;
     /*!< ADC semaphore */
-    SemaphoreP_Struct                conversionComplete;
+    SemaphoreP_Struct conversionComplete;
     /*!< Pointer to the current conversion struct */
-    ADCBuf_Conversion               *currentConversion;
+    ADCBuf_Conversion *currentConversion;
 
     /* PIN driver state object and handle */
     /*!< Pin state object */
-    PIN_State                       pinState;
+    PIN_State pinState;
     /*!< Pin handle */
-    PIN_Handle                      pinHandle;
+    PIN_Handle pinHandle;
 
     /* UDMA driver handle */
     /*!< UDMA handle */
-    UDMACC26XX_Handle               udmaHandle;
+    UDMACC26XX_Handle udmaHandle;
 
     /* GPTimer driver handle */
     /*!< Handle to underlying GPTimer peripheral */
-    GPTimerCC26XX_Handle            timerHandle;
+    GPTimerCC26XX_Handle timerHandle;
 
     /*!< Timeout for read semaphore in ::ADCBuf_RETURN_MODE_BLOCKING */
-    uint32_t                        semaphoreTimeout;
+    uint32_t semaphoreTimeout;
     /*!< Frequency in Hz at which the ADC is triggered */
-    uint32_t                        samplingFrequency;
+    uint32_t samplingFrequency;
 } ADCBufCC26XX_Object, *ADCBufCC26XX_Handle;
 
 /*
@@ -664,7 +669,6 @@ typedef struct{
  * Functions
  * =============================================================================
  */
-
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/build.dtd -->
-<package name="gnu.targets.arm" version="1, 0, 0" producerId="undefined">
+<package name="gnu.targets.arm" version="1, 0, 0" producerId="/db/ztree/library/trees/xdctargets/xdctargets-w20/src">
     <units>
         <interface name="ITarget"/>
         <interface name="IM"/>
@@ -32,7 +32,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/gnu_targets_arm.tar.dep" src="package/rel/gnu_targets_arm.xdc.inc"/>
+        <srcFile name="package/rel/gnu_targets_arm.zip.dep" src="package/rel/gnu_targets_arm.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -46,9 +46,9 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="gnu_targets_arm"
-        pname="gnu_targets_arm.tar"
+        pname="../../../../exports/gnu_targets_arm.zip"
         label="default"
-    >
+        relScript="tisb/release/filters/copyright.rel">
         <file name="package/package.bld.xml"/>
         <file name="package/build.cfg"/>
         <file name="package/package.xdc.inc"/>

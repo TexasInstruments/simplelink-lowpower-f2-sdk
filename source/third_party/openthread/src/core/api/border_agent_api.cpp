@@ -33,20 +33,23 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
+
 #include <openthread/border_agent.h>
 
-#include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-
-#if OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
+#include "common/as_core_type.hpp"
+#include "common/locator_getters.hpp"
 
 using namespace ot;
 
 otBorderAgentState otBorderAgentGetState(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    return MapEnum(AsCoreType(aInstance).Get<MeshCoP::BorderAgent>().GetState());
+}
 
-    return instance.Get<MeshCoP::BorderAgent>().GetState();
+uint16_t otBorderAgentGetUdpPort(otInstance *aInstance)
+{
+    return AsCoreType(aInstance).Get<MeshCoP::BorderAgent>().GetUdpPort();
 }
 
 #endif // OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE

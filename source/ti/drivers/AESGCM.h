@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -558,6 +558,9 @@
 extern "C" {
 #endif
 
+/* Only IVs with a length of 12 bytes are supported for now */
+#define AESGCM_IV_LENGTH_BYTES 12
+
 /*!
  * Common AESGCM status code reservation offset.
  * AESGCM driver implementations should offset status codes with
@@ -570,14 +573,14 @@ extern "C" {
  * #define AESGCMXYZ_STATUS_ERROR2    AESGCM_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESGCM_STATUS_RESERVED                AES_STATUS_RESERVED
+#define AESGCM_STATUS_RESERVED AES_STATUS_RESERVED
 /*!
  * @brief   Successful status code.
  *
  * Functions return AESGCM_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESGCM_STATUS_SUCCESS                 AES_STATUS_SUCCESS
+#define AESGCM_STATUS_SUCCESS  AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -585,7 +588,7 @@ extern "C" {
  * Functions return AESGCM_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESGCM_STATUS_ERROR                   AES_STATUS_ERROR
+#define AESGCM_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -595,12 +598,12 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESGCM_STATUS_RESOURCE_UNAVAILABLE    AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESGCM_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESGCM_STATUS_CANCELED                AES_STATUS_CANCELED
+#define AESGCM_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
  *  @brief  An error status code returned if the MAC provided by the application for
@@ -609,7 +612,7 @@ extern "C" {
  * This code is returned by AESGCM_oneStepDecrypt() or AESGCM_finalizeDecrypt() if the
  * verification of the MAC fails.
  */
-#define AESGCM_STATUS_MAC_INVALID             AES_STATUS_MAC_INVALID
+#define AESGCM_STATUS_MAC_INVALID AES_STATUS_MAC_INVALID
 
 /*!
  *  @brief  The operation requested is not supported on the target hardware.
@@ -617,18 +620,18 @@ extern "C" {
  *  This code is returned by AES GCM segmented data operations when attempting to
  *  use them on device families that do not support segmented operations.
  */
-#define AESGCM_STATUS_FEATURE_NOT_SUPPORTED   AES_STATUS_FEATURE_NOT_SUPPORTED
+#define AESGCM_STATUS_FEATURE_NOT_SUPPORTED AES_STATUS_FEATURE_NOT_SUPPORTED
 
 /*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
-#define AESGCM_STATUS_KEYSTORE_INVALID_ID     AES_STATUS_KEYSTORE_INVALID_ID
+#define AESGCM_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
 
 /*!
  *  @brief  The key store module returned a generic error. See key store documentation
  *  for additional details.
  */
-#define AESGCM_STATUS_KEYSTORE_GENERIC_ERROR  AES_STATUS_KEYSTORE_GENERIC_ERROR
+#define AESGCM_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  *  @brief AESGCM Global configuration
@@ -668,30 +671,32 @@ typedef AESGCM_Config *AESGCM_Handle;
  * |AESGCM_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     AESGCM_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
-                                            /*!< The function call will return immediately while the
-                                             *   GCM operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
+    /*!< The function call will return immediately while the
+     *   GCM operation goes on in the background. The registered
+     *   callback function is called after the operation completes.
+     *   The context the callback function is called (task, HWI, SWI)
+     *   is implementation-dependent.
+     */
     AESGCM_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
-                                            /*!< The function call will block while the GCM operation goes
-                                             *   on in the background. GCM operation results are available
-                                             *   after the function returns.
-                                             */
+    /*!< The function call will block while the GCM operation goes
+     *   on in the background. GCM operation results are available
+     *   after the function returns.
+     */
     AESGCM_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
-                                            /*!< The function call will continuously poll a flag while GCM
-                                             *   operation goes on in the background. GCM operation results
-                                             *   are available after the function returns.
-                                             */
+    /*!< The function call will continuously poll a flag while GCM
+     *   operation goes on in the background. GCM operation results
+     *   are available after the function returns.
+     */
 } AESGCM_ReturnBehavior;
 
 /*!
  *  @brief  Enum for the direction of the GCM operation.
  */
-typedef enum {
+typedef enum
+{
     AESGCM_MODE_ENCRYPT = 1,
     AESGCM_MODE_DECRYPT = 2,
 } AESGCM_Mode;
@@ -700,53 +705,54 @@ typedef enum {
  *  @brief  Struct containing the parameters required for encrypting/decrypting
  *          and authenticating/verifying a message for one-step operations.
  */
-typedef struct {
-   CryptoKey                *key;                       /*!< A previously initialized CryptoKey */
-   uint8_t                  *aad;                       /*!< A buffer of length \c aadLength containing additional
-                                                         *   authentication data to be authenticated/verified but not
-                                                         *   encrypted/decrypted.
-                                                         */
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the GCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   uint8_t                  *iv;                        /*!< A buffer containing an IV. IVs must be unique to
-                                                         *   each GCM operation and may not be reused. If
-                                                         *   ivInternallyGenerated is set, the IV will be
-                                                         *   generated by #AESGCM_oneStepEncrypt() and copied to
-                                                         *   this buffer.
-                                                         */
-   uint8_t                  *mac;                       /*!<
-                                                         *   - Encryption: The buffer where the message authentication
-                                                         *   code is copied.
-                                                         *   - Decryption: The buffer containing the received message
-                                                         *   authentication code.
-                                                         */
-   size_t                   aadLength;                  /*!< Length of the total \c aad in bytes. Either \c aadLength or
-                                                         *   \c inputLength must be non-zero.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Either \c aadLength or
-                                                         *   \c inputLength must be non-zero. Unlike this field in
-                                                         *   AESGCM_SegmentedDataOperation, the length doesn't need to be
-                                                         *   block-aligned.
-                                                         */
-   uint8_t                  ivLength;                   /*!< Length of \c IV in bytes.
-                                                         *   The only currently supported IV length is 12 bytes.
-                                                         */
-   uint8_t                  macLength;                  /*!< Length of \c mac in bytes.
-                                                         *   Valid MAC lengths are [4, 8, 12, 13, 14, 15, 16].
-                                                         */
-   bool                     ivInternallyGenerated;      /*!< When true, the IV buffer passed into AESGCM_oneStepEncrypt()
-                                                         *   will be overwritten with a randomly generated IV.
-                                                         *   Not supported by all implementations.
-                                                         */
+typedef struct
+{
+    CryptoKey *key;             /*!< A previously initialized CryptoKey */
+    uint8_t *aad;               /*!< A buffer of length \c aadLength containing additional
+                                 *   authentication data to be authenticated/verified but not
+                                 *   encrypted/decrypted.
+                                 */
+    uint8_t *input;             /*!<
+                                 *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                                 *   in the GCM operation.
+                                 *   - Decryption: The ciphertext to be decrypted and verified.
+                                 */
+    uint8_t *output;            /*!<
+                                 *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                                 *   is copied to.
+                                 *   - Decryption: The plaintext derived from the decrypted and verified
+                                 *   ciphertext is copied here.
+                                 */
+    uint8_t *iv;                /*!< A buffer containing an IV. IVs must be unique to
+                                 *   each GCM operation and may not be reused. If
+                                 *   ivInternallyGenerated is set, the IV will be
+                                 *   generated by #AESGCM_oneStepEncrypt() and copied to
+                                 *   this buffer.
+                                 */
+    uint8_t *mac;               /*!<
+                                 *   - Encryption: The buffer where the message authentication
+                                 *   code is copied.
+                                 *   - Decryption: The buffer containing the received message
+                                 *   authentication code.
+                                 */
+    size_t aadLength;           /*!< Length of the total \c aad in bytes. Either \c aadLength or
+                                 *   \c inputLength must be non-zero.
+                                 */
+    size_t inputLength;         /*!< Length of the input/output data in bytes. Either \c aadLength or
+                                 *   \c inputLength must be non-zero. Unlike this field in
+                                 *   AESGCM_SegmentedDataOperation, the length doesn't need to be
+                                 *   block-aligned.
+                                 */
+    uint8_t ivLength;           /*!< Length of \c IV in bytes.
+                                 *   The only currently supported IV length is 12 bytes.
+                                 */
+    uint8_t macLength;          /*!< Length of \c mac in bytes.
+                                 *   Valid MAC lengths are [4, 8, 12, 13, 14, 15, 16].
+                                 */
+    bool ivInternallyGenerated; /*!< When true, the IV buffer passed into AESGCM_oneStepEncrypt()
+                                 *   will be overwritten with a randomly generated IV.
+                                 *   Not supported by all implementations.
+                                 */
 } AESGCM_OneStepOperation;
 
 /*!
@@ -754,16 +760,17 @@ typedef struct {
  *          authenticating/verifying additional data in a segmented operation.
  *          Must be updated for each add AAD step of a segmented operation.
  */
-typedef struct {
-   uint8_t                  *aad;                       /*!< A buffer of length \c aadLength containing additional
-                                                         *   authentication data to be authenticated/verified but not
-                                                         *   encrypted/decrypted.
-                                                         */
-   size_t                   aadLength;                  /*!< Length of the \c aad in bytes. Must be non-zero, multiple
-                                                         *   of the AES block size (16 bytes) unless the last chunk of
-                                                         *   AAD is being passed in. In that case, this value doesn't
-                                                         *   need to be an AES block-sized multiple.
-                                                         */
+typedef struct
+{
+    uint8_t *aad;     /*!< A buffer of length \c aadLength containing additional
+                       *   authentication data to be authenticated/verified but not
+                       *   encrypted/decrypted.
+                       */
+    size_t aadLength; /*!< Length of the \c aad in bytes. Must be non-zero, multiple
+                       *   of the AES block size (16 bytes) unless the last chunk of
+                       *   AAD is being passed in. In that case, this value doesn't
+                       *   need to be an AES block-sized multiple.
+                       */
 } AESGCM_SegmentedAADOperation;
 
 /*!
@@ -771,23 +778,24 @@ typedef struct {
  *          a message in a segmented operation. Must be updated between each
  *          add data step of a segmented operation.
  */
-typedef struct {
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the GCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Must be non-zero, multiple
-                                                         *   of the AES block size (16 bytes) unless the last chunk of
-                                                         *   payload data is being passed in. In that case, this value doesn't
-                                                         *   need to be an AES block-sized multiple.
-                                                         */
+typedef struct
+{
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                         *   in the GCM operation.
+                         *   - Decryption: The ciphertext to be decrypted and verified.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                         *   is copied to.
+                         *   - Decryption: The plaintext derived from the decrypted and verified
+                         *   ciphertext is copied here.
+                         */
+    size_t inputLength; /*!< Length of the input/output data in bytes. Must be non-zero, multiple
+                         *   of the AES block size (16 bytes) unless the last chunk of
+                         *   payload data is being passed in. In that case, this value doesn't
+                         *   need to be an AES block-sized multiple.
+                         */
 } AESGCM_SegmentedDataOperation;
 
 /*!
@@ -795,32 +803,33 @@ typedef struct {
  *          encryption/decryption and authentication/verification of a message
  *          in a segmented operation.
  */
-typedef struct {
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the GCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   uint8_t                  *mac;                       /*!<
-                                                         *   - Encryption: The buffer where the message authentication
-                                                         *   code is copied.
-                                                         *   - Decryption: The buffer containing the received message
-                                                         *   authentication code.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Can be 0 if finalizing
-                                                         *   without new payload data. Unlike this field in
-                                                         *   AESGCM_SegmentedDataOperation, the length doesn't need to be
-                                                         *   block-aligned.
-                                                         */
-   uint8_t                  macLength;                  /*!< Length of \c mac in bytes.
-                                                         *   Valid MAC lengths are [4, 8, 12, 13, 14, 15, 16].
-                                                         */
+typedef struct
+{
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                         *   in the GCM operation.
+                         *   - Decryption: The ciphertext to be decrypted and verified.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                         *   is copied to.
+                         *   - Decryption: The plaintext derived from the decrypted and verified
+                         *   ciphertext is copied here.
+                         */
+    uint8_t *mac;       /*!<
+                         *   - Encryption: The buffer where the message authentication
+                         *   code is copied.
+                         *   - Decryption: The buffer containing the received message
+                         *   authentication code.
+                         */
+    size_t inputLength; /*!< Length of the input/output data in bytes. Can be 0 if finalizing
+                         *   without new payload data. Unlike this field in
+                         *   AESGCM_SegmentedDataOperation, the length doesn't need to be
+                         *   block-aligned.
+                         */
+    uint8_t macLength;  /*!< Length of \c mac in bytes.
+                         *   Valid MAC lengths are [4, 8, 12, 13, 14, 15, 16].
+                         */
 } AESGCM_SegmentedFinalizeOperation;
 
 /**
@@ -838,24 +847,27 @@ typedef AESGCM_OneStepOperation AESGCM_Operation;
  */
 typedef union AESGCM_OperationUnion
 {
-    AESGCM_OneStepOperation oneStepOperation;                       /* One-step operation element of the operation union */
-    AESGCM_SegmentedAADOperation segmentedAADOperation;             /* Segmented AAD operation element of the operation union */
-    AESGCM_SegmentedDataOperation segmentedDataOperation;           /* Segmented data operation element of the operation union */
-    AESGCM_SegmentedFinalizeOperation segmentedFinalizeOperation;   /* Segmented finalize operation element of the operation union */
+    AESGCM_OneStepOperation oneStepOperation;             /* One-step operation element of the operation union */
+    AESGCM_SegmentedAADOperation segmentedAADOperation;   /* Segmented AAD operation element of the operation union */
+    AESGCM_SegmentedDataOperation segmentedDataOperation; /* Segmented data operation element of the operation union */
+    AESGCM_SegmentedFinalizeOperation segmentedFinalizeOperation; /* Segmented finalize operation element of the
+                                                                     operation union */
 } AESGCM_OperationUnion;
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
-    AESGCM_OPERATION_TYPE_ENCRYPT = 1, /* Fields 1 and 2 are for backward compatibility */
-    AESGCM_OPERATION_TYPE_DECRYPT = 2,
-    AESGCM_OP_TYPE_ONESTEP_ENCRYPT = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not being unique */
-    AESGCM_OP_TYPE_ONESTEP_DECRYPT = 2,
-    AESGCM_OP_TYPE_AAD_ENCRYPT = 3,
-    AESGCM_OP_TYPE_AAD_DECRYPT = 4,
-    AESGCM_OP_TYPE_DATA_ENCRYPT = 5,
-    AESGCM_OP_TYPE_DATA_DECRYPT = 6,
+typedef enum
+{
+    AESGCM_OPERATION_TYPE_ENCRYPT   = 1, /* Fields 1 and 2 are for backward compatibility */
+    AESGCM_OPERATION_TYPE_DECRYPT   = 2,
+    AESGCM_OP_TYPE_ONESTEP_ENCRYPT  = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not
+                                            being unique */
+    AESGCM_OP_TYPE_ONESTEP_DECRYPT  = 2,
+    AESGCM_OP_TYPE_AAD_ENCRYPT      = 3,
+    AESGCM_OP_TYPE_AAD_DECRYPT      = 4,
+    AESGCM_OP_TYPE_DATA_ENCRYPT     = 5,
+    AESGCM_OP_TYPE_DATA_DECRYPT     = 6,
     AESGCM_OP_TYPE_FINALIZE_ENCRYPT = 7,
     AESGCM_OP_TYPE_FINALIZE_DECRYPT = 8,
 } AESGCM_OperationType;
@@ -875,10 +887,10 @@ typedef enum {
  *  @param  operationType  This parameter determines which operation the
  *                         callback refers to.
  */
-typedef void (*AESGCM_CallbackFxn) (AESGCM_Handle handle,
-                                    int_fast16_t returnValue,
-                                    AESGCM_OperationUnion *operation,
-                                    AESGCM_OperationType operationType);
+typedef void (*AESGCM_CallbackFxn)(AESGCM_Handle handle,
+                                   int_fast16_t returnValue,
+                                   AESGCM_OperationUnion *operation,
+                                   AESGCM_OperationType operationType);
 
 /*!
  *  @brief  GCM Parameters
@@ -888,15 +900,16 @@ typedef void (*AESGCM_CallbackFxn) (AESGCM_Handle handle,
  *
  *  @sa     AESGCM_Params_init()
  */
-typedef struct {
-    AESGCM_ReturnBehavior   returnBehavior;             /*!< Blocking, callback, or polling return behavior */
-    AESGCM_CallbackFxn      callbackFxn;                /*!< Callback function pointer */
-    uint32_t                timeout;                    /*!< Timeout before the driver returns an error in
-                                                         *   ::AESGCM_RETURN_BEHAVIOR_BLOCKING
-                                                         */
-    void                   *custom;                     /*!< Custom argument used by driver
-                                                         *   implementation
-                                                         */
+typedef struct
+{
+    AESGCM_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    AESGCM_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                     /*!< Timeout before the driver returns an error in
+                                           *   ::AESGCM_RETURN_BEHAVIOR_BLOCKING
+                                           */
+    void *custom;                         /*!< Custom argument used by driver
+                                           *   implementation
+                                           */
 } AESGCM_Params;
 
 /*!
@@ -1050,9 +1063,7 @@ int_fast16_t AESGCM_setupDecrypt(AESGCM_Handle handle,
  *  @post   #AESGCM_setIV()
  *  @post   #AESGCM_generateIV()
  */
-int_fast16_t AESGCM_setLengths(AESGCM_Handle handle,
-                               size_t aadLength,
-                               size_t plaintextLength);
+int_fast16_t AESGCM_setLengths(AESGCM_Handle handle, size_t aadLength, size_t plaintextLength);
 
 /*!
  *  @brief  Function to set the initialization vector (IV) for an AES GCM segmented operation.
@@ -1074,9 +1085,7 @@ int_fast16_t AESGCM_setLengths(AESGCM_Handle handle,
  *  @post   #AESGCM_addAAD()
  *  @post   #AESGCM_addData()
  */
-int_fast16_t AESGCM_setIV(AESGCM_Handle handle,
-                          const uint8_t *iv,
-                          size_t ivLength);
+int_fast16_t AESGCM_setIV(AESGCM_Handle handle, const uint8_t *iv, size_t ivLength);
 
 /*!
  *  @brief  Function to generate an IV for an AES GCM segmented encryption operation.
@@ -1102,10 +1111,7 @@ int_fast16_t AESGCM_setIV(AESGCM_Handle handle,
  *  @post   #AESGCM_addAAD()
  *  @post   #AESGCM_addData()
  */
-int_fast16_t AESGCM_generateIV(AESGCM_Handle handle,
-                               uint8_t *iv,
-                               size_t ivSize,
-                               size_t* ivLength);
+int_fast16_t AESGCM_generateIV(AESGCM_Handle handle, uint8_t *iv, size_t ivSize, size_t *ivLength);
 
 /*!
  *  @brief  Adds a segment of @a aad with a @a length in bytes to the generated MAC.
@@ -1138,8 +1144,7 @@ int_fast16_t AESGCM_generateIV(AESGCM_Handle handle,
  *  @post     #AESGCM_finalizeEncrypt()
  *  @post     #AESGCM_finalizeDecrypt()
  */
-int_fast16_t AESGCM_addAAD(AESGCM_Handle handle,
-                           AESGCM_SegmentedAADOperation *operation);
+int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *operation);
 
 /*!
  *  @brief  Adds a segment of @a data with a @a length that is a multiple of an AES block-size (16 bytes)
@@ -1170,8 +1175,7 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle,
  *  @post     #AESGCM_finalizeEncrypt()
  *  @post     #AESGCM_finalizeDecrypt()
  */
-int_fast16_t AESGCM_addData(AESGCM_Handle handle,
-                            AESGCM_SegmentedDataOperation *operation);
+int_fast16_t AESGCM_addData(AESGCM_Handle handle, AESGCM_SegmentedDataOperation *operation);
 
 /*!
  *  @brief  Finalize the MAC and ciphertext.
@@ -1198,8 +1202,7 @@ int_fast16_t AESGCM_addData(AESGCM_Handle handle,
  *                                               Try again later.
  *  @retval #AESGCM_STATUS_FEATURE_NOT_SUPPORTED The operation is not supported in this device.
  */
-int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle,
-                                    AESGCM_SegmentedFinalizeOperation *operation);
+int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation);
 
 /*!
  *  @brief  Finalize the MAC and plaintext and verify it.
@@ -1230,8 +1233,7 @@ int_fast16_t AESGCM_finalizeEncrypt(AESGCM_Handle handle,
  *  @retval #AESGCM_STATUS_MAC_INVALID           The provided MAC did not match the recomputed one.
  *  @retval #AESGCM_STATUS_FEATURE_NOT_SUPPORTED The operation is not supported in this device.
  */
-int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle,
-                                    AESGCM_SegmentedFinalizeOperation *operation);
+int_fast16_t AESGCM_finalizeDecrypt(AESGCM_Handle handle, AESGCM_SegmentedFinalizeOperation *operation);
 
 /*!
  *  @brief  Function to initialize an #AESGCM_Operation struct to its defaults
@@ -1296,7 +1298,8 @@ void AESGCM_SegmentedFinalizeOperation_init(AESGCM_SegmentedFinalizeOperation *o
  *
  *  @param  [in] handle                 A GCM handle returned from #AESGCM_open() or #AESGCM_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESGCM_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESGCM_STATUS_ERROR                 The operation failed.
@@ -1316,7 +1319,8 @@ int_fast16_t AESGCM_oneStepEncrypt(AESGCM_Handle handle, AESGCM_OneStepOperation
  *
  *  @param  [in] handle                 A GCM handle returned from #AESGCM_open() or #AESGCM_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESGCM_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESGCM_STATUS_ERROR                 The operation failed.

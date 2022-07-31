@@ -134,7 +134,7 @@
 #include <stdint.h>
 
 /* Line number that means 'put in scrolling section', if exists */
-#define DisplayUart2_SCROLLING       0xFF
+#define DisplayUart2_SCROLLING 0xFF
 
 extern const Display_FxnTable DisplayUart2Min_fxnTable;
 extern const Display_FxnTable DisplayUart2Ansi_fxnTable;
@@ -148,7 +148,8 @@ extern const Display_FxnTable DisplayUart2Ansi_fxnTable;
  *  Access to the buffer is synchronized by a semaphore.  The timeout
  *  for acquiring the semaphore is specified in the attributes.
  */
-typedef struct {
+typedef struct
+{
     /*! Index of uart in UART_config[] */
     unsigned int uartIdx;
     /*! Baud rate for uart */
@@ -156,44 +157,37 @@ typedef struct {
     /*! Timeout for acquiring semaphore */
     unsigned int mutexTimeout;
     /*! Buffer for formatting messages */
-    char        *strBuf;
+    char *strBuf;
     /*! Size of buffer */
-    uint16_t     strBufLen;
+    uint16_t strBufLen;
 } DisplayUart2_HWAttrs;
-
 
 /*!
  *  @brief      DisplayUart2 Object
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    UART2_Handle       hUart;
-    SemaphoreP_Handle  mutex;
-    char              *lineClearSeq;
+typedef struct
+{
+    UART2_Handle hUart;
+    SemaphoreP_Handle mutex;
+    char *lineClearSeq;
 } DisplayUart2_Object, *DisplayUart2_Handle;
-
 
 void DisplayUart2Min_init(Display_Handle handle);
 void DisplayUart2Ansi_init(Display_Handle handle);
 
-Display_Handle DisplayUart2Min_open(Display_Handle handle, Display_Params * params);
-Display_Handle DisplayUart2Ansi_open(Display_Handle handle, Display_Params * params);
+Display_Handle DisplayUart2Min_open(Display_Handle handle, Display_Params *params);
+Display_Handle DisplayUart2Ansi_open(Display_Handle handle, Display_Params *params);
 
 void DisplayUart2Min_clear(Display_Handle handle);
 void DisplayUart2Ansi_clear(Display_Handle handle);
 
-void DisplayUart2Min_clearLines(Display_Handle handle,
-                                uint8_t fromLine,
-                                uint8_t toLine);
-void DisplayUart2Ansi_clearLines(Display_Handle handle,
-                                 uint8_t fromLine,
-                                 uint8_t toLine);
+void DisplayUart2Min_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
+void DisplayUart2Ansi_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
 
-void DisplayUart2Min_vprintf(Display_Handle handle, uint8_t line,
-                             uint8_t column, const char *fmt, va_list va);
-void DisplayUart2Ansi_vprintf(Display_Handle handle, uint8_t line,
-                              uint8_t column, const char *fmt, va_list va);
+void DisplayUart2Min_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
+void DisplayUart2Ansi_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 
 void DisplayUart2Min_close(Display_Handle handle);
 void DisplayUart2Ansi_close(Display_Handle handle);
@@ -201,7 +195,7 @@ void DisplayUart2Ansi_close(Display_Handle handle);
 int DisplayUart2Min_control(Display_Handle handle, unsigned int cmd, void *arg);
 int DisplayUart2Ansi_control(Display_Handle handle, unsigned int cmd, void *arg);
 
-unsigned int   DisplayUart2Min_getType(void);
-unsigned int   DisplayUart2Ansi_getType(void);
+unsigned int DisplayUart2Min_getType(void);
+unsigned int DisplayUart2Ansi_getType(void);
 
 #endif /* ti_display_DisplayUart2__include */

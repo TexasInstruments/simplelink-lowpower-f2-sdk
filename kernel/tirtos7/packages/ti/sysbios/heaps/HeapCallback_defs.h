@@ -81,8 +81,6 @@
 #define HeapCallback_Handle_label ti_sysbios_heaps_HeapCallback_Handle_label
 #define HeapCallback_Handle_name ti_sysbios_heaps_HeapCallback_Handle_name
 #define HeapCallback_Instance_init ti_sysbios_heaps_HeapCallback_Instance_init
-#define HeapCallback_Object_count ti_sysbios_heaps_HeapCallback_Object_count
-#define HeapCallback_Object_get ti_sysbios_heaps_HeapCallback_Object_get
 #define HeapCallback_Object_first ti_sysbios_heaps_HeapCallback_Object_first
 #define HeapCallback_Object_next ti_sysbios_heaps_HeapCallback_Object_next
 #define HeapCallback_Object_sizeof ti_sysbios_heaps_HeapCallback_Object_sizeof
@@ -155,8 +153,6 @@
 #undef HeapCallback_Handle_label
 #undef HeapCallback_Handle_name
 #undef HeapCallback_Instance_init
-#undef HeapCallback_Object_count
-#undef HeapCallback_Object_get
 #undef HeapCallback_Object_first
 #undef HeapCallback_Object_next
 #undef HeapCallback_Object_sizeof
@@ -186,4 +182,3 @@
 #endif
 
 /* @endcond */
-

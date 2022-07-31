@@ -54,7 +54,6 @@
     #include <ti/drivers/aesctr/AESCTRCC26XX.h>
 #endif
 
-
 /* Forward declarations */
 static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment);
 static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
@@ -65,12 +64,13 @@ static void AESCTRDRBG_uninstantiate(AESCTRDRBG_Handle handle);
 /* Static globals */
 static bool isInitialized = false;
 
-#define CEIL(x, y)      (1 + (((x) - 1) / (y)))
+#define CEIL(x, y) (1 + (((x)-1) / (y)))
 
 /*
  *  ======== AESCTRDRBG_init ========
  */
-void AESCTRDRBG_init(void) {
+void AESCTRDRBG_init(void)
+{
     AESCTR_init();
 
     isInitialized = true;
@@ -81,14 +81,15 @@ void AESCTRDRBG_init(void) {
  */
 static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
                                              const void *additionalData,
-                                             size_t additionalDataLength) {
-    AESCTRDRBGXX_Object         *object;
-    AESCTR_Operation            operation;
+                                             size_t additionalDataLength)
+{
+    AESCTRDRBGXX_Object *object;
+    AESCTR_Operation operation;
     /*
      * Buffer must be word aligned as some AESCTR implementations require
      * word aligned I/O.
      */
-    uint32_t buf32[(AESCTRDRBG_MAX_SEED_LENGTH+3)/4] = {0};
+    uint32_t buf32[(AESCTRDRBG_MAX_SEED_LENGTH + 3) / 4] = {0};
 
     object = handle->object;
 
@@ -109,32 +110,30 @@ static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
      * nothing. However klocwork emits a warning that there is an out
      * of bounds array access (underflow) on buf32 if this check is not in place.
      */
-    if (additionalDataLength > 0) {
+    if (additionalDataLength > 0)
+    {
         /*
          * Copy over any additional data and operate on buf32 in place. This way
          * we can have the case where additionalDataLength < seedLength. This is
          * useful in AESCTRDRBG_getBytes() to avoid allocating a spare empty
          * buffer.
          */
-        memcpy(buf32,
-               additionalData,
-               additionalDataLength);
+        memcpy(buf32, additionalData, additionalDataLength);
     }
 
-    operation.key               = &object->key;
-    operation.input             = (uint8_t *)buf32;
-    operation.output            = (uint8_t *)buf32;
-    operation.initialCounter    = object->counter;
-    operation.inputLength       = object->key.u.plaintext.keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES;
+    operation.key            = &object->key;
+    operation.input          = (uint8_t *)buf32;
+    operation.output         = (uint8_t *)buf32;
+    operation.initialCounter = object->counter;
+    operation.inputLength    = object->key.u.plaintext.keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES;
 
-    if (AESCTR_oneStepEncrypt(object->ctrHandle, &operation) != AESCTR_STATUS_SUCCESS) {
+    if (AESCTR_oneStepEncrypt(object->ctrHandle, &operation) != AESCTR_STATUS_SUCCESS)
+    {
         return AESCTRDRBG_STATUS_ERROR;
     }
 
     /* Copy the left most keyLength bytes of the computed result */
-    memcpy(object->keyingMaterial,
-           buf32,
-           object->key.u.plaintext.keyLength);
+    memcpy(object->keyingMaterial, buf32, object->key.u.plaintext.keyLength);
 
     /*
      * Copy new counter value as the right most 16 bytes of the computed result.
@@ -154,13 +153,13 @@ static int_fast16_t AESCTRDRBGXX_updateState(AESCTRDRBG_Handle handle,
 /*
  *  ======== AESCTRDRBGXX_addBigendCounter ========
  */
-static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment) {
+static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment)
+{
     uint64_t *counter64 = (uint64_t *)counter;
     uint64_t prior;
 
     /* Turn it into a little-endian counter */
-    CryptoUtils_reverseBufferBytewise(counter64,
-                                      AESCTRDRBG_AES_BLOCK_SIZE_BYTES);
+    CryptoUtils_reverseBufferBytewise(counter64, AESCTRDRBG_AES_BLOCK_SIZE_BYTES);
 
     prior = counter64[0];
 
@@ -168,13 +167,13 @@ static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment) 
     counter64[0] += increment;
 
     /* Check if we wrapped and need to increment the upper 64 bits */
-    if (counter64[0] < prior) {
+    if (counter64[0] < prior)
+    {
         counter64[1]++;
     }
 
     /* Turn it back into a big-endian integer */
-    CryptoUtils_reverseBufferBytewise(counter64,
-                                      AESCTRDRBG_AES_BLOCK_SIZE_BYTES);
+    CryptoUtils_reverseBufferBytewise(counter64, AESCTRDRBG_AES_BLOCK_SIZE_BYTES);
 }
 
 /*
@@ -189,8 +188,9 @@ static void AESCTRDRBGXX_addBigendCounter(uint8_t *counter, uint32_t increment) 
  *  should be called if any of the AESCTR operations fail so that the DRBG instance
  *  will never be usable when its internal state is potentially corrupt.
  */
-static void AESCTRDRBG_uninstantiate(AESCTRDRBG_Handle handle) {
-    AESCTRDRBGXX_Object         *object;
+static void AESCTRDRBG_uninstantiate(AESCTRDRBG_Handle handle)
+{
+    AESCTRDRBGXX_Object *object;
 
     object = handle->object;
 
@@ -203,21 +203,23 @@ static void AESCTRDRBG_uninstantiate(AESCTRDRBG_Handle handle) {
 /*
  *  ======== AESCTRDRBG_construct ========
  */
-AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDRBG_Params *params) {
-    AESCTRDRBG_Handle               handle;
-    AESCTRDRBGXX_Object             *object;
-    const AESCTRDRBGXX_HWAttrs      *hwAttrs;
-    AESCTR_Params                   ctrParams;
-    uintptr_t                       key;
-    int_fast16_t                    status;
+AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDRBG_Params *params)
+{
+    AESCTRDRBG_Handle handle;
+    AESCTRDRBGXX_Object *object;
+    const AESCTRDRBGXX_HWAttrs *hwAttrs;
+    AESCTR_Params ctrParams;
+    uintptr_t key;
+    int_fast16_t status;
 
-    handle = (AESCTRDRBG_Handle)config;
-    object = handle->object;
+    handle  = (AESCTRDRBG_Handle)config;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     key = HwiP_disable();
 
-    if (!isInitialized || object->isOpen) {
+    if (!isInitialized || object->isOpen)
+    {
         HwiP_restore(key);
         return NULL;
     }
@@ -227,25 +229,36 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     HwiP_restore(key);
 
     /* There are no valid default params for this driver */
-    if (params == NULL) {
+    if (params == NULL)
+    {
         return NULL;
     }
 
     /* personalizationDataLength must be within
      * [0, AESCTRDRBG_AES_BLOCK_SIZE_BYTES] bytes.
      */
-    if (params->personalizationDataLength >
-        params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES) {
+    if (params->personalizationDataLength > params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES)
+    {
         return NULL;
     }
 
     /* Open the driver's AESCTR instance */
     AESCTR_Params_init(&ctrParams);
+#if (SPE_ENABLED == 0)
     ctrParams.returnBehavior = (AESCTR_ReturnBehavior)(params->returnBehavior);
+#else
+    /*
+     * For the secure-only implementation, AESCTRDRBG supports blocking or
+     * polling return behavior.  However, when SPE is enabled, polling return
+     * behavior must be forced since drivers cannot block inside the SPE.
+     */
+    ctrParams.returnBehavior = AESCTR_RETURN_BEHAVIOR_POLLING;
+#endif
 
     object->ctrHandle = AESCTR_open(hwAttrs->aesctrIndex, &ctrParams);
 
-    if (object->ctrHandle == NULL) {
+    if (object->ctrHandle == NULL)
+    {
         object->isOpen = false;
 
         return NULL;
@@ -259,7 +272,7 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     memset(object->keyingMaterial, 0, params->keyLength);
 
     /* Store constants for later */
-    object->seedLength = params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES;
+    object->seedLength     = params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES;
     object->reseedInterval = params->reseedInterval;
 
     /* Ideally this should be set only after instantiation is complete. However
@@ -271,12 +284,10 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     object->isInstantiated = true;
 
     /* Reseed the instance to generate the initial (counter, keyingMaterial) pair */
-    status = AESCTRDRBG_reseed(handle,
-                               params->seed,
-                               params->personalizationData,
-                               params->personalizationDataLength);
+    status = AESCTRDRBG_reseed(handle, params->seed, params->personalizationData, params->personalizationDataLength);
 
-    if (status != AESCTRDRBG_STATUS_SUCCESS) {
+    if (status != AESCTRDRBG_STATUS_SUCCESS)
+    {
         AESCTR_close(object->ctrHandle);
         AESCTRDRBG_uninstantiate(handle);
         object->isOpen = false;
@@ -290,8 +301,9 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
 /*
  *  ======== AESCTRDRBG_close ========
  */
-void AESCTRDRBG_close(AESCTRDRBG_Handle handle) {
-    AESCTRDRBGXX_Object         *object;
+void AESCTRDRBG_close(AESCTRDRBG_Handle handle)
+{
+    AESCTRDRBGXX_Object *object;
 
     DebugP_assert(handle);
 
@@ -309,23 +321,22 @@ void AESCTRDRBG_close(AESCTRDRBG_Handle handle) {
 /*
  *  ======== AESCTRDRBG_getBytes ========
  */
-int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle,
-                                 CryptoKey *randomBytes) {
+int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomBytes)
+{
     return AESCTRDRBG_generateKey(handle, randomBytes);
 }
 
 /*
  *  ======== AESCTRDRBG_generateKey ========
  */
-int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle,
-                                    CryptoKey *randomKey) {
+int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomKey)
+{
     int_fast16_t status = AESCTRDRBG_STATUS_ERROR;
 
-    status = AESCTRDRBG_getRandomBytes(handle,
-                                       randomKey->u.plaintext.keyMaterial,
-                                       randomKey->u.plaintext.keyLength);
+    status = AESCTRDRBG_getRandomBytes(handle, randomKey->u.plaintext.keyMaterial, randomKey->u.plaintext.keyLength);
 
-    if (status == AESCTRDRBG_STATUS_SUCCESS) {
+    if (status == AESCTRDRBG_STATUS_SUCCESS)
+    {
         randomKey->encoding = CryptoKey_PLAINTEXT;
     }
 
@@ -335,34 +346,38 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle,
 /*
  *  ======== AESCTRDRBG_getRandomBytes ========
  */
-int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle,
-                                       void *randomBytes,
-                                       size_t randomBytesSize) {
-    AESCTRDRBGXX_Object         *object;
-    AESCTR_Operation            operation;
-    int_fast16_t                status;
-    bool                        lockAcquired;
-    uint32_t                    lockAcquireTimeout;
+int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle, void *randomBytes, size_t randomBytesSize)
+{
+    AESCTRDRBGXX_Object *object;
+    AESCTR_Operation operation;
+    int_fast16_t status;
+    bool lockAcquired;
+    uint32_t lockAcquireTimeout;
 
     object = handle->object;
 
-    if (object->isInstantiated == false) {
+    if (object->isInstantiated == false)
+    {
         return AESCTRDRBG_STATUS_UNINSTANTIATED;
     }
 
-    if (object->reseedCounter >= object->reseedInterval) {
+    if (object->reseedCounter >= object->reseedInterval)
+    {
         return AESCTRDRBG_STATUS_RESEED_REQUIRED;
     }
 
-    if (SwiP_inISR() || HwiP_inISR()) {
+    if (SwiP_inISR() || HwiP_inISR())
+    {
         lockAcquireTimeout = SemaphoreP_NO_WAIT;
     }
-    else {
+    else
+    {
         lockAcquireTimeout = SemaphoreP_WAIT_FOREVER;
     }
 
     lockAcquired = AESCTR_acquireLock(object->ctrHandle, lockAcquireTimeout);
-    if (!lockAcquired) {
+    if (!lockAcquired)
+    {
         return AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE;
     }
 
@@ -387,15 +402,16 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle,
      */
     AESCTRDRBGXX_addBigendCounter(object->counter, 1);
 
-    operation.key               = &object->key;
-    operation.input             = randomBytes;
-    operation.output            = randomBytes;
-    operation.initialCounter    = object->counter;
-    operation.inputLength       = randomBytesSize;
+    operation.key            = &object->key;
+    operation.input          = randomBytes;
+    operation.output         = randomBytes;
+    operation.initialCounter = object->counter;
+    operation.inputLength    = randomBytesSize;
 
     status = AESCTR_oneStepEncrypt(object->ctrHandle, &operation);
 
-    if (status != AESCTR_STATUS_SUCCESS) {
+    if (status != AESCTR_STATUS_SUCCESS)
+    {
         AESCTR_releaseLock(object->ctrHandle);
 
         if (status == AESCTR_STATUS_UNALIGNED_IO_NOT_SUPPORTED)
@@ -415,16 +431,15 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle,
      * internal counter. We already incremented by one above
      * so we increment by one less here.
      */
-    AESCTRDRBGXX_addBigendCounter(object->counter,
-                                  CEIL(randomBytesSize, AESCTRDRBG_AES_BLOCK_SIZE_BYTES) - 1);
+    AESCTRDRBGXX_addBigendCounter(object->counter, CEIL(randomBytesSize, AESCTRDRBG_AES_BLOCK_SIZE_BYTES) - 1);
 
     status = AESCTRDRBGXX_updateState(handle, NULL, 0);
-
 
     AESCTR_enableThreadSafety(object->ctrHandle);
     AESCTR_releaseLock(object->ctrHandle);
 
-    if (status != AESCTRDRBG_STATUS_SUCCESS) {
+    if (status != AESCTRDRBG_STATUS_SUCCESS)
+    {
         AESCTRDRBG_uninstantiate(handle);
         return AESCTRDRBG_STATUS_UNINSTANTIATED;
     }
@@ -440,33 +455,39 @@ int_fast16_t AESCTRDRBG_getRandomBytes(AESCTRDRBG_Handle handle,
 int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
                                const void *seed,
                                const void *additionalData,
-                               size_t additionalDataLength) {
+                               size_t additionalDataLength)
+{
     AESCTRDRBGXX_Object *object;
-    int_fast16_t        status;
-    uint8_t             tmp[AESCTRDRBG_MAX_SEED_LENGTH];
-    uint32_t            i;
-    bool                lockAcquired;
-    uint32_t            lockAcquireTimeout;
+    int_fast16_t status;
+    uint8_t tmp[AESCTRDRBG_MAX_SEED_LENGTH];
+    uint32_t i;
+    bool lockAcquired;
+    uint32_t lockAcquireTimeout;
 
     object = handle->object;
 
-    if (object->isInstantiated == false) {
+    if (object->isInstantiated == false)
+    {
         return AESCTRDRBG_STATUS_UNINSTANTIATED;
     }
 
-    if (additionalDataLength > object->seedLength) {
+    if (additionalDataLength > object->seedLength)
+    {
         return AESCTRDRBG_STATUS_ERROR;
     }
 
-    if (SwiP_inISR() || HwiP_inISR()) {
+    if (SwiP_inISR() || HwiP_inISR())
+    {
         lockAcquireTimeout = SemaphoreP_NO_WAIT;
     }
-    else {
+    else
+    {
         lockAcquireTimeout = SemaphoreP_WAIT_FOREVER;
     }
 
     lockAcquired = AESCTR_acquireLock(object->ctrHandle, lockAcquireTimeout);
-    if (!lockAcquired) {
+    if (!lockAcquired)
+    {
         return AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE;
     }
 
@@ -477,7 +498,8 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
     memcpy(tmp, additionalData, additionalDataLength);
 
     /* XOR-in the seed. It should always be a multiple of 32 bits */
-    for (i = 0; i < object->seedLength / sizeof(uint32_t); i++){
+    for (i = 0; i < object->seedLength / sizeof(uint32_t); i++)
+    {
         ((uint32_t *)tmp)[i] ^= ((uint32_t *)seed)[i];
     }
 
@@ -487,7 +509,8 @@ int_fast16_t AESCTRDRBG_reseed(AESCTRDRBG_Handle handle,
     AESCTR_enableThreadSafety(object->ctrHandle);
     AESCTR_releaseLock(object->ctrHandle);
 
-    if (status != AESCTRDRBG_STATUS_SUCCESS) {
+    if (status != AESCTRDRBG_STATUS_SUCCESS)
+    {
         AESCTRDRBG_uninstantiate(handle);
         return AESCTRDRBG_STATUS_UNINSTANTIATED;
     }

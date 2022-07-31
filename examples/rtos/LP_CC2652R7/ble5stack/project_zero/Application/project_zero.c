@@ -188,7 +188,7 @@ typedef struct
 // Struct for message about button state
 typedef struct
 {
-    PIN_Id pinId;
+    uint_least8_t gpioId;
     uint8_t state;
 } pzButtonState_t;
 
@@ -289,36 +289,6 @@ static List_List setPhyCommStatList;
 
 // List to store connection handles for queued param updates
 static List_List paramUpdateList;
-
-/* Pin driver handles */
-static PIN_Handle buttonPinHandle;
-static PIN_Handle ledPinHandle;
-
-/* Global memory storage for a PIN_Config table */
-static PIN_State buttonPinState;
-static PIN_State ledPinState;
-
-/*
- * Initial LED pin configuration table
- *   - LEDs CONFIG_PIN_RLED & CONFIG_PIN_GLED are off.
- */
-PIN_Config ledPinTable[] = {
-    CONFIG_PIN_RLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL |
-    PIN_DRVSTR_MAX,
-    CONFIG_PIN_GLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL |
-    PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
-
-/*
- * Application button pin configuration table:
- *   - Buttons interrupts are configured to trigger on falling edge.
- */
-PIN_Config buttonPinTable[] = {
-    CONFIG_GPIO_BTN1 | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
-    CONFIG_GPIO_BTN2 | PIN_INPUT_EN | PIN_PULLUP | PIN_IRQ_NEGEDGE,
-    PIN_TERMINATE
-};
 
 // Clock objects for debouncing the buttons
 static Clock_Struct button0DebounceClock;
@@ -429,8 +399,7 @@ static void ProjectZero_connEvtCB(Gap_ConnEventRpt_t *pReport);
 
 /* Button handling functions */
 static void buttonDebounceSwiFxn(UArg buttonId);
-static void buttonCallbackFxn(PIN_Handle handle,
-                              PIN_Id pinId);
+static void GPIO_Board_keyCallback(uint_least8_t index);
 static void ProjectZero_handleButtonPress(pzButtonState_t *pState);
 
 /* Utility functions */
@@ -446,9 +415,8 @@ static void ProjectZero_processOadWriteCB(uint8_t event,
                                           uint16_t arg);
 static void ProjectZero_processL2CAPMsg(l2capSignalEvent_t *pMsg);
 static void ProjectZero_checkSvcChgndFlag(uint32_t flag);
-static void ProjectZero_bootManagerCheck(PIN_Handle buttonPinHandle,
-                                         uint8_t revertIo,
-                                         uint8_t eraseIo);
+static void ProjectZero_bootManagerCheck(uint_least8_t revertIo,
+                                         uint_least8_t eraseIo);
 
 /*********************************************************************
  * EXTERN FUNCTIONS
@@ -570,30 +538,12 @@ static void ProjectZero_init(void)
     // ******************************************************************
     // Hardware initialization
     // ******************************************************************
-
-    // Open LED pins
-    ledPinHandle = PIN_open(&ledPinState, ledPinTable);
-    if(!ledPinHandle)
-    {
-        Log_error0("Error initializing board LED pins");
-        Task_exit();
-    }
-
-    // Open button pins
-    buttonPinHandle = PIN_open(&buttonPinState, buttonPinTable);
-    if(!buttonPinHandle)
-    {
-        Log_error0("Error initializing button pins");
-        Task_exit();
-    }
-
-    // Setup callback for button pins
-    if(PIN_registerIntCb(buttonPinHandle, &buttonCallbackFxn) != 0)
-    {
-        Log_error0("Error registering button callback function");
-        Task_exit();
-    }
-
+    // Setup callback for button gpio
+    GPIO_setCallback(CONFIG_GPIO_BTN1, GPIO_Board_keyCallback);
+    GPIO_setCallback(CONFIG_GPIO_BTN2, GPIO_Board_keyCallback);
+    // Enable interrupt
+    GPIO_enableInt(CONFIG_GPIO_BTN1);
+    GPIO_enableInt(CONFIG_GPIO_BTN2);
     // Create the debounce clock objects for Button 0 and Button 1
     button0DebounceClockHandle = Util_constructClock(&button0DebounceClock,
                                                      buttonDebounceSwiFxn, 50,
@@ -651,7 +601,7 @@ static void ProjectZero_init(void)
     // We do this after the OAD init because if the external flash is empty
     // it will copy the current image into the factory image slot in external
     // flash.
-    ProjectZero_bootManagerCheck(buttonPinHandle, CONFIG_GPIO_BTN1,
+    ProjectZero_bootManagerCheck(CONFIG_GPIO_BTN1,
                                  CONFIG_GPIO_BTN2);
 
     // Capture the current OAD version and log it
@@ -1047,7 +997,7 @@ static void ProjectZero_processApplicationMessage(pzMsg_t *pMsg)
           ProjectZero_updateCharVal(pCharData);
           break;
 
-      case PZ_BUTTON_DEBOUNCED_EVT: /* Message from swi about pin change */
+      case PZ_BUTTON_DEBOUNCED_EVT: /* Message from swi about gpio change */
       {
           pzButtonState_t *pButtonState = (pzButtonState_t *)pMsg->pData;
           ProjectZero_handleButtonPress(pButtonState);
@@ -2057,7 +2007,7 @@ static void ProjectZero_updatePHYStat(uint16_t eventCode, uint8_t *pMsg)
  *          Invoked by the taskFxn based on a message received from a callback.
  *
  * @see     buttonDebounceSwiFxn
- * @see     buttonCallbackFxn
+ * @see     GPIO_Board_keyCallback
  *
  * @param   pState  pointer to pzButtonState_t message sent from debounce Swi.
  *
@@ -2066,7 +2016,7 @@ static void ProjectZero_updatePHYStat(uint16_t eventCode, uint8_t *pMsg)
 static void ProjectZero_handleButtonPress(pzButtonState_t *pState)
 {
     Log_info2("%s %s",
-              (uintptr_t)(pState->pinId ==
+              (uintptr_t)(pState->gpioId ==
                           CONFIG_GPIO_BTN1 ? "Button 0" : "Button 1"),
               (uintptr_t)(pState->state ?
                           ANSI_COLOR(FG_GREEN)"pressed"ANSI_COLOR(ATTR_RESET) :
@@ -2075,7 +2025,7 @@ static void ProjectZero_handleButtonPress(pzButtonState_t *pState)
 
     // Update the service with the new value.
     // Will automatically send notification/indication if enabled.
-    switch(pState->pinId)
+    switch(pState->gpioId)
     {
     case CONFIG_GPIO_BTN1:
         ButtonService_SetParameter(BS_BUTTON0_ID,
@@ -2122,7 +2072,7 @@ void ProjectZero_LedService_ValueChangeHandler(
         // Do something useful with pCharData->data here
         // -------------------------
         // Set the output value equal to the received value. 0 is off, not 0 is on
-        PIN_setOutputValue(ledPinHandle, CONFIG_PIN_RLED, pCharData->data[0]);
+        GPIO_write(CONFIG_GPIO_RLED, pCharData->data[0]);
         Log_info2("Turning %s %s",
                   (uintptr_t)ANSI_COLOR(FG_RED)"LED0"ANSI_COLOR(ATTR_RESET),
                   (uintptr_t)(pCharData->data[0] ? "on" : "off"));
@@ -2137,7 +2087,7 @@ void ProjectZero_LedService_ValueChangeHandler(
         // Do something useful with pCharData->data here
         // -------------------------
         // Set the output value equal to the received value. 0 is off, not 0 is on
-        PIN_setOutputValue(ledPinHandle, CONFIG_PIN_GLED, pCharData->data[0]);
+        GPIO_write(CONFIG_GPIO_GLED, pCharData->data[0]);
         Log_info2("Turning %s %s",
                   (uintptr_t)ANSI_COLOR(FG_GREEN)"LED1"ANSI_COLOR(ATTR_RESET),
                   (uintptr_t)(pCharData->data[0] ? "on" : "off"));
@@ -2619,42 +2569,43 @@ static void ProjectZero_paramUpdClockHandler(UArg arg)
  *
  *         Determines new state after debouncing
  *
- * @param  buttonId    The pin being debounced
+ * @param  buttonId    The gpio being debounced
  */
 static void buttonDebounceSwiFxn(UArg buttonId)
 {
     // Used to send message to app
-    pzButtonState_t buttonMsg = { .pinId = buttonId };
+    pzButtonState_t buttonMsg = { .gpioId = buttonId };
     uint8_t sendMsg = FALSE;
 
-    // Get current value of the button pin after the clock timeout
-    uint8_t buttonPinVal = PIN_getInputValue(buttonId);
+    // Get current value of the button gpio after the clock timeout
+    uint8_t buttonGpioVal = GPIO_read(buttonId);
 
     // Set interrupt direction to opposite of debounced state
     // If button is now released (button is active low, so release is high)
-    if(buttonPinVal)
+
+    if(buttonGpioVal)
     {
         // Enable negative edge interrupts to wait for press
-        PIN_setConfig(buttonPinHandle, PIN_BM_IRQ, buttonId | PIN_IRQ_NEGEDGE);
+        GPIO_setConfig(buttonId, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING | GPIO_CFG_INT_ENABLE);
     }
     else
     {
         // Enable positive edge interrupts to wait for relesae
-        PIN_setConfig(buttonPinHandle, PIN_BM_IRQ, buttonId | PIN_IRQ_POSEDGE);
+        GPIO_setConfig(buttonId, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_RISING | GPIO_CFG_INT_ENABLE);
     }
 
     switch(buttonId)
     {
     case CONFIG_GPIO_BTN1:
-        // If button is now released (buttonPinVal is active low, so release is 1)
+        // If button is now released (buttonGpioVal is active low, so release is 1)
         // and button state was pressed (buttonstate is active high so press is 1)
-        if(buttonPinVal && button0State)
+        if(buttonGpioVal && button0State)
         {
             // Button was released
             buttonMsg.state = button0State = 0;
             sendMsg = TRUE;
         }
-        else if(!buttonPinVal && !button0State)
+        else if(!buttonGpioVal && !button0State)
         {
             // Button was pressed
             buttonMsg.state = button0State = 1;
@@ -2663,15 +2614,15 @@ static void buttonDebounceSwiFxn(UArg buttonId)
         break;
 
     case CONFIG_GPIO_BTN2:
-        // If button is now released (buttonPinVal is active low, so release is 1)
+        // If button is now released (buttonGpioVal is active low, so release is 1)
         // and button state was pressed (buttonstate is active high so press is 1)
-        if(buttonPinVal && button1State)
+        if(buttonGpioVal && button1State)
         {
             // Button was released
             buttonMsg.state = button1State = 0;
             sendMsg = TRUE;
         }
-        else if(!buttonPinVal && !button1State)
+        else if(!buttonGpioVal && !button1State)
         {
             // Button was pressed
             buttonMsg.state = button1State = 1;
@@ -2695,25 +2646,24 @@ static void buttonDebounceSwiFxn(UArg buttonId)
 }
 
 /*********************************************************************
- * @fn     buttonCallbackFxn
+ * @fn      GPIO_Board_keyCallback
  *
- * @brief  Callback from PIN driver on interrupt
+ * @brief   Interrupt handler for Keys for GPIO++ module
  *
- *         Sets in motion the debouncing.
+ * @param   none
  *
- * @param  handle    The PIN_Handle instance this is about
- * @param  pinId     The pin that generated the interrupt
+ * @return  none
  */
-static void buttonCallbackFxn(PIN_Handle handle, PIN_Id pinId)
+static void GPIO_Board_keyCallback(uint_least8_t index)
 {
     Log_info1("Button interrupt: %s",
-              (uintptr_t)((pinId == CONFIG_GPIO_BTN1) ? "Button 0" : "Button 1"));
+              (uintptr_t)((index == CONFIG_GPIO_BTN1) ? "Button 0" : "Button 1"));
 
-    // Disable interrupt on that pin for now. Re-enabled after debounce.
-    PIN_setConfig(handle, PIN_BM_IRQ, pinId | PIN_IRQ_DIS);
+    // Disable interrupt on that gpio for now. Re-enabled after debounce.
+    GPIO_setConfig(index, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING | GPIO_CFG_INT_DISABLE);
 
     // Start debounce timer
-    switch(pinId)
+    switch(index)
     {
     case CONFIG_GPIO_BTN1:
         Util_startClock((Clock_Struct *)button0DebounceClockHandle);
@@ -2941,28 +2891,20 @@ static void projectZero_revertToFactoryImage(void)
  *          whether the external flash content should be erased (Left
  *          and Right button).
  *
- * @param   buttonPinHandle - Handle for the button pins
- * @param   revertIo - IOID of the pin that selects revert to factory
- * @param   eraseIo - IOID of the pin that if held with revert will
+ * @param   revertIo - IOID of the gpio that selects revert to factory
+ * @param   eraseIo - IOID of the gpio that if held with revert will
  *                    erase the external flash.
  *
  * @return  void
  */
-static void ProjectZero_bootManagerCheck(PIN_Handle buttonPinHandle,
-                                         uint8_t revertIo,
-                                         uint8_t eraseIo)
+static void ProjectZero_bootManagerCheck(uint_least8_t revertIo,
+                                         uint_least8_t eraseIo)
 {
-    if (buttonPinHandle == NULL)
-    {
-        Log_error0("Button pins not opened for boot check.");
-        return;
-    }
-
     uint32_t sleepDuration = 5000 * (1000/Clock_tickPeriod);
     uint32_t sleepInterval = 50 * (1000/Clock_tickPeriod);
 
-    uint32_t revertIoInit = PIN_getInputValue(revertIo);
-    uint32_t eraseIoInit = PIN_getInputValue(eraseIo);
+    uint32_t revertIoInit = GPIO_read(revertIo);
+    uint32_t eraseIoInit = GPIO_read(eraseIo);
 
     if (revertIoInit)
     {
@@ -2983,13 +2925,13 @@ static void ProjectZero_bootManagerCheck(PIN_Handle buttonPinHandle,
         {
             Task_sleep(sleepInterval);
 
-            if (PIN_getInputValue(revertIo) || PIN_getInputValue(eraseIo))
+            if (GPIO_read(revertIo) || GPIO_read(eraseIo))
             {
                 break;
             }
         }
 
-        if (PIN_getInputValue(revertIo) == 0 && PIN_getInputValue(eraseIo) == 0)
+        if (GPIO_read(revertIo) == 0 && GPIO_read(eraseIo) == 0)
         {
             projectZero_eraseExternalFlash();
             Log_warning0("There is now no factory image in external flash "
@@ -3013,13 +2955,13 @@ static void ProjectZero_bootManagerCheck(PIN_Handle buttonPinHandle,
         {
             Task_sleep(sleepInterval);
 
-            if (PIN_getInputValue(revertIo))
+            if (GPIO_read(revertIo))
             {
                 break;
             }
         }
 
-        if (PIN_getInputValue(revertIo) == 0)
+        if (GPIO_read(revertIo) == 0)
         {
             projectZero_revertToFactoryImage();
         }

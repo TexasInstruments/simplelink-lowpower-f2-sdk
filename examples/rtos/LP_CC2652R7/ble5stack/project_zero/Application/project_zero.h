@@ -58,7 +58,7 @@ extern "C"
  */
 #include <stdint.h>
 #include <ti/sysbios/knl/Queue.h>
-#include <ti/drivers/PIN.h>
+#include <ti/drivers/GPIO.h>
 
 #include <bcomdef.h>
 

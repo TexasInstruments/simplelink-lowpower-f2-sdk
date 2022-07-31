@@ -33,92 +33,70 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_JAM_DETECTION_ENABLE
+
 #include <openthread/jam_detection.h>
 
-#include "common/instance.hpp"
-#include "common/locator-getters.hpp"
+#include "common/as_core_type.hpp"
+#include "common/locator_getters.hpp"
 
 using namespace ot;
 
-#if OPENTHREAD_CONFIG_JAM_DETECTION_ENABLE
-
 otError otJamDetectionSetRssiThreshold(otInstance *aInstance, int8_t aRssiThreshold)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    AsCoreType(aInstance).Get<Utils::JamDetector>().SetRssiThreshold(aRssiThreshold);
 
-    instance.Get<Utils::JamDetector>().SetRssiThreshold(aRssiThreshold);
-
-    return OT_ERROR_NONE;
+    return kErrorNone;
 }
 
 int8_t otJamDetectionGetRssiThreshold(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().GetRssiThreshold();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().GetRssiThreshold();
 }
 
 otError otJamDetectionSetWindow(otInstance *aInstance, uint8_t aWindow)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().SetWindow(aWindow);
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().SetWindow(aWindow);
 }
 
 uint8_t otJamDetectionGetWindow(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().GetWindow();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().GetWindow();
 }
 
 otError otJamDetectionSetBusyPeriod(otInstance *aInstance, uint8_t aBusyPeriod)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().SetBusyPeriod(aBusyPeriod);
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().SetBusyPeriod(aBusyPeriod);
 }
 
 uint8_t otJamDetectionGetBusyPeriod(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().GetBusyPeriod();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().GetBusyPeriod();
 }
 
 otError otJamDetectionStart(otInstance *aInstance, otJamDetectionCallback aCallback, void *aContext)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().Start(aCallback, aContext);
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().Start(aCallback, aContext);
 }
 
 otError otJamDetectionStop(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().Stop();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().Stop();
 }
 
 bool otJamDetectionIsEnabled(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().IsEnabled();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().IsEnabled();
 }
 
 bool otJamDetectionGetState(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().GetState();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().GetState();
 }
 
 uint64_t otJamDetectionGetHistoryBitmap(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Utils::JamDetector>().GetHistoryBitmap();
+    return AsCoreType(aInstance).Get<Utils::JamDetector>().GetHistoryBitmap();
 }
 
 #endif // OPENTHREAD_CONFIG_JAM_DETECTION_ENABLE

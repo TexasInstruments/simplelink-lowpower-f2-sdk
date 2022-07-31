@@ -42,32 +42,34 @@
  *  function for use by the Idle task.
  */
 void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
-    StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize)
+                                   StackType_t **ppxIdleTaskStackBuffer,
+                                   uint32_t *pulIdleTaskStackSize)
 {
     static StaticTask_t xIdleTaskTCB;
     static StackType_t uxIdleTaskStack[configIDLE_TASK_STACK_DEPTH];
 
-    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+    *ppxIdleTaskTCBBuffer   = &xIdleTaskTCB;
     *ppxIdleTaskStackBuffer = uxIdleTaskStack;
-    *pulIdleTaskStackSize = configIDLE_TASK_STACK_DEPTH;
+    *pulIdleTaskStackSize   = configIDLE_TASK_STACK_DEPTH;
 }
 
-#if (configUSE_TIMERS == 1)
+    #if (configUSE_TIMERS == 1)
 /*
  *  ======== vApplicationGetTimerTaskMemory ========
  *  When static allocation is enabled, and timers are used, the app must provide
  *  this callback function for use by the Timer Service task.
  */
 void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer,
-    StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize)
+                                    StackType_t **ppxTimerTaskStackBuffer,
+                                    uint32_t *pulTimerTaskStackSize)
 {
     static StaticTask_t xTimerTaskTCB;
     static StackType_t uxTimerTaskStack[configTIMER_TASK_STACK_DEPTH];
 
-    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+    *ppxTimerTaskTCBBuffer   = &xTimerTaskTCB;
     *ppxTimerTaskStackBuffer = uxTimerTaskStack;
-    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+    *pulTimerTaskStackSize   = configTIMER_TASK_STACK_DEPTH;
 }
-#endif
+    #endif
 
 #endif

@@ -68,7 +68,6 @@
         linkerBuildOptions="
             -Wl,-i${WORKSPACE_LOC}/libopenthread_ncp_ftd_cc13x2_26x2_ticlang/OptimizeSize
             -Wl,-llibopenthread_ncp_ftd.a
-            --reread_libs
             -Wl,-i${WORKSPACE_LOC}/libopenthread_ftd_cc13x2_26x2_ticlang/OptimizeSize
             -Wl,-i${WORKSPACE_LOC}/libopenthread_platform_utils_ftd_cc13x2_26x2_ticlang/OptimizeSize
             -Wl,-i${WORKSPACE_LOC}/libmbedcrypto_cc13x2_26x2_ticlang/OptimizeSize
@@ -79,6 +78,7 @@
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
+            --reread_libs
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib
             -Wl,-c
@@ -128,8 +128,6 @@
         </file>
         <file path="../../platform/uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
-        <file path="../../platform/debug_uart.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
-        </file>
         <file path="../../platform/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
         </file>
         <file path="../../platform/nv/crc.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
@@ -140,9 +138,11 @@
         </file>
         <file path="../../platform/nv/nvintf.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform/nv">
         </file>
+        <file path="../../ncp.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
         <file path="../../platform/spi_periph.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
-        <file path="../../ncp.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../platform/ncp.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="platform">
         </file>
         <file path="../../main.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
@@ -160,7 +160,7 @@
         </file>
         <file path="../../release.cfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../ncp_ftd.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos/ncp_ftd.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_CC2652R7/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>

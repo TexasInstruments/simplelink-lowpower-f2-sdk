@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #include "erpc_framed_transport.h"
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 
 /*!
  * @addtogroup uart_simplelink
@@ -39,7 +39,6 @@ public:
     UartSimpleLinkTransport(void)
     : m_uart(NULL)
     {
-        UART_init();
     }
 
     /*!
@@ -47,7 +46,7 @@ public:
      */
     virtual ~UartSimpleLinkTransport(void)
     {
-        UART_close(m_uart);
+        UART2_close(m_uart);
     }
 
     /*!
@@ -84,7 +83,7 @@ protected:
     virtual erpc_status_t underlyingSend(const uint8_t *data, uint32_t size);
 
 private:
-    UART_Handle m_uart;         /*!< UART driver Handle */
+    UART2_Handle m_uart;         /*!< UART driver Handle */
 };
 
 } // namespace erpc

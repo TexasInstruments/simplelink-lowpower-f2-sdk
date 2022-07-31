@@ -81,9 +81,6 @@ pfnAppEventHandlerCB_t gAppCB;
 uint8_t gNumAnt = 0;
 rtlsSrv_clNumAnt_t *gClNumAnt = NULL;
 
-// Pin Handle
-PIN_Handle gPinHandle = NULL;
-
 // State of extended I/Q evet
 rtlsSrv_extIqEvtState_t gExtEvtState = {0};
 rtlsSrv_extCLIqEvtState_t gExtCLEvtState = {0};
@@ -220,67 +217,40 @@ bStatus_t RTLSSrv_setCteSampleAccuracy(uint16_t handle,
  *
  * Public function defined in rtls_srv_api.h
  */
-PIN_Handle RTLSSrv_initAntArray(uint8_t mainAntenna)
+bStatus_t RTLSSrv_initAntArray(uint8_t mainAntenna)
 {
   uint32_t enAntMask;
-  uint32_t pinCfg;
-  PIN_State pinState;
   uint8_t maskCounter = 0;
   uint32_t mainIoEntry;
-
-  // If we already have a handle, just return it
-  if (gPinHandle != NULL)
-  {
-    return gPinHandle;
-  }
-
-  pinCfg = PIN_TERMINATE;
 
   // Check that mainAntenna is one of the antennas configured in the board configuration
   if (mainAntenna > boardConfig.cteAntennaPropPtr->antPropTblSize)
   {
-    return NULL;
+    return FAILURE;
   }
-  else
-  {
-    mainIoEntry = boardConfig.cteAntennaPropPtr->antPropTbl[mainAntenna];
-  }
+  mainIoEntry = boardConfig.cteAntennaPropPtr->antPropTbl[mainAntenna];
 
   // Get antenna mask configured by the user
   enAntMask = boardConfig.cteAntennaPropPtr->antMask;
-
-  // Check if PIN handle already exists
-  if (gPinHandle == NULL)
-  {
-    gPinHandle = PIN_open(&pinState, &pinCfg);
-  }
 
   // Setup pins in Antenna Mask
   while (enAntMask)
   {
     if (enAntMask & 0x1)
     {
-      pinCfg = maskCounter | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-
-      if (PIN_add(gPinHandle, pinCfg) != PIN_SUCCESS)
-      {
-        PIN_close(gPinHandle);
-        return NULL;
-      }
+      GPIO_setConfig(maskCounter, GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_MED);
     }
-
     // Setup main antenna (switch relevant pins to high)
     if (mainIoEntry & 0x1)
     {
-      PIN_setOutputValue(gPinHandle, maskCounter, 1);
+      GPIO_write(maskCounter, 1);
     }
 
     maskCounter++;
     enAntMask>>=1;
     mainIoEntry>>=1;
   }
-
-  return gPinHandle;
+  return SUCCESS;
 }
 
 /*********************************************************************
@@ -484,7 +454,7 @@ bStatus_t RTLSSrv_processHciEvent(uint16_t hciEvt, uint16_t hciEvtSz, uint8_t *p
  *              translate to RTLS Services event and dispatch to user
  *              registered callback
  *
- * @param	pMsg - message to process
+ * @param   pMsg - message to process
  *
  * @return      TRUE if processed and safe to deallocate, FALSE if not processed.
  */

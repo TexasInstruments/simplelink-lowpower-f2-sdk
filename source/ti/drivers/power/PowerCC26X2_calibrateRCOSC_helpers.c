@@ -46,22 +46,22 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/aon_batmon.h)
 
-#define DDI_0_OSC_O_CTL1_LOCAL                       0x00000004             /* offset */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M     0x007C0000             /* mask */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S     18                     /* shift */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M  0x00020000             /* mask */
-#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S  17                     /* shift */
-#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M 0x00000C00    /* offset */
-#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S 10            /* shift */
+#define DDI_0_OSC_O_CTL1_LOCAL                                0x00000004 /* offset */
+#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M              0x007C0000 /* mask */
+#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S              18         /* shift */
+#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M           0x00020000 /* mask */
+#define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S           17         /* shift */
+#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M 0x00000C00 /* offset */
+#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S 10         /* shift */
 
-#define ACLK_REF_SRC_RCOSC_HF                        0     /* Use RCOSC_HF for ACLK REF */
-#define ACLK_REF_SRC_RCOSC_LF                        2     /* Use RCOSC_LF for ACLK REF */
+#define ACLK_REF_SRC_RCOSC_HF 0 /* Use RCOSC_HF for ACLK REF */
+#define ACLK_REF_SRC_RCOSC_LF 2 /* Use RCOSC_LF for ACLK REF */
 
 #if SPE_ENABLED
-#include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
+    #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
 #else
-/* Define the gateway attributes to nothing instead of ifdefs on each function */
-#define __tfm_secure_gateway_attributes__
+    /* Define the gateway attributes to nothing instead of ifdefs on each function */
+    #define __tfm_secure_gateway_attributes__
 #endif
 
 /*
@@ -69,8 +69,7 @@
  *  Update the SUBSECINC register based on measured RCOSC_LF frequency
  *  Reads measured result directly from TDC to guard againse injection
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_updateSubSecInc(bool firstLF)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_updateSubSecInc(bool firstLF)
 {
     int32_t newSubSecInc;
     uint32_t oldSubSecInc;
@@ -88,9 +87,10 @@ void PowerCC26X2_updateSubSecInc(bool firstLF)
     newSubSecInc = (45813 * tdcResult) / 256;
 
     /* Compensate HPOSC drift if HPOSC is in use */
-    if(OSC_IsHPOSCEnabled()) {
+    if (OSC_IsHPOSCEnabled())
+    {
         /* Get the HPOSC relative offset at this temperature */
-        hposcOffset = OSC_HPOSCRelativeFrequencyOffsetGet(AONBatMonTemperatureGetDegC());
+        hposcOffset    = OSC_HPOSCRelativeFrequencyOffsetGet(AONBatMonTemperatureGetDegC());
         /* Convert to RF core format */
         hposcOffsetInv = OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert(hposcOffset);
         /* Adjust SUBSECINC */
@@ -98,15 +98,17 @@ void PowerCC26X2_updateSubSecInc(bool firstLF)
     }
 
     /* Apply filter, but not for first calibration */
-    if (firstLF) {
+    if (firstLF)
+    {
         /* Don't apply filter first time, to converge faster */
         subSecInc = newSubSecInc;
     }
-    else {
+    else
+    {
         /* Read old SUBSECINC value */
         oldSubSecInc = HWREG(AON_RTC_BASE + AON_RTC_O_SUBSECINC) & 0x00FFFFFF;
         /* Apply filter, 0.5 times old value, 0.5 times new value */
-        subSecInc = (oldSubSecInc * 1 + newSubSecInc * 1) / 2;
+        subSecInc    = (oldSubSecInc * 1 + newSubSecInc * 1) / 2;
     }
 
     /* Update SUBSECINC values */
@@ -120,138 +122,116 @@ void PowerCC26X2_updateSubSecInc(bool firstLF)
 /*
  *  ======== PowerCC26X2_readCtrim ========
  */
-__tfm_secure_gateway_attributes__
-int32_t PowerCC26X2_readCtrim(void)
+__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrim(void)
 {
-    return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL) &
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M) >>
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S;
+    return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL) & DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M) >>
+           DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S;
 }
 
 /*
  *  ======== PowerCC26X2_readCtrimFract ========
  */
-__tfm_secure_gateway_attributes__
-int32_t PowerCC26X2_readCtrimFract(void)
+__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrimFract(void)
 {
-    return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL) &
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M) >>
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S;
+    return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL) & DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M) >>
+           DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S;
 }
 
 /*
  *  ======== PowerCC26X2_readRtrim ========
  */
-__tfm_secure_gateway_attributes__
-int32_t PowerCC26X2_readRtrim(void)
+__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readRtrim(void)
 {
     return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL) &
-        DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M) >>
-        DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S;
+            DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M) >>
+           DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S;
 }
 
 /*
  *  ======== PowerCC26X2_writeCtrim ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_writeCtrim(int32_t newValue)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrim(int32_t newValue)
 {
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL,
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M,
-        DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S,
-        newValue
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_RCOSCHFCTL,
+                       DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M,
+                       DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S,
+                       newValue);
 }
 
 /*
  *  ======== PowerCC26X2_writeCtrimFract ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_writeCtrimFract(int32_t newValue)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFract(int32_t newValue)
 {
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL,
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M,
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S,
-        newValue
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_CTL1_LOCAL,
+                       DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M,
+                       DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S,
+                       newValue);
 }
 
 /*
  *  ======== PowerCC26X2_writeCtrimFractEn ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_writeCtrimFractEn(int32_t newValue)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFractEn(int32_t newValue)
 {
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL,
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M,
-        DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S,
-        newValue
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_CTL1_LOCAL,
+                       DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M,
+                       DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S,
+                       newValue);
 }
 
 /*
  *  ======== PowerCC26X2_writeRtrim ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_writeRtrim(int32_t newValue)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_writeRtrim(int32_t newValue)
 {
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL,
-        DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M,
-        DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S,
-        newValue
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_ATESTCTL,
+                       DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M,
+                       DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S,
+                       newValue);
 }
 
 /*
  *  ======== PowerCC26X2_setTdcClkSrc24M ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_setTdcClkSrc24M(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setTdcClkSrc24M(void)
 {
     /* set TDC_SRC clock to be XOSC_HF/2 = 24 MHz */
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE,
-        DDI_0_OSC_O_CTL0,
-        DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
-        DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S,
-        2
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_CTL0,
+                       DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
+                       DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S,
+                       2);
 
     /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
-    DDI16BitfieldRead(
-        AUX_DDI0_OSC_BASE,
-        DDI_0_OSC_O_CTL0,
-        DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
-        DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S
-    );
+    DDI16BitfieldRead(AUX_DDI0_OSC_BASE,
+                      DDI_0_OSC_O_CTL0,
+                      DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M,
+                      DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_S);
 }
 
 /*
  *  ======== PowerCC26X2_setAclkRefSrc ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_setAclkRefSrc(uint32_t source)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setAclkRefSrc(uint32_t source)
 {
-    if (source == ACLK_REF_SRC_RCOSC_HF || source == ACLK_REF_SRC_RCOSC_LF) {
+    if (source == ACLK_REF_SRC_RCOSC_HF || source == ACLK_REF_SRC_RCOSC_LF)
+    {
         /* set the ACLK reference clock */
-            DDI16BitfieldWrite(
-                AUX_DDI0_OSC_BASE,
-                DDI_0_OSC_O_CTL0,
-                DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_S,
-                source
-            );
+        DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                           DDI_0_OSC_O_CTL0,
+                           DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
+                           DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_S,
+                           source);
 
-            /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
-            DDI16BitfieldRead(
-                AUX_DDI0_OSC_BASE,
-                DDI_0_OSC_O_CTL0,
-                DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
-                DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M
-            );
+        /* read back to ensure no race condition between OSC_DIG and AUX_SYSIF */
+        DDI16BitfieldRead(AUX_DDI0_OSC_BASE,
+                          DDI_0_OSC_O_CTL0,
+                          DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M,
+                          DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M);
     }
 }

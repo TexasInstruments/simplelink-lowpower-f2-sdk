@@ -51,37 +51,34 @@ extern NVS_Config NVS_config[];
 extern const uint8_t NVS_count;
 
 /* NVS function table for NVSRAM implementation */
-const NVS_FxnTable NVSRAM_fxnTable = {
-    NVSRAM_close,
-    NVSRAM_control,
-    NVSRAM_erase,
-    NVSRAM_getAttrs,
-    NVSRAM_init,
-    NVSRAM_lock,
-    NVSRAM_open,
-    NVSRAM_read,
-    NVSRAM_unlock,
-    NVSRAM_write
-};
+const NVS_FxnTable NVSRAM_fxnTable = {NVSRAM_close,
+                                      NVSRAM_control,
+                                      NVSRAM_erase,
+                                      NVSRAM_getAttrs,
+                                      NVSRAM_init,
+                                      NVSRAM_lock,
+                                      NVSRAM_open,
+                                      NVSRAM_read,
+                                      NVSRAM_unlock,
+                                      NVSRAM_write};
 
 /*
  *  Semaphore to synchronize access to the region.
  */
-static SemaphoreP_Handle  writeSem;
+static SemaphoreP_Handle writeSem;
 
 /*
  *  ======== NVSRAM_close ========
  */
 void NVSRAM_close(NVS_Handle handle)
 {
-    ((NVSRAM_Object *) handle->object)->isOpen = false;
+    ((NVSRAM_Object *)handle->object)->isOpen = false;
 }
 
 /*
  *  ======== NVSRAM_control ========
  */
-int_fast16_t NVSRAM_control(NVS_Handle handle, uint_fast16_t cmd,
-    uintptr_t arg)
+int_fast16_t NVSRAM_control(NVS_Handle handle, uint_fast16_t cmd, uintptr_t arg)
 {
     return (NVS_STATUS_UNDEFINEDCMD);
 }
@@ -119,7 +116,7 @@ void NVSRAM_getAttrs(NVS_Handle handle, NVS_Attrs *attrs)
  */
 void NVSRAM_init(void)
 {
-    uintptr_t         key;
+    uintptr_t key;
     SemaphoreP_Handle sem;
 
     /* speculatively create a binary semaphore for thread safety */
@@ -128,17 +125,20 @@ void NVSRAM_init(void)
 
     key = HwiP_disable();
 
-    if (writeSem == NULL) {
+    if (writeSem == NULL)
+    {
         /* use the binary sem created above */
         writeSem = sem;
         HwiP_restore(key);
     }
-    else {
+    else
+    {
         /* init already called */
         HwiP_restore(key);
 
         /* delete unused Semaphore */
-        if (sem) {
+        if (sem)
+        {
             SemaphoreP_delete(sem);
         }
     }
@@ -149,7 +149,8 @@ void NVSRAM_init(void)
  */
 int_fast16_t NVSRAM_lock(NVS_Handle handle, uint32_t timeout)
 {
-    if (SemaphoreP_pend(writeSem, timeout) != SemaphoreP_OK) {
+    if (SemaphoreP_pend(writeSem, timeout) != SemaphoreP_OK)
+    {
         return (NVS_STATUS_TIMEOUT);
     }
     return (NVS_STATUS_SUCCESS);
@@ -160,25 +161,28 @@ int_fast16_t NVSRAM_lock(NVS_Handle handle, uint32_t timeout)
  */
 NVS_Handle NVSRAM_open(uint_least8_t index, NVS_Params *params)
 {
-    NVS_Handle            handle;
-    NVSRAM_Object        *object;
+    NVS_Handle handle;
+    NVSRAM_Object *object;
     NVSRAM_HWAttrs const *hwAttrs;
 
     /* Confirm that 'init' has successfully completed */
-    if (writeSem == NULL) {
+    if (writeSem == NULL)
+    {
         NVSRAM_init();
-        if (writeSem == NULL) {
+        if (writeSem == NULL)
+        {
             return (NULL);
         }
     }
 
     /* verify NVS region index */
-    if (index >= NVS_count) {
+    if (index >= NVS_count)
+    {
         return (NULL);
     }
 
-    handle = &NVS_config[index];
-    object = NVS_config[index].object;
+    handle  = &NVS_config[index];
+    object  = NVS_config[index].object;
     hwAttrs = NVS_config[index].hwAttrs;
 
     /* for efficient argument checking */
@@ -186,29 +190,32 @@ NVS_Handle NVSRAM_open(uint_least8_t index, NVS_Params *params)
 
     SemaphoreP_pend(writeSem, SemaphoreP_WAIT_FOREVER);
 
-    if (object->isOpen) {
+    if (object->isOpen)
+    {
         SemaphoreP_post(writeSem);
 
         return (NULL);
     }
 
     /* The regionBase must be aligned on a page boundary */
-    if ((size_t) (hwAttrs->regionBase) & (hwAttrs->sectorSize - 1)) {
+    if ((size_t)(hwAttrs->regionBase) & (hwAttrs->sectorSize - 1))
+    {
         SemaphoreP_post(writeSem);
 
         return (NULL);
     }
 
     /* The region cannot be smaller than a sector size */
-    if (hwAttrs->regionSize < hwAttrs->sectorSize) {
+    if (hwAttrs->regionSize < hwAttrs->sectorSize)
+    {
         SemaphoreP_post(writeSem);
 
         return (NULL);
     }
 
     /* The region size must be a multiple of sector size */
-    if (hwAttrs->regionSize !=
-        (hwAttrs->regionSize & object->sectorBaseMask)) {
+    if (hwAttrs->regionSize != (hwAttrs->regionSize & object->sectorBaseMask))
+    {
         SemaphoreP_post(writeSem);
         return (NULL);
     }
@@ -223,13 +230,13 @@ NVS_Handle NVSRAM_open(uint_least8_t index, NVS_Params *params)
 /*
  *  ======== NVSRAM_read =======
  */
-int_fast16_t NVSRAM_read(NVS_Handle handle, size_t offset, void *buffer,
-    size_t bufferSize)
+int_fast16_t NVSRAM_read(NVS_Handle handle, size_t offset, void *buffer, size_t bufferSize)
 {
     NVSRAM_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* Validate offset and bufferSize */
-    if (offset + bufferSize > hwAttrs->regionSize) {
+    if (offset + bufferSize > hwAttrs->regionSize)
+    {
         return (NVS_STATUS_INV_OFFSET);
     }
 
@@ -257,19 +264,19 @@ void NVSRAM_unlock(NVS_Handle handle)
 /*
  *  ======== NVSRAM_write =======
  */
-int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer,
-    size_t bufferSize, uint_fast16_t flags)
+int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer, size_t bufferSize, uint_fast16_t flags)
 {
-    size_t                i;
-    uint8_t              *dstBuf;
-    uint8_t              *srcBuf;
-    int_fast16_t          result;
-    size_t                size;
-    NVSRAM_Object        *object = handle->object;
+    size_t i;
+    uint8_t *dstBuf;
+    uint8_t *srcBuf;
+    int_fast16_t result;
+    size_t size;
+    NVSRAM_Object *object         = handle->object;
     NVSRAM_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* Validate offset and bufferSize */
-    if (offset + bufferSize > hwAttrs->regionSize) {
+    if (offset + bufferSize > hwAttrs->regionSize)
+    {
         return (NVS_STATUS_INV_OFFSET);
     }
 
@@ -277,20 +284,24 @@ int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer,
     SemaphoreP_pend(writeSem, SemaphoreP_WAIT_FOREVER);
 
     /* If erase is set, erase destination sector(s) first */
-    if (flags & NVS_WRITE_ERASE) {
+    if (flags & NVS_WRITE_ERASE)
+    {
         size = bufferSize & object->sectorBaseMask;
-        if (bufferSize & (~object->sectorBaseMask)) {
+        if (bufferSize & (~object->sectorBaseMask))
+        {
             size += hwAttrs->sectorSize;
         }
 
         result = doErase(handle, offset & object->sectorBaseMask, size);
-        if (result != NVS_STATUS_SUCCESS) {
+        if (result != NVS_STATUS_SUCCESS)
+        {
             SemaphoreP_post(writeSem);
 
             return (result);
         }
     }
-    else if (flags & NVS_WRITE_PRE_VERIFY) {
+    else if (flags & NVS_WRITE_PRE_VERIFY)
+    {
         /*
          *  If pre-verify, each destination byte must be able to be changed to the
          *  source byte (1s to 0s, not 0s to 1s).
@@ -299,8 +310,10 @@ int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer,
          */
         dstBuf = (uint8_t *)((uint32_t)(hwAttrs->regionBase) + offset);
         srcBuf = buffer;
-        for (i = 0; i < bufferSize; i++) {
-            if (srcBuf[i] != (srcBuf[i] & dstBuf[i])) {
+        for (i = 0; i < bufferSize; i++)
+        {
+            if (srcBuf[i] != (srcBuf[i] & dstBuf[i]))
+            {
                 SemaphoreP_post(writeSem);
                 return (NVS_STATUS_INV_WRITE);
             }
@@ -309,7 +322,7 @@ int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer,
 
     dstBuf = (uint8_t *)((uint32_t)(hwAttrs->regionBase) + offset);
     srcBuf = buffer;
-    memcpy((void *) dstBuf, (void *) srcBuf, bufferSize);
+    memcpy((void *)dstBuf, (void *)srcBuf, bufferSize);
 
     SemaphoreP_post(writeSem);
 
@@ -321,25 +334,29 @@ int_fast16_t NVSRAM_write(NVS_Handle handle, size_t offset, void *buffer,
  */
 static int_fast16_t checkEraseRange(NVS_Handle handle, size_t offset, size_t size)
 {
-    NVSRAM_Object        *object = handle->object;
+    NVSRAM_Object *object         = handle->object;
     NVSRAM_HWAttrs const *hwAttrs = handle->hwAttrs;
 
-    if (offset != (offset & object->sectorBaseMask)) {
+    if (offset != (offset & object->sectorBaseMask))
+    {
         /* poorly aligned start address */
         return (NVS_STATUS_INV_ALIGNMENT);
     }
 
-    if (offset >= hwAttrs->regionSize) {
+    if (offset >= hwAttrs->regionSize)
+    {
         /* offset is past end of region */
         return (NVS_STATUS_INV_OFFSET);
     }
 
-    if (offset + size > hwAttrs->regionSize) {
+    if (offset + size > hwAttrs->regionSize)
+    {
         /* size is too big */
         return (NVS_STATUS_INV_SIZE);
     }
 
-    if (size != (size & object->sectorBaseMask)) {
+    if (size != (size & object->sectorBaseMask))
+    {
         /* size is not a multiple of sector size */
         return (NVS_STATUS_INV_SIZE);
     }
@@ -352,17 +369,18 @@ static int_fast16_t checkEraseRange(NVS_Handle handle, size_t offset, size_t siz
  */
 static int_fast16_t doErase(NVS_Handle handle, size_t offset, size_t size)
 {
-    void *                sectorBase;
-    int_fast16_t          rangeStatus;
+    void *sectorBase;
+    int_fast16_t rangeStatus;
     NVSRAM_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* sanity test the erase args */
     rangeStatus = checkEraseRange(handle, offset, size);
-    if (rangeStatus != NVS_STATUS_SUCCESS) {
+    if (rangeStatus != NVS_STATUS_SUCCESS)
+    {
         return (rangeStatus);
     }
 
-    sectorBase = (void *) ((uint32_t) hwAttrs->regionBase + offset);
+    sectorBase = (void *)((uint32_t)hwAttrs->regionBase + offset);
 
     memset(sectorBase, 0xFF, size);
 

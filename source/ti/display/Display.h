@@ -68,38 +68,38 @@
  *  @code
  *  // Import Display Driver definitions
  *  #include <ti/display/Display.h>
- *  
+ *
  *  // Initialize optional Display parameters
  *  Display_Handle    handle;
  *  Display_Params    params;
  *  Display_Params_init(&params);
- *  
+ *
  *  // Open Display implementation
  *  handle = Display_open(Display_Type_HOST, &params);
 
- *  
+ *
  *  // Output to Display
  *  Display_printf(handle, 0, 0, "Hello World");
- *  
+ *
  *  Display_close(handle);
  *  @endcode
- *  
+ *
  *  <hr>
  *  @anchor ti_drivers_Display_Examples
  *  # Examples
- *  
+ *
  *  @li @ref ti_drivers_Display_Examples_open "Opening a Display instance"
  *  @li @ref ti_drivers_Display_Examples_float "Floating point support"
  *  @li @ref ti_drivers_Display_Examples_host "Configuring Host Display"
  *  @li @ref ti_drivers_Display_Examples_lcd "Configuring a graphical Display"
- * 
+ *
  *  @anchor ti_drivers_Display_Examples_open
  *  ## Opening a Display instance
- *  
+ *
  *  @code
  *  Display_Handle    handle;
  *  Display_Params    params;
- *  
+ *
  *  Display_Params_init(&params);
  *  display = Display_open(Display_Type_HOST, &params);
  *  if (display == NULL) {
@@ -107,20 +107,20 @@
  *      while(1);
  *  }
  *  @endcode
- *  
+ *
  *  @anchor ti_drivers_Display_Examples_float
  *  ## Adding floating point
- *  
+ *
  *  @code
  *  // Note that for floating point support, the .cfg file must have a line like
  *  // System.extendedFormats = "%$L%$S%$F%f"; // Add '%f' support
  *  Display_printf(handle, 3, 0, "Pi is %f", 3.1415);
  *  Display_close(handle);
  *  @endcode
- *  
+ *
  *  @anchor ti_drivers_Display_Examples_host
  *  ## Configuring the HOST Display
- *  
+ *
  *  @code
  *  #include <ti/display/Display.h>
  *  #include <ti/display/DisplayHost.h>
@@ -145,10 +145,10 @@
  *
  *  const uint8_t Display_count = sizeof(Display_config) / sizeof(Display_Config);
  *  @endcode
- *  
+ *
  *  @anchor ti_drivers_Display_Examples_lcd
  *  ## Configuring graphical display
- *  
+ *
  *  @code
  *  Display_Handle    handle;
  *  Display_Params    params;
@@ -158,8 +158,8 @@
  *  if (NULL == handle)
  *     handle = Display_open(Display_Type_UART, &params);
  *  @endcode
- *  
- *  
+ *
+ *
  *## Opening the driver #
  *
  *  Because the Display driver serves as an abstraction, it is possible to
@@ -257,19 +257,19 @@ extern "C" {
  * Display types that can be used when opening the display interface, to open
  * only specific types of interfaces. Can be combined with bitwise-OR.
  */
-#define Display_Type_ANY      0xFFFFFFFF   /*!< All available displays       */
-#define Display_Type_INVALID  0x00000000   /*!< Invalid type                 */
-#define Display_Type_LCD      0x80000000   /*!< All LCD displays             */
-#define Display_Type_UART     0x40000000   /*!< All UART virtual displays    */
-#define Display_Type_LOG      0x20000000   /*!< All xdc.runtime.Log displays */
-#define Display_Type_ITM      0x10000000   /*!< All ARM ITM displays         */
-#define Display_Type_HOST     0x08000000   /*!< All displays using Host      */
-#define Display_Type_ANSI     0x04000000   /*!< All displays accepting ANSI  */
-#define Display_Type_GRLIB    0x00100000   /*!< All displays using GrLib     */
+#define Display_Type_ANY     0xFFFFFFFF /*!< All available displays       */
+#define Display_Type_INVALID 0x00000000 /*!< Invalid type                 */
+#define Display_Type_LCD     0x80000000 /*!< All LCD displays             */
+#define Display_Type_UART    0x40000000 /*!< All UART virtual displays    */
+#define Display_Type_LOG     0x20000000 /*!< All xdc.runtime.Log displays */
+#define Display_Type_ITM     0x10000000 /*!< All ARM ITM displays         */
+#define Display_Type_HOST    0x08000000 /*!< All displays using Host      */
+#define Display_Type_ANSI    0x04000000 /*!< All displays accepting ANSI  */
+#define Display_Type_GRLIB   0x00100000 /*!< All displays using GrLib     */
 /** @}*/
 
 /*! Max allowed displays. Any index value above this is a meta-type index. */
-#define Display_MAXINDEX    15
+#define Display_MAXINDEX 15
 
 /**
  *  @defgroup DISPLAY_CONTROL Display_control command and status codes
@@ -288,7 +288,7 @@ extern "C" {
  * #define DISPLAYXYZ_CMD_COMMAND1     DISPLAY_CMD_RESERVED + 1
  * @endcode
  */
-#define DISPLAY_CMD_RESERVED            32
+#define DISPLAY_CMD_RESERVED 32
 
 /*!
  * Common Display_control status code reservation offset.
@@ -302,7 +302,7 @@ extern "C" {
  * #define DISPLAYXYZ_STATUS_ERROR2    DISPLAY_STATUS_RESERVED - 2
  * @endcode
  */
-#define DISPLAY_STATUS_RESERVED        -32
+#define DISPLAY_STATUS_RESERVED -32
 
 /**
  *  @defgroup DISPLAY_STATUS Status Codes
@@ -317,7 +317,7 @@ extern "C" {
  * Display_control() returns DISPLAY_STATUS_SUCCESS if the control code was
  * executed successfully.
  */
-#define DISPLAY_STATUS_SUCCESS         0
+#define DISPLAY_STATUS_SUCCESS 0
 
 /*!
  * @brief   Generic error status code returned by Display_control().
@@ -325,7 +325,7 @@ extern "C" {
  * Display_control() returns DISPLAY_STATUS_ERROR if the control code was not
  * executed successfully.
  */
-#define DISPLAY_STATUS_ERROR          -1
+#define DISPLAY_STATUS_ERROR -1
 
 /*!
  * @brief   An error status code returned by Display_control() for undefined
@@ -334,7 +334,7 @@ extern "C" {
  * Display_control() returns DISPLAY_STATUS_UNDEFINEDCMD if the control code is
  * not recognized by the driver implementation.
  */
-#define DISPLAY_STATUS_UNDEFINEDCMD   -2
+#define DISPLAY_STATUS_UNDEFINEDCMD -2
 /** @}*/
 
 /**
@@ -355,7 +355,7 @@ extern "C" {
  *
  * With this command @b arg is @a don't @a care.
  */
-#define DISPLAY_CMD_TRANSPORT_CLOSE  0
+#define DISPLAY_CMD_TRANSPORT_CLOSE 0
 
 /*!
  * @brief Command used by Display_control() to resume control of its transport
@@ -365,7 +365,7 @@ extern "C" {
  *
  * With this command @b arg is @a don't @a care.
  */
-#define DISPLAY_CMD_TRANSPORT_OPEN   1
+#define DISPLAY_CMD_TRANSPORT_OPEN 1
 /** @}*/
 
 /** @}*/
@@ -374,91 +374,78 @@ extern "C" {
  *                                          Macros
  * ------------------------------------------------------------------------------
  */
-#define Display_clearLine(handle, n)    Display_clearLines(handle, n, 0)
-#define Display_isIndex(i)              (i <= Display_MAXINDEX)
-#define Display_isMetaType(i)           (i > Display_MAXINDEX)
+#define Display_clearLine(handle, n) Display_clearLines(handle, n, 0)
+#define Display_isIndex(i)           (i <= Display_MAXINDEX)
+#define Display_isMetaType(i)        (i > Display_MAXINDEX)
 
 #if !defined(Display_DISABLE_ALL) || (!Display_DISABLE_ALL)
 
-/*! Initializes the Display driver. \see Display_doInit() */
-#  define Display_init() \
-    Display_doInit()
+    /*! Initializes the Display driver. \see Display_doInit() */
+    #define Display_init() Display_doInit()
 
-/*! Open selected display id or the first display of type. \see Display_doOpen() */
-#  define Display_open(id, params) \
-    Display_doOpen(id, params)
+    /*! Open selected display id or the first display of type. \see Display_doOpen() */
+    #define Display_open(id, params) Display_doOpen(id, params)
 
-/*! Initialize default parameters. \see Display_doParamsInit() */
-#  define Display_Params_init(params) \
-    Display_doParamsInit(params)
+    /*! Initialize default parameters. \see Display_doParamsInit() */
+    #define Display_Params_init(params) Display_doParamsInit(params)
 
-/*! Clear display \see Display_doClear() */
-#  define Display_clear(handle) \
-    Display_doClear(handle)
+    /*! Clear display \see Display_doClear() */
+    #define Display_clear(handle) Display_doClear(handle)
 
-/*! Clear lines in display \see Display_doClearLines() */
-#  define Display_clearLines(handle, fromLine, toLine) \
-    Display_doClearLines(handle, fromLine, toLine)
+    /*! Clear lines in display \see Display_doClearLines() */
+    #define Display_clearLines(handle, fromLine, toLine) Display_doClearLines(handle, fromLine, toLine)
 
-/*! Output string fmt with variable arguments to display \see Display_doPrintf() */
-#  define Display_printf Display_doPrintf
+    /*! Output string fmt with variable arguments to display \see Display_doPrintf() */
+    #define Display_printf Display_doPrintf
 
-/*! Output string fmt with 0 arguments to display \see Display_doPrintf() */
-#  define Display_print0(handle, line, col, fmt) \
-    Display_printf(handle, line, col, fmt)
+    /*! Output string fmt with 0 arguments to display \see Display_doPrintf() */
+    #define Display_print0(handle, line, col, fmt) Display_printf(handle, line, col, fmt)
 
-/*! Output string fmt with 1 argument to display \see Display_doPrintf() */
-#  define Display_print1(handle, line, col, fmt, a0) \
-    Display_printf(handle, line, col, fmt, a0)
+    /*! Output string fmt with 1 argument to display \see Display_doPrintf() */
+    #define Display_print1(handle, line, col, fmt, a0) Display_printf(handle, line, col, fmt, a0)
 
-/*! Output string fmt with 2 arguments to display \see Display_doPrintf() */
-#  define Display_print2(handle, line, col, fmt, a0, a1) \
-    Display_printf(handle, line, col, fmt, a0, a1)
+    /*! Output string fmt with 2 arguments to display \see Display_doPrintf() */
+    #define Display_print2(handle, line, col, fmt, a0, a1) Display_printf(handle, line, col, fmt, a0, a1)
 
-/*! Output string fmt with 3 arguments to display \see Display_doPrintf() */
-#  define Display_print3(handle, line, col, fmt, a0, a1, a2) \
-    Display_printf(handle, line, col, fmt, a0, a1, a2)
+    /*! Output string fmt with 3 arguments to display \see Display_doPrintf() */
+    #define Display_print3(handle, line, col, fmt, a0, a1, a2) Display_printf(handle, line, col, fmt, a0, a1, a2)
 
-/*! Output string fmt with 4 arguments to display \see Display_doPrintf() */
-#  define Display_print4(handle, line, col, fmt, a0, a1, a2, a3) \
-    Display_printf(handle, line, col, fmt, a0, a1, a2, a3)
+    /*! Output string fmt with 4 arguments to display \see Display_doPrintf() */
+    #define Display_print4(handle, line, col, fmt, a0, a1, a2, a3) \
+        Display_printf(handle, line, col, fmt, a0, a1, a2, a3)
 
-/*! Output string fmt with 5 arguments to display \see Display_doPrintf() */
-#  define Display_print5(handle, line, col, fmt, a0, a1, a2, a3, a4) \
-    Display_printf(handle, line, col, fmt, a0, a1, a2, a3, a4)
+    /*! Output string fmt with 5 arguments to display \see Display_doPrintf() */
+    #define Display_print5(handle, line, col, fmt, a0, a1, a2, a3, a4) \
+        Display_printf(handle, line, col, fmt, a0, a1, a2, a3, a4)
 
-/*! Output string fmt with argument list \see Display_doVprintf() */
-#  define Display_vprintf(handle, line, col, fmt, va) \
-    Display_doVprintf(handle, line, col, fmt, va)
+    /*! Output string fmt with argument list \see Display_doVprintf() */
+    #define Display_vprintf(handle, line, col, fmt, va) Display_doVprintf(handle, line, col, fmt, va)
 
-/*! Get type of display */
-#  define Display_getType(handle) \
-    Display_doGetType(handle)
+    /*! Get type of display */
+    #define Display_getType(handle) Display_doGetType(handle)
 
-/*! Control a specific Display driver \see Display_doControl() */
-#  define Display_control(handle, cmd, arg) \
-    Display_doControl(handle, cmd, arg)
+    /*! Control a specific Display driver \see Display_doControl() */
+    #define Display_control(handle, cmd, arg) Display_doControl(handle, cmd, arg)
 
-/*! Close display \see Display_doClose() */
-#  define Display_close(handle) \
-    Display_doClose(handle)
+    /*! Close display \see Display_doClose() */
+    #define Display_close(handle) Display_doClose(handle)
 #else
-#  define Display_init()
-#  define Display_open(id, params)    NULL
-#  define Display_Params_init(params)
-#  define Display_clear(handle)
-#  define Display_clearLines(handle, fromLine, toLine)
-#  define Display_printf(handle, line, col, fmt, ...)
-#  define Display_print0(handle, line, col, fmt)
-#  define Display_print1(handle, line, col, fmt, a0)
-#  define Display_print2(handle, line, col, fmt, a0, a1)
-#  define Display_print3(handle, line, col, fmt, a0, a1, a2)
-#  define Display_print4(handle, line, col, fmt, a0, a1, a2, a3)
-#  define Display_print5(handle, line, col, fmt, a0, a1, a2, a3, a4)
-#  define Display_vprintf(handle, line, col, fmt, va)
-#  define Display_getType(handle) Display_Type_INVALID
-#  define Display_control(handle, cmd, arg) (DISPLAY_STATUS_UNDEFINEDCMD)
-#  define Display_close(handle)
+    #define Display_init()
+    #define Display_open(id, params) NULL
+    #define Display_Params_init(params)
+    #define Display_clear(handle)
+    #define Display_clearLines(handle, fromLine, toLine)
+    #define Display_printf(handle, line, col, fmt, ...)
+    #define Display_print0(handle, line, col, fmt)
+    #define Display_print1(handle, line, col, fmt, a0)
+    #define Display_print2(handle, line, col, fmt, a0, a1)
+    #define Display_print3(handle, line, col, fmt, a0, a1, a2)
+    #define Display_print4(handle, line, col, fmt, a0, a1, a2, a3)
+    #define Display_print5(handle, line, col, fmt, a0, a1, a2, a3, a4)
+    #define Display_vprintf(handle, line, col, fmt, va)
+    #define Display_getType(handle)           Display_Type_INVALID
+    #define Display_control(handle, cmd, arg) (DISPLAY_STATUS_UNDEFINEDCMD)
+    #define Display_close(handle)
 #endif
 
 /* -----------------------------------------------------------------------------
@@ -468,7 +455,7 @@ extern "C" {
 /*!
  *  @brief      A handle for specific Display implementations.
  */
-typedef struct Display_Config * Display_Handle;
+typedef struct Display_Config *Display_Handle;
 
 /*!
  *  @brief      A function pointer to a specific implementation of
@@ -481,10 +468,10 @@ typedef void (*Display_initFxn)(Display_Handle handle);
  */
 typedef enum Display_LineClearMode
 {
-    DISPLAY_CLEAR_NONE = 0,   /*!< Do not clear anything before writing      */
-    DISPLAY_CLEAR_LEFT,       /*!< Clear pixels to left of text on the line  */
-    DISPLAY_CLEAR_RIGHT,      /*!< Clear pixels to right of text on the line */
-    DISPLAY_CLEAR_BOTH        /*!< Clear pixels on both sides of text        */
+    DISPLAY_CLEAR_NONE = 0, /*!< Do not clear anything before writing      */
+    DISPLAY_CLEAR_LEFT,     /*!< Clear pixels to left of text on the line  */
+    DISPLAY_CLEAR_RIGHT,    /*!< Clear pixels to right of text on the line */
+    DISPLAY_CLEAR_BOTH      /*!< Clear pixels on both sides of text        */
 } Display_LineClearMode;
 
 /*!
@@ -497,15 +484,14 @@ typedef enum Display_LineClearMode
  */
 typedef struct Display_Params
 {
-    Display_LineClearMode lineClearMode;  /* Default clear entire line */
+    Display_LineClearMode lineClearMode; /* Default clear entire line */
 } Display_Params;
 
 /*!
  *  @brief      A function pointer to a specific implementation of
  *              Display_open().
  */
-typedef Display_Handle (*Display_openFxn)(Display_Handle handle,
-                                          Display_Params *params);
+typedef Display_Handle (*Display_openFxn)(Display_Handle handle, Display_Params *params);
 /*!
  *  @brief      A function pointer to a specific implementation of
  *              Display_clear().
@@ -516,19 +502,13 @@ typedef void (*Display_clearFxn)(Display_Handle handle);
  *  @brief      A function pointer to a specific implementation of
  *              Display_clearLines().
  */
-typedef void (*Display_clearLinesFxn)(Display_Handle handle,
-                                      uint8_t fromLine,
-                                      uint8_t toLine);
+typedef void (*Display_clearLinesFxn)(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
 
 /*!
  *  @brief      A function pointer to a specific implementation of
  *              Display_vprintf().
  */
-typedef void (*Display_vprintfFxn)(Display_Handle handle,
-                                   uint8_t line,
-                                   uint8_t column,
-                                   const char *fmt,
-                                   va_list va);
+typedef void (*Display_vprintfFxn)(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 
 /*!
  *  @brief      A function pointer to a specific implementation of
@@ -540,9 +520,7 @@ typedef void (*Display_closeFxn)(Display_Handle handle);
  *  @brief      A function pointer to a driver specific implementation of
  *              Display_control().
  */
-typedef int (*Display_controlFxn)(Display_Handle handle,
-                                  unsigned int cmd,
-                                  void *arg);
+typedef int (*Display_controlFxn)(Display_Handle handle, unsigned int cmd, void *arg);
 /*!
  *  @brief      A function pointer to a specific implementation of
  *              Display_getType().
@@ -556,14 +534,14 @@ typedef unsigned int (*Display_getTypeFxn)(void);
  */
 typedef struct Display_FxnTable
 {
-    Display_initFxn       initFxn;
-    Display_openFxn       openFxn;
-    Display_clearFxn      clearFxn;
+    Display_initFxn initFxn;
+    Display_openFxn openFxn;
+    Display_clearFxn clearFxn;
     Display_clearLinesFxn clearLinesFxn;
-    Display_vprintfFxn    vprintfFxn;
-    Display_closeFxn      closeFxn;
-    Display_controlFxn    controlFxn;
-    Display_getTypeFxn    getTypeFxn;
+    Display_vprintfFxn vprintfFxn;
+    Display_closeFxn closeFxn;
+    Display_controlFxn controlFxn;
+    Display_getTypeFxn getTypeFxn;
 } Display_FxnTable;
 
 /*!
@@ -583,12 +561,11 @@ typedef struct Display_Config
     Display_FxnTable const *fxnTablePtr;
 
     /*! Pointer to a driver specific data object */
-    void                   *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void const             *hwAttrs;
+    void const *hwAttrs;
 } Display_Config;
-
 
 /* -----------------------------------------------------------------------------
  *                                          Functions
@@ -624,7 +601,7 @@ typedef struct Display_Config
  * @sa          Display_doInit()
  * @sa          Display_doClose()
  */
-Display_Handle  Display_doOpen(uint32_t id, Display_Params *params);
+Display_Handle Display_doOpen(uint32_t id, Display_Params *params);
 
 /*!
  * @brief       Initializes parameter structure with default parameters.
@@ -642,7 +619,7 @@ void Display_doParamsInit(Display_Params *params);
  *
  * @return      void
  */
-void  Display_doClear(Display_Handle handle);
+void Display_doClear(Display_Handle handle);
 
 /*!
  * @brief       Calls the clearLines fxn of all opened Display implementations
@@ -653,7 +630,7 @@ void  Display_doClear(Display_Handle handle);
  *
  * @return      void
  */
-void  Display_doClearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
+void Display_doClearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
 
 /*!
  * @brief       Calls the output function of all opened Display implementations
@@ -666,8 +643,7 @@ void  Display_doClearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLi
  *
  * @return      void
  */
-void  Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column,
-                       const char *fmt, ...);
+void Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, ...);
 
 /*!
  * @brief       Calls the vfprintf function of all opened Display implementations
@@ -680,15 +656,14 @@ void  Display_doPrintf(Display_Handle handle, uint8_t line, uint8_t column,
  *
  * @return      void
  */
-void  Display_doVprintf(Display_Handle handle, uint8_t line, uint8_t column,
-                       const char *fmt, va_list va);
+void Display_doVprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 
 /*!
  * @brief       Closes selected Display implementations
  *
  * @return      void
  */
-void  Display_doClose(Display_Handle handle);
+void Display_doClose(Display_Handle handle);
 
 /*!
  * @brief       Gets the type of display for the handle.
@@ -696,7 +671,7 @@ void  Display_doClose(Display_Handle handle);
  *
  * @return      uint32_t representing Display_Type_Xxxx
  */
-uint32_t  Display_doGetType(Display_Handle handle);
+uint32_t Display_doGetType(Display_Handle handle);
 
 /*!
  *  @brief  Function performs implementation specific features on a given
@@ -748,4 +723,4 @@ void Display_doInit(void);
 }
 #endif
 
-#endif //ti_display_Display__include
+#endif // ti_display_Display__include

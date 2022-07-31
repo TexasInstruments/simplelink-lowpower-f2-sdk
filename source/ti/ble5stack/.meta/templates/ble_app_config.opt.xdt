@@ -126,29 +126,24 @@ const LPName = rfDesign.rfDesign;
 %
 % if(ccfg.srcClkLF == "LF RCOSC" || ble.useRcosc)
 % {
-
 -DUSE_RCOSC
 % }
 %
 % if(ccfg.disableCache)
 % {
-
 -DCACHE_AS_RAM
 % }
 %
-
 % if(ble.uartLog)
 % {
 -DUARTLOG_ENABLE
 % }
-
 % if(ble.ptm)
 % {
 -DPTM_MODE
 % }
 % if (_.isEqual(ble.deviceRole, "PERIPHERAL_CFG"))
 % {
-
 -DNPI_USE_UART
 % }
 %
@@ -156,7 +151,6 @@ const LPName = rfDesign.rfDesign;
 % {
 -DNPI_FLOW_CTRL=`ble.flowControl == "0" ? 0 : 1`
 % }
-
 %
 % if(ble.icallEvents)
 % {
@@ -194,7 +188,6 @@ const LPName = rfDesign.rfDesign;
 % {
 -DUSE_COEX
 % }
-
 % if(ble.ledDebug)
 % {
 -DLED_DEBUG
@@ -214,7 +207,6 @@ const LPName = rfDesign.rfDesign;
 % {
 -DOAD_BLE_SECURITY
 % }
-
 % if(ble.mesh)
 % {
 %
@@ -232,4 +224,8 @@ const LPName = rfDesign.rfDesign;
 -DOAD_SUPPORT
 -DOAD_SUPPORT_ONCHIP
 % }
+% }
+% if( (ble.deviceRole.includes("OBSERVER_CFG") || ble.deviceRole.includes("CENTRAL_CFG")) && ble.advReportChanNum )
+% {
+-DADV_RPT_INC_CHANNEL=1
 % }

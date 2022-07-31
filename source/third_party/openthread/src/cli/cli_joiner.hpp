@@ -38,57 +38,48 @@
 
 #include <openthread/joiner.h>
 
+#include "cli/cli_output.hpp"
+
 #if OPENTHREAD_CONFIG_JOINER_ENABLE
 
 namespace ot {
 namespace Cli {
 
-class Interpreter;
-
 /**
- * This class implements the CLI CoAP Secure server and client.
+ * This class implements the Joiner CLI interpreter.
  *
  */
-class Joiner
+class Joiner : private OutputWrapper
 {
 public:
+    typedef Utils::CmdLineParser::Arg Arg;
+
     /**
      * Constructor
      *
-     * @param[in]  aInterpreter  The CLI interpreter.
+     * @param[in]  aOutput The CLI console output context
      *
      */
-    explicit Joiner(Interpreter &aInterpreter)
-        : mInterpreter(aInterpreter)
+    explicit Joiner(Output &aOutput)
+        : OutputWrapper(aOutput)
     {
     }
 
     /**
      * This method interprets a list of CLI arguments.
      *
-     * @param[in]  aArgsLength  The number of elements in @p aArgs.
      * @param[in]  aArgs        A pointer to an array of command line arguments.
      *
      */
-    otError Process(uint8_t aArgsLength, char *aArgs[]);
+    otError Process(Arg aArgs[]);
 
 private:
-    struct Command
-    {
-        const char *mName;
-        otError (Joiner::*mCommand)(uint8_t aArgsLength, char *aArgs[]);
-    };
+    using Command = CommandEntry<Joiner>;
 
-    otError ProcessHelp(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessId(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStart(uint8_t aArgsLength, char *aArgs[]);
-    otError ProcessStop(uint8_t aArgsLength, char *aArgs[]);
+    template <CommandId kCommandId> otError Process(Arg aArgs[]);
 
     static void HandleCallback(otError aError, void *aContext);
     void        HandleCallback(otError aError);
-
-    static const Command sCommands[];
-    Interpreter &        mInterpreter;
 };
 
 } // namespace Cli

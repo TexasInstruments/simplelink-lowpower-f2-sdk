@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/build.dtd -->
-<package name="ti.targets" version="1, 0, 3" producerId="undefined">
+<package name="ti.targets" version="1, 0, 3" producerId="/db/ztree/library/trees/xdctargets/xdctargets-w20/src">
     <units>
         <interface name="ITarget"/>
         <module name="C28"/>
@@ -25,7 +25,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_targets.tar.dep" src="package/rel/ti_targets.xdc.inc"/>
+        <srcFile name="package/rel/ti_targets.zip.dep" src="package/rel/ti_targets.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -39,7 +39,7 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_targets"
-        pname="ti_targets.tar"
+        pname="../../../exports/ti_targets.zip"
         label="default"
         relScript="./local.rel">
         <file name="package/package.bld.xml"/>

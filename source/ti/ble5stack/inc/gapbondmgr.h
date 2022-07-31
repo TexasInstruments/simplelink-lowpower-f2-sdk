@@ -392,6 +392,18 @@ extern "C"
  */
 #define GAPBOND_AUTHEN_PAIRING_ONLY   0x41B
 
+/**
+ * The action that the device takes after receiving
+ * an IRK that is already exists in the resolving list
+ *
+ * size: uint8_t
+ *
+ * default: @ref GAPBOND_SAME_IRK_UPDATE_BOND_REC
+ *
+ * range: @ref GAPBondMgr_Identical_IRK_Action
+ */
+#define GAPBOND_SAME_IRK_OPTION       0x41C
+
 /** @} End GAPBondMgr_Params */
 
 /**
@@ -448,6 +460,16 @@ extern "C"
 /// Master Link Key
 #define GAPBOND_KEYDIST_MLINK                    0x80
 /** @} End GAPBondMgr_Key_Distr */
+
+/**
+ * @defgroup GAPBondMgr_Identical_IRK_Action
+ * @{
+ */
+/// Update the relevant bond record
+#define GAPBOND_SAME_IRK_UPDATE_BOND_REC               0x00
+/// Terminate link with HCI_DISCONNECT_AUTH_FAILURE error code
+#define GAPBOND_SAME_IRK_TERMINATE_LINK                0x01
+/** @} End GAPBondMgr_Identical_IRK_Action */
 
 /**
  * GAP Bond Manager NV layout

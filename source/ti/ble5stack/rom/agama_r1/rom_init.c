@@ -2386,14 +2386,37 @@ void MAP_llInitFeatureSet( void )
 /*******************************************************************************
  * Coex hooks
  */
-extern llCoexParams_t *llCoexGetParams(uint16 cmdNum);
+extern llCoexParams_t llCoexSetParams(uint16 cmdNum, RF_ScheduleCmdParams *pCmdParams);
+extern void llCoexInit(uint8 enable);
+extern void llCoexUpdateCounters(uint8 grant);
 
-void *MAP_llCoexGetParams(uint16 cmdNum)
+void MAP_llCoexSetParams(uint16 cmdNum, void *pCmdParams)
 {
 #ifdef USE_COEX
-  return llCoexGetParams(cmdNum);
+  llCoexSetParams(cmdNum,pCmdParams);
+#endif
+}
+
+void MAP_llCoexInit(uint8 enable)
+{
+#ifdef USE_COEX
+  llCoexInit(enable);
+#endif
+}
+
+void MAP_llCoexUpdateCounters(uint8 grant)
+{
+#ifdef USE_COEX
+  llCoexUpdateCounters(grant);
+#endif
+}
+
+uint8 MAP_LL_EXT_CoexEnable(uint8 enable)
+{
+#ifdef USE_COEX
+  return LL_EXT_CoexEnable(enable);
 #else
-  return NULL;
+  return 1;
 #endif
 }
 
@@ -2560,6 +2583,7 @@ uint8 MAP_gapAdv_periodicAdvCmdCompleteCBs( void *pMsg )
  * Periodic Scan hooks
  */
 extern uint8 llProcessExtScanRxFIFO_hook(void);
+extern uint8 llProcessScanRxFIFO_hook(void);
 extern void llProcessPeriodicScanSyncInfo( uint8 *pPkt, aeExtAdvRptEvt_t *advEvent, uint32 timeStamp, uint8 phy );
 extern ble5OpCmd_t *llFindNextPeriodicScan( void );
 extern void llUpdateExtScanAcceptSyncInfo( void );
@@ -2651,10 +2675,19 @@ uint8 MAP_LE_SetConnectionlessIqSamplingEnable( uint16 syncHandle, uint8 samplin
 
 uint8 MAP_llProcessExtScanRxFIFO_hook(void)
 {
-#ifdef USE_PERIODIC_SCAN
+#if (defined USE_PERIODIC_SCAN) || (ADV_RPT_INC_CHANNEL == TRUE)
   return llProcessExtScanRxFIFO_hook();
 #else
   return 0;
+#endif
+}
+
+uint8 MAP_llProcessScanRxFIFO_hook(void)
+{
+#if (ADV_RPT_INC_CHANNEL == TRUE)
+  return llProcessScanRxFIFO_hook();
+#else
+  return FALSE;
 #endif
 }
 

@@ -39,6 +39,7 @@
 #include "common/debug.hpp"
 #include "common/locator.hpp"
 #include "common/message.hpp"
+#include "common/non_copyable.hpp"
 #include "mac/mac_types.hpp"
 #include "net/ip6.hpp"
 #include "net/ip6_address.hpp"
@@ -71,10 +72,9 @@ using ot::Encoding::BigEndian::HostSwap16;
  */
 struct Context
 {
-    const uint8_t *mPrefix;       ///< A pointer to the prefix.
-    uint8_t        mPrefixLength; ///< The prefix length.
-    uint8_t        mContextId;    ///< The Context ID.
-    bool           mCompressFlag; ///< The Context compression flag.
+    Ip6::Prefix mPrefix;       ///< The Prefix
+    uint8_t     mContextId;    ///< The Context ID.
+    bool        mCompressFlag; ///< The Context compression flag.
 };
 
 /**
@@ -121,15 +121,15 @@ public:
      *
      * @param[in]  aLength  Number of bytes to advance.
      *
-     * @retval OT_ERROR_NONE     Enough buffer space is available to advance the requested number of bytes.
-     * @retval OT_ERROR_NO_BUFS  Insufficient buffer space to advance the requested number of bytes.
+     * @retval kErrorNone    Enough buffer space is available to advance the requested number of bytes.
+     * @retval kErrorNoBufs  Insufficient buffer space to advance the requested number of bytes.
      *
      */
-    otError Advance(uint8_t aLength)
+    Error Advance(uint8_t aLength)
     {
-        otError error = OT_ERROR_NONE;
+        Error error = kErrorNone;
 
-        VerifyOrExit(CanWrite(aLength), error = OT_ERROR_NO_BUFS);
+        VerifyOrExit(CanWrite(aLength), error = kErrorNoBufs);
         mWritePointer += aLength;
 
     exit:
@@ -141,15 +141,15 @@ public:
      *
      * @param[in]  aByte  Byte to write.
      *
-     * @retval  OT_ERROR_NONE     Successfully wrote the byte and updated the pointer.
-     * @retval  OT_ERROR_NO_BUFS  Insufficient buffer space to write the byte.
+     * @retval  kErrorNone     Successfully wrote the byte and updated the pointer.
+     * @retval  kErrorNoBufs  Insufficient buffer space to write the byte.
      *
      */
-    otError Write(uint8_t aByte)
+    Error Write(uint8_t aByte)
     {
-        otError error = OT_ERROR_NONE;
+        Error error = kErrorNone;
 
-        VerifyOrExit(CanWrite(sizeof(aByte)), error = OT_ERROR_NO_BUFS);
+        VerifyOrExit(CanWrite(sizeof(aByte)), error = kErrorNoBufs);
 
         *mWritePointer++ = aByte;
 
@@ -163,15 +163,15 @@ public:
      * @param[in]  aBuf     A pointer to the byte sequence.
      * @param[in]  aLength  Number of bytes to write.
      *
-     * @retval OT_ERROR_NONE     Successfully wrote the byte sequence and updated the pointer.
-     * @retval OT_ERROR_NO_BUFS  Insufficient buffer space to write the byte sequence.
+     * @retval kErrorNone    Successfully wrote the byte sequence and updated the pointer.
+     * @retval kErrorNoBufs  Insufficient buffer space to write the byte sequence.
      *
      */
-    otError Write(const void *aBuf, uint8_t aLength)
+    Error Write(const void *aBuf, uint8_t aLength)
     {
-        otError error = OT_ERROR_NONE;
+        Error error = kErrorNone;
 
-        VerifyOrExit(CanWrite(aLength), error = OT_ERROR_NO_BUFS);
+        VerifyOrExit(CanWrite(aLength), error = kErrorNoBufs);
 
         memcpy(mWritePointer, aBuf, aLength);
         mWritePointer += aLength;
@@ -188,20 +188,20 @@ public:
      * @param[in]  aMessage  A message buffer.
      * @param[in]  aLength   Number of bytes to write.
      *
-     * @retval OT_ERROR_NONE     Successfully wrote the byte sequence and updated the pointer.
-     * @retval OT_ERROR_NO_BUFS  Insufficient buffer space to write the byte sequence.
+     * @retval kErrorNone    Successfully wrote the byte sequence and updated the pointer.
+     * @retval kErrorNoBufs  Insufficient buffer space to write the byte sequence.
      *
      */
-    otError Write(const Message &aMessage, uint8_t aLength)
+    Error Write(const Message &aMessage, uint8_t aLength)
     {
-        otError error = OT_ERROR_NONE;
-        int     rval;
+        Error error = kErrorNone;
+        int   rval;
 
         OT_UNUSED_VARIABLE(rval);
 
-        VerifyOrExit(CanWrite(aLength), error = OT_ERROR_NO_BUFS);
+        VerifyOrExit(CanWrite(aLength), error = kErrorNoBufs);
 
-        rval = aMessage.Read(aMessage.GetOffset(), aLength, mWritePointer);
+        rval = aMessage.ReadBytes(aMessage.GetOffset(), mWritePointer, aLength);
         OT_ASSERT(rval == aLength);
 
         mWritePointer += aLength;
@@ -219,7 +219,7 @@ private:
  * This class implements LOWPAN_IPHC header compression.
  *
  */
-class Lowpan : public InstanceLocator
+class Lowpan : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -254,10 +254,7 @@ public:
      * @returns The size of the compressed header in bytes.
      *
      */
-    otError Compress(Message &           aMessage,
-                     const Mac::Address &aMacSource,
-                     const Mac::Address &aMacDest,
-                     BufferWriter &      aBuf);
+    Error Compress(Message &aMessage, const Mac::Address &aMacSource, const Mac::Address &aMacDest, BufferWriter &aBuf);
 
     /**
      * This method decompresses a LOWPAN_IPHC header.
@@ -282,12 +279,12 @@ public:
     /**
      * This method decompresses a LOWPAN_IPHC header.
      *
-     * @param[out]  aIp6Header              A reference where the IPv6 header will be placed.
-     * @param[out]  aCommpressedNextHeader  A boolean reference to output whether next header is compressed or not.
-     * @param[in]   aMacSource              The MAC source address.
-     * @param[in]   aMacDest                The MAC destination address.
-     * @param[in]   aBuf                    A pointer to the LOWPAN_IPHC header.
-     * @param[in]   aBufLength              The number of bytes in @p aBuf.
+     * @param[out]  aIp6Header             A reference where the IPv6 header will be placed.
+     * @param[out]  aCompressedNextHeader  A boolean reference to output whether next header is compressed or not.
+     * @param[in]   aMacSource             The MAC source address.
+     * @param[in]   aMacDest               The MAC destination address.
+     * @param[in]   aBuf                   A pointer to the LOWPAN_IPHC header.
+     * @param[in]   aBufLength             The number of bytes in @p aBuf.
      *
      * @returns The size of the compressed header in bytes or -1 if decompression fails.
      *
@@ -309,84 +306,82 @@ public:
      * @returns The size of the compressed header in bytes or -1 if decompression fails.
      *
      */
-    int DecompressUdpHeader(Ip6::UdpHeader &aUdpHeader, const uint8_t *aBuf, uint16_t aBufLength);
+    int DecompressUdpHeader(Ip6::Udp::Header &aUdpHeader, const uint8_t *aBuf, uint16_t aBufLength);
 
 private:
-    enum
-    {
-        kHcDispatch     = 3 << 13,
-        kHcDispatchMask = 7 << 13,
+    static constexpr uint16_t kHcDispatch     = 3 << 13;
+    static constexpr uint16_t kHcDispatchMask = 7 << 13;
 
-        kHcTrafficClass    = 1 << 11,
-        kHcFlowLabel       = 2 << 11,
-        kHcTrafficFlow     = 3 << 11,
-        kHcTrafficFlowMask = 3 << 11,
-        kHcNextHeader      = 1 << 10,
-        kHcHopLimit1       = 1 << 8,
-        kHcHopLimit64      = 2 << 8,
-        kHcHopLimit255     = 3 << 8,
-        kHcHopLimitMask    = 3 << 8,
-        kHcContextId       = 1 << 7,
-        kHcSrcAddrContext  = 1 << 6,
-        kHcSrcAddrMode0    = 0 << 4,
-        kHcSrcAddrMode1    = 1 << 4,
-        kHcSrcAddrMode2    = 2 << 4,
-        kHcSrcAddrMode3    = 3 << 4,
-        kHcSrcAddrModeMask = 3 << 4,
-        kHcMulticast       = 1 << 3,
-        kHcDstAddrContext  = 1 << 2,
-        kHcDstAddrMode0    = 0 << 0,
-        kHcDstAddrMode1    = 1 << 0,
-        kHcDstAddrMode2    = 2 << 0,
-        kHcDstAddrMode3    = 3 << 0,
-        kHcDstAddrModeMask = 3 << 0,
+    static constexpr uint16_t kHcTrafficClass    = 1 << 11;
+    static constexpr uint16_t kHcFlowLabel       = 2 << 11;
+    static constexpr uint16_t kHcTrafficFlow     = 3 << 11;
+    static constexpr uint16_t kHcTrafficFlowMask = 3 << 11;
+    static constexpr uint16_t kHcNextHeader      = 1 << 10;
+    static constexpr uint16_t kHcHopLimit1       = 1 << 8;
+    static constexpr uint16_t kHcHopLimit64      = 2 << 8;
+    static constexpr uint16_t kHcHopLimit255     = 3 << 8;
+    static constexpr uint16_t kHcHopLimitMask    = 3 << 8;
+    static constexpr uint16_t kHcContextId       = 1 << 7;
+    static constexpr uint16_t kHcSrcAddrContext  = 1 << 6;
+    static constexpr uint16_t kHcSrcAddrMode0    = 0 << 4;
+    static constexpr uint16_t kHcSrcAddrMode1    = 1 << 4;
+    static constexpr uint16_t kHcSrcAddrMode2    = 2 << 4;
+    static constexpr uint16_t kHcSrcAddrMode3    = 3 << 4;
+    static constexpr uint16_t kHcSrcAddrModeMask = 3 << 4;
+    static constexpr uint16_t kHcMulticast       = 1 << 3;
+    static constexpr uint16_t kHcDstAddrContext  = 1 << 2;
+    static constexpr uint16_t kHcDstAddrMode0    = 0 << 0;
+    static constexpr uint16_t kHcDstAddrMode1    = 1 << 0;
+    static constexpr uint16_t kHcDstAddrMode2    = 2 << 0;
+    static constexpr uint16_t kHcDstAddrMode3    = 3 << 0;
+    static constexpr uint16_t kHcDstAddrModeMask = 3 << 0;
 
-        kExtHdrDispatch     = 0xe0,
-        kExtHdrDispatchMask = 0xf0,
+    static constexpr uint8_t kExtHdrDispatch     = 0xe0;
+    static constexpr uint8_t kExtHdrDispatchMask = 0xf0;
 
-        kExtHdrEidHbh      = 0x00,
-        kExtHdrEidRouting  = 0x02,
-        kExtHdrEidFragment = 0x04,
-        kExtHdrEidDst      = 0x06,
-        kExtHdrEidMobility = 0x08,
-        kExtHdrEidIp6      = 0x0e,
-        kExtHdrEidMask     = 0x0e,
+    static constexpr uint8_t kExtHdrEidHbh      = 0x00;
+    static constexpr uint8_t kExtHdrEidRouting  = 0x02;
+    static constexpr uint8_t kExtHdrEidFragment = 0x04;
+    static constexpr uint8_t kExtHdrEidDst      = 0x06;
+    static constexpr uint8_t kExtHdrEidMobility = 0x08;
+    static constexpr uint8_t kExtHdrEidIp6      = 0x0e;
+    static constexpr uint8_t kExtHdrEidMask     = 0x0e;
 
-        kExtHdrNextHeader = 0x01,
-        kExtHdrMaxLength  = 255,
+    static constexpr uint8_t  kExtHdrNextHeader = 0x01;
+    static constexpr uint16_t kExtHdrMaxLength  = 255;
 
-        kUdpDispatch     = 0xf0,
-        kUdpDispatchMask = 0xf8,
-        kUdpChecksum     = 1 << 2,
-        kUdpPortMask     = 3 << 0,
-    };
+    static constexpr uint8_t kUdpDispatch     = 0xf0;
+    static constexpr uint8_t kUdpDispatchMask = 0xf8;
 
-    otError Compress(Message &           aMessage,
-                     const Mac::Address &aMacSource,
-                     const Mac::Address &aMacDest,
-                     BufferWriter &      aBuf,
-                     uint8_t &           aHeaderDepth);
+    static constexpr uint8_t kUdpChecksum = 1 << 2;
+    static constexpr uint8_t kUdpPortMask = 3 << 0;
 
-    otError CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, uint8_t &aNextHeader);
-    otError CompressSourceIid(const Mac::Address &aMacAddr,
-                              const Ip6::Address &aIpAddr,
-                              const Context &     aContext,
-                              uint16_t &          aHcCtl,
-                              BufferWriter &      aBuf);
-    otError CompressDestinationIid(const Mac::Address &aMacAddr,
-                                   const Ip6::Address &aIpAddr,
-                                   const Context &     aContext,
-                                   uint16_t &          aHcCtl,
-                                   BufferWriter &      aBuf);
-    otError CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl, BufferWriter &aBuf);
-    otError CompressUdp(Message &aMessage, BufferWriter &aBuf);
+    Error Compress(Message &           aMessage,
+                   const Mac::Address &aMacSource,
+                   const Mac::Address &aMacDest,
+                   BufferWriter &      aBuf,
+                   uint8_t &           aHeaderDepth);
 
-    int     DecompressExtensionHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength);
-    int     DecompressUdpHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength, uint16_t aDatagramLength);
-    otError DispatchToNextHeader(uint8_t aDispatch, uint8_t &aNextHeader);
+    Error CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, uint8_t &aNextHeader);
+    Error CompressSourceIid(const Mac::Address &aMacAddr,
+                            const Ip6::Address &aIpAddr,
+                            const Context &     aContext,
+                            uint16_t &          aHcCtl,
+                            BufferWriter &      aBuf);
+    Error CompressDestinationIid(const Mac::Address &aMacAddr,
+                                 const Ip6::Address &aIpAddr,
+                                 const Context &     aContext,
+                                 uint16_t &          aHcCtl,
+                                 BufferWriter &      aBuf);
+    Error CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl, BufferWriter &aBuf);
+    Error CompressUdp(Message &aMessage, BufferWriter &aBuf);
 
-    static void    CopyContext(const Context &aContext, Ip6::Address &aAddress);
-    static otError ComputeIid(const Mac::Address &aMacAddr, const Context &aContext, Ip6::Address &aIpAddress);
+    int   DecompressExtensionHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength);
+    int   DecompressUdpHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength, uint16_t aDatagramLength);
+    Error DispatchToNextHeader(uint8_t aDispatch, uint8_t &aNextHeader);
+
+    static void  CopyContext(const Context &aContext, Ip6::Address &aAddress);
+    static Error ComputeIid(const Mac::Address &aMacAddr, const Context &aContext, Ip6::Address &aIpAddress);
 };
 
 /**
@@ -396,10 +391,11 @@ private:
 class MeshHeader
 {
 public:
-    enum
-    {
-        kAdditionalHopsLeft = 1 ///< The additional value that is added to predicted value of the route cost.
-    };
+    /**
+     * The additional value that is added to predicted value of the route cost.
+     *
+     */
+    static constexpr uint8_t kAdditionalHopsLeft = 1;
 
     /**
      * This method initializes the Mesh Header with a given Mesh Source, Mesh Destination and Hops Left value.
@@ -431,11 +427,11 @@ public:
      * @param[in]  aFrameLength  The length of the frame.
      * @param[out] aHeaderLength A reference to a variable to output the parsed header length (on success).
      *
-     * @retval OT_ERROR_NONE     Mesh Header parsed successfully.
-     * @retval OT_ERROR_PARSE    Mesh Header could not be parsed.
+     * @retval kErrorNone     Mesh Header parsed successfully.
+     * @retval kErrorParse    Mesh Header could not be parsed.
      *
      */
-    otError ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength);
+    Error ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength);
 
     /**
      * This method parses the Mesh Header from a given message.
@@ -444,11 +440,11 @@ public:
      *
      * @param[in]  aMessage    The message to read from.
      *
-     * @retval OT_ERROR_NONE   Mesh Header parsed successfully.
-     * @retval OT_ERROR_PARSE  Mesh Header could not be parsed.
+     * @retval kErrorNone   Mesh Header parsed successfully.
+     * @retval kErrorParse  Mesh Header could not be parsed.
      *
      */
-    otError ParseFrom(const Message &aMessage);
+    Error ParseFrom(const Message &aMessage);
 
     /**
      * This method parses the Mesh Header from a given message.
@@ -458,11 +454,11 @@ public:
      * @param[in]  aMessage       The message to read from.
      * @param[out] aHeaderLength  A reference to a variable to output the parsed header length (on success).
      *
-     * @retval OT_ERROR_NONE   Mesh Header parsed successfully.
-     * @retval OT_ERROR_PARSE  Mesh Header could not be parsed.
+     * @retval kErrorNone   Mesh Header parsed successfully.
+     * @retval kErrorParse  Mesh Header could not be parsed.
      *
      */
-    otError ParseFrom(const Message &aMessage, uint16_t &aHeaderLength);
+    Error ParseFrom(const Message &aMessage, uint16_t &aHeaderLength);
 
     /**
      * This method returns the the Mesh Header length when written to a frame.
@@ -533,17 +529,16 @@ public:
     uint16_t WriteTo(Message &aMessage, uint16_t aOffset) const;
 
 private:
-    enum
-    {
-        kDispatch             = 2 << 6,
-        kDispatchMask         = 3 << 6,
-        kHopsLeftMask         = 0x0f,
-        kSourceShort          = 1 << 5,
-        kDestShort            = 1 << 4,
-        kDeepHopsLeft         = 0x0f,
-        kMinHeaderLength      = sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t), // dispatch byte + src + dest
-        kDeepHopsHeaderLength = kMinHeaderLength + sizeof(uint8_t),                    // min header + deep hops
-    };
+    static constexpr uint8_t kDispatch     = 2 << 6;
+    static constexpr uint8_t kDispatchMask = 3 << 6;
+    static constexpr uint8_t kHopsLeftMask = 0x0f;
+    static constexpr uint8_t kSourceShort  = 1 << 5;
+    static constexpr uint8_t kDestShort    = 1 << 4;
+    static constexpr uint8_t kDeepHopsLeft = 0x0f;
+
+    // Dispatch byte + src + dest
+    static constexpr uint16_t kMinHeaderLength      = sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
+    static constexpr uint16_t kDeepHopsHeaderLength = kMinHeaderLength + sizeof(uint8_t); // min header + deep hops
 
     uint16_t mSource;
     uint16_t mDestination;
@@ -557,11 +552,8 @@ private:
 class FragmentHeader
 {
 public:
-    enum
-    {
-        kFirstFragmentHeaderSize      = 4, ///< First fragment header size in octets.
-        kSubsequentFragmentHeaderSize = 5, ///< Subsequent fragment header size in octets.
-    };
+    static constexpr uint16_t kFirstFragmentHeaderSize      = 4; ///< First fragment header size in octets.
+    static constexpr uint16_t kSubsequentFragmentHeaderSize = 5; ///< Subsequent fragment header size in octets.
 
     /**
      * This method initializes the Fragment Header as a first fragment.
@@ -606,11 +598,11 @@ public:
      * @param[in]  aFrameLength    The length of the frame.
      * @param[out] aHeaderLength   A reference to a variable to output the parsed header length (on success).
      *
-     * @retval OT_ERROR_NONE     Fragment Header parsed successfully.
-     * @retval OT_ERROR_PARSE    Fragment header could not be parsed from @p aFrame.
+     * @retval kErrorNone     Fragment Header parsed successfully.
+     * @retval kErrorParse    Fragment header could not be parsed from @p aFrame.
      *
      */
-    otError ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength);
+    Error ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength);
 
     /**
      * This method parses the Fragment Header from a message.
@@ -619,11 +611,11 @@ public:
      * @param[in]  aOffset       The offset within the message to start reading from.
      * @param[out] aHeaderLength A reference to a variable to output the parsed header length (on success).
      *
-     * @retval OT_ERROR_NONE     Fragment Header parsed successfully.
-     * @retval OT_ERROR_PARSE    Fragment header could not be parsed from @p aFrame.
+     * @retval kErrorNone     Fragment Header parsed successfully.
+     * @retval kErrorParse    Fragment header could not be parsed from @p aFrame.
      *
      */
-    otError ParseFrom(const Message &aMessage, uint16_t aOffset, uint16_t &aHeaderLength);
+    Error ParseFrom(const Message &aMessage, uint16_t aOffset, uint16_t &aHeaderLength);
 
     /**
      * This method returns the Datagram Size value.
@@ -664,17 +656,16 @@ public:
     uint16_t WriteTo(uint8_t *aFrame) const;
 
 private:
-    enum
-    {
-        kDispatch     = 0xc0,   // 0b1100_0000
-        kDispatchMask = 0xd8,   // 0b1101_1000 which accepts first frag (0b1100_0xxx) and next frag (0b1110_0xxx).
-        kOffsetFlag   = 1 << 5, // Dispatch flag to indicate first (no offset) vs. next (offset is present) fragment.
-        kSizeMask     = 0x7ff,  // 0b0111_1111_1111 (first 11 bits).
-        kOffsetMask   = 0xfff8, // Clears the last 3 bits to ensure offset is a multiple of 8.
-        kSizeIndex    = 0,      // Start index of Size field in the Fragment Header byte sequence.
-        kTagIndex     = 2,      // Start index of Tag field in the Fragment Header byte sequence.
-        kOffsetIndex  = 4,      // Start index of Offset field in the Fragment Header byte sequence.
-    };
+    static constexpr uint8_t kDispatch     = 0xc0;   // 0b1100_0000
+    static constexpr uint8_t kDispatchMask = 0xd8;   // 0b1101_1000 accepts first (0b1100_0xxx) and next (0b1110_0xxx).
+    static constexpr uint8_t kOffsetFlag   = 1 << 5; // Indicate first (no offset) vs. next (offset present) fragment.
+
+    static constexpr uint16_t kSizeMask   = 0x7ff;  // 0b0111_1111_1111 (first 11 bits).
+    static constexpr uint16_t kOffsetMask = 0xfff8; // Clears the last 3 bits to ensure offset is a multiple of 8.
+
+    static constexpr uint8_t kSizeIndex   = 0; // Start index of Size field in the Fragment Header byte sequence.
+    static constexpr uint8_t kTagIndex    = 2; // Start index of Tag field in the Fragment Header byte sequence.
+    static constexpr uint8_t kOffsetIndex = 4; // Start index of Offset field in the Fragment Header byte sequence.
 
     uint16_t mSize;
     uint16_t mTag;

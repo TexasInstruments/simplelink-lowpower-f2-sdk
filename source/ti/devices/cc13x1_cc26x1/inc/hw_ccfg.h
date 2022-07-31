@@ -381,7 +381,7 @@
 // Select source for SCLK_LF.
 // ENUMs:
 // RCOSC_LF                 Low frequency RCOSC (default)
-// XOSC_LF                  32.768kHz low frequency XOSC
+// XOSC_LF                  32.768 kHz low frequency XOSC
 // EXTERNAL_LF              External low frequency clock on DIO defined by
 //                          EXT_LF_CLK.DIO. The RTC tick speed
 //                          AON_RTC:SUBSECINC is updated to
@@ -389,9 +389,9 @@
 //                          SetupTrimDevice() driverlib boot function).
 //                          External clock must always be running when the
 //                          chip is in standby for VDDR recharge timing.
-// XOSC_HF_DLF              31.25kHz clock derived from 48MHz XOSC or HPOSC.
+// XOSC_HF_DLF              31.25 kHz clock derived from 48 MHz XOSC or HPOSC.
 //                          The RTC tick speed AON_RTC:SUBSECINC is updated
-//                          to 0x8637BD, corresponding to a 31.25kHz clock
+//                          to 0x8637BD, corresponding to a 31.25 kHz clock
 //                          (done in the SetupTrimDevice() driverlib boot
 //                          function). The device must be blocked from
 //                          entering Standby mode when using this clock

@@ -61,16 +61,19 @@ extern "C"
  */
 typedef enum
 {
-  Empty_evtNwkSetup,           /* openthread network is setup */
-  Empty_evtKeyRight,           /* Right key is pressed */
-  Empty_evtNwkJoined,          /* Joined the network */
-  Empty_evtNwkJoinFailure,     /* Failed joining network */
-  Empty_evtDevRoleChanged,    /* Events for Device State */
+    Empty_evtNwkSetup,              /* openthread network is setup */
+    Empty_evtKeyRight,              /* Right key is pressed */
+    Empty_evtNwkJoined,             /* Joined the network */
+    Empty_evtNwkJoinFailure,        /* Failed joining network */
+    Empty_evtDevRoleChanged,        /* Events for Device State */
 #if TIOP_CUI
-  Empty_evtProcessMenuUpdate,  /* CUI Menu Event is triggered */
-  Empty_evtNwkAttach,          /* CUI Menu Attach option is selected */
-  Empty_evtNwkJoin,            /* CUI Menu Join option is selected */
+    Empty_evtNwkAttach,             /* CUI Menu Attach option is selected */
+    Empty_evtNwkJoin,               /* CUI Menu Join option is selected */
+    Empty_evtProcessMenuUpdate,     /* CUI Menu Event is triggered */
 #endif /* TIOP_CUI */
+#if TIOP_POWER_MEASUREMENT
+    Empty_evtPowerMeasumentReport,  /* CUI Menu Join option is selected */
+#endif
 } Empty_evt;
 
 /******************************************************************************

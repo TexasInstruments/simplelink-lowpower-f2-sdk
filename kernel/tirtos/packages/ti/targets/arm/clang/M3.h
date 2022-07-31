@@ -1,4 +1,9 @@
 /*
+ *  Copyright 2021 by Texas Instruments Incorporated.
+ *
+ */
+
+/*
  *  ======== M3.h ========
  *  DO NOT MODIFY: This header is generated from stddef.xdt
  *
@@ -116,3 +121,8 @@
 #define  xdc_target__bitsPerChar 8U
 
 #endif  /* end multi-include guard */
+/*
+ *  @(#) ti.targets.arm.clang; 1, 0, 0,; 7-28-2021 06:57:50; /db/ztree/library/trees/xdctargets/xdctargets-w20/src/ xlibrary
+
+ */
+

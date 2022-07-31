@@ -352,7 +352,8 @@ const stackSpecific_t bleStackConfig =
 #else
   .extStackSettings                     = EXTENDED_STACK_SETTINGS,
 #endif
-  .maxNumCteBuffers                     = MAX_NUM_CTE_BUFS
+  .maxNumCteBuffers                     = MAX_NUM_CTE_BUFS,
+  .advReportIncChannel                  = ADV_RPT_INC_CHANNEL
 };
 
 uint16_t bleUserCfg_maxPduSize = MAX_PDU_SIZE;

@@ -34,32 +34,34 @@
 #include "panid_query_server.hpp"
 
 #include "coap/coap_message.hpp"
+#include "common/as_core_type.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/thread_netif.hpp"
-#include "thread/thread_uri_paths.hpp"
+#include "thread/uri_paths.hpp"
 
 namespace ot {
+
+RegisterLogModule("MeshCoP");
 
 PanIdQueryServer::PanIdQueryServer(Instance &aInstance)
     : InstanceLocator(aInstance)
     , mChannelMask(0)
     , mPanId(Mac::kPanIdBroadcast)
-    , mTimer(aInstance, &PanIdQueryServer::HandleTimer, this)
-    , mPanIdQuery(OT_URI_PATH_PANID_QUERY, &PanIdQueryServer::HandleQuery, this)
+    , mTimer(aInstance, PanIdQueryServer::HandleTimer)
+    , mPanIdQuery(UriPath::kPanIdQuery, &PanIdQueryServer::HandleQuery, this)
 {
-    Get<Coap::Coap>().AddResource(mPanIdQuery);
+    Get<Tmf::Agent>().AddResource(mPanIdQuery);
 }
 
 void PanIdQueryServer::HandleQuery(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    static_cast<PanIdQueryServer *>(aContext)->HandleQuery(*static_cast<Coap::Message *>(aMessage),
-                                                           *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<PanIdQueryServer *>(aContext)->HandleQuery(AsCoapMessage(aMessage), AsCoreType(aMessageInfo));
 }
 
 void PanIdQueryServer::HandleQuery(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
@@ -68,10 +70,10 @@ void PanIdQueryServer::HandleQuery(Coap::Message &aMessage, const Ip6::MessageIn
     Ip6::MessageInfo responseInfo(aMessageInfo);
     uint32_t         mask;
 
-    VerifyOrExit(aMessage.GetCode() == OT_COAP_CODE_POST, OT_NOOP);
-    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0, OT_NOOP);
+    VerifyOrExit(aMessage.IsPostRequest());
+    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0);
 
-    SuccessOrExit(Tlv::ReadUint16Tlv(aMessage, MeshCoP::Tlv::kPanId, panId));
+    SuccessOrExit(Tlv::Find<MeshCoP::PanIdTlv>(aMessage, panId));
 
     mChannelMask  = mask;
     mCommissioner = aMessageInfo.GetPeerAddr();
@@ -80,8 +82,8 @@ void PanIdQueryServer::HandleQuery(Coap::Message &aMessage, const Ip6::MessageIn
 
     if (aMessage.IsConfirmable() && !aMessageInfo.GetSockAddr().IsMulticast())
     {
-        SuccessOrExit(Get<Coap::Coap>().SendEmptyAck(aMessage, responseInfo));
-        otLogInfoMeshCoP("sent panid query response");
+        SuccessOrExit(Get<Tmf::Agent>().SendEmptyAck(aMessage, responseInfo));
+        LogInfo("sent panid query response");
     }
 
 exit:
@@ -95,7 +97,7 @@ void PanIdQueryServer::HandleScanResult(Mac::ActiveScanResult *aScanResult, void
 
 void PanIdQueryServer::HandleScanResult(Mac::ActiveScanResult *aScanResult)
 {
-    if (aScanResult != NULL)
+    if (aScanResult != nullptr)
     {
         if (aScanResult->mPanId == mPanId)
         {
@@ -108,49 +110,43 @@ void PanIdQueryServer::HandleScanResult(Mac::ActiveScanResult *aScanResult)
     }
 }
 
-otError PanIdQueryServer::SendConflict(void)
+void PanIdQueryServer::SendConflict(void)
 {
-    otError                 error = OT_ERROR_NONE;
+    Error                   error = kErrorNone;
     MeshCoP::ChannelMaskTlv channelMask;
-    Ip6::MessageInfo        messageInfo;
+    Tmf::MessageInfo        messageInfo(GetInstance());
     Coap::Message *         message;
 
-    VerifyOrExit((message = MeshCoP::NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error = message->Init(OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST, OT_URI_PATH_PANID_CONFLICT));
+    SuccessOrExit(error = message->InitAsConfirmablePost(UriPath::kPanIdConflict));
     SuccessOrExit(error = message->SetPayloadMarker());
 
     channelMask.Init();
     channelMask.SetChannelMask(mChannelMask);
     SuccessOrExit(error = channelMask.AppendTo(*message));
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kPanId, mPanId));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::PanIdTlv>(*message, mPanId));
 
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerAddr(mCommissioner);
-    messageInfo.SetPeerPort(kCoapUdpPort);
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    messageInfo.SetSockAddrToRlocPeerAddrTo(mCommissioner);
 
-    otLogInfoMeshCoP("sent panid conflict");
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
+
+    LogInfo("sent panid conflict");
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
-    return error;
+    FreeMessageOnError(message, error);
+    MeshCoP::LogError("send panid conflict", error);
 }
 
 void PanIdQueryServer::HandleTimer(Timer &aTimer)
 {
-    aTimer.GetOwner<PanIdQueryServer>().HandleTimer();
+    aTimer.Get<PanIdQueryServer>().HandleTimer();
 }
 
 void PanIdQueryServer::HandleTimer(void)
 {
-    Get<Mac::Mac>().ActiveScan(mChannelMask, 0, HandleScanResult, this);
+    IgnoreError(Get<Mac::Mac>().ActiveScan(mChannelMask, 0, HandleScanResult, this));
     mChannelMask = 0;
 }
 

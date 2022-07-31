@@ -43,37 +43,40 @@
 /*
  *  ======== Temperature_getThresholdHigh ========
  */
-int16_t Temperature_getThresholdHigh(Temperature_NotifyObj *notifyObject) {
+int16_t Temperature_getThresholdHigh(Temperature_NotifyObj *notifyObject)
+{
     return notifyObject->thresholdHigh;
 }
 
 /*
  *  ======== Temperature_getThresholdLow ========
  */
-int16_t Temperature_getThresholdLow(Temperature_NotifyObj *notifyObject) {
+int16_t Temperature_getThresholdLow(Temperature_NotifyObj *notifyObject)
+{
     return notifyObject->thresholdLow;
 }
 
 /*
  *  ======== Temperature_getThresholdRange ========
  */
-void Temperature_getThresholdRange(Temperature_NotifyObj *notifyObject,
-                                   int16_t *thresholdHigh,
-                                   int16_t *thresholdLow) {
+void Temperature_getThresholdRange(Temperature_NotifyObj *notifyObject, int16_t *thresholdHigh, int16_t *thresholdLow)
+{
     *thresholdHigh = notifyObject->thresholdHigh;
-    *thresholdLow = notifyObject->thresholdLow;
+    *thresholdLow  = notifyObject->thresholdLow;
 }
 
 /*
  *  ======== Temperature_getClientArg ========
  */
-uintptr_t Temperature_getClientArg(Temperature_NotifyObj *notifyObject) {
+uintptr_t Temperature_getClientArg(Temperature_NotifyObj *notifyObject)
+{
     return notifyObject->clientArg;
 }
 
 /*
  *  ======== Temperature_getNotifyFxn ========
  */
-Temperature_NotifyFxn Temperature_getNotifyFxn(Temperature_NotifyObj *notifyObject) {
+Temperature_NotifyFxn Temperature_getNotifyFxn(Temperature_NotifyObj *notifyObject)
+{
     return notifyObject->notifyFxn;
 }

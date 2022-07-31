@@ -61,87 +61,83 @@
  */
 
 /***********************************************************************************
-* INCLUDES
-*/
+ * INCLUDES
+ */
 #include <stdint.h>
 #include <ti/drivers/pdm/Codec1.h>
 
 /**************************************************************************************************
-*                                        Global Variables
-*/
+ *                                        Global Variables
+ */
 
 static int16_t Codec1_pvEnc;
 static int16_t Codec1_pvDec;
 static int8_t Codec1_siEnc;
 static int8_t Codec1_siDec;
 
-static const uint16_t Codec1_stepsizeLut[89] =
-{
-    7,    8,    9,   10,   11,   12,   13,   14, 16,   17,   19,   21,   23,   25,   28,   31,
-    34,   37,   41,   45,   50,   55,   60,   66, 73,   80,   88,   97,  107,  118,  130,  143,
-    157,  173,  190,  209,  230,  253,  279,  307, 337,  371,  408,  449,  494,  544,  598,  658,
-    724,  796,  876,  963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066, 2272, 2499, 2749, 3024,
-    3327, 3660, 4026, 4428, 4871, 5358, 5894, 6484, 7132, 7845, 8630, 9493,10442,11487,12635,13899,
-    15289,16818,18500,20350,22385,24623,27086,29794, 32767
-};
+static const uint16_t Codec1_stepsizeLut[89] = {7,     8,     9,     10,    11,    12,    13,    14,    16,    17,
+                                                19,    21,    23,    25,    28,    31,    34,    37,    41,    45,
+                                                50,    55,    60,    66,    73,    80,    88,    97,    107,   118,
+                                                130,   143,   157,   173,   190,   209,   230,   253,   279,   307,
+                                                337,   371,   408,   449,   494,   544,   598,   658,   724,   796,
+                                                876,   963,   1060,  1166,  1282,  1411,  1552,  1707,  1878,  2066,
+                                                2272,  2499,  2749,  3024,  3327,  3660,  4026,  4428,  4871,  5358,
+                                                5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
+                                                15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-static const int8_t Codec1_IndexLut[16] =
-{
-    -1, -1, -1, -1, 2, 4, 6, 8,
-    -1, -1, -1, -1, 2, 4, 6, 8
-};
+static const int8_t Codec1_IndexLut[16] = {-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};
 
 /*
-*  ======== Codec1_encodeSingle ========
-*/
+ *  ======== Codec1_encodeSingle ========
+ */
 uint8_t Codec1_encodeSingle(int16_t audSample)
 {
     // Difference between samples and previous predicted value.
     // This difference will be encoded
-    int16_t difference = audSample - Codec1_pvEnc;
-    //Final nibble value
+    int16_t difference        = audSample - Codec1_pvEnc;
+    // Final nibble value
     uint8_t tic1_nibble_4bits = 0;
-    //Step size to quantisize the difference,
-    int16_t step = Codec1_stepsizeLut[Codec1_siEnc];
-    //cumulated difference from samples.
-    int16_t cum_diff = step>>3;
+    // Step size to quantisize the difference,
+    int16_t step              = Codec1_stepsizeLut[Codec1_siEnc];
+    // cumulated difference from samples.
+    int16_t cum_diff          = step >> 3;
 
-    if(difference<0)
+    if (difference < 0)
     {
         tic1_nibble_4bits = 8;
-        difference = -difference;
+        difference        = -difference;
     }
 
-    if(difference>=step)
+    if (difference >= step)
     {
         tic1_nibble_4bits |= 4;
         difference -= step;
         cum_diff += step;
     }
     step >>= 1;
-    if(difference>=step)
+    if (difference >= step)
     {
         tic1_nibble_4bits |= 2;
         difference -= step;
         cum_diff += step;
     }
     step >>= 1;
-    if(difference>=step)
+    if (difference >= step)
     {
         tic1_nibble_4bits |= 1;
         cum_diff += step;
     }
 
-    if(tic1_nibble_4bits&8)
+    if (tic1_nibble_4bits & 8)
     {
-        if (Codec1_pvEnc < (-32768+cum_diff))
+        if (Codec1_pvEnc < (-32768 + cum_diff))
             (Codec1_pvEnc) = -32768;
         else
             Codec1_pvEnc -= cum_diff;
     }
     else
     {
-        if (Codec1_pvEnc > (0x7fff-cum_diff))
+        if (Codec1_pvEnc > (0x7fff - cum_diff))
             (Codec1_pvEnc) = 0x7fff;
         else
             Codec1_pvEnc += cum_diff;
@@ -149,46 +145,45 @@ uint8_t Codec1_encodeSingle(int16_t audSample)
 
     Codec1_siEnc += Codec1_IndexLut[tic1_nibble_4bits];
 
-    if(Codec1_siEnc<0)
+    if (Codec1_siEnc < 0)
         Codec1_siEnc = 0;
-    else if(Codec1_siEnc>88)
+    else if (Codec1_siEnc > 88)
         Codec1_siEnc = 88;
 
     return tic1_nibble_4bits;
 }
 
-
 /*
-*  ======== Codec1_decodeSingle ========
-*/
+ *  ======== Codec1_decodeSingle ========
+ */
 int16_t Codec1_decodeSingle(uint8_t nibble_4bits)
 {
-    int16_t step = Codec1_stepsizeLut[Codec1_siDec];
-    int16_t cum_diff  = step>>3;
+    int16_t step     = Codec1_stepsizeLut[Codec1_siDec];
+    int16_t cum_diff = step >> 3;
 
     Codec1_siDec += Codec1_IndexLut[nibble_4bits];
-    if(Codec1_siDec<0)
+    if (Codec1_siDec < 0)
         Codec1_siDec = 0;
-    else if(Codec1_siDec>88)
+    else if (Codec1_siDec > 88)
         Codec1_siDec = 88;
 
-    if(nibble_4bits&4)
+    if (nibble_4bits & 4)
         cum_diff += step;
-    if(nibble_4bits&2)
-        cum_diff += step>>1;
-    if(nibble_4bits&1)
-        cum_diff += step>>2;
+    if (nibble_4bits & 2)
+        cum_diff += step >> 1;
+    if (nibble_4bits & 1)
+        cum_diff += step >> 2;
 
-    if(nibble_4bits&8)
+    if (nibble_4bits & 8)
     {
-        if (Codec1_pvDec < (-32767+cum_diff))
+        if (Codec1_pvDec < (-32767 + cum_diff))
             (Codec1_pvDec) = -32767;
         else
             Codec1_pvDec -= cum_diff;
     }
     else
     {
-        if (Codec1_pvDec > (0x7fff-cum_diff))
+        if (Codec1_pvDec > (0x7fff - cum_diff))
             (Codec1_pvDec) = 0x7fff;
         else
             Codec1_pvDec += cum_diff;
@@ -196,23 +191,22 @@ int16_t Codec1_decodeSingle(uint8_t nibble_4bits)
     return Codec1_pvDec;
 }
 
-
 /*
-*  ======== Codec1_encodeBuff ========
-*/
-uint8_t Codec1_encodeBuff(uint8_t* dst, int16_t* src, int16_t srcSize, int8_t *si, int16_t *pv)
+ *  ======== Codec1_encodeBuff ========
+ */
+uint8_t Codec1_encodeBuff(uint8_t *dst, int16_t *src, int16_t srcSize, int8_t *si, int16_t *pv)
 {
     Codec1_pvEnc = *pv;
     Codec1_siEnc = *si;
-    int16_t* end = (src + srcSize);
-    int8_t len = 0;
+    int16_t *end = (src + srcSize);
+    int8_t len   = 0;
 
-    while(src < end)
+    while (src < end)
     {
         // encode a pcm value from input buffer
-        uint8_t nibble = Codec1_encodeSingle( *src++ );
+        uint8_t nibble = Codec1_encodeSingle(*src++);
 
-        nibble |= (Codec1_encodeSingle( *src++ ) << 4);
+        nibble |= (Codec1_encodeSingle(*src++) << 4);
 
         *dst++ = nibble;
 
@@ -224,28 +218,27 @@ uint8_t Codec1_encodeBuff(uint8_t* dst, int16_t* src, int16_t srcSize, int8_t *s
     return len;
 }
 
-
 /*
-*  ======== Codec1_decodeBuff ========
-*/
-void Codec1_decodeBuff(int16_t* dst, uint8_t* src, unsigned srcSize,  int8_t *si, int16_t *pv)
+ *  ======== Codec1_decodeBuff ========
+ */
+void Codec1_decodeBuff(int16_t *dst, uint8_t *src, unsigned srcSize, int8_t *si, int16_t *pv)
 {
     Codec1_pvDec = *pv;
     Codec1_siDec = *si;
 
     // calculate pointers to iterate output buffer
-    int16_t* out = dst;
-    int16_t* end = out+(srcSize>>1);
+    int16_t *out = dst;
+    int16_t *end = out + (srcSize >> 1);
 
-    while(out<end)
+    while (out < end)
     {
         // get byte from src
         uint8_t nibble = *src;
-        *out++ = Codec1_decodeSingle((nibble&0xF));  // decode value and store it
-        nibble >>= 4;  // use high nibble of byte
-        nibble &= 0xF;  // use high nibble of byte
-        *out++ = Codec1_decodeSingle(nibble);  // decode value and store it
-        ++src;        // move on a byte for next sample
+        *out++         = Codec1_decodeSingle((nibble & 0xF)); // decode value and store it
+        nibble >>= 4;                                         // use high nibble of byte
+        nibble &= 0xF;                                        // use high nibble of byte
+        *out++ = Codec1_decodeSingle(nibble);                 // decode value and store it
+        ++src;                                                // move on a byte for next sample
     }
 
     *pv = Codec1_pvDec;

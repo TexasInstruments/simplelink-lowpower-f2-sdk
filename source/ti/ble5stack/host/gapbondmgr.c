@@ -253,6 +253,8 @@ static gapBondEccKeys_t gapBond_eccKeys =
 static uint8_t  gapBond_BondFailOption = GAPBOND_FAIL_TERMINATE_LINK;
 #endif
 
+static uint8_t gapBond_SamelIrkOption = GAPBOND_SAME_IRK_UPDATE_BOND_REC;
+
 static const gapBondCBs_t *pGapBondCB = NULL;
 
 // Local RAM shadowed bond records
@@ -290,6 +292,7 @@ static uint8_t gapBondMgrSaveBond(uint8_t bondIdx, gapBondRec_t* pBondRec,
                                   gapBondLTK_t* pLocalLtk, gapBondLTK_t* pDevLtk,
                                   uint8_t* pIRK, uint8_t* pSRK, uint32_t signCount,
                                   int8_t syncRL);
+static uint8_t gapBondFindIrkResolvingList( uint8_t* pIRK );
 static uint8_t gapBondMgrAddBond(gapBondRec_t *pBondRec,
                                  gapAuthCompleteEvent_t *pPkt);
 static uint8_t gapBondMgrGetStateFlags(uint8_t idx);
@@ -816,6 +819,18 @@ bStatus_t GAPBondMgr_SetParameter(uint16_t param, uint8_t len, void *pValue)
 
       break;
 
+    case GAPBOND_SAME_IRK_OPTION:
+      if( (len == sizeof(uint8_t)) &&
+          (*((uint8_t *)pValue) <= GAPBOND_SAME_IRK_TERMINATE_LINK))
+      {
+        gapBond_SamelIrkOption = *((uint8_t *)pValue);
+      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
+      break;
+
     default:
 
       // The param value isn't part of this profile, try the GAP.
@@ -925,6 +940,10 @@ bStatus_t GAPBondMgr_GetParameter(uint16_t param, void *pValue)
 
     case GAPBOND_AUTHEN_PAIRING_ONLY:
       *((uint8_t *)pValue) = gapBond_authenPairingOnly;
+      break;
+
+    case GAPBOND_SAME_IRK_OPTION:
+      *((uint8_t *)pValue) = gapBond_SamelIrkOption;
       break;
 
     default:
@@ -2311,6 +2330,41 @@ static uint8_t gapBondMgrSaveBond(uint8_t bondIdx,
 }
 
 /*********************************************************************
+ * @fn      gapBondFindIrkResolvingList
+ *
+ * @brief   Search the IRK given in the resolving list
+ *
+ * @param   pIRK - IRK to search for
+ *
+ * @return index if IRK was added
+ *         INVALID_RESOLVE_LIST_INDEX if IRK was not found
+ */
+static uint8_t gapBondFindIrkResolvingList( uint8_t* pIRK )
+{
+  uint8_t idx;
+  uint8_t tempIRK[KEYLEN];
+
+  MAP_osal_memcpy(tempIRK, pIRK, KEYLEN);
+
+  // Reverse it (in place) to pass to controller
+  MAP_LL_ENC_ReverseBytes(tempIRK, KEYLEN);
+
+  for( idx = 0; idx < BLE_RESOLVING_LIST_SIZE; idx++ )
+  {
+    // check if the Resolving List entry is valid
+    if ( resolvingList[idx].idAddrType != EMPTY_RESOLVE_LIST_ENTRY )
+    {
+      if( MAP_osal_memcmp(tempIRK, resolvingList[idx].IRK, KEYLEN) == TRUE )
+      {
+        return idx;
+      }
+    }
+  }
+
+  return INVALID_RESOLVE_LIST_INDEX;
+}
+
+/*********************************************************************
  * @fn      gapBondMgrAddBond
  *
  * @brief   Save a bond from a GAP Auth Complete Event
@@ -2330,7 +2384,87 @@ static uint8_t gapBondMgrAddBond(gapBondRec_t *pBondRec,
                                  gapAuthCompleteEvent_t *pPkt)
 {
   uint8_t bondIdx;
+  uint8_t rlIndex = INVALID_RESOLVE_LIST_INDEX;
   uint8_t snvErrorCode = SUCCESS;
+
+  // Check if the IRK can be found in the Resolving List
+  if(pPkt->pIdentityInfo)
+  {
+    rlIndex = gapBondFindIrkResolvingList( pPkt->pIdentityInfo->irk );
+  }
+
+  // Check if the bond information
+  bStatus_t findStatus = GAPBondMgr_FindAddr(pBondRec->addr, pBondRec->addrType,
+                                             &bondIdx, NULL, NULL);
+
+  if( ( rlIndex != INVALID_RESOLVE_LIST_INDEX ) &&
+      ( findStatus == bleGAPNotFound ) )
+  {
+    // This means we have two differen Identity Addresses with the same IRK
+    switch(gapBond_SamelIrkOption)
+    {
+      case GAPBOND_SAME_IRK_UPDATE_BOND_REC:
+      {
+        findStatus = GAPBondMgr_FindAddr(resolvingList[rlIndex].idAddr,
+                                         (GAP_Peer_Addr_Types_t)resolvingList[rlIndex].idAddrType,
+                                         &bondIdx, NULL, NULL);
+
+        if( findStatus != SUCCESS )
+        {
+          break;
+        }
+        snvErrorCode = gapBondMgrEraseBonding(bondIdx);
+
+        if( snvErrorCode != SUCCESS )
+        {
+          break;
+        }
+
+        // Make sure Bond RAM Shadow is up-to-date
+        gapBondMgrReadBonds();
+
+        // Bond and resolving list was erased, find a new empty place
+        bondIdx = gapBondMgrFindEmpty();
+
+        // Save the new bond information
+        snvErrorCode = gapBondMgrSaveBond(bondIdx, pBondRec,
+                                          (gapBondLTK_t*) pPkt->pSecurityInfo,
+                                          (gapBondLTK_t*) pPkt->pDevSecInfo,
+                                          pPkt->pIdentityInfo ? pPkt->pIdentityInfo->irk : NULL,
+                                          pPkt->pSigningInfo ? pPkt->pSigningInfo->srk : NULL,
+                                          pPkt->pSigningInfo ? pPkt->pSigningInfo->signCounter : 0,
+                                          FALSE);
+
+        // Update NV to have same CCC values as GATT database
+        gapBondMgr_SyncCharCfg(pPkt->connectionHandle);
+
+        // Check for there was an error when writing to the NV area
+        if (snvErrorCode != SUCCESS)
+        {
+          gapBondMgrEraseBonding(bondIdx);
+          gapBondMgrReadBonds();
+        }
+
+        return (snvErrorCode);
+
+        break;
+      }
+
+      case GAPBOND_SAME_IRK_TERMINATE_LINK:
+      {
+        // Terminate the connection
+        MAP_GAP_TerminateLinkReq(pPkt->connectionHandle,
+                                 HCI_DISCONNECT_AUTH_FAILURE);
+
+        return FAILURE;
+
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
 
   // First see if we already have an existing bond for this device
   if(GAPBondMgr_FindAddr(pBondRec->addr, pBondRec->addrType,

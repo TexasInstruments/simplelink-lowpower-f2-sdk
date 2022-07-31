@@ -87,7 +87,7 @@ bool Thread::operator==(Thread &o)
 
 Thread *Thread::getCurrentThread()
 {
-    return reinterpret_cast<Thread *>(Task_getArg1(Task_self()));
+    return reinterpret_cast<Thread *>((Task_self()));
 }
 
 void Thread::sleep(uint32_t usecs)
@@ -153,7 +153,7 @@ bool Mutex::acquire_mutex(UInt32 timeout)
         return true;
     }
     
-    if (!Semaphore_pend(Semaphore_handle(&m_mutex), 0)) {
+    if (!Semaphore_pend(Semaphore_handle(&m_mutex), timeout)) {
         return false;
     }
 

@@ -35,8 +35,7 @@
  * -----------------------------------------------------------------------------
  */
 // TI RTOS drivers
-#include <ti/drivers/PIN.h>
-
+#include <ti/drivers/GPIO.h>
 #include <ti/display/Display.h>
 #include <ti/display/DisplayDogm1286.h>
 #include <ti/display/lcd/LCDDogm1286.h>
@@ -48,13 +47,12 @@
  * -----------------------------------------------------------------------------
  */
 // Timeout of semaphore that controls exclusive to the LCD (500 ms)
-#define ACCESS_TIMEOUT    50000
+#define ACCESS_TIMEOUT 50000
 
 /* -----------------------------------------------------------------------------
  *   Type definitions
  * -----------------------------------------------------------------------------
  */
-
 
 /* -----------------------------------------------------------------------------
  *                           Local variables
@@ -76,7 +74,7 @@ const Display_FxnTable DisplayDogm1286_fxnTable = {
  *                                          Functions
  * -----------------------------------------------------------------------------
  */
-  /*!
+/*!
  * @fn          DisplayDogm1286_init
  *
  * @brief       Does nothing.
@@ -84,8 +82,7 @@ const Display_FxnTable DisplayDogm1286_fxnTable = {
  * @return      void
  */
 void DisplayDogm1286_init(Display_Handle handle)
-{
-}
+{}
 
 /*!
  * @fn          DisplayDogm1286_open
@@ -102,26 +99,12 @@ void DisplayDogm1286_init(Display_Handle handle)
  *
  * @return      Pointer to Display_Config struct
  */
-Display_Handle DisplayDogm1286_open(Display_Handle hDisplay,
-                                    Display_Params *params)
+Display_Handle DisplayDogm1286_open(Display_Handle hDisplay, Display_Params *params)
 {
     DisplayDogm1286_HWAttrs *hwAttrs = (DisplayDogm1286_HWAttrs *)hDisplay->hwAttrs;
-    DisplayDogm1286_Object  *object  = (DisplayDogm1286_Object  *)hDisplay->object;
+    DisplayDogm1286_Object *object   = (DisplayDogm1286_Object *)hDisplay->object;
 
-    PIN_Config pinTable[1 + 1];
-
-    uint32_t   i = 0;
-    if (hwAttrs->powerPin != PIN_TERMINATE)
-    {
-        pinTable[i++] = hwAttrs->powerPin | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX;
-    }
-    pinTable[i++] = PIN_TERMINATE;
-
-    object->hPins = PIN_open(&object->pinState, pinTable);
-    if (object->hPins == NULL)
-    {
-        return NULL;
-    }
+    GPIO_setConfig(hwAttrs->powerPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
 
     object->lineClearMode = params->lineClearMode;
 
@@ -141,11 +124,10 @@ Display_Handle DisplayDogm1286_open(Display_Handle hDisplay,
     }
     else
     {
-        PIN_close(object->hPins);
+        GPIO_resetConfig(hwAttrs->powerPin);
         return NULL;
     }
 }
-
 
 /*!
  * @fn          DisplayDogm1286_clear
@@ -158,7 +140,7 @@ Display_Handle DisplayDogm1286_open(Display_Handle hDisplay,
  */
 void DisplayDogm1286_clear(Display_Handle hDisplay)
 {
-    DisplayDogm1286_Object *object = (DisplayDogm1286_Object  *)hDisplay->object;
+    DisplayDogm1286_Object *object = (DisplayDogm1286_Object *)hDisplay->object;
 
     if (object->hLcd)
     {
@@ -166,7 +148,6 @@ void DisplayDogm1286_clear(Display_Handle hDisplay)
         LCD_update(object->hLcd, 0);
     }
 }
-
 
 /*!
  * @fn          DisplayDogm1286_clearLines
@@ -179,10 +160,9 @@ void DisplayDogm1286_clear(Display_Handle hDisplay)
  *
  * @return      void
  */
-void DisplayDogm1286_clearLines(Display_Handle hDisplay,
-                                uint8_t lineFrom, uint8_t lineTo)
+void DisplayDogm1286_clearLines(Display_Handle hDisplay, uint8_t lineFrom, uint8_t lineTo)
 {
-    DisplayDogm1286_Object *object = (DisplayDogm1286_Object  *)hDisplay->object;
+    DisplayDogm1286_Object *object = (DisplayDogm1286_Object *)hDisplay->object;
 
     if (lineTo < lineFrom)
     {
@@ -194,13 +174,11 @@ void DisplayDogm1286_clearLines(Display_Handle hDisplay,
         uint8_t xMin = 0;
         uint8_t xMax = 127;
 
-        LCD_bufferClearPart(object->hLcd, 0, xMin, xMax,
-                            (LCD_Page)lineFrom, (LCD_Page)lineTo);
+        LCD_bufferClearPart(object->hLcd, 0, xMin, xMax, (LCD_Page)lineFrom, (LCD_Page)lineTo);
 
         LCD_update(object->hLcd, 0);
     }
 }
-
 
 /*!
  * @fn          DisplayDogm1286_put5
@@ -215,12 +193,11 @@ void DisplayDogm1286_clearLines(Display_Handle hDisplay,
  *
  * @return      void
  */
-void DisplayDogm1286_vprintf(Display_Handle hDisplay, uint8_t line,
-                             uint8_t column, const char *fmt, va_list va)
+void DisplayDogm1286_vprintf(Display_Handle hDisplay, uint8_t line, uint8_t column, const char *fmt, va_list va)
 {
-    DisplayDogm1286_Object *object = (DisplayDogm1286_Object  *)hDisplay->object;
+    DisplayDogm1286_Object *object = (DisplayDogm1286_Object *)hDisplay->object;
 
-    char    dispStr[22] = { 0 };
+    char dispStr[22] = {0};
     uint8_t xp, clearStartX, clearEndX;
 
     xp          = column * 6;
@@ -228,34 +205,31 @@ void DisplayDogm1286_vprintf(Display_Handle hDisplay, uint8_t line,
 
     switch (object->lineClearMode)
     {
-    case DISPLAY_CLEAR_LEFT:
-        clearStartX = 0;
-        break;
-    case DISPLAY_CLEAR_RIGHT:
-        clearEndX = 127;
-        break;
-    case DISPLAY_CLEAR_BOTH:
-        clearStartX = 0;
-        clearEndX   = 127;
-        break;
-    case DISPLAY_CLEAR_NONE:
-    default:
-        break;
+        case DISPLAY_CLEAR_LEFT:
+            clearStartX = 0;
+            break;
+        case DISPLAY_CLEAR_RIGHT:
+            clearEndX = 127;
+            break;
+        case DISPLAY_CLEAR_BOTH:
+            clearStartX = 0;
+            clearEndX   = 127;
+            break;
+        case DISPLAY_CLEAR_NONE:
+        default:
+            break;
     }
 
     if (clearStartX != clearEndX)
     {
-        LCD_bufferClearPart(object->hLcd, 0,
-                            clearStartX, clearEndX, (LCD_Page)line, (LCD_Page)(line));
+        LCD_bufferClearPart(object->hLcd, 0, clearStartX, clearEndX, (LCD_Page)line, (LCD_Page)(line));
     }
-
 
     SystemP_vsnprintf(dispStr, sizeof(dispStr), fmt, va);
 
     LCD_bufferPrintString(object->hLcd, 0, dispStr, xp, (LCD_Page)line);
     LCD_update(object->hLcd, 0);
 }
-
 
 /*!
  * @fn          DisplayDogm1286_close
@@ -268,16 +242,11 @@ void DisplayDogm1286_vprintf(Display_Handle hDisplay, uint8_t line,
  */
 void DisplayDogm1286_close(Display_Handle hDisplay)
 {
-    DisplayDogm1286_Object *object = (DisplayDogm1286_Object  *)hDisplay->object;
-
-    if (object->hPins == NULL)
-    {
-        return;
-    }
+    DisplayDogm1286_HWAttrs *hwAttrs = (DisplayDogm1286_HWAttrs *)hDisplay->hwAttrs;
+    DisplayDogm1286_Object *object   = (DisplayDogm1286_Object *)hDisplay->object;
 
     // Turn off the display
-    PIN_close(object->hPins);
-    object->hPins = NULL;
+    GPIO_resetConfig(hwAttrs->powerPin);
 
     LCD_close(object->hLcd);
     object->hLcd = NULL;

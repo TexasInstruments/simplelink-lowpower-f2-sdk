@@ -56,7 +56,7 @@
 #include DeviceFamily_constructPath(driverlib/trng.h)
 
 /* Macros */
-#define MIN(x,y)   (((x) < (y)) ?  (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 /* Forward declarations */
 static void TRNGCC26XX_hwiFxn(uintptr_t arg0);
@@ -65,9 +65,7 @@ static void TRNGCC26XX_fillEntropyPool(uint32_t interruptStatus);
 static void TRNGCC26XX_copyToClient(TRNGCC26XX_Object *object);
 static void TRNGCC26XX_serviceJob(TRNG_Handle handle);
 static void TRNGCC26XX_startJob(TRNG_Handle handle);
-static void TRNGCC26XX_startTrng(uint32_t intPriority,
-                                 bool enableInterrupts,
-                                 uint32_t samplesPerCycle);
+static void TRNGCC26XX_startTrng(uint32_t intPriority, bool enableInterrupts, uint32_t samplesPerCycle);
 static void TRNGCC26XX_stopTrng(void);
 /* TRNG_getRandom()
  *  The underlying function that executes the operation
@@ -111,7 +109,8 @@ static List_List jobList = {0};
  *  ======== TRNGCC26XX_fillEntropyPool ========
  *  Copies freshly generated entropy from the TRNG hardware to the entropy pool.
  */
-static void TRNGCC26XX_fillEntropyPool(uint32_t interruptStatus) {
+static void TRNGCC26XX_fillEntropyPool(uint32_t interruptStatus)
+{
     uint8_t tmpEntropyBuf[TRNGCC26XX_MIN_BYTES_PER_ITERATION];
 
     ((uint32_t *)tmpEntropyBuf)[0] = TRNGNumberGet(TRNG_LOW_WORD);
@@ -124,30 +123,32 @@ static void TRNGCC26XX_fillEntropyPool(uint32_t interruptStatus) {
  *  ======== TRNGCC26XX_copyToClient ========
  *  Copies entropy from the pool to the client destination.
  */
-static void TRNGCC26XX_copyToClient(TRNGCC26XX_Object *object) {
+static void TRNGCC26XX_copyToClient(TRNGCC26XX_Object *object)
+{
     uint8_t tmpEntropyBuf[TRNGCC26XX_MIN_BYTES_PER_ITERATION];
     size_t bytesToCopy = 0;
 
     /* Do not do anything if this job does not need more entropy */
-    while (object->entropyGenerated < object->entropyRequested) {
+    while (object->entropyGenerated < object->entropyRequested)
+    {
 
         /* If there is entropy in the pool, dequeue it and copy to the job's
          * target.
          */
-        if (StructRingBuf_get(&entropyPool, tmpEntropyBuf) != -1) {
+        if (StructRingBuf_get(&entropyPool, tmpEntropyBuf) != -1)
+        {
 
-            bytesToCopy =  MIN(object->entropyRequested - object->entropyGenerated, sizeof(tmpEntropyBuf));
+            bytesToCopy = MIN(object->entropyRequested - object->entropyGenerated, sizeof(tmpEntropyBuf));
 
-            memcpy(object->entropyBuffer + object->entropyGenerated,
-                   tmpEntropyBuf,
-                   bytesToCopy);
+            memcpy(object->entropyBuffer + object->entropyGenerated, tmpEntropyBuf, bytesToCopy);
 
             object->entropyGenerated += bytesToCopy;
         }
         /* If the pool is depleted, stop the process regardless of if the job
          * is done yet.
          */
-        else {
+        else
+        {
             break;
         }
     }
@@ -157,26 +158,30 @@ static void TRNGCC26XX_copyToClient(TRNGCC26XX_Object *object) {
  *  ======== TRNGCC26XX_serviceJob ========
  *  Clean up a completed job and let the application know it is done.
  */
-static void TRNGCC26XX_serviceJob(TRNG_Handle handle) {
+static void TRNGCC26XX_serviceJob(TRNG_Handle handle)
+{
     TRNGCC26XX_Object *object = handle->object;
 
     object->returnStatus = TRNG_STATUS_SUCCESS;
 
     /* Mark the CryptoKey as non-empty */
-    if (object->entropyKey != NULL) {
+    if (object->entropyKey != NULL)
+    {
         object->entropyKey->encoding = CryptoKey_PLAINTEXT;
     }
 
-    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING)
+    {
         SemaphoreP_post(&object->operationSemaphore);
     }
-    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) {
-        if (object->entropyKey != NULL) {
-            object->cryptoKeyCallbackFxn(handle,
-                                         object->returnStatus,
-                                         object->entropyKey);
+    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK)
+    {
+        if (object->entropyKey != NULL)
+        {
+            object->cryptoKeyCallbackFxn(handle, object->returnStatus, object->entropyKey);
         }
-        else {
+        else
+        {
             object->randomBytesCallbackFxn(handle,
                                            object->returnStatus,
                                            object->entropyBuffer,
@@ -188,13 +193,14 @@ static void TRNGCC26XX_serviceJob(TRNG_Handle handle) {
 /*
  *  ======== TRNGCC26XX_hwiFxn ========
  */
-static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
-    uint32_t            interruptStatus;
-    bool                oldJobComplete = false;
-    TRNGCC26XX_Object   *oldObject;
-    List_Elem           *oldJob;
-    List_Elem           *newJob;
-    uintptr_t           key;
+static void TRNGCC26XX_hwiFxn(uintptr_t arg0)
+{
+    uint32_t interruptStatus;
+    bool oldJobComplete = false;
+    TRNGCC26XX_Object *oldObject;
+    List_Elem *oldJob;
+    List_Elem *newJob;
+    uintptr_t key;
 
     /* We need to perform the TRNG HW -> entropy pool -> job copying atomically.
      * The TRNGCC26XX_hwiFxn() is used by TRNG_generateEntropy() to kick off
@@ -208,11 +214,13 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
     /* Only access the TRNG hardware if it is already powered and running.
      * Otherwise, we might cause a hard fault.
      */
-    if (trngActive == true) {
+    if (trngActive == true)
+    {
         interruptStatus = TRNGStatusGet();
         TRNGIntClear(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
 
-        if (interruptStatus & TRNG_NUMBER_READY) {
+        if (interruptStatus & TRNG_NUMBER_READY)
+        {
 
             TRNGCC26XX_fillEntropyPool(interruptStatus);
 
@@ -229,7 +237,8 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
      * that was just added and the TRNG is idle.
      */
     oldJob = List_head(&jobList);
-    if (oldJob != NULL) {
+    if (oldJob != NULL)
+    {
         oldObject = (TRNGCC26XX_Object *)oldJob;
 
         /* Copy from the pool to the job destination. There may be no entropy
@@ -242,7 +251,8 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
          * finished generating the last bytes needed, removed the job from the
          * head of the queue and mark the old job as completed.
          */
-        if (oldObject->entropyGenerated >= oldObject->entropyRequested) {
+        if (oldObject->entropyGenerated >= oldObject->entropyRequested)
+        {
             oldJobComplete = true;
 
             List_remove(&jobList, oldJob);
@@ -251,22 +261,23 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
     }
 
     /* Only attempt to start a new job if there is no active job in progress */
-    if (trngActive == false) {
+    if (trngActive == false)
+    {
         /* Check if there is a job in the queue after we potentially completed
          * the one above.
          */
         newJob = List_head(&jobList);
-        if (newJob != NULL) {
+        if (newJob != NULL)
+        {
             /* If there is another job queued, start it. */
             TRNGCC26XX_startJob(((TRNGCC26XX_Object *)newJob)->handle);
         }
-        else if (StructRingBuf_isFull(&entropyPool) == false) {
+        else if (StructRingBuf_isFull(&entropyPool) == false)
+        {
             /* If no other job is queued, start the TRNG asynchronously to refill
              * the pool.
              */
-            TRNGCC26XX_startTrng(~0,
-                                 true,
-                                 TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
+            TRNGCC26XX_startTrng(~0, true, TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
         }
     }
 
@@ -277,7 +288,8 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
      * done outside the critical section to avoid the callback function being
      * called with interrupts disabled.
      */
-    if (oldJobComplete) {
+    if (oldJobComplete)
+    {
         TRNGCC26XX_serviceJob(((TRNGCC26XX_Object *)oldJob)->handle);
     }
 }
@@ -286,8 +298,9 @@ static void TRNGCC26XX_hwiFxn (uintptr_t arg0) {
  *  ======== TRNGCC26XX_startJob ========
  *  Kick off the TRNG with the settings specified by the job.
  */
-static void TRNGCC26XX_startJob(TRNG_Handle handle) {
-    TRNGCC26XX_Object *object = handle->object;
+static void TRNGCC26XX_startJob(TRNG_Handle handle)
+{
+    TRNGCC26XX_Object *object         = handle->object;
     TRNGCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     TRNGCC26XX_startTrng(hwAttrs->intPriority,
@@ -299,9 +312,8 @@ static void TRNGCC26XX_startJob(TRNG_Handle handle) {
  *  ======== TRNGCC26XX_startTrng ========
  *  Start the TRNG with specified settings.
  */
-static void TRNGCC26XX_startTrng(uint32_t intPriority,
-                                 bool enableInterrupts,
-                                 uint32_t samplesPerCycle) {
+static void TRNGCC26XX_startTrng(uint32_t intPriority, bool enableInterrupts, uint32_t samplesPerCycle)
+{
 
     trngActive = true;
 
@@ -316,10 +328,12 @@ static void TRNGCC26XX_startTrng(uint32_t intPriority,
      * registers its HWI callback with the OS.
      */
     TRNGIntClear(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
-    if (enableInterrupts) {
+    if (enableInterrupts)
+    {
         TRNGIntEnable(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
     }
-    else {
+    else
+    {
         TRNGIntDisable(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
     }
 
@@ -334,28 +348,31 @@ static void TRNGCC26XX_startTrng(uint32_t intPriority,
 /*
  *  ======== TRNGCC26XX_stopTrng ========
  */
-static void TRNGCC26XX_stopTrng(void) {
+static void TRNGCC26XX_stopTrng(void)
+{
 
-        TRNGDisable();
+    TRNGDisable();
 
-        TRNGIntClear(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
+    TRNGIntClear(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
 
-        Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
+    Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
-        Power_releaseDependency(PowerCC26XX_PERIPH_TRNG);
+    Power_releaseDependency(PowerCC26XX_PERIPH_TRNG);
 
-        trngActive = false;
+    trngActive = false;
 }
 
 /*
  *  ======== TRNG_init ========
  */
-void TRNG_init(void) {
+void TRNG_init(void)
+{
     uintptr_t key;
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
+    if (!isInitialized)
+    {
 
         HwiP_construct(&(TRNGCC26XX_hwi), INT_TRNG_IRQ, TRNGCC26XX_hwiFxn, NULL);
 
@@ -373,9 +390,7 @@ void TRNG_init(void) {
          * shared with qualification of the SCLK_LF so we do not spend much
          * additional time in IDLE as opposed to STANDBY.
          */
-        TRNGCC26XX_startTrng(~0,
-                             true,
-                             TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
+        TRNGCC26XX_startTrng(~0, true, TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
 
         isInitialized = true;
     }
@@ -386,54 +401,58 @@ void TRNG_init(void) {
 /*
  *  ======== TRNGCC26XX_construct ========
  */
-TRNG_Handle TRNG_construct(TRNG_Config *config, const TRNG_Params *params) {
-    TRNG_Handle                 handle;
-    TRNGCC26XX_Object           *object;
-    TRNGCC26XX_HWAttrs const    *hwAttrs;
-    uintptr_t                   key;
+TRNG_Handle TRNG_construct(TRNG_Config *config, const TRNG_Params *params)
+{
+    TRNG_Handle handle;
+    TRNGCC26XX_Object *object;
+    TRNGCC26XX_HWAttrs const *hwAttrs;
+    uintptr_t key;
 
-    handle = config;
-    object = handle->object;
+    handle  = config;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
-
 
     key = HwiP_disable();
 
-    if (object->isOpen || !isInitialized) {
+    if (object->isOpen || !isInitialized)
+    {
         HwiP_restore(key);
         return NULL;
     }
 
-    object->isOpen = true;
+    object->isOpen     = true;
     object->isEnqueued = false;
 
     HwiP_restore(key);
 
     /* If params are NULL, use defaults */
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &TRNG_defaultParams;
     }
 
     /* For callback mode, check if at least one of the
      * callback function pointers is set. */
-    if ((params->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) &&
-        (params->cryptoKeyCallbackFxn == NULL) &&
-        (params->randomBytesCallbackFxn == NULL)) {
+    if ((params->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) && (params->cryptoKeyCallbackFxn == NULL) &&
+        (params->randomBytesCallbackFxn == NULL))
+    {
         return NULL;
     }
 
-    object->returnBehavior          = params->returnBehavior;
-    object->semaphoreTimeout        = params->timeout;
-    object->cryptoKeyCallbackFxn    = params->cryptoKeyCallbackFxn;
-    object->randomBytesCallbackFxn  = params->randomBytesCallbackFxn;
-    object->handle                  = handle;
+    object->returnBehavior         = params->returnBehavior;
+    object->semaphoreTimeout       = params->timeout;
+    object->cryptoKeyCallbackFxn   = params->cryptoKeyCallbackFxn;
+    object->randomBytesCallbackFxn = params->randomBytesCallbackFxn;
+    object->handle                 = handle;
 
     if (hwAttrs->samplesPerCycle >= TRNGCC26XX_SAMPLES_PER_CYCLE_MIN &&
-        hwAttrs->samplesPerCycle <= TRNGCC26XX_SAMPLES_PER_CYCLE_MAX) {
+        hwAttrs->samplesPerCycle <= TRNGCC26XX_SAMPLES_PER_CYCLE_MAX)
+    {
 
         object->samplesPerCycle = hwAttrs->samplesPerCycle;
-
-    } else {
+    }
+    else
+    {
         object->samplesPerCycle = TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT;
     }
 
@@ -445,8 +464,9 @@ TRNG_Handle TRNG_construct(TRNG_Config *config, const TRNG_Params *params) {
 /*
  *  ======== TRNG_close ========
  */
-void TRNG_close(TRNG_Handle handle) {
-    TRNGCC26XX_Object         *object;
+void TRNG_close(TRNG_Handle handle)
+{
+    TRNGCC26XX_Object *object;
 
     /* Get the pointer to the object and hwAttrs */
     object = handle->object;
@@ -460,24 +480,27 @@ void TRNG_close(TRNG_Handle handle) {
 /*
  *  ======== TRNGCC26XX_waitForResult ========
  */
-static int_fast16_t TRNGCC26XX_waitForResult(TRNG_Handle handle) {
+static int_fast16_t TRNGCC26XX_waitForResult(TRNG_Handle handle)
+{
     TRNGCC26XX_Object *object = handle->object;
-    int_fast16_t status = TRNG_STATUS_ERROR;
+    int_fast16_t status       = TRNG_STATUS_ERROR;
 
     /* If we need to generate more entropy for a request, we will need to
      * work off the job queue to get to the current request. When that is
      * finished, the TRNGCC26XX_hwiFxn() will kick off an asynchronous refilling
      * of the entropy pool.
      */
-    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING) {
+    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING)
+    {
 
         /* Repeat until we have generated enough entropy. */
-        while(object->entropyGenerated < object->entropyRequested) {
+        while (object->entropyGenerated < object->entropyRequested)
+        {
             /* Wait until the TRNG has generated 64 bits of entropy */
-            do {
+            do
+            {
                 CPUdelay(1);
-            }
-            while(!(TRNGStatusGet() & (TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN)));
+            } while (!(TRNGStatusGet() & (TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN)));
 
             TRNGCC26XX_hwiFxn((uintptr_t)NULL);
         }
@@ -487,7 +510,8 @@ static int_fast16_t TRNGCC26XX_waitForResult(TRNG_Handle handle) {
     /* In blocking mode, we simply pend until the ISR posts our driver's
      * semaphore when our job is complete.
      */
-    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING) {
+    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING)
+    {
 
         SemaphoreP_pend(&object->operationSemaphore, object->semaphoreTimeout);
 
@@ -496,7 +520,8 @@ static int_fast16_t TRNGCC26XX_waitForResult(TRNG_Handle handle) {
     /* In callback mode, we always return with status success from this
      * function.
      */
-    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) {
+    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK)
+    {
         status = TRNG_STATUS_SUCCESS;
     }
 
@@ -507,7 +532,8 @@ static int_fast16_t TRNGCC26XX_waitForResult(TRNG_Handle handle) {
  *  ======== TRNGCC26XX_setSamplesPerCycle ========
  * samplesPerCycle must be between 2^8 and 2^24 (256 and 16777216)
  */
-int_fast16_t TRNGCC26XX_setSamplesPerCycle(TRNG_Handle handle, uint32_t samplesPerCycle) {
+int_fast16_t TRNGCC26XX_setSamplesPerCycle(TRNG_Handle handle, uint32_t samplesPerCycle)
+{
     TRNGCC26XX_Object *object = handle->object;
 
     object->samplesPerCycle = samplesPerCycle;
@@ -517,27 +543,28 @@ int_fast16_t TRNGCC26XX_setSamplesPerCycle(TRNG_Handle handle, uint32_t samplesP
 /*
  *  ======== TRNG_generateEntropy ========
  */
-int_fast16_t TRNG_generateEntropy(TRNG_Handle handle, CryptoKey *entropy) {
+int_fast16_t TRNG_generateEntropy(TRNG_Handle handle, CryptoKey *entropy)
+{
     return TRNG_generateKey(handle, entropy);
 }
 
 /*
  *  ======== TRNG_generateKey ========
  */
-int_fast16_t TRNG_generateKey(TRNG_Handle handle, CryptoKey *entropy) {
-    TRNGCC26XX_Object           *object = handle->object;
+int_fast16_t TRNG_generateKey(TRNG_Handle handle, CryptoKey *entropy)
+{
+    TRNGCC26XX_Object *object = handle->object;
 
-    if ((entropy == NULL) ||
-        (entropy->u.plaintext.keyMaterial == NULL) ||
-        (entropy->encoding != CryptoKey_BLANK_PLAINTEXT) ||
-        (entropy->u.plaintext.keyLength == 0)) {
+    if ((entropy == NULL) || (entropy->u.plaintext.keyMaterial == NULL) ||
+        (entropy->encoding != CryptoKey_BLANK_PLAINTEXT) || (entropy->u.plaintext.keyLength == 0))
+    {
         return TRNG_STATUS_INVALID_INPUTS;
     }
 
-    object->entropyGenerated    = 0;
-    object->entropyKey          = entropy;
-    object->entropyBuffer       = entropy->u.plaintext.keyMaterial;
-    object->entropyRequested    = entropy->u.plaintext.keyLength;
+    object->entropyGenerated = 0;
+    object->entropyKey       = entropy;
+    object->entropyBuffer    = entropy->u.plaintext.keyMaterial;
+    object->entropyRequested = entropy->u.plaintext.keyLength;
 
     return TRNG_getRandom(handle);
 }
@@ -545,19 +572,19 @@ int_fast16_t TRNG_generateKey(TRNG_Handle handle, CryptoKey *entropy) {
 /*
  *  ======== TRNG_getRandomBytes ========
  */
-int_fast16_t TRNG_getRandomBytes(TRNG_Handle handle,
-                                 void *randomBytes,
-                                 size_t randomBytesSize) {
-    TRNGCC26XX_Object           *object = handle->object;
+int_fast16_t TRNG_getRandomBytes(TRNG_Handle handle, void *randomBytes, size_t randomBytesSize)
+{
+    TRNGCC26XX_Object *object = handle->object;
 
-    if ((randomBytes == NULL) || (randomBytesSize == 0)) {
+    if ((randomBytes == NULL) || (randomBytesSize == 0))
+    {
         return TRNG_STATUS_INVALID_INPUTS;
     }
 
-    object->entropyGenerated    = 0;
-    object->entropyKey          = NULL;
-    object->entropyBuffer       = randomBytes;
-    object->entropyRequested    = randomBytesSize;
+    object->entropyGenerated = 0;
+    object->entropyKey       = NULL;
+    object->entropyBuffer    = randomBytes;
+    object->entropyRequested = randomBytesSize;
 
     return TRNG_getRandom(handle);
 }
@@ -565,14 +592,15 @@ int_fast16_t TRNG_getRandomBytes(TRNG_Handle handle,
 /*
  *  ======== TRNG_getRandom ========
  */
-static int_fast16_t TRNG_getRandom(TRNG_Handle handle) {
-    TRNGCC26XX_Object           *object = handle->object;
-    uintptr_t                   key;
-    bool                        preemptRefilling;
-    bool                        preemptJob;
+static int_fast16_t TRNG_getRandom(TRNG_Handle handle)
+{
+    TRNGCC26XX_Object *object = handle->object;
+    uintptr_t key;
+    bool preemptRefilling;
+    bool preemptJob;
 
     /* Initialize returnStatus */
-    object->returnStatus        = TRNG_STATUS_ERROR;
+    object->returnStatus = TRNG_STATUS_ERROR;
 
     key = HwiP_disable();
 
@@ -584,8 +612,8 @@ static int_fast16_t TRNG_getRandom(TRNG_Handle handle) {
      * comes in and clears it first. At best, the latter would cause the polling
      * job to require longer than needed. At worst, it could cause a fault.
      */
-    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING &&
-        trngActive == true) {
+    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING && trngActive == true)
+    {
 
         TRNGIntClear(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
         TRNGIntDisable(TRNG_NUMBER_READY | TRNG_FRO_SHUTDOWN);
@@ -597,8 +625,7 @@ static int_fast16_t TRNG_getRandom(TRNG_Handle handle) {
      * Otherwise, we might have to wait up to 5ms until the refill operation
      * completes when we only want the minimum amount of entropy.
      */
-    preemptRefilling = object->samplesPerCycle != TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT &&
-                       List_empty(&jobList) &&
+    preemptRefilling = object->samplesPerCycle != TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT && List_empty(&jobList) &&
                        trngActive == true;
 
     /* If we start a job with polling return behaviour from a critical section
@@ -608,24 +635,27 @@ static int_fast16_t TRNG_getRandom(TRNG_Handle handle) {
      * previously executing job and immediately handle this job to avoid calling
      * any callback functions from within TRNGCC26XX_waitForResult() in this call.
      */
-    preemptJob = object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING &&
-                 !List_empty(&jobList) &&
-                 trngActive == true;
+    preemptJob = object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING && !List_empty(&jobList) && trngActive == true;
 
-    if (preemptRefilling || preemptJob) {
+    if (preemptRefilling || preemptJob)
+    {
         TRNGCC26XX_stopTrng();
     }
 
-    if (object->isEnqueued == false) {
-        if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING) {
+    if (object->isEnqueued == false)
+    {
+        if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_POLLING)
+        {
             List_putHead(&jobList, &object->listElement);
         }
-        else {
+        else
+        {
             List_put(&jobList, &object->listElement);
         }
         object->isEnqueued = true;
     }
-    else {
+    else
+    {
         /* Throw an error as a new job was never enqueued even though
          * the getRandom operation was invoked.
          */
@@ -643,20 +673,22 @@ static int_fast16_t TRNG_getRandom(TRNG_Handle handle) {
 /*
  *  ======== TRNG_cancelOperation ========
  */
-int_fast16_t TRNG_cancelOperation(TRNG_Handle handle) {
-    TRNGCC26XX_Object *object   = handle->object;
-    uintptr_t         key;
-    List_Elem         *newJob;
+int_fast16_t TRNG_cancelOperation(TRNG_Handle handle)
+{
+    TRNGCC26XX_Object *object = handle->object;
+    uintptr_t key;
+    List_Elem *newJob;
 
     key = HwiP_disable();
 
-    if ((trngActive == false) ||
-        (object->isEnqueued == false)) {
+    if ((trngActive == false) || (object->isEnqueued == false))
+    {
         HwiP_restore(key);
         return TRNG_STATUS_SUCCESS;
     }
 
-    if (&object->listElement == List_head(&jobList)) {
+    if (&object->listElement == List_head(&jobList))
+    {
         TRNGCC26XX_stopTrng();
 
         List_remove(&jobList, &object->listElement);
@@ -665,20 +697,21 @@ int_fast16_t TRNG_cancelOperation(TRNG_Handle handle) {
          * the one above.
          */
         newJob = List_head(&jobList);
-        if (newJob != NULL) {
+        if (newJob != NULL)
+        {
             /* If there is another job queued, start it. */
             TRNGCC26XX_startJob(((TRNGCC26XX_Object *)newJob)->handle);
         }
-        else if (StructRingBuf_isFull(&entropyPool) == false) {
+        else if (StructRingBuf_isFull(&entropyPool) == false)
+        {
             /* If no other job is queued, start the TRNG asynchronously to refill
              * the pool.
              */
-            TRNGCC26XX_startTrng(~0,
-                                 true,
-                                 TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
+            TRNGCC26XX_startTrng(~0, true, TRNGCC26XX_SAMPLES_PER_CYCLE_DEFAULT);
         }
     }
-    else {
+    else
+    {
         List_remove(&jobList, &object->listElement);
     }
     object->isEnqueued = false;
@@ -686,20 +719,22 @@ int_fast16_t TRNG_cancelOperation(TRNG_Handle handle) {
     // Clear the entropy generated so far
     memset(object->entropyBuffer, 0, object->entropyRequested);
     object->entropyGenerated = 0;
-    object->returnStatus = TRNG_STATUS_CANCELED;
+    object->returnStatus     = TRNG_STATUS_CANCELED;
 
     HwiP_restore(key);
 
-    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING) {
+    if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_BLOCKING)
+    {
         SemaphoreP_post(&object->operationSemaphore);
     }
-    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) {
-        if (object->entropyKey != NULL) {
-            object->cryptoKeyCallbackFxn(handle,
-                                         object->returnStatus,
-                                         object->entropyKey);
+    else if (object->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK)
+    {
+        if (object->entropyKey != NULL)
+        {
+            object->cryptoKeyCallbackFxn(handle, object->returnStatus, object->entropyKey);
         }
-        else {
+        else
+        {
             object->randomBytesCallbackFxn(handle,
                                            object->returnStatus,
                                            object->entropyBuffer,

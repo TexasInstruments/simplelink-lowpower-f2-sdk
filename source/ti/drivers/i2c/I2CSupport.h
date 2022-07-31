@@ -80,8 +80,7 @@ extern void I2CSupport_powerRelConstraint(void);
  *                                without completing
  *  @retval I2C_STATUS_BUS_BUSY   I2C bus already in use by another I2C Master
  */
-extern int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle,
-    I2C_Transaction *transaction);
+extern int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle, I2C_Transaction *transaction);
 
 #ifdef __cplusplus
 }

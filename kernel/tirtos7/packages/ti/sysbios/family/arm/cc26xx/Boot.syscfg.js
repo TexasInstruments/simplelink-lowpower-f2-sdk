@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,6 +66,18 @@ function moduleInstances(mod)
     return (startupInstance);
 }
 
+/*
+ *  ======== validate ========
+ */
+function validate(mod, validation)
+{
+    if (system.modules["/ti/sysbios/BIOS"].$static.psaEnabled) {
+        if (mod.trimDevice == true) {
+            validation.logError("Trim Device Flag must be set to false when psaEnabled is true.", mod);
+        }
+    }
+}
+
 exports = {
     staticOnly: true,
     displayName: "Boot",
@@ -73,6 +85,7 @@ exports = {
     moduleStatic: {
         name: "moduleGlobal",
         moduleInstances: moduleInstances,
+        validate: validate,
         config: [
             {
                 name: "trimDevice",

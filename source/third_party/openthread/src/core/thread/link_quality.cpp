@@ -37,7 +37,7 @@
 
 #include "common/code_utils.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
+#include "common/locator_getters.hpp"
 
 namespace ot {
 
@@ -58,19 +58,12 @@ void SuccessRateTracker::AddSample(bool aSuccess, uint16_t aWeight)
     mFailureRate = static_cast<uint16_t>(((oldAverage * (n - 1)) + newValue + (n / 2)) / n);
 }
 
-void RssAverager::Reset(void)
+Error RssAverager::Add(int8_t aRss)
 {
-    mAverage = 0;
-    mCount   = 0;
-}
-
-otError RssAverager::Add(int8_t aRss)
-{
-    otError  error = OT_ERROR_NONE;
+    Error    error = kErrorNone;
     uint16_t newValue;
-    uint16_t oldAverage;
 
-    VerifyOrExit(aRss != OT_RADIO_RSSI_INVALID, error = OT_ERROR_INVALID_ARGS);
+    VerifyOrExit(aRss != OT_RADIO_RSSI_INVALID, error = kErrorInvalidArgs);
 
     // Restrict the RSS value to the closed range [0, -128] so the RSS times precision multiple can fit in 11 bits.
     if (aRss > 0)
@@ -83,28 +76,10 @@ otError RssAverager::Add(int8_t aRss)
     newValue = static_cast<uint16_t>(-aRss);
     newValue <<= kPrecisionBitShift;
 
-    oldAverage = mAverage;
-
-    if (mCount == 0)
-    {
-        mCount++;
-        mAverage = newValue;
-    }
-    else if (mCount < (1 << kCoeffBitShift) - 1)
-    {
-        mCount++;
-
-        // Maintain arithmetic mean.
-        // newAverage = newValue * (1/mCount) + oldAverage * ((mCount -1)/mCount)
-        mAverage = static_cast<uint16_t>(((oldAverage * (mCount - 1)) + newValue) / mCount);
-    }
-    else
-    {
-        // Maintain exponentially weighted moving average using coefficient of (1/2^kCoeffBitShift).
-        // newAverage = + newValue * 1/2^j + oldAverage * (1 - 1/2^j), for j = kCoeffBitShift.
-
-        mAverage = static_cast<uint16_t>(((oldAverage << kCoeffBitShift) - oldAverage + newValue) >> kCoeffBitShift);
-    }
+    mCount += (mCount < (1 << kCoeffBitShift));
+    // Maintain arithmetic mean.
+    // newAverage = newValue * (1/mCount) + oldAverage * ((mCount -1)/mCount)
+    mAverage = static_cast<uint16_t>(((mAverage * (mCount - 1)) + newValue) / mCount);
 
 exit:
     return error;
@@ -133,28 +108,41 @@ RssAverager::InfoString RssAverager::ToString(void) const
 {
     InfoString string;
 
-    VerifyOrExit(mCount != 0, OT_NOOP);
-    string.Set("%d.%s", -(mAverage >> kPrecisionBitShift), kDigitsString[mAverage & kPrecisionBitMask]);
+    VerifyOrExit(mCount != 0);
+    string.Append("%d.%s", -(mAverage >> kPrecisionBitShift), kDigitsString[mAverage & kPrecisionBitMask]);
 
 exit:
     return string;
 }
 
+void LqiAverager::Add(uint8_t aLqi)
+{
+    uint8_t count;
+
+    if (mCount < UINT8_MAX)
+    {
+        mCount++;
+    }
+    count = OT_MIN((1 << kCoeffBitShift), mCount);
+
+    mAverage = static_cast<uint8_t>(((mAverage * (count - 1)) + aLqi) / count);
+}
+
 void LinkQualityInfo::Clear(void)
 {
-    mRssAverager.Reset();
+    mRssAverager.Clear();
     SetLinkQuality(0);
     mLastRss = OT_RADIO_RSSI_INVALID;
 
-    mFrameErrorRate.Reset();
-    mMessageErrorRate.Reset();
+    mFrameErrorRate.Clear();
+    mMessageErrorRate.Clear();
 }
 
 void LinkQualityInfo::AddRss(int8_t aRss)
 {
     uint8_t oldLinkQuality = kNoLinkQuality;
 
-    VerifyOrExit(aRss != OT_RADIO_RSSI_INVALID, OT_NOOP);
+    VerifyOrExit(aRss != OT_RADIO_RSSI_INVALID);
 
     mLastRss = aRss;
 
@@ -178,8 +166,12 @@ uint8_t LinkQualityInfo::GetLinkMargin(void) const
 
 LinkQualityInfo::InfoString LinkQualityInfo::ToInfoString(void) const
 {
-    return InfoString("aveRss:%s, lastRss:%d, linkQuality:%d", mRssAverager.ToString().AsCString(), GetLastRss(),
-                      GetLinkQuality());
+    InfoString string;
+
+    string.Append("aveRss:%s, lastRss:%d, linkQuality:%d", mRssAverager.ToString().AsCString(), GetLastRss(),
+                  GetLinkQuality());
+
+    return string;
 }
 
 uint8_t LinkQualityInfo::ConvertRssToLinkMargin(int8_t aNoiseFloor, int8_t aRss)
@@ -206,7 +198,7 @@ uint8_t LinkQualityInfo::ConvertRssToLinkQuality(int8_t aNoiseFloor, int8_t aRss
 
 int8_t LinkQualityInfo::ConvertLinkQualityToRss(int8_t aNoiseFloor, uint8_t aLinkQuality)
 {
-    uint8_t linkmargin = 0;
+    int8_t linkmargin = 0;
 
     switch (aLinkQuality)
     {
@@ -232,6 +224,12 @@ int8_t LinkQualityInfo::ConvertLinkQualityToRss(int8_t aNoiseFloor, uint8_t aLin
 
 uint8_t LinkQualityInfo::CalculateLinkQuality(uint8_t aLinkMargin, uint8_t aLastLinkQuality)
 {
+    // Static private method to calculate the link quality from a given
+    // link margin while taking into account the last link quality
+    // value and adding the hysteresis value to the thresholds. If
+    // there is no previous value for link quality, the constant
+    // kNoLinkQuality should be passed as the second argument.
+
     uint8_t threshold1, threshold2, threshold3;
     uint8_t linkQuality = 0;
 
@@ -246,17 +244,17 @@ uint8_t LinkQualityInfo::CalculateLinkQuality(uint8_t aLinkMargin, uint8_t aLast
     case 0:
         threshold1 += kHysteresisThreshold;
 
-        // fall-through
+        OT_FALL_THROUGH;
 
     case 1:
         threshold2 += kHysteresisThreshold;
 
-        // fall-through
+        OT_FALL_THROUGH;
 
     case 2:
         threshold3 += kHysteresisThreshold;
 
-        // fall-through
+        OT_FALL_THROUGH;
 
     default:
         break;

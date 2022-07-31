@@ -217,7 +217,6 @@
  *******************************************************************************
  */
 
-
 #ifndef ti_drivers_LED__include
 #define ti_drivers_LED__include
 
@@ -233,40 +232,42 @@
 extern "C" {
 #endif
 
-#define LED_BRIGHTNESS_MAX      100U  /* Max brightness in % is 100%*/
-#define LED_BRIGHTNESS_MIN      0U    /* Max brightness in % is 0%*/
+#define LED_BRIGHTNESS_MAX 100U /* Max brightness in % is 100%*/
+#define LED_BRIGHTNESS_MIN 0U   /* Max brightness in % is 0%*/
 
-#define LED_ON                  1U
-#define LED_OFF                 0U
+#define LED_ON  1U
+#define LED_OFF 0U
 
-#define LED_BLINK_FOREVER       0xFFFF
+#define LED_BLINK_FOREVER 0xFFFF
 
 /* Number of user defined LED configurations */
 extern const uint_least8_t LED_count;
 
 /*!
-*  @brief    LED types based on control source
-*
-*  A LED can be controlled by GPIO or PWM. Only a PWM controlled LED can
-*  be operated to show brightness variation. An unopened instance will be of
-*  type #LED_NONE.
-*/
-typedef enum {
+ *  @brief    LED types based on control source
+ *
+ *  A LED can be controlled by GPIO or PWM. Only a PWM controlled LED can
+ *  be operated to show brightness variation. An unopened instance will be of
+ *  type #LED_NONE.
+ */
+typedef enum
+{
     LED_NONE = 0,
     LED_GPIO_CONTROLLED,
     LED_PWM_CONTROLLED
 } LED_Type;
 
 /*!
-*  @brief    LED State
-*
-*  A LED can be in OFF, ON or BLINKING state
-*
-*  State of particular LED may be tied with a warning/alert in system
-*  which a thread/task may want to know.
-*/
-typedef enum {
-    LED_STATE_OFF =  0,
+ *  @brief    LED State
+ *
+ *  A LED can be in OFF, ON or BLINKING state
+ *
+ *  State of particular LED may be tied with a warning/alert in system
+ *  which a thread/task may want to know.
+ */
+typedef enum
+{
+    LED_STATE_OFF = 0,
     LED_STATE_ON,
     LED_STATE_BLINKING
 } LED_State;
@@ -280,17 +281,18 @@ typedef enum {
  *  This structure needs to be defined and provided by the application and will
  *  be NULL terminated.
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to drivers internal data state object */
-    void        *object;
+    void *object;
     /*! Pointer to a driver specific hardware attributes structure */
-    void const  *hwAttrs;
+    void const *hwAttrs;
 } LED_Config;
 
 /*!
  *  @brief    A handle that is returned from a LED_open() call.
  */
-typedef LED_Config* LED_Handle;
+typedef LED_Config *LED_Handle;
 
 /*!
  *  @brief    Hardware specific settings for a LED module.
@@ -299,31 +301,33 @@ typedef LED_Config* LED_Handle;
  *  index should be correspond to the desired pin in either the PWM or GPIO
  *  config tables depending on the requested #LED_Type.
  */
-typedef struct {
+typedef struct
+{
     uint_least8_t index; /*!< Index into GPIO or PWM config array */
-    LED_Type      type; /*<! GPIO (binary) or PWM (dimmable) control */
+    LED_Type type;       /*<! GPIO (binary) or PWM (dimmable) control */
 } LED_HWAttrs;
 
 /*!
  *  @brief    LED Object structure
  *
-*  The application must not access any member variables of this structure!
+ *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    uint32_t        pwmPeriod;    /*!< pwmPeriod(us) of controlling PWM */
-    PWM_Handle      pwmHandle;    /*!< Used for PWM calls if PWM type LED */
-    ClockP_Handle   clockHandle;  /*!< Handle to clock used for blinking */
-    ClockP_Struct   clock;        /*!< Clock internal data */
-    LED_State       state;        /*!< Current State of LED */
-    LED_State       rawState;     /*!< rawState maintains actual state On or Off
-                                       while blinking which is super state */
-    LED_Type        ledType;      /*!< may be either GPIO or PWM controlled */
-    uint8_t         brightness;   /*!< Varying min-max(0-100%) for PWM LED) */
-    uint_least8_t   gpioIndex;    /*!< Index into #GPIO_PinConfig array */
-    uint16_t        togglePeriod; /*!< Toggleperiod(ms), 0 for non-blinking LED
-                                       This is half of blinkPeriod: two toggles
-                                       is one blink */
-    uint16_t        blinkCount;   /*!< Blinkcount, 0 for non-blinking LED */
+typedef struct
+{
+    uint32_t pwmPeriod;        /*!< pwmPeriod(us) of controlling PWM */
+    PWM_Handle pwmHandle;      /*!< Used for PWM calls if PWM type LED */
+    ClockP_Handle clockHandle; /*!< Handle to clock used for blinking */
+    ClockP_Struct clock;       /*!< Clock internal data */
+    LED_State state;           /*!< Current State of LED */
+    LED_State rawState;        /*!< rawState maintains actual state On or Off
+                                    while blinking which is super state */
+    LED_Type ledType;          /*!< may be either GPIO or PWM controlled */
+    uint8_t brightness;        /*!< Varying min-max(0-100%) for PWM LED) */
+    uint_least8_t gpioIndex;   /*!< Index into #GPIO_PinConfig array */
+    uint16_t togglePeriod;     /*!< Toggleperiod(ms), 0 for non-blinking LED
+                                    This is half of blinkPeriod: two toggles
+                                    is one blink */
+    uint16_t blinkCount;       /*!< Blinkcount, 0 for non-blinking LED */
 } LED_Object;
 
 /*!
@@ -336,11 +340,12 @@ typedef struct {
  *
  *  @sa     LED_Params_init()
  */
-typedef struct {
-    uint32_t    pwmPeriod;      /*!< pwmPeriod(us) of controlling PWM */
-    uint16_t    blinkPeriod;    /*!< param to set blink period (in ms) */
-    uint8_t     brightness;     /*!< may vary from 0-100% for PWM LED */
-    LED_State   setState;       /*!< request to set a LED state(eg blinking) */
+typedef struct
+{
+    uint32_t pwmPeriod;   /*!< pwmPeriod(us) of controlling PWM */
+    uint16_t blinkPeriod; /*!< param to set blink period (in ms) */
+    uint8_t brightness;   /*!< may vary from 0-100% for PWM LED */
+    LED_State setState;   /*!< request to set a LED state(eg blinking) */
 } LED_Params;
 
 /*!
@@ -464,9 +469,7 @@ extern bool LED_setOn(LED_Handle ledHandle, uint8_t brightness);
  *                       number of blinks is 0x7FFF or 32,767 blinks. An input
  *                       exceeding this value will be truncated to 0x7FFF.
  */
-extern void LED_startBlinking(LED_Handle ledHandle,
-                              uint16_t blinkPeriod,
-                              uint16_t blinkCount);
+extern void LED_startBlinking(LED_Handle ledHandle, uint16_t blinkPeriod, uint16_t blinkCount);
 
 /*!
  *  @brief  Function to stop an LED blinking

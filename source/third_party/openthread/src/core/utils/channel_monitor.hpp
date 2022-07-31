@@ -36,9 +36,12 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
+
 #include <openthread/platform/radio.h>
 
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "mac/mac.hpp"
 #include "radio/radio.hpp"
@@ -55,8 +58,6 @@ namespace Utils {
  * @{
  */
 
-#if OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
-
 /**
  * This class implements the channel monitoring logic.
  *
@@ -70,31 +71,28 @@ namespace Utils {
  * window (referred to as "channel occupancy").
  *
  */
-class ChannelMonitor : public InstanceLocator
+class ChannelMonitor : public InstanceLocator, private NonCopyable
 {
 public:
-    enum
-    {
-        /**
-         * The channel RSSI sample interval in milliseconds.
-         *
-         */
-        kSampleInterval = OPENTHREAD_CONFIG_CHANNEL_MONITOR_SAMPLE_INTERVAL,
+    /**
+     * The channel RSSI sample interval in milliseconds.
+     *
+     */
+    static constexpr uint32_t kSampleInterval = OPENTHREAD_CONFIG_CHANNEL_MONITOR_SAMPLE_INTERVAL;
 
-        /**
-         * The RSSI threshold in dBm.
-         *
-         * It is recommended that this value is set to same value as the CCA threshold used by radio.
-         *
-         */
-        kRssiThreshold = OPENTHREAD_CONFIG_CHANNEL_MONITOR_RSSI_THRESHOLD,
+    /**
+     * The RSSI threshold in dBm.
+     *
+     * It is recommended that this value is set to same value as the CCA threshold used by radio.
+     *
+     */
+    static constexpr int8_t kRssiThreshold = OPENTHREAD_CONFIG_CHANNEL_MONITOR_RSSI_THRESHOLD;
 
-        /**
-         * The averaging sample window length (in units of sample interval).
-         *
-         */
-        kSampleWindow = OPENTHREAD_CONFIG_CHANNEL_MONITOR_SAMPLE_WINDOW,
-    };
+    /**
+     * The averaging sample window length (in units of sample interval).
+     *
+     */
+    static constexpr uint32_t kSampleWindow = OPENTHREAD_CONFIG_CHANNEL_MONITOR_SAMPLE_WINDOW;
 
     /**
      * This constructor initializes the object.
@@ -109,22 +107,22 @@ public:
      *
      * Once started, any previously collected data is cleared.
      *
-     * @retval OT_ERROR_NONE      Channel Monitoring started successfully.
-     * @retval OT_ERROR_ALREADY   Channel Monitoring has already been started.
+     * @retval kErrorNone      Channel Monitoring started successfully.
+     * @retval kErrorAlready   Channel Monitoring has already been started.
      *
      */
-    otError Start(void);
+    Error Start(void);
 
     /**
      * This method stops the Channel Monitoring operation.
      *
      * @note After `Stop()`, the previous data is still valid and can be read.
      *
-     * @retval OT_ERROR_NONE      Channel Monitoring stopped successfully.
-     * @retval OT_ERROR_ALREADY   Channel Monitoring has already been stopped.
+     * @retval kErrorNone      Channel Monitoring stopped successfully.
+     * @retval kErrorAlready   Channel Monitoring has already been stopped.
      *
      */
-    otError Stop(void);
+    Error Stop(void);
 
     /**
      * This method indicates whether the Channel Monitoring operation is started and running.
@@ -182,21 +180,18 @@ public:
      *             channel with the same occupancy rate value.
      *
      */
-    Mac::ChannelMask FindBestChannels(const Mac::ChannelMask &aMask, uint16_t &aOccupancy);
+    Mac::ChannelMask FindBestChannels(const Mac::ChannelMask &aMask, uint16_t &aOccupancy) const;
 
 private:
-    enum
-    {
 #if (OPENTHREAD_CONFIG_RADIO_2P4GHZ_OQPSK_SUPPORT && OPENTHREAD_CONFIG_RADIO_915MHZ_OQPSK_SUPPORT)
-        kNumChannelMasks = 8,
+    static constexpr uint8_t kNumChannelMasks = 8;
 #else
-        kNumChannelMasks = 4,
+    static constexpr uint8_t kNumChannelMasks = 4;
 #endif
-        kNumChannels       = (Radio::kChannelMax - Radio::kChannelMin + 1),
-        kTimerInterval     = (kSampleInterval / kNumChannelMasks),
-        kMaxJitterInterval = 4096,
-        kMaxOccupancy      = 0xffff,
-    };
+    static constexpr uint8_t  kNumChannels       = (Radio::kChannelMax - Radio::kChannelMin + 1);
+    static constexpr uint32_t kTimerInterval     = (kSampleInterval / kNumChannelMasks);
+    static constexpr uint16_t kMaxJitterInterval = 4096;
+    static constexpr uint32_t kMaxOccupancy      = 0xffff;
 
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
@@ -212,8 +207,6 @@ private:
     TimerMilli mTimer;
 };
 
-#endif // OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
-
 /**
  * @}
  *
@@ -221,5 +214,7 @@ private:
 
 } // namespace Utils
 } // namespace ot
+
+#endif // OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
 
 #endif // CHANNEL_MONITOR_HPP_

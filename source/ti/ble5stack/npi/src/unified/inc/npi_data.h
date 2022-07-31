@@ -57,7 +57,7 @@ extern "C"
 
 #include <stdint.h>
 
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 #include <ti/drivers/SPI.h>
 
 // ****************************************************************************
@@ -189,7 +189,7 @@ typedef struct _npiFrame_t
 
 typedef union
 {
-  UART_Params uartParams;
+  UART2_Params uartParams;
   SPI_Params spiParams;                 // Not supported
 } npiInterfaceParams;
 

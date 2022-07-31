@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 "use strict";
 
 let Common   = system.getScript("/ti/drivers/Common.js");
-let UART     = system.getScript("/ti/drivers/UART");
+let UART     = system.getScript("/ti/drivers/UART2");
 let logError = Common.logError;
 
 let config = [
@@ -58,7 +58,6 @@ let config = [
         displayName: "Display Implementation",
         default: "DisplayUart2",
         options: [
-            {name: "DisplayUart"},
             {name: "DisplayUart2"},
             {name: "DisplayDogm1286"},
             {name: "DisplayHost"}
@@ -88,14 +87,6 @@ value that cannot be changed. Please refer to the
         displayName : "UART Buffer Size",
         description : "UART display buffer size in bytes",
         default     : 1024
-    },
-    {
-        name        : "useUART2",
-        displayName : "Use UART2",
-        description : "Use UART2 for underlying UART driver",
-        default     : true,
-        hidden      : false,
-        onChange    : onChange
     },
     {
         name        : "enableANSI",
@@ -198,13 +189,9 @@ function moduleInstances(inst)
 
         let displayName = "UART";
 
-        let moduleName = "/ti/drivers/UART";
+        let moduleName = "/ti/drivers/UART2";
         if (inst.$hardware && inst.$hardware.displayName) {
             displayName = inst.$hardware.displayName;
-        }
-
-        if (inst.useUART2) {
-            moduleName = "/ti/drivers/UART2";
         }
 
         return ([
@@ -380,7 +367,6 @@ function onChangeMutexTimeout(inst, ui)
 /*
  *  ======== onChange ========
  *  Show/hide appropriate config options for each type of display
- *  Update Display Implementation if useUART2 config is invoked
  */
 function onChange(inst, ui)
 {
@@ -388,7 +374,6 @@ function onChange(inst, ui)
         ui.enableANSI.hidden = true;
         ui.maxPrintLength.hidden = true;
         ui.uartBufferSize.hidden = true;
-        ui.useUART2.hidden = true;
         ui.baudRate.hidden = true;
         ui.lcdSize.hidden = false;
         ui.mutexTimeout.hidden = true;
@@ -399,7 +384,6 @@ function onChange(inst, ui)
         ui.enableANSI.hidden = true;
         ui.maxPrintLength.hidden = false;
         ui.uartBufferSize.hidden = true;
-        ui.useUART2.hidden = true;
         ui.baudRate.hidden = true;
         ui.lcdSize.hidden = true;
         ui.mutexTimeout.hidden = true;
@@ -410,18 +394,11 @@ function onChange(inst, ui)
         ui.enableANSI.hidden = false;
         ui.maxPrintLength.hidden = true;
         ui.uartBufferSize.hidden = false;
-        ui.useUART2.hidden = false;
         ui.baudRate.hidden = false;
         ui.lcdSize.hidden = true;
         ui.mutexTimeout.hidden = false;
         onChangeMutexTimeout(inst, ui);
-
-        if (inst.useUART2 == false) {
-            inst.displayImplementation = "DisplayUart";
-        }
-        else {
-            inst.displayImplementation = "DisplayUart2";
-        }
+        inst.displayImplementation = "DisplayUart2";
     }
 
     if (inst.$hardware) {

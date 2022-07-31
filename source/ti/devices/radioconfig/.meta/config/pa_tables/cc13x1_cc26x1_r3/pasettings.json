@@ -10,7 +10,18 @@
                         "PaSetting": [
                             {
                                 "_text": "14",
-                                "Value": "0x013F"
+                                "Value": "0x013F",
+                                "Option": {
+                                    "_name": "vddr",
+                                    "$": "HIGH"
+                                },
+                                "Command": {
+                                    "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                    "OverrideField": {
+                                        "_name": "pRegOverride",
+                                        "Block": "override_patable_14dbm.json"
+                                    }
+                                }
                             },
                             {
                                 "_text": "12.5",
@@ -630,7 +641,18 @@
                         "PaSetting": [
                             {
                                 "_text": "14",
-                                "Value": "0x013F"
+                                "Value": "0x013F",
+                                "Option": {
+                                    "_name": "vddr",
+                                    "$": "HIGH"
+                                },
+                                "Command": {
+                                    "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                    "OverrideField": {
+                                        "_name": "pRegOverride",
+                                        "Block": "override_patable_14dbm.json"
+                                    }
+                                }
                             },
                             {
                                 "_text": "12.5",
@@ -802,32 +824,32 @@
                             {
                                 "_text": "19",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x448CF"
+                                "TxHighPa": "0x0448CF"
                             },
                             {
                                 "_text": "18",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x48022"
+                                "TxHighPa": "0x048022"
                             },
                             {
                                 "_text": "17",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x2661C"
+                                "TxHighPa": "0x02661C"
                             },
                             {
                                 "_text": "16",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x05618"
+                                "TxHighPa": "0x005618"
                             },
                             {
                                 "_text": "15",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x04812"
+                                "TxHighPa": "0x004812"
                             },
                             {
                                 "_text": "14",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x0380D"
+                                "TxHighPa": "0x00380D"
                             }
                         ]
                     }
@@ -930,32 +952,32 @@
                             {
                                 "_text": "19",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x448CF"
+                                "TxHighPa": "0x0448CF"
                             },
                             {
                                 "_text": "18",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x48022"
+                                "TxHighPa": "0x048022"
                             },
                             {
                                 "_text": "17",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x2661C"
+                                "TxHighPa": "0x02661C"
                             },
                             {
                                 "_text": "16",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x05618"
+                                "TxHighPa": "0x005618"
                             },
                             {
                                 "_text": "15",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x04812"
+                                "TxHighPa": "0x004812"
                             },
                             {
                                 "_text": "14",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x0380D"
+                                "TxHighPa": "0x00380D"
                             }
                         ]
                     }

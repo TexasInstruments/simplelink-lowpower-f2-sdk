@@ -35,8 +35,9 @@
 
 #include <openthread/platform/misc.h>
 
-#include "common/logging.hpp"
 #include "common/new.hpp"
+#include "radio/trel_link.hpp"
+#include "utils/heap.hpp"
 
 namespace ot {
 
@@ -48,32 +49,30 @@ OT_DEFINE_ALIGNED_VAR(gInstanceRaw, sizeof(Instance), uint64_t);
 #endif
 
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
+#if !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
+Utils::Heap Instance::sHeap;
+#endif
+#if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
+bool Instance::sDnsNameCompressionEnabled = true;
+#endif
+#endif
 
-#if OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
-
-otHeapFreeFn   ot::Instance::mFree   = NULL;
-otHeapCAllocFn ot::Instance::mCAlloc = NULL;
-
-#endif // OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
-
-#endif // OPENTHREAD_MTD || OPENTHREAD_FTD
+#if OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE
+LogLevel Instance::sLogLevel = static_cast<LogLevel>(OPENTHREAD_CONFIG_LOG_LEVEL_INIT);
+#endif
 
 Instance::Instance(void)
-    : mTaskletScheduler()
-    , mTimerMilliScheduler(*this)
+    : mTimerMilliScheduler(*this)
 #if OPENTHREAD_CONFIG_PLATFORM_USEC_TIMER_ENABLE
     , mTimerMicroScheduler(*this)
 #endif
-#if OPENTHREAD_MTD || OPENTHREAD_FTD
-#if !OPENTHREAD_CONFIG_MULTIPLE_INSTANCE_ENABLE && !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
-    , mHeap()
-#endif
-    , mMbedTls()
-#endif // #if OPENTHREAD_MTD || OPENTHREAD_FTD
-    , mRandomManager()
     , mRadio(*this)
+#if OPENTHREAD_CONFIG_UPTIME_ENABLE
+    , mUptime(*this)
+#endif
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
     , mNotifier(*this)
+    , mTimeTicker(*this)
     , mSettings(*this)
     , mSettingsDriver(*this)
     , mMessagePool(*this)
@@ -85,11 +84,20 @@ Instance::Instance(void)
 #if OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE
     , mApplicationCoapSecure(*this, /* aLayerTwoSecurity */ true)
 #endif
+#if OPENTHREAD_CONFIG_PING_SENDER_ENABLE
+    , mPingSender(*this)
+#endif
 #if OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
     , mChannelMonitor(*this)
 #endif
-#if OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE
+#if OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE && OPENTHREAD_FTD
     , mChannelManager(*this)
+#endif
+#if OPENTHREAD_CONFIG_HISTORY_TRACKER_ENABLE
+    , mHistoryTracker(*this)
+#endif
+#if (OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE || OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE) && OPENTHREAD_FTD
+    , mDatasetUpdater(*this)
 #endif
 #if OPENTHREAD_CONFIG_ANNOUNCE_SENDER_ENABLE
     , mAnnounceSender(*this)
@@ -97,12 +105,12 @@ Instance::Instance(void)
 #if OPENTHREAD_CONFIG_OTNS_ENABLE
     , mOtns(*this)
 #endif
+#if OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
+    , mRoutingManager(*this)
+#endif
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
 #if OPENTHREAD_RADIO || OPENTHREAD_CONFIG_LINK_RAW_ENABLE
     , mLinkRaw(*this)
-#endif
-#if OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE
-    , mLogLevel(static_cast<otLogLevel>(OPENTHREAD_CONFIG_LOG_LEVEL_INIT))
 #endif
 #if OPENTHREAD_ENABLE_VENDOR_EXTENSION
     , mExtension(Extension::ExtensionBase::Init(*this))
@@ -120,7 +128,7 @@ Instance &Instance::InitSingle(void)
 {
     Instance *instance = &Get();
 
-    VerifyOrExit(!instance->mIsInitialized, OT_NOOP);
+    VerifyOrExit(!instance->mIsInitialized);
 
     instance = new (&gInstanceRaw) Instance();
 
@@ -141,14 +149,14 @@ Instance &Instance::Get(void)
 
 Instance *Instance::Init(void *aBuffer, size_t *aBufferSize)
 {
-    Instance *instance = NULL;
+    Instance *instance = nullptr;
 
-    VerifyOrExit(aBufferSize != NULL, OT_NOOP);
+    VerifyOrExit(aBufferSize != nullptr);
 
     // Make sure the input buffer is big enough
     VerifyOrExit(sizeof(Instance) <= *aBufferSize, *aBufferSize = sizeof(Instance));
 
-    VerifyOrExit(aBuffer != NULL, OT_NOOP);
+    VerifyOrExit(aBuffer != nullptr);
 
     instance = new (aBuffer) Instance();
 
@@ -165,6 +173,14 @@ void Instance::Reset(void)
     otPlatReset(this);
 }
 
+#if OPENTHREAD_RADIO
+void Instance::ResetRadioStack(void)
+{
+    mRadio.Init();
+    mLinkRaw.Init();
+}
+#endif
+
 void Instance::AfterInit(void)
 {
     mIsInitialized = true;
@@ -175,6 +191,10 @@ void Instance::AfterInit(void)
     Get<Settings>().Init();
     Get<Mle::MleRouter>().Restore();
 
+#if OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE
+    Get<Trel::Link>().AfterInit();
+#endif
+
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
 
 #if OPENTHREAD_ENABLE_VENDOR_EXTENSION
@@ -184,19 +204,19 @@ void Instance::AfterInit(void)
 
 void Instance::Finalize(void)
 {
-    VerifyOrExit(mIsInitialized, OT_NOOP);
+    VerifyOrExit(mIsInitialized);
 
     mIsInitialized = false;
 
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
-    IgnoreReturnValue(otThreadSetEnabled(this, false));
-    IgnoreReturnValue(otIp6SetEnabled(this, false));
-    IgnoreReturnValue(otLinkSetEnabled(this, false));
+    IgnoreError(otThreadSetEnabled(this, false));
+    IgnoreError(otIp6SetEnabled(this, false));
+    IgnoreError(otLinkSetEnabled(this, false));
 
     Get<Settings>().Deinit();
 #endif
 
-    Get<Mac::SubMac>().Disable();
+    IgnoreError(Get<Mac::SubMac>().Disable());
 
 #if !OPENTHREAD_CONFIG_MULTIPLE_INSTANCE_ENABLE
 
@@ -213,23 +233,73 @@ exit:
 }
 
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
+
 void Instance::FactoryReset(void)
 {
     Get<Settings>().Wipe();
     otPlatReset(this);
 }
 
-otError Instance::ErasePersistentInfo(void)
+Error Instance::ErasePersistentInfo(void)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
-    VerifyOrExit(Get<Mle::MleRouter>().IsDisabled(), error = OT_ERROR_INVALID_STATE);
+    VerifyOrExit(Get<Mle::MleRouter>().IsDisabled(), error = kErrorInvalidState);
     Get<Settings>().Wipe();
 
 exit:
     return error;
 }
 
+void Instance::GetBufferInfo(BufferInfo &aInfo)
+{
+    aInfo.Clear();
+
+    aInfo.mTotalBuffers = Get<MessagePool>().GetTotalBufferCount();
+    aInfo.mFreeBuffers  = Get<MessagePool>().GetFreeBufferCount();
+
+    Get<MeshForwarder>().GetSendQueue().GetInfo(aInfo.m6loSendQueue);
+    Get<MeshForwarder>().GetReassemblyQueue().GetInfo(aInfo.m6loReassemblyQueue);
+    Get<Ip6::Ip6>().GetSendQueue().GetInfo(aInfo.mIp6Queue);
+
+#if OPENTHREAD_FTD
+    Get<Ip6::Mpl>().GetBufferedMessageSet().GetInfo(aInfo.mMplQueue);
+#endif
+
+    Get<Mle::MleRouter>().GetMessageQueue().GetInfo(aInfo.mMleQueue);
+
+    Get<Tmf::Agent>().GetRequestMessages().GetInfo(aInfo.mCoapQueue);
+    Get<Tmf::Agent>().GetCachedResponses().GetInfo(aInfo.mCoapQueue);
+
+#if OPENTHREAD_CONFIG_DTLS_ENABLE
+    Get<Coap::CoapSecure>().GetRequestMessages().GetInfo(aInfo.mCoapSecureQueue);
+    Get<Coap::CoapSecure>().GetCachedResponses().GetInfo(aInfo.mCoapSecureQueue);
+#endif
+
+#if OPENTHREAD_CONFIG_COAP_API_ENABLE
+    GetApplicationCoap().GetRequestMessages().GetInfo(aInfo.mApplicationCoapQueue);
+    GetApplicationCoap().GetCachedResponses().GetInfo(aInfo.mApplicationCoapQueue);
+#endif
+}
+
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
+
+#if OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE
+
+void Instance::SetLogLevel(LogLevel aLogLevel)
+{
+    if (aLogLevel != sLogLevel)
+    {
+        sLogLevel = aLogLevel;
+        otPlatLogHandleLevelChanged(sLogLevel);
+    }
+}
+
+extern "C" OT_TOOL_WEAK void otPlatLogHandleLevelChanged(otLogLevel aLogLevel)
+{
+    OT_UNUSED_VARIABLE(aLogLevel);
+}
+
+#endif
 
 } // namespace ot

@@ -32,67 +32,58 @@
  */
 
 #include "openthread-core-config.h"
+
 #include <openthread/crypto.h>
 #include <openthread/error.h>
 
+#include "common/as_core_type.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
-#include "common/locator-getters.hpp"
+#include "common/locator_getters.hpp"
 #include "crypto/aes_ccm.hpp"
 #include "crypto/ecdsa.hpp"
 #include "crypto/hmac_sha256.hpp"
 
+using namespace ot;
 using namespace ot::Crypto;
 
-void otCryptoHmacSha256(const uint8_t *aKey,
-                        uint16_t       aKeyLength,
-                        const uint8_t *aBuf,
-                        uint16_t       aBufLength,
-                        uint8_t *      aHash)
+void otCryptoHmacSha256(const otCryptoKey *aKey, const uint8_t *aBuf, uint16_t aBufLength, otCryptoSha256Hash *aHash)
 {
     HmacSha256 hmac;
 
-    OT_ASSERT((aKey != NULL) && (aBuf != NULL) && (aHash != NULL));
+    OT_ASSERT((aKey != nullptr) && (aBuf != nullptr) && (aHash != nullptr));
 
-    hmac.Start(aKey, aKeyLength);
+    hmac.Start(AsCoreType(aKey));
     hmac.Update(aBuf, aBufLength);
-    hmac.Finish(aHash);
+    hmac.Finish(ot::AsCoreType(aHash));
 }
 
-void otCryptoAesCcm(const uint8_t *aKey,
-                    uint16_t       aKeyLength,
-                    uint8_t        aTagLength,
-                    const void *   aNonce,
-                    uint8_t        aNonceLength,
-                    const void *   aHeader,
-                    uint32_t       aHeaderLength,
-                    void *         aPlainText,
-                    void *         aCipherText,
-                    uint32_t       aLength,
-                    bool           aEncrypt,
-                    void *         aTag)
+void otCryptoAesCcm(const otCryptoKey *aKey,
+                    uint8_t            aTagLength,
+                    const void *       aNonce,
+                    uint8_t            aNonceLength,
+                    const void *       aHeader,
+                    uint32_t           aHeaderLength,
+                    void *             aPlainText,
+                    void *             aCipherText,
+                    uint32_t           aLength,
+                    bool               aEncrypt,
+                    void *             aTag)
 {
-    AesCcm  aesCcm;
-    uint8_t tagLength;
+    AesCcm aesCcm;
+    OT_ASSERT((aNonce != nullptr) && (aPlainText != nullptr) && (aCipherText != nullptr) && (aTag != nullptr));
 
-    OT_ASSERT((aKey != NULL) && (aNonce != NULL) && (aPlainText != NULL) && (aCipherText != NULL) && (aTag != NULL));
-
-    aesCcm.SetKey(aKey, aKeyLength);
-    SuccessOrExit(aesCcm.Init(aHeaderLength, aLength, aTagLength, aNonce, aNonceLength));
+    aesCcm.SetKey(AsCoreType(aKey));
+    aesCcm.Init(aHeaderLength, aLength, aTagLength, aNonce, aNonceLength);
 
     if (aHeaderLength != 0)
     {
-        OT_ASSERT(aHeader != NULL);
+        OT_ASSERT(aHeader != nullptr);
         aesCcm.Header(aHeader, aHeaderLength);
     }
 
-    aesCcm.Payload(aPlainText, aCipherText, aLength, aEncrypt);
-    aesCcm.Finalize(aTag, &tagLength);
-
-    OT_ASSERT(aTagLength == tagLength);
-
-exit:
-    return;
+    aesCcm.Payload(aPlainText, aCipherText, aLength, aEncrypt ? AesCcm::kEncrypt : AesCcm::kDecrypt);
+    aesCcm.Finalize(aTag);
 }
 
 #if OPENTHREAD_CONFIG_ECDSA_ENABLE
@@ -104,7 +95,7 @@ otError otCryptoEcdsaSign(uint8_t *      aOutput,
                           const uint8_t *aPrivateKey,
                           uint16_t       aPrivateKeyLength)
 {
-    return Ecdsa::Sign(aOutput, aOutputLength, aInputHash, aInputHashLength, aPrivateKey, aPrivateKeyLength);
+    return Ecdsa::Sign(aOutput, *aOutputLength, aInputHash, aInputHashLength, aPrivateKey, aPrivateKeyLength);
 }
 
 #endif // OPENTHREAD_CONFIG_ECDSA_ENABLE

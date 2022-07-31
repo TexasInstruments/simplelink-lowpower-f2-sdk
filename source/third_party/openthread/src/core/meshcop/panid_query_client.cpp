@@ -33,82 +33,75 @@
 
 #include "panid_query_client.hpp"
 
+#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+
 #include "coap/coap_message.hpp"
+#include "common/as_core_type.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/thread_netif.hpp"
-#include "thread/thread_uri_paths.hpp"
-
-#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+#include "thread/uri_paths.hpp"
 
 namespace ot {
 
+RegisterLogModule("PanIdQueryClnt");
+
 PanIdQueryClient::PanIdQueryClient(Instance &aInstance)
     : InstanceLocator(aInstance)
-    , mCallback(NULL)
-    , mContext(NULL)
-    , mPanIdQuery(OT_URI_PATH_PANID_CONFLICT, &PanIdQueryClient::HandleConflict, this)
+    , mCallback(nullptr)
+    , mContext(nullptr)
+    , mPanIdQuery(UriPath::kPanIdConflict, &PanIdQueryClient::HandleConflict, this)
 {
-    Get<Coap::Coap>().AddResource(mPanIdQuery);
+    Get<Tmf::Agent>().AddResource(mPanIdQuery);
 }
 
-otError PanIdQueryClient::SendQuery(uint16_t                            aPanId,
-                                    uint32_t                            aChannelMask,
-                                    const Ip6::Address &                aAddress,
-                                    otCommissionerPanIdConflictCallback aCallback,
-                                    void *                              aContext)
+Error PanIdQueryClient::SendQuery(uint16_t                            aPanId,
+                                  uint32_t                            aChannelMask,
+                                  const Ip6::Address &                aAddress,
+                                  otCommissionerPanIdConflictCallback aCallback,
+                                  void *                              aContext)
 {
-    otError                 error = OT_ERROR_NONE;
+    Error                   error = kErrorNone;
     MeshCoP::ChannelMaskTlv channelMask;
-    Ip6::MessageInfo        messageInfo;
-    Coap::Message *         message = NULL;
+    Tmf::MessageInfo        messageInfo(GetInstance());
+    Coap::Message *         message = nullptr;
 
-    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = OT_ERROR_INVALID_STATE);
-    VerifyOrExit((message = MeshCoP::NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = kErrorInvalidState);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error =
-                      message->Init(aAddress.IsMulticast() ? OT_COAP_TYPE_NON_CONFIRMABLE : OT_COAP_TYPE_CONFIRMABLE,
-                                    OT_COAP_CODE_POST, OT_URI_PATH_PANID_QUERY));
+    SuccessOrExit(error = message->InitAsPost(aAddress, UriPath::kPanIdQuery));
     SuccessOrExit(error = message->SetPayloadMarker());
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kCommissionerSessionId,
-                                               Get<MeshCoP::Commissioner>().GetSessionId()));
+    SuccessOrExit(
+        error = Tlv::Append<MeshCoP::CommissionerSessionIdTlv>(*message, Get<MeshCoP::Commissioner>().GetSessionId()));
 
     channelMask.Init();
     channelMask.SetChannelMask(aChannelMask);
     SuccessOrExit(error = channelMask.AppendTo(*message));
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kPanId, aPanId));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::PanIdTlv>(*message, aPanId));
 
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerAddr(aAddress);
-    messageInfo.SetPeerPort(kCoapUdpPort);
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    messageInfo.SetSockAddrToRlocPeerAddrTo(aAddress);
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
 
-    otLogInfoMeshCoP("sent panid query");
+    LogInfo("sent panid query");
 
     mCallback = aCallback;
     mContext  = aContext;
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
+    FreeMessageOnError(message, error);
     return error;
 }
 
 void PanIdQueryClient::HandleConflict(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    static_cast<PanIdQueryClient *>(aContext)->HandleConflict(*static_cast<Coap::Message *>(aMessage),
-                                                              *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<PanIdQueryClient *>(aContext)->HandleConflict(AsCoapMessage(aMessage), AsCoreType(aMessageInfo));
 }
 
 void PanIdQueryClient::HandleConflict(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
@@ -117,22 +110,22 @@ void PanIdQueryClient::HandleConflict(Coap::Message &aMessage, const Ip6::Messag
     Ip6::MessageInfo responseInfo(aMessageInfo);
     uint32_t         mask;
 
-    VerifyOrExit(aMessage.IsConfirmable() && aMessage.GetCode() == OT_COAP_CODE_POST, OT_NOOP);
+    VerifyOrExit(aMessage.IsConfirmablePostRequest());
 
-    otLogInfoMeshCoP("received panid conflict");
+    LogInfo("received panid conflict");
 
-    SuccessOrExit(Tlv::ReadUint16Tlv(aMessage, MeshCoP::Tlv::kPanId, panId));
+    SuccessOrExit(Tlv::Find<MeshCoP::PanIdTlv>(aMessage, panId));
 
-    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0, OT_NOOP);
+    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0);
 
-    if (mCallback != NULL)
+    if (mCallback != nullptr)
     {
         mCallback(panId, mask, mContext);
     }
 
-    SuccessOrExit(Get<Coap::Coap>().SendEmptyAck(aMessage, responseInfo));
+    SuccessOrExit(Get<Tmf::Agent>().SendEmptyAck(aMessage, responseInfo));
 
-    otLogInfoMeshCoP("sent panid query conflict response");
+    LogInfo("sent panid query conflict response");
 
 exit:
     return;

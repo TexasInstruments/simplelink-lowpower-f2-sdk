@@ -105,9 +105,9 @@ extern "C" {
 #endif
 
 /* Exit the SWI and wait until an HWI call posts the SWI again */
-#define ECJPAKECC26X2_STATUS_FSM_RUN_PKA_OP       ECJPAKE_STATUS_RESERVED - 0
+#define ECJPAKECC26X2_STATUS_FSM_RUN_PKA_OP ECJPAKE_STATUS_RESERVED - 0
 /* Execute the next FSM state immediately without waiting for the next HWI */
-#define ECJPAKECC26X2_STATUS_FSM_RUN_FSM          ECJPAKE_STATUS_RESERVED - 1
+#define ECJPAKECC26X2_STATUS_FSM_RUN_FSM    ECJPAKE_STATUS_RESERVED - 1
 
 /*!
  *  @brief      ECJPAKECC26X2 states
@@ -118,7 +118,8 @@ extern "C" {
  *  The FSM controller will increment the state counter and iterate through
  *  states until it is told to stop or restart.
  */
-typedef enum {
+typedef enum
+{
     ECJPAKECC26X2_FSM_ERROR = 0,
     ECJPAKECC26X2_FSM_ROUND_ONE_GENERATE_MYPUBLICKEY1,
     ECJPAKECC26X2_FSM_ROUND_ONE_GENERATE_MYPUBLICKEY1_RESULT,
@@ -187,7 +188,8 @@ typedef enum {
  *  ECJPAKECC26X2 hardware attributes should be included in the board file
  *  and pointed to by the ECJPAKE_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief PKA Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -198,9 +200,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } ECJPAKECC26X2_HWAttrs;
 
 /*!
@@ -208,18 +211,19 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                                isOpen;
-    bool                                operationInProgress;
-    bool                                operationCanceled;
-    int_fast16_t                        operationStatus;
-    ECJPAKE_CallbackFxn                 callbackFxn;
-    ECJPAKE_ReturnBehavior              returnBehavior;
-    ECJPAKECC26X2_FsmState              fsmState;
-    ECJPAKE_Operation                   operation;
-    ECJPAKE_OperationType               operationType;
-    uint32_t                            semaphoreTimeout;
-    uint32_t                            resultAddress;
+typedef struct
+{
+    bool isOpen;
+    bool operationInProgress;
+    bool operationCanceled;
+    int_fast16_t operationStatus;
+    ECJPAKE_CallbackFxn callbackFxn;
+    ECJPAKE_ReturnBehavior returnBehavior;
+    ECJPAKECC26X2_FsmState fsmState;
+    ECJPAKE_Operation operation;
+    ECJPAKE_OperationType operationType;
+    uint32_t semaphoreTimeout;
+    uint32_t resultAddress;
 } ECJPAKECC26X2_Object;
 
 #ifdef __cplusplus

@@ -115,7 +115,6 @@
                     "preferredType": ["I2C_SDA"]
                 },
 
-
                 {
                     "number" : 21,
                     "name"   : "5V"
@@ -227,7 +226,8 @@
                 {
                     "number" : 18,
                     "ball"   : "17",
-                    "name"   : "DIO11"
+                    "name"   : "DIO11",
+                    "preferredType": ["SPI_SS"]
                 },
                 {
                     "number" : 17,
@@ -305,8 +305,8 @@
 
         "BTN-1": {
             "displayName" : "LaunchPad Button BTN-1 (Left)",
-            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -320,8 +320,8 @@
         },
         "BTN-2": {
             "displayName" : "LaunchPad Button BTN-2 (Right)",
-            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -342,7 +342,7 @@
             "link": "BTN-2"
         },
 
-        "LP_SPI": {
+        "LP_SPI_BUS": {
             "displayName" : "LaunchPad SPI Bus",
             "description" : "Standard BoosterPack header SPI",
             "longDescription" : "Standard BoosterPack header SPI",
@@ -351,6 +351,26 @@
                 "SCLK"    : "16",
                 "MOSI"    : "15",
                 "MISO"    : "14"
+            }
+        },
+
+        "LP_SPI": {
+            "displayName" : "LaunchPad SPI Bus with Chip Select",
+            "description" : "Standard BoosterPack header SPI with Chip Select",
+            "longDescription" : "Standard BoosterPack header SPI with Chip Select",
+            "definition"  : "/ti/boards/components/spiDevice.json",
+            "subComponents": {
+                "SPI": {
+                    "link": "LP_SPI_BUS"
+                },
+                "SELECT": {
+                    "displayName" : "LaunchPad SPI Bus Chip Select",
+                    "description" : "Standard BoosterPack header SPI Chip Select",
+                    "longDescription" : "Standard BoosterPack header SPI Chip Select",
+                    "connections" : {
+                        "SS": "17"
+                    }
+                }
             }
         },
 
@@ -364,15 +384,15 @@
             },
             "subComponents": {
                 "SPI": {
-                    "link": "LP_SPI"
+                    "link": "LP_SPI_BUS"
                 },
                 "SELECT": {
-                    "displayName" : "MX25R8035F SPI Flash Slave Select",
-                    "description" : "MX25R8035F SPI Flash slave select",
-                    "longDescription" : "MX25R8035F SPI flash slave select",
+                    "displayName" : "MX25R8035F SPI Flash Chip Select",
+                    "description" : "MX25R8035F SPI Flash Chip Select",
+                    "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
-                        "SS": 30
+                        "SS": "30"
                     }
                 }
             }

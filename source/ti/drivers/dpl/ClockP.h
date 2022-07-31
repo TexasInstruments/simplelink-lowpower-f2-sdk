@@ -70,7 +70,7 @@ extern "C" {
  *  BIOS 7.x: 36
  *  FreeRTOS: 68
  */
-#define ClockP_STRUCT_SIZE   (68)
+#define ClockP_STRUCT_SIZE (68)
 
 /*!
  *  @brief    ClockP structure.
@@ -78,24 +78,27 @@ extern "C" {
  *  Opaque structure that should be large enough to hold any of the
  *  RTOS specific ClockP objects.
  */
-typedef union ClockP_Struct {
-    uint32_t dummy;  /*!< Align object */
-    uint8_t  data[ClockP_STRUCT_SIZE];
+typedef union ClockP_Struct
+{
+    uint32_t dummy; /*!< Align object */
+    uint8_t data[ClockP_STRUCT_SIZE];
 } ClockP_Struct;
 
 /*!
  *  @brief  Frequency-in-hertz struct
  */
-typedef struct {
-    uint32_t hi;      /*!< most significant 32-bits of frequency */
-    uint32_t lo;      /*!< least significant 32-bits of frequency */
+typedef struct
+{
+    uint32_t hi; /*!< most significant 32-bits of frequency */
+    uint32_t lo; /*!< least significant 32-bits of frequency */
 } ClockP_FreqHz;
 
 /*!
  *  @brief    Status codes for ClockP APIs
  */
-typedef enum {
-    ClockP_OK = 0,
+typedef enum
+{
+    ClockP_OK      = 0,
     ClockP_FAILURE = -1
 } ClockP_Status;
 
@@ -106,7 +109,7 @@ typedef enum {
  *  represents that instance. It is then is used in the other instance based
  *  functions (e.g. ::ClockP_start, ::ClockP_stop, etc.).
  */
-typedef  void *ClockP_Handle;
+typedef void *ClockP_Handle;
 
 #define ClockP_handle(x) ((ClockP_Handle)(x))
 
@@ -134,12 +137,12 @@ typedef void (*ClockP_Fxn)(uintptr_t arg);
  *  clock is initially started and set to expire with the 'timeout'
  *  argument.
  */
-typedef struct {
-    bool      startFlag; /*!< Start immediately after instance is created. */
-    uint32_t  period;    /*!< Period of clock object. */
-    uintptr_t arg;       /*!< Argument passed to the clock function. */
+typedef struct
+{
+    bool startFlag;  /*!< Start immediately after instance is created. */
+    uint32_t period; /*!< Period of clock object. */
+    uintptr_t arg;   /*!< Argument passed to the clock function. */
 } ClockP_Params;
-
 
 /*!
  *  @brief  Function to construct a clock object.
@@ -182,9 +185,7 @@ extern void ClockP_destruct(ClockP_Struct *clockP);
  *
  *  @return A ClockP_Handle on success or NULL on an error.
  */
-extern ClockP_Handle ClockP_create(ClockP_Fxn clockFxn,
-                                   uint32_t timeout,
-                                   ClockP_Params *params);
+extern ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout, ClockP_Params *params);
 
 /*!
  *  @brief  Function to delete a clock.
@@ -335,7 +336,6 @@ extern void ClockP_usleep(uint32_t usec);
  *  @param  sec  A duration in seconds
  */
 extern void ClockP_sleep(uint32_t sec);
-
 
 #ifdef __cplusplus
 }

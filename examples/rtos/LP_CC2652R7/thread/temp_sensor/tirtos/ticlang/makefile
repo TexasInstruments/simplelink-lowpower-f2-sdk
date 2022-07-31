@@ -11,8 +11,8 @@ CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 LNK = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 
 SYSCFG_CMD_STUB = $(SYSCONFIG_TOOL) --compiler ticlang --product $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/.metadata/product.json
-SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../temp_sensor.syscfg)
-SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../temp_sensor.syscfg)
+SYSCFG_GEN_FILES := $(shell $(SYSCFG_CMD_STUB) --listGeneratedFiles --output . ../../tirtos/temp_sensor.syscfg)
+SYSCFG_REF_FILES := $(shell $(SYSCFG_CMD_STUB) --listReferencedFiles --output . ../../tirtos/temp_sensor.syscfg)
 
 ifeq ($(OS),Windows_NT)
 	SYSCFG_FILES = $(subst \,/,$(SYSCFG_REF_FILES) $(SYSCFG_GEN_FILES))
@@ -22,7 +22,7 @@ endif
 SYSCFG_C_FILES = $(filter %.c,$(SYSCFG_FILES))
 SYSCFG_H_FILES = $(filter %.h,$(SYSCFG_FILES))
 
-OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_debug_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj tempsensor.obj tiop_ui.obj cui.obj disp_utils.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
+OBJECTS = platform_alarm.obj platform_alarm_micro.obj platform_diag.obj platform_entropy.obj platform_misc.obj platform_settings.obj platform_system.obj platform_radio.obj platform_uart.obj platform_nv_crc.obj platform_nv_nvocmp.obj tempsensor.obj tiop_ui.obj cui.obj disp_utils.obj main.obj otstack.obj otsupport_otrtosapi.obj platform_crypto_aes_alt.obj platform_crypto_sha256_alt.obj platform_crypto_ecjpake_alt.obj platform_crypto_crypto_misc.obj $(patsubst %.c,%.obj,$(notdir $(SYSCFG_C_FILES)))
 CONFIGPKG = temp_sensor
 
 NAME = temp_sensor
@@ -48,13 +48,14 @@ CFLAGS = -I../.. \
     -IOPENTHREAD_MAKE_PATH/src/core \
     -IOPENTHREAD_MAKE_PATH/src \
     -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
-    -IC:/.conan/7561cd/1/external/source \
+    -IC:/.conan/e89868/1/external/source \
     -I${PROJECT_ROOT}/platform/crypto \
     -DOPENTHREAD_MTD=1 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_mtd/config" \
     -DOPENTHREAD_CONFIG_FILE='"openthread-config-cc13x2_26x2-mtd.h"' \
     -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE='"openthread-core-cc13x2_26x2-config.h"' \
     -DTIOP_CUI=1 \
+    -DCUI_POSIX=1 \
     -DBOARD_DISPLAY_USE_LCD=0 \
     -DDeviceFamily_CC13X2X7_CC26X2X7 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
@@ -66,8 +67,7 @@ CFLAGS = -I../.. \
     -mfloat-abi=hard \
     -mfpu=fpv4-sp-d16
 
-LFLAGS = --reread_libs \
-    "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_mtd/lib/ticlang/m4f" \
+LFLAGS = "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_mtd/lib/ticlang/m4f" \
     "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_platform_utils_mtd/lib/ticlang/m4f" \
     "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libmbedcrypto/lib/ticlang/m4f" \
     -Wl,-llibopenthread_mtd.a \
@@ -75,8 +75,9 @@ LFLAGS = --reread_libs \
     -Wl,-llibmbedcrypto.a \
     -l${PROJECT_BUILD_DIR}/syscfg/ti_utils_build_linker.cmd.genlibs \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    -LC:/.conan/7561cd/1/external/source \
+    -LC:/.conan/e89868/1/external/source \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
+    --reread_libs \
     -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib \
     ../../tirtos/ticlang/cc13x2x7_cc26x2x7_tirtos.cmd \
     "-Wl,-m,$(NAME).map" \
@@ -99,7 +100,7 @@ $(CONFIGPKG)/linker.cmd: ../../release.cfg cflags.opt
 $(SYSCFG_FILES): syscfg
 	@ echo generation complete
 
-syscfg: ../../temp_sensor.syscfg
+syscfg: ../../tirtos/temp_sensor.syscfg
 	@ echo Generating configuration files...
 	@ $(SYSCFG_CMD_STUB) --output $(@D) $<
 
@@ -144,10 +145,6 @@ platform_radio.obj: ../../platform/radio.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compil
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 
 platform_uart.obj: ../../platform/uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
-	@ echo Building $@
-	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
-
-platform_debug_uart.obj: ../../platform/debug_uart.c $(SYSCFG_H_FILES) $(CONFIGPKG)/compiler.opt
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) -c $< @$(CONFIGPKG)/compiler.opt -o $@
 

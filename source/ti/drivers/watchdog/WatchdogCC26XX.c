@@ -47,14 +47,11 @@
 /* Function prototypes */
 void WatchdogCC26XX_clear(Watchdog_Handle handle);
 void WatchdogCC26XX_close(Watchdog_Handle handle);
-int_fast16_t  WatchdogCC26XX_control(Watchdog_Handle handle, uint_fast16_t cmd,
-        void *arg);
+int_fast16_t WatchdogCC26XX_control(Watchdog_Handle handle, uint_fast16_t cmd, void *arg);
 void WatchdogCC26XX_init(Watchdog_Handle handle);
 Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *params);
-int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle,
-        uint32_t ticks);
-uint32_t WatchdogCC26XX_convertMsToTicks(Watchdog_Handle handle,
-    uint32_t milliseconds);
+int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle, uint32_t ticks);
+uint32_t WatchdogCC26XX_convertMsToTicks(Watchdog_Handle handle, uint32_t milliseconds);
 
 /* WatchdogCC26XX internal functions */
 static void WatchdogCC26XX_initHw(Watchdog_Handle handle);
@@ -63,24 +60,22 @@ static void WatchdogCC26XX_initHw(Watchdog_Handle handle);
 static void WatchdogCC26XX_callbackFxn(void);
 
 /* WatchdogCC26XX global variables */
-static Watchdog_Handle    watchdogHandle;
-static Watchdog_Callback  watchdogUserCallback;
+static Watchdog_Handle watchdogHandle;
+static Watchdog_Callback watchdogUserCallback;
 
 /* Watchdog function table for CC26XX implementation */
-const Watchdog_FxnTable WatchdogCC26XX_fxnTable = {
-    WatchdogCC26XX_clear,
-    WatchdogCC26XX_close,
-    WatchdogCC26XX_control,
-    WatchdogCC26XX_init,
-    WatchdogCC26XX_open,
-    WatchdogCC26XX_setReload,
-    WatchdogCC26XX_convertMsToTicks
-};
+const Watchdog_FxnTable WatchdogCC26XX_fxnTable = {WatchdogCC26XX_clear,
+                                                   WatchdogCC26XX_close,
+                                                   WatchdogCC26XX_control,
+                                                   WatchdogCC26XX_init,
+                                                   WatchdogCC26XX_open,
+                                                   WatchdogCC26XX_setReload,
+                                                   WatchdogCC26XX_convertMsToTicks};
 
 /* Maximum allowable setReload value */
-#define MAX_RELOAD_VALUE        0xFFFFFFFF
-#define WATCHDOG_DIV_RATIO      32            /* Watchdog division ratio */
-#define MS_RATIO                1000          /* millisecond to second ratio */
+#define MAX_RELOAD_VALUE   0xFFFFFFFF
+#define WATCHDOG_DIV_RATIO 32   /* Watchdog division ratio */
+#define MS_RATIO           1000 /* millisecond to second ratio */
 
 /*
  *  ======== WatchdogCC26XX_callbackFxn ========
@@ -116,8 +111,7 @@ void WatchdogCC26XX_close(Watchdog_Handle handle)
  *  ======== WatchdogCC26XX_control ========
  *  @pre    Function assumes that the handle is not NULL
  */
-int_fast16_t WatchdogCC26XX_control(Watchdog_Handle handle, uint_fast16_t cmd,
-        void *arg)
+int_fast16_t WatchdogCC26XX_control(Watchdog_Handle handle, uint_fast16_t cmd, void *arg)
 {
     /* No implementation yet */
     return (Watchdog_STATUS_UNDEFINEDCMD);
@@ -138,8 +132,8 @@ void WatchdogCC26XX_init(Watchdog_Handle handle)
  */
 Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *params)
 {
-    unsigned int                   key;
-    WatchdogCC26XX_Object         *object;
+    unsigned int key;
+    WatchdogCC26XX_Object *object;
 
     /* get the pointer to the object and hwAttrs */
     object = handle->object;
@@ -148,7 +142,8 @@ Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *par
     key = HwiP_disable();
 
     /* Check if the Watchdog is open already with the HWAttrs */
-    if (object->isOpen == true) {
+    if (object->isOpen == true)
+    {
         HwiP_restore(key);
         DebugP_log1("Watchdog: Handle %x already in use.", (uintptr_t)handle);
         return (NULL);
@@ -162,8 +157,9 @@ Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *par
     object->resetMode      = params->resetMode;
 
     /* setup callback function if defined */
-    if (params->callbackFxn != NULL) {
-        watchdogHandle = handle;
+    if (params->callbackFxn != NULL)
+    {
+        watchdogHandle       = handle;
         watchdogUserCallback = params->callbackFxn;
         HwiP_plug(INT_NMI_FAULT, (void *)WatchdogCC26XX_callbackFxn);
     }
@@ -171,7 +167,7 @@ Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *par
     /* initialize the watchdog hardware */
     WatchdogCC26XX_initHw(handle);
 
-    DebugP_log1("Watchdog: handle %x opened" ,(uintptr_t)handle);
+    DebugP_log1("Watchdog: handle %x opened", (uintptr_t)handle);
 
     /* return handle of the Watchdog object */
     return (handle);
@@ -182,7 +178,7 @@ Watchdog_Handle WatchdogCC26XX_open(Watchdog_Handle handle, Watchdog_Params *par
  */
 int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle, uint32_t ticks)
 {
-    unsigned int                   key;
+    unsigned int key;
 
     /* disable preemption while unlocking WatchDog registers */
     key = HwiP_disable();
@@ -191,8 +187,7 @@ int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle, uint32_t ticks)
     WatchdogUnlock();
 
     /* make sure the Watchdog is unlocked before continuing */
-    while(WatchdogLockState() == WATCHDOG_LOCK_LOCKED)
-    { }
+    while (WatchdogLockState() == WATCHDOG_LOCK_LOCKED) {}
 
     /* update the reload value */
     WatchdogReloadSet(ticks);
@@ -203,7 +198,9 @@ int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle, uint32_t ticks)
     HwiP_restore(key);
 
     DebugP_log2("Watchdog: WDT with handle 0x%x has been set to "
-        "reload to 0x%x", (uintptr_t)handle, ticks);
+                "reload to 0x%x",
+                (uintptr_t)handle,
+                ticks);
 
     return (Watchdog_STATUS_SUCCESS);
 }
@@ -215,14 +212,15 @@ int_fast16_t WatchdogCC26XX_setReload(Watchdog_Handle handle, uint32_t ticks)
  *  @pre    Function assumes that the Watchdog handle is pointing to a hardware
  *          module which has already been opened.
  */
-static void WatchdogCC26XX_initHw(Watchdog_Handle handle) {
-    unsigned int                   key;
-    uint32_t                       tickValue;
-    WatchdogCC26XX_Object          *object;
-    WatchdogCC26XX_HWAttrs const   *hwAttrs;
+static void WatchdogCC26XX_initHw(Watchdog_Handle handle)
+{
+    unsigned int key;
+    uint32_t tickValue;
+    WatchdogCC26XX_Object *object;
+    WatchdogCC26XX_HWAttrs const *hwAttrs;
 
     /* get the pointer to the object and hwAttrs */
-    object = handle->object;
+    object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
     /* convert milliseconds to watchdog timer ticks */
@@ -235,24 +233,27 @@ static void WatchdogCC26XX_initHw(Watchdog_Handle handle) {
     WatchdogUnlock();
 
     /* make sure the Watchdog is unlocked before continuing */
-    while(WatchdogLockState() == WATCHDOG_LOCK_LOCKED)
-    { }
+    while (WatchdogLockState() == WATCHDOG_LOCK_LOCKED) {}
 
     WatchdogReloadSet(tickValue);
 
     /* set reset mode */
-    if (object->resetMode == Watchdog_RESET_ON) {
+    if (object->resetMode == Watchdog_RESET_ON)
+    {
         WatchdogResetEnable();
     }
-    else {
+    else
+    {
         WatchdogResetDisable();
     }
 
     /* set debug stall mode */
-    if (object->debugStallMode == Watchdog_DEBUG_STALL_ON) {
+    if (object->debugStallMode == Watchdog_DEBUG_STALL_ON)
+    {
         WatchdogStallEnable();
     }
-    else {
+    else
+    {
         WatchdogStallDisable();
     }
 
@@ -273,13 +274,12 @@ static void WatchdogCC26XX_initHw(Watchdog_Handle handle) {
  *  This function converts the input value from milliseconds to
  *  Watchdog clock ticks.
  */
-uint32_t WatchdogCC26XX_convertMsToTicks(Watchdog_Handle handle,
-    uint32_t milliseconds)
+uint32_t WatchdogCC26XX_convertMsToTicks(Watchdog_Handle handle, uint32_t milliseconds)
 {
-    uint32_t                       tickValue;
-    uint32_t                       convertRatio;
-    uint32_t                       maxConvertMs;
-    ClockP_FreqHz                   freq;
+    uint32_t tickValue;
+    uint32_t convertRatio;
+    uint32_t maxConvertMs;
+    ClockP_FreqHz freq;
 
     /* Determine milliseconds to clock ticks conversion ratio */
     /* Watchdog clock ticks/sec = CPU clock / WATCHDOG_DIV_RATIO */
@@ -290,12 +290,14 @@ uint32_t WatchdogCC26XX_convertMsToTicks(Watchdog_Handle handle,
 
     /* convert milliseconds to watchdog timer ticks */
     /* check if value exceeds maximum */
-    if (milliseconds > maxConvertMs) {
-        tickValue = 0;  /* return zero to indicate overflow */
+    if (milliseconds > maxConvertMs)
+    {
+        tickValue = 0; /* return zero to indicate overflow */
     }
-    else {
+    else
+    {
         tickValue = (uint32_t)(milliseconds * convertRatio);
     }
 
-    return(tickValue);
+    return (tickValue);
 }

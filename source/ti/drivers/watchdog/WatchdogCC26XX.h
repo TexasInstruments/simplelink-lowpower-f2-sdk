@@ -115,13 +115,14 @@
  *
  *
  * # Supported Functions #
- *  | Generic API Function          | API Function                      | Description                                       |
- *  |------------------------------ |---------------------------------- |---------------------------------------------------|
- *  | #Watchdog_init()             | WatchdogCC26XX_init()             | Initialize Watchdog driver                        |
- *  | #Watchdog_open()             | WatchdogCC26XX_open()             | Initialize Watchdog HW and set system dependencies|
- *  | #Watchdog_clear()            | WatchdogCC26XX_clear()            | Clear Watchdog interrupt flag and reload counter  |
- *  | #Watchdog_setReload()        | WatchdogCC26XX_setReload()        | Set Watchdog timer reload value in clock ticnks   |
- *  | #Watchdog_convertMsToTicks() | WatchdogCC26XX_convertMsToTicks() | Converts milliseconds to clock ticks              |
+ *  | Generic API Function          | API Function                      | Description |
+ *  |------------------------------ |----------------------------------
+ * |---------------------------------------------------| | #Watchdog_init()             | WatchdogCC26XX_init() |
+ * Initialize Watchdog driver                        | | #Watchdog_open()             | WatchdogCC26XX_open() |
+ * Initialize Watchdog HW and set system dependencies| | #Watchdog_clear()            | WatchdogCC26XX_clear() | Clear
+ * Watchdog interrupt flag and reload counter  | | #Watchdog_setReload()        | WatchdogCC26XX_setReload()        |
+ * Set Watchdog timer reload value in clock ticnks   | | #Watchdog_convertMsToTicks() |
+ * WatchdogCC26XX_convertMsToTicks() | Converts milliseconds to clock ticks              |
  *
  *  @note All calls should go through the generic API. Please refer to @ref Watchdog.h for a
  *  complete description of the generic APIs.
@@ -222,9 +223,10 @@ extern const Watchdog_FxnTable WatchdogCC26XX_fxnTable;
 /*!
  *  @brief  Watchdog hardware attributes for CC26XX
  */
-typedef struct {
-    unsigned int baseAddr;       /*!< Base adddress for Watchdog */
-    unsigned long reloadValue;   /*!< Reload value in milliseconds for Watchdog */
+typedef struct
+{
+    unsigned int baseAddr;     /*!< Base address for Watchdog */
+    unsigned long reloadValue; /*!< Reload value in milliseconds for Watchdog */
 } WatchdogCC26XX_HWAttrs;
 
 /*!
@@ -232,14 +234,15 @@ typedef struct {
  *
  *  Not to be accessed by the user.
  */
-typedef struct {
-    bool                isOpen;             /* Flag for open/close status */
-    Watchdog_Callback   callbackFxn;        /* Pointer to callback. Not supported
-                                               on all targets. */
-    Watchdog_ResetMode  resetMode;          /* Mode to enable resets.
-                                               Not supported on all targets. */
-    Watchdog_DebugMode  debugStallMode;     /* Mode to stall Watchdog at breakpoints.
-                                               Not supported on all targets. */
+typedef struct
+{
+    bool isOpen;                       /* Flag for open/close status */
+    Watchdog_Callback callbackFxn;     /* Pointer to callback. Not supported
+                                          on all targets. */
+    Watchdog_ResetMode resetMode;      /* Mode to enable resets.
+                                          Not supported on all targets. */
+    Watchdog_DebugMode debugStallMode; /* Mode to stall Watchdog at breakpoints.
+                                          Not supported on all targets. */
     /* Watchdog SYS/BIOS objects */
     HwiP_Struct hwi; /* Hwi object */
 } WatchdogCC26XX_Object;

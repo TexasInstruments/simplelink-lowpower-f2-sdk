@@ -58,34 +58,19 @@ public:
     explicit AnnounceBeginServer(Instance &aInstance);
 
     /**
-     * This method begins the MLE Announce transmission process using Count=3 and Period=1s.
-     *
-     * @param[in]  aChannelMask   The channels to use for transmission.
-     *
-     * @retval OT_ERROR_NONE  Successfully started the transmission process.
-     *
-     */
-    otError SendAnnounce(uint32_t aChannelMask);
-
-    /**
      * This method begins the MLE Announce transmission process.
      *
      * @param[in]  aChannelMask   The channels to use for transmission.
      * @param[in]  aCount         The number of transmissions per channel.
      * @param[in]  aPeriod        The time between transmissions (milliseconds).
      *
-     * @retval OT_ERROR_NONE  Successfully started the transmission process.
-     *
      */
-    otError SendAnnounce(uint32_t aChannelMask, uint8_t aCount, uint16_t aPeriod);
+    void SendAnnounce(uint32_t aChannelMask, uint8_t aCount = kDefaultCount, uint16_t aPeriod = kDefaultPeriod);
 
 private:
-    enum
-    {
-        kDefaultCount  = 3,
-        kDefaultPeriod = 1000,
-        kDefaultJitter = 0,
-    };
+    static constexpr uint8_t  kDefaultCount  = 3;
+    static constexpr uint16_t kDefaultPeriod = 1000;
+    static constexpr uint16_t kDefaultJitter = 0;
 
     static void HandleRequest(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo);
     void        HandleRequest(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo);

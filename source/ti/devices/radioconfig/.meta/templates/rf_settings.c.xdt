@@ -39,7 +39,7 @@
 /* Header templates */
 const fileHeader = system.getTemplate("/ti/devices/radioconfig/templates/fileheader.xdt");
 
-/* patch handler */
+/* Patch handler */
 const patchHandler = system.getScript("/ti/devices/radioconfig/patch_handler.js");
     
 /* Radio code export configuration */

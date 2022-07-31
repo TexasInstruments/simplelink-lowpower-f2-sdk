@@ -35,7 +35,8 @@
 
 typedef void (*TimerPCC26XX_Fxn)(uintptr_t arg);
 
-typedef struct {
+typedef struct
+{
     TimerPCC26XX_Fxn hookCH1;
     TimerPCC26XX_Fxn hookCH2;
 } TimerPCC26XX_channelHooks;

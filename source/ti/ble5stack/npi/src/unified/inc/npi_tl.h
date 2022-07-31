@@ -100,8 +100,8 @@ typedef struct
 typedef struct
 {
   uint16_t              npiTLBufSize;   //!< Buffer size of Tx/Rx Transport layer buffers
-  uint32_t              mrdyPinID;      //!< Pin ID Mrdy (only with Power Saving enabled)
-  uint32_t              srdyPinID;      //!< Pin ID Srdy (only with Power Saving enabled)
+  uint32_t              mrdyGpioIndex;  //!< Gpio Index Mrdy (only with Power Saving enabled)
+  uint32_t              srdyGpioIndex;  //!< Gpio Index Srdy (only with Power Saving enabled)
   uint8_t               portType;       //!< NPI_SERIAL_TYPE_[UART,SPI]
   uint8_t               portBoardID;    //!< Board ID for HW, i.e. CC2650_UART0
   npiInterfaceParams    portParams;     //!< Params to initialize NPI port

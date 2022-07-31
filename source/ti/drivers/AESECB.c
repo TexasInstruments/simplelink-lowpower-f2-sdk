@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,31 +50,34 @@ extern const uint_least8_t AESECB_count;
 
 const AESECB_Params AESECB_defaultParams = {
     .returnBehavior = AESECB_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== AESECB_Params_init ========
  */
-void AESECB_Params_init(AESECB_Params *params){
+void AESECB_Params_init(AESECB_Params *params)
+{
     *params = AESECB_defaultParams;
 }
 
 /*
  *  ======== AESECB_Operation_init ========
  */
-void AESECB_Operation_init(AESECB_Operation *operationStruct) {
+void AESECB_Operation_init(AESECB_Operation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESECB_Operation));
 }
 
 /*
  *  ======== AESECB_open ========
  */
-AESECB_Handle AESECB_open(uint_least8_t index, const AESECB_Params *params) {
+__attribute__((weak)) AESECB_Handle AESECB_open(uint_least8_t index, const AESECB_Params *params)
+{
     DebugP_assert(index < AESECB_count);
 
-    AESECB_Config *config = (AESECB_Config*)&AESECB_config[index];
+    AESECB_Config *config = (AESECB_Config *)&AESECB_config[index];
     return AESECB_construct(config, params);
 }

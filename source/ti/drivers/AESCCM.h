@@ -727,7 +727,7 @@ extern "C" {
  * #define AESCCMXYZ_STATUS_ERROR2    AESCCM_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCCM_STATUS_RESERVED        AES_STATUS_RESERVED
+#define AESCCM_STATUS_RESERVED AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -735,7 +735,7 @@ extern "C" {
  * Functions return AESCCM_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCCM_STATUS_SUCCESS         AES_STATUS_SUCCESS
+#define AESCCM_STATUS_SUCCESS AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -743,7 +743,7 @@ extern "C" {
  * Functions return AESCCM_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCCM_STATUS_ERROR           AES_STATUS_ERROR
+#define AESCCM_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -753,12 +753,12 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCCM_STATUS_RESOURCE_UNAVAILABLE  AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESCCM_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCCM_STATUS_CANCELED              AES_STATUS_CANCELED
+#define AESCCM_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
  * @brief   An error status code returned if the MAC provided by the application for
@@ -767,24 +767,24 @@ extern "C" {
  * This code is returned by AESCCM_oneStepDecrypt() or AESCCM_finalizeDecrypt()
  * if the verification of the MAC fails.
  */
-#define AESCCM_STATUS_MAC_INVALID           AES_STATUS_MAC_INVALID
+#define AESCCM_STATUS_MAC_INVALID AES_STATUS_MAC_INVALID
 
 /*!
  *  @brief  The operation requested is not supported either by the target hardware
  *          or the driver implementation.
  */
-#define AESCCM_STATUS_FEATURE_NOT_SUPPORTED     AES_STATUS_FEATURE_NOT_SUPPORTED
+#define AESCCM_STATUS_FEATURE_NOT_SUPPORTED AES_STATUS_FEATURE_NOT_SUPPORTED
 
 /*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
-#define AESCCM_STATUS_KEYSTORE_INVALID_ID       AES_STATUS_KEYSTORE_INVALID_ID
+#define AESCCM_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
 
 /*!
  *  @brief  The key store module returned a generic error. See key store documentation
  *  for additional details.
  */
-#define AESCCM_STATUS_KEYSTORE_GENERIC_ERROR    AES_STATUS_KEYSTORE_GENERIC_ERROR
+#define AESCCM_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  * @brief   The operation does not support non-word-aligned input and/or output.
@@ -792,7 +792,7 @@ extern "C" {
  * AESCCM driver implementations may have restrictions on the alignment of
  * input/output data due to performance limitations of the hardware.
  */
-#define AESCCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
+#define AESCCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  *  @brief AESCCM Global configuration
@@ -833,30 +833,32 @@ typedef AESCCM_Config *AESCCM_Handle;
  * |AESCCM_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     AESCCM_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
-                                            /*!< The function call will return immediately while the
-                                             *   CCM operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
+    /*!< The function call will return immediately while the
+     *   CCM operation goes on in the background. The registered
+     *   callback function is called after the operation completes.
+     *   The context the callback function is called (task, HWI, SWI)
+     *   is implementation-dependent.
+     */
     AESCCM_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
-                                            /*!< The function call will block while the CCM operation goes
-                                             *   on in the background. CCM operation results are available
-                                             *   after the function returns.
-                                             */
+    /*!< The function call will block while the CCM operation goes
+     *   on in the background. CCM operation results are available
+     *   after the function returns.
+     */
     AESCCM_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
-                                            /*!< The function call will continuously poll a flag while CCM
-                                             *   operation goes on in the background. CCM operation results
-                                             *   are available after the function returns.
-                                             */
+    /*!< The function call will continuously poll a flag while CCM
+     *   operation goes on in the background. CCM operation results
+     *   are available after the function returns.
+     */
 } AESCCM_ReturnBehavior;
 
 /*!
  *  @brief  Enum for the direction of the CCM operation.
  */
-typedef enum {
+typedef enum
+{
     AESCCM_MODE_ENCRYPT = 1,
     AESCCM_MODE_DECRYPT = 2,
 } AESCCM_Mode;
@@ -865,57 +867,58 @@ typedef enum {
  *  @brief  Struct containing the parameters required for encrypting/decrypting
  *          and authenticating/verifying a message for one-step operations.
  */
-typedef struct {
-   CryptoKey                *key;                       /*!< A previously initialized CryptoKey */
-   uint8_t                  *aad;                       /*!< A buffer of length \c aadLength containing additional
-                                                         *   authentication data to be authenticated/verified but not
-                                                         *   encrypted/decrypted.
-                                                         */
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the CCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   uint8_t                  *nonce;                     /*!< A buffer containing a nonce. Nonces must be unique to
-                                                         *   each CCM operation and may not be reused. If
-                                                         *   nonceInternallyGenerated is set, the nonce will be
-                                                         *   generated by #AESCCM_oneStepEncrypt() and copied to this buffer.
-                                                         */
-   uint8_t                  *mac;                       /*!<
-                                                         *   - Encryption: The buffer where the message authentication
-                                                         *   code is copied.
-                                                         *   - Decryption: The buffer containing the received message
-                                                         *   authentication code.
-                                                         */
-   size_t                   aadLength;                  /*!< Length of the total \c aad in bytes. Either \c aadLength or
-                                                         *   \c inputLength must be non-zero. Unlike this field in
-                                                         *   AESCCM_SegmentedAADOperation, the length doesn't need to be
-                                                         *   block-aligned.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Either \c aadLength or
-                                                         *   \c inputLength must be non-zero. Unlike this field in
-                                                         *   AESCCM_SegmentedDataOperation, the length doesn't need to be
-                                                         *   block-aligned.
-                                                         *   Max length supported may be limited depending on the return behavior.
-                                                         */
-   uint8_t                  nonceLength;                /*!< Length of \c nonce in bytes.
-                                                         *   Valid nonce lengths are [7, 8, ... 13].
-                                                         */
-   uint8_t                  macLength;                  /*!< Length of \c mac in bytes.
-                                                         *   Valid MAC lengths are [0, 4, 6, 8, 10, 12, 14, 16].
-                                                         *   A length of 0 disables authentication and verification. This is
-                                                         *   only permitted when using CCM*.
-                                                         */
-   bool                     nonceInternallyGenerated;   /*!< When true, the nonce buffer passed into #AESCCM_oneStepEncrypt()
-                                                         *   will be overwritten with a randomly generated nonce.
-                                                         *   Not supported by all implementations.
-                                                         */
+typedef struct
+{
+    CryptoKey *key;                /*!< A previously initialized CryptoKey */
+    uint8_t *aad;                  /*!< A buffer of length \c aadLength containing additional
+                                    *   authentication data to be authenticated/verified but not
+                                    *   encrypted/decrypted.
+                                    */
+    uint8_t *input;                /*!<
+                                    *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                                    *   in the CCM operation.
+                                    *   - Decryption: The ciphertext to be decrypted and verified.
+                                    */
+    uint8_t *output;               /*!<
+                                    *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                                    *   is copied to.
+                                    *   - Decryption: The plaintext derived from the decrypted and verified
+                                    *   ciphertext is copied here.
+                                    */
+    uint8_t *nonce;                /*!< A buffer containing a nonce. Nonces must be unique to
+                                    *   each CCM operation and may not be reused. If
+                                    *   nonceInternallyGenerated is set, the nonce will be
+                                    *   generated by #AESCCM_oneStepEncrypt() and copied to this buffer.
+                                    */
+    uint8_t *mac;                  /*!<
+                                    *   - Encryption: The buffer where the message authentication
+                                    *   code is copied.
+                                    *   - Decryption: The buffer containing the received message
+                                    *   authentication code.
+                                    */
+    size_t aadLength;              /*!< Length of the total \c aad in bytes. Either \c aadLength or
+                                    *   \c inputLength must be non-zero. Unlike this field in
+                                    *   AESCCM_SegmentedAADOperation, the length doesn't need to be
+                                    *   block-aligned.
+                                    */
+    size_t inputLength;            /*!< Length of the input/output data in bytes. Either \c aadLength or
+                                    *   \c inputLength must be non-zero. Unlike this field in
+                                    *   AESCCM_SegmentedDataOperation, the length doesn't need to be
+                                    *   block-aligned.
+                                    *   Max length supported may be limited depending on the return behavior.
+                                    */
+    uint8_t nonceLength;           /*!< Length of \c nonce in bytes.
+                                    *   Valid nonce lengths are [7, 8, ... 13].
+                                    */
+    uint8_t macLength;             /*!< Length of \c mac in bytes.
+                                    *   Valid MAC lengths are [0, 4, 6, 8, 10, 12, 14, 16].
+                                    *   A length of 0 disables authentication and verification. This is
+                                    *   only permitted when using CCM*.
+                                    */
+    bool nonceInternallyGenerated; /*!< When true, the nonce buffer passed into #AESCCM_oneStepEncrypt()
+                                    *   will be overwritten with a randomly generated nonce.
+                                    *   Not supported by all implementations.
+                                    */
 } AESCCM_OneStepOperation;
 
 /*!
@@ -923,16 +926,17 @@ typedef struct {
  *          authenticating/verifying additional data in a segmented operation.
  *          Must be updated for each add AAD step of a segmented operation.
  */
-typedef struct {
-   uint8_t                  *aad;                       /*!< A buffer of length \c aadLength containing additional
-                                                         *   authentication data to be authenticated/verified but not
-                                                         *   encrypted/decrypted.
-                                                         */
-   size_t                   aadLength;                  /*!< Length of the \c aad in bytes. Must be non-zero, multiple
-                                                         *   of the AES block size (16 bytes) unless the last chunk of
-                                                         *   AAD is being passed in. In that case, this value doesn't
-                                                         *   need to be an AES block-sized multiple.
-                                                         */
+typedef struct
+{
+    uint8_t *aad;     /*!< A buffer of length \c aadLength containing additional
+                       *   authentication data to be authenticated/verified but not
+                       *   encrypted/decrypted.
+                       */
+    size_t aadLength; /*!< Length of the \c aad in bytes. Must be non-zero, multiple
+                       *   of the AES block size (16 bytes) unless the last chunk of
+                       *   AAD is being passed in. In that case, this value doesn't
+                       *   need to be an AES block-sized multiple.
+                       */
 } AESCCM_SegmentedAADOperation;
 
 /*!
@@ -940,23 +944,24 @@ typedef struct {
  *          a message in a segmented operation. Must be updated between each
  *          add data step of a segmented operation.
  */
-typedef struct {
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the CCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Must be non-zero, multiple
-                                                         *   of the AES block size (16 bytes) unless the last chunk of data is being
-                                                         *   passed in. In that case, this value doesn't need to a block size multiple.
-                                                         *   Max length supported may be limited depending on the return behavior.
-                                                         */
+typedef struct
+{
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                         *   in the CCM operation.
+                         *   - Decryption: The ciphertext to be decrypted and verified.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                         *   is copied to.
+                         *   - Decryption: The plaintext derived from the decrypted and verified
+                         *   ciphertext is copied here.
+                         */
+    size_t inputLength; /*!< Length of the input/output data in bytes. Must be non-zero, multiple
+                         *   of the AES block size (16 bytes) unless the last chunk of data is being
+                         *   passed in. In that case, this value doesn't need to a block size multiple.
+                         *   Max length supported may be limited depending on the return behavior.
+                         */
 } AESCCM_SegmentedDataOperation;
 
 /*!
@@ -964,35 +969,36 @@ typedef struct {
  *          encryption/decryption and authentication/verification of a message
  *          in a segmented operation.
  */
-typedef struct {
-   uint8_t                  *input;                     /*!<
-                                                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
-                                                         *   in the CCM operation.
-                                                         *   - Decryption: The ciphertext to be decrypted and verified.
-                                                         */
-   uint8_t                  *output;                    /*!<
-                                                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
-                                                         *   is copied to.
-                                                         *   - Decryption: The plaintext derived from the decrypted and verified
-                                                         *   ciphertext is copied here.
-                                                         */
-   uint8_t                  *mac;                       /*!<
-                                                         *   - Encryption: The buffer where the message authentication
-                                                         *   code is copied.
-                                                         *   - Decryption: The buffer containing the received message
-                                                         *   authentication code.
-                                                         */
-   size_t                   inputLength;                /*!< Length of the input/output data in bytes. Can be 0 if finalizing
-                                                         *   without new payload data. Unlike this field in
-                                                         *   AESCCM_SegmentedDataOperation, the length doesn't need to be
-                                                         *   block-aligned.
-                                                         *   Max length supported may be limited depending on the return behavior.
-                                                         */
-   uint8_t                  macLength;                   /*!< Length of \c mac in bytes.
-                                                          *   Valid MAC lengths are [0, 4, 6, 8, 10, 12, 14, 16].
-                                                          *   A length of 0 disables authentication and verification. This is
-                                                          *   only permitted when using CCM*.
-                                                          */
+typedef struct
+{
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be encrypted and authenticated
+                         *   in the CCM operation.
+                         *   - Decryption: The ciphertext to be decrypted and verified.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that the encrypted plaintext
+                         *   is copied to.
+                         *   - Decryption: The plaintext derived from the decrypted and verified
+                         *   ciphertext is copied here.
+                         */
+    uint8_t *mac;       /*!<
+                         *   - Encryption: The buffer where the message authentication
+                         *   code is copied.
+                         *   - Decryption: The buffer containing the received message
+                         *   authentication code.
+                         */
+    size_t inputLength; /*!< Length of the input/output data in bytes. Can be 0 if finalizing
+                         *   without new payload data. Unlike this field in
+                         *   AESCCM_SegmentedDataOperation, the length doesn't need to be
+                         *   block-aligned.
+                         *   Max length supported may be limited depending on the return behavior.
+                         */
+    uint8_t macLength;  /*!< Length of \c mac in bytes.
+                         *   Valid MAC lengths are [0, 4, 6, 8, 10, 12, 14, 16].
+                         *   A length of 0 disables authentication and verification. This is
+                         *   only permitted when using CCM*.
+                         */
 } AESCCM_SegmentedFinalizeOperation;
 
 /**
@@ -1010,24 +1016,27 @@ typedef AESCCM_OneStepOperation AESCCM_Operation;
  */
 typedef union AESCCM_OperationUnion
 {
-    AESCCM_OneStepOperation oneStepOperation;                       /* One-step operation element of the operation union */
-    AESCCM_SegmentedAADOperation segmentedAADOperation;             /* Segmented AAD operation element of the operation union */
-    AESCCM_SegmentedDataOperation segmentedDataOperation;           /* Segmented data operation element of the operation union */
-    AESCCM_SegmentedFinalizeOperation segmentedFinalizeOperation;   /* Segmented finalize operation element of the operation union */
+    AESCCM_OneStepOperation oneStepOperation;             /* One-step operation element of the operation union */
+    AESCCM_SegmentedAADOperation segmentedAADOperation;   /* Segmented AAD operation element of the operation union */
+    AESCCM_SegmentedDataOperation segmentedDataOperation; /* Segmented data operation element of the operation union */
+    AESCCM_SegmentedFinalizeOperation segmentedFinalizeOperation; /* Segmented finalize operation element of the
+                                                                     operation union */
 } AESCCM_OperationUnion;
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
-    AESCCM_OPERATION_TYPE_ENCRYPT = 1, /* Fields 1 and 2 are for backward compatibility */
-    AESCCM_OPERATION_TYPE_DECRYPT = 2,
-    AESCCM_OP_TYPE_ONESTEP_ENCRYPT = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not being unique */
-    AESCCM_OP_TYPE_ONESTEP_DECRYPT = 2,
-    AESCCM_OP_TYPE_AAD_ENCRYPT = 3,
-    AESCCM_OP_TYPE_AAD_DECRYPT = 4,
-    AESCCM_OP_TYPE_DATA_ENCRYPT = 5,
-    AESCCM_OP_TYPE_DATA_DECRYPT = 6,
+typedef enum
+{
+    AESCCM_OPERATION_TYPE_ENCRYPT   = 1, /* Fields 1 and 2 are for backward compatibility */
+    AESCCM_OPERATION_TYPE_DECRYPT   = 2,
+    AESCCM_OP_TYPE_ONESTEP_ENCRYPT  = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not
+                                            being unique */
+    AESCCM_OP_TYPE_ONESTEP_DECRYPT  = 2,
+    AESCCM_OP_TYPE_AAD_ENCRYPT      = 3,
+    AESCCM_OP_TYPE_AAD_DECRYPT      = 4,
+    AESCCM_OP_TYPE_DATA_ENCRYPT     = 5,
+    AESCCM_OP_TYPE_DATA_DECRYPT     = 6,
     AESCCM_OP_TYPE_FINALIZE_ENCRYPT = 7,
     AESCCM_OP_TYPE_FINALIZE_DECRYPT = 8,
 } AESCCM_OperationType;
@@ -1047,10 +1056,10 @@ typedef enum {
  *  @param  operationType  This parameter determines which operation the
  *                         callback refers to.
  */
-typedef void (*AESCCM_CallbackFxn) (AESCCM_Handle handle,
-                                    int_fast16_t returnValue,
-                                    AESCCM_OperationUnion *operation,
-                                    AESCCM_OperationType operationType);
+typedef void (*AESCCM_CallbackFxn)(AESCCM_Handle handle,
+                                   int_fast16_t returnValue,
+                                   AESCCM_OperationUnion *operation,
+                                   AESCCM_OperationType operationType);
 
 /*!
  *  @brief  CCM Parameters
@@ -1060,15 +1069,16 @@ typedef void (*AESCCM_CallbackFxn) (AESCCM_Handle handle,
  *
  *  @sa     AESCCM_Params_init()
  */
-typedef struct {
-    AESCCM_ReturnBehavior   returnBehavior;             /*!< Blocking, callback, or polling return behavior */
-    AESCCM_CallbackFxn      callbackFxn;                /*!< Callback function pointer */
-    uint32_t                timeout;                    /*!< Timeout before the driver returns an error in
-                                                         *   ::AESCCM_RETURN_BEHAVIOR_BLOCKING
-                                                         */
-    void                   *custom;                     /*!< Custom argument used by driver
-                                                         *   implementation
-                                                         */
+typedef struct
+{
+    AESCCM_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    AESCCM_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                     /*!< Timeout before the driver returns an error in
+                                           *   ::AESCCM_RETURN_BEHAVIOR_BLOCKING
+                                           */
+    void *custom;                         /*!< Custom argument used by driver
+                                           *   implementation
+                                           */
 } AESCCM_Params;
 
 /*!
@@ -1233,10 +1243,7 @@ int_fast16_t AESCCM_setupDecrypt(AESCCM_Handle handle,
  *  @post   #AESCCM_setNonce()
  *  @post   #AESCCM_generateNonce()
  */
-int_fast16_t AESCCM_setLengths(AESCCM_Handle handle,
-                               size_t aadLength,
-                               size_t plaintextLength,
-                               size_t macLength);
+int_fast16_t AESCCM_setLengths(AESCCM_Handle handle, size_t aadLength, size_t plaintextLength, size_t macLength);
 
 /*!
  *  @brief  Function to set the nonce for an AES CCM segmented operation.
@@ -1258,9 +1265,7 @@ int_fast16_t AESCCM_setLengths(AESCCM_Handle handle,
  *  @post   #AESCCM_addAAD()
  *  @post   #AESCCM_addData()
  */
-int_fast16_t AESCCM_setNonce(AESCCM_Handle handle,
-                             const uint8_t *nonce,
-                             size_t nonceLength);
+int_fast16_t AESCCM_setNonce(AESCCM_Handle handle, const uint8_t *nonce, size_t nonceLength);
 
 /*!
  *  @brief  Function to generate a nonce for an AES CCM segmented encryption operation.
@@ -1286,10 +1291,7 @@ int_fast16_t AESCCM_setNonce(AESCCM_Handle handle,
  *  @post   #AESCCM_addAAD()
  *  @post   #AESCCM_addData()
  */
-int_fast16_t AESCCM_generateNonce(AESCCM_Handle handle,
-                                  uint8_t *nonce,
-                                  size_t nonceSize,
-                                  size_t* nonceLength);
+int_fast16_t AESCCM_generateNonce(AESCCM_Handle handle, uint8_t *nonce, size_t nonceSize, size_t *nonceLength);
 
 /*!
  *  @brief  Adds a segment of @a aad with a @a length in bytes to the generated MAC.
@@ -1325,8 +1327,7 @@ int_fast16_t AESCCM_generateNonce(AESCCM_Handle handle,
  *  @post     #AESCCM_finalizeEncrypt()
  *  @post     #AESCCM_finalizeDecrypt()
  */
-int_fast16_t AESCCM_addAAD(AESCCM_Handle handle,
-                           AESCCM_SegmentedAADOperation *operation);
+int_fast16_t AESCCM_addAAD(AESCCM_Handle handle, AESCCM_SegmentedAADOperation *operation);
 
 /*!
  *  @brief  Adds a segment of @a data with a @a length in bytes to the plaintext/ciphertext
@@ -1359,8 +1360,7 @@ int_fast16_t AESCCM_addAAD(AESCCM_Handle handle,
  *  @post     #AESCCM_finalizeEncrypt()
  *  @post     #AESCCM_finalizeDecrypt()
  */
-int_fast16_t AESCCM_addData(AESCCM_Handle handle,
-                            AESCCM_SegmentedDataOperation *operation);
+int_fast16_t AESCCM_addData(AESCCM_Handle handle, AESCCM_SegmentedDataOperation *operation);
 
 /*!
  *  @brief  Finalize the MAC and ciphertext.
@@ -1387,8 +1387,7 @@ int_fast16_t AESCCM_addData(AESCCM_Handle handle,
  *  @retval #AESCCM_STATUS_FEATURE_NOT_SUPPORTED The operation is not supported in this device.
  *  @retval #AESCCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
-int_fast16_t AESCCM_finalizeEncrypt(AESCCM_Handle handle,
-                                    AESCCM_SegmentedFinalizeOperation *operation);
+int_fast16_t AESCCM_finalizeEncrypt(AESCCM_Handle handle, AESCCM_SegmentedFinalizeOperation *operation);
 
 /*!
  *  @brief  Finalize the MAC and plaintext and verify it.
@@ -1419,8 +1418,7 @@ int_fast16_t AESCCM_finalizeEncrypt(AESCCM_Handle handle,
  *  @retval #AESCCM_STATUS_FEATURE_NOT_SUPPORTED The operation is not supported in this device.
  *  @retval #AESCCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
-int_fast16_t AESCCM_finalizeDecrypt(AESCCM_Handle handle,
-                                    AESCCM_SegmentedFinalizeOperation *operation);
+int_fast16_t AESCCM_finalizeDecrypt(AESCCM_Handle handle, AESCCM_SegmentedFinalizeOperation *operation);
 
 /*!
  *  @brief  Function to initialize an #AESCCM_Operation struct to its defaults
@@ -1485,7 +1483,8 @@ void AESCCM_SegmentedFinalizeOperation_init(AESCCM_SegmentedFinalizeOperation *o
  *
  *  @param  [in] handle                 A CCM handle returned from #AESCCM_open() or #AESCCM_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESCCM_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCCM_STATUS_ERROR                 The operation failed.
@@ -1506,7 +1505,8 @@ int_fast16_t AESCCM_oneStepEncrypt(AESCCM_Handle handle, AESCCM_OneStepOperation
  *
  *  @param  [in] handle                 A CCM handle returned from #AESCCM_open() or #AESCCM_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESCCM_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCCM_STATUS_ERROR                 The operation failed.

@@ -59,8 +59,9 @@
 /* OpenThread public API Header files */
 #include <openthread/coap.h>
 #include <openthread/link.h>
-#include <openthread/platform/uart.h>
 #include <openthread/thread.h>
+
+#include <utils/uart.h>
 
 /* grlib header defines `NDEBUG`, undefine here to avoid a compile warning */
 #ifdef NDEBUG
@@ -203,13 +204,14 @@ static attrDesc_t coapAttrs[ATTR_COUNT] = {
 }
 };
 
-static Button_Handle rightButtonHandle;
-
 /* Holds the server setup state: 1 indicates CoAP server has been setup */
 static bool serverSetup;
 
+#if TIOP_CUI
 /* String variable for copying over app lines to CUI */
 static char statusBuf[MAX_STATUS_LINE_VALUE_LEN];
+static Button_Handle rightButtonHandle;
+#endif
 
 /******************************************************************************
  Function Prototype
@@ -525,21 +527,6 @@ static void flushLcd(void)
 }
 
 /**
- * @brief Handles the key press events.
- *
- * @param _buttonHandle identifies which keys were pressed
- * @param _buttonEvents identifies the event that occurred on the key
- * @return None
- */
-void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
-{
-    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
-    {
-        Thermostat_postEvt(Thermostat_evtKeyRight);
-    }
-}
-
-/**
  * @brief Processes the OT stack events
  *
  * @param event             event identifier
@@ -684,6 +671,9 @@ static void processEvent(Thermostat_evt event)
 
         case Thermostat_evtNwkJoined:
         {
+#if TIOP_CUI
+            otNetworkKey networkKey;
+#endif /* TIOP_CUI */
             DISPUTILS_SERIALPRINTF( 1, 0, "Joined Nwk");
             DISPUTILS_LCDPRINTF(1, 0, "Joined Nwk");
 
@@ -694,7 +684,8 @@ static void processEvent(Thermostat_evt event)
             tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
             tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
             tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-            tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+            otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+            tiopCUIUpdateNetworkKey(networkKey);
             tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
             OtRtosApi_unlock();
 #endif /* TIOP_CUI */
@@ -761,6 +752,8 @@ static void processEvent(Thermostat_evt event)
                 case OT_DEVICE_ROLE_ROUTER:
                 case OT_DEVICE_ROLE_LEADER:
                 {
+                    otNetworkKey networkKey;
+
                     tiopCUIUpdateConnStatus(CUI_conn_joined);
 
                     OtRtosApi_lock();
@@ -768,7 +761,8 @@ static void processEvent(Thermostat_evt event)
                     tiopCUIUpdateChannel(otLinkGetChannel(OtInstance_get()));
                     tiopCUIUpdateShortAddr(otLinkGetShortAddress(OtInstance_get()));
                     tiopCUIUpdateNwkName(otThreadGetNetworkName(OtInstance_get()));
-                    tiopCUIUpdateMasterkey(*(otThreadGetMasterKey(OtInstance_get())));
+                    otThreadGetNetworkKey(OtInstance_get(), &networkKey);
+                    tiopCUIUpdateNetworkKey(networkKey);
                     tiopCUIUpdateExtPANID(*(otThreadGetExtendedPanId(OtInstance_get())));
                     OtRtosApi_unlock();
                     break;
@@ -830,6 +824,21 @@ void GraphicExt_requestProcess()
 }
 
 #if TIOP_CUI
+/**
+ * @brief Handles the key press events.
+ *
+ * @param _buttonHandle identifies which keys were pressed
+ * @param _buttonEvents identifies the event that occurred on the key
+ * @return None
+ */
+void processKeyChangeCB(Button_Handle _buttonHandle, Button_EventMask _buttonEvents)
+{
+    if (_buttonHandle == rightButtonHandle && _buttonEvents & Button_EV_CLICKED)
+    {
+        Thermostat_postEvt(Thermostat_evtKeyRight);
+    }
+}
+
 /**
  * documented in tiop_ui.h
  */
@@ -1041,8 +1050,10 @@ void *Thermostat_task(void *arg0)
 
     OtStack_registerCallback(processOtStackEvents);
 
+#if TIOP_CUI
     snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_RED "Temperature" CUI_COLOR_RESET "] " CUI_COLOR_WHITE"%s" CUI_COLOR_RESET " [" CUI_COLOR_CYAN "Set Point" CUI_COLOR_RESET "] " CUI_COLOR_WHITE "%s", (char*)thermostatTemp, (char*)thermostatSetPt);
     tiopCUIInit((char*)statusBuf, &rightButtonHandle);
+#endif
 
     DISPUTILS_SERIALPRINTF(0, 0, "Thermostat init!");
 

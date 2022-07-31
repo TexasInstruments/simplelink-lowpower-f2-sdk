@@ -93,7 +93,8 @@ extern "C" {
  *  AESECB26XX hardware attributes should be included in the board file
  *  and pointed to by the AESECB_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*!
         @brief Crypto Peripheral's interrupt priority.
 
@@ -110,7 +111,7 @@ typedef struct {
         zero-latency interrupts, thus invalidating the critical sections
         in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } AESECBCC26XX_HWAttrs;
 
 /*!
@@ -118,19 +119,20 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    AESECB_Operation                *operation;
-    AESECB_CallbackFxn              callbackFxn;
-    uint32_t                        semaphoreTimeout;
-    CryptoKey                       key;
-    volatile int_fast16_t           returnStatus;
-    AESECB_ReturnBehavior           returnBehavior;
-    AESECB_OperationType            operationType;
-    bool                            isOpen;
-    bool                            threadSafe;
-    volatile bool                   hwBusy;
-    volatile bool                   operationInProgress;
-    volatile bool                   cryptoResourceLocked;
+typedef struct
+{
+    AESECB_Operation *operation;
+    AESECB_CallbackFxn callbackFxn;
+    uint32_t semaphoreTimeout;
+    CryptoKey key;
+    volatile int_fast16_t returnStatus;
+    AESECB_ReturnBehavior returnBehavior;
+    AESECB_OperationType operationType;
+    bool isOpen;
+    bool threadSafe;
+    volatile bool hwBusy;
+    volatile bool operationInProgress;
+    volatile bool cryptoResourceLocked;
 } AESECBCC26XX_Object;
 
 /// @cond NODOC

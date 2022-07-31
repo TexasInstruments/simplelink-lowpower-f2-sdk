@@ -11897,6 +11897,9 @@
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
+//                          Note: This is not
+//                          supported by SIP module. See device specific
+//                          datasheet for more details.
 #define IOC_IOCFG31_PORT_ID_W                                                6
 #define IOC_IOCFG31_PORT_ID_M                                       0x0000003F
 #define IOC_IOCFG31_PORT_ID_S                                                0

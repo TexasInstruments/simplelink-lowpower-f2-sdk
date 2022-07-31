@@ -61,7 +61,6 @@ extern "C"
 
 #include <ti/display/Display.h>
 #include <ti/display/DisplayExt.h>
-#include <ti/sysbios/knl/Event.h>
 #include <ti/grlib/grlib.h>
 
 /******************************************************************************

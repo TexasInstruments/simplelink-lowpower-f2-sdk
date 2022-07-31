@@ -84,7 +84,7 @@
 
 #include "ti_ble_config.h"
 #ifdef LED_DEBUG
-#include <ti/drivers/PIN.h>
+#include <ti/drivers/GPIO.h>
 #endif //LED_DEBUG
 
 #include "simple_peripheral_oad_offchip_menu.h"
@@ -310,18 +310,6 @@ static bool oadWaitReboot = false;
 // indications needs to be sent out
 static uint32_t  sendSvcChngdOnNextBoot = FALSE;
 
-#ifdef LED_DEBUG
-// State variable for debugging LEDs
-static PIN_State sbpLedState;
-
-// Pin table for LED debug pins
-static const PIN_Config sbpLedPins[] = {
-    CONFIG_PIN_RLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    CONFIG_PIN_GLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
-#endif //LED_DEBUG
-
 // Advertising handles
 static uint8 advHandleLegacy;
 static uint8 advHandleLongRange;
@@ -465,40 +453,29 @@ static void SimplePeripheral_init(void)
   ICall_registerApp(&selfEntity, &syncEvent);
 
 #ifdef LED_DEBUG
-  // Open the LED debug pins
-  if (!PIN_open(&sbpLedState, sbpLedPins))
+  /* Configure the LED pin */
+  GPIO_setConfig(CONFIG_GPIO_GLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
+  GPIO_setConfig(CONFIG_GPIO_RLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
+
+  uint_least8_t activeLed;
+  uint8_t blinkCnt = 16;
+
+  if (blinkCnt < 12)
   {
-    Display_print0(dispHandle, 0, 0, "Debug PINs failed to open");
+    activeLed = CONFIG_GPIO_GLED;
   }
   else
   {
-    PIN_Id activeLed;
-    uint8_t blinkCnt = 15;
-
-    PIN_setOutputValue(&sbpLedState, CONFIG_PIN_RLED, 0);
-    PIN_setOutputValue(&sbpLedState, CONFIG_PIN_GLED, 0);
-
-    if (blinkCnt < 12)
-    {
-      activeLed = CONFIG_PIN_RLED;
-    }
-    else
-    {
-      activeLed = CONFIG_PIN_GLED;
-    }
-
-    for(uint8_t numBlinks = 0; numBlinks < blinkCnt; ++numBlinks)
-    {
-      PIN_setOutputValue(&sbpLedState, activeLed, !PIN_getOutputValue(activeLed));
-
-      // Sleep for 100ms, sys-tick for BLE-Stack is 10us,
-      // Task sleep is in # of ticks
-      Task_sleep(10000);
-    }
-
-    // Close the pins after using
-    PIN_close(&sbpLedState);
+    activeLed = CONFIG_GPIO_RLED;
   }
+  for(uint8_t numBlinks = 0; numBlinks < blinkCnt; ++numBlinks)
+  {
+    GPIO_toggle(activeLed);
+    // Sleep for 100ms, sys-tick for BLE-Stack is 10us,
+    // Task sleep is in # of ticks
+    Task_sleep(10000);
+  }
+  GPIO_write(activeLed, 0);
 #endif //LED_DEBUG
 
 #ifdef USE_RCOSC
@@ -721,13 +698,9 @@ static void SimplePeripheral_taskFxn(UArg a0, UArg a1)
         Display_print0(dispHandle, SP_ROW_STATUS_1, 0,
                         "OAD malloc fail, cancelling OAD");
         OAD_cancel();
-
 #ifdef LED_DEBUG
         // Diplay is not enabled in persist app so use LED
-        if(PIN_open(&sbpLedState, sbpLedPins))
-        {
-          PIN_setOutputValue(&sbpLedState, CONFIG_PIN_RLED, 1);
-        }
+        GPIO_write(CONFIG_GPIO_RLED, 1);
 #endif //LED_DEBUG
       }
       // OAD queue processing
@@ -1518,7 +1491,7 @@ static void SimplePeripheral_handleKeys(uint8_t keys)
   if (keys & KEY_LEFT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN1) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN1) == 0)
     {
       tbm_buttonLeft();
     }
@@ -1526,7 +1499,7 @@ static void SimplePeripheral_handleKeys(uint8_t keys)
   else if (keys & KEY_RIGHT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN2) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN2) == 0)
     {
       tbm_buttonRight();
     }
@@ -2018,9 +1991,9 @@ static uint8_t SimplePeripheral_clearConnListEntry(uint16_t connHandle)
     // Get connection index from handle
     connIndex = SimplePeripheral_getConnIndex(connHandle);
     if(connIndex >= MAX_NUM_BLE_CONNS)
-	{
-	  return(bleInvalidRange);
-	}
+    {
+      return(bleInvalidRange);
+    }
   }
 
   // Clear specific handle or all handles

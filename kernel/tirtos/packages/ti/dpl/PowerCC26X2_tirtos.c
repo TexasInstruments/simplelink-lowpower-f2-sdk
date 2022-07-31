@@ -76,9 +76,9 @@ void PowerCC26XX_standbyPolicy(void)
     constraints = Power_getConstraintMask();
 
     /* do quick check to see if only WFI allowed; if yes, do it now */
-    if ((constraints &
-        ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE))) ==
-        ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE))) {
+    if ((constraints & ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE))) ==
+        ((1 << PowerCC26XX_DISALLOW_STANDBY) | (1 << PowerCC26XX_DISALLOW_IDLE)))
+    {
 
         /* Flush any remaining log messages in the ITM */
         ITM_flush();
@@ -89,9 +89,11 @@ void PowerCC26XX_standbyPolicy(void)
     /*
      *  check if any sleep modes are allowed for automatic activation
      */
-    else {
+    else
+    {
         /* check if we are allowed to go to standby */
-        if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == 0) {
+        if ((constraints & (1 << PowerCC26XX_DISALLOW_STANDBY)) == 0)
+        {
             /*
              * Check how many ticks until the next scheduled wakeup.  A value of
              * zero indicates a wakeup will occur as the current Clock tick
@@ -105,8 +107,8 @@ void PowerCC26XX_standbyPolicy(void)
             time = ticks * Clock_tickPeriod;
 
             /* check if can go to STANDBY */
-            if (time > Power_getTransitionLatency(PowerCC26XX_STANDBY,
-                Power_TOTAL)) {
+            if (time > Power_getTransitionLatency(PowerCC26XX_STANDBY, Power_TOTAL))
+            {
 
                 /* schedule the wakeup event */
                 ticks -= PowerCC26X2_WAKEDELAYSTANDBY / Clock_tickPeriod;
@@ -128,7 +130,8 @@ void PowerCC26XX_standbyPolicy(void)
         }
 
         /* idle if allowed */
-        if (justIdle) {
+        if (justIdle)
+        {
 
             /* Flush any remaining log messages in the ITM */
             ITM_flush();
@@ -140,10 +143,12 @@ void PowerCC26XX_standbyPolicy(void)
              * NOTE: if radio driver is active it must force SYSBUS enable to
              * allow access to the bus and SRAM
              */
-            if ((constraints & (1 << PowerCC26XX_DISALLOW_IDLE)) == 0) {
+            if ((constraints & (1 << PowerCC26XX_DISALLOW_IDLE)) == 0)
+            {
                 uint32_t modeVIMS;
                 /* 1. Get the current VIMS mode */
-                do {
+                do
+                {
                     modeVIMS = VIMSModeGet(VIMS_BASE);
                 } while (modeVIMS == VIMS_MODE_CHANGING);
 
@@ -154,18 +159,20 @@ void PowerCC26XX_standbyPolicy(void)
                  * 5. Ensure any possible outstanding AON writes complete
                  * 6. Enter IDLE
                  */
-                if ((constraints & (1 << PowerCC26XX_NEED_FLASH_IN_IDLE)) ||
-                    (modeVIMS == VIMS_MODE_DISABLED)) {
+                if ((constraints & (1 << PowerCC26XX_NEED_FLASH_IN_IDLE)) || (modeVIMS == VIMS_MODE_DISABLED))
+                {
                     PowerCC26X2_sysCtrlIdle(VIMS_ON_BUS_ON_MODE);
                 }
-                else {
+                else
+                {
                     PowerCC26X2_sysCtrlIdle(VIMS_ON_CPU_ON_MODE);
                 }
 
                 /* 7. Make sure MCU and AON are in sync after wakeup */
                 SysCtrlAonUpdate();
             }
-            else {
+            else
+            {
                 PRCMSleep();
             }
 
@@ -184,7 +191,7 @@ void PowerCC26XX_standbyPolicy(void)
 void PowerCC26XX_schedulerDisable(void)
 {
     PowerCC26XX_taskKey = Task_disable();
-    PowerCC26XX_swiKey = Swi_disable();
+    PowerCC26XX_swiKey  = Swi_disable();
 }
 
 /*
@@ -211,21 +218,26 @@ void ti_sysbios_family_arm_lm4_Timer_disableCC26xx__I(int32_t id)
 
     key = Hwi_disable();
 
-    switch (id) {
-       case 0: Power_releaseDependency(PowerCC26XX_PERIPH_GPT0);
-                break;
+    switch (id)
+    {
+        case 0:
+            Power_releaseDependency(PowerCC26XX_PERIPH_GPT0);
+            break;
 
-        case 1: Power_releaseDependency(PowerCC26XX_PERIPH_GPT1);
-                break;
+        case 1:
+            Power_releaseDependency(PowerCC26XX_PERIPH_GPT1);
+            break;
 
-        case 2: Power_releaseDependency(PowerCC26XX_PERIPH_GPT2);
-                break;
+        case 2:
+            Power_releaseDependency(PowerCC26XX_PERIPH_GPT2);
+            break;
 
-        case 3: Power_releaseDependency(PowerCC26XX_PERIPH_GPT3);
-                break;
+        case 3:
+            Power_releaseDependency(PowerCC26XX_PERIPH_GPT3);
+            break;
 
         default:
-                break;
+            break;
     }
 
     /* release the disallow standby constraint when the GP timer is disabled */
@@ -249,21 +261,26 @@ void ti_sysbios_family_arm_lm4_Timer_enableCC26xx__I(int32_t id)
 
     key = Hwi_disable();
 
-    switch (id) {
-        case 0: Power_setDependency(PowerCC26XX_PERIPH_GPT0);
-                break;
+    switch (id)
+    {
+        case 0:
+            Power_setDependency(PowerCC26XX_PERIPH_GPT0);
+            break;
 
-        case 1: Power_setDependency(PowerCC26XX_PERIPH_GPT1);
-                break;
+        case 1:
+            Power_setDependency(PowerCC26XX_PERIPH_GPT1);
+            break;
 
-        case 2: Power_setDependency(PowerCC26XX_PERIPH_GPT2);
-                break;
+        case 2:
+            Power_setDependency(PowerCC26XX_PERIPH_GPT2);
+            break;
 
-        case 3: Power_setDependency(PowerCC26XX_PERIPH_GPT3);
-                break;
+        case 3:
+            Power_setDependency(PowerCC26XX_PERIPH_GPT3);
+            break;
 
         default:
-                break;
+            break;
     }
 
     /* declare the disallow standby constraint while GP timer is in use */

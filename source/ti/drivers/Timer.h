@@ -176,8 +176,7 @@
 #include <ti/drivers/Power.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*!
@@ -191,7 +190,7 @@ extern "C"
  * #define TimerXYZ_CMD_COMMAND1      Timer_CMD_RESERVED + 1
  * @endcode
  */
-#define Timer_CMD_RESERVED                (32)
+#define Timer_CMD_RESERVED (32)
 
 /*!
  * Common Timer_control status code reservation offset.
@@ -204,17 +203,17 @@ extern "C"
  * #define TimerXYZ_STATUS_ERROR1     Timer_STATUS_RESERVED - 1
  * @endcode
  */
-#define Timer_STATUS_RESERVED            (-32)
+#define Timer_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
  */
-#define Timer_STATUS_SUCCESS               (0)
+#define Timer_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
  */
-#define Timer_STATUS_ERROR                (-1)
+#define Timer_STATUS_ERROR (-1)
 
 /*!
  * @brief   An error status code returned by Timer_control() for undefined
@@ -223,7 +222,7 @@ extern "C"
  * Timer_control() returns Timer_STATUS_UNDEFINEDCMD if the control code is not
  * recognized by the driver implementation.
  */
-#define Timer_STATUS_UNDEFINEDCMD         (-2)
+#define Timer_STATUS_UNDEFINEDCMD (-2)
 
 /*!
  *  @brief      A handle that is returned from a Timer_open() call.
@@ -240,41 +239,42 @@ typedef struct Timer_Config_ *Timer_Handle;
  *  peripheral as an up or down counter. In any case, Timer_getCount() will
  *  return a value characteristic of an up counter.
  */
-typedef enum {
-    Timer_ONESHOT_CALLBACK,       /*!< Is a non-blocking call. After Timer_start()
-                                       is called, the calling thread will continue
-                                       execution. When the timer interrupt is
-                                       triggered, the specified callback function
-                                       will be called. The timer will not generate
-                                       another interrupt unless Timer_start() is
-                                       called again. Calling Timer_stop() or
-                                       Timer_close() after Timer_start() but,
-                                       before the timer interrupt, will prevent
-                                       the specified callback from ever being invoked.
-                                        */
-    Timer_ONESHOT_BLOCKING,       /*!< Is a blocking call. A semaphore is used to
-                                       block the calling thread's execution until
-                                       the timer generates an interrupt. If
-                                       Timer_stop() is called, the calling thread
-                                       will become unblocked immediately. The
-                                       behavior of the timer in this mode is similar
-                                       to a sleep function.
-                                        */
-    Timer_CONTINUOUS_CALLBACK,    /*!< Is a non-blocking call. After Timer_start()
-                                       is called, the calling thread will continue
-                                       execution. When the timer interrupt is
-                                       triggered, the specified callback function
-                                       will be called. The timer is automatically
-                                       restarted and will continue to periodically
-                                       generate interrupts until Timer_stop() is
-                                       called.
-                                        */
-    Timer_FREE_RUNNING            /*!< Is a non-blocking call. After Timer_start()
-                                       is called, the calling thread will continue
-                                       execution. The timer will not generate an
-                                       interrupt in this mode. The timer hardware
-                                       will run until Timer_stop() is called.
-                                        */
+typedef enum
+{
+    Timer_ONESHOT_CALLBACK,    /*!< Is a non-blocking call. After Timer_start()
+                                    is called, the calling thread will continue
+                                    execution. When the timer interrupt is
+                                    triggered, the specified callback function
+                                    will be called. The timer will not generate
+                                    another interrupt unless Timer_start() is
+                                    called again. Calling Timer_stop() or
+                                    Timer_close() after Timer_start() but,
+                                    before the timer interrupt, will prevent
+                                    the specified callback from ever being invoked.
+                                     */
+    Timer_ONESHOT_BLOCKING,    /*!< Is a blocking call. A semaphore is used to
+                                    block the calling thread's execution until
+                                    the timer generates an interrupt. If
+                                    Timer_stop() is called, the calling thread
+                                    will become unblocked immediately. The
+                                    behavior of the timer in this mode is similar
+                                    to a sleep function.
+                                     */
+    Timer_CONTINUOUS_CALLBACK, /*!< Is a non-blocking call. After Timer_start()
+                                    is called, the calling thread will continue
+                                    execution. When the timer interrupt is
+                                    triggered, the specified callback function
+                                    will be called. The timer is automatically
+                                    restarted and will continue to periodically
+                                    generate interrupts until Timer_stop() is
+                                    called.
+                                     */
+    Timer_FREE_RUNNING         /*!< Is a non-blocking call. After Timer_start()
+                                    is called, the calling thread will continue
+                                    execution. The timer will not generate an
+                                    interrupt in this mode. The timer hardware
+                                    will run until Timer_stop() is called.
+                                     */
 } Timer_Mode;
 
 /*!
@@ -283,12 +283,13 @@ typedef enum {
  *  This enum defines the units that may be specified for the period
  *  in #Timer_Params. This unit has no effect with Timer_getCounts.
  */
-typedef enum {
-    Timer_PERIOD_US,      /*!< Period specified in micro seconds. */
-    Timer_PERIOD_HZ,      /*!< Period specified in hertz; interrupts per
-                                  second. */
-    Timer_PERIOD_COUNTS   /*!< Period specified in ticks or counts. Varies
-                                  from board to board. */
+typedef enum
+{
+    Timer_PERIOD_US,    /*!< Period specified in micro seconds. */
+    Timer_PERIOD_HZ,    /*!< Period specified in hertz; interrupts per
+                                second. */
+    Timer_PERIOD_COUNTS /*!< Period specified in ticks or counts. Varies
+                                from board to board. */
 } Timer_PeriodUnits;
 
 /*!
@@ -309,37 +310,38 @@ typedef void (*Timer_CallBackFxn)(Timer_Handle handle, int_fast16_t status);
  *  these parameters are set using Timer_Params_init().
  *
  */
-typedef struct {
+typedef struct
+{
     /*! Mode to be used by the timer driver. */
-    Timer_Mode           timerMode;
+    Timer_Mode timerMode;
 
     /*! Units used to specify the period. */
-    Timer_PeriodUnits    periodUnits;
+    Timer_PeriodUnits periodUnits;
 
     /*! Callback function called when timerMode is Timer_ONESHOT_CALLBACK or
          Timer_CONTINUOUS_CALLBACK. */
-    Timer_CallBackFxn    timerCallback;
+    Timer_CallBackFxn timerCallback;
 
     /*! Period in units of periodUnits. */
-    uint32_t             period;
+    uint32_t period;
 } Timer_Params;
 
 /*! @cond NODOC */
-#define TIMER_BASE_OBJECT \
-    /* Timer control variables */ \
-    Timer_Mode                 mode;         /* Blocking or Callback mode */ \
-    Timer_CallBackFxn          callBack;     /* Callback function pointer */ \
-    Power_NotifyObj            notifyObj;    /* Ptr to current I2C transaction */ \
-    uint32_t                   timer; \
-    uint32_t                   period; \
-    uint32_t                   prescaler; \
-    \
-    /* Timer RTOS objects */ \
-    HwiP_Handle                hwiHandle;    /* Hwi object handle */ \
-    SemaphoreP_Struct          semStruct;    /* Grants exclusive access to I2C */ \
-    SemaphoreP_Handle          semHandle;    /* Signal I2C transfer complete */ \
-    \
-    bool                       isRunning;    /* Flag to show module is open */ \
+#define TIMER_BASE_OBJECT                                             \
+    /* Timer control variables */                                     \
+    Timer_Mode mode;            /* Blocking or Callback mode */       \
+    Timer_CallBackFxn callBack; /* Callback function pointer */       \
+    Power_NotifyObj notifyObj;  /* Ptr to current I2C transaction */  \
+    uint32_t timer;                                                   \
+    uint32_t period;                                                  \
+    uint32_t prescaler;                                               \
+                                                                      \
+    /* Timer RTOS objects */                                          \
+    HwiP_Handle hwiHandle;       /* Hwi object handle */              \
+    SemaphoreP_Struct semStruct; /* Grants exclusive access to I2C */ \
+    SemaphoreP_Handle semHandle; /* Signal I2C transfer complete */   \
+                                                                      \
+    bool isRunning; /* Flag to show module is open */                 \
 /*! @endcond */
 
 /*!
@@ -347,17 +349,18 @@ typedef struct {
  *  Timer Object. Applications must not access any member variables of
  *  this structure!
  */
-typedef struct {
+typedef struct
+{
     TIMER_BASE_OBJECT
 } Timer_Object;
 /*! @endcond */
 
 /*! @cond NODOC */
-#define TIMER_BASE_HWATTRS \
-    /*! Timer Peripheral's base address */ \
-    uint32_t baseAddress; \
-    /*! Timer Peripheral's interrupt vector */ \
-    uint32_t intNum; \
+#define TIMER_BASE_HWATTRS                      \
+    /*! Timer Peripheral's base address */      \
+    uint32_t baseAddress;                       \
+    /*! Timer Peripheral's interrupt vector */  \
+    uint32_t intNum;                            \
     /*! Timer Peripheral's interrupt priority*/ \
     uint32_t intPriority;
 /*! @endcond */
@@ -366,7 +369,8 @@ typedef struct {
  *  @cond NODOC
  *  Timer HWAttrs.
  */
-typedef struct {
+typedef struct
+{
     TIMER_BASE_HWATTRS
 } Timer_HWAttrs;
 /*! @endcond */
@@ -382,12 +386,13 @@ typedef struct {
  *
  *  @sa     Timer_init()
  */
-typedef struct Timer_Config_ {
+typedef struct Timer_Config_
+{
     /*! Pointer to a driver-specific data object. */
-    void                 *object;
+    void *object;
 
     /*! Pointer to a driver-specific hardware attributes structure. */
-    void           const *hwAttrs;
+    void const *hwAttrs;
 } Timer_Config;
 
 /*!
@@ -428,8 +433,7 @@ extern void Timer_close(Timer_Handle handle);
  *
  *  @sa     Timer_open()
  */
-extern int_fast16_t Timer_control(Timer_Handle handle, uint_fast16_t cmd,
-    void *arg);
+extern int_fast16_t Timer_control(Timer_Handle handle, uint_fast16_t cmd, void *arg);
 
 /*!
  *  @brief  Function to get the current count of a timer. The value returned
@@ -448,7 +452,6 @@ extern int_fast16_t Timer_control(Timer_Handle handle, uint_fast16_t cmd,
  *
  */
 extern uint32_t Timer_getCount(Timer_Handle handle);
-
 
 /*!
  *  @brief  Function to initialize a timer. This function will go through

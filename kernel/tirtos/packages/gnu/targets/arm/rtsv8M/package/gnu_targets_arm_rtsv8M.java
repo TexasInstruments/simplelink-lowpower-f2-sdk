@@ -168,8 +168,14 @@ public class gnu_targets_arm_rtsv8M
             sb.append("pkg.packageRepository = xdc.om['gnu.targets.arm.rtsv8M$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
+            sb.append("'lib/gnu.targets.arm.rtsv8M.am33fg',\n");
+            sb.append("'lib/boot.am33fg',\n");
+            sb.append("'lib/syscalls.am33fg',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
+            sb.append("['lib/gnu.targets.arm.rtsv8M.am33fg', {target: 'gnu.targets.arm.M33F', suffix: 'm33fg'}],\n");
+            sb.append("['lib/boot.am33fg', {target: 'gnu.targets.arm.M33F', suffix: 'm33fg'}],\n");
+            sb.append("['lib/syscalls.am33fg', {target: 'gnu.targets.arm.M33F', suffix: 'm33fg'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

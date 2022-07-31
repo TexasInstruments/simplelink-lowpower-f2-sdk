@@ -72,8 +72,7 @@ void Watchdog_close(Watchdog_Handle handle)
 /*
  *  ======== Watchdog_control ========
  */
-int_fast16_t Watchdog_control(Watchdog_Handle handle, uint_fast16_t cmd,
-                              void *arg)
+int_fast16_t Watchdog_control(Watchdog_Handle handle, uint_fast16_t cmd, void *arg)
 {
     return (handle->fxnTablePtr->watchdogControl(handle, cmd, arg));
 }
@@ -88,12 +87,14 @@ void Watchdog_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < Watchdog_count; i++) {
-            Watchdog_config[i].fxnTablePtr->watchdogInit((Watchdog_Handle)&(Watchdog_config[i]));
+        for (i = 0; i < Watchdog_count; i++)
+        {
+            Watchdog_config[i].fxnTablePtr->watchdogInit((Watchdog_Handle) & (Watchdog_config[i]));
         }
     }
 
@@ -108,13 +109,15 @@ Watchdog_Handle Watchdog_open(uint_least8_t index, Watchdog_Params *params)
     Watchdog_Handle handle = NULL;
 
     /* Verify driver index and state */
-    if (isInitialized && (index < Watchdog_count)) {
+    if (isInitialized && (index < Watchdog_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (Watchdog_Params *) &Watchdog_defaultParams;
+        if (params == NULL)
+        {
+            params = (Watchdog_Params *)&Watchdog_defaultParams;
         }
 
-        handle = (Watchdog_Handle)&(Watchdog_config[index]);
+        handle = (Watchdog_Handle) & (Watchdog_config[index]);
         handle = handle->fxnTablePtr->watchdogOpen(handle, params);
     }
 
@@ -128,7 +131,6 @@ void Watchdog_Params_init(Watchdog_Params *params)
 {
     *params = Watchdog_defaultParams;
 }
-
 
 /*
  *  ======== Watchdog_setReload ========

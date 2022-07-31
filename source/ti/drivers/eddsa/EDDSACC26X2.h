@@ -93,11 +93,11 @@ extern "C" {
 #endif
 
 /* Exit the SWI and wait until an HWI call posts the SWI again */
-#define EDDSACC26X2_STATUS_FSM_RUN_PKA_OP       EDDSA_STATUS_RESERVED - 0
+#define EDDSACC26X2_STATUS_FSM_RUN_PKA_OP EDDSA_STATUS_RESERVED - 0
 /* Execute the next FSM state immediately without waiting for the next HWI */
-#define EDDSACC26X2_STATUS_FSM_RUN_FSM          EDDSA_STATUS_RESERVED - 1
+#define EDDSACC26X2_STATUS_FSM_RUN_FSM    EDDSA_STATUS_RESERVED - 1
 /* PKA operation started correctly (needed for subFSM functionality) */
-#define EDDSACC26X2_PKA_OPERATION_STARTED       (0xFFFFFFFFUL)
+#define EDDSACC26X2_PKA_OPERATION_STARTED (0xFFFFFFFFUL)
 
 /*!
  *  @brief      EDDSACC26X2 KeyGen, Sign, and Verify states
@@ -108,7 +108,8 @@ extern "C" {
  *  linearly in this enum. The FSM controller will increment the state counter
  *  and iterate through states until it is told to stop or restart.
  */
-typedef enum {
+typedef enum
+{
     EDDSACC26X2_FSM_ERROR,
 
     EDDSACC26X2_FSM_GEN_PUB_KEY_HASH_PRIVATE_KEY,
@@ -265,7 +266,8 @@ typedef enum {
  *  The FSM controller will increment the substate counter and iterate through
  *  states until it is told to stop or restart.
  */
-typedef enum {
+typedef enum
+{
     EDDSACC26X2_SUBFSM_WEI_TO_MONT_ADDITION,
     EDDSACC26X2_SUBFSM_WEI_TO_MONT_ADDITION_RESULT,
     EDDSACC26X2_SUBFSM_MONT_TO_ED_ADD_ONE,
@@ -304,7 +306,7 @@ typedef enum {
  *  pointer is stored in the object at the beginning of the transaction.
  *  This way, unused state machines are removed at link time.
  */
-typedef int_fast16_t (*EDDSACC26X2_stateMachineFxn) (EDDSA_Handle handle);
+typedef int_fast16_t (*EDDSACC26X2_stateMachineFxn)(EDDSA_Handle handle);
 
 /*!
  *  @brief      EDDSACC26X2 Hardware Attributes
@@ -312,7 +314,8 @@ typedef int_fast16_t (*EDDSACC26X2_stateMachineFxn) (EDDSA_Handle handle);
  *  EDDSACC26X2 hardware attributes should be included in the board file
  *  and pointed to by the EDDSA_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*!
      *  @brief PKA Peripheral's interrupt priority.
      *
@@ -328,8 +331,8 @@ typedef struct {
      *  HWI's with priority 0 ignore the HWI dispatcher to support zero-latency
      *  interrupts, thus invalidating the critical sections in this driver.
      */
-    uint8_t    intPriority;
-    uint8_t    sha2IntPriority;
+    uint8_t intPriority;
+    uint8_t sha2IntPriority;
 } EDDSACC26X2_HWAttrs;
 
 #define ED25519_LENGTH 32
@@ -340,7 +343,8 @@ typedef struct {
  *  Holds intermediate memory to perform Ed25519 operations. Unlike PKA SRAM,
  *  these values can be easily accessed or modified.
  */
-typedef struct {
+typedef struct
+{
     uint8_t digestResult[SHA2_DIGEST_LENGTH_BYTES_512];
     uint8_t digestResult2[SHA2_DIGEST_LENGTH_BYTES_512];
     uint8_t publicKey[ED25519_LENGTH];
@@ -355,31 +359,32 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     /*
      * Note that sha2Config must be the first member so that we can use the
      * SHA2 callback in the EdDSA driver.
      */
-    SHA2_Config                     sha2Config;
-    SHA2CC26X2_Object               sha2Object;
-    SHA2CC26X2_HWAttrs              sha2HwAttrs;
-    SHA2_Handle                     sha2Handle;
-    bool                            isOpen;
-    bool                            operationInProgress;
-    bool                            operationCanceled;
-    int_fast16_t                    operationStatus;
-    EDDSA_Operation                 operation;
-    EDDSA_OperationType             operationType;
-    EDDSA_CallbackFxn               callbackFxn;
-    EDDSACC26X2_stateMachineFxn     fsmFxn;
-    EDDSA_ReturnBehavior            returnBehavior;
-    EDDSACC26X2_FsmState            fsmState;
-    EDDSACC26X2_FsmSubState         fsmSubState;
-    uint32_t                        semaphoreTimeout;
-    uint32_t                        resultAddress;
-    uint32_t                       *scratchNumber1;
-    uint32_t                       *scratchNumber2;
-    EDDSACC26X2_Workspace          EDDSACC26X2_GlobalWorkspace;
+    SHA2_Config sha2Config;
+    SHA2CC26X2_Object sha2Object;
+    SHA2CC26X2_HWAttrs sha2HwAttrs;
+    SHA2_Handle sha2Handle;
+    bool isOpen;
+    bool operationInProgress;
+    bool operationCanceled;
+    int_fast16_t operationStatus;
+    EDDSA_Operation operation;
+    EDDSA_OperationType operationType;
+    EDDSA_CallbackFxn callbackFxn;
+    EDDSACC26X2_stateMachineFxn fsmFxn;
+    EDDSA_ReturnBehavior returnBehavior;
+    EDDSACC26X2_FsmState fsmState;
+    EDDSACC26X2_FsmSubState fsmSubState;
+    uint32_t semaphoreTimeout;
+    uint32_t resultAddress;
+    uint32_t *scratchNumber1;
+    uint32_t *scratchNumber2;
+    EDDSACC26X2_Workspace EDDSACC26X2_GlobalWorkspace;
 } EDDSACC26X2_Object;
 
 #ifdef __cplusplus

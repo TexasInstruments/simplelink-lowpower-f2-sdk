@@ -59,6 +59,7 @@
 
 #include "bcomdef.h"
 
+#include <ti/drivers/GPIO.h>
 #include <icall.h>
 #include "util.h"
 /* This Header file contains all BLE API and icall structure definition */
@@ -1478,7 +1479,7 @@ static void SimpleCentral_handleKeys(uint8_t keys)
   if (keys & KEY_LEFT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN1) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN1) == 0)
     {
       tbm_buttonLeft();
     }
@@ -1486,7 +1487,7 @@ static void SimpleCentral_handleKeys(uint8_t keys)
   else if (keys & KEY_RIGHT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN2) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN2) == 0)
     {
       tbm_buttonRight();
     }

@@ -88,7 +88,6 @@ extern "C" {
  */
 extern uint8_t Codec1_encodeSingle(int16_t audSample);
 
-
 /*!
  *  @brief  This routine decode a 4-bit nibble sample to a uint16 PCM audio sample.
  *
@@ -115,7 +114,7 @@ extern int16_t Codec1_decodeSingle(uint8_t nibble_4bits);
  *
  *  @return Number of bytes written to the destination buffer
  */
-extern uint8_t Codec1_encodeBuff(uint8_t* dst, int16_t* src, int16_t srcSize, int8_t *si, int16_t *pv);
+extern uint8_t Codec1_encodeBuff(uint8_t *dst, int16_t *src, int16_t srcSize, int8_t *si, int16_t *pv);
 
 /*!
  *  @brief  This routine decodes a buffer with TI codec Type 1.
@@ -132,7 +131,7 @@ extern uint8_t Codec1_encodeBuff(uint8_t* dst, int16_t* src, int16_t srcSize, in
  *
  *  @param  pv Pointer to the current predicted-value
  */
-extern void Codec1_decodeBuff(int16_t* dst, uint8_t* src, unsigned srcSize,  int8_t *si, int16_t *pv);
+extern void Codec1_decodeBuff(int16_t *dst, uint8_t *src, unsigned srcSize, int8_t *si, int16_t *pv);
 
 #ifdef __cplusplus
 }

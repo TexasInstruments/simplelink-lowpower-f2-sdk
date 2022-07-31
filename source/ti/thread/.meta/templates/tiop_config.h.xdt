@@ -63,11 +63,11 @@ else
     linkModeD = "0";
 }
 
-/* Master key splitting */
-const masterKeyU = threadNetwork.masterKey
-    .substring(2, 2 + Common.MASTER_KEY_LEN)
-const masterKeyL = threadNetwork.masterKey
-    .substring(2 + Common.MASTER_KEY_LEN)
+/* Network key splitting */
+const networkKeyU = threadNetwork.networkKey
+    .substring(2, 2 + Common.NETWORK_KEY_LEN)
+const networkKeyL = threadNetwork.networkKey
+    .substring(2 + Common.NETWORK_KEY_LEN)
 %%}
 /******************************************************************************
 
@@ -132,9 +132,9 @@ const masterKeyL = threadNetwork.masterKey
  */
 
 /*
- * If 1, set the Extended Address, PAN ID, Extended PAN ID, and Master Key using
+ * If 1, set the Extended Address, PAN ID, Extended PAN ID, and Network Key using
  * the parameters defined by TIOP_CONFIG_EXT_ADDR, TIOP_CONFIG_PAN_ID,
- * TIOP_CONFIG_EXT_PAN_ID, and TIOP_CONFIG_MASTER_KEY_U/L.
+ * TIOP_CONFIG_EXT_PAN_ID, and TIOP_CONFIG_NETWORK_KEY_U/L.
  * If 0, do not set these parameters, leaving them as default. This should be used
  * when setting these parameters via the commissioning process.
  */
@@ -157,13 +157,13 @@ const masterKeyL = threadNetwork.masterKey
 #endif
 
 /*
- * Thread Master Key (split into upper and lower 8 bytes)
+ * Thread Network Key (split into upper and lower 8 bytes)
  */
-#ifndef TIOP_CONFIG_MASTER_KEY_U
-#define TIOP_CONFIG_MASTER_KEY_U   `"0x" + masterKeyU`
+#ifndef TIOP_CONFIG_NETWORK_KEY_U
+#define TIOP_CONFIG_NETWORK_KEY_U   `"0x" + networkKeyU`
 #endif
-#ifndef TIOP_CONFIG_MASTER_KEY_L
-#define TIOP_CONFIG_MASTER_KEY_L   `"0x" + masterKeyL`
+#ifndef TIOP_CONFIG_NETWORK_KEY_L
+#define TIOP_CONFIG_NETWORK_KEY_L   `"0x" + networkKeyL`
 #endif
 
 /*

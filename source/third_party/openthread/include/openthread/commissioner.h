@@ -37,6 +37,7 @@
 
 #include <openthread/dataset.h>
 #include <openthread/ip6.h>
+#include <openthread/joiner.h>
 #include <openthread/platform/radio.h>
 #include <openthread/platform/toolchain.h>
 
@@ -112,7 +113,27 @@ typedef struct otCommissioningDataset
     bool mIsJoinerUdpPortSet : 1; ///< TRUE if Joiner UDP Port is set, FALSE otherwise.
 } otCommissioningDataset;
 
-#define OT_PSKD_MAX_SIZE 32 ///< Size of a Joiner PSKd (bytes)
+#define OT_JOINER_MAX_PSKD_LENGTH 32 ///< Maximum string length of a Joiner PSKd (does not include null char).
+
+/**
+ * This structure represents a Joiner PSKd.
+ *
+ */
+typedef struct otJoinerPskd
+{
+    char m8[OT_JOINER_MAX_PSKD_LENGTH + 1]; ///< Char string array (must be null terminated - +1 is for null char).
+} otJoinerPskd;
+
+/**
+ * This enumeration defines a Joiner Info Type.
+ *
+ */
+typedef enum otJoinerInfoType
+{
+    OT_JOINER_INFO_TYPE_ANY       = 0, ///< Accept any Joiner (no EUI64 or Discerner is specified).
+    OT_JOINER_INFO_TYPE_EUI64     = 1, ///< Joiner EUI-64 is specified (`mSharedId.mEui64` in `otJoinerInfo`).
+    OT_JOINER_INFO_TYPE_DISCERNER = 2, ///< Joiner Discerner is specified (`mSharedId.mDiscerner` in `otJoinerInfo`).
+} otJoinerInfoType;
 
 /**
  * This structure represents a Joiner Info.
@@ -120,20 +141,21 @@ typedef struct otCommissioningDataset
  */
 typedef struct otJoinerInfo
 {
-    otExtAddress mEui64;                     ///< Joiner eui64
-    char         mPsk[OT_PSKD_MAX_SIZE + 1]; ///< Joiner pskd
-    uint32_t     mExpirationTime;            ///< Joiner expiration time in msec
-
-    bool mAny : 1; /// TRUE if eui64 isn't set, FALSE otherwise.
+    otJoinerInfoType mType; ///< Joiner type.
+    union
+    {
+        otExtAddress      mEui64;     ///< Joiner EUI64 (when `mType` is `OT_JOINER_INFO_TYPE_EUI64`)
+        otJoinerDiscerner mDiscerner; ///< Joiner Discerner (when `mType` is `OT_JOINER_INFO_TYPE_DISCERNER`)
+    } mSharedId;                      ///< Shared fields
+    otJoinerPskd mPskd;               ///< Joiner PSKd
+    uint32_t     mExpirationTime;     ///< Joiner expiration time in msec
 } otJoinerInfo;
 
 /**
  * This function pointer is called whenever the commissioner state changes.
  *
- * @param[in]  aChannelMask       The channel mask value.
- * @param[in]  aEnergyList        A pointer to the energy measurement list.
- * @param[in]  aEnergyListLength  Number of entries in @p aEnergyListLength.
- * @param[in]  aContext           A pointer to application-specific context.
+ * @param[in]  aState    The Commissioner state.
+ * @param[in]  aContext  A pointer to application-specific context.
  *
  */
 typedef void (*otCommissionerStateCallback)(otCommissionerState aState, void *aContext);
@@ -141,12 +163,14 @@ typedef void (*otCommissionerStateCallback)(otCommissionerState aState, void *aC
 /**
  * This function pointer is called whenever the joiner state changes.
  *
- * @param[in]  aEvent     The joiner event type.
- * @param[in]  aJoinerId  A pointer to the Joiner ID.
- * @param[in]  aContext   A pointer to application-specific context.
+ * @param[in]  aEvent       The joiner event type.
+ * @param[in]  aJoinerInfo  A pointer to the Joiner Info.
+ * @param[in]  aJoinerId    A pointer to the Joiner ID (if not known, it will be NULL).
+ * @param[in]  aContext     A pointer to application-specific context.
  *
  */
 typedef void (*otCommissionerJoinerCallback)(otCommissionerJoinerEvent aEvent,
+                                             const otJoinerInfo *      aJoinerInfo,
                                              const otExtAddress *      aJoinerId,
                                              void *                    aContext);
 
@@ -201,10 +225,31 @@ otError otCommissionerAddJoiner(otInstance *        aInstance,
                                 uint32_t            aTimeout);
 
 /**
+ * This function adds a Joiner entry with a given Joiner Discerner value.
+ *
+ * @param[in]  aInstance          A pointer to an OpenThread instance.
+ * @param[in]  aDiscerner         A pointer to the Joiner Discerner.
+ * @param[in]  aPskd              A pointer to the PSKd.
+ * @param[in]  aTimeout           A time after which a Joiner is automatically removed, in seconds.
+ *
+ * @retval OT_ERROR_NONE          Successfully added the Joiner.
+ * @retval OT_ERROR_NO_BUFS       No buffers available to add the Joiner.
+ * @retval OT_ERROR_INVALID_ARGS  @p aDiscerner or @p aPskd is invalid.
+ * @retval OT_ERROR_INVALID_STATE The commissioner is not active.
+ *
+ * @note Only use this after successfully starting the Commissioner role with otCommissionerStart().
+ *
+ */
+otError otCommissionerAddJoinerWithDiscerner(otInstance *             aInstance,
+                                             const otJoinerDiscerner *aDiscerner,
+                                             const char *             aPskd,
+                                             uint32_t                 aTimeout);
+
+/**
  * This method get joiner info at aIterator position.
  *
  * @param[in]      aInstance   A pointer to instance.
- * @param[inout]   aIterator   A pointer to the Joiner Info iterator context.
+ * @param[in,out]  aIterator   A pointer to the Joiner Info iterator context.
  * @param[out]     aJoiner     A reference to Joiner info.
  *
  * @retval OT_ERROR_NONE       Successfully get the Joiner info.
@@ -228,6 +273,22 @@ otError otCommissionerGetNextJoinerInfo(otInstance *aInstance, uint16_t *aIterat
  *
  */
 otError otCommissionerRemoveJoiner(otInstance *aInstance, const otExtAddress *aEui64);
+
+/**
+ * This function removes a Joiner entry.
+ *
+ * @param[in]  aInstance          A pointer to an OpenThread instance.
+ * @param[in]  aDiscerner         A pointer to the Joiner Discerner.
+ *
+ * @retval OT_ERROR_NONE          Successfully removed the Joiner.
+ * @retval OT_ERROR_NOT_FOUND     The Joiner specified by @p aEui64 was not found.
+ * @retval OT_ERROR_INVALID_ARGS  @p aDiscerner is invalid.
+ * @retval OT_ERROR_INVALID_STATE The commissioner is not active.
+ *
+ * @note Only use this after successfully starting the Commissioner role with otCommissionerStart().
+ *
+ */
+otError otCommissionerRemoveJoinerWithDiscerner(otInstance *aInstance, const otJoinerDiscerner *aDiscerner);
 
 /**
  * This function gets the Provisioning URL.

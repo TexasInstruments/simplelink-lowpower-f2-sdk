@@ -294,12 +294,14 @@ public class ti_sysbios_rts_gnu
             sb.append("pkg.packageRepository = xdc.om['ti.sysbios.rts.gnu$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
-            sb.append("'lib/debug/ti.sysbios.rts.gnu.am4fg',\n");
+            sb.append("'lib/debug/ti.sysbios.rts.gnu.am3g',\n");
             sb.append("'lib/debug/ti.sysbios.rts.gnu.am4g',\n");
+            sb.append("'lib/debug/ti.sysbios.rts.gnu.am4fg',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
-            sb.append("['lib/debug/ti.sysbios.rts.gnu.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
+            sb.append("['lib/debug/ti.sysbios.rts.gnu.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
             sb.append("['lib/debug/ti.sysbios.rts.gnu.am4g', {target: 'gnu.targets.arm.M4', suffix: 'm4g'}],\n");
+            sb.append("['lib/debug/ti.sysbios.rts.gnu.am4fg', {target: 'gnu.targets.arm.M4F', suffix: 'm4fg'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

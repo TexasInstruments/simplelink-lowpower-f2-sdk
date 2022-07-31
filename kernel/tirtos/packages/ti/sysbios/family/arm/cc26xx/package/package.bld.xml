@@ -10,6 +10,12 @@
         <module name="TimestampProvider"/>
     </units>
     <sources>
+        <srcFile name="package/package_ti.sysbios.family.arm.cc26xx.c"/>
+        <srcFile name="Alarm.c"/>
+        <srcFile name="Boot.c"/>
+        <srcFile name="Seconds.c"/>
+        <srcFile name="Timer.c"/>
+        <srcFile name="TimestampProvider.c"/>
     </sources>
     <configscripts>
     </configscripts>
@@ -17,11 +23,83 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_sysbios_family_arm_cc26xx.tar.dep" src="package/rel/ti_sysbios_family_arm_cc26xx.xdc.inc"/>
+        <srcFile name="lib/debug/ti.sysbios.family.arm.cc26xx.aem3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/package/package_ti.sysbios.family.arm.cc26xx.oem3.dep" src="package/package_ti.sysbios.family.arm.cc26xx.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Alarm.oem3.dep" src="Alarm.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Boot.oem3.dep" src="Boot.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Seconds.oem3.dep" src="Seconds.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Timer.oem3.dep" src="Timer.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/TimestampProvider.oem3.dep" src="TimestampProvider.c"/>
+        <srcFile name="lib/debug/ti.sysbios.family.arm.cc26xx.am3g.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/package/package_ti.sysbios.family.arm.cc26xx.om3g.dep" src="package/package_ti.sysbios.family.arm.cc26xx.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Alarm.om3g.dep" src="Alarm.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Boot.om3g.dep" src="Boot.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Seconds.om3g.dep" src="Seconds.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Timer.om3g.dep" src="Timer.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/TimestampProvider.om3g.dep" src="TimestampProvider.c"/>
+        <srcFile name="lib/debug/ti.sysbios.family.arm.cc26xx.arm3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/package/package_ti.sysbios.family.arm.cc26xx.orm3.dep" src="package/package_ti.sysbios.family.arm.cc26xx.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Alarm.orm3.dep" src="Alarm.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Boot.orm3.dep" src="Boot.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Seconds.orm3.dep" src="Seconds.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/Timer.orm3.dep" src="Timer.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.family.arm.cc26xx/TimestampProvider.orm3.dep" src="TimestampProvider.c"/>
+        <srcFile name="package/rel/ti_sysbios_family_arm_cc26xx.tar.gz.dep" src="package/rel/ti_sysbios_family_arm_cc26xx.xdc.inc"/>
     </makefiles>
     <targets>
+        <target name="ti.targets.arm.elf.M3"
+            version="ti.targets.arm.elf.M3{1,0,20.2,4"
+            rawVersion="20.2.4"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="em3"
+            rootDir="/db/vendors/ti/arm/20.2.4.LTS"
+            os="undefined"
+            rts="ti.targets.arm.rtsarm">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="gnu.targets.arm.M3"
+            version="gnu.targets.arm.M3{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="m3g"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv7M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M3"
+            version="iar.targets.arm.M3{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="rm3"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
     </targets>
     <libraries>
+    <library name="lib/debug/ti.sysbios.family.arm.cc26xx"
+        pname="lib/debug/ti.sysbios.family.arm.cc26xx.aem3"
+        profile="debug"
+        target="ti.targets.arm.elf.M3"/>
+    <library name="lib/debug/ti.sysbios.family.arm.cc26xx"
+        pname="lib/debug/ti.sysbios.family.arm.cc26xx.am3g"
+        profile="debug"
+        target="gnu.targets.arm.M3"/>
+    <library name="lib/debug/ti.sysbios.family.arm.cc26xx"
+        pname="lib/debug/ti.sysbios.family.arm.cc26xx.arm3"
+        profile="debug"
+        target="iar.targets.arm.M3"/>
     </libraries>
     <configurations>
     </configurations>
@@ -31,9 +109,9 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_sysbios_family_arm_cc26xx"
-        pname="ti_sysbios_family_arm_cc26xx.tar"
+        pname="../../../../..//../exports/ti_sysbios_family_arm_cc26xx.tar.gz"
         label="default"
-    >
+        relScript="ti/sysbios/libFilter.xs">
         <file name="package/package.bld.xml"/>
         <file name="package/build.cfg"/>
         <file name="package/package.xdc.inc"/>
@@ -43,6 +121,15 @@
         <file name="Alarm.xml"/>
         <file name="TimestampProvider.xml"/>
         <file name="package/package.cfg.xdc.inc"/>
+        <file name="lib/debug/ti.sysbios.family.arm.cc26xx.aem3"/>
+        <file name="package/package_ti.sysbios.family.arm.cc26xx.c"/>
+        <file name="Alarm.c"/>
+        <file name="Boot.c"/>
+        <file name="Seconds.c"/>
+        <file name="Timer.c"/>
+        <file name="TimestampProvider.c"/>
+        <file name="lib/debug/ti.sysbios.family.arm.cc26xx.am3g"/>
+        <file name="lib/debug/ti.sysbios.family.arm.cc26xx.arm3"/>
     </release>
     </releases>
     <repositories>

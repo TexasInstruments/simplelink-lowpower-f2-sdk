@@ -1,0 +1,34 @@
+{
+    "target": {
+        "Name": "LP_EM_CC1312PSIP",
+        "Revision": [],
+        "Description": {
+            "p": "CC1312PSIP LaunchPad. 7x7 VQFN48 package. Internal bias, differential output, sub-1 GHz band."
+        },
+        "DeviceName": "CC1312PSIP",
+        "DevicePackage": "MOT 7x7",
+        "FrontEnd": "ID",
+        "PaSettings": "pasettings.json",
+        "RfDesign": "LAUNCHXL-CC1352P1",
+        "DefaultCategory": "Settings",
+        "IoSettings": {
+            "_name": "RF Switch",
+            "IoPin": [
+                {
+                    "_name": "DIO0",
+                    "ControlFunction": "Input\/Output",
+                    "Idle": "Input tristate (Default)",
+                    "Tx": "Output high",
+                    "Rx": "Output high"
+                },
+                {
+                    "_name": "DIO3",
+                    "ControlFunction": "Input\/Output",
+                    "Idle": "Input tristate (Default)",
+                    "Tx": "Output low",
+                    "Rx": "Output low"
+                }
+            ]
+        }
+    }
+}

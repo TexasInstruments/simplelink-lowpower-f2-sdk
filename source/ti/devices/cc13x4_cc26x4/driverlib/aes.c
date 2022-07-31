@@ -193,7 +193,7 @@ uint32_t AESWaitForIRQFlags(uint32_t irqFlags)
 
 //*****************************************************************************
 //
-// Transfer a key from CM3 memory to a key store location.
+// Transfer a key from CPU memory to a key store location.
 //
 //*****************************************************************************
 uint32_t AESWriteToKeyStore(const uint8_t *aesKey, uint32_t aesKeyLength, uint32_t keyStoreArea)

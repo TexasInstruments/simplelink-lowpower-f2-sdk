@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,33 +49,36 @@ extern const AESCMAC_Config AESCMAC_config[];
 extern const uint_least8_t AESCMAC_count;
 
 const AESCMAC_Params AESCMAC_defaultParams = {
-    .returnBehavior = AESCMAC_RETURN_BEHAVIOR_BLOCKING,
+    .returnBehavior  = AESCMAC_RETURN_BEHAVIOR_BLOCKING,
     .operationalMode = AESCMAC_OPMODE_CMAC,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn     = NULL,
+    .timeout         = SemaphoreP_WAIT_FOREVER,
+    .custom          = NULL,
 };
 
 /*
  *  ======== AESCMAC_Params_init ========
  */
-void AESCMAC_Params_init(AESCMAC_Params *params){
+void AESCMAC_Params_init(AESCMAC_Params *params)
+{
     *params = AESCMAC_defaultParams;
 }
 
 /*
  *  ======== AESCMAC_open ========
  */
-AESCMAC_Handle AESCMAC_open(uint_least8_t index, const AESCMAC_Params *params) {
+__attribute__((weak)) AESCMAC_Handle AESCMAC_open(uint_least8_t index, const AESCMAC_Params *params)
+{
     DebugP_assert(index < AESCMAC_count);
 
-    AESCMAC_Config *config = (AESCMAC_Config*)&AESCMAC_config[index];
+    AESCMAC_Config *config = (AESCMAC_Config *)&AESCMAC_config[index];
     return AESCMAC_construct(config, params);
 }
 
 /*
  *  ======== AESCMAC_Operation_init ========
  */
-void AESCMAC_Operation_init(AESCMAC_Operation *operation) {
+void AESCMAC_Operation_init(AESCMAC_Operation *operation)
+{
     memset(operation, 0x00, sizeof(AESCMAC_Operation));
 }

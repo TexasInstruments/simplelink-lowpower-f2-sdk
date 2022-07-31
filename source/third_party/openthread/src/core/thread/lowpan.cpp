@@ -37,7 +37,7 @@
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
+#include "common/locator_getters.hpp"
 #include "net/ip6.hpp"
 #include "net/udp6.hpp"
 #include "thread/network_data_leader.hpp"
@@ -57,33 +57,33 @@ Lowpan::Lowpan(Instance &aInstance)
 
 void Lowpan::CopyContext(const Context &aContext, Ip6::Address &aAddress)
 {
-    aAddress.SetPrefix(aContext.mPrefix, aContext.mPrefixLength);
+    aAddress.SetPrefix(aContext.mPrefix);
 }
 
-otError Lowpan::ComputeIid(const Mac::Address &aMacAddr, const Context &aContext, Ip6::Address &aIpAddress)
+Error Lowpan::ComputeIid(const Mac::Address &aMacAddr, const Context &aContext, Ip6::Address &aIpAddress)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
     switch (aMacAddr.GetType())
     {
     case Mac::Address::kTypeShort:
-        aIpAddress.SetIidToLocator(aMacAddr.GetShort());
+        aIpAddress.GetIid().SetToLocator(aMacAddr.GetShort());
         break;
 
     case Mac::Address::kTypeExtended:
-        aIpAddress.SetIid(aMacAddr.GetExtended());
+        aIpAddress.GetIid().SetFromExtAddress(aMacAddr.GetExtended());
         break;
 
     default:
-        ExitNow(error = OT_ERROR_PARSE);
+        ExitNow(error = kErrorParse);
     }
 
-    if (aContext.mPrefixLength > 64)
+    if (aContext.mPrefix.GetLength() > 64)
     {
-        for (int i = (aContext.mPrefixLength & ~7); i < aContext.mPrefixLength; i++)
+        for (int i = (aContext.mPrefix.GetLength() & ~7); i < aContext.mPrefix.GetLength(); i++)
         {
             aIpAddress.mFields.m8[i / CHAR_BIT] &= ~(0x80 >> (i % CHAR_BIT));
-            aIpAddress.mFields.m8[i / CHAR_BIT] |= aContext.mPrefix[i / CHAR_BIT] & (0x80 >> (i % CHAR_BIT));
+            aIpAddress.mFields.m8[i / CHAR_BIT] |= aContext.mPrefix.GetBytes()[i / CHAR_BIT] & (0x80 >> (i % CHAR_BIT));
         }
     }
 
@@ -91,29 +91,29 @@ exit:
     return error;
 }
 
-otError Lowpan::CompressSourceIid(const Mac::Address &aMacAddr,
-                                  const Ip6::Address &aIpAddr,
-                                  const Context &     aContext,
-                                  uint16_t &          aHcCtl,
-                                  BufferWriter &      aBuf)
+Error Lowpan::CompressSourceIid(const Mac::Address &aMacAddr,
+                                const Ip6::Address &aIpAddr,
+                                const Context &     aContext,
+                                uint16_t &          aHcCtl,
+                                BufferWriter &      aBuf)
 {
-    otError      error = OT_ERROR_NONE;
+    Error        error = kErrorNone;
     BufferWriter buf   = aBuf;
     Ip6::Address ipaddr;
     Mac::Address tmp;
 
-    ComputeIid(aMacAddr, aContext, ipaddr);
+    IgnoreError(ComputeIid(aMacAddr, aContext, ipaddr));
 
-    if (memcmp(ipaddr.GetIid(), aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize) == 0)
+    if (ipaddr.GetIid() == aIpAddr.GetIid())
     {
         aHcCtl |= kHcSrcAddrMode3;
     }
     else
     {
-        tmp.SetShort(aIpAddr.GetLocator());
-        ComputeIid(tmp, aContext, ipaddr);
+        tmp.SetShort(aIpAddr.GetIid().GetLocator());
+        IgnoreError(ComputeIid(tmp, aContext, ipaddr));
 
-        if (memcmp(ipaddr.GetIid(), aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize) == 0)
+        if (ipaddr.GetIid() == aIpAddr.GetIid())
         {
             aHcCtl |= kHcSrcAddrMode2;
             SuccessOrExit(error = buf.Write(aIpAddr.mFields.m8 + 14, 2));
@@ -121,12 +121,12 @@ otError Lowpan::CompressSourceIid(const Mac::Address &aMacAddr,
         else
         {
             aHcCtl |= kHcSrcAddrMode1;
-            SuccessOrExit(error = buf.Write(aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize));
+            SuccessOrExit(error = buf.Write(aIpAddr.GetIid().GetBytes(), Ip6::InterfaceIdentifier::kSize));
         }
     }
 
 exit:
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         aBuf = buf;
     }
@@ -134,29 +134,29 @@ exit:
     return error;
 }
 
-otError Lowpan::CompressDestinationIid(const Mac::Address &aMacAddr,
-                                       const Ip6::Address &aIpAddr,
-                                       const Context &     aContext,
-                                       uint16_t &          aHcCtl,
-                                       BufferWriter &      aBuf)
+Error Lowpan::CompressDestinationIid(const Mac::Address &aMacAddr,
+                                     const Ip6::Address &aIpAddr,
+                                     const Context &     aContext,
+                                     uint16_t &          aHcCtl,
+                                     BufferWriter &      aBuf)
 {
-    otError      error = OT_ERROR_NONE;
+    Error        error = kErrorNone;
     BufferWriter buf   = aBuf;
     Ip6::Address ipaddr;
     Mac::Address tmp;
 
-    ComputeIid(aMacAddr, aContext, ipaddr);
+    IgnoreError(ComputeIid(aMacAddr, aContext, ipaddr));
 
-    if (memcmp(ipaddr.GetIid(), aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize) == 0)
+    if (ipaddr.GetIid() == aIpAddr.GetIid())
     {
         aHcCtl |= kHcDstAddrMode3;
     }
     else
     {
-        tmp.SetShort(aIpAddr.GetLocator());
-        ComputeIid(tmp, aContext, ipaddr);
+        tmp.SetShort(aIpAddr.GetIid().GetLocator());
+        IgnoreError(ComputeIid(tmp, aContext, ipaddr));
 
-        if (memcmp(ipaddr.GetIid(), aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize) == 0)
+        if (ipaddr.GetIid() == aIpAddr.GetIid())
         {
             aHcCtl |= kHcDstAddrMode2;
             SuccessOrExit(error = buf.Write(aIpAddr.mFields.m8 + 14, 2));
@@ -164,12 +164,12 @@ otError Lowpan::CompressDestinationIid(const Mac::Address &aMacAddr,
         else
         {
             aHcCtl |= kHcDstAddrMode1;
-            SuccessOrExit(error = buf.Write(aIpAddr.GetIid(), Ip6::Address::kInterfaceIdentifierSize));
+            SuccessOrExit(error = buf.Write(aIpAddr.GetIid().GetBytes(), Ip6::InterfaceIdentifier::kSize));
         }
     }
 
 exit:
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         aBuf = buf;
     }
@@ -177,9 +177,9 @@ exit:
     return error;
 }
 
-otError Lowpan::CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl, BufferWriter &aBuf)
+Error Lowpan::CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl, BufferWriter &aBuf)
 {
-    otError      error = OT_ERROR_NONE;
+    Error        error = kErrorNone;
     BufferWriter buf   = aBuf;
     Context      multicastContext;
 
@@ -212,9 +212,9 @@ otError Lowpan::CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl,
             else
             {
                 // Check if multicast address can be compressed using Context ID 0.
-                if (Get<NetworkData::Leader>().GetContext(0, multicastContext) == OT_ERROR_NONE &&
-                    multicastContext.mPrefixLength == aIpAddr.mFields.m8[3] &&
-                    memcmp(multicastContext.mPrefix, aIpAddr.mFields.m8 + 4, 8) == 0)
+                if (Get<NetworkData::Leader>().GetContext(0, multicastContext) == kErrorNone &&
+                    multicastContext.mPrefix.GetLength() == aIpAddr.mFields.m8[3] &&
+                    memcmp(multicastContext.mPrefix.GetBytes(), aIpAddr.mFields.m8 + 4, 8) == 0)
                 {
                     aHcCtl |= kHcDstAddrContext | kHcDstAddrMode0;
                     SuccessOrExit(error = buf.Write(aIpAddr.mFields.m8 + 1, 2));
@@ -231,7 +231,7 @@ otError Lowpan::CompressMulticast(const Ip6::Address &aIpAddr, uint16_t &aHcCtl,
     }
 
 exit:
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         aBuf = buf;
     }
@@ -239,29 +239,29 @@ exit:
     return error;
 }
 
-otError Lowpan::Compress(Message &           aMessage,
-                         const Mac::Address &aMacSource,
-                         const Mac::Address &aMacDest,
-                         BufferWriter &      aBuf)
+Error Lowpan::Compress(Message &           aMessage,
+                       const Mac::Address &aMacSource,
+                       const Mac::Address &aMacDest,
+                       BufferWriter &      aBuf)
 {
-    otError error;
+    Error   error;
     uint8_t headerDepth = 0xff;
 
     do
     {
         error = Compress(aMessage, aMacSource, aMacDest, aBuf, headerDepth);
-    } while ((error != OT_ERROR_NONE) && (headerDepth > 0));
+    } while ((error != kErrorNone) && (headerDepth > 0));
 
     return error;
 }
 
-otError Lowpan::Compress(Message &           aMessage,
-                         const Mac::Address &aMacSource,
-                         const Mac::Address &aMacDest,
-                         BufferWriter &      aBuf,
-                         uint8_t &           aHeaderDepth)
+Error Lowpan::Compress(Message &           aMessage,
+                       const Mac::Address &aMacSource,
+                       const Mac::Address &aMacDest,
+                       BufferWriter &      aBuf,
+                       uint8_t &           aHeaderDepth)
 {
-    otError              error       = OT_ERROR_NONE;
+    Error                error       = kErrorNone;
     NetworkData::Leader &networkData = Get<NetworkData::Leader>();
     uint16_t             startOffset = aMessage.GetOffset();
     BufferWriter         buf         = aBuf;
@@ -276,23 +276,22 @@ otError Lowpan::Compress(Message &           aMessage,
     uint8_t              headerDepth    = 0;
     uint8_t              headerMaxDepth = aHeaderDepth;
 
-    VerifyOrExit(aMessage.Read(aMessage.GetOffset(), sizeof(ip6Header), &ip6Header) == sizeof(ip6Header),
-                 error = OT_ERROR_PARSE);
+    SuccessOrExit(error = aMessage.Read(aMessage.GetOffset(), ip6Header));
 
     srcContextValid =
-        (networkData.GetContext(ip6Header.GetSource(), srcContext) == OT_ERROR_NONE && srcContext.mCompressFlag);
+        (networkData.GetContext(ip6Header.GetSource(), srcContext) == kErrorNone && srcContext.mCompressFlag);
 
     if (!srcContextValid)
     {
-        networkData.GetContext(0, srcContext);
+        IgnoreError(networkData.GetContext(0, srcContext));
     }
 
     dstContextValid =
-        (networkData.GetContext(ip6Header.GetDestination(), dstContext) == OT_ERROR_NONE && dstContext.mCompressFlag);
+        (networkData.GetContext(ip6Header.GetDestination(), dstContext) == kErrorNone && dstContext.mCompressFlag);
 
     if (!dstContextValid)
     {
-        networkData.GetContext(0, dstContext);
+        IgnoreError(networkData.GetContext(0, dstContext));
     }
 
     // Lowpan HC Control Bits
@@ -351,7 +350,7 @@ otError Lowpan::Compress(Message &           aMessage,
             hcCtl |= kHcNextHeader;
             break;
         }
-        // fall through
+        OT_FALL_THROUGH;
 
     default:
         SuccessOrExit(error = buf.Write(static_cast<uint8_t>(ip6Header.GetNextHeader())));
@@ -440,7 +439,7 @@ otError Lowpan::Compress(Message &           aMessage,
 
             error = Compress(aMessage, aMacSource, aMacDest, buf);
 
-            // fall through
+            OT_FALL_THROUGH;
 
         default:
             ExitNow();
@@ -452,10 +451,10 @@ otError Lowpan::Compress(Message &           aMessage,
 exit:
     aHeaderDepth = headerDepth;
 
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
-        IgnoreReturnValue(aBuf.Write(hcCtl >> 8));
-        IgnoreReturnValue(aBuf.Write(hcCtl & 0xff));
+        IgnoreError(aBuf.Write(hcCtl >> 8));
+        IgnoreError(aBuf.Write(hcCtl & 0xff));
         aBuf = buf;
     }
     else
@@ -466,9 +465,9 @@ exit:
     return error;
 }
 
-otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, uint8_t &aNextHeader)
+Error Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, uint8_t &aNextHeader)
 {
-    otError              error       = OT_ERROR_NONE;
+    Error                error       = kErrorNone;
     BufferWriter         buf         = aBuf;
     uint16_t             startOffset = aMessage.GetOffset();
     Ip6::ExtensionHeader extHeader;
@@ -476,8 +475,7 @@ otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, u
     uint8_t              padLength = 0;
     uint8_t              tmpByte;
 
-    VerifyOrExit(aMessage.Read(aMessage.GetOffset(), sizeof(extHeader), &extHeader) == sizeof(extHeader),
-                 error = OT_ERROR_PARSE);
+    SuccessOrExit(error = aMessage.Read(aMessage.GetOffset(), extHeader));
     aMessage.MoveOffset(sizeof(extHeader));
 
     tmpByte = kExtHdrDispatch | kExtHdrEidHbh;
@@ -500,7 +498,7 @@ otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, u
     len = (extHeader.GetLength() + 1) * 8 - sizeof(extHeader);
 
     // RFC 6282 does not support compressing large extension headers
-    VerifyOrExit(len <= kExtHdrMaxLength, error = OT_ERROR_FAILED);
+    VerifyOrExit(len <= kExtHdrMaxLength, error = kErrorFailed);
 
     // RFC 6282 says: "IPv6 Hop-by-Hop and Destination Options Headers may use a trailing
     // Pad1 or PadN to achieve 8-octet alignment. When there is a single trailing Pad1 or PadN
@@ -513,8 +511,7 @@ otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, u
 
         while ((offset - aMessage.GetOffset()) < len)
         {
-            VerifyOrExit(aMessage.Read(offset, sizeof(optionHeader), &optionHeader) == sizeof(optionHeader),
-                         error = OT_ERROR_PARSE);
+            SuccessOrExit(error = aMessage.Read(offset, optionHeader));
 
             if (optionHeader.GetType() == Ip6::OptionPad1::kType)
             {
@@ -539,7 +536,7 @@ otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, u
         len -= padLength;
     }
 
-    VerifyOrExit(aMessage.GetOffset() + len + padLength <= aMessage.GetLength(), error = OT_ERROR_PARSE);
+    VerifyOrExit(aMessage.GetOffset() + len + padLength <= aMessage.GetLength(), error = kErrorParse);
 
     aNextHeader = static_cast<uint8_t>(extHeader.GetNextHeader());
 
@@ -548,7 +545,7 @@ otError Lowpan::CompressExtensionHeader(Message &aMessage, BufferWriter &aBuf, u
     aMessage.MoveOffset(len + padLength);
 
 exit:
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         aBuf = buf;
     }
@@ -560,17 +557,16 @@ exit:
     return error;
 }
 
-otError Lowpan::CompressUdp(Message &aMessage, BufferWriter &aBuf)
+Error Lowpan::CompressUdp(Message &aMessage, BufferWriter &aBuf)
 {
-    otError        error       = OT_ERROR_NONE;
-    BufferWriter   buf         = aBuf;
-    uint16_t       startOffset = aMessage.GetOffset();
-    Ip6::UdpHeader udpHeader;
-    uint16_t       source;
-    uint16_t       destination;
+    Error            error       = kErrorNone;
+    BufferWriter     buf         = aBuf;
+    uint16_t         startOffset = aMessage.GetOffset();
+    Ip6::Udp::Header udpHeader;
+    uint16_t         source;
+    uint16_t         destination;
 
-    VerifyOrExit(aMessage.Read(aMessage.GetOffset(), sizeof(udpHeader), &udpHeader) == sizeof(udpHeader),
-                 error = OT_ERROR_PARSE);
+    SuccessOrExit(error = aMessage.Read(aMessage.GetOffset(), udpHeader));
 
     source      = udpHeader.GetSourcePort();
     destination = udpHeader.GetDestinationPort();
@@ -597,15 +593,16 @@ otError Lowpan::CompressUdp(Message &aMessage, BufferWriter &aBuf)
     else
     {
         SuccessOrExit(error = buf.Write(kUdpDispatch));
-        SuccessOrExit(error = buf.Write(&udpHeader, Ip6::UdpHeader::GetLengthOffset()));
+        SuccessOrExit(error = buf.Write(&udpHeader, Ip6::Udp::Header::kLengthFieldOffset));
     }
 
-    SuccessOrExit(error = buf.Write(reinterpret_cast<uint8_t *>(&udpHeader) + Ip6::UdpHeader::GetChecksumOffset(), 2));
+    SuccessOrExit(error =
+                      buf.Write(reinterpret_cast<uint8_t *>(&udpHeader) + Ip6::Udp::Header::kChecksumFieldOffset, 2));
 
     aMessage.MoveOffset(sizeof(udpHeader));
 
 exit:
-    if (error == OT_ERROR_NONE)
+    if (error == kErrorNone)
     {
         aBuf = buf;
     }
@@ -617,9 +614,9 @@ exit:
     return error;
 }
 
-otError Lowpan::DispatchToNextHeader(uint8_t aDispatch, uint8_t &aNextHeader)
+Error Lowpan::DispatchToNextHeader(uint8_t aDispatch, uint8_t &aNextHeader)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
     if ((aDispatch & kExtHdrDispatchMask) == kExtHdrDispatch)
     {
@@ -652,7 +649,7 @@ otError Lowpan::DispatchToNextHeader(uint8_t aDispatch, uint8_t &aNextHeader)
         ExitNow();
     }
 
-    error = OT_ERROR_PARSE;
+    error = kErrorParse;
 
 exit:
     return error;
@@ -666,7 +663,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
                                  uint16_t            aBufLength)
 {
     NetworkData::Leader &networkData = Get<NetworkData::Leader>();
-    otError              error       = OT_ERROR_PARSE;
+    Error                error       = kErrorParse;
     const uint8_t *      cur         = aBuf;
     const uint8_t *      end         = aBuf + aBufLength;
     uint16_t             hcCtl;
@@ -675,27 +672,27 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
     uint8_t              nextHeader;
     uint8_t *            bytes;
 
-    VerifyOrExit(cur + 2 <= end, OT_NOOP);
+    VerifyOrExit(cur + 2 <= end);
     hcCtl = ReadUint16(cur);
     cur += 2;
 
     // check Dispatch bits
-    VerifyOrExit((hcCtl & kHcDispatchMask) == kHcDispatch, OT_NOOP);
+    VerifyOrExit((hcCtl & kHcDispatchMask) == kHcDispatch);
 
     // Context Identifier
-    srcContext.mPrefixLength = 0;
-    dstContext.mPrefixLength = 0;
+    srcContext.mPrefix.SetLength(0);
+    dstContext.mPrefix.SetLength(0);
 
     if ((hcCtl & kHcContextId) != 0)
     {
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
 
-        if (networkData.GetContext(cur[0] >> 4, srcContext) != OT_ERROR_NONE)
+        if (networkData.GetContext(cur[0] >> 4, srcContext) != kErrorNone)
         {
             srcContextValid = false;
         }
 
-        if (networkData.GetContext(cur[0] & 0xf, dstContext) != OT_ERROR_NONE)
+        if (networkData.GetContext(cur[0] & 0xf, dstContext) != kErrorNone)
         {
             dstContextValid = false;
         }
@@ -704,17 +701,17 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
     }
     else
     {
-        networkData.GetContext(0, srcContext);
-        networkData.GetContext(0, dstContext);
+        IgnoreError(networkData.GetContext(0, srcContext));
+        IgnoreError(networkData.GetContext(0, dstContext));
     }
 
-    memset(&aIp6Header, 0, sizeof(aIp6Header));
-    aIp6Header.Init();
+    aIp6Header.Clear();
+    aIp6Header.InitVersionTrafficClassFlow();
 
     // Traffic Class and Flow Label
     if ((hcCtl & kHcTrafficFlowMask) != kHcTrafficFlow)
     {
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
 
         bytes = reinterpret_cast<uint8_t *>(&aIp6Header);
         bytes[1] |= (cur[0] & 0xc0) >> 2;
@@ -728,7 +725,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
 
         if ((hcCtl & kHcFlowLabel) == 0)
         {
-            VerifyOrExit(cur + 3 <= end, OT_NOOP);
+            VerifyOrExit(cur + 3 <= end);
             bytes[1] |= cur[0] & 0x0f;
             bytes[2] |= cur[1];
             bytes[3] |= cur[2];
@@ -739,7 +736,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
     // Next Header
     if ((hcCtl & kHcNextHeader) == 0)
     {
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
         aIp6Header.SetNextHeader(cur[0]);
         cur++;
         aCompressedNextHeader = false;
@@ -765,7 +762,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         break;
 
     default:
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
         aIp6Header.SetHopLimit(cur[0]);
         cur++;
         break;
@@ -777,7 +774,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
     case kHcSrcAddrMode0:
         if ((hcCtl & kHcSrcAddrContext) == 0)
         {
-            VerifyOrExit(cur + sizeof(Ip6::Address) <= end, OT_NOOP);
+            VerifyOrExit(cur + sizeof(Ip6::Address) <= end);
             memcpy(&aIp6Header.GetSource(), cur, sizeof(aIp6Header.GetSource()));
             cur += sizeof(Ip6::Address);
         }
@@ -785,13 +782,13 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         break;
 
     case kHcSrcAddrMode1:
-        VerifyOrExit(cur + Ip6::Address::kInterfaceIdentifierSize <= end, OT_NOOP);
-        aIp6Header.GetSource().SetIid(cur);
-        cur += Ip6::Address::kInterfaceIdentifierSize;
+        VerifyOrExit(cur + Ip6::InterfaceIdentifier::kSize <= end);
+        aIp6Header.GetSource().GetIid().SetBytes(cur);
+        cur += Ip6::InterfaceIdentifier::kSize;
         break;
 
     case kHcSrcAddrMode2:
-        VerifyOrExit(cur + 2 <= end, OT_NOOP);
+        VerifyOrExit(cur + 2 <= end);
         aIp6Header.GetSource().mFields.m8[11] = 0xff;
         aIp6Header.GetSource().mFields.m8[12] = 0xfe;
         memcpy(aIp6Header.GetSource().mFields.m8 + 14, cur, 2);
@@ -799,7 +796,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         break;
 
     case kHcSrcAddrMode3:
-        ComputeIid(aMacSource, srcContext, aIp6Header.GetSource());
+        IgnoreError(ComputeIid(aMacSource, srcContext, aIp6Header.GetSource()));
         break;
     }
 
@@ -811,7 +808,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         }
         else
         {
-            VerifyOrExit(srcContextValid, OT_NOOP);
+            VerifyOrExit(srcContextValid);
             CopyContext(srcContext, aIp6Header.GetSource());
         }
     }
@@ -823,20 +820,20 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         switch (hcCtl & kHcDstAddrModeMask)
         {
         case kHcDstAddrMode0:
-            VerifyOrExit((hcCtl & kHcDstAddrContext) == 0, OT_NOOP);
-            VerifyOrExit(cur + sizeof(Ip6::Address) <= end, OT_NOOP);
+            VerifyOrExit((hcCtl & kHcDstAddrContext) == 0);
+            VerifyOrExit(cur + sizeof(Ip6::Address) <= end);
             memcpy(&aIp6Header.GetDestination(), cur, sizeof(aIp6Header.GetDestination()));
             cur += sizeof(Ip6::Address);
             break;
 
         case kHcDstAddrMode1:
-            VerifyOrExit(cur + Ip6::Address::kInterfaceIdentifierSize <= end, OT_NOOP);
-            aIp6Header.GetDestination().SetIid(cur);
-            cur += Ip6::Address::kInterfaceIdentifierSize;
+            VerifyOrExit(cur + Ip6::InterfaceIdentifier::kSize <= end);
+            aIp6Header.GetDestination().GetIid().SetBytes(cur);
+            cur += Ip6::InterfaceIdentifier::kSize;
             break;
 
         case kHcDstAddrMode2:
-            VerifyOrExit(cur + 2 <= end, OT_NOOP);
+            VerifyOrExit(cur + 2 <= end);
             aIp6Header.GetDestination().mFields.m8[11] = 0xff;
             aIp6Header.GetDestination().mFields.m8[12] = 0xfe;
             memcpy(aIp6Header.GetDestination().mFields.m8 + 14, cur, 2);
@@ -857,7 +854,7 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
         }
         else
         {
-            VerifyOrExit(dstContextValid, OT_NOOP);
+            VerifyOrExit(dstContextValid);
             CopyContext(dstContext, aIp6Header.GetDestination());
         }
     }
@@ -872,27 +869,27 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
             switch (hcCtl & kHcDstAddrModeMask)
             {
             case kHcDstAddrMode0:
-                VerifyOrExit(cur + sizeof(Ip6::Address) <= end, OT_NOOP);
+                VerifyOrExit(cur + sizeof(Ip6::Address) <= end);
                 memcpy(aIp6Header.GetDestination().mFields.m8, cur, sizeof(Ip6::Address));
                 cur += sizeof(Ip6::Address);
                 break;
 
             case kHcDstAddrMode1:
-                VerifyOrExit(cur + 6 <= end, OT_NOOP);
+                VerifyOrExit(cur + 6 <= end);
                 aIp6Header.GetDestination().mFields.m8[1] = cur[0];
                 memcpy(aIp6Header.GetDestination().mFields.m8 + 11, cur + 1, 5);
                 cur += 6;
                 break;
 
             case kHcDstAddrMode2:
-                VerifyOrExit(cur + 4 <= end, OT_NOOP);
+                VerifyOrExit(cur + 4 <= end);
                 aIp6Header.GetDestination().mFields.m8[1] = cur[0];
                 memcpy(aIp6Header.GetDestination().mFields.m8 + 13, cur + 1, 3);
                 cur += 4;
                 break;
 
             case kHcDstAddrMode3:
-                VerifyOrExit(cur < end, OT_NOOP);
+                VerifyOrExit(cur < end);
                 aIp6Header.GetDestination().mFields.m8[1]  = 0x02;
                 aIp6Header.GetDestination().mFields.m8[15] = cur[0];
                 cur++;
@@ -904,12 +901,12 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
             switch (hcCtl & kHcDstAddrModeMask)
             {
             case 0:
-                VerifyOrExit(cur + 6 <= end, OT_NOOP);
-                VerifyOrExit(dstContextValid, OT_NOOP);
+                VerifyOrExit(cur + 6 <= end);
+                VerifyOrExit(dstContextValid);
                 aIp6Header.GetDestination().mFields.m8[1] = cur[0];
                 aIp6Header.GetDestination().mFields.m8[2] = cur[1];
-                aIp6Header.GetDestination().mFields.m8[3] = dstContext.mPrefixLength;
-                memcpy(aIp6Header.GetDestination().mFields.m8 + 4, dstContext.mPrefix, 8);
+                aIp6Header.GetDestination().mFields.m8[3] = dstContext.mPrefix.GetLength();
+                memcpy(aIp6Header.GetDestination().mFields.m8 + 4, dstContext.mPrefix.GetBytes(), 8);
                 memcpy(aIp6Header.GetDestination().mFields.m8 + 12, cur + 2, 4);
                 cur += 6;
                 break;
@@ -922,20 +919,20 @@ int Lowpan::DecompressBaseHeader(Ip6::Header &       aIp6Header,
 
     if ((hcCtl & kHcNextHeader) != 0)
     {
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
         SuccessOrExit(DispatchToNextHeader(cur[0], nextHeader));
         aIp6Header.SetNextHeader(nextHeader);
     }
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
-    return (error == OT_ERROR_NONE) ? static_cast<int>(cur - aBuf) : -1;
+    return (error == kErrorNone) ? static_cast<int>(cur - aBuf) : -1;
 }
 
 int Lowpan::DecompressExtensionHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength)
 {
-    otError         error = OT_ERROR_PARSE;
+    Error           error = kErrorParse;
     const uint8_t * cur   = aBuf;
     const uint8_t * end   = aBuf + aBufLength;
     uint8_t         hdr[2];
@@ -946,40 +943,40 @@ int Lowpan::DecompressExtensionHeader(Message &aMessage, const uint8_t *aBuf, ui
     Ip6::OptionPad1 optionPad1;
     Ip6::OptionPadN optionPadN;
 
-    VerifyOrExit(cur < end, OT_NOOP);
+    VerifyOrExit(cur < end);
     cur++;
 
     // next header
     if (ctl & kExtHdrNextHeader)
     {
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
 
         len = cur[0];
         cur++;
 
-        VerifyOrExit(cur + len <= end, OT_NOOP);
+        VerifyOrExit(cur + len <= end);
         SuccessOrExit(DispatchToNextHeader(cur[len], nextHeader));
         hdr[0] = static_cast<uint8_t>(nextHeader);
     }
     else
     {
-        VerifyOrExit(cur + 2 <= end, OT_NOOP);
+        VerifyOrExit(cur + 2 <= end);
 
         hdr[0] = cur[0];
         len    = cur[1];
         cur += 2;
 
-        VerifyOrExit(cur + len <= end, OT_NOOP);
+        VerifyOrExit(cur + len <= end);
     }
 
     // length
     hdr[1] = BitVectorBytes(sizeof(hdr) + len) - 1;
 
-    SuccessOrExit(aMessage.Append(hdr, sizeof(hdr)));
+    SuccessOrExit(aMessage.AppendBytes(hdr, sizeof(hdr)));
     aMessage.MoveOffset(sizeof(hdr));
 
     // payload
-    SuccessOrExit(aMessage.Append(cur, len));
+    SuccessOrExit(aMessage.AppendBytes(cur, len));
     aMessage.MoveOffset(len);
     cur += len;
 
@@ -993,35 +990,35 @@ int Lowpan::DecompressExtensionHeader(Message &aMessage, const uint8_t *aBuf, ui
         if (padLength == 1)
         {
             optionPad1.Init();
-            SuccessOrExit(aMessage.Append(&optionPad1, padLength));
+            SuccessOrExit(aMessage.AppendBytes(&optionPad1, padLength));
         }
         else
         {
             optionPadN.Init(padLength);
-            SuccessOrExit(aMessage.Append(&optionPadN, padLength));
+            SuccessOrExit(aMessage.AppendBytes(&optionPadN, padLength));
         }
 
         aMessage.MoveOffset(padLength);
     }
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
-    return (error == OT_ERROR_NONE) ? static_cast<int>(cur - aBuf) : -1;
+    return (error == kErrorNone) ? static_cast<int>(cur - aBuf) : -1;
 }
 
-int Lowpan::DecompressUdpHeader(Ip6::UdpHeader &aUdpHeader, const uint8_t *aBuf, uint16_t aBufLength)
+int Lowpan::DecompressUdpHeader(Ip6::Udp::Header &aUdpHeader, const uint8_t *aBuf, uint16_t aBufLength)
 {
-    otError        error = OT_ERROR_PARSE;
+    Error          error = kErrorParse;
     const uint8_t *cur   = aBuf;
     const uint8_t *end   = aBuf + aBufLength;
     uint8_t        udpCtl;
 
-    VerifyOrExit(cur < end, OT_NOOP);
+    VerifyOrExit(cur < end);
     udpCtl = cur[0];
     cur++;
 
-    VerifyOrExit((udpCtl & kUdpDispatchMask) == kUdpDispatch, OT_NOOP);
+    VerifyOrExit((udpCtl & kUdpDispatchMask) == kUdpDispatch);
 
     memset(&aUdpHeader, 0, sizeof(aUdpHeader));
 
@@ -1029,28 +1026,28 @@ int Lowpan::DecompressUdpHeader(Ip6::UdpHeader &aUdpHeader, const uint8_t *aBuf,
     switch (udpCtl & kUdpPortMask)
     {
     case 0:
-        VerifyOrExit(cur + 4 <= end, OT_NOOP);
+        VerifyOrExit(cur + 4 <= end);
         aUdpHeader.SetSourcePort(ReadUint16(cur));
         aUdpHeader.SetDestinationPort(ReadUint16(cur + 2));
         cur += 4;
         break;
 
     case 1:
-        VerifyOrExit(cur + 3 <= end, OT_NOOP);
+        VerifyOrExit(cur + 3 <= end);
         aUdpHeader.SetSourcePort(ReadUint16(cur));
         aUdpHeader.SetDestinationPort(0xf000 | cur[2]);
         cur += 3;
         break;
 
     case 2:
-        VerifyOrExit(cur + 3 <= end, OT_NOOP);
+        VerifyOrExit(cur + 3 <= end);
         aUdpHeader.SetSourcePort(0xf000 | cur[0]);
         aUdpHeader.SetDestinationPort(ReadUint16(cur + 1));
         cur += 3;
         break;
 
     case 3:
-        VerifyOrExit(cur < end, OT_NOOP);
+        VerifyOrExit(cur < end);
         aUdpHeader.SetSourcePort(0xf0b0 | (cur[0] >> 4));
         aUdpHeader.SetDestinationPort(0xf0b0 | (cur[0] & 0xf));
         cur++;
@@ -1064,24 +1061,24 @@ int Lowpan::DecompressUdpHeader(Ip6::UdpHeader &aUdpHeader, const uint8_t *aBuf,
     }
     else
     {
-        VerifyOrExit(cur + 2 <= end, OT_NOOP);
+        VerifyOrExit(cur + 2 <= end);
         aUdpHeader.SetChecksum(ReadUint16(cur));
         cur += 2;
     }
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
-    return (error == OT_ERROR_NONE) ? static_cast<int>(cur - aBuf) : -1;
+    return (error == kErrorNone) ? static_cast<int>(cur - aBuf) : -1;
 }
 
 int Lowpan::DecompressUdpHeader(Message &aMessage, const uint8_t *aBuf, uint16_t aBufLength, uint16_t aDatagramLength)
 {
-    Ip6::UdpHeader udpHeader;
-    int            headerLen = -1;
+    Ip6::Udp::Header udpHeader;
+    int              headerLen = -1;
 
     headerLen = DecompressUdpHeader(udpHeader, aBuf, aBufLength);
-    VerifyOrExit(headerLen >= 0, OT_NOOP);
+    VerifyOrExit(headerLen >= 0);
 
     // length
     if (aDatagramLength == 0)
@@ -1093,7 +1090,7 @@ int Lowpan::DecompressUdpHeader(Message &aMessage, const uint8_t *aBuf, uint16_t
         udpHeader.SetLength(aDatagramLength - aMessage.GetOffset());
     }
 
-    VerifyOrExit(aMessage.Append(&udpHeader, sizeof(udpHeader)) == OT_ERROR_NONE, headerLen = -1);
+    VerifyOrExit(aMessage.Append(udpHeader) == kErrorNone, headerLen = -1);
     aMessage.MoveOffset(sizeof(udpHeader));
 
 exit:
@@ -1107,7 +1104,7 @@ int Lowpan::Decompress(Message &           aMessage,
                        uint16_t            aBufLength,
                        uint16_t            aDatagramLength)
 {
-    otError        error = OT_ERROR_PARSE;
+    Error          error = kErrorParse;
     Ip6::Header    ip6Header;
     const uint8_t *cur       = aBuf;
     uint16_t       remaining = aBufLength;
@@ -1117,19 +1114,18 @@ int Lowpan::Decompress(Message &           aMessage,
     uint16_t       compressedLength = 0;
     uint16_t       currentOffset    = aMessage.GetOffset();
 
-    VerifyOrExit(remaining >= 2, OT_NOOP);
-    VerifyOrExit((rval = DecompressBaseHeader(ip6Header, compressed, aMacSource, aMacDest, cur, remaining)) >= 0,
-                 OT_NOOP);
+    VerifyOrExit(remaining >= 2);
+    VerifyOrExit((rval = DecompressBaseHeader(ip6Header, compressed, aMacSource, aMacDest, cur, remaining)) >= 0);
 
     cur += rval;
     remaining -= rval;
 
-    SuccessOrExit(aMessage.Append(&ip6Header, sizeof(ip6Header)));
-    SuccessOrExit(aMessage.MoveOffset(sizeof(ip6Header)));
+    SuccessOrExit(aMessage.Append(ip6Header));
+    aMessage.MoveOffset(sizeof(ip6Header));
 
     while (compressed)
     {
-        VerifyOrExit(remaining >= 1, OT_NOOP);
+        VerifyOrExit(remaining >= 1);
 
         if ((cur[0] & kExtHdrDispatchMask) == kExtHdrDispatch)
         {
@@ -1140,26 +1136,25 @@ int Lowpan::Decompress(Message &           aMessage,
                 cur++;
                 remaining--;
 
-                VerifyOrExit((rval = Decompress(aMessage, aMacSource, aMacDest, cur, remaining, aDatagramLength)) >= 0,
-                             OT_NOOP);
+                VerifyOrExit((rval = Decompress(aMessage, aMacSource, aMacDest, cur, remaining, aDatagramLength)) >= 0);
             }
             else
             {
                 compressed = (cur[0] & kExtHdrNextHeader) != 0;
-                VerifyOrExit((rval = DecompressExtensionHeader(aMessage, cur, remaining)) >= 0, OT_NOOP);
+                VerifyOrExit((rval = DecompressExtensionHeader(aMessage, cur, remaining)) >= 0);
             }
         }
         else if ((cur[0] & kUdpDispatchMask) == kUdpDispatch)
         {
             compressed = false;
-            VerifyOrExit((rval = DecompressUdpHeader(aMessage, cur, remaining, aDatagramLength)) >= 0, OT_NOOP);
+            VerifyOrExit((rval = DecompressUdpHeader(aMessage, cur, remaining, aDatagramLength)) >= 0);
         }
         else
         {
             ExitNow();
         }
 
-        VerifyOrExit(remaining >= rval, OT_NOOP);
+        VerifyOrExit(remaining >= rval);
         cur += rval;
         remaining -= rval;
     }
@@ -1176,12 +1171,12 @@ int Lowpan::Decompress(Message &           aMessage,
             HostSwap16(aMessage.GetOffset() - currentOffset - sizeof(Ip6::Header) + aBufLength - compressedLength);
     }
 
-    aMessage.Write(currentOffset + Ip6::Header::GetPayloadLengthOffset(), sizeof(ip6PayloadLength), &ip6PayloadLength);
+    aMessage.Write(currentOffset + Ip6::Header::kPayloadLengthFieldOffset, ip6PayloadLength);
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
-    return (error == OT_ERROR_NONE) ? static_cast<int>(compressedLength) : -1;
+    return (error == kErrorNone) ? static_cast<int>(compressedLength) : -1;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1199,22 +1194,21 @@ bool MeshHeader::IsMeshHeader(const uint8_t *aFrame, uint16_t aFrameLength)
     return (aFrameLength >= kMinHeaderLength) && ((*aFrame & kDispatchMask) == kDispatch);
 }
 
-otError MeshHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength)
+Error MeshHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength)
 {
-    otError error = OT_ERROR_PARSE;
+    Error   error = kErrorParse;
     uint8_t dispatch;
 
-    VerifyOrExit(aFrameLength >= kMinHeaderLength, OT_NOOP);
+    VerifyOrExit(aFrameLength >= kMinHeaderLength);
     dispatch = *aFrame++;
 
-    VerifyOrExit((dispatch & (kDispatchMask | kSourceShort | kDestShort)) == (kDispatch | kSourceShort | kDestShort),
-                 OT_NOOP);
+    VerifyOrExit((dispatch & (kDispatchMask | kSourceShort | kDestShort)) == (kDispatch | kSourceShort | kDestShort));
 
     mHopsLeft = (dispatch & kHopsLeftMask);
 
     if (mHopsLeft == kDeepHopsLeft)
     {
-        VerifyOrExit(aFrameLength >= kDeepHopsHeaderLength, OT_NOOP);
+        VerifyOrExit(aFrameLength >= kDeepHopsHeaderLength);
         mHopsLeft     = *aFrame++;
         aHeaderLength = kDeepHopsHeaderLength;
     }
@@ -1226,25 +1220,25 @@ otError MeshHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint
     mSource      = ReadUint16(aFrame);
     mDestination = ReadUint16(aFrame + 2);
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
     return error;
 }
 
-otError MeshHeader::ParseFrom(const Message &aMessage)
+Error MeshHeader::ParseFrom(const Message &aMessage)
 {
     uint16_t headerLength;
 
     return ParseFrom(aMessage, headerLength);
 }
 
-otError MeshHeader::ParseFrom(const Message &aMessage, uint16_t &aHeaderLength)
+Error MeshHeader::ParseFrom(const Message &aMessage, uint16_t &aHeaderLength)
 {
     uint8_t  frame[kDeepHopsHeaderLength];
     uint16_t frameLength;
 
-    frameLength = aMessage.Read(/* aOffset */ 0, sizeof(frame), frame);
+    frameLength = aMessage.ReadBytes(/* aOffset */ 0, frame, sizeof(frame));
 
     return ParseFrom(frame, frameLength, aHeaderLength);
 }
@@ -1292,7 +1286,7 @@ uint16_t MeshHeader::WriteTo(Message &aMessage, uint16_t aOffset) const
     uint16_t headerLength;
 
     headerLength = WriteTo(frame);
-    aMessage.Write(aOffset, headerLength, frame);
+    aMessage.WriteBytes(aOffset, frame, headerLength);
 
     return headerLength;
 }
@@ -1312,18 +1306,18 @@ bool FragmentHeader::IsFragmentHeader(const uint8_t *aFrame, uint16_t aFrameLeng
     return (aFrameLength >= kFirstFragmentHeaderSize) && ((*aFrame & kDispatchMask) == kDispatch);
 }
 
-otError FragmentHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength)
+Error FragmentHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, uint16_t &aHeaderLength)
 {
-    otError error = OT_ERROR_PARSE;
+    Error error = kErrorParse;
 
-    VerifyOrExit(IsFragmentHeader(aFrame, aFrameLength), OT_NOOP);
+    VerifyOrExit(IsFragmentHeader(aFrame, aFrameLength));
 
     mSize = ReadUint16(aFrame + kSizeIndex) & kSizeMask;
     mTag  = ReadUint16(aFrame + kTagIndex);
 
     if ((*aFrame & kOffsetFlag) == kOffsetFlag)
     {
-        VerifyOrExit(aFrameLength >= kSubsequentFragmentHeaderSize, OT_NOOP);
+        VerifyOrExit(aFrameLength >= kSubsequentFragmentHeaderSize);
         mOffset       = aFrame[kOffsetIndex] * 8;
         aHeaderLength = kSubsequentFragmentHeaderSize;
     }
@@ -1333,18 +1327,18 @@ otError FragmentHeader::ParseFrom(const uint8_t *aFrame, uint16_t aFrameLength, 
         aHeaderLength = kFirstFragmentHeaderSize;
     }
 
-    error = OT_ERROR_NONE;
+    error = kErrorNone;
 
 exit:
     return error;
 }
 
-otError FragmentHeader::ParseFrom(const Message &aMessage, uint16_t aOffset, uint16_t &aHeaderLength)
+Error FragmentHeader::ParseFrom(const Message &aMessage, uint16_t aOffset, uint16_t &aHeaderLength)
 {
     uint8_t  frame[kSubsequentFragmentHeaderSize];
     uint16_t frameLength;
 
-    frameLength = aMessage.Read(aOffset, sizeof(frame), frame);
+    frameLength = aMessage.ReadBytes(aOffset, frame, sizeof(frame));
 
     return ParseFrom(frame, frameLength, aHeaderLength);
 }
@@ -1353,7 +1347,7 @@ uint16_t FragmentHeader::WriteTo(uint8_t *aFrame) const
 {
     uint8_t *cur = aFrame;
 
-    WriteUint16((kDispatch << 8) + mSize, cur);
+    WriteUint16((static_cast<uint16_t>(kDispatch) << 8) + mSize, cur);
     cur += sizeof(uint16_t);
 
     WriteUint16(mTag, cur);

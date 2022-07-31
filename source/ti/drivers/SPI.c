@@ -46,14 +46,14 @@ extern const uint_least8_t SPI_count;
 
 /* Default SPI parameters structure */
 const SPI_Params SPI_defaultParams = {
-    SPI_MODE_BLOCKING,  /* transferMode */
-    SPI_WAIT_FOREVER,   /* transferTimeout */
-    NULL,               /* transferCallbackFxn */
-    SPI_MASTER,         /* mode */
-    1000000,            /* bitRate */
-    8,                  /* dataSize */
-    SPI_POL0_PHA0,      /* frameFormat */
-    NULL                /* custom */
+    SPI_MODE_BLOCKING, /* transferMode */
+    SPI_WAIT_FOREVER,  /* transferTimeout */
+    NULL,              /* transferCallbackFxn */
+    SPI_MASTER,        /* mode */
+    1000000,           /* bitRate */
+    8,                 /* dataSize */
+    SPI_POL0_PHA0,     /* frameFormat */
+    NULL               /* custom */
 };
 
 static bool isInitialized = false;
@@ -84,12 +84,14 @@ void SPI_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < SPI_count; i++) {
-            SPI_config[i].fxnTablePtr->initFxn((SPI_Handle)&(SPI_config[i]));
+        for (i = 0; i < SPI_count; i++)
+        {
+            SPI_config[i].fxnTablePtr->initFxn((SPI_Handle) & (SPI_config[i]));
         }
     }
 
@@ -103,14 +105,16 @@ SPI_Handle SPI_open(uint_least8_t index, SPI_Params *params)
 {
     SPI_Handle handle = NULL;
 
-    if (isInitialized && (index < SPI_count)) {
+    if (isInitialized && (index < SPI_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (SPI_Params *) &SPI_defaultParams;
+        if (params == NULL)
+        {
+            params = (SPI_Params *)&SPI_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (SPI_Handle)&(SPI_config[index]);
+        handle = (SPI_Handle) & (SPI_config[index]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 

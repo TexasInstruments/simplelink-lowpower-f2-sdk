@@ -91,7 +91,8 @@ extern "C" {
  *  AESCCM26XX hardware attributes should be included in the board file
  *  and pointed to by the AESCCM_config struct.
  */
-typedef struct {
+typedef struct
+{
     /*! @brief Crypto Peripheral's interrupt priority.
 
         The CC26xx uses three of the priority bits, meaning ~0 has the same effect as (7 << 5).
@@ -102,9 +103,10 @@ typedef struct {
 
         Setting the priority to 0 is not supported by this driver.
 
-        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the critical sections in this driver.
+        HWI's with priority 0 ignore the HWI dispatcher to support zero-latency interrupts, thus invalidating the
+       critical sections in this driver.
     */
-    uint8_t    intPriority;
+    uint8_t intPriority;
 } AESCCMCC26XX_HWAttrs;
 
 /*!
@@ -112,16 +114,17 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                            isOpen;
-    bool                            operationInProgress;
-    bool                            operationCanceled;
-    int_fast16_t                    returnStatus;
-    AESCCM_ReturnBehavior           returnBehavior;
-    AESCCM_OperationType            operationType;
-    uint32_t                        semaphoreTimeout;
-    AESCCM_CallbackFxn              callbackFxn;
-    AESCCM_Operation                *operation;
+typedef struct
+{
+    bool isOpen;
+    bool operationInProgress;
+    bool operationCanceled;
+    int_fast16_t returnStatus;
+    AESCCM_ReturnBehavior returnBehavior;
+    AESCCM_OperationType operationType;
+    uint32_t semaphoreTimeout;
+    AESCCM_CallbackFxn callbackFxn;
+    AESCCM_Operation *operation;
 } AESCCMCC26XX_Object;
 
 #ifdef __cplusplus

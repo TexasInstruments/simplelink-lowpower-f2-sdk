@@ -11,7 +11,18 @@
                             "PaSetting": [
                                 {
                                     "_text": "14",
-                                    "Value": "0x013F"
+                                    "Value": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
                                 },
                                 {
                                     "_text": "12.5",
@@ -90,7 +101,7 @@
                     },
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -162,7 +173,7 @@
                 "_name": "LP-CC2653P-6x6-XD24-PA24",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -233,7 +244,7 @@
                 "_name": "SOCKET-CC2653P-6x6",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -694,7 +705,7 @@
                     },
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -767,7 +778,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -935,7 +946,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1103,7 +1114,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1271,7 +1282,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1344,7 +1355,18 @@
                             "PaSetting": [
                                 {
                                     "_text": "14",
-                                    "Value": "0x013F"
+                                    "Value": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
                                 },
                                 {
                                     "_text": "12.5",
@@ -1428,7 +1450,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1596,7 +1618,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1837,7 +1859,18 @@
                             "PaSetting": [
                                 {
                                     "_text": "14",
-                                    "Value": "0x013F"
+                                    "Value": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
                                 },
                                 {
                                     "_text": "12.5",
@@ -1921,7 +1954,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2100,32 +2133,32 @@
                                 {
                                     "_text": "19",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x448CF"
+                                    "TxHighPa": "0x0448CF"
                                 },
                                 {
                                     "_text": "18",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x48022"
+                                    "TxHighPa": "0x048022"
                                 },
                                 {
                                     "_text": "17",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x2661C"
+                                    "TxHighPa": "0x02661C"
                                 },
                                 {
                                     "_text": "16",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x05618"
+                                    "TxHighPa": "0x005618"
                                 },
                                 {
                                     "_text": "15",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x04812"
+                                    "TxHighPa": "0x004812"
                                 },
                                 {
                                     "_text": "14",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x0380D"
+                                    "TxHighPa": "0x00380D"
                                 }
                             ]
                         }
@@ -2204,7 +2237,7 @@
                 "_name": "LP-CC2653P-6x6-XD24-PA24_20dBm",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -2255,7 +2288,7 @@
                 "_name": "SOCKET-CC2653P-6x6_20dBm",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -2302,7 +2335,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2445,7 +2478,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2588,12 +2621,12 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": {
                                 "_text": "14",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x0380D"
+                                "TxHighPa": "0x00380D"
                             }
                         }
                     },
@@ -2610,32 +2643,43 @@
                                 {
                                     "_text": "19",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x448CF"
+                                    "TxHighPa": "0x0448CF"
                                 },
                                 {
                                     "_text": "18",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x48022"
+                                    "TxHighPa": "0x048022"
                                 },
                                 {
                                     "_text": "17",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x2661C"
+                                    "TxHighPa": "0x02661C"
                                 },
                                 {
                                     "_text": "16",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x05618"
+                                    "TxHighPa": "0x005618"
                                 },
                                 {
                                     "_text": "15",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x04812"
+                                    "TxHighPa": "0x004812"
                                 },
                                 {
                                     "_text": "14",
                                     "Value": "0x013F",
-                                    "TxHighPa": "0x0380D"
+                                    "TxHighPa": "0x0380D",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
                                 },
                                 {
                                     "_text": "12.5",
@@ -2719,7 +2763,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2740,12 +2784,12 @@
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "14285F"
+                                    "TxHighPa": "0x14285F"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "144F2A"
+                                    "TxHighPa": "0x144F2A"
                                 }
                             ]
                         }
@@ -2852,7 +2896,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -3000,7 +3044,7 @@
                             "PaSetting": {
                                 "_text": "14",
                                 "Value": "0xFFFF",
-                                "TxHighPa": "0x0380D"
+                                "TxHighPa": "0x00380D"
                             }
                         }
                     },
@@ -3017,32 +3061,43 @@
                                 {
                                     "_text": "19",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x448CF"
+                                    "TxHighPa": "0x0448CF"
                                 },
                                 {
                                     "_text": "18",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x48022"
+                                    "TxHighPa": "0x048022"
                                 },
                                 {
                                     "_text": "17",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x2661C"
+                                    "TxHighPa": "0x02661C"
                                 },
                                 {
                                     "_text": "16",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x05618"
+                                    "TxHighPa": "0x005618"
                                 },
                                 {
                                     "_text": "15",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x04812"
+                                    "TxHighPa": "0x004812"
                                 },
                                 {
                                     "_text": "14",
                                     "Value": "0x013F",
-                                    "TxHighPa": "0x0380D"
+                                    "TxHighPa": "0x0380D",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
                                 },
                                 {
                                     "_text": "12.5",

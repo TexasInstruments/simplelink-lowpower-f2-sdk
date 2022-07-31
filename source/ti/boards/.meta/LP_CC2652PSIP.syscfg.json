@@ -113,7 +113,6 @@
                     "preferredType": ["I2C_SDA"]
                 },
 
-
                 {
                     "number" : 21,
                     "name"   : "5V"
@@ -225,7 +224,8 @@
                 {
                     "number" : 18,
                     "ball"   : "29",
-                    "name"   : "DIO11"
+                    "name"   : "DIO11",
+                    "preferredType": ["SPI_SS"]
                 },
                 {
                     "number" : 17,
@@ -341,7 +341,7 @@
             "link": "BTN-2"
         },
 
-        "LP_SPI": {
+        "LP_SPI_BUS": {
             "displayName" : "LaunchPad SPI Bus",
             "description" : "Standard BoosterPack header SPI",
             "longDescription" : "Standard BoosterPack header SPI",
@@ -350,6 +350,26 @@
                 "SCLK"    : "28",
                 "MOSI"    : "27",
                 "MISO"    : "26"
+            }
+        },
+
+        "LP_SPI": {
+            "displayName" : "LaunchPad SPI Bus with Chip Select",
+            "description" : "Standard BoosterPack header SPI with Chip Select",
+            "longDescription" : "Standard BoosterPack header SPI with Chip Select",
+            "definition"  : "/ti/boards/components/spiDevice.json",
+            "subComponents": {
+                "SPI": {
+                    "link": "LP_SPI_BUS"
+                },
+                "SELECT": {
+                    "displayName" : "LaunchPad SPI Bus Chip Select",
+                    "description" : "Standard BoosterPack header SPI Chip Select",
+                    "longDescription" : "Standard BoosterPack header SPI Chip Select",
+                    "connections" : {
+                        "SS": "29"
+                    }
+                }
             }
         },
 
@@ -363,12 +383,12 @@
             },
             "subComponents": {
                 "SPI": {
-                    "link": "LP_SPI"
+                    "link": "LP_SPI_BUS"
                 },
                 "SELECT": {
-                    "displayName" : "MX25R8035F SPI Flash Slave Select",
-                    "description" : "MX25R8035F SPI Flash slave select",
-                    "longDescription" : "MX25R8035F SPI flash slave select",
+                    "displayName" : "MX25R8035F SPI Flash Chip Select",
+                    "description" : "MX25R8035F SPI Flash Chip Select",
+                    "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
                         "SS": "41"

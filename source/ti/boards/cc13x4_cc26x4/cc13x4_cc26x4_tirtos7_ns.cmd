@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,15 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 /* --stack_size=256                                                          */
 /* --library=rtsv7M3_T_le_eabi.lib                                           */
 
-/* The starting address of the application.  Normally the interrupt vectors  */
-/* must be located at the beginning of the application.                      */
+/* This flash is reserved for the secure image                               */
+/* Early silicon note: This is reduced to fit in the first flash hole        */
 #define FLASH_S_BASE            0x0
-#define FLASH_SCSIZE            0x6000
-#define FLASH_BASE              FLASH_SCSIZE
+#define FLASH_SCSIZE            0x1C000
+
+/* The starting address of the application.  Must match the NS application   */
+/* base address defined in the SPE memory layouts.                           */
+/* Early silicon note: This is placed in the second flash region             */
+#define FLASH_BASE              0x30000
 #define FLASH_SIZE              0x100000
 #define RAM_BASE                0x2000C000
 #define RAM_SIZE                0x30000
@@ -77,8 +81,7 @@ MEMORY
      * first-sampling silicon.
      */
     SECURE_FLASH (RX) : origin = FLASH_S_BASE, length = FLASH_SCSIZE
-    FLASH_1 (RX) : origin = FLASH_BASE, length = 0x1C000
-    FLASH_2 (RX) : origin = 0x24000,    length = 0x38000
+    FLASH_2 (RX) : origin = FLASH_BASE, length = 0x32000
     FLASH_3 (RX) : origin = 0x64000,    length = 0x38000
     FLASH_4 (RX) : origin = 0xA4000,    length = 0x38000
     FLASH_5 (RX) : origin = 0xE4000,    length = 0x1C000
@@ -101,7 +104,7 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs        :   > 0x64000
+    .intvecs        :   > 0x30000
     .text           :   >> FLASH_3|FLASH_4|FLASH_5
     .TI.ramfunc     : {} load=FLASH_2, run=SRAM, table(BINIT)
     .const          :   >> FLASH_3|FLASH_4|FLASH_5
@@ -142,6 +145,6 @@ SECTIONS
 
 SECTIONS
 {
-    .resetVecs: load > 0x64000
+    .resetVecs: load > 0x30000
     .vecs: load > 0x2000C000, type = NOLOAD
 }

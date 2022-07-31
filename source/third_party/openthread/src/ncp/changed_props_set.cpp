@@ -79,7 +79,7 @@ const ChangedPropsSet::Entry ChangedPropsSet::mSupportedProps[] = {
     {SPINEL_PROP_MAC_15_4_PANID, SPINEL_STATUS_OK, true},
     {SPINEL_PROP_NET_NETWORK_NAME, SPINEL_STATUS_OK, true},
     {SPINEL_PROP_NET_XPANID, SPINEL_STATUS_OK, true},
-    {SPINEL_PROP_NET_MASTER_KEY, SPINEL_STATUS_OK, true},
+    {SPINEL_PROP_NET_NETWORK_KEY, SPINEL_STATUS_OK, true},
     {SPINEL_PROP_NET_PSKC, SPINEL_STATUS_OK, true},
     {SPINEL_PROP_PHY_CHAN_SUPPORTED, SPINEL_STATUS_OK, true},
 #if OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE
@@ -99,8 +99,8 @@ const ChangedPropsSet::Entry ChangedPropsSet::mSupportedProps[] = {
 
 uint8_t ChangedPropsSet::GetNumEntries(void) const
 {
-    OT_STATIC_ASSERT(OT_ARRAY_LENGTH(mSupportedProps) <= sizeof(mChangedSet) * CHAR_BIT,
-                     "Changed set size is smaller than number of entries in `mSupportedProps[]` array");
+    static_assert(OT_ARRAY_LENGTH(mSupportedProps) <= sizeof(mChangedSet) * CHAR_BIT,
+                  "Changed set size is smaller than number of entries in `mSupportedProps[]` array");
 
     return OT_ARRAY_LENGTH(mSupportedProps);
 }

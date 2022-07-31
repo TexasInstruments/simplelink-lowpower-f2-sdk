@@ -173,6 +173,7 @@ function moduleInstances(inst)
         args: radioConfigArgs
     };
 
+    // Add high PA options if present
     if(deviceId.match(/CC(265[12]R|2674R|1352R1|1354R)/))
     {
         cmdList.push("cmdRadioSetup");

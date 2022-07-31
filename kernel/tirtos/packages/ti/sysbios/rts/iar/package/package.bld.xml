@@ -14,22 +14,25 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="lib/debug/ti.sysbios.rts.iar.arm4f.mak" src="package.bld"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/package/package_ti.sysbios.rts.iar.orm4f.dep" src="package/package_ti.sysbios.rts.iar.c"/>
-        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/MultithreadSupport.orm4f.dep" src="MultithreadSupport.c"/>
+        <srcFile name="lib/debug/ti.sysbios.rts.iar.arm3.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/package/package_ti.sysbios.rts.iar.orm3.dep" src="package/package_ti.sysbios.rts.iar.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/MultithreadSupport.orm3.dep" src="MultithreadSupport.c"/>
         <srcFile name="lib/debug/ti.sysbios.rts.iar.arm4.mak" src="package.bld"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/package/package_ti.sysbios.rts.iar.orm4.dep" src="package/package_ti.sysbios.rts.iar.c"/>
         <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/MultithreadSupport.orm4.dep" src="MultithreadSupport.c"/>
-        <srcFile name="package/rel/ti_sysbios_rts_iar.tar.dep" src="package/rel/ti_sysbios_rts_iar.xdc.inc"/>
+        <srcFile name="lib/debug/ti.sysbios.rts.iar.arm4f.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/package/package_ti.sysbios.rts.iar.orm4f.dep" src="package/package_ti.sysbios.rts.iar.c"/>
+        <srcFile name="package/lib/lib/debug/ti.sysbios.rts.iar/MultithreadSupport.orm4f.dep" src="MultithreadSupport.c"/>
+        <srcFile name="package/rel/ti_sysbios_rts_iar.tar.gz.dep" src="package/rel/ti_sysbios_rts_iar.xdc.inc"/>
     </makefiles>
     <targets>
-        <target name="iar.targets.arm.M4F"
-            version="iar.targets.arm.M4F{1,0,8.50,1"
+        <target name="iar.targets.arm.M3"
+            version="iar.targets.arm.M3{1,0,8.50,1"
             rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
-            isa="v7M4"
-            suffix="rm4f"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            platform="ti.platforms.simplelink:CC2650:1"
+            isa="v7M"
+            suffix="rm3"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -39,10 +42,23 @@
         <target name="iar.targets.arm.M4"
             version="iar.targets.arm.M4{1,0,8.50,1"
             rawVersion="8.50.1.245"
-            platform="ti.platforms.tiva:TM4C1294NCPDT:1"
+            platform="ti.platforms.simplelink:CC3220SF:1"
             isa="v7M4"
             suffix="rm4"
-            rootDir="/scratch/xlibrary/.conan/data/iarcodegen/8.50.1.245-3/library-msp/ga/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
+            os="undefined"
+            rts="iar.targets.arm.rts">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
+        <target name="iar.targets.arm.M4F"
+            version="iar.targets.arm.M4F{1,0,8.50,1"
+            rawVersion="8.50.1.245"
+            platform="ti.platforms.simplelink:CC2642:1"
+            isa="v7M4"
+            suffix="rm4f"
+            rootDir="/db/vendors/iar/arm/8.50.1/Linux"
             os="undefined"
             rts="iar.targets.arm.rts">
             <model endian="little"
@@ -52,13 +68,17 @@
     </targets>
     <libraries>
     <library name="lib/debug/ti.sysbios.rts.iar"
-        pname="lib/debug/ti.sysbios.rts.iar.arm4f"
+        pname="lib/debug/ti.sysbios.rts.iar.arm3"
         profile="debug"
-        target="iar.targets.arm.M4F"/>
+        target="iar.targets.arm.M3"/>
     <library name="lib/debug/ti.sysbios.rts.iar"
         pname="lib/debug/ti.sysbios.rts.iar.arm4"
         profile="debug"
         target="iar.targets.arm.M4"/>
+    <library name="lib/debug/ti.sysbios.rts.iar"
+        pname="lib/debug/ti.sysbios.rts.iar.arm4f"
+        profile="debug"
+        target="iar.targets.arm.M4F"/>
     </libraries>
     <configurations>
     </configurations>
@@ -68,7 +88,7 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_sysbios_rts_iar"
-        pname="ti_sysbios_rts_iar.tar"
+        pname="../../../..//../exports/ti_sysbios_rts_iar.tar.gz"
         label="default"
         relScript="ti/sysbios/libFilter.xs">
         <file name="package/package.bld.xml"/>
@@ -78,10 +98,11 @@
         <file name="MultithreadSupport.xdt"/>
         <file name="package.bld"/>
         <file name="package/package.cfg.xdc.inc"/>
-        <file name="lib/debug/ti.sysbios.rts.iar.arm4f"/>
+        <file name="lib/debug/ti.sysbios.rts.iar.arm3"/>
         <file name="package/package_ti.sysbios.rts.iar.c"/>
         <file name="MultithreadSupport.c"/>
         <file name="lib/debug/ti.sysbios.rts.iar.arm4"/>
+        <file name="lib/debug/ti.sysbios.rts.iar.arm4f"/>
     </release>
     </releases>
     <repositories>

@@ -192,6 +192,15 @@ const config = {
             longDescription: Docs.disDevBySerUuidLongDescription,
             default: false,
             hidden: true
+        },
+        {
+            name: "advReportChanNum",
+            displayName: "Add Advertisement Channel Number",
+            description: "When enabled, adds the advertising channel number "
+                        + "to the advertise report",
+            longDescription: Docs.advReportChanNumLongDescription,
+            default: false,
+            hidden: true
         }
     ]
 };

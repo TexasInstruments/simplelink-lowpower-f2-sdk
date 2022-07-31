@@ -40,29 +40,30 @@ namespace Mle {
 
 void DeviceMode::Get(ModeConfig &aModeConfig) const
 {
-    aModeConfig.mRxOnWhenIdle       = IsRxOnWhenIdle();
-    aModeConfig.mSecureDataRequests = IsSecureDataRequest();
-    aModeConfig.mDeviceType         = IsFullThreadDevice();
-    aModeConfig.mNetworkData        = IsFullNetworkData();
+    aModeConfig.mRxOnWhenIdle = IsRxOnWhenIdle();
+    aModeConfig.mDeviceType   = IsFullThreadDevice();
+    aModeConfig.mNetworkData  = (GetNetworkDataType() == NetworkData::kFullSet);
 }
 
 void DeviceMode::Set(const ModeConfig &aModeConfig)
 {
-    mMode = 0;
+    mMode = kModeReserved;
     mMode |= aModeConfig.mRxOnWhenIdle ? kModeRxOnWhenIdle : 0;
-    mMode |= aModeConfig.mSecureDataRequests ? kModeSecureDataRequest : 0;
     mMode |= aModeConfig.mDeviceType ? kModeFullThreadDevice : 0;
     mMode |= aModeConfig.mNetworkData ? kModeFullNetworkData : 0;
 }
 
 DeviceMode::InfoString DeviceMode::ToString(void) const
 {
-    return InfoString("rx-on:%s sec-poll:%s ftd:%s full-net:%s", IsRxOnWhenIdle() ? "yes" : "no",
-                      IsSecureDataRequest() ? "yes" : "no", IsFullThreadDevice() ? "yes" : "no",
-                      IsFullNetworkData() ? "yes" : "no");
+    InfoString string;
+
+    string.Append("rx-on:%s ftd:%s full-net:%s", ToYesNo(IsRxOnWhenIdle()), ToYesNo(IsFullThreadDevice()),
+                  ToYesNo(GetNetworkDataType() == NetworkData::kFullSet));
+
+    return string;
 }
 
-void MeshLocalPrefix::SetFromExtendedPanId(const Mac::ExtendedPanId &aExtendedPanId)
+void MeshLocalPrefix::SetFromExtendedPanId(const MeshCoP::ExtendedPanId &aExtendedPanId)
 {
     m8[0] = 0xfd;
     memcpy(&m8[1], aExtendedPanId.m8, 5);

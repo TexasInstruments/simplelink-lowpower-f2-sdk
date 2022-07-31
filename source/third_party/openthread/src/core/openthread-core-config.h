@@ -44,13 +44,15 @@
 
 #ifdef OPENTHREAD_PROJECT_CORE_CONFIG_FILE
 #include OPENTHREAD_PROJECT_CORE_CONFIG_FILE
+#elif defined(OPENTHREAD_CONFIG_CORE_USER_CONFIG_HEADER_ENABLE)
+// This configuration header file should be provided by the user when
+// OPENTHREAD_CONFIG_CORE_USER_CONFIG_HEADER_ENABLE is defined to 1.
+#include "openthread-core-user-config.h"
 #endif
 
 #ifndef OPENTHREAD_CONFIG_THREAD_VERSION
-#define OPENTHREAD_CONFIG_THREAD_VERSION OT_THREAD_VERSION_1_1
+#define OPENTHREAD_CONFIG_THREAD_VERSION OT_THREAD_VERSION_1_2
 #endif
-
-#include "config/openthread-core-default-config.h"
 
 #include "config/announce_sender.h"
 #include "config/backbone_router.h"
@@ -60,29 +62,34 @@
 #include "config/child_supervision.h"
 #include "config/coap.h"
 #include "config/commissioner.h"
+#include "config/crypto.h"
+#include "config/dataset_updater.h"
 #include "config/dhcp6_client.h"
 #include "config/dhcp6_server.h"
 #include "config/diag.h"
 #include "config/dns_client.h"
+#include "config/dns_dso.h"
+#include "config/dnssd_server.h"
+#include "config/dtls.h"
+#include "config/history_tracker.h"
 #include "config/ip6.h"
 #include "config/joiner.h"
 #include "config/link_quality.h"
 #include "config/link_raw.h"
 #include "config/logging.h"
 #include "config/mac.h"
+#include "config/misc.h"
 #include "config/mle.h"
+#include "config/netdata_publisher.h"
 #include "config/parent_search.h"
+#include "config/ping_sender.h"
 #include "config/platform.h"
+#include "config/radio_link.h"
 #include "config/sntp_client.h"
+#include "config/srp_client.h"
+#include "config/srp_server.h"
 #include "config/time_sync.h"
 #include "config/tmf.h"
-
-#if OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE || OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE || \
-    OPENTHREAD_CONFIG_COMMISSIONER_ENABLE || OPENTHREAD_CONFIG_JOINER_ENABLE
-#define OPENTHREAD_CONFIG_DTLS_ENABLE 1
-#else
-#define OPENTHREAD_CONFIG_DTLS_ENABLE 0
-#endif
 
 #undef OPENTHREAD_CORE_CONFIG_H_IN
 

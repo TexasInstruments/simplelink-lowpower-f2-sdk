@@ -54,8 +54,12 @@
  * @{
  *
  * @defgroup api-dns                  DNSv6
+ * @defgroup api-dnssd-server         DNS-SD Server
  * @defgroup api-icmp6                ICMPv6
  * @defgroup api-ip6                  IPv6
+ * @defgroup api-srp                  SRP
+ * @defgroup api-ping-sender          Ping Sender
+ * @defgroup api-tcp                  TCP
  * @defgroup api-udp-group            UDP
  *
  * @{
@@ -72,11 +76,15 @@
  * @{
  *
  * @defgroup api-link-link            Link
+ * @defgroup api-link-metrics         Link Metrics
  * @defgroup api-link-raw             Raw Link
  *
  * @}
  *
  * @defgroup api-message              Message
+ *
+ * @defgroup api-multi-radio          Multi Radio Link
+ * @defgroup api-trel                 TREL - Thread Stack
  *
  * @defgroup api-thread               Thread
  *
@@ -89,6 +97,7 @@
  * @defgroup api-thread-general       General
  * @brief This module includes functions for all Thread roles.
  * @defgroup api-joiner               Joiner
+ * @defgroup api-operational-dataset  Operational Dataset
  * @defgroup api-thread-router        Router/Leader
  * @brief This module includes functions for Thread Routers and Leaders.
  * @defgroup api-server               Server
@@ -112,12 +121,12 @@
  * @}
  *
  * @defgroup api-cli                  Command Line Interface
- * @defgroup api-crypto               Crypto
- * @defgroup api-entropy              Entropy Source
- * @defgroup api-factory-diagnostics  Factory Diagnostics
+ * @defgroup api-crypto               Crypto - Thread Stack
+ * @defgroup api-factory-diagnostics  Factory Diagnostics - Thread Stack
  * @defgroup api-heap                 Heap
+ * @defgroup api-history-tracker      History Tracker
  * @defgroup api-jam-detection        Jam Detection
- * @defgroup api-logging              Logging
+ * @defgroup api-logging              Logging - Thread Stack
  * @defgroup api-ncp                  Network Co-Processor
  * @defgroup api-network-time         Network Time Synchronization
  * @defgroup api-random-group         Random Number Generator
@@ -145,10 +154,10 @@
  * @{
  *
  * @defgroup plat-alarm               Alarm
- * @defgroup plat-ble                 BLE Host
+ * @defgroup plat-crypto              Crypto - Platform
  * @defgroup plat-entropy             Entropy
- * @defgroup plat-factory-diagnostics Factory Diagnostics
- * @defgroup plat-logging             Logging
+ * @defgroup plat-factory-diagnostics Factory Diagnostics - Platform
+ * @defgroup plat-logging             Logging - Platform
  * @defgroup plat-memory              Memory
  * @defgroup plat-messagepool         Message Pool
  * @defgroup plat-misc                Miscellaneous
@@ -158,7 +167,7 @@
  * @defgroup plat-spi-slave           SPI Slave
  * @defgroup plat-time                Time Service
  * @defgroup plat-toolchain           Toolchain
- * @defgroup plat-uart                UART
+ * @defgroup plat-trel                TREL - Platform
  *
  * @}
  *

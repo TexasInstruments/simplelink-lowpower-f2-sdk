@@ -37,158 +37,119 @@
 
 #include <openthread/thread_ftd.h>
 
-#include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "thread/mle_types.hpp"
-#include "thread/topology.hpp"
+#include "common/as_core_type.hpp"
+#include "common/locator_getters.hpp"
 
 using namespace ot;
 
 uint16_t otThreadGetMaxAllowedChildren(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<ChildTable>().GetMaxChildrenAllowed();
+    return AsCoreType(aInstance).Get<ChildTable>().GetMaxChildrenAllowed();
 }
 
 otError otThreadSetMaxAllowedChildren(otInstance *aInstance, uint16_t aMaxChildren)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<ChildTable>().SetMaxChildrenAllowed(aMaxChildren);
+    return AsCoreType(aInstance).Get<ChildTable>().SetMaxChildrenAllowed(aMaxChildren);
 }
 
 uint8_t otThreadGetMaxChildIpAddresses(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetMaxChildIpAddresses();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetMaxChildIpAddresses();
 }
 
 #if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
 otError otThreadSetMaxChildIpAddresses(otInstance *aInstance, uint8_t aMaxIpAddresses)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().SetMaxChildIpAddresses(aMaxIpAddresses);
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().SetMaxChildIpAddresses(aMaxIpAddresses);
 }
 #endif
 
 bool otThreadIsRouterEligible(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().IsRouterEligible();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().IsRouterEligible();
 }
 
 otError otThreadSetRouterEligible(otInstance *aInstance, bool aEligible)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().SetRouterEligible(aEligible);
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().SetRouterEligible(aEligible);
 }
 
 otError otThreadSetPreferredRouterId(otInstance *aInstance, uint8_t aRouterId)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().SetPreferredRouterId(aRouterId);
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().SetPreferredRouterId(aRouterId);
 }
 
 uint8_t otThreadGetLocalLeaderWeight(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetLeaderWeight();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetLeaderWeight();
 }
 
 void otThreadSetLocalLeaderWeight(otInstance *aInstance, uint8_t aWeight)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetLeaderWeight(aWeight);
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetLeaderWeight(aWeight);
 }
 
-uint32_t otThreadGetLocalLeaderPartitionId(otInstance *aInstance)
+#if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
+uint32_t otThreadGetPreferredLeaderPartitionId(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetLeaderPartitionId();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetPreferredLeaderPartitionId();
 }
 
-void otThreadSetLocalLeaderPartitionId(otInstance *aInstance, uint32_t aPartitionId)
+void otThreadSetPreferredLeaderPartitionId(otInstance *aInstance, uint32_t aPartitionId)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().SetLeaderPartitionId(aPartitionId);
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetPreferredLeaderPartitionId(aPartitionId);
 }
+#endif
 
 uint16_t otThreadGetJoinerUdpPort(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<MeshCoP::JoinerRouter>().GetJoinerUdpPort();
+    return AsCoreType(aInstance).Get<MeshCoP::JoinerRouter>().GetJoinerUdpPort();
 }
 
 otError otThreadSetJoinerUdpPort(otInstance *aInstance, uint16_t aJoinerUdpPort)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    AsCoreType(aInstance).Get<MeshCoP::JoinerRouter>().SetJoinerUdpPort(aJoinerUdpPort);
 
-    instance.Get<MeshCoP::JoinerRouter>().SetJoinerUdpPort(aJoinerUdpPort);
-
-    return OT_ERROR_NONE;
+    return kErrorNone;
 }
 
 uint32_t otThreadGetContextIdReuseDelay(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<NetworkData::Leader>().GetContextIdReuseDelay();
+    return AsCoreType(aInstance).Get<NetworkData::Leader>().GetContextIdReuseDelay();
 }
 
 void otThreadSetContextIdReuseDelay(otInstance *aInstance, uint32_t aDelay)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<NetworkData::Leader>().SetContextIdReuseDelay(aDelay);
+    AsCoreType(aInstance).Get<NetworkData::Leader>().SetContextIdReuseDelay(aDelay);
 }
 
 uint8_t otThreadGetNetworkIdTimeout(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetNetworkIdTimeout();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetNetworkIdTimeout();
 }
 
 void otThreadSetNetworkIdTimeout(otInstance *aInstance, uint8_t aTimeout)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetNetworkIdTimeout(aTimeout);
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetNetworkIdTimeout(aTimeout);
 }
 
 uint8_t otThreadGetRouterUpgradeThreshold(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetRouterUpgradeThreshold();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetRouterUpgradeThreshold();
 }
 
 void otThreadSetRouterUpgradeThreshold(otInstance *aInstance, uint8_t aThreshold)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetRouterUpgradeThreshold(aThreshold);
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetRouterUpgradeThreshold(aThreshold);
 }
 
 otError otThreadReleaseRouterId(otInstance *aInstance, uint8_t aRouterId)
 {
-    otError   error    = OT_ERROR_NONE;
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    Error error = kErrorNone;
 
-    VerifyOrExit(aRouterId <= Mle::kMaxRouterId, error = OT_ERROR_INVALID_ARGS);
+    VerifyOrExit(aRouterId <= Mle::kMaxRouterId, error = kErrorInvalidArgs);
 
-    error = instance.Get<RouterTable>().Release(aRouterId);
+    error = AsCoreType(aInstance).Get<RouterTable>().Release(aRouterId);
 
 exit:
     return error;
@@ -196,22 +157,21 @@ exit:
 
 otError otThreadBecomeRouter(otInstance *aInstance)
 {
-    otError   error    = OT_ERROR_INVALID_STATE;
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    Error error = kErrorInvalidState;
 
-    switch (instance.Get<Mle::MleRouter>().GetRole())
+    switch (AsCoreType(aInstance).Get<Mle::MleRouter>().GetRole())
     {
     case Mle::kRoleDisabled:
     case Mle::kRoleDetached:
         break;
 
     case Mle::kRoleChild:
-        error = instance.Get<Mle::MleRouter>().BecomeRouter(ThreadStatusTlv::kHaveChildIdRequest);
+        error = AsCoreType(aInstance).Get<Mle::MleRouter>().BecomeRouter(ThreadStatusTlv::kHaveChildIdRequest);
         break;
 
     case Mle::kRoleRouter:
     case Mle::kRoleLeader:
-        error = OT_ERROR_NONE;
+        error = kErrorNone;
         break;
     }
 
@@ -220,55 +180,41 @@ otError otThreadBecomeRouter(otInstance *aInstance)
 
 otError otThreadBecomeLeader(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().BecomeLeader();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().BecomeLeader();
 }
 
 uint8_t otThreadGetRouterDowngradeThreshold(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetRouterDowngradeThreshold();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetRouterDowngradeThreshold();
 }
 
 void otThreadSetRouterDowngradeThreshold(otInstance *aInstance, uint8_t aThreshold)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetRouterDowngradeThreshold(aThreshold);
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetRouterDowngradeThreshold(aThreshold);
 }
 
 uint8_t otThreadGetRouterSelectionJitter(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetRouterSelectionJitter();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetRouterSelectionJitter();
 }
 
 void otThreadSetRouterSelectionJitter(otInstance *aInstance, uint8_t aRouterJitter)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetRouterSelectionJitter(aRouterJitter);
+    IgnoreError(AsCoreType(aInstance).Get<Mle::MleRouter>().SetRouterSelectionJitter(aRouterJitter));
 }
 
 otError otThreadGetChildInfoById(otInstance *aInstance, uint16_t aChildId, otChildInfo *aChildInfo)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    OT_ASSERT(aChildInfo != nullptr);
 
-    OT_ASSERT(aChildInfo != NULL);
-
-    return instance.Get<Mle::MleRouter>().GetChildInfoById(aChildId, *aChildInfo);
+    return AsCoreType(aInstance).Get<ChildTable>().GetChildInfoById(aChildId, AsCoreType(aChildInfo));
 }
 
 otError otThreadGetChildInfoByIndex(otInstance *aInstance, uint16_t aChildIndex, otChildInfo *aChildInfo)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    OT_ASSERT(aChildInfo != nullptr);
 
-    OT_ASSERT(aChildInfo != NULL);
-
-    return instance.Get<Mle::MleRouter>().GetChildInfoByIndex(aChildIndex, *aChildInfo);
+    return AsCoreType(aInstance).Get<ChildTable>().GetChildInfoByIndex(aChildIndex, AsCoreType(aChildInfo));
 }
 
 otError otThreadGetChildNextIp6Address(otInstance *               aInstance,
@@ -276,19 +222,24 @@ otError otThreadGetChildNextIp6Address(otInstance *               aInstance,
                                        otChildIp6AddressIterator *aIterator,
                                        otIp6Address *             aAddress)
 {
-    otError                   error    = OT_ERROR_NONE;
-    Instance &                instance = *static_cast<Instance *>(aInstance);
-    Child::Ip6AddressIterator iterator;
-    Ip6::Address *            address;
+    Error        error = kErrorNone;
+    const Child *child;
 
-    OT_ASSERT(aIterator != NULL && aAddress != NULL);
+    OT_ASSERT(aIterator != nullptr && aAddress != nullptr);
 
-    address = static_cast<Ip6::Address *>(aAddress);
-    iterator.Set(*aIterator);
+    child = AsCoreType(aInstance).Get<ChildTable>().GetChildAtIndex(aChildIndex);
+    VerifyOrExit(child != nullptr, error = kErrorInvalidArgs);
+    VerifyOrExit(child->IsStateValidOrRestoring(), error = kErrorInvalidArgs);
 
-    SuccessOrExit(error = instance.Get<Mle::MleRouter>().GetChildNextIp6Address(aChildIndex, iterator, *address));
+    {
+        Child::AddressIterator iter(*child, *aIterator);
 
-    *aIterator = iterator.Get();
+        VerifyOrExit(!iter.IsDone(), error = kErrorNotFound);
+        *aAddress = *iter.GetAddress();
+
+        iter++;
+        *aIterator = iter.GetAsIndex();
+    }
 
 exit:
     return error;
@@ -296,9 +247,7 @@ exit:
 
 uint8_t otThreadGetRouterIdSequence(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<RouterTable>().GetRouterIdSequence();
+    return AsCoreType(aInstance).Get<RouterTable>().GetRouterIdSequence();
 }
 
 uint8_t otThreadGetMaxRouterId(otInstance *aInstance)
@@ -309,72 +258,133 @@ uint8_t otThreadGetMaxRouterId(otInstance *aInstance)
 
 otError otThreadGetRouterInfo(otInstance *aInstance, uint16_t aRouterId, otRouterInfo *aRouterInfo)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    OT_ASSERT(aRouterInfo != nullptr);
 
-    OT_ASSERT(aRouterInfo != NULL);
-
-    return instance.Get<RouterTable>().GetRouterInfo(aRouterId, *aRouterInfo);
+    return AsCoreType(aInstance).Get<RouterTable>().GetRouterInfo(aRouterId, AsCoreType(aRouterInfo));
 }
 
 otError otThreadGetNextCacheEntry(otInstance *aInstance, otCacheEntryInfo *aEntryInfo, otCacheEntryIterator *aIterator)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    OT_ASSERT((aIterator != nullptr) && (aEntryInfo != nullptr));
 
-    OT_ASSERT((aIterator != NULL) && (aEntryInfo != NULL));
-
-    return instance.Get<AddressResolver>().GetNextCacheEntry(*aEntryInfo, *aIterator);
+    return AsCoreType(aInstance).Get<AddressResolver>().GetNextCacheEntry(*aEntryInfo, *aIterator);
 }
 
 #if OPENTHREAD_CONFIG_MLE_STEERING_DATA_SET_OOB_ENABLE
 void otThreadSetSteeringData(otInstance *aInstance, const otExtAddress *aExtAddress)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().SetSteeringData(static_cast<const Mac::ExtAddress *>(aExtAddress));
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetSteeringData(AsCoreTypePtr(aExtAddress));
 }
 #endif
 
-const otPskc *otThreadGetPskc(otInstance *aInstance)
+void otThreadGetPskc(otInstance *aInstance, otPskc *aPskc)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return &instance.Get<KeyManager>().GetPskc();
+    AsCoreType(aInstance).Get<KeyManager>().GetPskc(AsCoreType(aPskc));
 }
+
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+otPskcRef otThreadGetPskcRef(otInstance *aInstance)
+{
+    return AsCoreType(aInstance).Get<KeyManager>().GetPskcRef();
+}
+#endif
 
 otError otThreadSetPskc(otInstance *aInstance, const otPskc *aPskc)
 {
-    otError   error    = OT_ERROR_NONE;
-    Instance &instance = *static_cast<Instance *>(aInstance);
+    Error error = kErrorNone;
 
-    VerifyOrExit(instance.Get<Mle::MleRouter>().IsDisabled(), error = OT_ERROR_INVALID_STATE);
+    VerifyOrExit(AsCoreType(aInstance).Get<Mle::MleRouter>().IsDisabled(), error = kErrorInvalidState);
 
-    instance.Get<KeyManager>().SetPskc(*static_cast<const Pskc *>(aPskc));
-    instance.Get<MeshCoP::ActiveDataset>().Clear();
-    instance.Get<MeshCoP::PendingDataset>().Clear();
+    AsCoreType(aInstance).Get<KeyManager>().SetPskc(AsCoreType(aPskc));
+    AsCoreType(aInstance).Get<MeshCoP::ActiveDatasetManager>().Clear();
+    AsCoreType(aInstance).Get<MeshCoP::PendingDatasetManager>().Clear();
 
 exit:
     return error;
 }
 
+#if OPENTHREAD_CONFIG_PLATFORM_KEY_REFERENCES_ENABLE
+otError otThreadSetPskcRef(otInstance *aInstance, otPskcRef aKeyRef)
+{
+    Error     error    = kErrorNone;
+    Instance &instance = AsCoreType(aInstance);
+
+    VerifyOrExit(aKeyRef != 0, error = kErrorInvalidArgs);
+    VerifyOrExit(instance.Get<Mle::MleRouter>().IsDisabled(), error = kErrorInvalidState);
+
+    instance.Get<KeyManager>().SetPskcRef(aKeyRef);
+    instance.Get<MeshCoP::ActiveDatasetManager>().Clear();
+    instance.Get<MeshCoP::PendingDatasetManager>().Clear();
+
+exit:
+    return error;
+}
+#endif
+
 int8_t otThreadGetParentPriority(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().GetAssignParentPriority();
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().GetAssignParentPriority();
 }
 
 otError otThreadSetParentPriority(otInstance *aInstance, int8_t aParentPriority)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Mle::MleRouter>().SetAssignParentPriority(aParentPriority);
+    return AsCoreType(aInstance).Get<Mle::MleRouter>().SetAssignParentPriority(aParentPriority);
 }
 
 void otThreadRegisterNeighborTableCallback(otInstance *aInstance, otNeighborTableCallback aCallback)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Mle::MleRouter>().RegisterNeighborTableChangedCallback(aCallback);
+    AsCoreType(aInstance).Get<NeighborTable>().RegisterCallback(aCallback);
 }
+
+void otThreadSetDiscoveryRequestCallback(otInstance *                     aInstance,
+                                         otThreadDiscoveryRequestCallback aCallback,
+                                         void *                           aContext)
+{
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetDiscoveryRequestCallback(aCallback, aContext);
+}
+
+#if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
+void otThreadSendAddressNotification(otInstance *              aInstance,
+                                     otIp6Address *            aDestination,
+                                     otIp6Address *            aTarget,
+                                     otIp6InterfaceIdentifier *aMlIid)
+{
+    AsCoreType(aInstance).Get<AddressResolver>().SendAddressQueryResponse(AsCoreType(aTarget), AsCoreType(aMlIid),
+                                                                          nullptr, AsCoreType(aDestination));
+}
+
+#if OPENTHREAD_CONFIG_BACKBONE_ROUTER_DUA_NDPROXYING_ENABLE
+otError otThreadSendProactiveBackboneNotification(otInstance *              aInstance,
+                                                  otIp6Address *            aTarget,
+                                                  otIp6InterfaceIdentifier *aMlIid,
+                                                  uint32_t                  aTimeSinceLastTransaction)
+{
+    return AsCoreType(aInstance).Get<BackboneRouter::Manager>().SendProactiveBackboneNotification(
+        AsCoreType(aTarget), AsCoreType(aMlIid), aTimeSinceLastTransaction);
+}
+#endif
+
+void otThreadSetCcmEnabled(otInstance *aInstance, bool aEnabled)
+{
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetCcmEnabled(aEnabled);
+}
+
+void otThreadSetThreadVersionCheckEnabled(otInstance *aInstance, bool aEnabled)
+{
+    AsCoreType(aInstance).Get<Mle::MleRouter>().SetThreadVersionCheckEnabled(aEnabled);
+}
+#endif
+
+#if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
+void otThreadGetRouterIdRange(otInstance *aInstance, uint8_t *aMinRouterId, uint8_t *aMaxRouterId)
+{
+    AsCoreType(aInstance).Get<RouterTable>().GetRouterIdRange(*aMinRouterId, *aMaxRouterId);
+}
+
+otError otThreadSetRouterIdRange(otInstance *aInstance, uint8_t aMinRouterId, uint8_t aMaxRouterId)
+{
+    return AsCoreType(aInstance).Get<RouterTable>().SetRouterIdRange(aMinRouterId, aMaxRouterId);
+}
+#endif
 
 #endif // OPENTHREAD_FTD

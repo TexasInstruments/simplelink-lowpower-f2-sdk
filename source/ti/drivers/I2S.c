@@ -40,29 +40,29 @@ extern const uint_least8_t I2S_count;
 
 /* Default I2S parameters structure */
 const I2S_Params I2S_defaultParams = {
-  .samplingFrequency     = 8000,                              /* Sampling Freq */
-  .memorySlotLength      = I2S_MEMORY_LENGTH_16BITS,          /* Memory slot length */
-  .moduleRole            = I2S_MASTER,                        /* Master / Slave selection */
-  .trueI2sFormat         = (bool)true,                        /* Activate true I2S format */
-  .invertWS              = (bool)true,                        /* WS inversion */
-  .isMSBFirst            = (bool)true,                        /* Endianness selection */
-  .isDMAUnused           = (bool)false,                       /* Selection between DMA and CPU transmissions */
-  .samplingEdge          = I2S_SAMPLING_EDGE_RISING,          /* Sampling edge */
-  .beforeWordPadding     = 0,                                 /* Before sample padding */
-  .bitsPerWord           = 16,                                /* Bits/Sample */
-  .afterWordPadding      = 0,                                 /* After sample padding */
-  .fixedBufferLength     = 1,                                 /* Fixed Buffer Length */
-  .SD0Use                = I2S_SD0_OUTPUT,                    /* SD0Use */
-  .SD1Use                = I2S_SD1_INPUT,                     /* SD1Use */
-  .SD0Channels           = I2S_CHANNELS_STEREO,               /* Channels activated on SD0 */
-  .SD1Channels           = I2S_CHANNELS_STEREO,               /* Channels activated on SD1 */
-  .phaseType             = I2S_PHASE_TYPE_DUAL,               /* Phase type */
-  .startUpDelay          = 2,                                 /* Start up delay in number of WS periods */
-  .MCLKDivider           = 40,                                /* MCLK divider */
-  .readCallback          = NULL,                              /* Read callback */
-  .writeCallback         = NULL,                              /* Write callback */
-  .errorCallback         = NULL,                              /* Error callback */
-  .custom                = NULL,                              /* customParams */
+    .samplingFrequency = 8000,                     /* Sampling Freq */
+    .memorySlotLength  = I2S_MEMORY_LENGTH_16BITS, /* Memory slot length */
+    .moduleRole        = I2S_MASTER,               /* Master / Slave selection */
+    .trueI2sFormat     = (bool)true,               /* Activate true I2S format */
+    .invertWS          = (bool)true,               /* WS inversion */
+    .isMSBFirst        = (bool)true,               /* Endianness selection */
+    .isDMAUnused       = (bool)false,              /* Selection between DMA and CPU transmissions */
+    .samplingEdge      = I2S_SAMPLING_EDGE_RISING, /* Sampling edge */
+    .beforeWordPadding = 0,                        /* Before sample padding */
+    .bitsPerWord       = 16,                       /* Bits/Sample */
+    .afterWordPadding  = 0,                        /* After sample padding */
+    .fixedBufferLength = 1,                        /* Fixed Buffer Length */
+    .SD0Use            = I2S_SD0_OUTPUT,           /* SD0Use */
+    .SD1Use            = I2S_SD1_INPUT,            /* SD1Use */
+    .SD0Channels       = I2S_CHANNELS_STEREO,      /* Channels activated on SD0 */
+    .SD1Channels       = I2S_CHANNELS_STEREO,      /* Channels activated on SD1 */
+    .phaseType         = I2S_PHASE_TYPE_DUAL,      /* Phase type */
+    .startUpDelay      = 2,                        /* Start up delay in number of WS periods */
+    .MCLKDivider       = 40,                       /* MCLK divider */
+    .readCallback      = NULL,                     /* Read callback */
+    .writeCallback     = NULL,                     /* Write callback */
+    .errorCallback     = NULL,                     /* Error callback */
+    .custom            = NULL,                     /* customParams */
 };
 
 /*
@@ -78,10 +78,10 @@ void I2S_Params_init(I2S_Params *params)
  */
 void I2S_Transaction_init(I2S_Transaction *transaction)
 {
-    transaction->bufPtr               = NULL;
-    transaction->bufSize              = 0;
-    transaction->bytesTransferred     = 0;
-    transaction->untransferredBytes   = 0;
-    transaction->numberOfCompletions  = 0;
-    transaction->arg                  = (uintptr_t)NULL;
+    transaction->bufPtr              = NULL;
+    transaction->bufSize             = 0;
+    transaction->bytesTransferred    = 0;
+    transaction->untransferredBytes  = 0;
+    transaction->numberOfCompletions = 0;
+    transaction->arg                 = (uintptr_t)NULL;
 }

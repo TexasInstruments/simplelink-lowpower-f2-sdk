@@ -161,20 +161,23 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_UNSECURE_TRAFFIC_MANAGED_BY_STACK_ENABLE
+ * @def OPENTHREAD_CONFIG_TCP_ENABLE
  *
- * Define as 1 to enable dynamic unsecure port management
- *
- * If this feature is enabled, OpenThread will automaitically disable link-level
- * security for packets sent with unsecure source ports. Once we receive a secure
- * packet sent to the unsecure port, this port will be removed from the unsecure
- * port list.
- *
- * Enable only if you know well about its behavior.
+ * Define as 1 to enable TCP.
  *
  */
-#ifndef OPENTHREAD_CONFIG_UNSECURE_TRAFFIC_MANAGED_BY_STACK_ENABLE
-#define OPENTHREAD_CONFIG_UNSECURE_TRAFFIC_MANAGED_BY_STACK_ENABLE 0
+#ifndef OPENTHREAD_CONFIG_TCP_ENABLE
+#define OPENTHREAD_CONFIG_TCP_ENABLE 1
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_IP6_ALLOW_LOOP_BACK_HOST_DATAGRAMS
+ *
+ * Define as 1 to allow IPv6 datagrams from Host to be looped back to Host.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_IP6_ALLOW_LOOP_BACK_HOST_DATAGRAMS
+#define OPENTHREAD_CONFIG_IP6_ALLOW_LOOP_BACK_HOST_DATAGRAMS 1
 #endif
 
 #endif // CONFIG_IP6_H_

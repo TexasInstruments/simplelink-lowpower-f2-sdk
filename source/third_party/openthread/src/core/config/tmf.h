@@ -99,11 +99,11 @@
  *
  * Maximum retry delay for address query (in seconds).
  *
- * Default: 28800 seconds (480 minutes or 8 hours)
+ * Default: 120 seconds
  *
  */
 #ifndef OPENTHREAD_CONFIG_TMF_ADDRESS_QUERY_MAX_RETRY_DELAY
-#define OPENTHREAD_CONFIG_TMF_ADDRESS_QUERY_MAX_RETRY_DELAY 28800
+#define OPENTHREAD_CONFIG_TMF_ADDRESS_QUERY_MAX_RETRY_DELAY 120
 #endif
 
 /**
@@ -170,6 +170,60 @@
  */
 #ifndef OPENTHREAD_CONFIG_TMF_NETWORK_DIAG_MTD_ENABLE
 #define OPENTHREAD_CONFIG_TMF_NETWORK_DIAG_MTD_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE
+ *
+ * Define to 1 to enable TMF anycast locator functionality.
+ *
+ * This feature allows a device to determine the mesh local EID and RLOC16 of the closest destination of an anycast
+ * address (if any) through sending `TMF_ANYCAST_LOCATE` requests.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE
+#define OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE 0
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_SEND_RESPONSE
+ *
+ * Define to 1 to require the device to listen and respond to `TMF_ANYCAST_LOCATE` requests.
+ *
+ * This config is used only when `OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE` is enabled. It is enabled by default.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_SEND_RESPONSE
+#define OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_SEND_RESPONSE 1
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE
+ *
+ * Define to 1 for Thread 1.2 FTD device to register DUA of its MTD children registered
+ * even if it doesn't enable DUA feature itself.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE
+#define OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
+#endif
+
+#if OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE && OPENTHREAD_CONFIG_THREAD_VERSION < OT_THREAD_VERSION_1_2
+#error "Thread 1.2 or higher version is required for OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE"
+#endif
+
+/**
+ * @def OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE
+ *
+ * This setting configures the Multicast Listener Registration parent proxing in Thread 1.2.
+ *
+ */
+#ifndef OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE
+#define OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE (OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2)
+#endif
+
+#if OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE && OPENTHREAD_CONFIG_THREAD_VERSION < OT_THREAD_VERSION_1_2
+#error "Thread 1.2 or higher version is required for OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE"
 #endif
 
 #endif // CONFIG_TMF_H_

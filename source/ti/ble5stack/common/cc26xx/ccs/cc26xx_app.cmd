@@ -91,7 +91,7 @@
 --diag_suppress=10063,16011,16012
 
 /* The following command line options are set as part of the CCS project.    */
-	/* If you are building using the command line, or for some reason want to    */
+/* If you are building using the command line, or for some reason want to    */
 /* define them here, you can uncomment and modify these lines as needed.     */
 /* If you are using CCS for building, it is probably better to make any such */
 /* modifications in your CCS project and leave this file alone.              */

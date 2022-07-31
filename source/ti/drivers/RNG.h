@@ -270,7 +270,7 @@ extern "C" {
  * #define RNGXYZ_STATUS_ERROR2    ((int_fast16_t) (RNG_STATUS_RESERVED - 2))
  * @endcode
  */
-#define RNG_STATUS_RESERVED        (-32)
+#define RNG_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -278,7 +278,7 @@ extern "C" {
  * Functions return RNG_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define RNG_STATUS_SUCCESS         ((int_fast16_t) 0)
+#define RNG_STATUS_SUCCESS ((int_fast16_t)0)
 
 /*!
  * @brief   Generic error status code.
@@ -286,7 +286,7 @@ extern "C" {
  * Functions return RNG_STATUS_ERROR if the function was not executed
  * successfully.
  */
-#define RNG_STATUS_ERROR           ((int_fast16_t) -1)
+#define RNG_STATUS_ERROR ((int_fast16_t)-1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -297,38 +297,38 @@ extern "C" {
  * returned if the mutual exclusion mechanism signals that an operation cannot
  * currently be performed.
  */
-#define RNG_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t) -2)
+#define RNG_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t)-2)
 
 /*!
  * @brief   Operation failed due to invalid inputs.
  *
  * Functions return RNG_STATUS_INVALID_INPUTS if input validation fails.
  */
-#define RNG_STATUS_INVALID_INPUTS       ((int_fast16_t) -3)
+#define RNG_STATUS_INVALID_INPUTS ((int_fast16_t)-3)
 
 /*!
  * @brief  The ongoing operation was canceled.
  */
-#define RNG_STATUS_CANCELED             ((int_fast16_t) -4)
+#define RNG_STATUS_CANCELED ((int_fast16_t)-4)
 
 /*!
  * @brief  The pool of entropy has been exhausted and additional entropy cannot
  *         be generated. A reset of the system may be required to generate more
  *         entropy.
  */
-#define RNG_ENTROPY_EXHAUSTED           ((int_fast16_t) -5)
+#define RNG_ENTROPY_EXHAUSTED ((int_fast16_t)-5)
 
 /*!
  * @brief Some implementations have restrictions on how often or when
  *        RNG_init may be called. See the documentation for the implementation
  *        for more information.
  */
-#define RNG_STATUS_INIT_NOT_ALLOWED     ((int_fast16_t) -6)
+#define RNG_STATUS_INIT_NOT_ALLOWED ((int_fast16_t)-6)
 
- /*!
+/*!
  * @brief  Maximum number of bits that may be requested in a single call
  */
-#define RNG_MAX_BIT_LENGTH              ((size_t) 1u << 20u) /* 1 MiB */
+#define RNG_MAX_BIT_LENGTH ((size_t)1u << 20u) /* 1 MiB */
 
 /*!
  *  @brief RNG Global configuration
@@ -341,18 +341,19 @@ extern "C" {
  *
  *  @sa     RNG_init()
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } RNG_Config;
 
 /*!
  *  @brief  A handle that is returned from a RNG_open() call.
  */
-typedef const RNG_Config  *RNG_Handle;
+typedef const RNG_Config *RNG_Handle;
 
 /*!
  * @brief   The way in which RNG function calls return after generating
@@ -378,23 +379,24 @@ typedef const RNG_Config  *RNG_Handle;
  * | RNG_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
-    RNG_RETURN_BEHAVIOR_CALLBACK = 1,  /*!< The function call will return immediately while the
-                                        *   RNG operation goes on in the background. The
-                                        *   registered callback function is called after the
-                                        *   operation completes. The context the callback
-                                        *   function is called (task, HWI, SWI) is
-                                        *   implementation-dependent.
-                                        */
-    RNG_RETURN_BEHAVIOR_BLOCKING = 2,  /*!< The function call will block while RNG operation
-                                        *   goes on in the background. RNG operation results
-                                        *    are available after the function returns.
-                                        */
-    RNG_RETURN_BEHAVIOR_POLLING  = 4,  /*!< The function call will continuously poll a flag
-                                        *   while RNG operation goes on in the background. RNG
-                                        *   operation results are available after the function
-                                        *   returns.
-                                        */
+typedef enum
+{
+    RNG_RETURN_BEHAVIOR_CALLBACK = 1, /*!< The function call will return immediately while the
+                                       *   RNG operation goes on in the background. The
+                                       *   registered callback function is called after the
+                                       *   operation completes. The context the callback
+                                       *   function is called (task, HWI, SWI) is
+                                       *   implementation-dependent.
+                                       */
+    RNG_RETURN_BEHAVIOR_BLOCKING = 2, /*!< The function call will block while RNG operation
+                                       *   goes on in the background. RNG operation results
+                                       *    are available after the function returns.
+                                       */
+    RNG_RETURN_BEHAVIOR_POLLING  = 4, /*!< The function call will continuously poll a flag
+                                       *   while RNG operation goes on in the background. RNG
+                                       *   operation results are available after the function
+                                       *   returns.
+                                       */
 } RNG_ReturnBehavior;
 
 /*!
@@ -412,7 +414,7 @@ typedef enum {
  *  @param  key     The CryptoKey that describes the location the generated
  *                      entropy will be copied to.
  */
-typedef void (*RNG_CryptoKeyCallbackFxn) (RNG_Handle handle, int_fast16_t returnValue, CryptoKey *key);
+typedef void (*RNG_CryptoKeyCallbackFxn)(RNG_Handle handle, int_fast16_t returnValue, CryptoKey *key);
 
 /*!
  *  @brief  The definition of a callback function used by the RNG driver
@@ -432,8 +434,10 @@ typedef void (*RNG_CryptoKeyCallbackFxn) (RNG_Handle handle, int_fast16_t return
  *
  *  @param  randomBitsLength The length of the random data generated, in bits.
  */
-typedef void (*RNG_RandomBitsCallbackFxn) (RNG_Handle handle, int_fast16_t returnValue,
-                                           uint8_t *randomBits, size_t randomBitsLength);
+typedef void (*RNG_RandomBitsCallbackFxn)(RNG_Handle handle,
+                                          int_fast16_t returnValue,
+                                          uint8_t *randomBits,
+                                          size_t randomBitsLength);
 
 /*!
  *  @brief  RNG Parameters
@@ -447,20 +451,21 @@ typedef void (*RNG_RandomBitsCallbackFxn) (RNG_Handle handle, int_fast16_t retur
  *
  *  @sa     RNG_Params_init()
  */
-typedef struct {
-    RNG_ReturnBehavior          returnBehavior;         /*!< Blocking, callback, or polling return behavior */
-    RNG_CryptoKeyCallbackFxn    cryptoKeyCallbackFxn;   /*!< Callback function to use with RNG_generateKey()
-                                                         *   and RNG_generateKeyInRange().
-                                                         *   Set randomBitsCallbackFxn to NULL if using this.
-                                                         */
-    RNG_RandomBitsCallbackFxn   randomBitsCallbackFxn;  /*!< Callback function to use with RNG_getRandomBits(),
-                                                         *   RNG_getLERandomNumberInRange(), and
-                                                         *   RNG_getBERandomNumberInRange().
-                                                         *   Set cryptoKeyCallbackFxn to NULL if using this.
-                                                         */
-    uint32_t                    timeout;                /*!< Timeout (in ClockP ticks) before the driver
-                                                         *   returns an error in ::RNG_RETURN_BEHAVIOR_BLOCKING
-                                                         */
+typedef struct
+{
+    RNG_ReturnBehavior returnBehavior;               /*!< Blocking, callback, or polling return behavior */
+    RNG_CryptoKeyCallbackFxn cryptoKeyCallbackFxn;   /*!< Callback function to use with RNG_generateKey()
+                                                      *   and RNG_generateKeyInRange().
+                                                      *   Set randomBitsCallbackFxn to NULL if using this.
+                                                      */
+    RNG_RandomBitsCallbackFxn randomBitsCallbackFxn; /*!< Callback function to use with RNG_getRandomBits(),
+                                                      *   RNG_getLERandomNumberInRange(), and
+                                                      *   RNG_getBERandomNumberInRange().
+                                                      *   Set cryptoKeyCallbackFxn to NULL if using this.
+                                                      */
+    uint32_t timeout;                                /*!< Timeout (in ClockP ticks) before the driver
+                                                      *   returns an error in ::RNG_RETURN_BEHAVIOR_BLOCKING
+                                                      */
 } RNG_Params;
 
 /*!
@@ -646,8 +651,10 @@ int_fast16_t RNG_getRandomBits(RNG_Handle handle, void *randomBits, size_t rando
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
  */
-int_fast16_t RNG_getLERandomNumberInRange(RNG_Handle handle, const void *lowerLimit,
-                                          const void *upperLimit, void *randomNumber,
+int_fast16_t RNG_getLERandomNumberInRange(RNG_Handle handle,
+                                          const void *lowerLimit,
+                                          const void *upperLimit,
+                                          void *randomNumber,
                                           size_t randomNumberBitLength);
 
 /*!
@@ -702,8 +709,10 @@ int_fast16_t RNG_getLERandomNumberInRange(RNG_Handle handle, const void *lowerLi
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
  */
-int_fast16_t RNG_getBERandomNumberInRange(RNG_Handle handle, const void *lowerLimit,
-                                          const void *upperLimit, void *randomNumber,
+int_fast16_t RNG_getBERandomNumberInRange(RNG_Handle handle,
+                                          const void *lowerLimit,
+                                          const void *upperLimit,
+                                          void *randomNumber,
                                           size_t randomNumberBitLength);
 
 /*!
@@ -787,8 +796,10 @@ int_fast16_t RNG_generateKey(RNG_Handle handle, CryptoKey *key);
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
  */
-int_fast16_t RNG_generateLEKeyInRange(RNG_Handle handle, const void *lowerLimit,
-                                      const void *upperLimit, CryptoKey *key,
+int_fast16_t RNG_generateLEKeyInRange(RNG_Handle handle,
+                                      const void *lowerLimit,
+                                      const void *upperLimit,
+                                      CryptoKey *key,
                                       size_t randomNumberBitLength);
 
 /*!
@@ -840,8 +851,10 @@ int_fast16_t RNG_generateLEKeyInRange(RNG_Handle handle, const void *lowerLimit,
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
  */
-int_fast16_t RNG_generateBEKeyInRange(RNG_Handle handle, const void *lowerLimit,
-                                      const void *upperLimit, CryptoKey *key,
+int_fast16_t RNG_generateBEKeyInRange(RNG_Handle handle,
+                                      const void *lowerLimit,
+                                      const void *upperLimit,
+                                      CryptoKey *key,
                                       size_t randomNumberBitLength);
 
 /**

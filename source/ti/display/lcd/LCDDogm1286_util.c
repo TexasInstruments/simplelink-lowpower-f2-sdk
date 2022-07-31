@@ -103,7 +103,7 @@ unsigned char LCD_getFloatLength(float fNumber, unsigned char ucDecimals)
     }
 
     /* Get character count of integer part, comma and decimal part */
-    ucNumOfDigits += LCD_getIntLength((int) fNumber, 10);
+    ucNumOfDigits += LCD_getIntLength((int)fNumber, 10);
     if (ucDecimals)
     {
         ucNumOfDigits++;
@@ -126,7 +126,7 @@ void _itoa(unsigned int uiNum, unsigned char *buf, unsigned char uiRadix)
     for (i = 0; i < 32; i++, p++)
     {
         /* Isolate a digit */
-        c = uiNum % uiRadix;
+        c  = uiNum % uiRadix;
         /* Convert to Ascii */
         *p = c + ((c < 10) ? '0' : '7');
         uiNum /= uiRadix;

@@ -174,43 +174,42 @@
 extern "C" {
 #endif
 
+/*!
+ * @brief  Successful status code returned by DAC API.
+ */
+#define DAC_STATUS_SUCCESS (0)
 
+/*!
+ * @brief  Generic error status code returned by DAC API.
+ */
+#define DAC_STATUS_ERROR (-1)
 
- /*!
-  * @brief  Successful status code returned by DAC API.
-  */
- #define DAC_STATUS_SUCCESS            (0)
+/*!
+ * @brief  The DAC is currently in use by another handle or by the sensor controller.
+ */
+#define DAC_STATUS_INUSE (-2)
 
- /*!
-  * @brief  Generic error status code returned by DAC API.
-  */
- #define DAC_STATUS_ERROR              (-1)
+/*!
+ * @brief  The desired output value is outside the DAC's output range.
+ */
+#define DAC_STATUS_INVALID (-3)
 
- /*!
-  * @brief  The DAC is currently in use by another handle or by the sensor controller.
-  */
- #define DAC_STATUS_INUSE             (-2)
-
- /*!
-  * @brief  The desired output value is outside the DAC's output range.
-  */
- #define DAC_STATUS_INVALID           (-3)
-
- /*! @brief  DAC Global configuration
-  *
-  *  The DAC_Config structure contains a set of pointers used to characterize
-  *  the DAC driver implementation.
-  *
-  *  This structure needs to be defined before calling DAC_init() and it must
-  *  not be changed thereafter.
-  *
-  *  @sa     DAC_init()
-  */
-typedef struct {
+/*! @brief  DAC Global configuration
+ *
+ *  The DAC_Config structure contains a set of pointers used to characterize
+ *  the DAC driver implementation.
+ *
+ *  This structure needs to be defined before calling DAC_init() and it must
+ *  not be changed thereafter.
+ *
+ *  @sa     DAC_init()
+ */
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void                   *object;
+    void *object;
     /*! Pointer to a driver specific hardware attributes structure */
-    void          const    *hwAttrs;
+    void const *hwAttrs;
 } DAC_Config;
 
 /*!
@@ -226,11 +225,12 @@ typedef DAC_Config *DAC_Handle;
  *
  *  @sa       DAC_Params_init()
  */
-typedef struct {
+typedef struct
+{
     /*!< Initial DAC code */
-    uint32_t               initCode;
+    uint32_t initCode;
     /*!< Pointer to device specific custom params */
-    void                  *custom;
+    void *custom;
 } DAC_Params;
 
 /*!

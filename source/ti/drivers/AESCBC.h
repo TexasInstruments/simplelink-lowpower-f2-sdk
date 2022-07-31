@@ -567,7 +567,6 @@
  *  @endcode
  */
 
-
 #ifndef ti_drivers_AESCBC__include
 #define ti_drivers_AESCBC__include
 
@@ -594,7 +593,7 @@ extern "C" {
  * #define AESCBCXYZ_STATUS_ERROR2    AESCBC_STATUS_RESERVED - 2
  * @endcode
  */
-#define AESCBC_STATUS_RESERVED        AES_STATUS_RESERVED
+#define AESCBC_STATUS_RESERVED AES_STATUS_RESERVED
 
 /*!
  * @brief   Successful status code.
@@ -602,7 +601,7 @@ extern "C" {
  * Functions return #AESCBC_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AESCBC_STATUS_SUCCESS         AES_STATUS_SUCCESS
+#define AESCBC_STATUS_SUCCESS AES_STATUS_SUCCESS
 
 /*!
  * @brief   Generic error status code.
@@ -610,7 +609,7 @@ extern "C" {
  * Functions return #AESCBC_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AESCBC_STATUS_ERROR           AES_STATUS_ERROR
+#define AESCBC_STATUS_ERROR AES_STATUS_ERROR
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -620,12 +619,12 @@ extern "C" {
  * many clients can simultaneously perform operations. This status code is returned
  * if the mutual exclusion mechanism signals that an operation cannot currently be performed.
  */
-#define AESCBC_STATUS_RESOURCE_UNAVAILABLE     AES_STATUS_RESOURCE_UNAVAILABLE
+#define AESCBC_STATUS_RESOURCE_UNAVAILABLE AES_STATUS_RESOURCE_UNAVAILABLE
 
 /*!
  *  @brief  The ongoing operation was canceled.
  */
-#define AESCBC_STATUS_CANCELED                 AES_STATUS_CANCELED
+#define AESCBC_STATUS_CANCELED AES_STATUS_CANCELED
 
 /*!
  *  @brief  The operation requested is not supported for now.
@@ -634,18 +633,18 @@ extern "C" {
  *  generation of IVs isn't supported for now. Eventually, this
  *  function will make the TRNG generate the IV.
  */
-#define AESCBC_STATUS_FEATURE_NOT_SUPPORTED    AES_STATUS_FEATURE_NOT_SUPPORTED
+#define AESCBC_STATUS_FEATURE_NOT_SUPPORTED AES_STATUS_FEATURE_NOT_SUPPORTED
 
 /*!
  *  @brief  The operation tried to load a key from the keystore using an invalid key ID.
  */
-#define AESCBC_STATUS_KEYSTORE_INVALID_ID      AES_STATUS_KEYSTORE_INVALID_ID
+#define AESCBC_STATUS_KEYSTORE_INVALID_ID AES_STATUS_KEYSTORE_INVALID_ID
 
 /*!
  *  @brief  The key store module returned a generic error. See key store documentation
  *  for additional details.
  */
-#define AESCBC_STATUS_KEYSTORE_GENERIC_ERROR   AES_STATUS_KEYSTORE_GENERIC_ERROR
+#define AESCBC_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
  * @brief   The operation does not support non-word-aligned input and/or output.
@@ -653,7 +652,7 @@ extern "C" {
  * AESCBC driver implementations may have restrictions on the alignment of
  * input/output data due to performance limitations of the hardware.
  */
-#define AESCBC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
+#define AESCBC_STATUS_UNALIGNED_IO_NOT_SUPPORTED AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
 
 /*!
  *  @brief AESCBC Global configuration
@@ -694,30 +693,32 @@ typedef AESCBC_Config *AESCBC_Handle;
  * |AESCBC_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
+typedef enum
+{
     AESCBC_RETURN_BEHAVIOR_CALLBACK = AES_RETURN_BEHAVIOR_CALLBACK,
-                                            /*!< The function call will return immediately while the
-                                             *   CBC operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
+    /*!< The function call will return immediately while the
+     *   CBC operation goes on in the background. The registered
+     *   callback function is called after the operation completes.
+     *   The context the callback function is called (task, HWI, SWI)
+     *   is implementation-dependent.
+     */
     AESCBC_RETURN_BEHAVIOR_BLOCKING = AES_RETURN_BEHAVIOR_BLOCKING,
-                                            /*!< The function call will block while the CBC operation goes
-                                             *   on in the background. CBC operation results are available
-                                             *   after the function returns.
-                                             */
+    /*!< The function call will block while the CBC operation goes
+     *   on in the background. CBC operation results are available
+     *   after the function returns.
+     */
     AESCBC_RETURN_BEHAVIOR_POLLING  = AES_RETURN_BEHAVIOR_POLLING,
-                                            /*!< The function call will continuously poll a flag while CBC
-                                             *   operation goes on in the background. CBC operation results
-                                             *   are available after the function returns.
-                                             */
+    /*!< The function call will continuously poll a flag while CBC
+     *   operation goes on in the background. CBC operation results
+     *   are available after the function returns.
+     */
 } AESCBC_ReturnBehavior;
 
 /*!
  *  @brief  Enum for the direction of the CBC operation.
  */
-typedef enum {
+typedef enum
+{
     AESCBC_MODE_ENCRYPT = 1,
     AESCBC_MODE_DECRYPT = 2
 } AESCBC_Mode;
@@ -726,38 +727,39 @@ typedef enum {
  *  @brief  Struct containing the parameters required for encrypting/decrypting
  *          a message in a single-step operation.
  */
-typedef struct {
-   CryptoKey                *key;                        /*!< Pointer to a previously initialized CryptoKey. */
-   uint8_t                  *input;                      /*!<
-                                                          *   - Encryption: The plaintext buffer to be
-                                                          *     encrypted in the CBC operation.
-                                                          *   - Decryption: The ciphertext to be decrypted.
-                                                          */
-   uint8_t                  *output;                     /*!<
-                                                          *   - Encryption: The output ciphertext buffer that
-                                                          *     the encrypted plaintext is copied to.
-                                                          *   - Decryption: The plaintext derived from the
-                                                          *     decrypted ciphertext is copied here.
-                                                          */
-   uint8_t                  *iv;                         /*!< A buffer containing an IV. IVs must be unique to
-                                                          *   each CBC operation and may not be reused. If
-                                                          *   ivInternallyGenerated is set, the IV will be
-                                                          *   generated by #AESCBC_oneStepEncrypt() and copied to
-                                                          *   this buffer.
-                                                          */
-   size_t                   inputLength;                 /*!< Length of the input buffer in bytes for one-step
-                                                          *   AES CBC operations. Must be a multiple
-                                                          *   of the AES block size (16 bytes). Also, the
-                                                          *   output buffer must be large enough to receive
-                                                          *   the same number of bytes. The user or application
-                                                          *   should take care of necessary padding.
-                                                          *   Max length supported may be limited depending on the return behavior.
-                                                          */
+typedef struct
+{
+    CryptoKey *key;     /*!< Pointer to a previously initialized CryptoKey. */
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be
+                         *     encrypted in the CBC operation.
+                         *   - Decryption: The ciphertext to be decrypted.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that
+                         *     the encrypted plaintext is copied to.
+                         *   - Decryption: The plaintext derived from the
+                         *     decrypted ciphertext is copied here.
+                         */
+    uint8_t *iv;        /*!< A buffer containing an IV. IVs must be unique to
+                         *   each CBC operation and may not be reused. If
+                         *   ivInternallyGenerated is set, the IV will be
+                         *   generated by #AESCBC_oneStepEncrypt() and copied to
+                         *   this buffer.
+                         */
+    size_t inputLength; /*!< Length of the input buffer in bytes for one-step
+                         *   AES CBC operations. Must be a multiple
+                         *   of the AES block size (16 bytes). Also, the
+                         *   output buffer must be large enough to receive
+                         *   the same number of bytes. The user or application
+                         *   should take care of necessary padding.
+                         *   Max length supported may be limited depending on the return behavior.
+                         */
 
-   bool                     ivInternallyGenerated;       /*!< When true, the IV buffer passed into #AESCBC_oneStepEncrypt()
-                                                          *   will be overwritten with a randomly generated IV.
-                                                          *   Not supported by all implementations.
-                                                          */
+    bool ivInternallyGenerated; /*!< When true, the IV buffer passed into #AESCBC_oneStepEncrypt()
+                                 *   will be overwritten with a randomly generated IV.
+                                 *   Not supported by all implementations.
+                                 */
 } AESCBC_OneStepOperation;
 
 /*!
@@ -765,26 +767,27 @@ typedef struct {
  *          a message in a segmented operation. Must be updated for steps of a segmented
  *          operation where data is processed (addData() and finalize()).
  */
-typedef struct {
-   uint8_t                  *input;                      /*!<
-                                                          *   - Encryption: The plaintext buffer to be
-                                                          *     encrypted in the CBC operation.
-                                                          *   - Decryption: The ciphertext to be decrypted.
-                                                          */
-   uint8_t                  *output;                     /*!<
-                                                          *   - Encryption: The output ciphertext buffer that
-                                                          *     the encrypted plaintext is copied to.
-                                                          *   - Decryption: The plaintext derived from the
-                                                          *     decrypted ciphertext is copied here.
-                                                          */
-   size_t                   inputLength;                 /*!< Length of the input buffer in bytes for segmented
-                                                          *   AES CBC operations. Must be a multiple
-                                                          *   of the AES block size (16 bytes) unless finalizing
-                                                          *   without new data. In that case, this value can be 0.
-                                                          *   Also, the output buffer must be large enough to receive
-                                                          *   the same number of bytes.
-                                                          *   Max length supported may be limited depending on the return behavior.
-                                                          */
+typedef struct
+{
+    uint8_t *input;     /*!<
+                         *   - Encryption: The plaintext buffer to be
+                         *     encrypted in the CBC operation.
+                         *   - Decryption: The ciphertext to be decrypted.
+                         */
+    uint8_t *output;    /*!<
+                         *   - Encryption: The output ciphertext buffer that
+                         *     the encrypted plaintext is copied to.
+                         *   - Decryption: The plaintext derived from the
+                         *     decrypted ciphertext is copied here.
+                         */
+    size_t inputLength; /*!< Length of the input buffer in bytes for segmented
+                         *   AES CBC operations. Must be a multiple
+                         *   of the AES block size (16 bytes) unless finalizing
+                         *   without new data. In that case, this value can be 0.
+                         *   Also, the output buffer must be large enough to receive
+                         *   the same number of bytes.
+                         *   Max length supported may be limited depending on the return behavior.
+                         */
 } AESCBC_SegmentedOperation;
 
 /**
@@ -796,26 +799,26 @@ typedef struct {
  */
 typedef AESCBC_OneStepOperation AESCBC_Operation;
 
-
 /*!
  *  @brief Union  containing a reference to a one step or
  *  segmented operation
  */
 typedef union AESCBC_OperationUnion
 {
-    AESCBC_OneStepOperation oneStepOperation;       /* One-step operation element of the operation union */
-    AESCBC_SegmentedOperation segmentedOperation;   /* Segmented operation element of the operation union */
+    AESCBC_OneStepOperation oneStepOperation;     /* One-step operation element of the operation union */
+    AESCBC_SegmentedOperation segmentedOperation; /* Segmented operation element of the operation union */
 } AESCBC_OperationUnion;
-
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
-    AESCBC_OPERATION_TYPE_ENCRYPT = 1, /* Fields 1 and 2 are for backward compatibility */
-    AESCBC_OPERATION_TYPE_DECRYPT = 2,
-    AESCBC_OP_TYPE_ONESTEP_ENCRYPT = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not being unique */
-    AESCBC_OP_TYPE_ONESTEP_DECRYPT = 2,
+typedef enum
+{
+    AESCBC_OPERATION_TYPE_ENCRYPT    = 1, /* Fields 1 and 2 are for backward compatibility */
+    AESCBC_OPERATION_TYPE_DECRYPT    = 2,
+    AESCBC_OP_TYPE_ONESTEP_ENCRYPT   = 1, /* Names changed to _OP_TYPE_ to avoid MISRA deviation from first 31 chars not
+                                             being unique */
+    AESCBC_OP_TYPE_ONESTEP_DECRYPT   = 2,
     AESCBC_OP_TYPE_ENCRYPT_SEGMENTED = 3,
     AESCBC_OP_TYPE_DECRYPT_SEGMENTED = 4,
     AESCBC_OP_TYPE_FINALIZE_ENCRYPT_SEGMENTED = 5,
@@ -837,10 +840,10 @@ typedef enum {
  *  @param  operationType This parameter determines which operation the
  *                        callback refers to.
  */
-typedef void (*AESCBC_CallbackFxn) (AESCBC_Handle handle,
-                                    int_fast16_t returnValue,
-                                    AESCBC_OperationUnion *operation,
-                                    AESCBC_OperationType operationType);
+typedef void (*AESCBC_CallbackFxn)(AESCBC_Handle handle,
+                                   int_fast16_t returnValue,
+                                   AESCBC_OperationUnion *operation,
+                                   AESCBC_OperationType operationType);
 
 /*!
  *  @brief  CBC Parameters
@@ -850,15 +853,16 @@ typedef void (*AESCBC_CallbackFxn) (AESCBC_Handle handle,
  *
  *  @sa     #AESCBC_Params_init()
  */
-typedef struct {
-    AESCBC_ReturnBehavior   returnBehavior;             /*!< Blocking, callback, or polling return behavior */
-    AESCBC_CallbackFxn      callbackFxn;                /*!< Callback function pointer */
-    uint32_t                timeout;                    /*!< Timeout before the driver returns an error in
-                                                         *   ::AESCBC_RETURN_BEHAVIOR_BLOCKING
-                                                         */
-    void                   *custom;                     /*!< Custom argument used by driver
-                                                         *   implementation
-                                                         */
+typedef struct
+{
+    AESCBC_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    AESCBC_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                     /*!< Timeout before the driver returns an error in
+                                           *   ::AESCBC_RETURN_BEHAVIOR_BLOCKING
+                                           */
+    void *custom;                         /*!< Custom argument used by driver
+                                           *   implementation
+                                           */
 } AESCBC_Params;
 
 /*!
@@ -965,7 +969,8 @@ void AESCBC_SegmentedOperation_init(AESCBC_SegmentedOperation *operationStruct);
  *
  *  @param  [in] handle                 A CBC handle returned from #AESCBC_open() or #AESCBC_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESCBC_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCBC_STATUS_ERROR                 The operation failed.
@@ -986,7 +991,8 @@ int_fast16_t AESCBC_oneStepEncrypt(AESCBC_Handle handle, AESCBC_OneStepOperation
  *
  *  @param  [in] handle                 A CBC handle returned from #AESCBC_open() or #AESCBC_construct()
  *
- *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the operation.
+ *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
+ * operation.
  *
  *  @retval #AESCBC_STATUS_SUCCESS               The operation succeeded.
  *  @retval #AESCBC_STATUS_ERROR                 The operation failed.
@@ -1109,8 +1115,7 @@ int_fast16_t AESCBC_generateIV(AESCBC_Handle handle, uint8_t *iv, size_t ivSize,
  *
  *  @post   #AESCBC_addData() or #AESCBC_finalize()
  */
-int_fast16_t AESCBC_addData(AESCBC_Handle handle,
-                            AESCBC_SegmentedOperation *operation);
+int_fast16_t AESCBC_addData(AESCBC_Handle handle, AESCBC_SegmentedOperation *operation);
 
 /*!
  *  @brief  Finalize the AES operation. If new data needs to be added,
@@ -1134,8 +1139,7 @@ int_fast16_t AESCBC_addData(AESCBC_Handle handle,
  *                                                  Try again later.
  *  @retval #AESCBC_STATUS_UNALIGNED_IO_NOT_SUPPORTED  The input and/or output buffer were not word-aligned.
  */
-int_fast16_t AESCBC_finalize(AESCBC_Handle handle,
-                             AESCBC_SegmentedOperation *operation);
+int_fast16_t AESCBC_finalize(AESCBC_Handle handle, AESCBC_SegmentedOperation *operation);
 
 /*!
  *  @brief Cancels an ongoing AESCBC operation.

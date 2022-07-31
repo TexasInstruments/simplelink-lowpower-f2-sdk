@@ -7,7 +7,7 @@
         "DevicePackage": "VQFN 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "LP-CC1352P7-4_10dBm",
+        "RfDesign": "CC1352-P7EM-XD7793-XD24-PA24_10dBm",
         "DefaultCategory": "Settings for Bluetooth Low Energy",
         "IoSettings": {
             "_name": "RF Switch",

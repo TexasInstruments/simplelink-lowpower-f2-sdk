@@ -2526,7 +2526,7 @@ static void hci_tl_aeScanCback(uint8_t event, aeExtAdvRptEvt_t *extAdvRpt)
       if(!HCI_TL_CallbackEvtProcessCB( (void*) evtCallback, (void*) hci_tl_aeScanEventCallbackProcess))
       {
         // Not enough Heap...
-        if ((event == LL_CBACK_EXT_ADV_REPORT) )
+        if (event == LL_CBACK_EXT_ADV_REPORT)
         {
           if (extAdvRpt->pData)
           {
@@ -2540,7 +2540,7 @@ static void hci_tl_aeScanCback(uint8_t event, aeExtAdvRptEvt_t *extAdvRpt)
     }
     else
     {
-      if ((event == LL_CBACK_EXT_ADV_REPORT) )
+      if (event == LL_CBACK_EXT_ADV_REPORT)
       {
         if (extAdvRpt->pData)
         {
@@ -5141,7 +5141,7 @@ static uint8_t processExtMsgGATT(uint8_t cmdID, hciExtCmd_t *pCmd, uint8_t *pRsp
 {
 #if defined(GATT_DB_OFF_CHIP)
   static uint16_t totalAttrs = 0;
-  static gattService_t service = { 0, NULL };
+  static gattService_t service = { 0, 0, NULL };
 #endif // GATT_DB_OFF_CHIP
   uint8_t *pBuf, *pPayload = NULL, safeToDealloc = TRUE;
   uint16_t connHandle;
@@ -9051,7 +9051,7 @@ static void freeAttrRecs(gattService_t *pServ)
       gattAttrType_t *pType = &pServ->attrs[i].type;
       if (pType->uuid != NULL)
       {
-        if (GATT_FindUUIDRec((uint8_t *)pType->uuid, pType->len) == NULL)
+        if ((uint8_t*)GATT_FindUUIDRec((uint8_t *)pType->uuid, pType->len) == NULL)
         {
           // UUID was dynamically allocated; free it
           ICall_free((uint8_t *)pType->uuid);

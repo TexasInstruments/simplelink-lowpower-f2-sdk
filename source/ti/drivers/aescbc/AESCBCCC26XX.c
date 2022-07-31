@@ -227,7 +227,7 @@ AESCBC_Handle AESCBC_construct(AESCBC_Config *config, const AESCBC_Params *param
     DebugP_assert(params->returnBehavior == AESCBC_RETURN_BEHAVIOR_CALLBACK ? params->callbackFxn : true);
 
     object->returnBehavior = params->returnBehavior;
-    object->callbackFxn = params->callbackFxn;
+    object->callbackFxn    = params->callbackFxn;
 
     if (params->returnBehavior == AESCBC_RETURN_BEHAVIOR_BLOCKING)
     {
@@ -238,10 +238,10 @@ AESCBC_Handle AESCBC_construct(AESCBC_Config *config, const AESCBC_Params *param
         object->semaphoreTimeout = SemaphoreP_NO_WAIT;
     }
 
-    object->threadSafe = true;
+    object->threadSafe           = true;
     object->cryptoResourceLocked = false;
-    object->hwBusy = false;
-    object->operationInProgress = false;
+    object->hwBusy               = false;
+    object->operationInProgress  = false;
 
     /* Set power dependency - i.e. power up and enable clock for Crypto (CryptoResourceCC26XX) module. */
     Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
@@ -317,10 +317,10 @@ static int_fast16_t AESCBC_startOperation(AESCBC_Handle handle,
         object->cryptoResourceLocked = true;
     }
 
-    object->operation = (AESCBC_OperationUnion *)operation;
+    object->operation     = (AESCBC_OperationUnion *)operation;
     object->operationType = operationType;
     /* We will only change the returnStatus if there is an error */
-    object->returnStatus = AESCBC_STATUS_SUCCESS;
+    object->returnStatus  = AESCBC_STATUS_SUCCESS;
 
     memcpy(object->iv, operation->iv, sizeof(object->iv));
 
@@ -473,7 +473,7 @@ static int_fast16_t AESCBC_setupSegmentedOperation(AESCBC_Handle handle, const C
 
     if (result != AESCBC_STATUS_ERROR)
     {
-        object->key = *key;
+        object->key          = *key;
         /* returnStatus is changed in the case of an error or cancellation */
         object->returnStatus = AESCBC_STATUS_SUCCESS;
     }
@@ -491,7 +491,7 @@ int_fast16_t AESCBC_setupEncrypt(AESCBC_Handle handle, const CryptoKey *key)
     if (result != AESCBC_STATUS_ERROR)
     {
         AESCBCCC26XX_Object *object = handle->object;
-        object->operationType = AESCBC_OP_TYPE_ENCRYPT_SEGMENTED;
+        object->operationType       = AESCBC_OP_TYPE_ENCRYPT_SEGMENTED;
     }
 
     return result;
@@ -507,7 +507,7 @@ int_fast16_t AESCBC_setupDecrypt(AESCBC_Handle handle, const CryptoKey *key)
     if (result != AESCBC_STATUS_ERROR)
     {
         AESCBCCC26XX_Object *object = handle->object;
-        object->operationType = AESCBC_OP_TYPE_DECRYPT_SEGMENTED;
+        object->operationType       = AESCBC_OP_TYPE_DECRYPT_SEGMENTED;
     }
 
     return result;
@@ -640,7 +640,7 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
     /* Only plaintext CryptoKeys are supported for now */
     DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
 
-    uint16_t keyLength = object->key.u.plaintext.keyLength;
+    uint16_t keyLength      = object->key.u.plaintext.keyLength;
     uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
 
     /*
@@ -649,8 +649,7 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
      * should be checked in this function.
      */
     DebugP_assert(keyingMaterial);
-    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES ||
-                  keyLength == AES_192_KEY_LENGTH_BYTES ||
+    DebugP_assert(keyLength == AES_128_KEY_LENGTH_BYTES || keyLength == AES_192_KEY_LENGTH_BYTES ||
                   keyLength == AES_256_KEY_LENGTH_BYTES);
 
     if (inputLength == 0 || (inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
@@ -768,12 +767,12 @@ int_fast16_t AESCBC_finalize(AESCBC_Handle handle, AESCBC_SegmentedOperation *op
                   object->operationType == AESCBC_OP_TYPE_ENCRYPT_SEGMENTED);
 
     AESCBC_OperationType operationType = AESCBC_OP_TYPE_FINALIZE_ENCRYPT_SEGMENTED;
-    AESCBC_Mode direction = AESCBC_MODE_ENCRYPT;
+    AESCBC_Mode direction              = AESCBC_MODE_ENCRYPT;
 
     if (object->operationType == AESCBC_OP_TYPE_DECRYPT_SEGMENTED)
     {
         operationType = AESCBC_OP_TYPE_FINALIZE_DECRYPT_SEGMENTED;
-        direction = AESCBC_MODE_DECRYPT;
+        direction     = AESCBC_MODE_DECRYPT;
     }
 
     int_fast16_t result = AESCBC_STATUS_SUCCESS;
@@ -795,7 +794,7 @@ int_fast16_t AESCBC_finalize(AESCBC_Handle handle, AESCBC_SegmentedOperation *op
          * for the application callback
          */
         object->operationType = operationType;
-        object->operation = (AESCBC_OperationUnion *)operation;
+        object->operation     = (AESCBC_OperationUnion *)operation;
 
         result = AESCBC_addDataInternal(handle, operation->input, operation->output, operation->inputLength, direction);
 
@@ -849,7 +848,7 @@ int_fast16_t AESCBC_cancelOperation(AESCBC_Handle handle)
 
     if (!object->hwBusy)
     {
-        object->returnStatus = AESCBC_STATUS_CANCELED;
+        object->returnStatus        = AESCBC_STATUS_CANCELED;
         object->operationInProgress = false;
 
         HwiP_restore(key);
@@ -891,9 +890,9 @@ int_fast16_t AESCBC_cancelOperation(AESCBC_Handle handle)
      * The operation in progress states should be cleared so that the user
      * can start another operation after canceling
      */
-    object->returnStatus = AESCBC_STATUS_CANCELED;
+    object->returnStatus        = AESCBC_STATUS_CANCELED;
     object->operationInProgress = false;
-    object->hwBusy = false;
+    object->hwBusy              = false;
 
     if (object->returnBehavior == AESCBC_RETURN_BEHAVIOR_BLOCKING)
     {

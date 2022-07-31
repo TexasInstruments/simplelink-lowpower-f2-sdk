@@ -67,6 +67,7 @@ Target Device: cc13xx_cc26xx
 #include <intrinsics.h>
 #endif
 
+#include <ti/drivers/GPIO.h>
 #include <ti/drivers/utils/List.h>
 
 #include "util.h"
@@ -1898,7 +1899,7 @@ static void bleApp_handleKeys(uint8_t keys)
   if (keys & KEY_LEFT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN1) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN1) == 0)
     {
       tbm_buttonLeft();
     }
@@ -1906,7 +1907,7 @@ static void bleApp_handleKeys(uint8_t keys)
   else if (keys & KEY_RIGHT)
   {
     // Check if the key is still pressed. Workaround for possible bouncing.
-    if (PIN_getInputValue(CONFIG_GPIO_BTN2) == 0)
+    if (GPIO_read(CONFIG_GPIO_BTN2) == 0)
     {
       tbm_buttonRight();
     }

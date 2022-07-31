@@ -21,29 +21,38 @@ Done
 
 ## OpenThread Command List
 
+- [ba](#ba)
 - [bbr](#bbr)
+- [br](#br)
 - [bufferinfo](#bufferinfo)
+- [ccathreshold](#ccathreshold)
 - [channel](#channel)
 - [child](#child-list)
 - [childip](#childip)
 - [childmax](#childmax)
+- [childsupervision](#childsupervision-interval)
 - [childtimeout](#childtimeout)
 - [coap](README_COAP.md)
 - [coaps](README_COAPS.md)
 - [commissioner](README_COMMISSIONER.md)
 - [contextreusedelay](#contextreusedelay)
 - [counters](#counters)
+- [csl](#csl)
 - [dataset](README_DATASET.md)
 - [delaytimermin](#delaytimermin)
 - [diag](#diag)
 - [discover](#discover-channel)
-- [dns](#dns-resolve-hostname-dns-server-ip-dns-server-port)
+- [dns](#dns-config)
 - [domainname](#domainname)
+- [dua](#dua-iid)
 - [eidcache](#eidcache)
 - [eui64](#eui64)
 - [extaddr](#extaddr)
 - [extpanid](#extpanid)
 - [factoryreset](#factoryreset)
+- [fake](#fake)
+- [fem](#fem)
+- [history](README_HISTORY.md)
 - [ifconfig](#ifconfig)
 - [ipaddr](#ipaddr)
 - [ipmaddr](#ipmaddr)
@@ -51,34 +60,42 @@ Done
 - [joinerport](#joinerport-port)
 - [keysequence](#keysequence-counter)
 - [leaderdata](#leaderdata)
-- [leaderpartitionid](#leaderpartitionid)
 - [leaderweight](#leaderweight)
+- [linkmetrics](#linkmetrics-mgmt-ipaddr-enhanced-ack-clear)
 - [linkquality](#linkquality-extaddr)
+- [locate](#locate)
 - [log](#log-filename-filename)
 - [mac](#mac-retries-direct)
 - [macfilter](#macfilter)
-- [masterkey](#masterkey)
+- [mliid](#mliid-iid)
+- [mlr](#mlr-reg-ipaddr--timeout)
 - [mode](#mode)
+- [multiradio](#multiradio)
 - [neighbor](#neighbor-list)
-- [netdataregister](#netdataregister)
-- [netdatashow](#netdatashow)
+- [netdata](README_NETDATA.md)
+- [netstat](#netstat)
 - [networkdiagnostic](#networkdiagnostic-get-addr-type-)
 - [networkidtimeout](#networkidtimeout)
+- [networkkey](#networkkey)
 - [networkname](#networkname)
 - [networktime](#networktime)
 - [panid](#panid)
 - [parent](#parent)
 - [parentpriority](#parentpriority)
-- [ping](#ping-ipaddr-size-count-interval-hoplimit)
+- [partitionid](#partitionid)
+- [ping](#ping--i-source-ipaddr-size-count-interval-hoplimit-timeout)
 - [pollperiod](#pollperiod-pollperiod)
 - [preferrouterid](#preferrouterid-routerid)
-- [prefix](#prefix-add-prefix-padcrosnD-prf)
+- [prefix](#prefix)
 - [promiscuous](#promiscuous)
 - [pskc](#pskc--p-keypassphrase)
+- [radiofilter](#radiofilter)
+- [rcp](#rcp)
+- [region](#region)
 - [releaserouterid](#releaserouterid-routerid)
 - [reset](#reset)
 - [rloc16](#rloc16)
-- [route](#route-add-prefix-s-prf)
+- [route](#route)
 - [router](#router-list)
 - [routerdowngradethreshold](#routerdowngradethreshold)
 - [routereligible](#routereligible)
@@ -89,8 +106,15 @@ Done
 - [singleton](#singleton)
 - [sntp](#sntp-query-sntp-server-ip-sntp-server-port)
 - [state](#state)
+- [srp](README_SRP.md)
+- [tcp](README_TCP.md)
 - [thread](#thread-start)
+- [trel](#trel)
+- [tvcheck](#tvcheck-enable)
 - [txpower](#txpower)
+- [udp](README_UDP.md)
+- [unsecureport](#unsecureport-add-port)
+- [uptime](#uptime)
 - [version](#version)
 
 ## OpenThread Command Details
@@ -112,6 +136,93 @@ Done
 ```bash
 > bbr
 BBR Primary: None
+Done
+```
+
+### bbr mgmt dua \<status\|coap-code\> [meshLocalIid]
+
+Configure the response status for DUA.req with meshLocalIid in payload. Without meshLocalIid, simply respond any coming DUA.req next with the specified status or COAP code.
+
+Only for testing/reference device.
+
+known status value:
+
+- 0: ST_DUA_SUCCESS
+- 1: ST_DUA_REREGISTER
+- 2: ST_DUA_INVALID
+- 3: ST_DUA_DUPLICATE
+- 4: ST_DUA_NO_RESOURCES
+- 5: ST_DUA_BBR_NOT_PRIMARY
+- 6: ST_DUA_GENERAL_FAILURE
+- 160: COAP code 5.00
+
+```bash
+> bbr mgmt dua 1 2f7c235e5025a2fd
+Done
+> bbr mgmt dua 160
+Done
+```
+
+### bbr mgmt mlr listener
+
+Show the Multicast Listeners.
+
+Only for testing/reference Backbone Router device.
+
+```bash
+> bbr mgmt mlr listener
+ff04:0:0:0:0:0:0:abcd 3534000
+ff04:0:0:0:0:0:0:eeee 3537610
+Done
+```
+
+### bbr mgmt mlr listener add \<ipaddr\> \[\<timeout\>\]
+
+Add a Multicast Listener with a given IPv6 multicast address and timeout (in seconds).
+
+Only for testing/reference Backbone Router device.
+
+```bash
+> bbr mgmt mlr listener add ff04::1
+Done
+> bbr mgmt mlr listener add ff04::2 300
+Done
+> bbr mgmt mlr listener
+ff04:0:0:0:0:0:0:2 261
+ff04:0:0:0:0:0:0:1 3522
+Done
+```
+
+### bbr mgmt mlr listener clear
+
+Removes all the Multicast Listeners.
+
+Only for testing/reference Backbone Router device.
+
+```bash
+> bbr mgmt mlr listener clear
+Done
+> bbr mgmt mlr listener
+Done
+```
+
+### bbr mgmt mlr response \<status\>
+
+Configure the response status for the next MLR.req.
+
+Only for testing/reference device.
+
+Known status values:
+
+- 0: ST_MLR_SUCCESS
+- 2: ST_MLR_INVALID
+- 3: ST_MLR_NO_PERSISTENT
+- 4: ST_MLR_NO_RESOURCES
+- 5: ST_MLR_BBR_NOT_PRIMARY
+- 6: ST_MLR_GENERAL_FAILURE
+
+```bash
+> bbr mgmt mlr response 2
 Done
 ```
 
@@ -214,21 +325,118 @@ Set jitter (in seconds) for Backbone Router registration for Thread 1.2 FTD.
 Done
 ```
 
+### ba
+
+Show current Border Agent information.
+
+### ba port
+
+Print border agent service port.
+
+```bash
+> ba port
+49152
+Done
+```
+
+### ba state
+
+Print border agent state.
+
+```bash
+> ba state
+Started
+Done
+```
+
+### br
+
+Enbale/disable the Border Routing functionality.
+
+```bash
+> br enable
+Done
+```
+
+```bash
+> br disable
+Done
+```
+
+### br omrprefix
+
+Get the randomly generated off-mesh-routable prefix of the Border Router.
+
+```bash
+> br omrprefix
+fdfc:1ff5:1512:5622::/64
+Done
+```
+
+### br onlinkprefix
+
+Get the randomly generated on-link prefix of the Border Router.
+
+```bash
+> br onlinkprefix
+fd41:2650:a6f5:0::/64
+Done
+```
+
+### br nat64prefix
+
+Get the local NAT64 prefix of the Border Router.
+
+`OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE` is required.
+
+```bash
+> br nat64prefix
+fd14:1078:b3d5:b0b0:0:0::/96
+Done
+```
+
 ### bufferinfo
 
 Show the current message buffer information.
+
+- The `total` shows total number of message buffers in pool.
+- The `free` shows the number of free message buffers.
+- This is then followed by info about different queues used by OpenThread stack, each line representing info about a queue.
+  - The first number shows number messages in the queue.
+  - The second number shows number of buffers used by all messages in the queue.
+  - The third number shows total number of bytes of all messages in the queue.
 
 ```bash
 > bufferinfo
 total: 40
 free: 40
-6lo send: 0 0
-6lo reas: 0 0
-ip6: 0 0
-mpl: 0 0
-mle: 0 0
-arp: 0 0
-coap: 0 0
+6lo send: 0 0 0
+6lo reas: 0 0 0
+ip6: 0 0 0
+mpl: 0 0 0
+mle: 0 0 0
+coap: 0 0 0
+coap secure: 0 0 0
+application coap: 0 0 0
+Done
+```
+
+### ccathreshold
+
+Get the CCA threshold in dBm measured at antenna connector per IEEE 802.15.4 - 2015 section 10.1.4.
+
+```bash
+> ccathreshold
+-75 dBm
+Done
+```
+
+### ccathreshold \<ccathreshold\>
+
+Set the CCA threshold measured at antenna connector per IEEE 802.15.4 - 2015 section 10.1.4.
+
+```bash
+> ccathreshold -62
 Done
 ```
 
@@ -248,6 +456,165 @@ Set the IEEE 802.15.4 Channel value.
 
 ```bash
 > channel 11
+Done
+```
+
+### channel manager
+
+Get channel manager state.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` is required.
+
+```bash
+channel: 11
+auto: 1
+delay: 120
+interval: 10800
+supported: { 11-26}
+favored: { 11-26}
+Done
+```
+
+### channel manager change \<channel\>
+
+Initiate a channel change with the channel manager.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` is required.
+
+```bash
+> channel manager change 11
+channel manager change 11
+Done
+```
+
+### channel manager select \<skip quality check (boolean)\>
+
+Request a channel selection with the channel manager.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager select 1
+channel manager select 1
+Done
+```
+
+### channel manager auto \<enable (boolean)\>
+
+Enable/disable the auto-channel-selection functionality.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager auto 1
+channel manager auto 1
+Done
+```
+
+### channel manager delay \<delay\>
+
+Set the channel change delay (in seconds).
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager delay 120
+channel manager delay 120
+Done
+```
+
+### channel manager interval \<interval\>
+
+Set the auto-channel-selection interval (in seconds).
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager interval 10800
+channel manager interval 10800
+Done
+```
+
+### channel manager supported \<mask\>
+
+Set the supported channel mask for the auto-channel-selection.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager supported 0x7fffc00
+channel manager supported 0x7fffc00
+Done
+```
+
+### channel manager favored \<mask\>
+
+Set the favored channel mask for the auto-channel-selection.
+
+`OPENTHREAD_CONFIG_CHANNEL_MANAGER_ENABLE` and `OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` are required.
+
+```bash
+> channel manager favored 0x7fffc00
+channel manager favored 0x7fffc00
+Done
+```
+
+### channel monitor
+
+Get current channel monitor state and channel occupancy.
+
+`OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` is required.
+
+```bash
+> channel monitor
+channel monitor
+enabled: 1
+interval: 41000
+threshold: -75
+window: 960
+count: 10552
+occupancies:
+ch 11 (0x0cb7)  4.96% busy
+ch 12 (0x2e2b) 18.03% busy
+ch 13 (0x2f54) 18.48% busy
+ch 14 (0x0fef)  6.22% busy
+ch 15 (0x1536)  8.28% busy
+ch 16 (0x1746)  9.09% busy
+ch 17 (0x0b8b)  4.50% busy
+ch 18 (0x60a7) 37.75% busy
+ch 19 (0x0810)  3.14% busy
+ch 20 (0x0c2a)  4.75% busy
+ch 21 (0x08dc)  3.46% busy
+ch 22 (0x101d)  6.29% busy
+ch 23 (0x0092)  0.22% busy
+ch 24 (0x0028)  0.06% busy
+ch 25 (0x0063)  0.15% busy
+ch 26 (0x058c)  2.16% busy
+
+Done
+```
+
+### channel monitor start
+
+Start the channel monitor.
+
+`OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` is required.
+
+```bash
+> channel monitor start
+channel monitor start
+Done
+```
+
+### channel monitor stop
+
+Stop the channel monitor.
+
+`OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE` is required.
+
+```bash
+> channel monitor stop
+channel monitor stop
 Done
 ```
 
@@ -287,10 +654,10 @@ Print table of attached children.
 
 ```bash
 > child table
-| ID  | RLOC16 | Timeout    | Age        | LQ In | C_VN |R|S|D|N| Extended MAC     |
-+-----+--------+------------+------------+-------+------+-+-+-+-+------------------+
-|   1 | 0xe001 |        240 |         44 |     3 |  237 |1|1|1|1| d28d7f875888fccb |
-|   2 | 0xe002 |        240 |         27 |     3 |  237 |0|1|0|1| e2b3540590b0fd87 |
+| ID  | RLOC16 | Timeout    | Age        | LQ In | C_VN |R|D|N|Ver|CSL|QMsgCnt| Extended MAC     |
++-----+--------+------------+------------+-------+------+-+-+-+---+---+-------+------------------+
+|   1 | 0xc801 |        240 |         24 |     3 |  131 |1|0|0|  3| 0 |     0 | 4ecede68435358ac |
+|   2 | 0xc802 |        240 |          2 |     3 |  131 |0|0|0|  3| 1 |     0 | a672a601d2ce37d8 |
 Done
 ```
 
@@ -303,7 +670,7 @@ Print diagnostic information for an attached Thread Child. The `id` may be a Chi
 Child ID: 1
 Rloc: 9c01
 Ext Addr: e2b3540590b0fd87
-Mode: rsn
+Mode: rn
 Net Data: 184
 Timeout: 100
 Age: 0
@@ -362,6 +729,48 @@ Set the Thread maximum number of allowed children.
 Done
 ```
 
+### childsupervision interval
+
+Get the Child Supervision Interval value.
+
+Child supervision feature provides a mechanism for parent to ensure that a message is sent to each sleepy child within the supervision interval. If there is no transmission to the child within the supervision interval, OpenThread enqueues and sends a supervision message (a data message with empty payload) to the child. This command can only be used with FTD devices.
+
+```bash
+> childsupervision interval
+30
+Done
+```
+
+### childsupervision interval \<interval\>
+
+Set the Child Supervision Interval value. This command can only be used with FTD devices.
+
+```bash
+> childsupervision interval 30
+Done
+```
+
+### childsupervision checktimeout
+
+Get the Child Supervision Check Timeout value.
+
+If the device is a sleepy child and it does not hear from its parent within the specified check timeout, it initiates the re-attach process (MLE Child Update Request/Response exchange with its parent).
+
+```bash
+> childsupervision checktimeout
+30
+Done
+```
+
+### childsupervision checktimeout \<timeout\>
+
+Set the Child Supervision Check Timeout value.
+
+```bash
+> childsupervision checktimeout 30
+Done
+```
+
 ### childtimeout
 
 Get the Thread Child Timeout value.
@@ -406,6 +815,7 @@ Get the supported counter names.
 
 ```bash
 > counters
+ip
 mac
 mle
 Done
@@ -460,6 +870,12 @@ Partition Id Changes: 1
 Better Partition Attach Attempts: 0
 Parent Changes: 0
 Done
+> counters ip
+TxSuccess: 10
+TxFailed: 0
+RxSuccess: 5
+RxFailed: 0
+Done
 ```
 
 ### counters \<countername\> reset
@@ -470,6 +886,47 @@ Reset the counter value.
 > counters mac reset
 Done
 > counters mle reset
+Done
+> counters ip reset
+Done
+```
+
+### csl
+
+Get the CSL configuration.
+
+```bash
+> csl
+Channel: 11
+Period: 1000 (in units of 10 symbols), 160ms
+Timeout: 1000s
+Done
+```
+
+### csl channel \<channel\>
+
+Set CSL channel.
+
+```bash
+> csl channel 20
+Done
+```
+
+### csl period \<period\>
+
+Set CSL period in units of 10 symbols. Disable CSL by setting this parameter to `0`.
+
+```bash
+> csl period 3000
+Done
+```
+
+### csl timeout \<timeout\>
+
+Set the CSL timeout in seconds.
+
+```bash
+> csl timeout 10
 Done
 ```
 
@@ -530,16 +987,116 @@ Perform an MLE Discovery operation.
 Done
 ```
 
-### dns resolve \<hostname\> \[DNS server IP\] \[DNS server port\]
+### dns config
 
-Send DNS Query to obtain IPv6 address for given hostname. The latter two parameters have following default values:
+Get the default query config used by DNS client.
 
-- DNS server IP: 2001:4860:4860::8888 (Google DNS Server)
-- DNS server port: 53
+The config includes the server IPv6 address and port, response timeout in msec (wait time to rx response), maximum tx attempts before reporting failure, boolean flag to indicate whether the server can resolve the query recursively or not.
+
+```bash
+> dns config
+Server: [fd00:0:0:0:0:0:0:1]:1234
+ResponseTimeout: 5000 ms
+MaxTxAttempts: 2
+RecursionDesired: no
+Done
+>
+```
+
+### dns config \[DNS server IP\] \[DNS server port\] \[response timeout (ms)\] \[max tx attempts\] \[recursion desired (boolean)\]
+
+Set the default query config.
+
+```bash
+> dns config fd00::1 1234 5000 2 0
+Done
+
+> dns config
+Server: [fd00:0:0:0:0:0:0:1]:1234
+ResponseTimeout: 5000 ms
+MaxTxAttempts: 2
+RecursionDesired: no
+Done
+```
+
+We can leave some of the fields as unspecified (or use value zero). The unspecified fields are replaced by the corresponding OT config option definitions `OPENTHREAD_CONFIG_DNS_CLIENT_DEFAULT_{}` to form the default query config.
+
+```bash
+> dns config fd00::2
+Done
+
+> dns config
+Server: [fd00:0:0:0:0:0:0:2]:53
+ResponseTimeout: 3000 ms
+MaxTxAttempts: 3
+RecursionDesired: yes
+Done
+```
+
+### dns resolve \<hostname\> \[DNS server IP\] \[DNS server port\] \[response timeout (ms)\] \[max tx attempts\] \[recursion desired (boolean)\]
+
+Send DNS Query to obtain IPv6 address for given hostname.
+
+The parameters after `hostname` are optional. Any unspecified (or zero) value for these optional parameters is replaced by the value from the current default config (`dns config`).
 
 ```bash
 > dns resolve ipv6.google.com
 > DNS response for ipv6.google.com - 2a00:1450:401b:801:0:0:0:200e TTL: 300
+```
+
+### dns browse \<service-name\> \[DNS server IP\] \[DNS server port\] \[response timeout (ms)\] \[max tx attempts\] \[recursion desired (boolean)\]
+
+Send a browse (service instance enumeration) DNS query to get the list of services for given service-name.
+
+The parameters after `service-name` are optional. Any unspecified (or zero) value for these optional parameters is replaced by the value from the current default config (`dns config`).
+
+```bash
+> dns browse _service._udp.example.com
+DNS browse response for _service._udp.example.com.
+inst1
+    Port:1234, Priority:1, Weight:2, TTL:7200
+    Host:host.example.com.
+    HostAddress:fd00:0:0:0:0:0:0:abcd TTL:7200
+    TXT:[a=6531, b=6c12] TTL:7300
+instance2
+    Port:1234, Priority:1, Weight:2, TTL:7200
+    Host:host.example.com.
+    HostAddress:fd00:0:0:0:0:0:0:abcd TTL:7200
+    TXT:[a=1234] TTL:7300
+Done
+```
+
+### dns service \<service-instance-label\> \<service-name\> \[DNS server IP\] \[DNS server port\] \[response timeout (ms)\] \[max tx attempts\] \[recursion desired (boolean)\]
+
+Send a service instance resolution DNS query for a given service instance. Service instance label is provided first, followed by the service name (note that service instance label can contain dot '.' character).
+
+The parameters after `service-name` are optional. Any unspecified (or zero) value for these optional parameters is replaced by the value from the current default config (`dns config`).
+
+### dns compression \[enable|disable\]
+
+Enable/Disable the "DNS name compression" mode.
+
+By default DNS name compression is enabled. When disabled, DNS names are appended as full and never compressed. This is applicable to OpenThread's DNS and SRP client/server modules.
+
+This is intended for testing only and available under `REFERENCE_DEVICE` config.
+
+Get the current "DNS name compression" mode.
+
+```
+> dns compression
+Enabled
+```
+
+Set the "DNS name compression" mode.
+
+```
+> dns compression disable
+Done
+>
+>
+> dns compression
+Disabled
+Done
 ```
 
 ### domainname
@@ -561,14 +1118,42 @@ Set the Thread Domain Name for Thread 1.2 device.
 Done
 ```
 
+### dua iid
+
+Get the Interface Identifier mannually specified for Thread Domain Unicast Address on Thread 1.2 device.
+
+```bash
+> dua iid
+0004000300020001
+Done
+```
+
+### dua iid \<iid\>
+
+Set the Interface Identifier mannually specified for Thread Domain Unicast Address on Thread 1.2 device.
+
+```bash
+> dua iid 0004000300020001
+Done
+```
+
+### dua iid clear
+
+Clear the Interface Identifier mannually specified for Thread Domain Unicast Address on Thread 1.2 device.
+
+```bash
+> dua iid clear
+Done
+```
+
 ### eidcache
 
 Print the EID-to-RLOC cache entries.
 
 ```bash
 > eidcache
-fdde:ad00:beef:0:bb1:ebd6:ad10:f33 ac00
-fdde:ad00:beef:0:110a:e041:8399:17cd 6000
+fd49:caf4:a29f:dc0e:97fc:69dd:3c16:df7d 2000 cache canEvict=1 transTime=0 eid=fd49:caf4:a29f:dc0e:97fc:69dd:3c16:df7d
+fd49:caf4:a29f:dc0e:97fc:69dd:3c16:df7f fffe retry canEvict=1 timeout=10 retryDelay=30
 Done
 ```
 
@@ -631,6 +1216,48 @@ Delete all stored settings, and signal a platform reset.
 > factoryreset
 ```
 
+### fake
+
+Send fake Thread messages.
+
+Note: Only for certification test.
+
+#### fake /a/an \<dst-ipaddr\> \<target\> \<meshLocalIid\>
+
+```bash
+> fake /a/an fdde:ad00:beef:0:0:ff:fe00:a800 fd00:7d03:7d03:7d03:55f2:bb6a:7a43:a03b 1111222233334444
+Done
+```
+
+### fem
+
+Get external FEM parameters.
+
+```bash
+> fem
+LNA gain 11 dBm
+Done
+```
+
+### fem lnagain
+
+Get the Rx LNA gain in dBm of the external FEM.
+
+```bash
+> fem lnagain
+11
+Done
+```
+
+### fem lnagain \<LNA gain\>
+
+Set the Rx LNA gain in dBm of the external FEM.
+
+```bash
+> fem lnagain 8
+Done
+```
+
 ### ifconfig
 
 Show the status of the IPv6 interface.
@@ -668,6 +1295,16 @@ List all IPv6 addresses assigned to the Thread interface.
 fdde:ad00:beef:0:0:ff:fe00:0
 fdde:ad00:beef:0:558:f56b:d688:799
 fe80:0:0:0:f3d9:2a82:c8d8:fe43
+Done
+```
+
+Use `-v` to get more verbose informations about the address.
+
+```bash
+> ipaddr -v
+fdde:ad00:beef:0:0:ff:fe00:0 origin:thread
+fdde:ad00:beef:0:558:f56b:d688:799 origin:thread
+fe80:0:0:0:f3d9:2a82:c8d8:fe43 origin:thread
 Done
 ```
 
@@ -749,6 +1386,16 @@ Unsubscribe the Thread interface to the IPv6 multicast address.
 Done
 ```
 
+### ipmaddr llatn
+
+Get the Link-Local All Thread Nodes multicast address.
+
+```
+> ipmaddr llatn
+ff32:40:fdde:ad00:beef:0:0:1
+Done
+```
+
 ### ipmaddr promiscuous
 
 Get multicast promiscuous mode.
@@ -774,6 +1421,16 @@ Disable multicast promiscuous mode.
 
 ```bash
 > ipmaddr promiscuous disable
+Done
+```
+
+### ipmaddr rlatn
+
+Get the Realm-Local All Thread Nodes multicast address.
+
+```
+> ipmaddr rlatn
+ff33:40:fdde:ad00:beef:0:0:1
 Done
 ```
 
@@ -824,25 +1481,6 @@ Set Thread Key Switch Guard Time (in hours) 0 means Thread Key Switch imediately
 Done
 ```
 
-### leaderpartitionid
-
-Get the Thread Leader Partition ID.
-
-```bash
-> leaderpartitionid
-4294967295
-Done
-```
-
-### leaderpartitionid \<partitionid\>
-
-Set the Thread Leader Partition ID.
-
-```bash
-> leaderpartitionid 0xffffffff
-Done
-```
-
 ### leaderdata
 
 Show the Thread Leader Data.
@@ -876,6 +1514,119 @@ Set the Thread Leader Weight.
 Done
 ```
 
+### linkmetrics mgmt \<ipaddr\> enhanced-ack clear
+
+Send a Link Metrics Management Request to clear an Enhanced-ACK Based Probing.
+
+- ipaddr: Peer address (SHOULD be link local address of the neighboring device).
+
+```bash
+> linkmetrics mgmt fe80:0:0:0:3092:f334:1455:1ad2 enhanced-ack clear
+Done
+> Received Link Metrics Management Response from: fe80:0:0:0:3092:f334:1455:1ad2
+Status: Success
+```
+
+### linkmetrics mgmt \<ipaddr\> enhanced-ack register [qmr][r]
+
+Send a Link Metrics Management Request to register an Enhanced-ACK Based Probing.
+
+- ipaddr: Peer address.
+- qmr: This specifies what metrics to query. At most two options are allowed to select (per spec 4.11.3.4.4.6).
+  - q: Layer 2 LQI.
+  - m: Link Margin.
+  - r: RSSI.
+- r: This is optional and only used for reference devices. When this option is specified, Type/Average Enum of each Type Id Flags would be set to `reserved`. This is used to verify the Probing Subject correctly handles invalid Type Id Flags. This is only available when `OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is enabled.
+
+```bash
+> linkmetrics mgmt fe80:0:0:0:3092:f334:1455:1ad2 enhanced-ack register qm
+Done
+> Received Link Metrics Management Response from: fe80:0:0:0:3092:f334:1455:1ad2
+Status: Success
+
+> linkmetrics mgmt fe80:0:0:0:3092:f334:1455:1ad2 enhanced-ack register qm r
+Done
+> Received Link Metrics Management Response from: fe80:0:0:0:3092:f334:1455:1ad2
+Status: Cannot support new series
+```
+
+### linkmetrics mgmt \<ipaddr\> forward \<seriesid\> [ldraX][pqmr]
+
+Send a Link Metrics Management Request to configure a Forward Tracking Series.
+
+- ipaddr: Peer address.
+- seriesid: The Series ID.
+- ldraX: This specifies which frames are to be accounted.
+  - l: MLE Link Probe.
+  - d: MAC Data.
+  - r: MAC Data Request.
+  - a: MAC Ack.
+  - X: This represents none of the above flags, i.e., to stop accounting and remove the series. This can only be used without any other flags.
+- pqmr: This specifies what metrics to query.
+  - p: Layer 2 Number of PDUs received.
+  - q: Layer 2 LQI.
+  - m: Link Margin.
+  - r: RSSI.
+
+```bash
+> linkmetrics mgmt fe80:0:0:0:3092:f334:1455:1ad2 forward 1 dra pqmr
+Done
+> Received Link Metrics Management Response from: fe80:0:0:0:3092:f334:1455:1ad2
+Status: SUCCESS
+```
+
+### linkmetrics probe \<ipaddr\> \<seriesid\> \<length\>
+
+Send a MLE Link Probe message to the peer.
+
+- ipaddr: Peer address.
+- seriesid: The Series ID for which this Probe message targets at.
+- length: The length of the Probe message, valid range: [0, 64].
+
+```bash
+> linkmetrics probe fe80:0:0:0:3092:f334:1455:1ad2 1 10
+Done
+```
+
+### linkmetrics query \<ipaddr\> single [pqmr]
+
+Perform a Link Metrics query (Single Probe).
+
+- ipaddr: Peer address.
+- pqmr: This specifies what metrics to query.
+- p: Layer 2 Number of PDUs received.
+- q: Layer 2 LQI.
+- m: Link Margin.
+- r: RSSI.
+
+```bash
+> linkmetrics query fe80:0:0:0:3092:f334:1455:1ad2 single qmr
+Done
+> Received Link Metrics Report from: fe80:0:0:0:3092:f334:1455:1ad2
+
+ - LQI: 76 (Exponential Moving Average)
+ - Margin: 82 (dB) (Exponential Moving Average)
+ - RSSI: -18 (dBm) (Exponential Moving Average)
+```
+
+### linkmetrics query \<ipaddr\> forward \<seriesid\>
+
+Perform a Link Metrics query (Forward Tracking Series).
+
+- ipaddr: Peer address.
+- seriesid: The Series ID.
+
+```bash
+> linkmetrics query fe80:0:0:0:3092:f334:1455:1ad2 forward 1
+Done
+> Received Link Metrics Report from: fe80:0:0:0:3092:f334:1455:1ad2
+
+ - PDU Counter: 2 (Count/Summation)
+ - LQI: 76 (Exponential Moving Average)
+ - Margin: 82 (dB) (Exponential Moving Average)
+ - RSSI: -18 (dBm) (Exponential Moving Average)
+```
+
 ### linkquality \<extaddr\>
 
 Get the link quality on the link to a given extended address.
@@ -893,6 +1644,60 @@ Set the link quality on the link to a given extended address.
 ```bash
 > linkquality 36c1dd7a4f5201ff 3
 Done
+```
+
+### locate
+
+Gets the current state (`In Progress` or `Idle`) of anycast locator.
+
+`OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE` is required.
+
+```bash
+> locate
+Idle
+Done
+
+> locate fdde:ad00:beef:0:0:ff:fe00:fc10
+
+> locate
+In Progress
+Done
+```
+
+### locate \<anycastaddr\>
+
+Locate the closest destination of an anycast address (i.e., find the destination's mesh local EID and RLOC16).
+
+`OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE` is required.
+
+The closest destination is determined based on the the current routing table and path costs within the Thread mesh.
+
+Locate the leader using its anycast address:
+
+```bash
+> locate fdde:ad00:beef:0:0:ff:fe00:fc00
+fdde:ad00:beef:0:d9d3:9000:16b:d03b 0xc800
+Done
+```
+
+Locate the closest destination of a service anycast address:
+
+```bash
+
+> srp server enable
+Done
+
+> netdata show
+Prefixes:
+Routes:
+Services:
+44970 5d c002 s c800
+44970 5d c002 s cc00
+Done
+
+> locate fdde:ad00:beef:0:0:ff:fe00:fc10
+fdde:ad00:beef:0:a477:dc98:a4e4:71ea 0xcc00
+done
 ```
 
 ### log filename \<filename\>
@@ -921,22 +1726,42 @@ Set the log level.
 Done
 ```
 
-### masterkey
+### mliid \<iid\>
 
-Get the Thread Master Key value.
+Set the Mesh Local IID.
+
+It must be used before Thread stack is enabled.
+
+Only for testing/reference device.
 
 ```bash
-> masterkey
-00112233445566778899aabbccddeeff
+> mliid 1122334455667788
 Done
 ```
 
-### masterkey \<key\>
+### mlr reg \<ipaddr\> ... [timeout]
 
-Set the Thread Master Key value.
+Register Multicast Listeners to Primary Backbone Router, with an optional `timeout` (in seconds).
+
+Omit `timeout` to use the default MLR timeout on the Primary Backbone Router.
+
+Use `timeout = 0` to deregister Multicast Listeners.
+
+NOTE: Only for Thread 1.2 Commissioner FTD device.
 
 ```bash
-> masterkey 00112233445566778899aabbccddeeff
+> mlr reg ff04::1
+status 0, 0 failed
+Done
+> mlr reg ff04::1 ff04::2 ff02::1
+status 2, 1 failed
+ff02:0:0:0:0:0:0:1
+Done
+> mlr reg ff04::1 ff04::2 1000
+status 0, 0 failed
+Done
+> mlr reg ff04::1 ff04::2 0
+status 0, 0 failed
 Done
 ```
 
@@ -944,28 +1769,70 @@ Done
 
 Get the Thread Device Mode value.
 
+- -: no flags set (rx-off-when-idle, minimal Thread device, stable network data)
 - r: rx-on-when-idle
-- s: Secure IEEE 802.15.4 data requests
 - d: Full Thread Device
 - n: Full Network Data
 
 ```bash
 > mode
-rsdn
+rdn
 Done
 ```
 
-### mode [rsdn]
+### mode [rdn]
 
 Set the Thread Device Mode value.
 
+- -: no flags set (rx-off-when-idle, minimal Thread device, stable network data)
 - r: rx-on-when-idle
-- s: Secure IEEE 802.15.4 data requests
 - d: Full Thread Device
 - n: Full Network Data
 
 ```bash
-> mode rsdn
+> mode rdn
+Done
+```
+
+```bash
+> mode -
+Done
+```
+
+### multiradio
+
+Get the list of supported radio links by the device.
+
+This command is always available, even when only a single radio is supported by the device.
+
+```bash
+> multiradio
+[15.4, TREL]
+Done
+```
+
+### multiradio neighbor list
+
+Get the list of neighbors and their supported radios and their preference.
+
+This command is only available when device supports more than one radio link.
+
+```bash
+> multiradio neighbor list
+ExtAddr:3a65bc38dbe4a5be, RLOC16:0xcc00, Radios:[15.4(255), TREL(255)]
+ExtAddr:17df23452ee4a4be, RLOC16:0x1300, Radios:[15.4(255)]
+Done
+```
+
+### multiradio neighbor \<ext address\>
+
+Get the radio info for specific neighbor with a given extended address.
+
+This command is only available when device supports more than one radio link.
+
+```bash
+> multiradio neighbor 3a65bc38dbe4a5be
+[15.4(255), TREL(255)]
 Done
 ```
 
@@ -985,30 +1852,26 @@ Print table of neighbors.
 
 ```bash
 > neighbor table
-| Role | RLOC16 | Age | Avg RSSI | Last RSSI |R|S|D|N| Extended MAC     |
-+------+--------+-----+----------+-----------+-+-+-+-+------------------+
-|   C  | 0xcc01 |  96 |      -46 |       -46 |1|1|1|1| 1eb9ba8a6522636b |
-|   R  | 0xc800 |   2 |      -29 |       -29 |1|0|1|1| 9a91556102c39ddb |
-|   R  | 0xf000 |   3 |      -28 |       -28 |1|0|1|1| 0ad7ed6beaa6016d |
+| Role | RLOC16 | Age | Avg RSSI | Last RSSI |R|D|N| Extended MAC     |
++------+--------+-----+----------+-----------+-+-+-+------------------+
+|   C  | 0xcc01 |  96 |      -46 |       -46 |1|1|1| 1eb9ba8a6522636b |
+|   R  | 0xc800 |   2 |      -29 |       -29 |1|1|1| 9a91556102c39ddb |
+|   R  | 0xf000 |   3 |      -28 |       -28 |1|1|1| 0ad7ed6beaa6016d |
 Done
 ```
 
-### netdataregister
+### netstat
 
-Register local network data with Thread Leader.
-
-```bash
-> netdataregister
-Done
-```
-
-### netdatashow
-
-Show Thread Leader network data.
+List all UDP sockets.
 
 ```bash
-> netdatashow
-08040b020000
+> netstat
+| Local Address                                   | Peer Address                                    |
++-------------------------------------------------+-------------------------------------------------+
+| [0:0:0:0:0:0:0:0]:49153                         | [0:0:0:0:0:0:0:0]:0                             |
+| [0:0:0:0:0:0:0:0]:49152                         | [0:0:0:0:0:0:0:0]:0                             |
+| [0:0:0:0:0:0:0:0]:61631                         | [0:0:0:0:0:0:0:0]:0                             |
+| [0:0:0:0:0:0:0:0]:19788                         | [0:0:0:0:0:0:0:0]:0                             |
 Done
 ```
 
@@ -1067,6 +1930,25 @@ Set the NETWORK_ID_TIMEOUT parameter used in the Router role.
 
 ```bash
 > networkidtimeout 120
+Done
+```
+
+### networkkey
+
+Get the Thread Network Key value.
+
+```bash
+> networkkey
+00112233445566778899aabbccddeeff
+Done
+```
+
+### networkkey \<key\>
+
+Set the Thread Network Key value.
+
+```bash
+> networkkey 00112233445566778899aabbccddeeff
 Done
 ```
 
@@ -1145,20 +2027,60 @@ Set the assigned parent priority value: 1, 0, -1 or -2.
 Done
 ```
 
-### ping \<ipaddr\> [size][count] [interval][hoplimit]
+### partitionid
+
+Get the Thread Network Partition ID.
+
+```bash
+> partitionid
+4294967295
+Done
+```
+
+### partitionid preferred
+
+Get the preferred Thread Leader Partition ID.
+
+`OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is required.
+
+```bash
+> partitionid preferred
+4294967295
+Done
+```
+
+### partitionid preferred \<partitionid\>
+
+Set the preferred Thread Leader Partition ID.
+
+`OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is required.
+
+```bash
+> partitionid preferred 0xffffffff
+Done
+```
+
+### ping \[-I source\] \<ipaddr\> \[size\] \[count\] \[interval\] \[hoplimit\] \[timeout\]
 
 Send an ICMPv6 Echo Request.
 
+- source: The source IPv6 address of the echo request.
 - size: The number of data bytes to be sent.
 - count: The number of ICMPv6 Echo Requests to be sent.
 - interval: The interval between two consecutive ICMPv6 Echo Requests in seconds. The value may have fractional form, for example `0.5`.
 - hoplimit: The hoplimit of ICMPv6 Echo Request to be sent.
+- timeout: Time in seconds to wait for the final ICMPv6 Echo Reply after sending out the request. The value may have fractional form, for example `3.5`.
 
 ```bash
-> ping fdde:ad00:beef:0:558:f56b:d688:799
-16 bytes from fdde:ad00:beef:0:558:f56b:d688:799: icmp_seq=1 hlim=64 time=28ms
+> ping fd00:db8:0:0:76b:6a05:3ae9:a61a
+> 16 bytes from fd00:db8:0:0:76b:6a05:3ae9:a61a: icmp_seq=5 hlim=64 time=0ms
+1 packets transmitted, 1 packets received. Packet loss = 0.0%. Round-trip min/avg/max = 0/0.0/0 ms.
+Done
 
-> ping ff05::1 100 1 1 1
+> ping -I fd00:db8:0:0:76b:6a05:3ae9:a61a ff02::1 100 1 1 1
+> 108 bytes from fd00:db8:0:0:f605:fb4b:d429:d59a: icmp_seq=4 hlim=64 time=7ms
+1 packets transmitted, 1 packets received. Round-trip min/avg/max = 7/7.0/7 ms.
+Done
 ```
 
 ### ping stop
@@ -1245,6 +2167,16 @@ Done
 Done
 ```
 
+### prefix meshlocal
+
+Get the mesh local prefix.
+
+```bash
+> prefix meshlocal
+fdde:ad00:beef:0::/64
+Done
+```
+
 ### prefix remove \<prefix\>
 
 Invalidate a prefix in the Network Data.
@@ -1279,6 +2211,70 @@ Disable radio promiscuous operation.
 
 ```bash
 > promiscuous disable
+Done
+```
+
+### radiofilter
+
+`OPENTHREAD_CONFIG_MAC_FILTER_ENABLE` is required.
+
+The radio filter is mainly intended for testing. It can be used to temporarily block all tx/rx on the IEEE 802.15.4 radio.
+
+When radio filter is enabled, radio is put to sleep instead of receive (to ensure device does not receive any frame and/or potentially send ack). Also the frame transmission requests return immediately without sending the frame over the air (return "no ack" error if ack is requested, otherwise return success).
+
+Get radio filter status (enabled or disabled).
+
+```bash
+> radiofilter
+Disabled
+Done
+```
+
+### radiofilter enable
+
+`OPENTHREAD_CONFIG_MAC_FILTER_ENABLE` is required.
+
+Enable radio radio filter.
+
+```bash
+> radiofilter enable
+Done
+```
+
+### radiofilter disable
+
+`OPENTHREAD_CONFIG_MAC_FILTER_ENABLE` is required.
+
+Disable radio radio filter.
+
+```bash
+> radiofilter disable
+Done
+```
+
+### rcp
+
+RCP-related commands.
+
+### region
+
+Set the radio region, this can affect the transmit power limit.
+
+```bash
+> region US
+Done
+> region
+US
+Done
+```
+
+### rcp version
+
+Print RCP version string.
+
+```bash
+> rcp version
+OPENTHREAD/20191113-00825-g82053cc9d-dirty; SIMULATION; Jun  4 2020 17:53:16
 Done
 ```
 
@@ -1319,11 +2315,12 @@ Get the external route list in the local Network Data.
 Done
 ```
 
-### route add \<prefix\> [s][prf]
+### route add \<prefix\> [sn][prf]
 
 Add a valid external route to the Network Data.
 
 - s: Stable flag
+- n: NAT64 flag
 - prf: Default Router Preference, which may be: 'high', 'med', or 'low'.
 
 ```bash
@@ -1356,10 +2353,10 @@ Print table of routers.
 
 ```bash
 > router table
-| ID | RLOC16 | Next Hop | Path Cost | LQ In | LQ Out | Age | Extended MAC     |
-+----+--------+----------+-----------+-------+--------+-----+------------------+
-| 21 | 0x5400 |       21 |         0 |     3 |      3 |   5 | d28d7f875888fccb |
-| 56 | 0xe000 |       56 |         0 |     0 |      0 | 182 | f2d92a82c8d8fe43 |
+| ID | RLOC16 | Next Hop | Path Cost | LQ In | LQ Out | Age | Extended MAC     | Link |
++----+--------+----------+-----------+-------+--------+-----+------------------+------+
+| 22 | 0x5800 |       63 |         0 |     0 |      0 |   0 | 0aeb8196c9f61658 |    0 |
+| 49 | 0xc400 |       63 |         0 |     3 |      3 |   0 | faa1c03908e2dbf2 |    1 |
 Done
 ```
 
@@ -1490,13 +2487,13 @@ Perform an IEEE 802.15.4 Active Scan.
 
 ```bash
 > scan
-| J | Network Name     | Extended PAN     | PAN  | MAC Address      | Ch | dBm | LQI |
-+---+------------------+------------------+------+------------------+----+-----+-----+
-| 0 | OpenThread       | dead00beef00cafe | ffff | f1d92a82c8d8fe43 | 11 | -20 |   0 |
+| PAN  | MAC Address      | Ch | dBm | LQI |
++------+------------------+----+-----+-----+
+| ffff | f1d92a82c8d8fe43 | 11 | -20 |   0 |
 Done
 ```
 
-### scan energy \[duration\]
+### scan energy \[duration\] \[channel\]
 
 Perform an IEEE 802.15.4 Energy Scan.
 
@@ -1522,6 +2519,47 @@ Perform an IEEE 802.15.4 Energy Scan.
 | 24 |  -81 |
 | 25 |  -88 |
 | 26 |  -71 |
+Done
+```
+
+```bash
+> scan energy 10 20
+| Ch | RSSI |
++----+------+
+| 20 |  -82 |
+Done
+```
+
+### service
+
+Module for controlling service registration in Network Data. Each change in service registration must be sent to leader by `netdata register` command before taking effect.
+
+### service add \<enterpriseNumber\> \<serviceData\> \<serverData\>
+
+Add service to the Network Data.
+
+- enterpriseNumber: IANA enterprise number
+- serviceData: hex-encoded binary service data
+- serverData: hex-encoded binary server data
+
+```bash
+> service add 44970 112233 aabbcc
+Done
+> netdata register
+Done
+```
+
+### service remove \<enterpriseNumber\> \<serviceData\>
+
+Remove service from Network Data.
+
+- enterpriseNumber: IANA enterprise number
+- serviceData: hext-encoded binary service data
+
+```bash
+> service remove 44970 112233
+Done
+> netdata register
 Done
 ```
 
@@ -1601,6 +2639,111 @@ Get the Thread Version number.
 Done
 ```
 
+### trel
+
+Indicate whether TREL radio operation is enabled or not.
+
+`OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE` is required for all `trel` sub-commands.
+
+```bash
+> trel
+Enabled
+Done
+```
+
+### trel enable
+
+Enable TREL operation.
+
+```bash
+> trel enable
+Done
+```
+
+### trel disable
+
+Disable TREL operation.
+
+```bash
+> trel disable
+Done
+```
+
+### trel filter
+
+Indicate whether TREL filter mode is enabled or not
+
+When filter mode is enabled, any rx and tx traffic through TREL interface is silently dropped. This is mainly intended for use during testing.
+
+```bash
+> trel filter
+Disabled
+Done
+```
+
+### trel filter enable
+
+Enable TREL filter mode.
+
+```bash
+> trel filter enable
+Done
+```
+
+### trel filter disable
+
+Disable TREL filter mode.
+
+```bash
+> trel filter disable
+Done
+```
+
+### trel peers [list]
+
+Get the TREL peer table in table format or as a list.
+
+```bash
+> trel peers
+| No  | Ext MAC Address  | Ext PAN Id       | IPv6 Socket Address                              |
++-----+------------------+------------------+--------------------------------------------------+
+|   1 | 5e5785ba3a63adb9 | f0d9c001f00d2e43 | [fe80:0:0:0:cc79:2a29:d311:1aea]:9202            |
+|   2 | ce792a29d3111aea | dead00beef00cafe | [fe80:0:0:0:5c57:85ba:3a63:adb9]:9203            |
+Done
+
+> trel peers list
+001 ExtAddr:5e5785ba3a63adb9 ExtPanId:f0d9c001f00d2e43 SockAddr:[fe80:0:0:0:cc79:2a29:d311:1aea]:9202
+002 ExtAddr:ce792a29d3111aea ExtPanId:dead00beef00cafe SockAddr:[fe80:0:0:0:5c57:85ba:3a63:adb9]:9203
+>>>>>>> [trel] implement new TREL model using DNS-SD
+Done
+```
+
+### tvcheck enable
+
+Enable thread version check when upgrading to router or leader.
+
+Note: Thread version check is enabled by default.
+
+`OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is required.
+
+```bash
+> tvcheck enable
+Done
+```
+
+### tvcheck disable
+
+Enable thread version check when upgrading to router or leader.
+
+Note: Thread version check is enabled by default.
+
+`OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is required.
+
+```bash
+> tvcheck disable
+Done
+```
+
 ### txpower
 
 Get the transmit power in dBm.
@@ -1613,11 +2756,74 @@ Done
 
 ### txpower \<txpower\>
 
-Set the transmit power.
+Set the transmit power in dBm.
 
 ```bash
 > txpower -10
 Done
+```
+
+### unsecureport add \<port\>
+
+Add a port to the allowed unsecured port list.
+
+```bash
+> unsecureport add 1234
+Done
+```
+
+### unsecureport remove \<port\>
+
+Remove a port from the allowed unsecured port list.
+
+```bash
+> unsecureport remove 1234
+Done
+```
+
+### unsecureport remove all
+
+Remove all ports from the allowed unsecured port list.
+
+```bash
+> unsecureport remove all
+Done
+```
+
+### unsecureport get
+
+Print all ports from the allowed unsecured port list.
+
+```bash
+> unsecureport get
+1234
+Done
+```
+
+### uptime
+
+This command requires `OPENTHREAD_CONFIG_UPTIME_ENABLE` to be enabled.
+
+Print the OpenThread stack uptime (duration since OpenThread stack initialization).
+
+```bash
+> uptime
+12:46:35.469
+Done
+>
+```
+
+### uptime ms
+
+This command requires `OPENTHREAD_CONFIG_UPTIME_ENABLE` to be enabled.
+
+Print the OpenThread stack uptime in msec.
+
+```bash
+> uptime ms
+426238
+Done
+>
 ```
 
 ### version
@@ -1627,6 +2833,16 @@ Print the build version information.
 ```bash
 > version
 OPENTHREAD/gf4f2f04; Jul  1 2016 17:00:09
+Done
+```
+
+### version api
+
+Print API version number.
+
+```bash
+> version api
+28
 Done
 ```
 
@@ -1668,13 +2884,27 @@ Set the number of indirect TX retries on the MAC layer.
 Done
 ```
 
+### mac send \<op\>
+
+Instruct an Rx-Off-When-Idle device to send a mac frame to its parent. The mac frame could be either a mac data request or an empty mac data frame. Use `datarequest` to send a mac data request and `data` to send an empty mac data. This feature is for certification, it can only be used when `OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is enabled.
+
+```bash
+> mac send datarequest
+Done
+```
+
+```bash
+> mac send emptydata
+Done
+```
+
 ### macfilter
 
 List the macfilter status, including address and received signal strength filter settings.
 
 ```bash
 > macfilter
-Address Mode: Whitelist
+Address Mode: Allowlist
 0f6127e33af6b403 : rss -95 (lqi 1)
 0f6127e33af6b402
 RssIn List:
@@ -1689,7 +2919,7 @@ List the address filter status.
 
 ```bash
 > macfilter addr
-Whitelist
+Allowlist
 0f6127e33af6b403 : rss -95 (lqi 1)
 0f6127e33af6b402
 Done
@@ -1704,21 +2934,21 @@ Disable address filter mode.
 Done
 ```
 
-### macfilter addr whitelist
+### macfilter addr allowlist
 
-Enable whitelist address filter mode.
+Enable allowlist address filter mode.
 
 ```bash
-> macfilter addr whitelist
+> macfilter addr allowlist
 Done
 ```
 
-### macfilter addr blacklist
+### macfilter addr denylist
 
-Enable blacklist address filter mode.
+Enable denylist address filter mode.
 
 ```bash
-> macfilter addr blacklist
+> macfilter addr denylist
 Done
 ```
 
@@ -1819,44 +3049,5 @@ Done
 ### diag
 
 Factory Diagnostics module is enabled only when building OpenThread with `OPENTHREAD_CONFIG_DIAG_ENABLE=1` option. Go [diagnostics module][diag] for more information.
-
-### service
-
-Module for controlling service registration in Network Data. Each change in service registration must be sent to leader by `netdataregister` command before taking effect.
-
-### service add \<enterpriseNumber\> \<serviceData\> \<serverData\>
-
-Add service to the Network Data.
-
-```bash
-> service add 44970 foo bar
-Done
-> netdataregister
-Done
-> ipaddr
-fdde:ad00:beef:0:0:ff:fe00:fc10
-fdde:ad00:beef:0:0:ff:fe00:fc00
-fdde:ad00:beef:0:0:ff:fe00:7c00
-fe80:0:0:0:1486:2f57:3c:6e10
-fdde:ad00:beef:0:8ca4:19ed:217a:eff9
-Done
-```
-
-### service remove \<enterpriseNumber\> \<serviceData\>
-
-Remove service from Network Data.
-
-```bash
-> service remove 44970 foo
-Done
-> netdataregister
-Done
-> ipaddr
-fdde:ad00:beef:0:0:ff:fe00:fc00
-fdde:ad00:beef:0:0:ff:fe00:7c00
-fe80:0:0:0:1486:2f57:3c:6e10
-fdde:ad00:beef:0:8ca4:19ed:217a:eff9
-Done
-```
 
 [diag]: ../../src/core/diags/README.md

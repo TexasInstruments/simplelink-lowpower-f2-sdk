@@ -76,8 +76,6 @@
 #define HeapBuf_Handle_label ti_sysbios_heaps_HeapBuf_Handle_label
 #define HeapBuf_Handle_name ti_sysbios_heaps_HeapBuf_Handle_name
 #define HeapBuf_Instance_init ti_sysbios_heaps_HeapBuf_Instance_init
-#define HeapBuf_Object_count ti_sysbios_heaps_HeapBuf_Object_count
-#define HeapBuf_Object_get ti_sysbios_heaps_HeapBuf_Object_get
 #define HeapBuf_Object_first ti_sysbios_heaps_HeapBuf_Object_first
 #define HeapBuf_Object_next ti_sysbios_heaps_HeapBuf_Object_next
 #define HeapBuf_Object_sizeof ti_sysbios_heaps_HeapBuf_Object_sizeof
@@ -145,8 +143,6 @@
 #undef HeapBuf_Handle_label
 #undef HeapBuf_Handle_name
 #undef HeapBuf_Instance_init
-#undef HeapBuf_Object_count
-#undef HeapBuf_Object_get
 #undef HeapBuf_Object_first
 #undef HeapBuf_Object_next
 #undef HeapBuf_Object_sizeof

@@ -991,8 +991,14 @@ public class ti_sysbios_family_arm_cc26xx
             sb.append("pkg.packageRepository = xdc.om['ti.sysbios.family.arm.cc26xx$$stat$root'];\n");
         sb.append("}\n");
         sb.append("pkg.build.libraries = [\n");
+            sb.append("'lib/debug/ti.sysbios.family.arm.cc26xx.aem3',\n");
+            sb.append("'lib/debug/ti.sysbios.family.arm.cc26xx.am3g',\n");
+            sb.append("'lib/debug/ti.sysbios.family.arm.cc26xx.arm3',\n");
         sb.append("];\n");
         sb.append("pkg.build.libDesc = [\n");
+            sb.append("['lib/debug/ti.sysbios.family.arm.cc26xx.aem3', {target: 'ti.targets.arm.elf.M3', suffix: 'em3'}],\n");
+            sb.append("['lib/debug/ti.sysbios.family.arm.cc26xx.am3g', {target: 'gnu.targets.arm.M3', suffix: 'm3g'}],\n");
+            sb.append("['lib/debug/ti.sysbios.family.arm.cc26xx.arm3', {target: 'iar.targets.arm.M3', suffix: 'rm3'}],\n");
         sb.append("];\n");
         Global.eval(sb.toString());
     }

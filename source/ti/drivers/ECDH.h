@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,8 +87,7 @@
  * must do the following:
  *      - Generate the keying material for the private key. This keying material must
  *        be an integer in the interval [1, n - 1], where n is the order of the curve.
- *        It should be stored in an array with the least significant byte of the integer
- *        hex representation stored in the highest address of the array (big-endian).
+ *        It can be stored in big-endian or little-endian format.
  *        The array should be the same length as the curve parameters of the curve used.
  *        The driver validates private keys against the provided curve by default.
  *      - Initialize the private key CryptoKey. CryptoKeys are opaque data structures and representations
@@ -101,13 +100,14 @@
  *        All devices support plaintext CryptoKeys.
  *      - Initialize a blank CryptoKey for the public key. The CryptoKey will keep track
  *        of where the keying material for the public key should be copied and how
- *        long it is. It should have twice the length of the private key plus one
- *        for SEC 1-based octet string format public keys or the length of the private
- *        key for RFC 7748 Montgomery curve X-only public keys.
+ *        long it is. SEC 1-based big-endian format public keys should have key material twice the length
+ *        of the private key plus one. Little-endian format public keys should have key material the
+ *        length of the private key for Montgomery curve X-only public keys or have key material twice
+ *        the length of the private for other curves
  *      - Initialize the ECDH_OperationGeneratePublicKey struct and then populate it. By
- *        default, octet string public keys will be generated.
+ *        default, big-endian public keys will be generated.
  *      - If using RFC 7748-style public keys, initialize the operation's public key
- *        data format to be ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY.
+ *        data format to be ECDH_LITTLE_ENDIAN_KEY.
  *      - Call ECDH_generatePublicKey(). The generated keying material will be copied
  *        according the the CryptoKey passed in as the public key parameter. The CryptoKey
  *        will no longer be considered 'blank' after the operation.
@@ -129,12 +129,10 @@
  *      - Initialize a blank CryptoKey with the same size as the previously initialized
  *        public key.
  *      - Initialize the ECDH_OperationComputeSharedSecret struct and then populate it. By
- *        default, octet string public keys will be assumed and octet string shared secrets
+ *        default, big-endian input keys will be assumed and big-endian shared secrets
  *        will be generated.
- *      - If importing RFC 7748-style public keys, initialize the operation's public key
- *        data format to be ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY.
- *      - If generating RFC 7748-style shared secrets, initialize the operation's shared secret
- *        data format to be ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY.
+ *      - If importing RFC 7748-style public keys, initialize the operation's key material
+ *        endianess to be ECDH_LITTLE_ENDIAN_KEY.
  *      - Call ECDH_computeSharedSecret(). The shared secret will be copied to a location
  *        according to the shared secret CryptoKey passed to the function call. The driver
  *        will validate the supplied public key and reject invalid ones.
@@ -158,23 +156,23 @@
  * other ECC schemes.
  *
  * ## Key Formatting
- * By default, the ECDH API expects the private and public keys to be formatted in octet
- * string format. The details of octet string formatting can be found in
+ * By default, the ECDH API expects the private and public keys to be formatted in
+ * big-endian format. The details of octet string formatting can be found in
  * SEC 1: Elliptic Curve Cryptography.
  *
- * Private keys are formatted as big-endian integers of the same length as the
- * curve length.
+ * Private keys can be formatted as big-endian or little-endian integers of the same
+ * length as the curve length.
  *
  * Public keys and shared secrets are points on an elliptic curve. These points can
  * be expressed in several ways. The most common one is in affine coordinates as an
  * X,Y pair.
  * This API uses points expressed in uncompressed affine coordinates by default.
- * The octet string format requires a formatting byte in the first byte of the
+ * The big-endian format requires a formatting byte in the first byte of the
  * public key. When using uncompressed affine coordinates, this is the value
  * 0x04.
  * The point itself is stored as a concatenated array of X followed by Y.
- * X and Y are big-endian. Some implementations do not require or yield
- * the Y coordinate for ECDH on certain curves. It is recommended that the full
+ * X and Y maybe in big-endian or little-endian. Some implementations do not require or
+ * yield the Y coordinate for ECDH on certain curves. It is recommended that the full
  * keying material buffer of twice the curve param length is used to facilitate
  * code-reuse. Implementations that do not use the Y coordinate will zero-out
  * the Y-coordinate whenever they write a point to the CryptoKey.
@@ -228,8 +226,8 @@
  * CryptoKeyPlaintext_initKey(&theirPublicKey, theirPublicKeyingMaterial, sizeof(theirPublicKeyingMaterial));
  * CryptoKeyPlaintext_initBlankKey(&sharedSecret, sharedSecretKeyingMaterial, sizeof(sharedSecretKeyingMaterial));
  *
- * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific implementation
- * ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
+ * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific
+ * implementation ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
  * operationComputeSharedSecret.curve                      = &ECCParams_NISTP256;
  * operationComputeSharedSecret.myPrivateKey               = &myPrivateKey;
  * operationComputeSharedSecret.theirPublicKey             = &theirPublicKey;
@@ -263,8 +261,8 @@
  * operationGeneratePublicKey.curve                 = &ECCParams_Curve25519;
  * operationGeneratePublicKey.myPrivateKey          = &myPrivateKey;
  * operationGeneratePublicKey.myPublicKey           = &myPublicKey;
- * // If generating an RFC 7748 X-Only formatted key, we use the following public key data format:
- * operationGeneratePublicKey.publicKeyDataFormat   = ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY;
+ * // If generating public key in little-endian format, we use the following format:
+ * operationGeneratePublicKey.keyMaterialEndianness = ECDH_LITTLE_ENDIAN_KEY;
  *
  * // Generate the keying material for myPublicKey and store it in myPublicKeyingMaterial
  * operationResult = ECDH_generatePublicKey(ecdhHandle, &operationGeneratePublicKey);
@@ -276,16 +274,14 @@
  * CryptoKeyPlaintext_initKey(&theirPublicKey, theirPublicKeyingMaterial, sizeof(theirPublicKeyingMaterial));
  * CryptoKeyPlaintext_initBlankKey(&sharedSecret, sharedSecretKeyingMaterial, sizeof(sharedSecretKeyingMaterial));
  *
- * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific implementation
- * ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
+ * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific
+ * implementation ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
  * operationComputeSharedSecret.curve                      = &ECCParams_Curve25519;
  * operationComputeSharedSecret.myPrivateKey               = &myPrivateKey;
  * operationComputeSharedSecret.theirPublicKey             = &theirPublicKey;
  * operationComputeSharedSecret.sharedSecret               = &sharedSecret;
- * // If receiving an RFC 7748 X-Only formatted key, we specify the input format:
- * operationComputeSharedSecret.publicKeyDataFormat        = ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY;
- * // If agreeing on an RFC 7748 X-Only formatted shared secret, we specify the shared secret format
- * operationComputeSharedSecret.sharedSecretDataFormat     = ECDH_PUBLIC_KEY_DATA_FORMAT_MONTGOMERY_X_ONLY;
+ * // If receiving and generating keys in little-endian format, we use the following format:
+ * operationComputeSharedSecret.keyMaterialEndianness      = ECDH_LITTLE_ENDIAN_KEY;
  *
  * // Compute the shared secret and copy it to sharedSecretKeyingMaterial
  * operationResult = ECDH_computeSharedSecret(ecdhHandle, &operationComputeSharedSecret);
@@ -363,8 +359,8 @@
  * CryptoKeyPlaintext_initKey(&theirPublicKey, theirPublicKeyingMaterial, sizeof(theirPublicKeyingMaterial));
  * CryptoKeyPlaintext_initBlankKey(&sharedSecret, sharedSecretKeyingMaterial, sizeof(sharedSecretKeyingMaterial));
  *
- * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific implementation
- * ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
+ * // The ECC_NISTP256 struct is provided in ti/drivers/types/EccParams.h and the corresponding device-specific
+ * implementation ECDH_OperationComputeSharedSecret_init(&operationComputeSharedSecret);
  * operationComputeSharedSecret.curve                      = &ECCParams_NISTP256;
  * operationComputeSharedSecret.myPrivateKey               = &myPrivateKey;
  * operationComputeSharedSecret.theirPublicKey             = &theirPublicKey;
@@ -389,7 +385,6 @@
  *
  *
  */
-
 
 #ifndef ti_drivers_ECDH__include
 #define ti_drivers_ECDH__include
@@ -417,7 +412,7 @@ extern "C" {
  * #define ECCXYZ_STATUS_ERROR2    ECDH_STATUS_RESERVED - 2
  * @endcode
  */
-#define ECDH_STATUS_RESERVED        (-32)
+#define ECDH_STATUS_RESERVED (-32)
 
 /*!
  * @brief   Successful status code.
@@ -425,7 +420,7 @@ extern "C" {
  * Functions return ECDH_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define ECDH_STATUS_SUCCESS         (0)
+#define ECDH_STATUS_SUCCESS (0)
 
 /*!
  * @brief   Generic error status code.
@@ -433,7 +428,7 @@ extern "C" {
  * Functions return ECDH_STATUS_ERROR if the function was not executed
  * successfully.
  */
-#define ECDH_STATUS_ERROR           (-1)
+#define ECDH_STATUS_ERROR (-1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -512,12 +507,13 @@ extern "C" {
  *
  *  @sa     ECDH_init()
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } ECDH_Config;
 
 /*!
@@ -551,86 +547,94 @@ typedef ECDH_Config *ECDH_Handle;
  * |ECDH_RETURN_BEHAVIOR_POLLING    | X     | X     | X     |
  *
  */
-typedef enum {
-    ECDH_RETURN_BEHAVIOR_CALLBACK = 1,      /*!< The function call will return immediately while the
-                                             *   ECC operation goes on in the background. The registered
-                                             *   callback function is called after the operation completes.
-                                             *   The context the callback function is called (task, HWI, SWI)
-                                             *   is implementation-dependent.
-                                             */
-    ECDH_RETURN_BEHAVIOR_BLOCKING = 2,      /*!< The function call will block while ECC operation goes
-                                             *   on in the background. ECC operation results are available
-                                             *   after the function returns.
-                                             */
-    ECDH_RETURN_BEHAVIOR_POLLING  = 4,      /*!< The function call will continuously poll a flag while ECC
-                                             *   operation goes on in the background. ECC operation results
-                                             *   are available after the function returns.
-                                             */
+typedef enum
+{
+    ECDH_RETURN_BEHAVIOR_CALLBACK = 1, /*!< The function call will return immediately while the
+                                        *   ECC operation goes on in the background. The registered
+                                        *   callback function is called after the operation completes.
+                                        *   The context the callback function is called (task, HWI, SWI)
+                                        *   is implementation-dependent.
+                                        */
+    ECDH_RETURN_BEHAVIOR_BLOCKING = 2, /*!< The function call will block while ECC operation goes
+                                        *   on in the background. ECC operation results are available
+                                        *   after the function returns.
+                                        */
+    ECDH_RETURN_BEHAVIOR_POLLING  = 4, /*!< The function call will continuously poll a flag while ECC
+                                        *   operation goes on in the background. ECC operation results
+                                        *   are available after the function returns.
+                                        */
 } ECDH_ReturnBehavior;
 
-typedef enum {
-    ECDH_BIG_ENDIAN_KEY       = 0,  /*!< All ECDH key material (private key, public key, and shared secret (when used))
-                                     *   are in big-endian format
-                                     */
-    ECDH_LITTLE_ENDIAN_KEY    = 1,  /*!< All ECDH key material (private key, public key, and shared secret (when used))
-                                     *   are in little-endian format
-                                     */
-} ECDH_KeyMaterialEndianness; 
+typedef enum
+{
+    ECDH_BIG_ENDIAN_KEY    = 0, /*!< All ECDH key material (private key, public key, and shared secret (when used))
+                                 *   are in big-endian format
+                                 */
+    ECDH_LITTLE_ENDIAN_KEY = 1, /*!< All ECDH key material (private key, public key, and shared secret (when used))
+                                 *   are in little-endian format
+                                 */
+} ECDH_KeyMaterialEndianness;
 
 /*!
  *  @brief  Struct containing the parameters required to generate a public key.
  */
-typedef struct {
-    const ECCParams_CurveParams     *curve;                   /*!< A pointer to the elliptic curve parameters for myPrivateKey */
-    const CryptoKey                 *myPrivateKey;            /*!< A pointer to the private ECC key from which the new public
-                                                               *   key will be generated. (maybe your static key)
-                                                               */
-    CryptoKey                       *myPublicKey;             /*!< A pointer to a public ECC key which has been initialized blank.
-                                                               *   Newly generated key will be placed in this location.
-                                                               *   The formatting byte will be filled in by the driver if the
-                                                               *   publicKeyDataFormat requires it.
-                                                               */
-    ECDH_KeyMaterialEndianness      keyMaterialEndianness;    /*!< All keyMaterials, including myPrivate and myPublicKey,
-                                                               *   are either in Big Endian (default) or Little Endian format
-                                                               */
+typedef struct
+{
+    const ECCParams_CurveParams *curve; /*!< A pointer to the elliptic curve parameters for myPrivateKey */
+    const CryptoKey *myPrivateKey;      /*!< A pointer to the private ECC key from which the new public
+                                         *   key will be generated. (maybe your static key)
+                                         */
+    CryptoKey *myPublicKey;             /*!< A pointer to a public ECC key which has been initialized blank.
+                                         *   Newly generated key will be placed in this location.
+                                         *   The formatting byte will be filled in by the driver if the
+                                         *   keyMaterialEndianness requires it.
+                                         */
+    ECDH_KeyMaterialEndianness keyMaterialEndianness; /*!< All keyMaterials, including myPrivate and myPublicKey,
+                                                       *   are either in big-endian (default) or little-endian format
+                                                       */
 } ECDH_OperationGeneratePublicKey;
 
 /*!
  *  @brief  Struct containing the parameters required to compute the shared secret.
  */
-typedef struct {
-    const ECCParams_CurveParams     *curve;                   /*!< A pointer to the elliptic curve parameters for myPrivateKey.
-                                                               *   If ECDH_generateKey() was used, this should be the same private key.
-                                                               */
-    const CryptoKey                 *myPrivateKey;            /*!< A pointer to the private ECC key which will be used in to
-                                                               *   compute the shared secret.
-                                                               */
-    const CryptoKey                 *theirPublicKey;          /*!< A pointer to the public key of the party with whom the
-                                                               *   shared secret will be generated.
-                                                               */
-    CryptoKey                       *sharedSecret;            /*!< A pointer to a CryptoKey which has been initialized blank.
-                                                               *   The shared secret will be placed here.
-                                                               *   The formatting byte will be filled in by the driver if the
-                                                               *   sharedSecretDataFormat requires it.
-                                                               */
-    ECDH_KeyMaterialEndianness      keyMaterialEndianness;    /*!< All keyMaterials, including myPrivate, theirPublicKey, and sharedSecret
-                                                               *   are either in Big Endian (default) or Little Endian format
-                                                               */
+typedef struct
+{
+    const ECCParams_CurveParams *curve;               /*!< A pointer to the elliptic curve parameters for myPrivateKey.
+                                                       *   If ECDH_generateKey() was used, this should be the same private key.
+                                                       */
+    const CryptoKey *myPrivateKey;                    /*!< A pointer to the private ECC key which will be used in to
+                                                       *   compute the shared secret.
+                                                       */
+    const CryptoKey *theirPublicKey;                  /*!< A pointer to the public key of the party with whom the
+                                                       *   shared secret will be generated.
+                                                       */
+    CryptoKey *sharedSecret;                          /*!< A pointer to a CryptoKey which has been initialized blank.
+                                                       *   The shared secret will be placed here.
+                                                       *   The formatting byte will be filled in by the driver if the
+                                                       *   keyMaterialEndianness requires it.
+                                                       */
+    ECDH_KeyMaterialEndianness keyMaterialEndianness; /*!< All keyMaterials, including myPrivate, theirPublicKey, and
+                                                       *   sharedSecret are either in big-endian (default) or little-
+                                                       *   endian format
+                                                       */
 } ECDH_OperationComputeSharedSecret;
 
 /*!
  *  @brief  Union containing pointers to all supported operation structs.
  */
-typedef union {
-    ECDH_OperationGeneratePublicKey      *generatePublicKey;    /*!< A pointer to an ECDH_OperationGeneratePublicKey struct */
-    ECDH_OperationComputeSharedSecret    *computeSharedSecret;  /*!< A pointer to an ECDH_OperationGeneratePublicKey struct */
+typedef union
+{
+    ECDH_OperationGeneratePublicKey *generatePublicKey; /*!< A pointer to an ECDH_OperationGeneratePublicKey struct */
+    ECDH_OperationComputeSharedSecret *computeSharedSecret; /*!< A pointer to an ECDH_OperationGeneratePublicKey struct
+                                                             */
 } ECDH_Operation;
 
 /*!
  *  @brief  Enum for the operation types supported by the driver.
  */
-typedef enum {
-    ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY = 1,
+typedef enum
+{
+    ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY   = 1,
     ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET = 2,
 } ECDH_OperationType;
 
@@ -652,10 +656,10 @@ typedef enum {
  *  @param  operationType This parameter determined which operation the
  *          callback refers to and which type to access through /c operation.
  */
-typedef void (*ECDH_CallbackFxn) (ECDH_Handle handle,
-                                  int_fast16_t returnStatus,
-                                  ECDH_Operation operation,
-                                  ECDH_OperationType operationType);
+typedef void (*ECDH_CallbackFxn)(ECDH_Handle handle,
+                                 int_fast16_t returnStatus,
+                                 ECDH_Operation operation,
+                                 ECDH_OperationType operationType);
 
 /*!
  *  @brief  ECC Parameters
@@ -665,13 +669,14 @@ typedef void (*ECDH_CallbackFxn) (ECDH_Handle handle,
  *
  *  @sa     ECDH_Params_init()
  */
-typedef struct {
-    ECDH_ReturnBehavior     returnBehavior;             /*!< Blocking, callback, or polling return behavior */
-    ECDH_CallbackFxn        callbackFxn;                /*!< Callback function pointer */
-    uint32_t                timeout;                    /*!< Timeout of the operation */
-    void                   *custom;                     /*!< Custom argument used by driver
-                                                         *   implementation
-                                                         */
+typedef struct
+{
+    ECDH_ReturnBehavior returnBehavior; /*!< Blocking, callback, or polling return behavior */
+    ECDH_CallbackFxn callbackFxn;       /*!< Callback function pointer */
+    uint32_t timeout;                   /*!< Timeout of the operation */
+    void *custom;                       /*!< Custom argument used by driver
+                                         *   implementation
+                                         */
 } ECDH_Params;
 
 /*!
@@ -771,11 +776,13 @@ void ECDH_OperationComputeSharedSecret_init(ECDH_OperationComputeSharedSecret *o
  *
  *  @retval #ECDH_STATUS_SUCCESS                          The operation succeeded.
  *  @retval #ECDH_STATUS_ERROR                            The operation failed.
- *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE             The required hardware resource was not available. Try again later.
+ *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE             The required hardware resource was not available. Try again
+ * later.
  *  @retval #ECDH_STATUS_CANCELED                         The operation was canceled.
  *  @retval #ECDH_STATUS_POINT_AT_INFINITY                The computed public key is the point at infinity.
  *  @retval #ECDH_STATUS_PRIVATE_KEY_ZERO                 The provided private key is zero.
- *  @retval #ECDH_STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER   The provided private key is larger than or equal to the order of the curve.
+ *  @retval #ECDH_STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER   The provided private key is larger than or equal to the order
+ * of the curve.
  *
  */
 int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle, ECDH_OperationGeneratePublicKey *operation);
@@ -794,10 +801,12 @@ int_fast16_t ECDH_generatePublicKey(ECDH_Handle handle, ECDH_OperationGeneratePu
  *
  *  @retval #ECDH_STATUS_SUCCESS                        The operation succeeded.
  *  @retval #ECDH_STATUS_ERROR                          The operation failed.
- *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE           The required hardware resource was not available. Try again later.
+ *  @retval #ECDH_STATUS_RESOURCE_UNAVAILABLE           The required hardware resource was not available. Try again
+ * later.
  *  @retval #ECDH_STATUS_CANCELED                       The operation was canceled.
  *  @retval #ECDH_STATUS_PUBLIC_KEY_NOT_ON_CURVE        The foreign public key is not a point on the specified curve.
- *  @retval #ECDH_STATUS_PUBLIC_KEY_LARGER_THAN_PRIME   One of the public key coordinates is larger the the curve's prime.
+ *  @retval #ECDH_STATUS_PUBLIC_KEY_LARGER_THAN_PRIME   One of the public key coordinates is larger the the curve's
+ * prime.
  */
 int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeSharedSecret *operation);
 

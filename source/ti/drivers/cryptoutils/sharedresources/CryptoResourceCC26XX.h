@@ -50,14 +50,12 @@ extern "C" {
 #endif
 
 /* Crypto driver semaphore used to synchronize accesses to the keyStore, AES, and SHA2 engine */
-extern SemaphoreP_Struct    CryptoResourceCC26XX_accessSemaphore;
-extern SemaphoreP_Struct    CryptoResourceCC26XX_operationSemaphore;
+extern SemaphoreP_Struct CryptoResourceCC26XX_accessSemaphore;
+extern SemaphoreP_Struct CryptoResourceCC26XX_operationSemaphore;
 
-extern volatile bool        CryptoResourceCC26XX_pollingFlag;
+extern volatile bool CryptoResourceCC26XX_pollingFlag;
 
-extern HwiP_Struct          CryptoResourceCC26XX_hwi;
-
-
+extern HwiP_Struct CryptoResourceCC26XX_hwi;
 
 void CryptoResourceCC26XX_constructRTOSObjects(void);
 void CryptoResourceCC26XX_destructRTOSObjects(void);

@@ -71,8 +71,9 @@ extern "C" {
  *  ECC26XX hardware attributes should be included in the board file
  *  and pointed to by the ECDH_config struct.
  */
-typedef struct {
-    uint8_t    dummy;
+typedef struct
+{
+    uint8_t dummy;
 } ECDHCC26X1_HWAttrs;
 
 /*
@@ -93,7 +94,7 @@ typedef struct {
  * |      5      |       333       |       333       |
  * ---------------------------------------------------
  */
-#define ECDH26X1_ECC_WINDOW_SIZE  3
+#define ECDH26X1_ECC_WINDOW_SIZE 3
 
 /*
  * ECC Workzone size is based on worst case empirical measurement of ECDH
@@ -101,19 +102,20 @@ typedef struct {
  *    NIST P256  (win_size=3): 171 words
  *    Curve25519 (win_size=3): 198 words
  */
-#define ECDH26X1_ECC_WORKZONE_WORDS  198
+#define ECDH26X1_ECC_WORKZONE_WORDS 198
 
 /*!
  *  @brief      ECDHCC26X1 Object
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                            isOpen;
-    ECDH_CallbackFxn                callbackFxn;
-    ECDH_ReturnBehavior             returnBehavior; /* Note: Callback return behavior is not supported */
-    ECC_State                       eccState;
-    uint32_t                        eccWorkZone[ECDH26X1_ECC_WORKZONE_WORDS];
+typedef struct
+{
+    bool isOpen;
+    ECDH_CallbackFxn callbackFxn;
+    ECDH_ReturnBehavior returnBehavior; /* Note: Callback return behavior is not supported */
+    ECC_State eccState;
+    uint32_t eccWorkZone[ECDH26X1_ECC_WORKZONE_WORDS];
 } ECDHCC26X1_Object;
 
 #ifdef __cplusplus

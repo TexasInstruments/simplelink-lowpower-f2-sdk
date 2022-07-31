@@ -67,8 +67,6 @@
 #define Queue_handle ti_sysbios_knl_Queue_handle
 #define Queue_struct ti_sysbios_knl_Queue_struct
 #define Queue_Instance_init ti_sysbios_knl_Queue_Instance_init
-#define Queue_Object_count ti_sysbios_knl_Queue_Object_count
-#define Queue_Object_get ti_sysbios_knl_Queue_Object_get
 #define Queue_Object_first ti_sysbios_knl_Queue_Object_first
 #define Queue_Object_next ti_sysbios_knl_Queue_Object_next
 #define Queue_Object_sizeof ti_sysbios_knl_Queue_Object_sizeof
@@ -110,8 +108,6 @@
 #undef Queue_handle
 #undef Queue_struct
 #undef Queue_Instance_init
-#undef Queue_Object_count
-#undef Queue_Object_get
 #undef Queue_Object_first
 #undef Queue_Object_next
 #undef Queue_Object_sizeof

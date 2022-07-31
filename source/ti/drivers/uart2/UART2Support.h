@@ -75,8 +75,9 @@ extern void UART2Support_dmaRefreshRx(UART2_Handle handle);
  *  @brief  Function to configure the receive DMA
  *
  *  @param[in]  handle    A UART2_Handle returned from UART2_open()
+ *  @param[in]  copyFifo  Copy FIFO into ringbuffer before starting DMA transaction
  */
-extern void UART2Support_dmaStartRx(UART2_Handle handle);
+extern void UART2Support_dmaStartRx(UART2_Handle handle, bool copyFifo);
 
 /*!
  *  @brief  Function to configure the tramsit DMA
@@ -160,8 +161,7 @@ extern int_fast16_t UART2Support_rxStatus2ErrorCode(uint32_t errorData);
  *
  *  @return Returns the number of bytes written
  */
-extern uint32_t UART2Support_sendData(UART2_HWAttrs const *hwAttrs,
-        size_t size, uint8_t *buf);
+extern uint32_t UART2Support_sendData(UART2_HWAttrs const *hwAttrs, size_t size, uint8_t *buf);
 
 /*!
  *  @brief  Function to determine if TX is in progress

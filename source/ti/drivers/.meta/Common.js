@@ -348,7 +348,8 @@ function device2Family(device, mod)
         "SHA2" :        "CC26X2",
         "Temperature" : "CC26X2",
         "AESCCM" :      "CC26X4",
-        "AESGCM" :      "CC26X4"
+        "AESGCM" :      "CC26X4",
+        "Watchdog" :    "CC26X4"
     };
 
     /* CC26X2 and CC26X2R7 specific module delegates */
@@ -1696,8 +1697,8 @@ function findSignalTypes(hardware, signalTypes)
 /*
  *  ======== hexToBytes ========
  * Construct a byte array from hex-formatted string
- * adds 0-padding if needed 
-*/ 
+ * adds 0-padding if needed
+*/
 function hexToBytes(hexStr, hexByteLen) {
     hexStr = hexStr.padStart(hexByteLen*2, '0');
     for (var bytes = [], c = 0; c < hexStr.length; c += 2)

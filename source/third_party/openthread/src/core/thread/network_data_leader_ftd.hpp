@@ -36,9 +36,12 @@
 
 #include "openthread-core-config.h"
 
+#if OPENTHREAD_FTD
+
 #include <stdint.h>
 
 #include "coap/coap.hpp"
+#include "common/non_copyable.hpp"
 #include "common/timer.hpp"
 #include "net/ip6_address.hpp"
 #include "thread/mle_router.hpp"
@@ -62,14 +65,14 @@ namespace NetworkData {
  * This class implements the Thread Network Data maintained by the Leader.
  *
  */
-class Leader : public LeaderBase
+class Leader : public LeaderBase, private NonCopyable
 {
 public:
     /**
      * This enumeration defines the match mode constants to compare two RLOC16 values.
      *
      */
-    enum MatchMode
+    enum MatchMode : uint8_t
     {
         kMatchModeRloc16,   ///< Perform exact RLOC16 match.
         kMatchModeRouterId, ///< Perform Router ID match (match the router and any of its children).
@@ -152,7 +155,7 @@ public:
      * This method scans network data for given Service ID and returns pointer to the respective TLV, if present.
      *
      * @param aServiceId Service ID to look for.
-     * @return Pointer to the Service TLV for given Service ID, or NULL if not present.
+     * @return Pointer to the Service TLV for given Service ID, or nullptr if not present.
      *
      */
     const ServiceTlv *FindServiceById(uint8_t aServiceId) const;
@@ -163,12 +166,12 @@ public:
      * @param[in]  aHandler  A function pointer that is called when the transaction ends.
      * @param[in]  aContext  A pointer to arbitrary context information.
      *
-     * @retval OT_ERROR_NONE       A stale child entry was found and successfully enqueued a SVR_DATA.ntf message.
-     * @retval OT_ERROR_NO_BUFS    A stale child entry was found, but insufficient message buffers were available.
-     * @retval OT_ERROR_NOT_FOUND  No stale child entries were found.
+     * @retval kErrorNone      A stale child entry was found and successfully enqueued a SVR_DATA.ntf message.
+     * @retval kErrorNoBufs    A stale child entry was found, but insufficient message buffers were available.
+     * @retval kErrorNotFound  No stale child entries were found.
      *
      */
-    otError RemoveStaleChildEntries(Coap::ResponseHandler aHandler, void *aContext);
+    Error RemoveStaleChildEntries(Coap::ResponseHandler aHandler, void *aContext);
 
 private:
     class ChangedFlags
@@ -194,7 +197,7 @@ private:
         bool mStableChanged; // Stable network data change (add/remove).
     };
 
-    enum UpdateStatus
+    enum UpdateStatus : uint8_t
     {
         kTlvRemoved, // TLV contained no sub TLVs and therefore is removed.
         kTlvUpdated, // TLV stable flag is updated based on its sub TLVs.
@@ -206,20 +209,20 @@ private:
     static void HandleTimer(Timer &aTimer);
     void        HandleTimer(void);
 
-    otError RegisterNetworkData(uint16_t aRloc16, const uint8_t *aTlvs, uint8_t aTlvsLength);
+    void RegisterNetworkData(uint16_t aRloc16, const NetworkData &aNetworkData);
 
-    otError AddPrefix(const PrefixTlv &aPrefix, ChangedFlags &aChangedFlags);
-    otError AddHasRoute(const HasRouteTlv &aHasRoute, PrefixTlv &aDstPrefix, ChangedFlags &aChangedFlags);
-    otError AddBorderRouter(const BorderRouterTlv &aBorderRouter, PrefixTlv &aDstPrefix, ChangedFlags &aFlags);
-    otError AddService(const ServiceTlv &aService, ChangedFlags &aChangedFlags);
-    otError AddServer(const ServerTlv &aServer, ServiceTlv &aDstService, ChangedFlags &aChangedFlags);
+    Error AddPrefix(const PrefixTlv &aPrefix, ChangedFlags &aChangedFlags);
+    Error AddHasRoute(const HasRouteTlv &aHasRoute, PrefixTlv &aDstPrefix, ChangedFlags &aChangedFlags);
+    Error AddBorderRouter(const BorderRouterTlv &aBorderRouter, PrefixTlv &aDstPrefix, ChangedFlags &aChangedFlags);
+    Error AddService(const ServiceTlv &aService, ChangedFlags &aChangedFlags);
+    Error AddServer(const ServerTlv &aServer, ServiceTlv &aDstService, ChangedFlags &aChangedFlags);
 
-    otError AllocateServiceId(uint8_t &aServiceId);
+    Error AllocateServiceId(uint8_t &aServiceId) const;
 
-    otError AllocateContextId(uint8_t &aConextId);
-    void    FreeContextId(uint8_t aContextId);
-    void    StartContextReuseTimer(uint8_t aContextId);
-    void    StopContextReuseTimer(uint8_t aContextId);
+    Error AllocateContextId(uint8_t &aContextId);
+    void  FreeContextId(uint8_t aContextId);
+    void  StartContextReuseTimer(uint8_t aContextId);
+    void  StopContextReuseTimer(uint8_t aContextId);
 
     void RemoveContext(uint8_t aContextId);
     void RemoveContext(PrefixTlv &aPrefix, uint8_t aContextId);
@@ -227,11 +230,10 @@ private:
     void RemoveCommissioningData(void);
 
     void RemoveRloc(uint16_t aRloc16, MatchMode aMatchMode, ChangedFlags &aChangedFlags);
-    void RemoveRloc(uint16_t       aRloc16,
-                    MatchMode      aMatchMode,
-                    const uint8_t *aExcludeTlvs,
-                    uint8_t        aExcludeTlvsLength,
-                    ChangedFlags & aChangedFlags);
+    void RemoveRloc(uint16_t           aRloc16,
+                    MatchMode          aMatchMode,
+                    const NetworkData &aExcludeNetworkData,
+                    ChangedFlags &     aChangedFlags);
     void RemoveRlocInPrefix(PrefixTlv &      aPrefix,
                             uint16_t         aRloc16,
                             MatchMode        aMatchMode,
@@ -257,9 +259,9 @@ private:
 
     static bool RlocMatch(uint16_t aFirstRloc16, uint16_t aSecondRloc16, MatchMode aMatchMode);
 
-    static otError Validate(const uint8_t *aTlvs, uint8_t aTlvsLength, uint16_t aRloc16);
-    static otError ValidatePrefix(const PrefixTlv &aPrefix, uint16_t aRloc16);
-    static otError ValidateService(const ServiceTlv &aService, uint16_t aRloc16);
+    static Error Validate(const NetworkData &aNetworkData, uint16_t aRloc16);
+    static Error ValidatePrefix(const PrefixTlv &aPrefix, uint16_t aRloc16);
+    static Error ValidateService(const ServiceTlv &aService, uint16_t aRloc16);
 
     static bool ContainsMatchingEntry(const PrefixTlv *aPrefix, bool aStable, const HasRouteEntry &aEntry);
     static bool ContainsMatchingEntry(const HasRouteTlv *aHasRoute, const HasRouteEntry &aEntry);
@@ -286,17 +288,10 @@ private:
     void IncrementVersions(bool aIncludeStable);
     void IncrementVersions(const ChangedFlags &aFlags);
 
-    /**
-     * Thread Specification Constants.
-     *
-     */
-    enum
-    {
-        kMinContextId        = 1,            ///< Minimum Context ID (0 is used for Mesh Local)
-        kNumContextIds       = 15,           ///< Maximum Context ID
-        kContextIdReuseDelay = 48 * 60 * 60, ///< CONTEXT_ID_REUSE_DELAY (seconds)
-        kStateUpdatePeriod   = 60 * 1000,    ///< State update period in milliseconds
-    };
+    static constexpr uint8_t  kMinContextId        = 1;            // Minimum Context ID (0 is used for Mesh Local)
+    static constexpr uint8_t  kNumContextIds       = 15;           // Maximum Context ID
+    static constexpr uint32_t kContextIdReuseDelay = 48 * 60 * 60; // in seconds
+    static constexpr uint32_t kStateUpdatePeriod   = 60 * 1000;    // State update period in milliseconds
 
     uint16_t   mContextUsed;
     TimeMilli  mContextLastUsed[kNumContextIds];
@@ -315,5 +310,7 @@ private:
 
 } // namespace NetworkData
 } // namespace ot
+
+#endif // OPENTHREAD_FTD
 
 #endif // NETWORK_DATA_LEADER_FTD_HPP_

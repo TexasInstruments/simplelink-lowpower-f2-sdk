@@ -42,8 +42,7 @@
 #include "SEGGER_RTT.h"
 #include "logging_rtt.h"
 
-#if (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED) || \
-    (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_NCP_SPINEL)
+#if (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED)
 #if (LOG_RTT_COLOR_ENABLE == 1)
 #define RTT_COLOR_CODE_DEFAULT "\x1B[0m"
 #define RTT_COLOR_CODE_RED "\x1B[1;31m"
@@ -94,8 +93,8 @@ static inline const char *levelToString(otLogLevel aLogLevel)
 /**
  * Function for printing actual timestamp.
  *
- * @param[inout]  aLogString Pointer to the log buffer.
- * @param[in]     aMaxSize   Maximum size of the log buffer.
+ * @param[in,out]  aLogString Pointer to the log buffer.
+ * @param[in]      aMaxSize   Maximum size of the log buffer.
  *
  * @returns  Number of bytes successfully written to the log buffer.
  */
@@ -109,9 +108,9 @@ static inline int logTimestamp(char *aLogString, uint16_t aMaxSize)
 /**
  * Function for printing log level.
  *
- * @param[inout]  aLogString  Pointer to log buffer.
- * @param[in]     aMaxSize    Maximum size of log buffer.
- * @param[in]     aLogLevel   Log level.
+ * @param[in,out]  aLogString  Pointer to log buffer.
+ * @param[in]      aMaxSize    Maximum size of log buffer.
+ * @param[in]      aLogLevel   Log level.
  *
  * @returns  Number of bytes successfully written to the log buffer.
  */
@@ -176,5 +175,4 @@ void utilsLogRttOutput(otLogLevel aLogLevel, otLogRegion aLogRegion, const char 
 exit:
     return;
 }
-#endif // (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED) ||
-       // (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_NCP_SPINEL)
+#endif // (OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED)

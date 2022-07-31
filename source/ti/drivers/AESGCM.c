@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,32 +50,35 @@ extern const uint_least8_t AESGCM_count;
 
 const AESGCM_Params AESGCM_defaultParams = {
     .returnBehavior = AESGCM_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== AESGCM_Params_init ========
  */
-void AESGCM_Params_init(AESGCM_Params *params){
+void AESGCM_Params_init(AESGCM_Params *params)
+{
     *params = AESGCM_defaultParams;
 }
 
 /*
  *  ======== AESGCM_open ========
  */
-AESGCM_Handle AESGCM_open(uint_least8_t index, const AESGCM_Params *params) {
+__attribute__((weak)) AESGCM_Handle AESGCM_open(uint_least8_t index, const AESGCM_Params *params)
+{
     DebugP_assert(index < AESGCM_count);
 
-    AESGCM_Config *config = (AESGCM_Config*)&AESGCM_config[index];
+    AESGCM_Config *config = (AESGCM_Config *)&AESGCM_config[index];
     return AESGCM_construct(config, params);
 }
 
 /*
  *  ======== AESGCM_Operation_init ========
  */
-void AESGCM_Operation_init(AESGCM_Operation *operationStruct) {
+void AESGCM_Operation_init(AESGCM_Operation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESGCM_Operation));
 
     /* The only supported ivLength is 12 for now */
@@ -85,27 +88,31 @@ void AESGCM_Operation_init(AESGCM_Operation *operationStruct) {
 /*
  *  ======== AESGCM_OneStepOperation_init ========
  */
-void AESGCM_OneStepOperation_init(AESGCM_OneStepOperation *operationStruct) {
+void AESGCM_OneStepOperation_init(AESGCM_OneStepOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESGCM_OneStepOperation));
 }
 
 /*
  *  ======== AESGCM_SegmentedAADOperation_init ========
  */
-void AESGCM_SegmentedAADOperation_init(AESGCM_SegmentedAADOperation *operationStruct) {
+void AESGCM_SegmentedAADOperation_init(AESGCM_SegmentedAADOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESGCM_SegmentedAADOperation));
 }
 
 /*
  *  ======== AESGCM_SegmentedDataOperation_init ========
  */
-void AESGCM_SegmentedDataOperation_init(AESGCM_SegmentedDataOperation *operationStruct) {
+void AESGCM_SegmentedDataOperation_init(AESGCM_SegmentedDataOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESGCM_SegmentedDataOperation));
 }
 
 /*
  *  ======== AESGCM_SegmentedFinalizeOperation_init ========
  */
-void AESGCM_SegmentedFinalizeOperation_init(AESGCM_SegmentedFinalizeOperation *operationStruct) {
+void AESGCM_SegmentedFinalizeOperation_init(AESGCM_SegmentedFinalizeOperation *operationStruct)
+{
     memset(operationStruct, 0x00, sizeof(AESGCM_SegmentedFinalizeOperation));
 }

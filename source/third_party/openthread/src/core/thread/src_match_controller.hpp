@@ -36,8 +36,11 @@
 
 #include "openthread-core-config.h"
 
-#include <openthread/error.h>
+#if OPENTHREAD_FTD
+
+#include "common/error.hpp"
 #include "common/locator.hpp"
+#include "common/non_copyable.hpp"
 
 namespace ot {
 
@@ -65,7 +68,7 @@ class Child;
  * address or an extended/long address can be added to the source address match table.
  *
  */
-class SourceMatchController : public InstanceLocator
+class SourceMatchController : public InstanceLocator, private NonCopyable
 {
 public:
     /**
@@ -168,20 +171,20 @@ private:
      *
      * @param[in] aChild            A reference to the child
      *
-     * @retval OT_ERROR_NONE     Child's address was added successfully to the source match table.
-     * @retval OT_ERROR_NO_BUFS  No available space in the source match table.
+     * @retval kErrorNone     Child's address was added successfully to the source match table.
+     * @retval kErrorNoBufs   No available space in the source match table.
      *
      */
-    otError AddAddress(const Child &aChild);
+    Error AddAddress(const Child &aChild);
 
     /**
      * This method adds all pending entries to the source match table.
      *
-     * @retval OT_ERROR_NONE     All pending entries were successfully added.
-     * @retval OT_ERROR_NO_BUFS  No available space in the source match table.
+     * @retval kErrorNone     All pending entries were successfully added.
+     * @retval kErrorNoBufs   No available space in the source match table.
      *
      */
-    otError AddPendingEntries(void);
+    Error AddPendingEntries(void);
 
     bool mEnabled;
 };
@@ -192,5 +195,7 @@ private:
  */
 
 } // namespace ot
+
+#endif // OPENTHREAD_FTD
 
 #endif // SOURCE_MATCH_CONTROLLER_HPP_

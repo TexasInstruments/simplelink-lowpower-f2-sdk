@@ -39,63 +39,51 @@
 
 namespace ot {
 
-TrickleTimer::TrickleTimer(Instance &aInstance,
-#ifdef ENABLE_TRICKLE_TIMER_SUPPRESSION_SUPPORT
-                           uint32_t aRedundancyConstant,
-#endif
-                           Handler aTransmitHandler,
-                           Handler aIntervalExpiredHandler,
-                           void *  aOwner)
-    : TimerMilli(aInstance, &TrickleTimer::HandleTimer, aOwner)
-#ifdef ENABLE_TRICKLE_TIMER_SUPPRESSION_SUPPORT
-    , mRedundancyConstant(aRedundancyConstant)
-    , mCounter(0)
-#endif
+TrickleTimer::TrickleTimer(Instance &aInstance, Handler aHandler)
+    : TimerMilli(aInstance, TrickleTimer::HandleTimer)
     , mIntervalMin(0)
     , mIntervalMax(0)
     , mInterval(0)
     , mTimeInInterval(0)
-    , mTransmitHandler(aTransmitHandler)
-    , mIntervalExpiredHandler(aIntervalExpiredHandler)
-    , mMode(kModeNormal)
-    , mIsRunning(false)
-    , mInTransmitPhase(false)
+    , mRedundancyConstant(0)
+    , mCounter(0)
+    , mHandler(aHandler)
+    , mMode(kModeTrickle)
+    , mPhase(kBeforeRandomTime)
 {
-    OT_ASSERT(aTransmitHandler != NULL);
 }
 
-otError TrickleTimer::Start(uint32_t aIntervalMin, uint32_t aIntervalMax, Mode aMode)
+void TrickleTimer::Start(Mode aMode, uint32_t aIntervalMin, uint32_t aIntervalMax, uint16_t aRedundancyConstant)
 {
-    otError error = OT_ERROR_NONE;
+    OT_ASSERT((aIntervalMax >= aIntervalMin) && (aIntervalMin > 0));
 
-    VerifyOrExit(aIntervalMax >= aIntervalMin, error = OT_ERROR_INVALID_ARGS);
-    VerifyOrExit(aIntervalMin != 0 || aIntervalMax != 0, error = OT_ERROR_INVALID_ARGS);
-
-    mIntervalMin = aIntervalMin;
-    mIntervalMax = aIntervalMax;
-    mMode        = aMode;
-    mIsRunning   = true;
+    mIntervalMin        = aIntervalMin;
+    mIntervalMax        = aIntervalMax;
+    mRedundancyConstant = aRedundancyConstant;
+    mMode               = aMode;
 
     // Select interval randomly from range [Imin, Imax].
     mInterval = Random::NonCrypto::GetUint32InRange(mIntervalMin, mIntervalMax + 1);
 
     StartNewInterval();
-
-exit:
-    return error;
 }
 
-void TrickleTimer::Stop(void)
+void TrickleTimer::IndicateConsistent(void)
 {
-    mIsRunning = false;
-    TimerMilli::Stop();
+    if (mCounter < kInfiniteRedundancyConstant)
+    {
+        mCounter++;
+    }
 }
 
 void TrickleTimer::IndicateInconsistent(void)
 {
+    VerifyOrExit(mMode == kModeTrickle);
+
     // If interval is equal to minimum when an "inconsistent" event
     // is received, do nothing.
-    VerifyOrExit(mIsRunning && (mInterval != mIntervalMin), OT_NOOP);
+
+    VerifyOrExit(IsRunning() && (mInterval != mIntervalMin));
 
     mInterval = mIntervalMin;
     StartNewInterval();
@@ -108,33 +96,22 @@ void TrickleTimer::StartNewInterval(void)
 {
     uint32_t halfInterval;
 
-#ifdef ENABLE_TRICKLE_TIMER_SUPPRESSION_SUPPORT
-    mCounter = 0;
-#endif
-
-    mInTransmitPhase = true;
-
     switch (mMode)
     {
-    case kModeNormal:
-        halfInterval = mInterval / 2;
-        VerifyOrExit(halfInterval < mInterval, mTimeInInterval = halfInterval);
-
-        // Select a random point in the interval taken from the range [I/2, I).
-        mTimeInInterval = Random::NonCrypto::GetUint32InRange(halfInterval, mInterval);
-        break;
-
     case kModePlainTimer:
         mTimeInInterval = mInterval;
         break;
 
-    case kModeMPL:
-        // Select a random point in interval taken from the range [0, I].
-        mTimeInInterval = Random::NonCrypto::GetUint32InRange(0, mInterval + 1);
+    case kModeTrickle:
+        // Select a random point in the interval taken from the range [I/2, I).
+        halfInterval = mInterval / 2;
+        mTimeInInterval =
+            (halfInterval < mInterval) ? Random::NonCrypto::GetUint32InRange(halfInterval, mInterval) : halfInterval;
+        mCounter = 0;
+        mPhase   = kBeforeRandomTime;
         break;
     }
 
-exit:
     TimerMilli::Start(mTimeInInterval);
 }
 
@@ -145,71 +122,52 @@ void TrickleTimer::HandleTimer(Timer &aTimer)
 
 void TrickleTimer::HandleTimer(void)
 {
-    if (mInTransmitPhase)
-    {
-        HandleEndOfTimeInInterval();
-    }
-    else
-    {
-        HandleEndOfInterval();
-    }
-}
-
-void TrickleTimer::HandleEndOfTimeInInterval(void)
-{
-#ifdef ENABLE_TRICKLE_TIMER_SUPPRESSION_SUPPORT
-    // Trickle transmits if and only if the counter `c` is less
-    // than the redundancy constant `k`.
-    if (mRedundancyConstant == 0 || mCounter < mRedundancyConstant)
-#endif
-    {
-        bool shouldContinue = mTransmitHandler(*this);
-        VerifyOrExit(shouldContinue, Stop());
-    }
-
     switch (mMode)
     {
     case kModePlainTimer:
-        // Select a random interval in [Imin, Imax] and restart.
         mInterval = Random::NonCrypto::GetUint32InRange(mIntervalMin, mIntervalMax + 1);
         StartNewInterval();
         break;
 
-    case kModeNormal:
-    case kModeMPL:
-        // Waiting for the rest of the interval to elapse.
-        mInTransmitPhase = false;
-        TimerMilli::Start(mInterval - mTimeInInterval);
+    case kModeTrickle:
+        switch (mPhase)
+        {
+        case kBeforeRandomTime:
+            // We reached end of random `mTimeInInterval` (aka `t`)
+            // within the current interval. Trickle timer invokes
+            // handler if and only if the counter is less than the
+            // redundancy constant.
+
+            mPhase = kAfterRandomTime;
+            TimerMilli::Start(mInterval - mTimeInInterval);
+            VerifyOrExit(mCounter < mRedundancyConstant);
+            break;
+
+        case kAfterRandomTime:
+            // Interval has expired. Double the interval length and
+            // ensure result is below max.
+
+            if (mInterval == 0)
+            {
+                mInterval = 1;
+            }
+            else if (mInterval <= mIntervalMax - mInterval)
+            {
+                mInterval *= 2;
+            }
+            else
+            {
+                mInterval = mIntervalMax;
+            }
+
+            StartNewInterval();
+            ExitNow(); // Exit so to not call `mHanlder`
+        }
+
         break;
     }
 
-exit:
-    return;
-}
-
-void TrickleTimer::HandleEndOfInterval(void)
-{
-    // Double the interval and ensure result is below max.
-    if (mInterval == 0)
-    {
-        mInterval = 1;
-    }
-    else if (mInterval <= mIntervalMax - mInterval)
-    {
-        mInterval *= 2;
-    }
-    else
-    {
-        mInterval = mIntervalMax;
-    }
-
-    if (mIntervalExpiredHandler)
-    {
-        bool shouldContinue = mIntervalExpiredHandler(*this);
-        VerifyOrExit(shouldContinue, Stop());
-    }
-
-    StartNewInterval();
+    mHandler(*this);
 
 exit:
     return;

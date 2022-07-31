@@ -70,8 +70,8 @@ SECTIONS {
         KEEP (*(.resetVecs))
     } > REGION_TEXT
 
-    .ramVecs (NOLOAD) : ALIGN(1024){
-        KEEP (*(.ramVecs))
+    .ramVecs (NOLOAD) : ALIGN(256) {
+        KEEP (*(vtable_ram)) /* Section from interrupt.c (driverlib) */
     } > REGION_DATA
 
     /*

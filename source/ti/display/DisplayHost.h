@@ -84,8 +84,7 @@
 #include <ti/display/Display.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*!
@@ -98,9 +97,9 @@ extern "C"
 typedef struct DisplayHost_HWAttrs
 {
     /*! Buffer for formatting messages */
-    char        *strBuf;
+    char *strBuf;
     /*! Size of buffer */
-    uint16_t     strBufLen;
+    uint16_t strBufLen;
 } DisplayHost_HWAttrs;
 
 /*!
@@ -110,26 +109,21 @@ typedef struct DisplayHost_HWAttrs
  */
 typedef struct DisplayHost_Object
 {
-    int       dummy;
+    int dummy;
 } DisplayHost_Object, *DisplayHost_Handle;
-
 
 /* DisplayHost function table pointer */
 extern const Display_FxnTable DisplayHost_fxnTable;
 
-
 /* DisplayHost functions */
 void DisplayHost_init(Display_Handle handle);
-Display_Handle DisplayHost_open(Display_Handle handle,
-                               Display_Params * params);
-void           DisplayHost_clear(Display_Handle handle);
-void           DisplayHost_clearLines(Display_Handle handle, uint8_t fromLine,
-                                     uint8_t toLine);
-void           DisplayHost_vprintf(Display_Handle handle, uint8_t line,
-                                   uint8_t column, const char *fmt, va_list va);
+Display_Handle DisplayHost_open(Display_Handle handle, Display_Params *params);
+void DisplayHost_clear(Display_Handle handle);
+void DisplayHost_clearLines(Display_Handle handle, uint8_t fromLine, uint8_t toLine);
+void DisplayHost_vprintf(Display_Handle handle, uint8_t line, uint8_t column, const char *fmt, va_list va);
 void DisplayHost_close(Display_Handle handle);
 int DisplayHost_control(Display_Handle handle, unsigned int cmd, void *arg);
-unsigned int   DisplayHost_getType(void);
+unsigned int DisplayHost_getType(void);
 #ifdef __cplusplus
 }
 #endif

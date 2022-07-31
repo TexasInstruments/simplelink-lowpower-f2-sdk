@@ -142,9 +142,6 @@
   // User Application callback
   pfnAppEventHandlerCB_t gAppCB = NULL;
 
-  // Pin Handle
-  PIN_Handle gPinHandle = NULL;
-
   // Number of CTE Sampling Buffers
   uint8_t gMaxNumBuffers = MAX_NUM_CTE_BUFS;
 
@@ -355,69 +352,42 @@ void urtls_freeConn(uint8_t sessionId, uint8_t numHandles)
  *
  * @param   mainAntenna - Antenna ID to be used as main receiving antenna
  *
- * @return  PIN_Handle - handle for initialized pins
+ * @return      TRUE = success, FALSE = failure
  */
-PIN_Handle urtls_initAntArray(uint8_t mainAntenna)
+bStatus_t urtls_initAntArray(uint8_t mainAntenna)
 {
   uint32_t enAntMask;
-  uint32_t pinCfg;
-  PIN_State pinState;
   uint8_t maskCounter = 0;
   uint32_t mainIoEntry;
-
-  // If we already have a handle, just return it
-  if (gPinHandle != NULL)
-  {
-    return gPinHandle;
-  }
-
-  pinCfg = PIN_TERMINATE;
 
   // Check that mainAntenna is one of the antennas configured in the board configuration
   if (mainAntenna > cteAntProp.antPropTblSize)
   {
-    return NULL;
+    return FAILURE;
   }
-  else
-  {
-    mainIoEntry = cteAntProp.antPropTbl[mainAntenna];
-  }
+  mainIoEntry = cteAntProp.antPropTbl[mainAntenna];
 
   // Get antenna mask configured by the user
   enAntMask = cteAntProp.antMask;
-
-  // Check if PIN handle already exists
-  if (gPinHandle == NULL)
-  {
-    gPinHandle = PIN_open(&pinState, &pinCfg);
-  }
 
   // Setup pins in Antenna Mask
   while (enAntMask)
   {
     if (enAntMask & 0x1)
     {
-      pinCfg = maskCounter | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_INPUT_DIS | PIN_DRVSTR_MED;
-
-      if (PIN_add(gPinHandle, pinCfg) != PIN_SUCCESS)
-      {
-        PIN_close(gPinHandle);
-        return NULL;
-      }
+      GPIO_setConfig(maskCounter, GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_MED);
     }
-
     // Setup main antenna (switch relevant pins to high)
     if (mainIoEntry & 0x1)
     {
-      PIN_setOutputValue(gPinHandle, maskCounter, 1);
+      GPIO_write(maskCounter, 1);
     }
 
     maskCounter++;
     enAntMask>>=1;
     mainIoEntry>>=1;
   }
-
-  return gPinHandle;
+  return SUCCESS;
 }
 
 /*********************************************************************

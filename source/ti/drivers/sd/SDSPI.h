@@ -101,9 +101,10 @@ extern const SD_FxnTable SDSPI_fxnTable;
  *  };
  *  @endcode
  */
-typedef struct {
+typedef struct
+{
     uint_least8_t spiIndex;
-    uint16_t      spiCsGpioIndex;
+    uint16_t spiCsGpioIndex;
 } SDSPI_HWAttrs;
 
 /*!
@@ -111,11 +112,12 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
+typedef struct
+{
     SemaphoreP_Handle lockSem;
-    SPI_Handle        spiHandle;
-    SD_CardType       cardType;
-    bool              isOpen;
+    SPI_Handle spiHandle;
+    SD_CardType cardType;
+    bool isOpen;
 } SDSPI_Object;
 
 #ifdef __cplusplus

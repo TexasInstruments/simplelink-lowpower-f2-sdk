@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "BLE, 1 Mbps, LE 1M (Release Candidate)",
-        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band. (Release Candidate)",
+        "Name": "BLE, 1 Mbps, LE 1M",
+        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band.",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",

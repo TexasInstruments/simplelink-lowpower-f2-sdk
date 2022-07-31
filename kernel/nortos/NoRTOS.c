@@ -46,9 +46,9 @@ extern uint32_t ClockP_tickPeriod;
  */
 void NoRTOS_getConfig(NoRTOS_Config *cfg)
 {
-    cfg->idleCallback = SemaphoreP_defaultParams.callback;
+    cfg->idleCallback    = SemaphoreP_defaultParams.callback;
     cfg->clockTickPeriod = ClockP_tickPeriod;
-    cfg->swiIntNum = HwiP_swiPIntNum;
+    cfg->swiIntNum       = HwiP_swiPIntNum;
 }
 
 /*
@@ -59,8 +59,8 @@ void NoRTOS_setConfig(NoRTOS_Config *cfg)
     HwiP_disable();
 
     SemaphoreP_defaultParams.callback = cfg->idleCallback;
-    ClockP_tickPeriod = cfg->clockTickPeriod;
-    HwiP_swiPIntNum = cfg->swiIntNum;
+    ClockP_tickPeriod                 = cfg->clockTickPeriod;
+    HwiP_swiPIntNum                   = cfg->swiIntNum;
 }
 
 /*

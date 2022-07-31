@@ -53,8 +53,6 @@ void List_clearList(List_List *list)
     HwiP_restore(key);
 }
 
-
-
 /*
  *  ======== List_get ========
  */
@@ -68,12 +66,15 @@ List_Elem *List_get(List_List *list)
     elem = list->head;
 
     /* See if the List was empty */
-    if (elem != NULL) {
+    if (elem != NULL)
+    {
         list->head = elem->next;
-        if (elem->next != NULL) {
+        if (elem->next != NULL)
+        {
             elem->next->prev = NULL;
         }
-        else {
+        else
+        {
             list->tail = NULL;
         }
     }
@@ -82,7 +83,6 @@ List_Elem *List_get(List_List *list)
 
     return (elem);
 }
-
 
 /*
  *  ======== List_insert ========
@@ -95,17 +95,18 @@ void List_insert(List_List *list, List_Elem *newElem, List_Elem *curElem)
 
     newElem->next = curElem;
     newElem->prev = curElem->prev;
-    if (curElem->prev != NULL) {
+    if (curElem->prev != NULL)
+    {
         curElem->prev->next = newElem;
     }
-    else {
+    else
+    {
         list->head = newElem;
     }
     curElem->prev = newElem;
 
     HwiP_restore(key);
 }
-
 
 /*
  *  ======== List_put ========
@@ -118,10 +119,12 @@ void List_put(List_List *list, List_Elem *elem)
 
     elem->next = NULL;
     elem->prev = list->tail;
-    if (list->tail != NULL) {
+    if (list->tail != NULL)
+    {
         list->tail->next = elem;
     }
-    else {
+    else
+    {
         list->head = elem;
     }
 
@@ -141,10 +144,12 @@ void List_putHead(List_List *list, List_Elem *elem)
 
     elem->next = list->head;
     elem->prev = NULL;
-    if (list->head != NULL) {
+    if (list->head != NULL)
+    {
         list->head->prev = elem;
     }
-    else {
+    else
+    {
         list->tail = elem;
     }
 
@@ -163,18 +168,22 @@ void List_remove(List_List *list, List_Elem *elem)
     key = HwiP_disable();
 
     /* Handle the case where the elem to remove is the last one */
-    if (elem->next == NULL) {
+    if (elem->next == NULL)
+    {
         list->tail = elem->prev;
     }
-    else {
+    else
+    {
         elem->next->prev = elem->prev;
     }
 
     /* Handle the case where the elem to remove is the first one */
-    if (elem->prev == NULL) {
+    if (elem->prev == NULL)
+    {
         list->head = elem->next;
     }
-    else {
+    else
+    {
         elem->prev->next = elem->next;
     }
 

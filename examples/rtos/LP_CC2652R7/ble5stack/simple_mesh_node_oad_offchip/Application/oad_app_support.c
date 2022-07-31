@@ -419,62 +419,40 @@ bool OadApp_processConnEvt()
 
 #ifdef LED_DEBUG
 
-#include <ti/drivers/PIN.h>
-
-// State variable for debugging LEDs
-static PIN_State sbpLedState;
-
-// Pin table for LED debug pins
-static const PIN_Config sbpLedPins[] = {
-    CONFIG_PIN_RLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    CONFIG_PIN_GLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
+#include <ti/drivers/GPIO.h>
 
 void LedDebug_set()
 {
   // Diplay is not enabled in persist app so use LED
-  if(PIN_open(&sbpLedState, sbpLedPins))
-  {
-    PIN_setOutputValue(&sbpLedState, CONFIG_PIN_RLED, 1);
-  }
+  GPIO_write(CONFIG_GPIO_RLED, 1);
 }
 
 void LedDebug_init()
 {
   // Open the LED debug pins
-  if (!PIN_open(&sbpLedState, sbpLedPins))
+  GPIO_setConfig(CONFIG_GPIO_GLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
+  GPIO_setConfig(CONFIG_GPIO_RLED, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
+
+  uint_least8_t activeLed;
+  uint8_t blinkCnt = 9;
+
+  if (blinkCnt < 12)
   {
-    Display_print0(dispHandle, 0, 0, "Debug PINs failed to open");
+    activeLed = CONFIG_GPIO_RLED;
   }
   else
   {
-    PIN_Id activeLed;
-    uint8_t blinkCnt = 9;
-
-    PIN_setOutputValue(&sbpLedState, CONFIG_PIN_RLED, 0);
-    PIN_setOutputValue(&sbpLedState, CONFIG_PIN_GLED, 0);
-
-    if (blinkCnt < 12)
-    {
-      activeLed = CONFIG_PIN_RLED;
-    }
-    else
-    {
-      activeLed = CONFIG_PIN_GLED;
-    }
-
-    for(uint8_t numBlinks = 0; numBlinks < blinkCnt; ++numBlinks)
-    {
-      PIN_setOutputValue(&sbpLedState, activeLed, !PIN_getOutputValue(activeLed));
-
-      // Sleep for 100ms, sys-tick for BLE-Stack is 10us,
-      // Task sleep is in # of ticks
-      Task_sleep(10000);
-    }
-
-    // Close the pins after using
-    PIN_close(&sbpLedState);
+    activeLed = CONFIG_GPIO_GLED;
   }
+
+  for(uint8_t numBlinks = 0; numBlinks < blinkCnt; ++numBlinks)
+  {
+    GPIO_toggle(activeLed);
+
+    // Sleep for 100ms, sys-tick for BLE-Stack is 10us,
+    // Task sleep is in # of ticks
+    Task_sleep(10000);
+  }
+  GPIO_write(activeLed, 0);
 }
 #endif //LED_DEBUG

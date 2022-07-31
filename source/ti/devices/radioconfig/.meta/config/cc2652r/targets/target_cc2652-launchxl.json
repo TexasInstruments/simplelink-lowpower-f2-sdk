@@ -7,7 +7,7 @@
         "DevicePackage": "VQFN 7x7",
         "FrontEnd": "ID",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC2642EM-7ID",
+        "RfDesign": "CC2652REM-7ID",
         "DefaultCategory": "Settings for Bluetooth Low Energy",
         "IoSettingsIdle": [],
         "IoSettingsRx": [],

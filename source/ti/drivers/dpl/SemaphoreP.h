@@ -73,7 +73,7 @@ extern "C" {
  *  BIOS 7.x: 28
  *  FreeRTOS: 80
  */
-#define SemaphoreP_STRUCT_SIZE   (80)
+#define SemaphoreP_STRUCT_SIZE (80)
 
 /*!
  *  @brief    SemaphoreP structure.
@@ -81,9 +81,10 @@ extern "C" {
  *  Opaque structure that should be large enough to hold any of the
  *  RTOS specific SemaphoreP objects.
  */
-typedef union SemaphoreP_Struct {
-    uint32_t dummy;  /*!< Align object */
-    uint8_t  data[SemaphoreP_STRUCT_SIZE];
+typedef union SemaphoreP_Struct
+{
+    uint32_t dummy; /*!< Align object */
+    uint8_t data[SemaphoreP_STRUCT_SIZE];
 } SemaphoreP_Struct;
 
 /*!
@@ -94,14 +95,15 @@ typedef union SemaphoreP_Struct {
 /*!
  *  @brief    No wait define
  */
-#define SemaphoreP_NO_WAIT       (0)
+#define SemaphoreP_NO_WAIT (0)
 
 /*!
  *  @brief    Status codes for SemaphoreP APIs (for backwards compatibility)
  */
-typedef enum {
+typedef enum
+{
     /*! API completed successfully */
-    SemaphoreP_OK = 0,
+    SemaphoreP_OK      = 0,
     /*! API failed because of a timeout */
     SemaphoreP_TIMEOUT = -1
 } SemaphoreP_Status;
@@ -113,12 +115,13 @@ typedef enum {
  *  instance and  is used in the other instance based functions (e.g.
  *  ::SemaphoreP_post or ::SemaphoreP_pend, etc.).
  */
-typedef  void *SemaphoreP_Handle;
+typedef void *SemaphoreP_Handle;
 
 /*!
  *  @brief    Mode of the semaphore
  */
-typedef enum {
+typedef enum
+{
     SemaphoreP_Mode_COUNTING = 0x0,
     SemaphoreP_Mode_BINARY   = 0x1
 } SemaphoreP_Mode;
@@ -132,7 +135,8 @@ typedef enum {
  *  application sets the fields manually. The SemaphoreP default parameters are
  *  noted in SemaphoreP_Params_init.
  */
-typedef struct {
+typedef struct
+{
     SemaphoreP_Mode mode;   /*!< Mode for the semaphore */
     void (*callback)(void); /*!< Callback while pending for semaphore post */
 } SemaphoreP_Params;
@@ -154,17 +158,14 @@ typedef struct {
  */
 extern SemaphoreP_Params SemaphoreP_defaultParams;
 
-
 /*
  *  SemaphoreP construct APIs can only be used if one of the OS's
  *  is defined.  For FreeRTOS, configSUPPORT_STATIC_ALLOCATION also
  *  has to be set to 1 in FreeRTOSConfig.h.
  */
-extern SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *handle,
-        unsigned int count, SemaphoreP_Params *params);
+extern SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *handle, unsigned int count, SemaphoreP_Params *params);
 
-extern SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *handle,
-        unsigned int count);
+extern SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *handle, unsigned int count);
 
 extern void SemaphoreP_destruct(SemaphoreP_Struct *semP);
 
@@ -180,8 +181,7 @@ extern void SemaphoreP_destruct(SemaphoreP_Struct *semP);
  *
  *  @return A SemaphoreP_Handle on success or a NULL on an error
  */
-extern SemaphoreP_Handle SemaphoreP_create(unsigned int count,
-        SemaphoreP_Params *params);
+extern SemaphoreP_Handle SemaphoreP_create(unsigned int count, SemaphoreP_Params *params);
 
 /*!
  *  @brief  Function to create a binary semaphore.
@@ -207,8 +207,7 @@ extern SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count);
  *
  *  @return A SemaphoreP_Handle on success or a NULL on an error
  */
-extern SemaphoreP_Handle SemaphoreP_createBinaryCallback(unsigned int count,
-        void (*callback)(void));
+extern SemaphoreP_Handle SemaphoreP_createBinaryCallback(unsigned int count, void (*callback)(void));
 
 /*!
  *  @brief  Function to delete a semaphore.
@@ -240,8 +239,7 @@ extern void SemaphoreP_Params_init(SemaphoreP_Params *params);
  *    - SemaphoreP_OK: Obtained the semaphore
  *    - SemaphoreP_TIMEOUT: Timed out. Semaphore was not obtained.
  */
-extern SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle,
-                                         uint32_t timeout);
+extern SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout);
 
 /*!
  *  @brief  Function to post (signal) a semaphore from task of ISR context.

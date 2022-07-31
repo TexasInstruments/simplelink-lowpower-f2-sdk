@@ -507,9 +507,12 @@ The RAT may be used to capture a time stamp on an edge of a physical pin. This
 can be achieved with #RF_ratCapture().
 
 @code
-#include <ti/drivers/pin/PINCC26XX.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/ioc.h)
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/gpio/GPIOCC26XX.h>
 // Map IO 26 to RFC_GPI0
-PINCC26XX_setMux(pinHandle, IOID_26, PINCC26XX_MUX_RFC_GPI0);
+GPIO_setMux(IOID_26, IOC_PORT_RFC_GPI0);
 
 RF_Handle rfDriver;
 RF_RatConfigCapture config;
@@ -557,8 +560,11 @@ static uint32_t pOverrides[] =
 }
 
 // Finally, route the intermediate doorbell signal to a physical pin.
-#include <ti/drivers/pin/PINCC26XX.h>
-PINCC26XX_setMux(pinHandle, IOID_17, PINCC26XX_MUX_RFC_GPO2);
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/ioc.h)
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/gpio/GPIOCC26XX.h>
+GPIO_setMux(IOID_17, IOC_PORT_RFC_GPO2);
 @endcode
 
 <hr>

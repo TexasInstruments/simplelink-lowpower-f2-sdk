@@ -76,8 +76,6 @@
 #define HeapMem_Handle_label ti_sysbios_heaps_HeapMem_Handle_label
 #define HeapMem_Handle_name ti_sysbios_heaps_HeapMem_Handle_name
 #define HeapMem_Instance_init ti_sysbios_heaps_HeapMem_Instance_init
-#define HeapMem_Object_count ti_sysbios_heaps_HeapMem_Object_count
-#define HeapMem_Object_get ti_sysbios_heaps_HeapMem_Object_get
 #define HeapMem_Object_first ti_sysbios_heaps_HeapMem_Object_first
 #define HeapMem_Object_next ti_sysbios_heaps_HeapMem_Object_next
 #define HeapMem_Object_sizeof ti_sysbios_heaps_HeapMem_Object_sizeof
@@ -138,8 +136,6 @@
 #undef HeapMem_Handle_label
 #undef HeapMem_Handle_name
 #undef HeapMem_Instance_init
-#undef HeapMem_Object_count
-#undef HeapMem_Object_get
 #undef HeapMem_Object_first
 #undef HeapMem_Object_next
 #undef HeapMem_Object_sizeof

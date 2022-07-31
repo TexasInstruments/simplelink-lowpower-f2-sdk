@@ -72,8 +72,6 @@
 #define HeapTrack_Handle_label ti_sysbios_heaps_HeapTrack_Handle_label
 #define HeapTrack_Handle_name ti_sysbios_heaps_HeapTrack_Handle_name
 #define HeapTrack_Instance_init ti_sysbios_heaps_HeapTrack_Instance_init
-#define HeapTrack_Object_count ti_sysbios_heaps_HeapTrack_Object_count
-#define HeapTrack_Object_get ti_sysbios_heaps_HeapTrack_Object_get
 #define HeapTrack_Object_first ti_sysbios_heaps_HeapTrack_Object_first
 #define HeapTrack_Object_next ti_sysbios_heaps_HeapTrack_Object_next
 #define HeapTrack_Object_sizeof ti_sysbios_heaps_HeapTrack_Object_sizeof
@@ -131,8 +129,6 @@
 #undef HeapTrack_Handle_label
 #undef HeapTrack_Handle_name
 #undef HeapTrack_Instance_init
-#undef HeapTrack_Object_count
-#undef HeapTrack_Object_get
 #undef HeapTrack_Object_first
 #undef HeapTrack_Object_next
 #undef HeapTrack_Object_sizeof

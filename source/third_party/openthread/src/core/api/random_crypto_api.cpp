@@ -31,7 +31,7 @@
  *   This file implements the OpenThread cryptographic random number generator API.
  */
 
-#include "openthread/random_crypto.h"
+#include <openthread/random_crypto.h>
 
 #include <mbedtls/ctr_drbg.h>
 
@@ -42,9 +42,4 @@ using namespace ot;
 otError otRandomCryptoFillBuffer(uint8_t *aBuffer, uint16_t aSize)
 {
     return Random::Crypto::FillBuffer(aBuffer, aSize);
-}
-
-mbedtls_ctr_drbg_context *otRandomCryptoMbedTlsContextGet(void)
-{
-    return Random::Crypto::MbedTlsContextGet();
 }

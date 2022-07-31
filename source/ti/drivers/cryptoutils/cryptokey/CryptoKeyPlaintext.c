@@ -30,7 +30,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -42,8 +41,8 @@
 /*
  *  ======== CryptoKey_getCryptoKeyType ========
  */
-int_fast16_t CryptoKey_getCryptoKeyType(CryptoKey *keyHandle,
-                                        CryptoKey_Encoding *keyType) {
+int_fast16_t CryptoKey_getCryptoKeyType(CryptoKey *keyHandle, CryptoKey_Encoding *keyType)
+{
     *keyType = keyHandle->encoding;
 
     return CryptoKey_STATUS_SUCCESS;
@@ -52,11 +51,14 @@ int_fast16_t CryptoKey_getCryptoKeyType(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKey_isBlank ========
  */
-int_fast16_t CryptoKey_isBlank(CryptoKey *keyHandle, bool *isBlank) {
-    if (keyHandle->encoding == CryptoKey_BLANK_PLAINTEXT) {
+int_fast16_t CryptoKey_isBlank(CryptoKey *keyHandle, bool *isBlank)
+{
+    if (keyHandle->encoding == CryptoKey_BLANK_PLAINTEXT)
+    {
         *isBlank = true;
     }
-    else {
+    else
+    {
         *isBlank = false;
     }
 
@@ -66,7 +68,8 @@ int_fast16_t CryptoKey_isBlank(CryptoKey *keyHandle, bool *isBlank) {
 /*
  *  ======== CryptoKey_markAsBlank ========
  */
-int_fast16_t CryptoKey_markAsBlank(CryptoKey *keyHandle) {
+int_fast16_t CryptoKey_markAsBlank(CryptoKey *keyHandle)
+{
     keyHandle->encoding = CryptoKey_BLANK_PLAINTEXT;
 
     return CryptoKey_STATUS_SUCCESS;
@@ -75,12 +78,11 @@ int_fast16_t CryptoKey_markAsBlank(CryptoKey *keyHandle) {
 /*
  *  ======== CryptoKeyPlaintext_initKey ========
  */
-int_fast16_t CryptoKeyPlaintext_initKey(CryptoKey *keyHandle,
-                                        uint8_t *key,
-                                        size_t keyLength){
-    keyHandle->encoding = CryptoKey_PLAINTEXT;
+int_fast16_t CryptoKeyPlaintext_initKey(CryptoKey *keyHandle, uint8_t *key, size_t keyLength)
+{
+    keyHandle->encoding                = CryptoKey_PLAINTEXT;
     keyHandle->u.plaintext.keyMaterial = key;
-    keyHandle->u.plaintext.keyLength = keyLength;
+    keyHandle->u.plaintext.keyLength   = keyLength;
 
     return CryptoKey_STATUS_SUCCESS;
 }
@@ -88,13 +90,12 @@ int_fast16_t CryptoKeyPlaintext_initKey(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKeyPlaintext_initBlankKey ========
  */
-int_fast16_t CryptoKeyPlaintext_initBlankKey(CryptoKey *keyHandle,
-                                             uint8_t *keyLocation,
-                                             size_t keyLength){
+int_fast16_t CryptoKeyPlaintext_initBlankKey(CryptoKey *keyHandle, uint8_t *keyLocation, size_t keyLength)
+{
 
-    keyHandle->encoding = CryptoKey_BLANK_PLAINTEXT;
+    keyHandle->encoding                = CryptoKey_BLANK_PLAINTEXT;
     keyHandle->u.plaintext.keyMaterial = keyLocation;
-    keyHandle->u.plaintext.keyLength = keyLength;
+    keyHandle->u.plaintext.keyLength   = keyLength;
 
     return CryptoKey_STATUS_SUCCESS;
 }
@@ -102,8 +103,8 @@ int_fast16_t CryptoKeyPlaintext_initBlankKey(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKeyPlaintext_setKeyLocation ========
  */
-int_fast16_t CryptoKeyPlaintext_setKeyLocation(CryptoKey *keyHandle,
-                                               uint8_t *location){
+int_fast16_t CryptoKeyPlaintext_setKeyLocation(CryptoKey *keyHandle, uint8_t *location)
+{
     keyHandle->u.plaintext.keyMaterial = location;
 
     return CryptoKey_STATUS_SUCCESS;
@@ -112,8 +113,8 @@ int_fast16_t CryptoKeyPlaintext_setKeyLocation(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKeyPlaintext_setKeyLocation ========
  */
-int_fast16_t CryptoKeyPlaintext_getKeyLocation(CryptoKey *keyHandle,
-                                               uint8_t **location){
+int_fast16_t CryptoKeyPlaintext_getKeyLocation(CryptoKey *keyHandle, uint8_t **location)
+{
     *location = keyHandle->u.plaintext.keyMaterial;
 
     return CryptoKey_STATUS_SUCCESS;
@@ -122,8 +123,8 @@ int_fast16_t CryptoKeyPlaintext_getKeyLocation(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKeyPlaintext_getKeyLength ========
  */
-int_fast16_t CryptoKeyPlaintext_getKeyLength(CryptoKey *keyHandle,
-                                             size_t *length){
+int_fast16_t CryptoKeyPlaintext_getKeyLength(CryptoKey *keyHandle, size_t *length)
+{
     *length = keyHandle->u.plaintext.keyLength;
 
     return CryptoKey_STATUS_SUCCESS;
@@ -132,8 +133,8 @@ int_fast16_t CryptoKeyPlaintext_getKeyLength(CryptoKey *keyHandle,
 /*
  *  ======== CryptoKeyPlaintext_setKeyLength ========
  */
-int_fast16_t CryptoKeyPlaintext_setKeyLength(CryptoKey *keyHandle,
-                                             size_t length) {
+int_fast16_t CryptoKeyPlaintext_setKeyLength(CryptoKey *keyHandle, size_t length)
+{
     keyHandle->u.plaintext.keyLength = length;
 
     return CryptoKey_STATUS_SUCCESS;

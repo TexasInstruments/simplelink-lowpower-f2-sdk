@@ -54,13 +54,13 @@
 #include DeviceFamily_constructPath(driverlib/aes.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
 
-#define AES_BLOCK_SIZE_WORDS  (AES_BLOCK_SIZE / 4)
+#define AES_BLOCK_SIZE_WORDS (AES_BLOCK_SIZE / 4)
 
 #define AES_NON_BLOCK_MULTIPLE_MASK 0x0FU
 
-#define AESCMAC_CONST_RB    ((uint8_t)0x87U)
-#define AESCMAC_MSB_CHECK   ((uint8_t)0x80U)
-#define AESCMAC_PADDING     ((uint8_t)0x80U)
+#define AESCMAC_CONST_RB  ((uint8_t)0x87U)
+#define AESCMAC_MSB_CHECK ((uint8_t)0x80U)
+#define AESCMAC_PADDING   ((uint8_t)0x80U)
 
 typedef enum
 {
@@ -78,19 +78,14 @@ static int_fast16_t AESCMAC_startOneStepOperation(AESCMAC_Handle handle,
 static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle);
 static inline int_fast16_t AESCMAC_waitForResult(AESCMACCC26XX_Object *object);
 static void AESCMAC_cleanup(AESCMACCC26XX_Object *object);
-static void AESCMAC_getResult(AESCMACCC26XX_Object *object,
-                              bool isAfterDMAExecution);
-static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object,
-                                                  size_t *transactionLength);
+static void AESCMAC_getResult(AESCMACCC26XX_Object *object, bool isAfterDMAExecution);
+static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object, size_t *transactionLength);
 static inline void AESCMAC_processFinalInputBlock(AESCMACCC26XX_Object *object);
-static int_fast16_t AESCMAC_setupSegmentedOperation(AESCMACCC26XX_Object *object,
-                                                    const CryptoKey *key);
+static int_fast16_t AESCMAC_setupSegmentedOperation(AESCMACCC26XX_Object *object, const CryptoKey *key);
 static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object);
-static int_fast16_t AESCMAC_loadContext(AESCMACCC26XX_Object *object,
-                                        size_t inputLength);
+static int_fast16_t AESCMAC_loadContext(AESCMACCC26XX_Object *object, size_t inputLength);
 static void AESCMAC_deriveSubKey(uint8_t *buffer);
-static inline void AESCMAC_xorBlock(uint32_t *block1_dst,
-                                    const uint32_t *block2);
+static inline void AESCMAC_xorBlock(uint32_t *block1_dst, const uint32_t *block2);
 static int_fast16_t AESCMAC_generateSubKey(AESCMACCC26XX_Object *object,
                                            AESCMAC_SUBKEY_NUM subKeyNum,
                                            uint32_t *subKey);
@@ -136,11 +131,10 @@ static inline void AESCMAC_processFinalInputBlock(AESCMACCC26XX_Object *object)
 /*
  *  ======== AESCMAC_getResult ========
  */
-static void AESCMAC_getResult(AESCMACCC26XX_Object *object,
-                              bool isAfterDMAExecution)
+static void AESCMAC_getResult(AESCMACCC26XX_Object *object, bool isAfterDMAExecution)
 {
     AESCMAC_Operation *operation = object->operation;
-    uint8_t opcode = (object->operationType & AESCMAC_OP_CODE_MASK);
+    uint8_t opcode               = (object->operationType & AESCMAC_OP_CODE_MASK);
 
     /* If DMA was executed, read the output tag */
     if (isAfterDMAExecution)
@@ -152,27 +146,23 @@ static void AESCMAC_getResult(AESCMACCC26XX_Object *object,
     }
 
     /* If CMAC One-step or Final operation, process the final input block */
-    if ((object->operationalMode == AESCMAC_OPMODE_CMAC)  &&
-        (opcode != AESCMAC_OP_CODE_SEGMENTED) &&
+    if ((object->operationalMode == AESCMAC_OPMODE_CMAC) && (opcode != AESCMAC_OP_CODE_SEGMENTED) &&
         (object->returnStatus == AESCMAC_STATUS_SUCCESS))
     {
         AESCMAC_processFinalInputBlock(object);
     }
 
     /* If One-step or Final operation, verify or copy the MAC */
-    if ((opcode != AESCMAC_OP_CODE_SEGMENTED) &&
-        (object->returnStatus == AESCMAC_STATUS_SUCCESS))
+    if ((opcode != AESCMAC_OP_CODE_SEGMENTED) && (object->returnStatus == AESCMAC_STATUS_SUCCESS))
     {
         if (object->operationType & AESCMAC_OP_FLAG_SIGN)
         {
-            memcpy(operation->mac, object->intermediateTag,
-                   operation->macLength);
+            memcpy(operation->mac, object->intermediateTag, operation->macLength);
         }
         else
         {
             /* Constant time comparison of output tag versus provided MAC */
-            if (!CryptoUtils_buffersMatch(object->intermediateTag, operation->mac,
-                                          operation->macLength))
+            if (!CryptoUtils_buffersMatch(object->intermediateTag, operation->mac, operation->macLength))
             {
                 object->returnStatus = AESCMAC_STATUS_MAC_INVALID;
             }
@@ -186,7 +176,7 @@ static void AESCMAC_getResult(AESCMACCC26XX_Object *object,
 static void AESCMAC_hwiFxn(uintptr_t arg0)
 {
     AESCMACCC26XX_Object *object = ((AESCMAC_Handle)arg0)->object;
-    uint8_t opcode = (object->operationType & AESCMAC_OP_CODE_MASK);
+    uint8_t opcode               = (object->operationType & AESCMAC_OP_CODE_MASK);
     uintptr_t interruptKey;
 
     if (AESIntStatusRaw() & AES_DMA_BUS_ERR)
@@ -241,8 +231,7 @@ static void AESCMAC_hwiFxn(uintptr_t arg0)
     else /* AESCMAC_RETURN_BEHAVIOR_CALLBACK */
     {
         /* Call the callback function provided by the application */
-        object->callbackFxn((AESCMAC_Handle)arg0, object->returnStatus,
-                            object->operation, object->operationType);
+        object->callbackFxn((AESCMAC_Handle)arg0, object->returnStatus, object->operation, object->operationType);
     }
 }
 
@@ -298,13 +287,12 @@ void AESCMAC_init(void)
 /*
  *  ======== AESCMAC_construct ========
  */
-AESCMAC_Handle AESCMAC_construct(AESCMAC_Config *config,
-                                 const AESCMAC_Params *params)
+AESCMAC_Handle AESCMAC_construct(AESCMAC_Config *config, const AESCMAC_Params *params)
 {
     DebugP_assert(config);
     DebugP_assert(params);
 
-    AESCMAC_Handle handle = config;
+    AESCMAC_Handle handle        = config;
     AESCMACCC26XX_Object *object = handle->object;
 
     DebugP_assert(object);
@@ -327,12 +315,11 @@ AESCMAC_Handle AESCMAC_construct(AESCMAC_Config *config,
         params = (AESCMAC_Params *)&AESCMAC_defaultParams;
     }
 
-    DebugP_assert((params->returnBehavior != AESCMAC_RETURN_BEHAVIOR_CALLBACK) ||
-                  (params->callbackFxn != NULL));
+    DebugP_assert((params->returnBehavior != AESCMAC_RETURN_BEHAVIOR_CALLBACK) || (params->callbackFxn != NULL));
 
-    object->returnBehavior = params->returnBehavior;
+    object->returnBehavior  = params->returnBehavior;
     object->operationalMode = params->operationalMode;
-    object->callbackFxn = params->callbackFxn;
+    object->callbackFxn     = params->callbackFxn;
     if (params->returnBehavior == AESCMAC_RETURN_BEHAVIOR_BLOCKING)
     {
         object->semaphoreTimeout = params->timeout;
@@ -341,10 +328,10 @@ AESCMAC_Handle AESCMAC_construct(AESCMAC_Config *config,
     {
         object->semaphoreTimeout = SemaphoreP_NO_WAIT;
     }
-    object->threadSafe = true;
+    object->threadSafe           = true;
     object->cryptoResourceLocked = false;
-    object->hwBusy = false;
-    object->operationInProgress = false;
+    object->hwBusy               = false;
+    object->operationInProgress  = false;
 
     /* Set power dependency - i.e. power up and enable clock for Crypto
      * (CryptoResourceCC26XX) module. */
@@ -380,15 +367,13 @@ static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object)
     int_fast16_t status = AESCMAC_STATUS_SUCCESS;
 
     /* Only plaintext CryptoKeys are supported for now */
-    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) ||
-                  (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
 
     keyLength = object->key.u.plaintext.keyLength;
-    keyData = object->key.u.plaintext.keyMaterial;
+    keyData   = object->key.u.plaintext.keyMaterial;
 
     DebugP_assert(keyData);
-    DebugP_assert((keyLength == AES_128_KEY_LENGTH_BYTES) ||
-                  (keyLength == AES_192_KEY_LENGTH_BYTES) ||
+    DebugP_assert((keyLength == AES_128_KEY_LENGTH_BYTES) || (keyLength == AES_192_KEY_LENGTH_BYTES) ||
                   (keyLength == AES_256_KEY_LENGTH_BYTES));
 
     /* Workaround for a bug in AESWriteToKeyStore() as it invalidates only
@@ -447,8 +432,7 @@ static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object)
 /*
  *  ======== AESCMAC_loadContext ========
  */
-static int_fast16_t AESCMAC_loadContext(AESCMACCC26XX_Object *object,
-                                        size_t inputLength)
+static int_fast16_t AESCMAC_loadContext(AESCMACCC26XX_Object *object, size_t inputLength)
 {
     int_fast16_t status;
 
@@ -461,8 +445,7 @@ static int_fast16_t AESCMAC_loadContext(AESCMACCC26XX_Object *object,
          */
         AESSetInitializationVector(object->intermediateTag);
 
-        AESSetCtrl(CRYPTO_AESCTL_CBC_MAC | CRYPTO_AESCTL_SAVE_CONTEXT |
-                   CRYPTO_AESCTL_DIR);
+        AESSetCtrl(CRYPTO_AESCTL_CBC_MAC | CRYPTO_AESCTL_SAVE_CONTEXT | CRYPTO_AESCTL_DIR);
 
         AESSetDataLength(inputLength);
         AESSetAuthLength(0U);
@@ -479,34 +462,31 @@ static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle)
     AESCMACCC26XX_Object *object = handle->object;
     AESCMAC_Operation *operation = object->operation;
     AESCMAC_OperationType operationType;
-    bool isResultHandled = false;
-    int_fast16_t status = AESCMAC_STATUS_ERROR;
-    uint8_t opcode = (object->operationType & AESCMAC_OP_CODE_MASK);
+    bool isResultHandled                 = false;
+    int_fast16_t status                  = AESCMAC_STATUS_ERROR;
+    uint8_t opcode                       = (object->operationType & AESCMAC_OP_CODE_MASK);
     AESCMACCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    size_t transactionLength = operation->inputLength;
+    size_t transactionLength             = operation->inputLength;
 
     /* Input pointer cannot be NULL if input length is non-zero */
     DebugP_assert((operation->inputLength == 0U) || operation->input);
 
     /* MAC pointer cannot be NULL if performing a one-step operation or
      * finalizing a segmented operation */
-    DebugP_assert((opcode == AESCMAC_OP_CODE_SEGMENTED) ||
-                  (operation->mac));
+    DebugP_assert((opcode == AESCMAC_OP_CODE_SEGMENTED) || (operation->mac));
 
     /* We need to set the HWI function and priority since the same physical
      * interrupt is shared by multiple drivers and they all need to coexist.
      * Whenever a driver starts an operation, it registers its HWI callback with
      * the OS.
      */
-    HwiP_setFunc(&CryptoResourceCC26XX_hwi, AESCMAC_hwiFxn,
-                 (uintptr_t)handle);
+    HwiP_setFunc(&CryptoResourceCC26XX_hwi, AESCMAC_hwiFxn, (uintptr_t)handle);
     HwiP_setPriority(INT_CRYPTO_RESULT_AVAIL_IRQ, hwAttrs->intPriority);
 
     /* If CMAC One-step or Finalization operation, prepare the final input
      * block and adjust the transaction length accordingly.
      */
-    if ((object->operationalMode == AESCMAC_OPMODE_CMAC) &&
-        (opcode != AESCMAC_OP_CODE_SEGMENTED))
+    if ((object->operationalMode == AESCMAC_OPMODE_CMAC) && (opcode != AESCMAC_OP_CODE_SEGMENTED))
     {
         AESCMAC_prepareFinalInputBlock(object, &transactionLength);
     }
@@ -548,7 +528,7 @@ static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle)
                 /* Start the input DMA. There is no output DMA. */
                 AESStartDMAOperation(operation->input, transactionLength, NULL, 0U);
 
-                status = AESCMAC_waitForResult(object);
+                status          = AESCMAC_waitForResult(object);
                 isResultHandled = true;
             }
         }
@@ -561,7 +541,7 @@ static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle)
          * after the operationInProgress flag is cleared or access
          * semaphore is posted.
          */
-        status = object->returnStatus;
+        status        = object->returnStatus;
         operationType = object->operationType;
 
         object->operationInProgress = false;
@@ -577,8 +557,7 @@ static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle)
             /* Call the callback function provided by the application
              * to provide actual status of the operation.
              */
-            object->callbackFxn(handle, status,
-                                operation, operationType);
+            object->callbackFxn(handle, status, operation, operationType);
 
             /* Always return success in callback mode */
             status = AESCMAC_STATUS_SUCCESS;
@@ -600,8 +579,7 @@ static int_fast16_t AESCMAC_processData(AESCMAC_Handle handle)
  *  ======== AESCMAC_xorBlock ========
  *  XOR's two 16-byte blocks, storing the result in block1_dst.
  */
-static inline void AESCMAC_xorBlock(uint32_t *block1_dst,
-                                    const uint32_t *block2)
+static inline void AESCMAC_xorBlock(uint32_t *block1_dst, const uint32_t *block2)
 {
     uint_fast8_t i;
 
@@ -614,12 +592,11 @@ static inline void AESCMAC_xorBlock(uint32_t *block1_dst,
 /*
  *  ======== AESCMAC_prepareFinalInputBlock ========
  */
-static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object,
-                                                  size_t *transactionLength)
+static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object, size_t *transactionLength)
 {
     AESCMAC_Operation *operation = object->operation;
-    size_t finalInputLength = 0U;
-    size_t truncatedInputLength = 0U;
+    size_t finalInputLength      = 0U;
+    size_t truncatedInputLength  = 0U;
     uint32_t subKey[AES_BLOCK_SIZE_WORDS];
 
     /* Copy last partial or full block of input into local buffer */
@@ -636,8 +613,7 @@ static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object,
 
         truncatedInputLength = operation->inputLength - finalInputLength;
 
-        memcpy(object->buffer, &operation->input[truncatedInputLength],
-               finalInputLength);
+        memcpy(object->buffer, &operation->input[truncatedInputLength], finalInputLength);
     }
 
     /* Check if input message length is a positive block multiple */
@@ -664,7 +640,6 @@ static inline void AESCMAC_prepareFinalInputBlock(AESCMACCC26XX_Object *object,
     }
 }
 
-
 /*
  *  ======== AESCMAC_startOneStepOperation ========
  */
@@ -682,8 +657,7 @@ static int_fast16_t AESCMAC_startOneStepOperation(AESCMAC_Handle handle,
     int_fast16_t status;
 
     /* CBC-MAC is not permitted for zero length messages */
-    if ((object->operationalMode == AESCMAC_OPMODE_CBCMAC) &&
-        (operation->inputLength == 0))
+    if ((object->operationalMode == AESCMAC_OPMODE_CBCMAC) && (operation->inputLength == 0))
     {
         return AESCMAC_STATUS_ERROR;
     }
@@ -708,20 +682,19 @@ static int_fast16_t AESCMAC_startOneStepOperation(AESCMAC_Handle handle,
         object->cryptoResourceLocked = true;
     }
 
-    object->operation = operation;
+    object->operation     = operation;
     object->operationType = operationType;
     /* We will only change the returnStatus if there is an error or cancellation */
-    object->returnStatus = AESCMAC_STATUS_SUCCESS;
+    object->returnStatus  = AESCMAC_STATUS_SUCCESS;
     /* Make internal copy of crypto key */
-    object->key = *key;
+    object->key           = *key;
 
     /* Zero the intermediate tag because it will be used as the IV */
     memset(object->intermediateTag, 0, sizeof(object->intermediateTag));
 
     status = AESCMAC_processData(handle);
 
-    if ((status != AESCMAC_STATUS_SUCCESS) &&
-        (object->cryptoResourceLocked))
+    if ((status != AESCMAC_STATUS_SUCCESS) && (object->cryptoResourceLocked))
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
@@ -736,13 +709,12 @@ static int_fast16_t AESCMAC_startOneStepOperation(AESCMAC_Handle handle,
 static inline int_fast16_t AESCMAC_waitForResult(AESCMACCC26XX_Object *object)
 {
     int_fast16_t status = AESCMAC_STATUS_ERROR;
-    uint8_t opcode = (object->operationType & AESCMAC_OP_CODE_MASK);
+    uint8_t opcode      = (object->operationType & AESCMAC_OP_CODE_MASK);
 
     if (object->returnBehavior == AESCMAC_RETURN_BEHAVIOR_POLLING)
     {
         /* Wait until the operation is complete and check for DMA errors */
-        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) &
-            AES_DMA_BUS_ERR)
+        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
         {
             object->returnStatus = AESCMAC_STATUS_ERROR;
         }
@@ -769,8 +741,7 @@ static inline int_fast16_t AESCMAC_waitForResult(AESCMACCC26XX_Object *object)
     }
     else if (object->returnBehavior == AESCMAC_RETURN_BEHAVIOR_BLOCKING)
     {
-        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore,
-                        SemaphoreP_WAIT_FOREVER);
+        SemaphoreP_pend(&CryptoResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
 
         status = object->returnStatus;
     }
@@ -786,23 +757,17 @@ static inline int_fast16_t AESCMAC_waitForResult(AESCMACCC26XX_Object *object)
 /*
  *  ======== AESCMAC_oneStepSign ========
  */
-int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle,
-                                 AESCMAC_Operation *operation,
-                                 CryptoKey *key)
+int_fast16_t AESCMAC_oneStepSign(AESCMAC_Handle handle, AESCMAC_Operation *operation, CryptoKey *key)
 {
-    return AESCMAC_startOneStepOperation(handle, operation, key,
-                                         AESCMAC_OP_TYPE_SIGN);
+    return AESCMAC_startOneStepOperation(handle, operation, key, AESCMAC_OP_TYPE_SIGN);
 }
 
 /*
  *  ======== AESCMAC_oneStepVerify ========
  */
-int_fast16_t AESCMAC_oneStepVerify(AESCMAC_Handle handle,
-                                   AESCMAC_Operation *operation,
-                                   CryptoKey *key)
+int_fast16_t AESCMAC_oneStepVerify(AESCMAC_Handle handle, AESCMAC_Operation *operation, CryptoKey *key)
 {
-    return AESCMAC_startOneStepOperation(handle, operation, key,
-                                         AESCMAC_OP_TYPE_VERIFY);
+    return AESCMAC_startOneStepOperation(handle, operation, key, AESCMAC_OP_TYPE_VERIFY);
 }
 
 /*
@@ -811,7 +776,7 @@ int_fast16_t AESCMAC_oneStepVerify(AESCMAC_Handle handle,
 static int_fast16_t AESCMAC_setOperationInProgress(AESCMACCC26XX_Object *object)
 {
     uintptr_t interruptKey = HwiP_disable();
-    if(object->operationInProgress)
+    if (object->operationInProgress)
     {
         HwiP_restore(interruptKey);
         return AESCMAC_STATUS_ERROR;
@@ -821,12 +786,10 @@ static int_fast16_t AESCMAC_setOperationInProgress(AESCMACCC26XX_Object *object)
     return AESCMAC_STATUS_SUCCESS;
 }
 
-
 /*
  *  ======== AESCMAC_setupSegmentedOperation ========
  */
-static int_fast16_t AESCMAC_setupSegmentedOperation(AESCMACCC26XX_Object *object,
-                                                    const CryptoKey *key)
+static int_fast16_t AESCMAC_setupSegmentedOperation(AESCMACCC26XX_Object *object, const CryptoKey *key)
 {
     DebugP_assert(key);
 
@@ -844,7 +807,7 @@ static int_fast16_t AESCMAC_setupSegmentedOperation(AESCMACCC26XX_Object *object
         /* We will only change the returnStatus if there is an error or cancellation */
         object->returnStatus = AESCMAC_STATUS_SUCCESS;
         /* Make internal copy of crypto key */
-        object->key = *key;
+        object->key          = *key;
 
         /* Zero the intermediate tag because it will be used as the IV */
         memset(object->intermediateTag, 0, sizeof(object->intermediateTag));
@@ -894,8 +857,7 @@ int_fast16_t AESCMAC_setupVerify(AESCMAC_Handle handle, const CryptoKey *key)
 /*
  *  ======== AESCMAC_addData ========
  */
-int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
-                             AESCMAC_Operation *operation)
+int_fast16_t AESCMAC_addData(AESCMAC_Handle handle, AESCMAC_Operation *operation)
 {
     DebugP_assert(handle);
     DebugP_assert(operation);
@@ -913,8 +875,7 @@ int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
     }
 
     /* Verify the input length is non-zero and a multiple of the block size */
-    if ((operation->inputLength == 0U) ||
-        (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
+    if ((operation->inputLength == 0U) || (operation->inputLength & AES_NON_BLOCK_MULTIPLE_MASK))
     {
         return AESCMAC_STATUS_ERROR;
     }
@@ -933,15 +894,14 @@ int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
         (object->operationType == AESCMAC_OP_TYPE_SEGMENTED_VERIFY))
     {
         object->operation = operation;
-        status = AESCMAC_processData(handle);
+        status            = AESCMAC_processData(handle);
     }
     else
     {
         status = AESCMAC_STATUS_ERROR;
     }
 
-    if ((status != AESCMAC_STATUS_SUCCESS) &&
-        (object->cryptoResourceLocked))
+    if ((status != AESCMAC_STATUS_SUCCESS) && (object->cryptoResourceLocked))
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
@@ -955,12 +915,10 @@ int_fast16_t AESCMAC_addData(AESCMAC_Handle handle,
  *  Generate AES CMAC subkey based on
  *  https://tools.ietf.org/html/rfc4493#section-2.3
  */
-static int_fast16_t AESCMAC_generateSubKey(AESCMACCC26XX_Object *object,
-                                           AESCMAC_SUBKEY_NUM subKeyNum,
-                                           uint32_t *subKey)
+static int_fast16_t AESCMAC_generateSubKey(AESCMACCC26XX_Object *object, AESCMAC_SUBKEY_NUM subKeyNum, uint32_t *subKey)
 {
     uint32_t zeroBlock[AES_BLOCK_SIZE_WORDS] = {0};
-    int_fast16_t status = AESCMAC_loadKey(object);
+    int_fast16_t status                      = AESCMAC_loadKey(object);
 
     if (status == AESCMAC_STATUS_SUCCESS)
     {
@@ -978,8 +936,7 @@ static int_fast16_t AESCMAC_generateSubKey(AESCMACCC26XX_Object *object,
         AESStartDMAOperation((uint8_t *)zeroBlock, AES_BLOCK_SIZE, (uint8_t *)subKey, AES_BLOCK_SIZE);
 
         /* Wait until the operation is complete and check for DMA errors */
-        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) &
-            AES_DMA_BUS_ERR)
+        if (AESWaitForIRQFlags(AES_RESULT_RDY | AES_DMA_BUS_ERR) & AES_DMA_BUS_ERR)
         {
             status = AESCMAC_STATUS_ERROR;
         }
@@ -1029,20 +986,19 @@ static void AESCMAC_deriveSubKey(uint8_t *buffer)
         buffer[i] = buffer[i] << 1U;
     }
 
-    buffer[AES_BLOCK_SIZE  - 1U] ^= xorMask;
+    buffer[AES_BLOCK_SIZE - 1U] ^= xorMask;
 }
 
 /*
  *  ======== AESCMAC_finalize ========
  */
-int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
-                              AESCMAC_Operation *operation)
+int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle, AESCMAC_Operation *operation)
 {
     DebugP_assert(handle);
     DebugP_assert(operation);
 
     AESCMACCC26XX_Object *object = handle->object;
-    int_fast16_t status = AESCMAC_STATUS_SUCCESS;
+    int_fast16_t status          = AESCMAC_STATUS_SUCCESS;
 
     /* Check for previous failure or cancellation of segmented operation */
     if (object->returnStatus != AESCMAC_STATUS_SUCCESS)
@@ -1075,11 +1031,11 @@ int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
 
         if (object->operationType == AESCMAC_OP_TYPE_SEGMENTED_SIGN)
         {
-             object->operationType = AESCMAC_OP_TYPE_FINALIZE_SIGN;
+            object->operationType = AESCMAC_OP_TYPE_FINALIZE_SIGN;
         }
         else if (object->operationType == AESCMAC_OP_TYPE_SEGMENTED_VERIFY)
         {
-             object->operationType = AESCMAC_OP_TYPE_FINALIZE_VERIFY;
+            object->operationType = AESCMAC_OP_TYPE_FINALIZE_VERIFY;
         }
         else
         {
@@ -1089,11 +1045,10 @@ int_fast16_t AESCMAC_finalize(AESCMAC_Handle handle,
         if (status == AESCMAC_STATUS_SUCCESS)
         {
             object->operation = operation;
-            status = AESCMAC_processData(handle);
+            status            = AESCMAC_processData(handle);
         }
 
-        if ((status != AESCMAC_STATUS_SUCCESS) &&
-            (object->cryptoResourceLocked))
+        if ((status != AESCMAC_STATUS_SUCCESS) && (object->cryptoResourceLocked))
         {
             CryptoResourceCC26XX_releaseLock();
             object->cryptoResourceLocked = false;
@@ -1116,7 +1071,7 @@ int_fast16_t AESCMAC_cancelOperation(AESCMAC_Handle handle)
     /* Check if the HW operation already completed */
     if (!object->hwBusy)
     {
-        object->returnStatus = AESCMAC_STATUS_CANCELED;
+        object->returnStatus        = AESCMAC_STATUS_CANCELED;
         object->operationInProgress = false;
 
         HwiP_restore(interruptKey);
@@ -1144,8 +1099,8 @@ int_fast16_t AESCMAC_cancelOperation(AESCMAC_Handle handle)
      */
     IntPendClear(INT_CRYPTO_RESULT_AVAIL_IRQ);
 
-    object->returnStatus = AESCMAC_STATUS_CANCELED;
-    object->hwBusy = false;
+    object->returnStatus        = AESCMAC_STATUS_CANCELED;
+    object->hwBusy              = false;
     object->operationInProgress = false;
 
     if (object->returnBehavior == AESCMAC_RETURN_BEHAVIOR_BLOCKING)
@@ -1156,8 +1111,7 @@ int_fast16_t AESCMAC_cancelOperation(AESCMAC_Handle handle)
     else /* AESCMAC_RETURN_BEHAVIOR_CALLBACK */
     {
         /* Call the callback function provided by the application */
-        object->callbackFxn(handle, AESCMAC_STATUS_CANCELED,
-                            object->operation, object->operationType);
+        object->callbackFxn(handle, AESCMAC_STATUS_CANCELED, object->operation, object->operationType);
     }
 
     /* Cleanup posts the crypto access semaphore and must be done after the

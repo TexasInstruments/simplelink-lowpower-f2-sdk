@@ -38,6 +38,7 @@
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/profiles/simple_profile/cc26xx</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/ble5stack/hal/src/target/cc2650/rom</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/devices/cc13x2x7_cc26x2x7</path>
+        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/tirtos/packages</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/posix/iar</path>
     </includePath>
 

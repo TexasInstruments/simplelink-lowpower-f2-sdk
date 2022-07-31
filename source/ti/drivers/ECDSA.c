@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,38 +49,42 @@ extern const uint_least8_t ECDSA_count;
 
 const ECDSA_Params ECDSA_defaultParams = {
     .returnBehavior = ECDSA_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== ECDSA_Params_init ========
  */
-void ECDSA_Params_init(ECDSA_Params *params){
+void ECDSA_Params_init(ECDSA_Params *params)
+{
     *params = ECDSA_defaultParams;
 }
 
 /*
  *  ======== ECDSA_open ========
  */
-ECDSA_Handle ECDSA_open(uint_least8_t index, const ECDSA_Params *params) {
+__attribute__((weak)) ECDSA_Handle ECDSA_open(uint_least8_t index, const ECDSA_Params *params)
+{
     DebugP_assert(index < ECDSA_count);
 
-    ECDSA_Config *config = (ECDSA_Config*)&ECDSA_config[index];
+    ECDSA_Config *config = (ECDSA_Config *)&ECDSA_config[index];
     return ECDSA_construct(config, params);
 }
 
 /*
  *  ======== ECDSA_OperationSign_init ========
  */
-void ECDSA_OperationSign_init(ECDSA_OperationSign *operation){
+void ECDSA_OperationSign_init(ECDSA_OperationSign *operation)
+{
     memset(operation, 0x00, sizeof(ECDSA_OperationSign));
 }
 
 /*
  *  ======== ECDSA_OperationVerify_init ========
  */
-void ECDSA_OperationVerify_init(ECDSA_OperationVerify *operation){
+void ECDSA_OperationVerify_init(ECDSA_OperationVerify *operation)
+{
     memset(operation, 0x00, sizeof(ECDSA_OperationVerify));
 }

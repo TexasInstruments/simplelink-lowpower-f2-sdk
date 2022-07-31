@@ -5,7 +5,7 @@ include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 CC = "$(TICLANG_ARMCOMPILER)/bin/tiarmclang"
 AR = "$(TICLANG_ARMCOMPILER)/bin/tiarmar"
 
-OBJECTS = src_ncp_changed_props_set.obj src_ncp_example_vendor_hook.obj src_ncp_ncp_base.obj src_ncp_ncp_base_dispatcher.obj src_ncp_ncp_base_ftd.obj src_ncp_ncp_base_mtd.obj src_ncp_ncp_base_radio.obj src_ncp_ncp_spi.obj src_ncp_ncp_uart.obj src_lib_hdlc_hdlc.obj src_lib_spinel_spinel.obj src_lib_spinel_spinel_buffer.obj src_lib_spinel_spinel_decoder.obj src_lib_spinel_spinel_encoder.obj
+OBJECTS = src_ncp_changed_props_set.obj src_ncp_example_vendor_hook.obj src_ncp_ncp_base.obj src_ncp_ncp_base_dispatcher.obj src_ncp_ncp_base_ftd.obj src_ncp_ncp_base_mtd.obj src_ncp_ncp_base_radio.obj src_ncp_ncp_hdlc.obj src_ncp_ncp_spi.obj src_lib_hdlc_hdlc.obj src_lib_spinel_spinel.obj src_lib_spinel_spinel_buffer.obj src_lib_spinel_spinel_decoder.obj src_lib_spinel_spinel_encoder.obj
 NAME = libopenthread_ncp_ftd
 
 CFLAGS = -I../../.. \
@@ -108,11 +108,11 @@ src_ncp_ncp_base_radio.obj: OPENTHREAD_MAKE_PATH/src/ncp/ncp_base_radio.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_ncp_ncp_spi.obj: OPENTHREAD_MAKE_PATH/src/ncp/ncp_spi.cpp
+src_ncp_ncp_hdlc.obj: OPENTHREAD_MAKE_PATH/src/ncp/ncp_hdlc.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 
-src_ncp_ncp_uart.obj: OPENTHREAD_MAKE_PATH/src/ncp/ncp_uart.cpp
+src_ncp_ncp_spi.obj: OPENTHREAD_MAKE_PATH/src/ncp/ncp_spi.cpp
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) -c $< -o $@
 

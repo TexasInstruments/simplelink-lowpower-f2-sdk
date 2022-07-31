@@ -601,7 +601,7 @@ function isAntennaSwitchInPackage() {
     /* If P device and SIP package */
     return (
         !!deviceData.deviceId.match(/CC....P/)
-        && (deviceData.package === "SIP")
+        && !!deviceData.package.match(/SIP/)
     );
 }
 
@@ -615,6 +615,7 @@ function isCoexSupport() {
     /* If device family:
      * - cc13x2_cc26x2
      * - cc13x2x7_cc13x2x7
+     * - cc13x4_cc26x4
      * 
      * AND not a sub1g only device
      */
@@ -622,6 +623,7 @@ function isCoexSupport() {
         (
             !!deviceData.deviceId.match(/CC(13|26).2[RP][^7]/)
             || !!deviceData.deviceId.match(/CC(13|26).2[RP]7/)
+            || !!deviceData.deviceId.match(/CC(13|26).(3|4)[RP]/)
         )
         && !CommonRadioconfig.isSub1gOnlyDevice()
     );
@@ -670,7 +672,7 @@ function getRfHardware(inst=null) {
         const deviceFamily = DriverLib.getAttrs(deviceData.deviceId).deviceDir.replace(/x2x7/g, "x2");
 
         /* Hardware definition stored with RF module */
-        hardware = RfHardware.antennaSwitch[deviceFamily][deviceData.package]
+        hardware = RfHardware.antennaSwitch[deviceFamily]["SIP"]
     }
 
     return hardware;
@@ -1573,7 +1575,7 @@ function validate(inst, validation) {
 
     /* Antenna switch is required for P boards */
     const board = isCustomDesign() ? null : system.deviceData.board;
-    if ((board !== null) && (!!board.name.match(/CC....P/i)) && (deviceData.package !== "SIP")) {
+    if ((board !== null) && (!!board.name.match(/CC....P/i)) && !(!!deviceData.package.match(/SIP/i))) {
         if (inst.$hardware === null) {
             Common.logWarning(validation, inst, "$hardware", `The board '${board.displayName}' requires the 'RF Antenna Switch' to be selected.`);
         }

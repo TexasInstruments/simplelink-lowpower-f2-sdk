@@ -204,7 +204,7 @@
                     },
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -380,7 +380,7 @@
                     },
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -452,7 +452,7 @@
                 "_name": "CC2652PEM-7ID-Q1",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -523,7 +523,7 @@
                 "_name": "CC2652REM-7ID",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -594,7 +594,7 @@
                 "_name": "CC2652REM-7ID-Q1",
                 "FrequencyRange": {
                     "Min": "2360",
-                    "Max": "2500",
+                    "Max": "2510",
                     "PaSettingTable": {
                         "PaSetting": [
                             {
@@ -666,7 +666,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -819,7 +819,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1204,7 +1204,7 @@
                     },
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1277,7 +1277,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1453,7 +1453,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1515,6 +1515,139 @@
                                 {
                                     "_text": "-20",
                                     "Value": "0x04C6"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Min": "359",
+                        "Max": "510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "14",
+                                    "Value": "0x013F",
+                                    "Option": {
+                                        "_name": "vddr",
+                                        "$": "HIGH"
+                                    },
+                                    "Command": {
+                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                                        "OverrideField": {
+                                            "_name": "pRegOverride",
+                                            "Block": "override_patable_14dbm.json"
+                                        }
+                                    }
+                                },
+                                {
+                                    "_text": "12.5",
+                                    "Value": "0xB224"
+                                },
+                                {
+                                    "_text": "12",
+                                    "Value": "0xA410"
+                                },
+                                {
+                                    "_text": "11",
+                                    "Value": "0x669A"
+                                },
+                                {
+                                    "_text": "10",
+                                    "Value": "0x3E92"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0x3EDC"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0x2CD8"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0x26D4"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0x20D1"
+                                },
+                                {
+                                    "_text": "5",
+                                    "Value": "0x1CCE"
+                                },
+                                {
+                                    "_text": "4",
+                                    "Value": "0x16CD"
+                                },
+                                {
+                                    "_text": "3",
+                                    "Value": "0x14CB"
+                                },
+                                {
+                                    "_text": "2",
+                                    "Value": "0x12CA"
+                                },
+                                {
+                                    "_text": "1",
+                                    "Value": "0x12C9"
+                                },
+                                {
+                                    "_text": "0",
+                                    "Value": "0x10C8"
+                                },
+                                {
+                                    "_text": "-5",
+                                    "Value": "0x0AC4"
+                                },
+                                {
+                                    "_text": "-10",
+                                    "Value": "0x0AC2"
+                                },
+                                {
+                                    "_text": "-15",
+                                    "Value": "0x06C1"
+                                },
+                                {
+                                    "_text": "-20",
+                                    "Value": "0x04C0"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "_name": "LAUNCHXL-CC1352P4_10dBm",
+                "FrequencyRange": [
+                    {
+                        "Min": "2360",
+                        "Max": "2510",
+                        "PaSettingTable": {
+                            "PaSetting": [
+                                {
+                                    "_text": "10",
+                                    "Value": "0xFFFF",
+                                    "TxHighPa": "0x104F66"
+                                },
+                                {
+                                    "_text": "9",
+                                    "Value": "0xFFFF",
+                                    "TxHighPa": "0x103F5F"
+                                },
+                                {
+                                    "_text": "8",
+                                    "Value": "0xFFFF",
+                                    "TxHighPa": "0x10335A"
+                                },
+                                {
+                                    "_text": "7",
+                                    "Value": "0xFFFF",
+                                    "TxHighPa": "0x14285F"
+                                },
+                                {
+                                    "_text": "6",
+                                    "Value": "0xFFFF",
+                                    "TxHighPa": "0x144F2A"
                                 }
                             ]
                         }
@@ -1711,32 +1844,32 @@
                                 {
                                     "_text": "19",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x448CF"
+                                    "TxHighPa": "0x0448CF"
                                 },
                                 {
                                     "_text": "18",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x48022"
+                                    "TxHighPa": "0x048022"
                                 },
                                 {
                                     "_text": "17",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x2661C"
+                                    "TxHighPa": "0x02661C"
                                 },
                                 {
                                     "_text": "16",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x05618"
+                                    "TxHighPa": "0x005618"
                                 },
                                 {
                                     "_text": "15",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x04812"
+                                    "TxHighPa": "0x004812"
                                 },
                                 {
                                     "_text": "14",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x0380D"
+                                    "TxHighPa": "0x00380D"
                                 }
                             ]
                         }
@@ -1816,7 +1949,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1944,7 +2077,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -1965,12 +2098,12 @@
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "14285F"
+                                    "TxHighPa": "0x14285F"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "144F2A"
+                                    "TxHighPa": "0x144F2A"
                                 }
                             ]
                         }
@@ -2096,32 +2229,32 @@
                                 {
                                     "_text": "19",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x448CF"
+                                    "TxHighPa": "0x0448CF"
                                 },
                                 {
                                     "_text": "18",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x48022"
+                                    "TxHighPa": "0x048022"
                                 },
                                 {
                                     "_text": "17",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x2661C"
+                                    "TxHighPa": "0x02661C"
                                 },
                                 {
                                     "_text": "16",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x05618"
+                                    "TxHighPa": "0x005618"
                                 },
                                 {
                                     "_text": "15",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x04812"
+                                    "TxHighPa": "0x004812"
                                 },
                                 {
                                     "_text": "14",
                                     "Value": "0xFFFF",
-                                    "TxHighPa": "0x0380D"
+                                    "TxHighPa": "0x00380D"
                                 }
                             ]
                         }
@@ -2201,7 +2334,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2352,7 +2485,7 @@
                 "FrequencyRange": [
                     {
                         "Min": "2360",
-                        "Max": "2500",
+                        "Max": "2510",
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
@@ -2389,139 +2522,6 @@
                                     "_text": "14",
                                     "Value": "0xFFFF",
                                     "TxHighPa": "0x1B27D6"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "Min": "433",
-                        "Max": "510",
-                        "PaSettingTable": {
-                            "PaSetting": [
-                                {
-                                    "_text": "14",
-                                    "Value": "0x013F",
-                                    "Option": {
-                                        "_name": "vddr",
-                                        "$": "HIGH"
-                                    },
-                                    "Command": {
-                                        "_name": "CMD_PROP_RADIO_DIV_SETUP",
-                                        "OverrideField": {
-                                            "_name": "pRegOverride",
-                                            "Block": "override_patable_14dbm.json"
-                                        }
-                                    }
-                                },
-                                {
-                                    "_text": "12.5",
-                                    "Value": "0xB224"
-                                },
-                                {
-                                    "_text": "12",
-                                    "Value": "0xA410"
-                                },
-                                {
-                                    "_text": "11",
-                                    "Value": "0x669A"
-                                },
-                                {
-                                    "_text": "10",
-                                    "Value": "0x3E92"
-                                },
-                                {
-                                    "_text": "9",
-                                    "Value": "0x3EDC"
-                                },
-                                {
-                                    "_text": "8",
-                                    "Value": "0x2CD8"
-                                },
-                                {
-                                    "_text": "7",
-                                    "Value": "0x26D4"
-                                },
-                                {
-                                    "_text": "6",
-                                    "Value": "0x20D1"
-                                },
-                                {
-                                    "_text": "5",
-                                    "Value": "0x1CCE"
-                                },
-                                {
-                                    "_text": "4",
-                                    "Value": "0x16CD"
-                                },
-                                {
-                                    "_text": "3",
-                                    "Value": "0x14CB"
-                                },
-                                {
-                                    "_text": "2",
-                                    "Value": "0x12CA"
-                                },
-                                {
-                                    "_text": "1",
-                                    "Value": "0x12C9"
-                                },
-                                {
-                                    "_text": "0",
-                                    "Value": "0x10C8"
-                                },
-                                {
-                                    "_text": "-5",
-                                    "Value": "0x0AC4"
-                                },
-                                {
-                                    "_text": "-10",
-                                    "Value": "0x0AC2"
-                                },
-                                {
-                                    "_text": "-15",
-                                    "Value": "0x06C1"
-                                },
-                                {
-                                    "_text": "-20",
-                                    "Value": "0x04C0"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            },
-            {
-                "_name": "LAUNCHXL-CC1352P4_10dBm",
-                "FrequencyRange": [
-                    {
-                        "Min": "2360",
-                        "Max": "2500",
-                        "PaSettingTable": {
-                            "PaSetting": [
-                                {
-                                    "_text": "10",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x104F66"
-                                },
-                                {
-                                    "_text": "9",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x103F5F"
-                                },
-                                {
-                                    "_text": "8",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x10335A"
-                                },
-                                {
-                                    "_text": "7",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x14285F"
-                                },
-                                {
-                                    "_text": "6",
-                                    "Value": "0xFFFF",
-                                    "TxHighPa": "0x144F2A"
                                 }
                             ]
                         }

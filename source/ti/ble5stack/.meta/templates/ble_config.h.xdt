@@ -118,6 +118,7 @@ extern uint8_t KeyDistList;
 extern uint8_t eccDebugKeys;
 extern uint8_t allowDebugKeys;
 extern uint8_t eraseBondWhileInConn;
+extern uint8_t sameIrkAction;
 
 extern void setBondManagerParameters();
 

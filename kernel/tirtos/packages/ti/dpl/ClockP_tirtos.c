@@ -47,27 +47,25 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Task.h>
 
-
 /*
  *  ======== ClockP_construct ========
  */
-ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn clockFxn,
-        uint32_t timeout, ClockP_Params *params)
+ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn clockFxn, uint32_t timeout, ClockP_Params *params)
 {
     Clock_Params clockParams;
     Clock_Handle clock;
 
-    if (params == NULL) {
-        Clock_construct((Clock_Struct *)handle, (Clock_FuncPtr)clockFxn,
-                timeout, NULL);
+    if (params == NULL)
+    {
+        Clock_construct((Clock_Struct *)handle, (Clock_FuncPtr)clockFxn, timeout, NULL);
     }
-    else {
+    else
+    {
         Clock_Params_init(&clockParams);
-        clockParams.arg = params->arg;
+        clockParams.arg       = params->arg;
         clockParams.startFlag = params->startFlag;
-        clockParams.period = params->period;
-        Clock_construct((Clock_Struct *)handle, (Clock_FuncPtr)clockFxn,
-                timeout, &clockParams);
+        clockParams.period    = params->period;
+        Clock_construct((Clock_Struct *)handle, (Clock_FuncPtr)clockFxn, timeout, &clockParams);
     }
 
     clock = Clock_handle((Clock_Struct *)handle);
@@ -78,24 +76,23 @@ ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn clockFxn,
 /*
  *  ======== ClockP_create ========
  */
-ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout,
-        ClockP_Params *params)
+ClockP_Handle ClockP_create(ClockP_Fxn clockFxn, uint32_t timeout, ClockP_Params *params)
 {
     Clock_Handle handle;
     Clock_Params clockParams;
 
     /* Use 0 for timeout since we are only doing one-shot clocks */
-    if (params == NULL) {
-        handle = Clock_create((Clock_FuncPtr)clockFxn, timeout, NULL,
-                Error_IGNORE);
+    if (params == NULL)
+    {
+        handle = Clock_create((Clock_FuncPtr)clockFxn, timeout, NULL, Error_IGNORE);
     }
-    else {
+    else
+    {
         Clock_Params_init(&clockParams);
-        clockParams.arg = params->arg;
+        clockParams.arg       = params->arg;
         clockParams.startFlag = params->startFlag;
-        clockParams.period = params->period;
-        handle = Clock_create((Clock_FuncPtr)clockFxn, timeout, &clockParams,
-                Error_IGNORE);
+        clockParams.period    = params->period;
+        handle                = Clock_create((Clock_FuncPtr)clockFxn, timeout, &clockParams, Error_IGNORE);
     }
 
     return ((ClockP_Handle)handle);
@@ -164,9 +161,9 @@ bool ClockP_isActive(ClockP_Handle handle)
  */
 void ClockP_Params_init(ClockP_Params *params)
 {
-    params->arg = 0;
+    params->arg       = 0;
     params->startFlag = false;
-    params->period = 0;
+    params->period    = 0;
 }
 
 /*

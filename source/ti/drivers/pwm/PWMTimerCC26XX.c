@@ -55,9 +55,10 @@
 #include "ti/drivers/timer/GPTimerCC26XX.h"
 
 /* PWMTimerCC26XX defines */
-#define PWM_COUNT_MAX    0xFFFFFE /* GPTimer has maximum 24 bits incl prescaler.
-                                     Max count is set to (2^24 - 2) to allow for
-                                     a glitch free 100% duty cycle at max period count.*/
+#define PWM_COUNT_MAX                                       \
+    0xFFFFFE /* GPTimer has maximum 24 bits incl prescaler. \
+                Max count is set to (2^24 - 2) to allow for \
+                a glitch free 100% duty cycle at max period count.*/
 
 /*!
  *  @brief If the PWM period is lower than this value, setDutyAndPeriod
@@ -69,24 +70,22 @@
 #define PWM_PERIOD_FOR_GLITCH_PROTECTION 0xF
 
 /* PWMTimerCC26XX functions */
-void         PWMTimerCC26XX_close(PWM_Handle handle);
-int_fast16_t PWMTimerCC26XX_control(PWM_Handle handle, uint_fast16_t cmd,
-        void * arg);
-void         PWMTimerCC26XX_init(PWM_Handle handle);
-PWM_Handle   PWMTimerCC26XX_open(PWM_Handle handle, PWM_Params *params);
+void PWMTimerCC26XX_close(PWM_Handle handle);
+int_fast16_t PWMTimerCC26XX_control(PWM_Handle handle, uint_fast16_t cmd, void *arg);
+void PWMTimerCC26XX_init(PWM_Handle handle);
+PWM_Handle PWMTimerCC26XX_open(PWM_Handle handle, PWM_Params *params);
 int_fast16_t PWMTimerCC26XX_setDuty(PWM_Handle handle, uint32_t dutyValue);
 int_fast16_t PWMTimerCC26XX_setPeriod(PWM_Handle handle, uint32_t periodValue);
 int_fast16_t PWMTimerCC26XX_setDutyAndPeriod(PWM_Handle handle, uint32_t dutyValue, uint32_t periodValue);
-void         PWMTimerCC26XX_start(PWM_Handle handle);
-void         PWMTimerCC26XX_stop(PWM_Handle handle);
+void PWMTimerCC26XX_start(PWM_Handle handle);
+void PWMTimerCC26XX_stop(PWM_Handle handle);
 
 /* PWMTimerCC26XX internal functions */
-static uint32_t         PWMTimerCC26XX_getperiodCounts(PWM_Period_Units periodUnit, uint32_t periodValue);
-static int32_t         PWMTimerCC26XX_getdutyCounts(uint32_t periodCounts, PWM_Duty_Units dutyUnit, uint32_t dutyValue);
+static uint32_t PWMTimerCC26XX_getperiodCounts(PWM_Period_Units periodUnit, uint32_t periodValue);
+static int32_t PWMTimerCC26XX_getdutyCounts(uint32_t periodCounts, PWM_Duty_Units dutyUnit, uint32_t dutyValue);
 
 /* PWM function table for PWMTimerCC26XX implementation */
-const PWM_FxnTable PWMTimerCC26XX_fxnTable =
-{
+const PWM_FxnTable PWMTimerCC26XX_fxnTable = {
     PWMTimerCC26XX_close,
     PWMTimerCC26XX_control,
     PWMTimerCC26XX_init,
@@ -110,9 +109,7 @@ const PWM_FxnTable PWMTimerCC26XX_fxnTable =
  *
  */
 void PWMTimerCC26XX_init(PWM_Handle handle)
-{
-}
-
+{}
 
 /* Open the specific PWM peripheral with the settings given in params.
  * Will return a PWM handle if successfull, NULL if failed.
@@ -122,14 +119,14 @@ void PWMTimerCC26XX_init(PWM_Handle handle)
 PWM_Handle PWMTimerCC26XX_open(PWM_Handle handle, PWM_Params *params)
 {
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
-    PWMTimerCC26XX_Object        *object  = handle->object;
+    PWMTimerCC26XX_Object *object         = handle->object;
 
     /* Check if PWM already open  */
     uint32_t key = HwiP_disable();
     if (object->isOpen)
     {
         HwiP_restore(key);
-        DebugP_log1("PWM_open(%x):  Unit already in use.", (uintptr_t) handle);
+        DebugP_log1("PWM_open(%x):  Unit already in use.", (uintptr_t)handle);
         return NULL;
     }
     object->isOpen = 1;
@@ -147,7 +144,7 @@ PWM_Handle PWMTimerCC26XX_open(PWM_Handle handle, PWM_Params *params)
     /* Fail if cannot open timer */
     if (hTimer == NULL)
     {
-        DebugP_log2("PWM_open(%x): Timer unit (%d) already in use.", (uintptr_t) handle, hwAttrs->gpTimerUnit);
+        DebugP_log2("PWM_open(%x): Timer unit (%d) already in use.", (uintptr_t)handle, hwAttrs->gpTimerUnit);
         object->isOpen = false;
         return NULL;
     }
@@ -175,17 +172,16 @@ PWM_Handle PWMTimerCC26XX_open(PWM_Handle handle, PWM_Params *params)
     /* This will also set the duty cycle */
     if (PWMTimerCC26XX_setPeriod(handle, period) != PWM_STATUS_SUCCESS)
     {
-        DebugP_log1("PWM_open(%x): Failed setting period", (uintptr_t) handle);
+        DebugP_log1("PWM_open(%x): Failed setting period", (uintptr_t)handle);
         GPIO_resetConfig(hwAttrs->pwmPin);
         GPTimerCC26XX_close(hTimer);
         object->isOpen = false;
         return NULL;
     }
 
-    DebugP_log1("PWM_open(%x): Opened with great success!", (uintptr_t) handle);
+    DebugP_log1("PWM_open(%x): Opened with great success!", (uintptr_t)handle);
     return handle;
 }
-
 
 /* PWMTimerCC26XX_setPeriod -
    Sets / update PWM period. Unit must already be defined in object.
@@ -195,22 +191,21 @@ int_fast16_t PWMTimerCC26XX_setPeriod(PWM_Handle handle, uint32_t periodValue)
 {
     PWMTimerCC26XX_Object *object = handle->object;
     /* Copy current duty value and store new period */
-    uint32_t dutyValue       = object->dutyValue;
-    uint32_t newperiodCounts = PWMTimerCC26XX_getperiodCounts(object->periodUnit, periodValue);
-    int32_t  newdutyCounts   = PWMTimerCC26XX_getdutyCounts(newperiodCounts, object->dutyUnit, dutyValue);
+    uint32_t dutyValue            = object->dutyValue;
+    uint32_t newperiodCounts      = PWMTimerCC26XX_getperiodCounts(object->periodUnit, periodValue);
+    int32_t newdutyCounts         = PWMTimerCC26XX_getdutyCounts(newperiodCounts, object->dutyUnit, dutyValue);
 
     /* Fail if period is out of range */
-    if ((newperiodCounts > PWM_COUNT_MAX) ||
-        (newperiodCounts == 0))
+    if ((newperiodCounts > PWM_COUNT_MAX) || (newperiodCounts == 0))
     {
-        DebugP_log2("PWM(%x): Period (%d) is out of range", (uintptr_t) handle, periodValue);
+        DebugP_log2("PWM(%x): Period (%d) is out of range", (uintptr_t)handle, periodValue);
         return PWM_STATUS_INVALID_PERIOD;
     }
 
     /* Compare to new period and fail if invalid */
     if (newperiodCounts < (newdutyCounts - 1) || (newdutyCounts < 0))
     {
-        DebugP_log2("PWM(%x): Period is shorter than duty (%d)", (uintptr_t) handle, periodValue);
+        DebugP_log2("PWM(%x): Period is shorter than duty (%d)", (uintptr_t)handle, periodValue);
         return PWM_STATUS_INVALID_PERIOD;
     }
 
@@ -225,7 +220,7 @@ int_fast16_t PWMTimerCC26XX_setPeriod(PWM_Handle handle, uint32_t periodValue)
 
     GPTimerCC26XX_setMatchValue(object->hTimer, newdutyCounts);
 
-    DebugP_log1("PWM_setPeriod(%x): Period set with great success!", (uintptr_t) handle);
+    DebugP_log1("PWM_setPeriod(%x): Period set with great success!", (uintptr_t)handle);
     return PWM_STATUS_SUCCESS;
 }
 
@@ -237,13 +232,13 @@ int_fast16_t PWMTimerCC26XX_setDuty(PWM_Handle handle, uint32_t dutyValue)
 {
     PWMTimerCC26XX_Object *object = handle->object;
     /* Copy current duty unit and store new period */
-    PWM_Duty_Units dutyUnit = object->dutyUnit;
-    int32_t newdutyCounts   = PWMTimerCC26XX_getdutyCounts(object->periodCounts, dutyUnit, dutyValue);
+    PWM_Duty_Units dutyUnit       = object->dutyUnit;
+    int32_t newdutyCounts         = PWMTimerCC26XX_getdutyCounts(object->periodCounts, dutyUnit, dutyValue);
 
     /* Fail if duty cycle count is out of range. */
     if (newdutyCounts > PWM_COUNT_MAX)
     {
-        DebugP_log2("PWM(%x): Duty (%d) is out of range", (uintptr_t) handle, dutyValue);
+        DebugP_log2("PWM(%x): Duty (%d) is out of range", (uintptr_t)handle, dutyValue);
         return PWM_STATUS_INVALID_DUTY;
     }
 
@@ -254,10 +249,10 @@ int_fast16_t PWMTimerCC26XX_setDuty(PWM_Handle handle, uint32_t dutyValue)
      *  Unit PWM_DUTY_COUNTS needs error checking
      */
     if (((newdutyCounts > (object->periodCounts + 1)) &&
-        ((dutyUnit == PWM_DUTY_US) || (dutyUnit == PWM_DUTY_COUNTS))) ||
+         ((dutyUnit == PWM_DUTY_US) || (dutyUnit == PWM_DUTY_COUNTS))) ||
         (newdutyCounts < 0))
     {
-        DebugP_log2("PWM(%x): Duty (%d) is larger than period", (uintptr_t) handle, dutyValue);
+        DebugP_log2("PWM(%x): Duty (%d) is larger than period", (uintptr_t)handle, dutyValue);
         return PWM_STATUS_INVALID_DUTY;
     }
 
@@ -267,31 +262,32 @@ int_fast16_t PWMTimerCC26XX_setDuty(PWM_Handle handle, uint32_t dutyValue)
 
     GPTimerCC26XX_setMatchValue(object->hTimer, newdutyCounts);
 
-    DebugP_log1("PWM_setDuty(%x): Duty set with great success!", (uintptr_t) handle);
+    DebugP_log1("PWM_setDuty(%x): Duty set with great success!", (uintptr_t)handle);
     return PWM_STATUS_SUCCESS;
 }
 
 /* ======== PWMTimerCC26XX_setDutyAndPeriod ========
    Sets / update PWM duty and period. Unit must already be defined in object.
  */
-int_fast16_t PWMTimerCC26XX_setDutyAndPeriod (PWM_Handle handle, uint32_t dutyValue, uint32_t periodValue)
+int_fast16_t PWMTimerCC26XX_setDutyAndPeriod(PWM_Handle handle, uint32_t dutyValue, uint32_t periodValue)
 {
     uint32_t key;
-    bool stopped = false;
+    bool stopped                  = false;
     PWMTimerCC26XX_Object *object = handle->object;
 
-    uint32_t oldPeriod = object->periodValue;
+    uint32_t oldPeriod       = object->periodValue;
     uint32_t newperiodCounts = PWMTimerCC26XX_getperiodCounts(object->periodUnit, periodValue);
-    int32_t  newdutyCounts   = PWMTimerCC26XX_getdutyCounts(newperiodCounts, object->dutyUnit, dutyValue);
+    int32_t newdutyCounts    = PWMTimerCC26XX_getdutyCounts(newperiodCounts, object->dutyUnit, dutyValue);
 
     /* Fail if period is out of range or incompatible with new duty */
-    if ((newperiodCounts > PWM_COUNT_MAX) || (newperiodCounts == 0)
-        || (newperiodCounts < (newdutyCounts - 1))) {
+    if ((newperiodCounts > PWM_COUNT_MAX) || (newperiodCounts == 0) || (newperiodCounts < (newdutyCounts - 1)))
+    {
         return PWM_STATUS_INVALID_PERIOD;
     }
 
     /* Fail if duty cycle count is out of range. */
-    if ((newdutyCounts > PWM_COUNT_MAX) || (newdutyCounts < 0)) {
+    if ((newdutyCounts > PWM_COUNT_MAX) || (newdutyCounts < 0))
+    {
         return PWM_STATUS_INVALID_DUTY;
     }
 
@@ -306,7 +302,9 @@ int_fast16_t PWMTimerCC26XX_setDutyAndPeriod (PWM_Handle handle, uint32_t dutyVa
     // Disable interrupts for register update
     key = HwiP_disable();
 
-    if (object->isRunning && (oldPeriod <= PWM_PERIOD_FOR_GLITCH_PROTECTION || GPTimerCC26XX_getValue(object->hTimer) <= PWM_PERIOD_FOR_GLITCH_PROTECTION)) {
+    if (object->isRunning && (oldPeriod <= PWM_PERIOD_FOR_GLITCH_PROTECTION ||
+                              GPTimerCC26XX_getValue(object->hTimer) <= PWM_PERIOD_FOR_GLITCH_PROTECTION))
+    {
         stopped = true;
         GPTimerCC26XX_stop(object->hTimer);
     }
@@ -315,7 +313,8 @@ int_fast16_t PWMTimerCC26XX_setDutyAndPeriod (PWM_Handle handle, uint32_t dutyVa
     GPTimerCC26XX_setLoadValue(object->hTimer, newperiodCounts);
     GPTimerCC26XX_setMatchValue(object->hTimer, newdutyCounts);
 
-    if (stopped) {
+    if (stopped)
+    {
         GPTimerCC26XX_start(object->hTimer);
     }
 
@@ -334,17 +333,17 @@ static uint32_t PWMTimerCC26XX_getperiodCounts(PWM_Period_Units periodUnit, uint
 
     switch (periodUnit)
     {
-    case PWM_PERIOD_US:
-        periodCounts = ((uint64_t)freq.lo * (uint64_t)periodValue / 1000000) - 1;
-        break;
-    case PWM_PERIOD_HZ:
-        periodCounts = (freq.lo / periodValue) - 1;
-        break;
-    case PWM_PERIOD_COUNTS:
-    /* Fall through */
-    default:
-        periodCounts = periodValue;
-        break;
+        case PWM_PERIOD_US:
+            periodCounts = ((uint64_t)freq.lo * (uint64_t)periodValue / 1000000) - 1;
+            break;
+        case PWM_PERIOD_HZ:
+            periodCounts = (freq.lo / periodValue) - 1;
+            break;
+        case PWM_PERIOD_COUNTS:
+        /* Fall through */
+        default:
+            periodCounts = periodValue;
+            break;
     }
     return periodCounts;
 }
@@ -367,21 +366,21 @@ static int32_t PWMTimerCC26XX_getdutyCounts(uint32_t periodCounts, PWM_Duty_Unit
         /* Invert the duty cycle count to get the expected PWM signal output. */
         switch (dutyUnit)
         {
-        case PWM_DUTY_US:
-            dutyCounts = periodCounts - (((uint64_t)freq.lo * (uint64_t)dutyValue / 1000000) - 1);
-            break;
-        case PWM_DUTY_FRACTION:
-            dutyCounts = periodCounts - ((uint64_t)dutyValue * (uint64_t)periodCounts /
-                         PWM_DUTY_FRACTION_MAX);
-            break;
-        case PWM_DUTY_COUNTS:
-        /* Fall through */
-        default:
-            dutyCounts = periodCounts - dutyValue;
-            break;
+            case PWM_DUTY_US:
+                dutyCounts = periodCounts - (((uint64_t)freq.lo * (uint64_t)dutyValue / 1000000) - 1);
+                break;
+            case PWM_DUTY_FRACTION:
+                dutyCounts = periodCounts - ((uint64_t)dutyValue * (uint64_t)periodCounts / PWM_DUTY_FRACTION_MAX);
+                break;
+            case PWM_DUTY_COUNTS:
+            /* Fall through */
+            default:
+                dutyCounts = periodCounts - dutyValue;
+                break;
         }
 
-        /* Corner case: If 100% duty cycle, the resulting dutyCount will be 0, set new dutyCounts to periodCounts + 1 to create a glitch free signal. */
+        /* Corner case: If 100% duty cycle, the resulting dutyCount will be 0, set new dutyCounts to periodCounts + 1 to
+         * create a glitch free signal. */
         if (dutyCounts == 0)
         {
             dutyCounts = periodCounts + 1;
@@ -396,7 +395,7 @@ static int32_t PWMTimerCC26XX_getdutyCounts(uint32_t periodCounts, PWM_Duty_Unit
 void PWMTimerCC26XX_stop(PWM_Handle handle)
 {
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
-    PWMTimerCC26XX_Object        *object  = handle->object;
+    PWMTimerCC26XX_Object *object         = handle->object;
 
     object->isRunning = 0;
 
@@ -412,7 +411,7 @@ void PWMTimerCC26XX_stop(PWM_Handle handle)
 void PWMTimerCC26XX_start(PWM_Handle handle)
 {
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
-    PWMTimerCC26XX_Object        *object  = handle->object;
+    PWMTimerCC26XX_Object *object         = handle->object;
 
     object->isRunning = 1;
 
@@ -428,7 +427,7 @@ void PWMTimerCC26XX_start(PWM_Handle handle)
 void PWMTimerCC26XX_close(PWM_Handle handle)
 {
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
-    PWMTimerCC26XX_Object        *object  = handle->object;
+    PWMTimerCC26XX_Object *object         = handle->object;
 
     /* Restore PWM pin to GPIO module with default configuration */
     GPIO_resetConfig(hwAttrs->pwmPin);
@@ -443,20 +442,19 @@ void PWMTimerCC26XX_close(PWM_Handle handle)
 
 /* Driver specific control options. PWM peripheral must be opened before
    using this API */
-int_fast16_t PWMTimerCC26XX_control(PWM_Handle handle, uint_fast16_t cmd,
-        void * arg)
+int_fast16_t PWMTimerCC26XX_control(PWM_Handle handle, uint_fast16_t cmd, void *arg)
 {
     PWMTimerCC26XX_Object *object = handle->object;
-    int stat = PWM_STATUS_SUCCESS;
+    int stat                      = PWM_STATUS_SUCCESS;
 
     switch (cmd)
     {
-    case PWMTimerCC26XX_CMD_DEBUG_STALL:
-        GPTimerCC26XX_configureDebugStall(object->hTimer, *(GPTimerCC26XX_DebugMode *)arg);
-        break;
-    default:
-        stat = PWM_STATUS_UNDEFINEDCMD;
-        break;
+        case PWMTimerCC26XX_CMD_DEBUG_STALL:
+            GPTimerCC26XX_configureDebugStall(object->hTimer, *(GPTimerCC26XX_DebugMode *)arg);
+            break;
+        default:
+            stat = PWM_STATUS_UNDEFINEDCMD;
+            break;
     }
     return stat;
 }

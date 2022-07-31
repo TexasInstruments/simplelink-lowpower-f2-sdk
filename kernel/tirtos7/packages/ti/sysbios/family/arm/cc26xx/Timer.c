@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2021, Texas Instruments Incorporated
+ * Copyright (c) 2014-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,11 +65,9 @@ Timer_Module_State Timer_Module_state = {
     .objQ.prev = &Timer_Module_state.objQ,
 };
 
-/* funcHookCH1 */
-const Timer_FuncPtr Timer_funcHookCH1;
-
-/* funcHookCH2 */
-const Timer_FuncPtr Timer_funcHookCH2;
+/* RTC function hooks */
+const Timer_FuncPtr Timer_funcHookCH1 = Timer_funcHookCH1_D;
+const Timer_FuncPtr Timer_funcHookCH2 = Timer_funcHookCH2_D;
 
 /* startupNeeded */
 const unsigned int Timer_startupNeeded;
@@ -252,12 +250,18 @@ void Timer_start(Timer_Object *obj)
         compare = obj->period >> 16;
     }
 
+    /* Add current time to compare-value, in case it is not 0 */
+    compare += AONRTCCurrentCompareValueGet();
+
+    /* Clear events on channel 0 */
+    AONRTCEventClear(AON_RTC_CH0);
+
     /* set the compare value at the RTC */
     AONRTCCompareValueSet(AON_RTC_CH0, compare);
 
     /* enable compare channel 0 */
     AONEventMcuWakeUpSet(AON_EVENT_MCU_WU0, AON_EVENT_RTC0);
-    AONRTCEventClear(AON_RTC_CH0);
+
     AONRTCChannelEnable(AON_RTC_CH0);
 
     Hwi_restore(key);
@@ -582,12 +586,21 @@ Timer_Handle Timer_construct(Timer_Struct *obj, int id, Timer_FuncPtr tickFxn,
     hwiParams.arg = (uintptr_t)obj;
 
     if (params->runMode == Timer_RunMode_CONTINUOUS) {
-        hwi = Hwi_construct(&obj->hwiStruct, 20, Timer_dynamicStub,
+        hwi = Hwi_construct(&obj->hwiStruct, 20, Timer_periodicStub,
             &hwiParams, Error_IGNORE);
     }
     else {
-        hwi = Hwi_construct(&obj->hwiStruct, 20, Timer_dynamicMultiStub,
-            &hwiParams, Error_IGNORE);
+        /* We are using Timer_RunMode_DYNAMIC but still need to decide
+         * whether to add the RTC function hooks or not
+         */
+        if (Timer_funcHookCH1 == NULL && Timer_funcHookCH2 == NULL) {
+            hwi = Hwi_construct(&obj->hwiStruct, 20, Timer_dynamicStub,
+                &hwiParams, Error_IGNORE);
+        }
+        else {
+            hwi = Hwi_construct(&obj->hwiStruct, 20, Timer_dynamicMultiStub,
+                &hwiParams, Error_IGNORE);
+        }
     }
 
     Timer_postInit(obj);

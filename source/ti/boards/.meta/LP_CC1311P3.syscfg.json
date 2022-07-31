@@ -97,7 +97,16 @@
                     "name"   : "DIO10",
                     "preferredType": ["SPI_SCLK"]
                 },
-
+                /*
+                 * Number 12 is deliberately placed before number 8 in this file
+                 * in order for SysConfig to show DIO14/12 instead of DIO14/8.
+                 * Number 8 is an alias pointing to the same device ball as number 12.
+                 */
+                 {
+                    "number" : 12,
+                    "ball"   : "20",
+                    "name"   : "DIO14"
+                },
                 /*
                  * Header pin 8 is not connected by default.
                  *
@@ -254,7 +263,8 @@
                 {
                     "number" : 18,
                     "ball"   : "17",
-                    "name"   : "DIO11"
+                    "name"   : "DIO11",
+                    "preferredType": ["SPI_SS"]
                 },
                 {
                     "number" : 17,
@@ -280,11 +290,6 @@
                     "number" : 13,
                     "ball"   : "21",
                     "name"   : "DIO15"
-                },
-                {
-                    "number" : 12,
-                    "ball"   : "20",
-                    "name"   : "DIO14"
                 },
                 {
                     "number" : 11,
@@ -331,8 +336,8 @@
 
         "BTN-1": {
             "displayName" : "LaunchPad Button BTN-1 (Left)",
-            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-1 (Left) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -346,8 +351,8 @@
         },
         "BTN-2": {
             "displayName" : "LaunchPad Button BTN-2 (Right)",
-            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             "definition"  : "/ti/boards/components/button.json",
+            "longDescription" : "BTN-2 (Right) LaunchPad button with no external pull.",
             /* See schematic linked at top of file */
             "settings": {
                 "DIN": {
@@ -383,7 +388,7 @@
             "link": "RTC6608OU"
         },
 
-        "LP_SPI": {
+        "LP_SPI_BUS": {
             "displayName" : "LaunchPad SPI Bus",
             "description" : "Standard BoosterPack header SPI",
             "longDescription" : "Standard BoosterPack header SPI",
@@ -392,6 +397,26 @@
                 "SCLK"    : "16",
                 "MOSI"    : "15",
                 "MISO"    : "14"
+            }
+        },
+
+        "LP_SPI": {
+            "displayName" : "LaunchPad SPI Bus with Chip Select",
+            "description" : "Standard BoosterPack header SPI with Chip Select",
+            "longDescription" : "Standard BoosterPack header SPI with Chip Select",
+            "definition"  : "/ti/boards/components/spiDevice.json",
+            "subComponents": {
+                "SPI": {
+                    "link": "LP_SPI_BUS"
+                },
+                "SELECT": {
+                    "displayName" : "LaunchPad SPI Bus Chip Select",
+                    "description" : "Standard BoosterPack header SPI Chip Select",
+                    "longDescription" : "Standard BoosterPack header SPI Chip Select",
+                    "connections" : {
+                        "SS": "17"
+                    }
+                }
             }
         },
 
@@ -405,15 +430,15 @@
             },
             "subComponents": {
                 "SPI": {
-                    "link": "LP_SPI"
+                    "link": "LP_SPI_BUS"
                 },
                 "SELECT": {
-                    "displayName" : "MX25R8035F SPI Flash Slave Select",
-                    "description" : "MX25R8035F SPI Flash slave select",
-                    "longDescription" : "MX25R8035F SPI flash slave select",
+                    "displayName" : "MX25R8035F SPI Flash Chip Select",
+                    "description" : "MX25R8035F SPI Flash Chip Select",
+                    "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
-                        "SS": 30
+                        "SS": "30"
                     }
                 }
             }

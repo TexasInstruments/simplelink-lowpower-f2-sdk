@@ -88,8 +88,8 @@ extern "C"
     #define MRDY_PIN CONFIG_GPIO_BTN1
     #define SRDY_PIN CONFIG_GPIO_BTN2
   #endif
-  #define SRDY_ENABLE()                   PIN_setOutputValue(hNpiHandshakePins, SRDY_PIN, 0) /* RTS low */
-  #define SRDY_DISABLE()                  PIN_setOutputValue(hNpiHandshakePins, SRDY_PIN, 1) /* RTS high */
+  #define SRDY_ENABLE()                   GPIO_write(SRDY_PIN, 0) /* RTS low */
+  #define SRDY_DISABLE()                  GPIO_write(SRDY_PIN, 1) /* RTS high */
 #else
   #define SRDY_ENABLE()
   #define SRDY_DISABLE()

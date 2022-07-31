@@ -1,4 +1,9 @@
 /*
+ *  Copyright 2021 by Texas Instruments Incorporated.
+ *
+ */
+
+/*
  *  ======== M33F.h ========
  *  DO NOT MODIFY: This header is generated from stddef.xdt
  *
@@ -117,3 +122,8 @@
 #define  xdc_target__bitsPerChar 8U
 
 #endif  /* end multi-include guard */
+/*
+ *  @(#) gnu.targets.arm; 1, 0, 0,; 7-28-2021 06:57:32; /db/ztree/library/trees/xdctargets/xdctargets-w20/src/ xlibrary
+
+ */
+

@@ -62,17 +62,16 @@
 
 #include <ti/display/lcd/SharpGrLib.h>
 
-#define DELAY_US(i)    ClockP_usleep(i)
+#define DELAY_US(i) ClockP_usleep(i)
 
 static void SharpGrLib_initializeDisplayBuffer(const Graphics_Display *pDisplay, uint8_t ucValue);
 
-static uint8_t         VCOMbit = 0x40;
-static uint8_t         flagSendToggleVCOMCommand = 0;
+static uint8_t VCOMbit                   = 0x40;
+static uint8_t flagSendToggleVCOMCommand = 0;
 
-static SPI_Handle      spiHandle;
-static uint32_t        lcdChipSelect;
+static SPI_Handle spiHandle;
+static uint32_t lcdChipSelect;
 static SPI_Transaction spiTrans;
-
 
 void SharpGrLib_init(SPI_Handle hSpi, uint32_t csPin)
 {
@@ -90,12 +89,12 @@ void SharpGrLib_init(SPI_Handle hSpi, uint32_t csPin)
 //! to maximize code execution
 //
 //*******************************************************************************
-static const uint8_t referse_data[] = { 0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE, 0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF };
+static const uint8_t referse_data[] = {0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE, 0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF};
 static uint8_t SharpGrLib_reverse(uint8_t x)
 {
     uint8_t b = 0;
 
-    b  = referse_data[x & 0xF] << 4;
+    b = referse_data[x & 0xF] << 4;
     b |= referse_data[(x & 0xF0) >> 4];
     return b;
 }
@@ -116,14 +115,13 @@ static uint8_t SharpGrLib_reverse(uint8_t x)
 //! \return None.
 //
 //*****************************************************************************
-static void SharpGrLib_pixelDraw(const Graphics_Display *pDisplay, int16_t lX, int16_t lY,
-                                 uint16_t ulValue)
+static void SharpGrLib_pixelDraw(const Graphics_Display *pDisplay, int16_t lX, int16_t lY, uint16_t ulValue)
 {
 #ifdef NON_VOLATILE_MEMORY_BUFFER
     PrepareMemoryWrite();
 #endif
 
-    uint8_t *buf      = pDisplay->displayData;
+    uint8_t *buf    = pDisplay->displayData;
     uint16_t heigth = pDisplay->heigth;
 
     if (ClrBlack == ulValue)
@@ -165,28 +163,31 @@ static void SharpGrLib_pixelDraw(const Graphics_Display *pDisplay, int16_t lX, i
 //! \return None.
 //
 //*****************************************************************************
-static void SharpGrLib_drawMultiple(const Graphics_Display *pDisplay, int16_t lX,
-                                    int16_t lY, int16_t lX0, int16_t lCount,
+static void SharpGrLib_drawMultiple(const Graphics_Display *pDisplay,
+                                    int16_t lX,
+                                    int16_t lY,
+                                    int16_t lX0,
+                                    int16_t lCount,
                                     int16_t lBPP,
                                     const uint8_t *pucData,
                                     const uint32_t *pucPalette)
 {
-    uint8_t *buf      = pDisplay->displayData;
+    uint8_t *buf    = pDisplay->displayData;
     uint16_t heigth = pDisplay->heigth;
-    uint8_t *pData    = &buf[lY * (heigth >> 3) + (lX >> 3)];
-    uint16_t xj       = 0;
+    uint8_t *pData  = &buf[lY * (heigth >> 3) + (lX >> 3)];
+    uint16_t xj     = 0;
 
 #ifdef NON_VOLATILE_MEMORY_BUFFER
     PrepareMemoryWrite();
 #endif
 
-    //Write bytes of data to the display buffer
+    // Write bytes of data to the display buffer
     for (xj = 0; xj < (lCount >> 3); xj++)
     {
         *pData++ = *pucData++;
     }
 
-    //Write last data byte to the display buffer
+    // Write last data byte to the display buffer
     *pData = (*pData & (0xFF >> (lCount & 0x7))) | *pucData;
 
 #ifdef NON_VOLATILE_MEMORY_BUFFER
@@ -210,79 +211,82 @@ static void SharpGrLib_drawMultiple(const Graphics_Display *pDisplay, int16_t lX
 //! \return None.
 //
 //*****************************************************************************
-static void SharpGrLib_lineDrawH(const Graphics_Display *pDisplay, int16_t lX1, int16_t lX2,
-                                 int16_t lY, uint16_t ulValue)
+static void SharpGrLib_lineDrawH(const Graphics_Display *pDisplay,
+                                 int16_t lX1,
+                                 int16_t lX2,
+                                 int16_t lY,
+                                 uint16_t ulValue)
 {
     uint16_t xi          = 0;
     uint16_t x_index_min = lX1 >> 3;
     uint16_t x_index_max = lX2 >> 3;
     uint8_t *pucData, ucfirst_x_byte, uclast_x_byte;
-    uint8_t *buf      = pDisplay->displayData;
+    uint8_t *buf    = pDisplay->displayData;
     uint16_t heigth = pDisplay->heigth;
 
 #ifdef NON_VOLATILE_MEMORY_BUFFER
     PrepareMemoryWrite();
 #endif
 
-    //calculate first byte
-    //mod by 8 and shift this # bits
+    // calculate first byte
+    // mod by 8 and shift this # bits
     ucfirst_x_byte = (0xFF >> (lX1 & 0x7));
-    //calculate last byte
-    //mod by 8 and shift this # bits
-    uclast_x_byte = (0xFF << (7 - (lX2 & 0x7)));
+    // calculate last byte
+    // mod by 8 and shift this # bits
+    uclast_x_byte  = (0xFF << (7 - (lX2 & 0x7)));
 
-    //check if more than one data byte
+    // check if more than one data byte
     if (x_index_min != x_index_max)
     {
-        //set buffer to correct location
+        // set buffer to correct location
         pucData = &buf[lY * (heigth >> 3) + x_index_min];
 
-        //black pixels (clear bits)
+        // black pixels (clear bits)
         if (ClrBlack == ulValue)
         {
-            //write first byte
+            // write first byte
             *pucData++ &= ~ucfirst_x_byte;
 
-            //write middle bytes
+            // write middle bytes
             for (xi = x_index_min; xi < x_index_max - 1; xi++)
             {
                 *pucData++ = 0x00;
             }
 
-            //write last byte
+            // write last byte
             *pucData &= ~uclast_x_byte;
         }
-        //white pixels (set bits)
+        // white pixels (set bits)
         else
         {
-            //write first byte
+            // write first byte
             *pucData++ |= ucfirst_x_byte;
 
-            //write middle bytes
+            // write middle bytes
             for (xi = x_index_min; xi < x_index_max - 1; xi++)
             {
                 *pucData++ = 0xFF;
             }
 
-            //write last byte
+            // write last byte
             *pucData |= uclast_x_byte;
         }
     }
-    //only one data byte
+    // only one data byte
     else
     {
-        //calculate value of single byte
+        // calculate value of single byte
         ucfirst_x_byte &= uclast_x_byte;
 
-        //set buffer to correct location
+        // set buffer to correct location
         pucData = &buf[lY * (heigth >> 3) + x_index_min];
 
-        //draw black pixels (clear bits)
+        // draw black pixels (clear bits)
         if (ClrBlack == ulValue)
         {
             *pucData++ &= ~ucfirst_x_byte;
         }
-        //white pixels (set bits)
+        // white pixels (set bits)
         else
         {
             *pucData++ |= ucfirst_x_byte;
@@ -293,7 +297,6 @@ static void SharpGrLib_lineDrawH(const Graphics_Display *pDisplay, int16_t lX1, 
     FinishMemoryWrite();
 #endif
 }
-
 
 //*****************************************************************************
 //
@@ -312,32 +315,35 @@ static void SharpGrLib_lineDrawH(const Graphics_Display *pDisplay, int16_t lX1, 
 //! \return None.
 //
 //*****************************************************************************
-static void SharpGrLib_lineDrawV(const Graphics_Display *pDisplay, int16_t lX, int16_t lY1,
-                                 int16_t lY2, uint16_t ulValue)
+static void SharpGrLib_lineDrawV(const Graphics_Display *pDisplay,
+                                 int16_t lX,
+                                 int16_t lY1,
+                                 int16_t lY2,
+                                 uint16_t ulValue)
 {
     uint16_t yi      = 0;
     uint16_t x_index = lX >> 3;
-    uint8_t  data_byte;
-    uint8_t *buf      = pDisplay->displayData;
+    uint8_t data_byte;
+    uint8_t *buf    = pDisplay->displayData;
     uint16_t heigth = pDisplay->heigth;
 
 #ifdef NON_VOLATILE_MEMORY_BUFFER
     PrepareMemoryWrite();
 #endif
 
-    //calculate data byte
-    //mod by 8 and shift this # bits
+    // calculate data byte
+    // mod by 8 and shift this # bits
     data_byte = (0x80 >> (lX & 0x7));
 
-    //write data to the display buffer
+    // write data to the display buffer
     for (yi = lY1; yi <= lY2; yi++)
     {
-        //black pixels (clear bits)
+        // black pixels (clear bits)
         if (ClrBlack == ulValue)
         {
             buf[yi * (heigth >> 3) + x_index] &= ~data_byte;
         }
-        //white pixels (set bits)
+        // white pixels (set bits)
         else
         {
             buf[yi * (heigth >> 3) + x_index] |= data_byte;
@@ -366,85 +372,84 @@ static void SharpGrLib_lineDrawV(const Graphics_Display *pDisplay, int16_t lX, i
 //! \return None.
 //
 //*****************************************************************************
-static void SharpGrLib_rectFill(const Graphics_Display *pDisplay, const tRectangle *pRect,
-                                uint16_t ulValue)
+static void SharpGrLib_rectFill(const Graphics_Display *pDisplay, const tRectangle *pRect, uint16_t ulValue)
 {
     uint16_t xi          = 0;
     uint16_t yi          = 0;
     uint16_t x_index_min = pRect->sXMin >> 3;
     uint16_t x_index_max = pRect->sXMax >> 3;
     uint8_t *pucData, ucfirst_x_byte, uclast_x_byte;
-    uint8_t *buf      = pDisplay->displayData;
+    uint8_t *buf    = pDisplay->displayData;
     uint16_t heigth = pDisplay->heigth;
 
 #ifdef NON_VOLATILE_MEMORY_BUFFER
     PrepareMemoryWrite();
 #endif
 
-    //calculate first byte
-    //mod by 8 and shift this # bits
+    // calculate first byte
+    // mod by 8 and shift this # bits
     ucfirst_x_byte = (0xFF >> (pRect->sXMin & 0x7));
 
-    //calculate last byte
-    //mod by 8 and shift this # bits
+    // calculate last byte
+    // mod by 8 and shift this # bits
     uclast_x_byte = (0xFF << (7 - (pRect->sXMax & 0x7)));
 
-    //check if more than one data byte
+    // check if more than one data byte
     if (x_index_min != x_index_max)
     {
-        //write bytes
+        // write bytes
         for (yi = pRect->sYMin; yi <= pRect->sYMax; yi++)
         {
-            //set buffer to correct location
+            // set buffer to correct location
             pucData = &buf[yi * (heigth >> 3) + x_index_min];
 
-            //black pixels (clear bits)
+            // black pixels (clear bits)
             if (ClrBlack == ulValue)
             {
-                //write first byte
+                // write first byte
                 *pucData++ &= ~ucfirst_x_byte;
 
-                //write middle bytes
+                // write middle bytes
                 for (xi = x_index_min; xi < x_index_max - 1; xi++)
                 {
                     *pucData++ = 0x00;
                 }
 
-                //write last byte
+                // write last byte
                 *pucData &= ~uclast_x_byte;
             }
-            //white pixels (set bits)
+            // white pixels (set bits)
             else
             {
-                //write first byte
+                // write first byte
                 *pucData++ |= ucfirst_x_byte;
 
-                //write middle bytes
+                // write middle bytes
                 for (xi = x_index_min; xi < x_index_max - 1; xi++)
                 {
                     *pucData++ = 0xFF;
                 }
 
-                //write last byte
+                // write last byte
                 *pucData |= uclast_x_byte;
             }
         }
     }
-    //only one data byte
+    // only one data byte
     else
     {
-        //calculate value of single byte
+        // calculate value of single byte
         ucfirst_x_byte &= uclast_x_byte;
 
-        //set buffer to correct location
+        // set buffer to correct location
         pucData = &buf[pRect->sYMin * (heigth >> 3) + x_index_min];
 
-        //black pixels (clear bits)
+        // black pixels (clear bits)
         if (ClrBlack == ulValue)
         {
             *pucData++ &= ~ucfirst_x_byte;
         }
-        //white pixels (set bits)
+        // white pixels (set bits)
         else
         {
             *pucData++ |= ucfirst_x_byte;
@@ -473,15 +478,13 @@ static void SharpGrLib_rectFill(const Graphics_Display *pDisplay, const tRectang
 //! \return Returns the display-driver specific color.
 //
 //*****************************************************************************
-static uint32_t SharpGrLib_colorTranslate(const Graphics_Display *pDisplay,
-                                          uint32_t ulValue)
+static uint32_t SharpGrLib_colorTranslate(const Graphics_Display *pDisplay, uint32_t ulValue)
 {
     //
     // Translate from a 24-bit RGB color to mono color.
     //
-    return(DPYCOLORTRANSLATE(ulValue));
+    return (DPYCOLORTRANSLATE(ulValue));
 }
-
 
 //*****************************************************************************
 //
@@ -502,9 +505,9 @@ static void SharpGrLib_flush(const Graphics_Display *pDisplay)
 {
     uint8_t *buf     = pDisplay->displayData;
     uint8_t *pucData = buf;
-    int32_t  xj      = 0;
+    int32_t xj       = 0;
 
-    uint8_t  command = SHARP_LCD_CMD_WRITE_LINE;
+    uint8_t command = SHARP_LCD_CMD_WRITE_LINE;
 
     // Check if valid handles since this is a somewhat opaque API
     if (NULL == spiHandle)
@@ -512,7 +515,7 @@ static void SharpGrLib_flush(const Graphics_Display *pDisplay)
         return;
     }
 
-    //COM inversion bit
+    // COM inversion bit
     command = command ^ VCOMbit;
 
     GPIO_write(lcdChipSelect, 0x01);
@@ -538,7 +541,6 @@ static void SharpGrLib_flush(const Graphics_Display *pDisplay)
         SPI_transfer(spiHandle, &spiTrans);
         pucData += (pDisplay->width >> 3);
 
-
         command = SHARP_LCD_TRAILER_BYTE;
 
         spiTrans.txBuf = &command;
@@ -557,8 +559,8 @@ static void SharpGrLib_flush(const Graphics_Display *pDisplay)
         spiTrans.count = 1;
         SPI_transfer(spiHandle, &spiTrans)
 
-        spiTrans.txBuf = pucData;
-        spiTrans.count = (pDisplay->width >> 3);
+            spiTrans.txBuf = pucData;
+        spiTrans.count     = (pDisplay->width >> 3);
         SPI_transfer(spiHandle, &spiTrans);
         pucData += (pDisplay->width >> 3);
 
@@ -601,10 +603,10 @@ static void SharpGrLib_clearScreen(const Graphics_Display *pDisplay, uint16_t ul
         return;
     }
 
-    //clear screen mode(0X100000b)
+    // clear screen mode(0X100000b)
     uint8_t command = SHARP_LCD_CMD_CLEAR_SCREEN;
 
-    //COM inversion bit
+    // COM inversion bit
     command = command ^ VCOMbit;
 
     GPIO_write(lcdChipSelect, 0x01);
@@ -616,7 +618,7 @@ static void SharpGrLib_clearScreen(const Graphics_Display *pDisplay, uint16_t ul
     SPI_transfer(spiHandle, &spiTrans);
 
     flagSendToggleVCOMCommand = SHARP_SKIP_TOGGLE_VCOM_COMMAND;
-    command = SHARP_LCD_TRAILER_BYTE;
+    command                   = SHARP_LCD_TRAILER_BYTE;
 
     spiTrans.txBuf = &command;
     spiTrans.count = 1;
@@ -654,9 +656,9 @@ void SharpGrLib_sendToggleVCOMCommand(void)
     if (SHARP_SEND_TOGGLE_VCOM_COMMAND == flagSendToggleVCOMCommand)
     {
         // Clear screen mode(0V000000b)
-        uint8_t command[2] = { SHARP_LCD_CMD_CHANGE_VCOM, SHARP_LCD_TRAILER_BYTE };
+        uint8_t command[2] = {SHARP_LCD_CMD_CHANGE_VCOM, SHARP_LCD_TRAILER_BYTE};
         // COM inversion bit
-        command[0] = command[0] ^ VCOMbit;
+        command[0]         = command[0] ^ VCOMbit;
 
         // Assert chip select
         GPIO_write(lcdChipSelect, 0x01);
@@ -678,7 +680,6 @@ void SharpGrLib_sendToggleVCOMCommand(void)
     flagSendToggleVCOMCommand = SHARP_SEND_TOGGLE_VCOM_COMMAND;
 }
 
-
 //*****************************************************************************
 //
 //! Initialize DisplayBuffer.
@@ -695,7 +696,7 @@ void SharpGrLib_sendToggleVCOMCommand(void)
 //*****************************************************************************
 static void SharpGrLib_initializeDisplayBuffer(const Graphics_Display *pDisplay, uint8_t ucValue)
 {
-    uint16_t i       = 0, j = 0;
+    uint16_t i = 0, j = 0;
     uint8_t *pucData = pDisplay->displayData;
 
 #ifdef USE_FLASH_BUFFER
@@ -707,7 +708,7 @@ static void SharpGrLib_initializeDisplayBuffer(const Graphics_Display *pDisplay,
     for (i = 0; i < pDisplay->heigth; i++)
         for (j = 0; j < (pDisplay->width >> 3); j++)
             *pucData++ = ucValue;
-#endif //USE_FLASH_BUFFER
+#endif // USE_FLASH_BUFFER
 }
 
 //*****************************************************************************
@@ -716,18 +717,16 @@ static void SharpGrLib_initializeDisplayBuffer(const Graphics_Display *pDisplay,
 //! sharpLCD panel
 //
 //*****************************************************************************
-const Graphics_Display_Functions g_sharpFxns =
-{
-    SharpGrLib_pixelDraw,     //PixelDraw,
+const Graphics_Display_Functions g_sharpFxns = {
+    SharpGrLib_pixelDraw, // PixelDraw,
     SharpGrLib_drawMultiple,
     SharpGrLib_lineDrawH,
-    SharpGrLib_lineDrawV,  //LineDrawV,
-    SharpGrLib_rectFill,   //RectFill,
+    SharpGrLib_lineDrawV, // LineDrawV,
+    SharpGrLib_rectFill,  // RectFill,
     SharpGrLib_colorTranslate,
-    SharpGrLib_flush,      //Flush
-    SharpGrLib_clearScreen //Clear screen. Contents of display buffer unmodified
+    SharpGrLib_flush,      // Flush
+    SharpGrLib_clearScreen // Clear screen. Contents of display buffer unmodified
 };
-
 
 //*****************************************************************************
 //

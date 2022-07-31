@@ -53,46 +53,65 @@ displayUART.$hardware = system.deviceData.board.components.XDS110UART;
 
 /* ======== GPIO ======== */
     var GPIO = scripting.addModule("/ti/drivers/GPIO");
-    var gpio = GPIO.addInstance();
-    gpio.$hardware = system.deviceData.board.components.LED0;
-    gpio.$name = "CONFIG_GPIO_LED_0";
+    var GPIO1 = GPIO.addInstance();
+    GPIO1.$hardware = system.deviceData.board.components.LED0;
+    GPIO1.$name = "CONFIG_GPIO_LED_0";
 
 if (board.match(/CC32/)) {
-    var gpio2 = GPIO.addInstance();
-    gpio2.$name = "CONFIG_GPIO_OPT3001_POWER";
-    gpio2.$hardware = Sensors.components.OPT3001.subComponents.POWER;
+    var GPIO2 = GPIO.addInstance();
+    GPIO2.$name = "CONFIG_GPIO_OPT3001_POWER";
+    GPIO2.$hardware = Sensors.components.OPT3001.subComponents.POWER;
 
-    var gpio3 = GPIO.addInstance();
-    gpio3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
-    gpio3.gpioPin.$assign = "boosterpack.7";
-    gpio3.pull = "Pull Up";
-    gpio3.interruptTrigger = "Falling Edge";
+    var GPIO3 = GPIO.addInstance();
+    GPIO3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
+    GPIO3.gpioPin.$assign = "boosterpack.7";
+    GPIO3.pull = "Pull Up";
+    GPIO3.interruptTrigger = "Falling Edge";
 }
 else if (board.match(/CC13.[12]P/) || board.match(/CC2651P/) || board.match(/CC2653P/)) {
-    var gpio2 = GPIO.addInstance();
-    gpio2.$name = "CONFIG_GPIO_OPT3001_POWER";
-    gpio2.gpioPin.$assign = "boosterpack.18";
+    var GPIO2 = GPIO.addInstance();
+    GPIO2.$name = "CONFIG_GPIO_OPT3001_POWER";
+    /* We need to assign the power pin on top of the LP_SPI hardware's chip select to match the board header */
+    GPIO2.gpioPin.$assign = "boosterpack.18";
 
-    var gpio3 = GPIO.addInstance();
-    gpio3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
-    gpio3.$hardware = Sensors.components.OPT3001.subComponents.ALERT;
-    gpio3.pull = "Pull Up";
-    gpio3.interruptTrigger = "Falling Edge";
+    /* That means we also need to suppress the relevant warnings (this pin is connected to hardware) */
+    scripting.suppress("@@@.+?@@@", GPIO2, "gpioPin");
+
+
+    var GPIO3 = GPIO.addInstance();
+    GPIO3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
+    GPIO3.$hardware = Sensors.components.OPT3001.subComponents.ALERT;
+    GPIO3.pull = "Pull Up";
+    GPIO3.interruptTrigger = "Falling Edge";
+}
+else if (board.match(/CC2340R5_Q1/)) {
+    var GPIO2 = GPIO.addInstance();
+    GPIO2.$name = "CONFIG_GPIO_OPT3001_POWER";
+    GPIO2.$hardware = Sensors.components.OPT3001.subComponents.POWER;
+
+    var GPIO3 = GPIO.addInstance();
+    GPIO3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
+    GPIO3.gpioPin.$assign = "boosterpack.7";
+    GPIO3.pull = "Pull Up";
+    GPIO3.interruptTrigger = "Falling Edge";
+
+    /* That means we also need to suppress the relevant warnings (this pin is connected to hardware) */
+    scripting.suppress("@@@.+?@@@", GPIO3, "gpioPin");
 }
 else {
-    var gpio2 = GPIO.addInstance();
-    gpio2.$name = "CONFIG_GPIO_OPT3001_POWER";
-    gpio2.$hardware = Sensors.components.OPT3001.subComponents.POWER;
+    var GPIO2 = GPIO.addInstance();
+    GPIO2.$name = "CONFIG_GPIO_OPT3001_POWER";
+    GPIO2.$hardware = Sensors.components.OPT3001.subComponents.POWER;
 
-    var gpio3 = GPIO.addInstance();
-    gpio3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
-    gpio3.$hardware = Sensors.components.OPT3001.subComponents.ALERT;
-    gpio3.pull = "Pull Up";
-    gpio3.interruptTrigger = "Falling Edge";
+    var GPIO3 = GPIO.addInstance();
+    GPIO3.$name = "CONFIG_GPIO_OPT3001_INTERRUPT";
+    GPIO3.$hardware = Sensors.components.OPT3001.subComponents.ALERT;
+    GPIO3.pull = "Pull Up";
+    GPIO3.interruptTrigger = "Falling Edge";
 }
 
 /* ======== I2C ======== */
 var I2C = scripting.addModule("/ti/drivers/I2C");
-var i2c = I2C.addInstance();
-i2c.$name = "CONFIG_I2C_OPT3001";
-i2c.$hardware = Sensors.components.BP_BASSENSORSMKII_I2C;
+var I2C1 = I2C.addInstance();
+I2C1.$name = "CONFIG_I2C_OPT3001";
+I2C1.$hardware = Sensors.components.BP_BASSENSORSMKII_I2C;

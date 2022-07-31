@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,25 +42,25 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
 #include DeviceFamily_constructPath(inc/hw_ddi_0_osc.h)
+#include DeviceFamily_constructPath(driverlib/prcm.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/ccfgread.h)
 
 #if SPE_ENABLED
-#include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
-#include "system_cc26x4.h"
-#include "secure_utilities.h"
+    #include <third_party/tfm/interface/include/tfm_api.h>
+    #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
+    #include "system_cc26x4.h"
+    #include "secure_utilities.h"
 #else
-/* Define the gateway attributes to nothing instead of ifdefs on each function */
-#define __tfm_secure_gateway_attributes__
+    /* Define the gateway attributes to nothing instead of ifdefs on each function */
+    #define __tfm_secure_gateway_attributes__
 #endif
 
 /*
  *  ======== PowerCC26X2_oscCtlClearXtal ========
  *  Clears the XTAL bit in OSC_CTL0
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_oscCtlClearXtal(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_oscCtlClearXtal(void)
 {
     HWREG(AUX_DDI0_OSC_BASE + DDI_O_CLR + DDI_0_OSC_O_CTL0) = DDI_0_OSC_CTL0_XTAL_IS_24M;
 }
@@ -69,17 +69,24 @@ void PowerCC26X2_oscCtlClearXtal(void)
  *  ======== PowerCC26X2_pmctlDisableJtag ========
  *  Disables the JTAG power domain
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_pmctlDisableJtag(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_pmctlDisableJtag(void)
 {
     HWREG(AON_PMCTL_BASE + AON_PMCTL_O_JTAGCFG) = 0;
 }
 
 /*
+ *  ======== PowerCC26X2_sysctrlShutdownWithAbort ========
+ *  Shuts down the device while
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysctrlShutdownWithAbort(void)
+{
+    SysCtrlShutdownWithAbort();
+}
+
+/*
  *  ======== PowerCC26X2_prcmEnableCacheRetention ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_prcmEnableCacheRetention(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_prcmEnableCacheRetention(void)
 {
     PRCMCacheRetentionEnable();
 }
@@ -87,8 +94,7 @@ void PowerCC26X2_prcmEnableCacheRetention(void)
 /*
  *  ======== PowerCC26X2_oschfSwitchToRcosc ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_oschfSwitchToRcosc(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_oschfSwitchToRcosc(void)
 {
     OSCHF_SwitchToRcOscTurnOffXosc();
 }
@@ -96,8 +102,7 @@ void PowerCC26X2_oschfSwitchToRcosc(void)
 /*
  *  ======== PowerCC26X2_oscClockSourceGet ========
  */
-__tfm_secure_gateway_attributes__
-uint32_t PowerCC26X2_oscClockSourceGet(uint32_t ui32SrcClk)
+__tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_oscClockSourceGet(uint32_t ui32SrcClk)
 {
     return OSCClockSourceGet(ui32SrcClk);
 }
@@ -105,17 +110,14 @@ uint32_t PowerCC26X2_oscClockSourceGet(uint32_t ui32SrcClk)
 /*
  *  ======== PowerCC26X2_oscDisableQualifiers ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_oscDisableQualifiers(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_oscDisableQualifiers(void)
 {
     /* yes, disable the LF clock qualifiers */
-    DDI16BitfieldWrite(
-        AUX_DDI0_OSC_BASE,
-        DDI_0_OSC_O_CTL0,
-        DDI_0_OSC_CTL0_BYPASS_XOSC_LF_CLK_QUAL_M | DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL_M,
-        DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL_S,
-        0x3
-    );
+    DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
+                       DDI_0_OSC_O_CTL0,
+                       DDI_0_OSC_CTL0_BYPASS_XOSC_LF_CLK_QUAL_M | DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL_M,
+                       DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL_S,
+                       0x3);
 
     /* enable clock loss detection */
     OSCClockLossEventEnable();
@@ -125,26 +127,19 @@ void PowerCC26X2_oscDisableQualifiers(void)
  *  ======== PowerCC26X2_oschfTrySwitchToXosc ========
  *  Attempts twice to switch to XOSC_HF, returns 0 on failure.
  */
-__tfm_secure_gateway_attributes__
-uint32_t PowerCC26X2_oschfTrySwitchToXosc(void)
+__tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_oschfTrySwitchToXosc(void)
 {
     /* Switch to the XOSC_HF. Since this function is only called
      * after we get an interrupt signifying it is ready to switch,
      * it should always succeed. If it does not succeed, try once more.
      */
-    if (!OSCHF_AttemptToSwitchToXosc()) {
-        if (!OSCHF_AttemptToSwitchToXosc()) {
-            return 0;
-        }
-    }
-    return 1;
+    return OSCHF_AttemptToSwitchToXosc();
 }
 
 /*
  *  ======== PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock ========
  */
-__tfm_secure_gateway_attributes__
-bool PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock(void)
+__tfm_secure_gateway_attributes__ bool PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock(void)
 {
     return OSC_IsHPOSCEnabledWithHfDerivedLfClock();
 }
@@ -152,16 +147,17 @@ bool PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock(void)
 /*
  *  ======== PowerCC26X2_enableTCXOQual ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_enableTCXOQual(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_enableTCXOQual(void)
 {
     /* Enable clock qualification on 48MHz signal from TCXO */
-    if (CCFGRead_TCXO_TYPE() == 0x1) {
+    if (CCFGRead_TCXO_TYPE() == 0x1)
+    {
         /* If the selected TCXO type is clipped-sine, also enable internal common-mode bias */
         HWREG(AUX_DDI0_OSC_BASE + DDI_O_SET + DDI_0_OSC_O_XOSCHFCTL) = DDI_0_OSC_XOSCHFCTL_TCXO_MODE_XOSC_HF_EN |
-                                                                        DDI_0_OSC_XOSCHFCTL_TCXO_MODE;
+                                                                       DDI_0_OSC_XOSCHFCTL_TCXO_MODE;
     }
-    else {
+    else
+    {
         HWREG(AUX_DDI0_OSC_BASE + DDI_O_SET + DDI_0_OSC_O_XOSCHFCTL) = DDI_0_OSC_XOSCHFCTL_TCXO_MODE;
     }
 }
@@ -169,52 +165,53 @@ void PowerCC26X2_enableTCXOQual(void)
 /*
  *  ======== PowerCC26X2_disableTCXOQual ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_disableTCXOQual(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_disableTCXOQual(void)
 {
     /* Disable clock qualification on 48MHz signal from TCXO and turn
      * off TCXO bypass.
      * If we do not disable clock qualificaition, it will not run the
      * next time we switch to TCXO.
      */
-    if (CCFGRead_TCXO_TYPE() == 1) {
+    if (CCFGRead_TCXO_TYPE() == 1)
+    {
         /* Also turn off bias if clipped sine TCXO type. The bias
          * consumes a few hundred uA. That is fine while the TCXO is
          * running but we should not incur this penalty when not running
          * on TCXO.
          */
         HWREG(AUX_DDI0_OSC_BASE + DDI_O_CLR + DDI_0_OSC_O_XOSCHFCTL) = DDI_0_OSC_XOSCHFCTL_TCXO_MODE |
-                                                                        DDI_0_OSC_XOSCHFCTL_BYPASS |
-                                                                        DDI_0_OSC_XOSCHFCTL_TCXO_MODE_XOSC_HF_EN;
+                                                                       DDI_0_OSC_XOSCHFCTL_BYPASS |
+                                                                       DDI_0_OSC_XOSCHFCTL_TCXO_MODE_XOSC_HF_EN;
     }
-    else {
+    else
+    {
         HWREG(AUX_DDI0_OSC_BASE + DDI_O_CLR + DDI_0_OSC_O_XOSCHFCTL) = DDI_0_OSC_XOSCHFCTL_TCXO_MODE |
-                                                                        DDI_0_OSC_XOSCHFCTL_BYPASS;
+                                                                       DDI_0_OSC_XOSCHFCTL_BYPASS;
     }
+}
+
+__tfm_secure_gateway_attributes__ void PowerCC26X2_turnOnXosc(void)
+{
+    OSCHF_TurnOnXosc();
 }
 
 /*
  *  ======== PowerCC26X2_switchToTCXO ========
  *  Switching to TCXO after TCXO startup time has expired.
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_switchToTCXO(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_switchToTCXO(void)
 {
     /* Set bypass bit */
     HWREG(AUX_DDI0_OSC_BASE + DDI_O_SET + DDI_0_OSC_O_XOSCHFCTL) = DDI_0_OSC_XOSCHFCTL_BYPASS;
 
-    /* Request XOSC_HF. In this instance, that is the TCXO and it will
-     * immediately be ready to switch to after requesting since we turned it on
-     * earlier with a GPIO and waited for it to stabilise.
-     */
+    /* Request XOSC_HF. In this instance, that is the TCXO. */
     OSCHF_TurnOnXosc();
 }
 
 /*
  *  ======== PowerCC26X2_sysCtrlStandby ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_sysCtrlStandby(bool retainCache)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlStandby(bool retainCache)
 {
     SysCtrlStandby(retainCache, VIMS_ON_CPU_ON_MODE, SYSCTRL_PREFERRED_RECHARGE_MODE);
 }
@@ -222,8 +219,7 @@ void PowerCC26X2_sysCtrlStandby(bool retainCache)
 /*
  *  ======== PowerCC26X2_sysCtrlVoltageConditionalControl ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_sysCtrlVoltageConditionalControl(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlVoltageConditionalControl(void)
 {
     SysCtrl_DCDC_VoltageConditionalControl();
 }
@@ -231,8 +227,37 @@ void PowerCC26X2_sysCtrlVoltageConditionalControl(void)
 /*
  *  ======== PowerCC26X2_sysCtrlIdle ========
  */
-__tfm_secure_gateway_attributes__
-void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMode)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMode)
 {
     SysCtrlIdle(vimsPdMode);
+}
+
+/*
+ *  ======== PowerCC26X2_sysCtrlIdle ========
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setSECDMADependency(uint32_t setActive)
+{
+    if (setActive)
+    {
+        PRCMPeripheralRunEnable(PRCM_PERIPH_UDMA);
+        PRCMPeripheralSleepEnable(PRCM_PERIPH_UDMA);
+        PRCMPeripheralDeepSleepEnable(PRCM_PERIPH_UDMA);
+    }
+    else
+    {
+        PRCMPeripheralRunDisable(PRCM_PERIPH_UDMA);
+        PRCMPeripheralSleepDisable(PRCM_PERIPH_UDMA);
+        PRCMPeripheralDeepSleepDisable(PRCM_PERIPH_UDMA);
+    }
+
+    PRCMLoadSet();
+    while (!PRCMLoadGet())
+    {
+        ;
+    }
+}
+
+__tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_sysCtrlGetResetSource(void)
+{
+    return SysCtrlResetSourceGet();
 }

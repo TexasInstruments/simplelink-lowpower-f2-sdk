@@ -132,11 +132,10 @@ extern "C" {
  * ------------------------------------------------------------------------------
  */
 #if !defined(Display_DISABLE_ALL) || (!Display_DISABLE_ALL)
-/*! Get Graphics_Context of first opened Display that uses GrLib \see Display_doGetGrlibContext() */
-#  define DisplayExt_getGraphicsContext(handle) \
-    DisplayExt_doGetGraphicsContext(handle)
+    /*! Get Graphics_Context of first opened Display that uses GrLib \see Display_doGetGrlibContext() */
+    #define DisplayExt_getGraphicsContext(handle) DisplayExt_doGetGraphicsContext(handle)
 #else
-#  define DisplayExt_getGraphicsContext(handle)    NULL
+    #define DisplayExt_getGraphicsContext(handle) NULL
 #endif
 
 /* -----------------------------------------------------------------------------
@@ -164,10 +163,10 @@ typedef struct DisplayGrLib_Object
  *
  * @return      Graphics_Context pointer or NULL if no open display is found.
  */
-Graphics_Context  *DisplayExt_doGetGraphicsContext(Display_Handle handle);
+Graphics_Context *DisplayExt_doGetGraphicsContext(Display_Handle handle);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //ti_display_DisplayExt__include
+#endif // ti_display_DisplayExt__include

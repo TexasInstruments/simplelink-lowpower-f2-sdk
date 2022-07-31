@@ -1,4 +1,9 @@
 /*
+ *  Copyright 2021 by Texas Instruments Incorporated.
+ *
+ */
+
+/*
  *  Do not modify this file; it is automatically 
  *  generated and any modifications will be overwritten.
  *
@@ -329,3 +334,8 @@ static inline xdc_Void gnu_targets_arm_rtsv7M_Settings_Module_setMask(xdc_Bits16
 
 #endif /* gnu_targets_arm_rtsv7M_Settings__localnames__done */
 #endif
+/*
+ *  @(#) gnu.targets.arm.rtsv7M; 1, 0, 0,; 7-28-2021 07:05:34; /db/ztree/library/trees/xdctargets/xdctargets-w20/src/ xlibrary
+
+ */
+

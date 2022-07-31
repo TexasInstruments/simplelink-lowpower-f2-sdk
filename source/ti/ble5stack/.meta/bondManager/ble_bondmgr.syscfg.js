@@ -238,6 +238,23 @@ const config = {
             longDescription: Docs.eraseBondWhileInConnLongDescription,
             hidden: false,
             default: false
+        },
+        {
+            name: "sameIrkOption",
+            displayName: "Same IRK action",
+            default: "GAPBOND_SAME_IRK_UPDATE_BOND_REC",
+            longDescription: Docs.sameIrkOptionLongDescription,
+            hidden: false,
+            options: [
+                {
+                    displayName: "Update bond record",
+                    name: "GAPBOND_SAME_IRK_UPDATE_BOND_REC"
+                },
+                {
+                    displayName: "Terminate link",
+                    name: "GAPBOND_SAME_IRK_TERMINATE_LINK"
+                }
+            ]
         }
     ]
 }

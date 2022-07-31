@@ -79,14 +79,14 @@
 extern "C" {
 #endif
 
-
 /*!
  *  @brief Hardware-specific configuration attributes
  *
  *  SHA2CC26X1 hardware attributes are used in the board file by the
  *  #SHA2_Config struct.
  */
-typedef struct {
+typedef struct
+{
     uint8_t dummy;
 } SHA2CC26X1_HWAttrs;
 
@@ -97,12 +97,13 @@ typedef struct {
  *
  *  The application must not access any member variables of this structure!
  */
-typedef struct {
-    bool                            isOpen;
-    SHA2_ReturnBehavior             returnBehavior;
-    SHA2_CallbackFxn                callbackFxn;
-    uint32_t                        hmacDigest[SHA2_DIGEST_LENGTH_BYTES_256 / sizeof(uint32_t)];
-    SHA256_Workzone                 workzone;
+typedef struct
+{
+    bool isOpen;
+    SHA2_ReturnBehavior returnBehavior;
+    SHA2_CallbackFxn callbackFxn;
+    uint32_t hmacDigest[SHA2_DIGEST_LENGTH_BYTES_256 / sizeof(uint32_t)];
+    SHA256_Workzone workzone;
 } SHA2CC26X1_Object;
 
 /*! \endcond */

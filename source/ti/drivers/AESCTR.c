@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,45 +50,50 @@ extern const uint_least8_t AESCTR_count;
 
 const AESCTR_Params AESCTR_defaultParams = {
     .returnBehavior = AESCTR_RETURN_BEHAVIOR_BLOCKING,
-    .callbackFxn = NULL,
-    .timeout = SemaphoreP_WAIT_FOREVER,
-    .custom = NULL,
+    .callbackFxn    = NULL,
+    .timeout        = SemaphoreP_WAIT_FOREVER,
+    .custom         = NULL,
 };
 
 /*
  *  ======== AESCTR_Params_init ========
  */
-void AESCTR_Params_init(AESCTR_Params *params){
+void AESCTR_Params_init(AESCTR_Params *params)
+{
     *params = AESCTR_defaultParams;
 }
 
 /*
  *  ======== AESCTR_open ========
  */
-AESCTR_Handle AESCTR_open(uint_least8_t index, const AESCTR_Params *params) {
+__attribute__((weak)) AESCTR_Handle AESCTR_open(uint_least8_t index, const AESCTR_Params *params)
+{
     DebugP_assert(index < AESCTR_count);
 
-    AESCTR_Config *config = (AESCTR_Config*)&AESCTR_config[index];
+    AESCTR_Config *config = (AESCTR_Config *)&AESCTR_config[index];
     return AESCTR_construct(config, params);
 }
 
 /*
  *  ======== AESCTR_Operation_init ========
  */
-void AESCTR_Operation_init(AESCTR_Operation *operation) {
+void AESCTR_Operation_init(AESCTR_Operation *operation)
+{
     AESCTR_OneStepOperation_init(operation);
 }
 
 /*
  *  ======== AESCTR_Operation_init ========
  */
-void AESCTR_OneStepOperation_init(AESCTR_OneStepOperation *operation) {
+void AESCTR_OneStepOperation_init(AESCTR_OneStepOperation *operation)
+{
     memset(operation, 0x00, sizeof(AESCTR_OneStepOperation));
 }
 
 /*
  *  ======== AESCTR_SegmentedOperation_init ========
  */
-void AESCTR_SegmentedOperation_init(AESCTR_SegmentedOperation *operation) {
+void AESCTR_SegmentedOperation_init(AESCTR_SegmentedOperation *operation)
+{
     memset(operation, 0x00, sizeof(AESCTR_SegmentedOperation));
 }

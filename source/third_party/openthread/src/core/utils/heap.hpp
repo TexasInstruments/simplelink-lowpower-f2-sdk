@@ -32,15 +32,18 @@
  *
  */
 
-#ifndef OT_HEAP_HPP_
-#define OT_HEAP_HPP_
+#ifndef OT_UTILS_HEAP_HPP_
+#define OT_UTILS_HEAP_HPP_
 
 #include "openthread-core-config.h"
+
+#if !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "utils/static_assert.hpp"
+#include "common/const_cast.hpp"
+#include "common/non_copyable.hpp"
 
 namespace ot {
 namespace Utils {
@@ -93,7 +96,8 @@ public:
      */
     uint16_t GetNext(void) const
     {
-        return *reinterpret_cast<const uint16_t *>(reinterpret_cast<const uint8_t *>(this) + sizeof(mSize) + mSize);
+        return *reinterpret_cast<const uint16_t *>(
+            reinterpret_cast<const void *>(reinterpret_cast<const uint8_t *>(this) + sizeof(mSize) + mSize));
     }
 
     /**
@@ -106,7 +110,8 @@ public:
      */
     void SetNext(uint16_t aNext)
     {
-        *reinterpret_cast<uint16_t *>(reinterpret_cast<uint8_t *>(this) + sizeof(mSize) + mSize) = aNext;
+        *reinterpret_cast<uint16_t *>(
+            reinterpret_cast<void *>(reinterpret_cast<uint8_t *>(this) + sizeof(mSize) + mSize)) = aNext;
     }
 
     /**
@@ -144,18 +149,13 @@ public:
     bool IsFree(void) const { return mSize != kGuardBlockSize && GetNext() != 0; }
 
 private:
-    enum
-    {
-        kGuardBlockSize = 0xffff, ///< Size value of the guard block.
-    };
+    static constexpr uint16_t kGuardBlockSize = 0xffff; // Size value of the guard block.
 
-    uint16_t mSize; ///< Number of bytes in mMemory.
+    uint16_t mSize; // Number of bytes in mMemory.
 
-    /**
-     * Memory for user, with size of *mNext* to ensure size of this
-     * structure is equal to size of block metadata, i.e. sizeof(mSize) + sizeof(mNext)
-     *
-     */
+    // Memory for user, with size of `mNext` to ensure size of this
+    // structure is equal to size of block metadata, i.e.,
+    // sizeof(mSize) + sizeof(mNext).
     uint8_t mMemory[sizeof(uint16_t)];
 };
 
@@ -173,11 +173,11 @@ private:
  *     +--------------------------------------------------------------------------+
  *
  */
-class Heap
+class Heap : private NonCopyable
 {
 public:
     /**
-     * This constructure initialize a memory heap.
+     * This constructor initializes a memory heap.
      *
      */
     Heap(void);
@@ -190,7 +190,7 @@ public:
      *
      * @returns A pointer to the allocated memory.
      *
-     * @retval  NULL    Indicates not enough memory.
+     * @retval  nullptr    Indicates not enough memory.
      *
      */
     void *CAlloc(size_t aCount, size_t aSize);
@@ -209,7 +209,7 @@ public:
      */
     bool IsClean(void) const
     {
-        Heap &       self  = *const_cast<Heap *>(this);
+        Heap &       self  = *AsNonConst(this);
         const Block &super = self.BlockSuper();
         const Block &first = self.BlockRight(super);
         return super.GetNext() == self.BlockOffset(first) && first.GetSize() == kFirstBlockSize;
@@ -227,23 +227,20 @@ public:
     size_t GetFreeSize(void) const { return mMemory.mFreeSize; }
 
 private:
-    enum
-    {
 #if OPENTHREAD_CONFIG_DTLS_ENABLE
-        kMemorySize = OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE, ///< Size of memory buffer (bytes).
+    static constexpr uint16_t kMemorySize = OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE;
 #else
-        kMemorySize = OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE_NO_DTLS, ///< Size of memory buffer (bytes).
+    static constexpr uint16_t kMemorySize = OPENTHREAD_CONFIG_HEAP_INTERNAL_SIZE_NO_DTLS;
 #endif
-        kAlignSize          = sizeof(void *),                                     ///< The alignment size.
-        kBlockRemainderSize = kAlignSize - sizeof(uint16_t) * 2,                  ///< Block unit remainder size.
-        kSuperBlockSize     = kAlignSize - sizeof(Block),                         ///< Super block size.
-        kFirstBlockSize     = kMemorySize - kAlignSize * 3 + kBlockRemainderSize, ///< First block size.
-        kSuperBlockOffset   = kAlignSize - sizeof(uint16_t),                      ///< Offset of the super block.
-        kFirstBlockOffset   = kAlignSize * 2 - sizeof(uint16_t),                  ///< Offset of the first block.
-        kGuardBlockOffset   = kMemorySize - sizeof(uint16_t),                     ///< Offset of the guard block.
-    };
+    static constexpr uint16_t kAlignSize          = sizeof(void *);
+    static constexpr uint16_t kBlockRemainderSize = kAlignSize - sizeof(uint16_t) * 2;
+    static constexpr uint16_t kSuperBlockSize     = kAlignSize - sizeof(Block);
+    static constexpr uint16_t kFirstBlockSize     = kMemorySize - kAlignSize * 3 + kBlockRemainderSize;
+    static constexpr uint16_t kSuperBlockOffset   = kAlignSize - sizeof(uint16_t);
+    static constexpr uint16_t kFirstBlockOffset   = kAlignSize * 2 - sizeof(uint16_t);
+    static constexpr uint16_t kGuardBlockOffset   = kMemorySize - sizeof(uint16_t);
 
-    OT_STATIC_ASSERT(kMemorySize % kAlignSize == 0, "The heap memory size is not aligned to kAlignSize!");
+    static_assert(kMemorySize % kAlignSize == 0, "The heap memory size is not aligned to kAlignSize!");
 
     /**
      * This method returns the block at offset @p aOffset.
@@ -351,4 +348,6 @@ private:
 } // namespace Utils
 } // namespace ot
 
-#endif // OT_HEAP_HPP_
+#endif // !OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE
+
+#endif // OT_UTILS_HEAP_HPP_

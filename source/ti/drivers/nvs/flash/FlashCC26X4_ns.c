@@ -101,12 +101,12 @@ uint32_t FlashProtectionGet(uint32_t ui32SectorAddress)
 
     /* set the input vector */
     invecs[0].base = &ui32SectorAddress;
-    invecs[0].len = sizeof(uint32_t);
+    invecs[0].len  = sizeof(uint32_t);
 
     /* set the output vector */
     uint32_t ui32SectorProtect = 0;
-    outvecs[0].base = &ui32SectorProtect;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].base            = &ui32SectorProtect;
+    outvecs[0].len             = sizeof(uint32_t);
 
     /* call FlashProtectionGet command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_PROTECTION_GET, invecs, 1, outvecs, 1);
@@ -122,7 +122,6 @@ uint32_t FlashProtectionGet(uint32_t ui32SectorAddress)
         return (ui32SectorProtect);
     }
 }
-
 
 /*
  *  ======== FlashSectorErase ========
@@ -141,12 +140,12 @@ uint32_t FlashSectorErase(uint32_t ui32SectorAddress)
 
     /* set the input vector */
     invecs[0].base = &ui32SectorAddress;
-    invecs[0].len = sizeof(uint32_t);
+    invecs[0].len  = sizeof(uint32_t);
 
     /* set the output vector */
     uint32_t status = 0;
     outvecs[0].base = &status;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].len  = sizeof(uint32_t);
 
     /* call FlashSectorErase command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_SECTOR_ERASE, invecs, 1, outvecs, 1);
@@ -179,18 +178,18 @@ uint32_t FlashProgram(uint8_t *pui8DataBuffer, uint32_t ui32Address, uint32_t ui
     }
 
     /* construct structure containing all input arguments */
-    flashProgramArgs.dataBuffer = pui8DataBuffer;
+    flashProgramArgs.dataBuffer    = pui8DataBuffer;
     flashProgramArgs.sectorAddress = ui32Address;
-    flashProgramArgs.count = ui32Count;
+    flashProgramArgs.count         = ui32Count;
 
     /* set the input vector */
     invecs[0].base = &flashProgramArgs;
-    invecs[0].len = sizeof(flashProgramArgs);
+    invecs[0].len  = sizeof(flashProgramArgs);
 
     /* set the output vector */
     uint32_t status = 0;
     outvecs[0].base = &status;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].len  = sizeof(uint32_t);
 
     /* call FlashProgram command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_PROGRAM, invecs, 1, outvecs, 1);
@@ -223,18 +222,18 @@ uint32_t FlashProgram4X(uint8_t *pui8DataBuffer, uint32_t ui32Address, uint32_t 
     }
 
     /* construct structure containing all input arguments */
-    flashProgramArgs.dataBuffer = pui8DataBuffer;
+    flashProgramArgs.dataBuffer    = pui8DataBuffer;
     flashProgramArgs.sectorAddress = ui32Address;
-    flashProgramArgs.count = ui32Count;
-    
+    flashProgramArgs.count         = ui32Count;
+
     /* set the input vector */
     invecs[0].base = &flashProgramArgs;
-    invecs[0].len = sizeof(flashProgramArgs);
+    invecs[0].len  = sizeof(flashProgramArgs);
 
     /* set the output vector */
     uint32_t status = 0;
     outvecs[0].base = &status;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].len  = sizeof(uint32_t);
 
     /* call FlashProgram4X command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_PROGRAM_4X, invecs, 1, outvecs, 1);
@@ -250,7 +249,6 @@ uint32_t FlashProgram4X(uint8_t *pui8DataBuffer, uint32_t ui32Address, uint32_t 
         return (status);
     }
 }
-
 
 /*
  *  ======== FlashSectorSizeGet ========
@@ -270,7 +268,7 @@ uint32_t FlashSectorSizeGet(void)
     /* set the output vector */
     uint32_t status = 0;
     outvecs[0].base = &status;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].len  = sizeof(uint32_t);
 
     /* call FlashSectorSizeGet command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_SECTOR_SIZE_GET, invecs, 0, outvecs, 1);
@@ -305,7 +303,7 @@ uint32_t FlashSizeGet(void)
     /* set the output vector */
     uint32_t status = 0;
     outvecs[0].base = &status;
-    outvecs[0].len = sizeof(uint32_t);
+    outvecs[0].len  = sizeof(uint32_t);
 
     /* call FlashSizeGet command */
     psa_status_t err = psa_call(spHandle, FLASH_SP_MSG_TYPE_FLASH_SIZE_GET, invecs, 0, outvecs, 1);

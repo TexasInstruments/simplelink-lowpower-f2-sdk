@@ -83,8 +83,7 @@ void MutexP_delete(MutexP_Handle handle)
  *  ======== MutexP_destruct ========
  */
 void MutexP_destruct(MutexP_Struct *mutP)
-{
-}
+{}
 
 /*
  *  ======== MutexP_lock ========
@@ -94,7 +93,8 @@ uintptr_t MutexP_lock(MutexP_Handle handle)
     SemaphoreHandle_t xMutex = (SemaphoreHandle_t)handle;
 
     /* Retry every 10 ticks */
-    while (xSemaphoreTakeRecursive(xMutex, (TickType_t)10) == pdFALSE) {
+    while (xSemaphoreTakeRecursive(xMutex, (TickType_t)10) == pdFALSE)
+    {
         ;
     }
 

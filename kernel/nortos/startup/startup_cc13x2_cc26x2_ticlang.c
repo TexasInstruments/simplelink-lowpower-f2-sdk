@@ -36,7 +36,7 @@
 //
 //*****************************************************************************
 #if !(defined(__clang__))
-#error "startup_cc13x2_cc26x2_ticlang.c: Unsupported compiler!"
+    #error "startup_cc13x2_cc26x2_ticlang.c: Unsupported compiler!"
 #endif
 
 #include <ti/devices/DeviceFamily.h>
@@ -49,10 +49,10 @@
 //! Forward declaration of the reset ISR and the default fault handlers.
 //
 //*****************************************************************************
-void        resetISR( void );
-static void nmiISR( void );
-static void faultISR( void );
-static void intDefaultHandler( void );
+void resetISR(void);
+static void nmiISR(void);
+static void faultISR(void);
+static void intDefaultHandler(void);
 
 //*****************************************************************************
 //
@@ -73,69 +73,66 @@ extern unsigned long __STACK_END;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__ ((section(".intvecs"))) __attribute__ ((used))
-void (* const g_pfnVectors[])(void) =
-{
+__attribute__((section(".intvecs"))) __attribute__((used)) void (*const g_pfnVectors[])(void) = {
     (void (*)(void))((unsigned long)&__STACK_END),
-                                        //  0 The initial stack pointer
-    resetISR,                           //  1 The reset handler
-    nmiISR,                             //  2 The NMI handler
-    faultISR,                           //  3 The hard fault handler
-    intDefaultHandler,                  //  4 The MPU fault handler
-    intDefaultHandler,                  //  5 The bus fault handler
-    intDefaultHandler,                  //  6 The usage fault handler
-    0,                                  //  7 Reserved
-    0,                                  //  8 Reserved
-    0,                                  //  9 Reserved
-    0,                                  // 10 Reserved
-    intDefaultHandler,                  // 11 SVCall handler
-    intDefaultHandler,                  // 12 Debug monitor handler
-    0,                                  // 13 Reserved
-    intDefaultHandler,                  // 14 The PendSV handler
-    intDefaultHandler,                  // 15 The SysTick handler
+    //  0 The initial stack pointer
+    resetISR,          //  1 The reset handler
+    nmiISR,            //  2 The NMI handler
+    faultISR,          //  3 The hard fault handler
+    intDefaultHandler, //  4 The MPU fault handler
+    intDefaultHandler, //  5 The bus fault handler
+    intDefaultHandler, //  6 The usage fault handler
+    0,                 //  7 Reserved
+    0,                 //  8 Reserved
+    0,                 //  9 Reserved
+    0,                 // 10 Reserved
+    intDefaultHandler, // 11 SVCall handler
+    intDefaultHandler, // 12 Debug monitor handler
+    0,                 // 13 Reserved
+    intDefaultHandler, // 14 The PendSV handler
+    intDefaultHandler, // 15 The SysTick handler
     //--- External interrupts ---
-    intDefaultHandler,                  // 16 AON edge detect
-    intDefaultHandler,                  // 17 I2C
-    intDefaultHandler,                  // 18 RF Core Command & Packet Engine 1
-    intDefaultHandler,                  // 19 Reserved
-    intDefaultHandler,                  // 20 AON RTC
-    intDefaultHandler,                  // 21 UART0 Rx and Tx
-    intDefaultHandler,                  // 22 AUX software event 0
-    intDefaultHandler,                  // 23 SSI0 Rx and Tx
-    intDefaultHandler,                  // 24 SSI1 Rx and Tx
-    intDefaultHandler,                  // 25 RF Core Command & Packet Engine 0
-    intDefaultHandler,                  // 26 RF Core Hardware
-    intDefaultHandler,                  // 27 RF Core Command Acknowledge
-    intDefaultHandler,                  // 28 I2S
-    intDefaultHandler,                  // 29 AUX software event 1
-    intDefaultHandler,                  // 30 Watchdog timer
-    intDefaultHandler,                  // 31 Timer 0 subtimer A
-    intDefaultHandler,                  // 32 Timer 0 subtimer B
-    intDefaultHandler,                  // 33 Timer 1 subtimer A
-    intDefaultHandler,                  // 34 Timer 1 subtimer B
-    intDefaultHandler,                  // 35 Timer 2 subtimer A
-    intDefaultHandler,                  // 36 Timer 2 subtimer B
-    intDefaultHandler,                  // 37 Timer 3 subtimer A
-    intDefaultHandler,                  // 38 Timer 3 subtimer B
-    intDefaultHandler,                  // 39 Crypto Core Result available
-    intDefaultHandler,                  // 40 uDMA Software
-    intDefaultHandler,                  // 41 uDMA Error
-    intDefaultHandler,                  // 42 Flash controller
-    intDefaultHandler,                  // 43 Software Event 0
-    intDefaultHandler,                  // 44 AUX combined event
-    intDefaultHandler,                  // 45 AON programmable 0
-    intDefaultHandler,                  // 46 Dynamic Programmable interrupt
-                                        //    source (Default: PRCM)
-    intDefaultHandler,                  // 47 AUX Comparator A
-    intDefaultHandler,                  // 48 AUX ADC new sample or ADC DMA
-                                        //    done, underflow, overflow
-    intDefaultHandler,                  // 49 TRNG event
-    intDefaultHandler,                  // 50 Combined event from Oscillator control
-    intDefaultHandler,                  // 51 AUX Timer2 event 0
-    intDefaultHandler,                  // 52 UART1 combined interrupt
-    intDefaultHandler                   // 53 Combined event from battery monitor
+    intDefaultHandler, // 16 AON edge detect
+    intDefaultHandler, // 17 I2C
+    intDefaultHandler, // 18 RF Core Command & Packet Engine 1
+    intDefaultHandler, // 19 Reserved
+    intDefaultHandler, // 20 AON RTC
+    intDefaultHandler, // 21 UART0 Rx and Tx
+    intDefaultHandler, // 22 AUX software event 0
+    intDefaultHandler, // 23 SSI0 Rx and Tx
+    intDefaultHandler, // 24 SSI1 Rx and Tx
+    intDefaultHandler, // 25 RF Core Command & Packet Engine 0
+    intDefaultHandler, // 26 RF Core Hardware
+    intDefaultHandler, // 27 RF Core Command Acknowledge
+    intDefaultHandler, // 28 I2S
+    intDefaultHandler, // 29 AUX software event 1
+    intDefaultHandler, // 30 Watchdog timer
+    intDefaultHandler, // 31 Timer 0 subtimer A
+    intDefaultHandler, // 32 Timer 0 subtimer B
+    intDefaultHandler, // 33 Timer 1 subtimer A
+    intDefaultHandler, // 34 Timer 1 subtimer B
+    intDefaultHandler, // 35 Timer 2 subtimer A
+    intDefaultHandler, // 36 Timer 2 subtimer B
+    intDefaultHandler, // 37 Timer 3 subtimer A
+    intDefaultHandler, // 38 Timer 3 subtimer B
+    intDefaultHandler, // 39 Crypto Core Result available
+    intDefaultHandler, // 40 uDMA Software
+    intDefaultHandler, // 41 uDMA Error
+    intDefaultHandler, // 42 Flash controller
+    intDefaultHandler, // 43 Software Event 0
+    intDefaultHandler, // 44 AUX combined event
+    intDefaultHandler, // 45 AON programmable 0
+    intDefaultHandler, // 46 Dynamic Programmable interrupt
+                       //    source (Default: PRCM)
+    intDefaultHandler, // 47 AUX Comparator A
+    intDefaultHandler, // 48 AUX ADC new sample or ADC DMA
+                       //    done, underflow, overflow
+    intDefaultHandler, // 49 TRNG event
+    intDefaultHandler, // 50 Combined event from Oscillator control
+    intDefaultHandler, // 51 AUX Timer2 event 0
+    intDefaultHandler, // 52 UART1 combined interrupt
+    intDefaultHandler  // 53 Combined event from battery monitor
 };
-
 
 //*****************************************************************************
 //
@@ -147,8 +144,7 @@ void (* const g_pfnVectors[])(void) =
 //! application.
 //
 //*****************************************************************************
-void
-resetISR(void)
+void resetISR(void)
 {
     IntMasterDisable();
 
@@ -157,8 +153,8 @@ resetISR(void)
     //
     SetupTrimDevice();
 
-#if defined (__ARM_ARCH_7EM__) && defined(__VFP_FP__) && !defined(__SOFTFP__)
-    volatile uint32_t * pui32Cpacr = (uint32_t *) 0xE000ED88;
+#if defined(__ARM_ARCH_7EM__) && defined(__VFP_FP__) && !defined(__SOFTFP__)
+    volatile uint32_t *pui32Cpacr = (uint32_t *)0xE000ED88;
 
     // Enable Coprocessor Access Control (CPAC)
     *pui32Cpacr |= (0xF << 20);
@@ -183,15 +179,12 @@ resetISR(void)
 //! by a debugger.
 //
 //*****************************************************************************
-static void
-nmiISR(void)
+static void nmiISR(void)
 {
     //
     // Enter an infinite loop.
     //
-    while(1)
-    {
-    }
+    while (1) {}
 }
 
 //*****************************************************************************
@@ -201,17 +194,13 @@ nmiISR(void)
 //! for examination by a debugger.
 //
 //*****************************************************************************
-static void
-faultISR(void)
+static void faultISR(void)
 {
     //
     // Enter an infinite loop.
     //
-    while(1)
-    {
-    }
+    while (1) {}
 }
-
 
 //*****************************************************************************
 //
@@ -220,13 +209,10 @@ faultISR(void)
 //! for examination by a debugger.
 //
 //*****************************************************************************
-static void
-intDefaultHandler(void)
+static void intDefaultHandler(void)
 {
     //
-    // Go into an infinite loop.
+    // Enter an infinite loop.
     //
-    while(1)
-    {
-    }
+    while (1) {}
 }

@@ -43,7 +43,6 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-
 #if !defined(__GNUC__) || defined(__ti__)
 /*
  *  ssize_t is a signed size_t.  It is the return type for mqueue
@@ -56,7 +55,7 @@ typedef unsigned long useconds_t;
 typedef unsigned long timer_t;
 
 #else
-#include <../include/sys/types.h>
+    #include <../include/sys/types.h>
 #endif
 
 #ifdef __cplusplus

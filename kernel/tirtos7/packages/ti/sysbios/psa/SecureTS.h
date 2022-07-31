@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__IAR_SYSTEMS_ICC__)
 #ifndef __STATIC_INLINE
 #define __STATIC_INLINE static inline
 #endif
@@ -52,8 +52,7 @@
 extern "C" {
 #endif
 
-#define HWREG(x)                                                              \
-        (*((volatile unsigned long *)(x)))
+#define HWREG(x) (*((volatile unsigned long *)(x)))
 
 #define AON_RTC_BASE            0x40092000 // AON_RTC
 

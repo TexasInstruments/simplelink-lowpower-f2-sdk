@@ -55,7 +55,7 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/BIOS.h>
-#include <ti/drivers/UART.h>
+#include <ti/drivers/UART2.h>
 
 // Comment this in to use xdc.runtime.Log, but also remove UartLog_init below.
 //#include <xdc/runtime/Log.h>
@@ -142,8 +142,12 @@ int main()
      * Note: Define xdc_runtime_Log_DISABLE_ALL and remove define UARTLOG_ENABLE
      *       to remove all impact of Log statements.
      * Note: NULL as Params gives 115200,8,N,1 and Blocking mode */
-    UART_init();
-    UartLog_init(UART_open(CONFIG_DISPLAY_UART, NULL));
+
+    // Initialize UART2 parameters
+    UART2_Params params;
+    UART2_Params_init(&params);
+    // Open the UART
+    UartLog_init(UART2_open(CONFIG_DISPLAY_UART, &params));
 
     /* Initialize ICall module */
     ICall_init();

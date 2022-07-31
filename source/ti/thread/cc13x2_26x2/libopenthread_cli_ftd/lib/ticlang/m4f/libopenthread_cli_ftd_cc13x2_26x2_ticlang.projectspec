@@ -58,27 +58,61 @@
         description="this is the openthread cli (mode: ftd) library">
 
         <property name="isHybrid" value="true"/>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap_secure.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap_secure.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_commissioner.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_console.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_commissioner.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_dataset.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_dataset.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_history.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_history.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_joiner.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_server.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_joiner.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_uart.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_network_data.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_network_data.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_output.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_output.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_srp_client.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_srp_client.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_srp_server.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_srp_server.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_tcp.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_tcp.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_udp.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_udp.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/x509_cert_key.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
@@ -92,31 +126,21 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_DATASET.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_HISTORY.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_JOINER.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_NETDATA.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_SRP.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_SRP_CLIENT.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_SRP_SERVER.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_TCP.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/README_UDP.md" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_coap_secure.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_commissioner.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_console.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_dataset.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_joiner.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_server.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_uart.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/cli_udp.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/cli/x509_cert_key.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/cli">
         </file>
     </project>
 </projectSpec>

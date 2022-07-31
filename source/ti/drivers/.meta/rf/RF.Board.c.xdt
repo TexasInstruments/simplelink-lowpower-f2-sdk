@@ -239,15 +239,12 @@ void __attribute__((weak)) `callbackFxn`(RF_Handle client, RF_GlobalEvent events
 %   const {coexPinRequestIdleLevel: reqIdleLvl, coexPinPriorityIdleLevel: priIdleLvl, coexPinGrantIdleLevel: grantIdleLvl} = RF.$static;
 %   const coexPinConfig = {
 %       CONFIG_RF_COEX_REQUEST: {
-%           pinMask: `PIN_GPIO_OUTPUT_EN | PIN_PUSHPULL | PIN_DRVSTR_MAX | ${reqIdleLvl ? "PIN_GPIO_LOW | PIN_INV_INOUT" : "PIN_GPIO_LOW"}`,
 %           rfCoreMux: "IOC_PORT_RFC_GPO1"
 %       },
 %       CONFIG_RF_COEX_PRIORITY: {
-%           pinMask: `PIN_GPIO_OUTPUT_EN | PIN_PUSHPULL | PIN_DRVSTR_MAX | ${priIdleLvl ? "PIN_GPIO_LOW | PIN_INV_INOUT" : "PIN_GPIO_LOW"}`,
 %           rfCoreMux: "IOC_PORT_RFC_GPO2"
 %       },
 %       CONFIG_RF_COEX_GRANT: {
-%           pinMask: `PIN_INPUT_EN${grantIdleLvl ? "" : " | PIN_INV_INOUT"}`,
 %           rfCoreMux: "IOC_PORT_RFC_GPI1"
 %       }
 %   }
@@ -512,8 +509,8 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
         }
 % } else if (antennaSwitchName === "XMSSJJ3G0PA-054") {
         /* Switch off all paths. */
-        GPIO_write(CONFIG_RF_5_DBM_PA, 0);
-        GPIO_write(CONFIG_RF_10_DBM_PA, 0);
+        GPIO_write(CONFIG_RF_STANDARD_PA, 0);
+        GPIO_write(CONFIG_RF_HIGH_PA, 0);
 
         /* Decode the current PA configuration. */
         RF_TxPowerTable_PAType paType = (RF_TxPowerTable_PAType)RF_getTxPower(client).paType;
@@ -521,14 +518,14 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
         if (paType == RF_TxPowerTable_HighPA) {
             /*
             * Mux GPIOs to RF Core signals:
-            * - High PA    --> 10_DBM_PA
-            * - LNA enable --> 5_DBM_PA
+            * - High PA    --> HIGH_PA
+            * - LNA enable --> STANDARD_PA
             */
-            GPIO_setMux(CONFIG_RF_5_DBM_PA, IOC_PORT_RFC_GPO0);
-            GPIO_setMux(CONFIG_RF_10_DBM_PA, IOC_PORT_RFC_GPO3);
+            GPIO_setMux(CONFIG_RF_STANDARD_PA, IOC_PORT_RFC_GPO0);
+            GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_RFC_GPO3);
         } else {
             /* RF Core active --> 5_DBM */
-            GPIO_write(CONFIG_RF_5_DBM_PA, 1);
+            GPIO_write(CONFIG_RF_STANDARD_PA, 1);
         }
 % } else if (antennaSwitchName === "RTC6608OU") {
         /* Switch off all paths. */

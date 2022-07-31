@@ -38,9 +38,11 @@
 
 #include <stddef.h>
 
+#include "common/clearable.hpp"
 #include "common/encoding.hpp"
 #include "common/message.hpp"
 #include "net/ip6_address.hpp"
+#include "net/ip6_types.hpp"
 #include "net/netif.hpp"
 #include "net/socket.hpp"
 
@@ -86,102 +88,32 @@ using ot::Encoding::BigEndian::HostSwap32;
  */
 
 /**
- * Internet Protocol Numbers
- */
-enum
-{
-    kProtoHopOpts  = 0,  ///< IPv6 Hop-by-Hop Option
-    kProtoTcp      = 6,  ///< Transmission Control Protocol
-    kProtoUdp      = 17, ///< User Datagram
-    kProtoIp6      = 41, ///< IPv6 encapsulation
-    kProtoRouting  = 43, ///< Routing Header for IPv6
-    kProtoFragment = 44, ///< Fragment Header for IPv6
-    kProtoIcmp6    = 58, ///< ICMP for IPv6
-    kProtoNone     = 59, ///< No Next Header for IPv6
-    kProtoDstOpts  = 60, ///< Destination Options for IPv6
-};
-
-/**
- * Class Selectors
- */
-enum IpDscpCs
-{
-    kDscpCs0    = 0,    ///< Class selector codepoint 0
-    kDscpCs1    = 8,    ///< Class selector codepoint 8
-    kDscpCs2    = 16,   ///< Class selector codepoint 16
-    kDscpCs3    = 24,   ///< Class selector codepoint 24
-    kDscpCs4    = 32,   ///< Class selector codepoint 32
-    kDscpCs5    = 40,   ///< Class selector codepoint 40
-    kDscpCs6    = 48,   ///< Class selector codepoint 48
-    kDscpCs7    = 56,   ///< Class selector codepoint 56
-    kDscpCsMask = 0x38, ///< Class selector mask
-};
-
-enum
-{
-    kVersionClassFlowSize = 4, ///< Combined size of Version, Class, Flow Label in bytes.
-};
-
-/**
- * This structure represents an IPv6 header.
- *
- */
-OT_TOOL_PACKED_BEGIN
-struct HeaderPoD
-{
-    union OT_TOOL_PACKED_FIELD
-    {
-        uint8_t  m8[kVersionClassFlowSize / sizeof(uint8_t)];
-        uint16_t m16[kVersionClassFlowSize / sizeof(uint16_t)];
-        uint32_t m32[kVersionClassFlowSize / sizeof(uint32_t)];
-    } mVersionClassFlow;         ///< Version, Class, Flow Label
-    uint16_t     mPayloadLength; ///< Payload Length
-    uint8_t      mNextHeader;    ///< Next Header
-    uint8_t      mHopLimit;      ///< Hop Limit
-    otIp6Address mSource;        ///< Source
-    otIp6Address mDestination;   ///< Destination
-} OT_TOOL_PACKED_END;
-
-/**
  * This class implements IPv6 header generation and parsing.
  *
  */
 OT_TOOL_PACKED_BEGIN
-class Header : private HeaderPoD
+class Header : public Clearable<Header>
 {
 public:
-    /**
-     * This method initializes the IPv6 header.
-     *
-     */
-    void Init(void)
-    {
-        mVersionClassFlow.m32[0] = 0;
-        mVersionClassFlow.m8[0]  = kVersion6;
-    }
+    static constexpr uint8_t kPayloadLengthFieldOffset = 4;  ///< Offset of Payload Length field in IPv6 header.
+    static constexpr uint8_t kNextHeaderFieldOffset    = 6;  ///< Offset of Next Header field in IPv6 header.
+    static constexpr uint8_t kHopLimitFieldOffset      = 7;  ///< Offset of Hop Limit field in IPv6 header.
+    static constexpr uint8_t kSourceFieldOffset        = 8;  ///< Offset of Source Address field in IPv6 header.
+    static constexpr uint8_t kDestinationFieldOffset   = 24; ///< Offset of Destination Address field in IPv6 header.
 
     /**
-     * This method initializes the IPv6 header and sets Version, Traffic Control and Flow Label fields.
+     * This method initializes the Version to 6 and sets Traffic Class and Flow fields to zero.
+     *
+     * The other fields in the IPv6 header remain unchanged.
      *
      */
-    void Init(uint32_t aVersionClassFlow) { mVersionClassFlow.m32[0] = HostSwap32(aVersionClassFlow); }
-
-    /**
-     * This method reads the IPv6 header from @p aMessage.
-     *
-     * @param[in]  aMessage  The IPv6 datagram.
-     *
-     * @retval OT_ERROR_NONE   Successfully read the IPv6 header.
-     * @retval OT_ERROR_PARSE  Malformed IPv6 header.
-     *
-     */
-    otError Init(const Message &aMessage);
+    void InitVersionTrafficClassFlow(void) { SetVerionTrafficClassFlow(kVersTcFlowInit); }
 
     /**
      * This method indicates whether or not the header appears to be well-formed.
      *
-     * @retval TRUE  if the header appears to be well-formed.
-     * @retval FALSE if the header does not appear to be well-formed.
+     * @retval TRUE    If the header appears to be well-formed.
+     * @retval FALSE   If the header does not appear to be well-formed.
      *
      */
     bool IsValid(void) const;
@@ -193,30 +125,103 @@ public:
      * @retval FALSE  If the IPv6 Version is not set to 6.
      *
      */
-    bool IsVersion6(void) const { return (mVersionClassFlow.m8[0] & kVersionMask) == kVersion6; }
+    bool IsVersion6(void) const { return (mVerTcFlow.m8[0] & kVersionMask) == kVersion6; }
 
     /**
-     * This method returns the IPv6 DSCP value.
+     * This method gets the combination of Version, Traffic Class, and Flow fields as a 32-bit value.
      *
-     * @returns The IPv6 DSCP value.
+     * @returns The Version, Traffic Class, and Flow fields as a 32-bit value.
+     *
+     */
+    uint32_t GetVerionTrafficClassFlow(void) const { return HostSwap32(mVerTcFlow.m32); }
+
+    /**
+     * This method sets the combination of Version, Traffic Class, and Flow fields as a 32-bit value.
+     *
+     * @param[in] aVerTcFlow   The Version, Traffic Class, and Flow fields as a 32-bit value.
+     *
+     */
+    void SetVerionTrafficClassFlow(uint32_t aVerTcFlow) { mVerTcFlow.m32 = HostSwap32(aVerTcFlow); }
+
+    /**
+     * This method gets the Traffic Class field.
+     *
+     * @returns The Traffic Class field.
+     *
+     */
+    uint8_t GetTrafficClass(void) const
+    {
+        return static_cast<uint8_t>((HostSwap16(mVerTcFlow.m16[0]) & kTrafficClassMask) >> kTrafficClassOffset);
+    }
+
+    /**
+     * This method sets the Traffic Class filed.
+     *
+     * @param[in] aTc  The Traffic Class value.
+     *
+     */
+    void SetTrafficClass(uint8_t aTc)
+    {
+        mVerTcFlow.m16[0] = HostSwap16((HostSwap16(mVerTcFlow.m16[0]) & ~kTrafficClassMask) |
+                                       ((static_cast<uint16_t>(aTc) << kTrafficClassOffset) & kTrafficClassMask));
+    }
+
+    /**
+     * This method gets the 6-bit Differentiated Services Code Point (DSCP) from Traffic Class field.
+     *
+     * @returns The DSCP value.
      *
      */
     uint8_t GetDscp(void) const
     {
-        return static_cast<uint8_t>((HostSwap32(mVersionClassFlow.m32[0]) & kDscpMask) >> kDscpOffset);
+        return static_cast<uint8_t>((HostSwap16(mVerTcFlow.m16[0]) & kDscpMask) >> kDscpOffset);
     }
 
     /**
-     * This method sets the IPv6 DSCP value.
+     * This method sets 6-bit Differentiated Services Code Point (DSCP) in IPv6 header.
      *
-     * @param[in]  aDscp  The IPv6 DSCP value.
+     * @param[in]  aDscp  The DSCP value.
      *
      */
     void SetDscp(uint8_t aDscp)
     {
-        uint32_t tmp = HostSwap32(mVersionClassFlow.m32[0]);
-        tmp = (tmp & static_cast<uint32_t>(~kDscpMask)) | ((static_cast<uint32_t>(aDscp) << kDscpOffset) & kDscpMask);
-        mVersionClassFlow.m32[0] = HostSwap32(tmp);
+        mVerTcFlow.m16[0] = HostSwap16((HostSwap16(mVerTcFlow.m16[0]) & ~kDscpMask) |
+                                       ((static_cast<uint16_t>(aDscp) << kDscpOffset) & kDscpMask));
+    }
+
+    /**
+     * This method gets the 2-bit Explicit Congestion Notification (ECN) from Traffic Class field.
+     *
+     * @returns The ECN value.
+     *
+     */
+    Ecn GetEcn(void) const { return static_cast<Ecn>((mVerTcFlow.m8[1] & kEcnMask) >> kEcnOffset); }
+
+    /**
+     * This method sets the 2-bit Explicit Congestion Notification (ECN) in IPv6 header..
+     *
+     * @param[in]  aEcn  The ECN value.
+     *
+     */
+    void SetEcn(Ecn aEcn) { mVerTcFlow.m8[1] = (mVerTcFlow.m8[1] & ~kEcnMask) | ((aEcn << kEcnOffset) & kEcnMask); }
+
+    /**
+     * This method gets the 20-bit Flow field.
+     *
+     * @returns  The Flow value.
+     *
+     */
+    uint32_t GetFlow(void) const { return HostSwap32(mVerTcFlow.m32) & kFlowMask; }
+
+    /**
+     * This method sets the 20-bit Flow field in IPv6 header.
+     *
+     * @param[in] aFlow  The Flow value.
+     *
+     */
+    void SetFlow(uint32_t aFlow)
+    {
+        mVerTcFlow.m32 = HostSwap32((HostSwap32(mVerTcFlow.m32) & ~kFlowMask) | (aFlow & kFlowMask));
     }
 
     /**
@@ -273,7 +278,15 @@ public:
      * @returns A reference to the IPv6 Source address.
      *
      */
-    Address &GetSource(void) { return static_cast<Address &>(mSource); }
+    Address &GetSource(void) { return mSource; }
+
+    /**
+     * This method returns the IPv6 Source address.
+     *
+     * @returns A reference to the IPv6 Source address.
+     *
+     */
+    const Address &GetSource(void) const { return mSource; }
 
     /**
      * This method sets the IPv6 Source address.
@@ -289,7 +302,15 @@ public:
      * @returns A reference to the IPv6 Destination address.
      *
      */
-    Address &GetDestination(void) { return static_cast<Address &>(mDestination); }
+    Address &GetDestination(void) { return mDestination; }
+
+    /**
+     * This method returns the IPv6 Destination address.
+     *
+     * @returns A reference to the IPv6 Destination address.
+     *
+     */
+    const Address &GetDestination(void) const { return mDestination; }
 
     /**
      * This method sets the IPv6 Destination address.
@@ -300,45 +321,52 @@ public:
     void SetDestination(const Address &aDestination) { mDestination = aDestination; }
 
     /**
-     * This static method returns the byte offset of the IPv6 Payload Length field.
+     * This method parses and validates the IPv6 header from a given message.
      *
-     * @returns The byte offset of the IPv6 Payload Length field.
+     * The header is read from @p aMessage at offset zero.
      *
-     */
-    static uint8_t GetPayloadLengthOffset(void) { return offsetof(HeaderPoD, mPayloadLength); }
-
-    /**
-     * This static method returns the byte offset of the IPv6 Hop Limit field.
+     * @param[in]  aMessage  The IPv6 message.
      *
-     * @returns The byte offset of the IPv6 Hop Limit field.
+     * @retval kErrorNone   Successfully parsed the IPv6 header from @p aMessage.
+     * @retval kErrorParse  Malformed IPv6 header or message (e.g., message does not contained expected payload length).
      *
      */
-    static uint8_t GetHopLimitOffset(void) { return offsetof(HeaderPoD, mHopLimit); }
-
-    /**
-     * This static method returns the size of the IPv6 Hop Limit field.
-     *
-     * @returns The size of the IPv6 Hop Limit field.
-     *
-     */
-    static uint8_t GetHopLimitSize(void) { return sizeof(uint8_t); }
-
-    /**
-     * This static method returns the byte offset of the IPv6 Destination field.
-     *
-     * @returns The byte offset of the IPv6 Destination field.
-     *
-     */
-    static uint8_t GetDestinationOffset(void) { return offsetof(HeaderPoD, mDestination); }
+    Error ParseFrom(const Message &aMessage);
 
 private:
-    enum
+    // IPv6 header `mVerTcFlow` field:
+    //
+    // |             m16[0]            |            m16[1]             |
+    // |     m8[0]     |     m8[1]     |     m8[2]     |      m8[3]    |
+    // +---------------+---------------+---------------+---------------+
+    // |7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |Version|    DSCP   |ECN|             Flow Label                |
+    // |       | Traffic Class |                                       |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    static constexpr uint8_t  kVersion6           = 0x60;       // Use with `mVerTcFlow.m8[0]`
+    static constexpr uint8_t  kVersionMask        = 0xf0;       // Use with `mVerTcFlow.m8[0]`
+    static constexpr uint8_t  kTrafficClassOffset = 4;          // Use with `mVerTcFlow.m16[0]`
+    static constexpr uint16_t kTrafficClassMask   = 0x0ff0;     // Use with `mVerTcFlow.m16[0]`
+    static constexpr uint8_t  kDscpOffset         = 6;          // Use with `mVerTcFlow.m16[0]`
+    static constexpr uint16_t kDscpMask           = 0x0fc0;     // Use with `mVerTcFlow.m16[0]`
+    static constexpr uint8_t  kEcnOffset          = 4;          // Use with `mVerTcFlow.m8[1]`
+    static constexpr uint8_t  kEcnMask            = 0x30;       // Use with `mVerTcFlow.m8[1]`
+    static constexpr uint32_t kFlowMask           = 0x000fffff; // Use with `mVerTcFlow.m32`
+    static constexpr uint32_t kVersTcFlowInit     = 0x60000000; // Version 6, TC and flow zero.
+
+    union OT_TOOL_PACKED_FIELD
     {
-        kVersion6    = 0x60,
-        kVersionMask = 0xf0,
-        kDscpOffset  = 22,
-        kDscpMask    = 0xfc00000,
-    };
+        uint8_t  m8[sizeof(uint32_t) / sizeof(uint8_t)];
+        uint16_t m16[sizeof(uint32_t) / sizeof(uint16_t)];
+        uint32_t m32;
+    } mVerTcFlow;
+    uint16_t mPayloadLength;
+    uint8_t  mNextHeader;
+    uint8_t  mHopLimit;
+    Address  mSource;
+    Address  mDestination;
 } OT_TOOL_PACKED_END;
 
 /**
@@ -433,13 +461,12 @@ public:
      * IPv6 Option Type actions for unrecognized IPv6 Options.
      *
      */
-    enum Action
+    enum Action : uint8_t
     {
         kActionSkip      = 0x00, ///< skip over this option and continue processing the header
         kActionDiscard   = 0x40, ///< discard the packet
         kActionForceIcmp = 0x80, ///< discard the packet and forcibly send an ICMP Parameter Problem
         kActionIcmp      = 0xc0, ///< discard packet and conditionally send an ICMP Parameter Problem
-        kActionMask      = 0xc0, ///< mask for action bits
     };
 
     /**
@@ -467,6 +494,8 @@ public:
     void SetLength(uint8_t aLength) { mLength = aLength; }
 
 private:
+    static constexpr uint8_t kActionMask = 0xc0;
+
     uint8_t mType;
     uint8_t mLength;
 } OT_TOOL_PACKED_END;
@@ -479,12 +508,9 @@ OT_TOOL_PACKED_BEGIN
 class OptionPadN : public OptionHeader
 {
 public:
-    enum
-    {
-        kType      = 0x01, ///< PadN type
-        kData      = 0x00, ///< PadN specific data
-        kMaxLength = 0x05  ///< Maximum length of PadN option data
-    };
+    static constexpr uint8_t kType      = 0x01; ///< PadN type
+    static constexpr uint8_t kData      = 0x00; ///< PadN specific data
+    static constexpr uint8_t kMaxLength = 0x05; ///< Maximum length of PadN option data
 
     /**
      * This method initializes the PadN header.
@@ -495,8 +521,8 @@ public:
      */
     void Init(uint8_t aPadLength)
     {
-        OptionHeader::SetType(kType);
-        OptionHeader::SetLength(aPadLength - sizeof(OptionHeader));
+        SetType(kType);
+        SetLength(aPadLength - sizeof(OptionHeader));
         memset(mPad, kData, aPadLength - sizeof(OptionHeader));
     }
 
@@ -507,7 +533,7 @@ public:
      * @returns The total IPv6 Option Length.
      *
      */
-    uint8_t GetTotalLength(void) const { return OptionHeader::GetLength() + sizeof(OptionHeader); }
+    uint8_t GetTotalLength(void) const { return GetLength() + sizeof(OptionHeader); }
 
 private:
     uint8_t mPad[kMaxLength];
@@ -521,10 +547,7 @@ OT_TOOL_PACKED_BEGIN
 class OptionPad1
 {
 public:
-    enum
-    {
-        kType = 0x00
-    };
+    static constexpr uint8_t kType = 0x00;
 
     /**
      * This method initializes the Pad1 header.
@@ -656,15 +679,12 @@ public:
     static inline uint16_t BytesToFragmentOffset(uint16_t aOffset) { return aOffset >> 3; }
 
 private:
-    uint8_t mNextHeader;
-    uint8_t mReserved;
+    static constexpr uint8_t  kOffsetOffset = 3;
+    static constexpr uint16_t kOffsetMask   = 0xfff8;
+    static constexpr uint16_t kMoreFlag     = 1;
 
-    enum
-    {
-        kOffsetOffset = 3,
-        kOffsetMask   = 0xfff8,
-        kMoreFlag     = 1,
-    };
+    uint8_t  mNextHeader;
+    uint8_t  mReserved;
     uint16_t mOffsetMore;
     uint32_t mIdentification;
 } OT_TOOL_PACKED_END;

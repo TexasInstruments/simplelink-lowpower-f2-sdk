@@ -67,8 +67,6 @@
 #define GateSwi_Handle_label ti_sysbios_gates_GateSwi_Handle_label
 #define GateSwi_Handle_name ti_sysbios_gates_GateSwi_Handle_name
 #define GateSwi_Instance_init ti_sysbios_gates_GateSwi_Instance_init
-#define GateSwi_Object_count ti_sysbios_gates_GateSwi_Object_count
-#define GateSwi_Object_get ti_sysbios_gates_GateSwi_Object_get
 #define GateSwi_Object_first ti_sysbios_gates_GateSwi_Object_first
 #define GateSwi_Object_next ti_sysbios_gates_GateSwi_Object_next
 #define GateSwi_Object_sizeof ti_sysbios_gates_GateSwi_Object_sizeof
@@ -119,8 +117,6 @@
 #undef GateSwi_Handle_label
 #undef GateSwi_Handle_name
 #undef GateSwi_Instance_init
-#undef GateSwi_Object_count
-#undef GateSwi_Object_get
 #undef GateSwi_Object_first
 #undef GateSwi_Object_next
 #undef GateSwi_Object_sizeof

@@ -67,157 +67,157 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 /* \endcond */
 
 /*! The latency to reserve for resume from STANDBY (usec). */
-#define PowerCC26XX_RESUMETIMESTANDBY  750
+#define PowerCC26XX_RESUMETIMESTANDBY 750
 
 /*! The total latency to reserve for entry to and exit from STANDBY (usec). */
-#define PowerCC26XX_TOTALTIMESTANDBY   1000
+#define PowerCC26XX_TOTALTIMESTANDBY 1000
 
 /*! The initial delay when waking from STANDBY (usec). */
-#define PowerCC26XX_WAKEDELAYSTANDBY   240
+#define PowerCC26XX_WAKEDELAYSTANDBY 240
 
 /*! The initial wait time (usec) before checking if RCOSC_LF is stable. */
 #define PowerCC26XX_INITIALWAITRCOSC_LF 1000
 
 /*! The retry wait time (usec) when checking to see if RCOSC_LF is stable. */
-#define PowerCC26XX_RETRYWAITRCOSC_LF   1000
+#define PowerCC26XX_RETRYWAITRCOSC_LF 1000
 
 /*! The initial wait time (usec) before checking if XOSC_HF is stable. */
-#define PowerCC26XX_INITIALWAITXOSC_HF  50
+#define PowerCC26XX_INITIALWAITXOSC_HF 50
 
 /*! The retry wait time (usec) when checking to see if XOSC_HF is stable. */
-#define PowerCC26XX_RETRYWAITXOSC_HF    50
+#define PowerCC26XX_RETRYWAITXOSC_HF 50
 
 /*! The initial wait time (usec) before checking if XOSC_LF is stable. */
-#define PowerCC26XX_INITIALWAITXOSC_LF  10000
+#define PowerCC26XX_INITIALWAITXOSC_LF 10000
 
 /*! The retry wait time (usec) when checking to see if XOSC_LF is stable. */
-#define PowerCC26XX_RETRYWAITXOSC_LF    5000
+#define PowerCC26XX_RETRYWAITXOSC_LF 5000
 
 /* resource IDs */
-#define PowerCC26XX_PERIPH_GPT0    0
+#define PowerCC26XX_PERIPH_GPT0 0
 /*!< Resource ID: General Purpose Timer 0 */
 
-#define PowerCC26XX_PERIPH_GPT1    1
+#define PowerCC26XX_PERIPH_GPT1 1
 /*!< Resource ID: General Purpose Timer 1 */
 
-#define PowerCC26XX_PERIPH_GPT2    2
+#define PowerCC26XX_PERIPH_GPT2 2
 /*!< Resource ID: General Purpose Timer 2 */
 
-#define PowerCC26XX_PERIPH_GPT3    3
+#define PowerCC26XX_PERIPH_GPT3 3
 /*!< Resource ID: General Purpose Timer 3 */
 
-#define PowerCC26XX_PERIPH_SSI0    4
+#define PowerCC26XX_PERIPH_SSI0 4
 /*!< Resource ID: Synchronous Serial Interface 0 */
 
-#define PowerCC26XX_PERIPH_UART0   5  /*!< Resource ID: UART 0 */
+#define PowerCC26XX_PERIPH_UART0 5 /*!< Resource ID: UART 0 */
 
-#define PowerCC26XX_PERIPH_I2C0    6  /*!< Resource ID: I2C 0 */
+#define PowerCC26XX_PERIPH_I2C0 6 /*!< Resource ID: I2C 0 */
 
-#define PowerCC26XX_PERIPH_TRNG    7
+#define PowerCC26XX_PERIPH_TRNG 7
 /*!< Resource ID: True Random Number Generator */
 
-#define PowerCC26XX_PERIPH_GPIO    8  /*!< Resource ID: General Purpose I/Os */
+#define PowerCC26XX_PERIPH_GPIO 8 /*!< Resource ID: General Purpose I/Os */
 
-#define PowerCC26XX_PERIPH_UDMA    9  /*!< Resource ID: uDMA Controller */
+#define PowerCC26XX_PERIPH_UDMA 9 /*!< Resource ID: uDMA Controller */
 
-#define PowerCC26XX_PERIPH_CRYPTO  10 /*!< Resource ID: AES Security Module */
+#define PowerCC26XX_PERIPH_CRYPTO 10 /*!< Resource ID: AES Security Module */
 
-#define PowerCC26XX_PERIPH_I2S     11 /*!< Resource ID: I2S */
+#define PowerCC26XX_PERIPH_I2S 11 /*!< Resource ID: I2S */
 
-#define PowerCC26XX_PERIPH_RFCORE  12 /*!< Resource ID: RF Core Module */
+#define PowerCC26XX_PERIPH_RFCORE 12 /*!< Resource ID: RF Core Module */
 
-#define PowerCC26XX_XOSC_HF        13
+#define PowerCC26XX_XOSC_HF 13
 /*!< Resource ID: High Frequency Crystal Oscillator */
 
-#define PowerCC26XX_DOMAIN_PERIPH  14
+#define PowerCC26XX_DOMAIN_PERIPH 14
 /*!< Resource ID: Peripheral Power Domain */
 
-#define PowerCC26XX_DOMAIN_SERIAL  15
+#define PowerCC26XX_DOMAIN_SERIAL 15
 /*!< Resource ID: Serial Power Domain */
 
-#define PowerCC26XX_DOMAIN_RFCORE  16
+#define PowerCC26XX_DOMAIN_RFCORE 16
 /*!< Resource ID: RF Core Power Domain */
 
-#define PowerCC26XX_DOMAIN_SYSBUS  17
+#define PowerCC26XX_DOMAIN_SYSBUS 17
 /*!< Resource ID: System Bus Power Domain */
 
 /* The PKA and UART1 peripherals are not available on CC13X1 and CC26X1 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-/*!< Resource ID: PKA Module */
-#define PowerCC26XX_PERIPH_PKA      18
+    /*!< Resource ID: PKA Module */
+    #define PowerCC26XX_PERIPH_PKA 18
 
-/*!< Resource ID: UART1 */
-#define PowerCC26XX_PERIPH_UART1    19
+    /*!< Resource ID: UART1 */
+    #define PowerCC26XX_PERIPH_UART1 19
 
-/*!< Resource ID: Synchronous Serial Interface 1 */
-#define PowerCC26XX_PERIPH_SSI1     20
+    /*!< Resource ID: Synchronous Serial Interface 1 */
+    #define PowerCC26XX_PERIPH_SSI1 20
 
 #endif
 
 /* The peripherals below are only available on CC13X4 and CC26X4 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-/*!< Resource ID: UART2 */
-#define PowerCC26XX_PERIPH_UART2    21
+    /*!< Resource ID: UART2 */
+    #define PowerCC26XX_PERIPH_UART2 21
 
-/*!< Resource ID: UART3 */
-#define PowerCC26XX_PERIPH_UART3    22
+    /*!< Resource ID: UART3 */
+    #define PowerCC26XX_PERIPH_UART3 22
 
-/*!< Resource ID: SSI2 */
-#define PowerCC26XX_PERIPH_SSI2     23
+    /*!< Resource ID: SSI2 */
+    #define PowerCC26XX_PERIPH_SSI2 23
 
-/*!< Resource ID: SSI3 */
-#define PowerCC26XX_PERIPH_SSI3     24
+    /*!< Resource ID: SSI3 */
+    #define PowerCC26XX_PERIPH_SSI3 24
 
-/*!< Resource ID: I2C1 */
-#define PowerCC26XX_PERIPH_I2C1     25
+    /*!< Resource ID: I2C1 */
+    #define PowerCC26XX_PERIPH_I2C1 25
 
 #endif
 
 /* \cond */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0)
-#define PowerCC26XX_NUMRESOURCES 19 /* Number of resources in database */
+    #define PowerCC26XX_NUMRESOURCES 19 /* Number of resources in database */
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1)
-#define PowerCC26XX_NUMRESOURCES 19 /* Number of resources in database */
+    #define PowerCC26XX_NUMRESOURCES 19 /* Number of resources in database */
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
-#define PowerCC26XX_NUMRESOURCES 21 /* Number of resources in database */
+    #define PowerCC26XX_NUMRESOURCES 21 /* Number of resources in database */
 #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-#define PowerCC26XX_NUMRESOURCES 26 /* Number of resources in database */
+    #define PowerCC26XX_NUMRESOURCES 26 /* Number of resources in database */
 #endif
 /* \endcond */
 
 /* \cond */
 /* resource record bitmasks */
-#define PowerCC26XX_PERIPH          0x80 /* resource is a peripheral */
-#define PowerCC26XX_SPECIAL         0x40 /* resource requires special handler */
-#define PowerCC26XX_DOMAIN          0x00 /* resource is a domain */
-#define PowerCC26XX_PARENTMASK      0x3F /* parent resource mask */
-#define PowerCC26XX_NOPARENT        0x3F /* if resource has no parent */
+#define PowerCC26XX_PERIPH     0x80 /* resource is a peripheral */
+#define PowerCC26XX_SPECIAL    0x40 /* resource requires special handler */
+#define PowerCC26XX_DOMAIN     0x00 /* resource is a domain */
+#define PowerCC26XX_PARENTMASK 0x3F /* parent resource mask */
+#define PowerCC26XX_NOPARENT   0x3F /* if resource has no parent */
 /* \endcond */
 
-#define PowerCC26XX_STANDBY         0x1 /*!< The STANDBY sleep state */
+#define PowerCC26XX_STANDBY 0x1 /*!< The STANDBY sleep state */
 /* \cond */
 /* internal flags for enabling/disabling resources */
-#define PowerCC26XX_ENABLE          1
-#define PowerCC26XX_DISABLE         0
+#define PowerCC26XX_ENABLE  1
+#define PowerCC26XX_DISABLE 0
 /* \endcond */
 
 /* constraints */
-#define PowerCC26XX_RETAIN_VIMS_CACHE_IN_STANDBY  0
+#define PowerCC26XX_RETAIN_VIMS_CACHE_IN_STANDBY 0
 /*!< Constraint: VIMS RAM must be retained while in STANDBY */
 
-#define PowerCC26XX_DISALLOW_SHUTDOWN  1
+#define PowerCC26XX_DISALLOW_SHUTDOWN 1
 /*!< Constraint: Disallow a transition to the SHUTDOWN state */
 
-#define PowerCC26XX_DISALLOW_STANDBY  2
+#define PowerCC26XX_DISALLOW_STANDBY 2
 /*!< Constraint: Disallow a transition to the STANDBY sleep state */
 
-#define PowerCC26XX_DISALLOW_IDLE  3
+#define PowerCC26XX_DISALLOW_IDLE 3
 /*!< Constraint: Disallow a transition to the IDLE sleep state */
 
-#define PowerCC26XX_NEED_FLASH_IN_IDLE  4
+#define PowerCC26XX_NEED_FLASH_IN_IDLE 4
 /*!< Constraint: Flash memory needs to enabled during IDLE */
 
 #define PowerCC26XX_SWITCH_XOSC_HF_MANUALLY 5
@@ -243,16 +243,16 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  */
 
 /* \cond */
-#define PowerCC26XX_NUMCONSTRAINTS  7 /* Number of constraints supported */
+#define PowerCC26XX_NUMCONSTRAINTS 7 /* Number of constraints supported */
 /* \endcond */
 
 /* \cond */
 /* Deprecated constraint names */
-#define PowerCC26XX_SD_DISALLOW  PowerCC26XX_DISALLOW_SHUTDOWN
-#define PowerCC26XX_SB_DISALLOW  PowerCC26XX_DISALLOW_STANDBY
-#define PowerCC26XX_IDLE_PD_DISALLOW  PowerCC26XX_DISALLOW_IDLE
+#define PowerCC26XX_SD_DISALLOW                PowerCC26XX_DISALLOW_SHUTDOWN
+#define PowerCC26XX_SB_DISALLOW                PowerCC26XX_DISALLOW_STANDBY
+#define PowerCC26XX_IDLE_PD_DISALLOW           PowerCC26XX_DISALLOW_IDLE
 #define PowerCC26XX_XOSC_HF_SWITCHING_DISALLOW PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING
-#define PowerCC26XX_SB_VIMS_CACHE_RETAIN PowerCC26XX_RETAIN_VIMS_CACHE_IN_STANDBY
+#define PowerCC26XX_SB_VIMS_CACHE_RETAIN       PowerCC26XX_RETAIN_VIMS_CACHE_IN_STANDBY
 /* \endcond */
 
 /*
@@ -261,22 +261,23 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  *  Each event must be a power of two and must be sequential
  *  without any gaps.
  */
-#define PowerCC26XX_ENTERING_STANDBY    0x1
+#define PowerCC26XX_ENTERING_STANDBY 0x1
 /*!< Power event: The device is entering the STANDBY sleep state */
 
-#define PowerCC26XX_ENTERING_SHUTDOWN   0x2
+#define PowerCC26XX_ENTERING_SHUTDOWN 0x2
 /*!< Power event: The device is entering the SHUTDOWN state */
 
-#define PowerCC26XX_AWAKE_STANDBY       0x4
+#define PowerCC26XX_AWAKE_STANDBY 0x4
 /*!< Power event: The device is waking up from the STANDBY sleep state */
 
-#define PowerCC26XX_AWAKE_STANDBY_LATE  0x8
-/*!< Power event: The device is waking up from STANDBY (this event is sent later during wakeup, after interrupts are re-enabled) */
+#define PowerCC26XX_AWAKE_STANDBY_LATE 0x8
+/*!< Power event: The device is waking up from STANDBY (this event is sent later during wakeup, after interrupts are
+ * re-enabled) */
 
-#define PowerCC26XX_XOSC_HF_SWITCHED    0x10
+#define PowerCC26XX_XOSC_HF_SWITCHED 0x10
 /*!< Power event: The high frequency (HF) clock source has been switched to XOSC_HF */
 
-#define PowerCC26XX_JTAG_PD_TURNED_ON   0x20
+#define PowerCC26XX_JTAG_PD_TURNED_ON 0x20
 /*!< \warning Note that this power event is only supported by the CC2640R2 device!
  *
  * The JTAG subsystem on the CC26xx devices is automatically enabled after receiving
@@ -339,36 +340,38 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  *      // Everytime the device is about to enter standby, the power driver will check
  *      // to see if the JTAG_PD has been turned on after boot. If so, the notification
  *      // function will be called before entering standby...
- *      Power_registerNotify(&jtagPdTurnedOnNotifyObj, PowerCC26XX_JTAG_PD_TURNED_ON, (Fxn)jtagPdTurnedOnCallbackFxn, NULL);
+ *      Power_registerNotify(&jtagPdTurnedOnNotifyObj, PowerCC26XX_JTAG_PD_TURNED_ON, (Fxn)jtagPdTurnedOnCallbackFxn,
+ * NULL);
  *      ...
  *  }
  *  @endcode
  */
 
-
 /* \cond */
-#define PowerCC26XX_NUMEVENTS           6  /* Number of events supported */
+#define PowerCC26XX_NUMEVENTS 6 /* Number of events supported */
 /* \endcond */
 
 /* \cond */
 /*
  *  Calibration stages
  */
-#define PowerCC26XX_SETUP_CALIBRATE     1
-#define PowerCC26XX_INITIATE_CALIBRATE  2
-#define PowerCC26XX_DO_CALIBRATE        3
+#define PowerCC26XX_SETUP_CALIBRATE    1
+#define PowerCC26XX_INITIATE_CALIBRATE 2
+#define PowerCC26XX_DO_CALIBRATE       3
 /* \endcond */
 
 /* \cond */
 /*! @brief Power resource database record format */
-typedef struct {
-    uint8_t flags;          /* resource type | first parent */
-    uint16_t driverlibID;   /* corresponding driverlib ID for this resource */
+typedef struct
+{
+    uint8_t flags;        /* resource type | first parent */
+    uint16_t driverlibID; /* corresponding driverlib ID for this resource */
 } PowerCC26XX_ResourceRecord;
 /* \endcond */
 
 /*! @brief Global configuration structure */
-typedef struct {
+typedef struct
+{
     /*!
      *  @brief The Power Policy's initialization function
      *
@@ -437,7 +440,7 @@ typedef struct {
      *  this purpose.
      */
     uint32_t maxStandbyDuration;
-     /*!
+    /*!
      *  @brief Margin in SCLK_LF periods subtracted from previous longest
      *  VDDR recharge period.
      *
@@ -506,34 +509,35 @@ typedef struct {
  *  Power manager state structure. The application must not access any members
  *  of this structure!
  */
-typedef struct {
-    List_List notifyList;        /*!< Event notification list */
-    uint32_t constraintMask;     /*!< Aggregate constraints mask */
+typedef struct
+{
+    List_List notifyList;         /*!< Event notification list */
+    uint32_t constraintMask;      /*!< Aggregate constraints mask */
     ClockP_Struct clockObj;       /*!< Clock object for scheduling wakeups */
     ClockP_Struct xoscClockObj;   /*!< Clock object for XOSC_HF switching */
     ClockP_Struct lfClockObj;     /*!< Clock object for LF clock checking */
     ClockP_Struct calClockStruct; /*!< Clock object for RCOSC calibration */
     HwiP_Struct hwiStruct;        /*!< Hwi object for RCOSC calibration */
-    int32_t nDeltaFreqCurr;      /*!< RCOSC calibration variable */
-    int32_t nCtrimCurr;          /*!< RCOSC calibration variable */
-    int32_t nCtrimFractCurr;     /*!< RCOSC calibration variable */
-    int32_t nCtrimNew;           /*!< RCOSC calibration variable */
-    int32_t nCtrimFractNew;      /*!< RCOSC calibration variable */
-    int32_t nRtrimNew;           /*!< RCOSC calibration variable */
-    int32_t nRtrimCurr;          /*!< RCOSC calibration variable */
-    int32_t nDeltaFreqNew;       /*!< RCOSC calibration variable */
-    bool bRefine;                /*!< RCOSC calibration variable */
-    uint32_t state;              /*!< Current transition state */
-    bool xoscPending;            /*!< Is XOSC_HF activation in progress? */
-    bool calLF;                  /*!< Calibrate RCOSC_LF? */
-    uint8_t hwiState;            /*!< The AUX ISR calibration state */
-    bool busyCal;                /*!< Already busy calibrating? */
-    uint8_t calStep;             /*!< The current calibration step */
-    bool firstLF;                /*!< Is this the first LF calibration? */
-    bool enablePolicy;           /*!< Is the Power policy enabled? */
-    bool initialized;            /*!< Has Power_init() been called? */
+    int32_t nDeltaFreqCurr;       /*!< RCOSC calibration variable */
+    int32_t nCtrimCurr;           /*!< RCOSC calibration variable */
+    int32_t nCtrimFractCurr;      /*!< RCOSC calibration variable */
+    int32_t nCtrimNew;            /*!< RCOSC calibration variable */
+    int32_t nCtrimFractNew;       /*!< RCOSC calibration variable */
+    int32_t nRtrimNew;            /*!< RCOSC calibration variable */
+    int32_t nRtrimCurr;           /*!< RCOSC calibration variable */
+    int32_t nDeltaFreqNew;        /*!< RCOSC calibration variable */
+    bool bRefine;                 /*!< RCOSC calibration variable */
+    uint32_t state;               /*!< Current transition state */
+    bool xoscPending;             /*!< Is XOSC_HF activation in progress? */
+    bool calLF;                   /*!< Calibrate RCOSC_LF? */
+    uint8_t hwiState;             /*!< The AUX ISR calibration state */
+    bool busyCal;                 /*!< Already busy calibrating? */
+    uint8_t calStep;              /*!< The current calibration step */
+    bool firstLF;                 /*!< Is this the first LF calibration? */
+    bool enablePolicy;            /*!< Is the Power policy enabled? */
+    bool initialized;             /*!< Has Power_init() been called? */
 #if defined(DeviceFamily_CC26X0R2)
-    bool emulatorAttached;      /*!< Was an emulator detected during boot? */
+    bool emulatorAttached; /*!< Was an emulator detected during boot? */
 #endif
     uint8_t constraintCounts[PowerCC26XX_NUMCONSTRAINTS];
     /*!< Array to maintain constraint reference counts */
@@ -541,7 +545,7 @@ typedef struct {
     /*!< Array to maintain resource dependency reference counts */
     unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
-    Power_PolicyFxn policyFxn;   /*!< The Power policy function */
+    Power_PolicyFxn policyFxn; /*!< The Power policy function */
 } PowerCC26XX_ModuleState;
 
 /*!
@@ -686,8 +690,8 @@ void PowerCC26XX_standbyPolicy(void);
 void PowerCC26XX_schedulerDisable(void);
 void PowerCC26XX_schedulerRestore(void);
 
-#define Power_getPerformanceLevel(void)   0
-#define Power_setPerformanceLevel(level)  Power_EFAIL
+#define Power_getPerformanceLevel(void)  0
+#define Power_setPerformanceLevel(level) Power_EFAIL
 
 #ifdef __cplusplus
 }

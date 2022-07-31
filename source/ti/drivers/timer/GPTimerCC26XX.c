@@ -37,7 +37,6 @@
  *******************************************************************************
  */
 
-
 #include <ti/drivers/dpl/DebugP.h>
 #include <ti/drivers/dpl/HwiP.h>
 
@@ -50,13 +49,11 @@
 #include DeviceFamily_constructPath(inc/hw_gpt.h)
 #include DeviceFamily_constructPath(driverlib/timer.h)
 
-
 /* GPTimer configuration array from application */
 extern const GPTimerCC26XX_Config GPTimerCC26XX_config[];
 
 /* Register masks used by GPTimerCC26XX_resetHw */
-#define GPT_CTL_MASK    (GPT_CTL_TASTALL_M | GPT_CTL_TAEVENT_M | GPT_CTL_TAPWML_M)
-
+#define GPT_CTL_MASK (GPT_CTL_TASTALL_M | GPT_CTL_TAEVENT_M | GPT_CTL_TAPWML_M)
 
 /* GPTimerCC26XX internal functions */
 static void GPTimerCC26XX_initHw(GPTimerCC26XX_Handle handle, const GPTimerCC26XX_Params *params);
@@ -64,7 +61,10 @@ static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle);
 static void GPTimerCC26XXThreadsafeConstraintClr(GPTimerCC26XX_Handle handle);
 static void GPTimerCC26XXThreadsafeConstraintSet(GPTimerCC26XX_Handle handle);
 static void GPTimerCC26XXHwiFxn(uintptr_t a0);
-static void GPTimerCC26XXSetLoadMatch(GPTimerCC26XX_Handle handle, GPTimerCC26XX_Value loadMatchVal, uint32_t regPre, uint32_t regLoadMatch);
+static void GPTimerCC26XXSetLoadMatch(GPTimerCC26XX_Handle handle,
+                                      GPTimerCC26XX_Value loadMatchVal,
+                                      uint32_t regPre,
+                                      uint32_t regLoadMatch);
 static GPTimerCC26XX_Value GPTimerCC26XX_getTimerValue(GPTimerCC26XX_Handle handle, uint32_t reg);
 
 /* GPTimerCC26XX temporary internal functions.
@@ -72,7 +72,6 @@ static GPTimerCC26XX_Value GPTimerCC26XX_getTimerValue(GPTimerCC26XX_Handle hand
  */
 static inline void TimerSetConfig(uint32_t ui32Base, uint32_t ui32Config);
 static inline void TimerSetMode(uint32_t ui32Base, uint32_t timer, uint32_t mode);
-
 
 /* Lookup table definition for interfacing driverlib and register fields.
    Used to simplify code and to easily look up register fields as several fields
@@ -87,32 +86,29 @@ typedef struct GPTimerCC26XX_LUT
 } const GPTimerCC26XX_LUT;
 
 /* Lookup table definition for interfacing driverlib and register fields. */
-static const GPTimerCC26XX_LUT GPT_LUT[GPT_PARTS_COUNT] =
-{
+static const GPTimerCC26XX_LUT GPT_LUT[GPT_PARTS_COUNT] = {
     {
         .map        = TIMER_A,
         .shift      = 0,
         .offset     = 0,
-        .interrupts ={ GPT_MIS_TATOMIS,                   GPT_MIS_CAMMIS, GPT_MIS_CAEMIS, GPT_MIS_TAMMIS },
+        .interrupts = {GPT_MIS_TATOMIS, GPT_MIS_CAMMIS, GPT_MIS_CAEMIS, GPT_MIS_TAMMIS},
     },
     {
         .map        = TIMER_B,
         .shift      = 8,
         .offset     = 4,
-        .interrupts ={ GPT_MIS_TBTOMIS,                   GPT_MIS_CBMMIS, GPT_MIS_CBEMIS, GPT_MIS_TBMMIS },
+        .interrupts = {GPT_MIS_TBTOMIS, GPT_MIS_CBMMIS, GPT_MIS_CBEMIS, GPT_MIS_TBMMIS},
     },
 };
 
 /* Default GPTimer parameters */
-static const GPTimerCC26XX_Params GPT_DefaultParams =
-{
+static const GPTimerCC26XX_Params GPT_DefaultParams = {
     .width          = GPT_CONFIG_32BIT,
     .mode           = GPT_MODE_PERIODIC,
     .matchTiming    = GPTimerCC26XX_SET_MATCH_NEXT_CLOCK,
     .direction      = GPTimerCC26XX_DIRECTION_UP,
     .debugStallMode = GPTimerCC26XX_DEBUG_STALL_OFF,
 };
-
 
 /*!
  *  @brief Generic bit vector to lookup table vector implementation
@@ -199,13 +195,12 @@ void GPTimerCC26XX_Params_init(GPTimerCC26XX_Params *params)
  */
 GPTimerCC26XX_Handle GPTimerCC26XX_open(unsigned int index, const GPTimerCC26XX_Params *params)
 {
-    unsigned int         key;
-    GPTimerCC26XX_Handle handle = (GPTimerCC26XX_Handle) & GPTimerCC26XX_config[index];
+    unsigned int key;
+    GPTimerCC26XX_Handle handle = (GPTimerCC26XX_Handle)&GPTimerCC26XX_config[index];
 
     /* Get the pointer to the object and hwAttrs and timer*/
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
-
+    GPTimerCC26XX_Object *object         = handle->object;
 
     /*
      *  Input argument checks
@@ -222,18 +217,17 @@ GPTimerCC26XX_Handle GPTimerCC26XX_open(unsigned int index, const GPTimerCC26XX_
     {
         /* Fail if invalid combination of mode and configuration
            32-bit config  are only valid for periodic / oneshot modes */
-        if (params->mode != GPT_MODE_ONESHOT_UP &&
-            params->mode != GPT_MODE_PERIODIC_UP)
+        if (params->mode != GPT_MODE_ONESHOT_UP && params->mode != GPT_MODE_PERIODIC_UP)
         {
             DebugP_log1("Timer:(%p): Invalid combination of mode and configuration", hwAttrs->baseAddr);
-            return(NULL);
+            return (NULL);
         }
         /* Fail if invalid combination of timer unit and configuration.
            32-bit config is only valid in combination with GPT A */
         if (handle->timerPart != GPT_A)
         {
             DebugP_log1("Timer:(%p): Invalid combination of configuration and timer unit", hwAttrs->baseAddr);
-            return(NULL);
+            return (NULL);
         }
     }
 
@@ -305,7 +299,7 @@ void GPTimerCC26XX_close(GPTimerCC26XX_Handle handle)
 {
     /* Get the pointer to the object and hwAttrs */
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
+    GPTimerCC26XX_Object *object         = handle->object;
 
     /* Stop and reset timer */
     GPTimerCC26XX_resetHw(handle);
@@ -370,12 +364,15 @@ void GPTimerCC26XX_stop(GPTimerCC26XX_Handle handle)
  *          Functions calling this should specifiy which the register offset
  *          within the module base to the corresponding timer A register.
  */
-static void GPTimerCC26XXSetLoadMatch(GPTimerCC26XX_Handle handle, GPTimerCC26XX_Value loadMatchVal, uint32_t regPre, uint32_t regLoadMatch)
+static void GPTimerCC26XXSetLoadMatch(GPTimerCC26XX_Handle handle,
+                                      GPTimerCC26XX_Value loadMatchVal,
+                                      uint32_t regPre,
+                                      uint32_t regLoadMatch)
 {
     /* Get the pointer to the object and hwAttrs */
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
-    uint32_t offset = GPT_LUT[handle->timerPart].offset;
+    GPTimerCC26XX_Object *object         = handle->object;
+    uint32_t offset                      = GPT_LUT[handle->timerPart].offset;
 
     /* Split value into correct timer and prescaler register for 16 bit modes. */
     if (object->width == GPT_CONFIG_16BIT)
@@ -413,7 +410,6 @@ void GPTimerCC26XX_setMatchValue(GPTimerCC26XX_Handle handle, GPTimerCC26XX_Valu
     GPTimerCC26XXSetLoadMatch(handle, matchValue, GPT_O_TAPMR, GPT_O_TAMATCHR);
 }
 
-
 /*!
  *  @brief  Function to set which input event edge the GPTimer capture should
  *          use. Applies to edge-count and edge-time modes
@@ -447,8 +443,8 @@ static GPTimerCC26XX_Value GPTimerCC26XX_getTimerValue(GPTimerCC26XX_Handle hand
 {
     /* Get the pointer to the object and hwAttrs */
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
-    uint32_t offset = GPT_LUT[handle->timerPart].offset;
+    GPTimerCC26XX_Object *object         = handle->object;
+    uint32_t offset                      = GPT_LUT[handle->timerPart].offset;
 
     uint32_t value = HWREG(hwAttrs->baseAddr + offset + reg);
 
@@ -464,7 +460,6 @@ static GPTimerCC26XX_Value GPTimerCC26XX_getTimerValue(GPTimerCC26XX_Handle hand
     }
     return (GPTimerCC26XX_Value)value;
 }
-
 
 /*!
  *  @brief  Retrieve current free-running value from GPTimer
@@ -497,16 +492,18 @@ GPTimerCC26XX_Value GPTimerCC26XX_getValue(GPTimerCC26XX_Handle handle)
  *          Interrupts should be unregistered again before closing
  *          the timer resource.
  */
-void GPTimerCC26XX_registerInterrupt(GPTimerCC26XX_Handle handle, GPTimerCC26XX_HwiFxn callback, GPTimerCC26XX_IntMask intMask)
+void GPTimerCC26XX_registerInterrupt(GPTimerCC26XX_Handle handle,
+                                     GPTimerCC26XX_HwiFxn callback,
+                                     GPTimerCC26XX_IntMask intMask)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
+    GPTimerCC26XX_Object *object         = handle->object;
 
     /* Store callback function */
     object->hwiCallbackFxn[handle->timerPart] = callback;
     /* Construct RTOS HWI */
-    HwiP_Struct *pHwi = &object->hwi[handle->timerPart];
-    HwiP_Params  hp;
+    HwiP_Struct *pHwi                         = &object->hwi[handle->timerPart];
+    HwiP_Params hp;
     HwiP_Params_init(&hp);
     hp.arg       = (uintptr_t)handle;
     hp.enableInt = true;
@@ -524,7 +521,7 @@ void GPTimerCC26XX_registerInterrupt(GPTimerCC26XX_Handle handle, GPTimerCC26XX_
 void GPTimerCC26XX_unregisterInterrupt(GPTimerCC26XX_Handle handle)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
+    GPTimerCC26XX_Object *object         = handle->object;
 
     uint32_t ui32Base = hwAttrs->baseAddr;
     uint32_t timer    = GPT_LUT[handle->timerPart].map;
@@ -535,7 +532,7 @@ void GPTimerCC26XX_unregisterInterrupt(GPTimerCC26XX_Handle handle)
     /* Destroy callback function */
     object->hwiCallbackFxn[handle->timerPart] = NULL;
     /* Destruct HWI */
-    HwiP_Struct *pHwi = &object->hwi[handle->timerPart];
+    HwiP_Struct *pHwi                         = &object->hwi[handle->timerPart];
     HwiP_destruct(pHwi);
 }
 
@@ -547,11 +544,13 @@ void GPTimerCC26XX_unregisterInterrupt(GPTimerCC26XX_Handle handle)
 void GPTimerCC26XX_enableInterrupt(GPTimerCC26XX_Handle handle, GPTimerCC26XX_IntMask intMask)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uint32_t ui32Base = hwAttrs->baseAddr;
+    uint32_t ui32Base                    = hwAttrs->baseAddr;
 
     /* Interrupt registers are shared by TA and TB but bit fields are not symmetric
        Fetch mask from lookup table.*/
-    uint32_t intMaskLookup = GPTimerCC26XXReverseLookupMask(GPT_LUT[handle->timerPart].interrupts, intMask, GPT_NUM_INTS);
+    uint32_t intMaskLookup = GPTimerCC26XXReverseLookupMask(GPT_LUT[handle->timerPart].interrupts,
+                                                            intMask,
+                                                            GPT_NUM_INTS);
 
     /* Enable interrupts in timer unit */
     TimerIntEnable(ui32Base, intMaskLookup);
@@ -564,11 +563,13 @@ void GPTimerCC26XX_enableInterrupt(GPTimerCC26XX_Handle handle, GPTimerCC26XX_In
 void GPTimerCC26XX_disableInterrupt(GPTimerCC26XX_Handle handle, GPTimerCC26XX_IntMask intMask)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uint32_t ui32Base = hwAttrs->baseAddr;
+    uint32_t ui32Base                    = hwAttrs->baseAddr;
 
     /* Interrupt registers are shared by TA and TB but bit fields are not symmetric
        Fetch mask from lookup table. */
-    uint32_t intMaskLookup = GPTimerCC26XXReverseLookupMask(GPT_LUT[handle->timerPart].interrupts, intMask, GPT_NUM_INTS);
+    uint32_t intMaskLookup = GPTimerCC26XXReverseLookupMask(GPT_LUT[handle->timerPart].interrupts,
+                                                            intMask,
+                                                            GPT_NUM_INTS);
 
     /* Enable interrupts in timer unit */
     TimerIntDisable(ui32Base, intMaskLookup);
@@ -578,12 +579,12 @@ static void GPTimerCC26XX_initHw(GPTimerCC26XX_Handle handle, const GPTimerCC26X
 {
     /* Get the pointer to the object and hwAttrs */
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object const  *object  = handle->object;
+    GPTimerCC26XX_Object const *object   = handle->object;
 
     TimerSetConfig(hwAttrs->baseAddr, object->width);
     uint32_t timer = GPT_LUT[handle->timerPart].map;
 
-    uint32_t mode = (uint32_t) params->mode;
+    uint32_t mode = (uint32_t)params->mode;
 
     if (params->matchTiming == GPTimerCC26XX_SET_MATCH_ON_TIMEOUT)
     {
@@ -619,13 +620,13 @@ static void GPTimerCC26XX_initHw(GPTimerCC26XX_Handle handle, const GPTimerCC26X
 static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uint32_t ui32Base = hwAttrs->baseAddr;
+    uint32_t ui32Base                    = hwAttrs->baseAddr;
 
     uint32_t timer = GPT_LUT[handle->timerPart].map;
     uint32_t regMask;
     /* Some registers are shared by TA and TB.
        Shift bit fields by 1 byte for timer B. */
-    uint32_t shift = GPT_LUT[handle->timerPart].shift;
+    uint32_t shift  = GPT_LUT[handle->timerPart].shift;
     /* Some registers are offset by one word (4 bytes) for Timer B. */
     uint32_t offset = GPT_LUT[handle->timerPart].offset;
 
@@ -645,7 +646,6 @@ static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle)
         regMask |= (uint32_t)(GPT_LUT[handle->timerPart].interrupts[i]);
     }
     HWREG(ui32Base + GPT_O_IMR) &= ~regMask;
-
 
     /* Clear interrupts for Timer N ( ICLR).  Same regMask as GPT_O_IMR.
        Equivalent to TimerIntClear(ui32Base, regMask) */
@@ -668,7 +668,6 @@ static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle)
     HWREG(ui32Base + offset + GPT_O_TAPMR) = 0;
 }
 
-
 /*!
  *  @brief  GPTimer interrupt handler - Clears corresponding interrupt(s)
  *          and calls callback function with handle and bitmask argument
@@ -676,17 +675,17 @@ static void GPTimerCC26XX_resetHw(GPTimerCC26XX_Handle handle)
  */
 static void GPTimerCC26XXHwiFxn(uintptr_t a0)
 {
-    GPTimerCC26XX_Handle         handle  = (GPTimerCC26XX_Handle)a0;
+    GPTimerCC26XX_Handle handle          = (GPTimerCC26XX_Handle)a0;
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    GPTimerCC26XX_Object        *object  = handle->object;
+    GPTimerCC26XX_Object *object         = handle->object;
 
-    GPTimerCC26XX_HwiFxn         callbackFxn = object->hwiCallbackFxn[handle->timerPart];
-    uint32_t timer = GPT_LUT[handle->timerPart].map;
+    GPTimerCC26XX_HwiFxn callbackFxn = object->hwiCallbackFxn[handle->timerPart];
+    uint32_t timer                   = GPT_LUT[handle->timerPart].map;
 
     /* Full width raw interrupt status */
-    uint32_t interrupts = HWREG(hwAttrs->baseAddr + GPT_O_MIS);
+    uint32_t interrupts                   = HWREG(hwAttrs->baseAddr + GPT_O_MIS);
     /* Interrupt mask to clear (byte 0 or 1) */
-    uint32_t interruptClr = timer & interrupts;
+    uint32_t interruptClr                 = timer & interrupts;
     /* Clear interrupts */
     HWREG(hwAttrs->baseAddr + GPT_O_ICLR) = interruptClr;
 
@@ -752,7 +751,7 @@ static inline void GPTimerCC26XXThreadsafeConstraintClr(GPTimerCC26XX_Handle han
 void GPTimerCC26XX_configureDebugStall(GPTimerCC26XX_Handle handle, GPTimerCC26XX_DebugMode mode)
 {
     GPTimerCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uint32_t timer = GPT_LUT[handle->timerPart].map;
+    uint32_t timer                       = GPT_LUT[handle->timerPart].map;
     TimerStallControl(hwAttrs->baseAddr, timer, mode);
 }
 
@@ -762,7 +761,7 @@ void GPTimerCC26XX_configureDebugStall(GPTimerCC26XX_Handle handle, GPTimerCC26X
 void GPTimerCC26XX_setArg(GPTimerCC26XX_Handle handle, void *arg)
 {
     GPTimerCC26XX_Object *object = handle->object;
-    object->arg = (uint32_t)arg;
+    object->arg                  = (uint32_t)arg;
 }
 
 /*!
@@ -772,8 +771,7 @@ uint32_t GPTimerCC26XX_getArg(GPTimerCC26XX_Handle handle)
 {
     GPTimerCC26XX_Object *object = handle->object;
 
-    return ((uint32_t) object->arg);
-
+    return ((uint32_t)object->arg);
 }
 
 /*!

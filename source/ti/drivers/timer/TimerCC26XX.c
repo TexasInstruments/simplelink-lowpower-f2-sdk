@@ -48,12 +48,10 @@ static void TimerCC26XX_callbackfxn(GPTimerCC26XX_Handle gptHandle, GPTimerCC26X
 extern uint_least8_t Timer_count;
 
 /* Default Parameters */
-static const Timer_Params defaultParams = {
-    .timerMode     = Timer_ONESHOT_BLOCKING,
-    .periodUnits   = Timer_PERIOD_COUNTS,
-    .timerCallback = NULL,
-    .period        = (uint16_t) ~0
-};
+static const Timer_Params defaultParams = {.timerMode     = Timer_ONESHOT_BLOCKING,
+                                           .periodUnits   = Timer_PERIOD_COUNTS,
+                                           .timerCallback = NULL,
+                                           .period        = (uint16_t)~0};
 
 /*
  *  ======== Timer_close ========
@@ -66,7 +64,8 @@ void Timer_close(Timer_Handle handle)
     GPTimerCC26XX_unregisterInterrupt(object->gptHandle);
 
     /* Destruct semaphore */
-    if (object->semHandle != NULL) {
+    if (object->semHandle != NULL)
+    {
         SemaphoreP_destruct(&(object->semStruct));
         object->semHandle = NULL;
     }
@@ -82,8 +81,7 @@ void Timer_close(Timer_Handle handle)
 /*
  *  ======== Timer_control ========
  */
-int_fast16_t Timer_control(Timer_Handle handle,
-        uint_fast16_t cmd, void *arg)
+int_fast16_t Timer_control(Timer_Handle handle, uint_fast16_t cmd, void *arg)
 {
     return (Timer_STATUS_UNDEFINEDCMD);
 }
@@ -108,14 +106,16 @@ static void TimerCC26XX_callbackfxn(GPTimerCC26XX_Handle gptHandle, GPTimerCC26X
 {
     Timer_Handle handle;
     /* Get Timer Handle from arg in GPTimerCC26XX_Object */
-    handle = (Timer_Handle)GPTimerCC26XX_getArg(gptHandle);
+    handle                     = (Timer_Handle)GPTimerCC26XX_getArg(gptHandle);
     TimerCC26XX_Object *object = handle->object;
 
     /* Callback not created when using Timer_FREE_RUNNING */
-    if (object->mode != Timer_CONTINUOUS_CALLBACK) {
+    if (object->mode != Timer_CONTINUOUS_CALLBACK)
+    {
         Timer_stop(handle);
     }
-    if (object->mode != Timer_ONESHOT_BLOCKING) {
+    if (object->mode != Timer_ONESHOT_BLOCKING)
+    {
         object->callBack(handle, Timer_STATUS_SUCCESS);
     }
 }
@@ -125,22 +125,24 @@ static void TimerCC26XX_callbackfxn(GPTimerCC26XX_Handle gptHandle, GPTimerCC26X
  */
 Timer_Handle Timer_open(uint_least8_t index, Timer_Params *params)
 {
-    Timer_Handle               handle = NULL;
+    Timer_Handle handle = NULL;
     TimerCC26XX_HWAttrs const *hwAttrs;
-    TimerCC26XX_Object        *object;
-    GPTimerCC26XX_Params       gptParams;
-    int_fast16_t               status;
+    TimerCC26XX_Object *object;
+    GPTimerCC26XX_Params gptParams;
+    int_fast16_t status;
 
     /* Verify driver index and state */
-    if (index < Timer_count) {
+    if (index < Timer_count)
+    {
         /* If parameters are NULL use defaults */
-        if (params == NULL) {
-            params = (Timer_Params *) &defaultParams;
+        if (params == NULL)
+        {
+            params = (Timer_Params *)&defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (Timer_Handle) &(Timer_config[index]);
-        object = handle->object;
+        handle  = (Timer_Handle) & (Timer_config[index]);
+        object  = handle->object;
         hwAttrs = handle->hwAttrs;
     }
     else
@@ -159,25 +161,26 @@ Timer_Handle Timer_open(uint_least8_t index, Timer_Params *params)
     HwiP_restore(key);
 
     /* Check for valid parameters */
-    if (((params->timerMode == Timer_ONESHOT_CALLBACK ||
-          params->timerMode == Timer_CONTINUOUS_CALLBACK) &&
-          params->timerCallback == NULL) ||
-          params->period == 0) {
+    if (((params->timerMode == Timer_ONESHOT_CALLBACK || params->timerMode == Timer_CONTINUOUS_CALLBACK) &&
+         params->timerCallback == NULL) ||
+        params->period == 0)
+    {
 
         object->isOpen = false;
         return (NULL);
     }
 
-    object->mode = params->timerMode;
-    object->period = params->period;
-    object->callBack = params->timerCallback;
+    object->mode      = params->timerMode;
+    object->period    = params->period;
+    object->callBack  = params->timerCallback;
     object->isRunning = false;
 
     /* Initialize gptParams to default values */
     GPTimerCC26XX_Params_init(&gptParams);
 
     /* Convert Timer mode to GPT mode */
-    switch (params->timerMode) {
+    switch (params->timerMode)
+    {
         case Timer_ONESHOT_CALLBACK:
         case Timer_ONESHOT_BLOCKING:
             gptParams.mode = GPT_MODE_ONESHOT;
@@ -191,7 +194,8 @@ Timer_Handle Timer_open(uint_least8_t index, Timer_Params *params)
     }
 
     /* Convert Timer width to GPT width */
-    switch (hwAttrs->subTimer) {
+    switch (hwAttrs->subTimer)
+    {
         case TimerCC26XX_timer32:
             gptParams.width = GPT_CONFIG_32BIT;
             break;
@@ -207,24 +211,29 @@ Timer_Handle Timer_open(uint_least8_t index, Timer_Params *params)
     object->gptHandle = GPTimerCC26XX_open(hwAttrs->gpTimerUnit, &gptParams);
 
     /* Check if returned gptHandle is null */
-    if (object->gptHandle == NULL) {
+    if (object->gptHandle == NULL)
+    {
         object->isOpen = false;
         return (NULL);
     }
 
-    if (params->timerMode != Timer_FREE_RUNNING) {
+    if (params->timerMode != Timer_FREE_RUNNING)
+    {
         /* Set Timer Period and Units */
         status = Timer_setPeriod(handle, params->periodUnits, object->period);
-        if (status != Timer_STATUS_SUCCESS) {
+        if (status != Timer_STATUS_SUCCESS)
+        {
             Timer_close(handle);
             return (NULL);
         }
 
         /* Create the semaphore for blocking mode */
-        if (params->timerMode == Timer_ONESHOT_BLOCKING) {
+        if (params->timerMode == Timer_ONESHOT_BLOCKING)
+        {
             object->semHandle = SemaphoreP_constructBinary(&(object->semStruct), 0);
 
-            if (object->semHandle == NULL) {
+            if (object->semHandle == NULL)
+            {
                 Timer_close(handle);
                 return (NULL);
             }

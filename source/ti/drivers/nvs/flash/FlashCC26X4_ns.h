@@ -34,8 +34,8 @@
  *  @brief      Non-Secure Flash Client Interface for CC26X4 devices.
  *
  *  The defined APIs are identical to the function calls in flash.c. This client
- *  interface allows the access to the Secure Flash Service. 
- * 
+ *  interface allows the access to the Secure Flash Service.
+ *
  *  # Initialization #
  *  Users will need to call FlashOpen() once prior to any other function calls.
  *  FlashOpen() will only need to be called again if FlashClose() is called.
@@ -55,21 +55,21 @@
  *  Otherwise, a valid Flash driver value will be returned. Each API will follow
  *  this guideline but please reference each API individually for specific
  *  return characteristics.
- * 
+ *
  *  # PSA_ERROR_PROGRAMMER_ERROR #
  *  A PSA_ERROR_PROGRAMMER_ERROR is a strict error code returned by the SPM.
  *  Once this error code is returned, the SPM will terminate the connection
  *  to the service. All subsequent requests to the service from the same client
- *  will not be processed and will continue to return a 
+ *  will not be processed and will continue to return a
  *  PSA_ERROR_PROGRAMMER_ERROR. The client must close the connection to the SPM
- *  and then re-establish the connection to continue. This can be accomplished 
+ *  and then re-establish the connection to continue. This can be accomplished
  *  in the Non-Secure Flash Client Interface by calling FlashClose() followed by
  *  FlashOpen(). In the Non-Secure Flash Client Interface,
  *  PSA_ERROR_PROGRAMMER_ERROR codes will primarily be returned due to requests
  *  trying to read from or write to secure memory regions. Please reference the
  *  PSA Firmware Framework specification for more details regarding the
  *  PSA_ERROR_PROGRAMMER_ERROR code.
- * 
+ *
  *  ============================================================================
  */
 

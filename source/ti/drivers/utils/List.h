@@ -123,12 +123,14 @@
 extern "C" {
 #endif
 
-typedef struct List_Elem_ {
+typedef struct List_Elem_
+{
     struct List_Elem_ *next;
     struct List_Elem_ *prev;
 } List_Elem;
 
-typedef struct {
+typedef struct
+{
     List_Elem *head;
     List_Elem *tail;
 } List_List;
@@ -187,8 +189,7 @@ static inline List_Elem *List_head(List_List *list)
  *  @param  curElem Elem to insert the newElem in front of.
  *          This value cannot be NULL.
  */
-extern void List_insert(List_List *list, List_Elem *newElem,
-                         List_Elem *curElem);
+extern void List_insert(List_List *list, List_Elem *newElem, List_Elem *curElem);
 
 /*!
  *  @brief  Function to return the next elem in a linked list

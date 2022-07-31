@@ -53,7 +53,7 @@ extern "C" {
  * Functions return #AES_STATUS_SUCCESS if the function was executed
  * successfully.
  */
-#define AES_STATUS_SUCCESS                      ((int_fast16_t) 0)
+#define AES_STATUS_SUCCESS ((int_fast16_t)0)
 
 /*!
  * @brief   Generic error status code.
@@ -61,7 +61,7 @@ extern "C" {
  * Functions return #AES_STATUS_ERROR if the function was not executed
  * successfully and no more pertinent error code could be returned.
  */
-#define AES_STATUS_ERROR                        ((int_fast16_t) -1)
+#define AES_STATUS_ERROR ((int_fast16_t)-1)
 
 /*!
  * @brief   An error status code returned if the hardware or software resource
@@ -72,12 +72,12 @@ extern "C" {
  * returned if the mutual exclusion mechanism signals that an operation cannot
  * currently be performed.
  */
-#define AES_STATUS_RESOURCE_UNAVAILABLE         ((int_fast16_t) -2)
+#define AES_STATUS_RESOURCE_UNAVAILABLE ((int_fast16_t)-2)
 
 /*!
  * @brief   The ongoing operation was canceled.
  */
-#define AES_STATUS_CANCELED                     ((int_fast16_t) -3)
+#define AES_STATUS_CANCELED ((int_fast16_t)-3)
 
 /*!
  * @brief   The MAC verification failed.
@@ -85,7 +85,7 @@ extern "C" {
  * Functions return #AES_STATUS_MAC_INVALID if the MAC computed
  * for the provided (key, message) pair did not match the MAC provided.
  */
-#define AES_STATUS_MAC_INVALID                  ((int_fast16_t) -4)
+#define AES_STATUS_MAC_INVALID ((int_fast16_t)-4)
 
 /*!
  *  @brief   The operation tried to load a key from the keystore using
@@ -94,23 +94,23 @@ extern "C" {
  * This code is returned if the provided CryptoKey reference
  * is returned as invalid by the key store module.
  */
-#define AES_STATUS_KEYSTORE_INVALID_ID          ((int_fast16_t) -5)
+#define AES_STATUS_KEYSTORE_INVALID_ID ((int_fast16_t)-5)
 
 /*!
  * @brief   The key store module returned a generic error. See key store
  * documentation for additional details.
  */
-#define AES_STATUS_KEYSTORE_GENERIC_ERROR       ((int_fast16_t) -6)
+#define AES_STATUS_KEYSTORE_GENERIC_ERROR ((int_fast16_t)-6)
 
 /*!
  * @brief   The operation requested is not supported.
  */
-#define AES_STATUS_FEATURE_NOT_SUPPORTED        ((int_fast16_t) -7)
+#define AES_STATUS_FEATURE_NOT_SUPPORTED ((int_fast16_t)-7)
 
 /*!
  * @brief    The operation does not support non-word-aligned input and/or output.
  */
-#define AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED   ((int_fast16_t) -8)
+#define AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED ((int_fast16_t)-8)
 
 /*!
  * @brief   A driver shall use this error code and grow negatively until
@@ -129,7 +129,7 @@ extern "C" {
  * #define AESXYZ_STATUS_ERROR2    AES_STATUS_DRIVER_SPECIFIC_ERROR - 2
  * @endcode
  */
-#define AES_STATUS_DRIVER_SPECIFIC_ERROR        ((int_fast16_t) -16)
+#define AES_STATUS_DRIVER_SPECIFIC_ERROR ((int_fast16_t)-16)
 
 /*!
  * Common AES status code reservation offset.
@@ -143,7 +143,7 @@ extern "C" {
  * #define AESXYZCCXXXX_STATUS_ERROR2    AES_STATUS_RESERVED - 2
  * @endcode
  */
-#define AES_STATUS_RESERVED                     ((int_fast16_t) -32)
+#define AES_STATUS_RESERVED ((int_fast16_t)-32)
 
 /*!
  *  @brief AES Global configuration
@@ -151,12 +151,13 @@ extern "C" {
  *  The #AESCommon_Config structure contains a set of pointers used to
  *  characterize the AES driver implementation.
  */
-typedef struct {
+typedef struct
+{
     /*! Pointer to a driver specific data object */
-    void               *object;
+    void *object;
 
     /*! Pointer to a driver specific hardware attributes structure */
-    void         const *hwAttrs;
+    void const *hwAttrs;
 } AESCommon_Config;
 
 /*!
@@ -180,21 +181,22 @@ typedef struct {
  * |AES_RETURN_BEHAVIOR_POLLING  | X     | X     | X     |
  *
  */
-typedef enum {
-    AES_RETURN_BEHAVIOR_CALLBACK = 1,    /*!< The function call will return immediately while the
-                                          * operation goes on in the background. The registered
-                                          * callback function is called after the operation completes.
-                                          * The context the callback function is called (task, HWI, SWI)
-                                          * is implementation-dependent.
-                                          */
-    AES_RETURN_BEHAVIOR_BLOCKING = 2,    /*!< The function call will block while the operation goes
-                                          * on in the background. Operation results are available
-                                          * after the function returns.
-                                          */
-    AES_RETURN_BEHAVIOR_POLLING  = 4,    /*!< The function call will continuously poll a flag while
-                                          * operation goes on in the background. Operation results
-                                          * are available after the function returns.
-                                          */
+typedef enum
+{
+    AES_RETURN_BEHAVIOR_CALLBACK = 1, /*!< The function call will return immediately while the
+                                       * operation goes on in the background. The registered
+                                       * callback function is called after the operation completes.
+                                       * The context the callback function is called (task, HWI, SWI)
+                                       * is implementation-dependent.
+                                       */
+    AES_RETURN_BEHAVIOR_BLOCKING = 2, /*!< The function call will block while the operation goes
+                                       * on in the background. Operation results are available
+                                       * after the function returns.
+                                       */
+    AES_RETURN_BEHAVIOR_POLLING  = 4, /*!< The function call will continuously poll a flag while
+                                       * operation goes on in the background. Operation results
+                                       * are available after the function returns.
+                                       */
 } AES_ReturnBehavior;
 
 #ifdef __cplusplus

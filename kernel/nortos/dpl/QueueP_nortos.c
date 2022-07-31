@@ -64,13 +64,12 @@ uintptr_t QueueP_get(QueueP_Obj *obj)
 
     elem = obj->elem.next;
 
-    obj->elem.next = elem->next;
+    obj->elem.next   = elem->next;
     elem->next->prev = &(obj->elem);
 
     HwiP_restore(key);
 
     return ((uintptr_t)elem);
-
 }
 
 /*
@@ -85,13 +84,12 @@ uintptr_t QueueP_getTail(QueueP_Obj *obj)
 
     elem = obj->elem.prev;
 
-    obj->elem.prev = elem->prev;
+    obj->elem.prev   = elem->prev;
     elem->prev->next = &(obj->elem);
 
     HwiP_restore(key);
 
     return ((uintptr_t)elem);
-
 }
 
 /*
@@ -143,10 +141,10 @@ void QueueP_put(QueueP_Obj *obj, QueueP_Elem *elem)
 
     key = HwiP_disable();
 
-    elem->next = &(obj->elem);
-    elem->prev = obj->elem.prev;
+    elem->next           = &(obj->elem);
+    elem->prev           = obj->elem.prev;
     obj->elem.prev->next = elem;
-    obj->elem.prev = elem;
+    obj->elem.prev       = elem;
 
     HwiP_restore(key);
 }
@@ -160,10 +158,10 @@ void QueueP_putHead(QueueP_Obj *obj, QueueP_Elem *elem)
 
     key = HwiP_disable();
 
-    elem->prev = &(obj->elem);
-    elem->next = obj->elem.next;
+    elem->prev           = &(obj->elem);
+    elem->next           = obj->elem.next;
     obj->elem.next->prev = elem;
-    obj->elem.next = elem;
+    obj->elem.next       = elem;
 
     HwiP_restore(key);
 }
@@ -175,9 +173,9 @@ void QueueP_remove(QueueP_Elem *qelem)
 {
 #if defined(__IAR_SYSTEMS_ICC__)
     QueueP_Elem *temp;
-    temp = qelem->next;
+    temp              = qelem->next;
     qelem->prev->next = temp;
-    temp = qelem->prev;
+    temp              = qelem->prev;
     qelem->next->prev = temp;
 #else
     qelem->prev->next = qelem->next;
@@ -190,10 +188,12 @@ void QueueP_remove(QueueP_Elem *qelem)
  */
 bool QueueP_isQueued(QueueP_Elem *qelem)
 {
-    if ((qelem->prev == qelem) && (qelem->next == qelem)) {
+    if ((qelem->prev == qelem) && (qelem->next == qelem))
+    {
         return (false);
     }
-    else {
+    else
+    {
         return (true);
     }
 }

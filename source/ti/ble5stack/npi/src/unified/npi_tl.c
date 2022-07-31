@@ -52,10 +52,10 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/family/arm/m3/Hwi.h>
-#include <ti/drivers/pin/PINCC26XX.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Swi.h>
 
+#include <ti/drivers/GPIO.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
 #include "hal_types.h"
@@ -77,12 +77,9 @@
 #endif //NPI_USE_SPI
 
 #if (NPI_FLOW_CTRL == 1)
-// Indexes for pin configurations in PIN_Config array
-#define REM_RDY_PIN_IDX      0
-#define LOC_RDY_PIN_IDX      1
 
-#define LocRDY_ENABLE()      PIN_setOutputValue(hNpiHandshakePins, locRdyPIN, 0)
-#define LocRDY_DISABLE()     PIN_setOutputValue(hNpiHandshakePins, locRdyPIN, 1)
+#define LocRDY_ENABLE()      GPIO_write(LOC_RDY_GPIO, 0)
+#define LocRDY_DISABLE()     GPIO_write(LOC_RDY_GPIO, 1)
 #else
 #define LocRDY_ENABLE()
 #define LocRDY_DISABLE()
@@ -130,24 +127,14 @@ uint16_t npiBufSize = 0;
 npiTLCallBacks taskCBs;
 
 #if (NPI_FLOW_CTRL == 1)
-//! \brief PIN Config for Mrdy and Srdy signals without PIN IDs
-static PIN_Config npiHandshakePinsCfg[] =
-{
-    PIN_GPIO_OUTPUT_DIS | PIN_INPUT_EN | PIN_PULLUP,
-    PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
+//! \brief GPIO PinConfig for Mrdy and Srdy signals without GPIO index
 
-static uint32_t remRdyPIN = (IOID_UNUSED & IOC_IOID_MASK);
-static uint32_t locRdyPIN = (IOID_UNUSED & IOC_IOID_MASK);
+static GPIO_PinConfig REM_RDY_GPIO_CONFIG = GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_PULL_UP_INTERNAL | GPIO_CFG_STANDBY_WAKE_ON;
+static GPIO_PinConfig LOC_RDY_GPIO_CONFIG = GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_OUT_STR_HIGH | GPIO_CFG_OUT_HIGH;
+static uint_least8_t REM_RDY_GPIO;
+static uint_least8_t LOC_RDY_GPIO;
 
-//! \brief PIN State for remRdy and locRdy signals
-static PIN_State npiHandshakePins;
-
-//! \brief PIN Handles for remRdy and locRdy signals
-static PIN_Handle hNpiHandshakePins;
-
-//! \brief No way to detect whether positive or negative edge with PIN Driver
+//! \brief No way to detect whether positive or negative edge with GPIO Driver
 //!        Use a flag to keep track of state
 static uint8_t remRdy_state;
 #endif // NPI_FLOW_CTRL = 1
@@ -162,7 +149,7 @@ static void NPITL_transmissionCallBack(uint16_t Rxlen, uint16_t Txlen);
 
 #if (NPI_FLOW_CTRL == 1)
 //! \brief HWI interrupt function for remRdy
-static void NPITL_remRdyPINHwiFxn(PIN_Handle hPin, PIN_Id pinId);
+static void NPITL_remRdyGPIOHwiFxn(uint_least8_t index);
 
 //! \brief This routine is used to set constraints on power manager
 static void NPITL_setPM(void);
@@ -219,32 +206,25 @@ uint8_t NPITL_openTL(NPITL_Params *params)
 #endif //NPI_USE_UART
 
 #if (NPI_FLOW_CTRL == 1)
-    // Assign PIN IDs to remRdy and locRrdy
+    // Assign GPIO index to remRdy and locRrdy
 #ifdef NPI_MASTER
-    remRdyPIN = (params->srdyPinID & IOC_IOID_MASK);
-    locRdyPIN = (params->mrdyPinID & IOC_IOID_MASK);
+    REM_RDY_GPIO = params->srdyGpioIndex;
+    LOC_RDY_GPIO = params->mrdyGpioIndex;
 #else
-    remRdyPIN = (params->mrdyPinID & IOC_IOID_MASK);
-    locRdyPIN = (params->srdyPinID & IOC_IOID_MASK);
+    REM_RDY_GPIO = params->mrdyGpioIndex;
+    LOC_RDY_GPIO = params->srdyGpioIndex;
 #endif //NPI_MASTER
 
-    // Add PIN IDs to PIN Configuration
-    npiHandshakePinsCfg[REM_RDY_PIN_IDX] |= remRdyPIN;
-    npiHandshakePinsCfg[LOC_RDY_PIN_IDX] |= locRdyPIN;
+    // Add GPIO index to GPIO_PinConfig
+    GPIO_setConfig(REM_RDY_GPIO, REM_RDY_GPIO_CONFIG);
+    GPIO_setConfig(LOC_RDY_GPIO, LOC_RDY_GPIO_CONFIG);
 
-    // Initialize LOCRDY/REMRDY. Enable int after callback registered
-    hNpiHandshakePins = PIN_open(&npiHandshakePins, npiHandshakePinsCfg);
-    PIN_registerIntCb(hNpiHandshakePins, NPITL_remRdyPINHwiFxn);
-    PIN_setConfig(hNpiHandshakePins,
-                  PIN_BM_IRQ,
-                  remRdyPIN | PIN_IRQ_BOTHEDGES);
+    // set callback
+    GPIO_setCallback(REM_RDY_GPIO, NPITL_remRdyGPIOHwiFxn);
+    // Enable interrupt
+    GPIO_enableInt(REM_RDY_GPIO);
 
-    // Enable wakeup
-    PIN_setConfig(hNpiHandshakePins,
-                  PINCC26XX_BM_WAKEUP,
-                  remRdyPIN | PINCC26XX_WAKEUP_NEGEDGE);
-
-    remRdy_state = PIN_getInputValue(remRdyPIN);
+    remRdy_state = GPIO_read(REM_RDY_GPIO);
 
     // If MRDY is already low then we must initiate a read because there was
     // a prior MRDY negedge that was missed
@@ -290,16 +270,9 @@ void NPITL_closeTL(void)
     transportClose();
 
 #if (NPI_FLOW_CTRL == 1)
-    // Clear mrdy and srdy PIN IDs
-    remRdyPIN = (IOID_UNUSED & IOC_IOID_MASK); // Set to 0x000000FF
-    locRdyPIN = (IOID_UNUSED & IOC_IOID_MASK); // Set to 0x000000FF
-
-    // Clear PIN IDs from PIN Configuration
-    npiHandshakePinsCfg[REM_RDY_PIN_IDX] &= ~remRdyPIN;
-    npiHandshakePinsCfg[LOC_RDY_PIN_IDX] &= ~locRdyPIN;
-
-    // Close PIN Handle
-    PIN_close(hNpiHandshakePins);
+    // GPIO_resetConfig for REM_RDY_GPIO and LOC_RDY_GPIO
+    GPIO_resetConfig(REM_RDY_GPIO);
+    GPIO_resetConfig(LOC_RDY_GPIO);
 
     // Release Power Management
     NPITL_relPM();
@@ -317,9 +290,9 @@ bool NPITL_checkNpiBusy(void)
 {
 #if (NPI_FLOW_CTRL == 1)
 #ifdef NPI_MASTER
-    return !PIN_getOutputValue(locRdyPIN) || npiRxActive;
+    return !GPIO_read(LOC_RDY_GPIO) || npiRxActive;
 #else
-    return !PIN_getOutputValue(locRdyPIN);
+    return !GPIO_read(LOC_RDY_GPIO);
 #endif //NPI_MASTER
 #else
     return npiTxActive;
@@ -381,7 +354,7 @@ void NPITL_handleRemRdyEvent(void)
 
     // Check to make sure this event is not occurring during the next packet
     // transmission
-    if (PIN_getInputValue(remRdyPIN) == 0 ||
+    if (GPIO_read(REM_RDY_GPIO) == 0 ||
         (npiTxActive && mrdyPktStamp == txPktCount))
     {
         transportRemRdyEvent();
@@ -395,18 +368,16 @@ void NPITL_handleRemRdyEvent(void)
 
 #if (NPI_FLOW_CTRL == 1)
 // -----------------------------------------------------------------------------
-//! \brief      This is a HWI function handler for the MRDY pin. Some MRDY
+//! \brief      This is a HWI function handler for the MRDY GPIO. Some MRDY
 //!             functionality can execute from this HWI context. Others
 //!             must be executed from task context hence the taskCBs.remRdyCB()
 //!
-//! \param[in]  hPin - PIN Handle
-//! \param[in]  pinId - ID of pin that triggered HWI
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITL_remRdyPINHwiFxn(PIN_Handle hPin, PIN_Id pinId)
+static void NPITL_remRdyGPIOHwiFxn(uint_least8_t index)
 {
-    // The pin driver does not currently support returning whether the int
+    // The gpio driver does not currently support returning whether the int
     // was neg or pos edge so we must use a variable to keep track of state.
     remRdy_state ^= 1;
 
@@ -427,11 +398,11 @@ static void NPITL_remRdyPINHwiFxn(PIN_Handle hPin, PIN_Id pinId)
         taskCBs.remRdyCB(remRdy_state);
     }
 
-    // Check the physical state of the pin to see if it matches the variable
+    // Check the physical state of the gpio to see if it matches the variable
     // state. If not trigger another task call back
-    if (remRdy_state != PIN_getInputValue(remRdyPIN))
+    if (remRdy_state != GPIO_read(REM_RDY_GPIO))
     {
-        remRdy_state = PIN_getInputValue(remRdyPIN);
+        remRdy_state = GPIO_read(REM_RDY_GPIO);
 
         if (taskCBs.remRdyCB)
         {

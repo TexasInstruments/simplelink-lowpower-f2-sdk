@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/build.dtd -->
-<package name="gnu.targets.arm.rtsv8M" version="1, 0, 0" producerId="undefined">
+<package name="gnu.targets.arm.rtsv8M" version="1, 0, 0" producerId="/db/ztree/library/trees/xdctargets/xdctargets-w20/src/">
     <units>
         <module name="Settings"/>
     </units>
@@ -9,6 +9,50 @@
         <srcFile name="startup.c"/>
         <srcFile name="syscalls.c"/>
         <srcFile name="package.bld"/>
+        <srcFile name="package/package_gnu.targets.arm.rtsv8M.c"/>
+        <srcFile name="xdc/runtime/Assert.c"/>
+        <srcFile name="xdc/runtime/Core-mem.c"/>
+        <srcFile name="xdc/runtime/Core-smem.c"/>
+        <srcFile name="xdc/runtime/Core-label.c"/>
+        <srcFile name="xdc/runtime/Core-params.c"/>
+        <srcFile name="xdc/runtime/Diags.c"/>
+        <srcFile name="xdc/runtime/Error.c"/>
+        <srcFile name="xdc/runtime/Gate.c"/>
+        <srcFile name="xdc/runtime/GateNull.c"/>
+        <srcFile name="xdc/runtime/HeapMin.c"/>
+        <srcFile name="xdc/runtime/HeapStd.c"/>
+        <srcFile name="xdc/runtime/Log.c"/>
+        <srcFile name="xdc/runtime/LoggerBuf.c"/>
+        <srcFile name="xdc/runtime/LoggerCallback.c"/>
+        <srcFile name="xdc/runtime/LoggerSys.c"/>
+        <srcFile name="xdc/runtime/Memory.c"/>
+        <srcFile name="xdc/runtime/Registry.c"/>
+        <srcFile name="xdc/runtime/Rta.c"/>
+        <srcFile name="xdc/runtime/Startup.c"/>
+        <srcFile name="xdc/runtime/System.c"/>
+        <srcFile name="xdc/runtime/SysCallback.c"/>
+        <srcFile name="xdc/runtime/SysMin.c"/>
+        <srcFile name="xdc/runtime/SysStd.c"/>
+        <srcFile name="xdc/runtime/Text.c"/>
+        <srcFile name="xdc/runtime/Timestamp.c"/>
+        <srcFile name="xdc/runtime/TimestampNull.c"/>
+        <srcFile name="xdc/runtime/TimestampStd.c"/>
+        <srcFile name="xdc/runtime/xdc_noinit.c"/>
+        <srcFile name="xdc/runtime/knl/Cache.c"/>
+        <srcFile name="xdc/runtime/knl/GateThread.c"/>
+        <srcFile name="xdc/runtime/knl/Semaphore.c"/>
+        <srcFile name="xdc/runtime/knl/SyncNull.c"/>
+        <srcFile name="xdc/runtime/knl/GateH.c"/>
+        <srcFile name="xdc/runtime/knl/SemProcess.c"/>
+        <srcFile name="xdc/runtime/knl/Sync.c"/>
+        <srcFile name="xdc/runtime/knl/SyncSemThread.c"/>
+        <srcFile name="xdc/runtime/knl/GateProcess.c"/>
+        <srcFile name="xdc/runtime/knl/SemThread.c"/>
+        <srcFile name="xdc/runtime/knl/SyncGeneric.c"/>
+        <srcFile name="xdc/runtime/knl/Thread.c"/>
+        <srcFile name="xdc/runtime/knl/CacheSupportNull.c"/>
+        <srcFile name="xdc/runtime/knl/GateThreadSupportNull.c"/>
+        <srcFile name="xdc/runtime/knl/GateProcessSupportNull.c"/>
     </sources>
     <configscripts>
     </configscripts>
@@ -16,11 +60,88 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/gnu_targets_arm_rtsv8M.tar.dep" src="package/rel/gnu_targets_arm_rtsv8M.xdc.inc"/>
+        <srcFile name="lib/gnu.targets.arm.rtsv8M.am33fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/package/package_gnu.targets.arm.rtsv8M.om33fg.dep" src="package/package_gnu.targets.arm.rtsv8M.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Assert.om33fg.dep" src="xdc/runtime/Assert.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Core-mem.om33fg.dep" src="xdc/runtime/Core-mem.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Core-smem.om33fg.dep" src="xdc/runtime/Core-smem.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Core-label.om33fg.dep" src="xdc/runtime/Core-label.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Core-params.om33fg.dep" src="xdc/runtime/Core-params.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Diags.om33fg.dep" src="xdc/runtime/Diags.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Error.om33fg.dep" src="xdc/runtime/Error.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Gate.om33fg.dep" src="xdc/runtime/Gate.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/GateNull.om33fg.dep" src="xdc/runtime/GateNull.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/HeapMin.om33fg.dep" src="xdc/runtime/HeapMin.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/HeapStd.om33fg.dep" src="xdc/runtime/HeapStd.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Log.om33fg.dep" src="xdc/runtime/Log.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/LoggerBuf.om33fg.dep" src="xdc/runtime/LoggerBuf.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/LoggerCallback.om33fg.dep" src="xdc/runtime/LoggerCallback.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/LoggerSys.om33fg.dep" src="xdc/runtime/LoggerSys.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Memory.om33fg.dep" src="xdc/runtime/Memory.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Registry.om33fg.dep" src="xdc/runtime/Registry.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Rta.om33fg.dep" src="xdc/runtime/Rta.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Startup.om33fg.dep" src="xdc/runtime/Startup.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/System.om33fg.dep" src="xdc/runtime/System.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/SysCallback.om33fg.dep" src="xdc/runtime/SysCallback.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/SysMin.om33fg.dep" src="xdc/runtime/SysMin.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/SysStd.om33fg.dep" src="xdc/runtime/SysStd.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Text.om33fg.dep" src="xdc/runtime/Text.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/Timestamp.om33fg.dep" src="xdc/runtime/Timestamp.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/TimestampNull.om33fg.dep" src="xdc/runtime/TimestampNull.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/TimestampStd.om33fg.dep" src="xdc/runtime/TimestampStd.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/xdc_noinit.om33fg.dep" src="xdc/runtime/xdc_noinit.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/Cache.om33fg.dep" src="xdc/runtime/knl/Cache.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/GateThread.om33fg.dep" src="xdc/runtime/knl/GateThread.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/Semaphore.om33fg.dep" src="xdc/runtime/knl/Semaphore.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/SyncNull.om33fg.dep" src="xdc/runtime/knl/SyncNull.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/GateH.om33fg.dep" src="xdc/runtime/knl/GateH.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/SemProcess.om33fg.dep" src="xdc/runtime/knl/SemProcess.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/Sync.om33fg.dep" src="xdc/runtime/knl/Sync.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/SyncSemThread.om33fg.dep" src="xdc/runtime/knl/SyncSemThread.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/GateProcess.om33fg.dep" src="xdc/runtime/knl/GateProcess.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/SemThread.om33fg.dep" src="xdc/runtime/knl/SemThread.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/SyncGeneric.om33fg.dep" src="xdc/runtime/knl/SyncGeneric.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/Thread.om33fg.dep" src="xdc/runtime/knl/Thread.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/CacheSupportNull.om33fg.dep" src="xdc/runtime/knl/CacheSupportNull.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/GateThreadSupportNull.om33fg.dep" src="xdc/runtime/knl/GateThreadSupportNull.c"/>
+        <srcFile name="package/lib/lib/gnu.targets.arm.rtsv8M/xdc/runtime/knl/GateProcessSupportNull.om33fg.dep" src="xdc/runtime/knl/GateProcessSupportNull.c"/>
+        <srcFile name="lib/boot.am33fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/boot/package/package_gnu.targets.arm.rtsv8M.om33fg.dep" src="package/package_gnu.targets.arm.rtsv8M.c"/>
+        <srcFile name="package/lib/lib/boot/boot.om33fg.dep" src="boot.asm"/>
+        <srcFile name="package/lib/lib/boot/startup.om33fg.dep" src="startup.c"/>
+        <srcFile name="lib/syscalls.am33fg.mak" src="package.bld"/>
+        <srcFile name="package/lib/lib/syscalls/package/package_gnu.targets.arm.rtsv8M.om33fg.dep" src="package/package_gnu.targets.arm.rtsv8M.c"/>
+        <srcFile name="package/lib/lib/syscalls/syscalls.om33fg.dep" src="syscalls.c"/>
+        <srcFile name="package/rel/gnu_targets_arm_rtsv8M.zip.dep" src="package/rel/gnu_targets_arm_rtsv8M.xdc.inc"/>
     </makefiles>
     <targets>
+        <target name="gnu.targets.arm.M33F"
+            version="gnu.targets.arm.M33F{1,0,9.2,1"
+            rawVersion="9.2.1"
+            platform="ti.platforms.cortexM:FVP_MPS2"
+            isa="v8M"
+            suffix="m33fg"
+            rootDir="/db/vendors/arm/gcc-arm-none-eabi-9-2019-q4-major"
+            os="undefined"
+            rts="gnu.targets.arm.rtsv8M">
+            <model endian="little"
+                codeModel="thumb2"
+                dataModel="undefined"/>
+        </target>
     </targets>
     <libraries>
+    <library name="lib/gnu.targets.arm.rtsv8M"
+        pname="lib/gnu.targets.arm.rtsv8M.am33fg"
+        profile="release"
+        target="gnu.targets.arm.M33F"/>
+    <library name="lib/boot"
+        pname="lib/boot.am33fg"
+        profile="release"
+        target="gnu.targets.arm.M33F"/>
+    <library name="lib/syscalls"
+        pname="lib/syscalls.am33fg"
+        profile="release"
+        target="gnu.targets.arm.M33F"/>
     </libraries>
     <configurations>
     </configurations>
@@ -30,9 +151,9 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="gnu_targets_arm_rtsv8M"
-        pname="gnu_targets_arm_rtsv8M.tar"
+        pname="../../../../../exports/gnu_targets_arm_rtsv8M.zip"
         label="default"
-    >
+        relScript="tisb/release/filters/copyright.rel">
         <file name="package/package.bld.xml"/>
         <file name="package/build.cfg"/>
         <file name="package/package.xdc.inc"/>
@@ -41,6 +162,9 @@
         <file name="syscalls.c"/>
         <file name="package.bld"/>
         <file name="package/package.cfg.xdc.inc"/>
+        <file name="lib/gnu.targets.arm.rtsv8M.am33fg"/>
+        <file name="lib/boot.am33fg"/>
+        <file name="lib/syscalls.am33fg"/>
     </release>
     </releases>
     <repositories>

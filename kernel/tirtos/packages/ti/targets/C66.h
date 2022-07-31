@@ -1,4 +1,9 @@
 /*
+ *  Copyright 2021 by Texas Instruments Incorporated.
+ *
+ */
+
+/*
  *  ======== C66.h ========
  *  DO NOT MODIFY: This header is generated from stddef.xdt
  *
@@ -115,3 +120,8 @@
 #define  xdc_target__bitsPerChar 8U
 
 #endif  /* end multi-include guard */
+/*
+ *  @(#) ti.targets; 1, 0, 3,; 7-28-2021 06:57:38; /db/ztree/library/trees/xdctargets/xdctargets-w20/src/ xlibrary
+
+ */
+

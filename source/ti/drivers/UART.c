@@ -46,21 +46,21 @@ extern const uint_least8_t UART_count;
 
 /* Default UART parameters structure */
 const UART_Params UART_defaultParams = {
-    UART_MODE_BLOCKING,   /* readMode */
-    UART_MODE_BLOCKING,   /* writeMode */
-    UART_WAIT_FOREVER,    /* readTimeout */
-    UART_WAIT_FOREVER,    /* writeTimeout */
-    NULL,                 /* readCallback */
-    NULL,                 /* writeCallback */
-    UART_RETURN_NEWLINE,  /* readReturnMode */
-    UART_DATA_TEXT,       /* readDataMode */
-    UART_DATA_TEXT,       /* writeDataMode */
-    UART_ECHO_ON,         /* readEcho */
-    115200,               /* baudRate */
-    UART_LEN_8,           /* dataLength */
-    UART_STOP_ONE,        /* stopBits */
-    UART_PAR_NONE,        /* parityType */
-    NULL                  /* custom */
+    UART_MODE_BLOCKING,  /* readMode */
+    UART_MODE_BLOCKING,  /* writeMode */
+    UART_WAIT_FOREVER,   /* readTimeout */
+    UART_WAIT_FOREVER,   /* writeTimeout */
+    NULL,                /* readCallback */
+    NULL,                /* writeCallback */
+    UART_RETURN_NEWLINE, /* readReturnMode */
+    UART_DATA_TEXT,      /* readDataMode */
+    UART_DATA_TEXT,      /* writeDataMode */
+    UART_ECHO_ON,        /* readEcho */
+    115200,              /* baudRate */
+    UART_LEN_8,          /* dataLength */
+    UART_STOP_ONE,       /* stopBits */
+    UART_PAR_NONE,       /* parityType */
+    NULL                 /* custom */
 };
 
 static bool isInitialized = false;
@@ -91,12 +91,14 @@ void UART_init(void)
 
     key = HwiP_disable();
 
-    if (!isInitialized) {
-        isInitialized = (bool) true;
+    if (!isInitialized)
+    {
+        isInitialized = (bool)true;
 
         /* Call each driver's init function */
-        for (i = 0; i < UART_count; i++) {
-            UART_config[i].fxnTablePtr->initFxn((UART_Handle) &(UART_config[i]));
+        for (i = 0; i < UART_count; i++)
+        {
+            UART_config[i].fxnTablePtr->initFxn((UART_Handle) & (UART_config[i]));
         }
     }
 
@@ -110,14 +112,16 @@ UART_Handle UART_open(uint_least8_t index, UART_Params *params)
 {
     UART_Handle handle = NULL;
 
-    if (isInitialized && (index < UART_count)) {
+    if (isInitialized && (index < UART_count))
+    {
         /* If params are NULL use defaults */
-        if (params == NULL) {
-            params = (UART_Params *) &UART_defaultParams;
+        if (params == NULL)
+        {
+            params = (UART_Params *)&UART_defaultParams;
         }
 
         /* Get handle for this driver instance */
-        handle = (UART_Handle)&(UART_config[index]);
+        handle = (UART_Handle) & (UART_config[index]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 
@@ -167,8 +171,7 @@ int_fast32_t UART_write(UART_Handle handle, const void *buffer, size_t size)
 /*
  *  ======== UART_writePolling ========
  */
-int_fast32_t UART_writePolling(UART_Handle handle, const void *buffer,
-    size_t size)
+int_fast32_t UART_writePolling(UART_Handle handle, const void *buffer, size_t size)
 {
     return (handle->fxnTablePtr->writePollingFxn(handle, buffer, size));
 }

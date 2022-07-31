@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  This file conforms to the DTD xdc/bld/build.dtd -->
-<package name="ti.targets.arm.elf" version="1, 0, 0" producerId="undefined">
+<package name="ti.targets.arm.elf" version="1, 0, 0" producerId="/db/ztree/library/trees/xdctargets/xdctargets-w20/src">
     <units>
         <interface name="IArm"/>
         <interface name="IR4"/>
@@ -29,7 +29,7 @@
         <srcFile name="package.mak" src="package.bld"/>
         <srcFile name="package/package.xdc.dep" src="package.xdc"/>
         <srcFile name="package/package.cfg.dep" src="package.xdc"/>
-        <srcFile name="package/rel/ti_targets_arm_elf.tar.dep" src="package/rel/ti_targets_arm_elf.xdc.inc"/>
+        <srcFile name="package/rel/ti_targets_arm_elf.zip.dep" src="package/rel/ti_targets_arm_elf.xdc.inc"/>
     </makefiles>
     <targets>
     </targets>
@@ -43,9 +43,9 @@
     </tests>
     <releases relDir="package/rel/">
     <release name="ti_targets_arm_elf"
-        pname="ti_targets_arm_elf.tar"
+        pname="../../../../../exports/ti_targets_arm_elf.zip"
         label="default"
-    >
+        relScript="tisb/release/filters/copyright.rel">
         <file name="package/package.bld.xml"/>
         <file name="package/build.cfg"/>
         <file name="package/package.xdc.inc"/>

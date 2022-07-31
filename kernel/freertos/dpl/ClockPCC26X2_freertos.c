@@ -44,9 +44,10 @@
 #include "QueueP.h"
 #include "TimerP.h"
 
-#define CPU_CLOCK_HZ  ((uint32_t)48000000)
+#define CPU_CLOCK_HZ ((uint32_t)48000000)
 
-typedef struct _ClockP_Module_State {
+typedef struct _ClockP_Module_State
+{
     QueueP_Obj clockQ;
     volatile uint32_t ticks;
     SwiP_Struct swiStruct;
@@ -61,7 +62,8 @@ typedef struct _ClockP_Module_State {
     bool ticking;
 } ClockP_Module_State;
 
-typedef struct _ClockP_Obj {
+typedef struct _ClockP_Obj
+{
     QueueP_Elem elem;
     uint32_t timeout;
     uint32_t currTimeout;
@@ -72,11 +74,11 @@ typedef struct _ClockP_Obj {
 } ClockP_Obj;
 
 static ClockP_Module_State ClockP_module;
-static bool ClockP_initialized = false;
+static bool ClockP_initialized            = false;
 static ClockP_Params ClockP_defaultParams = {
     .startFlag = false,
-    .period = 0,
-    .arg = 0,
+    .period    = 0,
+    .arg       = 0,
 };
 
 void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1);
@@ -105,27 +107,24 @@ void ClockP_startup(void)
     SwiP_Params swiParams;
     TimerP_Params timerParams;
 
-    if (!ClockP_initialized) {
+    if (!ClockP_initialized)
+    {
         QueueP_init(&ClockP_module.clockQ);
-        ClockP_module.ticks = 0;
-        ClockP_module.numTickSkip = 1;
-        ClockP_module.nextScheduledTick = 1;
-        ClockP_module.maxSkippable = 0;
-        ClockP_module.inWorkFunc = false;
+        ClockP_module.ticks               = 0;
+        ClockP_module.numTickSkip         = 1;
+        ClockP_module.nextScheduledTick   = 1;
+        ClockP_module.maxSkippable        = 0;
+        ClockP_module.inWorkFunc          = false;
         ClockP_module.startDuringWorkFunc = false;
-        ClockP_module.ticking = false;
+        ClockP_module.ticking             = false;
 
         SwiP_Params_init(&swiParams);
-        swiParams.priority = ~0;  /* max priority */
-        ClockP_module.swi = SwiP_construct(&ClockP_module.swiStruct,
-                                           (SwiP_Fxn)ClockP_workFuncDynamic,
-                                           &swiParams);
+        swiParams.priority = ~0; /* max priority */
+        ClockP_module.swi  = SwiP_construct(&ClockP_module.swiStruct, (SwiP_Fxn)ClockP_workFuncDynamic, &swiParams);
 
         TimerP_Params_init(&timerParams);
-        timerParams.period = ClockP_tickPeriod;
-        ClockP_module.timer = TimerP_construct(&ClockP_module.timerStruct,
-                                               (TimerP_Fxn)ClockP_doTick,
-                                               &timerParams);
+        timerParams.period  = ClockP_tickPeriod;
+        ClockP_module.timer = TimerP_construct(&ClockP_module.timerStruct, (TimerP_Fxn)ClockP_doTick, &timerParams);
 
         /* get the max ticks that can be skipped by the timer */
         ClockP_module.maxSkippable = TimerP_getMaxTicks(ClockP_module.timer);
@@ -173,7 +172,8 @@ uint32_t ClockP_getTicksUntilInterrupt(void)
     ticks = ClockP_module.nextScheduledTick - current;
 
     /* clamp value to zero if nextScheduledTick is less than current */
-    if (ticks > ClockP_module.maxSkippable) {
+    if (ticks > ClockP_module.maxSkippable)
+    {
         ticks = 0;
     }
 
@@ -192,7 +192,7 @@ void ClockP_scheduleNextTick(uint32_t deltaTicks, uint32_t absTick)
     TimerP_setNextTick(ClockP_module.timer, deltaTicks);
 
     /* remember this */
-    ClockP_module.numTickSkip = deltaTicks;
+    ClockP_module.numTickSkip       = deltaTicks;
     ClockP_module.nextScheduledTick = absTick;
 }
 
@@ -211,27 +211,33 @@ uint32_t ClockP_walkQueueDynamic(bool service, uint32_t thisTick)
 
     /* Traverse clock queue */
     clockQ = &ClockP_module.clockQ;
-    elem = (QueueP_Elem *)QueueP_head(clockQ);
+    elem   = (QueueP_Elem *)QueueP_head(clockQ);
 
-    while (elem != (QueueP_Elem *)(clockQ)) {
+    while (elem != (QueueP_Elem *)(clockQ))
+    {
 
-        obj = (ClockP_Obj *)elem;
+        obj  = (ClockP_Obj *)elem;
         elem = (QueueP_Elem *)QueueP_next(elem);
 
         /* if  the object is active ... */
-        if (obj->active == true) {
+        if (obj->active == true)
+        {
 
             /* optionally service if tick matches timeout */
-            if (service == true) {
+            if (service == true)
+            {
 
                 /* if this object is timing out update its state */
-                if (obj->currTimeout == thisTick) {
+                if (obj->currTimeout == thisTick)
+                {
 
-                    if (obj->period == 0) { /* oneshot? */
+                    if (obj->period == 0)
+                    { /* oneshot? */
                         /* mark object idle */
                         obj->active = false;
                     }
-                    else {                      /* periodic */
+                    else
+                    { /* periodic */
                         /* refresh timeout */
                         obj->currTimeout += obj->period;
                     }
@@ -242,15 +248,16 @@ uint32_t ClockP_walkQueueDynamic(bool service, uint32_t thisTick)
             }
 
             /* if object still active update distance to soonest tick */
-            if (obj->active == true) {
+            if (obj->active == true)
+            {
 
                 delta = obj->currTimeout - thisTick;
 
                 /* if this is the soonest tick update distance to soonest */
-                if (delta < distance) {
+                if (delta < distance)
+                {
                     distance = delta;
                 }
-
             }
         }
     }
@@ -277,11 +284,11 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
     nowTick = TimerP_getCurrentTick(ClockP_module.timer, true);
 
     /* set flags while actively servicing queue */
-    ClockP_module.inWorkFunc = true;
+    ClockP_module.inWorkFunc          = true;
     ClockP_module.startDuringWorkFunc = false;
 
     /* determine first tick expiration to service (the anticipated next tick) */
-    serviceTick = ClockP_module.nextScheduledTick;
+    serviceTick    = ClockP_module.nextScheduledTick;
     ticksToService = nowTick - serviceTick;
 
     /*
@@ -291,8 +298,9 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
      */
 
     serviceDelta = serviceTick - ClockP_module.ticks;
-    nowDelta = nowTick - ClockP_module.ticks;
-    if (serviceDelta > nowDelta) {
+    nowDelta     = nowTick - ClockP_module.ticks;
+    if (serviceDelta > nowDelta)
+    {
         ClockP_module.inWorkFunc = false;
         HwiP_restore(hwiKey);
         return;
@@ -303,7 +311,8 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
     distance = 0;
 
     /* walk queue until catch up to current tick count */
-    while (ticksToService >= distance) {
+    while (ticksToService >= distance)
+    {
         serviceTick = serviceTick + distance;
         ticksToService -= distance;
         distance = ClockP_walkQueueDynamic(true, serviceTick);
@@ -313,19 +322,23 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
     hwiKey = HwiP_disable();
 
     /* if ClockP_start() during processing of Q, re-walk to update distance */
-    if (ClockP_module.startDuringWorkFunc == true) {
+    if (ClockP_module.startDuringWorkFunc == true)
+    {
         distance = ClockP_walkQueueDynamic(false, serviceTick);
     }
 
     /* if no active timeouts then skip the maximum supported by the timer */
-    if (distance == ~0) {
+    if (distance == ~0)
+    {
         skippable = ClockP_module.maxSkippable;
-        nextTick = serviceTick + skippable;
+        nextTick  = serviceTick + skippable;
     }
     /* else, finalize how many ticks can skip */
-    else {
+    else
+    {
         skippable = distance - ticksToService;
-        if (skippable > ClockP_module.maxSkippable) {
+        if (skippable > ClockP_module.maxSkippable)
+        {
             skippable = ClockP_module.maxSkippable;
         }
         nextTick = serviceTick + skippable;
@@ -334,9 +347,9 @@ void ClockP_workFuncDynamic(uintptr_t arg0, uintptr_t arg1)
     /* reprogram timer for next expected tick */
     ClockP_scheduleNextTick(skippable, nextTick);
 
-    ClockP_module.ticking = true;
+    ClockP_module.ticking    = true;
     ClockP_module.inWorkFunc = false;
-    ClockP_module.ticks = serviceTick;
+    ClockP_module.ticks      = serviceTick;
 
     HwiP_restore(hwiKey);
 }
@@ -352,33 +365,35 @@ void ClockP_doTick(uintptr_t arg)
 /*
  *  ======== ClockP_construct ========
  */
-ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn fxn,
-                               uint32_t timeout, ClockP_Params *params)
+ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn fxn, uint32_t timeout, ClockP_Params *params)
 {
     ClockP_Obj *obj = (ClockP_Obj *)handle;
 
-    if (handle == NULL) {
+    if (handle == NULL)
+    {
         return NULL;
     }
 
     ClockP_startup();
 
-    if (params == NULL) {
+    if (params == NULL)
+    {
         params = &ClockP_defaultParams;
     }
 
-    obj->period = params->period;
+    obj->period  = params->period;
     obj->timeout = timeout;
-    obj->fxn = fxn;
-    obj->arg = params->arg;
-    obj->active = false;
+    obj->fxn     = fxn;
+    obj->arg     = params->arg;
+    obj->active  = false;
 
     /*
      * Clock object is always placed on Clock work Q
      */
     QueueP_put(&ClockP_module.clockQ, &obj->elem);
 
-    if (params->startFlag) {
+    if (params->startFlag)
+    {
         ClockP_start(obj);
     }
 
@@ -388,16 +403,15 @@ ClockP_Handle ClockP_construct(ClockP_Struct *handle, ClockP_Fxn fxn,
 /*
  *  ======== ClockP_add ========
  */
-void ClockP_add(ClockP_Struct *handle, ClockP_Fxn fxn,
-                uint32_t timeout, uintptr_t arg)
+void ClockP_add(ClockP_Struct *handle, ClockP_Fxn fxn, uint32_t timeout, uintptr_t arg)
 {
     ClockP_Obj *obj = (ClockP_Obj *)handle;
 
-    obj->period = 0;
+    obj->period  = 0;
     obj->timeout = timeout;
-    obj->fxn = fxn;
-    obj->arg = arg;
-    obj->active = false;
+    obj->fxn     = fxn;
+    obj->arg     = arg;
+    obj->active  = false;
 
     /*
      * Clock object is always placed on Clock work Q
@@ -408,16 +422,14 @@ void ClockP_add(ClockP_Struct *handle, ClockP_Fxn fxn,
 /*
  *  ======== ClockP_create ========
  */
-ClockP_Handle ClockP_create(ClockP_Fxn clkFxn, uint32_t timeout,
-                            ClockP_Params *params)
+ClockP_Handle ClockP_create(ClockP_Fxn clkFxn, uint32_t timeout, ClockP_Params *params)
 {
     ClockP_Handle handle;
 
     handle = (ClockP_Handle)malloc(sizeof(ClockP_Obj));
 
     /* ClockP_construct will check handle for NULL, no need here */
-    handle = ClockP_construct((ClockP_Struct *)handle, clkFxn, timeout,
-                              params);
+    handle = ClockP_construct((ClockP_Struct *)handle, clkFxn, timeout, params);
 
     return (handle);
 }
@@ -453,7 +465,7 @@ void ClockP_delete(ClockP_Handle handle)
 void ClockP_start(ClockP_Handle handle)
 {
     ClockP_Obj *obj = (ClockP_Obj *)handle;
-    uintptr_t key = HwiP_disable();
+    uintptr_t key   = HwiP_disable();
 
     uint32_t nowTick, nowDelta;
     uint32_t scheduledTick, scheduledDelta;
@@ -464,7 +476,8 @@ void ClockP_start(ClockP_Handle handle)
     /* wait till after first tick */
     if ((ClockP_module.ticking == true) &&
         /* if Clock is NOT currently processing its Q */
-        (ClockP_module.inWorkFunc == false)) {
+        (ClockP_module.inWorkFunc == false))
+    {
 
         /*
          * get virtual current tick count,
@@ -472,15 +485,16 @@ void ClockP_start(ClockP_Handle handle)
          */
         nowTick = TimerP_getCurrentTick(ClockP_module.timer, true);
 
-        nowDelta = nowTick - ClockP_module.ticks;
+        nowDelta       = nowTick - ClockP_module.ticks;
         scheduledDelta = ClockP_module.nextScheduledTick - ClockP_module.ticks;
 
-        if (nowDelta <= scheduledDelta) {
+        if (nowDelta <= scheduledDelta)
+        {
             objectServiced = true;
 
             /* start new Clock object */
             obj->currTimeout = nowTick + obj->timeout;
-            obj->active = true;
+            obj->active      = true;
 
             /* get the next scheduled tick */
             scheduledTick = ClockP_module.nextScheduledTick;
@@ -488,13 +502,15 @@ void ClockP_start(ClockP_Handle handle)
             /* how many ticks until scheduled tick? */
             remainingTicks = scheduledTick - nowTick;
 
-            if (obj->timeout < remainingTicks) {
+            if (obj->timeout < remainingTicks)
+            {
                 ClockP_scheduleNextTick(obj->timeout, obj->currTimeout);
             }
         }
     }
 
-    if (objectServiced == false) {
+    if (objectServiced == false)
+    {
         /*
          * get virtual current tick count,
          * DO NOT (!) signal Timer to save corresponding NOW info
@@ -503,9 +519,10 @@ void ClockP_start(ClockP_Handle handle)
 
         /* start new Clock object */
         obj->currTimeout = nowTick + obj->timeout;
-        obj->active = true;
+        obj->active      = true;
 
-        if (ClockP_module.inWorkFunc == true) {
+        if (ClockP_module.inWorkFunc == true)
+        {
             ClockP_module.startDuringWorkFunc = true;
         }
     }
@@ -551,10 +568,12 @@ uint32_t ClockP_getTimeout(ClockP_Handle handle)
 {
     ClockP_Obj *obj = (ClockP_Obj *)handle;
 
-    if (obj->active == true) {
+    if (obj->active == true)
+    {
         return (obj->currTimeout - ClockP_getTicks());
     }
-    else {
+    else
+    {
         return (obj->timeout);
     }
 }
@@ -591,7 +610,7 @@ uint32_t ClockP_getSystemTickPeriod(void)
  */
 uint32_t ClockP_getSystemTicks(void)
 {
-    uint32_t  ticks;
+    uint32_t ticks;
     uintptr_t key;
 
     ClockP_startup();
@@ -637,14 +656,17 @@ void ClockP_usleep(uint32_t usec)
      *  If usec > ClockP_tickPeriod, sleep for the appropriate number
      *  of clock ticks.
      */
-    if (usec >= ClockP_tickPeriod) {
+    if (usec >= ClockP_tickPeriod)
+    {
         ticksToSleep = usec / ClockP_tickPeriod;
         sleepTicks(ticksToSleep);
     }
 
     curTick = TimerP_getCount64(ClockP_module.timer);
-    while (curTick < endTick) {
-        curTick = TimerP_getCount64(ClockP_module.timer);;
+    while (curTick < endTick)
+    {
+        curTick = TimerP_getCount64(ClockP_module.timer);
+        ;
     }
 }
 
@@ -669,12 +691,13 @@ static void sleepTicks(uint32_t ticks)
     ClockP_Params clkParams;
     SemaphoreP_Handle sem;
 
-    if (ticks > 0) {
+    if (ticks > 0)
+    {
         /* Construct a semaphore, and a clock object to post the semaphore */
         sem = SemaphoreP_construct(&semStruct, 0, NULL);
         ClockP_Params_init(&clkParams);
         clkParams.startFlag = true;
-        clkParams.arg = (uintptr_t)sem;
+        clkParams.arg       = (uintptr_t)sem;
         ClockP_construct(&clkStruct, sleepClkFxn, ticks, &clkParams);
 
         /* Pend forever on the semaphore, wait for ClockP callback to post it */

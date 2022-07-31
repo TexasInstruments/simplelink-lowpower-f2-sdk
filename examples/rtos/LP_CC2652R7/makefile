@@ -2,14 +2,10 @@ COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../..)
 include $(COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
 # Find all subdirectories
-TIRTOS-CCS-SUBDIRS = $(wildcard */*/tirtos/ccs/.)
 TIRTOS-IAR-SUBDIRS = $(wildcard */*/tirtos/iar/.)
 TIRTOS-TICLANG-SUBDIRS = $(wildcard */*/tirtos/ticlang/.)
 
 TIRTOS-SUBDIRS =
-ifneq ($(CCS_ARMCOMPILER),)
-	TIRTOS-SUBDIRS += $(TIRTOS-CCS-SUBDIRS)
-endif
 ifneq ($(IAR_ARMCOMPILER),)
 	TIRTOS-SUBDIRS += $(TIRTOS-IAR-SUBDIRS)
 endif

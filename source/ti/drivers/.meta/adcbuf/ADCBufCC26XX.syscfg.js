@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -291,7 +291,9 @@ function getChannels(inst)
         /* Generate COMPB index using device metadata */
         let packagePin = parseInt(channel.adc.adcPin.$solution.packagePinName);
         let auxInput = system.deviceData.devicePins[packagePin].attributes.alias_name;
-        auxInput = "ADC_COMPB_IN_" + auxInput.replace("_", "IO");
+        auxInput = "ADC_COMPB_IN_" + auxInput.replace("ANA_", "AUXIO");
+        // X3 and X4 signal names do not currently align with X1 and X2
+        auxInput = auxInput.replace("AUX_", "AUXIO");
 
         let comment = "";
         if (inst.$hardware && inst.$hardware.displayName) {

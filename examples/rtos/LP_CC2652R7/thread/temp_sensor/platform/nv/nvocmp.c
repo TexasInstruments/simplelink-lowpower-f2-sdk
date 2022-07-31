@@ -136,10 +136,20 @@ Linux envrionment. If debugging/logging functionality is required, the
 
 Configuration:
 NVOCMP_STATS - Places a protected item with driver stats
+
 NVOCMP_CRCONREAD (on:1 off:0) - item crc is checked on read. Disabling this may
 increase driver speed but safety is reduced.
+
 NVOCMP_NVS_INDEX - The index of the NVS_Config structure which describes the
 flash sector that NVOCMP should use. Default is 0.
+
+NVOCMP_RECOVER_FROM_COMPACT_FAILURE - This define needs to be enabled by
+the customer. It is disabled be default. When enabled, it causes the
+NV driver to reformat all NV pages when there is an error while
+collecting valid items for compaction. When disabled and an error
+occurs while collecting valid items for compaction, NV pages will
+preserve the original information prior to the start of such
+operation.
 
 Dependencies:
 Requires NVS for NV access.
@@ -160,7 +170,13 @@ Requires API's in a crc.h to implement CRC functionality.
 #include "nvocmp.h"
 #include "crc.h"
 #ifndef NV_LINUX
+
+/* CC23X0 does not support GPRAM,
+ * so VIMS access is not needed */
+#ifndef DeviceFamily_CC23X0
 #include <driverlib/vims.h>
+#endif
+
 #ifdef NVOCMP_MIN_VDD_FLASH_MV
 #include <driverlib/aon_batmon.h>
 #endif
@@ -318,8 +334,8 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 //*****************************************************************************
 // Page and Header Definitions
 //*****************************************************************************
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3)
-// CC26x4/CC13x4 devices flash page size is (1 << 11) or 0x800
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0)
+// CC26x4/CC13x4/CC23x0 devices flash page size is (1 << 11) or 0x800
 #define PAGE_SIZE_LSHIFT 11
 #else
 // CC26x2/CC13x2 devices flash page size is (1 << 13) or 0x2000
@@ -340,14 +356,17 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 #endif // NVOCMP_SIGNATURE
 
 // Compact Memory
-#ifndef NV_LINUX
+#if !defined (NV_LINUX) && !defined (DeviceFamily_CC23X0)
 #define NVOCMP_GPRAM
 #endif
 
 #ifdef NVOCMP_GPRAM
-#define RAM_BUFFER_ADDRESS    (uint8_t *)0x11000000
+#define RAM_BUFFER_ADDRESS    (uint8_t *)GPRAM_BASE
 #else
-uint32_t tBuffer[FLASH_PAGE_SIZE >> 2];               // this is for debugging
+/* When CC23X0 is used, as GPRAM is not supported,
+ * a RAM buffer of FLASH_PAGE_SIZE length is declared,
+ * as the NVOCMP algorithm relies on it. */
+uint32_t tBuffer[FLASH_PAGE_SIZE >> 2];
 #endif
 
 // Page header structure
@@ -2392,7 +2411,7 @@ static void NVOCMP_initNv(NVOCMP_nvHandle_t *pNvHandle)
  */
 static void NVOCMP_initNv(NVOCMP_nvHandle_t *pNvHandle)
 {
-  uint8_t status;
+  uint8_t status, prevactPage;
   NVOCMP_itemHdr_t iHdr;
   uint8_t pg;
   NVOCMP_initAction_t action;
@@ -2401,7 +2420,7 @@ static void NVOCMP_initNv(NVOCMP_nvHandle_t *pNvHandle)
 #if !defined(NVOCMP_MIGRATE_DISABLED)
   uint8_t noPgLeg = 0;
 #endif
-  bool compact = false;
+  bool compact = false, compaction_occurred = false;
 
   // Scan Pages
   pNvHandle->xsrcPage = NVOCMP_NULLPAGE;
@@ -2497,24 +2516,36 @@ static void NVOCMP_initNv(NVOCMP_nvHandle_t *pNvHandle)
   {
   case NVOCMP_NORMAL_RESUME :
       // resume state, set head page, act page and tail page
-      if(pNvHandle->actOffset > NVOCMP_PGDATAOFS + NVOCMP_ITEMHDRLEN)
-      {
-        NVOCMP_readHeader(pNvHandle->actPage, pNvHandle->actOffset - NVOCMP_ITEMHDRLEN , &iHdr, false);
-        if(iHdr.stats & NVOCMP_FOLLOWBIT)
-        {
-          status = NVOCMP_findItem(pNvHandle, pNvHandle->actPage, pNvHandle->actOffset - NVOCMP_ITEMHDRLEN - iHdr.len,
-                          &iHdr, NVOCMP_FINDSTRICT, NULL);
-          if((status == NVINTF_SUCCESS) && (iHdr.hofs > 0))
+      do {
+          compaction_occurred = false;
+          if(pNvHandle->actOffset > NVOCMP_PGDATAOFS + NVOCMP_ITEMHDRLEN)
           {
-            NVOCMP_setItemInactive(pNvHandle, iHdr.hpage, iHdr.hofs);
+            NVOCMP_readHeader(pNvHandle->actPage, pNvHandle->actOffset - NVOCMP_ITEMHDRLEN , &iHdr, false);
+            if(iHdr.stats & NVOCMP_FOLLOWBIT)
+            {
+              /* Cache current active page value before search starts */
+              prevactPage = pNvHandle->actPage;
+              status = NVOCMP_findItem(pNvHandle, pNvHandle->actPage, pNvHandle->actOffset - NVOCMP_ITEMHDRLEN - iHdr.len,
+                              &iHdr, NVOCMP_FINDSTRICT, NULL);
+
+              /* If the current active page is different than previous, then
+               * compaction occurred and the search for duplicate must occur
+               * again.
+               * If item is found and compaction did not occur, it is a true
+               * duplicate, so the item can be deleted. */
+              compaction_occurred = ( prevactPage != pNvHandle->actPage );
+              if((status == NVINTF_SUCCESS) && (iHdr.hofs > 0) && !compaction_occurred)
+              {
+                NVOCMP_setItemInactive(pNvHandle, iHdr.hpage, iHdr.hofs);
+              }
+            }
+            else
+            {
+              pNvHandle->forceCompact = 1;
+              compact = true;
+            }
           }
-        }
-        else
-        {
-          pNvHandle->forceCompact = 1;
-          compact = true;
-        }
-      }
+      } while (compaction_occurred); /* Repeat until compaction does not occur while searching */
 #ifdef NVOCMP_COMPACT_WHEN_RESUME
       compact = true;
 #endif
@@ -3789,6 +3820,7 @@ static int8_t NVOCMP_findItem(NVOCMP_nvHandle_t *pNvHandle, uint8_t pg, uint16_t
               // Something is corrupted, compact to fix
               NVOCMP_ALERT(false, "No item following current item, "
                       "compaction needed.")
+              pNvHandle->forceCompact = 1;
               NVOCMP_compactPage(pNvHandle, 0);
 #if (NVOCMP_NVPAGES > NVOCMP_NVTWOP)
               p = NVOCMP_INCPAGE(pNvHandle->actPage);
@@ -4622,13 +4654,12 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
               bool foundSig = NVOCMP_findSignature(srcPg, &srcOff);
               if(!foundSig)
               {
-#ifdef NVOCMP_GPRAM
-                NVOCMP_restoreCache(vm);
-#endif
                 // If we get here and foundSig is false, we never found another
-                // item in the page
+                // item in the page, break the loop so that any valid items
+                // that were collected up to this point get written to the
+                // destination page.
                 NVOCMP_ALERT(foundSig, "Attempt to find signature failed.")
-                return(NVOCMP_COMPACT_FAILURE);
+                break;
               }
             }
             else

@@ -54,7 +54,7 @@ LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
      -lti/grlib/lib/ticlang/m4f/grlib.a \
      -lthird_party/spiffs/lib/ticlang/m4f/spiffs_cc26xx.a \
      -lti/drivers/lib/ticlang/m4f/drivers_cc26x2x7.a \
-    "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
+    "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos7/packages" \
     ti_utils_build_linker.cmd.genlibs \
     "-l$(KERNEL_BUILD)/ticlang/linker.cmd" \
     -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib \

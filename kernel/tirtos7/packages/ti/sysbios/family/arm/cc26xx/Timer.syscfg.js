@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,40 @@ exports = {
     moduleStatic: {
         name: "moduleGlobal",
         pinmuxRequirements: pinmuxRequirements,
+        config: [
+            {
+                name: "funcHookCh1",
+                displayName: "RTC channel 1 function hook",
+                description: `Function hook for RTC channel 1`,
+                longDescription: `
+The RTC on CC13XX/CC26XX devices has multiple channels but only a combined
+interrupt vector. Since the timer module owns this interrupt vector, function
+hooks are provided to permit the use of the other channels.
+
+This function hook will be called when the RTC triggers on channel 1. It is
+executed from interrupt context. It must thus obey the usual restrictions for
+running from interrupt context.
+
+                `,
+                default: "NULL",
+            },
+            {
+                name: "funcHookCh2",
+                displayName: "RTC channel 2 function hook",
+                description: `Function hook for RTC channel 2`,
+                longDescription: `
+The RTC on CC13XX/CC26XX devices has multiple channels but only a combined
+interrupt vector. Since the timer module owns this interrupt vector, function
+hooks are provided to permit the use of the other channels.
+
+This function hook will be called when the RTC triggers on channel 2. It is
+executed from interrupt context. It must thus obey the usual restrictions for
+running from interrupt context.
+
+                `,
+                default: "NULL",
+            },
+        ]
     },
     templates: {
         bios_config_h: "/ti/sysbios/family/arm/cc26xx/Timer_config.h.xdt",
@@ -69,4 +103,3 @@ exports = {
     },
     getCFiles: () => { return ["ti/sysbios/family/arm/cc26xx/Timer.c"] }
 };
-

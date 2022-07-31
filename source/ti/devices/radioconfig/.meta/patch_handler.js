@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,16 +132,10 @@ function generateIncludesC(modules, coexType) {
         incl += CoExIncludeDriverLib[coexType];
     }
 
-    // RF driver
-    // incl += RfDriverInclude;
-
     // Iterate patch includes
     _.each(patchIncludes, (value, patchName) => {
         incl += patchInclude(patchName);
     });
-
-    // Radio Config header file
-    // incl += RfInclude;
 
     return incl;
 }

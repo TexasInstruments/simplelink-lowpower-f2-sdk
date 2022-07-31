@@ -2,9 +2,9 @@
 *  Filename:       ccfg.c
 
 *  Description:    Customer Configuration for:
-*                  CC13x2x7, CC26x2x7 device family (HW rev 1).
+*                  CC13x2x7, CC26x2x7 device family.
 *
-*  Copyright (c) 2021 Texas Instruments Incorporated. All rights reserved.
+*  Copyright (c) 2021-2022 Texas Instruments Incorporated. All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions are met:
@@ -165,10 +165,6 @@
 #endif
 #endif
 
-#ifndef SET_CCFG_MODE_CONF_VDDR_CAP
-#define SET_CCFG_MODE_CONF_VDDR_CAP                     0x3A       // Unsigned 8-bit integer representing the min. decoupling capacitance on VDDR in units of 100nF
-#endif
-
 #ifndef SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC
 #define SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC           0x1        // Temperature compensation on VDDR sleep trim disabled (default)
 // #define SET_CCFG_MODE_CONF_VDDR_TRIM_SLEEP_TC        0x0        // Temperature compensation on VDDR sleep trim enabled
@@ -240,8 +236,8 @@
 //#####################################
 
 #ifndef SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE
-#define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE           0x00       // Disable unlocking of TI FA option.
-// #define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE        0xC5       // Enable unlocking of TI FA option with the unlock code
+#define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE           0x00       // Disable unlocking of TI FA option
+// #define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE        0xC5       // Enable unlocking of TI FA option with the unlock key
 #endif
 
 #ifndef SET_CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE
@@ -437,8 +433,7 @@
      ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_FREQ                     )) << CCFG_MODE_CONF_XOSC_FREQ_S                     ) | ~CCFG_MODE_CONF_XOSC_FREQ_M                     ) & \
      ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAP_MOD                  )) << CCFG_MODE_CONF_XOSC_CAP_MOD_S                  ) | ~CCFG_MODE_CONF_XOSC_CAP_MOD_M                  ) & \
      ((((uint32_t)( SET_CCFG_MODE_CONF_HF_COMP                       )) << CCFG_MODE_CONF_HF_COMP_S                       ) | ~CCFG_MODE_CONF_HF_COMP_M                       ) & \
-     ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA           )) << CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_S           ) | ~CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_M           ) & \
-     ((((uint32_t)( SET_CCFG_MODE_CONF_VDDR_CAP                      )) << CCFG_MODE_CONF_VDDR_CAP_S                      ) | ~CCFG_MODE_CONF_VDDR_CAP_M                      ) )
+     ((((uint32_t)( SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA           )) << CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_S           ) | ~CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA_M           ) )
 
 #define DEFAULT_CCFG_VOLT_LOAD_0         ( \
      ((((uint32_t)( SET_CCFG_VOLT_LOAD_0_VDDR_EXT_TP45               )) << CCFG_VOLT_LOAD_0_VDDR_EXT_TP45_S               ) | ~CCFG_VOLT_LOAD_0_VDDR_EXT_TP45_M               ) & \
@@ -508,6 +503,8 @@ __root const ccfg_t __ccfg @ ".ccfg" =
 #pragma DATA_SECTION(__ccfg, ".ccfg")
 #pragma RETAIN(__ccfg)
 const ccfg_t __ccfg =
+#elif defined(__llvm__)
+const ccfg_t __ccfg __attribute__((section(".ccfg"), retain)) =
 #else
 const ccfg_t __ccfg __attribute__((section(".ccfg"))) __attribute__((used)) =
 #endif

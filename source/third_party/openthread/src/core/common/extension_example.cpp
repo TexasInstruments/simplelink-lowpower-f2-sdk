@@ -68,7 +68,7 @@ ExtensionBase &ExtensionBase::Init(Instance &aInstance)
 {
     ExtensionBase *ext = reinterpret_cast<ExtensionBase *>(&sExtensionRaw);
 
-    VerifyOrExit(!ext->mIsInitialized, OT_NOOP);
+    VerifyOrExit(!ext->mIsInitialized);
 
     ext = new (&sExtensionRaw) Extension(aInstance);
 
@@ -90,6 +90,13 @@ void ExtensionBase::SignalNcpInit(Ncp::NcpBase &aNcpBase)
     // TODO: Implement vendor extension code here and start interaction with NCP instance.
 
     OT_UNUSED_VARIABLE(aNcpBase);
+}
+
+void ExtensionBase::HandleNotifierEvents(Events aEvents)
+{
+    // TODO: Implement vendor extension code here to handle notifier events.
+
+    OT_UNUSED_VARIABLE(aEvents);
 }
 
 } // namespace Extension

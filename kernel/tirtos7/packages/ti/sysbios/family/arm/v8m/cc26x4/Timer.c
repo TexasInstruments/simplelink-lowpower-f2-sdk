@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2021, Texas Instruments Incorporated
+ * Copyright (c) 2014-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -252,12 +252,18 @@ void Timer_start(Timer_Object *obj)
         compare = obj->period >> 16;
     }
 
+    /* Add current time to compare-value, in case it is not 0 */
+    compare += AONRTCCurrentCompareValueGet();
+
+    /* Clear events on channel 0 */
+    AONRTCEventClear(AON_RTC_CH0);
+
     /* set the compare value at the RTC */
     AONRTCCompareValueSet(AON_RTC_CH0, compare);
 
     /* enable compare channel 0 */
     AONEventMcuWakeUpSet(AON_EVENT_MCU_WU0, AON_EVENT_RTC0);
-    AONRTCEventClear(AON_RTC_CH0);
+
     AONRTCChannelEnable(AON_RTC_CH0);
 
     Hwi_restore(key);

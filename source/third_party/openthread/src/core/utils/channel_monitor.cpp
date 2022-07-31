@@ -33,15 +33,17 @@
 
 #include "channel_monitor.hpp"
 
-#include "common/code_utils.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
-#include "common/random.hpp"
-
 #if OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
+
+#include "common/code_utils.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
+#include "common/random.hpp"
 
 namespace ot {
 namespace Utils {
+
+RegisterLogModule("ChannelMonitor");
 
 const uint32_t ChannelMonitor::mScanChannelMasks[kNumChannelMasks] = {
 #if OPENTHREAD_CONFIG_RADIO_915MHZ_OQPSK_SUPPORT
@@ -62,31 +64,31 @@ ChannelMonitor::ChannelMonitor(Instance &aInstance)
     : InstanceLocator(aInstance)
     , mChannelMaskIndex(0)
     , mSampleCount(0)
-    , mTimer(aInstance, &ChannelMonitor::HandleTimer, this)
+    , mTimer(aInstance, ChannelMonitor::HandleTimer)
 {
     memset(mChannelOccupancy, 0, sizeof(mChannelOccupancy));
 }
 
-otError ChannelMonitor::Start(void)
+Error ChannelMonitor::Start(void)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
-    VerifyOrExit(!IsRunning(), error = OT_ERROR_ALREADY);
+    VerifyOrExit(!IsRunning(), error = kErrorAlready);
     Clear();
     mTimer.Start(kTimerInterval);
-    otLogDebgUtil("ChannelMonitor: Starting");
+    LogDebg("Starting");
 
 exit:
     return error;
 }
 
-otError ChannelMonitor::Stop(void)
+Error ChannelMonitor::Stop(void)
 {
-    otError error = OT_ERROR_NONE;
+    Error error = kErrorNone;
 
-    VerifyOrExit(IsRunning(), error = OT_ERROR_ALREADY);
+    VerifyOrExit(IsRunning(), error = kErrorAlready);
     mTimer.Stop();
-    otLogDebgUtil("ChannelMonitor: Stopping");
+    LogDebg("Stopping");
 
 exit:
     return error;
@@ -98,14 +100,14 @@ void ChannelMonitor::Clear(void)
     mSampleCount      = 0;
     memset(mChannelOccupancy, 0, sizeof(mChannelOccupancy));
 
-    otLogDebgUtil("ChannelMonitor: Clearing data");
+    LogDebg("Clearing data");
 }
 
 uint16_t ChannelMonitor::GetChannelOccupancy(uint8_t aChannel) const
 {
     uint16_t occupancy = 0;
 
-    VerifyOrExit((Radio::kChannelMin <= aChannel) && (aChannel <= Radio::kChannelMax), OT_NOOP);
+    VerifyOrExit((Radio::kChannelMin <= aChannel) && (aChannel <= Radio::kChannelMax));
     occupancy = mChannelOccupancy[aChannel - Radio::kChannelMin];
 
 exit:
@@ -114,12 +116,13 @@ exit:
 
 void ChannelMonitor::HandleTimer(Timer &aTimer)
 {
-    aTimer.GetOwner<ChannelMonitor>().HandleTimer();
+    aTimer.Get<ChannelMonitor>().HandleTimer();
 }
 
 void ChannelMonitor::HandleTimer(void)
 {
-    Get<Mac::Mac>().EnergyScan(mScanChannelMasks[mChannelMaskIndex], 0, &ChannelMonitor::HandleEnergyScanResult, this);
+    IgnoreError(Get<Mac::Mac>().EnergyScan(mScanChannelMasks[mChannelMaskIndex], 0,
+                                           &ChannelMonitor::HandleEnergyScanResult, this));
 
     mTimer.StartAt(mTimer.GetFireTime(), Random::NonCrypto::AddJitter(kTimerInterval, kMaxJitterInterval));
 }
@@ -131,7 +134,7 @@ void ChannelMonitor::HandleEnergyScanResult(Mac::EnergyScanResult *aResult, void
 
 void ChannelMonitor::HandleEnergyScanResult(Mac::EnergyScanResult *aResult)
 {
-    if (aResult == NULL)
+    if (aResult == nullptr)
     {
         if (mChannelMaskIndex == kNumChannelMasks - 1)
         {
@@ -153,7 +156,7 @@ void ChannelMonitor::HandleEnergyScanResult(Mac::EnergyScanResult *aResult)
 
         OT_ASSERT(channelIndex < kNumChannels);
 
-        otLogDebgUtil("ChannelMonitor: channel: %d, rssi:%d", aResult->mChannel, aResult->mMaxRssi);
+        LogDebg("channel: %d, rssi:%d", aResult->mChannel, aResult->mMaxRssi);
 
         if (aResult->mMaxRssi != OT_RADIO_RSSI_INVALID)
         {
@@ -188,20 +191,20 @@ void ChannelMonitor::HandleEnergyScanResult(Mac::EnergyScanResult *aResult)
 
 void ChannelMonitor::LogResults(void)
 {
-#if (OPENTHREAD_CONFIG_LOG_LEVEL >= OT_LOG_LEVEL_INFO) && (OPENTHREAD_CONFIG_LOG_UTIL == 1)
+#if OT_SHOULD_LOG_AT(OT_LOG_LEVEL_INFO)
     const size_t        kStringSize = 128;
     String<kStringSize> logString;
 
-    for (size_t i = 0; i < kNumChannels; i++)
+    for (uint16_t channel : mChannelOccupancy)
     {
-        logString.Append("%02x ", mChannelOccupancy[i] >> 8);
+        logString.Append("%02x ", channel >> 8);
     }
 
-    otLogInfoUtil("ChannelMonitor: %u [%s]", mSampleCount, logString.AsCString());
+    LogInfo("%u [%s]", mSampleCount, logString.AsCString());
 #endif
 }
 
-Mac::ChannelMask ChannelMonitor::FindBestChannels(const Mac::ChannelMask &aMask, uint16_t &aOccupancy)
+Mac::ChannelMask ChannelMonitor::FindBestChannels(const Mac::ChannelMask &aMask, uint16_t &aOccupancy) const
 {
     uint8_t          channel;
     Mac::ChannelMask bestMask;
@@ -211,7 +214,7 @@ Mac::ChannelMask ChannelMonitor::FindBestChannels(const Mac::ChannelMask &aMask,
 
     channel = Mac::ChannelMask::kChannelIteratorFirst;
 
-    while (aMask.GetNextChannel(channel) == OT_ERROR_NONE)
+    while (aMask.GetNextChannel(channel) == kErrorNone)
     {
         uint16_t occupancy = GetChannelOccupancy(channel);
 
@@ -235,4 +238,4 @@ Mac::ChannelMask ChannelMonitor::FindBestChannels(const Mac::ChannelMask &aMask,
 } // namespace Utils
 } // namespace ot
 
-#endif // #if OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE
+#endif // OPENTHREAD_CONFIG_CHANNEL_MONITOR_ENABLE

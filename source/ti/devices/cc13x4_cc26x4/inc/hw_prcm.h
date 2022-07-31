@@ -268,7 +268,7 @@
 // SRAM Non-Secure Callable boundary Address
 #define PRCM_O_SRAMNSADDR                                           0x000002BC
 
-// BUS Secuirty Configuration Register
+// BUS Security Configuration Register
 #define PRCM_O_BUSSECCFG                                            0x000002C0
 
 // CPU Lock Register
@@ -328,7 +328,7 @@
 // Field:   [1:0] RATIO
 //
 // Division rate for clocks driving modules in the MCU_AON domain when system
-// CPU is in seepsleep mode. Division ratio affects both infrastructure clock
+// CPU is in deepsleep mode. Division ratio affects both infrastructure clock
 // and perbusull clock.
 // ENUMs:
 // DIV32                    Divide by 32
@@ -1318,13 +1318,11 @@
 //
 // Internal. Only to be used through TI provided API.
 // ENUMs:
-// DIV2                     Internal. Only to be used through TI provided API.
 // DIV1                     Internal. Only to be used through TI provided API.
 #define PRCM_CPUCLKDIV_RATIO                                        0x00000001
 #define PRCM_CPUCLKDIV_RATIO_BITN                                            0
 #define PRCM_CPUCLKDIV_RATIO_M                                      0x00000001
 #define PRCM_CPUCLKDIV_RATIO_S                                               0
-#define PRCM_CPUCLKDIV_RATIO_DIV2                                   0x00000001
 #define PRCM_CPUCLKDIV_RATIO_DIV1                                   0x00000000
 
 //*****************************************************************************
@@ -1573,7 +1571,7 @@
 // Field:     [8] DMA
 //
 // Write 1 to reset. HW cleared.
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1586,7 +1584,7 @@
 // Field:     [2] PKA
 //
 // Write 1 to reset. HW cleared.
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1599,7 +1597,7 @@
 // Field:     [1] TRNG
 //
 // Write 1 to reset. HW cleared.
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1612,7 +1610,7 @@
 // Field:     [0] CRYPTO
 //
 // Write 1 to reset. HW cleared.
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1633,7 +1631,7 @@
 // 0: No action
 // 1: Reset GPIO. HW cleared.
 //
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1654,7 +1652,7 @@
 // 0: No action
 // 1: Reset all GPTs. HW cleared.
 //
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1675,8 +1673,8 @@
 // 0: No action
 // 1: Reset I2C1. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
-// PDSTAT0.SERIAL_ON = 1
+// Access will only have effect when PERIPH power domain is on,
+// PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
@@ -1691,7 +1689,7 @@
 // 0: No action
 // 1: Reset I2C0. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
+// Access will only have effect when SERIAL power domain is on,
 // PDSTAT0.SERIAL_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1712,7 +1710,7 @@
 // 0: No action
 // 1: Reset UART3. HW cleared.
 //
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1728,8 +1726,8 @@
 // 0: No action
 // 1: Reset UART2. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
-// PDSTAT0.SERIAL_ON = 1
+// Access will only have effect when PERIPH power domain is on,
+// PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
@@ -1744,7 +1742,7 @@
 // 0: No action
 // 1: Reset UART1. HW cleared.
 //
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1760,7 +1758,7 @@
 // 0: No action
 // 1: Reset UART0. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
+// Access will only have effect when SERIAL power domain is on,
 // PDSTAT0.SERIAL_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1780,8 +1778,8 @@
 // 0: No action
 // 1: Reset SSI3. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
-// PDSTAT0.SERIAL_ON = 1
+// Access will only have effect when PERIPH power domain is on,
+// PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
@@ -1795,8 +1793,8 @@
 // 0: No action
 // 1: Reset SSI2. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
-// PDSTAT0.SERIAL_ON = 1
+// Access will only have effect when PERIPH power domain is on,
+// PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
@@ -1810,8 +1808,8 @@
 // 0: No action
 // 1: Reset SSI1. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
-// PDSTAT0.SERIAL_ON = 1
+// Access will only have effect when PERIPH power domain is on,
+// PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
@@ -1825,7 +1823,7 @@
 // 0: No action
 // 1: Reset SSI0. HW cleared.
 //
-// Acess will only have effect when SERIAL power domain is on,
+// Access will only have effect when SERIAL power domain is on,
 // PDSTAT0.SERIAL_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -1846,7 +1844,7 @@
 // 0: No action
 // 1: Reset module. HW cleared.
 //
-// Acess will only have effect when PERIPH power domain is on,
+// Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
@@ -2029,7 +2027,7 @@
 //
 //  0: RFC power domain powered off if also PDCTL0.RFC_ON = 0 1: RFC power
 // domain powered on  Bit shall be used by RFC in autonomous mode but there is
-// no HW restrictions fom system CPU to access the bit.
+// no HW restrictions from system CPU to access the bit.
 #define PRCM_PDCTL1_RFC_ON                                          0x00000004
 #define PRCM_PDCTL1_RFC_ON_BITN                                              2
 #define PRCM_PDCTL1_RFC_ON_M                                        0x00000004
@@ -2207,7 +2205,7 @@
 // Field:   [2:0] CURR
 //
 // Selects the set of commands that the RFC will accept. Only modes permitted
-// by RFCMODEHWOPT.AVAIL are writeable. See the technical reference manual for
+// by RFCMODEHWOPT.AVAIL are writable. See the technical reference manual for
 // details.
 // ENUMs:
 // MODE7                    Select Mode 7
@@ -2304,13 +2302,10 @@
 
 // Field:     [4] PAGE
 //
-// Page Mode select
 //
-// 0: Page Mode disabled. Memory works in standard mode
-// 1: Page Mode enabled. Only one  half of butterfly array selected. Page Mode
-// will select either LSB half or MSB half of the word based on PGS setting.
-//
-// This mode can be used for additional power saving
+// NOT in use.
+// Writing any other value than the reset value may result in undefined
+// behavior.
 #define PRCM_MCUSRAMCFG_PAGE                                        0x00000010
 #define PRCM_MCUSRAMCFG_PAGE_BITN                                            4
 #define PRCM_MCUSRAMCFG_PAGE_M                                      0x00000010
@@ -2403,7 +2398,7 @@
 // CACHE or SPLIT mode after waking up again
 // 01: VIMS:CTL.MODE must be GPRAM before DEEPSLEEP is asserted. Must remain in
 // GPRAM mode after wake up, alternatively select OFF mode first and then CACHE
-// or SPILT mode.
+// or SPLIT mode.
 // 10: Illegal mode
 // 11: No restrictions
 #define PRCM_RAMRETEN_VIMS_W                                                 2

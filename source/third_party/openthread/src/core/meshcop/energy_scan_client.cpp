@@ -33,87 +33,80 @@
 
 #include "energy_scan_client.hpp"
 
+#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+
 #include "coap/coap_message.hpp"
+#include "common/as_core_type.hpp"
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
 #include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/locator_getters.hpp"
+#include "common/log.hpp"
 #include "meshcop/meshcop.hpp"
 #include "meshcop/meshcop_tlvs.hpp"
 #include "thread/thread_netif.hpp"
-#include "thread/thread_uri_paths.hpp"
-
-#if OPENTHREAD_CONFIG_COMMISSIONER_ENABLE && OPENTHREAD_FTD
+#include "thread/uri_paths.hpp"
 
 namespace ot {
 
+RegisterLogModule("EnergyScanClnt");
+
 EnergyScanClient::EnergyScanClient(Instance &aInstance)
     : InstanceLocator(aInstance)
-    , mEnergyScan(OT_URI_PATH_ENERGY_REPORT, &EnergyScanClient::HandleReport, this)
+    , mCallback(nullptr)
+    , mContext(nullptr)
+    , mEnergyScan(UriPath::kEnergyReport, &EnergyScanClient::HandleReport, this)
 {
-    mContext  = NULL;
-    mCallback = NULL;
-    Get<Coap::Coap>().AddResource(mEnergyScan);
+    Get<Tmf::Agent>().AddResource(mEnergyScan);
 }
 
-otError EnergyScanClient::SendQuery(uint32_t                           aChannelMask,
-                                    uint8_t                            aCount,
-                                    uint16_t                           aPeriod,
-                                    uint16_t                           aScanDuration,
-                                    const Ip6::Address &               aAddress,
-                                    otCommissionerEnergyReportCallback aCallback,
-                                    void *                             aContext)
+Error EnergyScanClient::SendQuery(uint32_t                           aChannelMask,
+                                  uint8_t                            aCount,
+                                  uint16_t                           aPeriod,
+                                  uint16_t                           aScanDuration,
+                                  const Ip6::Address &               aAddress,
+                                  otCommissionerEnergyReportCallback aCallback,
+                                  void *                             aContext)
 {
-    otError                 error = OT_ERROR_NONE;
+    Error                   error = kErrorNone;
     MeshCoP::ChannelMaskTlv channelMask;
-    Ip6::MessageInfo        messageInfo;
-    Coap::Message *         message = NULL;
+    Tmf::MessageInfo        messageInfo(GetInstance());
+    Coap::Message *         message = nullptr;
 
-    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = OT_ERROR_INVALID_STATE);
-    VerifyOrExit((message = MeshCoP::NewMeshCoPMessage(Get<Coap::Coap>())) != NULL, error = OT_ERROR_NO_BUFS);
+    VerifyOrExit(Get<MeshCoP::Commissioner>().IsActive(), error = kErrorInvalidState);
+    VerifyOrExit((message = Get<Tmf::Agent>().NewPriorityMessage()) != nullptr, error = kErrorNoBufs);
 
-    SuccessOrExit(error =
-                      message->Init(aAddress.IsMulticast() ? OT_COAP_TYPE_NON_CONFIRMABLE : OT_COAP_TYPE_CONFIRMABLE,
-                                    OT_COAP_CODE_POST, OT_URI_PATH_ENERGY_SCAN));
+    SuccessOrExit(error = message->InitAsPost(aAddress, UriPath::kEnergyScan));
     SuccessOrExit(error = message->SetPayloadMarker());
 
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kCommissionerSessionId,
-                                               Get<MeshCoP::Commissioner>().GetSessionId()));
+    SuccessOrExit(
+        error = Tlv::Append<MeshCoP::CommissionerSessionIdTlv>(*message, Get<MeshCoP::Commissioner>().GetSessionId()));
 
     channelMask.Init();
     channelMask.SetChannelMask(aChannelMask);
     SuccessOrExit(error = channelMask.AppendTo(*message));
 
-    SuccessOrExit(error = Tlv::AppendUint8Tlv(*message, MeshCoP::Tlv::kCount, aCount));
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kPeriod, aPeriod));
-    SuccessOrExit(error = Tlv::AppendUint16Tlv(*message, MeshCoP::Tlv::kScanDuration, aScanDuration));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::CountTlv>(*message, aCount));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::PeriodTlv>(*message, aPeriod));
+    SuccessOrExit(error = Tlv::Append<MeshCoP::ScanDurationTlv>(*message, aScanDuration));
 
-    messageInfo.SetSockAddr(Get<Mle::MleRouter>().GetMeshLocal16());
-    messageInfo.SetPeerAddr(aAddress);
-    messageInfo.SetPeerPort(kCoapUdpPort);
-    SuccessOrExit(error = Get<Coap::Coap>().SendMessage(*message, messageInfo));
+    messageInfo.SetSockAddrToRlocPeerAddrTo(aAddress);
+    SuccessOrExit(error = Get<Tmf::Agent>().SendMessage(*message, messageInfo));
 
-    otLogInfoMeshCoP("sent energy scan query");
+    LogInfo("sent query");
 
     mCallback = aCallback;
     mContext  = aContext;
 
 exit:
-
-    if (error != OT_ERROR_NONE && message != NULL)
-    {
-        message->Free();
-    }
-
+    FreeMessageOnError(message, error);
     return error;
 }
 
 void EnergyScanClient::HandleReport(void *aContext, otMessage *aMessage, const otMessageInfo *aMessageInfo)
 {
-    static_cast<EnergyScanClient *>(aContext)->HandleReport(*static_cast<Coap::Message *>(aMessage),
-                                                            *static_cast<const Ip6::MessageInfo *>(aMessageInfo));
+    static_cast<EnergyScanClient *>(aContext)->HandleReport(AsCoapMessage(aMessage), AsCoreType(aMessageInfo));
 }
 
 void EnergyScanClient::HandleReport(Coap::Message &aMessage, const Ip6::MessageInfo &aMessageInfo)
@@ -127,23 +120,23 @@ void EnergyScanClient::HandleReport(Coap::Message &aMessage, const Ip6::MessageI
         uint8_t                list[OPENTHREAD_CONFIG_TMF_ENERGY_SCAN_MAX_RESULTS];
     } OT_TOOL_PACKED_END energyList;
 
-    VerifyOrExit(aMessage.IsConfirmable() && aMessage.GetCode() == OT_COAP_CODE_POST, OT_NOOP);
+    VerifyOrExit(aMessage.IsConfirmablePostRequest());
 
-    otLogInfoMeshCoP("received energy scan report");
+    LogInfo("received report");
 
-    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0, OT_NOOP);
+    VerifyOrExit((mask = MeshCoP::ChannelMaskTlv::GetChannelMask(aMessage)) != 0);
 
-    SuccessOrExit(MeshCoP::Tlv::GetTlv(aMessage, MeshCoP::Tlv::kEnergyList, sizeof(energyList), energyList.tlv));
-    VerifyOrExit(energyList.tlv.IsValid(), OT_NOOP);
+    SuccessOrExit(MeshCoP::Tlv::FindTlv(aMessage, MeshCoP::Tlv::kEnergyList, sizeof(energyList), energyList.tlv));
+    VerifyOrExit(energyList.tlv.IsValid());
 
-    if (mCallback != NULL)
+    if (mCallback != nullptr)
     {
         mCallback(mask, energyList.list, energyList.tlv.GetLength(), mContext);
     }
 
-    SuccessOrExit(Get<Coap::Coap>().SendEmptyAck(aMessage, aMessageInfo));
+    SuccessOrExit(Get<Tmf::Agent>().SendEmptyAck(aMessage, aMessageInfo));
 
-    otLogInfoMeshCoP("sent energy scan report response");
+    LogInfo("sent report response");
 
 exit:
     return;

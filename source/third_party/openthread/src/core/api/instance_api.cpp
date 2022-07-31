@@ -36,11 +36,24 @@
 #include <openthread/instance.h>
 #include <openthread/platform/misc.h>
 
-#include "common/instance.hpp"
-#include "common/locator-getters.hpp"
-#include "common/logging.hpp"
+#include "common/as_core_type.hpp"
+#include "common/locator_getters.hpp"
 #include "common/new.hpp"
 #include "radio/radio.hpp"
+
+#if !defined(OPENTHREAD_BUILD_DATETIME)
+#ifdef __ANDROID__
+#ifdef OPENTHREAD_ENABLE_ANDROID_NDK
+#include <sys/system_properties.h>
+#else
+#include <cutils/properties.h>
+#endif
+#else // __ANDROID__
+#if defined(__DATE__)
+#define OPENTHREAD_BUILD_DATETIME __DATE__ " " __TIME__
+#endif
+#endif // __ANDROID__
+#endif // !defined(OPENTHREAD_BUILD_DATETIME)
 
 using namespace ot;
 
@@ -50,7 +63,6 @@ otInstance *otInstanceInit(void *aInstanceBuffer, size_t *aInstanceBufferSize)
     Instance *instance;
 
     instance = Instance::Init(aInstanceBuffer, aInstanceBufferSize);
-    otLogInfoApi("otInstance Initialized");
 
     return instance;
 }
@@ -64,9 +76,7 @@ otInstance *otInstanceInitSingle(void)
 bool otInstanceIsInitialized(otInstance *aInstance)
 {
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.IsInitialized();
+    return AsCoreType(aInstance).IsInitialized();
 #else
     OT_UNUSED_VARIABLE(aInstance);
     return true;
@@ -75,46 +85,54 @@ bool otInstanceIsInitialized(otInstance *aInstance)
 
 void otInstanceFinalize(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-    instance.Finalize();
+    AsCoreType(aInstance).Finalize();
 }
 
 void otInstanceReset(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Reset();
+    AsCoreType(aInstance).Reset();
 }
+
+#if OPENTHREAD_CONFIG_UPTIME_ENABLE
+uint64_t otInstanceGetUptime(otInstance *aInstance)
+{
+    return AsCoreType(aInstance).Get<Uptime>().GetUptime();
+}
+
+void otInstanceGetUptimeAsString(otInstance *aInstance, char *aBuffer, uint16_t aSize)
+{
+    AsCoreType(aInstance).Get<Uptime>().GetUptime(aBuffer, aSize);
+}
+#endif
 
 #if OPENTHREAD_MTD || OPENTHREAD_FTD
 otError otSetStateChangedCallback(otInstance *aInstance, otStateChangedCallback aCallback, void *aContext)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Notifier>().RegisterCallback(aCallback, aContext);
+    return AsCoreType(aInstance).Get<Notifier>().RegisterCallback(aCallback, aContext);
 }
 
 void otRemoveStateChangeCallback(otInstance *aInstance, otStateChangedCallback aCallback, void *aContext)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.Get<Notifier>().RemoveCallback(aCallback, aContext);
+    AsCoreType(aInstance).Get<Notifier>().RemoveCallback(aCallback, aContext);
 }
 
 void otInstanceFactoryReset(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    instance.FactoryReset();
+    AsCoreType(aInstance).FactoryReset();
 }
 
 otError otInstanceErasePersistentInfo(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.ErasePersistentInfo();
+    return AsCoreType(aInstance).ErasePersistentInfo();
 }
 #endif // OPENTHREAD_MTD || OPENTHREAD_FTD
+
+#if OPENTHREAD_RADIO
+void otInstanceResetRadioStack(otInstance *aInstance)
+{
+    AsCoreType(aInstance).ResetRadioStack();
+}
+#endif
 
 const char *otGetVersionString(void)
 {
@@ -134,26 +152,44 @@ const char *otGetVersionString(void)
      * image will be undefined and may change.
      */
 
+#if !defined(OPENTHREAD_BUILD_DATETIME) && defined(__ANDROID__)
+
+#ifdef OPENTHREAD_ENABLE_ANDROID_NDK
+    static char sVersion[100 + PROP_VALUE_MAX];
+    char        dateTime[PROP_VALUE_MAX];
+
+    __system_property_get("ro.build.date", dateTime);
+#else
+    static char sVersion[100 + PROPERTY_VALUE_MAX];
+    char        dateTime[PROPERTY_VALUE_MAX];
+
+    property_get("ro.build.date", dateTime, "Thu Jan 1 1970 UTC 00:00:00");
+#endif
+
+    snprintf(sVersion, sizeof(sVersion), "%s/%s ;%s ; %s", PACKAGE_NAME, PACKAGE_VERSION,
+             OPENTHREAD_CONFIG_PLATFORM_INFO, dateTime);
+#else
+
 #ifdef PLATFORM_VERSION_ATTR_PREFIX
     PLATFORM_VERSION_ATTR_PREFIX
 #else
     static
 #endif
     const char sVersion[] = PACKAGE_NAME "/" PACKAGE_VERSION "; " OPENTHREAD_CONFIG_PLATFORM_INFO
-#if defined(__DATE__)
-                                         "; " __DATE__ " " __TIME__
+#ifdef OPENTHREAD_BUILD_DATETIME
+                                         "; " OPENTHREAD_BUILD_DATETIME
 #endif
 #ifdef PLATFORM_VERSION_ATTR_SUFFIX
                                              PLATFORM_VERSION_ATTR_SUFFIX
 #endif
         ; // Trailing semicolon to end statement.
 
+#endif
+
     return sVersion;
 }
 
 const char *otGetRadioVersionString(otInstance *aInstance)
 {
-    Instance &instance = *static_cast<Instance *>(aInstance);
-
-    return instance.Get<Radio>().GetVersionString();
+    return AsCoreType(aInstance).Get<Radio>().GetVersionString();
 }

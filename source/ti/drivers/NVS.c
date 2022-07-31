@@ -48,7 +48,7 @@ static bool isInitialized = false;
 
 /* Default NVS parameters structure */
 const NVS_Params NVS_defaultParams = {
-    NULL    /* custom */
+    NULL /* custom */
 };
 
 /*
@@ -91,7 +91,8 @@ void NVS_init(void)
     uint_least8_t i;
 
     /* Call each driver's init function */
-    for (i = 0; i < NVS_count; i++) {
+    for (i = 0; i < NVS_count; i++)
+    {
         NVS_config[i].fxnTablePtr->initFxn();
     }
 
@@ -114,12 +115,15 @@ NVS_Handle NVS_open(uint_least8_t index, NVS_Params *params)
     NVS_Handle handle = NULL;
 
     /* do init if not done yet */
-    if (!isInitialized) {
+    if (!isInitialized)
+    {
         NVS_init();
     }
 
-    if (index < NVS_count) {
-        if (params == NULL) {
+    if (index < NVS_count)
+    {
+        if (params == NULL)
+        {
             /* No params passed in, so use the defaults */
             params = (NVS_Params *)&NVS_defaultParams;
         }
@@ -140,8 +144,7 @@ void NVS_Params_init(NVS_Params *params)
 /*
  *  ======== NVS_read =======
  */
-int_fast16_t NVS_read(NVS_Handle handle, size_t offset, void *buffer,
-             size_t bufferSize)
+int_fast16_t NVS_read(NVS_Handle handle, size_t offset, void *buffer, size_t bufferSize)
 {
     return (handle->fxnTablePtr->readFxn(handle, offset, buffer, bufferSize));
 }
@@ -157,9 +160,7 @@ void NVS_unlock(NVS_Handle handle)
 /*
  *  ======== NVS_write =======
  */
-int_fast16_t NVS_write(NVS_Handle handle, size_t offset, void *buffer,
-              size_t bufferSize, uint_fast16_t flags)
+int_fast16_t NVS_write(NVS_Handle handle, size_t offset, void *buffer, size_t bufferSize, uint_fast16_t flags)
 {
-    return (handle->fxnTablePtr->writeFxn(handle, offset, buffer,
-                    bufferSize, flags));
+    return (handle->fxnTablePtr->writeFxn(handle, offset, buffer, bufferSize, flags));
 }

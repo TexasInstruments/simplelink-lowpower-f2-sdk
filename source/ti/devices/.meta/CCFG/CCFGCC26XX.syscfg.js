@@ -555,10 +555,29 @@ let devSpecific = {
                         displayName: "TI Failure Analysis",
                         description: "TI Failure Analysis",
                         longDescription: "If enabled, it is possible for TI to unlock access to the "
-                            + "DAP and all TAPs on the device with a security key to perform failure analysis",
+                            + "DAP and all TAPs on the device with an unlock key to perform failure analysis",
                         readOnly: false,
                         hidden: false,
                         default: false
+                    },
+                    {
+                        name: "FailureAnalysisCustomerKey",
+                        displayName: "TI Failure Analysis Customer Key",
+                        description: "Enable customer key to be XOR'ed with unlock key during TI Failure Analysis",
+                        readOnly: false,
+                        hidden: !isM33,
+                        default: false,
+                        onChange: (inst, ui) => {
+                            ui.FailureAnalysisCustomerKeyValue.hidden = (inst.FailureAnalysisCustomerKey === false);
+                        }
+                    },
+                    {
+                        name: "FailureAnalysisCustomerKeyValue",
+                        displayName: "128-bit Customer Key",
+                        description: "128-bit customer key XOR'ed with unlock key to enter TI Failure Analysis",
+                        readOnly: false,
+                        hidden: true,
+                        default: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                     },
                     {
                         name: "CpuDap",
@@ -633,14 +652,12 @@ function validate(inst, validation) {
         inst.xoscSinglePointCalibration === "") {
         Common.logError(validation, inst, "xoscSinglePointCalibration",
             "No XOSC_HF calibration temperature measurement provided!");
-        return;
     }
 
     // DIO check Ext Clk DIO
     if (inst.extClkDio < MIN_DIO || inst.extClkDio > MAX_DIO) {
         Common.logError(validation, inst, "extClkDio",
             "Valid range for integer: " + MIN_DIO + " to " + MAX_DIO);
-        return;
     }
 
     // DIO check backdoor
@@ -648,7 +665,6 @@ function validate(inst, validation) {
         || inst.dioBootloaderBackdoor > MAX_DIO) {
         Common.logError(validation, inst, "dioBootloaderBackdoor",
             "Valid range for integer: " + MIN_DIO + " to " + MAX_DIO);
-        return;
     }
 
     // RTC increment check
@@ -716,6 +732,12 @@ function validate(inst, validation) {
         Common.logWarning(validation, inst, "srcClkLF",
             "The LP_CC2652RB launchpad does not contain an LF crystal by default.\
             Make sure to mount an OSC before using this option");
+    }
+
+    // Customer key must be 128-bit hex value
+    if (!(inst.FailureAnalysisCustomerKeyValue.match(/^[a-fA-F0-9]{32}$/))) {
+        Common.logError(validation, inst, "FailureAnalysisCustomerKeyValue",
+            "Must be 128-bit hex-formatted value");
     }
 }
 
