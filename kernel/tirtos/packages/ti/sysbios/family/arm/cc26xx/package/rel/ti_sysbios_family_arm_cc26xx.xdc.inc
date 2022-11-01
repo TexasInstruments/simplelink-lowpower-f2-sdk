@@ -1,9 +1,0 @@
-package/package.bld.xml
-package/build.cfg
-package/package.xdc.inc
-package.bld
-Boot.xdt
-Boot.xml
-Alarm.xml
-TimestampProvider.xml
-package/package.cfg.xdc.inc
