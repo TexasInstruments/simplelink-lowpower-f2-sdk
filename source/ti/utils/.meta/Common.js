@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,8 @@
 
 exports = {
     isCName: isCName,              /* validate name is C identifier */
-    device2Family: device2Family   /* convert device object to device family */
+    device2Family: device2Family,  /* convert device object to device family */
+    autoForceModules: autoForceModules
 };
 
 /*!
@@ -93,4 +94,43 @@ function isCName(id)
         return true;
     }
     return false;
+}
+
+/*
+ *  ======== autoForceModules ========
+ *  Returns an implementation of a module's modules method that 
+ *  forces the addition of the specified modules
+ *
+ *  @param kwargs An array of module name strings.
+ *
+ *  @return An array with module instance objects
+ *
+ *  Example:
+ *     modules: Common.autoForceModules(["ti/drivers/Board", "JSON"])
+ */
+function autoForceModules(kwargs)
+{
+    return (function(){
+
+        let modArray = [];
+
+        if (kwargs == undefined || kwargs == null || !Array.isArray(kwargs)) {
+            console.log("Common.js:autoForceModules('kwargs'): 'kwargs' invalid!");
+            return (modArray);
+        }
+
+        for (let args = kwargs.length - 1; args >= 0; args--) {
+            let modPath = kwargs[args];
+            if (modPath.indexOf('/') == -1) {
+                modPath = "/ti/utils/" + modPath;
+            }
+            modArray.push({
+                name      : modPath.substring(modPath.lastIndexOf('/') + 1),
+                moduleName: modPath,
+                hidden    : true
+            });
+        }
+
+        return modArray;
+    });
 }

@@ -62,7 +62,6 @@ Done
 - [leaderdata](#leaderdata)
 - [leaderweight](#leaderweight)
 - [linkmetrics](#linkmetrics-mgmt-ipaddr-enhanced-ack-clear)
-- [linkquality](#linkquality-extaddr)
 - [locate](#locate)
 - [log](#log-filename-filename)
 - [mac](#mac-retries-direct)
@@ -392,6 +391,25 @@ Get the local NAT64 prefix of the Border Router.
 ```bash
 > br nat64prefix
 fd14:1078:b3d5:b0b0:0:0::/96
+Done
+```
+
+### br rioprf
+
+Get the preference used when advertising Route Info Options (e.g., for discovered OMR prefixes) in emitted Router Advertisement message.
+
+```bash
+> br rioprf
+med
+Done
+```
+
+### br rioprf \<prf\>
+
+Set the preference (which may be 'high', 'med', or 'low') to use when advertising Route Info Options (e.g., for discovered OMR prefixes) in emitted Router Advertisement message.
+
+```bash
+> br rioprf low
 Done
 ```
 
@@ -1627,25 +1645,6 @@ Done
  - RSSI: -18 (dBm) (Exponential Moving Average)
 ```
 
-### linkquality \<extaddr\>
-
-Get the link quality on the link to a given extended address.
-
-```bash
-> linkquality 36c1dd7a4f5201ff
-3
-Done
-```
-
-### linkquality \<extaddr\> \<linkquality\>
-
-Set the link quality on the link to a given extended address.
-
-```bash
-> linkquality 36c1dd7a4f5201ff 3
-Done
-```
-
 ### locate
 
 Gets the current state (`In Progress` or `Idle`) of anycast locator.
@@ -1996,7 +1995,7 @@ Done
 
 Get the diagnostic information for a Thread Router as parent.
 
-Note: When operating as a Thread Router, this command will return the cached information from when the device was previously attached as a Thread Child. Returning cached information is necessary to support the Thread Test Harness - Test Scenario 8.2.x requests the former parent (i.e. Joiner Router's) MAC address even if the device has already promoted to a router.
+Note: When operating as a Thread Router when `OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE` is enabled, this command will return the cached information from when the device was previously attached as a Thread Child. Returning cached information is necessary to support the Thread Test Harness - Test Scenario 8.2.x requests the former parent (i.e. Joiner Router's) MAC address even if the device has already promoted to a router.
 
 ```bash
 > parent
@@ -2005,7 +2004,15 @@ Rloc: 5c00
 Link Quality In: 3
 Link Quality Out: 3
 Age: 20
+Version: 4
 Done
+```
+
+Note: When `OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE` is enabled, this command will return two extra lines with information relevant for CSL Receiver operation.
+
+```bash
+CSL clock accuracy: 20
+CSL uncertainty: 5
 ```
 
 ### parentpriority
@@ -2174,6 +2181,15 @@ Get the mesh local prefix.
 ```bash
 > prefix meshlocal
 fdde:ad00:beef:0::/64
+Done
+```
+
+### prefix meshlocal <prefix>
+
+Set the mesh local prefix.
+
+```bash
+> prefix meshlocal fdde:ad00:beef:0::/64
 Done
 ```
 

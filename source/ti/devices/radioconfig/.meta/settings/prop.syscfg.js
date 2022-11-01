@@ -470,18 +470,22 @@ function validateSymbolRate(inst) {
         return status;
     }
 
-    // Workaround for validation issues ( Wi-SUN #5, and sub-1GHz ZigBee 500 kbps)
-    const deviceNeedsWorkAround = Common.isDeviceClass7() || Common.isDeviceClass3();
-    const phyType = inst.phyType868;
-    const phyNeedsWorkaround = phyType === "2gfsk300kbps75dev915wsun5" || phyType === "2gfsk500kbps154g";
+    // Workaround for validation issues (Wi-SUN #5, and sub-1GHz ZigBee 500 kbps)
+    let phyNeedsWorkaround = false;
+    if ("phyType868" in inst) {
+        const phyType = inst.phyType868;
+        phyNeedsWorkaround = phyType.includes("2gfsk300kbps75dev915wsun5")
+            || phyType.includes("2gfsk500kbps154g");
+    }
 
-    if (deviceNeedsWorkAround && phyNeedsWorkaround) {
+    if (phyNeedsWorkaround) {
         status.valid = true;
         return status;
     }
 
     const result = ParameterHandler.validateFreqSymrateRxBW(inst.carrierFrequency,
-        inst.symbolRate, inst.rxFilterBw);
+        inst.symbolRate,
+        inst.rxFilterBw);
     if (result !== null) {
         status.msg = result.message;
         return status;
@@ -683,13 +687,14 @@ function validate(inst, validation) {
 
     // Force VDDR off
     if (ParameterHandler.validateTxPower(txPower, freq, highPA) && ccfg.$static.forceVddr === false) {
-        logWarning(validation, inst, cfg,
+        logWarning(validation,
+            inst,
+            cfg,
             `The selected TX Power requires Force VDDR in ${forceVddrHref} to be enabled.`);
     }
     // Force VDDR on
     else if (!ParameterHandler.validateTxPower(txPower, freq, highPA) && ccfg.$static.forceVddr === true) {
-        logWarning(validation, inst, cfg,
-            `The selected TX Power requires Force VDDR in ${forceVddrHref}`
+        logWarning(validation, inst, cfg, `The selected TX Power requires Force VDDR in ${forceVddrHref}`
             + " to be disabled, otherwise the output power may be wrong and the current draw too high.");
     }
 }

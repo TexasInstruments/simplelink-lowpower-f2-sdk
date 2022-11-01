@@ -40,12 +40,11 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 #include <ti/drivers/cryptoutils/ecc/ECCParamsCC26X4_s.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
@@ -180,7 +179,7 @@ static void ECDH_s_hwiCallback(ECDH_Handle handle_s,
             }
 
             /* Trigger the interrupt for the non-secure callback dispatcher */
-            SecureCB_post(&ecdhSecureCB_ns->object);
+            SecureCallback_post(&ecdhSecureCB_ns->object);
         }
     }
 }
@@ -275,6 +274,34 @@ static inline void ECDH_s_releaseConfig(ECDH_Handle nsHandle)
 }
 
 /*
+ *  ======== ECDH_s_copyCryptoKey ========
+ *  secureKey: secure destination to copy non-secure key
+ *  secureOpKey: pointer to key in secure operational struct (source to copy
+ *               non-secure key from)
+ */
+static psa_status_t ECDH_s_copyCryptoKey(CryptoKey *secureKey, CryptoKey **secureOpKey)
+{
+    /* Validate key struct address range */
+    if (cmse_has_unpriv_nonsecure_read_access(*secureOpKey, sizeof(CryptoKey)) == NULL)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
+
+    /* Make a secure copy of the key */
+    (void)tfm_memcpy(secureKey, *secureOpKey, sizeof(CryptoKey));
+
+    if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
+    {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
+
+    /* Update the secure operational struct to point to secure key copy */
+    *secureOpKey = secureKey;
+
+    return PSA_SUCCESS;
+}
+
+/*
  *  ======== ECDH_s_copyGenPublicKeyOperation ========
  */
 static inline psa_status_t ECDH_s_copyGenPublicKeyOperation(ECDH_OperationGeneratePublicKey *secureOperation,
@@ -305,29 +332,16 @@ static inline psa_status_t ECDH_s_copyGenPublicKeyOperation(ECDH_OperationGenera
 
     /*
      * Make a secure copy of the private key struct and update the operation
-     * struct to point to the secure key copy.
+     * struct to point to the secure key copy. Cast is required since key is
+     * const data.
      */
-    (void)tfm_memcpy(securePrivateKey, secureOperation->myPrivateKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(securePrivateKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    secureOperation->myPrivateKey = securePrivateKey;
+    ECDH_s_copyCryptoKey(securePrivateKey, (CryptoKey **)&secureOperation->myPrivateKey);
 
     /*
      * Make a secure copy of the public key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)tfm_memcpy(securePublicKey, secureOperation->myPublicKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureOutputKey(securePublicKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    secureOperation->myPublicKey = securePublicKey;
+    ECDH_s_copyCryptoKey(securePublicKey, &secureOperation->myPublicKey);
 
     return PSA_SUCCESS;
 }
@@ -364,42 +378,23 @@ static inline psa_status_t ECDH_s_copyComputeSharedSecretOperation(ECDH_Operatio
 
     /*
      * Make a secure copy of the private key struct and update the operation
-     * struct to point to the secure key copy.
+     * struct to point to the secure key copy. Cast is required since key is
+     * const data.
      */
-    (void)tfm_memcpy(securePrivateKey, secureOperation->myPrivateKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(securePrivateKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    secureOperation->myPrivateKey = securePrivateKey;
+    ECDH_s_copyCryptoKey(securePrivateKey, (CryptoKey **)&secureOperation->myPrivateKey);
 
     /*
      * Make a secure copy of the public key struct and update the operation
-     * struct to point to the secure key copy.
+     * struct to point to the secure key copy. Cast is required since key is
+     * const data.
      */
-    (void)tfm_memcpy(securePublicKey, secureOperation->theirPublicKey, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureInputKey(securePublicKey) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    secureOperation->theirPublicKey = securePublicKey;
+    ECDH_s_copyCryptoKey(securePublicKey, (CryptoKey **)&secureOperation->theirPublicKey);
 
     /*
      * Make a secure copy of the shared secret key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)tfm_memcpy(secureSharedSecret, secureOperation->sharedSecret, sizeof(CryptoKey));
-
-    if (CryptoKey_verifySecureOutputKey(secureSharedSecret) != CryptoKey_STATUS_SUCCESS)
-    {
-        return PSA_ERROR_PROGRAMMER_ERROR;
-    }
-
-    secureOperation->sharedSecret = secureSharedSecret;
+    ECDH_s_copyCryptoKey(secureSharedSecret, &secureOperation->sharedSecret);
 
     return PSA_SUCCESS;
 }
@@ -547,8 +542,8 @@ static inline psa_status_t ECDH_s_construct(psa_msg_t *msg)
         if (constructMsg.params != NULL)
         {
             /*
-             * Copy params to secure memory and substitute our own callback
-             * if callback return behavior is specified.
+             * Copy params to secure memory and force callback mode,
+             * substituting our own callback function.
              */
             status = ECDH_s_copyParams(&params_s, constructMsg.params);
             if (status != PSA_SUCCESS)
@@ -622,6 +617,10 @@ static inline psa_status_t ECDH_s_open(psa_msg_t *msg)
         /* Non-secure callers have negative client ID */
         if (TFM_CLIENT_ID_IS_NS(msg->client_id))
         {
+            /*
+             * Copy params to secure memory and force callback mode,
+             * substituting our own callback function.
+             */
             status = ECDH_s_copyParams(&params_s, openMsg.params);
             if (status != PSA_SUCCESS)
             {

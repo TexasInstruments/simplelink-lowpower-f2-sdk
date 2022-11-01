@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1959,7 +1959,6 @@ void LCD_setContrast(LCD_Handle handle, unsigned char ucContrast)
 static bool LCD_initHw(LCD_Handle handle)
 {
     /* Locals */
-    uint32_t i = 0;
     LCD_HWAttrs const *hwAttrs;
 
     /* get the pointer to the hwAttrs */

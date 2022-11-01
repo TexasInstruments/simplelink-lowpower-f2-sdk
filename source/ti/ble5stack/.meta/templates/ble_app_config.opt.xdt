@@ -2,11 +2,23 @@
 
 const ble = system.modules["/ti/ble5stack/ble"].$static;
 const ccfg = system.modules["/ti/devices/CCFG"].$static;
-const rf = system.modules["/ti/drivers/RF"].$static;
 const Common = system.getScript("/ti/ble5stack/ble_common.js");
-const rfDesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
 const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
-const LPName = rfDesign.rfDesign;
+
+let rf;
+let LPName;
+let rfDesign;
+
+if(devFamily == "DeviceFamily_CC23X0")
+{
+  LPName = "LP_CC2340R5";
+}
+else
+{
+  rf = system.modules["/ti/drivers/RF"].$static;
+  rfDesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
+  LPName = rfDesign.rfDesign;
+}
 
 %%}
 
@@ -72,6 +84,11 @@ const LPName = rfDesign.rfDesign;
 -DCC26X2
 -DCC26XX
 % }
+% else if(devFamily == "DeviceFamily_CC13X4")
+% {
+-DCC13X4
+-DCC13XX
+% }
 % else if((devFamily == "DeviceFamily_CC13X2" && (LPName == "LAUNCHXL-CC1352P-2" || LPName == "LAUNCHXL-CC1352P-4")) || ((LPName == "LP_CC2652PSIP") || (LPName == "LP_CC1352P7-4") || (LPName == "LP_CC2651P3")))
 % {
 -DCC13X2P
@@ -81,6 +98,10 @@ const LPName = rfDesign.rfDesign;
 % {
 -DCC13X2
 -DCC13XX
+% }
+% else if(devFamily == "DeviceFamily_CC23X0")
+% {
+-DCC23X0
 % }
 %
 % if(ble.disableDisplayModule)
@@ -184,9 +205,12 @@ const LPName = rfDesign.rfDesign;
 % {
 -DONE_BLE_LIB_SIZE_OPTIMIZATION
 % }
+% if(devFamily != "DeviceFamily_CC23X0")
+% {
 % if(rf.coexEnable == true)
 % {
 -DUSE_COEX
+% }
 % }
 % if(ble.ledDebug)
 % {

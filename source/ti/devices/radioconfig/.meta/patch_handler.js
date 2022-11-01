@@ -49,8 +49,8 @@ const CmdHandler = Common.getScript("cmd_handler.js");
 
 // File constants
 const StandardIncludes = "#include <ti/devices/DeviceFamily.h>\n"
-  + "#include DeviceFamily_constructPath(driverlib/rf_mailbox.h)\n"
-  + driverLibCmdInclude("common");
+    + "#include DeviceFamily_constructPath(driverlib/rf_mailbox.h)\n"
+    + driverLibCmdInclude("common");
 const RfDriverInclude = "#include <ti/drivers/rf/RF.h>\n";
 const RfInclude = "#include \"ti_radio_config.h\"\n";
 const CoExIncludeDriverLib = {
@@ -165,13 +165,7 @@ function getPatchIncludes(phyGroup, instances, coexType) {
             throw Error("Unknown PHY type");
         }
 
-        let protocol;
-        if (coexType) {
-            protocol = coexType;
-        }
-        else {
-            protocol = inst.codeExportConfig.useMulti ? "multi" : "single";
-        }
+        const protocol = getPatchType(inst.codeExportConfig, coexType);
         const patch = CmdHandler.get(phyGroup, phy).getPatchInfo(protocol);
         if (typeof (patch.cpe) === "string") {
             includes[patch.cpe] = true;
@@ -184,6 +178,24 @@ function getPatchIncludes(phyGroup, instances, coexType) {
         }
     });
     return includes;
+}
+
+/*!
+*  ======== getPatchType ========
+*  Get the patch type: multi-protocol or default.
+*
+*  @param ceConfig - Code export configuration
+*/
+function getPatchType(ceConfig, coexType) {
+    if (coexType) {
+        return coexType;
+    }
+
+    const ui = ceConfig.$uiState;
+    if (ui.useMulti.hidden) {
+        return "default";
+    }
+    return ceConfig.useMulti ? "multi" : "default";
 }
 
 /*!
@@ -209,5 +221,6 @@ function patchInclude(patchName) {
 // Exported from this module
 exports = {
     generateIncludesH: generateIncludesH,
-    generateIncludesC: generateIncludesC
+    generateIncludesC: generateIncludesC,
+    getPatchType: getPatchType
 };

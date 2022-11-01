@@ -6,21 +6,20 @@
     xsi:noNamespaceSchemaLocation="IarProjectConnection_1.2.xsd">
 
     <device>
-        <name>CC1312PSIP</name>
+        <name>CC1352P1F3</name>
     </device>
 
     <asmIncludePath>
         <path>$PROJ_DIR$</path>
-        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2_cc26x2/release</path>
     </asmIncludePath>
 
     <includePath>
         <path>$PROJ_DIR$</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source</path>
+        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos</path>
         <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/posix/iar</path>
         <path>$FREERTOS_INSTALL_DIR$/FreeRTOS/Source/include</path>
         <path>$FREERTOS_INSTALL_DIR$/FreeRTOS/Source/portable/IAR/ARM_CM4F</path>
-        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2_cc26x2/release</path>
     </includePath>
 
     <defines>
@@ -52,8 +51,8 @@
             <arg>-L$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source</arg>
             <arg>-f$PROJ_DIR$/ti_utils_runtime_LogSite.cmd.genlibs</arg>
             <arg>--threaded_lib</arg>
+            <arg>-L$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel</arg>
             <arg>-f$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</arg>
-            <arg>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2_cc26x2/release/iar/freertos.lib</arg>
             <arg>ti/devices/cc13x2_cc26x2/driverlib/bin/iar/driverlib.lib</arg>
             <arg>--silent</arg>
             <arg>--cpu=Cortex-M4F</arg>
@@ -87,7 +86,7 @@
     </stacks>
 
     <preBuild>
-        <command>iarbuild.exe $SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2_cc26x2/release/iar/freertos_builds_cc13x2_cc26x2_release.ewp Debug</command>
+        <command>iarbuild.exe  Debug</command>
     </preBuild>
 
     <files>

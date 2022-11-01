@@ -58,7 +58,7 @@ const config = {
             options: rfDesignOptions,
             default: rfDesignOptions[0].name,
             onChange: onRfDesignChange,
-            hidden: false
+            hidden: hideRadioConfig()
         },
         {
             // RF Front End Settings
@@ -69,6 +69,7 @@ const config = {
             default: "RF_FE_DIFFERENTIAL",
             deprecated: true,
             longDescription: Docs.frontEndModeLongDescription,
+            hidden: hideRadioConfig(),
             options: [
                 {
                     displayName: "Differential",
@@ -106,6 +107,7 @@ const config = {
             default: "RF_FE_INT_BIAS",
             deprecated: true,
             longDescription: Docs.biasConfigurationLongDescription,
+            hidden: hideRadioConfig(),
             options: [
                 {
                     displayName: "Internal BIAS",
@@ -122,6 +124,7 @@ const config = {
             displayName: "Default Tx Power",
             default: "HCI_EXT_TX_POWER_0_DBM",
             description: "This is the Tx Power value the BLE stack will use",
+            hidden: hideRadioConfig(),
             options: (inst) => {
                 const configurable = [
                     { displayName: "-20", name: "HCI_EXT_TX_POWER_MINUS_20_DBM"},
@@ -153,6 +156,23 @@ const config = {
                     { displayName: "20",  name: "HCI_EXT_TX_POWER_P2_20_DBM"}]
                 return getPaTableValues(inst.rfDesign, configurable);
             }
+        },
+        {
+            name: "thorPg",
+            displayName: "Thor PG version",
+            default: 2,
+            options: [
+                {
+                    displayName: "1",
+                    name: 1
+                },
+                {
+                    displayName: "2",
+                    name: 2
+                }
+            ],
+            description: "Thor pg version",
+            hidden: true
         }
     ]
 }
@@ -202,7 +222,8 @@ function getPaTableValues(rfDesign, tableOptions)
                                                     config.displayName.valueOf() >= 14);
     }
     // If using CC1352P-4 device
-    else if(rfDesign == "LAUNCHXL-CC1352P-4" || rfDesign == "LP_CC2652PSIP" || rfDesign == "LP_CC1352P7-4" || rfDesign == "LP_CC2651P3")
+    else if(rfDesign == "LAUNCHXL-CC1352P-4" || rfDesign == "LP_CC2652PSIP" || rfDesign == "LP_CC1352P7-4" || rfDesign == "LP_CC2651P3"
+            || rfDesign == "LP_EM_CC1354P10_6")
     {
         currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 10);
     }
@@ -276,6 +297,23 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LP_CC2651R3SIPA"}];
     }
+	else if(deviceId === "CC1354P10RSK")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC1354P10_1"},
+                              {name: "LP_EM_CC1354P10_6"}];
+    }
+	else if(deviceId === "CC1354R10RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC1354R10_RGZ"}];
+    }
+    else if(deviceId === "CC2340R5RKP")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5"}];
+    }
+    else if(deviceId === "CC2340R5RHB")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5_Q1"}]
+    }
 
     return(newRfDesignOptions);
 }
@@ -338,37 +376,65 @@ function moduleInstances(inst)
 {
     const dependencyModule = [];
 
-    // Get the board default rf settings
-    const radioSettings = Common.getRadioScript(inst.rfDesign,system.deviceData.deviceId).radioConfigParams;
-
-    let args = {
-        $name: "RF_BLE_Setting",
-        phyType: "bt5le2m",
-        codeExportConfig: radioSettings,
-        paramVisibility: false,
-        permission: "ReadOnly"
-    }
-
-    if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3")
+    if(!hideRadioConfig())
     {
-        args.highPA = true;
-        if(inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2652PSIP")
-        {
-            args.phyType = "bt5le2mp10";
-            args.txPowerHi = "10";
-        }
-    }
+        // Get the board default rf settings
+        const radioSettings = Common.getRadioScript(inst.rfDesign,system.deviceData.deviceId).radioConfigParams;
 
-	dependencyModule.push({
-        name: "radioConfig",
-        group: "bleRadioConfig",
-        displayName: "BLE Radio Configuration",
-        moduleName: "/ti/devices/radioconfig/settings/ble",
-        collapsed: true,
-        args: args
-     });
+        let args = {
+            $name: "RF_BLE_Setting",
+            phyType: "bt5le2m",
+            codeExportConfig: radioSettings,
+            paramVisibility: false,
+            permission: "ReadOnly"
+        }
+
+        if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3" || inst.rfDesign == "LP_EM_CC1354P10_6")
+        {
+            args.highPA = true;
+            if(inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_EM_CC1354P10_6")
+            {
+                args.phyType = "bt5le2mp10";
+                args.txPowerHi = "10";
+            }
+        }
+
+        if( (inst.rfDesign == "LP_EM_CC1354P10_6") && (inst.thorPg == 1) )
+        {
+            args.phyType = "bt5le2mp10_pg10";
+        }
+        else if ( (inst.rfDesign == "LP_EM_CC1354P10_1") && (inst.thorPg == 1) )
+        {
+            args.phyType = "bt5le2m_pg10";
+        }
+
+        dependencyModule.push({
+            name: "radioConfig",
+            group: "bleRadioConfig",
+            displayName: "BLE Radio Configuration",
+            moduleName: "/ti/devices/radioconfig/settings/ble",
+            collapsed: true,
+            args: args
+        });
+    }
 
     return(dependencyModule);
+}
+
+/*
+ *  ======== hideRadioConfig ========
+ *  Check which device is used.
+ *  @return Bool - True if radio config should be hidden
+ *                 False if radio config should not be hidden
+ */
+function hideRadioConfig()
+{
+    if(Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    {
+        return true;
+    }
+
+    return false;
 }
 
 /*

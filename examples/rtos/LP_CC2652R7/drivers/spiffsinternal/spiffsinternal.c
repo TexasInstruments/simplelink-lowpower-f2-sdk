@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,9 +41,14 @@
 #include <ti/display/Display.h>
 
 #include "ti_drivers_config.h"
+#include <ti/devices/DeviceFamily.h>
 
 /* SPIFFS configuration parameters */
-#define SPIFFS_LOGICAL_BLOCK_SIZE   (8192)
+#if (DeviceFamily_parent == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #define SPIFFS_LOGICAL_BLOCK_SIZE (2048)
+#else
+    #define SPIFFS_LOGICAL_BLOCK_SIZE (8192)
+#endif
 #define SPIFFS_LOGICAL_PAGE_SIZE    (256)
 #define SPIFFS_FILE_DESCRIPTOR_SIZE (44)
 

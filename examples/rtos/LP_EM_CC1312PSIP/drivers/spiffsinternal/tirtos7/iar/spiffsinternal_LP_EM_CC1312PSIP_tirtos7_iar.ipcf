@@ -6,7 +6,7 @@
     xsi:noNamespaceSchemaLocation="IarProjectConnection_1.2.xsd">
 
     <device>
-        <name>CC1312PSIP</name>
+        <name>CC1352P1F3</name>
     </device>
 
     <asmIncludePath>

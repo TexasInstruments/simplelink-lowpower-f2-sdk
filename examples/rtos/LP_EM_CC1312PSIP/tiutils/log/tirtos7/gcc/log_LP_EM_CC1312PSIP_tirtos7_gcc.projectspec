@@ -73,6 +73,7 @@
         "
         description="Example showing TI logger">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

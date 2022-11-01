@@ -43,8 +43,8 @@
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
             -lti/devices/cc13x2_cc26x2/driverlib/bin/ticlang/driverlib.lib
-            -Wl,-c
-            -Wl,-w
+            -Wl,--rom_model
+            -Wl,--warn_sections
             -L${CG_TOOL_ROOT}/lib
             -llibc.a
         "
@@ -55,6 +55,7 @@
         "
         description="A tutorial to show portability across devices, kernels and compilers">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../temperature.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

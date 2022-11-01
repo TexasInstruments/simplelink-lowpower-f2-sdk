@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,7 @@ extern "C" {
 #define DeviceFamily_ID_CC26X4                 17
 #define DeviceFamily_ID_CC26X3                 18
 #define DeviceFamily_ID_CC23X0                 19
+#define DeviceFamily_ID_CC23X0R2               20
 
 /*
  * DeviceFamily_PARENT_XYZ values.
@@ -88,6 +89,7 @@ extern "C" {
 #define DeviceFamily_PARENT_CC13X2_CC26X2           2
 #define DeviceFamily_PARENT_CC13X1_CC26X1           3
 #define DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4    4
+#define DeviceFamily_PARENT_CC32XX                  5
 #define DeviceFamily_PARENT_CC23X0                  6
 
 /*
@@ -164,6 +166,11 @@ extern "C" {
     #define DeviceFamily_DIRECTORY      cc23x0
     #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23X0
 
+#elif defined(DeviceFamily_CC23X0R2)
+    #define DeviceFamily_ID             DeviceFamily_ID_CC23X0R2
+    #define DeviceFamily_DIRECTORY      cc23x0r2
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23X0
+
 #elif defined(DeviceFamily_CC13X1_CC26X1)
     #define DeviceFamily_ID             DeviceFamily_ID_CC13X1_CC26X1
     #define DeviceFamily_DIRECTORY      cc13x1_cc26x1
@@ -187,10 +194,12 @@ extern "C" {
 #elif defined(DeviceFamily_CC3200)
     #define DeviceFamily_ID             DeviceFamily_ID_CC3200
     #define DeviceFamily_DIRECTORY      cc32xx
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC32XX
 
 #elif defined(DeviceFamily_CC3220)
     #define DeviceFamily_ID             DeviceFamily_ID_CC3220
     #define DeviceFamily_DIRECTORY      cc32xx
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC32XX
 
 #else
     #error "DeviceFamily_XYZ undefined. You must define a DeviceFamily_XYZ!"

@@ -44,7 +44,9 @@
 /* Driver Header files */
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/UART2.h>
-#ifdef CC32XX
+
+#include <ti/devices/DeviceFamily.h>
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC32XX)
     #include <ti/drivers/Power.h>
     #include <ti/drivers/power/PowerCC32XX.h>
 #endif
@@ -84,7 +86,7 @@ static void itoa(int n, char s[]);
 
 /*
  *  ======== gpioButtonFxn ========
- *  Callback function for the GPIO interrupt on CONFIG_GPIO_BUTTON_1.
+ *  Callback function for the GPIO interrupt on CONFIG_GPIO_BUTTON_0.
  *  There is no debounce logic here since we are just looking for
  *  a button push. The uart2Enabled variable protects use against any
  *  additional interrupts cased by the bouncing of the button.
@@ -169,7 +171,7 @@ void *consoleThread(void *arg0)
     UART2_Handle uart2;
     int retc;
 
-#ifdef CC32XX
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC32XX)
     /*
      *  The CC32XX examples by default do not have power management enabled.
      *  This allows a better debug experience. With the power management
@@ -187,11 +189,11 @@ void *consoleThread(void *arg0)
 #else
 
     /* Configure the button pin */
-    GPIO_setConfig(CONFIG_GPIO_BUTTON_1, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING);
+    GPIO_setConfig(CONFIG_GPIO_BUTTON_0, GPIO_CFG_IN_PU | GPIO_CFG_IN_INT_FALLING);
 
     /* install Button callback and enable it */
-    GPIO_setCallback(CONFIG_GPIO_BUTTON_1, gpioButtonFxn);
-    GPIO_enableInt(CONFIG_GPIO_BUTTON_1);
+    GPIO_setCallback(CONFIG_GPIO_BUTTON_0, gpioButtonFxn);
+    GPIO_enableInt(CONFIG_GPIO_BUTTON_0);
 
 #endif
 

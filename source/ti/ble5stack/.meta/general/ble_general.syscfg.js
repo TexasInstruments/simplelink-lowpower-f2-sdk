@@ -134,10 +134,21 @@ const config = {
 function generateDisabledOptions(name)
 {
     return (inst) => {
+
+        // Find the configurable we're going to generate a disabled list from
+        const configurable = inst.$module.$configByName[name].options;
+
+        const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
+
+        if(devFamily == "DeviceFamily_CC23X0")
+        {
+            // List of invalid options
+            const disabledOptions = _.filter(configurable,(conf) => (conf.name.includes("RP") || conf.name.includes("RANDOM")) == true);
+            // Add the "reason" why it's disabled, and return that information
+            return disabledOptions.map((option) => ({ name: option.name, reason: "Only public address is currently supported" }));
+        }
         if(inst.hideAddressModeRPA)
         {
-            // Find the configurable we're going to generate a disabled list from
-            const configurable = inst.$module.$configByName[name].options;
             // List of invalid options
             const disabledOptions = _.filter(configurable,(conf) => conf.name.includes("RP") == true);
             // Add the "reason" why it's disabled, and return that information

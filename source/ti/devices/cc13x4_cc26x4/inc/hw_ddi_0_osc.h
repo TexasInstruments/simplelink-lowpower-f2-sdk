@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       hw_ddi_0_osc_h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 * Copyright (c) 2015 - 2017, Texas Instruments Incorporated
 * All rights reserved.
@@ -779,7 +777,7 @@
 // 0x5 Minimum current
 // 0x6 Default -10
 // 0x7 Default -9
-// …
+// . . .
 // 0xF Default -1
 // 0x0 Default current
 // 0x1 Default +1

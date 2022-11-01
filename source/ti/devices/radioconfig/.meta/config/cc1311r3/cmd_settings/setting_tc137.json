@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "100 kbps, 2-GFSK, 50 kHz deviation PHY. (Pre-silicon settings)",
+        "Name": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "100 kbps, 2-GFSK, 50 kHz deviation PHY. (Pre-Silicon)",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",

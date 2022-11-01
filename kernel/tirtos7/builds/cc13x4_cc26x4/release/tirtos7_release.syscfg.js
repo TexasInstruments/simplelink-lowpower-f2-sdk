@@ -4,7 +4,8 @@
 
 
 /* ================ Kernel (SYS/BIOS) configuration ================ */
-const BIOS  = scripting.addModule("/ti/sysbios/BIOS");
+const BIOS = scripting.addModule("/ti/sysbios/BIOS");
+let bigInt = system.utils.bigInt;
 
 /*
  * Enable asserts in the BIOS library.
@@ -345,3 +346,38 @@ Task.numPriorities = 6;
 const Event = scripting.addModule("/ti/sysbios/knl/Event");
 const Mailbox = scripting.addModule("/ti/sysbios/knl/Mailbox");
 const Timestamp = scripting.addModule("/ti/sysbios/runtime/Timestamp");
+
+if (system.modules["/ti/utils/TrustZone"]) {
+    /*
+    * Enable the TrustZone PSA extensions
+    */
+    BIOS.psaEnabled = true;
+
+    /* ================ Hwi configuration ================ */
+    /*
+    * Both these values must match the SPE expectations for the vector table. The
+    * base of RAM is reserved for the secure image. These values do not affect
+    * TICLANG or GCC, as they place vector tables using the linker file.
+    */
+    Hwi.vectorTableAddress = bigInt(0x2000C000);
+    Hwi.resetVectorAddress = bigInt(0x2000C000);
+
+    /* ================ Boot configuration ================ */
+    const Boot = scripting.addModule("/ti/sysbios/family/arm/cc26xx/Boot");
+    /*
+    * Disable the execution of SetupTrimDevice(), which is already called by the
+    * SPE before the application boots and requires access to secure resources.
+    */
+    Boot.trimDevice = false;
+
+    /*
+    * Enable the secure callback module
+    */
+    const SecureCallback = scripting.addModule("/ti/drivers/spe/SecureCallback");
+
+    /* Set Secure image reset vector table address */
+    const CCFG = scripting.addModule("/ti/devices/CCFG");
+
+    CCFG.setFlashVectorTable = true;
+    CCFG.addressFlashVectorTable = 0x00006900;
+}

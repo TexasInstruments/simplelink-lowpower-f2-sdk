@@ -38,7 +38,7 @@
 "use strict";
 
 const docs = system.getScript("/ti/dmm/dmm_docs.js");
-const easylinkUtil = system.getScript("/ti/easylink/easylink_common.js");
+const propRfUtil = system.getScript("/ti/prop_rf/prop_rf_common.js");
 
 // Max number of application states
 const maxAppStatesSupported = 32;
@@ -91,7 +91,7 @@ const dmmCCFGSettings = {
     LP_CC2652R7_CCFG_SETTINGS: {}
 };
 
-const currBoardName = easylinkUtil.getDeviceOrLaunchPadName(true);
+const currBoardName = propRfUtil.getDeviceOrLaunchPadName(true);
 const ccfgSettings = dmmCCFGSettings[currBoardName + "_CCFG_SETTINGS"];
 
 // Dictionary mapping current device/board name regex to supported target

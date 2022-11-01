@@ -204,21 +204,6 @@
                                         "_type": "ELEMENT",
                                         "_comment": "Bluetooth 5: Compensate for modified pilot tone length",
                                         "$": "0x015302A3"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: timing correction",
-                                        "$": "0x50D4,0x00F9"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: reduce sample delay",
-                                        "$": "0x50E0,0x0087"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: demodulation order",
-                                        "$": "0x50F8,0x0014"
                                     }
                                 ]
                             },
@@ -264,21 +249,6 @@
                                         "_type": "HW_REG_OVERRIDE",
                                         "_comment": "Bluetooth 5: increase low gain AGC delay for 2 Mbps",
                                         "$": "0x60A4,0x7D00"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: timing correction",
-                                        "$": "0x50D4,0x00F9"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: reduce sample delay",
-                                        "$": "0x50E0,0x0087"
-                                    },
-                                    {
-                                        "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Symbol tracking: demodulation order",
-                                        "$": "0x50F8,0x0014"
                                     }
                                 ]
                             },

@@ -688,7 +688,10 @@ static void HostTestApp_processGapEvent(ICall_HciExtEvt *pMsg)
       break;
 
     case HCI_BLE_HARDWARE_ERROR_EVENT_CODE:
-      AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,0);
+      {
+        hciEvt_HardwareError_t *pkt = (hciEvt_HardwareError_t *)pMsg;
+        AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,pkt->hardwareCode);
+      }
       break;
 
     case HCI_TEST_EVENT_CODE:
@@ -1070,9 +1073,8 @@ uint8_t Host_TestApp_postCallbackEvent(void *pData, void* callbackFctPtr)
 static uint8_t Host_TestApp_Queue_ProcessCbkEvent(void)
 {
   //Get the Queue elem atomicaly:
-  Host_TestAPP_QueueRec *pRec = Queue_get(Host_testApp_Queue);
-
-  if (pRec != (Host_TestAPP_QueueRec *)Host_testApp_Queue)
+  Host_TestAPP_QueueRec *pRec = (Host_TestAPP_QueueRec*) Queue_dequeue(Host_testApp_Queue);
+  if (pRec != NULL)
   {
     //List not Empty
     ((void (*)(void*))(pRec->callbackFctPtr))(pRec->pData);

@@ -7,7 +7,7 @@
         "DevicePackage": "RGZ 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC1354P10-7x7-XD7793-XD24-PA24_20dBm",
+        "RfDesign": "LP-CC2651P-7x7-XD24-PA24_20dBm",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",
@@ -16,14 +16,14 @@
                     "_name": "DIO28",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
-                    "Tx": "Output high",
+                    "Tx": "Output low",
                     "Rx": "Output high"
                 },
                 {
                     "_name": "DIO29",
                     "ControlFunction": "Input\/Output",
                     "Idle": "Input tristate (Default)",
-                    "Tx": "Output low",
+                    "Tx": "Output high",
                     "Rx": "Output low"
                 }
             ]

@@ -50,9 +50,20 @@
  */
 
 #include <ti/devices/DeviceFamily.h>
+#ifndef DeviceFamily_CC23X0
 #include DeviceFamily_constructPath(driverlib/prcm.h)
-#include DeviceFamily_constructPath(driverlib/gpio.h)
 #include DeviceFamily_constructPath(driverlib/ioc.h)
+#endif
+#include DeviceFamily_constructPath(driverlib/gpio.h)
+#include "led_debug.h"
+
+#ifdef DeviceFamily_CC23X0
+/* Remap driverlib API names that changed only for cc23x0
+ */
+#define GPIO_setDio             GPIOSetDio
+#define GPIO_clearDio           GPIOClearDio
+#define GPIO_setOutputEnableDio GPIOSetOutputEnableDio
+#endif
 
 /*******************************************************************************
  *                                       Local Functions
@@ -97,7 +108,7 @@ void blinkLed(uint32_t led, uint8_t nBlinks, uint32_t periodMs)
  */
 void lightRedLed(void)
 {
-    GPIO_setDio(IOID_6);
+    GPIO_setDio(RED_LED);
 }
 
 /**
@@ -111,7 +122,7 @@ void lightRedLed(void)
  */
 void lightGreenLed(void)
 {
-    GPIO_setDio(IOID_7);
+    GPIO_setDio(GREEN_LED);
 }
 
 
@@ -128,10 +139,14 @@ void delay(uint32_t delayMs)
 {
     uint32_t j;
 
-    /* by experimination, this is in ms (approx) */
+    /* by experimentation, this is in ms (approx) */
     for (j = 0; j < 4010 * delayMs; j++)
     {
+#if defined(__IAR_SYSTEMS_ICC__)
         asm(" NOP");
+#else // TICLANG & GCC
+        __asm__(" NOP");
+#endif
     }
 }
 
@@ -146,6 +161,7 @@ void delay(uint32_t delayMs)
  */
 void powerUpGpio(void)
 {
+#ifndef DeviceFamily_CC23X0
     /* GPIO power up*/
     PRCMPowerDomainOn(PRCM_DOMAIN_PERIPH);
     while (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH)
@@ -154,11 +170,11 @@ void powerUpGpio(void)
     PRCMPeripheralRunEnable(PRCM_PERIPH_GPIO);
     PRCMLoadSet();
     while (!PRCMLoadGet());
+#endif
 
     /* set direction */
-    GPIO_setOutputEnableDio(IOID_5, GPIO_OUTPUT_ENABLE);
-    GPIO_setOutputEnableDio(IOID_6, GPIO_OUTPUT_ENABLE);
-    GPIO_setOutputEnableDio(IOID_7, GPIO_OUTPUT_ENABLE);
+    GPIO_setOutputEnableDio(RED_LED, GPIO_OUTPUT_ENABLE);
+    GPIO_setOutputEnableDio(GREEN_LED, GPIO_OUTPUT_ENABLE);
 }
 
 /**
@@ -173,6 +189,7 @@ void powerUpGpio(void)
  */
 void powerDownGpio(void)
 {
+#ifndef DeviceFamily_CC23X0
     /* GPIO power down */
     PRCMPeripheralRunDisable(PRCM_PERIPH_GPIO);
     PRCMLoadSet();
@@ -181,6 +198,7 @@ void powerDownGpio(void)
     PRCMPowerDomainOff(PRCM_DOMAIN_PERIPH);
     while (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH)
            != PRCM_DOMAIN_POWER_OFF);
+#endif
 }
 /**************************************************************************************************
 */

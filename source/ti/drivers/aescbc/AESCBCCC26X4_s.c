@@ -39,12 +39,11 @@
 #include <ti/drivers/aescbc/AESCBCCC26XX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
@@ -155,7 +154,7 @@ static void AESCBC_s_hwiCallback(AESCBC_Handle handle_s,
             aescbcSecureCB_ns->operationType = operationType;
 
             /* Trigger the interrupt for the non-secure callback dispatcher */
-            SecureCB_post(&aescbcSecureCB_ns->object);
+            SecureCallback_post(&aescbcSecureCB_ns->object);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,10 +74,10 @@ extern "C" {
 /*!
  *  @brief    UART TX/RX interrupt FIFO threshold select
  *
- *  Defined FIFO thresholds for generation of both TX interrupt and RX
- *  interrupt.  If the RX and TX FIFO and thresholds are not set in the
- *  HwAttrs, the RX interrupt FIFO threshold is set to 1/8 full, and the
- *  TX interrupt FIFO threshold is set to 1/8 full.
+ *  Defined FIFO thresholds for generation of both TX interrupt and RX interrupt.
+ *
+ *  @note UART2CC26X2_FIFO_THRESHOLD_1_8 should be avoided as RX FIFO threshold
+ *        as it can lead to unreliable read operations when using UART2_ReadReturnMode_PARTIAL
  */
 typedef enum
 {
@@ -159,17 +159,17 @@ typedef enum
 typedef struct
 {
     UART2_BASE_HWATTRS
-    volatile tDMAControlTable *dmaTxTableEntryPri; /*! uDMA controlTable primary tx entry */
-    volatile tDMAControlTable *dmaRxTableEntryPri; /*! uDMA controlTable primary rx entry */
-    uint32_t txChannelMask;                        /*! Mask for uDMA tx channel number (1 << channel number) */
-    uint32_t rxChannelMask;                        /*! Mask for uDMA rx channel number (1 << channel number) */
-    PowerCC26XX_Resource powerId;                  /*! Power driver ID of the UART instance */
-    int32_t txPinMux;                              /*! Tx PIN mux value */
-    int32_t rxPinMux;                              /*! Tx PIN mux value */
-    int32_t ctsPinMux;                             /*! CTS PIN mux value for flow control */
-    int32_t rtsPinMux;                             /*! RTS PIN mux value for flow control */
-    UART2CC26X2_FifoThreshold txIntFifoThr;        /*! UART TX interrupt FIFO threshold select */
-    UART2CC26X2_FifoThreshold rxIntFifoThr;        /*! UART RX interrupt FIFO threshold select */
+    volatile tDMAControlTable *dmaTxTableEntryPri; /*!< uDMA controlTable primary TX entry */
+    volatile tDMAControlTable *dmaRxTableEntryPri; /*!< uDMA controlTable primary RX entry */
+    uint32_t txChannelMask;                        /*!< Mask for uDMA TX channel number (1 << channel number) */
+    uint32_t rxChannelMask;                        /*!< Mask for uDMA RX channel number (1 << channel number) */
+    PowerCC26XX_Resource powerId;                  /*!< Power driver ID of the UART instance */
+    int32_t txPinMux;                              /*!< TX PIN mux value */
+    int32_t rxPinMux;                              /*!< RX PIN mux value */
+    int32_t ctsPinMux;                             /*!< CTS PIN mux value for flow control */
+    int32_t rtsPinMux;                             /*!< RTS PIN mux value for flow control */
+    UART2CC26X2_FifoThreshold txIntFifoThr;        /*!< UART TX interrupt FIFO threshold select */
+    UART2CC26X2_FifoThreshold rxIntFifoThr;        /*!< UART RX interrupt FIFO threshold select */
 } UART2CC26X2_HWAttrs;
 
 /*!
@@ -181,8 +181,8 @@ typedef struct
 {
     UART2_BASE_OBJECT
 
-    UDMACC26XX_Handle udmaHandle; /* For setting power dependency */
-    Power_NotifyObj postNotify;   /* For Standby reconfiguration */
+    UDMACC26XX_Handle udmaHandle; /*!< For setting power dependency */
+    Power_NotifyObj postNotify;   /*!< For Standby reconfiguration */
 } UART2CC26X2_Object, *UART2CC26X2_Handle;
 
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,22 +39,18 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <xdc/runtime/Types.h>
-#include <xdc/runtime/Timestamp.h>
-
-#include <ti/sysbios/hal/Hwi.h>
+#include <ti/utils/osal/Timestamp.h>
+#include <ti/utils/osal/Interrupt.h>
 
 #include "LoggerText.h"
 
 #define LoggerText_FULL -1
-
 
 /*
  *  ======== ti_utils_runtime_config.c ========
  */
 extern const int LoggerText_count;
 extern LoggerText_Instance LoggerText_config[];
-
 
 /*
  *  ======== LoggerText_handle ========
@@ -63,7 +59,8 @@ LoggerText_Handle LoggerText_handle(int idx)
 {
     LoggerText_Handle hndl = NULL;
 
-    if ((0 <= idx) && (idx < LoggerText_count)) {
+    if ((0 <= idx) && (idx < LoggerText_count))
+    {
         hndl = &LoggerText_config[idx];
     }
 
@@ -75,41 +72,44 @@ LoggerText_Handle LoggerText_handle(int idx)
  */
 void LoggerText_write(LoggerText_Handle hndl, char *text)
 {
-    UInt key;
+    uintptr_t key;
     uint32_t serial;
     LoggerText_Record *rec;
 
     /* disable interrupts */
-    key = Hwi_disable();
+    key = Interrupt_disable();
 
     /* increment serial even when full */
     serial = ++(hndl->serial);
 
-    if (hndl->advance == LoggerText_FULL) {
-        Hwi_restore(key);
+    if (hndl->advance == LoggerText_FULL)
+    {
+        Interrupt_restore(key);
         goto leave;
     }
 
     /* compute next available record */
     rec = hndl->curEntry;
-    if (rec == hndl->endEntry) {
-        if (hndl->advance == LoggerText_Type_CIRCULAR) {
+    if (rec == hndl->endEntry)
+    {
+        if (hndl->advance == LoggerText_Type_CIRCULAR)
+        {
             hndl->curEntry = hndl->store;
         }
-        else {
+        else
+        {
             hndl->advance = LoggerText_FULL;
         }
     }
-    else {
-        hndl->curEntry = (LoggerText_Record *)
-            ((char *)rec + sizeof(LoggerText_Header) +
-            hndl->textLen * sizeof(char));
+    else
+    {
+        hndl->curEntry = (LoggerText_Record *)((char *)rec + sizeof(LoggerText_Header) + hndl->textLen * sizeof(char));
     }
 
-    Timestamp_get64((Types_Timestamp64 *)&rec->hdr.ts_hi);
+    Timestamp_get64((Timestamp_Val64 *)&rec->hdr.ts_hi);
 
     /* enable interrupts */
-    Hwi_restore(key);
+    Interrupt_restore(key);
 
     /* write data to record */
     rec->hdr.serial = serial;

@@ -1509,4 +1509,12 @@ extern uint8 smpResponderProcessPairingPublicKey_hook( void *pParsedMsg );
 extern uint8 smResponderProcessLTKReq_hook( uint16 connectionHandle, uint8 *pRandom, uint16 encDiv );
 extern uint8 smGeneratePairingReqRsp_hook( void );
 extern void  gapSendSlaveSecurityReqEvent_hook( uint8 taskID, uint16 connHandle, uint8 *pDevAddr, uint8 authReq );
+/*******************************************************************************
+ * Health check
+ */
+extern int8 MAP_llHealthCheck(void);
+extern void MAP_llHealthUpdate(uint8 state);
+extern void MAP_llHealthSetThreshold(uint32 connTime,uint32 scanTime,uint32 initTime,uint32 advTime);
+
+/*******************************************************************************/
 #endif // MAP_DIRECT_H

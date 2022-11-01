@@ -1,1 +1,1 @@
-#include "../_common/cc26xx/_hal_types.h"
+#include "../_common/_hal_types.h"

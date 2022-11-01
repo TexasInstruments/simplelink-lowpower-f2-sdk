@@ -602,7 +602,7 @@ NVOCMP_nvHandle_t NVOCMP_nvHandle;
 #else
 static NVS_Handle NVOCMP_nvsHandle;
 static NVS_Attrs NVOCMP_nvsAttrs;
-/*static*/ NVOCMP_nvHandle_t NVOCMP_nvHandle;
+static NVOCMP_nvHandle_t NVOCMP_nvHandle;
 #endif // NVDEBUG
 
 // Flag to indicate that a fatal error occurred while writing to or erasing the
@@ -657,6 +657,7 @@ static void       NVOCMP_unlockNvApi(int32_t);
 static bool       NVOCMP_expectCompApi(uint16_t len);
 static uint8_t    NVOCMP_eraseNvApi(void);
 static uint32_t   NVOCMP_getFreeNvApi(void);
+static uint32_t   NVOCMP_sanityCheckApi (void);
 
 //*****************************************************************************
 // NV Local Function Prototypes
@@ -744,6 +745,7 @@ void NVOCMP_loadApiPtrs(NVINTF_nvFuncts_t *pfn)
     pfn->expectComp   = &NVOCMP_expectCompApi;
     pfn->eraseNV      = &NVOCMP_eraseNvApi;
     pfn->getFreeNV    = &NVOCMP_getFreeNvApi;
+    pfn->sanityCheck  = &NVOCMP_sanityCheckApi;
 }
 
 /**
@@ -776,6 +778,7 @@ void NVOCMP_loadApiPtrsMin(NVINTF_nvFuncts_t *pfn)
     pfn->expectComp   = &NVOCMP_expectCompApi;
     pfn->eraseNV      = &NVOCMP_eraseNvApi;
     pfn->getFreeNV    = &NVOCMP_getFreeNvApi;
+    pfn->sanityCheck  = &NVOCMP_sanityCheckApi;
 }
 
 /**
@@ -807,6 +810,7 @@ void NVOCMP_loadApiPtrsExt(NVINTF_nvFuncts_t *pfn)
     pfn->expectComp   = &NVOCMP_expectCompApi;
     pfn->eraseNV      = &NVOCMP_eraseNvApi;
     pfn->getFreeNV    = &NVOCMP_getFreeNvApi;
+    pfn->sanityCheck  = &NVOCMP_sanityCheckApi;
 }
 
 /**
@@ -4905,6 +4909,174 @@ static uint8_t NVOCMP_verifyCRC(uint16_t iOfs, uint16_t len, uint8_t crc, uint8_
     }
 #endif // NVOCMP_STATS
     return(newCRC == crc ? NVINTF_SUCCESS : NVINTF_CORRUPT);
+}
+
+/******************************************************************************
+ * @fn      NVOCMP_sanityCheckApi
+ *
+ * @brief   Global function to perform a sanity check on the active
+ *          partition to report if corruption has been detected.
+ *
+ * @param   none
+ *
+ * @return  0: No failure found.
+ *          Non-zero: failure, each bit representing a particular error
+ *          as indicated in NV driver status codes defined in nvintf.h.
+ */
+static uint32_t NVOCMP_sanityCheckApi (void)
+{
+    NVOCMP_nvHandle_t *pNvHandle = &NVOCMP_nvHandle;
+    bool needScan = false;
+    bool needSkip = false;
+    uint16_t dstOff;
+    uint16_t endOff;
+    uint16_t srcOff;
+    uint16_t crcOff;
+    uint8_t dstPg;
+    uint8_t srcPg;
+    uint32_t ret = NVINTF_SUCCESS;
+    uint32_t aItem=0;
+#ifdef NVOCMP_GPRAM
+    uint32_t vm;
+    uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
+#else
+    uint8_t *pTBuffer = (uint8_t *)tBuffer;
+#endif
+
+#ifndef NVOCMP_GPRAM
+    memset(tBuffer, 0, sizeof(tBuffer));
+#endif
+    // Reset Flash erase/write fail indicator
+    NVOCMP_failW = NVINTF_SUCCESS;
+
+    // Stop looking when we get to this offset
+    endOff = NVOCMP_PGDATAOFS + NVOCMP_ITEMHDRLEN - 1;
+
+#if (NVOCMP_NVPAGES == NVOCMP_NVONEP)
+    srcPg = 0;
+    srcOff = pNvHandle->pageInfo[0].offset;
+    dstPg = 0;
+    dstOff = NVOCMP_PGDATAOFS;
+#else
+    srcPg = pNvHandle->headPage;
+    srcOff = pNvHandle->pageInfo[srcPg].offset;
+    dstPg = pNvHandle->tailPage;
+    dstOff = pNvHandle->pageInfo[dstPg].offset;
+#endif
+
+    NVOCMP_ALERT(false, "Sanity Check")
+
+#ifdef NVOCMP_GPRAM
+    NVOCMP_disableCache(&vm);
+#endif
+    while(srcOff > endOff)
+    {
+        if(NVOCMP_failW == NVINTF_SUCCESS)
+        {
+            NVOCMP_itemHdr_t srcHdr;
+            uint16_t dataLen;
+            uint16_t itemSize;
+
+            // Align to start of item header
+            srcOff -= NVOCMP_ITEMHDRLEN;
+
+            // Read and decompress item header
+            NVOCMP_readHeader(srcPg, srcOff, &srcHdr, false);
+            dataLen  = srcHdr.len;
+            itemSize = NVOCMP_ITEMHDRLEN + dataLen;
+
+            // Check if length is safe
+            if (srcOff < (dataLen + NVOCMP_PGDATAOFS) ||
+                    (NVOCMP_SIGNATURE != srcHdr.sig))
+            {
+                NVOCMP_ALERT(false, "Item header corrupted, data length too long.")
+                ret |= (1 << NVINTF_BADLENGTH);
+                needScan = true;
+            }
+            else
+            {
+              if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) && (srcHdr.stats & NVOCMP_ACTIVEIDBIT)) //valid bit is ok
+              {
+                crcOff    = srcOff - dataLen;
+                if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
+                {
+                  // Invalid CRC, corruption
+                  NVOCMP_ALERT(false, "Item CRC incorrect!")
+                  ret |= (1 << NVINTF_CORRUPT);
+                  needScan = true;
+                  srcOff--;
+                }
+                else
+                {
+                  needScan = false;
+                  needSkip = false;
+                }
+              }
+              else
+              {
+                needScan = false;
+                needSkip = true;
+              }
+            }
+
+            if(needScan)
+            {
+              // Detected a problem, find next header (scan for signature)
+              NVOCMP_ALERT(false, "Attempting to find signature...")
+              bool foundSig = NVOCMP_findSignature(srcPg, &srcOff);
+              if(!foundSig)
+              {
+                // If we get here and foundSig is false, we never found another
+                // item in the page, break the loop and report that corruption
+                // has been detected
+                NVOCMP_ALERT(foundSig, "Attempt to find signature failed.")
+                ret |= (1 << NVINTF_NO_SIG);
+                break;
+              }
+            }
+            else
+            {
+              if(!needSkip)
+              {
+                // Get block of bytes from source page
+#if NVOCMP_COMPR
+                NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + dstOff), itemSize);
+#else
+                NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + FLASH_PAGE_SIZE - dstOff - itemSize), itemSize);
+#endif
+                dstOff += itemSize;
+                aItem++;
+              }
+              NVOCMP_ALERT(srcOff > dataLen, "Offset overflow: srcOff")
+              srcOff -= dataLen;
+            }
+        }
+        else
+        {
+#ifdef NVOCMP_GPRAM
+            NVOCMP_restoreCache(vm);
+#endif
+            // Failure during item xfer makes next findItem() unreliable
+            NVOCMP_ASSERT(false, "SANITY CHECK FAILURE")
+            ret |= (1 << NVINTF_FAILURE);
+        }
+    } // end of while
+
+    if(NVOCMP_failW != NVINTF_SUCCESS)
+    {
+#ifdef NVOCMP_GPRAM
+        NVOCMP_restoreCache(vm);
+#endif
+        // Something bad happened when scanning the page
+        NVOCMP_ASSERT(false, "SANITY CHECK FAILURE")
+        ret |= (1 << NVINTF_FAILURE);
+    }
+
+#ifdef NVOCMP_GPRAM
+    NVOCMP_restoreCache(vm);
+#endif
+
+    return(ret);
 }
 
 //*****************************************************************************

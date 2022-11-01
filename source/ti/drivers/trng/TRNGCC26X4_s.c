@@ -40,13 +40,13 @@
 #include <ti/drivers/trng/TRNGCC26XX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
 #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h> /* __tfm_secure_gateway_attributes__ */
 #include <psa_manifest/crypto_sp.h>                               /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
@@ -179,7 +179,7 @@ static void TRNG_s_cryptoKeyCallback(TRNG_Handle handle_s, int_fast16_t returnVa
             trngSecureCB_ns->entropy     = TRNG_s_entropyKey[index].entropyKey_ns;
 
             /* Trigger the interrupt for the non-secure callback dispatcher */
-            SecureCB_post(&trngSecureCB_ns->object);
+            SecureCallback_post(&trngSecureCB_ns->object);
         }
     }
 }
@@ -211,7 +211,7 @@ static void TRNG_s_randomBytesCallback(TRNG_Handle handle_s,
             trngSecureCB_ns->randomBytesSize = object->entropyRequested;
 
             /* Trigger the interrupt for the non-secure callback dispatcher */
-            SecureCB_post(&trngSecureCB_ns->object);
+            SecureCallback_post(&trngSecureCB_ns->object);
         }
     }
 }
@@ -823,7 +823,7 @@ psa_status_t TRNG_s_handlePsaMsg(psa_msg_t *msg)
 /*
  *  ======== TRNG_s_init ========
  */
-void TRNG_s_init(void)
+__tfm_secure_gateway_attributes__ void TRNG_s_init(void)
 {
     TRNG_init();
 }

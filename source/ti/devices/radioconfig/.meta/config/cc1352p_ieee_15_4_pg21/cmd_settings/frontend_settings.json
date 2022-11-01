@@ -14,10 +14,7 @@
                             "_name": "config.biasMode",
                             "$": "0"
                         }
-                    ],
-                    "OverrideField": {
-                        "_name": "pRegOverride"
-                    }
+                    ]
                 }
             },
             {
@@ -33,10 +30,71 @@
                             "_name": "config.biasMode",
                             "$": "1"
                         }
-                    ],
-                    "OverrideField": {
-                        "_name": "pRegOverride"
-                    }
+                    ]
+                }
+            },
+            {
+                "_name": "IS_RFP",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP_PA",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "1"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "0"
+                        }
+                    ]
+                }
+            },
+            {
+                "_name": "IS_RFN",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP_PA",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "2"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "0"
+                        }
+                    ]
+                }
+            },
+            {
+                "_name": "XS_RFP",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP_PA",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "1"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "1"
+                        }
+                    ]
+                }
+            },
+            {
+                "_name": "XS_RFN",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP_PA",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "2"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "1"
+                        }
+                    ]
                 }
             }
         ]

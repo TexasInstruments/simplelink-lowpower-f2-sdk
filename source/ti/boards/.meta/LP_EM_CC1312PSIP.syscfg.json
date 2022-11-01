@@ -40,7 +40,7 @@
     "displayName" : "CC1312PSIP LaunchPad",
     "device"      : "CC1312PSIP",
     "part"        : "Default",
-    "package"     : "PSIP",
+    "package"     : "SIP",
     "headers"     : [
         {
             "type": "BoosterPack 40 pin",

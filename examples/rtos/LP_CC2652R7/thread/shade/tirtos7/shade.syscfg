@@ -36,9 +36,9 @@
  */
 
 /* Boosterpacks */
-if (system.deviceData.deviceId !== "CC2652P1FSIP")
+if (!system.deviceData.deviceId.match(/CC2652P1FSIP|[157]4[RP]10|2653P10/))
 {
-	var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
+    var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
 }
 
 
@@ -122,7 +122,8 @@ Display1.uart.rxPinInstance.mode            = "Input";
 Display1.uart.rxPinInstance.pull            = "Pull Down";
 
 
-if (system.deviceData.deviceId !== "CC2652P1FSIP")
+/* Boosterpacks */
+if (!system.deviceData.deviceId.match(/CC2652P1FSIP|[157]4[RP]10|2653P10/))
 {
     Display2.$name            = "CONFIG_DISPLAY_LCD";
     Display2.$hardware        = BOOSTXL_SHARP128.components.SHARP_LCD_DISPLAY;
@@ -137,7 +138,6 @@ if (system.deviceData.deviceId !== "CC2652P1FSIP")
     var SPI1                    = Display2.spi; // Create reference
     SPI1.$name                  = "CONFIG_SPI_0";
     SPI1.defaultTxBufferValue   = "0xFF"; // Default Tx Buffer Value (Provide in 0xh format)
-    SPI1.spi.$assign            = "SSI0"; // Use Peripheral
     SPI1.sclkPinInstance.$name  = "CONFIG_PIN_SPI_SCLK";
     SPI1.sclkPinInstance.mode   = "Input";
     SPI1.sclkPinInstance.pull   = "Pull Down";
@@ -163,7 +163,6 @@ LED2.$hardware                  = system.deviceData.board.components.LED_GREEN;
 LED2.gpioPin.$name              = "CONFIG_GPIO_GLED";
 LED2.gpioPin.mode               = "Output";
 LED2.gpioPin.callbackFunction   = "";
-
 
 /* RF */
 /* if an antenna component exists, assign it to the rf instance */

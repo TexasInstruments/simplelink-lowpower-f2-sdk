@@ -69,6 +69,7 @@
         "
         description="An example of using an SD card without a filesystem">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../sdraw.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

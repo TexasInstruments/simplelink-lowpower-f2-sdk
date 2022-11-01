@@ -44,16 +44,33 @@
 #include <ti/drivers/aesecb/AESECBCC26X4_s.h>
 #include <ti/drivers/aesgcm/AESGCMCC26X4_s.h>
 #include <ti/drivers/ecdh/ECDHCC26X4_s.h>
-//#include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
+#include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
 //#include <ti/drivers/eddsa/EDDSACC26X4_s.h>
 //#include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
 #include <ti/drivers/sha2/SHA2CC26X4_s.h>
 #include <ti/drivers/trng/TRNGCC26X4_s.h>
 
+#include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+#include <secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
+
+#include <psa/PSA_s.h>
+
 #include <ti/drivers/dpl/HwiP.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_ints.h)
+
+static psa_msg_t msg;
+
+/* Abort handling from TF-M v1.1 */
+static void tfm_abort(void)
+{
+    while (1) {}
+}
+
+#ifdef ENABLE_ITS_IPC_INTEGRATION
+    #include "CryptoCC26X4_ITS_s.c"
+#endif
 
 /*
  *  ======== Crypto_s_handlePsaMsg ========
@@ -99,9 +116,9 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
             status = ECDH_s_handlePsaMsg(msg);
             break;
 
-            //        case CRYPTO_S_MSG_TYPE_INDEX_ECDSA:
-            //            status = ECDSA_s_handlePsaMsg(msg);
-            //            break;
+        case CRYPTO_S_MSG_TYPE_INDEX_ECDSA:
+            status = ECDSA_s_handlePsaMsg(msg);
+            break;
 
             //        case CRYPTO_S_MSG_TYPE_INDEX_ECJPAKE:
             //            status = ECJPAKE_s_handlePsaMsg(msg);
@@ -119,6 +136,14 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
             status = TRNG_s_handlePsaMsg(msg);
             break;
 
+        case CRYPTO_S_MSG_TYPE_INDEX_KEYSTORE:
+            status = KeyStore_s_handlePsaMsg(msg);
+            break;
+
+        case CRYPTO_S_MSG_TYPE_INDEX_PSA:
+            status = PSA_s_handlePsaMsg(msg);
+            break;
+
         default:
             /* Unknown msg type - do nothing */
             break;
@@ -127,8 +152,6 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
     return status;
 }
 
-#define HWREG(x) (*((volatile unsigned long *)(x))) // BQ - temp code
-
 /*
  *  ======== Crypto_sp_main ========
  *  Crypto Secure Partition entry point
@@ -136,17 +159,20 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
 void Crypto_sp_main(void *param)
 {
     uint32_t signals;
-    psa_msg_t msg;
 
-    // BQ - temporary code to force power and clocks on.
-    // Periph power
-    HWREG(0x5808212C) |= 0x00000004;
-    // Force PKA, TRNG, and Crypto clocks
-    HWREG(0x5808203C) |= 0x00070000;
-    // Load clocks
-    HWREG(0x58082028) = 0x00000001;
+#if defined(ENABLE_ITS_LOCAL_INTEGRATION) || defined(ENABLE_ITS_IPC_INTEGRATION)
+    /* Initialize ITS */
+    if (tfm_its_init() != PSA_SUCCESS)
+    {
+        tfm_abort();
+    }
+#endif
 
-    /* Initialize all secure crypto drivers */
+    /*
+     * Initialize all secure crypto drivers except TRNG. TRNG init requires TRNG
+     * HW to be powered ON first so must be done by non-secure world where power
+     * is controlled.
+     */
     AESCBC_s_init();
     AESCCM_s_init();
     AESCMAC_s_init();
@@ -157,12 +183,15 @@ void Crypto_sp_main(void *param)
     AESCTRDRBG_s_init();
 
     ECDH_s_init();
-    //    ECDSA_s_init();
+    ECDSA_s_init();
     //    EDDSA_s_init();
     //    ECJPAKE_s_init();
 
     SHA2_s_init();
-    TRNG_s_init();
+
+    KeyStore_s_init();
+
+    PSA_s_init();
 
     while (1)
     {
@@ -213,6 +242,28 @@ void Crypto_sp_main(void *param)
                     }
                     break;
             }
+        }
+#ifdef ENABLE_ITS_IPC_INTEGRATION
+        else if (signals & TFM_ITS_SET_SIGNAL)
+        {
+            its_signal_handle(TFM_ITS_SET_SIGNAL, tfm_its_set_ipc);
+        }
+        else if (signals & TFM_ITS_GET_SIGNAL)
+        {
+            its_signal_handle(TFM_ITS_GET_SIGNAL, tfm_its_get_ipc);
+        }
+        else if (signals & TFM_ITS_GET_INFO_SIGNAL)
+        {
+            its_signal_handle(TFM_ITS_GET_INFO_SIGNAL, tfm_its_get_info_ipc);
+        }
+        else if (signals & TFM_ITS_REMOVE_SIGNAL)
+        {
+            its_signal_handle(TFM_ITS_REMOVE_SIGNAL, tfm_its_remove_ipc);
+        }
+#endif /* ENABLE_ITS_IPC_INTEGRATION */
+        else
+        {
+            tfm_abort();
         }
     }
 

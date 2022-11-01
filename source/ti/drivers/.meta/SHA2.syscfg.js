@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,19 @@ swiPriority.displayName = "Crypto interrupt Swi handler priority";
 let config = [];
 
 /*
+ *  ======== validate ========
+ */
+function validate(inst, validation)
+{
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (inst.$module.$instances.length > 2) {
+            validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
+                                driver instances are fixed in the SPE image. Two SHA2 instance are supported.`, inst);
+        }
+    }
+}
+
+/*
  *  ======== base ========
  *  Define the base SHA2 properties and methods
  */
@@ -75,7 +88,8 @@ with negligible probability of collision.
 `,
     defaultInstanceName : "CONFIG_SHA2_",
     config              : Common.addNameConfig(config, "/ti/drivers/SHA2", "CONFIG_SHA2_"),
-    modules: Common.autoForceModules(["Board", "Power"])
+    modules             : Common.autoForceModules(["Board", "Power"]),
+    validate            : validate
 };
 
 /* get family-specific SHA2 module */

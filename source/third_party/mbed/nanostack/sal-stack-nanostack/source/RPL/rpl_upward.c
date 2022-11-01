@@ -1713,7 +1713,8 @@ void rpl_instance_dio_trigger(rpl_instance_t *instance, protocol_interface_info_
     dodag_version->last_advertised_rank = rank;
 
     /* When we advertise a new lowest rank, need to re-evaluate our rank limits */
-    if (rank < dodag_version->lowest_advertised_rank) {
+    /* Rank limit applies only when dodag->config.dag_max_rank_increase is non-zero as per RFC 6550 */
+    if ((rank < dodag_version->lowest_advertised_rank) && (dodag->config.dag_max_rank_increase)) {
         dodag_version->lowest_advertised_rank = rank;
 #if 0
         // Standard RFC 6550 behaviour

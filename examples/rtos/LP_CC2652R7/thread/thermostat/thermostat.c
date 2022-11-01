@@ -304,17 +304,21 @@ static void updateThermostatMode(void)
         thermostatMode = Thermostat_modeCooling;
         thermostatSpriteList[5].image->pPixel = (uint8_t*)(thermostatModePix);
         /* Update the background animation */
+#if BOARD_DISPLAY_USE_LCD
         GraphicExt_animateBackground((Graphics_Image*)thermostatBackgroundImage, 0,
                         COOL_ANIMATION_END, true);
+#endif
     }
     else if(thermostatMode == Thermostat_modeCooling && temperature < setPoint)
     {
         thermostatMode = Thermostat_modeHeating;
         thermostatSpriteList[5].image->pPixel = (uint8_t*)(thermostatModePix +
                                                            MODE_ICON_OFFSET);
-       GraphicExt_animateBackground((Graphics_Image*)thermostatBackgroundImage,
-                                    COOL_ANIMATION_END,
-                                    HEAT_ANIMATION_END, true);
+#if BOARD_DISPLAY_USE_LCD
+        GraphicExt_animateBackground((Graphics_Image*)thermostatBackgroundImage,
+                                     COOL_ANIMATION_END,
+                                     HEAT_ANIMATION_END, true);
+#endif
     }
 }
 
@@ -517,16 +521,6 @@ exit:
 }
 
 /**
- * @brief Display's the image on the LCD screen.
- *
- * @return None
- */
-static void flushLcd(void)
-{
-    GraphicExt_drawSprites(thermostatSpriteList, SPRITE_COUNT, true);
-}
-
-/**
  * @brief Processes the OT stack events
  *
  * @param event             event identifier
@@ -592,7 +586,9 @@ static void processEvent(Thermostat_evt event)
             /* update the Lcd screen with new temperature value and mode */
             updateTemperatureLcd(thermostatTemp);
             updateThermostatMode();
-            flushLcd();
+#if BOARD_DISPLAY_USE_LCD
+            GraphicExt_drawSprites(thermostatSpriteList, SPRITE_COUNT, true);
+#endif
 #if TIOP_CUI
             snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_RED "Temperature" CUI_COLOR_RESET "] " CUI_COLOR_WHITE"%s" CUI_COLOR_RESET " [" CUI_COLOR_RED "Set Point" CUI_COLOR_RESET "] " CUI_COLOR_WHITE "%s", (char*)thermostatTemp, (char*)thermostatSetPt);
             tiopCUIUpdateApp((char*)statusBuf);
@@ -611,7 +607,9 @@ static void processEvent(Thermostat_evt event)
             /* update the Lcd screen with new setpoint value and mode */
             updateSetPtLcd(thermostatSetPt);
             updateThermostatMode();
-            flushLcd();
+#if BOARD_DISPLAY_USE_LCD
+            GraphicExt_drawSprites(thermostatSpriteList, SPRITE_COUNT, true);
+#endif
 #if TIOP_CUI
             snprintf(statusBuf, sizeof(statusBuf), "[" CUI_COLOR_RED "Temperature" CUI_COLOR_RESET "] " CUI_COLOR_WHITE"%s" CUI_COLOR_RESET " [" CUI_COLOR_RED "Set Point" CUI_COLOR_RESET "] " CUI_COLOR_WHITE "%s", (char*)thermostatTemp, (char*)thermostatSetPt);
             tiopCUIUpdateApp((char*)statusBuf);
@@ -637,10 +635,12 @@ static void processEvent(Thermostat_evt event)
                 updateSetPtLcd(thermostatSetPt);
 
                 /* Flush the sprites to the LCD */
-                flushLcd();
+#if BOARD_DISPLAY_USE_LCD
+                GraphicExt_drawSprites(thermostatSpriteList, SPRITE_COUNT, true);
                 GraphicExt_animateBackground((Graphics_Image*)thermostatBackgroundImage,
                                                     0,
                                                     COOL_ANIMATION_END, true);
+#endif
                 updateThermostatMode();
             }
             break;
@@ -648,8 +648,10 @@ static void processEvent(Thermostat_evt event)
 
         case Thermostat_evtGraphicExt:
         {
+#if BOARD_DISPLAY_USE_LCD
             /* process the GraphicExt event */
             GraphicExt_processEvt();
+#endif
             break;
         }
 

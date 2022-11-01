@@ -115,6 +115,7 @@ hide llSetNextDataChan
 hide smpResponderProcessPairingPublicKey
 hide llExtScan_PostProcess
 hide linkDB_NumActive
+hide linkDB_Authen
 hide llTimeCompare
 hide llAllocConnId
 hide GapScan_disable
@@ -124,6 +125,8 @@ hide llSetupConnRxDataEntryQueue
 hide llConnTerminate
 hide llReplaceRxBuffers
 hide LL_ChanMapUpdate
+hide l2capProcessOSALMsg
+hide gapScan_defragAdvRpt
 hide rfSetup
 hide llAllocRfMem
 hide llInit_TaskEnd

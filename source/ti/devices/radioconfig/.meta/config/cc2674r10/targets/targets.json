@@ -1,10 +1,9 @@
 {
     "targets": {
-        "Default": "target_lp_cc2674r10_rgz.json",
+        "Default": "target_lp_cc2674r10.json",
         "Target": [
-            "target_lp_cc2674r10_rgz.json",
-            "target_lp_cc2674r10_rsk.json",
-            "target_lp_cc2674r10_fpga.json"
+            "target_lp_cc2674r10.json",
+            "target_lp_em_cc2674r10.json"
         ]
     }
 }

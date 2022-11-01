@@ -35,28 +35,22 @@
  *  door_lock.syscfg
  */
 
-
 /* Boosterpacks */
-if (system.deviceData.deviceId !== "CC2652P1FSIP")
+if (!system.deviceData.deviceId.match(/CC2652P1FSIP|[157]4[RP]10|2653P10/))
 {
-	var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
-}
-
-/* ======== TIRTOS7 ======== */
-if (system.getRTOS() === "tirtos7") {
-    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
+    var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
 }
 
 /* Modules */
 var AESECB    = scripting.addModule("/ti/drivers/AESECB");
 var Button    = scripting.addModule("/ti/drivers/apps/Button");
-var LED       = scripting.addModule("/ti/drivers/apps/LED");
 var Device    = scripting.addModule("/ti/devices/CCFG");
 var Display   = scripting.addModule("/ti/display/Display");
 var DMA       = scripting.addModule("/ti/drivers/DMA");
 var ECDH      = scripting.addModule("/ti/drivers/ECDH");
 var ECDSA     = scripting.addModule("/ti/drivers/ECDSA");
 var ECJPAKE   = scripting.addModule("/ti/drivers/ECJPAKE");
+var LED       = scripting.addModule("/ti/drivers/apps/LED");
 var NVS       = scripting.addModule("/ti/drivers/NVS");
 var Power     = scripting.addModule("/ti/drivers/Power");
 var RF        = scripting.addModule("/ti/drivers/RF");
@@ -65,7 +59,6 @@ var SHA2      = scripting.addModule("/ti/drivers/SHA2");
 var Watchdog  = scripting.addModule("/ti/drivers/Watchdog");
 var TRNG      = scripting.addModule("/ti/drivers/TRNG");
 var Thread    = scripting.addModule("/ti/thread/thread");
-
 
 /* Instances */
 var AESECB     = AESECB.addInstance();
@@ -81,6 +74,12 @@ var NVS1       = NVS.addInstance();
 var SHA21      = SHA2.addInstance();
 var TRNG1      = TRNG.addInstance();
 var Watchdog1  = Watchdog.addInstance();
+
+/* ======== TIRTOS7 ======== */
+if (system.getRTOS() === "tirtos7") {
+    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
+}
+
 if (system.deviceData.deviceId !== "CC2652P1FSIP")
 {
     var Display2   = Display.addInstance();
@@ -121,7 +120,8 @@ Display1.uart.rxPinInstance.mode            = "Input";
 Display1.uart.rxPinInstance.pull            = "Pull Down";
 
 
-if (system.deviceData.deviceId !== "CC2652P1FSIP")
+/* Boosterpacks */
+if (!system.deviceData.deviceId.match(/CC2652P1FSIP|[157]4[RP]10|2653P10/))
 {
     Display2.$name            = "CONFIG_DISPLAY_LCD";
     Display2.$hardware        = BOOSTXL_SHARP128.components.SHARP_LCD_DISPLAY;
@@ -136,7 +136,6 @@ if (system.deviceData.deviceId !== "CC2652P1FSIP")
     var SPI1                    = Display2.spi; // Create reference
     SPI1.$name                  = "CONFIG_GPIO_SPI_SS";
     SPI1.defaultTxBufferValue   = "0xFF"; // Default Tx Buffer Value (Provide in 0xh format)
-    SPI1.spi.$assign            = "SSI0"; // Use Peripheral
     SPI1.sclkPinInstance.$name  = "CONFIG_PIN_SPI_SCLK";
     SPI1.sclkPinInstance.mode   = "Input";
     SPI1.sclkPinInstance.pull   = "Pull Down";

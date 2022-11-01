@@ -217,13 +217,13 @@ typedef struct
   uint32_t numComparison;
 } scPasscodeData_t;
 
-typedef struct  
+typedef struct
 {
 	osal_list_elem elem;
 	uint8_t  addr[B_ADDR_LEN];  // member's BDADDR
 	uint8_t  addrType;          // member's Address Type
 	uint16_t connHandle;        // member's connection handle
-	uint8_t  status;            // bitwise status flag 
+	uint8_t  status;            // bitwise status flag
 } groupListElem_t;
 
 /*********************************************************************
@@ -439,15 +439,14 @@ static uint8_t SimpleCentral_isMember(uint8_t *advData , uint8_t *groupName , ui
  *
  * @return  none
  */
-
-static void SimpleCentral_autoConnect(void) 
+static void SimpleCentral_autoConnect(void)
 {
   status_t status;
   if (memberInProg == NULL)
   {
     if (numConn < MAX_NUM_BLE_CONNS)
     {
-	  groupListElem_t *tempMember = (groupListElem_t *)osal_list_head(&groupList);
+	    groupListElem_t *tempMember = (groupListElem_t *)osal_list_head(&groupList);
       //If group member is not connected
       if ((tempMember != NULL) && (!(tempMember->status & GROUP_MEMBER_CONNECTED)))
       {
@@ -459,12 +458,12 @@ static void SimpleCentral_autoConnect(void)
           osal_list_remove(&groupList, (osal_list_elem *)tempMember);
           ICall_free(tempMember);
         }
-    	else
-    	{
+        else
+        {
           //Save pointer to connection in progress untill connection is established.
-		  memberInProg = tempMember;
+		      memberInProg = tempMember;
         }
-	  }
+      }
     }
     else
     {
@@ -832,20 +831,20 @@ static void SimpleCentral_processAppMsg(scEvt_t *pMsg)
     {
       GapScan_Evt_AdvRpt_t* pAdvRpt = (GapScan_Evt_AdvRpt_t*) (pMsg->pData);
       //Auto connect is enabled
-      if (autoConnect) 
+      if (autoConnect)
       {
         if (numGroupMembers == MAX_NUM_BLE_CONNS)
         {
           GapScan_disable("");
           break;
-		}
+        }
         //Check if advertiser is part of the group
         if (SimpleCentral_isMember(pAdvRpt->pData , acGroup, GROUP_NAME_LENGTH))
-	    {
-     	  groupListElem_t *tempMember;
-     	  //Traverse list to search if advertiser already in list.
-  	      for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember)) 
-  	      {
+	      {
+          groupListElem_t *tempMember;
+          //Traverse list to search if advertiser already in list.
+          for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember))
+          {
             if (osal_memcmp((uint8_t *)tempMember->addr ,(uint8_t *)pAdvRpt->addr,B_ADDR_LEN))
             {
               break;
@@ -864,7 +863,7 @@ static void SimpleCentral_processAppMsg(scEvt_t *pMsg)
               groupMember->connHandle = GROUP_INITIALIZED_CONNECTION_HANDLE;
               //Add group member into list.
               osal_list_putHead(&groupList,(osal_list_elem *)groupMember);
-			  numGroupMembers++;
+              numGroupMembers++;
             }
             else
             {
@@ -908,108 +907,108 @@ static void SimpleCentral_processAppMsg(scEvt_t *pMsg)
       if (autoConnect)
       {
         itemsToEnable |= SC_ITEM_AUTOCONNECT;
-		if (numGroupMembers < MAX_NUM_BLE_CONNS)
+        if (numGroupMembers < MAX_NUM_BLE_CONNS)
         {
            Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Not all members found, only %d members were found",numGroupMembers);
         }
-		else
-		{
-		  Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
-		  SimpleCentral_autoConnect();
+        else
+        {
+          Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
+          SimpleCentral_autoConnect();
           if (numConn > 0)
-	      {
-	        // Also enable "Work with"
-	        itemsToEnable |= SC_ITEM_SELECTCONN;
-	      }
+          {
+            // Also enable "Work with"
+            itemsToEnable |= SC_ITEM_SELECTCONN;
+          }
         }
-		// Enable "Discover Devices", "Set Scanning PHY", and possibly
-	    // "Connect to" and/or "Work with".
-	    // Disable "Stop Discovering".
-  	    tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
-	  }
+        // Enable "Discover Devices", "Set Scanning PHY", and possibly
+        // "Connect to" and/or "Work with".
+        // Disable "Stop Discovering".
+        tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
+      }
       else
       {
-	      uint8_t numReport;
-	      uint8_t i;
-	      static uint8_t* pAddrs = NULL;
-	      uint8_t* pAddrTemp;
+        uint8_t numReport;
+        uint8_t i;
+        static uint8_t* pAddrs = NULL;
+        uint8_t* pAddrTemp;
 #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
-	      numReport = numScanRes;
+        numReport = numScanRes;
 #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
-	      GapScan_Evt_AdvRpt_t advRpt;
+        GapScan_Evt_AdvRpt_t advRpt;
 
-	      numReport = ((GapScan_Evt_End_t*) (pMsg->pData))->numReport;
+        numReport = ((GapScan_Evt_End_t*) (pMsg->pData))->numReport;
 #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
 
-	      Display_printf(dispHandle, SC_ROW_NON_CONN, 0,
-	                     "%d devices discovered", numReport);
+        Display_printf(dispHandle, SC_ROW_NON_CONN, 0,
+                       "%d devices discovered", numReport);
 
-	      if (numReport > 0)
-	      {
-	        // Also enable "Connect to"
-	        itemsToEnable |= SC_ITEM_CONNECT;
-	      }
+        if (numReport > 0)
+        {
+          // Also enable "Connect to"
+          itemsToEnable |= SC_ITEM_CONNECT;
+        }
 
-	      if (numConn > 0)
-	      {
-	        // Also enable "Work with"
-	        itemsToEnable |= SC_ITEM_SELECTCONN;
-	      }
+        if (numConn > 0)
+        {
+          // Also enable "Work with"
+          itemsToEnable |= SC_ITEM_SELECTCONN;
+        }
 
-	      // Enable "Discover Devices", "Set Scanning PHY", and possibly
-	      // "Connect to" and/or "Work with".
-	      // Disable "Stop Discovering".
-	      tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
+        // Enable "Discover Devices", "Set Scanning PHY", and possibly
+        // "Connect to" and/or "Work with".
+        // Disable "Stop Discovering".
+        tbm_setItemStatus(&scMenuMain, itemsToEnable, SC_ITEM_STOPDISC);
 
-	      // Allocate buffer to display addresses
-	      if (pAddrs != NULL)
-	      {
-	        // A scan has been done previously, release the previously allocated buffer
-	        ICall_free(pAddrs);
-	      }
-	      pAddrs = ICall_malloc(numReport * SC_ADDR_STR_SIZE);
-	      if (pAddrs == NULL)
-	      {
-	        numReport = 0;
-	      }
+        // Allocate buffer to display addresses
+        if (pAddrs != NULL)
+        {
+          // A scan has been done previously, release the previously allocated buffer
+          ICall_free(pAddrs);
+        }
+        pAddrs = ICall_malloc(numReport * SC_ADDR_STR_SIZE);
+        if (pAddrs == NULL)
+        {
+          numReport = 0;
+        }
 
-	      TBM_SET_NUM_ITEM(&scMenuConnect, numReport);
+        TBM_SET_NUM_ITEM(&scMenuConnect, numReport);
 
-	      if (pAddrs != NULL)
-	      {
-	        pAddrTemp = pAddrs;
-	        for (i = 0; i < numReport; i++, pAddrTemp += SC_ADDR_STR_SIZE)
-	        {
-	  #if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
-	          // Get the address from the list, convert it to string, and
-	          // copy the string to the address buffer
-	          memcpy(pAddrTemp, Util_convertBdAddr2Str(scanList[i].addr),
-	                 SC_ADDR_STR_SIZE);
-	  #else // !DEFAULT_DEV_DISC_BY_SVC_UUID
-	          // Get the address from the report, convert it to string, and
-	          // copy the string to the address buffer
-	          GapScan_getAdvReport(i, &advRpt);
-	          memcpy(pAddrTemp, Util_convertBdAddr2Str(advRpt.addr),
-	                 SC_ADDR_STR_SIZE);
-	  #endif // DEFAULT_DEV_DISC_BY_SVC_UUID
+        if (pAddrs != NULL)
+        {
+          pAddrTemp = pAddrs;
+          for (i = 0; i < numReport; i++, pAddrTemp += SC_ADDR_STR_SIZE)
+          {
+#if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
+            // Get the address from the list, convert it to string, and
+            // copy the string to the address buffer
+            memcpy(pAddrTemp, Util_convertBdAddr2Str(scanList[i].addr),
+                   SC_ADDR_STR_SIZE);
+#else // !DEFAULT_DEV_DISC_BY_SVC_UUID
+            // Get the address from the report, convert it to string, and
+            // copy the string to the address buffer
+            GapScan_getAdvReport(i, &advRpt);
+            memcpy(pAddrTemp, Util_convertBdAddr2Str(advRpt.addr),
+                   SC_ADDR_STR_SIZE);
+#endif // DEFAULT_DEV_DISC_BY_SVC_UUID
 
-	          // Assign the string to the corresponding action description of the menu
-	          TBM_SET_ACTION_DESC(&scMenuConnect, i, pAddrTemp);
-	        }
+            // Assign the string to the corresponding action description of the menu
+            TBM_SET_ACTION_DESC(&scMenuConnect, i, pAddrTemp);
+          }
 
-	        // Disable any non-active scan results
-	        for (; i < DEFAULT_MAX_SCAN_RES; i++)
-	        {
-	          tbm_setItemStatus(&scMenuConnect, TBM_ITEM_NONE, (1 << i));
-	        }
+          // Disable any non-active scan results
+          for (; i < DEFAULT_MAX_SCAN_RES; i++)
+          {
+            tbm_setItemStatus(&scMenuConnect, TBM_ITEM_NONE, (1 << i));
+          }
 
-	        // Note: pAddrs is not freed since it will be used by the two button menu
-	        // to display the discovered address.
-	        // This implies that at least the last discovered addresses
-	        // will be maintained until a new scan is done.
-	      }
-	      break;
-	    }
+          // Note: pAddrs is not freed since it will be used by the two button menu
+          // to display the discovered address.
+          // This implies that at least the last discovered addresses
+          // will be maintained until a new scan is done.
+        }
+        break;
+      }
     }
     case SC_EVT_SVC_DISC:
       SimpleCentral_startSvcDiscovery();
@@ -1144,7 +1143,7 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
 	  // Set initiating PHY parameters
       GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MIN,
 						  INIT_PHYPARAM_MIN_CONN_INT);
-	  GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MAX,
+      GapInit_setPhyParam(DEFAULT_INIT_PHY, INIT_PHYPARAM_CONN_INT_MAX,
 						  INIT_PHYPARAM_MAX_CONN_INT);
 
       scMaxPduSize = pPkt->dataPktLen;
@@ -1181,18 +1180,18 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
     {
       uint16_t itemsToEnable = SC_ITEM_SCANPHY | SC_ITEM_STARTDISC |
                                SC_ITEM_CONNECT | SC_ITEM_AUTOCONNECT;
-	  if (autoConnect)
+      if (autoConnect)
       {
         if (memberInProg != NULL)
-		{
+        {
           //Remove node from member's group and free its memory.
           osal_list_remove(&groupList, (osal_list_elem *)memberInProg);
-          ICall_free(memberInProg);  
-  		  numGroupMembers--;
+          ICall_free(memberInProg);
+          numGroupMembers--;
           memberInProg = NULL;
-	    }
-		Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
-		//Keep on connecting to the remaining members in the list
+        }
+        Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect: Number of members in the group %d",numGroupMembers);
+        //Keep on connecting to the remaining members in the list
         SimpleCentral_autoConnect();
       }
 
@@ -1220,20 +1219,20 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
       if (autoConnect)
       {
         if (memberInProg != NULL)
-		{
-  		  if (osal_memcmp((uint8_t *)pAddr, (uint8_t *)memberInProg->addr, B_ADDR_LEN))
-  		  {
+        {
+          if (osal_memcmp((uint8_t *)pAddr, (uint8_t *)memberInProg->addr, B_ADDR_LEN))
+          {
             //Move the connected member to the tail of the list.
             osal_list_remove(&groupList,(osal_list_elem *)memberInProg);
             osal_list_put(&groupList,(osal_list_elem *)memberInProg);
             //Set the connected bit.;
-  		    memberInProg->status |= GROUP_MEMBER_CONNECTED;
+            memberInProg->status |= GROUP_MEMBER_CONNECTED;
             //Store the connection handle.
             memberInProg->connHandle = connHandle;
-  		    memberInProg = NULL;
-  		  }
-  	    }
-	  }
+            memberInProg = NULL;
+          }
+        }
+      }
       uint8_t  connIndex;
       uint32_t itemsToDisable = SC_ITEM_STOPDISC | SC_ITEM_CANCELCONN;
       uint8_t* pStrAddr;
@@ -1286,14 +1285,14 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
 
       if ((autoConnect) && (pairMode != GAPBOND_PAIRING_MODE_INITIATE))
       {
-		    SimpleCentral_autoConnect();
+        SimpleCentral_autoConnect();
       }
       break;
     }
 
     case GAP_LINK_TERMINATED_EVENT:
     {
-	  uint8_t connIndex;
+      uint8_t connIndex;
       BLE_LOG_INT_STR(0, BLE_LOG_MODULE_APP, "APP : GAP msg status=%d, opcode=%s\n", 0, "GAP_LINK_TERMINATED_EVENT");
       uint32_t itemsToEnable = SC_ITEM_STARTDISC | SC_ITEM_SCANPHY | SC_ITEM_AUTOCONNECT;
       uint8_t* pStrAddr;
@@ -1304,7 +1303,7 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
       {
         groupListElem_t *tempMember;
         //Traverse from tail to head because of the sorting which put the connected at the end of the list.
-		for (tempMember = (groupListElem_t *)osal_list_tail(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_prev((osal_list_elem *)tempMember)) 
+        for (tempMember = (groupListElem_t *)osal_list_tail(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_prev((osal_list_elem *)tempMember))
         {
           if (tempMember->connHandle == connHandle)
           {
@@ -1314,18 +1313,18 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
             //Clear the connected flag.
             tempMember->status &= ~GROUP_MEMBER_CONNECTED;
             //Clear the connnection handle.
-            tempMember->connHandle = GROUP_INITIALIZED_CONNECTION_HANDLE;   
+            tempMember->connHandle = GROUP_INITIALIZED_CONNECTION_HANDLE;
           }
         }
       }
       // Cancel timers
       SimpleCentral_CancelRssi(connHandle);
-	  
-	  // Mark this connection deleted in the connected device list.
+
+      // Mark this connection deleted in the connected device list.
       connIndex = SimpleCentral_removeConnInfo(connHandle);
       if (autoConnect)
       {
-	    SimpleCentral_autoConnect();
+        SimpleCentral_autoConnect();
       }
       // connIndex cannot be equal to or greater than MAX_NUM_BLE_CONNS
       SIMPLECENTRAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
@@ -1373,7 +1372,7 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
 
     case GAP_UPDATE_LINK_PARAM_REQ_EVENT:
     {
-	  gapUpdateLinkParamReqReply_t rsp;
+      gapUpdateLinkParamReqReply_t rsp;
       gapUpdateLinkParamReq_t *pReq;
 
       pReq = &((gapUpdateLinkParamReqEvent_t *)pMsg)->req;
@@ -1398,7 +1397,7 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
       // Send Reply
       VOID GAP_UpdateLinkParamReqReply(&rsp);
 
-	  if (autoConnect)
+      if (autoConnect)
       {
         SimpleCentral_autoConnect();
       }
@@ -1430,7 +1429,7 @@ static void SimpleCentral_processGapMsg(gapEventHdr_t *pMsg)
                          Util_convertBdAddr2Str(linkInfo.addr));
         }
       }
-      
+
       if (autoConnect)
       {
         SimpleCentral_autoConnect();
@@ -1592,9 +1591,9 @@ static void SimpleCentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
       uint16_t connHandle = BUILD_UINT16(pMsg->pReturnParam[1],
                                          pMsg->pReturnParam[2]);
       int8 rssi = (int8)pMsg->pReturnParam[3];
-      
-	  Display_printf(dispHandle, SC_ROW_ANY_CONN, 0, "%s: RSSI %d dBm",
-                   SimpleCentral_getConnAddrStr(connHandle), rssi);
+
+      Display_printf(dispHandle, SC_ROW_ANY_CONN, 0, "%s: RSSI %d dBm",
+                     SimpleCentral_getConnAddrStr(connHandle), rssi);
 
 #endif
       break;
@@ -1736,7 +1735,7 @@ static void SimpleCentral_processPairState(uint8_t state,
 
     if ((autoConnect) && (pairMode == GAPBOND_PAIRING_MODE_INITIATE))
     {
-	  SimpleCentral_autoConnect();
+      SimpleCentral_autoConnect();
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_ENCRYPTED)
@@ -2309,14 +2308,14 @@ bool SimpleCentral_doAutoConnect(uint8_t index)
       {
         groupListElem_t *tempMember;
         //Traverse list to search if advertiser already in list.
-        for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember)) 
+        for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember))
         {
           osal_list_remove(&groupList,(osal_list_elem *)tempMember);
           ICall_free(tempMember);
         }
-		numGroupMembers = 0;
-      }	
-	  Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect enabled: Group A");
+        numGroupMembers = 0;
+      }
+      Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect enabled: Group A");
       autoConnect = AUTOCONNECT_GROUP_A;
       acGroup[3] = 'A';
     }
@@ -2326,12 +2325,12 @@ bool SimpleCentral_doAutoConnect(uint8_t index)
       {
         groupListElem_t *tempMember;
         //Traverse list to search if advertiser already in list.
-        for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember)) 
+        for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember))
         {
           osal_list_remove(&groupList,(osal_list_elem *)tempMember);
           ICall_free(tempMember);
         }
-		numGroupMembers = 0;
+        numGroupMembers = 0;
       }
       Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect enabled: Group B");
       autoConnect = AUTOCONNECT_GROUP_B;
@@ -2342,28 +2341,28 @@ bool SimpleCentral_doAutoConnect(uint8_t index)
       autoConnect = AUTOCONNECT_DISABLE;
       groupListElem_t *tempMember;
       //Traverse list to search if advertiser already in list.
-      for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember)) 
+      for (tempMember = (groupListElem_t *)osal_list_head(&groupList); tempMember != NULL; tempMember = (groupListElem_t *)osal_list_next((osal_list_elem *)tempMember))
       {
         osal_list_remove(&groupList,(osal_list_elem *)tempMember);
         ICall_free(tempMember);
       }
-	  numGroupMembers = 0;
+      numGroupMembers = 0;
       Display_printf(dispHandle, SC_ROW_AC, 0, "AutoConnect disabled");
     }
     if ((autoConnect) && (MAX_NUM_BLE_CONNS > 8))
     {
-	  //Disable accepting L2CAP param upadte request
+      //Disable accepting L2CAP param upadte request
       acceptParamUpdateReq = false;
-	  //Disable all parameter update requests
-	  GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, GAP_UPDATE_REQ_DENY_ALL);
-	  //Set connection interval and supervision timeout
+      //Disable all parameter update requests
+       GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, GAP_UPDATE_REQ_DENY_ALL);
+      //Set connection interval and supervision timeout
       GapInit_setPhyParam(INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_CODED,INIT_PHYPARAM_CONN_INT_MAX,DEFAULT_MULTICON_INTERVAL);
       GapInit_setPhyParam(INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_CODED,INIT_PHYPARAM_CONN_INT_MIN,DEFAULT_MULTICON_INTERVAL);
-	  GapInit_setPhyParam(INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_CODED,INIT_PHYPARAM_SUP_TIMEOUT,DEFAULT_MULTICON_LSTO);
+      GapInit_setPhyParam(INIT_PHY_1M | INIT_PHY_2M | INIT_PHY_CODED,INIT_PHYPARAM_SUP_TIMEOUT,DEFAULT_MULTICON_LSTO);
     }
- 
+
     tbm_goTo(&scMenuMain);
-    
+
     return (true);
 }
 
@@ -2605,7 +2604,7 @@ bool SimpleCentral_doGattWrite(uint8_t index)
 
     req.handle = connList[connIndex].charHandle;
     req.len = 1;
-    charVal = charVals[index];    
+    charVal = charVals[index];
     req.pValue[0] = charVal;
     req.sig = 0;
     req.cmd = 0;
@@ -2765,7 +2764,6 @@ static void SimpleCentral_menuSwitchCb(tbmMenuObj_t* pMenuObjCurr,
   // entering scMenuConnect, scMenuSelectConn, and scMenuMain for now
   if (pMenuObjNext == &scMenuConnect)
   {
-    
     uint32_t itemsToDisable = SC_ITEM_NONE;
 
     for (i = 0; i < TBM_GET_NUM_ITEM(&scMenuConnect); i++)

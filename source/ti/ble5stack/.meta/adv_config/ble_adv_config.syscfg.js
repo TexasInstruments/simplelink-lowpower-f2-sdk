@@ -40,6 +40,19 @@
 // Get general long descriptions
 const Docs = system.getScript("/ti/ble5stack/adv_config/ble_adv_config_docs.js");
 
+// Get common Script
+const Common = system.getScript("/ti/ble5stack/ble_common.js");
+
+// OAD hidden value
+const oadHiddenVal = Common.hiddenValue();
+
+// TBM values
+const defaultTBMVal = Common.defaultValue();
+const hiddenTBMVal = Common.hiddenValue();
+
+// Disable disaplay values
+const hiddenDisableDisplay = Common.hiddenValue();
+
 const config = {
     displayName: "Advanced Settings",
     description: "Configure Extended Settings",
@@ -48,7 +61,8 @@ const config = {
             name: "disableDisplayModule",
             displayName: "Disable The Display Module",
             longDescription: Docs.disableDisplayModuleLongDescription,
-            default: false
+            default: false,
+            hidden: hiddenDisableDisplay
         },
         {
             name: "powerMamagement",
@@ -66,7 +80,8 @@ const config = {
             name: "tbmActiveItemsOnly",
             displayName: "Two Button Menu - Active Items Only",
             longDescription: Docs.tbmActiveItemsOnlyLongDescription,
-            default: true
+            default: defaultTBMVal,
+            hidden: hiddenTBMVal
         },
         {
             name: "stackLibrary",
@@ -218,22 +233,26 @@ const config = {
                 {
                     name: "ledDebug",
                     displayName: "Led Debug",
-                    default: false
+                    default: false,
+                    hidden: oadHiddenVal
                 },
                 {
                     name: "oadDebug",
                     displayName: "OAD Debug",
-                    default: false
+                    default: false,
+                    hidden: oadHiddenVal
                 },
                 {
                     name: "oadFeature",
                     displayName: "OAD Feature",
-                    default: false
+                    default: false,
+                    hidden: oadHiddenVal
                 },
                 {
                     name: "oadBleSecurity",
                     displayName: "OAD BLE Security",
-                    default: false
+                    default: false,
+                    hidden: oadHiddenVal
                 }
             ]
         }

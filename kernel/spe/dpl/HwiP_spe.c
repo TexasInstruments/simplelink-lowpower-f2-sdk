@@ -33,8 +33,9 @@
  *  ======== HwiP_spe.c ========
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <cmsis.h>
 
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/DebugP.h>
@@ -144,6 +145,7 @@ static HwiP_Obj* HwiP_dispatchTable[NUM_INTERRUPTS] = {
 
 int HwiP_swiPIntNum = INT_PENDSV;
 
+#define PRIMASK_NS_OFFSET 8UL
 
 /*
  *  ======== HwiP_enable ========
@@ -158,17 +160,33 @@ void HwiP_enable(void)
  */
 uintptr_t HwiP_disable(void)
 {
-    return (IntMasterDisable());
+    uintptr_t primask_ns;
+
+    /* Store the non-secure primask */
+    primask_ns = __TZ_get_PRIMASK_NS();
+
+    /* Write 1 to non-secure primask to disable non-secure interrupts */
+    __TZ_set_PRIMASK_NS(1UL);
+
+    /* 
+     * Disable secure interrupts and return key necessary to restore secure and
+     * non-secure interrupts using HwiP_restore()
+     */
+    return (IntMasterDisable() | (primask_ns << PRIMASK_NS_OFFSET));
 }
 
 /*
  *  ======== HwiP_restore ========
  */
-void HwiP_restore(uintptr_t alreadyDisabled)
+void HwiP_restore(uintptr_t key)
 {
-    if (!alreadyDisabled) {
+    /* Restore secure interrupts */
+    if ((key & 1UL) == 0UL) {
         IntMasterEnable();
     }
+
+    /* Restore non-secure interrupts */
+    __TZ_set_PRIMASK_NS(key >> PRIMASK_NS_OFFSET);
 }
 
 /*

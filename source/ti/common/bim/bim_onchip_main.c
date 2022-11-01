@@ -676,7 +676,7 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
         if (VERIFY_PASS == securityStatus)
         {
 
-            jumpToPrgEntry(imgHdr.fixedHdr.prgEntry);
+            jumpToPrgEntry((uint32_t*)imgHdr.fixedHdr.prgEntry);
 
         }
         else
@@ -807,7 +807,7 @@ static void Bim_UpdateExecValidImg()
         Bim_updateVerifStatus(IMAGE_1_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
         readFlashPg(IMAGE_1_HDR_START_PAGE_NUM, 0, (uint8_t *)&imgHdr_1, OAD_IMG_HDR_LEN);
         /* jump to the image */
-        jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+        jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
     }
     else if(!(isValidImg_1) && (isValidImg_2))
     {
@@ -823,7 +823,7 @@ static void Bim_UpdateExecValidImg()
         Bim_updateVerifStatus(IMAGE_2_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
         /* jump to the image */
         readFlashPg(IMAGE_2_HDR_START_PAGE_NUM, 0, (uint8_t *)&imgHdr_2, OAD_IMG_HDR_LEN);
-        jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+        jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
     }
     else if((isValidImg_1) && (isValidImg_2)) /* both the images are valid so far */
     {
@@ -849,7 +849,7 @@ static void Bim_UpdateExecValidImg()
 #endif
                 /* switch to new image */
                 Bim_updateVerifStatus(IMAGE_1_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
             }
             else if( secVer_1 < secVer_2)
             {
@@ -860,14 +860,14 @@ static void Bim_UpdateExecValidImg()
 #endif
                 /* Do not switch to new image */
                 Bim_updateVerifStatus(IMAGE_2_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
             }
             else /* same sec version */
             {
                 /* switch to new image */
                 Bim_updateVerifStatus(IMAGE_2_HDR_START_PAGE_NUM,  VERIFY_PASS_NOT_CURRENT);
                 Bim_updateVerifStatus(IMAGE_1_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
             }
         } /* end of if image 1 is new */
         /* image 2 is new */
@@ -882,7 +882,7 @@ static void Bim_UpdateExecValidImg()
 #endif
                 /* switch to new image */
                 Bim_updateVerifStatus(IMAGE_2_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
             }
             else if( secVer_2 < secVer_1)
             {
@@ -893,14 +893,14 @@ static void Bim_UpdateExecValidImg()
 #endif
                 /* Do not switch to new image */
                 Bim_updateVerifStatus(IMAGE_1_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
             }
             else /* same sec version */
             {
                 /* switch to new image */
                 Bim_updateVerifStatus(IMAGE_1_HDR_START_PAGE_NUM,  VERIFY_PASS_NOT_CURRENT);
                 Bim_updateVerifStatus(IMAGE_2_HDR_START_PAGE_NUM, VERIFY_PASS_CURRENT);
-                jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
             }
         } /* end of if image 2 is new */
         /* neither of the images are new */
@@ -912,13 +912,13 @@ static void Bim_UpdateExecValidImg()
             {
                 /* no need to update the status fields */
                 /* jump to the image */
-                jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
             }
             else if(imgHdr_1.fixedHdr.imgVld < imgHdr_2.fixedHdr.imgVld)
             {
                 /* no need to update the status fields */
                 /* jump to the image */
-                jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+                jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
             }
             else /*both are equal*/
 #endif
@@ -927,12 +927,12 @@ static void Bim_UpdateExecValidImg()
                 if((VERIFY_PASS_CURRENT == imgHdr_1.secInfoSeg.verifStat) &&
                    (VERIFY_PASS_NOT_CURRENT == imgHdr_2.secInfoSeg.verifStat))
                 {
-                    jumpToPrgEntry(imgHdr_1.fixedHdr.prgEntry);
+                    jumpToPrgEntry((uint32_t*)imgHdr_1.fixedHdr.prgEntry);
                 }
                 else if((VERIFY_PASS_CURRENT == imgHdr_2.secInfoSeg.verifStat) &&
                         (VERIFY_PASS_NOT_CURRENT == imgHdr_1.secInfoSeg.verifStat))
                 {
-                    jumpToPrgEntry(imgHdr_2.fixedHdr.prgEntry);
+                    jumpToPrgEntry((uint32_t*)imgHdr_2.fixedHdr.prgEntry);
                 }
                 /* else: any other case: something is wrong */
             }

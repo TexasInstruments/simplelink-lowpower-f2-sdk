@@ -141,6 +141,7 @@ for(var setting in bleRfDesignSettings)
 /* ======== BLE ======== */
 var ble = scripting.addModule("/ti/ble5stack/ble");
 ble.rfDesign = rfDesignSettings.rfDesign;
+ble.thorPg = 2;
 ble.deviceRole = "PERIPHERAL_CFG+CENTRAL_CFG";
 ble.disDevBySerUuid = true;
 if(lpName == "LP_CC2652RB")
@@ -249,7 +250,14 @@ if (system.getRTOS() === "tirtos7")
 
 
     /* ================ Hwi configuration ================ */
-    const Hwi           = scripting.addModule("/ti/sysbios/family/arm/m3/Hwi", {}, false);
+    if(lpName == "LP_EM_CC1354P10_1" || lpName == "LP_EM_CC1354P10_6")
+    {
+        var Hwi = scripting.addModule("/ti/sysbios/family/arm/v8m/Hwi", {}, false);
+    }
+    else
+    {
+        var Hwi = scripting.addModule("/ti/sysbios/family/arm/m3/Hwi", {}, false);
+    }
     /*
     * Checks for Hwi (system) stack overruns while in the Idle loop.
     *

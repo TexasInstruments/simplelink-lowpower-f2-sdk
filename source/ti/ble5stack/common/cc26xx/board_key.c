@@ -143,8 +143,8 @@ void Board_initKeys(keysPressedCB_t appKeyCB)
   //Enable wakeup - store current configure in temporary variable and update pinConfig
   GPIO_PinConfig currConfig;
   GPIO_getConfig(CONFIG_GPIO_BTN1, &currConfig);
-  GPIO_setConfig(CONFIG_GPIO_BTN1, currConfig | GPIO_CFG_STANDBY_WAKE_ON);
-  GPIO_setConfig(CONFIG_GPIO_BTN2, currConfig | GPIO_CFG_STANDBY_WAKE_ON);
+  GPIO_setConfig(CONFIG_GPIO_BTN1, currConfig);
+  GPIO_setConfig(CONFIG_GPIO_BTN2, currConfig);
 #endif
 }
 

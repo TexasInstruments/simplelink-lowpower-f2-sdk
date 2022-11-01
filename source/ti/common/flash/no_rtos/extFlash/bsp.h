@@ -65,15 +65,18 @@ extern "C"
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
-#include DeviceFamily_constructPath(inc/hw_sysctl.h) // Access to the GET_MCU_CLOCK define
+#include DeviceFamily_constructPath(inc/hw_sysctl.h)
 #include DeviceFamily_constructPath(inc/hw_ioc.h)
+#ifndef DeviceFamily_CC23X0
 #include DeviceFamily_constructPath(driverlib/ioc.h)
+#endif
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 
 /******************************************************************************
 * DEFINES
 */
 
+#ifndef DeviceFamily_CC23X0
 // Board LED defines
 #define BSP_IOID_LED_1          IOID_6
 #define BSP_IOID_LED_2          IOID_7
@@ -81,12 +84,37 @@ extern "C"
 // Board key defines
 #define BSP_IOID_KEY_LEFT       IOID_13
 #define BSP_IOID_KEY_RIGHT      IOID_14
+#endif
 
 // Board external flash defines
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2) || \
+    (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1)
+
 #define BSP_IOID_FLASH_CS       IOID_20
 #define BSP_SPI_MOSI            IOID_9
 #define BSP_SPI_MISO            IOID_8
 #define BSP_SPI_CLK_FLASH       IOID_10
+
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+
+#define BSP_IOID_FLASH_CS       IOID_38
+#define BSP_SPI_MOSI            IOID_36
+#define BSP_SPI_MISO            IOID_37
+#define BSP_SPI_CLK_FLASH       IOID_39
+
+#elif defined DeviceFamily_CC23X0
+
+#define BSP_IOID_FLASH_CS       6
+#define BSP_SPI_MOSI            13
+#define BSP_SPI_MISO            12
+#define BSP_SPI_CLK_FLASH       18
+
+#else
+
+#error "Invalid Device Family"
+
+#endif
+
 
 /******************************************************************************
 * Mark the end of the C bindings section for C++ compilers.

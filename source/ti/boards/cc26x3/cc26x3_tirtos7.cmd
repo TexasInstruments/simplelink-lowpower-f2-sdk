@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
---stack_size=1024   /* C stack is also used for ISR stack */
+--stack_size=0x600   /* C stack is also used for ISR stack */
 
 HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 
@@ -70,16 +70,8 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 
 MEMORY
 {
-    /* Application stored in and executes from internal flash
-     * Note there are some holes in this memory due to issues with
-     * first-sampling silicon.
-     */
-    FLASH_1 (RX) : origin = 0x0,     length = 0x1C000
-    FLASH_2 (RX) : origin = 0x24000, length = 0x38000
-    FLASH_3 (RX) : origin = 0x64000, length = 0x38000
-    FLASH_4 (RX) : origin = 0xA4000, length = 0x38000
-    FLASH_5 (RX) : origin = 0xE4000, length = 0x1C000
-
+    /* Application stored in and executes from internal flash */
+    FLASH (RX) : origin = FLASH_BASE, length = FLASH_SIZE
     /* Application uses internal RAM for data */
     SRAM (RWX) : origin = RAM_BASE, length = RAM_SIZE
     /* Application can use GPRAM region as RAM if cache is disabled in the CCFG
@@ -96,19 +88,20 @@ MEMORY
 
 /* Section allocation in memory */
 
+
 SECTIONS
 {
     .intvecs        :   > FLASH_BASE
-    .text           :   >> FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .TI.ramfunc     : {} load=FLASH_2, run=SRAM, table(BINIT)
-    .const          :   >> FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .constdata      :   >> FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .rodata         :   >> FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .binit          :   > FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .cinit          :   > FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .pinit          :   > FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .init_array     :   > FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
-    .emb_text       :   >> FLASH_1|FLASH_2|FLASH_3|FLASH_4|FLASH_5
+    .text           :   >> FLASH
+    .TI.ramfunc     : {} load=FLASH, run=SRAM, table(BINIT)
+    .const          :   >> FLASH
+    .constdata      :   >> FLASH
+    .rodata         :   >> FLASH
+    .binit          :   > FLASH
+    .cinit          :   > FLASH
+    .pinit          :   > FLASH
+    .init_array     :   > FLASH
+    .emb_text       :   >> FLASH
     .ccfg           :   > CCFG
 
     .vtable         :   > SRAM
@@ -126,7 +119,6 @@ SECTIONS
         __primary_heap_end__ = .;
     } > SRAM align 8
     .gpram          :   > GPRAM
-
     .log_data       :   > LOG_DATA, type = COPY
 }
 

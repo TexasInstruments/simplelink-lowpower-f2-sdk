@@ -166,11 +166,19 @@ extern "C"
     #define FLASH_PAGE(addr)                (addr >> 13)
     #define INTFLASH_PAGE_MASK              0xFFFFE000
     #define INTFLASH_PAGE_SIZE              0x2000
-#if defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC13X2X7)
-    #define MAX_ONCHIP_FLASH_PAGES          88
-#else
-    #define MAX_ONCHIP_FLASH_PAGES          44
-#endif
+    #if defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC13X2X7)
+        #define MAX_ONCHIP_FLASH_PAGES          88
+    #else
+        #define MAX_ONCHIP_FLASH_PAGES          44
+    #endif
+    #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
+#elif defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) ||  \
+      defined(DeviceFamily_CC26X3)
+    #define FLASH_ADDRESS(page, offset)     (((page) << 11) + (offset))
+    #define FLASH_PAGE(addr)                (addr >> 11)
+    #define INTFLASH_PAGE_MASK              0xFFFFF800
+    #define INTFLASH_PAGE_SIZE              0x800
+    #define MAX_ONCHIP_FLASH_PAGES          512
     #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
 #else
     #error

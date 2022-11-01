@@ -204,18 +204,6 @@ public:
     void Init(Type aType, Code aCode);
 
     /**
-     * This method initializes the CoAP header as `kTypeConfirmable` and `kCodePost`.
-     *
-     */
-    void InitAsConfirmablePost(void);
-
-    /**
-     * This method initializes the CoAP header as `kTypeNonConfirmable` and `kCodePost`.
-     *
-     */
-    void InitAsNonConfirmablePost(void);
-
-    /**
      * This method initializes the CoAP header with specific Type and Code.
      *
      * @param[in]  aType              The Type value.
@@ -227,28 +215,6 @@ public:
      *
      */
     Error Init(Type aType, Code aCode, const char *aUriPath);
-
-    /**
-     * This method initializes the CoAP header as `kTypeConfirmable` and `kCodePost` with a given URI Path.
-     *
-     * @param[in]  aUriPath           A pointer to a null-terminated string.
-     *
-     * @retval kErrorNone         Successfully appended the option.
-     * @retval kErrorNoBufs       The option length exceeds the buffer size.
-     *
-     */
-    Error InitAsConfirmablePost(const char *aUriPath);
-
-    /**
-     * This method initializes the CoAP header as `kTypeNonConfirmable` and `kCodePost` with a given URI Path.
-     *
-     * @param[in]  aUriPath           A pointer to a null-terminated string.
-     *
-     * @retval kErrorNone         Successfully appended the option.
-     * @retval kErrorNoBufs       The option length exceeds the buffer size.
-     *
-     */
-    Error InitAsNonConfirmablePost(const char *aUriPath);
 
     /**
      * This method initializes the CoAP header as `kCodePost` with a given URI Path with its type determined from a
@@ -985,7 +951,7 @@ private:
     const HelpData &GetHelpData(void) const
     {
         static_assert(sizeof(HelpData) + kHelpDataAlignment <= kHeadBufferDataSize,
-                      "Insufficient buffer size for CoAP processing!");
+                      "Insufficient buffer size for CoAP processing! Increase OPENTHREAD_CONFIG_MESSAGE_BUFFER_SIZE.");
 
         return *static_cast<const HelpData *>(OT_ALIGN(GetFirstData(), kHelpDataAlignment));
     }

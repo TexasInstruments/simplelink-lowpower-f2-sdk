@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,8 +63,8 @@
 /* Bytes per Megabyte */
 #define BYTESPERMEGABYTE 1048576
 
-static uint8_t writeBuffer[BUFFER_SIZE];
-static uint8_t readBuffer[BUFFER_SIZE];
+static uint8_t writeBuffer[BUFFER_SIZE] __attribute__((aligned(4)));
+static uint8_t readBuffer[BUFFER_SIZE] __attribute__((aligned(4)));
 #if (WRITEENABLE)
 static uint8_t emptyBuffer[BUFFER_SIZE] = {0};
 #endif

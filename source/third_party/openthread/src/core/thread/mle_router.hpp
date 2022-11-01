@@ -388,7 +388,7 @@ public:
      * @retval kErrorNoRoute   The destination is not reachable and the message should be dropped.
      *
      */
-    Error CheckReachability(uint16_t aMeshDest, Ip6::Header &aIp6Header);
+    Error CheckReachability(uint16_t aMeshDest, const Ip6::Header &aIp6Header);
 
     /**
      * This method resolves 2-hop routing loops.
@@ -570,21 +570,25 @@ public:
     void SetThreadVersionCheckEnabled(bool aEnabled) { mThreadVersionCheckEnabled = aEnabled; }
 #endif
 
+    /**
+     * This function sends an Address Release.
+     *
+     * @param[in] aResponseHandler        A pointer to a function that is called upon response reception or time-out.
+     * @param[in] aResponseHandlerContext A pointer to callback application-specific context.
+     *
+     */
+    void SendAddressRelease(Coap::ResponseHandler aResponseHandler = nullptr, void *aResponseHandlerContext = nullptr);
+
 private:
     static constexpr uint16_t kDiscoveryMaxJitter            = 250;  // Max jitter delay Discovery Responses (in msec).
     static constexpr uint32_t kStateUpdatePeriod             = 1000; // State update period (in msec).
     static constexpr uint16_t kUnsolicitedDataResponseJitter = 500;  // Max delay for unsol Data Response (in msec).
 
     // Threshold to accept a router upgrade request with reason
-    // `kBorderRouterRequst` (number of BRs acting as router in
+    // `kBorderRouterRequest` (number of BRs acting as router in
     // Network Data).
     static constexpr uint8_t kRouterUpgradeBorderRouterRequestThreshold = 2;
 
-    Error AppendConnectivity(Message &aMessage);
-    Error AppendChildAddresses(Message &aMessage, Child &aChild);
-    Error AppendRoute(Message &aMessage, Neighbor *aNeighbor = nullptr);
-    Error AppendActiveDataset(Message &aMessage);
-    Error AppendPendingDataset(Message &aMessage);
     void  HandleDetachStart(void);
     void  HandleChildStart(AttachMode aMode);
     void  HandleLinkRequest(RxInfo &aRxInfo);
@@ -603,10 +607,10 @@ private:
     void HandleTimeSync(RxInfo &aRxInfo);
 #endif
 
-    Error ProcessRouteTlv(const RouteTlv &aRoute);
+    Error ProcessRouteTlv(RxInfo &aRxInfo);
+    Error ProcessRouteTlv(RxInfo &aRxInfo, RouteTlv &aRouteTlv);
     void  StopAdvertiseTrickleTimer(void);
     Error SendAddressSolicit(ThreadStatusTlv::Status aStatus);
-    void  SendAddressRelease(void);
     void  SendAddressSolicitResponse(const Coap::Message &   aRequest,
                                      ThreadStatusTlv::Status aResponseStatus,
                                      const Router *          aRouter,
@@ -614,29 +618,28 @@ private:
     void  SendAdvertisement(void);
     Error SendLinkAccept(const Ip6::MessageInfo &aMessageInfo,
                          Neighbor *              aNeighbor,
-                         const RequestedTlvs &   aRequestedTlvs,
+                         const TlvList &         aRequestedTlvList,
                          const Challenge &       aChallenge);
     void  SendParentResponse(Child *aChild, const Challenge &aChallenge, bool aRoutersOnlyRequest);
     Error SendChildIdResponse(Child &aChild);
     Error SendChildUpdateRequest(Child &aChild);
     void  SendChildUpdateResponse(Child *                 aChild,
                                   const Ip6::MessageInfo &aMessageInfo,
-                                  const uint8_t *         aTlvs,
-                                  uint8_t                 aTlvsLength,
+                                  const TlvList &         aTlvList,
                                   const Challenge &       aChallenge);
     void  SendDataResponse(const Ip6::Address &aDestination,
-                           const uint8_t *     aTlvs,
-                           uint8_t             aTlvsLength,
+                           const TlvList &     aTlvList,
                            uint16_t            aDelay,
                            const Message *     aRequestMessage = nullptr);
     Error SendDiscoveryResponse(const Ip6::Address &aDestination, const Message &aDiscoverRequestMessage);
     void  SetStateRouter(uint16_t aRloc16);
-    void  SetStateLeader(uint16_t aRloc16);
+    void  SetStateLeader(uint16_t aRloc16, LeaderStartMode aStartMode);
     void  StopLeader(void);
     void  SynchronizeChildNetworkData(void);
     Error UpdateChildAddresses(const Message &aMessage, uint16_t aOffset, Child &aChild);
     void  UpdateRoutes(const RouteTlv &aRoute, uint8_t aRouterId);
     bool  UpdateLinkQualityOut(const RouteTlv &aRoute, Router &aNeighbor, bool &aResetAdvInterval);
+    bool  HasNeighborWithGoodLinkQuality(void) const;
 
     static void HandleAddressSolicitResponse(void *               aContext,
                                              otMessage *          aMessage,
@@ -698,6 +701,8 @@ private:
 
     uint8_t mRouterSelectionJitter;        ///< The variable to save the assigned jitter value.
     uint8_t mRouterSelectionJitterTimeout; ///< The Timeout prior to request/release Router ID.
+
+    uint8_t mLinkRequestDelay;
 
     int8_t mParentPriority; ///< The assigned parent priority value, -2 means not assigned.
 #if OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2018, Texas Instruments Incorporated
+ * Copyright (c) 2014-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -300,7 +300,7 @@ extern "C" {
 
 typedef size_t Json_Handle;
 
-#define JSON_DEFAULT_SIZE                       (1024u)
+#define JSON_DEFAULT_SIZE (1024u)
 
 /*!
  *  @brief      This function creates internal template from the
@@ -331,9 +331,7 @@ typedef size_t Json_Handle;
  *
  *  @sa Json_destroyTemplate()
  */
-int16_t Json_createTemplate(Json_Handle *templateHandle,
-    const char *templateString, uint16_t templateStringLen);
-
+int16_t Json_createTemplate(Json_Handle *templateHandle, const char *templateString, uint16_t templateStringLen);
 
 /*!
  *  @brief      This function frees the internal template memory
@@ -386,9 +384,7 @@ int16_t Json_destroyTemplate(Json_Handle templateHandle);
  *  @sa     Json_createTemplate()
  *  @sa     Json_destroyObject()
  */
-int16_t Json_createObject(Json_Handle *objHandle, Json_Handle templateHandle,
-        uint16_t maxObjectSize);
-
+int16_t Json_createObject(Json_Handle *objHandle, Json_Handle templateHandle, uint16_t maxObjectSize);
 
 /*!
  *  @brief      Free the internal json memory
@@ -433,7 +429,6 @@ int16_t Json_destroyObject(Json_Handle objHandle);
  */
 int16_t Json_parse(Json_Handle objHandle, char *jsonText, uint16_t jsonTextLen);
 
-
 /*!
  *  @brief      Retrieve the number of array elements in the provided key
  *
@@ -463,7 +458,6 @@ int16_t Json_parse(Json_Handle objHandle, char *jsonText, uint16_t jsonTextLen);
  *  @sa     Json_parse()
  */
 int16_t Json_getArrayMembersCount(Json_Handle objHandle, const char *pKey);
-
 
 /*!
  *  @brief This function retrieves value from json
@@ -502,9 +496,7 @@ int16_t Json_getArrayMembersCount(Json_Handle objHandle, const char *pKey);
  *
  *  @sa     Json_parse()
  */
-int16_t Json_getValue(Json_Handle objHandle, const char *pKey, void *pValue,
-        uint16_t *maxValueSize);
-
+int16_t Json_getValue(Json_Handle objHandle, const char *pKey, void *pValue, uint16_t *maxValueSize);
 
 /*!
  *  @brief      Sets the value for the provided key
@@ -541,9 +533,7 @@ int16_t Json_getValue(Json_Handle objHandle, const char *pKey, void *pValue,
  *
  *  @sa     Json_parse()
  */
-int16_t Json_setValue(Json_Handle objHandle, const char *pKey, void *pValue,
-        uint16_t valueSize);
-
+int16_t Json_setValue(Json_Handle objHandle, const char *pKey, void *pValue, uint16_t valueSize);
 
 /*!
  *  @brief This function builds the internal json into a text json

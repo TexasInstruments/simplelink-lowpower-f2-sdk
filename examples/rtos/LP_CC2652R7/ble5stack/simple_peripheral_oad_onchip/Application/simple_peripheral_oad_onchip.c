@@ -1714,7 +1714,7 @@ static void SimplePeripheral_passcodeCb(uint8_t *pDeviceAddr,
     // Enqueue the event.
     if(SimplePeripheral_enqueueMsg(SP_PASSCODE_EVT, pData) != SUCCESS)
     {
-      ICall_freeMsg(pData);
+      ICall_free(pData);
     }
   }
 }

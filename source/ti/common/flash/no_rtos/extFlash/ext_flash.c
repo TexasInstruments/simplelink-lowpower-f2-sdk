@@ -62,6 +62,7 @@
 */
 
 #define SPI_BIT_RATE              4000000
+#define SPI_CS_STD_OUT            0x20000201
 
 /* Instruction codes */
 
@@ -159,7 +160,11 @@ static int extFlashWaitPowerDown(void);
 */
 static void extFlashSelect(void)
 {
+#ifndef DeviceFamily_CC23X0
     GPIO_clearDio(BSP_IOID_FLASH_CS);
+#else
+    bspGpioWrite(BSP_IOID_FLASH_CS, 0);
+#endif
 }
 
 /*******************************************************************************
@@ -173,7 +178,11 @@ static void extFlashSelect(void)
 */
 static void extFlashDeselect(void)
 {
+#ifndef DeviceFamily_CC23X0	
     GPIO_setDio(BSP_IOID_FLASH_CS);
+#else
+    bspGpioWrite(BSP_IOID_FLASH_CS, 1);
+#endif
 }
 
 /*******************************************************************************
@@ -237,7 +246,7 @@ static bool extFlashPowerStandby(void)
         volatile uint16_t i = 400;
 
         // Waking up of the device is manufacturer dependent.
-        // for a Winond chip-set, once the request to wake up the flash has been
+        // for a Winbond chip-set, once the request to wake up the flash has been
         // send, CS needs to stay high at least 3us (for Winbond part)
         // for chip-set like Macronix, it can take up to 35us.
         for (i; i > 0; i--);
@@ -388,7 +397,11 @@ bool extFlashOpen(void)
     bspSpiOpen(SPI_BIT_RATE, BSP_SPI_CLK_FLASH);
 
     /* GPIO pin configuration */
+#ifndef DeviceFamily_CC23X0
     IOCPinTypeGpioOutput(BSP_IOID_FLASH_CS);
+#else
+    bspGpioSetConfig(BSP_IOID_FLASH_CS, SPI_CS_STD_OUT);
+#endif
 
     /* Default output to clear chip select */
     extFlashDeselect();

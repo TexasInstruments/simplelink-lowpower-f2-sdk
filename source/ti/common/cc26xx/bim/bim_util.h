@@ -89,11 +89,11 @@ extern "C"
  * @brief       This function jumps the execution to program entry to execute
  *              application
  *
- * @param       prgEntry - address of application entry.
+ * @param       vectorTable - address of application vector table.
  *
  * @return      None.
  */
-extern void jumpToPrgEntry(uint32_t prgEntry);
+extern void jumpToPrgEntry(uint32_t *vectorTable);
 
 /*******************************************************************************
  * @fn          imgIDCheck

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,9 @@
  *  #include <ti/devices/cc13x2_cc26x2/driverlib/aon_rtc.h>
  */
 
-#define DEMCR ((volatile uint32_t *)0xe000edfc)
+#define DEMCR       ((volatile uint32_t *)0xe000edfc)
 #define DWT_CONTROL ((volatile uint32_t *)0xe0001000)
-#define DWT_CYCCNT ((volatile uint32_t *)0xe0001004)
+#define DWT_CYCCNT  ((volatile uint32_t *)0xe0001004)
 
 /*
  *  ======== Timestamp_get64 ========
@@ -68,6 +68,6 @@ void Timestamp_get64(Timestamp_Val64 *ts)
  */
 void Timestamp_init(void)
 {
-    *DEMCR = 1 << 24;
+    *DEMCR       = 1 << 24;
     *DWT_CONTROL = 1;
 }

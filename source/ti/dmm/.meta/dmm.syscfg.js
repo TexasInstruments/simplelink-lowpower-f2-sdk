@@ -39,7 +39,7 @@
 
 const docs = system.getScript("/ti/dmm/dmm_docs.js");
 const commonConfig = system.getScript("/ti/dmm/dmm_common.js");
-const easylinkUtil = system.getScript("/ti/easylink/easylink_common.js");
+const propRfUtil = system.getScript("/ti/prop_rf/prop_rf_common.js");
 const genLibs = system.getScript("/ti/utils/build/GenLibs.syscfg.js");
 
 const stackDisplayNameMap = {
@@ -502,7 +502,7 @@ function getLibs(mod) {
     }
 
     if (mod.$static.genLibs == true) {
-        const boardName = easylinkUtil.getDeviceOrLaunchPadName(true);
+        const boardName = propRfUtil.getDeviceOrLaunchPadName(true);
 
         /* Get current RTOS configuration information */
         const rtos = system.getRTOS();

@@ -72,11 +72,11 @@ var Watchdog1  = Watchdog.addInstance();
 
 if (!system.deviceData.deviceId.match(/CC2651/))
 {
-	/* The CC2651 does not have PKA hardware, only add ECJ-PAKE on systems
-	 * that support it.
-	 */
-	var ECJPAKE = scripting.addModule("/ti/drivers/ECJPAKE");
-	var ECJPAKE = ECJPAKE.addInstance();
+    /* The CC2651 does not have PKA hardware, only add ECJ-PAKE on systems
+     * that support it.
+     */
+    var ECJPAKE = scripting.addModule("/ti/drivers/ECJPAKE");
+    var ECJPAKE = ECJPAKE.addInstance();
 }
 
 /* CCFG */

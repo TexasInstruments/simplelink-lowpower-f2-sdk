@@ -332,6 +332,9 @@ const companyIdentifierLongDescription = `First 2 octets contain \
 the Company Identifier Code followed by the additional manufacturer specific data\n
 __Default__: 0x0D00\n`
 
+// Long description for Additional Data configuration parameter
+const additionalDataLongDescription = `Additional Data in HEX format.\n\n__Default__: 0x00\n`
+
 // Exports the long descriptions for each configurable
  exports = {
     GAP_ADTYPE_LOCAL_NAME_SHORTLongDescription: GAP_ADTYPE_LOCAL_NAME_SHORTLongDescription,
@@ -360,5 +363,6 @@ __Default__: 0x0D00\n`
     GAP_ADTYPE_ADV_INTERVALLongDescription: GAP_ADTYPE_ADV_INTERVALLongDescription,
     advIntValueLongDescription: advIntValueLongDescription,
     GAP_ADTYPE_MANUFACTURER_SPECIFICLongDescription: GAP_ADTYPE_MANUFACTURER_SPECIFICLongDescription,
-    companyIdentifierLongDescription: companyIdentifierLongDescription
+    companyIdentifierLongDescription: companyIdentifierLongDescription,
+    additionalDataLongDescription: additionalDataLongDescription
 };

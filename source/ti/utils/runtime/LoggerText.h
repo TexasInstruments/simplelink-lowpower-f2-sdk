@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,50 +39,53 @@
 
 #include <stdint.h>
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
 /*
  *  ======== LoggerText_Type_CIRCULAR ========
  */
-#define LoggerText_Type_CIRCULAR        101
+#define LoggerText_Type_CIRCULAR 101
 
 /*
  *  ======== LoggerText_Type_LINEAR ========
  */
-#define LoggerText_Type_LINEAR          102
+#define LoggerText_Type_LINEAR 102
 
 /*
  *  ======== LoggerText_Header ========
  */
-typedef struct LoggerText_Header {
-    uint32_t    serial;
-    uint32_t    ts_hi;
-    uint32_t    ts_lo;
+typedef struct LoggerText_Header
+{
+    uint32_t serial;
+    uint32_t ts_hi;
+    uint32_t ts_lo;
 } LoggerText_Header;
 
 /*
  *  ======== LoggerText_Record ========
  */
-typedef struct LoggerText_Record {
-    LoggerText_Header   hdr;
-    char                text[];
+typedef struct LoggerText_Record
+{
+    LoggerText_Header hdr;
+    char text[];
 } LoggerText_Record;
 
 /*
  *  ======== LoggerText_Instance ========
  */
-typedef struct LoggerText_Instance {
-    char               *label;
-    uint8_t             bufType;
-    int8_t              advance;
-    uint16_t            numEntries;
-    uint32_t            textLen;
-    uint32_t            serial;
-    LoggerText_Record   *store;
-    LoggerText_Record   *curEntry;           /* next record to write */
-    LoggerText_Record   *endEntry;
+typedef struct LoggerText_Instance
+{
+    char *label;
+    uint8_t bufType;
+    int8_t advance;
+    uint16_t numEntries;
+    uint32_t textLen;
+    uint32_t serial;
+    LoggerText_Record *store;
+    LoggerText_Record *curEntry; /* next record to write */
+    LoggerText_Record *endEntry;
 } LoggerText_Instance;
 
 /*
@@ -98,11 +101,10 @@ extern LoggerText_Handle LoggerText_handle(int index);
 /*
  *  ======== LoggerText_write ========
  */
-//extern void LoggerText_write(char *text);
+// extern void LoggerText_write(char *text);
 extern void LoggerText_write(LoggerText_Handle hndl, char *text);
 
-
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@
 #include <time.h>
 #include <errno.h>
 
-#define MAXCOUNT 65535
+#define PTHREAD_RWLOCK_MAXCOUNT 65535
 
 /*
  *  ======== pthread_rwlock_obj ========
@@ -141,19 +141,19 @@ int pthread_rwlock_init(pthread_rwlock_t *rwlock,
 //  assert(sizeof(pthread_rwlock_obj) <= sizeof(pthread_rwlock_t));
 
     /*  FreeRTOS xSemaphoreCreateCounting() creates a queue of
-     *  length maxCount, where maxCount is the maximum count that
+     *  length PTHREAD_RWLOCK_MAXCOUNT, where PTHREAD_RWLOCK_MAXCOUNT is the maximum count that
      *  the semaphore should ever reach.  It looks like this should be
      *  ok since the item length for a semaphore queue is 0, so the
-     *  memory allocated is not dependent on maxCount.
+     *  memory allocated is not dependent on PTHREAD_RWLOCK_MAXCOUNT.
      */
     /* create semaphore with count of 1 */
-    obj->sem = xSemaphoreCreateCounting(MAXCOUNT, 1);
+    obj->sem = xSemaphoreCreateCounting(PTHREAD_RWLOCK_MAXCOUNT, 1);
     if (obj->sem == NULL) {
         return (ENOMEM);
     }
 
     /* create semaphore with count of 0 */
-    obj->readSem = xSemaphoreCreateCounting(MAXCOUNT, 0);
+    obj->readSem = xSemaphoreCreateCounting(PTHREAD_RWLOCK_MAXCOUNT, 0);
     if (obj->readSem == NULL) {
         vPortFree(obj->sem);
         obj->sem = NULL;

@@ -71,9 +71,9 @@ function moduleInstances(mod)
  */
 function validate(mod, validation)
 {
-    if (system.modules["/ti/sysbios/BIOS"].$static.psaEnabled) {
+    if (system.modules["/ti/utils/TrustZone"]) {
         if (mod.trimDevice == true) {
-            validation.logError("Trim Device Flag must be set to false when psaEnabled is true.", mod);
+            validation.logError("Trim Device Flag must be set to false to support TrustZone!", mod);
         }
     }
 }

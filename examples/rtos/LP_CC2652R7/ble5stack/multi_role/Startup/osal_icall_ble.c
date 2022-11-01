@@ -90,7 +90,11 @@
 #ifdef USE_ICALL
 
 #ifdef ICALL_JT
+#ifndef CC23X0
 #include "icall_jt.h"
+#else
+#include "icall.h"
+#endif
 #endif /* ICALL_JT */
 
 #ifdef ICALL_LITE

@@ -55,15 +55,13 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 /* --library=rtsv7M3_T_le_eabi.lib                                           */
 
 /* This flash is reserved for the secure image                               */
-/* Early silicon note: This is reduced to fit in the first flash hole        */
 #define FLASH_S_BASE            0x0
-#define FLASH_SCSIZE            0x1C000
+#define FLASH_SCSIZE            0x38000
 
 /* The starting address of the application.  Must match the NS application   */
 /* base address defined in the SPE memory layouts.                           */
-/* Early silicon note: This is placed in the second flash region             */
-#define FLASH_BASE              0x30000
-#define FLASH_SIZE              0x100000
+#define FLASH_BASE              0x00038100
+#define FLASH_SIZE              0xC7F00
 #define RAM_BASE                0x2000C000
 #define RAM_SIZE                0x30000
 #define GPRAM_BASE              0x11000000
@@ -76,16 +74,8 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 
 MEMORY
 {
-    /* Application stored in and executes from internal flash
-     * Note there are some holes in this memory due to issues with
-     * first-sampling silicon.
-     */
-    SECURE_FLASH (RX) : origin = FLASH_S_BASE, length = FLASH_SCSIZE
-    FLASH_2 (RX) : origin = FLASH_BASE, length = 0x32000
-    FLASH_3 (RX) : origin = 0x64000,    length = 0x38000
-    FLASH_4 (RX) : origin = 0xA4000,    length = 0x38000
-    FLASH_5 (RX) : origin = 0xE4000,    length = 0x1C000
-
+    /* Application stored in and executes from internal flash */
+    FLASH (RX) : origin = FLASH_BASE, length = FLASH_SIZE
     /* Application uses internal RAM for data */
     SRAM (RWX) : origin = RAM_BASE, length = RAM_SIZE
     /* Application can use GPRAM region as RAM if cache is disabled in the CCFG
@@ -104,17 +94,17 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs        :   > 0x30000
-    .text           :   >> FLASH_3|FLASH_4|FLASH_5
-    .TI.ramfunc     : {} load=FLASH_2, run=SRAM, table(BINIT)
-    .const          :   >> FLASH_3|FLASH_4|FLASH_5
-    .constdata      :   >> FLASH_3|FLASH_4|FLASH_5
-    .rodata         :   >> FLASH_3|FLASH_4|FLASH_5
-    .binit          :   > FLASH_3|FLASH_4|FLASH_5
-    .cinit          :   > FLASH_3|FLASH_4|FLASH_5
-    .pinit          :   > FLASH_3|FLASH_4|FLASH_5
-    .init_array     :   > FLASH_3|FLASH_4|FLASH_5
-    .emb_text       :   >> FLASH_3|FLASH_4|FLASH_5
+    .intvecs        :   > FLASH_BASE
+    .text           :   >> FLASH
+    .TI.ramfunc     : {} load=FLASH, run=SRAM, table(BINIT)
+    .const          :   >> FLASH
+    .constdata      :   >> FLASH
+    .rodata         :   >> FLASH
+    .binit          :   > FLASH
+    .cinit          :   > FLASH
+    .pinit          :   > FLASH
+    .init_array     :   > FLASH
+    .emb_text       :   >> FLASH
     .ccfg           :   > CCFG
 
     .vtable         :   > SRAM
@@ -145,6 +135,7 @@ SECTIONS
 
 SECTIONS
 {
-    .resetVecs: load > 0x30000
+    /* Place initial vector table at 256-byte boundary */
+    .resetVecs: load > FLASH_BASE
     .vecs: load > 0x2000C000, type = NOLOAD
 }

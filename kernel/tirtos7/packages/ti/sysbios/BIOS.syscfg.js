@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,9 +128,6 @@ function modules(mod)
     if (mod.assertsEnabled) {
         modArray.push({name: "Assert", moduleName: "ti/sysbios/runtime/Assert"});
     }
-    if (mod.psaEnabled) {
-        modArray.push({name: "PSA", moduleName: "ti/sysbios/psa/PSA"});
-    }
 
     /* Device-specific modules from Settings */
     if (Settings.secondsModule != null) {
@@ -176,6 +173,12 @@ function validate(mod, validation)
 {
     if (system.getRTOS() != "tirtos7") {
         validation.logError("Please configure sysconfig with --rtos tirtos7 to use this module!", mod);
+    }
+
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (mod.psaEnabled == false) {
+            validation.logError("Enable PSA Extensions must be set to true support TrustZone", mod);
+        }
     }
 }
 

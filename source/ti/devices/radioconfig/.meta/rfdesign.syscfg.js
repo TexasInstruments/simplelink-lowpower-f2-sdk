@@ -58,7 +58,7 @@ const LaunchPadMap = {
 };
 
 // Targets with 10 dBm High PA
-const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4", "LP_CC2651P3, 10DBM"];
+const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4", "LP_CC2651P3, 10DBM", "LP_EM_CC1354P10_6"];
 
 // Load board info
 let TiBoard = Common.getBoardName();
@@ -112,26 +112,32 @@ const Options24G = getOptions24G();
 // Front-end options
 const FrontEndOptions = [
     {
+        // biasMode = 1, frontEndMode = 0
         name: "XD",
         displayName: "External Bias, Differential mode"
     },
     {
+        // biasMode = 0, frontEndMode = 0
         name: "ID",
         displayName: "Internal Bias, Differential mode"
     },
     {
+        // biasMode = 1, frontEndMode = 1
         name: "XS_RFP",
         displayName: "External Bias, Single-Ended mode RFP"
     },
     {
+        // biasMode = 1, frontEndMode = 2
         name: "XS_RFN",
         displayName: "External Bias, Single-Ended mode RFN"
     },
     {
+        // biasMode = 0, frontEndMode = 1
         name: "IS_RFP",
         displayName: "Internal Bias, Single-Ended mode RFP"
     },
     {
+        // biasMode = 0, frontEndMode = 2
         name: "IS_RFN",
         displayName: "Internal Bias, Single-Ended mode RFN"
     }
@@ -260,13 +266,15 @@ if (DeviceInfo.hasHighPaSupport()) {
         });
     }
 
+    const usePa20Sub1g = Common.isSub1gDevice() && !Common.Device.match("CC267[24]");
+
     config.push({
         name: "pa20",
         displayName: "Assign High PA To Frequency Band",
         description: "Include support for High-Power Amplifier in the design.",
         onChange: onPaChange,
         options: opts,
-        default: Common.isSub1gDevice() ? "fbSub1g" : "fb24g"
+        default: usePa20Sub1g ? "fbSub1g" : "fb24g"
     });
 }
 
@@ -396,7 +404,8 @@ function getOptions24G() {
  */
 function setHighPaAccess(inst) {
     if ((inst.rfDesign === "LAUNCHXL-CC1352P1" || inst.rfDesign === "LP_CC1352P7-1"
-        || inst.rfDesign === "LP-CC1311P3" || inst.rfDesign.includes("CC2651-P3EM"))
+        || inst.rfDesign === "LP-CC1311P3" || inst.rfDesign.includes("CC2651-P3EM")
+        || inst.rfDesign.includes("CC1354P10_1"))
         && Common.isSub1gDevice()) {
         inst.pa20 = "fbSub1g";
     }
@@ -688,12 +697,10 @@ function getTxPowerOptionsDefault(freq, highPA) {
             TargetName = "LP_CC1352P7-1";
             Has10dBmPA = false;
         }
-        /* TBD: reintroduce when 10 dBm settings are ready
         if (TargetName === "LP_EM_CC1354P10_6") {
             TargetName = "LP_EM_CC1354P10_1";
             Has10dBmPA = false;
         }
-        */
     }
 
     const paList = getPaTable(freq, highPA);
@@ -1005,11 +1012,7 @@ function getDesignData() {
     const options = [];
     for (const td in rfDesign) {
         if (!(td.includes("HIGH-PA") || td.includes("CC1352R1-2_4GHZ")
-            || td.includes("LP_CC2672P3-2_4GHZ") || td.match(/CC1354P10.*-2_4GHZ/))) {
-            if (td.includes("-2_4GHZ") && DeviceInfo.getDeviceName() === "cc2672p3") {
-                // eslint-disable-next-line no-continue
-                continue;
-            }
+            || td.match(/CC1354P10.*-2_4GHZ/))) {
             const name = getBoardName(td);
 
             // Process description

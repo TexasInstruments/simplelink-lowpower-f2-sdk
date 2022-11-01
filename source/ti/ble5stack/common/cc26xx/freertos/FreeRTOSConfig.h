@@ -134,7 +134,7 @@
 
 #define NDK_TLS_INDEX 1  /* Reserve an index for NDK TLS */
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && !defined (__clang__)
 
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 1
 

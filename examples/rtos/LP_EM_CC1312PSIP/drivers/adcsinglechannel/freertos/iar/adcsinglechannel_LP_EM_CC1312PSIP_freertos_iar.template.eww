@@ -4,8 +4,5 @@
     <project>
         <path>$WS_DIR$/adcsinglechannel_LP_EM_CC1312PSIP_freertos_iar.ewp</path>
     </project>
-    <project>
-        <path>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos/builds/cc13x2_cc26x2/release/iar/freertos_builds_cc13x2_cc26x2_release.ewp</path>
-    </project>
     <batchBuild/>
 </workspace>

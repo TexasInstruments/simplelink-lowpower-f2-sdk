@@ -129,17 +129,17 @@
             },
             {
                 "_file": "frontend_settings.json",
-                "$": ".\/..\/config\/cc2652p_prop_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352p_prop_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2652p_ieee_15_4_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2652p_ble_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352p_ble_pg21\/cmd_settings"
             },
             {
                 "_file": "dummy_file_overrides.json",

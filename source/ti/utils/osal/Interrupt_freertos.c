@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@
 #include <portmacro.h>
 
 /* Masks off all bits but the VECTACTIVE bits in the ICSR register. */
-#define portVECTACTIVE_MASK  (0xFFUL)
+#define portVECTACTIVE_MASK (0xFFUL)
 
 /*
  *  ======== Interrupt_disable ========
@@ -54,24 +54,25 @@ uintptr_t Interrupt_disable(void)
     /*  If we're not in ISR context, use the FreeRTOS macro, since
      *  it handles nesting.
      */
-    if ((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0) {
+    if ((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0)
+    {
         portENTER_CRITICAL();
         key = 0;
     }
-    else {
+    else
+    {
 #ifdef __TI_COMPILER_VERSION__
         key = _set_interrupt_priority(configMAX_SYSCALL_INTERRUPT_PRIORITY);
 #else
-#ifdef __IAR_SYSTEMS_ICC__
-        asm volatile (
-#else
-        __asm__ __volatile__ (
-#endif
+    #ifdef __IAR_SYSTEMS_ICC__
+        asm volatile(
+    #else
+        __asm__ __volatile__(
+    #endif
             "mrs %0, basepri\n\t"
             "msr basepri, %1"
-            : "=&r" (key)
-            : "r" (configMAX_SYSCALL_INTERRUPT_PRIORITY)
-        );
+            : "=&r"(key)
+            : "r"(configMAX_SYSCALL_INTERRUPT_PRIORITY));
 #endif
     }
 
@@ -83,21 +84,21 @@ uintptr_t Interrupt_disable(void)
  */
 void Interrupt_restore(uintptr_t key)
 {
-    if ((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0) {
+    if ((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0)
+    {
         portEXIT_CRITICAL();
     }
-    else {
+    else
+    {
 #ifdef __TI_COMPILER_VERSION__
         _set_interrupt_priority(key);
 #else
-#ifdef __IAR_SYSTEMS_ICC__
-        asm volatile (
-#else
-        __asm__ __volatile__ (
-#endif
-            "msr basepri, %0"
-            :: "r" (key)
-            );
+    #ifdef __IAR_SYSTEMS_ICC__
+        asm volatile(
+    #else
+        __asm__ __volatile__(
+    #endif
+            "msr basepri, %0" ::"r"(key));
 #endif
     }
 }

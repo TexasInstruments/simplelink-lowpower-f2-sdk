@@ -38,12 +38,14 @@
 #include <ti/drivers/crypto/CryptoCC26X4_s.h>
 #include <ti/drivers/TRNG.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#include "ti_drivers_config.h" /* Sysconfig generated header */
+#if defined(TFM_PSA_API)
+    #include "ti_drivers_config.h" /* Sysconfig generated header */
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,7 +81,7 @@ extern "C" {
  */
 typedef struct
 {
-    SecureCB_Object object;
+    SecureCallback_Object object;
     /* TRNG crypto key callback fxn parameters */
     TRNG_Handle handle;
     int_fast16_t returnValue;
@@ -88,7 +90,7 @@ typedef struct
 
 typedef struct
 {
-    SecureCB_Object object;
+    SecureCallback_Object object;
     /* TRNG random bytes callback fxn parameters */
     TRNG_Handle handle;
     int_fast16_t returnValue;
@@ -162,7 +164,8 @@ psa_status_t TRNG_s_handlePsaMsg(psa_msg_t *msg);
 /*!
  *  @brief  Initializes the TRNG secure driver.
  *
- *  @note   This function should be called by secure partition thread only.
+ *  @note   This function should be called by the non-secure client and power
+ *          to TRNG HW must be enabled first.
  */
 void TRNG_s_init(void);
 

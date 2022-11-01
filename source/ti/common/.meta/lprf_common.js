@@ -41,7 +41,6 @@ const stacks = [
     {name: "DMM", path: "/ti/dmm/dmm"},
     {name: "BLE", path: "/ti/ble5stack/ble"},
     {name: "Custom", path: "/ti/devices/radioconfig/custom"},
-    {name: "EasyLink", path: "/ti/easylink/easylink"},
     {name: "TI 15.4 Stack", path: "/ti/ti154stack/ti154stack"},
     {name: "TI-OpenThread", path: "/ti/thread/thread"},
     {name: "Z-Stack", path: "/ti/zstack/zstack"}

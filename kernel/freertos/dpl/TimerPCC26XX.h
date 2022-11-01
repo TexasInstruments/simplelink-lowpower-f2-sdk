@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,9 @@
  *  ======== TimerPCC26XX.h ========
  */
 
+#ifndef kernel_freertos_dpl_TimerPCC26XX__include
+#define kernel_freertos_dpl_TimerPCC26XX__include
+
 typedef void (*TimerPCC26XX_Fxn)(uintptr_t arg);
 
 typedef struct
@@ -42,3 +45,5 @@ typedef struct
 } TimerPCC26XX_channelHooks;
 
 void TimerPCC26XX_setHookFxn(uint32_t channel, TimerPCC26XX_Fxn function);
+
+#endif /* kernel_freertos_dpl_TimerPCC26XX__include */

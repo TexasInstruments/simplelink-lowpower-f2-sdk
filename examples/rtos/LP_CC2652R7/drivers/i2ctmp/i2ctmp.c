@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@
 #define TMP116_LAUNCHPAD_ADDR  0x49
 
 /* Number of supported sensor iterations */
-#define TMP_COUNT 3
+#define TMP_COUNT 2
 
 /*
  * Data structure containing currently supported I2C TMP sensors.

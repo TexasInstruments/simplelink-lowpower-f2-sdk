@@ -48,6 +48,11 @@
 
 #include <ti/devices/DeviceFamily.h>
 
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
+#endif
+
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
     #include <ti/drivers/aesctr/AESCTRCC23XX.h>
 #else
@@ -235,7 +240,7 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     }
 
     /* personalizationDataLength must be within
-     * [0, AESCTRDRBG_AES_BLOCK_SIZE_BYTES] bytes.
+     * [0, AESCTRDRBG_AES_BLOCK_SIZE_BYTES + KeyLength] bytes.
      */
     if (params->personalizationDataLength > params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES)
     {
@@ -332,12 +337,60 @@ int_fast16_t AESCTRDRBG_getBytes(AESCTRDRBG_Handle handle, CryptoKey *randomByte
 int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomKey)
 {
     int_fast16_t status = AESCTRDRBG_STATUS_ERROR;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
+    uint8_t KeyStore_keyingMaterial[AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE];
+    KeyStore_PSA_KeyFileId keyID;
+#endif /* ENABLE_KEY_STORAGE */
 
-    status = AESCTRDRBG_getRandomBytes(handle, randomKey->u.plaintext.keyMaterial, randomKey->u.plaintext.keyLength);
-
-    if (status == AESCTRDRBG_STATUS_SUCCESS)
+    if (randomKey != NULL)
     {
-        randomKey->encoding = CryptoKey_PLAINTEXT;
+        if (randomKey->encoding == CryptoKey_BLANK_PLAINTEXT)
+        {
+            status = AESCTRDRBG_getRandomBytes(handle,
+                                               randomKey->u.plaintext.keyMaterial,
+                                               randomKey->u.plaintext.keyLength);
+            if (status == AESCTRDRBG_STATUS_SUCCESS)
+            {
+                randomKey->encoding = CryptoKey_PLAINTEXT;
+            }
+        }
+#if (ENABLE_KEY_STORAGE == 1)
+        else if (randomKey->encoding == CryptoKey_BLANK_KEYSTORE)
+        {
+            if ((randomKey->u.keyStore.keyLength != 0) &&
+                (randomKey->u.keyStore.keyLength <= AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE))
+            {
+                status = AESCTRDRBG_getRandomBytes(handle, KeyStore_keyingMaterial, randomKey->u.keyStore.keyLength);
+
+                if (status == AESCTRDRBG_STATUS_SUCCESS)
+                {
+                    keyStoreStatus = KeyStore_PSA_importKey(&randomKey->u.keyStore.attributes,
+                                                            KeyStore_keyingMaterial,
+                                                            randomKey->u.keyStore.keyLength,
+                                                            &keyID);
+                    if (keyStoreStatus == KEYSTORE_PSA_STATUS_SUCCESS)
+                    {
+                        if (randomKey->u.keyStore.attributes.core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
+                        {
+                            /* Set the keyID of volatile keys provided by KeyStore driver in the cryptokey structure */
+                            KeyStore_PSA_initKey(randomKey, keyID, randomKey->u.keyStore.keyLength);
+                        }
+                        else
+                        {
+                            /* Only update the KeyStore encoding for persistent keys */
+                            randomKey->encoding = CryptoKey_KEYSTORE;
+                        }
+                        status = AESCTRDRBG_STATUS_SUCCESS;
+                    }
+                    else
+                    {
+                        status = AESCTRDRBG_STATUS_KEYSTORE_ERROR;
+                    }
+                }
+            }
+        }
+#endif /* ENABLE_KEY_STORAGE */
     }
 
     return status;

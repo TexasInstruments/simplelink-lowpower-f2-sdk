@@ -95,6 +95,9 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #include "ti_dmm_application_policy.h"
 #include <dmm/dmm_priority_ble_154collector.h>
 
+/* Internal POSIX Mapping for thread handle */
+#include <tirtos/_pthread.h>
+
 #if defined(RESET_ASSERT)
 #include <driverlib/sys_ctrl.h>
 #include "ssf.h"
@@ -379,7 +382,7 @@ int main()
 
   /* register clients with DMM scheduler */
   DMMSch_registerClient(pBleTaskHndl, DMMPolicy_StackRole_BlePeripheral);
-  DMMSch_registerClient(pMacTaskHndl, DMMPolicy_StackRole_154Collector);
+  DMMSch_registerClient(&(((pthread_Obj *) pMacTaskHndl)->task), DMMPolicy_StackRole_154Collector);
 
   /* set the stacks in default states */
   DMMPolicy_updateApplicationState(DMMPolicy_StackRole_BlePeripheral, DMMPOLICY_BLE_IDLE);

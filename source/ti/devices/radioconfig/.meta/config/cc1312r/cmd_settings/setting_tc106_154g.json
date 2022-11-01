@@ -2,7 +2,7 @@
     "setting": {
         "Name": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth",
         "Description": "50 kbps, 2-GFSK, 25 kHz deviation, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band.",
-        "Frequency": "868",
+        "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
             "Cpe": "rf_patch_cpe_prop",
@@ -131,7 +131,7 @@
                     },
                     {
                         "_name": "centerFreq",
-                        "$": "868"
+                        "$": "915"
                     },
                     {
                         "_name": "intFreq",
@@ -254,7 +254,7 @@
                     },
                     {
                         "_name": "frequency",
-                        "$": "868"
+                        "$": "915"
                     },
                     {
                         "_name": "fractFreq",

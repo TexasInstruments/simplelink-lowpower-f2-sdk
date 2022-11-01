@@ -38,6 +38,8 @@
 
 const lpName = system.getScript("/ti/ble5stack/ble_common.js").getBoardOrLaunchPadName(true);
 
+var thorPg = 2;
+
 /* ======== AESCCM ======== */
 var AESCCM = scripting.addModule("/ti/drivers/AESCCM");
 var aesccm = AESCCM.addInstance();
@@ -62,18 +64,13 @@ aesctrdrbg.aesctrObject.$name = "CONFIG_AESCTR_0";
 /* ======== Display ======== */
 var Display = scripting.addModule("/ti/display/Display");
 var displayUART = Display.addInstance();
-displayUART.displayType = "Host";
+displayUART.$hardware = system.deviceData.board.components.XDS110UART;
 displayUART.enableANSI = true;
 displayUART.uartBufferSize = 128;
-
-/* ======== UART1 ======== */
-const UART = scripting.addModule("/ti/drivers/UART", {}, false);
-const UART1 = UART.addInstance();
-UART1.$hardware = system.deviceData.board.components.XDS110UART;
-UART1.txPinInstance.initialOutputState = "High";
-UART1.$name = "CONFIG_DISPLAY_UART";
-UART1.txPinInstance.$name = "CONFIG_GPIO_UART_TX";
-UART1.rxPinInstance.$name = "CONFIG_GPIO_UART_RX";
+displayUART.uart.txPinInstance.initialOutputState = "High";
+displayUART.uart.$name = "CONFIG_DISPLAY_UART";
+displayUART.uart.txPinInstance.$name = "CONFIG_GPIO_UART_TX";
+displayUART.uart.rxPinInstance.$name = "CONFIG_GPIO_UART_RX";
 
 /* ======== GPIO ======== */
 var GPIO = scripting.addModule("/ti/drivers/GPIO");
@@ -154,7 +151,8 @@ for(var setting in bleRfDesignSettings)
 var custom = scripting.addModule("/ti/devices/radioconfig/custom");
 var bleRadioSetModule;
 
-if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4")
+if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4"
+   || rfDesignSettings.rfDesign == "LP_EM_CC1354P10_6")
 {
     custom.ble = ["bt5le2mp10"];
     bleRadioSetModule = custom.radioConfigbt5le2mp10;
@@ -165,6 +163,15 @@ else
     bleRadioSetModule = custom.radioConfigbt5le2m;
 }
 
+if(rfDesignSettings.rfDesign == "LP_EM_CC1354P10_6" && thorPg == 1)
+{
+	custom.ble = ["bt5le2mp10_pg10"];
+}
+else if (rfDesignSettings.rfDesign == "LP_EM_CC1354P10_6" && thorPg == 1)
+{
+	custom.ble = ["bt5le2m_pg10"];
+}
+
 bleRadioSetModule.paramVisibility = false;
 const bleRadioSettings = radioSettings.radioConfigParams;
 for(var setting in bleRadioSettings)
@@ -172,10 +179,11 @@ for(var setting in bleRadioSettings)
     bleRadioSetModule.codeExportConfig[setting] = bleRadioSettings[setting];
 }
 
-if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-2" || rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4" || rfDesignSettings.rfDesign == "LP_CC2651P3")
+if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-2" || rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4" || rfDesignSettings.rfDesign == "LP_CC2651P3"
+   || rfDesignSettings.rfDesign == "LP_EM_CC1354P10_6")
 {
     bleRadioSetModule.highPA = true;
-	if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4")
+	if(rfDesignSettings.rfDesign == "LAUNCHXL-CC1352P-4" || rfDesignSettings.rfDesign == "LP_CC2652PSIP" || rfDesignSettings.rfDesign == "LP_CC1352P7-4" || rfDesignSettings.rfDesign == "LP_EM_CC1354P10_6")
 	{
         bleRadioSetModule.txPowerHi = "10";
 	}
@@ -257,7 +265,14 @@ if (system.getRTOS() === "tirtos7")
     Clock.swiPriority = 5;
 
     /* ================ Hwi configuration ================ */
-    const Hwi           = scripting.addModule("/ti/sysbios/family/arm/m3/Hwi", {}, false);
+    if(lpName == "LP_EM_CC1354P10_1" || lpName == "LP_EM_CC1354P10_6")
+    {
+        var Hwi = scripting.addModule("/ti/sysbios/family/arm/v8m/Hwi", {}, false);
+    }
+    else
+    {
+        var Hwi = scripting.addModule("/ti/sysbios/family/arm/m3/Hwi", {}, false);
+    }
     /*
     * Checks for Hwi (system) stack overruns while in the Idle loop.
     *

@@ -38,12 +38,14 @@
 #include <ti/drivers/crypto/CryptoCC26X4_s.h>
 #include <ti/drivers/AESCBC.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#include "ti_drivers_config.h" /* Sysconfig generated header */
+#if defined(TFM_PSA_API)
+    #include "ti_drivers_config.h" /* Sysconfig generated header */
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,7 +91,7 @@ extern "C" {
  */
 typedef struct
 {
-    SecureCB_Object object;
+    SecureCallback_Object object;
     /* AES CBC callback fxn parameters */
     AESCBC_Handle handle;
     int_fast16_t returnValue;

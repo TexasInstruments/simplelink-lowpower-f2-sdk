@@ -119,6 +119,7 @@ status = nvFps.readItem(id, 0, len, buf);
 #define NVINTF_LOWPOWER     11
 #define NVINTF_BADVERSION   12
 #define NVINTF_EXIST        13
+#define NVINTF_NO_SIG       14
 
 // doNext flag options
 #define NVINTF_DOSTART      0x1     // starts new search
@@ -218,6 +219,9 @@ typedef uint8_t (*NVINTF_eraseNV)(void);
 //! Function pointer definition for the NVINTF_getFreeNV() function
 typedef uint32_t (*NVINTF_getFreeNV)(void);
 
+//! Function pointer definition for the NVINTF_sanityCheck() function
+typedef uint32_t (*NVINTF_sanityCheck)(void);
+
 //! Structure of NV API function pointers
 typedef struct nvintf_nvfuncts_t
 {
@@ -251,6 +255,8 @@ typedef struct nvintf_nvfuncts_t
     NVINTF_eraseNV eraseNV;
     //! Get Free NV function
     NVINTF_getFreeNV getFreeNV;
+    //! Sanity Check function
+    NVINTF_sanityCheck sanityCheck;
 } NVINTF_nvFuncts_t;
 
 //*****************************************************************************

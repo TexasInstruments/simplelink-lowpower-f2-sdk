@@ -64,6 +64,8 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/border_router_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/border_routing_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/channel_manager_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/channel_monitor_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
@@ -115,6 +117,8 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/logging_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/message_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/nat64_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/api/multi_radio_api.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/api">
         </file>
@@ -178,11 +182,9 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/backbone_router/ndproxy_table.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/backbone_router">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/infra_if_platform.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/infra_if.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/router_advertisement.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/router_advertisement.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/infra_if.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/border_router/routing_manager.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/border_router">
         </file>
@@ -242,6 +244,14 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/extension.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/frame_builder.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/frame_builder.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/frame_data.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/frame_data.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/heap.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/heap.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
@@ -277,6 +287,8 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/message.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/message.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/min_max.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/common/new.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/common">
         </file>
@@ -540,9 +552,9 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/icmp6.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/ip4_address.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/ip4_types.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/ip4_address.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/ip4_types.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/ip6.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
@@ -567,6 +579,14 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nd_agent.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nd_agent.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nd6.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nd6.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nat64_translator.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/nat64_translator.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/net/netif.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/net">
         </file>
@@ -792,6 +812,8 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/thread/uri_paths.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/thread">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/thread/version.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/thread">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/utils/channel_manager.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/utils">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/utils/channel_manager.hpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/utils">
@@ -844,7 +866,11 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/config/backbone_router.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/config">
         </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/config/border_agent.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/config">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/config/border_router.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/config">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/config/border_routing.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/config">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/openthread/src/core/config/channel_manager.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="src/core/config">
         </file>

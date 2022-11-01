@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,12 +52,6 @@
     #define MIN(n, m) (((n) > (m)) ? (m) : (n))
 #endif
 
-#define DISPLAY_UART_ESC_INITIAL                     \
-    "\x1b\x63"   /* Reset terminal */                \
-    "\x1b[2J"    /* Clear screen   */                \
-    "\x1b[10r"   /* Scrolling region from line 10 */ \
-    "\x1b[11;1H" /* Set initial cursor to line 11 */
-
 #define DISPLAY_UART_ESC_MOVEPOS_FMT         \
     "\x1b\x37"    /* Save cursor position */ \
     "\x1b[10r"    /* Retransmit scroll    */ \
@@ -65,7 +59,6 @@
 
 #define DISPLAY_UART_ESC_RESTOREPOS "\x1b\x38" /* Restore saved cursor pos */
 
-#define DISPLAY_UART_ESC_CLEAR_SCREEN    "\x1b[2J" /* Clear screen       */
 #define DISPLAY_UART_ESC_CLEAR_CUR_LEFT  "\x1b[1K" /* Clear cursor left  */
 #define DISPLAY_UART_ESC_CLEAR_CUR_RIGHT "\x1b[0K" /* Clear cursor right */
 #define DISPLAY_UART_ESC_CLEAR_BOTH      "\x1b[2K" /* Clear line         */
@@ -103,6 +96,17 @@ const Display_FxnTable DisplayUart2Ansi_fxnTable = {
     DisplayUart2Ansi_control,
     DisplayUart2Ansi_getType,
 };
+
+/* Initial VT100 configuration. Must be in RAM to avoid DMA to read from flash
+   (workaround for devices where DMA cannot access all of flash) */
+char DisplayUart2Ansi_escInitial[] = "\x1b\x63"    /* Reset terminal */
+                                     "\x1b[2J"     /* Clear entire screen */
+                                     "\x1b[10r"    /* Scrolling region from line 10 */
+                                     "\x1b[11;1H"; /* Set initial cursor to line 11 */
+
+/* Clear screen. Must be in RAM to avoid DMA to read from flash (workaround
+   for devices where DMA cannot access all of flash) */
+char DisplayUart2Ansi_escClearScreen[] = "\x1b[2J";
 
 /* -----------------------------------------------------------------------------
  *                                          Functions
@@ -219,8 +223,8 @@ Display_Handle DisplayUart2Ansi_open(Display_Handle hDisplay, Display_Params *pa
             break;
     }
 
-    /* Send VT100 initial config to terminal */
-    UART2_write(object->hUart, DISPLAY_UART_ESC_INITIAL, sizeof DISPLAY_UART_ESC_INITIAL - 1, NULL);
+    /* Send VT100 initial configuration to terminal */
+    UART2_write(object->hUart, DisplayUart2Ansi_escInitial, sizeof(DisplayUart2Ansi_escInitial) - 1, NULL);
 
     return hDisplay;
 }
@@ -253,7 +257,7 @@ void DisplayUart2Ansi_clear(Display_Handle hDisplay)
 
     if (SemaphoreP_pend(object->mutex, hwAttrs->mutexTimeout) == SemaphoreP_OK)
     {
-        UART2_write(object->hUart, DISPLAY_UART_ESC_CLEAR_SCREEN, 4, NULL);
+        UART2_write(object->hUart, DisplayUart2Ansi_escClearScreen, sizeof(DisplayUart2Ansi_escClearScreen) - 1, NULL);
         SemaphoreP_post(object->mutex);
     }
 }
@@ -275,7 +279,7 @@ void DisplayUart2Min_clearLines(Display_Handle hDisplay, uint8_t lineFrom, uint8
 /*!
  * @fn          DisplayUart2Ansi_clearLines
  *
- * @brief       Does nothing, as output is stateless.
+ * @brief       Clear the specified display lines (inclusive).
  *
  * @param       hDisplay - pointer to Display_Config struct
  * @param       lineFrom - line index (0 .. )

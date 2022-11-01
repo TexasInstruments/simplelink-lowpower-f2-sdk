@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "4.8 kbps, OOK, 39 kHz RX Bandwidth",
-        "Description": "4.8 kbps OOK for 868 MHz band.",
+        "Name": "4.8 kbps, OOK, 39 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "4.8 kbps OOK for 868 MHz band. (Pre-Silicon)",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",

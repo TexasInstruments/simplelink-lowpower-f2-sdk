@@ -22,7 +22,7 @@
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQueueNTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
@@ -277,7 +277,19 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 #define PowerCC26XX_XOSC_HF_SWITCHED 0x10
 /*!< Power event: The high frequency (HF) clock source has been switched to XOSC_HF */
 
-#define PowerCC26XX_JTAG_PD_TURNED_ON 0x20
+#define PowerCC26XX_SCLK_LF_SWITCHED 0x20
+/*!< Power event: The low frequency (LF) clock source has been switched from
+ * RCOSC_HF derived to the source configured in CCFG.
+ *
+ * Only the XOSC_LF requires a significant amount of time to turn on and switch.
+ * The other LF clock sources will often have switched and trigger a
+ * notification before the OS schedules the first task after enabling
+ * interrupts. It may be necessary to register the notification in main, before
+ * interrupts are enabled to guarantee the event will not be missed by the
+ * application.
+ */
+
+#define PowerCC26XX_JTAG_PD_TURNED_ON 0x40
 /*!< \warning Note that this power event is only supported by the CC2640R2 device!
  *
  * The JTAG subsystem on the CC26xx devices is automatically enabled after receiving

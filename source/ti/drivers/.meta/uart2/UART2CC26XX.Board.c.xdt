@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,6 +64,16 @@
         };
 
     let driver = 'UART2CC26X2';  // In case name changes
+
+    /* Determine if non-blocking functions and datastructures should be used */
+    let useNonBlocking = false;
+    for (let i = 0; i < instances.length; i++) {
+        let inst = instances[i];
+        if (inst.enableNonblocking == true) {
+            useNonBlocking = true;
+        }
+    }
+
 %%}
 /*
  *  =============================== UART2 ===============================
@@ -86,7 +96,10 @@
 % for (let i = 0; i < instances.length; i++) {
 %     let inst = instances[i];
 static unsigned char uart2RxRingBuffer`i`[`inst.rxRingBufferSize`];
+%   if (inst.enableNonblocking == true) {
+/* TX ring buffer allocated to be used for nonblocking mode */
 static unsigned char uart2TxRingBuffer`i`[`inst.txRingBufferSize`];
+%   }
 % }
 
 % for (let i = 0; i < instances.length; i++) {
@@ -117,8 +130,8 @@ static const `driver`_HWAttrs uart2CC26X2HWAttrs[`countDef`] = {
 %     let rtsPinName = 'GPIO_INVALID_INDEX';
 %
 %     if (inst.flowControl) {
-%         ctsPinName = 'ctsPin' in inst ? inst.ctsPinInstance.$name : 'GPIO_INVALID_INDEX';
-%         rtsPinName = 'rtsPin' in inst ? inst.rtsPinInstance.$name : 'GPIO_INVALID_INDEX';
+%         ctsPinName = 'ctsPinInstance' in inst ? inst.ctsPinInstance.$name : 'GPIO_INVALID_INDEX';
+%         rtsPinName = 'rtsPinInstance' in inst ? inst.rtsPinInstance.$name : 'GPIO_INVALID_INDEX';
 %         flowName = 'UART2_FLOWCTRL_HARDWARE';
 %     }
   {
@@ -133,8 +146,13 @@ static const `driver`_HWAttrs uart2CC26X2HWAttrs[`countDef`] = {
     .powerId            = PowerCC26XX_PERIPH_UART`index`,
     .rxBufPtr           = uart2RxRingBuffer`i`,
     .rxBufSize          = sizeof(uart2RxRingBuffer`i`),
+% if (inst.enableNonblocking == true) {
     .txBufPtr           = uart2TxRingBuffer`i`,
     .txBufSize          = sizeof(uart2TxRingBuffer`i`),
+% } else {
+    .txBufPtr           = NULL,
+    .txBufSize          = 0,
+% }
     .txPinMux           = IOC_PORT_MCU_`peripheral.name`_TX,
     .rxPinMux           = IOC_PORT_MCU_`peripheral.name`_RX,
     .ctsPinMux          = IOC_PORT_MCU_`peripheral.name`_CTS,
@@ -161,3 +179,14 @@ const UART2_Config UART2_config[`countDef`] = {
 
 `declarations`
 const uint_least8_t UART2_count = `countDef`;
+
+% if (useNonBlocking == false) {
+/* Forward-declare write function used for blocking and callback mode */
+extern int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten, uint32_t timeout);
+
+/* Override weak writeTimeout function in UART2 library to only use blocking/callback mode */
+int_fast16_t UART2_writeTimeout(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten, uint32_t timeout)
+{
+    return UART2_writeTimeoutBlocking(handle, buffer, size, bytesWritten, timeout);
+}
+% }

@@ -58,9 +58,6 @@
 #include <ti/sysbios/heaps/HeapMem.h>
 #include <xdc/runtime/System.h>
 #include <xdc/runtime/Memory.h>
-#ifndef TIRTOS7_SUPPORT
-#include <xdc/cfg/global.h>
-#endif
 #endif
 /* macros to override the function names for efficient linking and multiple instantiations */
 #ifndef HEAPMGR_INIT

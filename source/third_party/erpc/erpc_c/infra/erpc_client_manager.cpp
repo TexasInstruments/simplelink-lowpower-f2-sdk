@@ -10,12 +10,6 @@
 
 #include "erpc_client_manager.h"
 #include "assert.h"
-#include <ti/utils/runtime/Bench.h>
-
-/* bench declarations */
-Bench_decl(CONFIG_ERPC_ClientManager_createRequest_t0);
-Bench_decl(CONFIG_ERPC_ClientManager_createRequest_t1);
-Bench_decl(CONFIG_ERPC_ClientManager_performRequest_t0);
 
 using namespace erpc;
 
@@ -36,20 +30,14 @@ void ClientManager::setTransport(Transport *transport)
 
 RequestContext ClientManager::createRequest(bool isOneway)
 {
-    Bench_logTS(CONFIG_ERPC_ClientManager_createRequest_t0);
-
     // Create codec to read and write the request.
     Codec *codec = createBufferAndCodec();
-
-    Bench_logTS(CONFIG_ERPC_ClientManager_createRequest_t1);
 
     return RequestContext(++m_sequence, codec, isOneway);
 }
 
 void ClientManager::performRequest(RequestContext &request)
 {
-    Bench_logTS(CONFIG_ERPC_ClientManager_performRequest_t0);
-
     // Check the codec status
     if (kErpcStatus_Success != (request.getCodec()->getStatus()))
     {

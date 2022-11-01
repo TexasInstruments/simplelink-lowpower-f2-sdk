@@ -3006,4 +3006,30 @@ void gapSendSlaveSecurityReqEvent_hook( uint8 taskID, uint16 connHandle, uint8 *
 #endif
 }
 /*******************************************************************************
+ * Health check
+ */
+int8 MAP_llHealthCheck( void )
+{
+#ifdef USE_HEALTH_CHECK
+  return llHealthCheck();
+#else
+  return 1;
+#endif
+}
+
+void MAP_llHealthUpdate(uint8 state)
+{
+#ifdef USE_HEALTH_CHECK
+  llHealthUpdate(state);
+#endif
+}
+
+void MAP_llHealthSetThreshold(uint32 connTime, uint32 scanTime, uint32 initTime, uint32 advTime)
+{
+#ifdef USE_HEALTH_CHECK
+  llHealthSetThreshold(connTime, scanTime, initTime, advTime);
+#endif
+}
+
+/*******************************************************************************
  */

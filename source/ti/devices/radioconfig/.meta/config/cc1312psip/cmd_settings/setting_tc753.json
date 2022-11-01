@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Wi-SUN mode #4a, 200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth",
-        "Description": "200 kbps, 2-GFSK, 50 kHz deviation WiSUN mode #4a compatible PHY.",
+        "Name": "Wi-SUN mode #4a, 200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "200 kbps, 2-GFSK, 50 kHz deviation WiSUN mode #4a compatible PHY. (Pre-Silicon)",
         "Frequency": "918.4",
         "Patch": {
             "Define": "RF_MODE_AUTO",

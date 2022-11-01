@@ -57,6 +57,10 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/smph.h)
 
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
+
 /* Forward declarations */
 static void AESECB_hwiFxn(uintptr_t arg0);
 static int_fast16_t AESECB_waitForResult(AESECB_Handle handle);
@@ -459,13 +463,52 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
     AESECBCC26XX_Object *object         = handle->object;
     AESECBCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
     SemaphoreP_Status resourceAcquired;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
-    /* Only plaintext CryptoKeys are supported for now */
-    uint16_t keyLength      = object->key.u.plaintext.keyLength;
-    uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
+    /* Only plaintext and KeyStore CryptoKeys are supported for now */
+    if (object->key.encoding == CryptoKey_PLAINTEXT)
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
-    /* Only plaintext keys are supported in the current implementation */
-    DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CCM,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return AESECB_STATUS_KEYSTORE_INVALID_ID;
+        }
+
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return AESECB_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return AESECB_STATUS_FEATURE_NOT_SUPPORTED;
+    }
+
+    /* Only plaintext and KeyStore keys are supported in the current implementation */
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
     /*
      * keyMaterial and keyLength are passed to AESWriteToKeyStore(),

@@ -2,7 +2,7 @@
 
 @file  ble_stack_api.h
 
-@brief This file contains the ble stack wrapper abovr icall
+@brief This file contains the BLE stack wrapper above ICall
 
 Group: WCS, BTS
 Target Device: cc13xx_cc26xx
@@ -69,33 +69,6 @@ typedef ICall_EntityID          bleStack_entityId_t;
 typedef ICall_Hdr               bleStack_msgHdt_t;
 typedef ICall_Errno             bleStack_errno_t;
 
-typedef struct
-{
-    uint8 pairMode;
-    uint8 mitm;
-    uint8 ioCap;
-    uint8 bonding;
-    uint8 secureConnection;
-    uint8 authenPairingOnly;
-    uint8 autoSyncWL;
-    uint8 eccReGenPolicy;
-    uint8 KeySize;
-    uint8 removeLRUBond;
-    uint8 KeyDistList;
-    uint8 eccDebugKeys;
-    uint8 eraseBondWhileInConn;
-} GapBond_params_t;
-
-typedef union
-{
-    uint8_t advHandle;
-    GapAdv_setTerm_t pSetTerm;
-    GapAdv_scanReqReceived_t pScanReqRcv;
-    GapAdv_truncData_t pTruncData;
-    GapScan_Evt_End_t pScanDis;
-    GapScan_Evt_AdvRpt_t pAdvReport;
-}GapAdv_data_t;
-
 typedef struct {
   /**
    * Bits 0 to 4 indicate connectable, scannable, directed, scan response, and
@@ -128,23 +101,27 @@ typedef struct {
   uint8_t  *pData;
 } bleStk_GapScan_Evt_AdvRpt_t;
 
-// Structures/unions data types declarations
 typedef union
 {
     uint8_t advHandle;
     GapAdv_setTerm_t pSetTerm;
     GapAdv_scanReqReceived_t pScanReqRcv;
     GapAdv_truncData_t pTruncData;
+} GapAdv_data_t;
+
+// Structures/unions data types declarations
+typedef union
+{
     GapScan_Evt_End_t pScanDis;
     bleStk_GapScan_Evt_AdvRpt_t pAdvReport;
-}Gap_Evt_data_t;
+} GapScan_data_t;
 
 typedef void (*pfnBleStkAdvCB_t) (uint32_t event,
                                   GapAdv_data_t *pBuf,
                                   uint32_t *arg);
 typedef void (*bleStk_pfnGapScanCB_t) (uint32_t event,
-                                     Gap_Evt_data_t *pBuf,
-                                     uint32_t *arg);
+                                       GapScan_data_t *pBuf,
+                                       uint32_t *arg);
 
 /*********************************************************************
  * MACROS
@@ -165,24 +142,25 @@ bleStack_errno_t bleStack_register(uint8_t *selfEntity, appCallback_t appCallbac
 extern void      bleStack_createTasks();
 
 // Stack Init
-extern bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, uint16_t paramUpdateDecision);
-extern bStatus_t bleStack_initGapBond(GapBond_params_t *pGapBondParams, void *bleApp_bondMgrCBs);
+extern bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pfnGapScanCB_t scanCallback, uint16_t paramUpdateDecision);
+extern bStatus_t bleStack_initGapBond(gapBondParams_t *pGapBondParams, void *bleApp_bondMgrCBs);
 extern bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t *pAttDeviceName);
 
 // Advertisement
 extern bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHandle,
-                              GapAdv_eventMaskFlags_t eventMask, GapAdv_params_t *advParams,
-                              uint16_t advDataLen ,uint8_t advData[],
-                              uint16_t scanRespDataLen, uint8_t scanRespData[]);
+                                          GapAdv_eventMaskFlags_t eventMask,
+                                          GapAdv_params_t *advParams,
+                                          uint16_t advDataLen ,uint8_t advData[],
+                                          uint16_t scanRespDataLen, uint8_t scanRespData[]);
 extern void bleStk_getDevAddr(uint8_t wantIA, uint8_t *pAddr);
 
 // Scan
 extern bStatus_t bleStk_scanInit(bleStk_pfnGapScanCB_t bleStk_bleApp_scanCB,
-                              GapScan_EventMask_t eventMask,
-                              uint8_t primPhys, uint8_t scanType, uint16_t scanInterval, uint16_t scanWindow,
-                              uint16_t advReportFields, uint8_t defaultScanPhy, uint8_t scanDupFilter,
-                              uint16_t scanFilterPduType,
-                              uint16_t scanMinConnInterval, uint16_t scanMaxConnInterval);
+                                       GapScan_EventMask_t eventMask,
+                                       uint8_t primPhys, uint8_t scanType, uint16_t scanInterval, uint16_t scanWindow,
+                                       uint16_t advReportFields, uint8_t defaultScanPhy, uint8_t scanDupFilter,
+                                       uint16_t scanFilterPduType,
+                                       uint16_t scanMinConnInterval, uint16_t scanMaxConnInterval);
 status_t bleStk_GapScan_registerCb(bleStk_pfnGapScanCB_t cb, uint32_t * arg);
 
 #ifdef __cplusplus

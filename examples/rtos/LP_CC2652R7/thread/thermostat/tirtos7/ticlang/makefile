@@ -41,7 +41,7 @@ CFLAGS = -I../.. \
     -IOPENTHREAD_MAKE_PATH/src/core \
     -IOPENTHREAD_MAKE_PATH/src \
     -IOPENTHREAD_MAKE_PATH/third_party/mbedtls/repo/include \
-    -IC:/.conan/e89868/1/external/source \
+    -IC:/.conan/f8f2be/1/external/source \
     -I${PROJECT_ROOT}/platform/crypto \
     -DOPENTHREAD_FTD=1 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc13x2_26x2/libopenthread_ftd/config" \
@@ -49,7 +49,7 @@ CFLAGS = -I../.. \
     -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE='"openthread-core-cc13x2_26x2-config.h"' \
     -DTIOP_CUI=1 \
     -DCUI_POSIX=1 \
-    -DBOARD_DISPLAY_USE_LCD=1 \
+    -DBOARD_DISPLAY_USE_LCD=0 \
     -DDeviceFamily_CC13X2X7_CC26X2X7 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/devices/cc13x2_cc26x2" \
@@ -69,13 +69,13 @@ LFLAGS = "-Wl,-i$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/thread/cc1
     -Wl,-llibmbedcrypto.a \
     -l${PROJECT_BUILD_DIR}/syscfg/ti_utils_build_linker.cmd.genlibs \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
-    -LC:/.conan/e89868/1/external/source \
+    -LC:/.conan/f8f2be/1/external/source \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos7/packages" \
     -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib \
     ../../tirtos7/ticlang/cc13x2x7_cc26x2x7_tirtos7.cmd \
     "-Wl,-m,$(NAME).map" \
-    -Wl,-c \
-    -Wl,-w \
+    -Wl,--rom_model \
+    -Wl,--warn_sections \
     "-L$(TICLANG_ARMCOMPILER)/lib" \
     -llibc.a
 all: $(NAME).out

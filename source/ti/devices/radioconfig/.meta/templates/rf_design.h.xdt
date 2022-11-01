@@ -50,7 +50,7 @@ const design = inst.rfDesign;
 //   RF Frontend configuration
 // *********************************************************************************
 %
-// RF design based on: `design` (`mod.getCurrentDesign().RfDesign`)
+// RF design based on: `design`
 #define `design.replace(/-|\s+/g, "_").replace(/,/, "").toUpperCase()`
 
 % if (useHpa) {

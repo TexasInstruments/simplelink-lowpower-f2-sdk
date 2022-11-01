@@ -4710,6 +4710,27 @@ extern void LL_EXT_PacketErrorRateCback( uint16 numPkts,
  */
 extern void LL_EXT_ExtendRfRangeCback( void );
 
+/*******************************************************************************
+ * @fn          LL_DataLenExceedEventCback
+ *
+ * @brief       This EXT LL callback is used to generate an event after receiving L2CAP
+ *              data packet and the L2CAP length was exceeded the MTU size.
+ *
+ * input parameters
+ *
+ * @param       status - error code:
+ *                       HW_FAIL_PDU_SIZE_EXCEEDS_MTU or
+ *                       HW_FAIL_PKT_LEN_EXCEEDS_PDU_SIZE
+ * @param       handle - Connection handle.
+ * @param       cid - L2CAP Channel ID.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid );
 
 /*******************************************************************************
  * @fn          LL_AuthPayloadTimeoutExpiredCback Callback

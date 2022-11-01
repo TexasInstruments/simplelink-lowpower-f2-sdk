@@ -77,8 +77,7 @@ constexpr uint8_t kMaxServiceAlocs = OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_MAX_A
 constexpr uint8_t  kMaxServiceAlocs      = OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_MAX_ALOCS;
 #endif
 
-constexpr uint8_t  kThreadVersion = OPENTHREAD_CONFIG_THREAD_VERSION; ///< Thread Version
-constexpr uint16_t kUdpPort       = 19788;                            ///< MLE UDP Port
+constexpr uint16_t kUdpPort = 19788; ///< MLE UDP Port
 
 /*
  * MLE Protocol delays and timeouts.
@@ -100,6 +99,7 @@ constexpr uint32_t kMaxResponseDelay               = 1000; ///< Max response del
 constexpr uint32_t kMaxChildIdRequestTimeout       = 5000; ///< Max delay to rx a Child ID Request (in msec)
 constexpr uint32_t kMaxChildUpdateResponseTimeout  = 2000; ///< Max delay to rx a Child Update Response (in msec)
 constexpr uint32_t kMaxLinkRequestTimeout          = 2000; ///< Max delay to rx a Link Accept
+constexpr uint8_t  kMulticastLinkRequestDelay      = 5;    ///< Max delay for sending a mcast Link Request (in sec)
 
 constexpr uint32_t kMinTimeoutKeepAlive = (((kMaxChildKeepAliveAttempts + 1) * kUnicastRetransmissionDelay) / 1000);
 constexpr uint32_t kMinPollPeriod       = OPENTHREAD_CONFIG_MAC_MINIMUM_POLL_PERIOD;
@@ -161,6 +161,13 @@ constexpr uint8_t kRouterSelectionJitter      = 120; ///< (in sec)
 constexpr uint8_t kRouterDowngradeThreshold = 23;
 constexpr uint8_t kRouterUpgradeThreshold   = 16;
 
+/**
+ * Threshold to accept a router upgrade request with reason `kBorderRouterRequest` (number of BRs acting as router in
+ * Network Data).
+ *
+ */
+constexpr uint8_t kRouterUpgradeBorderRouterRequestThreshold = 2;
+
 constexpr uint32_t kMaxLeaderToRouterTimeout = 90;  ///< (in sec)
 constexpr uint32_t kReedAdvertiseInterval    = 570; ///< (in sec)
 constexpr uint32_t kReedAdvertiseJitter      = 60;  ///< (in sec)
@@ -210,13 +217,25 @@ constexpr uint16_t kAloc16NeighborDiscoveryAgentEnd   = 0xfc4e;
 constexpr uint8_t kServiceMinId = 0x00; ///< Minimal Service ID.
 constexpr uint8_t kServiceMaxId = 0x0f; ///< Maximal Service ID.
 
+/**
+ * This enumeration specifies the leader role start mode.
+ *
+ * The start mode indicates whether device is starting normally as leader or restoring its role after reset.
+ *
+ */
+enum LeaderStartMode : uint8_t
+{
+    kStartingAsLeader,              ///< Starting as leader normally.
+    kRestoringLeaderRoleAfterReset, ///< Restoring leader role after reset.
+};
+
 #if OPENTHREAD_CONFIG_THREAD_VERSION >= OT_THREAD_VERSION_1_2
 
 /*
  * Backbone Router / DUA / MLR constants
  *
  */
-constexpr uint16_t kRegistrationDelayDefault         = 1200;              ///< In seconds.
+constexpr uint16_t kRegistrationDelayDefault         = 5;                 ///< In seconds.
 constexpr uint32_t kMlrTimeoutDefault                = 3600;              ///< In seconds.
 constexpr uint32_t kMlrTimeoutMin                    = 300;               ///< In seconds.
 constexpr uint32_t kMlrTimeoutMax                    = 0x7fffffff / 1000; ///< In seconds (about 24 days).
@@ -416,24 +435,6 @@ private:
 };
 
 /**
- * This class represents a Mesh Local Prefix.
- *
- */
-OT_TOOL_PACKED_BEGIN
-class MeshLocalPrefix : public Ip6::NetworkPrefix
-{
-public:
-    /**
-     * This method derives and sets the Mesh Local Prefix from an Extended PAN ID.
-     *
-     * @param[in] aExtendedPanId   An Extended PAN ID.
-     *
-     */
-    void SetFromExtendedPanId(const MeshCoP::ExtendedPanId &aExtendedPanId);
-
-} OT_TOOL_PACKED_END;
-
-/**
  * This class represents the Thread Leader Data.
  *
  */
@@ -578,7 +579,6 @@ typedef Mac::Key Key;
 
 } // namespace Mle
 
-DefineCoreType(otMeshLocalPrefix, Mle::MeshLocalPrefix);
 DefineCoreType(otLeaderData, Mle::LeaderData);
 DefineMapEnum(otDeviceRole, Mle::DeviceRole);
 

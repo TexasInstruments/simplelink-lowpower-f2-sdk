@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-silicon settings)",
-        "Description": "Bluetooth 5, LE Coded PHY with S=8 coding (1 Msym\/s GFSK, 125 kbps data rate) for the 2.4 GHz ISM band. (Pre-silicon settings)",
+        "Name": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-Silicon)",
+        "Description": "Bluetooth 5, LE Coded PHY with S=8 coding (1 Msym\/s GFSK, 125 kbps data rate) for the 2.4 GHz ISM band. (Pre-Silicon)",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
+
 #include <ti/drivers/AESCCM.h>
 #include <ti/drivers/aesccm/AESCCMCC26X4.h>
 #include <ti/drivers/cryptoutils/sharedresources/CryptoResourceCC26XX.h>
@@ -57,6 +58,10 @@
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/smph.h)
+
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
 
 #define AES_NON_BLOCK_MULTIPLE_MASK 0x0F
 
@@ -989,18 +994,56 @@ static int_fast16_t AESCCM_addAADInternal(AESCCM_Handle handle, uint8_t *aad, si
     DebugP_assert(aad && aadLength);
 
     AESCCMCC26X4_Object *object = handle->object;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
     /*
      * The key is provided as an input in setupEncrypt/Decrypt()
      * and within the input operation struct for oneStepEncrypt/Decrypt(),
      * and users should check those inputs.
-     * Only plaintext CryptoKeys are supported for now
+     * Only plaintext and KeyStore CryptoKeys are supported for now
      */
-    DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
-    uint16_t keyLength      = object->key.u.plaintext.keyLength;
-    uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
+    if (object->key.encoding == CryptoKey_PLAINTEXT)
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CCM,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return (AESCCM_STATUS_KEYSTORE_INVALID_ID);
+        }
+
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return (AESCCM_STATUS_KEYSTORE_GENERIC_ERROR);
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    }
     /*
      * keyMaterial and keyLength are passed to AESWriteToKeyStore(),
      * which may be in ROM where it won't have asserts so these
@@ -1293,17 +1336,56 @@ static int_fast16_t AESCCM_addDataInternal(AESCCM_Handle handle,
     DebugP_assert(input && output && inputLength);
 
     AESCCMCC26X4_Object *object = handle->object;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
     /*
      * The key is provided as an input in setupEncrypt/Decrypt()
      * and within the input operation struct for oneStepEncrypt/Decrypt(),
      * and users should check those inputs.
-     * Only plaintext CryptoKeys are supported for now
+     * Only plaintext and KeyStore CryptoKeys are supported for now
      */
-    DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
-    uint16_t keyLength      = object->key.u.plaintext.keyLength;
-    uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
+    if (object->key.encoding == CryptoKey_PLAINTEXT)
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
+
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CCM,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return (AESCCM_STATUS_KEYSTORE_INVALID_ID);
+        }
+
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return (AESCCM_STATUS_KEYSTORE_GENERIC_ERROR);
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return (AESCCM_STATUS_FEATURE_NOT_SUPPORTED);
+    }
 
     /*
      * keyMaterial and keyLength are passed to AESWriteToKeyStore(),

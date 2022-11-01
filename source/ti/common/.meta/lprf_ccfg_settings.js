@@ -125,6 +125,12 @@ const boardSpecificCCFGSettings = {
         dioBootloaderBackdoor: 13,
         levelBootloaderBackdoor: "Active low"
     },
+    LP_EM_CC1312PSIP_CCFG_SETTINGS: {
+        enableBootloader: true,
+        enableBootloaderBackdoor: true,
+        dioBootloaderBackdoor: 13,
+        levelBootloaderBackdoor: "Active low"
+    },
     LP_CC1352P7_1_CCFG_SETTINGS: {
         xoscCapArray: true,
         xoscCapArrayDelta: 0xC1,
@@ -232,10 +238,10 @@ for(stack of Common.stacks)
     let stackPath = stack.path;
     if(system.modules[stackPath])
     {
-        // Workaround for rf driver examples provided by EasyLink
+        // Workaround for rf driver examples 
         if(stackPath === "/ti/devices/radioconfig/custom")
         {
-            stackPath = "/ti/easylink/easylink";
+            stackPath = "/ti/prop_rf/prop_rf";
         }
 
         const stackCommon = system.getScript(stackPath + "_common.js");

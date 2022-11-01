@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-silicon settings)",
-        "Description": "2.4 kbps, 169.45 MHz GFSK PHY, RX. (Pre-silicon settings)",
+        "Name": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-Silicon)",
+        "Description": "2.4 kbps, 169.45 MHz GFSK PHY, RX. (Pre-Silicon)",
         "Frequency": "169",
         "Patch": {
             "Define": "RF_MODE_AUTO",

@@ -174,12 +174,16 @@ function enableExceptionChange(inst, ui)
  */
 function validate(mod, validation)
 {
-    if (system.modules["/ti/sysbios/BIOS"].$static.psaEnabled) {
-        if (mod.resetVectorAddress == Settings.defaultResetVectorAddress) {
-            validation.logError("resetVectorAddress must be modified to match the SPE linker settings", mod);
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (mod.resetVectorAddress != Settings.defaultSpeResetVectorAddress) {
+            validation.logError("resetVectorAddress must be configured to 0x" +
+                                Settings.defaultSpeResetVectorAddress.toString(16).toUpperCase() +
+                                " to match the SPE linker settings", mod);
         }
-        if (mod.vectorTableAddress == Settings.defaultVectorTableAddress) {
-            validation.logError("vectorTableAddress must be configured to match the SPE linker settings", mod);
+        if (mod.vectorTableAddress != Settings.defaultSpeVectorTableAddress) {
+            validation.logError("vectorTableAddress must be configured to 0x" +
+                                Settings.defaultSpeVectorTableAddress.toString(16).toUpperCase() +
+                                " to match the SPE linker settings", mod);
         }
     }
 }
@@ -419,7 +423,6 @@ is created and placed in the \".resetVecs\" section.
 
                 `,
                 displayFormat: { radix: "hex", bitSize: 32 },
-                hidden: true,
                 default: bigInt(Settings.defaultResetVectorAddress)
             },
             {
@@ -445,7 +448,6 @@ must be aligned on an even 64 word boundary.
 
                 `,
                 displayFormat: { radix: "hex", bitSize: 32 },
-                hidden: true,
                 default: bigInt(Settings.defaultVectorTableAddress)
             },
             {

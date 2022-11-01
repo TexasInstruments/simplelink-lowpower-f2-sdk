@@ -7,20 +7,30 @@ const ble = system.modules["/ti/ble5stack/ble"].$static;
 
 const common = system.getScript("/ti/ble5stack/ble_common.js");
 
+// Set the profileRole parameter according to the deviceRole value
+let profileRole = [];
+
+ble.deviceRole.includes("PERIPHERAL_CFG") ? profileRole.push("GAP_PROFILE_PERIPHERAL"): false;
+ble.deviceRole.includes("BROADCASTER") ? profileRole.push("GAP_PROFILE_BROADCASTER"): false;
+ble.deviceRole.includes("CENTRAL_CFG") ? profileRole.push("GAP_PROFILE_CENTRAL"): false;
+ble.deviceRole.includes("OBSERVER") ? profileRole.push("GAP_PROFILE_OBSERVER"): false;
+
 %%}
 
 #include <bcomdef.h>
 #include <gapgattserver.h>
 #include <gap_advertiser.h>
+% if(ble.bondManager == true) {
 #include <gapbondmgr.h>
+%}
 #include "ti_ble_config.h"
 
 % if (ble){
 
-
-
+// The GAP profile role
+uint8_t profileRole = `profileRole.join(" | ")`;
+// GAP GATT Service (GGS) parameters
 uint8_t attDeviceName[GAP_DEVICE_NAME_LEN]= "`ble.deviceName`";
-
 
 % if(ble.addressMode == "ADDRMODE_RANDOM" || ble.addressMode == "ADDRMODE_RP_WITH_RANDOM_ID")
 % {
@@ -35,6 +45,30 @@ uint8_t * pRandomAddress = NULL;
 /*********************************************************************
  * Bond Manager Configuration
  */
+
+gapBondParams_t gapBondParams = {
+    .pairMode             = `ble.bondPairing`,
+    .mitm                 = `ble.bondMITMProtection`,
+    .ioCap                = `ble.bondIOCaps`,
+    .bonding              = `ble.bonding`,
+    .secureConnection     = `ble.secureConn`,
+    .authenPairingOnly    = `ble.authenPairingOnly`,
+    .autoSyncWL           = `ble.syncWLWithBondDev`,
+% if(!ble.eccDebugKeys)
+% {
+    .eccReGenPolicy       = `ble.ECCKeyRegenPolicy`,
+% }
+    .KeySize              = `ble.LTKSize`,
+    .removeLRUBond        = `ble.lruBondRep`,
+    .KeyDistList          = `ble.keyDistList.join(" | ")`,
+    .eccDebugKeys         = `ble.eccDebugKeys`,
+    .eraseBondWhileInConn = `ble.eraseBondWhileInConn`,
+% if(ble.deviceRole.includes("CENTRAL_CFG"))
+% {
+    .bondFailAction       = `ble.bondFailAction`,
+% }
+    .sameIrkAction        = `ble.sameIrkOption`
+};
 
 uint8_t pairMode                =    `ble.bondPairing`;
 uint8_t mitm                    =    `ble.bondMITMProtection`;
@@ -394,8 +428,11 @@ uint8_t `ble["advSet"+i]["scanRes"+i].name`[] =
   //Company Identifier
   `common.advDataHexValues(module.companyIdentifier.toString(16).padStart(4, "0"))`
   //Additional Data
-  `common.advDataHexValues(common.addZeroFromLeft(module.additionalData.toString(16)))`
-
+%  var data = module.additionalData.toString(16).toLowerCase()
+%  if(data.startsWith("0x")){
+%    data = data.slice(2)
+% }
+  `common.advDataHexValues(common.addZeroFromLeft(data.toString(16)))`
 %}
 };
 

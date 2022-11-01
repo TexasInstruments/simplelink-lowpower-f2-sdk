@@ -411,6 +411,12 @@ const connParamsRanges = {
   maxPDUSizeMaxValue:           "255"                 // Max value of MAX_PDU_SIZE
 }
 
+// Advertising Interval unit (ms)
+const advIntUnit = 0.625;
+
+// Connection Interval unit (ms)
+const connectionIntUnit = 1.25;
+
 // Maximum number of advertisement sets
 const maxNumAdvSets = 20;
 
@@ -441,7 +447,11 @@ const deviceToBoard = {
   CC1352P7: "LP_CC1352P7",
   CC2651P3: "LP_CC2651P3",
   CC2651R3: "LP_CC2651R3",
-  CC2651R3SIPA: "LP_CC2651R3SIPA"
+  CC2651R3SIPA: "LP_CC2651R3SIPA",
+  LP_EM_CC1354P10_1: "LP_EM_CC1354P10_1",
+  LP_EM_CC1354P10_6: "LP_EM_CC1354P10_6",
+  CC2340R5: "LP_EM_CC2340R5",
+  CC2340R5_Q1: "LP_EM_CC2340R5_Q1"
 };
 
 // Settings for ti/devices/CCFG module
@@ -462,7 +472,9 @@ const bleCentralCCFGSettings = {
   LP_CC2651R3SIPA_CCFG_SETTINGS: {},
   LP_CC2652RB_CCFG_SETTINGS: {
     srcClkLF: "Derived from HF XOSC"
-  }
+  },
+  LP_EM_CC1354P10_1_CCFG_SETTINGS: {},
+  LP_EM_CC1354P10_6_CCFG_SETTINGS: {}
 };
 
 const supportedMigrations = {
@@ -611,6 +623,14 @@ function validateConnInterval(inst,validation,minValue,minName,maxValue,maxName)
       validation.logError("The Range of connection interval is " + connParamsRanges.connectionIntMinValue +
                           " ms to " + connParamsRanges.connectionIntMaxValue + " ms" ,inst, maxName);
   }
+  if(maxValue % connectionIntUnit != 0)
+  {
+    validation.logError("The value Shall be a multiple of " + connectionIntUnit, inst, maxName);
+  }
+  if(minValue % connectionIntUnit != 0)
+  {
+    validation.logError("The value Shall be a multiple of " + connectionIntUnit, inst, minName);
+  }
 }
 
 /*
@@ -639,6 +659,14 @@ function validateAdvInterval(inst,validation,minValue,minName,maxValue,maxName)
   {
       validation.logError("The Range of connection interval is " + advParamsRanges.priAdvIntMinValue +
                           " ms to " + advParamsRanges.priAdvIntMaxValue + " ms" ,inst, maxName);
+  }
+  if(maxValue % advIntUnit != 0)
+  {
+      validation.logError("The value Shall be a multiple of " + advIntUnit, inst, maxName);
+  }
+  if(minValue % advIntUnit != 0)
+  {
+      validation.logError("The value Shall be a multiple of " + advIntUnit, inst, minName);
   }
 }
 
@@ -684,6 +712,23 @@ function validateNumOfUUIDs(inst,validation,numOfUUIDs,uuid,length)
   else
   {
       validateUUIDLength(inst,validation,inst[numOfUUIDs],uuid,length);
+  }
+}
+
+/*
+ * ======== validateAdditionalData ========
+ * Validate that the additional data is hex
+ *
+ * @param inst       - instance to be validated
+ * @param validation - object to hold detected validation issues
+ * @param addDataValue - the value of the additional data
+ * @params addDataName      - the name of the additional data parameter to validate
+ */
+function validateAdditionalData(inst, validation, addDataValue, addDataName)
+{
+  const hexRegex = new RegExp('^(0[xX])?[0-9A-Fa-f]+$');
+  if(!hexRegex.test(addDataValue)){
+    validation.logError("Please enter a valid HEX number", inst, addDataName);
   }
 }
 
@@ -1003,6 +1048,14 @@ function device2DeviceFamily(deviceId)
     {
         driverString = "DeviceFamily_CC26X2";
     }
+    else if(deviceId.match(/CC26.4/))
+    {
+        driverString = "DeviceFamily_CC26X4";
+    }
+	else if(deviceId.match(/CC13.4/))
+    {
+        driverString = "DeviceFamily_CC13X4";
+    }
     else if(deviceId.match(/CC26.0/))
     {
         driverString = "DeviceFamily_CC26X0";
@@ -1031,6 +1084,10 @@ function device2DeviceFamily(deviceId)
     else if(deviceId.match(/CC26.1/))
     {
         driverString = "DeviceFamily_CC26X1";
+    }
+    else if(deviceId.match(/CC23.0/))
+    {
+        driverString = "DeviceFamily_CC23X0";
     }
     else
     {
@@ -1126,6 +1183,16 @@ function getRadioScript(rfDesign, deviceId)
             radioSettings = system.getScript("/ti/ble5stack/rf_config/"
                 + "LP_CC1352P7_4_rf_defaults.js");
         }
+        else if(rfDesign === "LP_EM_CC1354P10_1")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC1354P10_1_rf_defaults.js");
+        }
+        else if(rfDesign === "LP_EM_CC1354P10_6")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC1354P10_6_rf_defaults.js");
+}
     }
     else if(deviceId === "CC1352P1F3RGZ")
     {
@@ -1182,6 +1249,11 @@ function getRadioScript(rfDesign, deviceId)
     {
         radioSettings = system.getScript("/ti/ble5stack/rf_config/"
             + "LP_CC2651R3SIPA_rf_defaults.js");
+    }
+    else if(deviceId === "CC1354R10RGZ")
+    {
+        radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+            + "LP_CC1354R10_rf_defaults.js");
     }
     return(radioSettings);
 }
@@ -1310,6 +1382,48 @@ function getMigrationMarkdown(currTarget)
   return(migrationText);
 }
 
+/* ======== defaultValue ========
+* Returns the parmeter defualt value
+*
+* @returns true or false
+*/
+function defaultValue()
+{
+    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    {
+        return false;
+    }
+    return true;
+}
+
+/* ======== readOnlyValue ========
+* Returns the parmeter read only value
+*
+* @returns true or false
+*/
+function readOnlyValue()
+{
+    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    {
+        return "Currently not supported for CC23X0";
+    }
+    return false;
+}
+
+/* ======== hiddenValue ========
+* Returns the parmeter hidden value
+*
+* @returns true or false
+*/
+function hiddenValue()
+{
+    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    {
+        return true;
+    }
+    return false;
+}
+
 exports = {
     sigModelMapping:sigModelMapping,
     alphanumeric: alphanumeric,
@@ -1333,6 +1447,7 @@ exports = {
     validateAdvInterval: validateAdvInterval,
     validateUUIDLength: validateUUIDLength,
     validateNumOfUUIDs: validateNumOfUUIDs,
+    validateAdditionalData: validateAdditionalData,
     advDataTotalLength: advDataTotalLength,
     addZeroFromLeft: addZeroFromLeft,
     advDataHexValues: advDataHexValues,
@@ -1345,5 +1460,8 @@ exports = {
     decimalToHexString: decimalToHexString,
     isMigrationValid: isMigrationValid,
     migrate: migrate,
-    getMigrationMarkdown: getMigrationMarkdown
+    getMigrationMarkdown: getMigrationMarkdown,
+    hiddenValue: hiddenValue,
+    readOnlyValue: readOnlyValue,
+    defaultValue: defaultValue
 };

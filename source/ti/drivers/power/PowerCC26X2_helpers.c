@@ -30,31 +30,32 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#include <ti/drivers/Power.h>
-#include <ti/drivers/power/PowerCC26XX.h>
-#include <ti/drivers/power/PowerCC26X2.h>
-#include <ti/drivers/Temperature.h>
+#include <ti/drivers/power/PowerCC26X2_helpers.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
+#include DeviceFamily_constructPath(inc/hw_aon_pmctl.h)
 #include DeviceFamily_constructPath(inc/hw_ddi_0_osc.h)
+#include DeviceFamily_constructPath(driverlib/ccfgread.h)
+#include DeviceFamily_constructPath(driverlib/osc.h)
 #include DeviceFamily_constructPath(driverlib/prcm.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
-#include DeviceFamily_constructPath(driverlib/ccfgread.h)
+#include DeviceFamily_constructPath(driverlib/setup_rom.h)
 
 #if SPE_ENABLED
-    #include <third_party/tfm/interface/include/tfm_api.h>
     #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
-    #include "system_cc26x4.h"
-    #include "secure_utilities.h"
+    #include <third_party/tfm/secure_fw/spm/include/tfm_utils.h> /* tfm_core_panic() */
 #else
     /* Define the gateway attributes to nothing instead of ifdefs on each function */
     #define __tfm_secure_gateway_attributes__
 #endif
+
+/* Constants for SubSecInc values at different SCLK_LF frequencies */
+#define SUBSECINC_31250_HZ 0x8637BD
+#define SUBSECINC_32768_HZ 0x800000
 
 /*
  *  ======== PowerCC26X2_oscCtlClearXtal ========
@@ -124,14 +125,21 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_oscDisableQualifiers(void)
 }
 
 /*
+ *  ======== PowerCC26X2_getOscHfSourceReady ========
+ */
+__tfm_secure_gateway_attributes__ bool PowerCC26X2_getOscHfSourceReady(void)
+{
+    return OSCHfSourceReady();
+}
+
+/*
  *  ======== PowerCC26X2_oschfTrySwitchToXosc ========
- *  Attempts twice to switch to XOSC_HF, returns 0 on failure.
  */
 __tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_oschfTrySwitchToXosc(void)
 {
-    /* Switch to the XOSC_HF. Since this function is only called
-     * after we get an interrupt signifying it is ready to switch,
-     * it should always succeed. If it does not succeed, try once more.
+    /* Switch to the XOSC_HF. Since this function is only called after we get an
+     * interrupt signifying it is ready to switch, it should always succeed. If
+     * it does not succeed, the caller should retry.
      */
     return OSCHF_AttemptToSwitchToXosc();
 }
@@ -190,6 +198,9 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_disableTCXOQual(void)
     }
 }
 
+/*
+ *  ======== PowerCC26X2_turnOnXosc ========
+ */
 __tfm_secure_gateway_attributes__ void PowerCC26X2_turnOnXosc(void)
 {
     OSCHF_TurnOnXosc();
@@ -232,32 +243,101 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMo
     SysCtrlIdle(vimsPdMode);
 }
 
+#if SPE_ENABLED
 /*
- *  ======== PowerCC26X2_sysCtrlIdle ========
+ *  ======== PowerCC26X2_isSecurePeriph ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_setSECDMADependency(uint32_t setActive)
+static bool PowerCC26X2_isSecurePeriph(uint32_t prcmPeriph)
 {
-    if (setActive)
+    bool isSecurePeriph = false;
+
+    if ((prcmPeriph == PRCM_PERIPH_PKA) || (prcmPeriph == PRCM_PERIPH_CRYPTO) || (prcmPeriph == PRCM_PERIPH_TRNG) ||
+        (prcmPeriph == PRCM_PERIPH_UDMA))
     {
-        PRCMPeripheralRunEnable(PRCM_PERIPH_UDMA);
-        PRCMPeripheralSleepEnable(PRCM_PERIPH_UDMA);
-        PRCMPeripheralDeepSleepEnable(PRCM_PERIPH_UDMA);
+        isSecurePeriph = true;
     }
-    else
+
+    return isSecurePeriph;
+}
+#endif
+
+/*
+ *  ======== PowerCC26X2_setPeriphDependency ========
+ *  @param prcmPeriph   Must be set to a PRCM_PERIPH_XXXX define
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setPeriphDependency(uint32_t prcmPeriph)
+{
+#if SPE_ENABLED
+    if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
     {
-        PRCMPeripheralRunDisable(PRCM_PERIPH_UDMA);
-        PRCMPeripheralSleepDisable(PRCM_PERIPH_UDMA);
-        PRCMPeripheralDeepSleepDisable(PRCM_PERIPH_UDMA);
+        tfm_core_panic();
     }
+#endif
+
+    PRCMPeripheralRunEnable(prcmPeriph);
+    PRCMPeripheralSleepEnable(prcmPeriph);
+    PRCMPeripheralDeepSleepEnable(prcmPeriph);
 
     PRCMLoadSet();
-    while (!PRCMLoadGet())
-    {
-        ;
-    }
+    while (!PRCMLoadGet()) {}
 }
 
+/*
+ *  ======== PowerCC26X2_releasePeriphDependency ========
+ *  @param prcmPeriph   Must be set to a PRCM_PERIPH_XXXX define
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_releasePeriphDependency(uint32_t prcmPeriph)
+{
+#if SPE_ENABLED
+    if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
+    {
+        tfm_core_panic();
+    }
+#endif
+
+    PRCMPeripheralRunDisable(prcmPeriph);
+    PRCMPeripheralSleepDisable(prcmPeriph);
+    PRCMPeripheralDeepSleepDisable(prcmPeriph);
+
+    PRCMLoadSet();
+    while (!PRCMLoadGet()) {}
+}
+
+/*
+ *  ======== PowerCC26X2_setPeriphDeepSleepEnable ========
+ *  @param prcmPeriph   Must be set to a PRCM_PERIPH_XXXX define
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setPeriphDeepSleepEnable(uint32_t prcmPeriph)
+{
+#if SPE_ENABLED
+    if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
+    {
+        tfm_core_panic();
+    }
+#endif
+
+    PRCMPeripheralDeepSleepEnable(prcmPeriph);
+}
+
+/*
+ *  ======== PowerCC26X2_sysCtrlGetResetSource ========
+ */
 __tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_sysCtrlGetResetSource(void)
 {
     return SysCtrlResetSourceGet();
+}
+
+/*
+ *  ======== PowerCC26X2_setSubSecIncToXoscLf ========
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setSubSecIncToXoscLf(void)
+{
+    /* We only want to set SubSecInc if we are running on XOSC_LF */
+    if (CCFGRead_SCLK_LF_OPTION() == CCFGREAD_SCLK_LF_OPTION_XOSC_LF)
+    {
+        /* Set SubSecInc back to 32.768 kHz now that we have switched to
+         * the RCOSC_LF or XOSC_LF target clock.
+         */
+        SetupSetAonRtcSubSecInc(SUBSECINC_32768_HZ);
+    }
 }

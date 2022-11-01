@@ -64,6 +64,7 @@ extern "C" {
 #define CRYPTO_S_MSG_TYPE_INDEX_SHA2       ((int32_t)0xCC)
 #define CRYPTO_S_MSG_TYPE_INDEX_TRNG       ((int32_t)0xDD)
 #define CRYPTO_S_MSG_TYPE_INDEX_KEYSTORE   ((int32_t)0xEE)
+#define CRYPTO_S_MSG_TYPE_INDEX_PSA        ((int32_t)0xFF)
 
 #define CRYPTO_S_MSG_TYPE_SHIFT           8U
 #define CRYPTO_S_MSG_TYPE_INDEX_MASK      0xFF

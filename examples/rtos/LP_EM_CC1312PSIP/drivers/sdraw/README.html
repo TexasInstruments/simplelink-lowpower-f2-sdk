@@ -89,10 +89,6 @@ Card Capacity:          7168 MB
 <li><p>Read data from the SD card and compare with data written.</p></li>
 <li><p>The data previously written is erased by overwriting the data with 0.</p></li>
 </ol>
-<p>TI-RTOS:</p>
-<ul>
-<li>When building in Code Composer Studio, the kernel configuration project will be imported along with the example. The kernel configuration project is referenced by the example, so it will be built first. The “release” kernel configuration is the default project used. It has many debug features disabled. These feature include assert checking, logging and runtime stack checks. For a detailed difference between the “release” and “debug” kernel configurations and how to switch between them, please refer to the SimpleLink MCU SDK User’s Guide. The “release” and “debug” kernel configuration projects can be found under &lt;SDK_INSTALL_DIR&gt;/kernel/tirtos/builds/&lt;BOARD&gt;/(release|debug)/(ccs|gcc).</li>
-</ul>
 <p>FreeRTOS:</p>
 <ul>
 <li>Please view the <code>FreeRTOSConfig.h</code> header file for example configuration information.</li>

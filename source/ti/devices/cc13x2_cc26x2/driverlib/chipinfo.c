@@ -155,15 +155,6 @@ ChipInfo_GetChipType( void )
                 }
             }
             break;
-        case 0x5:
-            if ( fcfg1Cc13 ) {
-                if ( fcfg1Pa ) {
-                    chipType = CHIP_TYPE_CC2672P3;
-                } else {
-                    chipType = CHIP_TYPE_CC2672R3;
-                }
-            }
-            break;
         case 0x9 :
             if ( ! fcfg1Pa ) {
                 chipType = CHIP_TYPE_CC2642;
@@ -172,6 +163,9 @@ ChipInfo_GetChipType( void )
         case 0x8 :
             if ( ! fcfg1Pa ) {
                 chipType = CHIP_TYPE_CC1312;
+            }
+            else {
+                chipType = CHIP_TYPE_CC1312P;
             }
             break;
         }

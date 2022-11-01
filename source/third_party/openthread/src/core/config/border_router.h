@@ -36,16 +36,6 @@
 #define CONFIG_BORDER_ROUTER_H_
 
 /**
- * @def OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
- *
- * Define to 1 to enable Border Agent support.
- *
- */
-#ifndef OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE
-#define OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE 0
-#endif
-
-/**
  * @def OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE
  *
  * Define to 1 to enable Border Router support.
@@ -56,43 +46,59 @@
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
+ * @def OPENTHREAD_CONFIG_BORDER_ROUTER_REQUEST_ROUTER_ROLE
  *
- * Define to 1 to enable Border Routing support.
+ * Define to 1 to enable mechanism on a Border Router which provides IP connectivity to request router role upgrade.
+ *
+ * This config is applicable on an `OPENTHREAD_FTD` build and when `OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE` is also
+ * enabled.
+ *
+ * A Border Router is considered to provide external IP connectivity if at least one of the below conditions hold:
+ *
+ * - It has added at least one external route entry.
+ * - It has added at least one prefix entry with default-route and on-mesh flags set.
+ * - It has added at least one domain prefix (domain and on-mesh flags set).
+ *
+ * A Border Router which provides IP connectivity and is acting as a REED is eligible to request a router role upgrade
+ * by sending an "Address Solicit" request to leader with status reason `BorderRouterRequest`. This reason is used when
+ * the number of active routers in the Thread mesh is above the threshold, and only if the number of existing eligible
+ * BRs (determined from the Thread Network Data) that are acting as router is less than two. This mechanism allows up
+ * to two eligible Border Routers to request router role upgrade when the number of routers is already above the
+ * threshold.
  *
  */
-#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE
-#define OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE 0
+#ifndef OPENTHREAD_CONFIG_BORDER_ROUTER_REQUEST_ROUTER_ROLE
+#define OPENTHREAD_CONFIG_BORDER_ROUTER_REQUEST_ROUTER_ROLE 1
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE
+ * @def OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE
  *
- * Define to 1 to enable Border Routing Vicarious Router Solicitation.
+ * Define to 1 to enable the internal NAT64 translator.
  *
  */
-#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE
-#define OPENTHREAD_CONFIG_BORDER_ROUTING_VICARIOUS_RS_ENABLE 1
+#ifndef OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE
+#define OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE 0
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE
+ * @def OPENTHREAD_CONFIG_NAT64_MAX_MAPPINGS
  *
- * Define to 1 to enable Border Routing NAT64 support.
+ * Specifies maximum number of active mappings for NAT64.
  *
  */
-#ifndef OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE
-#define OPENTHREAD_CONFIG_BORDER_ROUTING_NAT64_ENABLE 0
+#ifndef OPENTHREAD_CONFIG_NAT64_MAX_MAPPINGS
+#define OPENTHREAD_CONFIG_NAT64_MAX_MAPPINGS 254
 #endif
 
 /**
- * @def OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT
+ * @def OPENTHREAD_CONFIG_NAT64_IDLE_TIMEOUT_SECONDS
  *
- * Specifies the Border Agent UDP port, and use 0 for ephemeral port.
+ * Specifies timeout in seconds before removing an inactive address mapping.
  *
  */
-#ifndef OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT
-#define OPENTHREAD_CONFIG_BORDER_AGENT_UDP_PORT 0
+#ifndef OPENTHREAD_CONFIG_NAT64_IDLE_TIMEOUT_SECONDS
+#define OPENTHREAD_CONFIG_NAT64_IDLE_TIMEOUT_SECONDS 7200
 #endif
 
 #endif // CONFIG_BORDER_ROUTER_H_

@@ -21,11 +21,11 @@
             "options": [
                 {
                     "name": "2gfsk100kbps",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk250kbps",
-                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom2400",
@@ -277,8 +277,7 @@
                     "name": "highPA",
                     "displayName": "High PA",
                     "description": "Select if the High Power Amplifier on the device should be used",
-                    "default": false,
-                    "hidden": false
+                    "default": false
                 },
                 {
                     "name": "txPower2400",
@@ -685,13 +684,13 @@
             {
                 "file": "setting_tc900.json",
                 "name": "2gfsk100kbps",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc901.json",
                 "name": "2gfsk250kbps",
-                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "disable_high_pa"
             },
             {

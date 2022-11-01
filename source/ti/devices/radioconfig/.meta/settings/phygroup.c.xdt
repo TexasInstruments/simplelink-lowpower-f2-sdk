@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,9 @@ const CodeExportHandler = Common.getScript("code_export_param");
 /* RF Command Handler */
 const CmdHandler = Common.getScript("cmd_handler.js");
 
+/* Patch Handler */
+const PatchHandler = Common.getScript("patch_handler.js");
+
 /* PHY header */
 const phyHeader = system.getTemplate("/ti/devices/radioconfig/templates/phyheader.xdt");
 
@@ -63,13 +66,7 @@ const instances = module.$instances;
 %   const cmdHandler = CmdHandler.getUpdatedRfCommands(inst, phyGroup);
 %   const paramSummary = cmdHandler.getParameterSummary(inst);
 %   const symNames = CodeExportHandler.getSymNames(ceConfig, phy);
-%   let protocol;
-%   if (coexType) {
-%       protocol = coexType;
-%   }
-%   else {
-%       protocol = ceConfig.useMulti ? "multi" : "single"
-%   }
+%   const protocol = PatchHandler.getPatchType(ceConfig, coexType);
 %   const patchCode = cmdHandler.generatePatchCode(protocol);
 %   const legacy = ceConfig.symGenMethod === "Legacy";
 %   const qualifier = ceConfig.useConst ? 'const ' : '';

@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "WMBUS S1-Mode, 32.768 kcps, 2-GFSK, 311 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "32.768 kcps manchester encoded, 2-GFSK, 50 kHz deviation WMBUS S1-Mode PHY for 863-930 MHz band. (Pre-silicon settings)",
+        "Name": "WMBUS S1-Mode, 32.768 kcps, 2-GFSK, 311 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "32.768 kcps manchester encoded, 2-GFSK, 50 kHz deviation WMBUS S1-Mode PHY for 863-930 MHz band. (Pre-Silicon)",
         "Frequency": "868.3",
         "Patch": {
             "Define": "RF_MODE_AUTO",

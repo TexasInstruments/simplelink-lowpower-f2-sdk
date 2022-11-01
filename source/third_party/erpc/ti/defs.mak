@@ -76,8 +76,7 @@ INCS = \
 
 INCS-tirtos = $(INCS)                                   \
     -I$(SDK_INSTALL_DIR)/source                         \
-    -I$(SDK_INSTALL_DIR)/kernel/tirtos/packages         \
-    -I$(XDC_INSTALL_DIR)/packages
+    -I$(SDK_INSTALL_DIR)/kernel/tirtos7/packages        \
 
 INCS-linux = $(INCS)                                    \
     -I$(SDK_INSTALL_DIR)/source

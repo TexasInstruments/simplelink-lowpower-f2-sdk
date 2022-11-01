@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -119,7 +119,6 @@ let devSpecific = {
             description : "Select the FIFO level for the RX interrupt",
             default     : '4/8',
             options     : [
-                { name:   "1/8" },
                 { name:   "2/8" },
                 { name:   "4/8" },
                 { name:   "6/8" },

@@ -125,7 +125,6 @@ PowerCC26X2_ModuleState PowerCC26X2_module = {
     .resourceHandlers = {configureRFCoreClocks, configureXOSCHF, nopResourceHandler}, /* special resource handler
                                                                                          functions */
     .policyFxn        = 0,                                                            /* power policyFxn */
-    .lastResetReason  = 0,
 };
 
 /*! Temperature notification to compensate the RTC when SCLK_LF is derived
@@ -289,7 +288,7 @@ int_fast16_t Power_init(void)
     /* set module state field 'initialized' to true */
     PowerCC26X2_module.initialized = true;
 
-    PowerCC26X2_module.lastResetReason = PowerCC26X2_sysCtrlGetResetSource();
+    PowerCC26X2_module.lastResetReason = (PowerCC26X2_ResetReason)PowerCC26X2_sysCtrlGetResetSource();
 
     /* set the module state enablePolicy field */
     PowerCC26X2_module.enablePolicy = PowerCC26X2_config.enablePolicy;
@@ -358,46 +357,32 @@ int_fast16_t Power_init(void)
         }
     }
 
-    /*
-     * if LF source is RCOSC_LF or XOSC_LF: assert DISALLOW_STANDBY constraint
-     * and start a timeout to check for activation
-     */
-    if ((ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_RCOSC_LF) || (ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_XOSC_LF))
+    if (ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_RCOSC_LF || ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_XOSC_LF ||
+        ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_XOSC_HF_DLF)
     {
-
-        /* Turn on oscillator interrupt for SCLK_LF switching */
+        /* Turn on oscillator interrupt for SCLK_LF switching.
+         * When using HPOSC-derived LF, the LF clock will already have switched
+         * and the interrupt will fire once interrupts are enabled
+         * again when the OS starts.
+         * When using a regular HF crystal to derive the LF source, it may take
+         * up to a few hundred microseconds for the crystal to start up.
+         * When using RCOSC_LF, the clock switch will happen very fast and
+         * the interrupt will often immediately trigger once interrupts are
+         * enabled again when the OS starts.
+         */
         HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_OSCIMSC) |= PRCM_OSCIMSC_LFSRCDONEIM_M;
 
-        /* disallow STANDBY pending LF clock quailifier disabling */
+        /* Disallow STANDBY pending LF clock quailifier disabling */
         Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
     }
     else if (ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_EXTERNAL_LF)
     {
-        /*
-         * else, if the LF clock source is external, can disable clock qualifiers
-         * now; no need to assert DISALLOW_STANDBY or start the Clock object
+        /* If the LF clock source is external, can disable clock qualifiers
+         * now; no need to assert DISALLOW_STANDBY
          */
 
         /* yes, disable the LF clock qualifiers */
         PowerCC26X2_oscDisableQualifiers();
-    }
-    else if (ccfgLfClkSrc == CCFGREAD_SCLK_LF_OPTION_XOSC_HF_DLF)
-    {
-        /* else, user has requested LF to be derived from XOSC_HF */
-
-        /* Turn on oscillator interrupt for SCLK_LF switching.
-         * When using HPOSC, the LF clock will already have switched
-         * and the interrupt will fire once interrupts are enabled
-         * again when the OS starts.
-         * When using a regular HF crystal, it may take a little
-         * time for the crystal to start up
-         */
-        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_OSCIMSC) |= PRCM_OSCIMSC_LFSRCDONEIM_M;
-
-        /* disallow standby since we cannot go into standby with
-         * an HF derived LF clock
-         */
-        Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
     }
 
     /* if VIMS RAM is configured as GPRAM: set retention constraint */
@@ -508,50 +493,55 @@ int_fast16_t Power_releaseDependency(uint_fast16_t resourceId)
         /* deactivate this resource ... */
         id = resourceDB[resourceId].driverlibID;
 
-        /* Special handling for the DMA, which is on the secure side for CC26X3/X4 */
-        if (id == PowerCC26XX_PERIPH_UDMA)
+/* Conditional compile required since CC26X1 does not define PRCM_PERIPH_PKA */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+        /*
+         * Special handling for the Crypto, TRNG, PKA, and DMA peripherals
+         * which are on the secure side for CC26X3/X4.
+         */
+        if ((id == PRCM_PERIPH_CRYPTO) || (id == PRCM_PERIPH_TRNG) || (id == PRCM_PERIPH_PKA) ||
+            (id == PRCM_PERIPH_UDMA))
         {
-            PowerCC26X2_setSECDMADependency(0);
+            PowerCC26X2_releasePeriphDependency(id);
         }
-        /* is resource a peripheral?... */
-        else if (resourceDB[resourceId].flags & PowerCC26XX_PERIPH)
-        {
-            PRCMPeripheralRunDisable(id);
-            PRCMPeripheralSleepDisable(id);
-            PRCMPeripheralDeepSleepDisable(id);
-            PRCMLoadSet();
-            while (!PRCMLoadGet())
-            {
-                ;
-            }
-        }
-        /* else, does resource require a special handler?... */
-        else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
-        {
-            /* call the special handler */
-            PowerCC26X2_module.resourceHandlers[id](PowerCC26XX_DISABLE);
-        }
-
-        /* else resource is a power domain */
         else
         {
-            PRCMPowerDomainOff(id);
-            while (PRCMPowerDomainsAllOff(id) != PRCM_DOMAIN_POWER_OFF)
+#endif
+            /* is resource a peripheral?... */
+            if (resourceDB[resourceId].flags & PowerCC26XX_PERIPH)
             {
-                ;
+                PRCMPeripheralRunDisable(id);
+                PRCMPeripheralSleepDisable(id);
+                PRCMPeripheralDeepSleepDisable(id);
+                PRCMLoadSet();
+                while (!PRCMLoadGet()) {}
             }
+            /* else, does resource require a special handler?... */
+            else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
+            {
+                /* call the special handler */
+                PowerCC26X2_module.resourceHandlers[id](PowerCC26XX_DISABLE);
+            }
+            /* else resource is a power domain */
+            else
+            {
+                PRCMPowerDomainOff(id);
+                while (PRCMPowerDomainsAllOff(id) != PRCM_DOMAIN_POWER_OFF) {}
+            }
+
+            /* propagate release up the dependency tree ... */
+
+            /* check for a first parent */
+            parent = resourceDB[resourceId].flags & PowerCC26XX_PARENTMASK;
+
+            /* if 1st parent, make recursive call to release that dependency */
+            if (parent < PowerCC26X2_NUMRESOURCES)
+            {
+                Power_releaseDependency(parent);
+            }
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
         }
-
-        /* propagate release up the dependency tree ... */
-
-        /* check for a first parent */
-        parent = resourceDB[resourceId].flags & PowerCC26XX_PARENTMASK;
-
-        /* if 1st parent, make recursive call to release that dependency */
-        if (parent < PowerCC26X2_NUMRESOURCES)
-        {
-            Power_releaseDependency(parent);
-        }
+#endif
     }
 
     /* re-enable interrupts */
@@ -623,38 +613,44 @@ int_fast16_t Power_setDependency(uint_fast16_t resourceId)
         /* now activate this resource ... */
         id = resourceDB[resourceId].driverlibID;
 
-        /* Special handling for the DMA, which is on the secure side for CC26X3/X4 */
-        if (id == PowerCC26XX_PERIPH_UDMA)
+/* Conditional compile required since CC26X1 does not define PRCM_PERIPH_PKA */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+        /*
+         * Special handling for the Crypto, TRNG, PKA, and DMA peripherals
+         * which are on the secure side for CC26X3/X4.
+         */
+        if ((id == PRCM_PERIPH_CRYPTO) || (id == PRCM_PERIPH_TRNG) || (id == PRCM_PERIPH_PKA) ||
+            (id == PRCM_PERIPH_UDMA))
         {
-            PowerCC26X2_setSECDMADependency(1);
+            PowerCC26X2_setPeriphDependency(id);
         }
-        /* is resource a peripheral?... */
-        if (resourceDB[resourceId].flags & PowerCC26XX_PERIPH)
-        {
-            PRCMPeripheralRunEnable(id);
-            PRCMPeripheralSleepEnable(id);
-            PRCMPeripheralDeepSleepEnable(id);
-            PRCMLoadSet();
-            while (!PRCMLoadGet())
-            {
-                ;
-            }
-        }
-        /* else, does resource require a special handler?... */
-        else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
-        {
-            /* call the special handler */
-            PowerCC26X2_module.resourceHandlers[id](PowerCC26XX_ENABLE);
-        }
-        /* else resource is a power domain */
         else
         {
-            PRCMPowerDomainOn(id);
-            while (PRCMPowerDomainsAllOn(id) != PRCM_DOMAIN_POWER_ON)
+#endif
+            /* is resource a peripheral?... */
+            if (resourceDB[resourceId].flags & PowerCC26XX_PERIPH)
             {
-                ;
+                PRCMPeripheralRunEnable(id);
+                PRCMPeripheralSleepEnable(id);
+                PRCMPeripheralDeepSleepEnable(id);
+                PRCMLoadSet();
+                while (!PRCMLoadGet()) {}
             }
+            /* else, does resource require a special handler?... */
+            else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
+            {
+                /* call the special handler */
+                PowerCC26X2_module.resourceHandlers[id](PowerCC26XX_ENABLE);
+            }
+            /* else resource is a power domain */
+            else
+            {
+                PRCMPowerDomainOn(id);
+                while (PRCMPowerDomainsAllOn(id) != PRCM_DOMAIN_POWER_ON) {}
+            }
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
         }
+#endif
     }
 
     /* re-enable interrupts */
@@ -757,10 +753,8 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
     {
         status = Power_EINVALIDINPUT;
     }
-
     else
     {
-
         /* check to make sure Power is not busy with another transition */
         if (PowerCC26X2_module.state == Power_ACTIVE)
         {
@@ -774,7 +768,6 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
 
         if (status == Power_SOK)
         {
-
             /* setup sleep vars */
             preEvent      = PowerCC26XX_ENTERING_STANDBY;
             postEvent     = PowerCC26XX_AWAKE_STANDBY;
@@ -862,7 +855,6 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* 4. If didn't retain VIMS in standby, re-enable retention now */
             if (retainCache == false)
             {
-
                 /* 5.1 If previously in a cache mode, restore the mode now */
                 if (modeVIMS == VIMS_MODE_ENABLED)
                 {
@@ -879,11 +871,11 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             /* 7. Restore deep sleep clocks of Crypto and DMA */
             if (Power_getDependencyCount(PowerCC26XX_PERIPH_CRYPTO))
             {
-                PRCMPeripheralDeepSleepEnable(resourceDB[PowerCC26XX_PERIPH_CRYPTO].driverlibID);
+                PowerCC26X2_setPeriphDeepSleepEnable(resourceDB[PowerCC26XX_PERIPH_CRYPTO].driverlibID);
             }
             if (Power_getDependencyCount(PowerCC26XX_PERIPH_UDMA))
             {
-                PRCMPeripheralDeepSleepEnable(resourceDB[PowerCC26XX_PERIPH_UDMA].driverlibID);
+                PowerCC26X2_setPeriphDeepSleepEnable(resourceDB[PowerCC26XX_PERIPH_UDMA].driverlibID);
             }
 
             /* 8. Make sure clock settings take effect */
@@ -896,8 +888,7 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             PowerCC26X2_module.state = Power_EXITING_SLEEP;
 
             /* 11. Wait until all power domains are back on */
-            while (PRCMPowerDomainsAllOn(poweredDomains) != PRCM_DOMAIN_POWER_ON)
-                ;
+            while (PRCMPowerDomainsAllOn(poweredDomains) != PRCM_DOMAIN_POWER_ON) {}
 
             /* 12. Wait for the RTC shadow values to be updated so that
              * the early notification callbacks can read out valid RTC values.
@@ -1091,7 +1082,7 @@ bool PowerCC26XX_isStableXOSC_HF(void)
     /* only query if HF source is ready if there is a pending change */
     if (PowerCC26X2_module.xoscPending)
     {
-        ready = OSCHfSourceReady();
+        ready = PowerCC26X2_getOscHfSourceReady();
     }
 
     HwiP_restore(key);
@@ -1118,7 +1109,7 @@ void PowerCC26XX_switchXOSC_HF(void)
      * function, we can just switch without handling the case when the XOSC_HF
      * is not ready or PowerCC26X2_module.xoscPending is not true.
      */
-    OSCHF_AttemptToSwitchToXosc();
+    PowerCC26X2_oschfTrySwitchToXosc();
 
     /* Since configureXOSCHF() was called prior to this function to turn
      * on the XOSC_HF, PowerCC26X2_module.xoscPending will be true and
@@ -1150,7 +1141,7 @@ void PowerCC26XX_switchXOSC_HF(void)
  *  ======== PowerCC26XX_getResetReason ========
  *  Returns the root  for latest reset.
  */
-uint32_t PowerCC26X2_getResetReason(void)
+PowerCC26X2_ResetReason PowerCC26X2_getResetReason(void)
 {
     return PowerCC26X2_module.lastResetReason;
 }
@@ -1199,7 +1190,24 @@ static void oscillatorISR(uintptr_t arg)
     /* XOSC_LF or RCOSC_LF qualified */
     if (rawStatus & PRCM_OSCRIS_LFSRCDONERIS_M & intStatusMask)
     {
+        /* Only switch SubSecInc for XOSC_LF.
+         * XOSC_HF_DLF and RCOSC_LF do not spend enough time waiting for the
+         * clock switch after enabling interrupts to accumulate any notable
+         * drift.
+         * External LF is just driven immediately and has no transition period.
+         */
+        if (CCFGRead_SCLK_LF_OPTION() == CCFGREAD_SCLK_LF_OPTION_XOSC_LF)
+        {
+            /* Set SubSecInc back to 32.768 kHz now that we have switched to
+             * the RCOSC_LF or XOSC_LF target clock.
+             */
+            PowerCC26X2_setSubSecIncToXoscLf();
+        }
+
         disableLFClockQualifiers();
+
+        /* Call all registered callback functions waiting on LF clock switch */
+        notify(PowerCC26XX_SCLK_LF_SWITCHED);
     }
 
     /* XOSC_HF ready to switch to */

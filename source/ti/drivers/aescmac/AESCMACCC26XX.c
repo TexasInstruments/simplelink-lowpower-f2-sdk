@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,10 @@
 #include DeviceFamily_constructPath(inc/hw_crypto.h)
 #include DeviceFamily_constructPath(driverlib/aes.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
+
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
 
 #define AES_BLOCK_SIZE_WORDS (AES_BLOCK_SIZE / 4)
 
@@ -362,17 +366,55 @@ void AESCMAC_close(AESCMAC_Handle handle)
  */
 static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object)
 {
-    uint16_t keyLength;
-    const uint8_t *keyData;
-    int_fast16_t status = AESCMAC_STATUS_SUCCESS;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+    int_fast16_t status     = AESCMAC_STATUS_SUCCESS;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
     /* Only plaintext CryptoKeys are supported for now */
-    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) ||
+                  (object->key.encoding == CryptoKey_BLANK_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
-    keyLength = object->key.u.plaintext.keyLength;
-    keyData   = object->key.u.plaintext.keyMaterial;
+    if ((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_BLANK_PLAINTEXT))
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
-    DebugP_assert(keyData);
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CMAC,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return AESCMAC_STATUS_KEYSTORE_INVALID_ID;
+        }
+
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return AESCMAC_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return AESCMAC_STATUS_ERROR;
+    }
+
+    DebugP_assert(keyingMaterial);
     DebugP_assert((keyLength == AES_128_KEY_LENGTH_BYTES) || (keyLength == AES_192_KEY_LENGTH_BYTES) ||
                   (keyLength == AES_256_KEY_LENGTH_BYTES));
 
@@ -385,7 +427,7 @@ static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object)
     /* Load the key from RAM or flash into the key store at a hardcoded and
      * reserved location.
      */
-    if (AESWriteToKeyStore(keyData, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
+    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
     {
         status = AESCMAC_STATUS_ERROR;
     }

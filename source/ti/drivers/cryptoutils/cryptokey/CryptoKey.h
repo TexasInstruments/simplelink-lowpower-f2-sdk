@@ -63,8 +63,8 @@
  * with a call to one of the initialization functions.
  *  - CryptoKeyPlaintext_initKey()
  *  - CryptoKeyPlaintext_initBlankKey()
- *  - CryptoKeyKeyStore_initKey()
- *  - CryptoKeyKeyStore_initBlankKey()
+ *  - KeyStore_PSA_initKey()
+ *  - KeyStore_PSA_initBlankKey()
  *
  * The keystore CryptoKeys may be used to load a key into a key store after
  * its respective _init call.
@@ -83,6 +83,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -177,9 +181,11 @@ typedef struct
  */
 typedef struct
 {
-    void *keyStore;
     uint32_t keyLength;
-    uint32_t keyIndex;
+    uint32_t keyID;
+#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
+    KeyStore_PSA_KeyAttributes attributes;
+#endif
 } CryptoKey_KeyStore;
 
 /*!

@@ -2,7 +2,7 @@
 
 @file  ble_stack_api.c
 
-@brief This file contains the ble stack wrapper abovr icall
+@brief This file contains the BLE stack wrapper above ICall
 
 Group: WCS, BTS
 Target Device: cc13xx_cc26xx
@@ -83,13 +83,13 @@ bleStack_errno_t bleStack_register(uint8_t *selfEntity, appCallback_t appCallbac
   ICall_EntityID   localSelfEntity;
   ICall_Errno status;
   // ******************************************************************
-  // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
+  // NO STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
   // ******************************************************************
   // Register the current thread as an ICall dispatcher application
   // so that the application can send and receive messages.
   status = ICall_registerAppCback(&localSelfEntity, appCallback);
 
-  // applicatios should use the task entity ID
+  // Application should use the task entity ID
   *selfEntity = localSelfEntity;
 
   return status;
@@ -99,7 +99,7 @@ bleStack_errno_t bleStack_register(uint8_t *selfEntity, appCallback_t appCallbac
 /*********************************************************************
  * @fn      bleStack_createTasks
  *
- * @brief   creaete ICALL tasks
+ * @brief   Create ICALL tasks
  *
  * @param   None
  *
@@ -125,12 +125,26 @@ void bleStack_createTasks()
  *
  * @return  SUCCESS ot FAILURE.
  */
-bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, uint16_t paramUpdateDecision)
+bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pfnGapScanCB_t scanCallback, uint16_t paramUpdateDecision)
 {
+  bStatus_t status;
   if (role & (GAP_PROFILE_PERIPHERAL | GAP_PROFILE_CENTRAL))
   {
-      // Pass all parameter update requests to the app for it to decide
-      GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, paramUpdateDecision);
+    // Pass all parameter update requests to the app for it to decide
+    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, paramUpdateDecision);
+  }
+
+  if((scanCallback != NULL) && (role & (GAP_PROFILE_OBSERVER | GAP_PROFILE_CENTRAL)))
+  {
+    // Register scan callback to process scanner events
+    status = GapScan_registerCb(scanCallback, NULL);
+    if (status != SUCCESS)
+    {
+      return status;
+    }
+
+    // Set Scanner Event Mask
+    GapScan_setEventMask(GAP_EVT_SCAN_EVT_MASK);
   }
 
   // Register with GAP for HCI/Host messages. This is needed to receive HCI
@@ -150,7 +164,7 @@ bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, uint16_t 
  *
  * @return  SUCCESS ot FAILURE.
  */
-void bleStack_initGapBondParams(GapBond_params_t *pGapBondParams)
+void bleStack_initGapBondParams(gapBondParams_t *pGapBondParams)
 {
     // Set Pairing Mode
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pGapBondParams->pairMode);
@@ -178,6 +192,8 @@ void bleStack_initGapBondParams(GapBond_params_t *pGapBondParams)
     GAPBondMgr_SetParameter(GAPBOND_SC_HOST_DEBUG, sizeof(uint8_t), &pGapBondParams->eccDebugKeys);
     // Set the Erase bond While in Active Connection Flag
     GAPBondMgr_SetParameter(GAPBOND_ERASE_BOND_IN_CONN, sizeof(uint8_t), &pGapBondParams->eraseBondWhileInConn);
+    // Set Same IRK Action
+    GAPBondMgr_SetParameter(GAPBOND_SAME_IRK_OPTION, sizeof(uint8_t), &pGapBondParams->sameIrkAction);
 }
 
 /*********************************************************************
@@ -190,31 +206,18 @@ void bleStack_initGapBondParams(GapBond_params_t *pGapBondParams)
  *
  * @return  SUCCESS ot FAILURE.
  */
-bStatus_t bleStack_initGapBond(GapBond_params_t *pGapBondParams, void *bleApp_bondMgrCBs)
+bStatus_t bleStack_initGapBond(gapBondParams_t *pGapBondParams, void *bleApp_bondMgrCBs)
 {
 #if defined ( GAP_BOND_MGR )
-    if (pGapBondParams == NULL)
-    {
-#ifndef NO_TI_BLE_CONFIG
-        // Setup the GAP Bond Manager. For more information see the GAP Bond Manager
-        // section in the User's Guide
-        // Todo: - remove setBondManagerParameters implementation from SysConfig
-        // Todo: - set one call _all instaead of many calls to GAPBondMgr_SetParameter
-        setBondManagerParameters();
-#endif
-    }
-    else
-    {
-        bleStack_initGapBondParams(pGapBondParams);
-    }
+  bleStack_initGapBondParams(pGapBondParams);
 
-    if (bleApp_bondMgrCBs != NULL)
-    {
-        // Start Bond Manager and register callback
-        VOID GAPBondMgr_Register((gapBondCBs_t *)bleApp_bondMgrCBs);
-    }
+  if (bleApp_bondMgrCBs != NULL)
+  {
+    // Start Bond Manager and register callback
+    VOID GAPBondMgr_Register((gapBondCBs_t *)bleApp_bondMgrCBs);
+  }
 #endif // GAP_BOND_MGR
-    return SUCCESS;
+  return SUCCESS;
 }
 
 /*********************************************************************
@@ -230,10 +233,16 @@ bStatus_t bleStack_initGapBond(GapBond_params_t *pGapBondParams, void *bleApp_bo
  */
 bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t *pAttDeviceName)
 {
+    bStatus_t status = SUCCESS;
+
   // Set the Device Name characteristic in the GAP GATT Service
   // For more information, see the section in the User's Guide:
   // http://software-dl.ti.com/lprf/ble5stack-latest/
-  GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, (void *)pAttDeviceName);
+    status = GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, (void *)pAttDeviceName);
+    if (status != SUCCESS)
+    {
+      return status;
+    }
 
   // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP GATT Service
@@ -255,7 +264,7 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
     // http://software-dl.ti.com/lprf/ble5stack-latest/
     HCI_LE_WriteSuggestedDefaultDataLenCmd(BLEAPP_SUGGESTED_PDU_SIZE, BLEAPP_SUGGESTED_TX_TIME);
   }
-  else
+  if (role & (GAP_PROFILE_CENTRAL | GAP_PROFILE_OBSERVER))
   //Set default values for Data Length Extension
   //Extended Data Length Feature is already enabled by default
   //in build_config.opt in stack project.
@@ -272,8 +281,11 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
     HCI_EXT_SetMaxDataLenCmd(APP_SUGGESTED_TX_PDU_SIZE, APP_SUGGESTED_TX_TIME, APP_SUGGESTED_RX_PDU_SIZE, APP_SUGGESTED_RX_TIME);
   }
 
-  // Initialize GATT Client
-  GATT_InitClient("");
+  if (role & (GAP_PROFILE_PERIPHERAL | GAP_PROFILE_CENTRAL))
+  {
+      // Initialize GATT Client
+      GATT_InitClient("");
+  }
 
   if (role & (GAP_PROFILE_CENTRAL | GAP_PROFILE_OBSERVER))
   {
@@ -281,7 +293,7 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
       GATT_RegisterForInd(appSelfEntity);
   }
 
-  return SUCCESS;
+  return status;
 }
 
 /*********************************************************************
@@ -291,6 +303,9 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
  *
  * @param advCallback     - callback for advertising progress states
  * @param advHandle       - return the created advertising handle
+ * @param eventMask       - A bitfield to enable / disable events returned to the
+ *                          per-advertising set callback function (@ref pfnGapCB_t ).
+ *                          See @ref GapAdv_eventMaskFlags_t
  * @param advParams       - pointer to structure of adversing parameters
  * @param advData         - pointer to array containing the advertise data
  * @param advDataLen      - length (in bytes) of advData
@@ -301,9 +316,10 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
  *         else, relevant error code upon failure
  */
 bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHandle,
-                              GapAdv_eventMaskFlags_t eventMask, GapAdv_params_t *advParams,
-                              uint16_t advDataLen ,uint8_t advData[],
-                              uint16_t scanRespDataLen, uint8_t scanRespData[])
+                                   GapAdv_eventMaskFlags_t eventMask,
+                                   GapAdv_params_t *advParams,
+                                   uint16_t advDataLen ,uint8_t advData[],
+                                   uint16_t scanRespDataLen, uint8_t scanRespData[])
 {
   bStatus_t status;
 
@@ -352,9 +368,6 @@ bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHandle,
   {
     return status;
   }
-
-  // Enable advertising for set
-  status = GapAdv_enable(*advHandle, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
 
   return status;
 }
@@ -499,7 +512,7 @@ void bleStk_getDevAddr(uint8_t wantIA, uint8_t *pAddr)
 void appContext_ScanCb(uint32_t event, uint8_t *pBuf, uint32_t *arg)
 {
   // No need to copy the message and internal pData, ERPC will copy the internal pData 
-  remote_bleApp_ScanCb(event, (Gap_Evt_data_t *)pBuf, arg);
+  remote_bleApp_ScanCb(event, (GapScan_data_t *)pBuf, arg);
 }
 
 /*********************************************************************
@@ -514,7 +527,7 @@ void appContext_ScanCb(uint32_t event, uint8_t *pBuf, uint32_t *arg)
 *
 * @return  None.
 */
-void local_bleApp_ScanCb(uint32_t event, Gap_Evt_data_t *pBuf, uint32_t *arg)
+void local_bleApp_ScanCb(uint32_t event, GapScan_data_t *pBuf, uint32_t *arg)
 {
     bleSrv_callOnAppContext((callbackFxn_t)appContext_ScanCb, event, (uint8_t *)pBuf, arg);
 }

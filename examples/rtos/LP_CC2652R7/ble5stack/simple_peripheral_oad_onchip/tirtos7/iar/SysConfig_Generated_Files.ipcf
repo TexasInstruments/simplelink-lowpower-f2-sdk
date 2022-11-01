@@ -8,12 +8,12 @@
         <path>$PROJ_DIR$/ti_radio_config.c</path>
         <path>$PROJ_DIR$/ti_ble_config.c</path>
         <path>$PROJ_DIR$/ti_ble_app_config.opt</path>
-        <path>$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</path>
-        <path>$PROJ_DIR$/ti_drivers_config.c</path>
         <path>$PROJ_DIR$/ti_sysbios_config.c</path>
-        <path>$PROJ_DIR$/ti_radio_config.h</path>
-        <path>$PROJ_DIR$/ti_sysbios_config.h</path>
+        <path>$PROJ_DIR$/ti_drivers_config.c</path>
+        <path>$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</path>
         <path>$PROJ_DIR$/ti_drivers_config.h</path>
+        <path>$PROJ_DIR$/ti_sysbios_config.h</path>
         <path>$PROJ_DIR$/ti_ble_config.h</path>
+        <path>$PROJ_DIR$/ti_radio_config.h</path>
     </files>
 </iarProjectConnection>

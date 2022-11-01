@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,10 @@
 #include DeviceFamily_constructPath(inc/hw_crypto.h)
 #include DeviceFamily_constructPath(driverlib/aes.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
+
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
 
 #define AES_NON_BLOCK_MULTIPLE_MASK 0x0F
 
@@ -629,6 +633,13 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
     DebugP_assert(output);
 
     AESCBCCC26XX_Object *object = handle->object;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
     /*
      * The key is provided as an input in setupEncrypt/Decrypt()
@@ -637,11 +648,42 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
      */
     DebugP_assert(object->key);
 
-    /* Only plaintext CryptoKeys are supported for now */
-    DebugP_assert(object->key.encoding == CryptoKey_PLAINTEXT);
+    /* Only plaintext and KeyStore CryptoKeys are supported for now */
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
-    uint16_t keyLength      = object->key.u.plaintext.keyLength;
-    uint8_t *keyingMaterial = object->key.u.plaintext.keyMaterial;
+    if (object->key.encoding == CryptoKey_PLAINTEXT)
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
+
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CBC_NO_PADDING,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return AESCBC_STATUS_KEYSTORE_INVALID_ID;
+        }
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return AESCBC_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return AESCBC_STATUS_FEATURE_NOT_SUPPORTED;
+    }
 
     /*
      * keyMaterial and keyLength are passed to AESWriteToKeyStore(),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -105,7 +105,9 @@ function validateRfParams(inst, validation, phyType, phyGroup) {
     _.each(rfData, (value, key) => {
         if (!("highPA" in inst && key.includes("txPower"))) {
             if (!cmdHandler.isParameterUsed(key, usedCmds)) {
-                Common.logWarning(validation, inst, key,
+                Common.logWarning(validation,
+                    inst,
+                    key,
                     "This RF parameter has no effect on the exported code "
                     + "(no corresponding RF command selected).");
             }
@@ -131,8 +133,10 @@ function validateFrontendSettings(inst, validation, phyGroup) {
     const id = RfDesign.getFrontEnd(freqBand);
     const fe = CmdHandler.getFrontendSettings(phyGroup, id);
     if (fe === null) {
-        const rfinst = RfDesign.$static;
-        Common.logError(validation, rfinst, cfgName,
+        const rfinst = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
+        Common.logError(validation,
+            rfinst,
+            cfgName,
             "This frontend setting is not supported for the current RF Design");
     }
 }

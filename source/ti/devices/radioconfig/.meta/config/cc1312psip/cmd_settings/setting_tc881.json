@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4",
-        "Description": "2.5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 4, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*4=8 chips per data bit).",
+        "Name": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)",
+        "Description": "2.5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 4, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*4=8 chips per data bit). (Pre-Silicon)",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",

@@ -67,7 +67,7 @@
             },
             {
                 "_file": "frontend_settings.json",
-                "$": ".\/..\/config\/cc1312r\/cmd_settings"
+                "$": ".\/..\/config\/cc1352r_prop_pg21\/cmd_settings"
             },
             {
                 "_file": "dummy_file_overrides.json",

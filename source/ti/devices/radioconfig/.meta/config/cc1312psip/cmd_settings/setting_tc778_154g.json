@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "500 kbps, 190 kHz Deviation, 2-GFSK, 1150 kHz RX Bandwidth",
-        "Description": "50 kbps, 2-GFSK, H=0.76, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band.",
+        "Name": "500 kbps, 190 kHz Deviation, 2-GFSK, 1150 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "50 kbps, 2-GFSK, H=0.76, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band. (Pre-Silicon)",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",

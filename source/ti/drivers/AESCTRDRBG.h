@@ -349,6 +349,14 @@ extern "C" {
 #define AESCTRDRBG_STATUS_UNALIGNED_IO_NOT_SUPPORTED (AES_STATUS_DRIVER_SPECIFIC_ERROR - 2)
 
 /*!
+ * @brief   Importing generated key into KeyStore failed
+ *
+ * Functions return AESCTRDRBG_STATUS_KEYSTORE_ERROR if the KeyStore_PSA_importKey()
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define AESCTRDRBG_STATUS_KEYSTORE_ERROR (AES_STATUS_KEYSTORE_GENERIC_ERROR)
+
+/*!
  * @brief   The AES block size in bytes.
  */
 #define AESCTRDRBG_AES_BLOCK_SIZE_BYTES 16

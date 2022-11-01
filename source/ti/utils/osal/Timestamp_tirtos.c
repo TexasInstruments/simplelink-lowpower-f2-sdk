@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,10 @@
 #include <ti/sysbios/BIOS.h>
 #if defined(ti_sysbios_BIOS_version) && (ti_sysbios_BIOS_version <= 0x6FFFF)
 
-#include <ti/utils/osal/Timestamp.h>
-#include <xdc/runtime/Types.h>
-#define xdc_runtime_Timestamp__nolocalnames
-#include <xdc/runtime/Timestamp.h>
+    #include <ti/utils/osal/Timestamp.h>
+    #include <xdc/runtime/Types.h>
+    #define xdc_runtime_Timestamp__nolocalnames
+    #include <xdc/runtime/Timestamp.h>
 
 /*
  *  ======== Timestamp_get64 ========
@@ -62,10 +62,10 @@ void Timestamp_init(void)
 
 #else
 
-#define ti_utils_osal_Timestamp__nolocalnames
-#include <ti/utils/osal/Timestamp.h>
-#include <ti/sysbios/runtime/Types.h>
-#include <ti/sysbios/runtime/Timestamp.h>
+    #define ti_utils_osal_Timestamp__nolocalnames
+    #include <ti/utils/osal/Timestamp.h>
+    #include <ti/sysbios/runtime/Types.h>
+    #include <ti/sysbios/runtime/Timestamp.h>
 
 /*
  *  ======== Timestamp_get64 ========

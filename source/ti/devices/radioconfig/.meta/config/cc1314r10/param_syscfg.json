@@ -21,19 +21,75 @@
             "options": [
                 {
                     "name": "2gfsk50kbps",
-                    "displayName": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
+                    "displayName": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Release Candidate)"
                 },
                 {
                     "name": "2gfsk50kbps154g",
-                    "displayName": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
+                    "displayName": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk100kbps154g",
+                    "displayName": "100 kbps, 25 kHz Deviation, 2-GFSK, 137 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "2gfsk200kbps154g",
+                    "displayName": "200 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk500kbps154g",
+                    "displayName": "500 kbps, 190 kHz Deviation, 2-GFSK, 622 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "slr2500bps2gfsk",
+                    "displayName": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
+                },
+                {
+                    "name": "slr5kbps2gfsk",
+                    "displayName": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk48kbpstcxo",
+                    "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "2gfsk50kbps12dev868wsun1a",
+                    "displayName": "Wi-SUN mode #1a, 50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "2gfsk50kbps25dev915wsun1b",
+                    "displayName": "Wi-SUN mode #1b, 50 kbps, 25 kHz Deviation, 2-GFSK, 98 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk100kbps25dev915wsun2a",
+                    "displayName": "Wi-SUN mode #2a, 100 kbps, 25 kHz Deviation, 2-GFSK, 137 kHz RX Bandwidth (Release Candidate)"
                 },
                 {
                     "name": "2gfsk100kbps50dev915wsun2b",
-                    "displayName": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk150kbps75dev868wsun3",
+                    "displayName": "Wi-SUN mode #3, 150 kbps, 37.5 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "2gfsk200kbps50dev915wsun4a",
+                    "displayName": "Wi-SUN mode #4a, 200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Release Candidate)"
                 },
                 {
                     "name": "2gfsk200kbps100dev915wsun4b",
-                    "displayName": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "2gfsk300kbps75dev915wsun5",
+                    "displayName": "Wi-SUN mode #5, 300 kbps, 75 kHz Deviation, 2-GFSK, 496 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "fskc10kbps5dev915sun",
+                    "displayName": "SUN FSK, 10 kbps, 5 kHz Deviation, FSK-C, 24.5 kHz RX Bandwidth (Pre-Silicon)"
+                },
+                {
+                    "name": "fskc20kbps10dev915sun",
+                    "displayName": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom868",
@@ -677,24 +733,105 @@
             {
                 "file": "setting_tc106.json",
                 "name": "2gfsk50kbps",
-                "description": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)"
+                "description": "50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Release Candidate)"
             },
             {
                 "file": "setting_tc106_154g.json",
                 "name": "2gfsk50kbps154g",
-                "description": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Preview)",
+                "description": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc152_154g.json",
+                "name": "2gfsk100kbps154g",
+                "description": "100 kbps, 25 kHz Deviation, 2-GFSK, 137 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc146_154g.json",
+                "name": "2gfsk200kbps154g",
+                "description": "200 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc178_154g.json",
+                "name": "2gfsk500kbps154g",
+                "description": "500 kbps, 190 kHz Deviation, 2-GFSK, 622 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc481.json",
+                "name": "slr2500bps2gfsk",
+                "description": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
+            },
+            {
+                "file": "setting_tc480.json",
+                "name": "slr5kbps2gfsk",
+                "description": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Release Candidate)"
+            },
+            {
+                "file": "setting_tc594.json",
+                "name": "2gfsk48kbpstcxo",
+                "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth (Pre-Silicon)"
+            },
+            {
+                "file": "setting_tc120.json",
+                "name": "2gfsk50kbps12dev868wsun1a",
+                "description": "Wi-SUN mode #1a, 50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc121.json",
+                "name": "2gfsk50kbps25dev915wsun1b",
+                "description": "Wi-SUN mode #1b, 50 kbps, 25 kHz Deviation, 2-GFSK, 98 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc140.json",
+                "name": "2gfsk100kbps25dev915wsun2a",
+                "description": "Wi-SUN mode #2a, 100 kbps, 25 kHz Deviation, 2-GFSK, 137 kHz RX Bandwidth (Release Candidate)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc136.json",
                 "name": "2gfsk100kbps50dev915wsun2b",
-                "description": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc142.json",
+                "name": "2gfsk150kbps75dev868wsun3",
+                "description": "Wi-SUN mode #3, 150 kbps, 37.5 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc153.json",
+                "name": "2gfsk200kbps50dev915wsun4a",
+                "description": "Wi-SUN mode #4a, 200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Release Candidate)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc150.json",
                 "name": "2gfsk200kbps100dev915wsun4b",
-                "description": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc154.json",
+                "name": "2gfsk300kbps75dev915wsun5",
+                "description": "Wi-SUN mode #5, 300 kbps, 75 kHz Deviation, 2-GFSK, 496 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc122.json",
+                "name": "fskc10kbps5dev915sun",
+                "description": "SUN FSK, 10 kbps, 5 kHz Deviation, FSK-C, 24.5 kHz RX Bandwidth (Pre-Silicon)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc123.json",
+                "name": "fskc20kbps10dev915sun",
+                "description": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {

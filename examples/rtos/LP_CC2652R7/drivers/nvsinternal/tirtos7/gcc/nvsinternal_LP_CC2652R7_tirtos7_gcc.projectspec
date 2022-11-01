@@ -69,6 +69,7 @@
         "
         description="Example to read and write data into non-volatile storage using the NVS driver.">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../nvsinternal.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

@@ -36,7 +36,6 @@
  */
 %%}
 %%{
-    const Timestamp = args[0];
     const RTOS = system.getRTOS();
 %%}
 /*

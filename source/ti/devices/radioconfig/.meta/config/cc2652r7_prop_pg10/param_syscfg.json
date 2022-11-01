@@ -29,7 +29,7 @@
                 },
                 {
                     "name": "2msk250kbps",
-                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom2400",
@@ -685,7 +685,7 @@
             {
                 "file": "setting_tc902.json",
                 "name": "2msk250kbps",
-                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc900_custom.json",

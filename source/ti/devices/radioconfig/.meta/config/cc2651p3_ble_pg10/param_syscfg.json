@@ -35,7 +35,7 @@
                 },
                 {
                     "name": "bt5le1madvncp10",
-                    "displayName": "BLE, 1 Mbps, BT4, 10 dBm (Pre-silicon settings)"
+                    "displayName": "BLE, 1 Mbps, BT4, 10 dBm (Pre-Silicon)"
                 },
                 {
                     "name": "bt5le2mp10",
@@ -43,11 +43,11 @@
                 },
                 {
                     "name": "bt5lecodeds2p10",
-                    "displayName": "BLE, 500 kbps, LE Coded, 10 dBm (Pre-silicon settings)"
+                    "displayName": "BLE, 500 kbps, LE Coded, 10 dBm (Pre-Silicon)"
                 },
                 {
                     "name": "bt5lecodeds8p10",
-                    "displayName": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-silicon settings)"
+                    "displayName": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-Silicon)"
                 }
             ],
             "default": "bt5le1m"
@@ -313,8 +313,7 @@
             "name": "highPA",
             "displayName": "High PA",
             "description": "Select if the High Power Amplifier on the device should be used",
-            "default": false,
-            "hidden": false
+            "default": false
         },
         {
             "name": "packetLengthBle",
@@ -370,7 +369,7 @@
             {
                 "file": "setting_bt5_le_1m_adv_nc_10_dbm.json",
                 "name": "bt5le1madvncp10",
-                "description": "BLE, 1 Mbps, BT4, 10 dBm (Pre-silicon settings)",
+                "description": "BLE, 1 Mbps, BT4, 10 dBm (Pre-Silicon)",
                 "options": "10dBm"
             },
             {
@@ -382,13 +381,13 @@
             {
                 "file": "setting_bt5_le_coded_s2_10_dbm.json",
                 "name": "bt5lecodeds2p10",
-                "description": "BLE, 500 kbps, LE Coded, 10 dBm (Pre-silicon settings)",
+                "description": "BLE, 500 kbps, LE Coded, 10 dBm (Pre-Silicon)",
                 "options": "10dBm"
             },
             {
                 "file": "setting_bt5_le_coded_s8_10_dbm.json",
                 "name": "bt5lecodeds8p10",
-                "description": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-silicon settings)",
+                "description": "BLE, 125 kbps, LE Coded, 10 dBm (Pre-Silicon)",
                 "options": "10dBm"
             }
         ]

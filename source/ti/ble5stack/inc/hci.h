@@ -1109,6 +1109,14 @@ typedef struct
   uint16 connHandle;              //!< connection handle
 } hciEvt_AptoExpired_t;
 
+/// @brief L2CAP data length exceed Event
+typedef struct
+{
+  osal_event_hdr_t  hdr;          //!< osal event header
+  uint16 connHandle;              //!< connection handle
+  uint16 cid;                     //!< L2CAP channel ID
+} hciEvt_DataLenExceed_t;
+
 /// @brief LE Remote Connection Parameter Request Event
 typedef struct
 {

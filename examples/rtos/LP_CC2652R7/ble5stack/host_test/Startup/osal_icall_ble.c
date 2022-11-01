@@ -53,6 +53,9 @@
 #include "osal.h"
 #include "osal_tasks.h"
 #include "osal_snv.h"
+#ifdef FREERTOS
+#include "mqueue.h"
+#endif // FREERTOS
 
 /* LL */
 #include "ll.h"
@@ -93,9 +96,13 @@
 #include "ble_dispatch.h"
 
 #ifdef USE_ICALL
+#ifndef CC23X0
 #ifdef ICALL_JT
 #include "icall_jt.h"
 #endif /* ICALL_JT */
+#else // CC23X0
+#include "icall.h"
+#endif /* CC23X0*/
 
 #ifdef ICALL_LITE
 #include "icall_lite_translation.h"

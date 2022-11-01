@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2018, Texas Instruments Incorporated
+ * Copyright (c) 2014-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -58,56 +58,55 @@ extern "C" {
 
 #define __O
 #define _IO_
-#define _I_             const
+#define _I_ const
 
 /** @endcond */
 
 typedef enum json_rc_TAG
 {
-    JSON_RC__OK                                      =      0  ,
-    JSON_RC__RECOVERED__IGNORED_UNKNOWN_VALUE        =     -1  ,
+    JSON_RC__OK                               = 0,
+    JSON_RC__RECOVERED__IGNORED_UNKNOWN_VALUE = -1,
 
-    JSON_RC__RECOVERED__NESTING_EXCEEDED__IGNORING_LEAVES =-4  ,
-    JSON_RC__RECOVERED__PARSING_FAILURE              =     -5  ,
-    JSON_RC__RECOVERED__INVALID_VALUE                =    -22  ,
-    JSON_RC__RECOVERED__NUMBER_ACCURACY_LOSS         =    -23  ,
-    JSON_RC__RECOVERED__NUMBER_OVERFLOW              =    -24  ,
-    JSON_RC__RECOVERED__ILLEGAL_Q_VALUES             =    -25  ,
-    JSON_RC__RECOVERED__STRING_TRUNCATED             =    -28  ,
+    JSON_RC__RECOVERED__NESTING_EXCEEDED__IGNORING_LEAVES = -4,
+    JSON_RC__RECOVERED__PARSING_FAILURE                   = -5,
+    JSON_RC__RECOVERED__INVALID_VALUE                     = -22,
+    JSON_RC__RECOVERED__NUMBER_ACCURACY_LOSS              = -23,
+    JSON_RC__RECOVERED__NUMBER_OVERFLOW                   = -24,
+    JSON_RC__RECOVERED__ILLEGAL_Q_VALUES                  = -25,
+    JSON_RC__RECOVERED__STRING_TRUNCATED                  = -28,
 
-    JSON_RC__REWIND_REQUIRED                         =    -99  ,
-    JSON_RC__RECOVERABLE_ERROR__MINIMUM_VALUE        =   -100  ,
+    JSON_RC__REWIND_REQUIRED                  = -99,
+    JSON_RC__RECOVERABLE_ERROR__MINIMUM_VALUE = -100,
 
-    JSON_RC__PARSING_BUFFER_SIZE_EXCEEDED            =   -101  ,
-    JSON_RC__PARSING_FAILURE                         =   -102  ,
-    JSON_RC__PARSING_FAILURE__INCOMPLETE_STRING      =   -103  ,
-    JSON_RC__NO_HASH_FOUND                           =   -104  ,
-    JSON_RC__BUILDING_UNKNOWN_ATOM                   =   -105  ,
-    JSON_RC__BUILDING_BUFFER_SIZE_EXCEEDED           =   -106  ,
-    JSON_RC__BUILDING_PARSED_DATA_EXHAUSTED          =   -107  ,
-    JSON_RC__WRONG_VALUE_SIZE_FOR_TYPE               =   -108  ,
-    JSON_RC__VALUE_NOT_AN_ARRAY                      =   -109  ,
-    JSON_RC__INDEX_FAR_BEYOND_ARRAY_END              =   -110  ,
-    JSON_RC__PARSING_BUFFER_SIZE_WOULD_HAVE_EXCEEDED =   -111  ,
-    JSON_RC__NOT_SUPPORTED                           =   -128  ,
+    JSON_RC__PARSING_BUFFER_SIZE_EXCEEDED            = -101,
+    JSON_RC__PARSING_FAILURE                         = -102,
+    JSON_RC__PARSING_FAILURE__INCOMPLETE_STRING      = -103,
+    JSON_RC__NO_HASH_FOUND                           = -104,
+    JSON_RC__BUILDING_UNKNOWN_ATOM                   = -105,
+    JSON_RC__BUILDING_BUFFER_SIZE_EXCEEDED           = -106,
+    JSON_RC__BUILDING_PARSED_DATA_EXHAUSTED          = -107,
+    JSON_RC__WRONG_VALUE_SIZE_FOR_TYPE               = -108,
+    JSON_RC__VALUE_NOT_AN_ARRAY                      = -109,
+    JSON_RC__INDEX_FAR_BEYOND_ARRAY_END              = -110,
+    JSON_RC__PARSING_BUFFER_SIZE_WOULD_HAVE_EXCEEDED = -111,
+    JSON_RC__NOT_SUPPORTED                           = -128,
 
+    JSON_RC__NOT_FOUND        = -200,
+    JSON_RC__VALUE_IS_NULL    = -201,
+    JSON_RC__VALUE_NOT_VALID  = -202,
+    JSON_RC__NESTING_EXCEEDED = -204,
 
-    JSON_RC__NOT_FOUND                               =   -200  ,
-    JSON_RC__VALUE_IS_NULL                           =   -201  ,
-    JSON_RC__VALUE_NOT_VALID                         =   -202  ,
-    JSON_RC__NESTING_EXCEEDED                        =   -204  ,
+    JSON_RC__MEMORY_ALLOCATION_ERROR = -300,
+    JSON_RC__INVALID_TEMPLATE_HANDLE = -301,
+    JSON_RC__INVALID_OBJECT_HANDLE   = -302,
 
-    JSON_RC__MEMORY_ALLOCATION_ERROR                 =   -300  ,
-    JSON_RC__INVALID_TEMPLATE_HANDLE                 =   -301  ,
-    JSON_RC__INVALID_OBJECT_HANDLE                   =   -302  ,
-
-    JSON_RC__UNEXPECTED_ERROR                        = -16384
+    JSON_RC__UNEXPECTED_ERROR = -16384
 
 } json_rc_T;
 
 /** @cond INTERNAL */
 
-#define JSON_PARSE_FLAGS__ESTIMATE_ONLY             0x80000000u
+#define JSON_PARSE_FLAGS__ESTIMATE_ONLY 0x80000000u
 
 /*!
     \brief     External function for initializing internal representation buffer
@@ -115,9 +114,10 @@ typedef enum json_rc_TAG
     \return    json_rc_T
 
     \param[out]   json_internal         Buffer for internal representation of data
-    \param[inout] json_internal_size    On call - max buffer size.  On return - used buffer size - minimal:  With variable-length fields (strings) assumed empty
-    \param[in]    json_template         Buffer containing template describing the JSON.  This function can use either the minimal template or the full template
-    \param[in]    json_template_size    Size of template
+    \param[inout] json_internal_size    On call - max buffer size.  On return - used buffer size - minimal:  With
+   variable-length fields (strings) assumed empty \param[in]    json_template         Buffer containing template
+   describing the JSON.  This function can use either the minimal template or the full template \param[in]
+   json_template_size    Size of template
 
     \sa
     \note
@@ -129,9 +129,9 @@ typedef enum json_rc_TAG
 
     \endcode
  */
-json_rc_T __JSON_Init(__O void *   json_internal,
-                      _IO_ uint16_t * json_internal_size,
-                      _I_ void *   json_template,
+json_rc_T __JSON_Init(__O void *json_internal,
+                      _IO_ uint16_t *json_internal_size,
+                      _I_ void *json_template,
                       _I_ uint16_t json_template_size);
 
 /*!
@@ -143,9 +143,9 @@ json_rc_T __JSON_Init(__O void *   json_internal,
     \param[inout] json_internal_size    On call - max buffer size.  On return - used buffer size
     \param[in]    json_text             JSON text string
     \param[in]    json_text_size        JSON text string size
-    \param[in]    json_template         Buffer containing template describing the JSON.  This function can use either the minimal template or the full template
-    \param[in]    json_template_size    Size of template
-    \param[in]    flags                 May be 0 or JSON_PARSE_FLAGS__ESTIMATE_ONLY
+    \param[in]    json_template         Buffer containing template describing the JSON.  This function can use either
+   the minimal template or the full template \param[in]    json_template_size    Size of template \param[in]    flags
+   May be 0 or JSON_PARSE_FLAGS__ESTIMATE_ONLY
 
     \sa
     \note
@@ -157,11 +157,11 @@ json_rc_T __JSON_Init(__O void *   json_internal,
 
     \endcode
  */
-json_rc_T __JSON_Parse(__O void *   json_internal,
-                       _IO_ uint16_t * json_internal_size,
-                       _I_ char *   json_text,
+json_rc_T __JSON_Parse(__O void *json_internal,
+                       _IO_ uint16_t *json_internal_size,
+                       _I_ char *json_text,
                        _I_ uint16_t json_text_size,
-                       _I_ void *   json_template,
+                       _I_ void *json_template,
                        _I_ uint16_t json_template_size,
                        _I_ uint32_t flags);
 
@@ -173,32 +173,31 @@ json_rc_T __JSON_Parse(__O void *   json_internal,
     \param[out]   json_text             Buffer for JSON text string
     \param[inout] json_text_size        On call - max buffer size.  On return - used buffer size
     \param[out]   json_internal         Internal representation of data
-    \param[in]    json_template         Buffer containing template describing the JSON.  This function must use the full template
+    \param[in]    json_template         Buffer containing template describing the JSON.  This function must use the full
+   template
 
 
     \sa
     \note
-                        The output of __JSON_Build() contains only the values marked as "valid" in the internal representation
-    \warning
-    \par
-    \code
+                        The output of __JSON_Build() contains only the values marked as "valid" in the internal
+   representation \warning \par \code
          //@ TBD code sample
 
 
     \endcode
  */
-json_rc_T __JSON_Build(__O char *    json_text,
-                       _IO_ uint16_t *  json_text_size,
-                       _I_ void *    json_internal,
-                       _I_ void *    json_template);
+json_rc_T __JSON_Build(__O char *json_text,
+                       _IO_ uint16_t *json_text_size,
+                       _I_ void *json_internal,
+                       _I_ void *json_template);
 
 /*!
     \brief     External function for getting a single value from internal representation
 
     \return    json_rc_T
 
-    \param[out]   value_buffer          Buffer to hold the value. In case of NULL, just the value len is returned in value_buffer_size
-    \param[inout] value_buffer_size     On call - max buffer size.  On return - used buffer size
+    \param[out]   value_buffer          Buffer to hold the value. In case of NULL, just the value len is returned in
+   value_buffer_size \param[inout] value_buffer_size     On call - max buffer size.  On return - used buffer size
     \param[in]    json_internal         Internal representation of data
     \param[in]    property_path         Path to JSON property to be gotten
     \param[in]    property_path_size    Size of Path to JSON property to be gotten
@@ -236,10 +235,10 @@ json_rc_T __JSON_Build(__O char *    json_text,
 
     \endcode
  */
-json_rc_T __JSON_GetValue(__O void *    value_buffer,
-                          _IO_ uint16_t *  value_buffer_size,
-                          _I_ void *    json_internal,
-                          _I_ char *    property_path,
+json_rc_T __JSON_GetValue(__O void *value_buffer,
+                          _IO_ uint16_t *value_buffer_size,
+                          _I_ void *json_internal,
+                          _I_ char *property_path,
                           _I_ uint16_t property_path_size);
 
 /*!
@@ -262,32 +261,27 @@ json_rc_T __JSON_GetValue(__O void *    value_buffer,
                 static const char *Properties[] =
                                                         {
                                                                 "SomeInt32Property"           ,  // A value
-                                                                "SomeObject.SomeArray[3]"     ,  // A value from an array
-                                                                "SomeObject.SomeArray[3][2]"  ,  // A value from an array within an array
-                                                                "Obj.Arr[3][2].ObjectWithin"     // A value from an object in an array within an array
-                                                        } ;
-                static const uint32_t Values[4];
-                int i;
-                json_rc_T rc = JSON_RC__OK;
+                                                                "SomeObject.SomeArray[3]"     ,  // A value from an
+   array "SomeObject.SomeArray[3][2]"  ,  // A value from an array within an array "Obj.Arr[3][2].ObjectWithin"     // A
+   value from an object in an array within an array } ; static const uint32_t Values[4]; int i; json_rc_T rc =
+   JSON_RC__OK;
 
 
                 for (i = 0  ;  (rc > JSON_RC__RECOVERABLE_ERROR__MINIMUM_VALUE)  &&  (i < 4)  ;  i++)
                 {
                         rc = __JSON_SetValue ( gJsonCb               ,  // json_internal
-                                                                &gJsonCbSize           ,  // json_internal_size //@ need to improve
-                                                                &Values[i]             ,  // value_buffer
-                                                                 sizeof(Values[i])     ,  // value_buffer_size
-                                                                 Properties[i]         ,  // property_path
-                                                                 StrLen(Properties[i]) ,  // property_path_size
+                                                                &gJsonCbSize           ,  // json_internal_size //@ need
+   to improve &Values[i]             ,  // value_buffer sizeof(Values[i])     ,  // value_buffer_size Properties[i] , //
+   property_path StrLen(Properties[i]) ,  // property_path_size
                 }
 
     \endcode
  */
-json_rc_T __JSON_SetValue(_IO_ void *    json_internal,
-                          _IO_ uint16_t *  json_internal_size,
-                          _I_ void *    value,
+json_rc_T __JSON_SetValue(_IO_ void *json_internal,
+                          _IO_ uint16_t *json_internal_size,
+                          _I_ void *value,
                           _I_ uint16_t value_size,
-                          _I_ char *    property_path,
+                          _I_ char *property_path,
                           _I_ uint16_t property_path_size);
 
 /*!
@@ -317,9 +311,9 @@ json_rc_T __JSON_SetValue(_IO_ void *    json_internal,
 
     \endcode
  */
-json_rc_T __JSON_GetArrayMembersCount(__O uint16_t *  members_count_var,
-                                      _I_ void *    json_internal,
-                                      _I_ char *    property_path,
+json_rc_T __JSON_GetArrayMembersCount(__O uint16_t *members_count_var,
+                                      _I_ void *json_internal,
+                                      _I_ char *property_path,
                                       _I_ uint16_t property_path_size);
 /*!
     \brief     External function for parsing a text-file into a template
@@ -343,10 +337,10 @@ json_rc_T __JSON_GetArrayMembersCount(__O uint16_t *  members_count_var,
     \endcode
  */
 
-json_rc_T __JSON_Templetize(__O void *      output_template,
-                            _IO_ uint16_t *    output_template_size,
-                            __O uint16_t *    minimal_template_size,
-                            _I_ char *      partly_templetized_json,
+json_rc_T __JSON_Templetize(__O void *output_template,
+                            _IO_ uint16_t *output_template_size,
+                            __O uint16_t *minimal_template_size,
+                            _I_ char *partly_templetized_json,
                             _I_ uint16_t partly_templetized_json_size);
 
 /** @endcond */

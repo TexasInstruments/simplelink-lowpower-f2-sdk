@@ -85,8 +85,11 @@
 #include "ti_ble_config.h"
 
 #ifdef USE_ICALL
-
+#ifdef CC23X0
+#include "icall.h"
+#else
 #include "icall_jt.h"
+#endif
 
 #ifdef ICALL_LITE
 #include "icall_lite_translation.h"

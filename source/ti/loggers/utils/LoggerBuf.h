@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,46 +41,48 @@
 
 #include <ti/utils/runtime/ILogger.h>
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
-#define LoggerBuf_Type_LINEAR       (1)
-#define LoggerBuf_Type_CIRCULAR     (2)
-#define LoggerBuf_WORDS_PER_RECORD  (5)
-#define LoggerBuf_BUF_HEADER_SIZE sizeof(LoggerBuf_RecordType) + sizeof(uint32_t)
-#define LoggerBuf_SIZEOF_RECORD (sizeof(uint32_t)*LoggerBuf_WORDS_PER_RECORD)
+#define LoggerBuf_Type_LINEAR      (1)
+#define LoggerBuf_Type_CIRCULAR    (2)
+#define LoggerBuf_WORDS_PER_RECORD (5)
+#define LoggerBuf_BUF_HEADER_SIZE  sizeof(LoggerBuf_RecordType) + sizeof(uint32_t)
+#define LoggerBuf_SIZEOF_RECORD    (sizeof(uint32_t) * LoggerBuf_WORDS_PER_RECORD)
 
-typedef enum{
-    LoggerBuf_EVENT = 0,
-    LoggerBuf_PRINTF = 1,
-    LoggerBuf_BUFFER_START = 2,
+typedef enum
+{
+    LoggerBuf_EVENT            = 0,
+    LoggerBuf_PRINTF           = 1,
+    LoggerBuf_BUFFER_START     = 2,
     LoggerBuf_BUFFER_CONTINUED = 3
 } LoggerBuf_RecordType;
-
 
 /*
  *  ======== LoggerBuf_Rec ========
  */
-typedef struct LoggerBuf_Rec {
-    uint32_t                serial;
-    uint32_t                ts_hi;
-    uint32_t                ts_lo;
-    LoggerBuf_RecordType    type;
-    uint32_t                data[LoggerBuf_WORDS_PER_RECORD];
+typedef struct LoggerBuf_Rec
+{
+    uint32_t serial;
+    uint32_t ts_hi;
+    uint32_t ts_lo;
+    LoggerBuf_RecordType type;
+    uint32_t data[LoggerBuf_WORDS_PER_RECORD];
 } LoggerBuf_Rec;
 
 /*
  *  ======== LoggerBuf_Instance ========
  */
-typedef struct LoggerBuf_Instance {
-    uint8_t             bufType;
-    int8_t              advance;
-    uint16_t            numEntries;
-    uint32_t            serial;
-    LoggerBuf_Rec      *buffer;
-    LoggerBuf_Rec      *curEntry;               /* next record to write */
-    LoggerBuf_Rec      *endEntry;
+typedef struct LoggerBuf_Instance
+{
+    uint8_t bufType;
+    int8_t advance;
+    uint16_t numEntries;
+    uint32_t serial;
+    LoggerBuf_Rec *buffer;
+    LoggerBuf_Rec *curEntry; /* next record to write */
+    LoggerBuf_Rec *endEntry;
 } LoggerBuf_Instance;
 
 /*
@@ -102,21 +104,18 @@ extern void ti_loggers_utils_LoggerBuf_event(ILogger_Handle handle,
 /*
  *  ======== LoggerBuf_printf ========
  */
-extern void  ti_loggers_utils_LoggerBuf_printf(ILogger_Handle handle,
-                                               uint32_t header,
-                                               uint32_t numArgs,
-                                               ...);
+extern void ti_loggers_utils_LoggerBuf_printf(ILogger_Handle handle, uint32_t header, uint32_t numArgs, ...);
 
 /*
  *  ======== LoggerBuf_buf ========
  */
-extern void  ti_loggers_utils_LoggerBuf_buf(ILogger_Handle handle,
-                                            uint32_t header,
-                                            const char* format,
-                                            uint8_t *data,
-                                            size_t size);
+extern void ti_loggers_utils_LoggerBuf_buf(ILogger_Handle handle,
+                                           uint32_t header,
+                                           const char *format,
+                                           uint8_t *data,
+                                           size_t size);
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 

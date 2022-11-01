@@ -9,7 +9,7 @@ const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
 
 -DHOST_CONFIG=`ble.deviceRole`
 %
-% if(ble.extAdv && devFamily == "DeviceFamily_CC26X1") {
+% if(ble.extAdv && devFamily == "DeviceFamily_CC26X1" || ble.extAdv && devFamily == "DeviceFamily_CC13X4") {
 
 -DUSE_AE
 %}
@@ -17,7 +17,6 @@ const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
 
 -DEXCLUDE_AE
 %}
-%
 % if(ble.extAdv)
 %{
 % if(ble.periodicAdv) {
@@ -35,7 +34,10 @@ const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
 
 -DEXCLUDE_SM
 %}
-%
+% if(ble.disableConfig) {
+
+-DNO_QOS
+%}
 % if(ble.gattDB) {
 
 -DGATT_DB_OFF_CHIP

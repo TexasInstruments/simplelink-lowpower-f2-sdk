@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,7 +22,7 @@
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQueueNTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== PowerCC26X2_calibrateRCOSC.c ========
+ *  ======== PowerCC26X2_calibrateRCOSC_helpers.c ========
  */
 
 #include <stdbool.h>
@@ -45,6 +45,7 @@
 #include DeviceFamily_constructPath(driverlib/osc.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/aon_batmon.h)
+#include DeviceFamily_constructPath(driverlib/setup_rom.h)
 
 #define DDI_0_OSC_O_CTL1_LOCAL                                0x00000004 /* offset */
 #define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M              0x007C0000 /* mask */
@@ -106,17 +107,13 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_updateSubSecInc(bool firstLF)
     else
     {
         /* Read old SUBSECINC value */
-        oldSubSecInc = HWREG(AON_RTC_BASE + AON_RTC_O_SUBSECINC) & 0x00FFFFFF;
+        oldSubSecInc = HWREG(AON_RTC_BASE + AON_RTC_O_SUBSECINC) & AON_RTC_SUBSECINC_VALUEINC_M;
         /* Apply filter, 0.5 times old value, 0.5 times new value */
         subSecInc    = (oldSubSecInc * 1 + newSubSecInc * 1) / 2;
     }
 
     /* Update SUBSECINC values */
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINC0) = subSecInc;
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINC1) = subSecInc >> 16;
-
-    /* update to use new values */
-    HWREG(AUX_SYSIF_BASE + AUX_SYSIF_O_RTCSUBSECINCCTL) = AUX_SYSIF_RTCSUBSECINCCTL_UPD_REQ;
+    SetupSetAonRtcSubSecInc(subSecInc);
 }
 
 /*

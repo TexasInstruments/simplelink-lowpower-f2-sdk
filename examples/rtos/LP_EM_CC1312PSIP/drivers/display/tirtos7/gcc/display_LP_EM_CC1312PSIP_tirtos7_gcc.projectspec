@@ -71,6 +71,7 @@
         "
         description="An example demonstrating how to use the display driver">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../display.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

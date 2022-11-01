@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,7 @@
 
 /* Forward declarations */
 static void ECDSACC26X2_hwiFxn(uintptr_t arg0);
+static void ECDSACC26X2_enableIRQ(void);
 static void ECDSACC26X2_internalCallbackFxn(ECDSA_Handle handle,
                                             int_fast16_t returnStatus,
                                             ECDSA_Operation operation,
@@ -85,6 +86,7 @@ static int_fast16_t ECDSACC26X2_waitForResult(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle);
 static int_fast16_t ECDSACC26X2_convertReturnValue(uint32_t pkaResult);
+static void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, CryptoKey *pmsn);
 
 /* Static globals */
 static bool isInitialized = false;
@@ -92,6 +94,13 @@ static uint32_t resultAddress;
 
 static uint32_t scratchBuffer0Size = SCRATCH_BUFFER_SIZE;
 static uint32_t scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
+
+static void ECDSACC26X2_enableIRQ(void)
+{
+#if (SPE_ENABLED == 0)
+    IntEnable(INT_PKA_IRQ);
+#endif
+}
 
 /*
  *  ======== ECDSACC26X2_internalCallbackFxn ========
@@ -198,7 +207,7 @@ static void ECDSACC26X2_hwiFxn(uintptr_t arg0)
 /*
  *  ======== ECDSACC26X2_trngCallback ========
  */
-void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, CryptoKey *pmsn)
+static void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, CryptoKey *pmsn)
 {
     ECDSACC26X2_Object *object = ((ECDSACC26X2_Object *)(handle));
     uint32_t pkaResult         = 0;
@@ -217,8 +226,7 @@ void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, Cryp
     /* Check that PMSN < curve order */
     PKABigNumCmpStart(pmsn->u.plaintext.keyMaterial, object->operation.sign->curve->order, pmsn->u.plaintext.keyLength);
 
-    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
-        ;
+    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
 
     pkaResult = PKABigNumCmpGetResult();
 
@@ -242,7 +250,7 @@ void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, Cryp
             TRNG_close(object->trngHandle);
 
             /* Post hwi as if operation finished for cleanup */
-            IntEnable(INT_PKA_IRQ);
+            ECDSACC26X2_enableIRQ();
         }
     }
     else if (tmp == 0 || returnValue != TRNG_STATUS_SUCCESS)
@@ -252,7 +260,7 @@ void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, Cryp
         TRNG_close(object->trngHandle);
 
         /* Post hwi as if operation finished for cleanup */
-        IntEnable(INT_PKA_IRQ);
+        ECDSACC26X2_enableIRQ();
     }
     else
     {
@@ -261,7 +269,7 @@ void ECDSACC26X2_trngCallback(TRNG_Handle handle, int_fast16_t returnValue, Cryp
         /* Run the FSM by triggering the PKA interrupt. It is level triggered
          * and the complement of the RUN bit.
          */
-        IntEnable(INT_PKA_IRQ);
+        ECDSACC26X2_enableIRQ();
     }
 }
 
@@ -433,7 +441,7 @@ static int_fast16_t ECDSACC26X2_runSignFSM(ECDSA_Handle handle)
 
     // If we get to this point, we want to perform another PKA operation
     IntPendClear(INT_PKA_IRQ);
-    IntEnable(INT_PKA_IRQ);
+    ECDSACC26X2_enableIRQ();
 
     return ECDSACC26X2_STATUS_FSM_RUN_PKA_OP;
 }
@@ -459,8 +467,7 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
                               object->operation.verify->curve->order,
                               object->operation.verify->curve->length);
 
-            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
-                ;
+            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
 
             pkaResult = PKABigNumCmpGetResult();
 
@@ -478,8 +485,7 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
                               object->operation.verify->curve->order,
                               object->operation.verify->curve->length);
 
-            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
-                ;
+            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
 
             pkaResult = PKABigNumCmpGetResult();
 
@@ -744,7 +750,7 @@ static int_fast16_t ECDSACC26X2_runVerifyFSM(ECDSA_Handle handle)
 
     // If we get to this point, we want to perform another PKA operation
     IntPendClear(INT_PKA_IRQ);
-    IntEnable(INT_PKA_IRQ);
+    ECDSACC26X2_enableIRQ();
 
     return ECDSACC26X2_STATUS_FSM_RUN_PKA_OP;
 }
@@ -810,8 +816,34 @@ static int_fast16_t ECDSACC26X2_waitForResult(ECDSA_Handle handle)
     switch (object->returnBehavior)
     {
         case ECDSA_RETURN_BEHAVIOR_POLLING:
-            while (!PKAResourceCC26XX_pollingFlag)
-                ;
+#if (SPE_ENABLED == 0)
+            while (!PKAResourceCC26XX_pollingFlag) {}
+#else
+            /*
+             * True polling mode must be used because secure partitions cannot
+             * process interrupt messages while a PSA call is in progress.
+             */
+
+            /* Execute next states */
+            do
+            {
+                object->operationStatus = object->fsmFxn(handle);
+                while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
+
+                object->fsmState++;
+            } while ((object->operationStatus == ECDSACC26X2_STATUS_FSM_RUN_FSM) ||
+                     (object->operationStatus == ECDSACC26X2_STATUS_FSM_RUN_PKA_OP));
+
+            /* Mark this operation as complete */
+            object->operationInProgress = false;
+
+            /* Make sure there is no keying material remaining in PKA RAM */
+            PKAClearPkaRam();
+
+            SemaphoreP_post(&PKAResourceCC26XX_accessSemaphore);
+
+            Power_releaseConstraint(PowerCC26XX_DISALLOW_STANDBY);
+#endif
             return object->operationStatus;
         case ECDSA_RETURN_BEHAVIOR_BLOCKING:
             SemaphoreP_pend(&PKAResourceCC26XX_operationSemaphore, SemaphoreP_WAIT_FOREVER);
@@ -936,9 +968,13 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
     object->trngConfig.object       = &object->trngObject;
     object->trngConfig.hwAttrs      = &object->trngHwAttrs;
 
-    trngParams.returnBehavior       = TRNG_RETURN_BEHAVIOR_CALLBACK;
+#if (SPE_ENABLED == 1)
+    /* Only polling mode calls can be made on secure side */
+    trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_POLLING;
+#else
+    trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_CALLBACK;
     trngParams.cryptoKeyCallbackFxn = ECDSACC26X2_trngCallback;
-
+#endif
     object->trngHandle = TRNG_construct(&object->trngConfig, &trngParams);
 
     if (object->trngHandle == NULL)
@@ -969,6 +1005,11 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
 
         return ECDSA_STATUS_ERROR;
     }
+
+#if (SPE_ENABLED == 1)
+    /* TRNG was used in polling mode so callback must be manually called */
+    ECDSACC26X2_trngCallback(object->trngHandle, trngStatus, &object->pmsnKey);
+#endif
 
     Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
 
@@ -1018,7 +1059,7 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
     /* Run the FSM by triggering the interrupt. It is level triggered
      * and the complement of the RUN bit.
      */
-    IntEnable(INT_PKA_IRQ);
+    ECDSACC26X2_enableIRQ();
 
     return ECDSACC26X2_waitForResult(handle);
 }
@@ -1038,7 +1079,7 @@ int_fast16_t ECDSA_cancelOperation(ECDSA_Handle handle)
     object->operationCanceled = true;
 
     /* Post hwi as if operation finished for cleanup */
-    IntEnable(INT_PKA_IRQ);
+    ECDSACC26X2_enableIRQ();
     HwiP_post(INT_PKA_IRQ);
 
     return ECDSA_STATUS_SUCCESS;

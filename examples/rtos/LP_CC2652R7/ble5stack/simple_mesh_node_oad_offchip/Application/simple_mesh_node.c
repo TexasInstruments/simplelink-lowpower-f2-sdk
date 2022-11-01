@@ -655,7 +655,7 @@ int bleApp_stackInit(void)
 
 #if defined(CONFIG_BT_MESH_PROXY) || defined(ADD_SIMPLE_PERIPHERAL)
   // init GAP
-  bleStack_initGap(profileRole, appSelfEntity, DEFAULT_PARAM_UPDATE_REQ_DECISION);
+  bleStack_initGap(profileRole, appSelfEntity, NULL, DEFAULT_PARAM_UPDATE_REQ_DECISION);
 
   // init GapBond
   bleStack_initGapBond(0, &bleApp_bondMgrCBs);
@@ -664,7 +664,7 @@ int bleApp_stackInit(void)
   bleStack_initGatt(profileRole, appSelfEntity, attDeviceName);
 #else
   // init GAP
-  bleStack_initGap(profileRole, appSelfEntity, 0);
+  bleStack_initGap(profileRole, appSelfEntity, NULL, 0);
 
   // init GapBond
   bleStack_initGapBond(0, &bleApp_bondMgrCBs);

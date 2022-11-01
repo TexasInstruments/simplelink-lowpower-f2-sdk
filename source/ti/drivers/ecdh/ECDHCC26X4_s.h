@@ -38,30 +38,31 @@
 #include <ti/drivers/crypto/CryptoCC26X4_s.h>
 #include <ti/drivers/ECDH.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#include "ti_drivers_config.h" /* Sysconfig generated header */
+#if defined(TFM_PSA_API)
+    #include "ti_drivers_config.h" /* Sysconfig generated header */
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define ECDH_S_MSG_TYPE(index) (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + (index))))
+
 /*
  * ECDH secure message types
  */
-#define ECDH_S_MSG_TYPE_CONSTRUCT (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define ECDH_S_MSG_TYPE_OPEN      (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define ECDH_S_MSG_TYPE_REGISTER_CALLBACK \
-    (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define ECDH_S_MSG_TYPE_CLOSE (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define ECDH_S_MSG_TYPE_GENERATE_PUBLIC_KEY \
-    (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define ECDH_S_MSG_TYPE_COMPUTE_SHARED_SECRET \
-    (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
-#define ECDH_S_MSG_TYPE_CANCEL_OPERATION (CRYPTO_S_MSG_TYPE_INDEX_ECDH | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 6U)))
+#define ECDH_S_MSG_TYPE_CONSTRUCT             ECDH_S_MSG_TYPE(0U)
+#define ECDH_S_MSG_TYPE_OPEN                  ECDH_S_MSG_TYPE(1U)
+#define ECDH_S_MSG_TYPE_REGISTER_CALLBACK     ECDH_S_MSG_TYPE(2U)
+#define ECDH_S_MSG_TYPE_CLOSE                 ECDH_S_MSG_TYPE(3U)
+#define ECDH_S_MSG_TYPE_GENERATE_PUBLIC_KEY   ECDH_S_MSG_TYPE(4U)
+#define ECDH_S_MSG_TYPE_COMPUTE_SHARED_SECRET ECDH_S_MSG_TYPE(5U)
+#define ECDH_S_MSG_TYPE_CANCEL_OPERATION      ECDH_S_MSG_TYPE(6U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created
@@ -80,7 +81,7 @@ extern "C" {
  */
 typedef struct
 {
-    SecureCB_Object object;
+    SecureCallback_Object object;
     /* ECDH callback fxn parameters */
     ECDH_Handle handle;
     int_fast16_t returnStatus;

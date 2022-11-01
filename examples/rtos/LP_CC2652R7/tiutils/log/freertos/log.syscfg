@@ -45,10 +45,8 @@ const LogSite           = scripting.addModule("/ti/utils/runtime/LogSite", {}, f
 const LogSite1          = LogSite.addInstance();
 const ITM               = scripting.addModule("/ti/drivers/ITM");
 
-/* ======== TIRTOS7 ======== */
-if (system.getRTOS() === "tirtos7") {
-    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
-}
+/* ======== Kernel Configuration ======== */
+system.getScript("kernel_config_release.syscfg.js");
 
 /* Add a GPIO instance to force PIN_init() to be called.  We need to
  * call PIN_init() before shutting down the external flash in

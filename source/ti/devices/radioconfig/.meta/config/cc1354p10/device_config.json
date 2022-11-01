@@ -26,12 +26,12 @@
             {
                 "_file": "targets.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1354p10_ble_pg10\/targets"
+                "$": ".\/..\/config\/cc1354p10_ble_pg20\/targets"
             },
             {
                 "_file": "targets.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1354p10_ble_pg10\/targets"
+                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg20\/targets"
             },
             {
                 "_file": "pasettings.json",
@@ -51,17 +51,17 @@
             },
             {
                 "_file": "param_definition.json",
-                "$": ".\/..\/config\/cc1354p10_prop_pg10"
+                "$": ".\/..\/config\/cc1354p10_prop_pg20"
             },
             {
                 "_file": "param_definition.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1354p10_ble_pg10"
+                "$": ".\/..\/config\/cc1354p10_ble_pg20"
             },
             {
                 "_file": "param_definition.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg10"
+                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg20"
             },
             {
                 "_file": "param_cmd_mapping.json",
@@ -103,21 +103,21 @@
             {
                 "_file": "rf_command_definitions.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1352p_ble_pg21"
+                "$": ".\/..\/config\/cc2651p3_ble_pg10"
             },
             {
                 "_file": "categories.json",
-                "$": ".\/..\/config\/cc1354p10_prop_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc1354p10_prop_pg20\/cmd_settings"
             },
             {
                 "_file": "categories.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg20\/cmd_settings"
             },
             {
                 "_file": "categories.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1354p10_ble_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc1354p10_ble_pg20\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
@@ -135,17 +135,17 @@
             },
             {
                 "_file": "dummy_file_overrides.json",
-                "$": ".\/..\/config\/cc1354p10_prop_pg10\/overrides"
+                "$": ".\/..\/config\/cc1354p10_prop_pg20\/overrides"
             },
             {
                 "_file": "dummy_file_overrides.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg10\/overrides"
+                "$": ".\/..\/config\/cc1354p10_ieee_15_4_pg20\/overrides"
             },
             {
                 "_file": "dummy_file_overrides.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1354p10_ble_pg10\/overrides"
+                "$": ".\/..\/config\/cc1354p10_ble_pg20\/overrides"
             }
         ]
     }

@@ -442,7 +442,7 @@ const char *otPlatRadioGetVersionString(otInstance *aInstance);
 int8_t otPlatRadioGetReceiveSensitivity(otInstance *aInstance);
 
 /**
- * Get the factory-assigned IEEE EUI-64 for this interface.
+ * Gets the factory-assigned IEEE EUI-64 for this interface.
  *
  * @param[in]  aInstance   The OpenThread instance structure.
  * @param[out] aIeeeEui64  A pointer to the factory-assigned IEEE EUI-64.
@@ -536,7 +536,7 @@ otError otPlatRadioGetCcaEnergyDetectThreshold(otInstance *aInstance, int8_t *aT
 otError otPlatRadioSetCcaEnergyDetectThreshold(otInstance *aInstance, int8_t aThreshold);
 
 /**
- * Get the external FEM's Rx LNA gain in dBm.
+ * Gets the external FEM's Rx LNA gain in dBm.
  *
  * @param[in]  aInstance  The OpenThread instance structure.
  * @param[out] aGain     The external FEM's Rx LNA gain in dBm.
@@ -549,7 +549,7 @@ otError otPlatRadioSetCcaEnergyDetectThreshold(otInstance *aInstance, int8_t aTh
 otError otPlatRadioGetFemLnaGain(otInstance *aInstance, int8_t *aGain);
 
 /**
- * Set the external FEM's Rx LNA gain in dBm.
+ * Sets the external FEM's Rx LNA gain in dBm.
  *
  * @param[in] aInstance  The OpenThread instance structure.
  * @param[in] aGain      The external FEM's Rx LNA gain in dBm.
@@ -857,6 +857,7 @@ int8_t otPlatRadioGetRssi(otInstance *aInstance);
  * @param[in] aScanDuration  The duration, in milliseconds, for the channel to be scanned.
  *
  * @retval OT_ERROR_NONE             Successfully started scanning the channel.
+ * @retval OT_ERROR_BUSY             The radio is performing enery scanning.
  * @retval OT_ERROR_NOT_IMPLEMENTED  The radio doesn't support energy scanning.
  *
  */
@@ -968,7 +969,7 @@ void otPlatRadioClearSrcMatchExtEntries(otInstance *aInstance);
 uint32_t otPlatRadioGetSupportedChannelMask(otInstance *aInstance);
 
 /**
- * Get the radio preferred channel mask that the device prefers to form on.
+ * Gets the radio preferred channel mask that the device prefers to form on.
  *
  * @param[in]  aInstance   The OpenThread instance structure.
  *
@@ -1060,14 +1061,14 @@ void otPlatRadioUpdateCslSampleTime(otInstance *aInstance, uint32_t aCslSampleTi
 uint8_t otPlatRadioGetCslAccuracy(otInstance *aInstance);
 
 /**
- * Get the current uncertainty, in units of 10 us, of the clock used for scheduling CSL operations.
+ * The fixed uncertainty of the Device for scheduling CSL Transmissions in units of 10 microseconds.
  *
  * @param[in]   aInstance    A pointer to an OpenThread instance.
  *
- * @returns The current CSL Clock Uncertainty in units of 10 us.
+ * @returns The CSL Uncertainty in units of 10 us.
  *
  */
-uint8_t otPlatRadioGetCslClockUncertainty(otInstance *aInstance);
+uint8_t otPlatRadioGetCslUncertainty(otInstance *aInstance);
 
 /**
  * Set the max transmit power for a specific channel.

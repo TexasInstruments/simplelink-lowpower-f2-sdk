@@ -30,37 +30,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-__TI_STACK_SIZE = 1024;
+__TI_STACK_SIZE = 0x600;
 HEAPSIZE = 0x4000; /* Size of heap buffer used by HeapMem */
 
 ENTRY(_c_int00)
 
 MEMORY
 {
-    /* Application stored in and executes from internal flash
-     * Note there are some holes in this memory due to issues with
-     * first-sampling silicon.
-     * GCC cannot automatically break up sections and allocate the across
-     * non-contiguous memory regions. As such, we need to create special
-     * sections for each major SW component and allocate these sections
-     * to a region. This makes it difficult to use all the space available
-     * in flash but lets us use significantly more than if we restricted
-     * the GCC linker to one segment of the flash.
-     * The symbols not placed explicitly or via wildcards are placed in
-     * one of the larger flash regions. If you run out of space in that
-     * region, you will need to manually direct the linker to place
-     * certain symbols, compilation units, or libraries in another region
-     * that still has space
-     * To avoid modifying the startup code, we need to leave the .data
-     * section content to be placed in one section since it needs
-     * to be contiguous. By default, that is the FLASH5 section.
-     */
-    FLASH1 (RX)      : ORIGIN = 0x00000000, LENGTH = 0x1C000	/* Default: Core SDK + RFLib */
-    FLASH2 (RX)      : ORIGIN = 0x00024000, LENGTH = 0x38000	/* Default: Stack */
-    FLASH3 (RX)      : ORIGIN = 0x00064000, LENGTH = 0x38000	/* Default: Stack / misc */
-    FLASH4 (RX)      : ORIGIN = 0x000A4000, LENGTH = 0x38000	/* Default: Application. Anything in .text or .rodata not placed explicitly ends up here */
-    FLASH5 (RX)      : ORIGIN = 0x000E4000, LENGTH = 0x1C000	/* Default: .data section / misc */
-
+    FLASH (RX)      : ORIGIN = 0x00000000, LENGTH = 0x000FFFFF
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash, 1024 bytes
@@ -68,25 +45,33 @@ MEMORY
     FLASH_CCFG (RX) : ORIGIN = 0x50000000, LENGTH = 0x00000800
     SRAM (RWX)      : ORIGIN = 0x20000000, LENGTH = 0x00020000
     GPRAM (RWX)     : ORIGIN = 0x11000000, LENGTH = 0x00002000
+    /* Explicitly placed off target for the storage of logging data.
+     * The data placed here is NOT loaded onto the target device.
+     * This is part of 1 GB of external memory from 0x60000000 - 0x9FFFFFFF.
+     * ARM memory map can be found here:
+     * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
+     */
+    LOG_DATA (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
 }
 
-REGION_ALIAS("REGION_TEXT", FLASH4);
+REGION_ALIAS("REGION_TEXT", FLASH);
 REGION_ALIAS("REGION_BSS", SRAM);
 REGION_ALIAS("REGION_DATA", SRAM);
 REGION_ALIAS("REGION_STACK", SRAM);
 REGION_ALIAS("REGION_HEAP", SRAM);
-REGION_ALIAS("REGION_ARM_EXIDX", FLASH4);
-REGION_ALIAS("REGION_ARM_EXTAB", FLASH4);
+REGION_ALIAS("REGION_LOG", LOG_DATA);
+REGION_ALIAS("REGION_ARM_EXIDX", FLASH);
+REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
 
 SECTIONS {
 
     PROVIDE (_intvecs_base_address =
         DEFINED(_intvecs_base_address) ? _intvecs_base_address : 0x0);
 
-	/* Place interrupt vectors in FLASH1 region */
+	/* Place interrupt vectors in REGION_TEXT region */
     .intvecs (_intvecs_base_address) : AT (_intvecs_base_address) {
         KEEP (*(.intvecs))
-    } > FLASH1
+    } > REGION_TEXT
 
     PROVIDE (_vtable_base_address =
         DEFINED(_vtable_base_address) ? _vtable_base_address : 0x20000000);
@@ -194,32 +179,6 @@ SECTIONS {
     UDMACC26XX_dmaSpi1TxAltControlTableEntry_is_placed = 0;
     .dmaSpi1TxAltControlTableEntry DMA_SPI1_TX_ALT_CONTROL_TABLE_ENTRY_ADDRESS (NOLOAD) : AT (DMA_SPI1_TX_ALT_CONTROL_TABLE_ENTRY_ADDRESS) {*(.dmaSpi1TxAltControlTableEntry)} > REGION_DATA
 
-	/* Place all of the following .text and .rodata content in the FLASH1 region:
-	 * - drivers
-	 * - driverlib
-	 * - TI-RTOS7
-	 * - Board_ functions
-	 * - SPIFFS
-	 * - FATFS
-	 * - Display
-	 * - Loggers
-	 * - RFLib
-	 */
-	.coresdk.text : {
-		*drivers*.a:* (.text .text* .rodata .rodata*)
-		*driverlib.lib:* (.text .text* .rodata .rodata*)
-		*sysbios.a:* (.text .text* .rodata .rodata*)
-		*sysbios_psa.a:* (.text .text* .rodata .rodata*)
-		*spiffs*.a:* (.text .text* .rodata .rodata*)
-		*fatfs.a:* (.text .text* .rodata .rodata*)
-		*display*.a:* (.text .text* .rodata .rodata*)
-		*loggers*.a:* (.text .text* .rodata .rodata*)
-		*rf_multiMode*.a:* (.text .text* .rodata .rodata*)
-		*ti_drivers_config.o* (.text .text* .rodata .rodata*)
-		*ti_sysbios_config.o* (.text .text* .rodata .rodata*)
-		*ti_devices_config.o* (.text .text* .rodata .rodata*)
-	} > FLASH1
-
     .text : {
         CREATE_OBJECT_SYMBOLS
         *(.text)
@@ -253,7 +212,7 @@ SECTIONS {
         *(.data.*)
         . = ALIGN (4);
         __data_end__ = .;
-    } > REGION_DATA AT> FLASH5
+    } > REGION_DATA AT> REGION_TEXT
 
     .ARM.exidx : {
         __exidx_start = .;
@@ -296,4 +255,8 @@ SECTIONS {
         KEEP(*(.stack))
         . += __TI_STACK_SIZE;
     } > REGION_STACK AT> REGION_STACK
+
+    .log_data (COPY) : {
+        KEEP (*(.log_data))
+    } > REGION_LOG
 }

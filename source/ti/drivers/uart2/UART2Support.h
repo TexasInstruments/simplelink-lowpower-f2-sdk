@@ -75,9 +75,8 @@ extern void UART2Support_dmaRefreshRx(UART2_Handle handle);
  *  @brief  Function to configure the receive DMA
  *
  *  @param[in]  handle    A UART2_Handle returned from UART2_open()
- *  @param[in]  copyFifo  Copy FIFO into ringbuffer before starting DMA transaction
  */
-extern void UART2Support_dmaStartRx(UART2_Handle handle, bool copyFifo);
+extern void UART2Support_dmaStartRx(UART2_Handle handle);
 
 /*!
  *  @brief  Function to configure the tramsit DMA
@@ -125,14 +124,22 @@ extern void UART2Support_enableRx(UART2_HWAttrs const *hwAttrs);
 extern void UART2Support_enableTx(UART2_HWAttrs const *hwAttrs);
 
 /*!
- *  @brief  Function to set power constraint
+ *  @brief  Function to set power constraints
+ *
+ *  @param[in]  handle    A UART2_Handle returned from UART2_open()
+ *  @param[in]  setFlashConstraint A boolean value, on whether or not to conditionally set a "keep flash in idle" power
+ * constraint
  */
-extern void UART2Support_powerSetConstraint(void);
+extern void UART2Support_powerSetConstraint(UART2_Handle handle, bool setFlashConstraint);
 
 /*!
- *  @brief  Function to release power constraint
+ *  @brief  Function to release power constraints
+ *
+ *  @param[in]  handle    A UART2_Handle returned from UART2_open()
+ *  @param[in]  relFlashConstraint A boolean value, on whether or not to conditionally release a "keep flash in idle"
+ * power constraint
  */
-extern void UART2Support_powerRelConstraint(void);
+extern void UART2Support_powerRelConstraint(UART2_Handle handle, bool relFlashConstraint);
 
 /*!
  *  @brief  Function to convert RX error status to a UART2 error code

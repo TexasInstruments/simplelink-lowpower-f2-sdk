@@ -1026,10 +1026,6 @@ static void HCI_TL_getMemStats(uint8_t memStatCmd, uint8_t* rspBuf, uint8_t *len
     }
     if (memStatCmd & GET_THREAD_STATS)
     {
-#ifndef TIRTOS7_SUPPORT
-        uint8_t staticThreadNb = Task_Object_count(); // + 1 for the idle task.
-        Task_Handle tempHandle2;
-#endif // TIRTOS7_SUPPORT
         Task_Stat stats;
         uint8_t nbThoffset;
         Task_Handle tempHandle;
@@ -1043,35 +1039,7 @@ static void HCI_TL_getMemStats(uint8_t memStatCmd, uint8_t* rspBuf, uint8_t *len
 
         do
         {
-#ifndef TIRTOS7_SUPPORT
-            if(staticThreadNb)
-            {
-                //Go through all static thread first
-                //Get Stats for this thread.
-                if (rspIndex <= ( MAX_RSP_BUF - 8))
-                {
-                    tempHandle2 = Task_Object_get(NULL, staticThreadNb-1);
-                    if (tempHandle2)
-                    {
-                        Task_stat(tempHandle2, &stats);
-                        rspBuf[rspIndex++] = stats.priority;
-                        rspBuf[rspIndex++] = BREAK_UINT32((uint32_t)tempHandle2, 0);
-                        rspBuf[rspIndex++] = BREAK_UINT32((uint32_t)tempHandle2, 1);
-                        rspBuf[rspIndex++] = BREAK_UINT32(stats.used, 0);
-                        rspBuf[rspIndex++] = BREAK_UINT32(stats.used, 1);
-                        rspBuf[rspIndex++] = BREAK_UINT32(stats.stackSize, 0);
-                        rspBuf[rspIndex++] = BREAK_UINT32(stats.stackSize, 1);
-                        rspBuf[nbThoffset]++;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-                staticThreadNb--;
-                continue;
-            }
-#endif // TIRTOS7_SUPPORT
+
             // no more static thread, continue with dynamic thread.
             if ((tempHandle) && (rspIndex <= ( MAX_RSP_BUF - 8)))
             {

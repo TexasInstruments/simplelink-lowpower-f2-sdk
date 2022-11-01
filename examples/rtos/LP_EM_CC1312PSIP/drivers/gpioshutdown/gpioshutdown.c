@@ -66,13 +66,13 @@ void *mainThread(void *arg0)
     LED_Handle led0Handle = LED_open(CONFIG_LED_0, NULL);
     LED_Handle led1Handle = LED_open(CONFIG_LED_1, NULL);
 
-    uint32_t resetReason = PowerCC26X2_getResetReason();
+    PowerCC26X2_ResetReason resetReason = PowerCC26X2_getResetReason();
 
     /* If we are waking up from shutdown, we do something extra. */
-    if (resetReason == RSTSRC_WAKEUP_FROM_SHUTDOWN)
+    if (resetReason == PowerCC26X2_RESET_SHUTDOWN_IO)
     {
         /* Application code must always disable the IO latches when coming out of shutdown */
-        PowerCtrlPadSleepDisable();
+        PowerCC26X2_releaseLatches();
 
         /* In this example we toggle LED1 */
         LED_startBlinking(led1Handle, 500, 3);
@@ -103,6 +103,5 @@ void *mainThread(void *arg0)
     Power_shutdown(0, 0);
 
     /* Should never get here, since shutdown will reset. */
-    while (1)
-        ;
+    while (1) {}
 }

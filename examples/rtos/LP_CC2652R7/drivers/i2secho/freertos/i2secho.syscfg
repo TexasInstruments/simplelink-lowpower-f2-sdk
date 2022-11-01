@@ -42,10 +42,8 @@ if (!board.match(/CC13.[12]|CC2651P|CC2653P/)) {
     var CC3200AUDBOOST = scripting.addHardware("/ti/boards/boosterpacks/CC3200AUDBOOST");
 }
 
-/* ======== TIRTOS7 ======== */
-if (system.getRTOS() === "tirtos7") {
-    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
-}
+/* ======== Kernel Configuration ======== */
+system.getScript("kernel_config_release.syscfg.js");
 
 /* ======== GPIO ========
  * Add the GPIO LED for boards that support it. The CC32XX LaunchPads

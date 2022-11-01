@@ -228,7 +228,6 @@ public:
      * This method requests transmission of a data poll (MAC Data Request) frame.
      *
      * @retval kErrorNone          Data poll transmission request is scheduled successfully.
-     * @retval kErrorAlready       MAC is busy sending earlier poll transmission request.
      * @retval kErrorInvalidState  The MAC layer is not enabled.
      *
      */
@@ -584,7 +583,7 @@ public:
      * @returns CSL channel.
      *
      */
-    uint8_t GetCslChannel(void) const { return mLinks.GetSubMac().GetCslChannel(); }
+    uint8_t GetCslChannel(void) const { return mCslChannel; }
 
     /**
      * This method sets the CSL channel.
@@ -595,12 +594,10 @@ public:
     void SetCslChannel(uint8_t aChannel);
 
     /**
-     * This method indicates if CSL channel has been explicitly specified by the upper layer.
-     *
-     * @returns If CSL channel has been specified.
+     * This method centralizes CSL state switching conditions evaluating, configuring SubMac accordingly.
      *
      */
-    bool IsCslChannelSpecified(void) const { return mLinks.GetSubMac().IsCslChannelSpecified(); }
+    void UpdateCsl(void);
 
     /**
      * This method gets the CSL period.
@@ -608,7 +605,7 @@ public:
      * @returns CSL period in units of 10 symbols.
      *
      */
-    uint16_t GetCslPeriod(void) const { return mLinks.GetSubMac().GetCslPeriod(); }
+    uint16_t GetCslPeriod(void) const { return mCslPeriod; }
 
     /**
      * This method sets the CSL period.
@@ -637,42 +634,33 @@ public:
     bool IsCslCapable(void) const;
 
     /**
-     * This method returns CSL parent clock accuracy, in ± ppm.
+     * This method indicates whether the device is connected to a parent which supports CSL.
      *
-     * @retval CSL parent clock accuracy, in ± ppm.
+     * @retval TRUE   If parent supports CSL.
+     * @retval FALSE  If parent does not support CSL.
      *
      */
-    uint8_t GetCslParentClockAccuracy(void) const { return mLinks.GetSubMac().GetCslParentClockAccuracy(); }
+    bool IsCslSupported(void) const;
 
     /**
-     * This method sets CSL parent clock accuracy, in ± ppm.
+     * This method returns parent CSL accuracy (clock accuracy and uncertainty).
      *
-     * @param[in] aCslParentAccuracy CSL parent clock accuracy, in ± ppm.
+     * @returns The parent CSL accuracy.
      *
      */
-    void SetCslParentClockAccuracy(uint8_t aCslParentAccuracy)
+    const CslAccuracy &GetCslParentAccuracy(void) const { return mLinks.GetSubMac().GetCslParentAccuracy(); }
+
+    /**
+     * This method sets parent CSL accuracy.
+     *
+     * @param[in] aCslAccuracy  The parent CSL accuracy.
+     *
+     */
+    void SetCslParentAccuracy(const CslAccuracy &aCslAccuracy)
     {
-        mLinks.GetSubMac().SetCslParentClockAccuracy(aCslParentAccuracy);
+        mLinks.GetSubMac().SetCslParentAccuracy(aCslAccuracy);
     }
 
-    /**
-     * This method returns CSL parent uncertainty, in ±10 us units.
-     *
-     * @retval CSL parent uncertainty, in ±10 us units.
-     *
-     */
-    uint8_t GetCslParentUncertainty(void) const { return mLinks.GetSubMac().GetCslParentUncertainty(); }
-
-    /**
-     * This method returns CSL parent uncertainty, in ±10 us units.
-     *
-     * @param[in] aCslParentUncert  CSL parent uncertainty, in ±10 us units.
-     *
-     */
-    void SetCslParentUncertainty(uint8_t aCslParentUncert)
-    {
-        mLinks.GetSubMac().SetCslParentUncertainty(aCslParentUncert);
-    }
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
 
 #if OPENTHREAD_CONFIG_MAC_FILTER_ENABLE && OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE
@@ -821,6 +809,11 @@ private:
 #if OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE
     TimeMilli mCslTxFireTime;
 #endif
+#endif
+#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
+    // When Mac::mCslChannel is 0, it indicates that CSL channel has not been specified by the upper layer.
+    uint8_t  mCslChannel;
+    uint16_t mCslPeriod;
 #endif
 
     union

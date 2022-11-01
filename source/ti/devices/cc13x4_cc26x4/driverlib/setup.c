@@ -67,6 +67,7 @@
 #include "osc.h"
 #include "setup.h"
 #include "setup_rom.h"
+#include "ccfgread.h"
 
 //*****************************************************************************
 //
@@ -93,6 +94,14 @@
 #define CPU_DELAY_MICRO_SECONDS( x ) \
    CPUdelay(((uint32_t)((( x ) * 48.0 ) / 5.0 )) - 1 )
 
+
+//*****************************************************************************
+//
+// Constants for SubSecInc values at different SCLK_LF frequencies
+//
+//*****************************************************************************
+#define SUBSECINC_31250_HZ 0x8637BD
+#define SUBSECINC_32768_HZ 0x800000
 
 //*****************************************************************************
 //
@@ -209,6 +218,24 @@ SetupTrimDevice(void)
     // Start the RTC
     AONRTCEnable();
 
+    if (CCFGRead_SCLK_LF_OPTION() == CCFGREAD_SCLK_LF_OPTION_XOSC_LF)
+    {
+        /* Set SubSecInc to 31.250 kHz since we start up on RCOSC_HF_DLF. The
+         * rom startup code leaves this at the default 32.768 kHz but that is
+         * only accurate once we actually switch to XOSC_LF. Once the
+         * oscillator combined interrupt triggers after we switch to the target
+         * clock, we will configure SubSecInc back to 32.768 kHz.
+         *
+         * There is no need to update SubSecInc dynamically for other LF clock
+         * sources.
+         *  - RCOSC_LF starts on RCOSC_HF-derived but switches fast enough that
+         *    we do not accumulate any real-time clock drift before switching.
+         *  - External LF is correctly set and requires no switching.
+         *  - XOSC_HF-derived does not change LF clock frequencies.
+         */
+        SetupSetAonRtcSubSecInc(SUBSECINC_31250_HZ);
+    }
+
     // Make sure there are no ongoing VIMS mode change when leaving SetupTrimDevice()
     // (There should typically be no wait time here, but need to be sure)
     while ( HWREG( VIMS_BASE + VIMS_O_STAT ) & VIMS_STAT_MODE_CHANGING ) {
@@ -253,6 +280,16 @@ SetupTrimDevice(void)
     HWREG( AUX_SCE_BASE + AUX_SCE_O_NONSECDDIACC3) = AUX_SCE_NONSECDDIACC3_RD_EN |
                                                      (( ( DDI_0_OSC_O_CTL0 / 2 ) << AUX_SCE_NONSECDDIACC3_ADDR_S ) & AUX_SCE_NONSECDDIACC3_ADDR_M ) |
                                                      (( DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_M | DDI_0_OSC_CTL0_ACLK_REF_SRC_SEL_M ) & AUX_SCE_NONSECDDIACC3_WR_MASK_M );
+
+    // Configure Sensor Controller access to read the XOSC_HF frequency good
+    // signal.
+    // We want to read DDI_0_OSC_STAT2_XOSC_HF_FREQGOOD.
+    // The ADDR field is encoded as a half-word index. So we need to divide the
+    // regular byte-offset by two.
+    // No need for the WR mask since we only want to read from the register.
+    HWREG( AUX_SCE_BASE + AUX_SCE_O_NONSECDDIACC2) = AUX_SCE_NONSECDDIACC2_RD_EN |
+                                                     (( ( DDI_0_OSC_O_STAT2 / 2 ) << AUX_SCE_NONSECDDIACC2_ADDR_S ) & AUX_SCE_NONSECDDIACC2_ADDR_M);
+
 
     // Configure Sensor Controller access to COMPB 32 kHz clock enable
     // We want to read and write DDI_0_OSC_ATESTCTL_SCLK_LF_AUX_EN.

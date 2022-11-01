@@ -43,8 +43,6 @@
     ],
     "cc13x4_cc26x4": [
         "rf_patch_cpe_ieee_coex",
-        "rf_patch_cpe_multi",
-        "rf_patch_mce_ieee_cohr",
-        "rf_patch_rfe_ieee_cohr"
+        "rf_patch_cpe_multi_protocol"
     ]
 }

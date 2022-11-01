@@ -53,12 +53,21 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/smph.h)
 
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
+
 /* Defines and enumerations */
 #define SHA2_UNUSED(value) ((void)(value))
 
 /* Outer and inner padding bytes used in HMAC */
 #define HMAC_OPAD_BYTE 0x5C
 #define HMAC_IPAD_BYTE 0x36
+
+#if (ENABLE_KEY_STORAGE == 1)
+    /*! @brief Maximum HMAC key size in bytes when using KeyStore */
+    #define SHA2CC26X2_HMAC_MAX_KEYSTORE_KEY_SIZE 128
+#endif /* ENABLE_KEY_STORAGE */
 
 /* Though the DMA Length Registers are 32-bit, they can only take a 16-bit
  * length while the bits [31:16] are reserved.
@@ -799,7 +808,19 @@ static void SHA2CC26X2_emptyFinalize(SHA2CC26X2_Object *object, void *digest)
     }
 
     SHA2IntClear(SHA2_DMA_IN_DONE | SHA2_RESULT_RDY);
+
+    /*
+     * For CC13x4/CC26x4 devices, SHA2_DMA_IN_DONE is also routed to
+     * INT_CRYPTO_RESULT_AVAIL_IRQ in addition to SHA2_RESULT_RDY. To prevent
+     * multiple interrupts from occurring, SHA2_DMA_IN_DONE is not enabled for
+     * those devices.
+     */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    SHA2IntEnable(SHA2_RESULT_RDY);
+#else
     SHA2IntEnable(SHA2_DMA_IN_DONE | SHA2_RESULT_RDY);
+#endif
+
     HWREG(CRYPTO_BASE + CRYPTO_O_HASHMODE) = hashModeTable[object->hashType];
     SHA2SetDigest(object->digest, intermediateDigestSizeTable[object->hashType]);
     SHA2StartDMAOperation(object->buffer, blockSize, digest, digestSizeTable[object->hashType]);
@@ -907,8 +928,77 @@ int_fast16_t SHA2CC26X2_setupHmac(SHA2_Handle handle, CryptoKey *key)
     uint8_t xorBuffer[SHA2CC26X2_MAX_BLOCK_SIZE_BYTES];
     SHA2CC26X2_Object *object         = handle->object;
     SHA2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
-    size_t keyLength                  = key->u.plaintext.keyLength;
-    uint8_t *keyingMaterial           = key->u.plaintext.keyMaterial;
+
+#if (ENABLE_KEY_STORAGE == 1)
+    /* Expect SHA2 keys using KeyStore to not be more than the max SHA2 block size */
+    uint8_t KeyStore_keyingMaterial[SHA2CC26X2_HMAC_MAX_KEYSTORE_KEY_SIZE];
+    int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
+    KeyStore_PSA_KeyFileId keyID;
+#endif /* ENABLE_KEY_STORAGE */
+
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
+
+    if (key->encoding == CryptoKey_PLAINTEXT)
+    {
+        keyLength      = key->u.plaintext.keyLength;
+        keyingMaterial = key->u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (key->encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, key->u.keyStore.keyID);
+
+        switch (object->hashType)
+        {
+            case SHA2_HASH_TYPE_224:
+                status = KeyStore_PSA_getKey(keyID,
+                                             KeyStore_keyingMaterial,
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_SHA_224,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                break;
+            case SHA2_HASH_TYPE_256:
+                status = KeyStore_PSA_getKey(keyID,
+                                             KeyStore_keyingMaterial,
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_SHA_256,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                break;
+            case SHA2_HASH_TYPE_384:
+                status = KeyStore_PSA_getKey(keyID,
+                                             KeyStore_keyingMaterial,
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_SHA_384,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                break;
+            case SHA2_HASH_TYPE_512:
+                status = KeyStore_PSA_getKey(keyID,
+                                             KeyStore_keyingMaterial,
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_SHA_512,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                break;
+            default:
+                break;
+        }
+
+        if ((status != KEYSTORE_PSA_STATUS_SUCCESS) || (keyLength != key->u.keyStore.keyLength))
+        {
+            return SHA2_STATUS_KEYSTORE_ERROR;
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return SHA2_STATUS_UNSUPPORTED;
+    }
 
     /* Since we will be making multiple calls to SHA2 driver APIs, we need
      * to ensure we retain access across those calls. Otherwise another
@@ -1102,6 +1192,7 @@ int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, siz
 {
     SHA2CC26X2_Object *object         = handle->object;
     SHA2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
+    int16_t status                    = SHA2_STATUS_ERROR;
 
     /* Try and obtain access to the crypto module.
      * We will be keeping this for multiple operations
@@ -1114,7 +1205,11 @@ int_fast16_t SHA2_hmac(SHA2_Handle handle, CryptoKey *key, const void *data, siz
     /* Retain access over multiple SHA2 driver calls */
     object->retainAccessCounter++;
 
-    SHA2CC26X2_setupHmac(handle, key);
+    status = SHA2CC26X2_setupHmac(handle, key);
+    if (status != SHA2_STATUS_SUCCESS)
+    {
+        return status;
+    }
 
     /* For now, only polling return behaviour is supported for the main data
      * segment

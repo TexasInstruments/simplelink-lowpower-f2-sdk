@@ -4133,9 +4133,12 @@ void ws_bootstrap_trickle_timer(protocol_interface_info_entry_t *cur, uint16_t t
             cur->ws_info->pas_requests++;
         }
 
-        if (cur->ws_info->pas_requests > PCS_MAX || cur->ws_info->pan_config_sol_max_timeout == 0) {
+        if ((cur->ws_info->pas_requests > PCS_MAX || cur->ws_info->pan_config_sol_max_timeout == 0) &&
+            (!cur->ws_info->configuration_learned)) {
             // if MAX PCS sent or max waited timeout restart discovery
             // Trickle is reseted when entering to discovery from state 3
+            // Additional check for configuration_learned is added to handle the race condition where a configuration was just received
+            // before bootstrap trickle timer expiry & state change away from config scan has not been triggered yet
             tr_info("PAN configuration Solicit timeout");
             trickle_inconsistent_heard(&cur->ws_info->trickle_pan_advertisement_solicit, &cur->ws_info->trickle_params_pan_discovery);
             ws_bootstrap_event_discovery_start(cur);

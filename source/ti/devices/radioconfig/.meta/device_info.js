@@ -56,8 +56,6 @@ const DevNameMap = {
     CC1352R1F3RGZ: "cc1352r",
     CC1352P1F3RGZ: "cc1352p",
     CC1312R1F3RGZ: "cc1312r",
-    CC2672R3RGZ: "cc2672r3",
-    CC2672P3RGZ: "cc2672p3",
     CC2652R1FRGZ: "cc2652r",
     CC2642R1FRGZ: "cc2642r",
     CC2642R1FRTC: "cc2642rq1",
@@ -102,9 +100,11 @@ const DeviceSupported = DeviceName !== "none";
 
 // True if High PA device
 const HighPaDevice = DeviceName.includes("cc1352p")
+    || DeviceName.includes("cc1354p")
+    || DeviceName.includes("cc2674p")
+    || DeviceName.includes("cc2653p")
     || DeviceName.includes("cc1312psip")
     || DeviceName.includes("cc2652p")
-    || DeviceName.includes("cc2672p")
     || DeviceName.includes("cc1311p")
     || DeviceName.includes("cc2651p");
 

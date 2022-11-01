@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "250 kbps MSK, 62.5 kHz deviation. (Pre-silicon settings)",
+        "Name": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "250 kbps MSK, 62.5 kHz deviation. (Pre-Silicon)",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_PROPRIETARY_2_4",

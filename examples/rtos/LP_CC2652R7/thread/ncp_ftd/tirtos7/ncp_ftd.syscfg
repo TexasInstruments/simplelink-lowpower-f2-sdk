@@ -132,7 +132,6 @@ for(var setting in rfDesignSettings)
 /* SPI for NCP */
 SPI2.$name                   = "CONFIG_SPI_1";
 SPI2.mode                    = "Four Pin SS Active Low";
-SPI2.spi.$assign             = "SSI1"; // Use Peripheral
 SPI2.spi.misoPin.$assign     = "DIO24"
 SPI2.spi.mosiPin.$assign     = "DIO25"
 SPI2.spi.sclkPin.$assign     = "DIO26"

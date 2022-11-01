@@ -77,7 +77,6 @@ function viewInitInstance()
 //  Monitor.println("LoggerText: viewInitInstance");
 
     var count = Program.fetchVariable("LoggerText_count");
-    var config = Program.fetchVariable("LoggerText_config");
     var table = new Array();
 
     var typespecInst = Program.lookupType("LoggerText_Instance");
@@ -116,7 +115,6 @@ function viewInitRecord(argstr)
     var index = Number(args[0]) - 1;
 
     count = Program.fetchVariable("LoggerText_count");
-    var config = Program.fetchVariable("LoggerText_config");
     var table = new Array();
 
     if (index > count) return (table);

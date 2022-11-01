@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,18 +68,19 @@
 const char inputfile[]  = STR(DRIVE_NUM) ":input.txt";
 const char outputfile[] = STR(DRIVE_NUM) ":output.txt";
 
-const char textarray[] = "***********************************************************************\n"
-                         "0         1         2         3         4         5         6         7\n"
-                         "01234567890123456789012345678901234567890123456789012345678901234567890\n"
-                         "This is some text to be inserted into the inputfile if there isn't\n"
-                         "already an existing file located on the media.\n"
-                         "If an inputfile already exists, or if the file was already once\n"
-                         "generated, then the inputfile will NOT be modified.\n"
-                         "***********************************************************************\n";
+const char textarray[]
+    __attribute__((aligned(4))) = "***********************************************************************\n"
+                                  "0         1         2         3         4         5         6         7\n"
+                                  "01234567890123456789012345678901234567890123456789012345678901234567890\n"
+                                  "This is some text to be inserted into the inputfile if there isn't\n"
+                                  "already an existing file located on the media.\n"
+                                  "If an inputfile already exists, or if the file was already once\n"
+                                  "generated, then the inputfile will NOT be modified.\n"
+                                  "***********************************************************************\n";
 
 static Display_Handle display;
 
-unsigned char cpy_buff[CPY_BUFF_SIZE + 1];
+unsigned char cpy_buff[CPY_BUFF_SIZE + 1] __attribute__((aligned(4)));
 
 FIL src;
 FIL dst;

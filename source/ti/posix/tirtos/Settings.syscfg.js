@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,26 +55,6 @@ var posixFiles = [
     "ti/posix/tirtos/sleep.c",
     "ti/posix/tirtos/timer.c"
 ];
-
-function validate(mod, validation)
-{
-    /* confirm that TI-RTOS is selected */
-    if (system.modules["/ti/utils/RTOS"]) {
-        let RTOS = system.modules["/ti/utils/RTOS"];
-        if (RTOS.$static.name != "TI-RTOS") {
-            validation.logError("POSIX Settings should not be used when " +
-                                "ti.utils.RTOS.name is not TI-RTOS.", mod);
-        }
-    }
-
-    if (system.modules["/ti/drivers/RTOS"]) {
-        let RTOS = system.modules["/ti/drivers/RTOS"];
-        if (RTOS.$static.name != "TI-RTOS") {
-            validation.logError("POSIX Settings should not be used when " +
-                                "ti.drivers.RTOS.name is not TI-RTOS.", mod);
-        }
-    }
-}
 
 var config = [
     {
@@ -148,7 +128,6 @@ exports = {
     staticOnly: true,
     displayName: "POSIX Settings",
     moduleStatic: {
-        validate: validate,
         modules: modules,
         moduleInstances: moduleInstances,
         config: config

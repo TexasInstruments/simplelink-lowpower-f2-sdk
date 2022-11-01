@@ -44,17 +44,6 @@ let topModules = [
             "/ti/loggers/utils/LoggerBuf"
         ]
     },
-    {
-        displayName: "TI Utils Run-time",
-        categories: [
-            {
-                displayName: "Execution Graph",
-                modules: [
-                    "/ti/loggers/utils/ExGr_LoggerBuf"
-                ]
-            }
-        ]
-    }
 ];
 
 let templates = [

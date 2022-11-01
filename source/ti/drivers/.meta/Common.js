@@ -341,15 +341,16 @@ function device2Family(device, mod)
 
     /* CC26X4 specific module delegates */
     let cc26x4Mods = {
-        "ECDH" :        "CC26X2",
-        "ECDSA" :       "CC26X2",
-        "ECJPAKE" :     "CC26X2",
-        "EDDSA" :       "CC26X2",
-        "SHA2" :        "CC26X2",
-        "Temperature" : "CC26X2",
-        "AESCCM" :      "CC26X4",
-        "AESGCM" :      "CC26X4",
-        "Watchdog" :    "CC26X4"
+        "ECDH" :           "CC26X2",
+        "ECDSA" :          "CC26X2",
+        "ECJPAKE" :        "CC26X2",
+        "EDDSA" :          "CC26X2",
+        "SHA2" :           "CC26X2",
+        "Temperature" :    "CC26X2",
+        "AESCCM" :         "CC26X4",
+        "AESGCM" :         "CC26X4",
+        "SecureCallback" : "CC26X4",
+        "Watchdog" :       "CC26X4"
     };
 
     /* CC26X2 and CC26X2R7 specific module delegates */

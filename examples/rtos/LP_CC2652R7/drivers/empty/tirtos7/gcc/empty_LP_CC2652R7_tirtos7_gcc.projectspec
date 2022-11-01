@@ -69,6 +69,7 @@
         "
         description="An empty RTOS project">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../empty.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

@@ -505,7 +505,7 @@ static int8_t checkImagesExtFlash(void)
                     {
                         /* close external Flash gracefully before jumping */
                         extFlashClose();
-                        jumpToPrgEntry(imgFxdHdr.prgEntry);
+                        jumpToPrgEntry((uint32_t*)imgFxdHdr.prgEntry);
                     }
                 }
                 else /* CRC check failed */
@@ -621,7 +621,7 @@ static uint8_t checkImagesIntFlash(uint8_t flashPageNum)
                    if(Bim_authenticateImage((uint32_t)startAddr, imgHdr.len, false) == SUCCESS)
                    {
 #endif
-                       jumpToPrgEntry(imgHdr.prgEntry);  /* No return from here */
+                       jumpToPrgEntry((uint32_t*)imgHdr.prgEntry);  /* No return from here */
 #if (defined(SECURITY))
                    }
 #endif
@@ -638,7 +638,7 @@ static uint8_t checkImagesIntFlash(uint8_t flashPageNum)
                 if(Bim_authenticateImage((uint32_t)startAddr, imgHdr.len, false) == SUCCESS)
                 {
 #endif
-                jumpToPrgEntry(imgHdr.prgEntry);  /* No return from here */
+                jumpToPrgEntry((uint32_t*)imgHdr.prgEntry);  /* No return from here */
 #if (defined(SECURITY))
                 }
 #endif
@@ -719,7 +719,7 @@ static bool Bim_revertFactoryImage(void)
             {
 #endif
             /* Jump to program entry to execute it */
-            jumpToPrgEntry(metadataHdr.fixedHdr.prgEntry);
+            jumpToPrgEntry((uint32_t*)metadataHdr.fixedHdr.prgEntry);
 #if defined(SECURITY)
             }
 #endif

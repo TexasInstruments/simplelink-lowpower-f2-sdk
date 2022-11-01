@@ -3026,12 +3026,12 @@ bool multi_role_doSetAdvPhy(uint8_t index)
   uint16_t props;
   GapAdv_primaryPHY_t phy;
   bool isAdvActive = mrIsAdvertising;
-  
+
   switch (MRMenu_advPhy[index].value)
   {
     case MR_ADV_LEGACY_PHY_1_MBPS:
         props = GAP_ADV_PROP_CONNECTABLE | GAP_ADV_PROP_SCANNABLE | GAP_ADV_PROP_LEGACY;
-        phy = GAP_ADV_PRIM_PHY_1_MBPS;     
+        phy = GAP_ADV_PRIM_PHY_1_MBPS;
     break;
     case MR_ADV_EXT_PHY_1_MBPS:
         props = GAP_ADV_PROP_CONNECTABLE;
@@ -3057,7 +3057,7 @@ bool multi_role_doSetAdvPhy(uint8_t index)
     // Turn on advertising
     GapAdv_enable(advHandle, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
   }
-  
+
   Display_printf(dispHandle, MR_ROW_CUR_CONN, 0, "Advertise PHY preference: %s",
                  TBM_GET_ACTION_DESC(&mrMenuAdvPhy, index));
 

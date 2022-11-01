@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,6 +78,8 @@ let deviceSettingsTable = {
         defaultNumInterrupts : 16 + 47,
         defaultResetVectorAddress : 0x00000000,
         defaultVectorTableAddress : 0x20000000,
+        defaultSpeResetVectorAddress : 0x2000C000,
+        defaultSpeVectorTableAddress : 0x2000C000,
         defaultCpuFrequency : 48000000
     },
     "cc32xx" : {
@@ -183,6 +185,8 @@ exports = {
     defaultNumInterrupts : deviceSettings.defaultNumInterrupts,
     defaultResetVectorAddress : deviceSettings.defaultResetVectorAddress,
     defaultVectorTableAddress : deviceSettings.defaultVectorTableAddress,
+    defaultSpeResetVectorAddress : deviceSettings.defaultSpeResetVectorAddress,
+    defaultSpeVectorTableAddress : deviceSettings.defaultSpeVectorTableAddress,
 
     /* Timestamp module settings */
     availableTimestampProviderModules : deviceSettings.availableTimestampProviderModules,

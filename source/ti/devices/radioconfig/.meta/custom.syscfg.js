@@ -182,6 +182,11 @@ function generateDisabledOptions(category) {
             });
         }
         else if ("settings5dbm" in pi && RfDesign.has10dBmPA()) {
+            // If no 10 dBm existing setting exists, allow the 5 dBm setting to be used
+            // NB! IEEE 15.4 for CC2674P10
+            if ("settings10dbm" in pi && pi.settings10dbm.length === 0) {
+                return [];
+            }
             pi.settings5dbm.forEach((opt) => {
                 opts.push({
                     name: opt.name,

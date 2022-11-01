@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "200 kbps, 2-GFSK, 100 kHz deviation WiSUN mode #4b compatible PHY. (Pre-silicon settings)",
+        "Name": "Wi-SUN mode #4b, 200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Release Candidate)",
+        "Description": "200 kbps, 2-GFSK, 100 kHz deviation WiSUN mode #4b compatible PHY. (Release Candidate)",
         "Frequency": "920.8",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -154,7 +154,7 @@
                             "Element32b": {
                                 "_type": "ELEMENT",
                                 "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
-                                "$": "0x000388D3"
+                                "$": "0x004388D3"
                             }
                         },
                         {

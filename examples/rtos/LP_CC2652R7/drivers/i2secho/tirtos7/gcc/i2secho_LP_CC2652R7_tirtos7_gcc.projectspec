@@ -69,6 +69,7 @@
         "
         description="An example that performs audio echo on the CC32XXAUDBOOST BoosterPack">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../i2secho.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

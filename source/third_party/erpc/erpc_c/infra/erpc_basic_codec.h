@@ -13,13 +13,6 @@
 
 #include "erpc_codec.h"
 #include <new>
-#include <ti/utils/runtime/Bench.h>
-
-/* bench declarations */
-Bench_decl(CONFIG_ERPC_BasicCodecFactory_create_t0);
-Bench_decl(CONFIG_ERPC_BasicCodecFactory_create_t1);
-Bench_decl(CONFIG_ERPC_BasicCodecFactory_dispose_t0);
-Bench_decl(CONFIG_ERPC_BasicCodecFactory_dispose_t1);
 
 /*!
  * @addtogroup infra_codec
@@ -395,11 +388,7 @@ public:
     {
         BasicCodec *codec;
 
-        Bench_logTS(CONFIG_ERPC_BasicCodecFactory_create_t0);
-
         codec = new (std::nothrow) BasicCodec;
-
-        Bench_logTS(CONFIG_ERPC_BasicCodecFactory_create_t1);
 
         return codec;
     }
@@ -412,11 +401,7 @@ public:
 //  virtual void dispose(Codec *codec) { delete codec; }
     virtual void dispose(Codec *codec)
     {
-        Bench_logTS(CONFIG_ERPC_BasicCodecFactory_dispose_t0);
-
         delete codec;
-
-        Bench_logTS(CONFIG_ERPC_BasicCodecFactory_dispose_t1);
     }
 };
 

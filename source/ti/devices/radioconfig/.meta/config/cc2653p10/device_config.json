@@ -37,12 +37,12 @@
             {
                 "_file": "param_definition.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2674p10_ble_pg10"
+                "$": ".\/..\/config\/cc2674p10_ble_pg20"
             },
             {
                 "_file": "param_definition.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg10"
+                "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg20"
             },
             {
                 "_file": "param_cmd_mapping.json",
@@ -67,7 +67,7 @@
             {
                 "_file": "rf_command_definitions.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1352p_ble_pg21"
+                "$": ".\/..\/config\/cc2651p3_ble_pg10"
             },
             {
                 "_file": "rf_command_definitions.json",
@@ -77,32 +77,32 @@
             {
                 "_file": "categories.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2653p10_ble_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc2653p10_ble_pg20\/cmd_settings"
             },
             {
                 "_file": "categories.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2653p10_ieee_15_4_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc2653p10_ieee_15_4_pg20\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2674p10_ble_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc1352p_ble_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg10\/cmd_settings"
+                "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21\/cmd_settings"
             },
             {
                 "_file": "dummy_file_overrides.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2653p10_ble_pg10\/overrides"
+                "$": ".\/..\/config\/cc2653p10_ble_pg20\/overrides"
             },
             {
                 "_file": "dummy_file_overrides.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2653p10_ieee_15_4_pg10\/overrides"
+                "$": ".\/..\/config\/cc2653p10_ieee_15_4_pg20\/overrides"
             }
         ]
     }

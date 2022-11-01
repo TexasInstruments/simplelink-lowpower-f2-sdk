@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       hw_ccfg_simple_struct_h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 * Copyright (c) 2015 - 2017, Texas Instruments Incorporated
 * All rights reserved.
@@ -70,7 +68,7 @@ typedef struct
     uint32_t   CCFG_TRUSTZONE_FLASH_CFG      ; // 0x50000054
     uint32_t   CCFG_TRUSTZONE_SRAM_CFG       ; // 0x50000058
     uint32_t   CCFG_SRAM_CFG                 ; // 0x5000005C
-    uint32_t   RESERVED0                     ; // 0x50000060
+    uint32_t   RESERVED96                    ; // 0x50000060
     uint32_t   CCFG_CPU_LOCK_CFG             ; // 0x50000064
     uint32_t   CCFG_DEB_AUTH_CFG             ; // 0x50000068
     uint32_t   CCFG_CKEY0                    ; // 0x5000006C

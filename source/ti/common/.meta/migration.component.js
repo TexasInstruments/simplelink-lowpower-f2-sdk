@@ -100,11 +100,11 @@ function getExtraMigrationMarkdown()
         {
             isStackProject = true;
 
-            // Workaround for RF driver examples provided by EasyLink
+            // Workaround for RF driver examples 
             if(stackPath === "/ti/devices/radioconfig/custom")
             {
-                stackPath = "/ti/easylink/easylink";
-                stackName = "EasyLink";
+                stackPath = "/ti/prop_rf/prop_rf";
+                stackName = "PropRF";
             }
 
             // Get the stack's common functions
@@ -208,11 +208,11 @@ function getIsMigrationValidDialog(args)
         let stackName = stack.name;
         if(system.modules[stackPath])
         {
-            // Workaround for RF driver examples provided by EasyLink
+            // Workaround for RF driver examples 
             if(stackPath === "/ti/devices/radioconfig/custom")
             {
-                stackPath = "/ti/easylink/easylink";
-                stackName = "EasyLink";
+                stackPath = "/ti/prop_rf/prop_rf";
+                stackName = "PropRF";
             }
 
             // Get the stack's common functions

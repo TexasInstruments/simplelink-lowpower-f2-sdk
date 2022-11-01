@@ -39,7 +39,7 @@
 /* Boosterpacks */
 if (system.deviceData.deviceId !== "CC2652P1FSIP")
 {
-	var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
+    var BOOSTXL_SHARP128 = scripting.addHardware("/ti/boards/boosterpacks/BOOSTXL-SHARP128");
 }
 
 /* ======== TIRTOS7 ======== */

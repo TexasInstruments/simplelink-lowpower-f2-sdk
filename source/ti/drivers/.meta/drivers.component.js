@@ -60,6 +60,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESECB",
                 "/ti/drivers/AESGCM",
                 "/ti/drivers/Board",
+                //"/ti/drivers/CryptoKey", // unused - no configuration currently required for CC26X4 family
                 "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
                 "/ti/drivers/ECDH",
@@ -69,7 +70,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/GPIO",
                 "/ti/drivers/I2C",
                 "/ti/drivers/I2S",
-                //"/ti/drivers/ITM",  // example itmwrite is not working on Thor1M devices (TIDRIVERS-5334)
+                //"/ti/drivers/ITM",  // example itmwrite is not working on CC26X4 family devices (TIDRIVERS-5334)
                 "/ti/drivers/NVS",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",
@@ -80,7 +81,6 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
@@ -134,7 +134,6 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
@@ -184,7 +183,6 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
                 "/ti/drivers/TRNG",
-                "/ti/drivers/UART",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
@@ -208,7 +206,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             description: description,
             modules: [
                 "/ti/display/Display",
-                // "/ti/drivers/ADC",
+                "/ti/drivers/ADC",
                 // "/ti/drivers/ADCBuf",
                 "/ti/drivers/AESCBC",
                 "/ti/drivers/AESCCM",
@@ -217,6 +215,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESCTRDRBG",
                 "/ti/drivers/AESECB",
                 "/ti/drivers/Board",
+                "/ti/drivers/Comparator",
                 // "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
                 "/ti/drivers/ECDH",
@@ -231,9 +230,8 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 // "/ti/drivers/SD",
                 // "/ti/drivers/SHA2",
                 "/ti/drivers/SPI",
-                // "/ti/drivers/Temperature",
+                "/ti/drivers/Temperature",
                 // "/ti/drivers/Timer",
-                // "/ti/drivers/UART",
                 "/ti/drivers/UART2"
                 // "/ti/drivers/Watchdog"
             ],

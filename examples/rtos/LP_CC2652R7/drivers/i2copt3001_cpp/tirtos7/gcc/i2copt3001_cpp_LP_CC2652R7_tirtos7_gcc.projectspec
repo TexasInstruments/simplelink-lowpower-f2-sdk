@@ -70,6 +70,7 @@
         "
         description="A C++ example on how to use the I2C driver with the OPT3001 sensor">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../i2copt3001_cpp.cpp" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

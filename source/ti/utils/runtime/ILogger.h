@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 #include <stdint.h>
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -62,21 +62,14 @@ extern void ILogger_event(ILogger_Handle handle,
 /*
  *  ======== ILogger_printf ========
  */
-extern void ILogger_printf(ILogger_Handle handle,
-                           uint32_t header,
-                           uint32_t numArgs,
-                           ...);
+extern void ILogger_printf(ILogger_Handle handle, uint32_t header, uint32_t numArgs, ...);
 
 /*
  *  ======== ILogger_buf ========
  */
-extern void ILogger_buf(ILogger_Handle handle,
-                        uint32_t header,
-                        const char* format,
-                        uint8_t *data,
-                        size_t size);
+extern void ILogger_buf(ILogger_Handle handle, uint32_t header, const char *format, uint8_t *data, size_t size);
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 

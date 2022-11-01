@@ -69,6 +69,7 @@
         "
         description="An example that sets up a simple timer to toggle an LED every second">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../timerled.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

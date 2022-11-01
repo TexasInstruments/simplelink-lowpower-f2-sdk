@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,19 @@ let family = Common.device2Family(system.deviceData, "AESCMAC");
 let config = [];
 
 /*
+ *  ======== validate ========
+ */
+function validate(inst, validation)
+{
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (inst.$module.$instances.length > 2) {
+            validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
+                                driver instances are fixed in the SPE image. Two AESCMAC instances are supported.`, inst);
+        }
+    }
+}
+
+/*
  *  ======== base ========
  *  Define the base AESCMAC properties and methods
  */
@@ -69,7 +82,8 @@ code using AES in CMAC or CBC-MAC mode.
 `,
     defaultInstanceName : "CONFIG_AESCMAC_",
     config              : Common.addNameConfig(config, "/ti/drivers/AESCMAC", "CONFIG_AESCMAC_"),
-    modules: Common.autoForceModules(["Board", "Power", "DMA"])
+    modules             : Common.autoForceModules(["Board", "Power", "DMA"]),
+    validate            : validate
 };
 
 /* extend the base exports to include family-specific content */

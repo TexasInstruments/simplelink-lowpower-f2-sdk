@@ -76,7 +76,6 @@
 #include <ti/display/Display.h>
 #include <ti/drivers/GPIO.h>
 
-//#include "crypto_board.h"
 #include "crypto_mac_api.h"
 #include <chipinfo.h>
 
@@ -85,7 +84,6 @@
 #include <hw_memmap.h>
 
 #include <ti/sysbios/hal/Hwi.h>
-#include "pwrmon.h"
 
 #include "cpu.h"
 
@@ -111,6 +109,9 @@
 
 /* Include DMM module */
 #include <dmm/dmm_scheduler.h>
+
+/* Internal POSIX Mapping for thread handle */
+#include <tirtos/_pthread.h>
 
 #include "ti_dmm_application_policy.h"
 #if ZG_BUILD_ENDDEVICE_TYPE
@@ -243,7 +244,7 @@ static const uint8_t dummyExtAddr[] =
  *                                     MAIN_ASSERT_ICALL, or
  *                                     MAIN_ASSERT_MAC
  */
-void Main_assertHandler(uint8_t assertReason)
+int  Main_assertHandler(uint8_t assertReason)
 {
     Main_assertReason = assertReason;
 
@@ -400,7 +401,7 @@ void assertHandler(void)
 /*!
  * @brief       "main()" function - starting point
  */
-Void main()
+int main()
 {
 #ifdef BLE_START
     Task_Handle* pBleTaskHndl;

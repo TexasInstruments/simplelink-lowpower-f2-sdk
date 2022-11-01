@@ -182,7 +182,7 @@ define symbol FLASH_END             = FLASH_START + FLASH_SIZE - RESERVED_SIZE -
 // Stack
 //
 
-define symbol STACK_SIZE          = 0x400;
+define symbol STACK_SIZE          = 0xA00;
 define symbol STACK_START         = RAM_END + 1;
 define symbol STACK_END           = STACK_START - STACK_SIZE;
 //

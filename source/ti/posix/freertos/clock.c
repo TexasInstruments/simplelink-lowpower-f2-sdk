@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,16 +49,16 @@
  *  The maximum number of ticks before the tick count rolls over.  We use
  *  0xFFFFFFFF instead of 0x100000000 to avoid 64-bit math.
  */
-#define MAX_TICKS 0xFFFFFFFF
+#define CLOCK_MAX_TICKS 0xFFFFFFFF
 
-/* The integral number of seconds in a period of MAX_TICKS */
-#define MAX_SECONDS (MAX_TICKS / configTICK_RATE_HZ)
+/* The integral number of seconds in a period of CLOCK_MAX_TICKS */
+#define CLOCK_MAX_SECONDS (CLOCK_MAX_TICKS / configTICK_RATE_HZ)
 
-/* The total number of system ticks in MAX_SECONDS seconds */
-#define MAX_SECONDS_TICKS (MAX_SECONDS * configTICK_RATE_HZ)
+/* The total number of system ticks in CLOCK_MAX_SECONDS seconds */
+#define CLOCK_MAX_SECONDS_TICKS (CLOCK_MAX_SECONDS * configTICK_RATE_HZ)
 
 /*
- *  MAX_TICKS - MAX_SECONDS_TICKS is the number of ticks left over that
+ *  CLOCK_MAX_TICKS - CLOCK_MAX_SECONDS_TICKS is the number of ticks left over that
  *  don't make up a whole second.  We add 1 to get the remaining number
  *  of ticks when the tick count wraps back to 0.  REM_TICKS could
  *  theoritically be equivalent to 1 second (when the tick period divides
@@ -67,7 +67,7 @@
  *  However, this will not affect the seconds calculation in clock_gettime(),
  *  so we can ignore this special case.
  */
-#define REM_TICKS ((MAX_TICKS - MAX_SECONDS_TICKS) + 1)
+#define REM_TICKS ((CLOCK_MAX_TICKS - CLOCK_MAX_SECONDS_TICKS) + 1)
 
 /* number of seconds from 1900 (TI Epoch) to 1970 (POSIX Epoch) */
 #define TI_EPOCH_OFFSET 2208988800
@@ -145,7 +145,7 @@ int clock_nanosleep(clockid_t clock_id, int flags,
     }
     else {
         /* max interval, needs to be fixed: TIRTOS-1314 */
-        if (rqtp->tv_sec >= MAX_SECONDS) {
+        if (rqtp->tv_sec >= CLOCK_MAX_SECONDS) {
             return (EINVAL);
         }
 
@@ -334,5 +334,5 @@ static void _clock_gettimeMono(struct timespec *ts)
     remSecs = remTicks / configTICK_RATE_HZ;
     remTicks = remTicks - (remSecs * configTICK_RATE_HZ);
 
-    ts->tv_sec = (time_t)secs + remSecs + (MAX_SECONDS * numRollovers);
+    ts->tv_sec = (time_t)secs + remSecs + (CLOCK_MAX_SECONDS * numRollovers);
     ts->tv_nsec = (unsigned long)(remTicks * (1000000000 / configTICK_RATE_HZ));}

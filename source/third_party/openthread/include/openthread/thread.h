@@ -138,6 +138,14 @@ typedef struct
     uint8_t      mAge;                 ///< Time last heard
     bool         mAllocated : 1;       ///< Router ID allocated or not
     bool         mLinkEstablished : 1; ///< Link established with Router ID or not
+    uint8_t      mVersion;             ///< Thread version
+
+    /**
+     * Parent CSL parameters are only relevant when OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE is enabled.
+     *
+     */
+    uint8_t mCslClockAccuracy; ///< CSL clock accuracy, in ± ppm
+    uint8_t mCslUncertainty;   ///< CSL uncertainty, in ±10 us
 } otRouterInfo;
 
 /**
@@ -195,9 +203,20 @@ typedef struct otThreadParentResponseInfo
 } otThreadParentResponseInfo;
 
 /**
+ * This callback informs the application that the detaching process has finished.
+ *
+ * @param[in] aContext A pointer to application-specific context.
+ *
+ */
+typedef void (*otDetachGracefullyCallback)(void *aContext);
+
+/**
  * This function starts Thread protocol operation.
  *
  * The interface must be up when calling this function.
+ *
+ * Calling this function with @p aEnabled set to FALSE stops any ongoing processes of detaching started by
+ * otThreadDetachGracefully(). Its callback will be called.
  *
  * @param[in] aInstance A pointer to an OpenThread instance.
  * @param[in] aEnabled  TRUE if Thread is enabled, FALSE otherwise.
@@ -309,7 +328,7 @@ uint32_t otThreadGetChildTimeout(otInstance *aInstance);
 void otThreadSetChildTimeout(otInstance *aInstance, uint32_t aTimeout);
 
 /**
- * Get the IEEE 802.15.4 Extended PAN ID.
+ * Gets the IEEE 802.15.4 Extended PAN ID.
  *
  * @param[in]  aInstance A pointer to an OpenThread instance.
  *
@@ -321,9 +340,9 @@ void otThreadSetChildTimeout(otInstance *aInstance, uint32_t aTimeout);
 const otExtendedPanId *otThreadGetExtendedPanId(otInstance *aInstance);
 
 /**
- * Set the IEEE 802.15.4 Extended PAN ID.
+ * Sets the IEEE 802.15.4 Extended PAN ID.
  *
- * This function can only be called while Thread protocols are disabled.  A successful
+ * @note Can only be called while Thread protocols are disabled. A successful
  * call to this function invalidates the Active and Pending Operational Datasets in
  * non-volatile memory.
  *
@@ -574,9 +593,9 @@ const char *otThreadGetNetworkName(otInstance *aInstance);
 otError otThreadSetNetworkName(otInstance *aInstance, const char *aNetworkName);
 
 /**
- * Get the Thread Domain Name.
+ * Gets the Thread Domain Name.
  *
- * This function is only available since Thread 1.2.
+ * @note Available since Thread 1.2.
  *
  * @param[in]  aInstance A pointer to an OpenThread instance.
  *
@@ -588,10 +607,9 @@ otError otThreadSetNetworkName(otInstance *aInstance, const char *aNetworkName);
 const char *otThreadGetDomainName(otInstance *aInstance);
 
 /**
- * Set the Thread Domain Name.
+ * Sets the Thread Domain Name. Only succeeds when Thread protocols are disabled.
  *
- * This function is only available since Thread 1.2.
- * This function succeeds only when Thread protocols are disabled.
+ * @note Available since Thread 1.2.
  *
  * @param[in]  aInstance     A pointer to an OpenThread instance.
  * @param[in]  aDomainName   A pointer to the Thread Domain Name.
@@ -605,9 +623,11 @@ const char *otThreadGetDomainName(otInstance *aInstance);
 otError otThreadSetDomainName(otInstance *aInstance, const char *aDomainName);
 
 /**
- * Set/Clear the Interface Identifier manually specified for the Thread Domain Unicast Address.
+ * Sets or clears the Interface Identifier manually specified for the Thread Domain Unicast Address.
  *
- * This function is only available since Thread 1.2 when `OPENTHREAD_CONFIG_DUA_ENABLE` is enabled.
+ * Available when `OPENTHREAD_CONFIG_DUA_ENABLE` is enabled.
+ *
+ * @note Only available since Thread 1.2.
  *
  * @param[in]  aInstance   A pointer to an OpenThread instance.
  * @param[in]  aIid        A pointer to the Interface Identifier to set or NULL to clear.
@@ -620,9 +640,11 @@ otError otThreadSetDomainName(otInstance *aInstance, const char *aDomainName);
 otError otThreadSetFixedDuaInterfaceIdentifier(otInstance *aInstance, const otIp6InterfaceIdentifier *aIid);
 
 /**
- * Get the Interface Identifier manually specified for the Thread Domain Unicast Address.
+ * Gets the Interface Identifier manually specified for the Thread Domain Unicast Address.
  *
- * This function is only available since Thread 1.2 when `OPENTHREAD_CONFIG_DUA_ENABLE` is enabled.
+ * Available when `OPENTHREAD_CONFIG_DUA_ENABLE` is enabled.
+ *
+ * @note Only available since Thread 1.2.
  *
  * @param[in]  aInstance A pointer to an OpenThread instance.
  *
@@ -834,7 +856,18 @@ otError otThreadGetParentAverageRssi(otInstance *aInstance, int8_t *aParentRssi)
 otError otThreadGetParentLastRssi(otInstance *aInstance, int8_t *aLastRssi);
 
 /**
- * Get the IPv6 counters.
+ * Starts the process for child to search for a better parent while staying attached to its current parent.
+ *
+ * Must be used when device is attached as a child.
+ *
+ * @retval OT_ERROR_NONE           Successfully started the process to search for a better parent.
+ * @retval OT_ERROR_INVALID_STATE  Device role is not child.
+ *
+ */
+otError otThreadSearchForBetterParent(otInstance *aInstance);
+
+/**
+ * Gets the IPv6 counters.
  *
  * @param[in]  aInstance  A pointer to an OpenThread instance.
  *
@@ -844,7 +877,7 @@ otError otThreadGetParentLastRssi(otInstance *aInstance, int8_t *aLastRssi);
 const otIpCounters *otThreadGetIp6Counters(otInstance *aInstance);
 
 /**
- * Reset the IPv6 counters.
+ * Resets the IPv6 counters.
  *
  * @param[in]  aInstance  A pointer to an OpenThread instance.
  *
@@ -852,7 +885,7 @@ const otIpCounters *otThreadGetIp6Counters(otInstance *aInstance);
 void otThreadResetIp6Counters(otInstance *aInstance);
 
 /**
- * Get the Thread MLE counters.
+ * Gets the Thread MLE counters.
  *
  * @param[in]  aInstance  A pointer to an OpenThread instance.
  *
@@ -862,7 +895,7 @@ void otThreadResetIp6Counters(otInstance *aInstance);
 const otMleCounters *otThreadGetMleCounters(otInstance *aInstance);
 
 /**
- * Reset the Thread MLE counters.
+ * Resets the Thread MLE counters.
  *
  * @param[in]  aInstance  A pointer to an OpenThread instance.
  *
@@ -1008,6 +1041,21 @@ otError otThreadSendProactiveBackboneNotification(otInstance *              aIns
                                                   otIp6Address *            aTarget,
                                                   otIp6InterfaceIdentifier *aMlIid,
                                                   uint32_t                  aTimeSinceLastTransaction);
+
+/**
+ * This function notifies other nodes in the network (if any) and then stops Thread protocol operation.
+ *
+ * It sends an Address Release if it's a router, or sets its child timeout to 0 if it's a child.
+ *
+ * @param[in] aInstance A pointer to an OpenThread instance.
+ * @param[in] aCallback A pointer to a function that is called upon finishing detaching.
+ * @param[in] aContext  A pointer to callback application-specific context.
+ *
+ * @retval OT_ERROR_NONE Successfully started detaching.
+ * @retval OT_ERROR_BUSY Detaching is already in progress.
+ *
+ */
+otError otThreadDetachGracefully(otInstance *aInstance, otDetachGracefullyCallback aCallback, void *aContext);
 
 /**
  * @}

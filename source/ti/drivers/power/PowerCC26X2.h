@@ -22,7 +22,7 @@
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQueueNTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
@@ -153,6 +153,31 @@ extern "C" {
 #define PowerCC26X2_DO_CALIBRATE       3
 /* \endcond */
 
+/*!
+ * @brief Reasons the device has booted or rebooted.
+ */
+typedef enum
+{
+    /*! Device woke up from shutdown due to an IO event */
+    PowerCC26X2_RESET_SHUTDOWN_IO = RSTSRC_WAKEUP_FROM_SHUTDOWN,
+    /*! Device woke up from noise on the JTAG TCK line */
+    PowerCC26X2_RESET_TCK_NOISE   = RSTSRC_WAKEUP_FROM_TCK_NOISE,
+    /*! Device reset trggered by software or watchdog timeout */
+    PowerCC26X2_RESET_SYSTEM      = RSTSRC_SYSRESET,
+    /*! Device woke up due to warm reset event. Usually debugger related. */
+    PowerCC26X2_RESET_WARM_RESET  = RSTSRC_WARMRESET,
+    /*! Device reset due to clock loss */
+    PowerCC26X2_RESET_CLK         = RSTSRC_CLK_LOSS,
+    /*! Device reset due to VDDR brownout event */
+    PowerCC26X2_RESET_VDDR        = RSTSRC_VDDR_LOSS,
+    /*! Device reset due to VDDS brownout event */
+    PowerCC26X2_RESET_VDDS        = RSTSRC_VDDS_LOSS,
+    /*! Device reset due to pin reset */
+    PowerCC26X2_RESET_PIN         = RSTSRC_PIN_RESET,
+    /*! Device booted due to power on reset */
+    PowerCC26X2_RESET_POR         = RSTSRC_PWR_ON,
+} PowerCC26X2_ResetReason;
+
 /*! @brief Global configuration structure */
 typedef struct
 {
@@ -277,7 +302,7 @@ typedef struct
     unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
     Power_PolicyFxn policyFxn; /*!< The Power policy function */
-    uint32_t lastResetReason;
+    PowerCC26X2_ResetReason lastResetReason;
 } PowerCC26X2_ModuleState;
 
 /*!
@@ -296,18 +321,30 @@ void PowerCC26X2_enableHposcRtcCompensation(void);
 /*!
  * @brief Returns the reason for the most recent reset
  *
- * Returns one of the following values from sys_ctrl.h:
- * RSTSRC_PWR_ON: Power-on reset
- * RSTSRC_PIN_RESET: Pin reset
- * RSTSRC_VDDS_LOSS: Brown-out from VDDS
- * RSTSRC_VDDR_LOSS: Brown-out from VDDS
- * RSTSRC_CLK_LOSS: Lost clock
- * RSTSRC_SYSRESET: System reset (software or watchdog reset)
- * RSTSRC_WARMRESET: Warm reset (usually by the debugger)
- * RSTSRC_WAKEUP_FROM_SHUTDOWN: Waking from shutdown
- * RSTSRC_WAKEUP_FROM_TCK_NOISE: Woken up by TCLK noise
+ * @pre Power_init()
+ * @post PowerCC26X2_releaseLatches()
+ * @return #PowerCC26X2_ResetReason
  */
-uint32_t PowerCC26X2_getResetReason(void);
+PowerCC26X2_ResetReason PowerCC26X2_getResetReason(void);
+
+/*!
+ * @brief Unlatch all IOs
+ *
+ * This function releases the latches on all frozen IOs. This function should
+ * be called after waking up from shutdown and reconfiguring the IO state so
+ * as not to cause glitches.
+ *
+ * @note Calling this function will clear the reset reason register if it was
+ *       #PowerCC26X2_RESET_SHUTDOWN_IO and cause #PowerCC26X2_getResetReason
+ *       not to return the true reset reason.
+ *
+ * @pre Power_shutdown()
+ * @pre PowerCC26X2_getResetReason()
+ */
+static inline void PowerCC26X2_releaseLatches(void)
+{
+    PowerCtrlPadSleepDisable();
+}
 
 #ifdef __cplusplus
 }

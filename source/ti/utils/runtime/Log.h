@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,15 +66,19 @@
  *
  *  The following terms are used throughout the log documentation.
  *
- *  | Term                            | Definition                                                                                                                                                                                                                                                                                                                     |
+ *  | Term                            | Definition |
  *  |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- *  | `LogModule`                     | A parameter passed to Log APIs to indicate which software module the log statement originated from.                                                                                                                                                                                                                            |
- *  | `LogLevel`                      | The severity or importance of a given log statement.                                                                                                                                                                                                                                                                           |
- *  | `BackendDelegate`               | Also simply called a logger. This is a transport specific logger implementation. <br> The Logging framework is flexible such that multiple backend delegates may exist in a single firmware image.                                                                                                                             |
- *  | `CallSite`                      | A specific invocation of a Log API in a given file or program.                                                                                                                                                                                                                                                                 |
- *  | `LogSite`                       | The syscfg module that handles routing of `LogModule`s to specific `BackendDelegate`s.                                                                                                                                                                                                                                         |
- *  | Link Time Optimization (LTO)    | Conditional inclusion/exclusion of logs using link time optimization/dead code elimination. <br> This approach will push the decision of log inclusion to the linker. <br> In order to achieve good performance all code and libraries participating in logging must be compiled and linked at the highest optimization level. |
- *  | Preprocessor Optimization (PPO) | Conditional inclusion/exclusion of logs using the C preprocessor. The decision to include/exclude logs is made during preprocessing.                                                                                                                                                                                           |
+ *  | `LogModule`                     | A parameter passed to Log APIs to indicate which software module the log
+ * statement originated from. | | `LogLevel`                      | The severity or importance of a given log statement.
+ * | | `BackendDelegate`               | Also simply called a logger. This is a transport specific logger
+ * implementation. <br> The Logging framework is flexible such that multiple backend delegates may exist in a single
+ * firmware image. | | `CallSite`                      | A specific invocation of a Log API in a given file or program.
+ * | | `LogSite`                       | The syscfg module that handles routing of `LogModule`s to specific
+ * `BackendDelegate`s. | | Link Time Optimization (LTO)    | Conditional inclusion/exclusion of logs using link time
+ * optimization/dead code elimination. <br> This approach will push the decision of log inclusion to the linker. <br> In
+ * order to achieve good performance all code and libraries participating in logging must be compiled and linked at the
+ * highest optimization level. | | Preprocessor Optimization (PPO) | Conditional inclusion/exclusion of logs using the C
+ * preprocessor. The decision to include/exclude logs is made during preprocessing. |
  *
  *  ## Modules ##
  *
@@ -101,9 +105,10 @@
  *  @code
  *  const uint32_t        ti_utils_runtime_LogMain_LogSite_level = 0;
  *  const ILogger_Handle  ti_utils_runtime_LogMain_LogSite_handle = &ti_loggers_utils_LoggerBuf_config[0];
- *  extern void           ti_utils_runtime_LogMain_LogSite_event(ILogger_Handle, uint32_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t);
- *  extern void           ti_utils_runtime_LogMain_LogSite_printf(ILogger_Handle, uint32_t, uint32_t, ...);
- *  extern void           ti_utils_runtime_LogMain_LogSite_buf(ILogger_Handle, uint32_t, const char*, uint8_t *, size_t);
+ *  extern void           ti_utils_runtime_LogMain_LogSite_event(ILogger_Handle, uint32_t, uintptr_t, uintptr_t,
+ * uintptr_t, uintptr_t, uintptr_t); extern void           ti_utils_runtime_LogMain_LogSite_printf(ILogger_Handle,
+ * uint32_t, uint32_t, ...); extern void           ti_utils_runtime_LogMain_LogSite_buf(ILogger_Handle, uint32_t, const
+ * char*, uint8_t *, size_t);
  *  @endcode
  *
  *  In summary, each new module will instantiate a level bitmask and handle.
@@ -294,10 +299,9 @@
 
 #include <ti/utils/runtime/ILogger.h>
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
-
 
 /*
  *  ======== undef all working macros ========
@@ -309,54 +313,53 @@ extern "C" {
  */
 #if ti_utils_runtime_Log_USE_LTO || ti_utils_runtime_Log_USE_PPO
 
-#undef Log_MASK_INFO1
-#undef Log_MASK_INFO2
-#undef Log_MASK_INFO3
-#undef Log_MASK_INFO4
-#undef Log_MASK_INFO5
-#undef Log_MASK_INFO6
-#undef Log_MASK_WARN
-#undef Log_MASK_ERROR
-#undef Log_MASK
-#undef _Log_event_B
-#undef _Log_buf_B
-#undef _Log_printf_B
-#undef _Log_DECL_Write
-#undef _Log_DECL_Write_A
-#undef _Log_DECL_Write_B
-#undef _Log_DECL_Handle
-#undef _Log_DECL_Handle_A
-#undef _Log_DECL_Handle_B
-#undef _Log_DECL_Level
-#undef _Log_DECL_Level_A
-#undef _Log_DECL_Level_B
-#undef _Log_DECL_buf
-#undef _Log_DECL_buf_A
-#undef _Log_DECL_buf_B
-#undef _Log_DECL_Printf
-#undef _Log_DECL_Printf_A
-#undef _Log_DECL_Printf_B
+    #undef Log_MASK_INFO1
+    #undef Log_MASK_INFO2
+    #undef Log_MASK_INFO3
+    #undef Log_MASK_INFO4
+    #undef Log_MASK_INFO5
+    #undef Log_MASK_INFO6
+    #undef Log_MASK_WARN
+    #undef Log_MASK_ERROR
+    #undef Log_MASK
+    #undef _Log_event_B
+    #undef _Log_buf_B
+    #undef _Log_printf_B
+    #undef _Log_DECL_Write
+    #undef _Log_DECL_Write_A
+    #undef _Log_DECL_Write_B
+    #undef _Log_DECL_Handle
+    #undef _Log_DECL_Handle_A
+    #undef _Log_DECL_Handle_B
+    #undef _Log_DECL_Level
+    #undef _Log_DECL_Level_A
+    #undef _Log_DECL_Level_B
+    #undef _Log_DECL_buf
+    #undef _Log_DECL_buf_A
+    #undef _Log_DECL_buf_B
+    #undef _Log_DECL_Printf
+    #undef _Log_DECL_Printf_A
+    #undef _Log_DECL_Printf_B
 
-
-#undef _Log_ARGS
-#undef _Log_ARGS_A
-#undef _Log_ARGS_B
-#undef _Log_ARGS0
-#undef _Log_ARGS1
-#undef _Log_ARGS2
-#undef _Log_ARGS3
-#undef _Log_ARGS4
-#undef _Log_NUMARGS
-#undef _Log_NUMARGS_A
-#undef _Log_NUMARGS_B
-#undef _Log_CONCAT2_A
-#undef _Log_CONCAT2
-#undef _Log__TOKEN2STRING_A
-#undef _Log_TOKEN2STRING
-#undef _Log_APPEND_META_TO_FORMAT
-#undef _Log_FIRST_ARG
-#undef _Log_PLACE_FORMAT_IN_SECTOR
-#undef _Log_GUARD_MACRO
+    #undef _Log_ARGS
+    #undef _Log_ARGS_A
+    #undef _Log_ARGS_B
+    #undef _Log_ARGS0
+    #undef _Log_ARGS1
+    #undef _Log_ARGS2
+    #undef _Log_ARGS3
+    #undef _Log_ARGS4
+    #undef _Log_NUMARGS
+    #undef _Log_NUMARGS_A
+    #undef _Log_NUMARGS_B
+    #undef _Log_CONCAT2_A
+    #undef _Log_CONCAT2
+    #undef _Log__TOKEN2STRING_A
+    #undef _Log_TOKEN2STRING
+    #undef _Log_APPEND_META_TO_FORMAT
+    #undef _Log_FIRST_ARG
+    #undef _Log_PLACE_FORMAT_IN_SECTOR
+    #undef _Log_GUARD_MACRO
 #endif
 
 /* these are always defined */
@@ -377,10 +380,10 @@ extern "C" {
  *  It must be defined before including this header file.
  */
 #ifdef ti_utils_runtime_Log_ENABLE_LTO
-#undef ti_utils_runtime_Log_ENABLE_LTO
-#define ti_utils_runtime_Log_USE_LTO 1
+    #undef ti_utils_runtime_Log_ENABLE_LTO
+    #define ti_utils_runtime_Log_USE_LTO 1
 #else
-#define ti_utils_runtime_Log_USE_LTO 0
+    #define ti_utils_runtime_Log_USE_LTO 0
 #endif
 
 /*
@@ -391,15 +394,15 @@ extern "C" {
  *  It must be defined before including this header file.
  */
 #ifdef ti_utils_runtime_Log_ENABLE_PPO
-#undef ti_utils_runtime_Log_ENABLE_PPO
-#define ti_utils_runtime_Log_USE_PPO 1
+    #undef ti_utils_runtime_Log_ENABLE_PPO
+    #define ti_utils_runtime_Log_USE_PPO 1
 #else
-#define ti_utils_runtime_Log_USE_PPO 0
+    #define ti_utils_runtime_Log_USE_PPO 0
 #endif
 
 /* cannot define both macros at the same time */
 #if ti_utils_runtime_Log_USE_LTO && ti_utils_runtime_Log_USE_PPO
-#error Cannot define both LTO and PPO at the same time.
+    #error Cannot define both LTO and PPO at the same time.
 #endif
 
 #if ti_utils_runtime_Log_USE_LTO || ti_utils_runtime_Log_USE_PPO
@@ -411,495 +414,434 @@ extern "C" {
 
 /** @cond NODOC */
 
-#ifdef ti_utils_runtime_Log_ENABLE_ALL
-#undef ti_utils_runtime_Log_ENABLE_ALL
+    #ifdef ti_utils_runtime_Log_ENABLE_ALL
+        #undef ti_utils_runtime_Log_ENABLE_ALL
 
-#define Log_MASK_INFO1 Log_INFO1
-#define Log_MASK_INFO2 Log_INFO2
-#define Log_MASK_INFO3 Log_INFO3
-#define Log_MASK_INFO4 Log_INFO4
-#define Log_MASK_INFO5 Log_INFO5
-#define Log_MASK_INFO6 Log_INFO6
-#define Log_MASK_WARN  Log_WARN
-#define Log_MASK_ERROR Log_ERROR
+        #define Log_MASK_INFO1 Log_INFO1
+        #define Log_MASK_INFO2 Log_INFO2
+        #define Log_MASK_INFO3 Log_INFO3
+        #define Log_MASK_INFO4 Log_INFO4
+        #define Log_MASK_INFO5 Log_INFO5
+        #define Log_MASK_INFO6 Log_INFO6
+        #define Log_MASK_WARN  Log_WARN
+        #define Log_MASK_ERROR Log_ERROR
 
-#else
+    #else
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO1
-#undef ti_utils_runtime_Log_ENABLE_INFO1
-#define Log_MASK_INFO1 Log_INFO1
-#else
-#define Log_MASK_INFO1 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO1
+            #undef ti_utils_runtime_Log_ENABLE_INFO1
+            #define Log_MASK_INFO1 Log_INFO1
+        #else
+            #define Log_MASK_INFO1 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO2
-#undef ti_utils_runtime_Log_ENABLE_INFO2
-#define Log_MASK_INFO2 Log_INFO2
-#else
-#define Log_MASK_INFO2 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO2
+            #undef ti_utils_runtime_Log_ENABLE_INFO2
+            #define Log_MASK_INFO2 Log_INFO2
+        #else
+            #define Log_MASK_INFO2 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO3
-#undef ti_utils_runtime_Log_ENABLE_INFO3
-#define Log_MASK_INFO3 Log_INFO3
-#else
-#define Log_MASK_INFO3 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO3
+            #undef ti_utils_runtime_Log_ENABLE_INFO3
+            #define Log_MASK_INFO3 Log_INFO3
+        #else
+            #define Log_MASK_INFO3 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO4
-#undef ti_utils_runtime_Log_ENABLE_INFO4
-#define Log_MASK_INFO4 Log_INFO4
-#else
-#define Log_MASK_INFO4 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO4
+            #undef ti_utils_runtime_Log_ENABLE_INFO4
+            #define Log_MASK_INFO4 Log_INFO4
+        #else
+            #define Log_MASK_INFO4 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO5
-#undef ti_utils_runtime_Log_ENABLE_INFO5
-#define Log_MASK_INFO5 Log_INFO5
-#else
-#define Log_MASK_INFO5 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO5
+            #undef ti_utils_runtime_Log_ENABLE_INFO5
+            #define Log_MASK_INFO5 Log_INFO5
+        #else
+            #define Log_MASK_INFO5 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_INFO6
-#undef ti_utils_runtime_Log_ENABLE_INFO6
-#define Log_MASK_INFO6 Log_INFO6
-#else
-#define Log_MASK_INFO6 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_INFO6
+            #undef ti_utils_runtime_Log_ENABLE_INFO6
+            #define Log_MASK_INFO6 Log_INFO6
+        #else
+            #define Log_MASK_INFO6 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_WARN
-#undef ti_utils_runtime_Log_ENABLE_WARN
-#define Log_MASK_WARN Log_WARN
-#else
-#define Log_MASK_WARN 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_WARN
+            #undef ti_utils_runtime_Log_ENABLE_WARN
+            #define Log_MASK_WARN Log_WARN
+        #else
+            #define Log_MASK_WARN 0
+        #endif
 
-#ifdef ti_utils_runtime_Log_ENABLE_ERROR
-#undef ti_utils_runtime_Log_ENABLE_ERROR
-#define Log_MASK_ERROR Log_ERROR
-#else
-#define Log_MASK_ERROR 0
-#endif
+        #ifdef ti_utils_runtime_Log_ENABLE_ERROR
+            #undef ti_utils_runtime_Log_ENABLE_ERROR
+            #define Log_MASK_ERROR Log_ERROR
+        #else
+            #define Log_MASK_ERROR 0
+        #endif
 
-#endif /* ti_utils_runtime_Log_ENABLE_ALL */
+    #endif /* ti_utils_runtime_Log_ENABLE_ALL */
 
-#define Log_MASK (\
-        Log_MASK_INFO1 | Log_MASK_INFO2 | Log_MASK_INFO3 | \
-        Log_MASK_INFO4 | Log_MASK_INFO5 | Log_MASK_INFO6 | \
-        Log_MASK_WARN  | Log_MASK_ERROR)
+    #define Log_MASK                                                                                           \
+        (Log_MASK_INFO1 | Log_MASK_INFO2 | Log_MASK_INFO3 | Log_MASK_INFO4 | Log_MASK_INFO5 | Log_MASK_INFO6 | \
+         Log_MASK_WARN | Log_MASK_ERROR)
 
+    /* This macro protects against sideffects of the C preprocessor expansion
+     * of log statements. Each log API should be guarded by it.
+     * An article explaining this behavior can be found here:
+     * https://gcc.gnu.org/onlinedocs/cpp/Swallowing-the-Semicolon.html
+     */
+    #define _Log_GUARD_MACRO(x) \
+        do                      \
+        {                       \
+            x                   \
+        } while (0)
 
-/* This macro protects against sideffects of the C preprocessor expansion
- * of log statements. Each log API should be guarded by it.
- * An article explaining this behavior can be found here:
- * https://gcc.gnu.org/onlinedocs/cpp/Swallowing-the-Semicolon.html
- */
-#define _Log_GUARD_MACRO(x) do{ x }while(0)
+    /*
+     *
+     *  ======== Log Private Macros ========
+     *
+     *  The following macros are intended to be private to the log module and
+     *  are not intended for use by the user. Private macros will start with _Log.
+     *
+     *  In the case of multi level macros (macros that invoke other macros), a
+     *  letter is appended at the end of the definition. With each level of nesting,
+     *  the appended letter is incremented.
+     *
+     *  For example: _Log_test --> _Log_test_A --> _Log_test_B
+     */
+    /* Extracts the first argument from __VA_ARGS__ */
+    #define _Log_FIRST_ARG(N, ...) N
 
-/*
- *
- *  ======== Log Private Macros ========
- *
- *  The following macros are intended to be private to the log module and
- *  are not intended for use by the user. Private macros will start with _Log.
- *
- *  In the case of multi level macros (macros that invoke other macros), a
- *  letter is appended at the end of the definition. With each level of nesting,
- *  the appended letter is incremented.
- *
- *  For example: _Log_test --> _Log_test_A --> _Log_test_B
- */
-/* Extracts the first argument from __VA_ARGS__ */
-#define _Log_FIRST_ARG(N, ...) N
+    /*  Routes a log call based on the number of arguments provided */
+    #define _Log_EVENT_ARGS(module, header, ...) \
+        _Log_EVENT_ARGS_A(module, header, _Log_NUMARGS(__VA_ARGS__), __VA_ARGS__)
+    #define _Log_EVENT_ARGS_A(module, header, num, ...) _Log_EVENT_ARGS_B(module, header, num, __VA_ARGS__)
+    #define _Log_EVENT_ARGS_B(module, header, num, ...) _Log_EVENT_ARGS##num(module, uintptr_t, header, __VA_ARGS__)
 
-/*  Routes a log call based on the number of arguments provided */
-#define _Log_EVENT_ARGS(module, header, ...) \
-           _Log_EVENT_ARGS_A(module, header, _Log_NUMARGS(__VA_ARGS__), __VA_ARGS__)
-#define _Log_EVENT_ARGS_A(module, header, num, ...)                            \
-            _Log_EVENT_ARGS_B(module, header, num, __VA_ARGS__)
-#define _Log_EVENT_ARGS_B(module, header, num, ...)                            \
-            _Log_EVENT_ARGS##num(module, uintptr_t, header, __VA_ARGS__)
+    /*  Helper macros to fill out dummy parameters if they're unused */
+    #define _Log_EVENT_ARGS0(module, type, header, event) \
+        (uint32_t) header, (uintptr_t)module##_##event, (type)0, (type)0, (type)0, (type)0
 
-/*  Helper macros to fill out dummy parameters if they're unused */
-#define _Log_EVENT_ARGS0(module, type, header, event)                          \
-            (uint32_t)header,                                                  \
-            (uintptr_t)module##_##event,                                       \
-            (type)0,                                                           \
-            (type)0,                                                           \
-            (type)0,                                                           \
-            (type)0
+    #define _Log_EVENT_ARGS1(module, type, header, event, a1) \
+        (uint32_t) header, (uintptr_t)module##_##event, (type)a1, (type)0, (type)0, (type)0
 
-#define _Log_EVENT_ARGS1(module, type, header, event, a1)                      \
-            (uint32_t)header,                                                  \
-            (uintptr_t)module##_##event,                                       \
-            (type)a1,                                                          \
-            (type)0,                                                           \
-            (type)0,                                                           \
-            (type)0
+    #define _Log_EVENT_ARGS2(module, type, header, event, a1, a2) \
+        (uint32_t) header, (uintptr_t)module##_##event, (type)a1, (type)a2, (type)0, (type)0
 
-#define _Log_EVENT_ARGS2(module, type, header, event, a1, a2)                  \
-            (uint32_t)header,                                                  \
-            (uintptr_t)module##_##event,                                       \
-            (type)a1,                                                          \
-            (type)a2,                                                          \
-            (type)0,                                                           \
-            (type)0
+    #define _Log_EVENT_ARGS3(module, type, header, event, a1, a2, a3) \
+        ((uint32_t)header, (uintptr_t)module##_##event, (type)a1, (type)a2, (type)a3, (type)0)
 
-#define _Log_EVENT_ARGS3(module, type, header, event, a1, a2, a3)              \
-            ((uint32_t)header,                                                 \
-             (uintptr_t)module##_##event,                                      \
-             (type)a1,                                                         \
-             (type)a2,                                                         \
-             (type)a3,                                                         \
-             (type)0)
+    #define _Log_EVENT_ARGS4(module, type, header, event, a1, a2, a3, a4) \
+        (uint32_t) header, (uintptr_t)module##_##event, (type)a1, (type)a2, (type)a3, (type)a4
 
-#define _Log_EVENT_ARGS4(module, type, header, event, a1, a2, a3, a4)          \
-            (uint32_t)header,                                                  \
-            (uintptr_t)module##_##event,                                       \
-            (type)a1,                                                          \
-            (type)a2,                                                          \
-            (type)a3,                                                          \
-            (type)a4
+    /*  Helper macro to count the number of arguments in __VA_ARGS_ */
+    #define _Log_NUMARGS(...)                              _Log_NUMARGS_A(__VA_ARGS__, 4, 3, 2, 1, 0)
+    #define _Log_NUMARGS_A(...)                            _Log_NUMARGS_B(__VA_ARGS__)
+    #define _Log_NUMARGS_B(_first, _4, _3, _2, _1, N, ...) N
 
-/*  Helper macro to count the number of arguments in __VA_ARGS_ */
-#define _Log_NUMARGS(...) _Log_NUMARGS_A(__VA_ARGS__, 4, 3, 2, 1, 0)
-#define _Log_NUMARGS_A(...) _Log_NUMARGS_B(__VA_ARGS__)
-#define _Log_NUMARGS_B(_first, _4, _3, _2, _1, N, ...) N
+    /*
+     *  ======== Meta string tokenization macros ========
+     */
+    /*  Helper macro to concatenate two symbols */
+    #define _Log_CONCAT2_A(x, y) x##_##y
+    #define _Log_CONCAT2(x, y)   _Log_CONCAT2_A(x, y)
 
-/*
- *  ======== Meta string tokenization macros ========
- */
-/*  Helper macro to concatenate two symbols */
-#define _Log_CONCAT2_A(x,y) x ## _ ## y
-#define _Log_CONCAT2(x,y) _Log_CONCAT2_A(x,y)
+    /*  Helper macro to concatenate two symbols */
+    #define _Log__TOKEN2STRING_A(x) #x
+    #define _Log_TOKEN2STRING(x)    _Log__TOKEN2STRING_A(x)
 
-/*  Helper macro to concatenate two symbols */
-#define _Log__TOKEN2STRING_A(x) #x
-#define _Log_TOKEN2STRING(x) _Log__TOKEN2STRING_A(x)
+    /* Macro to place meta string in a memory section separated by record separator */
+    #define _Log_APPEND_META_TO_FORMAT(opcode, file, line, level, module, format, nargs)                                  \
+        _Log_TOKEN2STRING(opcode) "\x1e" _Log_TOKEN2STRING(file) "\x1e" _Log_TOKEN2STRING(line) "\x1e" _Log_TOKEN2STRING( \
+            level) "\x1e" _Log_TOKEN2STRING(module) "\x1e" _Log_TOKEN2STRING(format) "\x1e" _Log_TOKEN2STRING(nargs)
 
-/* Macro to place meta string in a memory section separated by record separator */
-#define _Log_APPEND_META_TO_FORMAT(opcode,                                     \
-                                    file,                                      \
-                                    line,                                      \
-                                    level,                                     \
-                                    module,                                    \
-                                    format,                                    \
-                                    nargs)                                     \
-                                    _Log_TOKEN2STRING(opcode)     "\x1e"       \
-                                    _Log_TOKEN2STRING(file)       "\x1e"       \
-                                    _Log_TOKEN2STRING(line)       "\x1e"       \
-                                    _Log_TOKEN2STRING(level)      "\x1e"       \
-                                    _Log_TOKEN2STRING(module)     "\x1e"       \
-                                    _Log_TOKEN2STRING(format)     "\x1e"       \
-                                    _Log_TOKEN2STRING(nargs)
-
-/* Place a string in trace format section named ".log_data"
- * This section must exist in the linker file
- */
-#if defined(__IAR_SYSTEMS_ICC__)
-#define _Log_PLACE_FORMAT_IN_SECTOR(name, opcode, level, module, format, nargs)\
-            __root static const char name[] @ ".log_data" =                    \
-            _Log_APPEND_META_TO_FORMAT(opcode,                                 \
-                                       __FILE__,                               \
-                                       __LINE__,                               \
-                                       level,                                  \
-                                       module,                                 \
-                                       format,                                 \
-                                       nargs);
-#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
-#define _Log_PLACE_FORMAT_IN_SECTOR(name, opcode, level, module, format, nargs)\
-            static const char name[]                                           \
-            __attribute__((used,section(".log_data"))) =                       \
-            _Log_APPEND_META_TO_FORMAT(opcode,                                 \
-                                        __FILE__,                              \
-                                        __LINE__,                              \
-                                        level,                                 \
-                                        module,                                \
-                                        format,                                \
-                                        nargs);
-#else
-#error Incompatible compiler: Logging is currently supported by the following \
+    /* Place a string in trace format section named ".log_data"
+     * This section must exist in the linker file
+     */
+    #if defined(__IAR_SYSTEMS_ICC__)
+        #define _Log_PLACE_FORMAT_IN_SECTOR(name, opcode, level, module, format, nargs) \
+            #pragma location = ".log_data" __root static const char                     \
+                name[]       = _Log_APPEND_META_TO_FORMAT(opcode, __FILE__, __LINE__, level, module, format, nargs);
+    #elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
+        #define _Log_PLACE_FORMAT_IN_SECTOR(name, opcode, level, module, format, nargs)            \
+            static const char name[]                                                               \
+                __attribute__((used, section(".log_data"))) = _Log_APPEND_META_TO_FORMAT(opcode,   \
+                                                                                         __FILE__, \
+                                                                                         __LINE__, \
+                                                                                         level,    \
+                                                                                         module,   \
+                                                                                         format,   \
+                                                                                         nargs);
+    #else
+        #error Incompatible compiler: Logging is currently supported by the following \
 compilers: TI ARM Compiler, TI CLANG Compiler, GCC, IAR. Please migrate to a \
 a supported compiler.
-#endif
+    #endif
 
-/** @endcond */
+    /** @endcond */
 
-/**
- *  Declare a log module other than the default (ti_utils_runtime_LogMain)
- *
- *  This macro will create the necessary externs used to route this module's
- *  traffic to a logger instance. It can be useful for statically linked
- *  libraries to forward declare their modules so that they can be routed
- *  at link time
- *
- *  This must be combined with a symbol remapping to the specific backend
- *  logger that will accept this modules log statements. This is discussed in
- *  the modules section above.  If using syscfg, this macro is not required
- *  as the externs are generated by the LogSite module.
- *
- *  @param[in] module      Log module to declare
- */
-#define  Log_DECLARE_MODULE(module)                                            \
-            _Log_DECL_Write(module);                                           \
-            _Log_DECL_Printf(module);                                          \
-            _Log_DECL_buf(module);                                             \
-            _Log_DECL_Handle(module);                                          \
-            _Log_DECL_Level(module);
+    /**
+     *  Declare a log module other than the default (ti_utils_runtime_LogMain)
+     *
+     *  This macro will create the necessary externs used to route this module's
+     *  traffic to a logger instance. It can be useful for statically linked
+     *  libraries to forward declare their modules so that they can be routed
+     *  at link time
+     *
+     *  This must be combined with a symbol remapping to the specific backend
+     *  logger that will accept this modules log statements. This is discussed in
+     *  the modules section above.  If using syscfg, this macro is not required
+     *  as the externs are generated by the LogSite module.
+     *
+     *  @param[in] module      Log module to declare
+     */
+    #define Log_DECLARE_MODULE(module) \
+        _Log_DECL_Write(module);       \
+        _Log_DECL_Printf(module);      \
+        _Log_DECL_buf(module);         \
+        _Log_DECL_Handle(module);      \
+        _Log_DECL_Level(module);
 
-/** @cond NODOC */
-#define _Log_DECL_Write(module) _Log_DECL_Write_A(module)
-#define _Log_DECL_Write_A(module) _Log_DECL_Write_B(module)
-#define _Log_DECL_Write_B(module)                                              \
-    extern void module##_LogSite_event(ILogger_Handle logger,                  \
-                                       uint32_t header,                        \
-                                       uintptr_t event,                        \
-                                       uintptr_t arg0,                         \
-                                       uintptr_t arg1,                         \
-                                       uintptr_t arg2,                         \
-                                       uintptr_t arg3)
+    /** @cond NODOC */
+    #define _Log_DECL_Write(module)   _Log_DECL_Write_A(module)
+    #define _Log_DECL_Write_A(module) _Log_DECL_Write_B(module)
+    #define _Log_DECL_Write_B(module)                             \
+        extern void module##_LogSite_event(ILogger_Handle logger, \
+                                           uint32_t header,       \
+                                           uintptr_t event,       \
+                                           uintptr_t arg0,        \
+                                           uintptr_t arg1,        \
+                                           uintptr_t arg2,        \
+                                           uintptr_t arg3)
 
-#define _Log_DECL_Printf(module) _Log_DECL_Printf_A(module)
-#define _Log_DECL_Printf_A(module) _Log_DECL_Printf_B(module)
-#define _Log_DECL_Printf_B(module)                                             \
-    extern void module##_LogSite_printf(ILogger_Handle handle,                 \
-                                        uint32_t header,                       \
-                                        uint32_t numArgs,                      \
-                                        ...)
+    #define _Log_DECL_Printf(module)   _Log_DECL_Printf_A(module)
+    #define _Log_DECL_Printf_A(module) _Log_DECL_Printf_B(module)
+    #define _Log_DECL_Printf_B(module) \
+        extern void module##_LogSite_printf(ILogger_Handle handle, uint32_t header, uint32_t numArgs, ...)
 
-#define _Log_DECL_buf(module) _Log_DECL_buf_A(module)
-#define _Log_DECL_buf_A(module) _Log_DECL_buf_B(module)
-#define _Log_DECL_buf_B(module)                                                \
-    extern void module##_LogSite_buf(ILogger_Handle handle,                    \
-                                     uint32_t header,                          \
-                                     const char* format,                       \
-                                     uint8_t *data,                            \
-                                     size_t size)
+    #define _Log_DECL_buf(module)   _Log_DECL_buf_A(module)
+    #define _Log_DECL_buf_A(module) _Log_DECL_buf_B(module)
+    #define _Log_DECL_buf_B(module)                             \
+        extern void module##_LogSite_buf(ILogger_Handle handle, \
+                                         uint32_t header,       \
+                                         const char *format,    \
+                                         uint8_t *data,         \
+                                         size_t size)
 
-#define _Log_DECL_Handle(module) _Log_DECL_Handle_A(module)
-#define _Log_DECL_Handle_A(module) _Log_DECL_Handle_B(module)
-#define _Log_DECL_Handle_B(module)                                             \
-    extern const ILogger_Handle module##_LogSite_handle
+    #define _Log_DECL_Handle(module)   _Log_DECL_Handle_A(module)
+    #define _Log_DECL_Handle_A(module) _Log_DECL_Handle_B(module)
+    #define _Log_DECL_Handle_B(module) extern const ILogger_Handle module##_LogSite_handle
 
-#define _Log_DECL_Level(module) _Log_DECL_Level_A(module)
-#define _Log_DECL_Level_A(module) _Log_DECL_Level_B(module)
-#define _Log_DECL_Level_B(module)                                              \
-    extern const uint32_t module##_LogSite_level
+    #define _Log_DECL_Level(module)   _Log_DECL_Level_A(module)
+    #define _Log_DECL_Level_A(module) _Log_DECL_Level_B(module)
+    #define _Log_DECL_Level_B(module) extern const uint32_t module##_LogSite_level
 
-#if ti_utils_runtime_Log_USE_LTO
+    #if ti_utils_runtime_Log_USE_LTO
 
-#define _Log_event_B(module, level, ...)                                       \
-    if ((level) & module##_LogSite_level) {                                    \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_EVENT,                          \
-                                    level,                                     \
-                                    module,                                    \
-                                    _Log_FIRST_ARG(__VA_ARGS__),               \
-                                    _Log_NUMARGS(__VA_ARGS__))                 \
-        module##_LogSite_event(module##_LogSite_handle,                        \
-                               _Log_EVENT_ARGS(module,                         \
-                                               &_Log_CONCAT2(LogSymbol,        \
-                                                             __LINE__),        \
-                                               __VA_ARGS__));                  \
-    }
+        #define _Log_event_B(module, level, ...)                                                                      \
+            if ((level)&module##_LogSite_level)                                                                       \
+            {                                                                                                         \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),                                        \
+                                            LOG_OPCODE_EVENT,                                                         \
+                                            level,                                                                    \
+                                            module,                                                                   \
+                                            _Log_FIRST_ARG(__VA_ARGS__),                                              \
+                                            _Log_NUMARGS(__VA_ARGS__))                                                \
+                    module##_LogSite_event(module##_LogSite_handle,                                                   \
+                                           _Log_EVENT_ARGS(module, &_Log_CONCAT2(LogSymbol, __LINE__), __VA_ARGS__)); \
+            }
 
-#endif
+    #endif
 
-#if ti_utils_runtime_Log_USE_PPO
+    #if ti_utils_runtime_Log_USE_PPO
 
-#define _Log_event_B(module, level, ...)                                       \
-    if ((level) & (Log_MASK)) {                                                \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_EVENT,                          \
-                                    level,                                     \
-                                    module,                                    \
-                                    _Log_FIRST_ARG(__VA_ARGS__),               \
-                                    _Log_NUMARGS(__VA_ARGS__))                 \
-        module##_LogSite_event(module##_LogSite_handle,                        \
-                               _Log_EVENT_ARGS(module,                         \
-                                               &_Log_CONCAT2(LogSymbol,        \
-                                                             __LINE__),        \
-                                               __VA_ARGS__));                  \
-    }
+        #define _Log_event_B(module, level, ...)                                                                      \
+            if ((level) & (Log_MASK))                                                                                 \
+            {                                                                                                         \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),                                        \
+                                            LOG_OPCODE_EVENT,                                                         \
+                                            level,                                                                    \
+                                            module,                                                                   \
+                                            _Log_FIRST_ARG(__VA_ARGS__),                                              \
+                                            _Log_NUMARGS(__VA_ARGS__))                                                \
+                    module##_LogSite_event(module##_LogSite_handle,                                                   \
+                                           _Log_EVENT_ARGS(module, &_Log_CONCAT2(LogSymbol, __LINE__), __VA_ARGS__)); \
+            }
 
-#endif
+    #endif
 
-#if ti_utils_runtime_Log_USE_LTO
+    #if ti_utils_runtime_Log_USE_LTO
 
-#define _Log_buf_B(module , level, format, data, size)                         \
-    if ((level) & module##_LogSite_level) {                                    \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_BUFFER,                         \
-                                    level,                                     \
-                                    module,                                    \
-                                    format,                                    \
-                                    0)                                         \
-        module##_LogSite_buf(module##_LogSite_handle,                          \
-                             (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),     \
-                             format,                                           \
-                             data,                                             \
-                             size);                                            \
-    }
+        #define _Log_buf_B(module, level, format, data, size)                                                     \
+            if ((level)&module##_LogSite_level)                                                                   \
+            {                                                                                                     \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),                                    \
+                                            LOG_OPCODE_BUFFER,                                                    \
+                                            level,                                                                \
+                                            module,                                                               \
+                                            format,                                                               \
+                                            0) module##_LogSite_buf(module##_LogSite_handle,                      \
+                                                                    (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__), \
+                                                                    format,                                       \
+                                                                    data,                                         \
+                                                                    size);                                        \
+            }
 
-#endif
+    #endif
 
-#if ti_utils_runtime_Log_USE_PPO
+    #if ti_utils_runtime_Log_USE_PPO
 
-#define _Log_buf_B(module , level, format, data, size)                         \
-    if ((level) & (Log_MASK)) {                                                \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_BUFFER,                         \
-                                    level,                                     \
-                                    module,                                    \
-                                    format,                                    \
-                                    0)                                         \
-        module##_LogSite_buf(module##_LogSite_handle,                          \
-                             (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),     \
-                             format,                                           \
-                             data,                                             \
-                             size);                                            \
-    }
+        #define _Log_buf_B(module, level, format, data, size)                                                     \
+            if ((level) & (Log_MASK))                                                                             \
+            {                                                                                                     \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),                                    \
+                                            LOG_OPCODE_BUFFER,                                                    \
+                                            level,                                                                \
+                                            module,                                                               \
+                                            format,                                                               \
+                                            0) module##_LogSite_buf(module##_LogSite_handle,                      \
+                                                                    (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__), \
+                                                                    format,                                       \
+                                                                    data,                                         \
+                                                                    size);                                        \
+            }
 
-#endif
+    #endif
 
-#if ti_utils_runtime_Log_USE_LTO
+    #if ti_utils_runtime_Log_USE_LTO
 
-#define _Log_printf_B(module, level, ...)                                      \
-    if ((level) & module##_LogSite_level) {                                    \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_FORMATED_TEXT,                  \
-                                    level,                                     \
-                                    module,                                    \
-                                    _Log_FIRST_ARG(__VA_ARGS__),               \
-                                    _Log_NUMARGS(__VA_ARGS__))                 \
-        module##_LogSite_printf(module##_LogSite_handle,                       \
-                                (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),  \
-                                _Log_NUMARGS(__VA_ARGS__),                     \
-                                __VA_ARGS__);                                  \
-    }
+        #define _Log_printf_B(module, level, ...)                                         \
+            if ((level)&module##_LogSite_level)                                           \
+            {                                                                             \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),            \
+                                            LOG_OPCODE_FORMATED_TEXT,                     \
+                                            level,                                        \
+                                            module,                                       \
+                                            _Log_FIRST_ARG(__VA_ARGS__),                  \
+                                            _Log_NUMARGS(__VA_ARGS__))                    \
+                    module##_LogSite_printf(module##_LogSite_handle,                      \
+                                            (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__), \
+                                            _Log_NUMARGS(__VA_ARGS__),                    \
+                                            __VA_ARGS__);                                 \
+            }
 
-#endif
+    #endif
 
-#if ti_utils_runtime_Log_USE_PPO
+    #if ti_utils_runtime_Log_USE_PPO
 
-#define _Log_printf_B(module, level, ...)                                      \
-    if ((level) & (Log_MASK)) {                                                \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_FORMATED_TEXT,                  \
-                                    level,                                     \
-                                    module,                                    \
-                                    _Log_FIRST_ARG(__VA_ARGS__),               \
-                                    _Log_NUMARGS(__VA_ARGS__))                 \
-        module##_LogSite_printf(module##_LogSite_handle,                       \
-                                (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),  \
-                                _Log_NUMARGS(__VA_ARGS__),                     \
-                                __VA_ARGS__);                                  \
-    }
+        #define _Log_printf_B(module, level, ...)                                         \
+            if ((level) & (Log_MASK))                                                     \
+            {                                                                             \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),            \
+                                            LOG_OPCODE_FORMATED_TEXT,                     \
+                                            level,                                        \
+                                            module,                                       \
+                                            _Log_FIRST_ARG(__VA_ARGS__),                  \
+                                            _Log_NUMARGS(__VA_ARGS__))                    \
+                    module##_LogSite_printf(module##_LogSite_handle,                      \
+                                            (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__), \
+                                            _Log_NUMARGS(__VA_ARGS__),                    \
+                                            __VA_ARGS__);                                 \
+            }
 
-#endif
+    #endif
 
-/** @endcond */
+    /** @endcond */
 
-/**
- *  @brief Raise a log event to the logger
- *
- *  This API will emit a log record with the user provided event arguments.
- *  This event is linked to the one constructed by @ref Log_EVENT_CONSTRUCT
- *  through a pointer to the metadata location. Separate construct and consume
- *  APIs means that an event can be constructed in the code and reused multiple
- *  places in the code with different runtime arguments.
- *
- *  @param[in] module      Log module that the event belongs to
- *  @param[in] level       log level
- *  @param[in]  ...        Variadic arguments consisting of the following
- *                         - `event` structure declared by
- *                         @ref Log_EVENT_CONSTRUCT. **This is required**
- *                         - `a0-a3` arguments consumed by the
- *                         Log_EVENT_CONSTRUCT format string. These are optional
- *
- *  @remark
- *    The maximum number of arguments is four. All 4 arguments will always
- *    be provided to the backend. Unused arguments are passed as 0.
- */
-#define Log_event(module, level, ...)                                          \
-                     _Log_GUARD_MACRO(_Log_event_B(module , level, __VA_ARGS__))
+    /**
+     *  @brief Raise a log event to the logger
+     *
+     *  This API will emit a log record with the user provided event arguments.
+     *  This event is linked to the one constructed by @ref Log_EVENT_CONSTRUCT
+     *  through a pointer to the metadata location. Separate construct and consume
+     *  APIs means that an event can be constructed in the code and reused multiple
+     *  places in the code with different runtime arguments.
+     *
+     *  @param[in] module      Log module that the event belongs to
+     *  @param[in] level       log level
+     *  @param[in]  ...        Variadic arguments consisting of the following
+     *                         - `event` structure declared by
+     *                         @ref Log_EVENT_CONSTRUCT. **This is required**
+     *                         - `a0-a3` arguments consumed by the
+     *                         Log_EVENT_CONSTRUCT format string. These are optional
+     *
+     *  @remark
+     *    The maximum number of arguments is four. All 4 arguments will always
+     *    be provided to the backend. Unused arguments are passed as 0.
+     */
+    #define Log_event(module, level, ...) _Log_GUARD_MACRO(_Log_event_B(module, level, __VA_ARGS__))
 
+    /**
+     *  @brief Construct a log event object
+     *
+     *  Use this marco to define a log event object. The object is private
+     *  to the current file. Use the object handle in a call to @ref Log_event to
+     *  raise that event to the logger.
+     *
+     *  @param[in]  module     Log module that the event belongs to
+     *  @param[in]  name       Event variable name, to be passed to Log_event API
+     *  @param[in]  fmt        Restricted format string. Note `%s` is not supported.
+     *                         Supported format specifiers include: `%c`, `%f`,
+     *                         `%d`, `%x`
+     *  @remark
+     *    The module passed here must match the one from the callsite
+     */
+    #define Log_EVENT_CONSTRUCT(module, name, fmt)                                                            \
+        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, name), LOG_EVENT_CONSTRUCT, name, module, fmt, 0) \
+            const char *_Log_CONCAT2(module, name) = _Log_CONCAT2(LogSymbol, name);
 
-/**
- *  @brief Construct a log event object
- *
- *  Use this marco to define a log event object. The object is private
- *  to the current file. Use the object handle in a call to @ref Log_event to
- *  raise that event to the logger.
- *
- *  @param[in]  module     Log module that the event belongs to
- *  @param[in]  name       Event variable name, to be passed to Log_event API
- *  @param[in]  fmt        Restricted format string. Note `%s` is not supported.
- *                         Supported format specifiers include: `%c`, `%f`,
- *                         `%d`, `%x`
- *  @remark
- *    The module passed here must match the one from the callsite
- */
-#define Log_EVENT_CONSTRUCT(module, name, fmt)                                 \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, name),             \
-                                    LOG_EVENT_CONSTRUCT,                       \
-                                    name,                                      \
-                                    module,                                    \
-                                    fmt,                                       \
-                                    0)                                         \
-        const char *_Log_CONCAT2(module, name) = _Log_CONCAT2(LogSymbol,       \
-                                                              name);
+    /**
+     *  @brief Log a continuous block of memory
+     *
+     *  Use this marco to send out runtime data from the device. This API should be
+     *  used when the data is non constant and can only be derived at runtime. It
+     *  is the most intrusive in terms of record overhead and instructions used.
+     *
+     *  @param[in]  module     Log module that the buffer originated from
+     *  @param[in]  level      log level of type @ref Log_Level
+     *  @param[in]  format     Restricted format string.
+     *  @param[in]  data       Pointer to array of bytes (uint8_t *)
+     *  @param[in]  size       Size in bytes of array to send
+     *
+     */
+    #define Log_buf(module, level, format, data, size) _Log_GUARD_MACRO(_Log_buf_B(module, level, format, data, size))
 
-
-/**
- *  @brief Log a continuous block of memory
- *
- *  Use this marco to send out runtime data from the device. This API should be
- *  used when the data is non constant and can only be derived at runtime. It
- *  is the most intrusive in terms of record overhead and instructions used.
- *
- *  @param[in]  module     Log module that the buffer originated from
- *  @param[in]  level      log level of type @ref Log_Level
- *  @param[in]  format     Restricted format string.
- *  @param[in]  data       Pointer to array of bytes (uint8_t *)
- *  @param[in]  size       Size in bytes of array to send
- *
- */
-#define Log_buf(module, level, format, data, size)                             \
-                _Log_GUARD_MACRO(_Log_buf_B(module , level, format, data, size))
-
-/**
- *  @brief Emit a printf formatted log
- *
- *  Use this marco to enable printf style logging. This API offers the most
- *  flexibility as the construction of the format string is embedded in the call
- *  site of the API. It also supports true variadic arguments.
- *
- *  @param[in]  module     Log module that the buffer originated from
- *  @param[in]  level      log level of type @ref Log_Level
- *  @param[in]  ...        Variadic arguments consisting of the following
- *                         - `format` format string. **This is required**
- *                         - `a0-a3` arguments consumed by the format string.
- *                         These are optional
- *
- *  @remark
- *    The number of arguments is currently limited to 4. Only used arguments are
- *    included in the record.
- */
-#define Log_printf(module, level, ...)                                         \
-                     _Log_GUARD_MACRO(_Log_printf_B(module, level, __VA_ARGS__))
+    /**
+     *  @brief Emit a printf formatted log
+     *
+     *  Use this marco to enable printf style logging. This API offers the most
+     *  flexibility as the construction of the format string is embedded in the call
+     *  site of the API. It also supports true variadic arguments.
+     *
+     *  @param[in]  module     Log module that the buffer originated from
+     *  @param[in]  level      log level of type @ref Log_Level
+     *  @param[in]  ...        Variadic arguments consisting of the following
+     *                         - `format` format string. **This is required**
+     *                         - `a0-a3` arguments consumed by the format string.
+     *                         These are optional
+     *
+     *  @remark
+     *    The number of arguments is currently limited to 4. Only used arguments are
+     *    included in the record.
+     */
+    #define Log_printf(module, level, ...) _Log_GUARD_MACRO(_Log_printf_B(module, level, __VA_ARGS__))
 
 #else /* ti_utils_runtime_Log_USE_LTO || ti_utils_runtime_Log_USE_PPO */
 
-/*
- *  =================================================
- *  ======== Log Disabled (default behavior) ========
- *  =================================================
- */
-#define _Log_DECL_Config()
-#define _Log_DECL_Module_Id_Name(module)
-#define Log_EVENT_CONSTRUCT(name, type, fmt)
-#define Log_event(level, ...)
+    /*
+     *  =================================================
+     *  ======== Log Disabled (default behavior) ========
+     *  =================================================
+     */
+    #define _Log_DECL_Config()
+    #define _Log_DECL_Module_Id_Name(module)
+    #define Log_EVENT_CONSTRUCT(name, type, fmt)
+    #define Log_event(level, ...)
 
 #endif /* ti_utils_runtime_Log_USE_LTO || ti_utils_runtime_Log_USE_PPO */
 
@@ -915,14 +857,15 @@ a supported compiler.
  *  avoid the multiple definition errors raised by the compiler.
  */
 #ifndef Log_FIRST
-/** @cond NODOC */
-#define Log_FIRST
+    /** @cond NODOC */
+    #define Log_FIRST
 /** @endcond */
 
 /*
  *  ======== Log_Level ========
  */
-typedef enum Log_Level {
+typedef enum Log_Level
+{
     Log_INFO1 = 1,
     Log_INFO2 = 2,
     Log_INFO3 = 4,
@@ -947,21 +890,17 @@ extern void ti_utils_runtime_LogMain_LogSite_event(ILogger_Handle,
                                                    uintptr_t,
                                                    uintptr_t,
                                                    uintptr_t);
-extern void ti_utils_runtime_LogMain_LogSite_printf(ILogger_Handle handle,
-                                                    uint32_t header,
-                                                    uint32_t numArgs,
-                                                    ...);
+extern void ti_utils_runtime_LogMain_LogSite_printf(ILogger_Handle handle, uint32_t header, uint32_t numArgs, ...);
 extern void ti_utils_runtime_LogMain_LogSite_buf(ILogger_Handle handle,
                                                  uint32_t header,
-                                                 const char* format,
+                                                 const char *format,
                                                  uint8_t *data,
                                                  size_t size);
 /** @endcond */
 #endif /* Log_FIRST */
 
-
 /*! @} */
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 

@@ -56,7 +56,7 @@ typedef enum arm_library_event_type_e {
     APPLICATION_EVENT, /**< Application-specific event. */
     NCP_AUTO_START_EVENT, /**< NCP AUTO START event. */
     NCP_UART_EVENT, /**< for NCP model, host sent a command on uart */
-    NCP_SEND_RSPONSE_EVENT, /**< event prompting to send reponse to host over uart */
+    NCP_SEND_RESPONSE_EVENT, /**< event prompting to send reponse to host over uart */
     NCP_SEND_ASYNC_RSPONSE_EVENT, /**< event prompting to send async reponse to host over uart */
 } arm_library_event_type_e;
 

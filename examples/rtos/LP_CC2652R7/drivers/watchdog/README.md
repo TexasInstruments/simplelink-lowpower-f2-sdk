@@ -92,18 +92,6 @@ equivalent to the user manually pressing the LaunchPad reset button. Therefore,
 behavior after a reset is device specific. In most instances, the example
 application will restart.
 
-TI-RTOS:
-
-* When building in Code Composer Studio, the kernel configuration project will
-be imported along with the example. The kernel configuration project is
-referenced by the example, so it will be built first. The "release" kernel
-configuration is the default project used. It has many debug features disabled.
-These feature include assert checking, logging and runtime stack checks. For a
-detailed difference between the "release" and "debug" kernel configurations and
-how to switch between them, please refer to the SimpleLink MCU SDK User's
-Guide. The "release" and "debug" kernel configuration projects can be found
-under &lt;SDK_INSTALL_DIR&gt;/kernel/tirtos/builds/&lt;BOARD&gt;/(release|debug)/(ccs|gcc).
-
 FreeRTOS:
 
 * Please view the `FreeRTOSConfig.h` header file for example configuration

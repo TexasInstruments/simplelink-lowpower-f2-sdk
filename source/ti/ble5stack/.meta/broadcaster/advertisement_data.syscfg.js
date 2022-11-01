@@ -1045,8 +1045,8 @@ const config = [
     {
         name: "additionalData",
         displayName: "Additional Data",
-        displayFormat: "hex",
-        default: system.utils.bigInt("00",16),
+        longDescription: Docs.additionalDataLongDescription,
+        default: "0x00",
         hidden: true
     }
 ];
@@ -1191,7 +1191,8 @@ function validate(inst, validation)
             validation.logError("The current data length exceeds the allowed max length (" + maxLength + ")" ,inst);
         }
     }
-
+    // validate additional data
+    Common.validateAdditionalData(inst ,validation, inst.additionalData, "additionalData");
     // Validate Complete Local Name
     if(inst.GAP_ADTYPE_LOCAL_NAME_COMPLETE)
     {

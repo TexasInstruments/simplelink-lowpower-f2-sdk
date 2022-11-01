@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,23 +70,22 @@ function getLibs(mod)
     let libs = [];
 
     if (family != "") {
-        libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
-
-        if (!family.match(/cc23/)) {
-
-            if (!family.match(/(cc.*4)/)) {
-                libs.push(libPath("ti/grlib", "grlib.a"));
-            }
-
-            if (rtos == "tirtos" || rtos == "tirtos7") {
-                if (!family.match(/cc.*4/)) {
-                    libs.push(libPath("ti/dpl","dpl_" + family + ".a"));
-                }
-            }
-            else if (rtos == "nortos") {
-                libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
-            }
+        /* Check for TrustZone module */
+        if(family.match(/(cc.*4)/) && system.modules["/ti/utils/TrustZone"]){
+            libs.push(libPath("ti/drivers","drivers_" + family + "_spe" + ".a"));
         }
+        else{
+            libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
+        }
+
+        if (!family.match(/cc(13|26).[34]|cc23/)) {
+            libs.push(libPath("ti/grlib", "grlib.a"));
+        }
+
+        if (rtos == "nortos") {
+            libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
+        }
+
     }
 
     if (libs == null) {
@@ -147,6 +146,12 @@ function modules(mod)
         reqs.push({
             name      : "DPL",
             moduleName: "/ti/dpl/Settings",
+            hidden    : true
+        });
+    } else if (system.getRTOS() === "freertos") {
+        reqs.push({
+            name      : "DPL",
+            moduleName: "/freertos/dpl/Settings",
             hidden    : true
         });
     }
@@ -245,11 +250,6 @@ module will execute.
         config   : config
     }
 };
-
-/* This should maybe go somewhere else, but until we get a FreeRTOS module it can stay here */
-if (system.getRTOS() == "freertos") {
-    base.templates["/ti/utils/rov/syscfg_c.rov.xs.xdt"] = "/kernel/freertos/rov/FreeRTOS.rov.js";
-}
 
 /* extend the base exports to include family-specific content */
 let deviceBoard = system.getScript("/ti/drivers/Board" + family);

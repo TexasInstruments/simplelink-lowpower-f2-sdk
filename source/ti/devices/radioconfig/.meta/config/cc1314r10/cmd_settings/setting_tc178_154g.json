@@ -1,8 +1,8 @@
 {
     "setting": {
-        "Name": "500 kbps, 190 kHz Deviation, 2-GFSK, 1150 kHz RX Bandwidth (FPGA)",
-        "Description": "500 kbps, 2-GFSK, h=0.76, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band.",
-        "Frequency": "915",
+        "Name": "500 kbps, 190 kHz Deviation, 2-GFSK, 622 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "500 kbps, 2-GFSK, h=0.76, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band. (Pre-Silicon)",
+        "Frequency": "916",
         "Patch": {
             "Define": "RF_MODE_AUTO",
             "Cpe": "rf_patch_cpe_multi_protocol",
@@ -75,7 +75,7 @@
                     },
                     {
                         "_name": "rxBw",
-                        "$": "96"
+                        "$": "93"
                     },
                     {
                         "_name": "preamConf.nPreamBytes",
@@ -131,11 +131,11 @@
                     },
                     {
                         "_name": "centerFreq",
-                        "$": "915"
+                        "$": "916"
                     },
                     {
                         "_name": "intFreq",
-                        "$": "0x800"
+                        "$": "0x600"
                     },
                     {
                         "_name": "loDivider",
@@ -145,6 +145,14 @@
                 "OverrideField": {
                     "_name": "pRegOverride",
                     "Block": [
+                        {
+                            "_name": "override_prop_common.json",
+                            "Element32b": {
+                                "_type": "ELEMENT",
+                                "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
+                                "$": "0x004388D3"
+                            }
+                        },
                         {
                             "_name": "override_prop_common_sub1g.json",
                             "Element32b": [
@@ -195,12 +203,12 @@
                                 },
                                 {
                                     "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Rx: Set AGC reference level to 0x30 (default: 0x2E)",
-                                    "$": "0x609C,0x0030"
+                                    "_comment": "Rx: Set AGC reference level to 0x22 (default: 0x2E)",
+                                    "$": "0x609C,0x0022"
                                 },
                                 {
                                     "_type": "ELEMENT",
-                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB (default: -2), trimmed for external bias and differential configuration",
+                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB at 779-930 MHz",
                                     "$": "0x000488A3"
                                 },
                                 {
@@ -210,58 +218,13 @@
                                 },
                                 {
                                     "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Tx: Set wait time before turning off ramp to 0x1A (default: 0x1F)",
+                                    "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1A ticks of 16\/24 us = 17.3 us).",
                                     "$": "0x6028,0x001A"
                                 },
                                 {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Set LNA IB offset to 0xF",
-                                    "$": "0x000F8883"
-                                }
-                            ]
-                        },
-                        {
-                            "_name": "override_fpga_prop.json",
-                            "Element32b": [
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Enable demodulator wired input",
-                                    "$": "0x51E4,0x0001"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Output digital baseband signal on RFC_GPO0",
-                                    "$": "0x1110,0x0004"
-                                },
-                                {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Disable digital transmitter",
-                                    "$": "0x00000083"
-                                },
-                                {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Disable synth programming",
-                                    "$": "0x00800403"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5100,0x0000"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5104,0x721C"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5108,0x0072"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter gain for wired input",
-                                    "$": "0x50D4,0x48F4"
+                                    "_type": "ADI_HALFREG_OVERRIDE",
+                                    "_comment": "Set LNA IB boost to 2",
+                                    "$": "0,5,0xF,0x2"
                                 }
                             ]
                         },
@@ -321,7 +284,7 @@
                     },
                     {
                         "_name": "frequency",
-                        "$": "915"
+                        "$": "916"
                     },
                     {
                         "_name": "fractFreq",

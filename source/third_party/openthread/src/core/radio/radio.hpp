@@ -56,12 +56,6 @@ static constexpr uint64_t kMinCslPeriod  = OPENTHREAD_CONFIG_MAC_CSL_MIN_PERIOD 
 static constexpr uint64_t kMaxCslTimeout = OPENTHREAD_CONFIG_MAC_CSL_MAX_TIMEOUT;
 #endif
 
-#if OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE
-static constexpr uint8_t kCslWorstCrystalPpm  = 255; ///< Worst possible crystal accuracy, in units of ± ppm.
-static constexpr uint8_t kCslWorstUncertainty = 255; ///< Worst possible scheduling uncertainty, in units of 10 us.
-static constexpr uint8_t kUsPerUncertUnit     = 10;  ///< Number of microseconds by uncertainty unit.
-#endif
-
 /**
  * @addtogroup core-radio
  *
@@ -473,12 +467,12 @@ public:
     uint8_t GetCslAccuracy(void);
 
     /**
-     * Get the current uncertainty, in units of 10 us, of the clock used for scheduling CSL operations.
+     * Get the fixed uncertainty of the Device for scheduling CSL Transmissions in units of 10 microseconds.
      *
-     * @returns The current CSL Clock Uncertainty in units of 10 us.
+     * @returns The CSL Uncertainty in units of 10 us.
      *
      */
-    uint8_t GetCslClockUncertainty(void);
+    uint8_t GetCslUncertainty(void);
 #endif // OPENTHREAD_CONFIG_MAC_CSL_RECEIVER_ENABLE || OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE
 
     /**
@@ -522,6 +516,7 @@ public:
      * @param[in] aScanDuration  The duration, in milliseconds, for the channel to be scanned.
      *
      * @retval kErrorNone            Successfully started scanning the channel.
+     * @retval kErrorBusy            The radio is performing energy scanning.
      * @retval kErrorNotImplemented  The radio doesn't support energy scanning.
      *
      */
@@ -809,10 +804,12 @@ inline uint8_t Radio::GetCslAccuracy(void)
 {
     return otPlatRadioGetCslAccuracy(GetInstancePtr());
 }
+#endif
 
-inline uint8_t Radio::GetCslClockUncertainty(void)
+#if OPENTHREAD_CONFIG_MAC_CSL_TRANSMITTER_ENABLE
+inline uint8_t Radio::GetCslUncertainty(void)
 {
-    return otPlatRadioGetCslClockUncertainty(GetInstancePtr());
+    return otPlatRadioGetCslUncertainty(GetInstancePtr());
 }
 #endif
 
@@ -979,7 +976,7 @@ inline uint8_t Radio::GetCslAccuracy(void)
     return UINT8_MAX;
 }
 
-inline uint8_t Radio::GetCslClockUncertainty(void)
+inline uint8_t Radio::GetCslUncertainty(void)
 {
     return UINT8_MAX;
 }

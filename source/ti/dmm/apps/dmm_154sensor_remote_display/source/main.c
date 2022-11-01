@@ -59,6 +59,7 @@
 #include <ti/sysbios/hal/Hwi.h>
 #include <ti/drivers/GPIO.h>
 
+
 #include <icall.h>
 #include "bcomdef.h"
 
@@ -70,7 +71,6 @@
 
 #include "macTask.h"
 #include "sensor.h"
-
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
 #include <driverlib/vims.h>
@@ -100,6 +100,9 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #include <dmm/dmm_scheduler.h>
 #include "ti_dmm_application_policy.h"
 #include <dmm/dmm_priority_ble_154sensor.h>
+
+/* Internal POSIX Mapping for thread handle */
+#include <tirtos/_pthread.h>
 
 #if defined(RESET_ASSERT)
 #include <driverlib/sys_ctrl.h>
@@ -391,7 +394,8 @@ int main()
 
   /* register clients with DMM scheduler */
   DMMSch_registerClient(pBleTaskHndl, DMMPolicy_StackRole_BlePeripheral);
-  DMMSch_registerClient(pMacTaskHndl, DMMPolicy_StackRole_154Sensor);
+
+  DMMSch_registerClient(&(((pthread_Obj *) pMacTaskHndl)->task), DMMPolicy_StackRole_154Sensor);
 
   /* set the stacks in default states */
   DMMPolicy_updateApplicationState(DMMPolicy_StackRole_BlePeripheral, DMMPOLICY_BLE_IDLE);
@@ -472,7 +476,7 @@ void AssertHandler(uint8 assertCause, uint8 assertSubcause)
     case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
 #ifndef CUI_DISABLE
       CUI_assert("***ERROR*** >> OUT OF MEMORY!", false);
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
 
     case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
@@ -486,31 +490,31 @@ void AssertHandler(uint8 assertCause, uint8 assertSubcause)
       {
         CUI_assert("***ERROR*** >> INTERNAL ERROR!", false);
       }
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
 
     case HAL_ASSERT_CAUSE_ICALL_ABORT:
 #ifndef CUI_DISABLE
       CUI_assert("***ERROR*** >> ICALL ABORT!", true);
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
 
     case HAL_ASSERT_CAUSE_ICALL_TIMEOUT:
 #ifndef CUI_DISABLE
       CUI_assert("***ERROR*** >> ICALL TIMEOUT!", true);
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
 
     case HAL_ASSERT_CAUSE_WRONG_API_CALL:
 #ifndef CUI_DISABLE
       CUI_assert("***ERROR*** >> WRONG API CALL!", true);
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
 
   default:
 #ifndef CUI_DISABLE
       CUI_assert("***ERROR*** >> DEFAULT SPINLOCK!", true);
-#endif /* CUI_DSIABLE */
+#endif /* CUI_DISABLE */
       break;
   }
 

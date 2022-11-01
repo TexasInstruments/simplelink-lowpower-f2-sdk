@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       hw_ccfg_h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 * Copyright (c) 2015 - 2017, Texas Instruments Incorporated
 * All rights reserved.
@@ -121,16 +119,16 @@
 // Configuration register for debug authentication
 #define CCFG_O_DEB_AUTH_CFG                                         0x00000068
 
-// Not to be used
+// Customer key
 #define CCFG_O_CKEY0                                                0x0000006C
 
-// Not to be used
+// Customer key
 #define CCFG_O_CKEY1                                                0x00000070
 
-// Not to be used
+// Customer key
 #define CCFG_O_CKEY2                                                0x00000074
 
-// Not to be used
+// Customer key
 #define CCFG_O_CKEY3                                                0x00000078
 
 //*****************************************************************************
@@ -760,7 +758,11 @@
 //*****************************************************************************
 // Field: [23:16] C_FA_DIS
 //
-// Reserved. Must be set to 0xC5.
+// Option to disable failure analysis without customer password. If C_FA_DIS !=
+// 0xC5, CKEY must be provided to TI for failure analysis to be possible.
+//
+// 0xC5: Failure analysis without customer password is enabled
+// All other values: Failure analysis without customer password is disabled
 #define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_W                                      8
 #define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_M                             0x00FF0000
 #define CCFG_CCFG_TI_OPTIONS_C_FA_DIS_S                                     16
@@ -1308,7 +1310,8 @@
 //*****************************************************************************
 // Field:  [31:0] KEY
 //
-// Reserved. Must be set to 0xFFFFFFFF.
+// Bit[31:0] of customer key used for XOR of TI unlock code when
+// CCFG_TI_OPTIONS.C_FA_DIS != 0xC5.
 #define CCFG_CKEY0_KEY_W                                                    32
 #define CCFG_CKEY0_KEY_M                                            0xFFFFFFFF
 #define CCFG_CKEY0_KEY_S                                                     0
@@ -1320,7 +1323,8 @@
 //*****************************************************************************
 // Field:  [31:0] KEY
 //
-// Reserved. Must be set to 0xFFFFFFFF.
+// Bit[63:32] of customer key used for XOR of TI unlock code when
+// CCFG_TI_OPTIONS.C_FA_DIS != 0xC5.
 #define CCFG_CKEY1_KEY_W                                                    32
 #define CCFG_CKEY1_KEY_M                                            0xFFFFFFFF
 #define CCFG_CKEY1_KEY_S                                                     0
@@ -1332,7 +1336,8 @@
 //*****************************************************************************
 // Field:  [31:0] KEY
 //
-// Reserved. Must be set to 0xFFFFFFFF.
+// Bit[95:64] of customer key used for XOR of TI unlock code when
+// CCFG_TI_OPTIONS.C_FA_DIS != 0xC5.
 #define CCFG_CKEY2_KEY_W                                                    32
 #define CCFG_CKEY2_KEY_M                                            0xFFFFFFFF
 #define CCFG_CKEY2_KEY_S                                                     0
@@ -1344,7 +1349,8 @@
 //*****************************************************************************
 // Field:  [31:0] KEY
 //
-// Reserved. Must be set to 0xFFFFFFFF.
+// Bit[127:96] of customer key used for XOR of TI unlock code when
+// CCFG_TI_OPTIONS.C_FA_DIS != 0xC5.
 #define CCFG_CKEY3_KEY_W                                                    32
 #define CCFG_CKEY3_KEY_M                                            0xFFFFFFFF
 #define CCFG_CKEY3_KEY_S                                                     0

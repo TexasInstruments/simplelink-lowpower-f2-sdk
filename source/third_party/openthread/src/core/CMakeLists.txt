@@ -35,6 +35,7 @@ set(COMMON_SOURCES
     api/backbone_router_ftd_api.cpp
     api/border_agent_api.cpp
     api/border_router_api.cpp
+    api/border_routing_api.cpp
     api/channel_manager_api.cpp
     api/channel_monitor_api.cpp
     api/child_supervision_api.cpp
@@ -62,6 +63,7 @@ set(COMMON_SOURCES
     api/logging_api.cpp
     api/message_api.cpp
     api/multi_radio_api.cpp
+    api/nat64_api.cpp
     api/netdata_api.cpp
     api/netdata_publisher_api.cpp
     api/netdiag_api.cpp
@@ -86,8 +88,7 @@ set(COMMON_SOURCES
     backbone_router/bbr_manager.cpp
     backbone_router/multicast_listeners_table.cpp
     backbone_router/ndproxy_table.cpp
-    border_router/infra_if_platform.cpp
-    border_router/router_advertisement.cpp
+    border_router/infra_if.cpp
     border_router/routing_manager.cpp
     coap/coap.cpp
     coap/coap_message.cpp
@@ -97,6 +98,8 @@ set(COMMON_SOURCES
     common/crc16.cpp
     common/data.cpp
     common/error.cpp
+    common/frame_builder.cpp
+    common/frame_data.cpp
     common/heap.cpp
     common/heap_data.cpp
     common/heap_string.cpp
@@ -163,12 +166,14 @@ set(COMMON_SOURCES
     net/dns_types.cpp
     net/dnssd_server.cpp
     net/icmp6.cpp
-    net/ip4_address.cpp
+    net/ip4_types.cpp
     net/ip6.cpp
     net/ip6_address.cpp
     net/ip6_filter.cpp
     net/ip6_headers.cpp
     net/ip6_mpl.cpp
+    net/nat64_translator.cpp
+    net/nd6.cpp
     net/nd_agent.cpp
     net/netif.cpp
     net/sntp_client.cpp

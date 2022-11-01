@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,26 +64,26 @@ For more information, refer to the [BLE Stack User's Guide]\
 __Default__: Peripheral\n`
 
 // Long description for the bondManager configuration parameter
-const bondManagerLongDescription = `The GAP Bond Manager (GAPBondMgr) is a\
-configurable module that offloads most of the Pairing & Bonding security\
-mechanisms associated with the Security Manager (SM) protocol from the application.\
-The GAPBongMgr executes in the protocol stack task’s context. For more information,\
+const bondManagerLongDescription = `The GAP Bond Manager (GAPBondMgr) is a \
+configurable module that offloads most of the Pairing & Bonding security \
+mechanisms associated with the Security Manager (SM) protocol from the application. \
+The GAPBondMgr executes in the protocol stack task’s context. For more information, \
 refer to the [BLE Stack User's Guide](/ble5stack/ble_user_guide/html/ble-stack-5.x/\
-gapbondmngr.html#gap-bond-manager-and-le-secure-connections)\n
+gapbondmngr-cc13xx_cc26xx.html#gap-bond-manager-and-le-secure-connections).\n
 __Default__: True (checked)\n`
 
 // Long description for the extAdv configuration parameter
 const extAdvLongDescription = `BLE5 Extended advertising feature.\n
 For more information, refer to the [BLE Stack User's Guide]\
-(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13x2_26x2.html)\n
+(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13xx_cc26xx.html).\n
 __Default__: True (enabled)\n
 __Note__: When the feature is disabled, remove all extended advertising sets`
 
 // Long description for the periodicAdv configuration parameter
 const periodicAdvLongDescription = `Periodic advertising feature.\n
 For more information, refer to the [BLE Stack User's Guide]\
-(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13x2_26x2.html#periodic-\
-advertising)\n
+(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13xx_cc26xx.html#periodic-\
+advertising).\n
 __Default__: False (disabled)\n
 __Note__: When the feature is enabled, add non-connectable non-scannable \
 extended advertising set`
@@ -93,12 +93,12 @@ const periodicAdvSyncLongDescription = `Periodic adv sync feature.\n
 Synchronization can only occur when scanning is enabled. While scanning is \
 disabled, no attempt to synchronize will take place.\n
 For more information, refer to the [BLE Stack User's Guide]\
-(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13x2_26x2.html#periodic-\
+(/ble5stack/ble_user_guide/html/ble-stack-5.x/gap-cc13xx_cc26xx.html#periodic-\
 advertising)\n
 __Default__: False (disabled)\n`
 
 // Long description for the gattDB configuration parameter
-const gattDBLongDescription = `Indicates that the GATT database is maintained off\
+const gattDBLongDescription = `Indicates that the GATT database is maintained off \
 the chip on the Application Processor (AP)\n
 __Default__: False (unchecked)\n`
 
@@ -108,22 +108,22 @@ Manager requires the stack’s GATT client to read the peer device’s GAP \
 characteristics. To accomplish this, GATT_NO_CLIENT should be \
 unchecked so that the GATT client is included.\n
 For more information, refer to the [BLE Stack User's Guide](/ble5stack/\
-ble_user_guide/html/ble-stack-5.x/privacy.html#using-privacy-in-stack)\n
+ble_user_guide/html/ble-stack-5.x/privacy.html#using-privacy-in-stack).\n
 __Default__: False (unchecked)\n`
 
 // Long description for the L2CAPCOC configuration parameter
-const L2CAPCOCLongDescription = `Enable/Disable the use of L2CAP Connection Oriented Channels.\
-The BLE5-Stack provides APIs to create L2CAP CoC channels to transfer bidirectional data between\
+const L2CAPCOCLongDescription = `Enable/Disable the use of L2CAP Connection Oriented Channels. \
+The BLE5-Stack provides APIs to create L2CAP CoC channels to transfer bidirectional data between \
 two Bluetooth Low Energy devices supporting this feature. For more information, refer to the \
 [BLE Stack User's Guide](/ble5stack/ble_user_guide/html/ble-stack-common/l2cap.html#connection\
--oriented-channels-example) .\n
+-oriented-channels-example).\n
 __Default__: False (unchecked)\n`
 
 // Long description for the delayingAttReadReq configuration parameter
 const delayingAttReadReqLongDescription = `Delaying an ATT_READ_REQ from a \
 registered service is possible by enabling this parameter.\n
 For more information, refer to the [BLE Stack User's Guide](/ble5stack/\
-ble_user_guide/html/ble-stack-5.x/gatt.html#delaying-an-att-read-request)\n
+ble_user_guide/html/ble-stack-5.x/gatt.html#delaying-an-att-read-request).\n
 __Default__: False (unchecked)\n`
 
 // Long description for the trensLayer configuration parameter

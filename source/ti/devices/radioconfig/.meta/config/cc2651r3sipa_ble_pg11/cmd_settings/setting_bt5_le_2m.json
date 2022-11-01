@@ -5,7 +5,7 @@
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",
-            "Cpe": "rf_patch_cpe_multi_protocol",
+            "Cpe": "rf_patch_cpe_bt5",
             "Mce": "rf_patch_mce_bt5",
             "Rfe": []
         },

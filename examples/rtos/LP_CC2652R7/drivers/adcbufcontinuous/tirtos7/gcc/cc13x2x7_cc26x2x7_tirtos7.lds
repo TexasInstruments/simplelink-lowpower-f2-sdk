@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-__TI_STACK_SIZE = 1024;
+__TI_STACK_SIZE = 0x600;
 HEAPSIZE = 0x4000; /* Size of heap buffer used by HeapMem */
 
 ENTRY(_c_int00)

@@ -48,9 +48,11 @@
 
 #include "radio.h"
 
-#ifdef USE_DMM
+#if defined (USE_DMM)
 #include <dmm/dmm_rfmap.h>
 #include <dmm_thread_activity.h>
+#elif defined(TIOP_RADIO_USE_CSF)
+#include <cfs_rfmap.h>
 #else
 #include <ti/drivers/rf/RF.h>
 #endif
@@ -312,7 +314,6 @@ static void rfCoreInitBufs(void)
     sTransmitFrame.mPsdu   = sTransmitPsdu;
     sTransmitFrame.mLength = 0;
 }
-
 /**
  * @brief initializes the setup command structure
  *
@@ -321,7 +322,7 @@ static void rfCoreInitBufs(void)
 void rfCoreInitSetupCmd(void)
 {
     /* initialize radio setup command */
-    sRadioSetupCmd = RF_cmdRadioSetup;
+    sRadioSetupCmd = RF_cmdIeeeRadioSetup;
 
     sRadioSetupCmd.startTrigger.pastTrig = 1; // XXX: workaround for RF scheduler
 }
@@ -368,6 +369,8 @@ static void rfCoreInitReceiveParams(void)
     sReceiveCmd.ccaOpt.ccaEnSync              = 1;
     sReceiveCmd.ccaOpt.ccaSyncOp              = 1;
     sReceiveCmd.ccaOpt.ccaCorrThr             = 1;
+
+
 }
 
 /**
@@ -946,6 +949,7 @@ static void rfCoreRxCallback(RF_Handle aRfHandle,
          * and avoid the TX command being submitted without a background RX
          * command.
          */
+
          rfCoreSendReceiveCmd(sRfHandle);
     }
     else
@@ -1839,7 +1843,19 @@ void otPlatRadioSetPanId(otInstance *aInstance, uint16_t aPanid)
     /* XXX: if the pan id is the broadcast pan id (0xFFFF) the auto ack will
      * not work. This is due to the design of the CM0 and follows IEEE 802.15.4
      */
-    sReceiveCmd.localPanID = aPanid;
+    if (platformRadio_phyState_Sleep == sState ||
+        platformRadio_phyState_Disabled == sState)
+    {
+        sReceiveCmd.localPanID = aPanid;
+    }
+    else
+    {
+        rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
+
+        sReceiveCmd.localPanID = aPanid;
+
+        rfCoreSendReceiveCmd(sRfHandle);
+    }
 
     return;
 }
@@ -1851,7 +1867,19 @@ void otPlatRadioSetExtendedAddress(otInstance *aInstance, const otExtAddress *aA
 {
     (void)aInstance;
 
-    sReceiveCmd.localExtAddr = *((uint64_t *)(aAddress));
+    if (platformRadio_phyState_Sleep == sState ||
+        platformRadio_phyState_Disabled == sState)
+    {
+          sReceiveCmd.localExtAddr = *((uint64_t *)(aAddress));
+    }
+    else
+    {
+        rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
+
+        sReceiveCmd.localExtAddr = *((uint64_t *)(aAddress));
+
+        rfCoreSendReceiveCmd(sRfHandle);
+    }
 
     return;
 }
@@ -1862,8 +1890,19 @@ void otPlatRadioSetExtendedAddress(otInstance *aInstance, const otExtAddress *aA
 void otPlatRadioSetShortAddress(otInstance *aInstance, uint16_t aAddress)
 {
     (void)aInstance;
+    if (platformRadio_phyState_Sleep == sState ||
+        platformRadio_phyState_Disabled == sState)
+    {
+        sReceiveCmd.localShortAddr = aAddress;
+    }
+    else
+    {
+        rfCoreExecuteAbortCmd(sRfHandle, sReceiveCmdHandle);
 
-    sReceiveCmd.localShortAddr = aAddress;
+        sReceiveCmd.localShortAddr = aAddress;
+
+        rfCoreSendReceiveCmd(sRfHandle);
+    }
 
     return;
 }

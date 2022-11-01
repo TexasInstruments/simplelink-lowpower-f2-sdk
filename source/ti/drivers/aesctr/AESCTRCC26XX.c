@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,10 @@
 #include DeviceFamily_constructPath(inc/hw_crypto.h)
 #include DeviceFamily_constructPath(driverlib/aes.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
+
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#endif
 
 #define AES_NON_BLOCK_MULTIPLE_MASK 0x0F
 
@@ -192,7 +196,7 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
     if (!AESCTR_isInitialized || object->isOpen)
     {
         HwiP_restore(interruptKey);
-        return (NULL);
+        return NULL;
     }
 
     object->isOpen = true;
@@ -226,7 +230,7 @@ AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *param
      * (CryptoResourceCC26XX) module. */
     Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
 
-    return (handle);
+    return handle;
 }
 
 /*
@@ -254,20 +258,58 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
     AESCTRCC26XX_Object *object         = handle->object;
     int_fast16_t status                 = AESCTR_STATUS_SUCCESS;
     AESCTRCC26XX_HWAttrs const *hwAttrs = handle->hwAttrs;
-    uint16_t keyLength;
-    const uint8_t *keyData;
+    size_t keyLength;
+    uint8_t *keyingMaterial = NULL;
     uint32_t ctrlVal;
+#if (ENABLE_KEY_STORAGE == 1)
+    int_fast16_t keyStoreStatus;
+    KeyStore_PSA_KeyFileId keyID;
+    uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
+#endif
 
     DebugP_assert(object->input);
     DebugP_assert(object->output);
 
-    /* Only plaintext CryptoKeys are supported currently */
-    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) || (object->key.encoding == CryptoKey_BLANK_PLAINTEXT));
+    /* Only plaintext and KeyStore CryptoKeys are supported currently */
+    DebugP_assert((object->key.encoding == CryptoKey_PLAINTEXT) ||
+                  (object->key.encoding == CryptoKey_BLANK_PLAINTEXT) || (object->key.encoding == CryptoKey_KEYSTORE));
 
-    keyLength = object->key.u.plaintext.keyLength;
-    keyData   = object->key.u.plaintext.keyMaterial;
+    if (object->key.encoding == CryptoKey_PLAINTEXT || object->key.encoding == CryptoKey_BLANK_PLAINTEXT)
+    {
+        keyLength      = object->key.u.plaintext.keyLength;
+        keyingMaterial = object->key.u.plaintext.keyMaterial;
+    }
+#if (ENABLE_KEY_STORAGE == 1)
+    else if (object->key.encoding == CryptoKey_KEYSTORE)
+    {
+        GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
-    DebugP_assert(keyData);
+        keyStoreStatus = KeyStore_PSA_getKey(keyID,
+                                             &KeyStore_keyingMaterial[0],
+                                             sizeof(KeyStore_keyingMaterial),
+                                             &keyLength,
+                                             KEYSTORE_PSA_ALG_CTR,
+                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+
+        if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
+        {
+            return AESCTR_STATUS_KEYSTORE_INVALID_ID;
+        }
+
+        if (keyLength != object->key.u.keyStore.keyLength)
+        {
+            return AESCTR_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
+        keyingMaterial = KeyStore_keyingMaterial;
+    }
+#endif
+    else
+    {
+        return AESCTR_STATUS_FEATURE_NOT_SUPPORTED;
+    }
+
+    DebugP_assert(keyingMaterial);
     DebugP_assert((keyLength == 16) || (keyLength == 24) || (keyLength == 32));
 
     /* We need to set the HWI function and priority since the same physical
@@ -281,7 +323,7 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
     /* Load the key from RAM or flash into the key store at a hardcoded and
      * reserved location.
      */
-    if (AESWriteToKeyStore(keyData, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
+    if (AESWriteToKeyStore(keyingMaterial, keyLength, AES_KEY_AREA_6) != AES_SUCCESS)
     {
         status = AESCTR_STATUS_ERROR;
     }
@@ -629,7 +671,7 @@ int_fast16_t AESCTR_addData(AESCTR_Handle handle, AESCTR_SegmentedOperation *ope
         /* Return the status of the previous call.
          * The callback function will not be executed.
          */
-        return (object->returnStatus);
+        return object->returnStatus;
     }
 
     /* Assert the segmented operation was setup */
@@ -688,7 +730,7 @@ int_fast16_t AESCTR_finalize(AESCTR_Handle handle, AESCTR_SegmentedOperation *op
         /* Return the failure status of previous call.
          * The callback will not be called.
          */
-        return (object->returnStatus);
+        return object->returnStatus;
     }
 
     /* Assert the segmented operation was setup */

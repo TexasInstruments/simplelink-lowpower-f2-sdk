@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,17 +38,17 @@
 "use strict";
 
 // Long description for the deviceName configuration parameter
-const deviceNameLongDescription = `The device name is the user-friendly name\
-that a BLE device exposes to remote devices. The name is a character string\
+const deviceNameLongDescription = `The device name is the user-friendly name \
+that a BLE device exposes to remote devices. The name is a character string \
 held in the Device Name characteristic.\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_\
 guide/html/ble-stack-5.x/gatt.html#gatt-services-and-profile).\n
 __Range__: Max Length of Device Name Attribute is 21`
 
 // Long description for the addressMode configuration parameter
-const addressModeLongDescription = `Devices are identified using a device\
-address. Device addresses may be either a public device address or a random\
-device address. A public device address and a random device address are both\
+const addressModeLongDescription = `Devices are identified using a device \
+address. Device addresses may be either a public device address or a random \
+device address. A public device address and a random device address are both \
 48 bits in length.\n
 A device shall use at least one type of device address and may contain both.\n
 Options | Description
@@ -86,7 +86,7 @@ const maxConnNumLongDescription = `This is the maximum number of simultaneous \
 BLE connections allowed. Adding more connections uses more RAM and may \
 require increasing HEAPMGR_SIZE.\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
-html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13x2_26x2.\
+html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13xx_cc26xx.\
 html#ram-optimization).\n
 __Default__: 8\n
 __Range__: Central Role: 0 to 32, Other Roles: 0 to 16`
@@ -97,10 +97,10 @@ __Default__: 5\n
 __Range__: 0 to sizeof(uint8)\n
 __Note__: If the maximum number of connections is set to 0, then this number \
 should also be set to 0.\n
-Set \`MAX_NUM_PDU\` and \`MAX_PDU_SIZE\` to reduce the amount of packets that\
+Set \`MAX_NUM_PDU\` and \`MAX_PDU_SIZE\` to reduce the amount of packets that \
 can be queued up by the stack at a time. This will reduce heap consumption.\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
-html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13x2_26x2.\
+html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13xx_cc26xx.\
 html#ram-optimization).\n`
 
 // Long description for the maxPDUSize configuration parameter
@@ -110,7 +110,7 @@ __Range__: 27 to 255\n
 __Note__: If using LE Secure Connections, MAX_PDU_SIZE must be >= 69\n
 The maximum ATT_MTU is MAX_PDU_SIZE - 4\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
-html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13x2_26x2.\
+html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13xx_cc26xx.\
 html#ram-optimization).\n`
 
  // Exports the long descriptions for each configurable

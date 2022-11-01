@@ -87,7 +87,7 @@
             {
                 "_file": "rf_command_definitions.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2652r_ble_pg21"
+                "$": ".\/..\/config\/cc2651r3_ble_pg10"
             },
             {
                 "_file": "categories.json",
@@ -105,17 +105,17 @@
             },
             {
                 "_file": "frontend_settings.json",
-                "$": ".\/..\/config\/cc2652r_prop_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352r_prop_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2652r_ieee_15_4_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352r_ieee_15_4_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc2652r_ble_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352r_ble_pg21\/cmd_settings"
             },
             {
                 "_file": "dummy_file_overrides.json",

@@ -103,7 +103,7 @@ public:
      * This type represents an SRP client host info.
      *
      */
-    class HostInfo : public otSrpClientHostInfo, public Clearable<HostInfo>
+    class HostInfo : public otSrpClientHostInfo, private Clearable<HostInfo>
     {
         friend class Client;
 
@@ -127,6 +127,15 @@ public:
          *
          */
         const char *GetName(void) const { return mName; }
+
+        /**
+         * This method indicates whether or not the host auto address mode is enabled.
+         *
+         * @retval TRUE  If the auto address mode is enabled.
+         * @retval FALSE If the auto address mode is disabled.
+         *
+         */
+        bool IsAutoAddressEnabled(void) const { return mAutoAddress; }
 
         /**
          * This method gets the number of host IPv6 addresses.
@@ -158,6 +167,7 @@ public:
         void SetName(const char *aName) { mName = aName; }
         void SetState(ItemState aState);
         void SetAddresses(const Ip6::Address *aAddresses, uint8_t aNumAddresses);
+        void EnableAutoAddress(void);
     };
 
     /**
@@ -411,6 +421,31 @@ public:
     void SetCallback(Callback aCallback, void *aContext);
 
     /**
+     * This method gets the TTL used in SRP update requests.
+     *
+     * Note that this is the TTL requested by the SRP client. The server may choose to accept a different TTL.
+     *
+     * By default, the TTL will equal the lease interval. Passing 0 or a value larger than the lease interval via
+     * `otSrpClientSetTtl()` will also cause the TTL to equal the lease interval.
+     *
+     * @returns The TTL (in seconds).
+     *
+     */
+    uint32_t GetTtl(void) const { return (0 < mTtl && mTtl < mLeaseInterval) ? mTtl : mLeaseInterval; }
+
+    /**
+     * This method sets the TTL used in SRP update requests.
+     *
+     * Changing the TTL does not impact the TTL of already registered services/host-info.
+     * It only changes any future SRP update messages (i.e adding new services and/or refreshes of existing services).
+     *
+     * @param[in] aTtl  The TTL (in seconds). If value is zero or greater than lease interval, the TTL is set to the
+     *                  lease interval.
+     *
+     */
+    void SetTtl(uint32_t aTtl) { mTtl = aTtl; }
+
+    /**
      * This method gets the lease interval used in SRP update requests.
      *
      * Note that this is lease duration that would be requested by the SRP client. Server may choose to accept a
@@ -464,16 +499,16 @@ public:
     const HostInfo &GetHostInfo(void) const { return mHostInfo; }
 
     /**
-     * This function sets the host name label.
+     * This method sets the host name label.
      *
-     * After a successful call to this function, `Callback` will be called to report the status of host info
+     * After a successful call to this method, `Callback` will be called to report the status of host info
      *  registration with SRP server.
      *
      * The host name can be set before client is started or after start but before host info is registered with server
      * (host info should be in either `kToAdd` or `kRemoved`).
      *
      * @param[in] aName       A pointer to host name label string (MUST NOT be NULL). Pointer the string buffer MUST
-     *                        persist and remain valid and constant after return from this function.
+     *                        persist and remain valid and constant after return from this method.
      *
      * @retval kErrorNone           The host name label was set successfully.
      * @retval kErrorInvalidArgs    The @p aName is NULL.
@@ -481,6 +516,27 @@ public:
      *
      */
     Error SetHostName(const char *aName);
+
+    /**
+     * This method enables auto host address mode.
+     *
+     * When enabled host IPv6 addresses are automatically set by SRP client using all the unicast addresses on Thread
+     * netif excluding the link-local and mesh-local addresses. If there is no valid address, then Mesh Local EID
+     * address is added. The SRP client will automatically re-register when/if addresses on Thread netif are updated
+     * (new addresses are added or existing addresses are removed).
+     *
+     * The auto host address mode can be enabled before start or during operation of SRP client except when the host
+     * info is being removed (client is busy handling a remove request from an call to `RemoveHostAndServices()` and
+     * host info still being in  either `kStateToRemove` or `kStateRemoving` states).
+     *
+     * After auto host address mode is enabled, it can be disabled by a call to `SetHostAddresses()` which then
+     * explicitly sets the host addresses.
+     *
+     * @retval kErrorNone          Successfully enabled auto host address mode.
+     * @retval kErrorInvalidState  Host is being removed and therefore cannot enable auto host address mode.
+     *
+     */
+    Error EnableAutoHostAddress(void);
 
     /**
      * This method sets/updates the list of host IPv6 address.
@@ -492,6 +548,9 @@ public:
      *
      * After a successful call to this method, `Callback` will be called to report the status of the address
      * registration with SRP server.
+     *
+     * Calling this method disables auto host address mode if it was previously enabled from a successful call to
+     * `EnableAutoHostAddress()`.
      *
      * @param[in] aAddresses          A pointer to the an array containing the host IPv6 addresses.
      * @param[in] aNumAddresses       The number of addresses in the @p aAddresses array.
@@ -718,7 +777,8 @@ private:
     // delay as specified by `kUpdateTxDelay` before sending an SRP
     // update to server. This allows the user to provide more change
     // that are then all sent in same update message.
-    static constexpr uint32_t kUpdateTxDelay = OPENTHREAD_CONFIG_SRP_CLIENT_UPDATE_TX_DELAY; // in msec.
+    static constexpr uint32_t kUpdateTxMinDelay = OPENTHREAD_CONFIG_SRP_CLIENT_UPDATE_TX_MIN_DELAY; // in msec.
+    static constexpr uint32_t kUpdateTxMaxDelay = OPENTHREAD_CONFIG_SRP_CLIENT_UPDATE_TX_MAX_DELAY; // in msec.
 
     // -------------------------------
     // Retry related constants
@@ -795,6 +855,26 @@ private:
         kKeepRetryInterval,
     };
 
+    class SingleServiceMode
+    {
+    public:
+        SingleServiceMode(void)
+            : mEnabled(false)
+            , mService(nullptr)
+        {
+        }
+
+        void     Enable(void) { mEnabled = true, mService = nullptr; }
+        void     Disable(void) { mEnabled = false; }
+        bool     IsEnabled(void) const { return mEnabled; }
+        Service *GetService(void) { return mService; }
+        void     SetService(Service &aService) { mService = &aService; }
+
+    private:
+        bool     mEnabled;
+        Service *mService;
+    };
+
 #if OPENTHREAD_CONFIG_SRP_CLIENT_AUTO_START_API_ENABLE
     class AutoStart : Clearable<AutoStart>
     {
@@ -859,6 +939,7 @@ private:
     void         Pause(void);
     void         HandleNotifierEvents(Events aEvents);
     void         HandleRoleChanged(void);
+    Error        UpdateHostInfoStateOnAddressChange(void);
     void         UpdateServiceStateToRemove(Service &aService);
     State        GetState(void) const { return mState; }
     void         SetState(State aState);
@@ -870,10 +951,11 @@ private:
     Error        PrepareUpdateMessage(Message &aMessage);
     Error        ReadOrGenerateKey(Crypto::Ecdsa::P256::KeyPair &aKeyPair);
     Error        AppendServiceInstructions(Service &aService, Message &aMessage, Info &aInfo);
-    Error        AppendHostDescriptionInstruction(Message &aMessage, Info &aInfo) const;
+    Error        AppendHostDescriptionInstruction(Message &aMessage, Info &aInfo);
     Error        AppendKeyRecord(Message &aMessage, Info &aInfo) const;
     Error        AppendDeleteAllRrsets(Message &aMessage) const;
     Error        AppendHostName(Message &aMessage, Info &aInfo, bool aDoNotCompress = false) const;
+    Error        AppendAaaaRecord(const Ip6::Address &aAddress, Message &aMessage, Info &aInfo) const;
     Error        AppendUpdateLeaseOptRecord(Message &aMessage) const;
     Error        AppendSignature(Message &aMessage, Info &aInfo);
     void         UpdateRecordLengthInMessage(Dns::ResourceRecord &aRecord, uint16_t aOffset, Message &aMessage) const;
@@ -913,6 +995,7 @@ private:
     State   mState;
     uint8_t mTxFailureRetryCount : 4;
     bool    mShouldRemoveKeyLease : 1;
+    bool    mAutoHostAddressAddedMeshLocal : 1;
 #if OPENTHREAD_CONFIG_REFERENCE_DEVICE_ENABLE
     bool mServiceKeyRecordEnabled : 1;
 #endif
@@ -922,6 +1005,7 @@ private:
 
     TimeMilli mLeaseRenewTime;
     uint32_t  mAcceptedLeaseInterval;
+    uint32_t  mTtl;
     uint32_t  mLeaseInterval;
     uint32_t  mKeyLeaseInterval;
 
@@ -932,6 +1016,7 @@ private:
     const char *        mDomainName;
     HostInfo            mHostInfo;
     LinkedList<Service> mServices;
+    SingleServiceMode   mSingleServiceMode;
     TimerMilli          mTimer;
 #if OPENTHREAD_CONFIG_SRP_CLIENT_AUTO_START_API_ENABLE
     AutoStart mAutoStart;

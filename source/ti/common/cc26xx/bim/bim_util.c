@@ -80,32 +80,24 @@ const uint8_t OAD_EXTFL_ID[OAD_IMG_ID_LEN] = OAD_EXTFL_ID_VAL;
  * @brief       This function jumps the execution to program entry to execute
  *              application
  *
- * @param       prgEntry - address of application entry.
+ * @param       vectorTable - address of application vector table.
  *
  * @return      None.
  */
-void jumpToPrgEntry(uint32_t prgEntry)
+void jumpToPrgEntry(uint32_t *vectorTable)
 {
-#ifdef __IAR_SYSTEMS_ICC__
-
-    prgEntry +=4;
-    uint32_t *entry = (uint32_t *)&prgEntry;
-    __asm volatile( "LDR R2, [%0]\n\t"    :: "r" (entry));
-    asm(" LDR.W R2, [R2] ");
-
-    // Reset the stack pointer,
-    asm(" LDR SP, [R0, #0x0] ");
-    asm(" BX R2 ");
-
-#elif defined(__TI_COMPILER_VERSION__) || defined(__clang__)
-    static uint32_t temp;
-    temp = prgEntry;
-    // Reset the stack pointer,
-    temp +=4;
-    asm(" LDR SP, [R0, #0x0] ");
-    ((void (*)(void))(*((uint32_t*)temp)))();
-
+    // Set SP to vectorTable[0]
+#ifdef __ICCARM__
+    __asm volatile (
+        "LDR R5,[R0,#0x0] \n"
+        "MOV SP, R5       \n"
+    );
+#else
+    __asm volatile (" LDR SP, [R0, #0x0] ");
 #endif
+
+    // Jump to vectorTable[1]
+    ( (void (*)(void)) (*(vectorTable + 1)) )();
 }
 
 /*******************************************************************************

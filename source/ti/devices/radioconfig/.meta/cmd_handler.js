@@ -1090,10 +1090,10 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             if (protocol === "multi") {
                 ret.cpe = "rf_patch_cpe_multi_protocol";
             }
-            else if (protocol === "coex_ble") {
+            else if (protocol.includes("coex_ble")) {
                 ret.cpe = "rf_patch_cpe_multi_bt5_coex";
             }
-            else if (protocol === "coex_ieee") {
+            else if (protocol.includes("coex_ieee")) {
                 ret.cpe = "rf_patch_cpe_ieee_coex";
             }
             else {

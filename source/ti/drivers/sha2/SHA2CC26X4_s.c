@@ -40,12 +40,12 @@
 #include <ti/drivers/sha2/SHA2CC26X2.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/sysbios/psa/SecureCB.h>
+#include <ti/drivers/spe/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
@@ -158,7 +158,7 @@ static void SHA2_s_hwiCallback(SHA2_Handle handle_s, int_fast16_t returnStatus)
             sha2SecureCB_ns->returnStatus = returnStatus;
 
             /* Trigger the interrupt for the non-secure callback dispatcher */
-            SecureCB_post(&sha2SecureCB_ns->object);
+            SecureCallback_post(&sha2SecureCB_ns->object);
         }
     }
 }

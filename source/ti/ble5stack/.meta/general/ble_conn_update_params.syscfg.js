@@ -118,7 +118,7 @@ function validate(inst, validation)
                              " ms to " + Common.connParamsRanges.connTimeoutMaxValue + " ms", inst, "upConnTo");
     }
     // Validate connection interval
-    Common.validateConnInterval(inst,validation,inst.upMinConnInt,"upMinConnInt",inst.upMaxConnInt,"upMaxConnInt");
+    Common.validateConnInterval(inst,validation,inst.reqMinConnInt,"reqMinConnInt",inst.reqMaxConnInt,"reqMaxConnInt");
 }
 
 /*

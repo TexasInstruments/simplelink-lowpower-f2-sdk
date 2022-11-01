@@ -290,7 +290,7 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 /*!
  * Image built for EasyLink
  */
-#define OAD_WIRELESS_TECH_EASYLINK        0xFFBF
+#define OAD_WIRELESS_TECH_PROPRF          0xFFBF
 
 /*!
  * Image built for MIOTY
@@ -313,6 +313,12 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
       defined (DeviceFamily_CC13X2_V1) ||                                     \
       defined (DeviceFamily_CC13X2_V2)
   #define OAD_IMG_ID_VAL                    {'C', 'C', '1', '3', 'x', '2', 'R', '1'}
+#elif defined (DeviceFamily_CC13X4)
+  #define OAD_IMG_ID_VAL                    {'C', 'C', '1', '3', 'x', '4', ' ', ' '}
+#elif defined (DeviceFamily_CC26X3)
+  #define OAD_IMG_ID_VAL                    {'C', 'C', '2', '6', 'x', '3', ' ', ' '}
+#elif defined (DeviceFamily_CC26X4)
+  #define OAD_IMG_ID_VAL                    {'C', 'C', '2', '6', 'x', '4', ' ', ' '}
 #elif defined (DeviceFamily_CC26X0R2)
   #define OAD_IMG_ID_VAL                    {'O', 'A', 'D', ' ', 'I', 'M', 'G', ' '}
 #elif defined (DOXYGEN)

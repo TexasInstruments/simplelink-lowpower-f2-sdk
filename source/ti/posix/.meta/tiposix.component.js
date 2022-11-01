@@ -1,9 +1,10 @@
 
 let topModules = [];
+let displayName = "";
 
 /* Only show the Settings module for tirtos7 */
-if (system.getRTOS() == "tirtos7")
-{
+if (system.getRTOS() == "tirtos7") {
+    displayName = "TI RTOS"
     topModules = [
         {
             displayName: "TI RTOS",
@@ -13,9 +14,20 @@ if (system.getRTOS() == "tirtos7")
             ],
         }
     ]
+} else if (system.getRTOS() == "freertos") {
+    displayName = "FreeRTOS"
+    topModules = [
+        {
+            displayName: "FreeRTOS",
+            description: "POSIX API support for FreeRTOS",
+            "modules": [
+                "/ti/posix/freertos/Settings"
+            ],
+        }
+    ]
 }
 
 exports = {
-    displayName: "TI RTOS",
+    displayName: displayName,
     topModules: topModules
 };

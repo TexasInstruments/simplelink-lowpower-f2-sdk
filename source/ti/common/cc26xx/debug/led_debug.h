@@ -61,8 +61,13 @@ extern "C"
  * MACROS
  */
 
+#ifdef DeviceFamily_CC23X0
+#define RED_LED    14
+#define GREEN_LED  15
+#else
 #define RED_LED    IOID_6
 #define GREEN_LED  IOID_7
+#endif
 
 /******************************************************************************
  * FUNCTIONS

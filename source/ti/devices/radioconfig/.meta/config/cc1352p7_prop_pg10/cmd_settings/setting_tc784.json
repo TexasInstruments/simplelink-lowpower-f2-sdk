@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "1 Mbps, 2-GFSK, 350 kHz deviation for 863-930 MHz band. (Pre-silicon settings)",
+        "Name": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)",
+        "Description": "1 Mbps, 2-GFSK, 350 kHz deviation for 863-930 MHz band. (Pre-Silicon)",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",

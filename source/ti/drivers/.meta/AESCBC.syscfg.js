@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,19 @@ let family = Common.device2Family(system.deviceData, "AESCBC");
 let config = [];
 
 /*
+ *  ======== validate ========
+ */
+function validate(inst, validation)
+{
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (inst.$module.$instances.length > 1) {
+            validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
+                                driver instances are fixed in the SPE image. One AESCBC instance is supported.`, inst);
+        }
+    }
+}
+
+/*
  *  ======== base ========
  *  Define the base AESCBC properties and methods
  */
@@ -71,7 +84,8 @@ Unlike ECB, it guarantees confidentiality of the entire message.
 `,
     defaultInstanceName : "CONFIG_AESCBC_",
     config              : Common.addNameConfig(config, "/ti/drivers/AESCBC", "CONFIG_AESCBC_"),
-    modules             : Common.autoForceModules(["Board", "DMA", "Power"])
+    modules             : Common.autoForceModules(["Board", "DMA", "Power"]),
+    validate            : validate
 };
 
 /* extend the base exports to include family-specific content */

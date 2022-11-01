@@ -1850,8 +1850,8 @@ bool SimplePeripheral_doAutoConnect(uint8_t index)
         GapAdv_enable(advHandleLegacy, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         GapAdv_enable(advHandleLongRange, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         autoConnect = AUTOCONNECT_GROUP_A;
-      }	
-	  Display_printf(dispHandle, SP_ROW_AC, 0, "AutoConnect enabled: Group A");
+      }
+	    Display_printf(dispHandle, SP_ROW_AC, 0, "AutoConnect enabled: Group A");
     }
     else if (index == 2)
     {
@@ -1866,7 +1866,7 @@ bool SimplePeripheral_doAutoConnect(uint8_t index)
         GapAdv_enable(advHandleLegacy, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         GapAdv_enable(advHandleLongRange, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         autoConnect = AUTOCONNECT_GROUP_B;
-      } 
+      }
       Display_printf(dispHandle, SP_ROW_AC, 0, "AutoConnect enabled: Group B");
     }
     else
@@ -1882,11 +1882,11 @@ bool SimplePeripheral_doAutoConnect(uint8_t index)
         GapAdv_enable(advHandleLegacy, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         GapAdv_enable(advHandleLongRange, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         autoConnect = AUTOCONNECT_DISABLE;
-      } 
+      }
       Display_printf(dispHandle, SP_ROW_AC, 0, "AutoConnect disabled");
     }
     tbm_goTo(&spMenuMain);
-    
+
     return (true);
 }
 
@@ -2159,7 +2159,7 @@ static void SimplePeripheral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
   {
     case HCI_READ_RSSI:
     {
-      int8 rssi = (int8)pMsg->pReturnParam[3];  
+      int8 rssi = (int8)pMsg->pReturnParam[3];
 
       // Display RSSI value, if RSSI is higher than threshold, change to faster PHY
       if (status == SUCCESS)

@@ -39,11 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef DebugP_ASSERT_ENABLED
-    #define DebugP_ASSERT_ENABLED 0
-#endif
-
-#include <ti/drivers/dpl/DebugP.h>
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/UART2.h>
 #include <ti/drivers/uart2/UART2Support.h>
@@ -67,6 +62,21 @@ const UART2_Params UART2_defaultParams = {
     NULL                          /* userArg */
 };
 
+/* Functions used internally */
+int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle,
+                                        const void *buffer,
+                                        size_t size,
+                                        size_t *bytesWritten,
+                                        uint32_t timeout);
+
+int_fast16_t UART2_writeTimeoutNonblocking(UART2_Handle handle,
+                                           const void *buffer,
+                                           size_t size,
+                                           size_t *bytesWritten,
+                                           uint32_t timeout);
+
+static int_fast16_t UART2_writePolling(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten);
+
 /*
  *  ======== UART2_getRxCount ========
  */
@@ -79,12 +89,14 @@ size_t __attribute__((weak)) UART2_getRxCount(UART2_Handle handle)
     key = HwiP_disable();
     if (object->state.opened)
     {
-        UART2Support_dmaRefreshRx(handle);
+        /* Stop and start the DMA transaction. This will update the count in the ring buffer */
+        UART2Support_dmaStopRx(handle);
+        UART2Support_dmaStartRx(handle);
         count = RingBuf_getCount(&object->rxBuffer);
     }
     HwiP_restore(key);
 
-    return (count);
+    return count;
 }
 
 /*
@@ -112,7 +124,7 @@ int_fast16_t __attribute__((weak)) UART2_read(UART2_Handle handle, void *buffer,
         status = UART2_readTimeout(handle, buffer, size, bytesRead, UART2_WAIT_FOREVER);
     }
 
-    return (status);
+    return status;
 }
 
 /*
@@ -123,6 +135,7 @@ int_fast16_t __attribute__((weak)) UART2_readFull(UART2_Handle handle, void *buf
     unsigned char *buf = (unsigned char *)buffer;
     int status         = UART2_STATUS_SUCCESS;
     size_t totalRead   = 0;
+    size_t sizeTemp    = size;
     size_t nRead;
 
     while (size > 0)
@@ -138,236 +151,203 @@ int_fast16_t __attribute__((weak)) UART2_readFull(UART2_Handle handle, void *buf
         }
     }
 
-    if (bytesRead)
+    if (bytesRead != NULL)
     {
         *bytesRead = totalRead;
     }
 
-    return (status);
+    if (sizeTemp == 0)
+    {
+        /* Reading 0 bytes is not valid */
+        status = UART2_STATUS_EINVALID;
+    }
+
+    return status;
 }
 
 /*
  *  ======== UART2_readTimeout ========
  */
-int_fast16_t __attribute__((weak))
-UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, size_t *bytesRead, uint32_t timeout)
+int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, size_t *bytesRead, uint32_t timeout)
 {
     UART2_Object *object = handle->object;
     int status           = UART2_STATUS_SUCCESS;
-    uintptr_t key;
-    size_t nBytesRead;
-    size_t *pNBytesRead;
-    int available;
-    unsigned char *srcAddr;
+    uintptr_t key;          /* Key returned by HwiP_disable, used to restore interrupts */
+    int available;          /* Number of available bytes in ring buffer */
+    unsigned char *srcAddr; /* Address in ring buffer where data can be read from */
+    void *readBufCopy;      /* Temporarily copy readBuf before clearing it, to pass copy to callback */
 
-    pNBytesRead  = (bytesRead == NULL) ? &nBytesRead : bytesRead;
-    *pNBytesRead = 0;
+    if (bytesRead != NULL)
+    {
+        *bytesRead = 0;
+    }
 
     key = HwiP_disable();
 
     if (!object->state.opened)
     {
-        /* device instance not yet opened */
+        /* Instance not yet opened */
         HwiP_restore(key);
-        return (UART2_STATUS_ENOTOPEN);
+        return UART2_STATUS_ENOTOPEN;
     }
 
     if (object->readInUse)
     {
         /* Another read is ongoing */
         HwiP_restore(key);
-        return (UART2_STATUS_EINUSE);
+        return UART2_STATUS_EINUSE;
     }
 
+    if (size == 0)
+    {
+        /* Reading 0 bytes is not valid */
+        HwiP_restore(key);
+        return UART2_STATUS_EINVALID;
+    }
+
+    /* The driver is now free to start a read transaction. Even though there is no active "user read" ongoing,
+     * the ring buffer could be receiving data in the background. Stop potentially ongoing transfers before proceeding.
+     */
+    UART2Support_dmaStopRx(handle);
+
+    /* Update driver state variables */
     object->readInUse          = true;
+    object->readBuf            = (unsigned char *)buffer;
+    object->readSize           = size;
+    object->readCount          = size; /* Number remaining to be read */
+    object->bytesRead          = 0;    /* Number of bytes read */
+    object->rxStatus           = 0;    /* Clear receive errors */
     object->state.rxCancelled  = false;
     object->state.readTimedOut = false;
-    object->state.rxTimeOut    = false;
 
-    /* Save the data to be read and restore interrupts. */
-    object->readBuf   = (unsigned char *)buffer;
-    object->readSize  = size;
-    object->readCount = size; /* Number remaining to be read */
-    object->bytesRead = 0;    /* Number of bytes read */
-    object->rxStatus  = 0;    /* Clear receive errors */
-
-    HwiP_restore(key);
+    /* Enable RX. If RX has already been enabled, this function call does nothing */
     UART2_rxEnable(handle);
 
-    // TODO: case for !HwiP_interruptsEnabled()?
+    /* Start RX. Depending on the number of bytes in the ring buffer, this will either start a DMA transaction
+     * straight into the user buffer, or continue reading into the ring buffer (if it contains enough data for this read
+     */
+    UART2Support_dmaStartRx(handle);
 
-    if ((object->state.readMode == UART2_Mode_BLOCKING) && (timeout != UART2_WAIT_FOREVER) && (timeout != 0))
+    HwiP_restore(key);
+
+    /* Read data from the ring buffer */
+    do
     {
-        ClockP_setTimeout(&(object->readTimeoutClk), timeout);
-        ClockP_start(&(object->readTimeoutClk));
-    }
+        key       = HwiP_disable();
+        available = RingBuf_getPointer(&object->rxBuffer, &srcAddr);
+
+        if (available > object->readCount)
+        {
+            available = object->readCount;
+        }
+        memcpy((unsigned char *)buffer + object->bytesRead, srcAddr, available);
+
+        RingBuf_getConsume(&object->rxBuffer, available);
+
+        object->readCount -= available;
+        object->bytesRead += available;
+
+        HwiP_restore(key);
+    } while ((available > 0) && (object->readCount > 0));
 
     key = HwiP_disable();
 
-    while (object->readCount > 0)
+    /* If we are in nonblocking mode, the read operation is done. Update state variables */
+    if (object->state.readMode == UART2_Mode_NONBLOCKING)
     {
-        if (object->state.rxCancelled)
+        object->readCount = 0;
+        object->readBuf   = NULL;
+        object->readInUse = false;
+    }
+    /* If there are no more bytes to read, the read operation is complete */
+    if (object->readCount == 0)
+    {
+        /* Update driver state variables */
+        object->readInUse = false;
+        /* Set readBuf to NULL, but first make a copy to pass to the callback. We cannot set it to NULL after
+         * the callback in case another read was issued from the callback.
+         */
+        readBufCopy       = object->readBuf;
+        object->readBuf   = NULL;
+
+        if (object->state.readMode == UART2_Mode_CALLBACK)
         {
-            object->state.rxCancelled = false;
-            status                    = UART2_STATUS_ECANCELLED;
-            break;
+            /* Safely call the callback function in case UART2_read()
+             * is called from within the callback, to avoid recursion.
+             */
+            object->state.readCallbackPending = true;
+            HwiP_restore(key);
+
+            /* If we're not inside the read callback function... */
+            if (object->state.inReadCallback == false)
+            {
+                while (object->state.readCallbackPending)
+                {
+                    key                               = HwiP_disable();
+                    object->state.readCallbackPending = false;
+                    object->state.inReadCallback      = true;
+                    HwiP_restore(key);
+
+                    object->readCallback(handle, readBufCopy, object->bytesRead, object->userArg, UART2_STATUS_SUCCESS);
+
+                    object->state.inReadCallback = false;
+                }
+            }
+            key = HwiP_disable();
         }
+    }
+
+    HwiP_restore(key);
+
+    /* If the driver is in blocking mode, and there are bytes still left to read */
+    if ((object->state.readMode == UART2_Mode_BLOCKING) && (object->readCount > 0))
+    {
+        /* Wait for more data, with given timeout */
+        if (SemaphoreP_pend(&object->readSem, timeout) != SemaphoreP_OK)
+        {
+            /* The semaphore-pend returned with a timeout */
+            object->state.readTimedOut = true;
+        }
+
+        key = HwiP_disable();
+
+        /* Stop RX temporarily*/
+        UART2Support_dmaStopRx(handle);
+
+        /* Update state variables */
+        object->readCount = 0;
+        object->readBuf   = NULL;
+        object->readInUse = false;
+
+        /* In case RX was cancelled or timed out, start a new RX. This will start a transaction into the ring buffer */
+        UART2Support_dmaStartRx(handle);
 
         if (object->state.readTimedOut)
         {
             status = UART2_STATUS_ETIMEOUT;
-            break;
         }
 
-        /* Update RX ring buffer state with latest number of bytes dma'd */
-        UART2Support_dmaRefreshRx(handle);
+        if (object->state.rxCancelled)
+        {
+            status = UART2_STATUS_ECANCELLED;
+        }
 
-        /* Flush semaphore before re-enabling HWI */
-        SemaphoreP_pend(&object->readSem, SemaphoreP_NO_WAIT);
         HwiP_restore(key);
-
-        /* Read as much data as is available from ring buffer */
-        do
-        {
-            available = RingBuf_getPointer(&object->rxBuffer, &srcAddr);
-
-            /*
-             *  This logic does not need a HWI lock because it is already
-             *  mutually exclusive above by allowing only one active read()
-             *  call before reporting to the caller that the driver is busy.
-             *  The reason we want to perform the copy without HWI locked is
-             *  that the size of the copy is not necessarily deterministic,
-             *  and we don't want preemption disabled for an indeterminate
-             *  amount of time.
-             */
-            key = HwiP_disable();
-            if (available > object->readCount)
-            {
-                available = object->readCount;
-            }
-            memcpy((unsigned char *)buffer + object->bytesRead, srcAddr, available);
-
-            RingBuf_getConsume(&object->rxBuffer, available);
-
-            object->readCount -= available;
-            object->bytesRead += available;
-
-            HwiP_restore(key);
-        } while ((available > 0) && (object->readCount > 0));
-
-        key = HwiP_disable();
-
-        /* Non-blocking mode returns */
-        if (object->state.readMode == UART2_Mode_NONBLOCKING)
-        {
-            if (object->bytesRead == 0)
-            {
-                status = UART2_STATUS_EAGAIN;
-            }
-            break;
-        }
-
-        if (object->bytesRead > 0)
-        {
-            /*
-             *  Because we pulled some data out, we made space in the RX
-             *  buffer.  Check if the RX DMA is stopped, and restart if
-             *  appropriate. Do not empty the FIFO first, as it needs to contain
-             *  some data for a receive-timeout interrupt to occur
-             */
-            UART2Support_dmaStartRx(handle, false);
-            /* If Blocking mode */
-            if (object->state.readMode != UART2_Mode_CALLBACK)
-            {
-                /* If Read Partial */
-                if (object->state.readReturnMode != UART2_ReadReturnMode_FULL)
-                {
-                    /* Got some data, break out of 'while (bytesRead > 0)' if RX timeout condition occured */
-                    if (object->state.rxTimeOut)
-                    {
-                        object->state.rxTimeOut = false;
-                        break;
-                    }
-                }
-                /* Break out of 'while (bytesRead > 0)' if all data has been read */
-                if (object->readCount == 0)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                /* Callback mode */
-                if ((object->state.readReturnMode != UART2_ReadReturnMode_FULL) || (object->readCount == 0))
-                {
-                    object->readCount = 0;
-                    object->readInUse = false;
-
-                    /*
-                     *  Safely call the callback function in case UART2_read()
-                     *  is called from within the callback, to avoid recursion.
-                     */
-                    object->state.readCallbackPending = true;
-                    HwiP_restore(key);
-
-                    /* If we're not inside the read callback function... */
-                    if (object->state.inReadCallback == false)
-                    {
-                        while (object->state.readCallbackPending)
-                        {
-                            key                               = HwiP_disable();
-                            object->state.readCallbackPending = false;
-                            object->state.inReadCallback      = true;
-                            HwiP_restore(key);
-
-                            object->readCallback(handle,
-                                                 (void *)object->readBuf,
-                                                 object->bytesRead,
-                                                 object->userArg,
-                                                 UART2_STATUS_SUCCESS);
-
-                            object->state.inReadCallback = false;
-                        }
-                    }
-
-                    key = HwiP_disable();
-                }
-                /* Return immediately for callback mode */
-                break;
-            } /* callback mode */
-        }     /* if (object->bytesRead > 0) */
-        HwiP_restore(key);
-
-        if (object->state.readMode != UART2_Mode_CALLBACK)
-        {
-            /* Wait for more data to be transferred to the ring buffer */
-            SemaphoreP_pend(&object->readSem, SemaphoreP_WAIT_FOREVER);
-        }
-        else
-        {
-            /* Callback mode, all available bytes read */
-            key = HwiP_disable();
-            break;
-        }
-
-        key = HwiP_disable();
-    } /* while (object->readCount > 0) */
-
-    /* Don't set readInUse for callback mode in case not done */
-    if (object->state.readMode != UART2_Mode_CALLBACK)
-    {
-        object->readInUse = false;
-        ClockP_stop(&(object->readTimeoutClk));
     }
 
-    /* If readInUse is true, readCount must not be 0 */
-    DebugP_assert(!(object->readInUse && (object->readCount == 0)));
+    key = HwiP_disable();
 
-    *pNBytesRead = object->bytesRead;
+    /* Set the number of bytes read, but not in callback mode. The number of bytes read here will be 0 in that case,
+     * and the correct number will be passed to the callback
+     */
+    if ((object->state.readMode != UART2_Mode_CALLBACK) && (bytesRead != NULL))
+    {
+        *bytesRead = object->bytesRead;
+    }
 
     HwiP_restore(key);
 
-    return (status);
+    return status;
 }
 
 /*
@@ -422,7 +402,8 @@ void __attribute__((weak)) UART2_rxDisable(UART2_Handle handle)
         UART2Support_dmaStopRx(handle);
         UART2Support_disableRx(hwAttrs);
 
-        UART2Support_powerRelConstraint();
+        /* Release standby-constraint, but not flash-constraint */
+        UART2Support_powerRelConstraint(handle, false);
 
         object->state.rxEnabled = false;
     }
@@ -441,17 +422,15 @@ void __attribute__((weak)) UART2_rxEnable(UART2_Handle handle)
     {
         object->state.rxEnabled = true;
 
-        /* enable registered event callbacks/interrupts and receive */
+        /* Enable registered event callbacks/interrupts and receive */
         UART2Support_enableInts(handle);
         UART2Support_enableRx(handle->hwAttrs);
-        /*
-         * Start a DMA RX transaction. Do not empty the FIFO first, as it needs to contain
-         * some data for a receive-timeout interrupt to occur
-         */
-        UART2Support_dmaStartRx(handle, false);
 
-        /* Set constraints to guarantee transaction */
-        UART2Support_powerSetConstraint();
+        /* Start a DMA RX transaction */
+        UART2Support_dmaStartRx(handle);
+
+        /* Set standby constraint to guarantee transaction, but not flash constraint */
+        UART2Support_powerSetConstraint(handle, false);
     }
     HwiP_restore(key);
 }
@@ -462,7 +441,7 @@ void __attribute__((weak)) UART2_rxEnable(UART2_Handle handle)
 int_fast16_t __attribute__((weak))
 UART2_write(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten)
 {
-    return (UART2_writeTimeout(handle, buffer, size, bytesWritten, UART2_WAIT_FOREVER));
+    return UART2_writeTimeout(handle, buffer, size, bytesWritten, UART2_WAIT_FOREVER);
 }
 
 /*
@@ -471,231 +450,289 @@ UART2_write(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesW
 int_fast16_t __attribute__((weak))
 UART2_writeTimeout(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten, uint32_t timeout)
 {
+    UART2_Object *object = handle->object;
+
+    if (object->state.writeMode == UART2_Mode_NONBLOCKING)
+    {
+        return UART2_writeTimeoutNonblocking(handle, buffer, size, bytesWritten, timeout);
+    }
+    else
+    {
+        return UART2_writeTimeoutBlocking(handle, buffer, size, bytesWritten, timeout);
+    }
+}
+
+int_fast16_t UART2_writePolling(UART2_Handle handle, const void *buffer, size_t size, size_t *bytesWritten)
+{
     UART2_Object *object         = handle->object;
     UART2_HWAttrs const *hwAttrs = handle->hwAttrs;
-    int status                   = UART2_STATUS_SUCCESS;
-    uintptr_t key;
     uint32_t writeCount;
-    size_t nBytesWritten;
-    size_t *pNBytesWritten;
+
+    if (object->eventMask & UART2_EVENT_TX_BEGIN)
+    {
+        object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
+    }
+
+    while (size)
+    {
+        writeCount = UART2Support_sendData(hwAttrs, size, (unsigned char *)buffer + object->bytesWritten);
+        object->bytesWritten += writeCount;
+        size -= writeCount;
+    }
+    /* Wait for data to be fully shifted out of TX shift register. This is
+     * required so that the device does not transition to low-power mode
+     * prematurely.
+     */
+    while (!UART2Support_txDone(hwAttrs)) {}
+
+    UART2Support_disableTx(hwAttrs);
+    if (object->eventMask & UART2_EVENT_TX_FINISHED)
+    {
+        object->eventCallback(handle, UART2_EVENT_TX_FINISHED, 0, object->userArg);
+    }
+
+    object->writeInUse = false;
+
+    /* Set output argument, if supplied */
+    if (bytesWritten != NULL)
+    {
+        *bytesWritten = object->bytesWritten;
+    }
+
+    return UART2_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== UART2_writeTimeout ========
+ */
+int_fast16_t UART2_writeTimeoutBlocking(UART2_Handle handle,
+                                        const void *buffer,
+                                        size_t size,
+                                        size_t *bytesWritten,
+                                        uint32_t timeout)
+{
+    UART2_Object *object         = handle->object;
+    UART2_HWAttrs const *hwAttrs = handle->hwAttrs;
+    uintptr_t key;
+
+    /* Set output argument, if supplied */
+    if (bytesWritten != NULL)
+    {
+        *bytesWritten = 0;
+    }
+
+    /* Return error if size is 0 */
+    if (size == 0)
+    {
+        return UART2_STATUS_EINVALID;
+    }
+
+    /* Enter critical section while checking and modifying state variables */
+    key = HwiP_disable();
+
+    if (!object->state.opened)
+    {
+        /* Instance not yet opened */
+        HwiP_restore(key);
+        return UART2_STATUS_ENOTOPEN;
+    }
+
+    if (object->writeInUse)
+    {
+        /* An active write call is already in progress */
+        HwiP_restore(key);
+        return UART2_STATUS_EINUSE;
+    }
+
+    /* Update state variables */
+    object->writeInUse          = true;
+    object->writeBuf            = buffer;
+    object->writeSize           = size;
+    object->writeCount          = size;
+    object->bytesWritten        = 0;
+    object->txStatus            = UART2_STATUS_SUCCESS;
+    object->state.writeTimedOut = false;
+    object->state.txCancelled   = false;
+
+    /* Flush TX semaphore */
+    SemaphoreP_pend(&object->writeSem, SemaphoreP_NO_WAIT);
+
+    /* Enable TX - interrupts must be disabled */
+    UART2Support_enableTx(hwAttrs);
+
+    /* Leave critical section */
+    HwiP_restore(key);
+
+    if (!HwiP_interruptsEnabled() && object->state.writeMode == UART2_Mode_BLOCKING)
+    {
+        /* RTOS not started yet, called from main(), use polling mode */
+        return UART2_writePolling(handle, buffer, size, bytesWritten);
+    }
+
+    /* Invoke event callback if necessary */
+    if ((object->eventMask & UART2_EVENT_TX_BEGIN) && object->eventCallback)
+    {
+        object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
+    }
+
+    key = HwiP_disable();
+
+    /* Start TX transaction */
+    UART2Support_dmaStartTx(handle);
+
+    HwiP_restore(key);
+
+    /* If blocking mode, wait until transfer is complete */
+    if (object->state.writeMode == UART2_Mode_BLOCKING)
+    {
+        /* Wait until semaphore is posted by either
+         * - EOT interrupt is received
+         * - Write is cancelled
+         * - SemaphoreP_pend times out
+         */
+        if (SemaphoreP_pend(&object->writeSem, timeout) != SemaphoreP_OK)
+        {
+            object->state.writeTimedOut = true;
+        }
+
+        /* If write was cancelled or timed out, stop TX transaction */
+        UART2Support_dmaStopTx(handle);
+
+        object->writeInUse = false;
+    }
+
+    /* Set output argument, if supplied */
+    if (bytesWritten != NULL)
+    {
+        *bytesWritten = object->bytesWritten;
+    }
+
+    if (object->state.txCancelled)
+    {
+        object->state.txCancelled = false;
+        return UART2_STATUS_ECANCELLED;
+    }
+
+    if (object->state.writeTimedOut)
+    {
+        return UART2_STATUS_ETIMEOUT;
+    }
+
+    return UART2_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== UART2_writeTimeout ========
+ */
+int_fast16_t UART2_writeTimeoutNonblocking(UART2_Handle handle,
+                                           const void *buffer,
+                                           size_t size,
+                                           size_t *bytesWritten,
+                                           uint32_t timeout)
+{
+    UART2_Object *object         = handle->object;
+    UART2_HWAttrs const *hwAttrs = handle->hwAttrs;
+    int_fast16_t status          = UART2_STATUS_SUCCESS;
+    uintptr_t key;
     unsigned char *dstAddr;
     int space;
 
-    if (size == 0)
+    /* Set output argument, if supplied */
+    if (bytesWritten != NULL)
     {
-        return (UART2_STATUS_EINVALID);
+        *bytesWritten = 0;
     }
 
-    pNBytesWritten = (bytesWritten == NULL) ? &nBytesWritten : bytesWritten;
+    /* Return error if size is 0 */
+    if (size == 0)
+    {
+        return UART2_STATUS_EINVALID;
+    }
 
     key = HwiP_disable();
 
     if (!object->state.opened)
     {
-        /* device instance not yet opened */
+        /* Instance not yet opened */
         HwiP_restore(key);
-        return (UART2_STATUS_ENOTOPEN);
+        return UART2_STATUS_ENOTOPEN;
     }
 
     if (object->writeInUse)
     {
-        /* an active write call is already in progress */
+        /* An active write call is already in progress */
         HwiP_restore(key);
-        return (UART2_STATUS_EINUSE);
+        return UART2_STATUS_EINUSE;
     }
 
-    object->state.txCancelled = false;
-    object->writeInUse        = true;
-
-    /* Save the data to be written and restore interrupts. */
+    /* Update state variables */
+    object->writeInUse          = true;
     object->writeBuf            = buffer;
     object->writeSize           = size;
     object->writeCount          = size;
     object->bytesWritten        = 0;
+    object->txStatus            = UART2_STATUS_SUCCESS;
     object->state.writeTimedOut = false;
-
-    object->txStatus = UART2_STATUS_SUCCESS;
+    object->state.txCancelled   = false;
 
     /* Enable TX - interrupts must be disabled */
     UART2Support_enableTx(hwAttrs);
 
     HwiP_restore(key);
 
-    if (!HwiP_interruptsEnabled() && object->state.writeMode == UART2_Mode_BLOCKING)
+    /* Copy as much data as we can to the ring buffer */
+    do
     {
-        /* RTOS not started yet, called from main(), use polling mode */
-        if (object->eventMask & UART2_EVENT_TX_BEGIN)
-        {
-            object->eventCallback(handle, UART2_EVENT_TX_BEGIN, 0, object->userArg);
-        }
-
-        while (size)
-        {
-            writeCount = UART2Support_sendData(hwAttrs, size, (unsigned char *)buffer + object->bytesWritten);
-            object->bytesWritten += writeCount;
-            size -= writeCount;
-        }
-        /* Wait for data to be fully shifted out of TX shift register. This is
-         * required so that the device does not transition to low power mode
-         * prematurely upon starting of the RTOS.
+        /* Get the number of bytes we can copy to the ring buffer
+         * and the location where we can start the copy into the
+         * ring buffer.
          */
-        while (!UART2Support_txDone(hwAttrs))
+        key = HwiP_disable();
+
+        space = RingBuf_putPointer(&object->txBuffer, &dstAddr);
+
+        if (space > object->writeCount)
         {
-            ;
+            space = object->writeCount;
         }
+        memcpy(dstAddr, (unsigned char *)buffer + object->bytesWritten, space);
 
-        UART2Support_disableTx(hwAttrs);
-        if (object->eventMask & UART2_EVENT_TX_FINISHED)
-        {
-            object->eventCallback(handle, UART2_EVENT_TX_FINISHED, 0, object->userArg);
-        }
+        /* Update the ring buffer state with the number of bytes copied */
+        RingBuf_putAdvance(&object->txBuffer, space);
 
-        object->writeInUse = false;
-        *pNBytesWritten    = object->bytesWritten;
-        return (status);
-    }
+        object->writeCount -= space;
+        object->bytesWritten += space;
 
-    if ((object->state.writeMode == UART2_Mode_BLOCKING) && (timeout != UART2_WAIT_FOREVER) && (timeout != 0))
-    {
-        ClockP_setTimeout(&(object->writeTimeoutClk), timeout);
-        ClockP_start(&(object->writeTimeoutClk));
-    }
+        HwiP_restore(key);
+    } while ((space > 0) && (object->writeCount > 0));
 
     key = HwiP_disable();
 
-    while (object->writeCount)
+    /* If anything was written to the ring buffer, enable and start TX */
+    if (object->bytesWritten > 0)
     {
-        if (object->state.txCancelled)
-        {
-            object->state.txCancelled = false;
-            status                    = UART2_STATUS_ECANCELLED;
-            break;
-        }
-        if (object->state.writeTimedOut)
-        {
-            status = UART2_STATUS_ETIMEOUT;
-            break;
-        }
-
-        /* Flush semaphore before re-enabling HWI */
-        SemaphoreP_pend(&object->writeSem, SemaphoreP_NO_WAIT);
-        HwiP_restore(key);
-
-        /* Copy as much data as we can to the ring buffer */
-        do
-        {
-            /*
-             *  Get the number of bytes we can copy to the ring buffer
-             *  and the location where we can start the copy into the
-             *  ring buffer.
-             */
-            space = RingBuf_putPointer(&object->txBuffer, &dstAddr);
-
-            key = HwiP_disable();
-            if (space > object->writeCount)
-            {
-                space = object->writeCount;
-            }
-            memcpy(dstAddr, (unsigned char *)buffer + object->bytesWritten, space);
-
-            /* Update the ring buffer state with the number of bytes copied */
-            RingBuf_putAdvance(&object->txBuffer, space);
-
-            object->writeCount -= space;
-            object->bytesWritten += space;
-
-            HwiP_restore(key);
-        } while ((space > 0) && (object->writeCount > 0));
-
-        key = HwiP_disable();
-        if (object->bytesWritten > 0)
-        {
-            /* Try and start the dma, it may already be started. */
-            UART2Support_enableTx(hwAttrs);
-            UART2Support_dmaStartTx(handle);
-        }
-        if (object->state.writeMode == UART2_Mode_NONBLOCKING)
-        {
-            if (object->bytesWritten == 0)
-            {
-                /* There is currently no space in the ring buffer */
-                status = UART2_STATUS_EAGAIN;
-            }
-            break;
-        }
-
-        if (object->state.writeMode == UART2_Mode_CALLBACK)
-        {
-            if (object->writeCount == 0)
-            {
-                /*
-                 *  All data written to ring buffer, call callback function.
-                 *  Since the write callback function may call UART2_write(),
-                 *  take care to prevent recursion causing a stack overflow.
-                 */
-                object->writeInUse = false;
-                HwiP_restore(key);
-
-                object->state.writeCallbackPending = true;
-                /* If we're not inside the write callback function... */
-                if (object->state.inWriteCallback == false)
-                {
-                    while (object->state.writeCallbackPending)
-                    {
-                        object->state.writeCallbackPending = false;
-                        object->state.inWriteCallback      = true;
-
-                        object->writeCallback(handle,
-                                              (void *)buffer,
-                                              object->bytesWritten,
-                                              object->userArg,
-                                              UART2_STATUS_SUCCESS);
-
-                        object->state.inWriteCallback = false;
-                    }
-                }
-                key = HwiP_disable();
-            }
-            break;
-        }
-
-        if (object->writeCount == 0)
-        {
-            /* All data has been written to the TX buffer */
-            if (object->state.writeMode == UART2_Mode_BLOCKING)
-            {
-                /* Wait until EOT is signaled. Pend twice because
-                UART2CC26X2_hwiIntFxn will post once for UDMA done,
-                and once for UART EOT */
-                HwiP_restore(key);
-                SemaphoreP_pend(&object->writeSem, SemaphoreP_WAIT_FOREVER);
-                SemaphoreP_pend(&object->writeSem, SemaphoreP_WAIT_FOREVER);
-                key = HwiP_disable();
-            }
-            break;
-        }
-
-        HwiP_restore(key);
-
-        /* Wait for space to be available in ring buffer */
-        SemaphoreP_pend(&object->writeSem, SemaphoreP_WAIT_FOREVER);
-        key = HwiP_disable();
-    } // while (object->writeCount > 0)
-
-    /* Don't set writeInUse to false for callback mode if not done. */
-    if (object->state.writeMode != UART2_Mode_CALLBACK)
-    {
-        object->writeInUse = false;
-        ClockP_stop(&(object->writeTimeoutClk));
+        /* Try to start the DMA, it may already be started. */
+        UART2Support_enableTx(hwAttrs);
+        UART2Support_dmaStartTx(handle);
     }
 
-    DebugP_assert(!(object->writeInUse && (object->writeCount == 0)));
+    /* If there was no space in the ring buffer, set the status to indicate so */
+    if (object->bytesWritten == 0)
+    {
+        status = UART2_STATUS_EAGAIN;
+    }
 
-    *pNBytesWritten = object->bytesWritten;
+    /* Set output argument, if supplied */
+    if (bytesWritten != NULL)
+    {
+        *bytesWritten = object->bytesWritten;
+    }
+
+    object->writeInUse = false;
 
     HwiP_restore(key);
 
-    return (status);
+    return status;
 }
 
 /*
@@ -709,7 +746,7 @@ void __attribute__((weak)) UART2_writeCancel(UART2_Handle handle)
 
     key = HwiP_disable();
 
-    if (object->writeInUse && !object->state.txCancelled)
+    if (!object->state.txCancelled)
     {
         object->state.txCancelled = true;
 
@@ -717,35 +754,44 @@ void __attribute__((weak)) UART2_writeCancel(UART2_Handle handle)
         bytesRemaining = UART2Support_dmaStopTx(handle);
 
         /* bytesWritten includes bytes commited to DMA transaction. Remove bytes remaining in transaction from count */
-        object->bytesWritten -= bytesRemaining;
-
-        SemaphoreP_post(&object->writeSem);
-
-        /* Post one extra time if in blocking mode, as the write-function is
-           pending on this semaphore until EOT interrupt is received */
-        if (object->state.writeMode == UART2_Mode_BLOCKING)
+        if (object->state.writeMode == UART2_Mode_NONBLOCKING)
         {
-            SemaphoreP_post(&object->writeSem);
+            object->bytesWritten -= bytesRemaining;
+            RingBuf_flush(&object->txBuffer);
         }
 
-        if (object->state.writeMode == UART2_Mode_CALLBACK)
+        if (object->writeInUse)
         {
-            object->writeInUse = false;
-            object->writeCount = 0;
-            object->writeCallback(handle,
-                                  (void *)object->writeBuf,
-                                  object->bytesWritten,
-                                  object->userArg,
-                                  UART2_STATUS_ECANCELLED);
+            /* If in blocking mode, wake up the blocked write task */
+            if (object->state.writeMode == UART2_Mode_BLOCKING)
+            {
+                SemaphoreP_post(&object->writeSem);
+            }
+
+            /* Invoke callback if in callback mode */
+            if (object->state.writeMode == UART2_Mode_CALLBACK)
+            {
+                object->writeInUse = false;
+                object->writeCount = 0;
+                object->writeCallback(handle,
+                                      (void *)object->writeBuf,
+                                      object->bytesWritten,
+                                      object->userArg,
+                                      UART2_STATUS_ECANCELLED);
+            }
         }
     }
 
     if (object->state.txEnabled)
     {
+        /* If the UART peripheral is actively transmitting, wait for it to clear the TX FIFO */
         while (!UART2Support_txDone(handle->hwAttrs)) {}
+
+        /* Disable TX in the peripheral */
         UART2Support_disableTx(handle->hwAttrs);
         object->state.txEnabled = false;
-        UART2Support_powerRelConstraint();
+        /* Disable standby constraint and flash constraint */
+        UART2Support_powerRelConstraint(handle, true);
     }
 
     HwiP_restore(key);

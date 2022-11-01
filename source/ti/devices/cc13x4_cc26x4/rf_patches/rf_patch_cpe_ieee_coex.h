@@ -1,7 +1,9 @@
 /******************************************************************************
 *  Filename:       rf_patch_cpe_ieee_coex.h
+*  Revised:        $Date$
+*  Revision:       $Revision$
 *
-*  Description:    RF Core patch for IEEE 802.15.4-2006 with Coex in CC13x4 and CC26x4
+*  Description:    RF Core patch for IEEE 802.15.4-2006 with Coex in CC13x2 and CC26x2 PG2.1
 *
 *  Copyright (c) 2015-2022, Texas Instruments Incorporated
 *  All rights reserved.

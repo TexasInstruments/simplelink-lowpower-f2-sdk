@@ -40,6 +40,13 @@
 // Get Bond Manager long descriptions
 const Docs = system.getScript("/ti/ble5stack/bondManager/ble_bondmgr_docs.js");
 
+// Get common utility functions
+const Common = system.getScript("/ti/ble5stack/ble_common.js");
+
+// Bonding default values
+const defaultBondingVal = Common.defaultValue();
+const readOnlyBondingvVal = Common.readOnlyValue();
+
 const config = {
     name: "bondMgrConfig",
     displayName:"Bond Manager",
@@ -100,7 +107,8 @@ const config = {
             name: "bonding",
             displayName: "Bonding",
             longDescription: Docs.bondingLongDescription,
-            default: true
+            default: defaultBondingVal,
+            readOnly: readOnlyBondingvVal
         },
         {
             name: "secureConn",

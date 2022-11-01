@@ -69,6 +69,7 @@
         "
         description="An example demonstrating shutdown and wakeup using GPIO">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../gpioshutdown.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

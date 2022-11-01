@@ -106,10 +106,10 @@ extern "C"
 
 //*****************************************************************************
 //
-// Number of IOs (max. total of 32)
+// Number of IOs (max. total of 32 for 26x2, 48 for 26x4)
 //
 //*****************************************************************************
-#define NUM_IO_MAX 32
+#define NUM_IO_MAX 48
 
 //*****************************************************************************
 //
@@ -148,6 +148,22 @@ extern "C"
 #define IOID_29                 0x0000001D  // IO Id 29
 #define IOID_30                 0x0000001E  // IO Id 30
 #define IOID_31                 0x0000001F  // IO Id 31
+#define IOID_32                 0x00000020  // IO Id 32
+#define IOID_33                 0x00000021  // IO Id 33
+#define IOID_34                 0x00000022  // IO Id 34
+#define IOID_35                 0x00000023  // IO Id 35
+#define IOID_36                 0x00000024  // IO Id 36
+#define IOID_37                 0x00000025  // IO Id 37
+#define IOID_38                 0x00000026  // IO Id 38
+#define IOID_39                 0x00000027  // IO Id 39
+#define IOID_40                 0x00000028  // IO Id 40
+#define IOID_41                 0x00000029  // IO Id 41
+#define IOID_42                 0x0000002A  // IO Id 42
+#define IOID_43                 0x0000002B  // IO Id 43
+#define IOID_44                 0x0000002C  // IO Id 44
+#define IOID_45                 0x0000002D  // IO Id 45
+#define IOID_46                 0x0000002E  // IO Id 46
+#define IOID_47                 0x0000002F  // IO Id 47
 #define IOID_UNUSED             0xFFFFFFFF  // Unused IO Id
 
 #define IOC_IOID_MASK           0x000000FF  // IOC IO Id bit mask

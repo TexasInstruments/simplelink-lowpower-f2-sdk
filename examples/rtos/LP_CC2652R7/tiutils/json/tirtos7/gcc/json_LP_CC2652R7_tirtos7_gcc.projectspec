@@ -69,6 +69,7 @@
         "
         description="The JSON example shows how to use the JSON APIs to build and parse JSON strings.">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../json.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

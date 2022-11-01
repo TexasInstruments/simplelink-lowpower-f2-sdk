@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,12 +48,13 @@ extern "C" {
  */
 #define Timestamp_Val64 ti_utils_osal_Timestamp_Val64
 #define Timestamp_get64 ti_utils_osal_Timestamp_get64
-#define Timestamp_init ti_utils_osal_Timestamp_init
+#define Timestamp_init  ti_utils_osal_Timestamp_init
 
 /*
  *  ======== Timestamp_Val64 ========
  */
-typedef struct {
+typedef struct
+{
     uint32_t hi;
     uint32_t lo;
 } Timestamp_Val64;
@@ -73,9 +74,9 @@ extern void Timestamp_init(void);
  */
 #ifdef ti_utils_osal_Timestamp__nolocalnames
 
-#undef Timestamp_Val64
-#undef Timestamp_get64
-#undef Timestamp_init
+    #undef Timestamp_Val64
+    #undef Timestamp_get64
+    #undef Timestamp_init
 
 #endif
 #if defined(__cplusplus)

@@ -380,7 +380,7 @@
             "longDescription" : "[__RichWave RTC6608OU__](http://www.richwave.com.tw/en/page_prd_new.aspx?Id=6) single-pole, dual throw (SPDT) antenna switch.",
             "signals": {
                 "24GHZ": {"type": "RF_24GHZ", "connection": 41},
-                "HIGH_PA": {"type": "RF_HIGH_PA", "connection": 42},
+                "HIGH_PA": {"type": "RF_HIGH_PA", "connection": 42}
             }
         },
 

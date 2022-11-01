@@ -154,7 +154,7 @@ Semaphore.supportsPriority = false;
  *      simultaneously.
  *  - false (default)
  *      Events must be explicitly posted to unblock tasks.
- *
+ */
 //Semaphore.supportsEvents = true;
 Semaphore.supportsEvents = false;
 
@@ -291,7 +291,7 @@ const Task = scripting.addModule("/ti/sysbios/knl/Task", {}, false);
  *      context switching ("from" and "to")
  *  - false
  *      Disables runtime checks for task stack overflow conditions.
- *
+ */
 //Task.checkStackFlag = true;
 Task.checkStackFlag = false;
 

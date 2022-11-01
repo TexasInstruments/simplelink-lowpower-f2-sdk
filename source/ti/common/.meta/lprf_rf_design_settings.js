@@ -89,6 +89,9 @@ const boardSpecificRfDesignSettings = {
     LP_CC1312R7_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_CC1312R7"
     },
+    LP_EM_CC1312PSIP_RF_DESIGN_SETTINGS: {
+        rfDesign: "LP_EM_CC1312PSIP"
+    },
     LP_CC1352P7_1_RF_DESIGN_SETTINGS: {
         rfDesign: "LP_CC1352P7-1"
     },

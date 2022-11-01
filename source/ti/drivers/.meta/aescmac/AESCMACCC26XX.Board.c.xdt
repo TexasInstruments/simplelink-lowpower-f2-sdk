@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,16 @@
 #include <ti/drivers/aescmac/AESCMACCC26XX.h>
 
 #define `countDef` `instances.length`
+
+% if (system.modules["/ti/utils/TrustZone"]) {
+#include <ti/drivers/aescmac/AESCMACCC26X4_ns.h>
+#include <ti/drivers/aescmac/AESCMACCC26X4_s.h>
+/* These object arrays store non-secure copies of the secure callback struct and handle parameters required for
+ * Secure/Non-secure driver functionality. The size of the arrays depend on the number of driver instances. */
+AESCMAC_s_SecureCallback aescmacSecureCB_ns[AESCMAC_SECURE_CALLBACK_COUNT];
+AESCMACCC26X4_ns_Object aescmacObject_ns[AESCMAC_SECURE_CALLBACK_COUNT];
+% }
+
 AESCMACCC26XX_Object aescmacCC26XXObjects[`countDef`];
 
 /*

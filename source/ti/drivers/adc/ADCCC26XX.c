@@ -266,7 +266,7 @@ int_fast16_t ADCCC26XX_convert(ADC_Handle handle, uint16_t *value)
 
     *value = conversionValue;
 
-    /* Return the number of bytes transfered by the ADC */
+    /* Return the status-code of the conversion */
     return conversionResult;
 }
 
@@ -367,6 +367,7 @@ int_fast16_t ADCCC26XX_convertChain(ADC_Handle *handleList, uint16_t *dataBuffer
      */
     SemaphoreP_post(&adcSemaphore);
 
+    /* Return the status-code of the conversion */
     return conversionResult;
 }
 
@@ -383,7 +384,9 @@ uint32_t ADCCC26XX_convertToMicroVolts(ADC_Handle handle, uint16_t adcValue)
     /* Get the pointer to the hwAttrs */
     hwAttrs = handle->hwAttrs;
 
-    /* Only apply trim if specified */
+    /* If returnAdjustedVal is set, the raw value has already been adjusted by convert-function.
+     * If not, we need to adjust it here. (This is why the logic here appears inverted)
+     */
     if (hwAttrs->returnAdjustedVal)
     {
         adjustedValue = adcValue;

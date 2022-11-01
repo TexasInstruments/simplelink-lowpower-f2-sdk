@@ -43,6 +43,7 @@
 #include "common/instance.hpp"
 #include "common/locator_getters.hpp"
 #include "common/log.hpp"
+#include "common/min_max.hpp"
 #include "common/random.hpp"
 #include "net/checksum.hpp"
 #include "net/ip6.hpp"
@@ -123,11 +124,9 @@ exit:
     return error;
 }
 
-Instance &Tcp::Endpoint::GetInstance(void)
+Instance &Tcp::Endpoint::GetInstance(void) const
 {
-    struct tcpcb &tp = GetTcb();
-
-    return AsCoreType(tp.instance);
+    return AsNonConst(AsCoreType(GetTcb().instance));
 }
 
 const SockAddr &Tcp::Endpoint::GetLocalAddress(void) const
@@ -160,7 +159,7 @@ Error Tcp::Endpoint::Bind(const SockAddr &aSockName)
     struct tcpcb &tp = GetTcb();
 
     VerifyOrExit(!AsCoreType(&aSockName.mAddress).IsUnspecified(), error = kErrorInvalidArgs);
-    VerifyOrExit(GetInstance().Get<Tcp>().CanBind(aSockName), error = kErrorInvalidState);
+    VerifyOrExit(Get<Tcp>().CanBind(aSockName), error = kErrorInvalidState);
 
     memcpy(&tp.laddr, &aSockName.mAddress, sizeof(tp.laddr));
     tp.lport = HostSwap16(aSockName.mPort);
@@ -235,7 +234,11 @@ Error Tcp::Endpoint::ReceiveByReference(const otLinkedBuffer *&aBuffer)
 
 Error Tcp::Endpoint::ReceiveContiguify(void)
 {
-    return kErrorNotImplemented;
+    struct tcpcb &tp = GetTcb();
+
+    cbuf_contiguify(&tp.recvbuf, tp.reassbmp);
+
+    return kErrorNone;
 }
 
 Error Tcp::Endpoint::CommitReceive(size_t aNumBytes, uint32_t aFlags)
@@ -275,9 +278,7 @@ Error Tcp::Endpoint::Deinitialize(void)
 {
     Error error;
 
-    Tcp &tcp = GetInstance().Get<Tcp>();
-
-    SuccessOrExit(error = tcp.mEndpoints.Remove(*this));
+    SuccessOrExit(error = Get<Tcp>().mEndpoints.Remove(*this));
     SetNext(nullptr);
 
     SuccessOrExit(error = Abort());
@@ -356,7 +357,7 @@ void Tcp::Endpoint::SetTimer(uint8_t aTimerFlag, uint32_t aDelay)
     LogDebg("Endpoint %p set timer %u to %u ms", static_cast<void *>(this), static_cast<unsigned int>(timerIndex),
             static_cast<unsigned int>(aDelay));
 
-    GetInstance().Get<Tcp>().mTimer.FireAtIfEarlier(newFireTime);
+    Get<Tcp>().mTimer.FireAtIfEarlier(newFireTime);
 }
 
 void Tcp::Endpoint::CancelTimer(uint8_t aTimerFlag)
@@ -435,7 +436,7 @@ bool Tcp::Endpoint::FirePendingTimers(TimeMilli aNow, bool &aHasFutureTimer, Tim
             else
             {
                 aHasFutureTimer       = true;
-                aEarliestFutureExpiry = OT_MIN(aEarliestFutureExpiry, expiry);
+                aEarliestFutureExpiry = Min(aEarliestFutureExpiry, expiry);
             }
         }
     }
@@ -451,7 +452,7 @@ void Tcp::Endpoint::PostCallbacksAfterSend(size_t aSent, size_t aBacklogBefore)
     if (backlogAfter < aBacklogBefore + aSent && mForwardProgressCallback != nullptr)
     {
         mPendingCallbacks |= kForwardProgressCallbackFlag;
-        GetInstance().Get<Tcp>().mTasklet.Post();
+        Get<Tcp>().mTasklet.Post();
     }
 }
 
@@ -542,11 +543,9 @@ exit:
     return error;
 }
 
-Instance &Tcp::Listener::GetInstance(void)
+Instance &Tcp::Listener::GetInstance(void) const
 {
-    struct tcpcb_listen *tpl = &GetTcbListen();
-
-    return AsCoreType(tpl->instance);
+    return AsNonConst(AsCoreType(GetTcbListen().instance));
 }
 
 Error Tcp::Listener::Listen(const SockAddr &aSockName)
@@ -555,7 +554,7 @@ Error Tcp::Listener::Listen(const SockAddr &aSockName)
     uint16_t             port = HostSwap16(aSockName.mPort);
     struct tcpcb_listen *tpl  = &GetTcbListen();
 
-    VerifyOrExit(GetInstance().Get<Tcp>().CanBind(aSockName), error = kErrorInvalidState);
+    VerifyOrExit(Get<Tcp>().CanBind(aSockName), error = kErrorInvalidState);
 
     memcpy(&tpl->laddr, &aSockName.mAddress, sizeof(tpl->laddr));
     tpl->lport   = port;
@@ -580,9 +579,7 @@ Error Tcp::Listener::Deinitialize(void)
 {
     Error error;
 
-    Tcp &tcp = GetInstance().Get<Tcp>();
-
-    SuccessOrExit(error = tcp.mListeners.Remove(*this));
+    SuccessOrExit(error = Get<Tcp>().mListeners.Remove(*this));
     SetNext(nullptr);
 
 exit:
@@ -812,7 +809,7 @@ bool Tcp::AutoBind(const SockAddr &aPeer, SockAddr &aToBind, bool aBindAddress, 
 
         peerInfo.Clear();
         peerInfo.SetPeerAddr(aPeer.GetAddress());
-        netifAddress = InstanceLocator::GetInstance().Get<Ip6>().SelectSourceAddress(peerInfo);
+        netifAddress = Get<Ip6>().SelectSourceAddress(peerInfo);
         VerifyOrExit(netifAddress != nullptr, success = false);
         aToBind.GetAddress() = netifAddress->GetAddress();
     }
@@ -854,12 +851,12 @@ exit:
 
 void Tcp::HandleTimer(Timer &aTimer)
 {
-    OT_ASSERT(&aTimer == &aTimer.GetInstance().Get<Tcp>().mTimer);
+    OT_ASSERT(&aTimer == &aTimer.Get<Tcp>().mTimer);
     LogDebg("Main TCP timer expired");
-    aTimer.GetInstance().Get<Tcp>().ProcessTimers();
+    aTimer.Get<Tcp>().ProcessTimers();
 }
 
-void Tcp::ProcessTimers()
+void Tcp::ProcessTimers(void)
 {
     TimeMilli now = TimerMilli::GetNow();
     bool      pendingTimer;
@@ -1014,7 +1011,7 @@ void tcplp_sys_stop_timer(struct tcpcb *aTcb, uint8_t aTimerFlag)
 struct tcpcb *tcplp_sys_accept_ready(struct tcpcb_listen *aTcbListen, struct in6_addr *aAddr, uint16_t aPort)
 {
     Tcp::Listener &               listener = Tcp::Listener::FromTcbListen(*aTcbListen);
-    Tcp &                         tcp      = listener.GetInstance().Get<Tcp>();
+    Tcp &                         tcp      = listener.Get<Tcp>();
     struct tcpcb *                rv       = (struct tcpcb *)-1;
     otSockAddr                    addr;
     otTcpEndpoint *               endpointPtr;
@@ -1065,7 +1062,7 @@ bool tcplp_sys_accepted_connection(struct tcpcb_listen *aTcbListen,
 {
     Tcp::Listener &listener = Tcp::Listener::FromTcbListen(*aTcbListen);
     Tcp::Endpoint &endpoint = Tcp::Endpoint::FromTcb(*aAccepted);
-    Tcp &          tcp      = endpoint.GetInstance().Get<Tcp>();
+    Tcp &          tcp      = endpoint.Get<Tcp>();
     bool           accepted = true;
 
     if (listener.mAcceptDoneCallback != nullptr)

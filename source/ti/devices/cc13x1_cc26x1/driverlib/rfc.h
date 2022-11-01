@@ -84,10 +84,12 @@ typedef struct {
 
 // Definition of maximum search depth used by the RFCOverrideUpdate function
 #define RFC_MAX_SEARCH_DEPTH     5
-#define RFC_PA_TYPE_ADDRESS		 0x21000385
-#define RFC_PA_TYPE_MASK 		 0x04
-#define RFC_PA_GAIN_ADDRESS		 0x21000398
-#define RFC_PA_GAIN_MASK		 0x003FFFFF
+#define RFC_IEEE_CMD_BG_ADDRESS  0x21000160
+#define RFC_IEEE_CMD_BG_IEEE_RX_O_CAP_TIME 24
+#define RFC_PA_TYPE_ADDRESS      0x21000385
+#define RFC_PA_TYPE_MASK         0x04
+#define RFC_PA_GAIN_ADDRESS      0x21000398
+#define RFC_PA_GAIN_MASK         0x003FFFFF
 #define RFC_FE_MODE_ESCAPE_VALUE 0xFF
 #define RFC_FE_OVERRIDE_ADDRESS  0x0703
 #define RFC_FE_OVERRIDE_MASK     0x0000FFFF
@@ -411,6 +413,18 @@ RFCGetPowerDomainStatus(void)
 {
     return (HWREG(PRCM_BASE + PRCM_O_PDCTL1RFC) |
             HWREG(PRCM_BASE + PRCM_O_PDSTAT0RFC));
+}
+
+//*****************************************************************************************
+//
+//! Get the capture time from RFC_RAM of the current received packet in an IEEE RX command
+//! Warning: Reading from RFC_RAM requires the RF Core to be powered.
+//
+//*****************************************************************************************
+__STATIC_INLINE uint32_t
+RFCGetIeeeRxCaptureTime(void)
+{
+    return (HWREG(RFC_IEEE_CMD_BG_ADDRESS + RFC_IEEE_CMD_BG_IEEE_RX_O_CAP_TIME));
 }
 
 //*****************************************************************************

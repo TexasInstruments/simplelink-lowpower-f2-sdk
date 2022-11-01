@@ -113,6 +113,36 @@ extern int bspSpiRead( uint8_t *buf, size_t length);
  */
 extern int bspSpiWrite(const uint8_t *buf, size_t length);
 
+#ifdef DeviceFamily_CC23X0
+/*******************************************************************************
+ * @fn          bspGpioSetConfig
+ *
+ * @brief       Configure Gpio
+ *
+ * @param       index     - Gpio index - DIO number
+ * @param       pinConfig - Configuration bitmask
+ *
+ * @return      None
+ *
+ */
+extern void bspGpioSetConfig(uint32_t index, uint32_t pinConfig);
+
+/*******************************************************************************
+ * @fn          bspGpioWrite
+ *
+ * @brief       Write to a Gpio
+ *
+ * @param       index     - Gpio index - DIO number
+ * @param       value     - 0 deasserts the GPIO given the current configuration
+ *                        - 1 asserts the GPIO given the current configuration
+ *
+ *
+ * @return      None
+ *
+ */
+extern void bspGpioWrite(uint_least8_t index, unsigned int value);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

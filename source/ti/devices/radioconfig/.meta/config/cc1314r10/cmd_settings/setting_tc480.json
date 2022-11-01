@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (FPGA)",
-        "Description": "5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 2, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*2=4 chips per data bit).",
+        "Name": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Release Candidate)",
+        "Description": "5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 2, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*2=4 chips per data bit).  (Release Candidate)",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -83,7 +83,7 @@
                     },
                     {
                         "_name": "preamConf.preamMode",
-                        "$": "0"
+                        "$": "1"
                     },
                     {
                         "_name": "formatConf.nSwBits",
@@ -146,6 +146,14 @@
                     "_name": "pRegOverride",
                     "Block": [
                         {
+                            "_name": "override_prop_common.json",
+                            "Element32b": {
+                                "_type": "ELEMENT",
+                                "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
+                                "$": "0x004388D3"
+                            }
+                        },
+                        {
                             "_name": "override_prop_common_sub1g.json",
                             "Element32b": [
                                 {
@@ -161,7 +169,7 @@
                             ]
                         },
                         {
-                            "_name": "override_phy_simplelink_long_range_dsss2.json",
+                            "_name": "override_phy_slr_dsss2.json",
                             "Element32b": {
                                 "_type": "HW_REG_OVERRIDE",
                                 "_comment": "PHY: Configure DSSS SF=2 for payload data",
@@ -169,7 +177,7 @@
                             }
                         },
                         {
-                            "_name": "override_tc480_tc481_tc482.json",
+                            "_name": "override_tc480_tc481.json",
                             "Element32b": [
                                 {
                                     "_type": "ADI_2HALFREG_OVERRIDE",
@@ -193,53 +201,8 @@
                                 },
                                 {
                                     "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Tx: Set wait time before turning off ramp to 0x1A (default: 0x1F)",
+                                    "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1A ticks of 16\/24 us = 17.3 us).",
                                     "$": "0x6028,0x001A"
-                                }
-                            ]
-                        },
-                        {
-                            "_name": "override_fpga_prop.json",
-                            "Element32b": [
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Enable demodulator wired input",
-                                    "$": "0x51E4,0x0001"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Output digital baseband signal on RFC_GPO0",
-                                    "$": "0x1110,0x0004"
-                                },
-                                {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Disable digital transmitter",
-                                    "$": "0x00000083"
-                                },
-                                {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Disable synth programming",
-                                    "$": "0x00800403"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5100,0x0000"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5104,0x721C"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter for wired input",
-                                    "$": "0x5108,0x0072"
-                                },
-                                {
-                                    "_type": "HW_REG_OVERRIDE",
-                                    "_comment": "Update matched filter gain for wired input",
-                                    "$": "0x50D4,0x48F4"
                                 }
                             ]
                         },

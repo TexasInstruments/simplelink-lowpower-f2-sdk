@@ -852,6 +852,49 @@ void HCI_SendControllerToHostEvent( uint8 eventCode,
   }
 }
 
+/*******************************************************************************
+ * @fn          LL_DataLenExceedEventCback
+ *
+ * @brief       This EXT LL callback is used to generate an event after receiving
+ *              L2CAP data packet and the L2CAP length was exceeded the MTU size.
+ *
+ * input parameters
+ *
+ * @param       status - error code:
+ *                       HW_FAIL_PDU_SIZE_EXCEEDS_MTU or
+ *                       HW_FAIL_PKT_LEN_EXCEEDS_PDU_SIZE
+ * @param       handle - Connection handle.
+ * @param       cid - L2CAP Channel ID.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid )
+{
+  // check if this is for the Host
+  if ( hciL2capTaskID != 0 )
+  {
+    hciEvt_DataLenExceed_t *pkt =
+      (hciEvt_DataLenExceed_t *)MAP_osal_msg_allocate( sizeof(hciEvt_DataLenExceed_t) );
+    if ( pkt )
+    {
+      pkt->hdr.event  = HCI_DATA_EVENT;              // packet type
+      pkt->hdr.status = status;                      // event code
+      pkt->connHandle = handle;
+      pkt->cid = cid;
+
+      (void)MAP_osal_msg_send( hciL2capTaskID, (uint8 *)pkt );
+    }
+  }
+  else
+  {
+    // in HCI test keep the same behavior as it was before
+    MAP_HCI_HardwareErrorEvent(status);
+  }
+}
 
 /*******************************************************************************
  * @fn          LL_AuthPayloadTimeoutExpiredCback Callback

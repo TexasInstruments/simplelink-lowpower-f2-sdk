@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,10 +81,6 @@ extern "C" {
 /* Support for DO_NOT_CONFIG would break a major initialisation optimisation */
 #define GPIO_CFG_DO_NOT_CONFIG_INTERNAL GPIOCC26XX_CFG_OPTION_NOT_SUPPORTED
 
-/* CC13XX/CC26XX pins are always enabled for wakeup from standby with standard interrupts */
-#define GPIO_CFG_STANDBY_WAKE_OFF_INTERNAL GPIOCC26XX_CFG_OPTION_NOT_SUPPORTED
-#define GPIO_CFG_STANDBY_WAKE_ON_INTERNAL  0x0
-
 /* See GPIO.h for details about these configuration values */
 
 /* General options remapped directly to IOC defines */
@@ -118,9 +114,9 @@ extern "C" {
 #define GPIO_CFG_SLEW_NORMAL_INTERNAL  0
 #define GPIO_CFG_SLEW_REDUCED_INTERNAL IOC_IOCFG0_SLEW_RED
 
-#define GPIO_CFG_DRVSTR_LOW_INTERNAL  IOC_IOCFG0_IOSTR_AUTO
-#define GPIO_CFG_DRVSTR_MED_INTERNAL  IOC_IOCFG0_IOSTR_MED
-#define GPIO_CFG_DRVSTR_HIGH_INTERNAL IOC_IOCFG0_IOSTR_MAX
+#define GPIO_CFG_DRVSTR_LOW_INTERNAL  IOC_IOCFG0_IOCURR_2MA
+#define GPIO_CFG_DRVSTR_MED_INTERNAL  IOC_IOCFG0_IOCURR_4MA
+#define GPIO_CFG_DRVSTR_HIGH_INTERNAL IOC_IOCFG0_IOCURR_4_8MA
 
 #define GPIO_CFG_SHUTDOWN_WAKE_OFF_INTERNAL  0
 #define GPIO_CFG_SHUTDOWN_WAKE_HIGH_INTERNAL IOC_WAKE_ON_HIGH

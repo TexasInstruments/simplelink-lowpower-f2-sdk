@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -511,7 +511,7 @@ static void PDMCC26XX_I2S_hwiFxn(UArg arg)
         }
         else
         {
-            asm(" NOP");
+            __asm(" NOP");
             object->currentStream->status = PDMCC26XX_I2S_STREAM_ERROR;
             /* Use a temporary stream pointer in case the callback function
              * attempts to perform another PDMCC26XX_I2S_bufferRequest call

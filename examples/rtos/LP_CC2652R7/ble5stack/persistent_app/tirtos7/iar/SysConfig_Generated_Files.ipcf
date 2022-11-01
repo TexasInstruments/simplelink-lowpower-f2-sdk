@@ -7,8 +7,8 @@
         <path>$PROJ_DIR$/ti_drivers_config.c</path>
         <path>$PROJ_DIR$/ti_sysbios_config.c</path>
         <path>$PROJ_DIR$/ti_radio_config.c</path>
+        <path>$PROJ_DIR$/ti_radio_config.h</path>
         <path>$PROJ_DIR$/ti_sysbios_config.h</path>
         <path>$PROJ_DIR$/ti_drivers_config.h</path>
-        <path>$PROJ_DIR$/ti_radio_config.h</path>
     </files>
 </iarProjectConnection>

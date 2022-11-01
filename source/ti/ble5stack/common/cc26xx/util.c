@@ -271,14 +271,14 @@ void Util_startClock(Clock_Struct *pClock)
 {
 #ifdef FREERTOS
 
-    pClock->isActive = 1;
-    timer_settime(pClock->clock, 0, &(pClock->timeVal), NULL);
+  pClock->isActive = 1;
+  timer_settime(pClock->clock, 0, &(pClock->timeVal), NULL);
 
 #else
-    Clock_Handle handle = Clock_handle(pClock);
+  Clock_Handle handle = Clock_handle(pClock);
 
-    // Start clock instance
-    Clock_start(handle);
+  // Start clock instance
+  Clock_start(handle);
 #endif
 }
 
@@ -329,15 +329,15 @@ void Util_restartClock(Clock_Struct *pClock, uint32_t clockTimeout)
 bool Util_isActive(Clock_Struct *pClock)
 {
 #ifdef FREERTOS
-    if(pClock->isActive == 1)
-    {
-        return TRUE;
-    }
+  if(pClock->isActive == 1)
+  {
+    return TRUE;
+  }
 
-    // Start clock instance
-    return FALSE;
+  // Start clock instance
+  return FALSE;
 #else
-    Clock_Handle handle = Clock_handle(pClock);
+  Clock_Handle handle = Clock_handle(pClock);
 
   // Start clock instance
   return Clock_isActive(handle);
@@ -366,10 +366,10 @@ void Util_stopClock(Clock_Struct *pClock)
     pClock->isActive = 0;
 
 #else
-    Clock_Handle handle = Clock_handle(pClock);
+  Clock_Handle handle = Clock_handle(pClock);
 
-    // Stop clock instance
-    Clock_stop(handle);
+  // Stop clock instance
+  Clock_stop(handle);
 #endif
 }
 
@@ -447,7 +447,7 @@ void Util_constructQueue(mqd_t *pQueue)
     MRattr.mq_msgsize = sizeof(uint8_t*);
     /* Open the reply message queue */
     *pQueue = mq_open("/AppQueue", O_CREAT | O_NONBLOCK , 0, &MRattr);
-    if (pQueue == (mqd_t) -1)
+    if (pQueue == (mqd_t *) -1)
     {
         //handle_error("mq_open");
 
@@ -526,8 +526,7 @@ uint8_t Util_enqueueMsg(Queue_Handle msgQueue,
     // Wake up the application thread event handler.
     if (event)
     {
-
-        Event_post(event, UTIL_QUEUE_EVENT_ID);
+      Event_post(event, UTIL_QUEUE_EVENT_ID);
     }
     return TRUE;
   }

@@ -9,8 +9,6 @@
         </when>
     </applicability>
 
-    <import spec="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/freertos/builds/cc13x2x7_cc26x2x7/release/gcc/freertos_builds_cc13x2x7_cc26x2x7_release_gcc.projectspec"/>
-
     <project
         title="SPIFFS EXTERNAL"
         name="spiffsexternal_LP_CC2652R7_freertos_gcc"
@@ -20,19 +18,17 @@
         device="Cortex M.CC2652R7"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
-        references="freertos_builds_cc13x2x7_cc26x2x7_release_gcc"
-        products="sysconfig"
-        requiredVariables="FREERTOS_INSTALL_DIR"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
         compilerBuildOptions="
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}
             -O3
             -DDeviceFamily_CC26X2X7
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/freertos
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc
             -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include
             -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F
-            -I${WORKSPACE_LOC}/freertos_builds_cc13x2x7_cc26x2x7_release_gcc
             -mcpu=cortex-m4
             -march=armv7e-m
             -mthumb
@@ -52,8 +48,6 @@
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
-            -L${WORKSPACE_LOC}/freertos_builds_cc13x2x7_cc26x2x7_release_gcc/Debug
-            -l:libfreertos_builds_cc13x2x7_cc26x2x7_release_gcc.a
             -l:ti/devices/cc13x2x7_cc26x2x7/driverlib/bin/gcc/driverlib.lib
             -march=armv7e-m
             -mthumb

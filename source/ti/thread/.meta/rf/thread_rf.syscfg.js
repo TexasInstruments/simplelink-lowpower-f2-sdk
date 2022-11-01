@@ -157,7 +157,7 @@ function moduleInstances(inst)
     const radioConfigArgs = {
         frequency: 2405 + (5 * (inst.channel - 11)),
         codeExportConfig: {
-            symGenMethod: "Legacy",
+            symGenMethod: "Custom",
             paExport: "active",
             useConst: true,
             cmdList_ieee_15_4: cmdList
@@ -177,11 +177,13 @@ function moduleInstances(inst)
     if(deviceId.match(/CC(265[12]R|2674R|1352R1|1354R)/))
     {
         cmdList.push("cmdRadioSetup");
+        _.mergeWith(radioConfigArgs.codeExportConfig, {cmdRadioSetup: "RF_cmdIeeeRadioSetup"});
         radioConfigArgs.txPower = RfDesign.getTxPowerOptions(2405, false)[0].name;
     }
     else if(deviceId.match(/CC(265[12]P|2674P|1352P)/))
     {
         cmdList.push("cmdRadioSetupPa");
+        _.mergeWith(radioConfigArgs.codeExportConfig, {cmdRadioSetupPa: "RF_cmdIeeeRadioSetup"});
         radioConfigArgs.highPA = true;
         radioConfigArgs.codeExportConfig.paExport = "combined";
         radioConfigArgs.txPowerHi = RfDesign.getTxPowerOptions(2405, true)[0].name;
@@ -190,6 +192,7 @@ function moduleInstances(inst)
     {
         // currently not characterized for high PA
         cmdList.push("cmdRadioSetupPa");
+        _.mergeWith(radioConfigArgs.codeExportConfig, {cmdRadioSetupPa: "RF_cmdIeeeRadioSetup"});
         radioConfigArgs.txPower = RfDesign.getTxPowerOptions(2405, false)[0].name;
     }
     else

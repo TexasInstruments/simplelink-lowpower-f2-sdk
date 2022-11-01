@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -146,21 +146,34 @@ extern "C" {
 /** @}*/
 
 /*! Base address for the DMA control table, must be 1024 bytes aligned */
-#if !defined(UDMACC26XX_CONFIG_BASE) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
-    /* On CC13X2, CC13X2X7, CC26X2, and CC26X2X7 devices, the uDMA table needs
-     * to be offset a few kB since the ROM area of SRAM is placed at the start
-     * of SRAM on those devices.
-     */
-    #define UDMACC26XX_CONFIG_BASE 0x20001800
-#elif !defined(UDMACC26XX_CONFIG_BASE) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
-                                           DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-    /* Since there is no ROM area of SRAM on the CC13X1, CC26X1, CC13X4, and
-     * CC26X4 devices, we can move the uDMA table closer to the start of SRAM.
-     * This improves the linker efficiency when using dynamically sized heaps.
-     */
-    #define UDMACC26XX_CONFIG_BASE 0x20000400
-#elif !defined(UDMACC26XX_CONFIG_BASE)
-    #define UDMACC26XX_CONFIG_BASE 0x20000400
+#if !defined(UDMACC26XX_CONFIG_BASE)
+    #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
+        /* On CC13X2, CC13X2X7, CC26X2, and CC26X2X7 devices, the uDMA table needs
+         * to be offset a few kB since the ROM area of SRAM is placed at the start
+         * of SRAM on those devices.
+         */
+        #define UDMACC26XX_CONFIG_BASE 0x20001800
+    #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1)
+        /*
+         * Since there is no ROM area of SRAM on the CC13X1 and CC26X1 devices, we
+         * can move the uDMA table closer to the start of SRAM. This improves the
+         * linker efficiency when using dynamically sized heaps.
+         */
+        #define UDMACC26XX_CONFIG_BASE 0x20000400
+    #elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+        /*
+         * Since there is no ROM area of SRAM on the CC13X4 and CC26X4 devices, we
+         * can move the uDMA table closer to the start of SRAM. This improves the
+         * linker efficiency when using dynamically sized heaps.
+         */
+        #if (SPE_ENABLED == 0)
+            #define UDMACC26XX_CONFIG_BASE 0x20000400
+        #else
+            #define UDMACC26XX_CONFIG_BASE 0x2000C400
+        #endif
+    #else
+        #define UDMACC26XX_CONFIG_BASE 0x20000400
+    #endif
 #endif
 
 /*! Make sure DMA control table base address is 1024 bytes aligned */

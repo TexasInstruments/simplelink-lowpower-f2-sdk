@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-silicon settings)",
-        "Description": "4.8 kbps, 2-GFSK, 2 kHz deviation for 426-430 MHz band. (Pre-silicon settings)",
+        "Name": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-Silicon)",
+        "Description": "4.8 kbps, 2-GFSK, 2 kHz deviation for 426-430 MHz band. (Pre-Silicon)",
         "Frequency": "429",
         "Patch": {
             "Define": "RF_MODE_AUTO",

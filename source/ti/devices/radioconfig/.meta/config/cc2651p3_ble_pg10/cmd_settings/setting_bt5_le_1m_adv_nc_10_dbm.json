@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "BLE, 1 Mbps, BT4, 10 dBm (Pre-silicon settings)",
-        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band. (Pre-silicon settings)",
+        "Name": "BLE, 1 Mbps, BT4, 10 dBm (Pre-Silicon)",
+        "Description": "Bluetooth 5, LE 1M PHY (1 Msym\/s GFSK, 1 Mbps data rate) for the 2.4 GHz ISM band. (Pre-Silicon)",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",

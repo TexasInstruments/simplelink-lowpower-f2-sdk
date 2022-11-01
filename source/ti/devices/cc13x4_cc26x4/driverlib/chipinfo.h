@@ -339,7 +339,7 @@ typedef enum {
    CHIP_TYPE_CUSTOM_1      =  7,    //!<  7 means that this is a CUSTOM_1 chip.
    CHIP_TYPE_CC2640R2      =  8,    //!<  8 means that this is a CC2640R2 chip.
    CHIP_TYPE_CC2642        =  9,    //!<  9 means that this is a CC2642 chip.
-   CHIP_TYPE_unused0       =  10,   //!< 10 unused value
+   CHIP_TYPE_CC1312P       =  10,   //!< 10 means that this is a CC1312P chip.
    CHIP_TYPE_CC2652        =  11,   //!< 11 means that this is a CC2652 chip.
    CHIP_TYPE_CC1312        =  12,   //!< 12 means that this is a CC1312 chip.
    CHIP_TYPE_CC1352        =  13,   //!< 13 means that this is a CC1352 chip.
@@ -353,22 +353,19 @@ typedef enum {
    CHIP_TYPE_CC2651P3      =  21,   //!< 21 means that this is a CC2651P3 chip.
    CHIP_TYPE_CC2641R3      =  22,   //!< 22 means that this is a CC2641R3 chip.
    CHIP_TYPE_CC1312R7      =  23,   //!< 23 means that this is a CC1312R7 chip.
-   CHIP_TYPE_unused1       =  24,   //!< 24 unused value
+   CHIP_TYPE_unused0       =  24,   //!< 24 unused value
    CHIP_TYPE_CC1352R7      =  25,   //!< 25 means that this is a CC1352R7 chip.
    CHIP_TYPE_CC1352P7      =  26,   //!< 26 means that this is a CC1352P7 chip.
    CHIP_TYPE_CC2652R7      =  27,   //!< 27 means that this is a CC2652R7 chip.
    CHIP_TYPE_CC2652P7      =  28,   //!< 28 means that this is a CC2652P7 chip.
-   CHIP_TYPE_unused2       =  29,   //!< 29 unused value
-   // Note: The following chip types are drafts only and for internal use at moment.
+   CHIP_TYPE_unused1       =  29,   //!< 29 unused value
    CHIP_TYPE_CC1314R10     =  30,   //!< 30 means that this is a CC1314R10 chip.
    CHIP_TYPE_CC1354P10     =  31,   //!< 31 means that this is a CC1354P10 chip.
    CHIP_TYPE_CC1354R10     =  32,   //!< 32 means that this is a CC1354R10 chip.
    CHIP_TYPE_CC2653P10     =  33,   //!< 33 means that this is a CC2653P10 chip.
-   CHIP_TYPE_unused3       =  34,   //!< 34 unused value
+   CHIP_TYPE_unused2       =  34,   //!< 34 unused value
    CHIP_TYPE_CC2674P10     =  35,   //!< 35 means that this is a CC2674P10 chip.
    CHIP_TYPE_CC2674R10     =  36,   //!< 36 means that this is a CC2674R10 chip.
-   CHIP_TYPE_CC2672R3      =  37,   //!< 37 means that this is a CC2672R3 chip.
-   CHIP_TYPE_CC2672P3      =  38,   //!< 38 means that this is a CC2672P3 chip.
 } ChipType_t;
 
 //*****************************************************************************
@@ -419,6 +416,7 @@ extern ChipFamily_t ChipInfo_GetChipFamily( void );
 #define DRIVERLIB_BUILD_CC13X2_CC26X2     4 //!< 4 is the driverlib build ID for the cc13x2_cc26x2 driverlib.
 #define DRIVERLIB_BUILD_CC13X2X7_CC26X2X7 5 //!< 5 is the driverlib build ID for the cc13x2x7_cc26x2x7 driverlib.
 #define DRIVERLIB_BUILD_CC13X4_CC26X4     6 //!< 6 is the driverlib build ID for the cc13x4_cc26x4 driverlib.
+
 
 //*****************************************************************************
 //

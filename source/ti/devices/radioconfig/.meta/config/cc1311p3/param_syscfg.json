@@ -29,23 +29,23 @@
                 },
                 {
                     "name": "2gfsk50kbps915",
-                    "displayName": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk100kbps50dev868",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk200kbps100dev868",
-                    "displayName": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk1mbps868",
-                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk1mbps915",
-                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk50kbps154g",
@@ -122,7 +122,7 @@
                 },
                 {
                     "name": "2gfsk200kbps433mhz",
-                    "displayName": "200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk50kbps154g433mhz",
@@ -134,7 +134,7 @@
                 },
                 {
                     "name": "slr2500bps2gfsk433mhz",
-                    "displayName": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-silicon settings)"
+                    "displayName": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
                 },
                 {
                     "name": "custom433",
@@ -390,8 +390,7 @@
                     "name": "highPA",
                     "displayName": "High PA",
                     "description": "Select if the High Power Amplifier on the device should be used",
-                    "default": false,
-                    "hidden": false
+                    "default": false
                 },
                 {
                     "name": "txPower433",
@@ -803,30 +802,30 @@
             {
                 "file": "setting_tc719.json",
                 "name": "2gfsk50kbps915",
-                "description": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc737.json",
                 "name": "2gfsk100kbps50dev868",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc751.json",
                 "name": "2gfsk200kbps100dev868",
-                "description": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc784.json",
                 "name": "2gfsk1mbps868",
-                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-silicon settings)"
+                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc785.json",
                 "name": "2gfsk1mbps915",
-                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-silicon settings)"
+                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc706_154g.json",
@@ -925,7 +924,7 @@
             {
                 "file": "setting_tc148.json",
                 "name": "2gfsk200kbps433mhz",
-                "description": "200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "200 kbps, 50 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc112_154g.json",
@@ -941,7 +940,7 @@
             {
                 "file": "setting_tc441.json",
                 "name": "slr2500bps2gfsk433mhz",
-                "description": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-silicon settings)"
+                "description": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
             },
             {
                 "file": "setting_tc112_custom.json",

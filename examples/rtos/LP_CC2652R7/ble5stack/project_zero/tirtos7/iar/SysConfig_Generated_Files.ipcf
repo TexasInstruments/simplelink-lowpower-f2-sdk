@@ -16,6 +16,8 @@
 		<path>$PROJ_DIR$\ti_drivers_config.h</path>
 		<path>$PROJ_DIR$\ti_utils_build_linker.cmd.genlibs</path>
 		<path>$PROJ_DIR$\syscfg_c.rov.xs</path>
+		<path>$PROJ_DIR$\ti_utils_runtime_model.gv</path>
+		<path>$PROJ_DIR$\ti_utils_runtime_Makefile</path>
 		<path>$PROJ_DIR$\ti_sysbios_config.h</path>
 		<path>$PROJ_DIR$\ti_sysbios_config.c</path>
   </files>

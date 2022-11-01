@@ -186,12 +186,17 @@ static uint8_t gapBond_maxCharCfg = 4;
 static uint8_t gapBond_gatt_no_client = 0;
 static uint8_t gapBond_gatt_no_service_changed = 1;
 static uint8_t gapBond_eraseBondInConnFlag = FALSE;
-//Local OOB parameters
+// Local OOB parameters
 static uint8_t localOobAvailable = FALSE;
 gapBondOOBData_t gapBond_localOobData;
-//Remote OOB parameters
+
+// Remote OOB parameters
 static uint8_t gapBond_OOBDataFlag = FALSE;
 gapBondOOBData_t gapBond_remoteOobData = {0};
+
+// Marks if the ECC keys where generated using GAPBondMgr_GenerateEccKeys
+static uint8 gapBond_eccManualGenerated = FALSE;
+
 #if defined ( HCI_TL_FULL )
  /* for test mode only */
 static uint8_t gapBond_AutoFail = FALSE;
@@ -1829,7 +1834,7 @@ static void gapBondMgr_LinkEst(GAP_Peer_Addr_Types_t addrType, uint8_t *pDevAddr
       HAL_ASSERT( HAL_ASSERT_CAUSE_OUT_OF_MEMORY );
       return;
     }
-    
+
     smSigningInfo_t signingInfo;
 
     // On peripheral, load the key information for the bonding
@@ -3348,21 +3353,30 @@ bStatus_t gapBondMgr_syncResolvingList(void)
 static uint8_t gapBondMgr_ProcessSMMsg(smEventHdr_t *pMsg)
 {
   uint8_t safeToDealloc = FALSE;
+
   switch(pMsg->opcode)
   {
     case SM_ECC_KEYS_EVENT:
     {
       smEccKeysEvt_t *Keys= (smEccKeysEvt_t *)pMsg;
+
       gapBond_useEccKeys = TRUE;
+      gapBond_eccManualGenerated = TRUE;
+
       MAP_osal_memcpy(gapBond_eccKeys.privateKey, Keys->privateKey, ECC_KEYLEN);
       MAP_osal_memcpy(gapBond_eccKeys.publicKeyX, Keys->publicKeyX, ECC_KEYLEN);
       MAP_osal_memcpy(gapBond_eccKeys.publicKeyY, Keys->publicKeyY, ECC_KEYLEN);
+
       // Call app state callback. In this case connectionHandle is not relevant (always 0)
       if(pGapBondCB && pGapBondCB->pairStateCB)
       {
-            pGapBondCB->pairStateCB(0, GAPBOND_GENERATE_ECC_DONE, Keys->hdr.status);
+        pGapBondCB->pairStateCB(0, GAPBOND_GENERATE_ECC_DONE, Keys->hdr.status);
       }
+
+      break;
     }
+
+    default:
       break;
   }
   return safeToDealloc;
@@ -3378,7 +3392,27 @@ static uint8_t gapBondMgr_ProcessSMMsg(smEventHdr_t *pMsg)
  */
 bStatus_t GAPBondMgr_GenerateEccKeys( void )
 {
-	return  MAP_SM_GetEccKeys();
+  if( gapBond_useEccKeys == FALSE )
+  {
+    return MAP_SM_GetEccKeys();
+  }
+  else
+  {
+    if( gapBond_eccManualGenerated == TRUE )
+    {
+      return MAP_SM_GetEccKeys();
+    }
+    else
+    {
+      // Call app state callback. In this case connectionHandle is not relevant (always 0)
+      if(pGapBondCB && pGapBondCB->pairStateCB)
+      {
+        pGapBondCB->pairStateCB(0, GAPBOND_GENERATE_ECC_DONE, SUCCESS);
+      }
+    }
+  }
+
+  return SUCCESS;
 }
 
 /*********************************************************************
@@ -3394,17 +3428,24 @@ bStatus_t GAPBondMgr_GenerateEccKeys( void )
 bStatus_t GAPBondMgr_SCGetLocalOOBParameters(gapBondOOBData_t *localOobData)
 {
   bStatus_t stat;
-  /*Generating the local random number - ra*/
+
+  /* Generating the local random number - ra */
   SM_GenerateRandBuf(localOobData->rand, KEYLEN);
   MAP_osal_memcpy(gapBond_localOobData.rand, localOobData->rand, KEYLEN);
-  /*Generating the local confirmation value - ca*/
+
+  /* Generating the local confirmation value - ca */
   stat = MAP_SM_GetScConfirmOob(gapBond_eccKeys.publicKeyX, localOobData->rand, localOobData->confirm);
+
   if(stat != SUCCESS)
   {
 	return FAILURE;
   }
+
   MAP_osal_memcpy(gapBond_localOobData.confirm, localOobData->confirm, KEYLEN);
+
+  /* Mark that the Locak OOB information is available */
   localOobAvailable = TRUE;
+
   return SUCCESS;
 }
 
@@ -3423,8 +3464,11 @@ bStatus_t GAPBondMgr_SCGetLocalOOBParameters(gapBondOOBData_t *localOobData)
                                               uint8 OOBDataFlag)
 {
   gapBond_OOBDataFlag = OOBDataFlag;
+
+  /* Copt the peers confirm value and randon number */
   MAP_osal_memcpy(gapBond_remoteOobData.confirm, remoteOobData->confirm, KEYLEN);
   MAP_osal_memcpy(gapBond_remoteOobData.rand, remoteOobData->rand, KEYLEN);
+
   return SUCCESS;
 }
 

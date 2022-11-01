@@ -1,9 +1,9 @@
 /******************************************************************************
 *  Filename:       rf_ieee_cmd.h
 *
-*  Description:    CC13x2/CC26x2 API for IEEE 802.15.4 commands
+*  Description:    CC13x4/CC26x4 API for IEEE 802.15.4 commands
 *
-*  Copyright (c) 2015 - 2020, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,9 @@ struct __RFC_STRUCT rfc_CMD_IEEE_RX_s {
       uint8_t ccaCorrThr:2;             //!<        Threshold for number of correlation peaks in correlator based carrier sense
    } ccaOpt;                            //!<        CCA options
    int8_t ccaRssiThr;                   //!<        RSSI threshold for CCA
-   uint8_t __dummy0;
+   uint8_t dualPanEn;                   //!< \brief Dual PAN support<br>
+                                        //!<        0: Single PAN; legacy command structure supported<br>
+                                        //!<        1: Dual PAN enabled
    uint8_t numExtEntries;               //!<        Number of extended address entries
    uint8_t numShortEntries;             //!<        Number of short address entries
    uint32_t* pExtEntryList;             //!<        Pointer to list of extended address entries
@@ -190,8 +192,8 @@ struct __RFC_STRUCT rfc_CMD_IEEE_RX_s {
    uint64_t localExtAddr;               //!<        The extended address of the local device
    uint16_t localShortAddr;             //!<        The short address of the local device
    uint16_t localPanID;                 //!<        The PAN ID of the local device
-   uint16_t __dummy1;
-   uint8_t __dummy2;
+   uint16_t __dummy0;
+   uint8_t __dummy1;
    struct {
       uint8_t triggerType:4;            //!<        The type of trigger
       uint8_t bEnaCmd:1;                //!< \brief 0: No alternative trigger command<br>
@@ -202,6 +204,39 @@ struct __RFC_STRUCT rfc_CMD_IEEE_RX_s {
    } endTrigger;                        //!<        Trigger that causes the device to end the Rx operation
    ratmr_t endTime;                     //!< \brief Time used together with <code>endTrigger</code> that causes the device to end the Rx
                                         //!<        operation
+   struct {
+      uint16_t frameFilterDoneEn0:1;    //!< \brief 0: Disable frame filtering done interrupt on PAN 0<br>
+                                        //!<        1: Enable frame filtering done interrupt on PAN 0.
+      uint16_t frameFilterDoneEn1:1;    //!< \brief 0: Disable frame filtering done interrupt on PAN 1<br>
+                                        //!<        1: Enable frame filtering done interrupt on PAN 1.
+      uint16_t autoAckEn0:1;            //!< \brief 0: Disable auto ACK on PAN 0<br>
+                                        //!<        1: Enable auto ACK on PAN 0.
+      uint16_t autoAckEn1:1;            //!< \brief 0: Disable auto ACK on PAN 1<br>
+                                        //!<        1: Enable auto ACK on PAN 1.
+      uint16_t autoPendEn0:1;           //!< \brief 0: Auto-pend disabled on PAN 0<br>
+                                        //!<        1: Auto-pend enabled on PAN 0
+      uint16_t autoPendEn1:1;           //!< \brief 0: Auto-pend disabled on PAN 1<br>
+                                        //!<        1: Auto-pend enabled on PAN 1
+      uint16_t bPendDataReqOnly0:1;     //!< \brief 0: Use auto-pend for any packet on PAN 0<br>
+                                        //!<        1: Use auto-pend for data request packets only on PAN 0
+      uint16_t bPendDataReqOnly1:1;     //!< \brief 0: Use auto-pend for any packet on PAN 1<br>
+                                        //!<        1: Use auto-pend for data request packets only on PAN 1
+      uint16_t bPanCoord0:1;            //!< \brief 0: Device on PAN 0 is not PAN coordinator<br>
+                                        //!<        1: Device on PAN 0 is PAN coordinator
+      uint16_t bPanCoord1:1;            //!< \brief 0: Device on PAN 1 is not PAN coordinator<br>
+                                        //!<        1: Device on PAN 1 is PAN coordinator
+      uint16_t bAllowEnhAck0:1;         //!< \brief 0: Do not accept Enh-Ack on PAN 0<br>
+                                        //!<        1: Accept Enh-Ack on PAN 0
+      uint16_t bAllowEnhAck1:1;         //!< \brief 0: Do not accept Enh-Ack on PAN 1<br>
+                                        //!<        1: Accept Enh-Ack on PAN 1
+   } dualPanFiltOpt;                    //!<        Dual PAN frame filtering options
+   uint8_t numExtEntries1;              //!<        Number of extended address entries for PAN 1
+   uint8_t numShortEntries1;            //!<        Number of short address entries for PAN 1
+   uint32_t* pExtEntryList1;            //!<        Pointer to list of extended address entries for PAN 1
+   uint32_t* pShortEntryList1;          //!<        Pointer to list of short address entries for PAN 1
+   uint64_t localExtAddr1;              //!<        The extended address of the local device on PAN 1
+   uint16_t localShortAddr1;            //!<        The short address of the local device on PAN 1
+   uint16_t localPanID1;                //!<        The PAN ID of the local device on PAN 1
 } __RFC_STRUCT_ATTR;
 
 //! @}

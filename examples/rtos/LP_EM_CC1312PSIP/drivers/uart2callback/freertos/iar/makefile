@@ -2,8 +2,6 @@ SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../../../../../..)
 
 include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
-KERNEL_BUILD := $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/freertos/builds/cc13x2_cc26x2/release
-
 CC = "$(IAR_ARMCOMPILER)/bin/iccarm"
 LNK = "$(IAR_ARMCOMPILER)/bin/ilinkarm"
 
@@ -24,12 +22,13 @@ NAME = uart2callback
 
 CFLAGS = -I../.. \
     -I. \
+    -Oh \
     -DDeviceFamily_CC13X2 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/freertos" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/iar" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/IAR/ARM_CM4F" \
-    "-I$(KERNEL_BUILD)" \
     --cpu=Cortex-M4F \
     --vla \
     --debug \
@@ -41,21 +40,14 @@ CFLAGS = -I../.. \
 
 LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     --threaded_lib \
+    "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel" \
     -fti_utils_build_linker.cmd.genlibs \
-    "$(KERNEL_BUILD)/iar/freertos.lib" \
     ti/devices/cc13x2_cc26x2/driverlib/bin/iar/driverlib.lib \
     --config ../../freertos/iar/cc13x2_cc26x2_freertos.icf \
     --map "$(NAME).map" \
     --silent \
-    --cpu=Cortex-M4F \
-    --semihosting=iar_breakpoint
+    --cpu=Cortex-M4F
 all: $(NAME).out
-
-$(KERNEL_BUILD)/iar/freertos.lib:
-	@ $(ECHOBLANKLINE)
-	@ echo $@ is not built.
-	@ echo You can build it by issuing $(MAKE) in $(dir $@).
-	@ $(ECHOBLANKLINE)
 
 .INTERMEDIATE: syscfg
 $(SYSCFG_FILES): syscfg
@@ -81,7 +73,7 @@ freertos_main_freertos.obj: ../../freertos/main_freertos.c $(SYSCFG_H_FILES)
 	@ echo Building $@
 	@ $(CC) $(CFLAGS) $< -o $@
 
-$(NAME).out: $(OBJECTS) $(KERNEL_BUILD)/iar/freertos.lib
+$(NAME).out: $(OBJECTS)
 	@ echo linking $@
 	@ $(LNK)  $(OBJECTS)  $(LFLAGS) -o $(NAME).out
 

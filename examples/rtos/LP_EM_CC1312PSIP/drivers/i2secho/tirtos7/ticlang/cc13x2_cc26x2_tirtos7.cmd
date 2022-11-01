@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
---stack_size=1024   /* C stack is also used for ISR stack */
+--stack_size=0x600   /* C stack is also used for ISR stack */
 
 HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 

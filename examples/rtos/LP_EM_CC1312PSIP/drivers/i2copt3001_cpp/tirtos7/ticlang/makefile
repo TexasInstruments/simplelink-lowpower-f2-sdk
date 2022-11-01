@@ -57,8 +57,8 @@ LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     -lti/devices/cc13x2_cc26x2/driverlib/bin/ticlang/driverlib.lib \
     ../../tirtos7/ticlang/cc13x2_cc26x2_tirtos7.cmd \
     "-Wl,-m,$(NAME).map" \
-    -Wl,-c \
-    -Wl,-w \
+    -Wl,--rom_model \
+    -Wl,--warn_sections \
     "-L$(TICLANG_ARMCOMPILER)/lib" \
     -llibc.a
 all: $(NAME).out

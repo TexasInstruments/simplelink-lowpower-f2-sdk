@@ -1234,40 +1234,21 @@ static void csnCallback(uint_least8_t index)
  */
 static void flushFifos(SPICC26X4DMA_HWAttrs const *hwAttrs)
 {
+    /* Disable the SPI in case it isn't already */
+    disableSPI(hwAttrs->baseAddr);
 
-    // TIDRIVERS-5163: Temporary workaround
-    // TODO: TIDRIVERS-5152: Replace with proper API for S/NS configuration
-    //  Perform a full reset of the correct SPI hardware instance
-    if (hwAttrs->baseAddr == SPI0_BASE)
-    {
-        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI0;
-    }
-    else if (hwAttrs->baseAddr == SPI1_BASE)
-    {
-        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI1;
-    }
-    else if (hwAttrs->baseAddr == SPI2_BASE)
-    {
-        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI2;
-    }
-    else if (hwAttrs->baseAddr == SPI3_BASE)
-    {
-        HWREG(PRCM_BASE + PRCM_O_RESETSSI) = PRCM_RESETSSI_SSI3;
-    }
+    /* Trigger fifo flush */
+    HWREG(hwAttrs->baseAddr + SPI_O_CTL1) |= SPI_CTL1_FIFORST_SET;
 
-    /* Flush RX FIFO */
-    while (!(HWREG(hwAttrs->baseAddr + SPI_O_STAT) & SPI_STAT_RFE_EMPTY))
-    {
-        /* Read element from RX FIFO and discard */
-        HWREG(hwAttrs->baseAddr + SPI_O_RXDATA);
-    }
+    /* Delay 5 cycles to ensure the flush is complete */
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
 
-    /* Flush TX FIFO */
-    while (!(HWREG(hwAttrs->baseAddr + SPI_O_STAT) & SPI_STAT_TFE_EMPTY))
-    {
-        /* Read element from TX FIFO and discard */
-        HWREG(hwAttrs->baseAddr + SPI_O_TXDATA);
-    }
+    /* Complete the fifo flush */
+    HWREG(hwAttrs->baseAddr + SPI_O_CTL1) &= ~(SPI_CTL1_FIFORST_SET);
 }
 
 /*

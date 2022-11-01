@@ -35,10 +35,8 @@
  *  spislave.syscfg
  */
 
-/* ======== TIRTOS7 ======== */
-if (system.getRTOS() === "tirtos7") {
-    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
-}
+/* ======== Kernel Configuration ======== */
+system.getScript("kernel_config_release.syscfg.js");
 
 /* ======== Board ======== */
 var board = system.deviceData.board.name;
@@ -100,7 +98,7 @@ else if (board.match(/CC23/)) {
     gpio2.$hardware = system.deviceData.board.components.BUTTON0;
     gpio3.gpioPin.$assign = "DIO21";
 
-    spi0.$hardware = system.deviceData.board.components.SPI_FLASH;
+    spi0.$hardware = system.deviceData.board.components.LP_SPI;
     spi0.defaultTxBufferValue = "0xFF";
 
     /*

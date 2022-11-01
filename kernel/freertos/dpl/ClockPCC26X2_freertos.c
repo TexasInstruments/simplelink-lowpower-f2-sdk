@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 
 #define CPU_CLOCK_HZ ((uint32_t)48000000)
 
+/* The name of this struct and the names of its members are used by ROV */
 typedef struct _ClockP_Module_State
 {
     QueueP_Obj clockQ;
@@ -62,6 +63,7 @@ typedef struct _ClockP_Module_State
     bool ticking;
 } ClockP_Module_State;
 
+/* The name of this struct and the names of its members are used by ROV */
 typedef struct _ClockP_Obj
 {
     QueueP_Elem elem;
@@ -73,7 +75,11 @@ typedef struct _ClockP_Obj
     uintptr_t arg;
 } ClockP_Obj;
 
+/* The name of this struct is used by ROV */
+/* The existance of a variable with this name is the signal to ROV
+ * that it is used on a CC13X2 or CC26X2 device */
 static ClockP_Module_State ClockP_module;
+/* The name of this variable is used by ROV */
 static bool ClockP_initialized            = false;
 static ClockP_Params ClockP_defaultParams = {
     .startFlag = false,
@@ -87,9 +93,13 @@ void ClockP_doTick(uintptr_t arg0);
 static void sleepTicks(uint32_t ticks);
 static void sleepClkFxn(uintptr_t arg0);
 
-static TimerP_FreqHz timerFreq;
-static uint32_t usecsPerTimerTick;
+/* This ClockP implementation uses the RTC timer. The raw RTC timer increments
+ * by 2^32 per second (32-bit register AON_RTC.SUBSEC wraps once per second).
+ * Divide 2^32 by 1 million to get RTC ticks per microsecond */
+#define ClockP_rtcTicksPerUsec (0x100000000UL / 1000000)
 
+/* Empirically deduced value of the ClockP_usleep() processing overhead, in us */
+#define ClockP_usleepOverhead (15 * ClockP_tickPeriod)
 /*
  *  ======== ClockP_Params_init ========
  */
@@ -128,10 +138,6 @@ void ClockP_startup(void)
 
         /* get the max ticks that can be skipped by the timer */
         ClockP_module.maxSkippable = TimerP_getMaxTicks(ClockP_module.timer);
-
-        /* Used for ClockP_usleep() */
-        TimerP_getFreq(ClockP_module.timer, &timerFreq);
-        usecsPerTimerTick = 1000000 / timerFreq.lo;
 
         ClockP_initialized = true;
     }
@@ -647,18 +653,20 @@ void ClockP_usleep(uint32_t usec)
 
     ClockP_startup();
 
+    /* Read the current raw counter value */
     curTick = TimerP_getCount64(ClockP_module.timer);
 
-    /* Make sure we sleep at least one tick if usec > 0 */
-    endTick = curTick + (usec + usecsPerTimerTick - 1) / usecsPerTimerTick;
+    /* Calculate raw end tick value */
+    endTick = curTick + (usec * ClockP_rtcTicksPerUsec);
 
     /*
-     *  If usec > ClockP_tickPeriod, sleep for the appropriate number
+     *  If usec is sufficiently large, sleep for the appropriate number
      *  of clock ticks.
      */
-    if (usec >= ClockP_tickPeriod)
+    if (usec >= ClockP_usleepOverhead)
     {
-        ticksToSleep = usec / ClockP_tickPeriod;
+        /* Sleep at least 1 tick */
+        ticksToSleep = (usec - (ClockP_usleepOverhead - ClockP_tickPeriod)) / ClockP_tickPeriod;
         sleepTicks(ticksToSleep);
     }
 
@@ -666,7 +674,6 @@ void ClockP_usleep(uint32_t usec)
     while (curTick < endTick)
     {
         curTick = TimerP_getCount64(ClockP_module.timer);
-        ;
     }
 }
 

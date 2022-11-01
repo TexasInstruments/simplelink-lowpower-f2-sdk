@@ -12,11 +12,32 @@
     <project
         title="FreeRTOS build release configuration"
         name="freertos_builds_CC26X2R1_LAUNCHXL_release_gcc"
+        configurations="Debug"
         toolChain="GNU"
         device="Cortex M.CC2642R1F"
         outputType="staticLibrary"
         requiredVariables="FREERTOS_INSTALL_DIR"
-        compilerBuildOptions=" -I${PROJECT_ROOT} -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source  -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano -I${CG_TOOL_ROOT}/arm-none-eabi/include -mcpu=cortex-m4 -march=armv7e-m -mthumb -std=c99 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffunction-sections -fdata-sections -fno-builtin-malloc -g -gstrict-dwarf -Wall --specs=nano.specs -DDeviceFamily_CC13X2_CC26X2"
+        compilerBuildOptions=" -I${PROJECT_ROOT}
+                               -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include
+                               -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F
+                               -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc
+                               -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+                               -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano
+                               -I${CG_TOOL_ROOT}/arm-none-eabi/include
+                               -mcpu=cortex-m4
+                               -march=armv7e-m
+                               -mthumb
+                               -std=c99
+                               -mfloat-abi=hard
+                               -mfpu=fpv4-sp-d16
+                               -ffunction-sections
+                               -fdata-sections
+                               -fno-builtin-malloc
+                               -g
+                               -gstrict-dwarf
+                               -Wall
+                               --specs=nano.specs
+                               -DDeviceFamily_CC13X2_CC26X2"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
         description="A FreeRTOS release configuration project">
@@ -72,7 +93,7 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/freertos/dpl/SystemP_freertos.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="dpl" >
         </file>
-        <file path="${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="freertos/portable/GCC/ARM_CM3" >
+        <file path="${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="freertos/portable/GCC/ARM_CM4F" >
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/freertos/dpl/HwiPCC26X2_freertos.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="dpl" >
         </file>

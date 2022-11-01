@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,19 @@ let family = Common.device2Family(system.deviceData, "ECDH");
 let config = [];
 
 /*
+ *  ======== validate ========
+ */
+function validate(inst, validation)
+{
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (inst.$module.$instances.length > 1) {
+            validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
+                                driver instances are fixed in the SPE image. One ECDH instance is supported.`, inst);
+        }
+    }
+}
+
+/*
  *  ======== base ========
  *  Define the base ECDH properties and methods
  */
@@ -69,7 +82,8 @@ the Diffie-Hellman key exchange protocol.
 `,
     defaultInstanceName : "CONFIG_ECDH_",
     config              : Common.addNameConfig(config, "/ti/drivers/ECDH", "CONFIG_ECDH_"),
-    modules             : Common.autoForceModules(["Board", "Power"])
+    modules             : Common.autoForceModules(["Board", "Power"]),
+    validate            : validate
 };
 
 /* extend the base exports to include family-specific content */

@@ -33,15 +33,15 @@
                 },
                 {
                     "name": "2gfsk50kbps915",
-                    "displayName": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk100kbps50dev868",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk200kbps100dev868",
-                    "displayName": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk1mbps868",
@@ -85,11 +85,11 @@
                 },
                 {
                     "name": "2gfsk100kbpswmbust",
-                    "displayName": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk100kbpswmbusc",
-                    "displayName": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "2gfsk50kbps12dev868wsun1a",
@@ -125,19 +125,19 @@
                 },
                 {
                     "name": "wbdsss480ksps30kbps",
-                    "displayName": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-silicon settings)"
+                    "displayName": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-Silicon)"
                 },
                 {
                     "name": "wbdsss480ksps60kbps",
-                    "displayName": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-silicon settings)"
+                    "displayName": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
                 },
                 {
                     "name": "wbdsss480ksps120kbps",
-                    "displayName": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Pre-silicon settings)"
+                    "displayName": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Pre-Silicon)"
                 },
                 {
                     "name": "wbdsss480ksps240kbps",
-                    "displayName": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1 (Pre-silicon settings)"
+                    "displayName": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1 (Pre-Silicon)"
                 },
                 {
                     "name": "custom868",
@@ -182,7 +182,7 @@
                 },
                 {
                     "name": "2gfsk48kpbs429mhz",
-                    "displayName": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-Silicon)"
                 }
             ],
             "default": "2gfsk50kbps433mhz"
@@ -195,27 +195,27 @@
             "options": [
                 {
                     "name": "gfsk24kbps169mhzrx",
-                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-Silicon)"
                 },
                 {
                     "name": "gfsk24kbps169mhzch15tx",
-                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-Silicon)"
                 },
                 {
                     "name": "gfsk24kbps169mhzch6tx",
-                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-Silicon)"
                 },
                 {
                     "name": "gfsk48kbps169mhzrx",
-                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-Silicon)"
                 },
                 {
                     "name": "gfsk48kbps169mhzch15tx",
-                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-Silicon)"
                 },
                 {
                     "name": "gfsk48kbps169mhzch6tx",
-                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-silicon settings)"
+                    "displayName": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-Silicon)"
                 },
                 {
                     "name": "custom169",
@@ -878,19 +878,19 @@
             {
                 "file": "setting_tc119.json",
                 "name": "2gfsk50kbps915",
-                "description": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc137.json",
                 "name": "2gfsk100kbps50dev868",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
                 "file": "setting_tc151.json",
                 "name": "2gfsk200kbps100dev868",
-                "description": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "200 kbps, 100 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "ieee_15_4g"
             },
             {
@@ -950,12 +950,12 @@
             {
                 "file": "setting_tc210.json",
                 "name": "2gfsk100kbpswmbust",
-                "description": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "WMBUS T-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc216.json",
                 "name": "2gfsk100kbpswmbusc",
-                "description": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "WMBUS C-Mode, 100 kbps, 2-GFSK, 235 kHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc120.json",
@@ -1008,22 +1008,22 @@
             {
                 "file": "setting_tc383.json",
                 "name": "wbdsss480ksps30kbps",
-                "description": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-silicon settings)"
+                "description": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-Silicon)"
             },
             {
                 "file": "setting_tc382.json",
                 "name": "wbdsss480ksps60kbps",
-                "description": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-silicon settings)"
+                "description": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)"
             },
             {
                 "file": "setting_tc381.json",
                 "name": "wbdsss480ksps120kbps",
-                "description": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Pre-silicon settings)"
+                "description": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2 (Pre-Silicon)"
             },
             {
                 "file": "setting_tc380.json",
                 "name": "wbdsss480ksps240kbps",
-                "description": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1 (Pre-silicon settings)"
+                "description": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1 (Pre-Silicon)"
             },
             {
                 "file": "setting_tc106_custom.json",
@@ -1071,39 +1071,39 @@
             {
                 "file": "setting_tc596.json",
                 "name": "2gfsk48kpbs429mhz",
-                "description": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-silicon settings)"
+                "description": "Narrowband, 4.8 kbps, 2 kHz Deviation, 2-GFSK, 10.1 kHz RX Bandwidth (Pre-Silicon)"
             }
         ],
         "prop169": [
             {
                 "file": "setting_tc220_rx.json",
                 "name": "gfsk24kbps169mhzrx",
-                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc220_tx_ch1-5.json",
                 "name": "gfsk24kbps169mhzch15tx",
-                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc220_tx_ch6.json",
                 "name": "gfsk24kbps169mhzch6tx",
-                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 2.4 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc221_rx.json",
                 "name": "gfsk48kbps169mhzrx",
-                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, RX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc221_tx_ch1-5.json",
                 "name": "gfsk48kbps169mhzch15tx",
-                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 1-5, TX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc221_tx_ch6.json",
                 "name": "gfsk48kbps169mhzch6tx",
-                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-silicon settings)"
+                "description": "WMBUS N-MODE, 4.8 kbps, 2.4 kHz Deviation, 2-GFSK, 10 kHz RX Bandwidth, channel 6, TX (Pre-Silicon)"
             },
             {
                 "file": "setting_tc220_rx_custom.json",

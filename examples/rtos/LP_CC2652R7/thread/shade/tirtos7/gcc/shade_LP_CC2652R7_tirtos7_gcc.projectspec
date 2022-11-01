@@ -57,7 +57,7 @@
             -DOPENTHREAD_PROJECT_CORE_CONFIG_FILE=&apos;&quot;openthread-core-cc13x2_26x2-config.h&quot;&apos;
             -DTIOP_CUI=1
             -DCUI_POSIX=1
-            -DBOARD_DISPLAY_USE_LCD=1
+            -DBOARD_DISPLAY_USE_LCD=0
             -DDeviceFamily_CC13X2X7_CC26X2X7
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x2_cc26x2
@@ -109,6 +109,7 @@
         "
         description="A simple application with Shade functionality on a Thread network">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

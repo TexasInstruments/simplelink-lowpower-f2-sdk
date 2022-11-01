@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       hw_udma_h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 * Copyright (c) 2015 - 2017, Texas Instruments Incorporated
 * All rights reserved.

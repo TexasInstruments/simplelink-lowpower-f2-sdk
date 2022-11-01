@@ -629,7 +629,7 @@ extern char *llCtrl_BleLogStrings[];
 
 #ifndef DISABLE_RCOSC_SW_FIX
 // MODE_CONF SCLK_LF_OPTION selection for SCLK_LF
-#define SCLK_LF_OPTION_OFFSET                          0xFB6     // in CCFG (CCA); LSB..MSB
+#define SCLK_LF_OPTION_OFFSET                          0x1FB6     // in CCFG (CCA); LSB..MSB
 
 // SCLK_LF Options
 #define SCLK_LF_MASK                                   0xC0
@@ -942,6 +942,19 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_CONN_EVT_PHY_UPDATE                         0x02
 #define LL_CONN_EVT_ALL                                0xFF
 
+// Health check status
+#define LL_HEALTH_CHECK_SUCCESS         0
+#define LL_HEALTH_CHECK_CONN_FAILURE    -1
+#define LL_HEALTH_CHECK_SCAN_FAILURE    -2
+#define LL_HEALTH_CHECK_INIT_FAILURE    -3
+#define LL_HEALTH_CHECK_ADV_FAILURE     -4
+
+// Health check default time threshold
+#define LL_HEALTH_CHECK_CONN_DEFAULT_THRESHOLD  (RAT_TICKS_IN_32S)           //32 sec - max LSTO
+#define LL_HEALTH_CHECK_SCAN_DEFAULT_THRESHOLD  (40000 * RAT_TICKS_IN_1MS)   //40 sec max scan interval
+#define LL_HEALTH_CHECK_INIT_DEFAULT_THRESHOLD  (40000 * RAT_TICKS_IN_1MS)   //40 sec max scan interval
+#define LL_HEALTH_CHECK_ADV_DEFAULT_THRESHOLD   (10000 * RAT_TICKS_IN_1MS)   //10 sec max adv interval
+
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -1250,6 +1263,7 @@ struct llConnExtraParams_t
 {
   uint16  size;
   uint16  pduSize;
+  uint16  pduCid;
   uint8   state;
   uint8 * pEntry;
   uint8   extFeatureMask;                 //external features can highjack this bitmap which is connection oriented
@@ -2077,6 +2091,12 @@ extern uint32               llDmmGetActivityIndex(uint16 cmdNum);
 extern uint8                llDmmSetAdvHandle(uint8 handle, uint8 clear);
 extern void                 llDmmDynamicFree(void);
 extern llStatus_t           llDmmDynamicAlloc(void);
+
+// Health check api
+extern int8 llHealthCheck(void);
+extern void llHealthSetThreshold(uint32 connTime,uint32 scanTime,uint32 initTime,uint32 advTime);
+// Health check internal
+extern void llHealthUpdate(uint8 state);
 
 #ifdef __cplusplus
 }

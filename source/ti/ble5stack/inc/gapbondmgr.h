@@ -818,6 +818,26 @@ typedef struct
   uint8_t  value;       // attribute value for this device
 } gapBondCharCfg_t;
 
+/// @brief Contains part of the GAP Bond Manager Parameters values
+typedef struct
+{
+    uint8_t pairMode;
+    uint8_t mitm;
+    uint8_t ioCap;
+    uint8_t bonding;
+    uint8_t secureConnection;
+    uint8_t authenPairingOnly;
+    uint8_t autoSyncWL;
+    uint8_t eccReGenPolicy;
+    uint8_t KeySize;
+    uint8_t removeLRUBond;
+    uint8_t KeyDistList;
+    uint8_t eccDebugKeys;
+    uint8_t eraseBondWhileInConn;
+    uint8_t bondFailAction;
+    uint8_t sameIrkAction;
+} gapBondParams_t;
+
 /** @} End GAPBondMgr_Structs */
 /*-------------------------------------------------------------------
  * API's

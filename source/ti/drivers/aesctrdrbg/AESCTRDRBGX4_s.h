@@ -38,7 +38,7 @@
 #include <ti/drivers/crypto/CryptoCC26X4_s.h>
 #include <ti/drivers/AESCTRDRBG.h>
 
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
+#include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
 #ifdef __cplusplus

@@ -69,6 +69,7 @@
         "
         description="An example on how to use the PWM driver to control on-board LEDs">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../pwmled2.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

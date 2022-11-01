@@ -174,7 +174,7 @@ void NPITL_initTL(npiRtosCB_t npiCBTx, npiRtosCB_t npiCBRx, npiRtosCB_t npiCBMrd
     SRDY_DISABLE();
 
     // Initialize SRDY/MRDY
-    GPIO_setConfig(MRDY_PIN, GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_PULL_UP_INTERNAL | GPIO_CFG_STANDBY_WAKE_ON);
+    GPIO_setConfig(MRDY_PIN, GPIO_CFG_INPUT_INTERNAL | GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_PULL_UP_INTERNAL);
     GPIO_setConfig(SRDY_PIN, GPIO_CFG_OUTPUT_INTERNAL | GPIO_CFG_OUT_STR_HIGH | GPIO_CFG_OUT_HIGH);
     // set callback
     GPIO_setCallback(MRDY_PIN, NPITL_MRDYPinHwiFxn);
@@ -258,8 +258,13 @@ void NPITL_handleMrdyEvent(void)
     if ( GPIO_read(MRDY_PIN) == 0 ||
         (npiTxActive && mrdyPktStamp == txPktCount ) )
     {
+#if defined(NPI_USE_SPI)
         transportMrdyEvent();
         SRDY_ENABLE();
+#elif defined(NPI_USE_UART)
+        SRDY_ENABLE();
+        transportMrdyEvent();
+#endif
     }
 
     ICall_leaveCriticalSection(key);

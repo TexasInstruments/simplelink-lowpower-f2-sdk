@@ -1082,6 +1082,9 @@ drop:
 }
 #endif // defined(TI_WISUN_FAN_OPT_ICMPV6) || defined(HAVE_IPV6_ND)
 
+#ifdef WISUN_FAN_DEBUG
+volatile uint_fast32_t num_icmp_packet_to_host = 0;
+#endif
 buffer_t *icmpv6_up(buffer_t *buf)
 {
     protocol_interface_info_entry_t *cur = NULL;
@@ -1121,6 +1124,10 @@ buffer_t *icmpv6_up(buffer_t *buf)
 #ifdef WISUN_NCP_ENABLE
     if(buf->options.type == ICMPV6_TYPE_INFO_ECHO_REPLY)
     {
+#ifdef WISUN_FAN_DEBUG
+        num_icmp_packet_to_host++;
+        tr_debug("ICMP echo reply to Host (%d)", num_icmp_packet_to_host);
+#endif
         nanostack_process_stream_net_from_stack(buf);
         buffer_free(buf);
         return NULL;
@@ -1256,6 +1263,15 @@ buffer_t *icmpv6_down(buffer_t *buf)
         uint8_t *dptr;
         dptr = buffer_data_reserve_header(buf, 4);
         buf->info = (buffer_info_t)(B_FROM_ICMP | B_TO_IPV6 | B_DIR_DOWN);
+
+        if (buf->options.type == ICMPV6_TYPE_INFO_ECHO_REPLY)
+        {   /* log the ping reply */
+            tr_debug("ICMP echo reply to: %s", trace_ipv6(buf->dst_sa.address));
+        }
+        else if (buf->options.type == ICMPV6_TYPE_INFO_ECHO_REQUEST)
+        {   /* log the ping request */
+            tr_debug("ICMP echo request to: %s", trace_ipv6(buf->dst_sa.address));
+        }
 
         if (buf->src_sa.addr_type != ADDR_IPV6) {
             if (addr_interface_select_source(cur, buf->src_sa.address, buf->dst_sa.address, 0) != 0) {

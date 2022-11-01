@@ -33,6 +33,9 @@
  *  ======== QueueP.h ========
  */
 
+#ifndef kernel_freertos_dpl_QueueP__include
+#define kernel_freertos_dpl_QueueP__include
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -58,3 +61,5 @@ uintptr_t QueueP_get(QueueP_Obj *obj);
 void QueueP_put(QueueP_Obj *obj, QueueP_Elem *elem);
 void QueueP_remove(QueueP_Elem *qelem);
 bool QueueP_empty(QueueP_Obj *obj);
+
+#endif

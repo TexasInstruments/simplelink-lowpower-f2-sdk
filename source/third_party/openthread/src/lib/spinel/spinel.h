@@ -377,7 +377,7 @@
  * Please see section "Spinel definition compatibility guideline" for more details.
  *
  */
-#define SPINEL_RCP_API_VERSION 5
+#define SPINEL_RCP_API_VERSION 6
 
 /**
  * @def SPINEL_MIN_HOST_SUPPORTED_RCP_API_VERSION
@@ -706,7 +706,7 @@ enum
     SPINEL_NCP_LOG_REGION_OT_UTIL     = 17,
     SPINEL_NCP_LOG_REGION_OT_BBR      = 18,
     SPINEL_NCP_LOG_REGION_OT_MLR      = 19,
-    SPINEL_NCP_LOG_REGION_OT_DUA      = 10,
+    SPINEL_NCP_LOG_REGION_OT_DUA      = 20,
     SPINEL_NCP_LOG_REGION_OT_BR       = 21,
     SPINEL_NCP_LOG_REGION_OT_SRP      = 22,
     SPINEL_NCP_LOG_REGION_OT_DNS      = 23,
@@ -2295,7 +2295,7 @@ enum
     SPINEL_PROP_THREAD_LEADER_ADDR = SPINEL_PROP_THREAD__BEGIN + 0,
 
     /// Thread Parent Info
-    /** Format: `ESLccCC` - Read only
+    /** Format: `ESLccCCCCC` - Read only
      *
      *  `E`: Extended address
      *  `S`: RLOC16
@@ -2304,6 +2304,9 @@ enum
      *  `c`: Last RSSI (in dBm)
      *  `C`: Link Quality In
      *  `C`: Link Quality Out
+     *  `C`: Version
+     *  `C`: CSL clock accuracy
+     *  `C`: CSL uncertainty
      *
      */
     SPINEL_PROP_THREAD_PARENT = SPINEL_PROP_THREAD__BEGIN + 1,
@@ -4730,6 +4733,24 @@ enum
      *
      */
     SPINEL_PROP_RCP_ENH_ACK_PROBING = SPINEL_PROP_RCP_EXT__BEGIN + 3,
+
+    /// CSL Accuracy
+    /** Format: `C`
+     * Required capability: `SPINEL_CAP_NET_THREAD_1_2`
+     *
+     * The current CSL rx/tx scheduling drift, in units of ± ppm.
+     *
+     */
+    SPINEL_PROP_RCP_CSL_ACCURACY = SPINEL_PROP_RCP_EXT__BEGIN + 4,
+
+    /// CSL Uncertainty
+    /** Format: `C`
+     * Required capability: `SPINEL_CAP_NET_THREAD_1_2`
+     *
+     * The current uncertainty, in units of 10 us, of the clock used for scheduling CSL operations.
+     *
+     */
+    SPINEL_PROP_RCP_CSL_UNCERTAINTY = SPINEL_PROP_RCP_EXT__BEGIN + 5,
 
     SPINEL_PROP_RCP_EXT__END = 0x900,
 

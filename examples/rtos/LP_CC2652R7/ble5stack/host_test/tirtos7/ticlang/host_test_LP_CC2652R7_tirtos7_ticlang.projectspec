@@ -47,7 +47,6 @@
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/common/cc26xx
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/inc
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common
-            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/cc26xx
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/inc
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/heapmgr
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/profiles/dev_info
@@ -58,6 +57,7 @@
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/services/src/sdata
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cc26xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/src
             -DCC2652R7_LP
             -DCC26XX
             -DCC26X2
@@ -66,7 +66,6 @@
             -DNVOCMP_NWSAMEITEM=1
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x2x7_cc26x2x7
             -DHEAPMGR_CONFIG=0x80
-            -DTIRTOS7_SUPPORT
             -DHEAPMGR_SIZE=0x0
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
@@ -90,14 +89,13 @@
             --diag_suppress=16032-D
             -c
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
-            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos/packages
-            --define=FLASH_ROM_BUILD=2
             -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            --define=FLASH_ROM_BUILD=2
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
             -lti/devices/cc13x2x7_cc26x2x7/driverlib/bin/ticlang/driverlib.lib
-            -Wl,-c
-            -Wl,-w
+            -Wl,--rom_model
+            -Wl,--warn_sections
             -L${CG_TOOL_ROOT}/lib
             -llibc.a
         "
@@ -231,19 +229,13 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_mcu.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/_common">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/cc26xx/mb.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/_common">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/cc26xx/rf_hal.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/_common">
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/rf_hal.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/_common">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_board_cfg.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Config">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_flash_wrapper.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_rtc_wrapper.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_trng_wrapper.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_trng_wrapper.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/gap.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
         </file>
@@ -263,10 +255,6 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/sm_ecc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
         </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/rtls_srv.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/rtls_srv_api.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
-        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/inc/ble_dispatch.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/ICallBLE">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/stack/ble_dispatch_JT.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/ICallBLE">
@@ -274,8 +262,6 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/stack/ble_dispatch_lite.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/ICallBLE">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/icall/src/icall_lite_translation.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/ICallBLE">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/common/cc26xx/npi/stack/npi.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/NPI">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/osal/src/inc/comdef.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/OSAL">
         </file>
@@ -328,6 +314,18 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/common/cc26xx/onboard.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Tools">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/rom/agama_r1/rom_init.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Startup">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/host/rtls_srv.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/inc/rtls_srv_api.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/Host">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/common/cc26xx/npi/stack/npi.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/NPI">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_trng_wrapper.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/hal_trng_wrapper.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/Drivers">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack/hal/src/target/_common/mb.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="StackWrapper/HAL/Target/CC2650/_common">
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>

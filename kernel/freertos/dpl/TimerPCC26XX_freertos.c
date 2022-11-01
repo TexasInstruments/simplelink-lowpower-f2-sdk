@@ -45,8 +45,7 @@
 
 #define COMPARE_MARGIN 4
 
-#define MAX_SKIP   (0x7E9000000000) /* 32400 seconds (9 hours) */
-#define TIMER_FREQ 65536
+#define MAX_SKIP (0x7E9000000000) /* 32400 seconds (9 hours) */
 
 typedef struct _TimerP_Obj
 {
@@ -54,7 +53,6 @@ typedef struct _TimerP_Obj
     uint32_t period;
     uintptr_t arg;
     HwiP_Fxn tickFxn;
-    TimerP_FreqHz frequency;
     uint64_t period64;
     uint64_t savedCurrCount;
     uint64_t prevThreshold;
@@ -117,8 +115,6 @@ TimerP_Handle TimerP_construct(TimerP_Struct *handle, TimerP_Fxn timerFxn, Timer
         obj->startMode      = params->startMode;
         obj->arg            = params->arg;
         obj->tickFxn        = timerFxn;
-        obj->frequency.lo   = TIMER_FREQ;
-        obj->frequency.hi   = 0;
         obj->period         = (0x100000000UL * params->period) / 1000000U;
         obj->period64       = obj->period;
         obj->savedCurrCount = 0;
@@ -321,15 +317,6 @@ void TimerP_setPeriod(TimerP_Handle handle, uint32_t period)
 uint64_t TimerP_getCount64(TimerP_Handle handle)
 {
     return (AONRTCCurrent64BitValueGet());
-}
-
-/*
- *  ======== TimerP_getFreq ========
- */
-void TimerP_getFreq(TimerP_Handle handle, TimerP_FreqHz *freq)
-{
-    freq->lo = TIMER_FREQ;
-    freq->hi = 0;
 }
 
 /*

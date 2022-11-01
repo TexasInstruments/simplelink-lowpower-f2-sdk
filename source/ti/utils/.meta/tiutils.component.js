@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,15 +42,32 @@ const displayName = "TI Utils";
 let description =
     "The TI Utils Component provides various utilities for application programmers";
 
-let topModules = [
-    {
-        displayName: displayName,
-        description: description,
-        modules: [
-            "/ti/utils/JSON"
-        ]
-    }
-];
+let topModules;
+let deviceId = system.deviceData.deviceId;
+
+if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
+    /* CC13X4 & CC26X4 */
+    topModules = [
+        {
+            displayName: displayName,
+            description: description,
+            modules: [
+                "/ti/utils/JSON",
+                "/ti/utils/TrustZone"
+            ]
+        }
+    ];
+} else {
+    topModules = [
+        {
+            displayName: displayName,
+            description: description,
+            modules: [
+                "/ti/utils/JSON",
+            ]
+        }
+    ];
+}
 
 exports = {
     displayName,

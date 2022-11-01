@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -307,6 +307,14 @@ extern "C" {
 #define TRNG_STATUS_CANCELED (-4)
 
 /*!
+ * @brief   Importing generated key into KeyStore failed
+ *
+ * Functions return TRNG_STATUS_KEYSTORE_ERROR if the KeyStore_PSA_importKey()
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define TRNG_STATUS_KEYSTORE_ERROR (-5)
+
+/*!
  *  @brief TRNG Global configuration
  *
  *  The TRNG_Config structure contains a set of pointers used to characterize
@@ -464,7 +472,7 @@ void TRNG_init(void);
  *  Default values are:    <br>
  *      returnBehavior              = TRNG_RETURN_BEHAVIOR_BLOCKING <br>
  *      cryptoKeyCallbackFxn        = NULL                          <br>
- *      randomBytesCallbackFxn      = NULL                          <br>
+ *      randomBytesCallbackFxn      = NULL                          <br>
  *      timeout                     = SemaphoreP_WAIT_FOREVER       <br>
  *      custom                      = NULL                          <br>
  */

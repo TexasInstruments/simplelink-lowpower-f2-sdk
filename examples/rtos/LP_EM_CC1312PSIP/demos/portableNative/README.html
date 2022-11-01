@@ -88,10 +88,6 @@ t: display current temperature</code></pre></li>
 <li><p>A thread, <code>temperatureThread</code>, reads the temperature via I2C. The thread reads the sensor every second. The timing is controlled by a timer and semaphore. This approach was used to eliminate time drift (which would have occurred with simply using sleep(1)).</p></li>
 <li><p>The disabling of interrupts/tasking (depending on the kernel you are using) is used to protect the reading/writing of the temperature variables. The reading/writing of these two variables must be done atomically. For example without critical region management, the temperature thread (which is higher priority) could interrupt the reading of the variables by the console thread. This could result with the console thread printing a Celsius value that did not match up with the Fahrenheit value.</p></li>
 </ul>
-<p>TI-RTOS:</p>
-<ul>
-<li>When building in Code Composer Studio, the kernel configuration project will be imported along with the example. The kernel configuration project is referenced by the example, so it will be built first. The “release” kernel configuration is the default project used. It has many debug features disabled. These feature include assert checking, logging and runtime stack checks. For a detailed difference between the “release” and “debug” kernel configurations and how to switch between them, please refer to the SimpleLink MCU SDK User’s Guide. The “release” and “debug” kernel configuration projects can be found under &lt;SDK_INSTALL_DIR&gt;/kernel/tirtos/builds/&lt;BOARD&gt;/(release|debug)/(ccs|gcc).</li>
-</ul>
 <p>FreeRTOS:</p>
 <ul>
 <li>Please view the <code>FreeRTOSConfig.h</code> header file for example configuration information.</li>

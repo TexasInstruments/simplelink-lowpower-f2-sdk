@@ -489,7 +489,7 @@ def print_segInfo(metaVector):
     if(techValue&32==0):
         hdr['wirelessTech'] += '[Thread]'
     if(techValue&64==0):
-        hdr['wirelessTech'] += '[EasyLink]'
+        hdr['wirelessTech'] += '[PropRF]'
     if(techValue&128==0):
         hdr['wirelessTech'] += '[MIOTY]'
     if(techValue&256==0):

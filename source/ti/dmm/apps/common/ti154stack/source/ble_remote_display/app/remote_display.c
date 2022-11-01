@@ -3624,7 +3624,7 @@ static void RemoteDisplay_setBlockModeOffPeriodAction(const char _input, char* _
  */
 static void RemoteDisplay_setBlockModePeriodUiAction(uint16_t* blockModePeriod, const char _input, char* _pLines[3], CUI_cursorInfo_t* _pCurInfo)
 {
-  static char periodValArr[4] = {};
+  static char periodValArr[5] = {};
   static CUI_cursorInfo_t cursor = {0, 4};
 
   switch (_input) {
@@ -3668,7 +3668,7 @@ static void RemoteDisplay_setBlockModePeriodUiAction(uint16_t* blockModePeriod, 
     }
   }
 
-  snprintf(_pLines[0], 16, "    %04s      ", periodValArr);
+  snprintf(_pLines[0], 16, "    %4s      ", periodValArr);
 
   if (_input != CUI_ITEM_PREVIEW)
   {

@@ -2,8 +2,6 @@ SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../../../../../..)
 
 include $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
-KERNEL_BUILD := $(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/freertos/builds/cc13x2_cc26x2/release
-
 CC = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-gcc"
 LNK = "$(GCC_ARMCOMPILER)/bin/arm-none-eabi-gcc"
 
@@ -27,10 +25,10 @@ CFLAGS = -I../.. \
     -O3 \
     -DDeviceFamily_CC13X2 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/freertos" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/gcc" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM4F" \
-    "-I$(KERNEL_BUILD)" \
     -mcpu=cortex-m4 \
     -march=armv7e-m \
     -mthumb \
@@ -50,10 +48,10 @@ CPPFLAGS = -I../.. \
     -O3 \
     -DDeviceFamily_CC13X2 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
+    "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/freertos" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source/ti/posix/gcc" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/include" \
     "-I$(FREERTOS_INSTALL_DIR)/FreeRTOS/Source/portable/GCC/ARM_CM4F" \
-    "-I$(KERNEL_BUILD)" \
     -mcpu=cortex-m4 \
     -march=armv7e-m \
     -mthumb \
@@ -73,8 +71,6 @@ LFLAGS = -lstdc++ \
     "-Wl,-Map,$(NAME).map" \
     "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     ti_utils_build_linker.cmd.genlibs \
-    "-L$(KERNEL_BUILD)/gcc" \
-    -l:freertos.lib \
     -l:ti/devices/cc13x2_cc26x2/driverlib/bin/gcc/driverlib.lib \
     -march=armv7e-m \
     -mthumb \
@@ -90,12 +86,6 @@ LFLAGS = -lstdc++ \
     -lnosys \
     --specs=nano.specs
 all: $(NAME).out
-
-$(KERNEL_BUILD)/gcc/freertos.lib:
-	@ $(ECHOBLANKLINE)
-	@ echo $@ is not built.
-	@ echo You can build it by issuing $(MAKE) in $(dir $@).
-	@ $(ECHOBLANKLINE)
 
 .INTERMEDIATE: syscfg
 $(SYSCFG_FILES): syscfg
@@ -125,7 +115,7 @@ OPT3001.obj: ../../OPT3001.cpp $(SYSCFG_H_FILES)
 	@ echo Building $@
 	@ $(CC) $(CPPFLAGS) $< -c -o $@
 
-$(NAME).out: $(OBJECTS) $(KERNEL_BUILD)/gcc/freertos.lib
+$(NAME).out: $(OBJECTS)
 	@ echo linking $@
 	@ $(LNK)  $(OBJECTS)  $(LFLAGS) -o $(NAME).out
 

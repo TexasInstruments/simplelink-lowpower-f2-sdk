@@ -69,6 +69,7 @@
         "
         description="An example using interrupts to toggle an LED after a button press">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../gpiointerrupt.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

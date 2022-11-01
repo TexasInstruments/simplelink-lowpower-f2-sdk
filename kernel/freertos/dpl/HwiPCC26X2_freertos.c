@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@
 /* interrupt reserved for SwiP */
 int HwiP_swiPIntNum = INT_SWEV0;
 
+/* The name of this struct and the names of its members are used by ROV */
 typedef struct _HwiP_Obj
 {
     uint32_t intNum;
@@ -63,8 +64,10 @@ typedef struct _HwiP_Obj
     uintptr_t arg;
 } HwiP_Obj;
 
+/* The name of this table is used by ROV */
 static HwiP_Obj *HwiP_dispatchTable[MAX_INTERRUPTS] = {0};
 
+/* The name of this struct and the names of its members are used by ROV */
 typedef struct HwiP_NVIC
 {
     uint32_t RES_00;
@@ -142,6 +145,7 @@ typedef struct HwiP_NVIC
     uint32_t CID3;
 } HwiP_NVIC;
 
+/* The name of this variable is used by ROV */
 static volatile HwiP_NVIC *HwiP_nvic = (HwiP_NVIC *)0xE000E000;
 
 void HwiP_dispatch(void);
@@ -251,6 +255,20 @@ void HwiP_destruct(HwiP_Struct *handle)
 }
 
 /*
+ *  ======== HwiP_enable ========
+ */
+void HwiP_enable(void)
+{
+#if defined(__IAR_SYSTEMS_ICC__)
+    asm volatile("msr basepri, %0 " ::"r"(0) : "memory");
+#elif (defined(__GNUC__) || defined(__clang__))
+    __asm__ __volatile__("msr basepri, %0 " ::"r"(0) : "memory");
+#else
+    #error "Compiler not supported."
+#endif
+}
+
+/*
  *  ======== HwiP_disable ========
  */
 uintptr_t HwiP_disable(void)
@@ -297,6 +315,7 @@ void HwiP_disableInterrupt(int interruptNum)
 
 /*
  *  ======== HwiP_dispatch ========
+ * The name of this function is used by ROV
  */
 void HwiP_dispatch(void)
 {

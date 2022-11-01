@@ -2,33 +2,33 @@ COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR ?= $(abspath ../../..)
 include $(COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/imports.mak
 
 # Find all subdirectories
-TIRTOS-IAR-SUBDIRS = $(wildcard */*/tirtos/iar/.)
-TIRTOS-TICLANG-SUBDIRS = $(wildcard */*/tirtos/ticlang/.)
+TIRTOS7-IAR-SUBDIRS = $(wildcard */*/tirtos7/iar/.)
+TIRTOS7-TICLANG-SUBDIRS = $(wildcard */*/tirtos7/ticlang/.)
 
-TIRTOS-SUBDIRS =
+TIRTOS7-SUBDIRS =
 ifneq ($(IAR_ARMCOMPILER),)
-	TIRTOS-SUBDIRS += $(TIRTOS-IAR-SUBDIRS)
+	TIRTOS7-SUBDIRS += $(TIRTOS7-IAR-SUBDIRS)
 endif
 ifneq ($(TICLANG_ARMCOMPILER),)
-	TIRTOS-SUBDIRS += $(TIRTOS-TICLANG-SUBDIRS)
+	TIRTOS7-SUBDIRS += $(TIRTOS7-TICLANG-SUBDIRS)
 endif
 
-.PHONY: tirtos $(TIRTOS-SUBDIRS)
+.PHONY: tirtos7 $(TIRTOS7-SUBDIRS)
 
-all: tirtos
+all: tirtos7
 
-tirtos: $(TIRTOS-SUBDIRS)
+tirtos7: $(TIRTOS7-SUBDIRS)
 
-$(TIRTOS-SUBDIRS):
+$(TIRTOS7-SUBDIRS):
 	@ $(MAKE) -C $@
 
-CLEAN-TIRTOS-SUBDIRS = $(addprefix clean-,$(TIRTOS-SUBDIRS))
+CLEAN-TIRTOS7-SUBDIRS = $(addprefix clean-,$(TIRTOS7-SUBDIRS))
 
-.PHONY: clean-tirtos $(CLEAN-TIRTOS-SUBDIRS)
+.PHONY: clean-tirtos7 $(CLEAN-TIRTOS7-SUBDIRS)
 
-clean: clean-tirtos
+clean: clean-tirtos7
 
-clean-tirtos: $(CLEAN-TIRTOS-SUBDIRS)
+clean-tirtos7: $(CLEAN-TIRTOS7-SUBDIRS)
 
-$(CLEAN-TIRTOS-SUBDIRS):
+$(CLEAN-TIRTOS7-SUBDIRS):
 	@ $(MAKE) -C $(subst clean-,,$@) clean

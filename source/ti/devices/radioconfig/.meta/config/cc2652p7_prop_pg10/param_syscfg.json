@@ -29,7 +29,7 @@
                 },
                 {
                     "name": "2msk250kbps",
-                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-silicon settings)"
+                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom2400",
@@ -281,8 +281,7 @@
                     "name": "highPA",
                     "displayName": "High PA",
                     "description": "Select if the High Power Amplifier on the device should be used",
-                    "default": false,
-                    "hidden": false
+                    "default": false
                 },
                 {
                     "name": "txPower2400",
@@ -701,7 +700,7 @@
             {
                 "file": "setting_tc902.json",
                 "name": "2msk250kbps",
-                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-silicon settings)",
+                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "disable_high_pa"
             },
             {

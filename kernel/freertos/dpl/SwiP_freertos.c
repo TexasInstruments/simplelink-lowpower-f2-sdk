@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 #include "QueueP.h"
 
 /* Lowest priority interrupt */
-#define INT_PRI_LEVEL7 0xe0
+#define SWIP_INT_PRI_LEVEL7 0xe0
 
 #define NUMPRI 4
 
@@ -148,7 +148,7 @@ SwiP_Handle SwiP_construct(SwiP_Struct *handle, SwiP_Fxn swiFxn, SwiP_Params *pa
             SwiP_schedulerRunning = false;
 
             HwiP_Params_init(&hwiParams);
-            hwiParams.priority = INT_PRI_LEVEL7; // use the lowest priority
+            hwiParams.priority = SWIP_INT_PRI_LEVEL7; // use the lowest priority
             HwiP_construct(&SwiP_hwiStruct, HwiP_swiPIntNum, SwiP_handleHwi, &hwiParams);
 
             SwiP_initialized = true;

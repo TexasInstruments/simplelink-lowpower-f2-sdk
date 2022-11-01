@@ -42,10 +42,8 @@ var board = system.deviceData.board.name;
 var Sensors = scripting.addHardware("/ti/boards/boosterpacks/BP-BASSENSORSMKII");
 
 
-/* ======== TIRTOS7 ======== */
-if (system.getRTOS() === "tirtos7") {
-    const tirtos7_release_syscfg_js = system.getScript("tirtos7_release.syscfg.js");
-}
+/* ======== Kernel Configuration ======== */
+system.getScript("kernel_config_release.syscfg.js");
 
 /* ======== GPIO ======== */
 var GPIO = scripting.addModule("/ti/drivers/GPIO");
@@ -54,9 +52,9 @@ gpio0.$hardware = system.deviceData.board.components.LED0;
 gpio0.$name = "CONFIG_GPIO_LED_0";
 if (!board.match(/CC32/)) {
     var gpio1 = GPIO.addInstance();
-    gpio1.$hardware = system.deviceData.board.components.BUTTON1;
+    gpio1.$hardware = system.deviceData.board.components.BUTTON0;
     gpio1.callbackFunction = "NULL";
-    gpio1.$name = "CONFIG_GPIO_BUTTON_1";
+    gpio1.$name = "CONFIG_GPIO_BUTTON_0";
 }
 
 if (!(board.match(/CC13.[12]P/) || board.match(/CC2651P/) || board.match(/CC2653P/))) {

@@ -37,7 +37,6 @@
 %%}
 %%{
     let LoggerBuf = args[0];
-    let instAry = LoggerBuf.$instances;
 %%}
 /*
  *  ======== ti.loggers.utils/LoggerBuf ========

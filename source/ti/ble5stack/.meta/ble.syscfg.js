@@ -82,6 +82,10 @@ const meshProvDataScript = system.getScript("/ti/ble5stack/mesh/"
 // Get common Script
 const Common = system.getScript("/ti/ble5stack/ble_common.js");
 
+// Ext Adv default values
+const defaultExtAdvVal = Common.defaultValue();
+const readOnlyExtAdvVal = Common.readOnlyValue();
+
 //static implementation of the BLE module
 const moduleStatic = {
     
@@ -184,7 +188,16 @@ const moduleStatic = {
                     description: "BLE5 extended advertising feature",
                     longDescription: Docs.extAdvLongDescription,
                     onChange: onExtAdvChange,
-                    default: true
+                    default: defaultExtAdvVal,
+                    readOnly: readOnlyExtAdvVal
+                },
+                {
+                    name: "disableConfig",
+                    displayName: "Disable Config",
+                    description: "Disable Configuration",
+                    onChange: ondisableConfigChange,
+                    default: false,
+                    hidden: true
                 },
                 {
                     name: "periodicAdv",
@@ -337,7 +350,10 @@ const moduleStatic = {
  */
 function validate(inst, validation)
 {
-    radioScript.validate(inst, validation);
+    if( Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0" )
+    {
+        radioScript.validate(inst, validation);
+    }
     generalScript.validate(inst, validation);
     bondMgrScript.validate(inst, validation);
     advSetScript.validate(inst, validation);
@@ -375,7 +391,9 @@ function validate(inst, validation)
 function isFlashOnlyDevice() {
     return (
         // Return true if the device is from CC26X1 family
-        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC26X1"
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC26X1" ||
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC13X4" ||
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0"
     );
 }
 
@@ -487,11 +505,34 @@ function onExtAdvChange(inst,ui)
     // Hide/UnHide periodicAdv if extended advertising is enabled and the Observer/Central roles
     // is used
     // CC26X1 only support periodic advertising
-    if(devFamily != "DeviceFamily_CC26X1")
+    if(devFamily != "DeviceFamily_CC26X1" && devFamily != "DeviceFamily_CC26X4" && devFamily != "DeviceFamily_CC13X4")
     {
         inst.extAdv && (inst.deviceRole.includes("OBSERVER_CFG") || inst.deviceRole.includes("CENTRAL_CFG")) ?
         ui.periodicAdvSync.hidden = false : ui.periodicAdvSync.hidden = true;
     }
+}
+
+/*
+ *  ======== ondisableConfigChange ========
+ * When using exlude SM than GapBondMgr should be,
+ * removed.
+ * @param inst  - Module instance containing the config that changed
+ * @param ui    - The User Interface object
+ */
+function ondisableConfigChange(inst, ui)
+{
+    if ( inst.disableConfig == true )
+    {
+        inst.bondManager = false;
+        inst.disablePairing = true;
+    }
+    else
+    {
+        inst.bondManager = true;
+        inst.disablePairing = false;
+    }
+
+    changeGroupsState(inst,ui);
 }
 
 /*
@@ -662,9 +703,18 @@ function changeGroupsState(inst,ui)
     }
     else
     {
-        // Show Bond Manager
-        inst.hideBondMgrGroup = false;
-        Common.hideGroup(Common.getGroupByName(inst.$module.config, "bondMgrConfig"), inst.hideBondMgrGroup, ui);
+        if(inst.bondManager == true)
+        {
+            // Show Bond Manager
+            inst.hideBondMgrGroup = false;
+            Common.hideGroup(Common.getGroupByName(inst.$module.config, "bondMgrConfig"), inst.hideBondMgrGroup, ui);
+        }
+        else
+        {
+            // Hide Bond Manager
+            inst.hideBondMgrGroup = true;
+            Common.hideGroup(Common.getGroupByName(inst.$module.config, "bondMgrConfig"), inst.hideBondMgrGroup, ui);
+        }
     }
 
     if(inst.mesh)
@@ -731,9 +781,16 @@ function getLibs(inst)
         // There are 3 different folders (cc26x2r1, cc13x2r1 and cc1352p)
         // Each device should use it from the appropriate folder.
         const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
+
         let basePath = "ti/ble5stack/libraries/";
-        const rfDesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
-        const LPName = rfDesign.rfDesign;
+        let rfDesign;
+        let LPName;
+
+        if(devFamily != "DeviceFamily_CC23X0")
+        {
+            rfDesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
+            LPName = rfDesign.rfDesign;
+        }
         let devLibsFolder = "cc26x2r1";
 
         // DeviceFamily_CC26X2 and DeviceFamily_CC26X2X7 devices are using the libs from the
@@ -790,11 +847,41 @@ function getLibs(inst)
             }
             basePath = "ti/ble5stack_flash/libraries/";
         }
+        else if(devFamily == "DeviceFamily_CC26X4" || devFamily == "DeviceFamily_CC13X4" )
+        {
+            if(LPName == "LP_EM_CC1354P10_1")
+            {
+                devLibsFolder = "cc1354p10_1";
+            }
+            else if(LPName == "LP_EM_CC1354P10_6")
+            {
+                devLibsFolder = "cc1354p10_6";
+            }
+            basePath = "ti/ble5stack_flash/libraries/";
+        }
+        else if(devFamily == "DeviceFamily_CC23X0")
+        {
+            // Add OneLib library
+            basePath = "ti/ble5stack_flash/lib_projects/CC2340R5/OneLib/lib/ticlang/m0p"
+            devLibsFolder = ""
+            libs.push(basePath + devLibsFolder + "/OneLib.a");
+            // Add StackWrapper library
+            basePath = "ti/ble5stack_flash/lib_projects/CC2340R5/StackWrapper/lib/ticlang/m0p"
+            devLibsFolder = ""
+            libs.push(basePath + devLibsFolder + "/StackWrapper.a");
+        }
 
-        libs.push(basePath + devLibsFolder + "/OneLib.a");
-        libs.push(basePath + devLibsFolder + "/StackWrapper.a");
-        // DeviceFamily_CC26X1 devices are using FlashOnly libs, which not required the ROM symbols
-        if(devFamily != "DeviceFamily_CC26X1")
+        if(devFamily != "DeviceFamily_CC23X0")
+        {
+            libs.push(basePath + devLibsFolder + "/OneLib.a");
+            libs.push(basePath + devLibsFolder + "/StackWrapper.a");
+        }
+
+        // Devices are using FlashOnly libs, which not required the ROM symbols
+        if(devFamily != "DeviceFamily_CC26X1" &&
+           devFamily != "DeviceFamily_CC26X4" &&
+           devFamily != "DeviceFamily_CC13X4" &&
+           devFamily != "DeviceFamily_CC23X0")
         {
             libs.push(basePath + devLibsFolder + "/ble_r2.symbols");
         }
@@ -847,7 +934,10 @@ function moduleInstances(inst)
 {
     let dependencyModule = [];
 
-    dependencyModule = radioScript.moduleInstances(inst);
+    if( Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0" )
+    {
+        dependencyModule = radioScript.moduleInstances(inst);
+    }
     dependencyModule = dependencyModule.concat(centralScript.moduleInstances(inst));
     dependencyModule = dependencyModule.concat(peripheralScript.moduleInstances(inst));
     dependencyModule = dependencyModule.concat(broadcasterScript.moduleInstances(inst));

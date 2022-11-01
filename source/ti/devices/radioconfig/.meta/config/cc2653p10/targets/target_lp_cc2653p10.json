@@ -7,7 +7,7 @@
         "DevicePackage": "RGZ 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "CC1354P10-7x7-XD7793-XD24-PA24",
+        "RfDesign": "LP-CC2651P-7x7-XD24-PA24",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",

@@ -69,6 +69,7 @@
         "
         description="Echoes characters back using the UART2 driver">
 
+        <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <file path="../../uart2echo.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

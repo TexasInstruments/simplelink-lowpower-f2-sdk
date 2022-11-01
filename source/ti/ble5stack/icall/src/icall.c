@@ -56,11 +56,6 @@
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/BIOS.h>
-// This include file will ensure HEAPMGR_CONFIG is properly setup in the ti-rtos
-// config file.
-#ifndef TIRTOS7_SUPPORT
-#include <xdc/cfg/global.h>
-#endif
 #include "osal.h"
 #include <stdint.h>
 
@@ -4070,7 +4065,7 @@ ICall_Errno ICall_registerAppCback(uint8_t *selfEntity, appCallback_t appCallbac
   // so that the application can send and receive messages.
   status = ICall_registerApp(&localSelfEntity, &localSyncEvent);
 
-  // applicatios should use the task entity ID
+  // Application should use the task entity ID
   *selfEntity = localSelfEntity;
 
   // Save app callback to be used instead of enqueue/event_pend/dequeue

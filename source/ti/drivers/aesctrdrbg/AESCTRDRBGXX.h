@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,6 +81,11 @@ extern "C" {
 
 /*! @brief Define that specifies the maximum seed length used by the driver */
 #define AESCTRDRBG_MAX_SEED_LENGTH (AESCTRDRBG_MAX_KEY_LENGTH + AESCTRDRBG_AES_BLOCK_SIZE_BYTES)
+
+#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
+    /*! @brief Maximum output key size in bytes when using KeyStore */
+    #define AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE 64
+#endif
 
 /*!
  *  @brief      AESCTRDRBGXX Hardware Attributes

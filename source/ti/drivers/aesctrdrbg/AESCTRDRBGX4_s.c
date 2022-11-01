@@ -38,11 +38,11 @@
 #include <ti/drivers/AESCTRDRBG.h>
 #include <ti/drivers/aesctrdrbg/AESCTRDRBGXX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
+#include <ti/drivers/cryptoutils/cryptokey/CryptoKey_s.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/interface/include/psa/crypto_types.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
@@ -494,7 +494,7 @@ static inline psa_status_t AESCTRDRBG_s_generateKey(psa_msg_t *msg)
     AESCTRDRBG_s_GenerateKeyMsg genKeyMsg;
     CryptoKey randomKey_s;
     AESCTRDRBG_Handle handle_s;
-    int_fast16_t ret;
+    int_fast16_t ret    = AESCTRDRBG_STATUS_RESOURCE_UNAVAILABLE;
     psa_status_t status = PSA_SUCCESS;
 
     if ((msg->in_size[0] != sizeof(genKeyMsg)) || (msg->out_size[0] != sizeof(ret)))
@@ -513,13 +513,7 @@ static inline psa_status_t AESCTRDRBG_s_generateKey(psa_msg_t *msg)
         }
 
         /* Make a secure copy of the crypto key struct */
-        (void)tfm_memcpy(&randomKey_s, genKeyMsg.randomKey, sizeof(CryptoKey));
-
-        /* Key encoding must be blank plaintext */
-        if (randomKey_s.encoding != CryptoKey_BLANK_PLAINTEXT)
-        {
-            return PSA_ERROR_PROGRAMMER_ERROR;
-        }
+        CryptoKey_s_copyCryptoKeyFromClient(&randomKey_s, genKeyMsg.randomKey, msg->client_id);
 
         if (CryptoKey_verifySecureOutputKey(&randomKey_s) != CryptoKey_STATUS_SUCCESS)
         {
@@ -530,6 +524,12 @@ static inline psa_status_t AESCTRDRBG_s_generateKey(psa_msg_t *msg)
 
         /* Copy the updated encoding to the non-secure key struct */
         genKeyMsg.randomKey->encoding = randomKey_s.encoding;
+
+        if (randomKey_s.encoding == CryptoKey_KEYSTORE)
+        {
+            /* Copy the updated keyID to the non-secure key struct for KeyStore keys */
+            genKeyMsg.randomKey->u.keyStore.keyID = randomKey_s.u.keyStore.keyID;
+        }
     }
     else /* Secure client */
     {

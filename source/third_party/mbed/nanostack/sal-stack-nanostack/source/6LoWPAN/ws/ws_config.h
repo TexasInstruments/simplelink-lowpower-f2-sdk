@@ -198,7 +198,7 @@ extern uint8_t DEVICE_MIN_SENS;
  *
  */
 #define WS_DHCP_SOLICIT_TIMEOUT         60
-#define WS_DHCP_SOLICIT_MAX_RT          900
+#define WS_DHCP_SOLICIT_MAX_RT          60 // Wi-SUN Specification requires DHCP MAX RT to be one min
 #define WS_DHCP_SOLICIT_MAX_RC          0
 
 

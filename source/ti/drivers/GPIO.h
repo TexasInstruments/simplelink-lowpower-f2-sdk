@@ -446,11 +446,6 @@ typedef uint32_t GPIO_PinConfig;
  *  @{
  */
 /*! @hideinitializer This pin will not wake the device up */
-#define GPIO_CFG_STANDBY_WAKE_OFF GPIO_CFG_STANDBY_WAKE_OFF_INTERNAL
-/*! @hideinitializer A high value will wake the device from standby */
-#define GPIO_CFG_STANDBY_WAKE_ON  GPIO_CFG_STANDBY_WAKE_ON_INTERNAL
-
-/*! @hideinitializer This pin will not wake the device up */
 #define GPIO_CFG_SHUTDOWN_WAKE_OFF  GPIO_CFG_SHUTDOWN_WAKE_OFF_INTERNAL
 /*! @hideinitializer A high value will wake the device from shutdown */
 #define GPIO_CFG_SHUTDOWN_WAKE_HIGH GPIO_CFG_SHUTDOWN_WAKE_HIGH_INTERNAL

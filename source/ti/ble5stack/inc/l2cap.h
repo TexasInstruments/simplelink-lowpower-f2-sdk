@@ -711,6 +711,11 @@ extern void L2CAP_RegisterFlowCtrlTask( uint8 taskId );
  *
  * @note
  * Packet 'pPayload' must be allocated using L2CAP_bm_alloc().
+ * If SUCCESS is returned to the user upon calling this API,
+ * 'pPayload' is now owned by the BLE Stack. The user is NOT allowed
+ * to free 'pPayload' beyond this point.
+ * If SUCCESS is NOT returned to the user upon calling this API,
+ * 'pPayload' is STILL owned by the user - the BLE Stack will NOT free 'pPayload'.
  *
  * @param   connHandle - connection to be used.
  * @param   pPkt - pointer to packet to be sent.

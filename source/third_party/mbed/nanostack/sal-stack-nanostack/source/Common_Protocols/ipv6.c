@@ -1207,11 +1207,17 @@ no_forward:
 }
 
 #ifdef WISUN_NCP_ENABLE
+#ifdef WISUN_FAN_DEBUG
+volatile uint_fast32_t num_ip_packet_from_host = 0;
+#endif
 otError nanostack_process_stream_net_from_host(uint8_t* framePtr, uint16_t payload_length)
 {
     buffer_t *buf = NULL;
     otError error = OT_ERROR_NONE;
 
+#ifdef WISUN_FAN_DEBUG
+    num_ip_packet_from_host++;
+#endif
     /* get the buffer allocated */
     buf = buffer_get(payload_length);
     if (!buf) {
@@ -1230,6 +1236,10 @@ otError nanostack_process_stream_net_from_host(uint8_t* framePtr, uint16_t paylo
     buf->payload_length = payload_length;
     buf->ip_routed_up = true;
     buf->info = (buffer_info_t)(B_DIR_UP | B_FROM_IPV6_TXRX | B_TO_IPV6_FWD);
+#ifdef WISUN_FAN_DEBUG
+    tr_debug("ip packet from host: %d ", num_ip_packet_from_host);
+#endif
+
     protocol_push(buf);
     return error;
 }

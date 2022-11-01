@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -341,6 +341,14 @@ extern "C" {
  *  supported by the device specific implementation.
  */
 #define SHA2_STATUS_UNSUPPORTED ((int_fast16_t)-4)
+
+/*!
+ * @brief   Importing generated key into KeyStore failed
+ *
+ * Functions return SHA2_STATUS_KEYSTORE_ERROR if the KeyStore_PSA_importKey()
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define SHA2_STATUS_KEYSTORE_ERROR ((int_fast16_t)-5)
 
 /*!
  * @brief   The way in which SHA2 function calls return after performing an

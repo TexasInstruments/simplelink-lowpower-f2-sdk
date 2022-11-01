@@ -12,45 +12,63 @@
 
 const ble = system.modules["/ti/ble5stack/ble"].$static;
 const common = system.getScript("/ti/ble5stack/ble_common.js");
-const rfdesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
+const devFamily = common.device2DeviceFamily(system.deviceData.deviceId);
 
-let bias = "RF_FE_INT_BIAS";
-let frontEnd = "RF_FE_DIFFERENTIAL";
+let rfdesign;
+let frontEnd;
+let bias;
 
-// Get the selected Bias from the rfdesign module
-if(rfdesign.fe24g.includes("X") || rfdesign.fe24g.includes("XS"))
+if(devFamily != "DeviceFamily_CC23X0")
 {
-    bias = "RF_FE_EXT_BIAS";
-}
+    rfdesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
 
-// Get the selected frontEnd mode from the rfdesign module
-if(rfdesign.fe24g.includes("RFP"))
-{
-    frontEnd = "RF_FE_SINGLE_ENDED_RFP";
-}
-else if(rfdesign.fe24g.includes("RFN"))
-{
-    frontEnd = "RF_FE_SINGLE_ENDED_RFN";
-}
+    bias = "RF_FE_INT_BIAS";
+    frontEnd = "RF_FE_DIFFERENTIAL";
 
+    // Get the selected Bias from the rfdesign module
+    if(rfdesign.fe24g.includes("X") || rfdesign.fe24g.includes("XS"))
+    {
+        bias = "RF_FE_EXT_BIAS";
+    }
+
+    // Get the selected frontEnd mode from the rfdesign module
+    if(rfdesign.fe24g.includes("RFP"))
+    {
+        frontEnd = "RF_FE_SINGLE_ENDED_RFP";
+    }
+    else if(rfdesign.fe24g.includes("RFN"))
+    {
+        frontEnd = "RF_FE_SINGLE_ENDED_RFN";
+    }
+}
 %%}
 
 #include <bcomdef.h>
 #include <gapgattserver.h>
 #include <gap_advertiser.h>
+% if(ble.bondManager == true) {
 #include <gapbondmgr.h>
+%}
+% if(devFamily != "DeviceFamily_CC23X0")
+% {
 #include <ti_radio_config.h>
-
+%}
 % if (ble){
 
+// The GAP profile role
+extern uint8_t profileRole;
+// GAP GATT Service (GGS) parameters
+extern uint8_t attDeviceName[GAP_DEVICE_NAME_LEN];
+
+%if(devFamily != "DeviceFamily_CC23X0")
+%{
 % if(rfdesign){
 #define RF_FE_MODE_AND_BIAS            `frontEnd` | `bias`
+%}
 %}
 
 // Default Tx Power Index
 #define DEFAULT_TX_POWER               `ble.defaultTxPower`
-
-extern uint8_t attDeviceName[GAP_DEVICE_NAME_LEN];
 
 //Random Address
 % if(ble.addressMode == "ADDRMODE_RANDOM" || ble.addressMode == "ADDRMODE_RP_WITH_RANDOM_ID")
@@ -96,6 +114,8 @@ extern uint8_t * pRandomAddress;
 
 #define GAP_BONDINGS_MAX                      `ble.maxBonds`
 #define GAP_CHAR_CFG_MAX                      `ble.maxCharCfg`
+
+extern gapBondParams_t gapBondParams;
 
 extern uint8_t pairMode;
 extern uint8_t mitm;

@@ -24,6 +24,7 @@ CFLAGS = -I../.. \
     -I. \
     -DBOARD_DISPLAY_USE_UART_ANSI=1 \
     -DBOARD_DISPLAY_USE_LCD=1 \
+    -Oh \
     -DDeviceFamily_CC13X2 \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     "-I$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/kernel/tirtos7/packages" \
@@ -44,8 +45,7 @@ LFLAGS = "-L$(SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR)/source" \
     --config ../../tirtos7/iar/cc13x2_cc26x2_tirtos7.icf \
     --map "$(NAME).map" \
     --silent \
-    --cpu=Cortex-M4F \
-    --semihosting=iar_breakpoint
+    --cpu=Cortex-M4F
 all: $(NAME).out
 
 .INTERMEDIATE: syscfg

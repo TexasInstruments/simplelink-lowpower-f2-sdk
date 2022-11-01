@@ -53,6 +53,7 @@ const config = [
         displayName: "Advertisement Type",
         default: "legacy",
         longDescription: Docs.advTypeLongDescription,
+        getDisabledOptions: generateDisabledOptions("advType"),
         onChange: onAdvTypeChange,
         options: [
             { displayName: "Legacy",    name: "legacy"   },
@@ -354,6 +355,27 @@ function generateDisabledOptions(name)
         // Find the configurable we're going to generate a disabled list from
         const configurable = _.find(inst.$module.config,(conf) => conf.name == name);
 
+        if(name == "advType")
+        {
+            const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
+
+            if(devFamily == "DeviceFamily_CC23X0")
+            {
+                // Find the configurable we're going to generate a disabled list from
+                const configurable = _.find(inst.$module.config,(conf) => conf.name == name);
+
+                // List of invalid options
+                const disabledOptions = configurable.options.slice(configurable.options.includes("legacy") == false);
+
+                // Add the "reason" why it's disabled, and return that information
+                return disabledOptions.map((option) => ({ name: option.name, reason: "Currently not supported for CC23X0" }));
+            }
+            else
+            {
+                return [];
+            }
+        }
+
         // Hide the option to use PHY != 1M for Legacy adv params
         if(name == "primPhy" || name == "secPhy")
         {
@@ -408,7 +430,6 @@ function generateDisabledOptions(name)
             }
         }
 	}
-
 }
 
 /*

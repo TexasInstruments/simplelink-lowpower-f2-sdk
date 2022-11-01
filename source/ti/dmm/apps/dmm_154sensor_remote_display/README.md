@@ -21,7 +21,7 @@
 ## <a name="Introduction"></a>Introduction
 
 The dmm_154sensor_remote_display project showcases a dynamic multi-protocol example which
-enables concurrent proprietary IEEE 802.15.4g frequency hoping (WiSUN FAN) and BLE5. This example implements
+enables concurrent proprietary IEEE 802.15.4g frequency hopping (WiSUN FAN) and BLE5. This example implements
 an IEEE 802.15.4g Sub1Ghz Wireless Network with a BLE Remote Display, using TI's DMM (Dynamic
 Multi-protocol Manager) to enable the multi-protocol and dual band features of
 the CC1352.
@@ -111,7 +111,7 @@ based on the activity and priority of RF commands.  For details of the GPT,
 refer to `<SDK_DIR>\source\ti\common\dmm\dmm_priority_ble_154sensor.c/h`.
 
 The Application Level information is the user defined information via the policy
-table and inludes: Application State Name, Weight, AppliedActivity, Pause, etc;
+table and includes: Application State Name, Weight, AppliedActivity, Pause, etc;
 the policy table can have multiple policies. A policy defines a specific state
 of the DMM application where the user wants to apply different priority based on
 an action.  A simplified policy table is shown below, it defines the behavior
@@ -324,7 +324,7 @@ The following sections detail the functions and operations of each of the charac
 
 This characteristic sets PAN ID that the 15.4 sensor will join. This is the same as setting CONFIG_PAN_ID in the sensor config.h file.
 
-Setting CONFIG_PAN_ID or Node Data Characteristic to 0xFFFF (the default) on the Sensor allows it to join any network, setting it to a specific valeue forces it to only join a network with that PAN ID.  Setting CONFIG_PAN_ID in config.h to 0xFFFF on the Collector allows it to form a network with a random PAN ID, setting it to a specific value forces it to form a network with that specific PAN ID.
+Setting CONFIG_PAN_ID or Node Data Characteristic to 0xFFFF (the default) on the Sensor allows it to join any network, setting it to a specific value forces it to only join a network with that PAN ID.  Setting CONFIG_PAN_ID in config.h to 0xFFFF on the Collector allows it to form a network with a random PAN ID, setting it to a specific value forces it to form a network with that specific PAN ID.
 
 #### <a name="SensorOperatingChannels"></a>Sensor Operating Channels Characteristic (UUID: 1194)
 
@@ -355,7 +355,7 @@ the IEEE 802.15.4g network. The BLE connection can be resumed once the 15.4
 Sensor is associated to a 15.4 network, and full concurrent IEEE 802.15.4g
 Frequency Hopping and BLE advertisements or connection can be demonstrated.
 
-#### <a name="SensorProvisioingState"></a>Sensor Provisioning State (UUID: 1198)
+#### <a name="SensorProvisioningState"></a>Sensor Provisioning State (UUID: 1198)
 
 This characteristic is used to read the sensors 802.15.4g network state. The following states will be observed:
 
@@ -500,7 +500,7 @@ By default, the DMM examples can support connecting up to 4 BLE centrals devices
 
 ### SM Commissioning BLE Service
 
-A separate BLE profile `sm_commisioning_gatt_profile` is enabled to control and track all SM related activities. The `sm_commisioning_gatt_profile` has the following characeristics and permissions.
+A separate BLE profile `sm_commissioning_gatt_profile` is enabled to control and track all SM related activities. The `sm_commissioning_gatt_profile` has the following characteristics and permissions.
 
 Service UUID: 0xf000baaa-0451-4000-b000-000000000000
 
@@ -605,7 +605,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
 -DCUI_DISABLE
 ```
 
-> Please Note: particular features that are dependednt on the CUI wil be unavailable when this feature is enabled.
+> Please Note: particular features that are dependent on the CUI wil be unavailable when this feature is enabled.
 
 ## <a name="15.4SensorRebootAndReset"></a>DMM Sensor Reboot and Reset
 

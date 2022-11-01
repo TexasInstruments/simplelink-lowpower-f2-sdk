@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-silicon settings)",
-        "Description": "8x Wideband Direct Sequence Spread Spectrum (WB-DSSS) 30 kbps, 2-GFSK, 195 kHz deviation, FEC K = 4 for the 902-928 MHz band  (Pre-silicon settings)",
+        "Name": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8 (Pre-Silicon)",
+        "Description": "8x Wideband Direct Sequence Spread Spectrum (WB-DSSS) 30 kbps, 2-GFSK, 195 kHz deviation, FEC K = 4 for the 902-928 MHz band  (Pre-Silicon)",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",

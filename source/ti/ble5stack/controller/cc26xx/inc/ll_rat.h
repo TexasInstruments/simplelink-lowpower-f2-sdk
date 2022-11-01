@@ -159,6 +159,7 @@ extern uint8 llTimeCompare( uint32 time1, uint32 time2 );
 
 extern uint32 llTimeDelta( uint32 time1, uint32 time2 );
 
+extern uint32 llTimeAbs( uint32 time1, uint32 time2 );
 #ifdef __cplusplus
 }
 #endif

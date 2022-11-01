@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,19 @@ let Common = system.getScript("/ti/drivers/Common.js");
 let config = []; /* nothing (yet) beyond generic driver configs */
 
 /*
+ *  ======== validate ========
+ */
+function validate(inst, validation)
+{
+    if (system.modules["/ti/utils/TrustZone"]) {
+        if (inst.$module.$instances.length > 1) {
+            validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
+                                driver instances are fixed in the SPE image. One AESCTRDRBG instance is supported.`, inst);
+        }
+    }
+}
+
+/*
  *  ======== base ========
  *  Define the base AESCTRDRBG properties and methods
  */
@@ -67,7 +80,8 @@ related purposes.
 [3]: /drivers/doxygen/html/_a_e_s_c_t_r_d_r_b_g_8h.html#ti_drivers_AESCTRDRBG_Examples "C usage examples"
 `,
     config              : Common.addNameConfig(config, "/ti/drivers/aesctrdrbg", "CONFIG_AESCTRDRBG_"),
-    defaultInstanceName : "CONFIG_AESCTRDRBG_"
+    defaultInstanceName : "CONFIG_AESCTRDRBG_",
+    validate            : validate
 };
 
 /* extend the base exports to include family-specific content */

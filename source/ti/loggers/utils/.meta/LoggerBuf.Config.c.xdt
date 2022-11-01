@@ -37,7 +37,6 @@
 %%}
 %%{
     let LoggerBuf = args[0];
-    let config = new Array();
 %%}
 /*
  *  ======== ti.loggers.utils/LoggerBuf ========

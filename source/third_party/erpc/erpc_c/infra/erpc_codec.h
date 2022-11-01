@@ -16,11 +16,6 @@
 #include "erpc_transport.h"
 #include <cstring>
 #include <stdint.h>
-#include <ti/utils/runtime/Bench.h>
-
-/* bench declarations */
-Bench_decl(CONFIG_ERPC_Codec_ctor_t0);
-Bench_decl(CONFIG_ERPC_Codec_ctor_t1);
 
 /*!
  * @addtogroup infra_codec
@@ -64,11 +59,7 @@ public:
     Codec(void)
     : m_buffer()
     , m_cursor()
-    , m_status(kErpcStatus_Success)
-    {
-        Bench_logTS(CONFIG_ERPC_Codec_ctor_t0);
-        Bench_logTS(CONFIG_ERPC_Codec_ctor_t1);
-    }
+    , m_status(kErpcStatus_Success){}
 
     /*!
      * @brief Codec destructor

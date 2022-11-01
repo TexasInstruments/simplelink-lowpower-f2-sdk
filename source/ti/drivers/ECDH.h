@@ -497,6 +497,14 @@ extern "C" {
 #define ECDH_STATUS_INVALID_KEY_SIZE (-9)
 
 /*!
+ * @brief   Importing generated key into KeyStore failed
+ *
+ * Functions return ECDH_STATUS_KEYSTORE_ERROR if the KeyStore_PSA_importKey()
+ * did not return KEYSTORE_PSA_STATUS_SUCCESS
+ */
+#define ECDH_STATUS_KEYSTORE_ERROR (-10)
+
+/*!
  *  @brief ECC Global configuration
  *
  *  The ECDH_Config structure contains a set of pointers used to characterize

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@ void PowerCC26X2_prcmEnableCacheRetention(void);
 void PowerCC26X2_oschfSwitchToRcosc(void);
 uint32_t PowerCC26X2_oscClockSourceGet(uint32_t ui32SrcClk);
 void PowerCC26X2_oscDisableQualifiers(void);
+bool PowerCC26X2_getOscHfSourceReady(void);
 uint32_t PowerCC26X2_oschfTrySwitchToXosc(void);
 bool PowerCC26X2_oscIsHPOSCEnabledWithHfDerivedLfClock(void);
 void PowerCC26X2_enableTCXOQual(void);
@@ -55,8 +56,11 @@ void PowerCC26X2_turnOnXosc(void);
 void PowerCC26X2_sysCtrlStandby(bool retainCache);
 void PowerCC26X2_sysCtrlVoltageConditionalControl(void);
 void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMode);
-void PowerCC26X2_setSECDMADependency(uint32_t setActive);
+void PowerCC26X2_setPeriphDependency(uint32_t prcmPeriph);
+void PowerCC26X2_releasePeriphDependency(uint32_t prcmPeriph);
+void PowerCC26X2_setPeriphDeepSleepEnable(uint32_t prcmPeriph);
 uint32_t PowerCC26X2_sysCtrlGetResetSource(void);
+void PowerCC26X2_setSubSecIncToXoscLf(void);
 
 /* Functions implemented in PowerCC26X2_calibrateRCOSC_helpers.c */
 void PowerCC26X2_updateSubSecInc(bool firstLF);

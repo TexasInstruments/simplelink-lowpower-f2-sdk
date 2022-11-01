@@ -4493,8 +4493,8 @@ RF_Handle RF_open(RF_Object *pObj, RF_Mode* pRfMode, RF_RadioSetup* pRadioSetup,
     /* Check for illegal PHY mode in CC2672 device */
     #if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)
     /* Check for chip ID */
-    if ((ChipInfo_GetChipType() == CHIP_TYPE_CC2672P3) ||
-        (ChipInfo_GetChipType() == CHIP_TYPE_CC2672R3))
+    if ((ChipInfo_GetChipType() == CHIP_TYPE_CC2652P7) ||
+        (ChipInfo_GetChipType() == CHIP_TYPE_CC2652R7))
     {
         /* Check if Sub-1G frequency band is used */
         if (pRadioSetup->commandId.commandNo == CMD_PROP_RADIO_DIV_SETUP)

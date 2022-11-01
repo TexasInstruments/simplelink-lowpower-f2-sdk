@@ -324,8 +324,7 @@
             "name": "highPA",
             "displayName": "High PA",
             "description": "Select if the High Power Amplifier on the device should be used",
-            "default": false,
-            "hidden": false
+            "default": false
         },
         {
             "name": "packetLengthBle",
