@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC1354P10"
+            />
+        </when>
+    </applicability>
+
+    <project
+        title="PWM LED"
+        name="pwmled2_LP_EM_CC1354P10_1_tirtos7_ticlang"
+        configurations="Debug"
+        toolChain="TICLANG"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC1354P10"
+        ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        compilerBuildOptions="
+            -I${PROJECT_ROOT}
+            -I${PROJECT_ROOT}/${ConfigName}
+            -Oz
+            -DDeviceFamily_CC13X4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -gdwarf-3
+            -mcpu=cortex-m33
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+        "
+        linkerBuildOptions="
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+             -lti/display/lib/ticlang/m33f/display_cc13x4.a
+             -lthird_party/spiffs/lib/ticlang/m33f/spiffs_cc26xx.a
+             -lti/drivers/lib/ticlang/m33f/drivers_cc13x4.a
+             -lthird_party/fatfs/lib/ticlang/m33f/fatfs.a
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -L${PROJECT_BUILD_DIR}/syscfg
+            -lti_utils_build_linker.cmd.genlibs
+            -lti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib
+            -Wl,--rom_model
+            -Wl,--warn_sections
+            -L${CG_TOOL_ROOT}/lib
+            -llibc.a
+        "
+        enableSysConfigTool="true"
+        sysConfigBuildOptions="
+            --product ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/.metadata/product.json
+            --compiler ticlang
+        "
+        description="An example on how to use the PWM driver to control on-board LEDs">
+
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <file path="../../pwmled2.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../overview.rov.json" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../tirtos7/main_tirtos.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../tirtos7/pwmled2.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
+        </file>
+        <file path="../../tirtos7/ticlang/cc13x4_cc26x4_tirtos7.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+    </project>
+</projectSpec>

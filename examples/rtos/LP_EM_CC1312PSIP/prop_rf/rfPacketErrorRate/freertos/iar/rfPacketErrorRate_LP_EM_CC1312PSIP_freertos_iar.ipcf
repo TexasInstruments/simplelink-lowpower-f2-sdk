@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IAR Project Connection File -->
+
+<iarProjectConnection version="1.2" name="RF Packet Error Rate Test" oneShot="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="IarProjectConnection_1.2.xsd">
+
+    <device>
+        <name>CC1352P1F3</name>
+    </device>
+
+    <asmIncludePath>
+        <path>$PROJ_DIR$</path>
+    </asmIncludePath>
+
+    <includePath>
+        <path>$PROJ_DIR$</path>
+        <path>$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source</path>
+        <path>$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel/freertos</path>
+        <path>$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/posix/iar</path>
+        <path>$FREERTOS_INSTALL_DIR$/FreeRTOS/Source/include</path>
+        <path>$FREERTOS_INSTALL_DIR$/FreeRTOS/Source/portable/IAR/ARM_CM4F</path>
+    </includePath>
+
+    <defines>
+        <define>BOARD_DISPLAY_USE_LCD=1</define>
+        <define>DeviceFamily_CC13X2</define>
+    </defines>
+
+    <extraOptions>
+        <args>
+            <arg>--debug</arg>
+            <arg>--silent</arg>
+            <arg>-e</arg>
+            <arg>--aeabi</arg>
+            <arg>--thumb</arg>
+            <arg>--diag_suppress=Pa050</arg>
+        </args>
+    </extraOptions>
+
+    <linkerFile>
+        <override>true</override>
+        <path>$PROJ_DIR$/cc13x2_cc26x2_freertos.icf</path>
+    </linkerFile>
+
+    <linkerExtraOptions>
+        <args>
+            <arg>-L$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source</arg>
+            <arg>--threaded_lib</arg>
+            <arg>-L$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/kernel</arg>
+            <arg>-f$PROJ_DIR$/ti_utils_build_linker.cmd.genlibs</arg>
+            <arg>$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2/driverlib/bin/iar/driverlib.lib</arg>
+            <arg>--silent</arg>
+            <arg>--cpu=Cortex-M4F</arg>
+        </args>
+    </linkerExtraOptions>
+
+    <customBuildTools>
+        <customBuildTool atRoot="true" name="SysConfig"> <!-- Custom build tool for entire project-->
+            <fileExtensions>.syscfg</fileExtensions>
+            <command>$SYSCONFIG_ROOT$/sysconfig_cli.bat -o $PROJ_DIR$ -s "$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/.metadata/product.json" --compiler iar $FILE_PATH$
+            </command>
+            <output>
+                <path>SysConfig_Generated_Files.ipcf</path>
+            </output>
+            <hasPrio>true</hasPrio> <!-- true: run this tool before all other tools-->
+        </customBuildTool>
+    </customBuildTools>
+
+    <heaps>
+        <heap> <!-- If omitted, id="0" -->
+            <size>0</size>
+        </heap>
+        <heap id="1">
+            <size>0</size>
+        </heap>
+    </heaps>
+    <stacks>
+        <stack> <!-- If omitted, id="0" -->
+            <size>512</size>
+        </stack>
+    </stacks>
+
+    <preBuild>
+        <command>iarbuild.exe  Debug</command>
+    </preBuild>
+
+    <postBuild>
+        <command>ielftool --ihex --verbose $TARGET_BPATH$.out $TARGET_BPATH$.hex</command>
+    </postBuild>
+
+    <files>
+        <path reference="$PROJ_DIR$/Board.html">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/source/ti/boards/LP_EM_CC1312PSIP/Board.html</path>
+        <path copyTo="$PROJ_DIR$/cc13x2_cc26x2_freertos.icf">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/freertos/iar/cc13x2_cc26x2_freertos.icf</path>
+        <path copyTo="$PROJ_DIR$/config.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/config.c</path>
+        <path copyTo="$PROJ_DIR$/config.h">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/config.h</path>
+        <path copyTo="$PROJ_DIR$/main_freertos.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/freertos/main_freertos.c</path>
+        <path copyTo="$PROJ_DIR$/menu.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/menu.c</path>
+        <path copyTo="$PROJ_DIR$/menu.h">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/menu.h</path>
+        <path copyTo="$PROJ_DIR$/overview.rov.json">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/overview.rov.json</path>
+        <path copyTo="$PROJ_DIR$/README.md">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/README.md</path>
+        <path copyTo="$PROJ_DIR$/rfPacketErrorRate.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/rfPacketErrorRate.c</path>
+        <path copyTo="$PROJ_DIR$/rfPacketErrorRate.syscfg">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/freertos/rfPacketErrorRate.syscfg</path>
+        <path copyTo="$PROJ_DIR$/RFQueue.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/RFQueue.c</path>
+        <path copyTo="$PROJ_DIR$/RFQueue.h">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/RFQueue.h</path>
+        <path copyTo="$PROJ_DIR$/rx.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/rx.c</path>
+        <path copyTo="$PROJ_DIR$/tx.c">$COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$/examples/rtos/LP_EM_CC1312PSIP/prop_rf/rfPacketErrorRate/tx.c</path>
+    </files>
+</iarProjectConnection>

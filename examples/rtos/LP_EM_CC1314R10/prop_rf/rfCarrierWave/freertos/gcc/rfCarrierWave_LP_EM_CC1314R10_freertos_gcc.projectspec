@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC1314R10"
+            />
+        </when>
+    </applicability>
+
+    <project
+        title="RF Carrier Wave"
+        name="rfCarrierWave_LP_EM_CC1314R10_freertos_gcc"
+        configurations="Debug"
+        toolChain="GNU"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC1314R10"
+        ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        compilerBuildOptions="
+            -I${PROJECT_ROOT}
+            -I${PROJECT_ROOT}/${ConfigName}
+            -DDeviceFamily_CC13X4 -Dxdc_target__isaCompatible_v8M
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/freertos
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc
+            -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include
+            -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure
+            -mcpu=cortex-m33
+            -mthumb
+            -std=c99
+            -std=c++11
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+            -ffunction-sections
+            -fdata-sections
+            -g
+            -gstrict-dwarf
+            -Wall
+            -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano
+            -I${CG_TOOL_ROOT}/arm-none-eabi/include
+        "
+        linkerBuildOptions="
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -L${PROJECT_BUILD_DIR}/syscfg
+            -lti_utils_build_linker.cmd.genlibs
+            -l:ti/devices/cc13x4_cc26x4/driverlib/bin/gcc/driverlib.lib
+            -mthumb
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+            -nostartfiles
+            -static
+            -Wl,--gc-sections
+            -L${CG_TOOL_ROOT}/arm-none-eabi/lib/thumb/v8-m/hard
+            -lgcc
+            -lc
+            -lm
+            -lnosys
+            --specs=nano.specs
+        "
+        enableHexTool="true"
+        hexBuildOptions="-O ihex --remove-section .vtable --remove-section .dmaSpi0RxControlTableEntry --remove-section .dmaSpi0TxControlTableEntry --remove-section .dmaSpi1RxControlTableEntry --remove-section .dmaSpi1TxControlTableEntry --remove-section .dmaSpi0RxAltControlTableEntry --remove-section .dmaSpi0TxAltControlTableEntry --remove-section .dmaSpi1RxAltControlTableEntry --remove-section .dmaSpi1TxAltControlTableEntry"
+        enableSysConfigTool="true"
+        sysConfigBuildOptions="
+            --product ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/.metadata/product.json
+            --compiler gcc
+        "
+        description="An example that uses the RF driver to generate a carrier wave">
+
+        <property name="isHybrid" value="true"/>
+        <file path="../../rfCarrierWave.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../freertos/rfCarrierWave.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../freertos/main_freertos.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../overview.rov.json" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
+        </file>
+        <file path="../../freertos/gcc/cc13x4_cc26x4_freertos.lds" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+    </project>
+</projectSpec>

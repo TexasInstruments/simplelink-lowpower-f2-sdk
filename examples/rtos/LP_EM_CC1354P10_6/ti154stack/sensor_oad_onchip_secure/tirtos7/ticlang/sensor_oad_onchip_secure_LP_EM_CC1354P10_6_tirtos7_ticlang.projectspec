@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC1354P10"
+            />
+        </when>
+    </applicability>
+
+    <project
+        title="Sensor OAD ONCHIP CC13X4 Secure"
+        name="sensor_oad_onchip_secure_LP_EM_CC1354P10_6_tirtos7_ticlang"
+        configurations="Release"
+        toolChain="TICLANG"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC1354P10"
+        ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        compilerBuildOptions="
+            -I${PROJECT_ROOT}
+            -I${PROJECT_ROOT}/${ConfigName}
+            @${PROJECT_LOC}/application/defines/sensor_oad_onchip.opts
+            -I${PROJECT_ROOT}/application/sensor/oad
+             
+            -I${PROJECT_ROOT}/application/sensor
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cc26xx/flash_interface
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cc26xx/crc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/common/oad
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor_oad_onchip
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cui
+            -Oz
+            -std=gnu9x
+            -munaligned-access
+            -fshort-enums
+            -fcommon
+            -funsigned-char
+            -mlittle-endian
+            -fdiagnostics-show-option
+            -ffunction-sections
+            -fno-strict-aliasing
+            -g
+            -DxTIMAC_ROM_IMAGE_BUILD
+            -I${PROJECT_ROOT}/application
+            -I${PROJECT_ROOT}/software_stack/ti15_4stack/osal
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/boards
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/stack/src
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/stack/tirtos/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/heapmgr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/saddr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/sdata
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/crypto
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/rf
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/fh
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/high_level
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/inc/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/tracer
+            @${PROJECT_LOC}/${ConfigName}/syscfg/ti_154stack_config.opts
+            -DDeviceFamily_CC13X4
+            -DSECURITY
+            -DMCUBOOT
+            -DOAD_ONCHIP
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/driverlib
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -gdwarf-3
+            -mcpu=cortex-m33
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+        "
+        linkerBuildOptions="
+            
+            --define=NVOCMP_NVPAGES=2
+            --define=OAD_IMG_B=1
+            -i${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -i${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            --define=TIRTOS7
+            --unused_section_elimination=on
+            --diag_wrap=off
+            --xml_link_info=${ProjName}_linkInfo.xml
+            -x
+            --display_error_number
+            --rom_model
+            --warn_sections
+            -L${PROJECT_BUILD_DIR}/syscfg
+            -lti_utils_build_linker.cmd.genlibs
+            -lti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib
+            -Wl,--rom_model
+            -Wl,--warn_sections
+            -L${CG_TOOL_ROOT}/lib
+            -llibc.a
+        "
+        postBuildStep="
+            ${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target ihex ${ProjName}.hex;${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target binary ${ProjName}-noheader.bin;${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/tools/common/mcuboot/imgtool sign --header-size 0x20 --align 4 --slot-size 0x7B000 --pad --version 1.0.0 --pad-header --key ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mcuboot/root-ec-p256.pem ${ProjName}-noheader.bin ${ProjName}.bin;
+        "
+        enableSysConfigTool="true"
+        sysConfigBuildOptions="
+            --product ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/.metadata/product.json
+            --compiler ticlang
+        "
+        description="">
+
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <file path="../../README_MCUboot.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../README_MCUboot.html" openOnCreation="true" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor/main.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor/sensor.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor/sensor.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor/ssf.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/sensor/ssf.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor">
+        </file>
+        <file path="../../application/sensor/advanced_config.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="application/sensor">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/jdllc/jdllc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/link_controller">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/inc/jdllc.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/link_controller">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/inc/llc.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/link_controller">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/inc/macconfig.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/boards/mac_user_config.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/boards/mac_user_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/boards/ti_154stack_overrides.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/inc/smsgs.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/boards/device_type.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/defines">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cui/cui.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/cui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cui/cui.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/cui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/apps/common/oad/oad_client.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/apps/common/oad/oad_client.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/native_oad/oad_protocol.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/native_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/native_oad/oad_protocol.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/native_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/native_oad/oad_storage.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/native_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/native_oad/oad_storage.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/native_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/oad_image_header.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/oad_image_header_app.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/oad_image_header_app.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/ext_flash_layout.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cc26xx/flash_interface/flash_interface.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/flash_interface">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cc26xx/flash_interface/internal/flash_interface_int_rtos_NVS.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/flash_interface/rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cc26xx/crc/crc32.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/crc">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/cc26xx/crc/crc32.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/crc">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/ble_oad/oad_switch.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/ble_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/oad/CC13X2_CC26X2R1_LAUNCHXL/ble_oad/oad_switch.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/sensor/oad/ble_oad">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/nv/nvintf.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/nv">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/nv">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/nv/nvocmp.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/nv">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/common/nv/nvocmp.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/nv">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/services/saddr/saddr.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/services/sdata/sdata.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="../../application/defines/sensor_oad_onchip.opts" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="application/defines">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/low_level/cc13xx/mac_activity.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/low_level">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/high_level/mac_cfg.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/low_level/cc13xx/mac_settings.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/low_level/cc13xx/mac_settings.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/osal_port_posix/macTask.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/osal_port_posix/api_mac.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/osal_port.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/osal">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/osal_port_timers.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/osal">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/macTask.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/osal_port/api_mac.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/util/util_timer.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/osal">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/apps/../../../../source/ti/ti154stack/common/util/mac_util.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4stack/osal">
+        </file>
+        <file path="../../tirtos7/sensor.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/lp_em_cc1354p10_6/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
+        </file>
+        <file path="../../tirtos7/ticlang/cc13x4_cc26x4_oad.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+    </project>
+</projectSpec>

@@ -1,0 +1,160 @@
+cmake_minimum_required(VERSION 3.21.3)
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_common.cmake)
+
+set(SOURCES_CC13XX_CC26XX_COMMON ${SOURCES_COMMON}
+    ADC.c
+    adc/ADCCC26XX.c
+    ADCBuf.c
+    adcbuf/ADCBufCC26X2.c
+    AESCBC.c
+    AESCCM.c
+    AESCMAC.c
+    AESCTR.c
+    AESCTRDRBG.c
+    AESECB.c
+    cryptoutils/cryptokey/CryptoKeyPlaintext.c
+    cryptoutils/sharedresources/CryptoResourceCC26XX.c
+    cryptoutils/utils/CryptoUtils.c
+    DAC.c
+    dac/DACCC26X2.c
+    dma/UDMACC26XX.c
+    ECDH.c
+    ECDSA.c
+    GPIO.c
+    gpio/GPIOCC26XX.c
+    I2C.c
+    i2c/I2CCC26XX.c
+    I2S.c
+    i2s/I2SCC26XX.c
+    ITM.c
+    itm/ITMCC26XX.c
+    NVS.c
+    nvs/NVSCC26XX.c
+    nvs/NVSRAM.c
+    nvs/NVSSPI25X.c
+    pdm/Codec1.c
+    pdm/PDMCC26XX.c
+    pdm/PDMCC26XX_util.c
+    pdm/pdm2pcm_cc26x2_${TI_TOOLCHAIN_NAME}.asm
+    power/PowerCC26X2.c
+    power/PowerCC26X2_calibrateRCOSC.c
+    PWM.c
+    pwm/PWMTimerCC26XX.c
+    RNG.c
+    rng/RNGCC26XX.c
+    SD.c
+    sd/SDSPI.c
+    SDFatFS.c
+    SHA2.c
+    SPI.c
+    Temperature.c
+    temperature/TemperatureCC26X2.c
+    Timer.c
+    timer/GPTimerCC26XX.c
+    timer/TimerCC26XX.c
+    TRNG.c
+    UART2.c
+    uart2/UART2CC26X2.c
+    Watchdog.c
+)
+
+set(SOURCES_CC13X1_CC26X1 ${SOURCES_CC13XX_CC26XX_COMMON}
+    aescbc/AESCBCCC26XX.c
+    aesccm/AESCCMCC26XX.c
+    aescmac/AESCMACCC26XX.c
+    aesctr/AESCTRCC26XX.c
+    aesctrdrbg/AESCTRDRBGXX.c
+    aesecb/AESECBCC26XX.c
+    cryptoutils/ecc/ECCInitCC26X1.c
+    cryptoutils/ecc/ECCParamsCC26X1.c
+    ecdh/ECDHCC26X1.c
+    ecdsa/ECDSACC26X1.c
+    gpio/GPIOCC26X2.c
+    power/PowerCC26X2_calibrateRCOSC_helpers.c
+    power/PowerCC26X2_helpers.c
+    sha2/SHA2CC26X1.c
+    spi/SPICC26X2DMA.c
+    trng/TRNGCC26XX.c
+    watchdog/WatchdogCC26XX.c
+)
+
+set(SOURCES_CC13X2_CC26X2 ${SOURCES_CC13XX_CC26XX_COMMON}
+    aescbc/AESCBCCC26XX.c
+    aesccm/AESCCMCC26XX.c
+    aescmac/AESCMACCC26XX.c
+    aesctr/AESCTRCC26XX.c
+    aesctrdrbg/AESCTRDRBGXX.c
+    aesecb/AESECBCC26XX.c
+    AESGCM.c
+    aesgcm/AESGCMCC26XX.c
+    cryptoutils/ecc/ECCParamsCC26X2.c
+    cryptoutils/sharedresources/PKAResourceCC26XX.c
+    ecdh/ECDHCC26X2.c
+    ecdsa/ECDSACC26X2.c
+    ECJPAKE.c
+    ecjpake/ECJPAKECC26X2.c
+    EDDSA.c
+    eddsa/EDDSACC26X2.c
+    gpio/GPIOCC26X2.c
+    power/PowerCC26X2_calibrateRCOSC_helpers.c
+    power/PowerCC26X2_helpers.c
+    sha2/SHA2CC26X2.c
+    spi/SPICC26X2DMA.c
+    trng/TRNGCC26XX.c
+    watchdog/WatchdogCC26XX.c
+)
+
+set(SOURCES_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13XX_CC26XX_COMMON}
+    AESGCM.c
+    cryptoutils/sharedresources/PKAResourceCC26XX.c
+    ECJPAKE.c
+    EDDSA.c
+    gpio/GPIOCC26X4.c
+    spi/SPICC26X4DMA.c
+    watchdog/WatchdogCC26X4.c
+)
+
+set(SOURCES_TFM_NS_API
+    ${SPE_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
+    ${SPE_INSTALL_DIR}/source/third_party/tfm/platform/ext/target/ti/common/tfm_ns_interface.c
+)
+
+set(SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4}
+    aescbc/AESCBCCC26XX.c
+    aesccm/AESCCMCC26X4.c
+    aescmac/AESCMACCC26XX.c
+    aesctr/AESCTRCC26XX.c
+    aesctrdrbg/AESCTRDRBGXX.c
+    aesecb/AESECBCC26XX.c
+    aesgcm/AESGCMCC26X4.c
+    cryptoutils/ecc/ECCParamsCC26X2.c
+    ecdh/ECDHCC26X2.c
+    ecdsa/ECDSACC26X2.c
+    ecjpake/ECJPAKECC26X2.c
+    eddsa/EDDSACC26X2.c
+    power/PowerCC26X2_calibrateRCOSC_helpers.c
+    power/PowerCC26X2_helpers.c
+    sha2/SHA2CC26X2.c
+    trng/TRNGCC26XX.c
+)
+
+set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4} ${SOURCES_TFM_NS_API}
+    aescbc/AESCBCCC26X4_ns.c
+    aesccm/AESCCMCC26X4_ns.c
+    aescmac/AESCMACCC26X4_ns.c
+    aesctr/AESCTRCC26X4_ns.c
+    aesctrdrbg/AESCTRDRBGX4_ns.c
+    aesecb/AESECBCC26X4_ns.c
+    aesgcm/AESGCMCC26X4_ns.c
+    attestation/Attestation_PSA_ns.c
+    crypto/CryptoCC26X4_ns.c
+    cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_ns.c
+    cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.c
+    cryptoutils/ecc/ECCParamsCC26X4_ns.c
+    ecdh/ECDHCC26X4_ns.c
+    nvs/flash/FlashCC26X4_ns.c
+    sha2/SHA2CC26X4_ns.c
+    spe/SecureCallback.c
+    trng/TRNGCC26X4_ns.c
+    ${SPE_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_initial_attestation_ipc_api.c
+)

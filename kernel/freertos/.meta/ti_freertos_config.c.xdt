@@ -1,0 +1,105 @@
+%%{
+/*
+ * Copyright (c) 2022, Texas Instruments Incorporated - http://www.ti.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+ *  ======== FreeRTOS_config.c.xdt ========
+ */
+    let kernel = system.modules["/freertos/FreeRTOS"].$static;
+%%}
+/*
+ *  ======== ti_freertos_config.c ========
+ *  Configured FreeRTOS module definitions
+ *
+ *  DO NOT EDIT - This file is generated
+ *  by the SysConfig tool.
+ */
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include "FreeRTOSConfig.h"
+
+% if (system.compiler == "gcc") {
+#pragma GCC diagnostic push
+/*
+ * We see two warnings in the GCC code generated when using FreeRTOS + portable implementation.
+ * Here we just disable the specific diagnostics that generate those warnings. Both have been
+ * reviewed in the kernel; it seems the issue is that GCC doesn't understand that semaphores
+ * are very special queues, so tries to evaluate code paths that will never execute
+ */
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wnonnull"
+% }
+
+% /* compute a canonical order for the used modules */
+% let keys = Object.keys(system.modules).sort();
+% /* loop over all modules in the current configuration */
+% for (let i = 0; i < keys.length; i++) {
+%     let mod = system.modules[keys[i]];
+%     /* Find modules that contribute to the FreeRTOS configuration */
+%     if (mod.getCFiles) {
+%         let files = mod.getCFiles();
+%         for (let index in files) {
+#include <`files[index]`>
+%         }
+%     }
+% }
+
+% if (system.compiler == "gcc") {
+#pragma GCC diagnostic pop
+% }
+
+/* Wrapper functions for using the queue registry regardless of whether it is enabled or disabled */
+% if (kernel.rovQueueEnabled) {
+void vQueueAddToRegistryWrapper(QueueHandle_t xQueue, const char * pcQueueName)
+{
+    vQueueAddToRegistry(xQueue, pcQueueName);
+}
+
+void vQueueUnregisterQueueWrapper(QueueHandle_t xQueue)
+{
+    vQueueUnregisterQueue(xQueue);
+}
+% }
+% else {
+void vQueueAddToRegistryWrapper(QueueHandle_t xQueue, const char * pcQueueName)
+{
+    /* This function is intentionally left empty as the Queue Registry is disabled */
+}
+
+void vQueueUnregisterQueueWrapper(QueueHandle_t xQueue)
+{
+    /* This function is intentionally left empty as the Queue Registry is disabled */
+}
+% }

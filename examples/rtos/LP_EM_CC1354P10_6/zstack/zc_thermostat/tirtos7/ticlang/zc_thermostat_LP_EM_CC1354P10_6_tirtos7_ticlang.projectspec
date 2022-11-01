@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC2674R10"
+            />
+        </when>
+    </applicability>
+
+    <project
+        title="ZC Thermostat"
+        name="zc_thermostat_LP_EM_CC1354P10_6_tirtos7_ticlang"
+        configurations="default"
+        toolChain="TICLANG"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC2674R10"
+        ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        compilerBuildOptions="
+            -I${PROJECT_ROOT}
+            -I${PROJECT_ROOT}/${ConfigName}
+            -DZCL_READ
+            -DZCL_DISCOVER
+            -DZCL_WRITE
+            -DZCL_BASIC
+            -DZCL_IDENTIFY
+            -DZCL_HVAC_CLUSTER 
+            -DZCL_MS
+            -DBDB_REPORTING
+            -DZCL_REPORT_DESTINATION_DEVICE
+            -Oz
+            -std=gnu9x
+            -munaligned-access
+            -fshort-enums
+            -fcommon
+            -funsigned-char
+            -mlittle-endian
+            -fdiagnostics-show-option
+            -ffunction-sections
+            -g
+            -DTIMAC_ROM_PATCH
+            -DxCUI_DISABLE 
+            -DMAX_STATUS_LINES=10
+            -DZSTACK_SECURITY
+            -DBOARD_DISPLAY_USE_UART
+            -DFREQ_2_4G
+            -DOSAL_PORT2TIRTOS
+            -DOSAL_PORT2TIRTOS_OSALMAP
+            -DZDO_API_BASIC
+            -DTC_LINKKEY_JOIN
+            -DNV_RESTORE
+            -DNV_INIT
+            -DFEATURE_NON_BEACON_MODE
+            -DZCL_STANDALONE
+            -DMAX_DEVICE_TABLE_ENTRIES=50
+            -I${PROJECT_ROOT}/Application/StartUp
+            -I${PROJECT_ROOT}/Application/Services
+            -I${PROJECT_ROOT}/Application/ui
+            -I${PROJECT_ROOT}/Application/util
+            -I${PROJECT_ROOT}/Application/ZStackApi
+            -I${PROJECT_ROOT}/Common/gp
+            -I${PROJECT_ROOT}/Common/touchlink
+            -I${PROJECT_ROOT}/Stack/af
+            -I${PROJECT_ROOT}/Stack/bdb
+            -I${PROJECT_ROOT}/Stack/Config
+            -I${PROJECT_ROOT}/Stack/gp
+            -I${PROJECT_ROOT}/Stack/HAL/Crypto
+            -I${PROJECT_ROOT}/Stack/HAL/Platform
+            -I${PROJECT_ROOT}/Stack/HAL/RF
+            -I${PROJECT_ROOT}/Stack/MAC/HighLevel
+            -I${PROJECT_ROOT}/Stack/MAC/LowLevel
+            -I${PROJECT_ROOT}/Stack/MAC
+            -I${PROJECT_ROOT}/Stack/nwk
+            -I${PROJECT_ROOT}/Stack/osal_port
+            -I${PROJECT_ROOT}/Stack/ROM
+            -I${PROJECT_ROOT}/Stack/sec
+            -I${PROJECT_ROOT}/Stack/sys
+            -I${PROJECT_ROOT}/Stack/zdo
+            -I${PROJECT_ROOT}/Stack/zmac
+            -I${PROJECT_ROOT}/Stack/ZStackTask
+            -I${CG_TOOL_ROOT}/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/mt
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/osal
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/saddr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/sdata
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/crypto
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/rf
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/af
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sec
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac/f8w
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/ui
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cui
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/fh
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/high_level
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/inc/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/tracer  
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/heapmgr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/util
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/config
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/startup
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/api/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/time
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/apps/thermostat
+             @${PROJECT_ROOT}/Stack/Config/f8wcoord.opts
+             -I${PROJECT_ROOT}/Common/zcl 
+            -DDeviceFamily_CC13X4
+            -DHEAPMGR_SIZE=6144
+            -DHEAPMGR_CONFIG=0
+            -DTIRTOS7_SUPPORT
+            -DNVOCMP_NVPAGES=4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/boards
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/driverlib
+             -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -gdwarf-3
+            -mcpu=cortex-m33
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+        "
+        linkerBuildOptions="
+            --diag_wrap=off
+            --unused_section_elimination=on
+            --xml_link_info=${ProjName}_linkInfo.xml
+            -x
+            --define=NVOCMP_NVPAGES=2
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -L${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -L${PROJECT_BUILD_DIR}/syscfg
+            -lti_utils_build_linker.cmd.genlibs
+            -lti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib
+            -Wl,--rom_model
+            -Wl,--warn_sections
+            -L${CG_TOOL_ROOT}/lib
+            -llibc.a
+        "
+        enableSysConfigTool="true"
+        sysConfigBuildOptions="
+            --product ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/.metadata/product.json
+            --compiler ticlang
+        "
+        description="">
+
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/apps/thermostat/zcl_samplethermostat.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/apps/thermostat/zcl_samplethermostat.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/apps/thermostat/zcl_samplethermostat_data.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/apps/thermostat/zcl_sample_app_def.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/StartUp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cui/cui.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/cui/cui.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/startup/zstackstartup.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/StartUp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/startup/zstackstartup.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/StartUp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/nvintf.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/nvocmp.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/nvocmp.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/saddr/saddr.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/saddr/saddr.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/services/sdata/sdata.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/Services">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/ui/zcl_sampleapps_ui.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/ui/zcl_sampleapps_ui.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ui">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util/mac_util.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util/mac_util.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util/util_timer.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/util/util_timer.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/time/utc_clock.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/time/utc_clock.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/util">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/af/af.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/af">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/af/af.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/af">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_finding_and_binding.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_interface.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_reporting.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_reporting.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink_initiator.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink_initiator.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink_target.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/bdb_touchlink_target.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/bdb">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/bdb_tl_commissioning.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/bdb_tl_commissioning.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/touchlink_initiator_app.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/touchlink_initiator_app.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/touchlink_target_app.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/bdb/touchlinkapp/touchlink_target_app.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/touchlink">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/cgp_stub.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/dgp_stub.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_common.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_common.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_interface.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_proxy_table.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_proxy.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_proxy.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_bit_fields.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/gp/gp_bit_fields.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/gp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/crypto/crypto_mac_api.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/HAL/Crypto">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/platform/hal_defs.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/HAL/Platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/platform/hal_mcu.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/HAL/Platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/platform/hal_types.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/HAL/Platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/hal/rf/rf_mac_api.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/HAL/RF">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/tracer/dbg.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/Debug">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/tracer/dbg.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/Debug">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/high_level/mac_cfg.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/HighLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/high_level/mac_high_level.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/HighLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_assert.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_rx.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_tx.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_activity.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_activity.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/inc/mac_api.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/addr_mgr.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/aps.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/aps_frag.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/aps_groups.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/aps_util.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/aps_mede.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/assoc_list.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/binding_table.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nl_mede.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nwk.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nwk_bufs.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nwk_globals.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nwk_globals.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/nwk_util.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/reflecttrack.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/rtg.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/stub_aps.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/nwk/stub_aps.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/nwk">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/osal/osal_nv.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/osal/osal_nv.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_posix/osal_port_timers.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/osal_port/osal_port_timers.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstack.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstackapi.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ZStackApi">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstackapi.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application/ZStackApi">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstackconfig.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstackmsg.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstacktask.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zstacktask.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/api/zsversion.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ZStackTask">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sec/eccapi.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sec">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sec/ssp.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sec">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sec/ssp_hash.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sec">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/comdef.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/zcomdef.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/zdiags.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/zdiags.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/zglobals.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/sys/zglobals.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/sys">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_app.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_app.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_config.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_config.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_nwk_mgr.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_nwk_mgr.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_object.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_object.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_profile.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_profile.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_sec_mgr.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zdo/zd_sec_mgr.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zdo">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac/zmac.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zmac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac/f8w/zmac.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zmac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac/f8w/zmac_cb.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zmac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/zmac/f8w/zmac_internal.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/zmac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/rom_init_154.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/fh_rom_init.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/hmac_rom_init.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/lmac_rom_init.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/icall_osal_rom_init.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/rom_jt_154.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/rom_jt_def_154.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/fh_rom_jt.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/hmac_rom_jt.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/lmac_rom_jt.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/icall_osal_rom_jt.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/fh_map_direct.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/hmac_map_direct.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/lmac_map_direct.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/rom/icall_osal_map_direct.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/ROM">
+        </file>
+        <file path="../../README.html" openOnCreation="true" excludeFromBuild="true" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/config/f8wcoord.opts" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/Config">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_datatypes.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_port.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_port.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_general.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_general.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_green_power.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_green_power.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ha.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ha.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_diagnostic.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_diagnostic.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_closures.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_closures.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_control.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_control.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_events_alerts.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_events_alerts.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_identification.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_statistics.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_appliance_statistics.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_cc.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_cc.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_cert_data.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_electrical_measurement.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_electrical_measurement.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_hvac.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_hvac.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_retail.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_retail.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_telecommunication.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_telecommunication.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_lighting.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_lighting.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ll.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ll.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ms.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ms.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ota.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ota.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_partition.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_partition.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_pi.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_pi.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_poll_control.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_poll_control.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_power_profile.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_power_profile.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_se.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_se.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ss.c" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/stack/zcl/zcl_ss.h" openOnCreation="false" excludeFromBuild="true" action="copy" targetDirectory="Common/zcl">
+        </file>
+        <file path="../../tirtos7/zc_thermostat.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/boards/mac_user_config.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/Config">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/common/boards/mac_user_config.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/Config">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_settings.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti154stack/low_level/cc13xx/mac_settings.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Stack/MAC/LowLevel">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/zstack/boards/cc13x4_cc26x4/cc13x4_cc26x4_tirtos7_ticlang.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+    </project>
+</projectSpec>

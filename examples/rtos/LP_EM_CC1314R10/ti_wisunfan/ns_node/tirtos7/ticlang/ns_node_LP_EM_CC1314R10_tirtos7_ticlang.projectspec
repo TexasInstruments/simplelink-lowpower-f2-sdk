@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC1314R10"
+            />
+        </when>
+    </applicability>
+
+    <project
+        title="Wisun-fan mbed nanostack mesh with TI RF Driver"
+        name="ns_node_LP_EM_CC1314R10_tirtos7_ticlang"
+        configurations="Release"
+        toolChain="TICLANG"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC1314R10"
+        ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        compilerBuildOptions="
+            -I${PROJECT_ROOT}
+            -I${PROJECT_ROOT}/${ConfigName}
+            @${PROJECT_LOC}/application/defines/router.opts
+            -Oz
+            -std=gnu9x
+            -munaligned-access
+            -fshort-enums
+            -fcommon
+            -funsigned-char
+            -mlittle-endian
+            -fdiagnostics-show-option
+            -ffunction-sections
+            -g
+            -fno-strict-aliasing
+            -DWISUN_NCP_ENABLE
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx/combo
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/ti-rf-driver/ti-rf-driver
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/common/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_config/ws_router
+            -include mbed_config.h
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/ti-rf-driver/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/mbedtls2tirtos
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/mbedtls2tirtos/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/mbed_port/mbedtls2tirtos/mbedtls/mbed-crypto
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/nanostack-libservice/mbed-client-libservice
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/nanostack-libservice
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/nanostack-libservice/mbed-client-libservice/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-client-randlib/mbed-client-randlib/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-client-randlib/mbed-client-randlib
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-client-randlib
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-trace
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-coap
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/frameworks/mbed-coap/source/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/nanostack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns/fnet
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns/fnet/fnet_stack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns/fnet/fnet_stack/stack
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns/fnet/fnet_stack/services/serial
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Core/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/6LowPAN
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack-eventloop
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack-eventloop/nanostack-event-loop
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack-eventloop/nanostack-event-loop/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/nanostack-hal-mbed-cmsis-rtos
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/mbed-mesh-api/source/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/mbed-mesh-api/mbed-mesh-api
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/mbed-mesh-api
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/coap-service/coap-service
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/coap-service/source/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/ti_wisunfan/mbedtls
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/ti_wisunfan/mbedtls/platform/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/ti_wisunfan/mbedtls/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/ti_wisunfan/mbedtls/platform/COMPONENT_PSA_SRV_IMPL/COMPONENT_NSPE
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/shell
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/config
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/uip
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/uip/conf
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/uip/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/uip/pltfrm/sysbios
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/uip/net
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/services
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/hal/assert
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/hal/appasrt
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/hal/crypto
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/hal/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/hal/rf
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/high_level
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/low_level
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/osal_port
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/boards
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/util
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/stack/src
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/stack/tirtos/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/common/heapmgr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/services/saddr
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/services/sdata
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/fh
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/rom
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/inc/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/wisunfan_mac/tracer
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/mbed-mesh-api/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/6LoWPAN/MAC
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/6LoWPAN/Thread
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Security/PANA
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/mdns/fnet/fnet_stack/services/mdns
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/fnv_hash
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/hmac
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/load_balance
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/libNET/src
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack-eventloop/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/ti_wisunfan/mbedtls/platform/COMPONENT_PSA_SRV_IMPL
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/whiteboard
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/6LoWPAN/ws
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/DHCPv6_client
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/libDHCPv6
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/utils
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/pan_blacklist
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/third_party/mbed/nanostack/sal-stack-nanostack/source/Common_Protocols
+            -DEXCLUDE_TRACE
+            -DxSWITCH_NCP_TO_TRACE
+            -DTLS_SEC_PROT_LIB_USE_MBEDTLS_PLATFORM_MEMORY
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/config
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/include
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/src
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/src/core
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/src/core/utils
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/examples/platforms
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/src/core/thread
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/src/ncp
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform/nv
+            -DxWISUN_AUTO_START
+            -DTI_WISUN_FAN_DEBUG
+            @${PROJECT_LOC}/${ConfigName}/syscfg/ti_wisunfan_config.opts
+            -DBoard_EXCLUDE_NVS_EXTERNAL_FLASH
+            -DDeviceFamily_CC13X4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/inc
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/devices/cc13x4_cc26x4/driverlib
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/ticlang
+            -gdwarf-3
+            -mcpu=cortex-m33
+            -mfloat-abi=hard
+            -mfpu=fpv5-sp-d16
+        "
+        linkerBuildOptions="
+            -i${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
+            -i${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel
+            -i${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/kernel/tirtos7/packages
+            --define=TIRTOS7
+            --unused_section_elimination=on
+            --diag_wrap=off
+            --xml_link_info=${ProjName}_linkInfo.xml
+            -x
+            --display_error_number
+            --rom_model
+            --warn_sections
+            -L${PROJECT_BUILD_DIR}/syscfg
+            -lti_utils_build_linker.cmd.genlibs
+            -lti/devices/cc13x4_cc26x4/driverlib/bin/ticlang/driverlib.lib
+            -Wl,--rom_model
+            -Wl,--warn_sections
+            -L${CG_TOOL_ROOT}/lib
+            -llibc.a
+        "
+        postBuildStep="
+            ${CG_TOOL_ROOT}/bin/tiarmobjcopy ${ProjName}.out --output-target ihex ${ProjName}.hex;
+        "
+        enableSysConfigTool="true"
+        sysConfigBuildOptions="
+            --product ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/.metadata/product.json
+            --compiler ticlang
+        "
+        description="">
+
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf/main.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf/application.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/common/include/application.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf/mbed_config_app.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/ti_wisunfan/mbedtls/inc/mbedtls/config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbedtls/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/ti_wisunfan/mbedtls/platform/inc/platform_mbed.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbedtls/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf/mbedtls_wisun_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbedtls/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/udp_nanostack_mesh_tirf/wisun_certificates.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/nsconfig.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/nanostack/sal-stack-nanostack/source/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/configs/cfg_ti_ws_router.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/nanostack/sal-stack-nanostack/source/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_config/ws_router/mbed_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/nanostack/sal-stack-nanostack/source/configs">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/ti-rf-driver/ti-rf-driver/NanostackTiRfPhy.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-rf-driver/ti-rf-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/ti-rf-driver/source/RFQueue.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-rf-driver/source">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/ti-rf-driver/source/RFQueue.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-rf-driver/ti-rf-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/common/nv/nvintf.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-nv-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/common/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-nv-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/common/nv/nvocmp.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-nv-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/common/nv/nvocmp.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/ti-nv-driver">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/shell/ns_list.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="application/shell">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/arm_hal_interrupt.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/arm_hal_random.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/arm_hal_timer.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/ns_event_loop.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/ns_event_loop_mutex.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/ns_hal_init.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos/arm_hal_fhss_timer.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/nanostack/nanostack-hal-mbed-cmsis-rtos">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/platform/ns_trace.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/mbed_port/mbednanostack2tirtos/platform/ns_trace.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/mbednanostack2tirtos/platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/mbed/nanostack/sal-stack-nanostack/source/Service_Libs/utils/ns_file.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/nanostack/sal-stack-nanostack/source/Service_Libs/utils">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/high_level/mac_cfg.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx/mac_settings.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/low_level/cc13xx/mac_settings.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/mac_settings">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/inc/macconfig.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/boards/mac_user_config.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/radio_configuration">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/boards/mac_user_config.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/radio_configuration">
+        </file>
+        <file path="../../application/defines/router.opts" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="application/defines">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/macTask.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/macTask.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/api_mac.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/stack_user_api/api_mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/api_mac.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/stack_user_api/api_mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/timac_fhss_config.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/stack_user_api/api_mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/timac_ns_interface.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/stack_user_api/api_mac">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_tirtos/osal_port.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_tirtos/osal_port_timers.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/osal_port_timers.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="software_stack/ti15_4mac/osal_port">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform/uart.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="wisun_ncp/platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform/debug_uart.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="wisun_ncp/platform">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/ti/ti_wisunfan/ncp_interface/src/ncp/ncp_base_mtd.cpp" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="wisun_ncp/src/ncp">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ti_wisunfan/apps/../../../../source/third_party/mbed/nanostack/mbed-mesh-api/source/wisun_tasklet.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="mbed/nanostack/mbed-mesh-api/source">
+        </file>
+        <file path="../../tirtos7/ti_wisunfan_router_node.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/lp_em_cc1314r10/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
+        </file>
+        <file path="../../cc13x4_cc26x4.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+    </project>
+</projectSpec>

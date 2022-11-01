@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+set(ARCH_cc23x0 m0p)
+set(ARCH_cc2340 m0p)
+
+list(APPEND SUPPORTED_PLATFORMS cc23x0)
+list(APPEND SUPPORTED_DEVICES cc2340)
+list(APPEND SUPPORTED_ARCHITECTURES m0p)
+
+include("${CMAKE_CURRENT_LIST_DIR}/PlatformCC23X0Targets.cmake")
+check_required_components(PlatformCC23X0)
