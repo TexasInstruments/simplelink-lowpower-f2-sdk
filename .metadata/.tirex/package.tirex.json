@@ -1,0 +1,40 @@
+[{
+    "metadataVersion": "3.0.0",
+    "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
+    "name": "SimpleLink CC13xx CC26xx SDK",
+    "version": "6.30.00.84",
+    "type": "software",
+    "devices": [
+        "CC13x1",
+        "CC13x2",
+        "CC13x2x7",
+        "CC26x1",
+        "CC26x2",
+        "CC26x2x7"
+    ],
+    "license": "../../license_simplelink_cc13xx_cc26xx_sdk_6_30_00_84.txt",
+    "image": "./cc13xx_cc26xx-tirex.png",
+    "dependencies": [
+        {
+            "packageId": "sysconfig",
+            "version": "1.14.0",
+            "require": "mandatory"
+        },
+        {
+            "packageId": "xdctools",
+            "version": "3.62.01.15",
+            "require": "optional"
+        },
+        {
+            "packageId": "ti_cgt_tiarmclang",
+            "version": "2.1.2",
+            "require": "optional"
+        },
+        {
+            "packageId": "arm.gnu",
+            "version": "9.2",
+            "require": "optional"
+        }
+    ],
+    "description": "<p>The SimpleLink™ CC13xx_CC26xx Software Development Kit (SDK) continues support for devices previously supported in the SimpleLink™ CC13x2_CC26x2 SDK. This SDK is backwards compatible for qualification purposes with previous SDK versions. CC13x0 and CC2640R2 devices will continue to use their respective SDKs.</p><p>The SimpleLink™ CC13xx_CC26xx Software Development Kit (SDK) delivers components that enable engineers to develop applications on the Texas Instruments SimpleLink CC13xx and CC26xx family of wireless microcontroller (MCUs). This software toolkit provides a cohesive and consistent software experience for all SimpleLink CC13xx and CC26xx wireless MCU users by packaging essential software components, such as a Bluetooth® low energy (BLE) protocol stack supporting Bluetooth 5, Thread 1.1 networking stack based on OpenThread, ZigBee 3.0 compliant protocol suite, RF-Proprietary examples, TI's 15.4 Stack as well as the TI-RTOS kernel and TI Drivers in one easy-to-use software package along with example applications and documentation. In addition, the Dynamic Multi-Protocol Manager (DMM) software component enables multiprotocol development on a single SimpleLink wireless MCU through time division multiplexing. The SimpleLink MCU portfolio offers a single development environment that delivers flexible hardware, software and tool options for customers developing wired and wireless applications. With 100 percent code reuse across host MCUs, Wi-Fi™, Bluetooth low energy, Sub-1GHz devices and more, choose the MCU or connectivity standard that fits your design. A one-time investment with the SimpleLink software development kit (SDK) allows you to reuse often, opening the door to create unlimited applications. For more information, visit <a href=\"http://www.ti.com/simplelink\">http://www.ti.com/simplelink</a>.</p>"
+}]

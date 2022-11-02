@@ -1,0 +1,42 @@
+{
+    "name": "simplelink_cc13xx_cc26xx_sdk",
+    "displayName": "simplelink_cc13xx_cc26xx_sdk",
+    "version": "6.30.00.83_s",
+    "documentationPath": "../docs",
+    "includePaths": [
+        "../source",
+        "../kernel",
+        "../kernel/tirtos7/builds",
+        "../kernel/tirtos7/packages"
+    ],
+    "components": [
+        "/ti/ble5stack/ble.component.js",
+        "/ti/thread/thread.component.js",
+        "/ti/dmm/dmm.component.js",
+        "/ti/common/migration.component.js",
+        "/ti/devices/devices.component.js",
+        "/ti/devices/radioconfig/radioconfig.component.js",
+        "/ti/drivers/drivers.component.js",
+        "/ti/drivers/rflib.component.js",
+        "/ti/loggers/drivers/drivers.component.js",
+        "/ti/loggers/utils/utils.component.js",
+        "/ti/posix/tiposix.component.js",
+        "/ti/utils/tiutils.component.js",
+        "/ti/utils/build/build.component.js",
+        "/ti/utils/osal/osal.component.js",
+        "/ti/utils/rov/rov.component.js",
+        "/ti/utils/runtime/runtime.component.js",
+        "/freertos/freertos.component.js",
+        "/ti/sysbios/sysbios.component.js"
+    ],
+    "devices": [
+        "CC[12][36][0-9][^0].*"
+    ],
+    "rtos": [
+        "freertos",
+        "none",
+        "nortos",
+        "tirtos7"
+    ],
+    "minToolVersion": "1.14.0"
+}
