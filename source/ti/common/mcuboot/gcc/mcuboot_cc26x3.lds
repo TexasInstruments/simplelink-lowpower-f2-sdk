@@ -33,9 +33,11 @@
 STACKSIZE = 1024;
 HEAPSIZE = 16384; /* Size of heap buffer used by HeapMem */
 
+FLASH_BASE = DEFINED(DUAL_SLOT) ? 0x800 : 0x0;
+
 MEMORY
 {
-    FLASH (RX)      : ORIGIN = 0x00000000, LENGTH = 0x6000
+    FLASH (RX)      : ORIGIN = FLASH_BASE, LENGTH = 0x6000
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash, up to 1024 bytes
@@ -56,8 +58,8 @@ REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
 
 SECTIONS {
 
-	.vectors : {
-		KEEP (*(.vectors))
+	.resetVecs : {
+		KEEP (*(.resetVecs))
 	} > REGION_FLASH_START
 
     .ramVecs (NOLOAD) : ALIGN(1024){

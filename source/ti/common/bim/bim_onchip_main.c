@@ -55,10 +55,10 @@
 #include DeviceFamily_constructPath(driverlib/watchdog.h)
 #include DeviceFamily_constructPath(inc/hw_prcm.h)
 
-#include "common/cc26xx/crc/crc32.h"
-#include "common/cc26xx/flash_interface/flash_interface.h"
-#include "common/cc26xx/bim/bim_util.h"
-#include "common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/crc/crc32.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/bim/bim_util.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
 
 #ifdef __IAR_SYSTEMS_ICC__
 #include <intrinsics.h>
@@ -66,8 +66,8 @@
 
 #if defined(DEBUG_BIM) || defined(BIM_BLINK_LED_NO_VALID_IMAGE)
 #include DeviceFamily_constructPath(driverlib/gpio.h)
-#include "common/flash/no_rtos/extFlash/bsp.h"
-#include "common/cc26xx/debug/led_debug.h"
+#include "ti/common/flash/no_rtos/extFlash/bsp.h"
+#include "ti/common/cc26xx/debug/led_debug.h"
 #endif
 
 #if defined(SECURITY)
@@ -600,7 +600,7 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
                 /* Read in the header to check if the signature has already been denied */
                 readFlashPg(flashPageNum, 0, &readSecurityByte[0], (SEC_VERIF_STAT_OFFSET + 1));
 
-                if(readSecurityByte[SEC_VERIF_STAT_OFFSET] != VERIFY_FAIL)
+                if(readSecurityByte[SEC_VERIF_STAT_OFFSET] == DEFAULT_STATE)
                 {
                     signVrfyStatus = Bim_verifyImage(iFlStrAddr);
 
@@ -610,6 +610,15 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
                         readSecurityByte[SEC_VERIF_STAT_OFFSET] = VERIFY_FAIL;
                         writeFlashPg(flashPageNum, SEC_VERIF_STAT_OFFSET,  &readSecurityByte[SEC_VERIF_STAT_OFFSET], 1);
                     }
+                    else
+                    {
+                        readSecurityByte[SEC_VERIF_STAT_OFFSET] = VERIFY_PASS;
+                        writeFlashPg(flashPageNum, SEC_VERIF_STAT_OFFSET,  &readSecurityByte[SEC_VERIF_STAT_OFFSET], 1);
+                    }
+                }
+                else if (readSecurityByte[SEC_VERIF_STAT_OFFSET] == VERIFY_PASS)
+                {
+                    signVrfyStatus = SUCCESS;
                 }
             } /* if(securityPresence) */
         }
@@ -1032,7 +1041,7 @@ int main(void)
 
     return(0);
 #endif
-        
+
 } /* end of main function */
 
 /**************************************************************************************************

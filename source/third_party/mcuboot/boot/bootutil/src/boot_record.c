@@ -62,7 +62,7 @@ boot_add_data_to_shared_area(uint8_t        major_type,
 
     boot_data = (struct shared_boot_data *)MCUBOOT_SHARED_DATA_BASE;
 
-    /* Check whether first time to call this function. If does then initialise
+    /* Check whether first time to call this function. If true, then initialise
      * shared data area.
      */
     if (!shared_memory_init_done) {
@@ -115,6 +115,12 @@ boot_add_data_to_shared_area(uint8_t        major_type,
     boot_data->header.tlv_tot_len += SHARED_DATA_ENTRY_SIZE(size);
 
     return SHARED_MEMORY_OK;
+}
+
+int boot_save_shared_data(const struct image_header *hdr,
+                          const struct flash_area *fap)
+{
+    return 0;
 }
 #endif /* MCUBOOT_MEASURED_BOOT OR MCUBOOT_DATA_SHARING */
 

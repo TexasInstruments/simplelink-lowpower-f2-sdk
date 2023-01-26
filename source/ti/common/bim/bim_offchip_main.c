@@ -55,19 +55,19 @@
 #include DeviceFamily_constructPath(driverlib/watchdog.h)
 #include DeviceFamily_constructPath(inc/hw_prcm.h)
 
-#include "common/cc26xx/oad/ext_flash_layout.h"
-#include "common/cc26xx/crc/crc32.h"
-#include "common/flash/no_rtos/extFlash/ext_flash.h"
-#include "common/cc26xx/flash_interface/flash_interface.h"
-#include "common/cc26xx/bim/bim_util.h"
-#include "common/cc26xx/oad/oad_image_header.h"
-#include "common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/oad/ext_flash_layout.h"
+#include "ti/common/cc26xx/crc/crc32.h"
+#include "ti/common/flash/no_rtos/extFlash/ext_flash.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/bim/bim_util.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
 #ifdef __IAR_SYSTEMS_ICC__
 #include <intrinsics.h>
 #endif
 
 #ifdef DEBUG_BIM
-#include "common/cc26xx/debug/led_debug.h"
+#include "ti/common/cc26xx/debug/led_debug.h"
 #endif
 
 #if defined (SECURITY)
@@ -1152,7 +1152,7 @@ static int8_t Bim_authenticateImage(uint32_t flStrAddr, uint32_t imgLen, bool is
             if ((uint8_t)imgSignVrfyStatus != SUCCESS)
             {
                 readSecurityByte[SEC_VERIF_STAT_OFFSET] = VERIFY_FAIL;
-                writeFlash((flStrAddr+SEC_VERIF_STAT_OFFSET), 
+                writeFlash((flStrAddr+SEC_VERIF_STAT_OFFSET),
                             &readSecurityByte[SEC_VERIF_STAT_OFFSET], 1);
             }
         }

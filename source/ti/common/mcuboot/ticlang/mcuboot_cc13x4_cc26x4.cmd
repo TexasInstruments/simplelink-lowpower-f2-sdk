@@ -58,7 +58,6 @@
 
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
-#define FLASH_BASE              0x0
 #define FLASH_SIZE              0x6000
 #define RAM_BASE                0x20000000
 #define RAM_SIZE                0x40000
@@ -67,13 +66,18 @@
 #define CCFG_BASE               0x50000000
 #define CCFG_SIZE               0x800
 
+#ifdef DUAL_SLOT
+#define FLASH_BASE  0x800
+#else
+#define FLASH_BASE  0x000
+#endif
 
 /* System memory map */
 
 MEMORY
 {
     /* Application stored in and executes from internal flash */
-    FLASH (RX) : origin = 0x0,     length = FLASH_SIZE
+    FLASH (RX) : origin = FLASH_BASE,     length = FLASH_SIZE
     /* Application uses internal RAM for data */
     SRAM (RWX) : origin = RAM_BASE, length = RAM_SIZE
     /* Application can use GPRAM region as RAM if cache is disabled in the CCFG

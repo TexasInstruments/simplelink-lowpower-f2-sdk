@@ -44,6 +44,12 @@ var boardName = system.deviceData.board.name;
  * Import the modules used in this configuration.
  */
 const CCFG = scripting.addModule("/ti/devices/CCFG");
+const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+for(var setting in ccfgSettings)
+{
+    CCFG[setting] = ccfgSettings[setting];
+}
+
 if (boardName.match(/CC13.2.7|CC26.2.7/))
 {
     // mcuboot stored at end of flash alongside CCFG

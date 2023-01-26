@@ -196,13 +196,13 @@ void bspSpiOpen(uint32_t bitRate, uint32_t clkPin)
                      bitRate, /* bit rate */
                      8); /* data size */
 
-  GPIOSetOutputEnableDio(BSP_SPI_MOSI, GPIO_OUTPUT_ENABLE);
+  GPIO_setOutputEnableDio(BSP_SPI_MOSI, GPIO_OUTPUT_ENABLE);
   bspGpioSetMux(BSP_SPI_MOSI, GPIO_MUX_PORTCFG_PFUNC_2);
 
   bspGpioSetConfig(BSP_SPI_MISO, GPIO_CFG_INPUT_INTERNAL_NO_PULL);
   bspGpioSetMux(BSP_SPI_MISO, GPIO_MUX_PORTCFG_PFUNC_1);
 
-  GPIOSetOutputEnableDio(BSP_SPI_CLK_FLASH, GPIO_OUTPUT_ENABLE);
+  GPIO_setOutputEnableDio(BSP_SPI_CLK_FLASH, GPIO_OUTPUT_ENABLE);
   bspGpioSetMux(BSP_SPI_CLK_FLASH, GPIO_MUX_PORTCFG_PFUNC_4);
 
   SPIEnable(BLS_SPI_BASE);

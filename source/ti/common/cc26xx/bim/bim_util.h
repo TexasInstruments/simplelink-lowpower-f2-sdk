@@ -65,7 +65,7 @@ extern "C"
 #include DeviceFamily_constructPath(driverlib/setup.h)
 #include DeviceFamily_constructPath(driverlib/pwr_ctrl.h)
 
-#include "common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
 
 /*******************************************************************************
 *  EXTERNAL VARIABLES

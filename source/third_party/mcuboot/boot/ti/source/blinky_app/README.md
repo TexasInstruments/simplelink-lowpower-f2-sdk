@@ -41,3 +41,7 @@ initialization is complete.
 * `CONFIG_GPIO_LED_0` is toggled every 500ms.
 * `CONFIG_GPIO_LED_1` is toggled every 500ms.
 
+## Dual Slot build configuration
+
+When this configuration is enabled, make sure to **also** flash file `mcuboot_blinky_*.2.bin` to the primary 2 slot. This is needed because MCUBoot will verify primary slots 1 and 2 as a requirement to boot primary 1. `mcuboot_blinky_*.2.bin` is an identical copy of the primary 1 binary, but processed for a slot length of 0x4e800, which is the slot length configured for primary 2 and secondary 2 slots.
+

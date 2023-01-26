@@ -30,10 +30,16 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-define symbol __intvec_start__ = 0x00000000;
-/*-Memory Regions-*/
-define symbol FLASH_start__ = 0x00000000;
-define symbol FLASH_end__   = 0x00006000;
+if (DUAL_SLOT == 1) {
+    define symbol __intvec_start__ = 0x800;
+    define symbol FLASH_start__    = 0x800;
+    define symbol FLASH_end__      = 0x67ff;
+} else {
+    define symbol __intvec_start__ = 0x0;
+    define symbol FLASH_start__    = 0x0;
+    define symbol FLASH_end__      = 0x5fff;
+}
+
 define symbol RAM_start__ = 0x20000000;
 define symbol RAM_end__   = 0x2003FFFF;
 define symbol GPRAM_start__ = 0x11000000;

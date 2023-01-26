@@ -56,7 +56,7 @@
  *  The external flash layout file should be included in an OAD enabled
  *  application as follows:
  *  @code
- *  #include <common/cc26xx/oad/ext_flash_layout.h>
+ *  #include <ti/common/cc26xx/oad/ext_flash_layout.h>
  *  @endcode
  *
  *  # Overview #
@@ -85,7 +85,7 @@ extern "C"
  * INCLUDES
  ******************************************************************************/
 
-#include <common/cc26xx/oad/oad_image_header.h>
+#include <ti/common/cc26xx/oad/oad_image_header.h>
 
 /*!
  * Magic number used by entries in the image header table at the beginning of

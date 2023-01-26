@@ -85,6 +85,16 @@ of the data block is used to jump from one item to the next. If this field is
 corrupted, the driver is forced to search for items by signature and possibly
 compute multiple CRC's to confirm it has found a valid item. Note that any
 corruption event forces a compaction to recover.
+
+To reduce further RAM consumption, the user can define NVOCMP_RAM_OPTIMIZATION to
+enable this feature. Note that for cc23x0, NVOCMP_RAM_OPTIMIZATION is enabled
+by default. Alternatively, if this optimization is not needed in a particular
+application for cc23x0, the user can define NVOCMP_NO_RAM_OPTIMIZATION to
+effectively disable this feature for cc23x0.
+
+When RAM optimization is enabled, the user can configure the size of the
+working buffer by setting NVOCMP_RAM_BUFFER_SIZE, which defaults to 500.
+
 */
 //*****************************************************************************
 // Use / Configuration
@@ -155,6 +165,12 @@ ENABLE_SANITY_CHECK - This define needs to be enabled if user needs the
 NVOCMP_sanityCheckApi() to be available. This function is used to perform
 a sanity check on the active partition to report if corruption has been
 detected.
+
+NVOCMP_RAM_OPTIMIZATION - Enables RAM optimization.
+NVOCMP_NO_RAM_OPTIMIZATION - Disables RAM optimization for cc23x0, as it
+is enabled by default on this family of devices.
+NVOCMP_RAM_BUFFER_SIZE - Sets the size for the RAM buffer used when
+RAM optimization is enabled. Default value is 500.
 
 Dependencies:
 Requires NVS for NV access.
@@ -360,27 +376,50 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 #define NVOCMP_SIGNATURE  0x96
 #endif // NVOCMP_SIGNATURE
 
-// Compact Memory
-#if !defined (NV_LINUX) && \
-    !defined (DeviceFamily_CC13X4) && \
-    !defined (DeviceFamily_CC26X4) && \
-    !defined (DeviceFamily_CC26X3) && \
-    !defined (DeviceFamily_CC23X0)
-#define NVOCMP_GPRAM
+#ifndef NVOCMP_NO_RAM_OPTIMIZATION
+#ifdef DeviceFamily_CC23X0
+    #define NVOCMP_RAM_OPTIMIZATION
+#endif
 #endif
 
-#ifdef NVOCMP_GPRAM
-#define RAM_BUFFER_ADDRESS    (uint8_t *)GPRAM_BASE
+#ifndef NVOCMP_RAM_OPTIMIZATION
+    // Compact Memory
+    #if !defined (NV_LINUX) && \
+        !defined (DeviceFamily_CC13X4) && \
+        !defined (DeviceFamily_CC26X4) && \
+        !defined (DeviceFamily_CC26X3) && \
+        !defined (DeviceFamily_CC23X0)
+        #define NVOCMP_GPRAM
+    #endif
+
+    #ifdef NVOCMP_GPRAM
+        #define RAM_BUFFER_ADDRESS    (uint8_t *)GPRAM_BASE
+    #else
+        /* When CC23X0 is used, as GPRAM is not supported,
+         * an SRAM buffer of FLASH_PAGE_SIZE length is declared,
+         * as the NVOCMP algorithm relies on it.
+         * Also, when CC13X4 / CC26X3 / CC26X4 is used,
+         * GPRAM cannot be used as it is always mapped to secure
+         * address space, and therefore cannot be used by non-secure
+         * application. A buffer in SRAM is used instead.
+         * */
+        uint32_t tBuffer[FLASH_PAGE_SIZE >> 2];
+    #endif
 #else
-/* When CC23X0 is used, as GPRAM is not supported,
- * an SRAM buffer of FLASH_PAGE_SIZE length is declared,
- * as the NVOCMP algorithm relies on it.
- * Also, when CC13X4 / CC26X3 /CC26X4 is used,
- * GPRAM cannot be used as it is always mapped to secure
- * address space, and therefore cannot be used by non-secure
- * application. A buffer in SRAM is used instead.
- * */
-uint32_t tBuffer[FLASH_PAGE_SIZE >> 2];
+    #ifdef NVOCMP_FASTOFF
+        #undef NVOCMP_FASTOFF
+    #endif
+    #define NVOCMP_FASTOFF      0
+
+    #ifdef NVOCMP_FASTITEM
+        #undef NVOCMP_FASTITEM
+    #endif
+    #define NVOCMP_FASTITEM     0
+
+    #ifndef NVOCMP_RAM_BUFFER_SIZE
+        #define NVOCMP_RAM_BUFFER_SIZE 500
+    #endif
+    uint8_t tBuffer[NVOCMP_RAM_BUFFER_SIZE];
 #endif
 
 // Page header structure
@@ -711,7 +750,6 @@ static uint8_t    NVOCMP_checkItem(NVINTF_itemID_t *id, uint16_t len, NVOCMP_ite
                                    uint8_t flag);
 static inline void NVOCMP_read(uint8_t pg, uint16_t off, uint8_t *pBuf, uint16_t len);
 static uint8_t    NVOCMP_write(uint8_t dstPg, uint16_t off, uint8_t *pBuf, uint16_t len);
-
 static void       NVOCMP_readHeader(uint8_t pg, uint16_t ofs, NVOCMP_itemHdr_t *iHdr, bool flag);
 static void       NVOCMP_setCompactHdr(uint8_t dstPg, uint8_t pg, int16_t offset,
                                        uint16_t location);
@@ -729,11 +767,13 @@ static uint8_t    NVOCMP_findPage(NVOCMP_pageState_t state);
 static void       NVOCMP_getCompactHdr(uint8_t dstPg, uint16_t location, NVOCMP_compactHdr_t *pHdr);
 #endif
 
-#if (NVOCMP_NVPAGES > NVOCMP_NVONEP)
-#if !defined(NVOCMP_MIGRATE_DISABLED)
-static void       NVOCMP_copyItem(uint8_t srcPg, uint8_t xPg, uint16_t sOfs, uint16_t dOfs, uint16_t len);
+#if (NVOCMP_NVPAGES > NVOCMP_NVONEP) && !defined(NVOCMP_MIGRATE_DISABLED)
 static void       NVOCMP_migratePage(NVOCMP_nvHandle_t *pNvHandle, uint8_t page);
 #endif
+
+#if ((NVOCMP_NVPAGES > NVOCMP_NVONEP) && !defined(NVOCMP_MIGRATE_DISABLED)) \
+    || defined NVOCMP_RAM_OPTIMIZATION
+static void       NVOCMP_copyItem(uint8_t srcPg, uint8_t dstPg, uint16_t sOfs, uint16_t dOfs, uint16_t len);
 #endif
 
 //*****************************************************************************
@@ -3207,27 +3247,34 @@ static void NVOCMP_writeItem(NVOCMP_nvHandle_t *pNvHandle, NVOCMP_itemHdr_t *pHd
  * @param   pg   - A valid NV Flash page
  * @param   ofs  - A valid offset into the page
  * @param   pHdr - Pointer to caller's item header buffer
- * @param   flag - fast flag
+ * @param   flag - fast flag (not used if NVOCMP_RAM_OPTIMIZATION is defined)
  *
  * @return  none
  */
 static void NVOCMP_readHeader(uint8_t pg, uint16_t ofs, NVOCMP_itemHdr_t *pHdr, bool flag)
 {
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
 #else
     uint8_t *pTBuffer = (uint8_t *)tBuffer;
 #endif
+#endif
+
     cmpIH_t cHdr;
+#ifndef NVOCMP_RAM_OPTIMIZATION
     if(flag)
     {
       memcpy((uint8_t *)cHdr, (uint8_t *)(pTBuffer + ofs), NVOCMP_ITEMHDRLEN);
     }
     else
     {
+#endif
       // Get item header from Flash
       NVOCMP_read(pg, ofs, (uint8_t *)cHdr, NVOCMP_ITEMHDRLEN);
+#ifndef NVOCMP_RAM_OPTIMIZATION
     }
+#endif
     // Offset to compressed header
     pHdr->hofs = ofs;
     pHdr->hpage = pg;
@@ -3278,7 +3325,7 @@ static void NVOCMP_readHeader(uint8_t pg, uint16_t ofs, NVOCMP_itemHdr_t *pHdr, 
  * @param   bOfs - offset into NV data block
  * @param   len - length of NV data to return (0 is illegal)
  * @param   pBuf - pointer to caller's read data buffer  (NULL is illegal)
- * @param   flag - fast flag
+ * @param   flag - fast flag (not used if NVOCMP_RAM_OPTIMIZATION is defined)
  *
  * @return  NVINTF_SUCCESS or specific failure code
  */
@@ -3287,24 +3334,27 @@ static uint8_t NVOCMP_readItem(NVOCMP_itemHdr_t *iHdr, uint16_t ofs, uint16_t le
 {
     uint8_t err = NVINTF_SUCCESS;
     uint16_t dOfs, iOfs;
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
 #else
     uint8_t *pTBuffer = (uint8_t *)tBuffer;
 #endif
+#endif
     iOfs = (iHdr->hofs - iHdr->len);
 
     // Optional CRC integrity check
-    if (NVOCMP_CRCONREAD)
-    {
-        err = NVOCMP_verifyCRC(iOfs, iHdr->len, iHdr->crc8, iHdr->hpage, flag);
-    }
+#if NVOCMP_CRCONREAD    
+    err = NVOCMP_verifyCRC(iOfs, iHdr->len, iHdr->crc8, iHdr->hpage, flag);
+#endif
+
     if(err == NVINTF_SUCCESS)
     {
         // Offset to start of item data
         dOfs = iOfs + ofs;
         if((dOfs + len) <= iHdr->hofs)
         {
+#ifndef NVOCMP_RAM_OPTIMIZATION
             if(flag)
             {
               // Copy from RAM
@@ -3312,9 +3362,12 @@ static uint8_t NVOCMP_readItem(NVOCMP_itemHdr_t *iHdr, uint16_t ofs, uint16_t le
             }
             else
             {
+#endif
               // Copy NV data block to caller's buffer
               NVOCMP_read(iHdr->hpage, dOfs, (uint8_t *)pBuf, len);
+#ifndef NVOCMP_RAM_OPTIMIZATION
             }
+#endif
         }
         else
         {
@@ -3505,7 +3558,7 @@ static uint16_t NVOCMP_findOffset(uint8_t pg, uint16_t ofs)
     {
         ofs -= sizeof(uint32_t);
         tmp = (uint32_t *)(pTBuffer + ofs);
-        if((*tmp) != 0xFFFFFFFF)
+        if((*tmp) != NVOCMP_ERASEDWORD)
         {
             break;
         }
@@ -3514,7 +3567,7 @@ static uint16_t NVOCMP_findOffset(uint8_t pg, uint16_t ofs)
     // Starting with LSB, look for non-erased byte
     for(i = j = 1; i <= 4; i++)
     {
-        if(((*tmp) & 0xFF) != 0xFF)
+        if(((*tmp) & NVOCMP_ERASEDBYTE) != NVOCMP_ERASEDBYTE)
         {
             // Last non-erased byte so far
             j = i;
@@ -3548,7 +3601,7 @@ static uint16_t NVOCMP_findOffset(uint8_t pg, uint16_t ofs)
     // Starting with LSB, look for non-erased byte
     for(i = j = 1; i <= 4; i++)
     {
-        if((tmp & 0xFF) != NVOCMP_ERASEDBYTE)
+        if((tmp & NVOCMP_ERASEDBYTE) != NVOCMP_ERASEDBYTE)
         {
             // Last non-erased byte so far
             j = i;
@@ -4362,12 +4415,15 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     uint8_t dstPg;
     uint8_t srcPg;
     uint32_t aItem=0;
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint32_t vm;
     uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
 #else
     uint8_t *pTBuffer = (uint8_t *)tBuffer;
 #endif
+#endif
+
     NVOCMP_compactStatus_t status = NVOCMP_COMPACT_SUCCESS;
 
 #ifndef NVOCMP_GPRAM
@@ -4479,9 +4535,11 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
                 NVOCMP_restoreCache(vm);
 #endif
                 // If we get here and foundSig is false, we never found another
-                // item in the page
+                // item in the page, break the loop so that any valid items
+                // that were collected up to this point get written to the
+                // destination page.
                 NVOCMP_ALERT(foundSig, "Attempt to find signature failed.")
-                return(NVOCMP_COMPACT_FAILURE);
+                break;
               }
             }
             else
@@ -4498,10 +4556,14 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
                 else
                 {
                   // Get block of bytes from source page
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #if NVOCMP_COMPR
                   NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + dstOff), itemSize);
 #else
                   NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + FLASH_PAGE_SIZE - dstOff - itemSize), itemSize);
+#endif
+#else
+                  NVOCMP_copyItem(srcPg, dstPg, crcOff, dstOff, itemSize);
 #endif
                   dstOff += itemSize;
                   aItem++;
@@ -4537,6 +4599,7 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     }
 
     // Write block to destination page
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #if NVOCMP_COMPR
     uint16_t off = NVOCMP_PGDATAOFS;
     uint16_t len = dstOff - NVOCMP_PGDATAOFS;
@@ -4548,6 +4611,7 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     uint16_t len = dstOff - NVOCMP_PGDATAOFS;
 
     NVOCMP_failW |= NVOCMP_write(dstPg, off, (uint8_t *)(pTBuffer + doff), len);
+#endif
 #endif
 
 #ifdef NVOCMP_GPRAM
@@ -4576,6 +4640,7 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     {
       status |= NVOCMP_COMPACT_DSTDONE;
     }
+
     return(status);
 }
 #else
@@ -4599,11 +4664,13 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     uint8_t dstPg;
     uint8_t srcPg;
     uint32_t aItem=0;
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint32_t vm;
     uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
 #else
     uint8_t *pTBuffer = (uint8_t *)tBuffer;
+#endif
 #endif
 
 #ifndef NVOCMP_GPRAM
@@ -4700,10 +4767,14 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
               if(!needSkip)
               {
                 // Get block of bytes from source page
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #if NVOCMP_COMPR
                 NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + dstOff), itemSize);
 #else
                 NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + FLASH_PAGE_SIZE - dstOff - itemSize), itemSize);
+#endif
+#else
+                NVOCMP_copyItem(srcPg, dstPg, crcOff, dstOff, itemSize);
 #endif
                 dstOff += itemSize;
                 aItem++;
@@ -4740,6 +4811,7 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
 #endif
 
     // Write block to destination page
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #if NVOCMP_COMPR
     uint16_t off = NVOCMP_PGDATAOFS;
     uint16_t len = dstOff - NVOCMP_PGDATAOFS;
@@ -4748,8 +4820,8 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
     uint16_t off = NVOCMP_PGDATAOFS;
     uint16_t doff = FLASH_PAGE_SIZE - dstOff;
     uint16_t len = dstOff - NVOCMP_PGDATAOFS;
-
     NVOCMP_failW |= NVOCMP_write(dstPg, off, (uint8_t *)(pTBuffer + doff), len);
+#endif
 #endif
 
 #ifdef NVOCMP_GPRAM
@@ -4767,7 +4839,8 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
 }
 #endif
 
-#if ((NVOCMP_NVPAGES > NVOCMP_NVONEP) && !defined(NVOCMP_MIGRATE_DISABLED))
+#if ((NVOCMP_NVPAGES > NVOCMP_NVONEP) && !defined(NVOCMP_MIGRATE_DISABLED)) \
+    || defined NVOCMP_RAM_OPTIMIZATION
 /******************************************************************************
  * @fn      NVOCMP_copyItem
  *
@@ -4784,13 +4857,21 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
 static void NVOCMP_copyItem(uint8_t srcPg, uint8_t dstPg, uint16_t sOfs, uint16_t dOfs, uint16_t len)
 {
     uint16_t num;
+#ifndef NVOCMP_RAM_OPTIMIZATION
     uint8_t tmp[NVOCMP_XFERBLKMAX];
+#else
+    uint8_t *tmp = (uint8_t *)tBuffer;
+#endif
 
     // Copy over the data: Flash to RAM, then RAM to Flash
     while(len > 0 && !NVOCMP_failW)
     {
         // Number of bytes to transfer in this block
+#ifndef NVOCMP_RAM_OPTIMIZATION
         num = (len < NVOCMP_XFERBLKMAX) ? len : NVOCMP_XFERBLKMAX;
+#else
+        num = (len < NVOCMP_RAM_BUFFER_SIZE) ? len : NVOCMP_RAM_BUFFER_SIZE;
+#endif
 
         // Get block of bytes from source page
         NVOCMP_read(srcPg, sOfs, (uint8_t *)&tmp, num);
@@ -4850,17 +4931,19 @@ static void NVOCMP_writeByte(uint8_t pg, uint16_t ofs, uint8_t bwv)
  * @param   ofs - Flash page offset to lowest address item byte
  * @param   len - Item data length
  * @param   crc - value to start with, should be NULL if new calculation
- * @param   flag - fast flag
+ * @param   flag - fast flag (not used if NVOCMP_RAM_OPTIMIZATION is defined)
  *
  * @return  crc byte
  */
 static uint8_t NVOCMP_doNVCRC(uint8_t pg, uint16_t ofs, uint16_t len, uint8_t crc, bool flag)
 {
     uint16_t rdLen = 0;
+#ifndef NVOCMP_RAM_OPTIMIZATION
 #ifdef NVOCMP_GPRAM
     uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
 #else
     uint8_t *pTBuffer = (uint8_t *)tBuffer;
+#endif
 #endif
     uint8_t tmp[NVOCMP_XFERBLKMAX];
     crc_t newCRC = (crc_t)crc;
@@ -4869,14 +4952,18 @@ static uint8_t NVOCMP_doNVCRC(uint8_t pg, uint16_t ofs, uint16_t len, uint8_t cr
     while(len > 0)
     {
         rdLen  = (len < NVOCMP_XFERBLKMAX ? len : NVOCMP_XFERBLKMAX);
+#ifndef NVOCMP_RAM_OPTIMIZATION
         if(flag)
         {
           memcpy((uint8_t *)tmp, (uint8_t *)(pTBuffer+ofs), rdLen);
         }
         else
         {
+#endif
           NVOCMP_read(pg, ofs, tmp, rdLen);
+#ifndef NVOCMP_RAM_OPTIMIZATION
         }
+#endif
         newCRC = crc_update(newCRC,tmp,rdLen);
         len   -= rdLen;
         ofs   += rdLen;
@@ -4913,7 +5000,7 @@ static uint8_t NVOCMP_doRAMCRC(uint8_t *input, uint16_t len, uint8_t crc)
  * @param   len - length of item data
  * @param   crc - crc to compare against
  * @param   pg - page to work on
- * @param   flag - fast flag
+ * @param   flag - fast flag (not used if NVOCMP_RAM_OPTIMIZATION is defined)
  *
  * @return  status byte
  */
@@ -4966,16 +5053,7 @@ static uint32_t NVOCMP_sanityCheckApi (void)
     uint8_t srcPg;
     uint32_t ret = NVINTF_SUCCESS;
     uint32_t aItem=0;
-#ifdef NVOCMP_GPRAM
-    uint32_t vm;
-    uint8_t *pTBuffer = RAM_BUFFER_ADDRESS;
-#else
-    uint8_t *pTBuffer = (uint8_t *)tBuffer;
-#endif
 
-#ifndef NVOCMP_GPRAM
-    memset(tBuffer, 0, sizeof(tBuffer));
-#endif
     // Reset Flash erase/write fail indicator
     NVOCMP_failW = NVINTF_SUCCESS;
 
@@ -4996,9 +5074,6 @@ static uint32_t NVOCMP_sanityCheckApi (void)
 
     NVOCMP_ALERT(false, "Sanity Check")
 
-#ifdef NVOCMP_GPRAM
-    NVOCMP_disableCache(&vm);
-#endif
     while(srcOff > endOff)
     {
         if(NVOCMP_failW == NVINTF_SUCCESS)
@@ -5068,12 +5143,6 @@ static uint32_t NVOCMP_sanityCheckApi (void)
             {
               if(!needSkip)
               {
-                // Get block of bytes from source page
-#if NVOCMP_COMPR
-                NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + dstOff), itemSize);
-#else
-                NVOCMP_read(srcPg, crcOff, (uint8_t *)(pTBuffer + FLASH_PAGE_SIZE - dstOff - itemSize), itemSize);
-#endif
                 dstOff += itemSize;
                 aItem++;
               }
@@ -5083,9 +5152,6 @@ static uint32_t NVOCMP_sanityCheckApi (void)
         }
         else
         {
-#ifdef NVOCMP_GPRAM
-            NVOCMP_restoreCache(vm);
-#endif
             // Failure during item xfer makes next findItem() unreliable
             NVOCMP_ASSERT(false, "SANITY CHECK FAILURE")
             ret |= (1 << NVINTF_FAILURE);
@@ -5094,17 +5160,10 @@ static uint32_t NVOCMP_sanityCheckApi (void)
 
     if(NVOCMP_failW != NVINTF_SUCCESS)
     {
-#ifdef NVOCMP_GPRAM
-        NVOCMP_restoreCache(vm);
-#endif
         // Something bad happened when scanning the page
         NVOCMP_ASSERT(false, "SANITY CHECK FAILURE")
         ret |= (1 << NVINTF_FAILURE);
     }
-
-#ifdef NVOCMP_GPRAM
-    NVOCMP_restoreCache(vm);
-#endif
 
     return(ret);
 }

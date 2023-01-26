@@ -58,15 +58,22 @@
 
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
-#define FLASH_BASE              0x6080
-#define FLASH_SIZE              0x7CF80
+
+#define FLASH_SIZE              0x29f80
 #define RAM_BASE                0x20000000
 #define RAM_SIZE                0x20000
 #define GPRAM_BASE              0x11000000
 #define GPRAM_SIZE              0x2000
 
 /* Export the header address to the blinky app */
-MCUBOOT_HDR_BASE = 0x00006000;
+
+#ifdef DUAL_SLOT
+#define FLASH_BASE  0x6880
+MCUBOOT_HDR_BASE  = 0x6800;
+#else
+#define FLASH_BASE  0x6080
+MCUBOOT_HDR_BASE  = 0x6000;
+#endif
 
 /* System memory map */
 

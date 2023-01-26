@@ -39,7 +39,7 @@
 "use strict";
 
 // Module version
-const RADIO_CONFIG_VERSION = "1.14";
+const RADIO_CONFIG_VERSION = "1.16";
 
 // Common utility functions
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");

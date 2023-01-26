@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "9.6 kbps, 2-GFSK, 2.4 kHz deviation for 863-930 MHz band. Needs to be used with TCXO. (Pre-Silicon)",
+        "Name": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth",
+        "Description": "9.6 kbps, 2-GFSK, 2.4 kHz deviation for 863-930 MHz band. Needs to be used with TCXO.",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",

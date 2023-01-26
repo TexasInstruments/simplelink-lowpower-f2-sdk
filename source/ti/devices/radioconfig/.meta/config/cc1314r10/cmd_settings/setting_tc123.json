@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "20 kbps, FSK-C, 10 kHz deviation, IEEE 802.15.4 SUN FSK compatible PHY. (Pre-Silicon)",
+        "Name": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth",
+        "Description": "20 kbps, FSK-C, 10 kHz deviation, IEEE 802.15.4 SUN FSK compatible PHY.",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -122,6 +122,10 @@
                         "$": "0"
                     },
                     {
+                        "_name": "config.bSynthNarrowBand",
+                        "$": "1"
+                    },
+                    {
                         "_name": "txPower",
                         "$": "0x9F3F"
                     },
@@ -171,6 +175,36 @@
                         {
                             "_name": "override_tc123.json",
                             "Element32b": [
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set loop bandwidth after lock to 80 kHz (K2)",
+                                    "$": "0xA47E0583"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set loop bandwidth after lock to 80 kHz (K2)",
+                                    "$": "0x000005A3"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set loop bandwidth after lock to 80 kHz (K3, LSB)",
+                                    "$": "0xEAE00603"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set loop bandwidth after lock to 80 kHz (K3, MSB)",
+                                    "$": "0x00010623"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set FREF = 8 MHz",
+                                    "$": "0x000684A3"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Synth: Set FREF dither = 9.6 MHz",
+                                    "$": "0x000584B3"
+                                },
                                 {
                                     "_type": "HW_REG_OVERRIDE",
                                     "_comment": "Tx: Configure PA ramping, set wait time before turning off (0x1A ticks of 16\/24 us = 17.3 us).",

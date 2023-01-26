@@ -58,7 +58,6 @@
 
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
-#define MCUBOOT_HDR_BASE        0x00000000
 #define FLASH_BASE              0x00000080
 #define FLASH_SIZE              0x29F80
 #define RAM_BASE                0x20000000

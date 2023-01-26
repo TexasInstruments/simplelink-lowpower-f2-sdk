@@ -528,12 +528,12 @@ function getPaTableExportMethods() {
 function validate(rfinst, validation) {
     // Validate RF design versus system board selection
     if (HasTiBoard) {
-        const lockMsg = "Changing front-end is only possible on custom boards";
-        if (TiBoard !== rfinst.rfDesign) {
+        if (!rfinst.rfDesign.includes(TiBoard)) {
             Common.logError(validation, rfinst, "rfDesign", "RF Design must align with board selection: " + TiBoard);
             return;
         }
 
+        const lockMsg = "Changing front-end is only possible on custom boards";
         if (rfinst.feSub1g !== CurrentDesign.feSub1g) {
             Common.logError(validation, rfinst, "feSub1g", lockMsg);
             return;

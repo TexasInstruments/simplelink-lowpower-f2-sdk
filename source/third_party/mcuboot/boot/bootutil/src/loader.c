@@ -2329,6 +2329,8 @@ context_boot_go(struct boot_loader_state *state, struct boot_rsp *rsp)
                 }
             }
 
+	    rc = 0;
+
 #ifdef MCUBOOT_DIRECT_XIP_REVERT
             rc = boot_select_or_erase(&slot_state, selected_slot);
             if (rc != 0) {

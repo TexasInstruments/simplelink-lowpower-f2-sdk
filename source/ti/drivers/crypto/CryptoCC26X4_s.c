@@ -45,8 +45,8 @@
 #include <ti/drivers/aesgcm/AESGCMCC26X4_s.h>
 #include <ti/drivers/ecdh/ECDHCC26X4_s.h>
 #include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
-//#include <ti/drivers/eddsa/EDDSACC26X4_s.h>
-//#include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
+// #include <ti/drivers/eddsa/EDDSACC26X4_s.h>
+// #include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
 #include <ti/drivers/sha2/SHA2CC26X4_s.h>
 #include <ti/drivers/trng/TRNGCC26X4_s.h>
 

@@ -55,7 +55,7 @@ extern "C"
  *                                          Includes
  */
 
-#include "common/flash/no_rtos/extFlash/bsp.h"
+#include "ti/common/flash/no_rtos/extFlash/bsp.h"
 
 /*******************************************************************************
  * MACROS

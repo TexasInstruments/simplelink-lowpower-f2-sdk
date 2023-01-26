@@ -49,26 +49,95 @@
 
 #define FLASH_BASE_ADDRESS          0
 
+/*
+* The following definitions apply for the configuration in which
+* TI_BOOT_USE_EXTERNAL_FLASH is not defined; that is, both
+* Primary and Secondary slots are located in on-chip memory.
+*/
 #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2)
-    #define BOOTLOADER_BASE_ADDRESS     0x00054000
-    #define BOOT_BOOTLOADER_SIZE        0x0003FA8
-    #define BOOT_PRIMARY_1_SIZE         0x2A000
-    #define BOOT_SECONDARY_1_SIZE       0x2A000
+    #define BOOTLOADER_BASE_ADDRESS             0x00054000
+    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
+    #define BOOT_PRIMARY_1_SIZE                 0x0002A000
+    
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x0002A000
+    #define BOOT_SECONDARY_1_SIZE               0x0002A000
 #elif defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-    #define BOOTLOADER_BASE_ADDRESS     0x000AC000
-    #define BOOT_BOOTLOADER_SIZE        0x0003FA8
-    #define BOOT_PRIMARY_1_SIZE         0x56000
-    #define BOOT_SECONDARY_1_SIZE       0x56000
+    #define BOOTLOADER_BASE_ADDRESS             0x000AC000
+    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
+    #define BOOT_PRIMARY_1_SIZE                 0x00056000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
+    #define BOOT_SECONDARY_1_SIZE               0x00056000
 #elif defined DeviceFamily_CC23X0
-    #define BOOTLOADER_BASE_ADDRESS     0
-    #define BOOT_BOOTLOADER_SIZE        0x06000
-    #define BOOT_PRIMARY_1_SIZE         0x3d000
-    #define BOOT_SECONDARY_1_SIZE       0x3d000
+    #define BOOTLOADER_BASE_ADDRESS             0x00000000
+    #define BOOT_BOOTLOADER_SIZE                0x00006000
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00006000
+    #define BOOT_PRIMARY_1_SIZE                 0x0003d000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00043000
+    #define BOOT_SECONDARY_1_SIZE               0x0003d000
 #else
-    #define BOOTLOADER_BASE_ADDRESS     0
-    #define BOOT_BOOTLOADER_SIZE        0x06000
-    #define BOOT_PRIMARY_1_SIZE         0x7D000
-    #define BOOT_SECONDARY_1_SIZE       0x7D000
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        #define BOOTLOADER_BASE_ADDRESS         0x00000800
+        #define BOOT_BOOTLOADER_SIZE            0x00006000
+
+        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x0000d000 
+        #define BOOT_PRIMARY_1_SIZE             0x0002b000
+
+        #define BOOT_PRIMARY_2_BASE_ADDRESS     0x00038000
+        #define BOOT_PRIMARY_2_SIZE             0x0004e800
+
+        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00086800
+        #define BOOT_SECONDARY_1_SIZE           0x0002b000
+
+        #define BOOT_SECONDARY_2_BASE_ADDRESS   0x000b1800
+        #define BOOT_SECONDARY_2_SIZE           0x0004e800
+    #else
+        #define BOOTLOADER_BASE_ADDRESS         0x00000000
+        #define BOOT_BOOTLOADER_SIZE            0x00006000
+
+        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x00006000
+        #define BOOT_PRIMARY_1_SIZE             0x0002b000
+        
+        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00031000 
+        #define BOOT_SECONDARY_1_SIZE           0x0002b000
+    #endif
+#endif
+
+/* 
+* The following definitions apply for the configuration in which
+* TI_BOOT_USE_EXTERNAL_FLASH is defined; that is, 
+* Primary slots are located in on-chip memory, and Secondary 
+* slots are located in off-chip memory. Note that only the base 
+* address for Secondary slots differ from on-chip mode, but their
+* respective sizes are kept.
+*/
+#ifdef TI_BOOT_USE_EXTERNAL_FLASH
+    #ifdef BOOT_SECONDARY_1_BASE_ADDRESS
+        #undef BOOT_SECONDARY_1_BASE_ADDRESS
+    #endif
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00000000
+
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        #ifdef BOOT_SECONDARY_2_BASE_ADDRESS
+            #undef BOOT_SECONDARY_2_BASE_ADDRESS
+        #endif
+
+         /* 
+         * The base and size of the secondary 1 slot are
+         * used to compute the start address of the Secondary 2
+         * slot, to keep both slots contiguous in external
+         * flash. 
+         */
+        #define BOOT_SECONDARY_2_BASE_ADDRESS   BOOT_SECONDARY_1_BASE_ADDRESS + \
+                                                BOOT_SECONDARY_1_SIZE
+    #endif
 #endif
 
 #ifdef DeviceFamily_CC23X0
@@ -85,7 +154,7 @@
 #ifdef TI_FLASH_MAP_EXT_DESC
     /* Nothing to be there when external FlashMap Descriptors are used */
 #else
-    static struct flash_area bootloader =
+    static const struct flash_area bootloader =
     {
         .fa_id = FLASH_AREA_BOOTLOADER,
         .fa_device_id = FLASH_DEVICE_INTERNAL_FLASH,
@@ -93,42 +162,58 @@
         .fa_size = BOOT_BOOTLOADER_SIZE
     };
 
-    static struct flash_area primary_1 =
+    static const struct flash_area primary_1 =
     {
         .fa_id = FLASH_AREA_IMAGE_PRIMARY(0),
         .fa_device_id = FLASH_DEVICE_INTERNAL_FLASH,
-    #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2) || \
-        defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-        .fa_off = 0,
-    #else
-        .fa_off = BOOTLOADER_BASE_ADDRESS + BOOT_BOOTLOADER_SIZE,
-    #endif
+        .fa_off = BOOT_PRIMARY_1_BASE_ADDRESS,
         .fa_size = BOOT_PRIMARY_1_SIZE
     };
+    
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        static const struct flash_area primary_2 =
+        {
+            .fa_id = FLASH_AREA_IMAGE_PRIMARY(1),
+            .fa_device_id = FLASH_DEVICE_INTERNAL_FLASH,
+            .fa_off = BOOT_PRIMARY_2_BASE_ADDRESS,
+            .fa_size = BOOT_PRIMARY_2_SIZE
+        };
+    #endif
 
-    static struct flash_area secondary_1 =
+    static const struct flash_area secondary_1 =
     {
         .fa_id = FLASH_AREA_IMAGE_SECONDARY(0),
     #ifndef TI_BOOT_USE_EXTERNAL_FLASH
         .fa_device_id = FLASH_DEVICE_INTERNAL_FLASH,
-        #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2) || \
-            defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-            .fa_off = BOOT_PRIMARY_1_SIZE,
-        #else
-            .fa_off = BOOTLOADER_BASE_ADDRESS + \
-                BOOT_BOOTLOADER_SIZE + \
-                BOOT_PRIMARY_1_SIZE,
-        #endif
     #else
         .fa_device_id = FLASH_DEVICE_EXTERNAL_FLASH(0),
-        .fa_off = 0,
     #endif
+        .fa_off = BOOT_SECONDARY_1_BASE_ADDRESS,
         .fa_size = BOOT_SECONDARY_1_SIZE
     };
+    
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        static const struct flash_area secondary_2 =
+        {
+            .fa_id = FLASH_AREA_IMAGE_SECONDARY(1),            
+            #ifndef TI_BOOT_USE_EXTERNAL_FLASH
+                .fa_device_id = FLASH_DEVICE_INTERNAL_FLASH,
+            #else
+                .fa_device_id = FLASH_DEVICE_EXTERNAL_FLASH(0),
+            #endif
+            .fa_off = BOOT_SECONDARY_2_BASE_ADDRESS,
+            .fa_size = BOOT_SECONDARY_2_SIZE
+        };
+     #endif
+#endif
 
-    #if (MCUBOOT_IMAGE_NUMBER == 2) /* if dual-image */
-        #error "Dual-image not supported"
-    #endif
+#if (MCUBOOT_IMAGE_NUMBER == 2) && \
+    (DeviceFamily_PARENT != DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #error "MCUBOOT_IMAGE_NUMBER == 2 for current device not supported"
+#endif
+
+#if (MCUBOOT_IMAGE_NUMBER > 2)
+#error "More than 2 images not supported"
 #endif
 
 #ifdef MCUBOOT_SWAP_USING_SCRATCH
@@ -142,7 +227,7 @@ static struct flash_area scratch =
 /* Use external Flash Map Descriptors */
 extern struct flash_area *boot_area_descs[];
 #else
-struct flash_area *boot_area_descs[] =
+static const struct flash_area *boot_area_descs[] =
 {
     &bootloader,
     &primary_1,
@@ -564,7 +649,7 @@ int flash_area_get_sectors(int idx, uint32_t *cnt, struct flash_sector *ret)
     {
         if(idx == boot_area_descs[i]->fa_id)
         {
-            fa = boot_area_descs[i];
+            fa = (struct flash_area *) boot_area_descs[i];
             break;
         }
         i++;

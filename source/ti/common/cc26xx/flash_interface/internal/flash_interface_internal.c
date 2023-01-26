@@ -53,7 +53,7 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
 #include DeviceFamily_constructPath(driverlib/vims.h)
-#include "common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
 
 
 /*********************************************************************

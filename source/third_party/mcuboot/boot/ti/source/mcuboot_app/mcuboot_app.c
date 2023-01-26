@@ -44,6 +44,9 @@
 #include "common/cc26xx/debug/led_debug.h"
 #endif // EXCLUDE_GPIOS
 
+#ifdef MCUBOOT_DATA_SHARING
+#include "common/mcuboot/boot_seed/boot_seed.h"
+#endif
 #define BLINK_INTERVAL     500000  /* Set blink interval to 500000us or 500ms */
 
 static void start_app(uint32_t *vector_table) {
@@ -72,10 +75,7 @@ static void start_app(uint32_t *vector_table) {
      * */
 
     /* Reset the SP with the value stored at vector_table[0] */
-    __asm volatile (
-        "LDR R5,[R0,#0x0] \n"
-        "MOV SP, R5       \n"
-    );
+    __asm volatile ("MSR msp, %0" : : "r" (vector_table[0]) : );
 
     /* Jump to the Reset Handler address at vector_table[1] */
 
@@ -91,6 +91,10 @@ static void do_boot(struct boot_rsp *rsp) {
 
     MCUBOOT_LOG_INF("  Vector Table Start Address: 0x%x",
     (int)vector_table);
+
+#ifdef MCUBOOT_DATA_SHARING
+    Boot_Seed();
+#endif
 
     start_app((uint32_t *)vector_table);
 }
@@ -137,6 +141,7 @@ int main(void)
 
     if ((0 == bootStatus) && (IMAGE_MAGIC == bootRsp.br_hdr->ih_magic))
     {
+        blinkLed(GREEN_LED, 3, 500);
         MCUBOOT_LOG_INF("bootRsp: slot = %x, offset = %x, ver=%d.%d.%d.%d",
                             bootStatus,
                             bootRsp.br_image_off,

@@ -57,12 +57,14 @@
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 #include "led_debug.h"
 
+#if 0 /* To be enabled in cc23xx Core SDK 6.40 */
 #ifdef DeviceFamily_CC23X0
 /* Remap driverlib API names that changed only for cc23x0
  */
 #define GPIO_setDio             GPIOSetDio
 #define GPIO_clearDio           GPIOClearDio
 #define GPIO_setOutputEnableDio GPIOSetOutputEnableDio
+#endif
 #endif
 
 /*******************************************************************************

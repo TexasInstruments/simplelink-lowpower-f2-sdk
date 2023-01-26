@@ -55,7 +55,7 @@
  *  The OAD Image header file should be included in an OAD enabled application
  *  as follows:
  *  @code
- *  #include <common/cc26xx/oad/oad_image_header.h>
+ *  #include <ti/common/cc26xx/oad/oad_image_header.h>
  *  @endcode
  *
  *  # Overview #
@@ -582,10 +582,6 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 #define VERIFY_FAIL                  0xF8
 
 #else
-/*!
-* Flagimg verification status indicating the successful sign verification
-*/
-#define VERIFY_PASS                  0xFE
 
 /*!
 * Flagimg verification status indicating the failed sign verification
@@ -593,6 +589,11 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 #define VERIFY_FAIL                  0xFC
 
 #endif // BIM_DUAL_ONCHIP_IMAGE
+
+/*!
+* Flagimg verification status indicating the successful sign verification
+*/
+#define VERIFY_PASS                  0xFE
 
 /*!
  * Length of image external flash image header

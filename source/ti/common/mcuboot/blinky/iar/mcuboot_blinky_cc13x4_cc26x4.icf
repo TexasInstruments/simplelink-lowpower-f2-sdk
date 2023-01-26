@@ -30,17 +30,23 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-define symbol __intvec_start__ = 0x0006080;
-/*-Memory Regions-*/
-define symbol FLASH_start__ = 0x00006080;
-define symbol FLASH_end__   = 0x0007CF80;
+
+if (DUAL_SLOT == 1) {
+    define symbol __intvec_start__ = 0x6880; 
+    define symbol FLASH_start__ = 0x6880;
+    define symbol FLASH_end__  = 0x3077f;
+    define exported symbol MCUBOOT_HDR_BASE = 0x6800;
+} else {
+    define symbol __intvec_start__ = 0x6080; 
+    define symbol FLASH_start__ = 0x6080;
+    define symbol FLASH_end__  = 0x0002ff7f;
+    define exported symbol MCUBOOT_HDR_BASE = 0x6000;
+}
+
 define symbol RAM_start__ = 0x20000000;
 define symbol RAM_end__   = 0x2003FFFF;
 define symbol GPRAM_start__ = 0x11000000;
 define symbol GPRAM_end__   = 0x11001FFF;
-
-/* Export the header address to the blinky app */
-define exported symbol MCUBOOT_HDR_BASE = 0x00006000;
 
 /* Define a memory region that covers the entire 4 GB addressable space */
 define memory mem with size = 4G;

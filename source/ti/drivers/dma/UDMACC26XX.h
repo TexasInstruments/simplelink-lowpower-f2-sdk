@@ -183,17 +183,17 @@ extern "C" {
 
 /*! Compiler specific macros to allocate DMA control table entries */
 #if defined(__IAR_SYSTEMS_ICC__)
-    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                     \
-        __no_init static volatile tDMAControlTable ENTRY_NAME @UDMACC26XX_CONFIG_BASE + \
-            CHANNEL_INDEX * sizeof(tDMAControlTable)
+    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                            \
+        __no_init __root static volatile tDMAControlTable ENTRY_NAME @UDMACC26XX_CONFIG_BASE + \
+            (CHANNEL_INDEX) * sizeof(tDMAControlTable)
 #elif defined(__TI_COMPILER_VERSION__) || defined(__clang__)
     #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX) \
         static volatile tDMAControlTable ENTRY_NAME                 \
-            __attribute__((retain, location(UDMACC26XX_CONFIG_BASE + CHANNEL_INDEX * sizeof(tDMAControlTable))))
+            __attribute__((retain, location((UDMACC26XX_CONFIG_BASE) + (CHANNEL_INDEX) * sizeof(tDMAControlTable))))
 #elif defined(__GNUC__)
-    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                               \
-        extern int UDMACC26XX_##ENTRY_NAME##_is_placed;                                           \
-        __attribute__((section("." #ENTRY_NAME))) static volatile tDMAControlTable ENTRY_NAME = { \
+    #define ALLOCATE_CONTROL_TABLE_ENTRY(ENTRY_NAME, CHANNEL_INDEX)                                     \
+        extern int UDMACC26XX_##ENTRY_NAME##_is_placed;                                                 \
+        __attribute__((section("." #ENTRY_NAME), used)) static volatile tDMAControlTable ENTRY_NAME = { \
             &UDMACC26XX_##ENTRY_NAME##_is_placed}
 #else
     #error "don't know how to define ALLOCATE_CONTROL_TABLE_ENTRY for this toolchain"

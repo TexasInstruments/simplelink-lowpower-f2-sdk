@@ -66,7 +66,7 @@
 #define GPRAM_SIZE              0x2000
 
 /* Export the header address to the blinky app */
-MCUBOOT_HDR_BASE = 0x00006000;
+MCUBOOT_HDR_BASE = 0x00000000;
 
 /* System memory map */
 

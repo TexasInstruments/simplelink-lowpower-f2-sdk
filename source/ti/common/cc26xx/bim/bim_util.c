@@ -56,9 +56,9 @@
 #include DeviceFamily_constructPath(driverlib/setup.h)
 #include DeviceFamily_constructPath(driverlib/pwr_ctrl.h)
 
-#include "common/cc26xx/oad/oad_image_header.h"
-#include "common/cc26xx/crc/crc32.h"
-#include "common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/crc/crc32.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
 
 /*******************************************************************************
  * LOCAL VARIABLES
@@ -198,18 +198,18 @@ bool metadataIDCheck(imgFixedHdr_t *imgHdr)
  *
  * @param  value  - input field on which to calculate the even number of 1's.
  *
- * @return True when the value field has even number of 1's, otherwise returns 
+ * @return True when the value field has even number of 1's, otherwise returns
  *         False.
  */
 bool evenBitCount(uint32_t value)
 {
-  uint8_t count; 
-  
+  uint8_t count;
+
   for (count = 0; value; count++)
   {
     value &= value - 1;
   }
-  
+
   if (count % 2)
   {
     return false;

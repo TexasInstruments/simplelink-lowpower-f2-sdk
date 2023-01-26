@@ -193,7 +193,7 @@ const boardSpecificCCFGSettings = {
     },
     LP_EM_CC1354P10_1_CCFG_SETTINGS: {
         xoscCapArray: true,
-        xoscCapArrayDelta: 0xC1,
+        xoscCapArrayDelta: 0xD5,
         enableBootloader: true,
         enableBootloaderBackdoor: true,
         dioBootloaderBackdoor: 15,
@@ -201,13 +201,15 @@ const boardSpecificCCFGSettings = {
     },
     LP_EM_CC1354P10_6_CCFG_SETTINGS: {
         xoscCapArray: true,
-        xoscCapArrayDelta: 0xC1,
+        xoscCapArrayDelta: 0xD5,
         enableBootloader: true,
         enableBootloaderBackdoor: true,
         dioBootloaderBackdoor: 15,
         levelBootloaderBackdoor: "Active low"
     },
     LP_EM_CC1314R10_CCFG_SETTINGS: {
+        xoscCapArray: true,
+        xoscCapArrayDelta: 0xD5,
         enableBootloader: true,
         enableBootloaderBackdoor: true,
         dioBootloaderBackdoor: 15,
@@ -215,7 +217,7 @@ const boardSpecificCCFGSettings = {
     },
     LP_CC2653P10_CCFG_SETTINGS: {
         xoscCapArray: true,
-        xoscCapArrayDelta: 0xC1,
+        xoscCapArrayDelta: 0xD5,
         enableBootloader: true,
         enableBootloaderBackdoor: true,
         dioBootloaderBackdoor: 13,

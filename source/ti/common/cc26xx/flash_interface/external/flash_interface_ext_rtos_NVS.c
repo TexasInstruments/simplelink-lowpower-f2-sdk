@@ -48,7 +48,7 @@
  * INCLUDES
  */
 
-#include <common/cc26xx/flash_interface/flash_interface.h>
+#include <ti/common/cc26xx/flash_interface/flash_interface.h>
 #include <ti_drivers_config.h>
 #include <ti/drivers/NVS.h>
 

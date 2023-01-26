@@ -60,15 +60,6 @@
  /* Uncomment to enable the overwrite-only code path. */
 //#define MCUBOOT_OVERWRITE_ONLY
 
-#ifdef MCUBOOT_OVERWRITE_ONLY
-/*software based downgrade prevention the image version numbers are compared */
-#define MCUBOOT_DOWNGRADE_PREVENTION
-#define MCUBOOT_WATCHDOG_FEED() { }
-/* Uncomment to only erase and overwrite those primary slot sectors needed
- * to install the new image, rather than the entire image slot. */
-//#define MCUBOOT_OVERWRITE_ONLY_FAST
-#endif
-
 /* Uncomment to enable the direct-xip code path. */
 #define MCUBOOT_DIRECT_XIP
 
@@ -103,11 +94,40 @@
 
 /* Default maximum number of flash sectors per image slot; change
  * as desirable. */
-#define MCUBOOT_MAX_IMG_SECTORS 128
+#define MCUBOOT_MAX_IMG_SECTORS 250
 
 /* Default number of separately updateable images; change in case of
  * multiple images. */
+
+#ifdef DUAL_SLOT
+#define MCUBOOT_IMAGE_NUMBER 2
+#else
 #define MCUBOOT_IMAGE_NUMBER 1
+#endif
+
+#if (MCUBOOT_IMAGE_NUMBER > 1)
+
+/* The following configuration adjustment is needed if
+ * more than 1 images are used */
+
+#ifdef MCUBOOT_DIRECT_XIP
+#undef MCUBOOT_DIRECT_XIP
+#endif
+
+#ifndef MCUBOOT_OVERWRITE_ONLY
+#define MCUBOOT_OVERWRITE_ONLY
+#endif
+
+#endif
+
+#ifdef MCUBOOT_OVERWRITE_ONLY
+/*software based downgrade prevention the image version numbers are compared */
+#define MCUBOOT_DOWNGRADE_PREVENTION
+#define MCUBOOT_WATCHDOG_FEED() { }
+/* Uncomment to only erase and overwrite those primary slot sectors needed
+ * to install the new image, rather than the entire image slot. */
+//#define MCUBOOT_OVERWRITE_ONLY_FAST
+#endif
 
 /*
  * Logging
@@ -133,6 +153,11 @@
  *    MCUBOOT_LOG_ERR > MCUBOOT_LOG_WRN > MCUBOOT_LOG_INF > MCUBOOT_LOG_DBG
  */
 #define MCUBOOT_HAVE_LOGGING 1
+
+#ifdef MCUBOOT_DATA_SHARING
+#define MCUBOOT_SHARED_DATA_BASE 0x20000000
+#define MCUBOOT_SHARED_DATA_SIZE 0x400
+#endif
 
 /*
  * Assertions

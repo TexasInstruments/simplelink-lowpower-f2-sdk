@@ -48,8 +48,8 @@
  *                                          Includes
  */
 
-#include "common/cc26xx/flash_interface/flash_interface.h"
-#include "common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
 
 /*******************************************************************************
  *                                          Constants
