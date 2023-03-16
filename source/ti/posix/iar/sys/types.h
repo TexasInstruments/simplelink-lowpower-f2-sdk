@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #ifndef __IAR_SYSTEMS_ICC__
-#error Incompatible compiler: use this include path (.../ti/posix/iar) only with an IAR compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/iar) only with an IAR compiler. You appear to be using a different compiler.
 #endif
 
 #include <stddef.h>
@@ -57,12 +57,12 @@ extern "C" {
  *  as GNU compiler, which defines both types.
  */
 #ifdef __SIZE_T_TYPE__
-#define unsigned signed
+    #define unsigned signed
 typedef __SIZE_T_TYPE__ ssize_t;
-#undef unsigned
-#define _SSIZE_T_DECLARED
+    #undef unsigned
+    #define _SSIZE_T_DECLARED
 #else
-#error __SIZE_T_TYPE__ not defined
+    #error __SIZE_T_TYPE__ not defined
 #endif
 
 typedef uint32_t clockid_t;
@@ -80,11 +80,10 @@ typedef unsigned short uid_t;
  *  Pull in time.h (which includes time[32,64].h) to get time_t definition.
  */
 #if defined(__430_CORE__) || defined(__430X_CORE__)
-#include <../inc/dlib/c/time.h>
+    #include <../inc/dlib/c/time.h>
 #else
-#include <../inc/c/time.h>
+    #include <../inc/c/time.h>
 #endif
-
 
 /*
  *************************************************************************
@@ -99,12 +98,13 @@ extern "C" {
 /*
  *  ======== pthread_attr_t ========
  */
-typedef struct pthread_attr_t {
+typedef struct pthread_attr_t
+{
     int priority;
     void *stack;
     size_t stacksize;
     size_t guardsize;
-    int  detachstate;
+    int detachstate;
 } pthread_attr_t;
 
 typedef uint32_t pthread_barrierattr_t;
@@ -112,7 +112,8 @@ typedef uint32_t pthread_condattr_t;
 
 typedef void *pthread_key_t;
 
-typedef struct pthread_mutexattr_t {
+typedef struct pthread_mutexattr_t
+{
     int type;
     int protocol;
     int prioceiling;
@@ -122,33 +123,38 @@ typedef uint32_t pthread_rwlockattr_t;
 
 typedef void *pthread_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Barrier sysbios;
     struct freertos_Barrier freertos;
 } pthread_barrier_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Cond sysbios;
     struct freertos_Cond freertos;
 } pthread_cond_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Mutex sysbios;
     struct freertos_Mutex freertos;
 } pthread_mutex_t;
 
 typedef uint32_t pthread_once_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_RWLock sysbios;
     struct freertos_RWLock freertos;
 } pthread_rwlock_t;
 
-struct _pthread_cleanup_context {
-    pthread_t  thread;
-    void       (*fxn)(void *);
-    void      *arg;
-    int        cancelType;
+struct _pthread_cleanup_context
+{
+    pthread_t thread;
+    void (*fxn)(void *);
+    void *arg;
+    int cancelType;
     struct _pthread_cleanup_context *next;
 };
 

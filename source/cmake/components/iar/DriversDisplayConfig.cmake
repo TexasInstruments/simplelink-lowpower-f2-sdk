@@ -30,13 +30,19 @@ endmacro()
 
 ####################################################################################
 
+find_package("GrlibWrapper" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4Targets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM33FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/DriversDisplayM33FTargets.cmake")
 
 check_required_components(DriversDisplay)

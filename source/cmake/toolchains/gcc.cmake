@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,9 @@ else ()
 endif ()
 
 #Specify how the compilers should be invoked
-set(CMAKE_C_COMPILE_OBJECT "<CMAKE_C_COMPILER> -c -MD -MF $$@.dep <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>")
+set(CMAKE_C_COMPILE_OBJECT
+    "<CMAKE_C_COMPILER> -c -MD -MF $$@.dep <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -MD -MF <OBJECT>.d -c <SOURCE>"
+)
 set(CMAKE_ASM_COMPILE_OBJECT
     "<CMAKE_ASM_COMPILER> -c -x assembler-with-cpp <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>"
 )
@@ -63,19 +65,26 @@ if (NOT TARGET TOOLCHAIN_gcc)
     add_library(TOOLCHAIN_gcc INTERFACE IMPORTED)
     target_compile_options(
         TOOLCHAIN_gcc
-        INTERFACE -std=c11
+        INTERFACE $<$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>:
+                  # This part included if TI_CFLAGS_OVERRIDE not defined
+                  -std=c11
                   -mthumb
                   $<$<COMPILE_LANGUAGE:C>:-g
                   -mabi=aapcs
                   -Dgcc
                   -ffunction-sections
                   -fdata-sections>
-                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-O2>
+                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-O3>
                   $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Debug>>:-O0>
+                  >
+                  # If TI_CFLAGS_OVERRIDE, use it exclusively
+                  $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>>
     )
     target_link_options(
         TOOLCHAIN_gcc
         INTERFACE
+        $<$<STREQUAL:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>,>:
+        # This part included if TI_LFLAGS_OVERRIDE not defined
         # If linker-file property exists, add linker file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>,>>:-Wl,-T,$<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>>
         # If map-file property exists, set map file
@@ -85,6 +94,8 @@ if (NOT TARGET TOOLCHAIN_gcc)
         # Disables 0x10000 sector allocation boundaries, which interfere
         # with the SPE layouts and prevent proper secure operation
         --nmagic
+        # If TI_CFLAGS_OVERRIDE, use it exclusively
+        $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>>
     )
 
     add_library(TOOLCHAIN_gcc_m0p INTERFACE IMPORTED)

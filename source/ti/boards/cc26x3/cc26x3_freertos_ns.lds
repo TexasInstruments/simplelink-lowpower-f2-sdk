@@ -34,7 +34,7 @@ STACKSIZE = 0x800;
 
 MEMORY
 {
-    FLASH (RX)      : ORIGIN = 0x00038100, LENGTH = 0x000C7F00
+    FLASH (RX)      : ORIGIN = 0x00038100, LENGTH = 0x000C6F00  /* Reduced by 0x1000 for the image trailer when using SecureBoot */
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash
@@ -50,6 +50,8 @@ MEMORY
      * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
      */
     LOG_DATA (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
+    LOG_PTR  (R) : ORIGIN = 0x94000008, LENGTH = 0x40000
+
 }
 
 REGION_ALIAS("REGION_TEXT", FLASH);
@@ -62,6 +64,7 @@ REGION_ALIAS("REGION_ARM_EXIDX", FLASH);
 REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
 
 SECTIONS {
+
     /* Interrupt vectors start at 256-byte boundry closest to NS flash base */
     PROVIDE (_intvecs_base_address =
         DEFINED(_intvecs_base_address) ? _intvecs_base_address : 0x00038100);
@@ -70,11 +73,8 @@ SECTIONS {
         KEEP (*(.resetVecs))
     } > REGION_TEXT
 
-    PROVIDE (_vtable_base_address =
-        DEFINED(_vtable_base_address) ? _vtable_base_address : 0x2000C000);
-
-    .vtable (_vtable_base_address) (NOLOAD) : {
-        KEEP (*(.ramVecs))
+    .ramVecs (NOLOAD) : ALIGN(256) {
+        KEEP (*(.ramVecs)) /* Section from interrupt.c (driverlib) */
     } > REGION_DATA
 
     /*
@@ -262,6 +262,9 @@ SECTIONS {
     .log_data (COPY) : {
         KEEP (*(.log_data))
     } > REGION_LOG
+    .log_ptr (COPY) : {
+        KEEP (*(.log_ptr*))
+    } > LOG_PTR
 }
 
 ENTRY(resetISR)

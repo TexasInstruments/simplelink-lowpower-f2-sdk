@@ -40,7 +40,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2022, Texas Instruments Incorporated
+ Copyright (c) 2013-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -207,8 +207,8 @@ place at start of FLASH_IMG_HDR { readonly section .img_hdr };
 keep                            { readonly section .img_hdr };
 
 // Interrupt Vector Table
-place at address mem:ENTRY_START { readonly section .intvec };
-keep                             { readonly section .intvec };
+place at address mem:ENTRY_START { readonly section .resetVecs };
+keep                             { readonly section .resetVecs };
 
 define block ROSTK       { section .rostk };
 
@@ -217,7 +217,7 @@ place in FLASH { readonly,
                 last block ROSTK };
 
 // RAM Vector Table
-define block VTABLE { section .vtable_ram };
+define block VTABLE { section .ramVecs };
 
 // Runtime Stack
 define block CSTACK with alignment = 8, size = STACK_SIZE { section .stack };

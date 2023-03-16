@@ -39,7 +39,7 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #include DeviceFamily_constructPath(driverlib/vims.h)
 #endif
 
@@ -72,7 +72,7 @@
 
     #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
     #define BOOT_SECONDARY_1_SIZE               0x00056000
-#elif defined DeviceFamily_CC23X0
+#elif defined DeviceFamily_CC23X0R5
     #define BOOTLOADER_BASE_ADDRESS             0x00000000
     #define BOOT_BOOTLOADER_SIZE                0x00006000
 
@@ -140,7 +140,7 @@
     #endif
 #endif
 
-#ifdef DeviceFamily_CC23X0
+#ifdef DeviceFamily_CC23X0R5
 /* Remap driverlib API names that changed only for cc23x0
  */
 #define FlashSectorSizeGet FlashGetSectorSize
@@ -247,7 +247,7 @@ static const struct flash_area *boot_area_descs[] =
 static bool extFlashStatus = false;
 #endif
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 /* Prepares system for a write to flash */
 static uint8_t disableCache(void)
 {
@@ -418,7 +418,7 @@ int flash_area_write(const struct flash_area *fa, uint32_t off,
     if (fa->fa_device_id == FLASH_DEVICE_INTERNAL_FLASH)
     {
         uint32_t flashStat;
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
         uint8_t cacheState = disableCache();
 #endif
 
@@ -428,7 +428,7 @@ int flash_area_write(const struct flash_area *fa, uint32_t off,
             rc = 0;
         }
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
         enableCache(cacheState);
 #endif
     }
@@ -476,7 +476,7 @@ int flash_area_erase(const struct flash_area *fa, uint32_t off, uint32_t len)
 
         assert(erase_start_addr % sectorSize);
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
         uint8_t cacheState = disableCache();
 #endif
 
@@ -485,14 +485,14 @@ int flash_area_erase(const struct flash_area *fa, uint32_t off, uint32_t len)
             flashStat = FlashSectorErase(pageAddr);
             if(flashStat != FAPI_STATUS_SUCCESS)
             {
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
                 enableCache(cacheState);
 #endif
                 return rc;
             }
         }
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
         enableCache(cacheState);
 #endif
         rc = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ void I2C_cancel(I2C_Handle handle)
         return;
     }
 
-    I2CSupport_masterFinish(hwAttrs);
+    I2CSupport_controllerFinish(hwAttrs);
 
     /* Set current transaction as canceled */
     object->currentTransaction->status = I2C_STATUS_CANCEL;
@@ -254,7 +254,7 @@ int_fast16_t I2C_transferTimeout(I2C_Handle handle, I2C_Transaction *transaction
                  *  condition will finish the current burst, we can't
                  *  unblock the object->mutex until this occurs.
                  *
-                 *  This may block forever if the slave holds the clock line--
+                 *  This may block forever if the target holds the clock line--
                  *  rendering the I2C bus un-usable.
                  */
                 SemaphoreP_pend(&(object->transferComplete), SemaphoreP_WAIT_FOREVER);

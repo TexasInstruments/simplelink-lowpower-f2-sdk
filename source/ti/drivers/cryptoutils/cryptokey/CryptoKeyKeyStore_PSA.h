@@ -41,8 +41,8 @@
  * CryptoKeys. Key store CryptoKeys reference keying material stored in flash or
  * RAM using a key identifier. These CryptoKeys are subject to enforced usage
  * restrictions as defined by the key attributes assigned during key import.
- * This file provides defintions that are common between
- * the secure and non-secure elements of a secure processing environment.
+ * This file provides definitions that are common between the Non-Secure
+ * Processing Environment (NSPE) and Secure Processing Environment (SPE).
  *
  * # Usage #
  *
@@ -86,7 +86,7 @@
  * }
  *
  * //Initialize the cryptoKey
- * KeyStore_PSA_initKey(&cryptoKey, keyID, sizeof(keyingMaterial));
+ * KeyStore_PSA_initKey(&cryptoKey, keyID, sizeof(keyingMaterial), NULL);
  *
  * // Export the previously imported CryptoKey using keyID
  * status = KeyStore_PSA_exportKey(keyID, keyingMaterial2, sizeof(keyingMaterial2), &returnedLength);
@@ -110,11 +110,11 @@
 #ifndef ti_drivers_CryptoKeyKeyStore_PSA__include
 #define ti_drivers_CryptoKeyKeyStore_PSA__include
 
-#if (SPE_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
-    #include <third_party/mbedtls/include/psa/crypto.h>
+#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
+    #include <third_party/mbedcrypto/include/psa/crypto.h>
 #else
     #include <third_party/tfm/interface/include/psa/crypto.h>
-#endif /* #if (SPE_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* #if (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
 
 #ifdef __cplusplus
 extern "C" {
@@ -593,7 +593,7 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
 /* Volatile Key Limit [1, PSA_KEY_SLOT_COUNT] for TF-Mv1.1
  * Upper limit for volatile keys, PSA_KEY_SLOT_COUNT (32) is the size of global slot array in mbedcrypto3.1
  */
-#if (SPE_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
     #define KEYSTORE_PSA_MAX_VOLATILE_KEY_ID PSA_KEY_SLOT_COUNT
 #else
     /*
@@ -750,7 +750,7 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
 #define KEYSTORE_PSA_KEY_USAGE_DERIVE ((KeyStore_PSA_KeyUsage)PSA_KEY_USAGE_DERIVE)
 /**@}*/
 
-#if (SPE_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
     /** A Key owner is a PSA partition identifier. This definition follow
      * 'psa_key_owner_id_t' from crypto_platform.h */
     #if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
@@ -908,7 +908,7 @@ typedef psa_key_id_t KeyStore_PSA_KeyFileId;
 typedef struct psa_client_key_attributes_s KeyStore_PSA_KeyAttributes;
 
     #define KEYSTORE_PSA_KEY_ATTRIBUTES_INIT PSA_CLIENT_KEY_ATTRIBUTES_INIT
-#endif /* #if (SPE_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* #if (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
 /**@}*/
 
 /**@}*/

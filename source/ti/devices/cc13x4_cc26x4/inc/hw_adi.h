@@ -353,7 +353,7 @@
 #define ADI_O_NONSECWR2         0x000000A8  // Non-secure write configuration 2
 #define ADI_O_NONSECWR3         0x000000AC  // Non-secure write configuration 3
 #define ADI_O_NONSECWR4         0x000000B0  // Non-secure write configuration 4
-#define ADI_O_NONSECWR5         0x000000B0  // Non-secure write configuration 5
+#define ADI_O_NONSECWR5         0x000000B4  // Non-secure write configuration 5
 #define ADI_O_NONSECWR6         0x000000B8  // Non-secure write configuration 6
 #define ADI_O_NONSECWR7         0x000000BC  // Non-secure write configuration 7
 #define ADI_O_NONSECCMD         0x000000C0  // Non-secure master can write this

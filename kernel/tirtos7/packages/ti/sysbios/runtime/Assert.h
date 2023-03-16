@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ extern "C" {
 #if BIOS_assertsEnabled_D
 #if Assert_useBkpt_D
 #define Assert_isTrue(c, id) do { \
-    /* TODO: port the SW bkpt instruction to other ISAs */
+    /* TODO: port the SW bkpt instruction to other ISAs */ \
     if (!(c)) __asm("bkpt #13"); } while (0);
 #else
 extern void Assert_failX(const char * id);

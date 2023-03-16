@@ -561,33 +561,28 @@ void PowerCC26XX_RCOSC_clockFunc(uintptr_t arg)
 
         case STEP_TDC_INIT_2:
             /* finish wait for AUX_WUC:TDCCLKCTL.ACK to be set ... */
-            while (!(HWREG(AUX_WUC_BASE + AUX_WUC_O_TDCCLKCTL) & AUX_WUC_TDCCLKCTL_ACK))
-                ;
+            while (!(HWREG(AUX_WUC_BASE + AUX_WUC_O_TDCCLKCTL) & AUX_WUC_TDCCLKCTL_ACK)) {}
             break;
 
         case STEP_CAL_LF_1:
         case STEP_CAL_HF1_1:
         case STEP_CAL_HF2_1:
             /* finish wait for AUX_WUC:REFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK) {}
             break;
 
         case STEP_CAL_LF_2:
         case STEP_CAL_HF1_2:
         case STEP_CAL_HF2_2:
             /* finish wait for AUX_WUC:REFCLKCTL.ACK to be set ... */
-            while (!(HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK))
-                ;
+            while (!(HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK)) {}
             break;
 
         case STEP_CLEANUP_2:
             /* finish wait for AUX_WUC:TDCCLKCTL.ACK to be cleared ... */
-            while ((HWREG(AUX_WUC_BASE + AUX_WUC_O_TDCCLKCTL) & AUX_WUC_TDCCLKCTL_ACK))
-                ;
+            while ((HWREG(AUX_WUC_BASE + AUX_WUC_O_TDCCLKCTL) & AUX_WUC_TDCCLKCTL_ACK)) {}
             /* finish wait for AUX_WUC:REFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_WUC_BASE + AUX_WUC_O_REFCLKCTL) & AUX_WUC_REFCLKCTL_ACK) {}
             break;
 
         default:

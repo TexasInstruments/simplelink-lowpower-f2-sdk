@@ -49,6 +49,9 @@ if (system.getRTOS() === "freertos") {
     else if (board.match(/CC13.4/) || board.match(/CC26.4/) || board.match(/CC26.3/)) {
 	    const freertos_release_syscfg_js = system.getScript("cc13x4_cc26x4/release/freertos_release.syscfg.js");
     }
+    else if (board.match(/CC23.0R2/)) {
+	    const freertos_release_syscfg_js = system.getScript("cc23x0r2/release/freertos_release.syscfg.js");
+    }
     else if (board.match(/CC23.0/)) {
 	    const freertos_release_syscfg_js = system.getScript("cc23x0/release/freertos_release.syscfg.js");
     }

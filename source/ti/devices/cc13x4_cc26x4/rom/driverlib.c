@@ -2,6 +2,7 @@
 #include "../driverlib/cpu.h"
 #include "../driverlib/flash.h"
 #include "../inc/hw_ccfg.h"
+#include "../inc/hw_fcfg2.h"
 #include "../inc/hw_types.h"
 
 //*****************************************************************************
@@ -196,9 +197,9 @@ void
 CPUdelay(uint32_t ui32Count)
 {
     // Loop the specified number of times
-    __asm("CPUdelay:\n"
+    __asm("CPUdel:\n"
           "    subs    r0, #1\n"
-          "    bne.n   CPUdelay\n"
+          "    bne.n   CPUdel\n"
           "    bx      lr");
 }
 #else
@@ -227,8 +228,6 @@ CPUdelay(uint32_t ui32Count)
 #define CCFG_SIZE_SECURITY     0x00000018
 #define CCFG_SIZE_SECT_PROT    0x00000004
 
-#define FLASH_2T_WAITSTATE_VAL      (0x5)
-
 //*****************************************************************************
 //
 // Default values for security control in customer configuration area in flash
@@ -245,7 +244,7 @@ CPUdelay(uint32_t ui32Count)
 const uint8_t g_pui8CcfgDefaultSec[] = {0xFF, 0xFF, 0xFF, 0xC5,
                                         0xFF, 0xFF, 0xFF, 0xFF,
                                         0xFF, 0xFF, 0xFF, 0xFF,
-                                        0xC5, 0xC5, 0xFF, 0xFF,
+                                        0xC5, 0xC5, 0xC5, 0xFF,
                                         0xC5, 0xC5, 0xC5, 0xFF,
                                         0xC5, 0xC5, 0xC5, 0xFF
                                        };
@@ -738,12 +737,13 @@ uint32_t FlashhOtpEngrErase(void) {
     uint32_t ui32BankNum;
     uint32_t regionNum;
     uint32_t ui32Region;
-    uint32_t store1Twaitstate;
+    uint32_t ui32waitState;
 
-    // store the existing 1T wait state
     // ENGR flash is 2T Flash, program with 2T wait state
-    store1Twaitstate = HWREG(NVMNW_BASE + NVMNW_O_CFGCMD );
-    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) = FLASH_2T_WAITSTATE_VAL;
+    ui32waitState = ((HWREG(FCFG2_BASE + FCFG2_O_CFG_CMD) & FCFG2_CFG_CMD_WAITSTATE2T_M)
+                      >> FCFG2_CFG_CMD_WAITSTATE2T_S);
+    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD) =
+                ((ui32waitState << NVMNW_CFGCMD_WAITSTATE_S) & NVMNW_CFGCMD_WAITSTATE_M);
 
     numberBank = (HWREG(NVMNW_BASE + NVMNW_O_GBLINFO0) & NVMNW_GBLINFO0_NUMBANKS_M ) >>
                     NVMNW_GBLINFO0_NUMBANKS_S;
@@ -821,7 +821,10 @@ uint32_t FlashhOtpEngrErase(void) {
     }
 
     // restore the default 1T wait state
-    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) = store1Twaitstate ;
+    ui32waitState = ((HWREG(FCFG2_BASE + FCFG2_O_CFG_CMD) & FCFG2_CFG_CMD_WAITSTATE1T_M)
+                      >> FCFG2_CFG_CMD_WAITSTATE1T_S);
+    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) =
+                ((ui32waitState << NVMNW_CFGCMD_WAITSTATE_S) & NVMNW_CFGCMD_WAITSTATE_M);
 
     // Return status of operation.
     return(ui32ErrorReturn);
@@ -1669,7 +1672,7 @@ uint32_t FlashProgramEngr(uint8_t *pui8DataBuffer, uint32_t ui32AddressOffset, u
     uint32_t ui32BankNum;
     uint32_t ui32SectorNumber;
     uint32_t sectorSize;
-    uint32_t store1Twaitstate;
+    uint32_t ui32waitState;
 
     sectorSize = FlashSectorSizeGet();
 
@@ -1695,10 +1698,11 @@ uint32_t FlashProgramEngr(uint8_t *pui8DataBuffer, uint32_t ui32AddressOffset, u
     // Set the status to indicate success.
     ui32ErrorReturn = FAPI_STATUS_SUCCESS;
 
-    // store the existing 1T wait state
     // ENGR flash is 2T Flash, program with 2T wait state
-    store1Twaitstate = HWREG(NVMNW_BASE + NVMNW_O_CFGCMD );
-    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) = FLASH_2T_WAITSTATE_VAL;
+    ui32waitState = ((HWREG(FCFG2_BASE + FCFG2_O_CFG_CMD) & FCFG2_CFG_CMD_WAITSTATE2T_M)
+                      >> FCFG2_CFG_CMD_WAITSTATE2T_S);
+    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) =
+                ((ui32waitState << NVMNW_CFGCMD_WAITSTATE_S) & NVMNW_CFGCMD_WAITSTATE_M);
 
     // Find flash bank width in number of bytes.
     ui8BankWidth = (((HWREG(NVMNW_BASE + NVMNW_O_GBLINFO1) &
@@ -1781,7 +1785,10 @@ uint32_t FlashProgramEngr(uint8_t *pui8DataBuffer, uint32_t ui32AddressOffset, u
     }
 
     // restore the default 1T wait state
-    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) = store1Twaitstate ;
+    ui32waitState = ((HWREG(FCFG2_BASE + FCFG2_O_CFG_CMD) & FCFG2_CFG_CMD_WAITSTATE1T_M)
+                      >> FCFG2_CFG_CMD_WAITSTATE1T_S);
+    HWREG(NVMNW_BASE + NVMNW_O_CFGCMD ) =
+                ((ui32waitState << NVMNW_CFGCMD_WAITSTATE_S) & NVMNW_CFGCMD_WAITSTATE_M);
 
     // Return status of operation.
     return(ui32ErrorReturn);
@@ -1816,8 +1823,7 @@ static void IssueFsmCommand(tFlashStateCommandsType eCommand) {
     ASSERT(
         eCommand == FAPI_ERASE_SECTOR    || eCommand == FAPI_ERASE_BANK ||
         eCommand == FAPI_PROGRAM_FOURWORD || eCommand == FAPI_CLEAR_STATUS ||
-        eCommand == FAPI_PROGRAM_ONEWORD  || eCommand == FAPI_PROGRAM_TWOWORD ||
-        eCommand == FAPI_READVERIFY );
+        eCommand == FAPI_PROGRAM_ONEWORD  || eCommand == FAPI_PROGRAM_TWOWORD );
 
     // write to NW COMMAND Type register
     HWREG(NVMNW_BASE + NVMNW_O_CMDTYPE) = eCommand;

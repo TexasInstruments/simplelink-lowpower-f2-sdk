@@ -62,10 +62,10 @@
             "connections": {
                 /* 7:  BoosterPack standard: SPI CLK */
                 "SCLK"    : 7,
-                /* 15: BoosterPack standard: SPI MOSI */
-                "MOSI"   : 15,
-                /* 14: BoosterPack standard: SPI MISO */
-                "MISO"   : 14
+                /* 15: BoosterPack standard: SPI PICO */
+                "PICO"   : 15,
+                /* 14: BoosterPack standard: SPI POCI */
+                "POCI"   : 14
             }
         },
 
@@ -166,7 +166,7 @@
                     "description": "ADXL362 Accelerometer SPI chip select",
                     "longDescription": "ADXL362 Accelerometer SPI chip select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
-                    "connections" : { "SS": 18 }
+                    "connections" : { "CSN": 18 }
                 },
                 "ACC_INT1": {
                     "type": "SENSOR_INT",

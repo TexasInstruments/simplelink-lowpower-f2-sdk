@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,33 +100,41 @@ extern "C" {
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-    /*!< Resource ID: PKA Module */
+    /*! Resource ID: PKA Module */
     #define PowerCC26X2_PERIPH_PKA PowerCC26XX_PERIPH_PKA
 
-    /*!< Resource ID: UART1 */
+    /*! Resource ID: UART1 */
     #define PowerCC26X2_PERIPH_UART1 PowerCC26XX_PERIPH_UART1
 
-    /*!< Resource ID: SSI1 */
+    /*! Resource ID: SSI1 */
     #define PowerCC26X2_PERIPH_SSI1 PowerCC26XX_PERIPH_SSI1
+    #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+        /*! Resource ID: SPI1 */
+        #define PowerCC26X2_PERIPH_SPI1 PowerCC26X2_PERIPH_SSI1
+    #endif
 
 #endif
 
-/* The peripherals below are only available on CC13X4 and CC26X4 devices */
+/* The peripherals below are only available on CC13X4, CC26X3 and CC26X4 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-    /*!< Resource ID: UART2 */
+    /*! Resource ID: UART2 */
     #define PowerCC26X2_PERIPH_UART2 PowerCC26XX_PERIPH_UART2
 
-    /*!< Resource ID: UART3 */
+    /*! Resource ID: UART3 */
     #define PowerCC26X2_PERIPH_UART3 PowerCC26XX_PERIPH_UART3
 
-    /*!< Resource ID: SSI2 */
-    #define PowerCC26X2_PERIPH_SSI2 PowerCC26XX_PERIPH_SSI2
+    /*! Resource ID: SPI2 */
+    #define PowerCC26X2_PERIPH_SPI2 PowerCC26XX_PERIPH_SPI2
+    /*! Included for compatibility. Please use \ref PowerCC26X2_PERIPH_SPI2 */
+    #define PowerCC26X2_PERIPH_SSI2 PowerCC26X2_PERIPH_SPI2
 
-    /*!< Resource ID: SSI3 */
-    #define PowerCC26X2_PERIPH_SSI3 PowerCC26XX_PERIPH_SSI3
+    /*! Resource ID: SPI3 */
+    #define PowerCC26X2_PERIPH_SPI3 PowerCC26XX_PERIPH_SPI3
+    /*! Included for compatibility. Please use \ref PowerCC26X2_PERIPH_SPI3 */
+    #define PowerCC26X2_PERIPH_SSI3 PowerCC26X2_PERIPH_SPI3
 
-    /*!< Resource ID: I2C1 */
+    /*! Resource ID: I2C1 */
     #define PowerCC26X2_PERIPH_I2C1 PowerCC26XX_PERIPH_I2C1
 
 #endif
@@ -135,6 +143,11 @@ extern "C" {
  *  SCLK_LF is derived from SCLK_HF and SCLK_HF is supplied by HPOSC.
  */
 #define PowerCC26X2_HPOSC_RTC_COMPENSATION_DELTA 3
+
+/*! The temperature delta in degrees C before the RTC is re-compensated when
+ *  SCLK_LF is derived from XOSC_LF
+ */
+#define PowerCC26X2_XOSC_LF_RTC_COMPENSATION_DELTA 2
 
 /* \cond */
 #define PowerCC26X2_NUMRESOURCES PowerCC26XX_NUMRESOURCES
@@ -301,8 +314,8 @@ typedef struct
     /*!< Array to maintain resource dependency reference counts */
     unsigned int (*resourceHandlers[3])(unsigned int arg);
     /*!< Array of special dependency handler functions */
-    Power_PolicyFxn policyFxn; /*!< The Power policy function */
-    PowerCC26X2_ResetReason lastResetReason;
+    Power_PolicyFxn policyFxn;               /*!< The Power policy function */
+    PowerCC26X2_ResetReason lastResetReason; /*!< Reason for the last device reset */
 } PowerCC26X2_ModuleState;
 
 /*!
@@ -313,10 +326,23 @@ typedef struct
  *
  *  It only needs to be called once after the system boots.
  *
- *  This function should only be called when SCLK_LF is configured to be drived
+ *  This function should only be called when SCLK_LF is configured to be derived
  *  from HPOSC.
  */
 void PowerCC26X2_enableHposcRtcCompensation(void);
+
+/*!
+ *  @brief Enable RTC compensation when SCLK_LF is derived from XOSC_LF
+ *
+ *  Enables automatic compensation for temperature-based clock drift of the RTC
+ *  when SCLK_LF is derived from XOSC_LF.
+ *
+ *  It only needs to be called once after the system boots.
+ *
+ *  This function should only be called when SCLK_LF is configured to be derived
+ *  from XOSC_LF.
+ */
+void PowerCC26X2_enableXoscLfRtcCompensation(void);
 
 /*!
  * @brief Returns the reason for the most recent reset

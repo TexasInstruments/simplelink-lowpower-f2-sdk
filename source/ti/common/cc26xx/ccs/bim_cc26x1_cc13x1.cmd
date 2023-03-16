@@ -16,7 +16,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2022, Texas Instruments Incorporated
+ Copyright (c) 2012-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -178,7 +178,7 @@ MEMORY
  ******************************************************************************/
 SECTIONS
 {
-  .intvecs        :   > FLASH_BIM_START
+  .resetVecs      :   > FLASH_BIM_START
   .text           :   > FLASH_BIM
   .const          :   > FLASH_BIM
   .constdata      :   > FLASH_BIM
@@ -191,9 +191,9 @@ SECTIONS
   .fnPtr          :   > FLASH_FNPTR
   .ccfg           :   > FLASH_CCFG (HIGH)
 
+  .ramVecs        :   > SRAM
   .vtable         :   > SRAM
   .vtable_ram     :   > SRAM
-  vtable_ram      :   > SRAM
   .data           :   > SRAM
   .bss            :   > SRAM
   .sysmem         :   > SRAM

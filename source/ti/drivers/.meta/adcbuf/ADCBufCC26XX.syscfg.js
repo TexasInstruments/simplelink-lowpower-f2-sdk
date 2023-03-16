@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -193,7 +193,7 @@ function pinmuxRequirements(inst)
         name: "adc",
         displayName: "ADC Peripheral",
         interfaceName: "ADC",
-        canShareWith: "ADCBuf",
+        canShareWith: "ADC",
         resources: []
     };
 
@@ -202,6 +202,7 @@ function pinmuxRequirements(inst)
             name: "dmaADCChannel",
             displayName: "DMA ADC Channel",
             description: "DMA channel used for ADC",
+            canShareWith: "ADCBuf",
             interfaceNames: ["DMA_ADC"]
         }
     ];

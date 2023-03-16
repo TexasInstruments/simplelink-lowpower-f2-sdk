@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -105,11 +105,7 @@ extern RF_Handle rfHandle;
 // HCI Version and Revision
 #if defined( CC26XX ) || defined( CC13XX )
   #if defined(BLE_V50_FEATURES)
-  #ifdef QUAL_TEST
-    #define HCI_VERSION                              0x0A    // BT Core Specification V5.1
-  #else
-    #define HCI_VERSION                              0x09    // BT Core Specification V5.0
-  #endif
+    #define HCI_VERSION                              0x0B    // BT Core Specification V5.2
   #elif defined(CTRL_V42_CONFIG)
     #define HCI_VERSION                              0x08    // BT Core Specification V4.2
   #elif defined(CTRL_V41_CONFIG)
@@ -123,7 +119,7 @@ extern RF_Handle rfHandle;
 
 // Major Version (8 bits) . Minor Version (4 bits) . SubMinor Version (4 bits)
 #if defined( CC26X2 ) || defined(CC13X2) || defined(CC13X2P)
-#define HCI_REVISION                                 0x0226  // HCI Version BLE5 2.2.6
+#define HCI_REVISION                                 0x0228  // HCI Version BLE5 2.2.8
 #elif defined( CC26XX )
 #define HCI_REVISION                                 0x0111  // HCI Version BLE5 1.1.1
 #else // !CC26X2 && !CC13X2 && !CC26XX && !CC13XX
@@ -1694,7 +1690,16 @@ hciStatus_t HCI_LE_ReadAdvChanTxPowerCmd( void )
   uint8 rtnParam[2];
 
   // status
-  rtnParam[0] = MAP_LL_ReadAdvChanTxPower( (int8*)&(rtnParam[1]) );
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_READ_ADV_CHANNEL_TX_POWER))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+    rtnParam[1] = 0;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LL_ReadAdvChanTxPower( (int8*)&(rtnParam[1]) );
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_ADV_CHANNEL_TX_POWER,
                                 sizeof(rtnParam),
@@ -3399,10 +3404,18 @@ hciStatus_t HCI_LE_SetPeriodicAdvParamsCmd( uint8 advHandle,
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_SetPeriodicAdvParams(advHandle,
-                                            periodicAdvIntervalMin,
-                                            periodicAdvIntervalMax,
-                                            periodicAdvProp);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_SET_PERIODIC_ADV_PARAMETERS))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_SetPeriodicAdvParams(advHandle,
+                                              periodicAdvIntervalMin,
+                                              periodicAdvIntervalMax,
+                                              periodicAdvProp);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_SET_PERIODIC_ADV_PARAMETERS,
                                 sizeof(rtnParam),
@@ -3425,10 +3438,18 @@ hciStatus_t HCI_LE_SetPeriodicAdvDataCmd( uint8 advHandle,
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_SetPeriodicAdvData(advHandle,
-                                          operation,
-                                          dataLength,
-                                          data);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_SET_PERIODIC_ADV_DATA))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_SetPeriodicAdvData(advHandle,
+                                            operation,
+                                            dataLength,
+                                            data);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_SET_PERIODIC_ADV_DATA,
                                 sizeof(rtnParam),
@@ -3450,8 +3471,16 @@ hciStatus_t HCI_LE_SetPeriodicAdvEnableCmd( uint8 enable,
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_SetPeriodicAdvEnable(enable,
-                                            advHandle);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_SET_PERIODIC_ADV_ENABLE))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_SetPeriodicAdvEnable(enable,
+                                              advHandle);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_SET_PERIODIC_ADV_ENABLE,
                                 sizeof(rtnParam),
@@ -3534,13 +3563,21 @@ hciStatus_t HCI_LE_PeriodicAdvCreateSyncCmd( uint8  options,
   hciStatus_t status;
 
   // status
-  status = MAP_LE_PeriodicAdvCreateSync( options,
-                                     advSID,
-                                     advAddrType,
-                                     advAddress,
-                                     skip,
-                                     syncTimeout,
-                                     syncCteType );
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_PERIODIC_ADV_CREATE_SYNC))
+  {
+    status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    status = MAP_LE_PeriodicAdvCreateSync( options,
+                                           advSID,
+                                           advAddrType,
+                                           advAddress,
+                                           skip,
+                                           syncTimeout,
+                                           syncCteType );
+  }
 
   MAP_HCI_CommandStatusEvent( status, HCI_LE_PERIODIC_ADV_CREATE_SYNC );
 
@@ -3559,7 +3596,15 @@ hciStatus_t HCI_LE_PeriodicAdvCreateSyncCancelCmd( void )
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_PeriodicAdvCreateSyncCancel();
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_PERIODIC_ADV_CREATE_SYNC_CANCEL))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_PeriodicAdvCreateSyncCancel();
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_PERIODIC_ADV_CREATE_SYNC_CANCEL,
                                 sizeof(rtnParam),
@@ -3580,7 +3625,15 @@ hciStatus_t HCI_LE_PeriodicAdvTerminateSyncCmd( uint16 syncHandle )
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_PeriodicAdvTerminateSync(syncHandle);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_PERIODIC_ADV_TERMINATE_SYNC))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_PeriodicAdvTerminateSync(syncHandle);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_PERIODIC_ADV_TERMINATE_SYNC,
                                 sizeof(rtnParam),
@@ -3603,9 +3656,17 @@ hciStatus_t HCI_LE_AddDeviceToPeriodicAdvListCmd( uint8 advAddrType,
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_AddDeviceToPeriodicAdvList(advAddrType,
-                                              advAddress,
-                                              advSID);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_ADD_DEVICE_TO_PERIODIC_ADV_LIST))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_AddDeviceToPeriodicAdvList(advAddrType,
+                                                    advAddress,
+                                                    advSID);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_ADD_DEVICE_TO_PERIODIC_ADV_LIST,
                                 sizeof(rtnParam),
@@ -3628,9 +3689,17 @@ hciStatus_t HCI_LE_RemoveDeviceFromPeriodicAdvListCmd( uint8 advAddrType,
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_RemoveDeviceFromPeriodicAdvList(advAddrType,
-                                                   advAddress,
-                                                   advSID);
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_REMOVE_DEVICE_FROM_PERIODIC_ADV_LIST))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_RemoveDeviceFromPeriodicAdvList(advAddrType,
+                                                         advAddress,
+                                                         advSID);
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_REMOVE_DEVICE_FROM_PERIODIC_ADV_LIST,
                                 sizeof(rtnParam),
@@ -3651,7 +3720,15 @@ hciStatus_t HCI_LE_ClearPeriodicAdvListCmd( void )
   uint8 rtnParam[1];
 
   // status
-  rtnParam[0] = MAP_LE_ClearPeriodicAdvList();
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_CLEAR_PERIODIC_ADV_LIST))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_ClearPeriodicAdvList();
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_CLEAR_PERIODIC_ADV_LIST,
                                 sizeof(rtnParam),
@@ -3672,7 +3749,16 @@ hciStatus_t HCI_LE_ReadPeriodicAdvListSizeCmd( void )
   // 1: List Size
   uint8 rtnParam[2];
 
-  rtnParam[0] = MAP_LE_ReadPeriodicAdvListSize( &rtnParam[1] );
+  // status
+  // Check if a legacy/extended command mixing is allowed
+  if(MAP_checkLegacyHCICmdStatus(HCI_LE_READ_PERIODIC_ADV_LIST_SIZE))
+  {
+    rtnParam[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+  }
+  else
+  {
+    rtnParam[0] = MAP_LE_ReadPeriodicAdvListSize( &rtnParam[1] );
+  }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_PERIODIC_ADV_LIST_SIZE,
                                 sizeof(rtnParam),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,17 +47,21 @@ var dplFiles = [
     "ti/dpl/MutexP_tirtos.c",
     "ti/dpl/SemaphoreP_tirtos.c",
     "ti/dpl/SwiP_tirtos.c",
-    "ti/dpl/SystemP_tirtos.c"
+    "ti/dpl/SystemP_tirtos.c",
+    "ti/dpl/TaskP_tirtos.c",
 ];
 
 function getCFiles()
 {
     if (system.deviceData.deviceId.match(/CC13.2|CC26.2/)) {
         dplFiles.push("ti/dpl/PowerCC26X2_tirtos.c");
+        dplFiles.push("ti/dpl/TimestampPCC26XX_tirtos.c");
     } else if (system.deviceData.deviceId.match(/CC32.*/)) {
         dplFiles.push("ti/dpl/PowerCC32XX_tirtos.c");
+        dplFiles.push("ti/dpl/TimestampPCC32XX_tirtos.c");
     } else /* default to cc13x2/cc26x2 */ {
         dplFiles.push("ti/dpl/PowerCC26X2_tirtos.c");
+        dplFiles.push("ti/dpl/TimestampPCC26XX_tirtos.c");
     }
 
     return (dplFiles);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/setup_rom.h)
 
-#if SPE_ENABLED
+#if TFM_ENABLED
     #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
     #include <third_party/tfm/secure_fw/spm/include/tfm_utils.h> /* tfm_core_panic() */
 #else
@@ -243,7 +243,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlIdle(uint32_t vimsPdMo
     SysCtrlIdle(vimsPdMode);
 }
 
-#if SPE_ENABLED
+#if TFM_ENABLED
 /*
  *  ======== PowerCC26X2_isSecurePeriph ========
  */
@@ -267,7 +267,7 @@ static bool PowerCC26X2_isSecurePeriph(uint32_t prcmPeriph)
  */
 __tfm_secure_gateway_attributes__ void PowerCC26X2_setPeriphDependency(uint32_t prcmPeriph)
 {
-#if SPE_ENABLED
+#if TFM_ENABLED
     if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
     {
         tfm_core_panic();
@@ -288,7 +288,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_setPeriphDependency(uint32_t 
  */
 __tfm_secure_gateway_attributes__ void PowerCC26X2_releasePeriphDependency(uint32_t prcmPeriph)
 {
-#if SPE_ENABLED
+#if TFM_ENABLED
     if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
     {
         tfm_core_panic();
@@ -309,7 +309,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_releasePeriphDependency(uint3
  */
 __tfm_secure_gateway_attributes__ void PowerCC26X2_setPeriphDeepSleepEnable(uint32_t prcmPeriph)
 {
-#if SPE_ENABLED
+#if TFM_ENABLED
     if (!PowerCC26X2_isSecurePeriph(prcmPeriph))
     {
         tfm_core_panic();
@@ -330,14 +330,39 @@ __tfm_secure_gateway_attributes__ uint32_t PowerCC26X2_sysCtrlGetResetSource(voi
 /*
  *  ======== PowerCC26X2_setSubSecIncToXoscLf ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_setSubSecIncToXoscLf(void)
+__tfm_secure_gateway_attributes__ void PowerCC26X2_setSubSecIncToXoscLf(uint32_t subsecinc)
 {
     /* We only want to set SubSecInc if we are running on XOSC_LF */
     if (CCFGRead_SCLK_LF_OPTION() == CCFGREAD_SCLK_LF_OPTION_XOSC_LF)
     {
-        /* Set SubSecInc back to 32.768 kHz now that we have switched to
-         * the RCOSC_LF or XOSC_LF target clock.
+        /* Check that the argument is within allowed limits. The range is
+         * the nominal RTC increment value (0x800000) +/- 2%. This is to
+         * allow RTC SWTCXO to set the value within a reasonable range,
+         * without allowing arbitrary values to be written
          */
-        SetupSetAonRtcSubSecInc(SUBSECINC_32768_HZ);
+        if (subsecinc > 0x7D70A3 && subsecinc < 0x828F5C)
+        {
+            /* Set SubSecInc back to 32.768 kHz, or a compensated value
+             * if RTC SWTCXO is enabled. In that case, the argument will
+             * be an already temperature-adjusted value
+             */
+            SetupSetAonRtcSubSecInc(subsecinc);
+        }
     }
+}
+
+/*
+ *  ======== PowerCC26X2_sysCtrlUpdateVoltageRegulator ========
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlUpdateVoltageRegulator(void)
+{
+    SysCtrl_DCDC_VoltageConditionalControl();
+}
+
+/*
+ *  ======== PowerCC26X2_sysCtrlReset ========
+ */
+__tfm_secure_gateway_attributes__ void PowerCC26X2_sysCtrlReset(void)
+{
+    SysCtrlSystemReset();
 }

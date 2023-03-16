@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,12 +75,12 @@
  *
  * ### Known Issue #
  * @warning The I2C will transmit a single data byte in the event that the
- * I2C slave address is not acknowledged (NACK'd). This is due to a known
+ * I2C target address is not acknowledged (NACK'd). This is due to a known
  * hardware bug.
  *
  * ## Error handling #
  * If an error occurs during operation:
- *   - The I2C Master transmits a stop bit and remains enabled.
+ *   - The I2C Controller transmits a stop bit and remains enabled.
  *   .
  *
  * ## Power Management #
@@ -120,8 +120,8 @@
  *
  *  ## Unsupported Functionality #
  *  The CC26XX I2C driver currently does not support:
- *    - Multi-master mode
- *    - I2C slave mode
+ *    - Multi-controller mode
+ *    - I2C target mode
  *
  * ## Use Cases @anchor I2C_USE_CASES ##
  * ### Basic Receive #
@@ -137,12 +137,12 @@
  *  // Configure I2C parameters.
  *  I2C_Params_init(&params);
  *
- *  // Initialize master I2C transaction structure
- *  i2cTrans.writeCount   = 0;
- *  i2cTrans.writeBuf     = txBuf;
- *  i2cTrans.readCount    = 10;
- *  i2cTrans.readBuf      = rxBuf;
- *  i2cTrans.slaveAddress = 0x3C;
+ *  // Initialize I2C transaction structure
+ *  i2cTrans.writeCount    = 0;
+ *  i2cTrans.writeBuf      = txBuf;
+ *  i2cTrans.readCount     = 10;
+ *  i2cTrans.readBuf       = rxBuf;
+ *  i2cTrans.targetAddress = 0x3C;
  *
  *  // Open I2C
  *  handle = I2C_open(CONFIG_I2C, &params);
@@ -186,12 +186,12 @@
  *      for(uint32_t i = 0; i < numTxBytes; i++)
  *          txBuffer[i] = (uint8_t) i;
  *
- *      // Initialize master I2C transaction structure
- *      i2cTrans.writeCount   = 16;
- *      i2cTrans.writeBuf     = txBuffer;
- *      i2cTrans.readCount    = 0;
- *      i2cTrans.readBuf      = rxBuffer;
- *      i2cTrans.slaveAddress = 0x3C;
+ *      // Initialize I2C transaction structure
+ *      i2cTrans.writeCount    = 16;
+ *      i2cTrans.writeBuf      = txBuffer;
+ *      i2cTrans.readCount     = 0;
+ *      i2cTrans.readBuf       = rxBuffer;
+ *      i2cTrans.targetAddress = 0x3C;
  *
  *      // Open I2C
  *      handle = I2C_open(CONFIG_I2C, &params);
@@ -253,19 +253,19 @@
  *      for(uint32_t i = 0; i < numTxBytes; i++)
  *          txBuffer[i] = (uint8_t) i;
  *
- *      // Initialize first master I2C transaction structure
- *      i2cTrans.writeCount   = 10;
- *      i2cTrans.writeBuf     = txBuffer;
- *      i2cTrans.readCount    = 0;
- *      i2cTrans.readBuf      = rxBuffer;
- *      i2cTrans.slaveAddress = 0x3C;
+ *      // Initialize first I2C transaction structure
+ *      i2cTrans.writeCount    = 10;
+ *      i2cTrans.writeBuf      = txBuffer;
+ *      i2cTrans.readCount     = 0;
+ *      i2cTrans.readBuf       = rxBuffer;
+ *      i2cTrans.targetAddress = 0x3C;
  *
  *      // Second transaction
- *      i2cTrans2.writeCount   = 32;
- *      i2cTrans2.writeBuf     = txBuffer2;
- *      i2cTrans2.readCount    = 0;
- *      i2cTrans2.readBuf      = rxBuffer2;
- *      i2cTrans2.slaveAddress = 0x2E;
+ *      i2cTrans2.writeCount    = 32;
+ *      i2cTrans2.writeBuf      = txBuffer2;
+ *      i2cTrans2.readCount     = 0;
+ *      i2cTrans2.readBuf       = rxBuffer2;
+ *      i2cTrans2.targetAddress = 0x2E;
  *
  *      // Open I2C
  *      handle = I2C_open(CONFIG_I2C, &params);

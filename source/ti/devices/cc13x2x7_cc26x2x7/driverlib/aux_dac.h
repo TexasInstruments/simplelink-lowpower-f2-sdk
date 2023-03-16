@@ -233,17 +233,31 @@ extern uint32_t AUXDACCalcCode(uint32_t uVoltOut, uint32_t uVoltOutMin, uint32_t
 //
 //! \brief Configures and sets the DAC sample clock.
 //!
-//! This function determines the sample clock base frequency considering that
+//! This function determines the sample clock frequency assuming that
 //! the operational rate for the DAC sample clock state machine is the AUX Bus
 //! Rate.
+
+//! AUX Bus frequency (24 MHz) divided by (dacClkDiv + 1) determines the sample
+//! base clock frequency(SBCLK).
 //!
-//! AUX Bus Rate divided by (dacClkDiv + 1) determines the sample clock base
-//! frequency.
+//! In this implementation, the high and low hold period (H_PER and L_PER) are
+//! both set to 4 periods, resulting in a DAC sample clock of SBCLK/8.
+//!
+//! The formula (24 MHz / (dacCLKDiv +1)) / 8 describes the final DAC Sample
+//! Clock Frequency. For example, dacCLKDiv = 11 gives SBCLK frequency = 24 MHz
+//! / (11+1) = 2 MHz, which gives DAC sample clock frequency = 2 MHz / 8 = 250
+//! KHz.
+//!
+//! \note The max sample clock frequency supported by the DAC is 1 MHz for
+//! internal load and 250 kHz for external load. The current implementation of
+//! the DAC driver assumes that it will be used to drive an internal load.
+//! Please refer to the register description before changing sample clock
+//! configuration settings. The DAC may behave unexpectedly if the sample clock
+//! operates at unsupported frequencies.
 //!
 //! \note This function must be called before \ref AUXDACEnable.
 //!
-//! \param dacClkDiv
-//!     The clock division factor
+//! \param dacClkDiv The clock division factor
 //
 //*****************************************************************************
 extern void AUXDACSetSampleClock(uint8_t dacClkDiv);

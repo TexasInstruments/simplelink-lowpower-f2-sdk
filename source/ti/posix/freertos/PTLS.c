@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,10 @@
  *  POSIX Task Local Storage
  */
 
-#include <FreeRTOS.h>  /* defines PTLS_TLS_INDEX via FreeRTOSConfig.h */
+#include <FreeRTOS.h> /* defines PTLS_TLS_INDEX via FreeRTOSConfig.h */
 #include <task.h>
 
 #include "PTLS.h"
-
 
 /*
  *  ======== PTLS_getBuf ========
@@ -50,7 +49,7 @@ void *PTLS_getBuf(void)
     void *buf;
 
     task = xTaskGetCurrentTaskHandle();
-    buf = pvTaskGetThreadLocalStoragePointer(task, PTLS_TLS_INDEX);
+    buf  = pvTaskGetThreadLocalStoragePointer(task, PTLS_TLS_INDEX);
 
     return (buf);
 }
@@ -76,7 +75,8 @@ void PTLS_taskDeleteHook(void *task)
 
     buf = pvTaskGetThreadLocalStoragePointer(task, PTLS_TLS_INDEX);
 
-    if (buf != NULL) {
+    if (buf != NULL)
+    {
         vPortFree(buf);
     }
 }

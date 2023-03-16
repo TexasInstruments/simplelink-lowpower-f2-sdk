@@ -12,7 +12,6 @@ CFLAGS = -I../../.. \
     -Oz \
     -g \
     -gdwarf-3 \
-    -gstrict-dwarf \
     -Wall \
     -Wno-ti-macros \
     -ffunction-sections \
@@ -43,7 +42,6 @@ CPPFLAGS = -I../../.. \
     -Oz \
     -g \
     -gdwarf-3 \
-    -gstrict-dwarf \
     -Wall \
     -Wno-ti-macros \
     -ffunction-sections \

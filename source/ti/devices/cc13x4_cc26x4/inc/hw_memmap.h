@@ -191,14 +191,13 @@
 #define CPU_ICB_BASE            0xE000E000 // CPU_ICB
 #define CPU_SYSTICK_BASE        0xE000E010 // CPU_SYSTICK
 #define CPU_NVIC_BASE           0xE000E100 // CPU_NVIC
-#define CPU_MPU_BASE            0xE000EDC0 // CPU_MPU
+#define CPU_SCB_BASE            0xE000ED00 // CPU_SCS
+#define CPU_MPU_BASE            0xE000ED90 // CPU_MPU
 #define CPU_SAU_BASE            0xE000EDD0 // CPU_SAU
 #define CPU_DCB_BASE            0xE000EDE0 // CPU_DCB
 #define CPU_SIG_BASE            0xE000EF00 // CPU_SIG
 #define CPU_FPU_BASE            0xE000EF30 // CPU_FPU
-#define CPU_ETM_BASE            0xE0041000 // CPU_ETM
-#define CPU_CTI_BASE            0xE0042000 // CPU_CTI
-#define CPU_MTB_BASE            0xE0043000 // CPU_MTB
+#define CPU_TPIU_BASE           0xE0040000 // CPU_TPIU
 #define CPU_ROM_TABLE_BASE      0xE00FF000 // CPU_ROM_TABLE
 
 #endif // __HW_MEMMAP__

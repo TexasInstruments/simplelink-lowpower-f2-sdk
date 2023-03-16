@@ -40,7 +40,7 @@
 #include <ti/drivers/cryptoutils/ecc/ECCParamsCC26X4_s.h>
 #include <ti/drivers/ecdsa/ECDSACC26X2.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 

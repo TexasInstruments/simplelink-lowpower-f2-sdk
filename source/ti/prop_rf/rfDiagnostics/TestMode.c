@@ -67,14 +67,14 @@ static void TestMode_Exit(uint8_t testMode)
             int32_t rssiAvg = Radio_getAvgRssi();
             uint16_t packetCount = Radio_getNumRxPackets();
 
-            pTestMsgFxn(TestMode_EXIT, packetCount, rssiAvg, (int32_t)(rssiMin), (int32_t)(rssiMax));
+            pTestMsgFxn(TestMode_EXIT, packetCount, false, rssiAvg, (int32_t)(rssiMin), (int32_t)(rssiMax));
         }
     }
 }
 
 void TestMode_perTxPrintMsg(uint16_t numPackets)
 {
-    pTestMsgFxn(TestMode_PER_TX, numPackets, 0, 0, 0);
+    pTestMsgFxn(TestMode_PER_TX, numPackets, false, 0, 0, 0);
 }
 
 uint8_t TestMode_read(void)
@@ -159,6 +159,8 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
             {
                 status = TestMode_Status_Fail;
             }
+
+            pTestMsgFxn(TestMode_PER_TX, 0, true, 0, 0, 0);
         }
 
         //------------------------------------------------------------------------------------------
@@ -171,7 +173,7 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
             {
                 *currentRadioTestMode = TestMode_PER_RX;
                 status = TestMode_Status_Success;
-                pTestMsgFxn(TestMode_PER_RX, 0, 0, 0, 0);
+                pTestMsgFxn(TestMode_PER_RX, 0, false, 0, 0, 0);
             }
             else
             {

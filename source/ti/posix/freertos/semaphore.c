@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,8 @@
 /* temporary until limits.h is restored, TIRTOS-1315 */
 #define SEM_VALUE_MAX 65535
 
-typedef struct {
+typedef struct
+{
     SemaphoreHandle_t sem;
 } sem_obj;
 
@@ -69,8 +70,7 @@ typedef struct {
  *  Function for obtaining a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
  */
-extern int _clock_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, uint32_t *ticks);
+extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks);
 
 static int semaphorePend(SemaphoreHandle_t sem, TickType_t ticks);
 
@@ -79,7 +79,7 @@ static int semaphorePend(SemaphoreHandle_t sem, TickType_t ticks);
  */
 int sem_destroy(sem_t *semaphore)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
     vSemaphoreDelete(obj->sem);
     return (0);
@@ -91,9 +91,9 @@ int sem_destroy(sem_t *semaphore)
 int sem_getvalue(sem_t *semaphore, int *value)
 {
     UBaseType_t count;
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
-    count = uxSemaphoreGetCount(obj->sem);
+    count  = uxSemaphoreGetCount(obj->sem);
     *value = (int)count;
     return (0);
 }
@@ -103,12 +103,13 @@ int sem_getvalue(sem_t *semaphore, int *value)
  */
 int sem_init(sem_t *semaphore, int pshared, unsigned value)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
     /* TODO object size validation */
-//  assert(sizeof(sem_obj) <= sizeof(sem_t));
+    //  assert(sizeof(sem_obj) <= sizeof(sem_t));
 
-    if (value > SEM_VALUE_MAX) {
+    if (value > SEM_VALUE_MAX)
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -119,10 +120,10 @@ int sem_init(sem_t *semaphore, int pshared, unsigned value)
      *  ok since the item length for a semaphore queue is 0, so the
      *  memory allocated is not dependent on maxCount.
      */
-    obj->sem = xSemaphoreCreateCounting((UBaseType_t)SEM_VALUE_MAX,
-            (UBaseType_t)value);
+    obj->sem = xSemaphoreCreateCounting((UBaseType_t)SEM_VALUE_MAX, (UBaseType_t)value);
 
-    if (obj->sem == NULL) {
+    if (obj->sem == NULL)
+    {
         errno = ENOSPC;
         return (-1);
     }
@@ -137,17 +138,20 @@ int sem_post(sem_t *semaphore)
 {
     BaseType_t xHigherPriorityTaskWoken;
     BaseType_t result;
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         result = xSemaphoreGiveFromISR(obj->sem, &xHigherPriorityTaskWoken);
 
-        if (result != pdTRUE) {
+        if (result != pdTRUE)
+        {
             /* queue is full */
             return (-1);
         }
     }
-    else {
+    else
+    {
         xSemaphoreGive(obj->sem);
     }
 
@@ -161,21 +165,24 @@ int sem_timedwait(sem_t *semaphore, const struct timespec *abstime)
 {
     int retc = 0;
     uint32_t timeout;
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
     /* don't bother checking the time if the semaphore is available */
-    if (semaphorePend(obj->sem, 0) == 0) {
+    if (semaphorePend(obj->sem, 0) == 0)
+    {
         return (0);
     }
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     retc = semaphorePend(obj->sem, (TickType_t)timeout);
 
-    if (retc == -1) {
+    if (retc == -1)
+    {
         errno = ETIMEDOUT;
     }
 
@@ -188,11 +195,12 @@ int sem_timedwait(sem_t *semaphore, const struct timespec *abstime)
 int sem_trywait(sem_t *semaphore)
 {
     int retc;
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
     retc = semaphorePend(obj->sem, 0);
 
-    if (retc == -1) {
+    if (retc == -1)
+    {
         errno = EAGAIN;
     }
 
@@ -204,7 +212,7 @@ int sem_trywait(sem_t *semaphore)
  */
 int sem_wait(sem_t *semaphore)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->freertos);
+    sem_obj *obj = (sem_obj *)(&semaphore->freertos);
 
     semaphorePend(obj->sem, portMAX_DELAY);
     return (0);

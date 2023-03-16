@@ -106,7 +106,9 @@ static int_fast16_t KeyStore_PSA_getPreProvisionedKeyIDs(void)
     if (memcmp(currentKey,
                KEYSTORE_PSA_PRE_PROVISIONED_KEY_MAGIC_HEADER,
                KEYSTORE_PSA_PRE_PROVISIONED_KEY_MAGIC_HEADER_LENGTH) != 0)
+    {
         return KEYSTORE_PSA_STATUS_DOES_NOT_EXIST;
+    }
 
     /* Rest keySize (size of each key) and preProvisionedKeyCount (length of the pre-provisioned key array) */
     keySize                = 0;
@@ -214,10 +216,14 @@ static uint32_t KeyStore_PSA_computeFletcherChecksum(uint8_t *addr, uint32_t len
     {
         sum1 += *addr++;
         if (sum1 >= mod)
+        {
             sum1 -= mod;
+        }
         sum2 += sum1;
         if (sum2 >= mod)
+        {
             sum2 -= mod;
+        }
     }
     checksum = sum2 << mod | sum1;
 
@@ -535,9 +541,22 @@ int_fast16_t KeyStore_PSA_purgeKey(KeyStore_PSA_KeyFileId key)
 /*
  *  ======== KeyStore_cleanUp ========
  */
-static int_fast16_t KeyStore_cleanUp(KeyStore_PSA_KeyFileId key, int_fast16_t status)
+static int_fast16_t KeyStore_cleanUp(KeyStore_PSA_KeyFileId key, int_fast16_t status, KeyStore_PSA_KeyHandle handle)
 {
-    KeyStore_PSA_purgeKey(key);
+    /*
+     * psa_close_key() is equivalent to psa_destroy_key() for volatile keys.
+     * Only close persistent keys, volatile keys do not have to be closed.
+     * This removes volatile copy of persistent keys from global key slots.
+     */
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
+    if (key.key_id > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
+#else
+    if (key > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
+#endif
+    {
+        (void)psa_close_key(handle);
+    }
+
     KeyStore_semaphoreObject.isAcquired = false;
     if (status != KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE)
     {
@@ -572,7 +591,7 @@ int_fast16_t KeyStore_PSA_init(void)
     {
         /*
          * Applications may call psa_crypto_init() function more than once,
-         * for example in Key Store and SPE. Once a call succeeds,
+         * for example in Key Store and TF-M. Once a call succeeds,
          * subsequent calls are guaranteed to succeed.
          */
         status = psa_crypto_init();
@@ -652,7 +671,7 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -667,7 +686,7 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
     if (dataSize == 0)
     {
         status = PSA_ERROR_BUFFER_TOO_SMALL;
-        return KeyStore_cleanUp(key, status);
+        return KeyStore_cleanUp(key, status, handle);
     }
 
     /*
@@ -682,11 +701,13 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
     status = psa_get_key_from_slot(handle, &slot, usage, alg);
 
     if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        return KeyStore_cleanUp(key, status);
+    {
+        return KeyStore_cleanUp(key, status, handle);
+    }
 
     status = psa_internal_export_key(slot, data, dataSize, dataLength, 0);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -700,14 +721,17 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
     KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
-    /* Check if the persistent keyID is already used by the pre-provisioned keys */
+    /* Check if the persistent keyID is already used by the pre-provisioned keys or is in range reserved for volatile
+     * keys */
     if (attributes->core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT)
     {
 #if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-        if (key->key_id >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN &&
-            key->key_id <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)
+        if (((key->key_id >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) &&
+             (key->key_id <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
+            (key->key_id <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
 #else
-        if ((*key >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (*key <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
+        if (((*key >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (*key <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
+            (*key <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
 #endif
         {
             return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
@@ -719,6 +743,7 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
         status = KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE;
         return status;
     }
+    KeyStore_semaphoreObject.isAcquired = true;
 
     status = psa_import_key(attributes, data, dataLength, &handle);
     /*
@@ -740,11 +765,7 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
         }
     }
 
-    if (status != KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE)
-    {
-        KeyStore_releaseLock();
-    }
-    return status;
+    return KeyStore_cleanUp(*key, status, handle);
 }
 
 /*
@@ -779,7 +800,7 @@ int_fast16_t KeyStore_PSA_exportKey(KeyStore_PSA_KeyFileId key, uint8_t *data, s
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -789,7 +810,7 @@ int_fast16_t KeyStore_PSA_exportKey(KeyStore_PSA_KeyFileId key, uint8_t *data, s
 
     status = psa_export_key(handle, data, dataSize, dataLength);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -827,7 +848,7 @@ int_fast16_t KeyStore_PSA_exportPublicKey(KeyStore_PSA_KeyFileId key,
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -837,7 +858,7 @@ int_fast16_t KeyStore_PSA_exportPublicKey(KeyStore_PSA_KeyFileId key,
 
     status = psa_export_public_key(handle, data, dataSize, dataLength);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -872,8 +893,10 @@ int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attribut
         return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
     }
 
-    /* Check if a certificate already exists with the same ID in pre-provisioned keys storage */
-    if ((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
+    /* Check if a certificate already exists with the same ID in pre-provisioned keys storage or is in range reserved
+     * for volatile keys */
+    if (((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
+        (keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
     {
         return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
     }
@@ -900,7 +923,7 @@ int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attribut
      */
     status = psa_import_key(attributes, data, dataLength, &handle);
 
-    return KeyStore_cleanUp(*key, status);
+    return KeyStore_cleanUp(*key, status, handle);
 }
 
 /*
@@ -946,12 +969,12 @@ int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
     {
         /* Remove references to KEYSTORE_PSA_STATUS_INVALID_KEY_ID when porting to TF-Mv1.5 */
         status = KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
-        return KeyStore_cleanUp(key, status);
+        return KeyStore_cleanUp(key, status, handle);
     }
 
     status = psa_export_key(handle, data, dataSize, dataLength);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -985,7 +1008,7 @@ int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -995,7 +1018,7 @@ int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
 
     status = psa_destroy_key(handle);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -1037,7 +1060,7 @@ int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
     {
         /* Cannot delete keys with associated certificates, the application must first delete the certificate */
         status = KEYSTORE_PSA_STATUS_NOT_PERMITTED;
-        return KeyStore_cleanUp(certificateID, status);
+        return KeyStore_cleanUp(certificateID, status, certHandle);
     }
 
     if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -1046,7 +1069,7 @@ int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -1056,7 +1079,7 @@ int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
 
     status = psa_destroy_key(handle);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*
@@ -1085,7 +1108,7 @@ int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_
 
         if (status != KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status);
+            return KeyStore_cleanUp(key, status, handle);
         }
     }
     else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
@@ -1095,7 +1118,7 @@ int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_
 
     status = psa_get_key_attributes(handle, attributes);
 
-    return KeyStore_cleanUp(key, status);
+    return KeyStore_cleanUp(key, status, handle);
 }
 
 /*

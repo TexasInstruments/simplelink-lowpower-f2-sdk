@@ -46,6 +46,7 @@
                                            // Fault
 #define INT_BUS_FAULT                    5 // Bus Fault
 #define INT_USAGE_FAULT                  6 // Usage Fault
+#define INT_SECURE_FAULT                 7 // SecureFault
 #define INT_SVCALL                      11 // Supervisor Call (SVCall)
 #define INT_DEBUG                       12 // Debug Monitor
 #define INT_PENDSV                      14 // Pending Service Call (PendSV)
@@ -59,8 +60,8 @@
 #define INT_AON_RTC_COMB                20 // Event from AON_RTC
 #define INT_UART0_COMB                  21 // UART0 combined interrupt
 #define INT_AUX_SWEV0                   22 // AUX software event 0
-#define INT_SSI0_COMB                   23 // SSI0 combined interrupt
-#define INT_SSI1_COMB                   24 // SSI1 combined interrupt
+#define INT_SPI0_COMB                   23 // SPI0 combined interrupt
+#define INT_SPI1_COMB                   24 // SPI1 combined interrupt
 #define INT_RFC_CPE_0                   25 // Combined Interrupt for CPE
                                            // Generated events
 #define INT_RFC_HW_COMB                 26 // Combined RFC hardware interrupt
@@ -95,8 +96,8 @@
 #define INT_UART1_COMB                  52 // UART1 combined interrupt
 #define INT_BATMON_COMB                 53 // Combined event from battery
                                            // monitor
-#define INT_SSI2_COMB                   54 // SSI2 combined interrupt
-#define INT_SSI3_COMB                   55 // SSI3 combined interrupt
+#define INT_SPI2_COMB                   54 // SPI2 combined interrupt
+#define INT_SPI3_COMB                   55 // SPI3 combined interrupt
 #define INT_UART2_COMB                  56 // UART2 combined interrupt
 #define INT_UART3_COMB                  57 // UART3 combined interrupt
 #define INT_I2C1_IRQ                    58 // Interrupt event from I2C1

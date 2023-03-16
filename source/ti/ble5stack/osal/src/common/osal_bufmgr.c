@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2008-2022, Texas Instruments Incorporated
+ Copyright (c) 2008-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -49,10 +49,11 @@
 /*********************************************************************
  * INCLUDES
  */
+
 #include "osal.h"
 #include "onboard.h"
 #include "osal_bufmgr.h"
-
+#include "rom_jt.h"
 /*********************************************************************
  * MACROS
  */
@@ -80,17 +81,35 @@ typedef struct bm_desc
 /*********************************************************************
  * GLOBAL FUNCTIONS
  */
-
+extern uint8 llQueryTxQueue(uint32 addr);
+extern void llHealthUpdateWrapperForOsal(void);
 /*********************************************************************
  * LOCAL VARIABLES
  */
 // Linked list of allocated buffer descriptors
 static bm_desc_t *bm_list_ptr = NULL;
-
+// pre release callback
+bm_notify_t bm_preReleaseBuffCB = NULL;
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 static bm_desc_t *bm_desc_from_payload ( uint8 *payload_ptr );
+
+
+/*********************************************************************
+ * @fn      osal_bm_reg_callback
+ *
+ * @brief   Register the pre release buffer callback function.
+ *
+ * @param   pCBack - Callback function.
+ *
+ * @return  None.
+ */
+void osal_bm_reg_callback(bm_notify_t pCBack)
+{
+  // Register the pre release buffer callback function
+  bm_preReleaseBuffCB = pCBack;
+}
 
 /*********************************************************************
  * @fn      osal_bm_alloc
@@ -146,8 +165,33 @@ void osal_bm_free( void *payload_ptr )
   halIntState_t cs;
   bm_desc_t *loop_ptr;
   bm_desc_t *prev_ptr;
-
   HAL_ENTER_CRITICAL_SECTION(cs);
+
+  // start the search for the address inside the TX queue only if Health check was defined or the callback was defined
+#if defined (USE_HEALTH_CHECK)
+  if (MAP_llQueryTxQueue((uint32_t)payload_ptr) == TRUE)
+  {
+    MAP_llHealthUpdateWrapperForOsal();
+    HAL_EXIT_CRITICAL_SECTION(cs);
+    if (bm_preReleaseBuffCB != NULL)
+    {
+      //notify the host about the pre release
+      (bm_preReleaseBuffCB)();
+    }
+    return;
+  }
+#else
+  if (bm_preReleaseBuffCB != NULL)
+  {
+    if (MAP_llQueryTxQueue((uint32_t)payload_ptr) == TRUE)
+    {
+      HAL_EXIT_CRITICAL_SECTION(cs);
+      //notify the host about the pre release
+      (bm_preReleaseBuffCB)();
+      return;
+    }
+  }
+#endif
 
   prev_ptr = NULL;
 

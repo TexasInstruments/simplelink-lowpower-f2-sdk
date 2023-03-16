@@ -35,6 +35,20 @@
 ******************************************************************************/
 #include "aux_dac.h"
 
+/*********** Defines for values used in the DACSMPLCFG1 register. ***********/
+
+// Number of inactive sample clock periods (0) between each active sample clock
+// period during hold phase
+#define SAMPLE_CLK_HOLD_PERIOD  (0 << AUX_ANAIF_DACSMPLCFG1_HOLD_INTERVAL_S)
+
+// Number of active sample clock periods (16) during the setup phase.
+#define SAMPLE_CLK_SETUP_COUNT  (15 << AUX_ANAIF_DACSMPLCFG1_SETUP_CNT_S)
+
+// This encoding means that the sample clock is held low for 4 periods.
+#define SAMPLE_CLK_LOW_PERIOD   (3  << AUX_ANAIF_DACSMPLCFG1_L_PER_S)
+
+// This encoding means that the sample clock is held high for 4 periods.
+#define SAMPLE_CLK_HIGH_PERIOD  (1 << AUX_ANAIF_DACSMPLCFG1_H_PER_S)
 
 //*****************************************************************************
 //
@@ -208,8 +222,24 @@ AUXDACSetSampleClock(uint8_t dacClkDiv)
     // Set the peripheral operational rate to the AUX bus rate of 24 MHz.
     HWREGB(AUX_SYSIF_BASE + AUX_SYSIF_O_PEROPRATE) |= AUX_SYSIF_PEROPRATE_ANAIF_DAC_OP_RATE_BUS_RATE;
 
-    // Set sample clock frequency considering a clock base frequency of 24 MHz and the given clock divider.
+    // Configure sample base clock (SBCLK). SBCLK = 24 MHz / (dacClkDiv + 1).
+    // Max possible dacCLKDiv value = 63.
     HWREGB(AUX_ANAIF_BASE + AUX_ANAIF_O_DACSMPLCFG0) = dacClkDiv;
+
+    // Configure DAC sample clock:
+    //
+    // - Set 16 active sample clock periods during setup phase.
+    // - Set 0 inactive sample clock periods between each active sample clock
+    //    period during hold phase.
+    // - Set high and low hold period to 4, resulting in a DAC sample clock of
+    //    SBCLK/8.
+    //
+    // This makes DAC clock frequency = (24 MHz / (dacCLKDiv + 1)) / 8
+
+    HWREG(AUX_ANAIF_BASE + AUX_ANAIF_O_DACSMPLCFG1) = (SAMPLE_CLK_HOLD_PERIOD)|
+                                                      (SAMPLE_CLK_SETUP_COUNT)|
+                                                      (SAMPLE_CLK_LOW_PERIOD)|
+                                                      (SAMPLE_CLK_HIGH_PERIOD);
 }
 
 //*****************************************************************************

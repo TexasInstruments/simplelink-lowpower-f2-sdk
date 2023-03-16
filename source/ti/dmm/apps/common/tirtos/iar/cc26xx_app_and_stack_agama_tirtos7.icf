@@ -41,7 +41,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2018-2022, Texas Instruments Incorporated
+ Copyright (c) 2018-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -189,14 +189,14 @@ place at end of FLASH_LAST_PAGE { readonly section .ccfg };
 keep { section .ccfg };
 
 // Interrupt Vector Table
-place at address mem:FLASH_START { readonly section .intvec };
-keep                             { readonly section .intvec };
+place at address mem:FLASH_START { readonly section .resetVecs };
+keep                             { readonly section .resetVecs };
 
 // All other pieces of code:
 place in FLASH_ALL { readonly };
 
 // RAM Vector Table
-place at start of RAM { section .vtable_ram };
+place at start of RAM { section .ramVecs };
 
 // Runtime Stack
 define block CSTACK with alignment = 8, size = STACK_SIZE { section .stack };

@@ -40,7 +40,7 @@ const displayName = "BLE AoA";
 const categoryName = "RF Stacks";
 let topModules;
 
-if(deviceId.match(/SIP|CC26.2R1|CC2652R7|CC2652RB|CC1352|CC2651.3/))
+if(deviceId.match(/CC26.2R1|CC2652|CC1352|CC2651.3/))
 {
     topModules = [
         {

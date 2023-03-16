@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,7 @@ extern "C" {
 #endif
 
 /* Current version number */
-#define ti_sysbios_BIOS_version (0x70200)
+#define ti_sysbios_BIOS_version (0x70300)
 
 /*!
  * @brief Current thread type definitions

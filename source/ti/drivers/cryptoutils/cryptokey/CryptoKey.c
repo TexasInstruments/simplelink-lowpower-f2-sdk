@@ -32,7 +32,7 @@
 
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
 
     #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 

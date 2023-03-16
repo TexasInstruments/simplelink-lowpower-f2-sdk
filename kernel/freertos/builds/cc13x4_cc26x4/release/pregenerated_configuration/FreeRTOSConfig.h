@@ -53,6 +53,7 @@
 /* General options */
 #define configCPU_CLOCK_HZ ((unsigned long)(48000000))
 #define configTOTAL_HEAP_SIZE ((size_t)(0x8000))
+#define configAPPLICATION_ALLOCATED_HEAP 0
 #define configCHECK_FOR_STACK_OVERFLOW 2
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #define configEXPECTED_IDLE_TIME_BEFORE_SLEEP 2
@@ -89,10 +90,12 @@
             ;                     \
     }
 
+/* Floating point unit enabled or disabled */
+#define configENABLE_FPU 1
+
 /* Modifying the options below is not permitted or currently unsupported */
 
-/* ARM-v8m specific settings: floating point unit is enabled, memory protection unit is disabled */
-#define configENABLE_FPU 1
+/* MPU is disabled */
 #define configENABLE_MPU 0
 
 /* The CM33 port requires an additional stack size definition */
@@ -190,16 +193,14 @@
 #define INCLUDE_xTaskGetCurrentTaskHandle 1
 #define INCLUDE_xTaskGetSchedulerState 1
 #define INCLUDE_xSemaphoreGetMutexHolder 0
-#define INCLUDE_xTimerPendFunctionCall 0
+#define INCLUDE_xTimerPendFunctionCall 1
 
 /* Cortex-M3/4 interrupt priority configuration follows...................... */
 
-/* Use the system definition, if there is one. */
-#ifdef __NVIC_PRIO_BITS
-#define configPRIO_BITS __NVIC_PRIO_BITS
-#else
-#define configPRIO_BITS 3 /* 8 priority levels */
-#endif
+/* Use the system definition.
+ * The number of priority bits is reduced by one for TFM-enabled configurations.
+ */
+#define configPRIO_BITS 3
 
 /*
  * The lowest interrupt priority that can be used in a call to a "set priority"

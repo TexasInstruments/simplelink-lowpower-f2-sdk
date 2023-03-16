@@ -1628,7 +1628,7 @@ function genResourceComment(text)
  *  signalTypes - an array of signal type strings
  *
  * Example:
- *    findSignalTypes(hardware, ["SPI_SS", "DOUT", "I2S_SCL"])
+ *    findSignalTypes(hardware, ["SPI_CSN", "DOUT", "I2S_SCL"])
  *
  *  Returns true if any signal in 'signalTypes' is found in the hardware
  *  component. This function returns as soon as any signal in 'signalTypes' is

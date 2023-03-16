@@ -86,7 +86,7 @@
 // Event
 #define AON_BATMON_O_EVENT                                          0x0000004C
 
-// Battery Upper Limit
+// Battery Upper Limit.
 #define AON_BATMON_O_BATTUL                                         0x00000050
 
 // Battery Lower Limit
@@ -279,10 +279,10 @@
 //
 // Integer part:
 //
-// 0x0: 0V + fractional part
+// 0x0: Battery voltage = 0V + fractional part
 // ...
-// 0x3: 3V + fractional part
-// 0x4: 4V + fractional part
+// 0x3: Battery voltage = 3V + fractional part
+// 0x4: Battery voltage = 4V + fractional part
 #define AON_BATMON_BAT_INT_W                                                 3
 #define AON_BATMON_BAT_INT_M                                        0x00000700
 #define AON_BATMON_BAT_INT_S                                                 8
@@ -299,7 +299,7 @@
 // ...
 // 0xA0: 1/2 + 1/8 = .625V
 // ...
-// 0xFF: Max
+// 0xFF: 1/2 + 1/4 + 1/8 + .. + 1/256 = 0.99V
 #define AON_BATMON_BAT_FRAC_W                                                8
 #define AON_BATMON_BAT_FRAC_M                                       0x000000FF
 #define AON_BATMON_BAT_FRAC_S                                                0
@@ -328,8 +328,8 @@
 //*****************************************************************************
 // Field:  [16:8] INT
 //
-// Integer part (signed) of temperature value.
-// Total value = INTEGER + FRACTIONAL
+// Integer part of temperature value (signed)
+// Total value = INT + FRAC
 // 2's complement encoding
 //
 // 0x100: Min value
@@ -342,6 +342,32 @@
 #define AON_BATMON_TEMP_INT_W                                                9
 #define AON_BATMON_TEMP_INT_M                                       0x0001FF00
 #define AON_BATMON_TEMP_INT_S                                                8
+
+// Field:   [7:6] FRAC
+//
+// Fractional part of temperature value.
+// Total value = INT + FRAC
+// The encoding is an extension of the 2's complement encoding.
+//
+// 00: 0.0C
+// 01: 0.25C
+// 10: 0.5C
+// 11: 0.75C
+//
+// For example:
+// 000000001,00 = ( 1+0,00) =  1,00
+// 000000000,11 = ( 0+0,75) =  0,75
+// 000000000,10 = ( 0+0,50) =  0,50
+// 000000000,01 = ( 0+0,25) =  0,25
+// 000000000,00 = ( 0+0,00) =  0,00
+// 111111111,11 = (-1+0,75) = -0,25
+// 111111111,10 = (-1+0,50) = -0,50
+// 111111111,01 = (-1+0,25) = -0,75
+// 111111111,00 = (-1+0,00) = -1,00
+// 111111110,11 = (-2+0,75) = -1,25
+#define AON_BATMON_TEMP_FRAC_W                                               2
+#define AON_BATMON_TEMP_FRAC_M                                      0x000000C0
+#define AON_BATMON_TEMP_FRAC_S                                               6
 
 //*****************************************************************************
 //
@@ -500,11 +526,11 @@
 // Field:  [10:8] INT
 //
 // Integer part:
-//
-// 0x0: 0V + fractional part
+// Total battery voltage = INT + FRAC (integer and fractional part)
+// 0x0: Battery voltage = 0V + fractional part
 // ...
-// 0x3: 3V + fractional part
-// 0x4: 4V + fractional part
+// 0x3: Battery voltage = 3V + fractional part
+// 0x4: Battery voltage = 4V + fractional part
 #define AON_BATMON_BATTUL_INT_W                                              3
 #define AON_BATMON_BATTUL_INT_M                                     0x00000700
 #define AON_BATMON_BATTUL_INT_S                                              8
@@ -521,7 +547,7 @@
 // ...
 // 0xA0: 1/2 + 1/8 = .625V
 // ...
-// 0xFF: Max
+// 0xFF: 1/2 + 1/4 + 1/8 + .. + 1/256 = 0.99V
 #define AON_BATMON_BATTUL_FRAC_W                                             8
 #define AON_BATMON_BATTUL_FRAC_M                                    0x000000FF
 #define AON_BATMON_BATTUL_FRAC_S                                             0
@@ -534,11 +560,12 @@
 // Field:  [10:8] INT
 //
 // Integer part:
+// Total battery voltage = INT + FRAC (integer and fractional part)
 //
-// 0x0: 0V + fractional part
+// 0x0: Battery voltage = 0V + fractional part
 // ...
-// 0x3: 3V + fractional part
-// 0x4: 4V + fractional part
+// 0x3: Battery voltage =  3V + fractional part
+// 0x4: Battery voltage =  4V + fractional part
 #define AON_BATMON_BATTLL_INT_W                                              3
 #define AON_BATMON_BATTLL_INT_M                                     0x00000700
 #define AON_BATMON_BATTLL_INT_S                                              8
@@ -555,7 +582,7 @@
 // ...
 // 0xA0: 1/2 + 1/8 = .625V
 // ...
-// 0xFF: Max
+// 0xFF: 1/2 + 1/4 + 1/8 + .. + 1/256 = 0.99V
 #define AON_BATMON_BATTLL_FRAC_W                                             8
 #define AON_BATMON_BATTLL_FRAC_M                                    0x000000FF
 #define AON_BATMON_BATTLL_FRAC_S                                             0

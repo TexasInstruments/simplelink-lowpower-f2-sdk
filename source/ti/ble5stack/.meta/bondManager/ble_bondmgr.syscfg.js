@@ -43,9 +43,8 @@ const Docs = system.getScript("/ti/ble5stack/bondManager/ble_bondmgr_docs.js");
 // Get common utility functions
 const Common = system.getScript("/ti/ble5stack/ble_common.js");
 
-// Bonding default values
-const defaultBondingVal = Common.defaultValue();
-const readOnlyBondingvVal = Common.readOnlyValue();
+// Get the default number of bonds allowed
+const defaultMaxBonds = Common.defaultBondValue();
 
 const config = {
     name: "bondMgrConfig",
@@ -61,7 +60,7 @@ const config = {
             name: "maxBonds",
             displayName: "Maximum Number of Supported Bonds",
             description: "Maximum number of bonds that can be saved in NV",
-            default: 10,
+            default: defaultMaxBonds,
             longDescription: Docs.maxBondsLongDescription
         },
         {
@@ -107,8 +106,8 @@ const config = {
             name: "bonding",
             displayName: "Bonding",
             longDescription: Docs.bondingLongDescription,
-            default: defaultBondingVal,
-            readOnly: readOnlyBondingvVal
+            default: true,
+            readOnly: false
         },
         {
             name: "secureConn",
@@ -276,17 +275,32 @@ const config = {
  */
 function validate(inst, validation)
 {
-    //check what is the max value
-    if(inst.maxBonds < 0 || inst.maxBonds > 32)
+    if( Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0" )
     {
-        validation.logError("The Max number of bonds that can be saved in NV is 32"
-                            , inst, "maxBonds");
-    }
+       //check what is the max value
+       if(inst.maxBonds < 0 || inst.maxBonds > 32)
+       {
+           validation.logError("The Max number of bonds that can be saved in NV is 32"
+                               , inst, "maxBonds");
+       }
 
-    if(inst.maxBonds > 21)
+       if(inst.maxBonds > 21)
+       {
+           validation.logWarning("If scanning or connection initiation on the 2M PHY is used, "
+           + "the max number of bonds that can be saved in NV is 21.", inst, "maxBonds");
+       }
+    }
+    else
     {
-        validation.logWarning("If scanning or connection initiation on the 2M PHY is used, "
-        + "the max number of bonds that can be saved in NV is 21.", inst, "maxBonds");
+        // Check what is the max value
+        if ( inst.maxBonds > 5 )
+        {
+            validation.logWarning("When using privacy the maxBonds should not be greater than 5");
+        }
+        if ( (inst.maxBonds < 0) || (inst.maxBonds > 15) )
+        {
+            validation.logError("Maximum number of bonds allowed is 15");
+        }
     }
 
     if(inst.maxCharCfg < 0 || inst.maxCharCfg > 4)

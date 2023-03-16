@@ -187,8 +187,7 @@
 // MODE_CONF_1.ALT_DCDC_IPEAK
 //
 // NOTE! The DriverLib function SysCtrl_DCDC_VoltageConditionalControl() must
-// be called regularly to apply this field (handled automatically if using TI
-// RTOS!).
+// be called regularly to apply this field.
 #define CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING                0x00000002
 #define CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING_BITN                    1
 #define CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING_M              0x00000002
@@ -234,8 +233,7 @@
 // 1: Do not use the DC/DC during recharge in powerdown (default).
 //
 // NOTE! The DriverLib function SysCtrl_DCDC_VoltageConditionalControl() must
-// be called regularly to apply this field (handled automatically if using TI
-// RTOS!).
+// be called regularly to apply this field.
 #define CCFG_MODE_CONF_DCDC_RECHARGE                                0x08000000
 #define CCFG_MODE_CONF_DCDC_RECHARGE_BITN                                   27
 #define CCFG_MODE_CONF_DCDC_RECHARGE_M                              0x08000000
@@ -248,8 +246,7 @@
 // 1: Do not use the DC/DC during active mode (default).
 //
 // NOTE! The DriverLib function SysCtrl_DCDC_VoltageConditionalControl() must
-// be called regularly to apply this field (handled automatically if using TI
-// RTOS!).
+// be called regularly to apply this field.
 #define CCFG_MODE_CONF_DCDC_ACTIVE                                  0x04000000
 #define CCFG_MODE_CONF_DCDC_ACTIVE_BITN                                     26
 #define CCFG_MODE_CONF_DCDC_ACTIVE_M                                0x04000000
@@ -257,9 +254,7 @@
 
 // Field:    [25] VDDR_EXT_LOAD
 //
-// Reserved for future use. Software should not rely on the value of a
-// reserved. Writing any other value than the reset/default value may result in
-// undefined behavior.
+// For TI internal use only.
 #define CCFG_MODE_CONF_VDDR_EXT_LOAD                                0x02000000
 #define CCFG_MODE_CONF_VDDR_EXT_LOAD_BITN                                   25
 #define CCFG_MODE_CONF_VDDR_EXT_LOAD_M                              0x02000000
@@ -269,7 +264,7 @@
 //
 // VDDS BOD level.
 // 0: VDDS BOD level is 2.0V (necessary for external load mode, or for maximum
-// PA output power on CC13xx).
+// PA output power on CC13x4x10).
 // 1: VDDS BOD level is 1.8V (or 1.65V for external regulator mode) (default).
 #define CCFG_MODE_CONF_VDDS_BOD_LEVEL                               0x01000000
 #define CCFG_MODE_CONF_VDDS_BOD_LEVEL_BITN                                  24
@@ -307,11 +302,10 @@
 // Field:    [21] VDDR_TRIM_SLEEP_TC
 //
 // 0x1: VDDR_TRIM_SLEEP_DELTA is not temperature compensated
-// 0x0: RTOS/driver temperature compensates VDDR_TRIM_SLEEP_DELTA every time
-// standby mode is entered. This improves low-temperature RCOSC_LF frequency
-// stability in standby mode.
+// 0x0: TI's Power Manager temperature compensates VDDR_TRIM_SLEEP_DELTA every
+// time Standby mode is entered.
 //
-// When temperature compensation is performed, the delta is calculates this
+// When temperature compensation is performed, the delta is calculated this
 // way:
 // Delta = max (delta, min(8, floor(62-temp)/8))
 // Here, delta is given by VDDR_TRIM_SLEEP_DELTA, and temp is the current
@@ -457,11 +451,11 @@
 // (SIZE_AND_DIS_FLAGS.DIS_ALT_DCDC_SETTING=0). Assuming 10uH external
 // inductor!
 //
-// 0: 46mA (min)
+// 0: Min 46mA
 // ...
-// 4: 70mA
+// 4: Typical 70mA
 // ...
-// 7: 87mA (max)
+// 7: Max 87mA
 #define CCFG_MODE_CONF_1_ALT_DCDC_IPEAK_W                                    3
 #define CCFG_MODE_CONF_1_ALT_DCDC_IPEAK_M                           0x00070000
 #define CCFG_MODE_CONF_1_ALT_DCDC_IPEAK_S                                   16
@@ -582,9 +576,7 @@
 // Field: [31:24] DIO
 //
 // Unsigned integer, selecting the DIO to supply external 32 kHz clock as
-// SCLK_LF when MODE_CONF.SCLK_LF_OPTION is set to EXTERNAL. The selected DIO
-// will be marked as reserved by the pin driver (TI-RTOS environment) and hence
-// not selectable for other usage.
+// SCLK_LF when MODE_CONF.SCLK_LF_OPTION is set to EXTERNAL.
 #define CCFG_EXT_LF_CLK_DIO_W                                                8
 #define CCFG_EXT_LF_CLK_DIO_M                                       0xFF000000
 #define CCFG_EXT_LF_CLK_DIO_S                                               24
@@ -607,8 +599,8 @@
 // Field:  [31:0] ADDR
 //
 // Bits[31:0] of the 64-bits custom IEEE MAC address.
-// If different from 0xFFFFFFFF then the value of this field is applied;
-// otherwise use value from FCFG.
+// If different from 0xFFFFFFFF then the value of this field is applied
+// otherwise use value from FCFG:MAC_15_4_0.
 #define CCFG_IEEE_MAC_0_ADDR_W                                              32
 #define CCFG_IEEE_MAC_0_ADDR_M                                      0xFFFFFFFF
 #define CCFG_IEEE_MAC_0_ADDR_S                                               0
@@ -621,8 +613,8 @@
 // Field:  [31:0] ADDR
 //
 // Bits[63:32] of the 64-bits custom IEEE MAC address.
-// If different from 0xFFFFFFFF then the value of this field is applied;
-// otherwise use value from FCFG.
+// If different from 0xFFFFFFFF then the value of this field is applied,
+// otherwise use value from FCFG:MAC_15_4_1.
 #define CCFG_IEEE_MAC_1_ADDR_W                                              32
 #define CCFG_IEEE_MAC_1_ADDR_M                                      0xFFFFFFFF
 #define CCFG_IEEE_MAC_1_ADDR_S                                               0
@@ -635,8 +627,8 @@
 // Field:  [31:0] ADDR
 //
 // Bits[31:0] of the 64-bits custom IEEE BLE address.
-// If different from 0xFFFFFFFF then the value of this field is applied;
-// otherwise use value from FCFG.
+// If different from 0xFFFFFFFF then the value of this field is applied
+// otherwise use value from FCFG:MAC_BLE_0.
 #define CCFG_IEEE_BLE_0_ADDR_W                                              32
 #define CCFG_IEEE_BLE_0_ADDR_M                                      0xFFFFFFFF
 #define CCFG_IEEE_BLE_0_ADDR_S                                               0
@@ -649,8 +641,8 @@
 // Field:  [31:0] ADDR
 //
 // Bits[63:32] of the 64-bits custom IEEE BLE address.
-// If different from 0xFFFFFFFF then the value of this field is applied;
-// otherwise use value from FCFG.
+// If different from 0xFFFFFFFF then the value of this field is applied,
+// otherwise use value from FCFG:MAC_BLE_1.
 #define CCFG_IEEE_BLE_1_ADDR_W                                              32
 #define CCFG_IEEE_BLE_1_ADDR_M                                      0xFFFFFFFF
 #define CCFG_IEEE_BLE_1_ADDR_S                                               0
@@ -663,8 +655,8 @@
 // Field: [31:24] BOOTLOADER_ENABLE
 //
 // Bootloader enable. Boot loader can be accessed if
-// IMAGE_VALID_CONF.IMAGE_VALID is non-zero or BL_ENABLE is enabled (and
-// conditions for boot loader backdoor are met).
+// IMAGE_VALID_CONF.IMAGE_VALID is an invalid vector table address or BL_ENABLE
+// is enabled (and conditions for boot loader backdoor are met).
 // 0xC5: Boot loader is enabled.
 // Any other value: Boot loader is disabled.
 #define CCFG_BL_CONFIG_BOOTLOADER_ENABLE_W                                   8
@@ -759,7 +751,8 @@
 // Field: [23:16] C_FA_DIS
 //
 // Option to disable failure analysis without customer password. If C_FA_DIS !=
-// 0xC5, CKEY must be provided to TI for failure analysis to be possible.
+// 0xC5, CKEY (CKEY0.KEY, CKEY1.KEY, CKEY2.KEY, CKEY2.KEY) must be provided to
+// TI for failure analysis to be possible.
 //
 // 0xC5: Failure analysis without customer password is enabled
 // All other values: Failure analysis without customer password is disabled

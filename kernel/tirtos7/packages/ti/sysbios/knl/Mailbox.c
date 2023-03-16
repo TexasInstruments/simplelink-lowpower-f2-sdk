@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -274,6 +274,37 @@ bool Mailbox_pend(Mailbox_Object *obj, void * msg, uint32_t timeout)
 }
 
 /*
+ *  ======== Mailbox_peek ========
+ */
+bool Mailbox_peek(Mailbox_Object *obj, void * msg, uint32_t timeout)
+{
+    Mailbox_MbxElem *elem;
+    Queue_Handle dataQue;
+    Semaphore_Handle dataSem, freeSem;
+
+    dataQue = &obj->dataQue;
+    dataSem = &obj->dataSem;
+    freeSem = &obj->freeSem;
+
+    if (Semaphore_pend(dataSem, timeout)) {
+        /* get message from dataQue */
+        elem = Queue_head(dataQue);
+
+        /* copy message to user supplied pointer */
+        /* SV.BANNED.REQUIRED.COPY */
+        (void)memcpy(msg, elem + 1, obj->msgSize);
+
+        /* post the semaphore */
+        Semaphore_post(freeSem);
+
+        return (true);
+    }
+    else {
+        return (false);
+    }
+}
+
+/*
  *  ======== Mailbox_post ========
  */
 bool Mailbox_post(Mailbox_Object *obj, void * msg, uint32_t timeout)
@@ -324,6 +355,66 @@ bool Mailbox_post(Mailbox_Object *obj, void * msg, uint32_t timeout)
 
         Hwi_restore(hwiKey);
         Task_restore(taskKey);
+
+        return (true);          /* success */
+    }
+    else {
+        return (false);         /* error */
+    }
+}
+
+/*
+ *  ========= Mailbox_putHead ========
+ */
+bool Mailbox_putHead(Mailbox_Object *obj, void * msg, uint32_t timeout)
+{
+    Mailbox_MbxElem *elem;
+    Queue_Handle dataQue;
+    Queue_Handle freeQue;
+    Semaphore_Handle dataSem, freeSem;
+    unsigned int hwiKey;
+
+    dataQue = &obj->dataQue;
+    freeQue = &obj->freeQue;
+    dataSem = &obj->dataSem;
+    freeSem = &obj->freeSem;
+
+    if (Semaphore_pend(freeSem, timeout)) {
+        /* perform the dequeue and decrement numFreeMsgs atomically */
+        hwiKey = Hwi_disable();
+
+        /* get a message from the free queue */
+        elem = Queue_dequeue(freeQue);
+
+        /* Make sure that a valid pointer was returned. */
+        if (elem == (Mailbox_MbxElem *)(freeQue)) {
+            Hwi_restore(hwiKey);
+            return (false);
+        }
+
+        /* decrement the numFreeMsgs */
+        obj->numFreeMsgs--;
+
+        /* re-enable ints */
+        Hwi_restore(hwiKey);
+
+        /* copy msg to elem */
+        /* SV.BANNED.REQUIRED.COPY */
+        /* Elem + 1 represents the address just after the Queue element without
+         * referencing it directly
+         */
+        (void)memcpy(elem + 1, msg, obj->msgSize);
+
+        /* Make Queue_enqueue and Semaphore_post atomic */
+        hwiKey = Hwi_disable();
+
+        /* put message on dataQueue */
+        Queue_putHead(dataQue, &(elem->elem));
+
+        /* post the semaphore */
+        Semaphore_post(dataSem);
+
+        Hwi_restore(hwiKey);
 
         return (true);          /* success */
     }

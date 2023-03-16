@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,19 +62,19 @@
  *
  *  This object must align with 'struct freertos_Mutex' (_internal.h).
  */
-typedef struct {
-    int                protocol;
-    pthread_t          owner;
-    int                type;
-    SemaphoreHandle_t  sem;
+typedef struct
+{
+    int protocol;
+    pthread_t owner;
+    int type;
+    SemaphoreHandle_t sem;
 } pthread_mutex_obj;
 
 /*
  *  Function for obtaining a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
  */
-extern int _clock_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, uint32_t *ticks);
+extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks);
 
 static int acquireMutex(pthread_mutex_obj *mutex, uint32_t timeout);
 
@@ -111,8 +111,7 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type)
 /*
  *  ======== pthread_mutexattr_getprotocol ========
  */
-int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
-        int *protocol)
+int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr, int *protocol)
 {
     *protocol = attr->protocol;
     return (0);
@@ -132,9 +131,8 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr)
  */
 int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr, int protocol)
 {
-    if ((protocol != PTHREAD_PRIO_NONE) &&
-            (protocol != PTHREAD_PRIO_INHERIT) &&
-            (protocol != PTHREAD_PRIO_PROTECT)) {
+    if ((protocol != PTHREAD_PRIO_NONE) && (protocol != PTHREAD_PRIO_INHERIT) && (protocol != PTHREAD_PRIO_PROTECT))
+    {
         return (EINVAL);
     }
 
@@ -147,13 +145,12 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr, int protocol)
  */
 int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
 {
-    int     retc = EINVAL;
+    int retc = EINVAL;
 
-    if ((type == PTHREAD_MUTEX_NORMAL) ||
-            (type == PTHREAD_MUTEX_RECURSIVE) ||
-            (type == PTHREAD_MUTEX_ERRORCHECK)) {
+    if ((type == PTHREAD_MUTEX_NORMAL) || (type == PTHREAD_MUTEX_RECURSIVE) || (type == PTHREAD_MUTEX_ERRORCHECK))
+    {
         attr->type = type;
-        retc = 0;
+        retc       = 0;
     }
 
     return (retc);
@@ -165,7 +162,6 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
  *************************************************************************
  */
 
-
 /*
  *  ======== pthread_mutex_destroy ========
  */
@@ -173,7 +169,8 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex)
 {
     pthread_mutex_obj *obj = (pthread_mutex_obj *)(&mutex->freertos);
 
-    if (obj->sem != NULL) {
+    if (obj->sem != NULL)
+    {
         vSemaphoreDelete(obj->sem);
     }
 
@@ -187,26 +184,28 @@ int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
 {
     pthread_mutex_obj *obj = (pthread_mutex_obj *)(&mutex->freertos);
     pthread_mutexattr_t *mAttrs;
-    SemaphoreHandle_t    sem;
+    SemaphoreHandle_t sem;
 
     mAttrs = (attr == NULL) ? &defAttrs : (pthread_mutexattr_t *)attr;
 
-    obj->type = mAttrs->type;
-    obj->sem = NULL;
+    obj->type  = mAttrs->type;
+    obj->sem   = NULL;
     obj->owner = NULL;
 
     obj->protocol = mAttrs->protocol;
 
-    if ((obj->type == PTHREAD_MUTEX_NORMAL) ||
-            (obj->type == PTHREAD_MUTEX_ERRORCHECK)) {
+    if ((obj->type == PTHREAD_MUTEX_NORMAL) || (obj->type == PTHREAD_MUTEX_ERRORCHECK))
+    {
         sem = xSemaphoreCreateMutex();
     }
-    else {
+    else
+    {
         /* PTHREAD_MUTEX_RECURSIVE */
         sem = xSemaphoreCreateRecursiveMutex();
     }
 
-    if (sem == NULL) {
+    if (sem == NULL)
+    {
         pthread_mutex_destroy(mutex);
         return (ENOMEM);
     }
@@ -240,8 +239,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
  *    EDEADLK - Mutex type is PTHREAD_MUTEX_ERRORCHECK and calling thread
  *              already owns the mutex.
  */
-int pthread_mutex_timedlock(pthread_mutex_t *mutex,
-        const struct timespec *abstime)
+int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *abstime)
 {
     pthread_mutex_obj *obj = (pthread_mutex_obj *)(&mutex->freertos);
     uint32_t timeout;
@@ -250,16 +248,19 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
     /* must attempt operation before validating abstime */
     retc = acquireMutex(obj, 0);
 
-    if (retc != ETIMEDOUT) {
+    if (retc != ETIMEDOUT)
+    {
         return (retc);
     }
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         return (EINVAL);
     }
 
     /* requested abstime has already passed */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         return (ETIMEDOUT);
     }
 
@@ -276,7 +277,7 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 int pthread_mutex_trylock(pthread_mutex_t *mutex)
 {
     pthread_mutex_obj *obj = (pthread_mutex_obj *)(&mutex->freertos);
-    int retc = 0;
+    int retc               = 0;
 
     /* Attempt to acquire the mutex with timeout of 0 */
     retc = acquireMutex(obj, 0);
@@ -309,22 +310,25 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
      *  Instead, we'll rely on FreeRTOS returning an error.
      */
 
-    if (obj->type == PTHREAD_MUTEX_RECURSIVE) {
+    if (obj->type == PTHREAD_MUTEX_RECURSIVE)
+    {
         status = xSemaphoreGiveRecursive(obj->sem);
         return (status == pdTRUE ? 0 : EPERM);
     }
-    else {
+    else
+    {
         /* Disable the scheduler */
         vTaskSuspendAll();
 
-        status = xSemaphoreGive(obj->sem);
+        status     = xSemaphoreGive(obj->sem);
         obj->owner = NULL;
 
         /* Re-enable the scheduler */
         xTaskResumeAll();
     }
 
-    if (status != pdTRUE) {
+    if (status != pdTRUE)
+    {
         /*
          *  This is an internal error.  Semaphores are implemented using
          *  queues, and an error occurs if there is no space on the queue
@@ -335,7 +339,6 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
     }
     return (retc);
 }
-
 
 /*
  *************************************************************************
@@ -348,30 +351,36 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
  */
 static int acquireMutex(pthread_mutex_obj *mutex, uint32_t timeout)
 {
-    pthread_t       *thisThread;
-    BaseType_t       status;
-    int              retc = 0;
+    pthread_t *thisThread;
+    BaseType_t status;
+    int retc = 0;
 
     thisThread = pthread_self();
 
     /* Return if the thread already owns the mutex */
-    if (mutex->owner == thisThread) {
-        if (mutex->type == PTHREAD_MUTEX_ERRORCHECK) {
+    if (mutex->owner == thisThread)
+    {
+        if (mutex->type == PTHREAD_MUTEX_ERRORCHECK)
+        {
             return (EDEADLK);
         }
     }
 
-    if (mutex->type == PTHREAD_MUTEX_RECURSIVE) {
+    if (mutex->type == PTHREAD_MUTEX_RECURSIVE)
+    {
         status = xSemaphoreTakeRecursive(mutex->sem, (TickType_t)timeout);
     }
-    else {
+    else
+    {
         status = xSemaphoreTake(mutex->sem, (TickType_t)timeout);
     }
 
-    if (status != pdTRUE) {
+    if (status != pdTRUE)
+    {
         retc = ETIMEDOUT;
     }
-    else {
+    else
+    {
         mutex->owner = thisThread;
     }
 

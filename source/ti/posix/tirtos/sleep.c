@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,23 +53,25 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
     uint32_t ticks;
 
     /* max interval to avoid tick count overflow */
-    if (rqtp->tv_sec >= MAX_SECONDS) {
+    if (rqtp->tv_sec >= MAX_SECONDS)
+    {
         errno = EINVAL;
         return (-1);
     }
-    if ((rqtp->tv_nsec < 0) || (rqtp->tv_nsec >= 1000000000)) {
+    if ((rqtp->tv_nsec < 0) || (rqtp->tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
-    if ((rqtp->tv_sec == 0) && (rqtp->tv_nsec == 0)) {
+    if ((rqtp->tv_sec == 0) && (rqtp->tv_nsec == 0))
+    {
         return (0);
     }
 
     ticks = rqtp->tv_sec * (1000000 / Clock_tickPeriod);
 
     /* compute ceiling value */
-    ticks += (rqtp->tv_nsec + Clock_tickPeriod * 1000 - 1) /
-            (Clock_tickPeriod * 1000);
+    ticks += (rqtp->tv_nsec + Clock_tickPeriod * 1000 - 1) / (Clock_tickPeriod * 1000);
 
     /*  Add one tick to ensure the timeout is not less than the
      *  amount of time requested. The clock may be about to tick,
@@ -87,8 +89,9 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
      *  always be zero. Caution: the rqtp and rmtp arguments may
      *  point to the same object.
      */
-    if (rmtp != NULL) {
-        rmtp->tv_sec = 0;
+    if (rmtp != NULL)
+    {
+        rmtp->tv_sec  = 0;
         rmtp->tv_nsec = 0;
     }
 
@@ -100,16 +103,18 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
  */
 unsigned sleep(unsigned seconds)
 {
-    unsigned long secs, ticks;  /* at least 32-bit */
-    unsigned max_secs, rval;    /* native size, might be 16-bit */
+    unsigned long secs, ticks; /* at least 32-bit */
+    unsigned max_secs, rval;   /* native size, might be 16-bit */
 
     max_secs = MAX_SECONDS;
 
-    if (seconds < max_secs) {
+    if (seconds < max_secs)
+    {
         secs = seconds;
         rval = 0;
     }
-    else {
+    else
+    {
         secs = max_secs;
         rval = seconds - max_secs;
     }
@@ -131,7 +136,8 @@ int usleep(useconds_t usec)
     UInt32 timeout;
 
     /* usec must be less than 1000000 */
-    if (usec >= 1000000) {
+    if (usec >= 1000000)
+    {
         errno = EINVAL;
         return (-1);
     }

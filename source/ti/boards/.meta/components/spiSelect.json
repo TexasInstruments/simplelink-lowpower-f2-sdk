@@ -36,13 +36,13 @@
  */
 
 {
-    "type": ["SPISelect", "SPI_SS", "DOUT"],
+    "type": ["SPISelect", "SPI_CSN", "DOUT"],
     "displayName": "SPI Select",
     "description": "SPI Chip Select",
     "longDescription": "Generic Serial Interface Peripheral (SPI) chip select digital output",
     "signals": {
-        "SS": {
-            "type": ["SPI_SS", "DOUT"]
+        "CSN": {
+            "type": ["SPI_CSN", "DOUT"]
         }
     }
 }

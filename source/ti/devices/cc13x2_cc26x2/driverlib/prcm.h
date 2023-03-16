@@ -188,7 +188,7 @@ extern "C"
 // Defines used for enabling and disabling peripheral modules in the MCU domain
 // bits[11:8] Defines the index into the register offset constant tables:
 //            g_pui32RCGCRegs, g_pui32SCGCRegs and g_pui32DCGCRegs
-// bits[4:0]  Defines the bit position within the register pointet on in [11:8]
+// bits[4:0]  Defines the bit position within the register pointed on in [11:8]
 //
 //*****************************************************************************
 #define PRCM_PERIPH_TIMER0 ( 0x00000000 | ( PRCM_GPTCLKGR_CLK_EN_S           )) // Peripheral ID for GPT module 0
@@ -235,8 +235,8 @@ PRCMPeripheralValid(uint32_t ui32Peripheral)
            (ui32Peripheral == PRCM_PERIPH_TIMER2)   ||
            (ui32Peripheral == PRCM_PERIPH_TIMER3)   ||
            (ui32Peripheral == PRCM_PERIPH_SSI0)     ||
-           (ui32Peripheral == PRCM_PERIPH_UART0)    ||
            (ui32Peripheral == PRCM_PERIPH_SSI1)     ||
+           (ui32Peripheral == PRCM_PERIPH_UART0)    ||
            (ui32Peripheral == PRCM_PERIPH_UART1)    ||
            (ui32Peripheral == PRCM_PERIPH_PKA)      ||
            (ui32Peripheral == PRCM_PERIPH_I2C0)     ||

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,12 +54,12 @@ define region RAM_region = mem:[from RAM_start__ to RAM_end__];
 define region GPRAM_region = mem:[from GPRAM_start__ to GPRAM_end__];
 
 /* Place the interrupt vectors at the start of flash */
-place at address mem:__intvec_start__ { readonly section .intvec };
-keep { section .intvec};
+place at address mem:__intvec_start__ { readonly section .resetVecs };
+keep { section .resetVecs};
 
 /* Define a region for CCFG */
 define region CCFG_region = mem:[from CCFG_START__ to CCFG_END__];
-place in CCFG_region {section .ccfg};
+place in CCFG_region {section .ccfg };
 keep { section .ccfg };
 
 /* Place remaining 'read only' in Flash */
@@ -93,8 +93,9 @@ define exported symbol __primary_heap_start__ = __primary_heap_end__ - HEAPSIZE;
 
 /* Ensure RW data is not placed in stack or heap blocks */
 define region RWRAM_region   = mem:[from RAM_start__   to __primary_heap_start__];
-place in RWRAM_region   { readwrite };
+place in RWRAM_region   { readwrite, section .ramVecs };
 initialize by copy { readwrite };
+do not initialize { section .ramVecs };
 
 /* Explicitly placed off target for the storage of logging data.
  * The data placed here is NOT  loaded ont the target device.
@@ -103,4 +104,8 @@ initialize by copy { readwrite };
  * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
  */
 define region LOG_DATA = mem:[from 0x90000000 to 0x9003FFFF];
-".log_data": place noload in LOG_DATA { readonly section .log_data };
+define region LOG_PTR = mem:[from 0x94000008 to 0x94040007];
+define block LOG_DATA  with size = 0x40000 { readonly section .log_data  };
+define block LOG_PTR   with size = 0x40000 { readonly section .log_ptr* };
+".log_data": place noload in LOG_DATA { block LOG_DATA };
+".log_ptr": place noload in LOG_PTR { block LOG_PTR };

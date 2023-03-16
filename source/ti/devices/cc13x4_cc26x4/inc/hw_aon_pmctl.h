@@ -484,10 +484,7 @@
 
 // Field:     [8] VDDS_LOSS_EN
 //
-// Controls reset generation in case VDDS is lost
-//
-// 0: Brown out detect of VDDS is ignored, unless VDDS_LOSS_EN_OVR=1
-// 1: Brown out detect of VDDS generates system reset
+// Internal. Only to be used through TI provided API.
 #define AON_PMCTL_RESETCTL_VDDS_LOSS_EN                             0x00000100
 #define AON_PMCTL_RESETCTL_VDDS_LOSS_EN_BITN                                 8
 #define AON_PMCTL_RESETCTL_VDDS_LOSS_EN_M                           0x00000100
@@ -495,10 +492,7 @@
 
 // Field:     [7] VDDR_LOSS_EN
 //
-// Controls reset generation in case VDDR is lost
-//
-// 0: Brown out detect of VDDR is ignored, unless VDDR_LOSS_EN_OVR=1
-// 1: Brown out detect of VDDR generates system reset
+// Internal. Only to be used through TI provided API.
 #define AON_PMCTL_RESETCTL_VDDR_LOSS_EN                             0x00000080
 #define AON_PMCTL_RESETCTL_VDDR_LOSS_EN_BITN                                 7
 #define AON_PMCTL_RESETCTL_VDDR_LOSS_EN_M                           0x00000080
@@ -506,10 +500,7 @@
 
 // Field:     [6] VDD_LOSS_EN
 //
-// Controls reset generation in case VDD is lost
-//
-// 0: Brown out detect of VDD is ignored, unless VDD_LOSS_EN_OVR=1
-// 1: Brown out detect of VDD generates system reset
+// Internal. Only to be used through TI provided API.
 #define AON_PMCTL_RESETCTL_VDD_LOSS_EN                              0x00000040
 #define AON_PMCTL_RESETCTL_VDD_LOSS_EN_BITN                                  6
 #define AON_PMCTL_RESETCTL_VDD_LOSS_EN_M                            0x00000040

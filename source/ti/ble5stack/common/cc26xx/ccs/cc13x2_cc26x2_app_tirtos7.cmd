@@ -26,7 +26,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -304,4 +304,5 @@ SECTIONS
 {
     .resetVecs: load > 0
     .vecs: load > 0x20000000, type = NOLOAD
+	.ramVecs:   > SRAM, type = NOLOAD, ALIGN(256)
 }

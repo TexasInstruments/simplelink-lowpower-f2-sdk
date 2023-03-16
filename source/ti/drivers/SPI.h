@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,20 +45,21 @@
  *
  *  The SPI driver operates on some key definitions and assumptions:
  *  - The driver operates transparently from the chip select. Some SPI
- *    controllers feature a hardware chip select to assert SPI slave
+ *    controllers feature a hardware chip select to assert SPI peripheral
  *    peripherals. See the specific device implementations on chip
  *    select requirements.
  *
  *  - The SPI protocol does not account for a built-in handshaking mechanism
  *    and neither does this SPI driver. Therefore, when operating in
- *    #SPI_SLAVE mode, the application must provide such a mechanism to
- *    ensure that the SPI slave is ready for the SPI master. The SPI slave
- *    must call #SPI_transfer() *before* the SPI master starts transmitting.
+ *    #SPI_PERIPHERAL mode, the application must provide such a mechanism to
+ *    ensure that the SPI peripheral is ready for the SPI controller. The SPI
+ *    peripheral must call #SPI_transfer() *before* the SPI controller starts
+ *    transmitting.
  *    Some example application mechanisms could include:
- *    - Timed delays on the SPI master to guarantee the SPI slave is ready
- *      for a SPI transaction.
- *    - A form of GPIO flow control from the slave to the SPI master to notify
- *      the master when ready.
+ *    - Timed delays on the SPI controller to guarantee the SPI peripheral is
+ *      ready for a SPI transaction.
+ *    - A form of GPIO flow control from the peripheral to the SPI controller to
+ *      notify the controller when ready.
  *
  *  <hr>
  *  @anchor ti_drivers_SPI_Usage
@@ -79,7 +80,7 @@
  *
  *  @anchor ti_drivers_SPI_Synopsis
  *  ## Synopsis
- *  The following code example opens a SPI instance as a master SPI,
+ *  The following code example opens a SPI instance as a SPI controller,
  *  and issues a transaction.
  *
  *  @code
@@ -184,13 +185,13 @@
  *  of all the parameters, see #SPI_Params.
  *
  *  ### SPI Mode
- *  The SPI driver operates in both SPI master and SPI slave modes.
+ *  The SPI driver operates in both SPI controller and SPI peripheral modes.
  *  Logically, the implementation is identical, however the difference
  *  between these two modes is driven by hardware.  The default mode is
- *  #SPI_MASTER, but can be set to slave mode by setting #SPI_Params.mode
- *  to #SPI_SLAVE in the parameters passed to SPI_open().  See
- *  @ref ti_drivers_SPI_MasterSlaveModes "Master/Slave Modes" for further
- *  details.
+ *  #SPI_CONTROLLER, but can be set to peripheral mode by setting
+ *  #SPI_Params.mode to #SPI_PERIPHERAL in the parameters passed to SPI_open().
+ *  See @ref ti_drivers_SPI_ControllerPeripheralModes "Controller/Peripheral Modes"
+ *  for further details.
  *
  *  ### SPI Transfer Mode
  *  The SPI driver supports two transfer modes of operation: blocking and
@@ -364,27 +365,27 @@
  *  SPI_transferCancel(spi);
  *  @endcode
  *
- *  @anchor ti_drivers_SPI_MasterSlaveModes
- *  ## Master/Slave Modes
- *  This SPI driver functions in both SPI master and SPI slave modes.
+ *  @anchor ti_drivers_SPI_ControllerPeripheralModes
+ *  ## Controller/Peripheral Modes
+ *  This SPI driver functions in both SPI controller and SPI peripheral modes.
  *  Logically, the implementation is identical, however the difference between
- *  these two modes is driven by hardware. As a SPI master, the peripheral is
+ *  these two modes is driven by hardware. As a SPI controller, the peripheral is
  *  in control of the clock signal and therefore will commence communications
- *  to the SPI slave immediately. As a SPI slave, the SPI driver prepares
- *  the peripheral to transmit and receive data in a way such that the
- *  peripheral is ready to transfer data when the SPI master initiates a
+ *  to the SPI peripheral immediately. As a SPI peripheral, the SPI driver
+ *  prepares the peripheral to transmit and receive data in a way such that the
+ *  peripheral is ready to transfer data when the SPI controller initiates a
  *  transaction.
  *
  *  ## Asserting on Chip Select
- *  The SPI protocol requires that the SPI master asserts a SPI slave's chip
- *  select pin prior to starting a SPI transaction. While this protocol is
+ *  The SPI protocol requires that the SPI controller asserts a SPI peripheral's
+ *  chip select pin prior to starting a SPI transaction. While this protocol is
  *  generally followed, various types of SPI peripherals have different
  *  timing requirements as to when and for how long the chip select pin must
  *  remain asserted for a SPI transaction.
  *
- *  Commonly, the SPI master uses a hardware chip select to assert and
- *  de-assert the SPI slave for every data frame. In other cases, a SPI slave
- *  imposes the requirement of asserting the chip select over several SPI
+ *  Commonly, the SPI controller uses a hardware chip select to assert and
+ *  de-assert the SPI peripheral for every data frame. In other cases, a SPI
+ *  peripheral imposes the requirement of asserting the chip select over several SPI
  *  data frames. This is generally accomplished by using a regular,
  *  general-purpose output pin. Due to the complexity of such SPI peripheral
  *  implementations, this SPI driver has been designed to operate
@@ -421,7 +422,7 @@
  *  pointers to a device specific SPI driver implementation's function
  *  table, driver object, and hardware attributes.  The hardware attributes
  *  define properties such as the SPI peripheral's base address, and
- *  the MOSI and MISO pins.  Each element in @p SPI_config[] corresponds to
+ *  the PICO and POCI pins.  Each element in @p SPI_config[] corresponds to
  *  a SPI instance, and none of the elements should have NULL pointers.
  *  There is no correlation between the index and the
  *  peripheral designation (such as SPI0 or SPI1).  For example, it is
@@ -442,6 +443,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+/* Enable backwards-compatibility for legacy terminology if specified. */
+#ifdef ENABLE_LEGACY_TERMINOLOGY
+    #include <ti/drivers/LegacyTerminology.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -590,8 +596,8 @@ typedef void (*SPI_CallbackFxn)(SPI_Handle handle, SPI_Transaction *transaction)
  */
 typedef enum
 {
-    SPI_MASTER = 0, /*!< SPI in master mode */
-    SPI_SLAVE  = 1  /*!< SPI in slave mode */
+    SPI_CONTROLLER = 0, /*!< SPI in controller mode */
+    SPI_PERIPHERAL = 1  /*!< SPI in peripheral mode */
 } SPI_Mode;
 
 /*!
@@ -649,14 +655,14 @@ typedef struct
     uint32_t transferTimeout;            /*!< Transfer timeout in system
                                               ticks */
     SPI_CallbackFxn transferCallbackFxn; /*!< Callback function pointer */
-    SPI_Mode mode;                       /*!< Master or Slave mode */
+    SPI_Mode mode;                       /*!< Controller or Peripheral mode */
     /*! @brief SPI bit rate in Hz
      *
      *  Maximum bit rates supported by hardware:
-     *  Device Family | Slave Max (MHz)    | Master Max (MHz) |
-     *  ------------- | ------------------ | ---------------- |
-     *  CC13XX/CC26XX | 4  MHz             | 12 MHz           |
-     *  CC32XX        | 20 MHz             | 20 MHz           |
+     *  Device Family | Peripheral Max (MHz) | Controller Max (MHz) |
+     *  ------------- | -------------------- | -------------------- |
+     *  CC13XX/CC26XX | 4  MHz               | 12 MHz               |
+     *  CC32XX        | 20 MHz               | 20 MHz               |
      *
      *  Please note that depending on the specific use case, the driver may not
      *  support the hardware's maximum bit rate.
@@ -769,7 +775,7 @@ extern void SPI_close(SPI_Handle handle);
  *          #SPI_Handle.
  *
  *  Commands for SPI_control can originate from SPI.h or from implementation
- *  specific SPI*.h (SPICC26XXDMA.h, SPIMSP432DMA.h, etc.. ) files.
+ *  specific SPI*.h (SPICC26X2DMA.h, SPIMSP432DMA.h, etc.. ) files.
  *  While commands from SPI.h are API portable across driver implementations,
  *  not all implementations may support all these commands.
  *  Conversely, commands from driver implementation specific SPI*.h files add
@@ -842,7 +848,7 @@ extern SPI_Handle SPI_open(uint_least8_t index, SPI_Params *params);
  *  * SPI_Params.transferMode        = #SPI_MODE_BLOCKING
  *  * SPI_Params.transferTimeout     = #SPI_WAIT_FOREVER
  *  * SPI_Params.transferCallbackFxn = NULL
- *  * SPI_Params.mode                = #SPI_MASTER
+ *  * SPI_Params.mode                = #SPI_CONTROLLER
  *  * SPI_Params.bitRate             = 1000000 (Hz)
  *  * SPI_Params.dataSize            = 8 (bits)
  *  * SPI_Params.frameFormat         = #SPI_POL0_PHA0
@@ -852,10 +858,10 @@ extern void SPI_Params_init(SPI_Params *params);
 /*!
  *  @brief  Function to perform SPI transactions
  *
- *  If the SPI is in #SPI_MASTER mode, it will immediately start the
- *  transaction. If the SPI is in #SPI_SLAVE mode, it prepares the driver for
- *  a transaction with a SPI master device. The device will then wait until
- *  the master begins the transfer.
+ *  If the SPI is in #SPI_CONTROLLER mode, it will immediately start the
+ *  transaction. If the SPI is in #SPI_PERIPHERAL mode, it prepares the driver for
+ *  a transaction with a SPI controller device. The device will then wait until
+ *  the controller begins the transfer.
  *
  *  In #SPI_MODE_BLOCKING, #SPI_transfer() will block task execution until the
  *  transaction has completed or a timeout has occurred.
@@ -873,7 +879,7 @@ extern void SPI_Params_init(SPI_Params *params);
  *  It is also forbidden to modify the content of the #SPI_Transaction.txBuf
  *  during a transaction, even though the physical transfer might not have
  *  started yet. Doing this can result in data corruption. This is especially
- *  important for slave operations where SPI_transfer() might be called a long
+ *  important for peripheral operations where SPI_transfer() might be called a long
  *  time before the actual data transfer begins.
  *
  *  @param  handle      A #SPI_Handle

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -723,7 +723,8 @@ static HCI_TL_CalllbackEvtProcessCB_t HCI_TL_CallbackEvtProcessCB = NULL;
 #ifdef LEGACY_CMD
 // Store the type of commmand that are used.
 // Once it is set, it can only be change by reset HCI (HCI_RESET command)
-uint8_t legacyCmdStatus = HCI_LEGACY_CMD_STATUS_UNDEFINED;
+uint8_t legacyCmdStatusAdv = HCI_LEGACY_CMD_STATUS_UNDEFINED;
+uint8_t legacyCmdStatusScan = HCI_LEGACY_CMD_STATUS_UNDEFINED;
 #endif // LEGACY_CMD
 
 /*********************************************************************
@@ -1350,7 +1351,38 @@ static void HCI_TL_SendCommandPkt(hciPacket_t *pMsg)
 #endif //!HOST_CONFIG
 }
 
-#ifndef HOST_CONFIG
+#ifdef LEGACY_CMD
+/*********************************************************************
+ * @fn      checkLegacyHCICmdMode
+ *
+ * @brief   Check comand opcode and return operation mode.
+ *
+ * @param   opcode - command opcode
+ *
+ * @return  operation mode
+ */
+static uint8_t checkLegacyHCICmdMode(uint16_t opcode)
+{
+  if ((opcode >= HCI_LE_SET_ADV_PARAM) && (opcode <= HCI_LE_SET_ADV_ENABLE)) {
+    return HCI_LEGACY_CMD_STATUS_BT4_ADV;
+  }
+  else if (((opcode >= HCI_LE_SET_EXT_ADV_PARAMETERS) && (opcode <= HCI_LE_SET_PERIODIC_ADV_ENABLE)) ||
+            (opcode == HCI_EXT_LE_SET_EXT_ADV_DATA) ||
+            (opcode == HCI_EXT_LE_SET_EXT_SCAN_RESPONSE_DATA)) {
+    return HCI_LEGACY_CMD_STATUS_BT5_ADV;
+  }
+  else if ((opcode >= HCI_LE_SET_SCAN_PARAM) && (opcode <= HCI_LE_CREATE_CONNECTION_CANCEL)) {
+    return HCI_LEGACY_CMD_STATUS_BT4_SCAN;
+  }
+  else if ((opcode >= HCI_LE_SET_EXT_SCAN_PARAMETERS) && (opcode <= HCI_LE_READ_PERIODIC_ADV_LIST_SIZE)) {
+    return HCI_LEGACY_CMD_STATUS_BT5_SCAN;
+  }
+  else {
+    return HCI_LEGACY_CMD_STATUS_UNDEFINED;
+  }
+}
+#endif // LEGACY_CMD
+
 /*********************************************************************
  * @fn      checkLegacyHCICmdStatus
  *
@@ -1363,22 +1395,45 @@ static void HCI_TL_SendCommandPkt(hciPacket_t *pMsg)
  * @return  0: SUCCESS,
  *          1: failure, wrong mode, the command should be rejected.
  */
-static uint8_t checkLegacyHCICmdStatus(uint8_t mode)
+uint8_t checkLegacyHCICmdStatus(uint16_t opcode)
 {
 #ifdef LEGACY_CMD
-    if (legacyCmdStatus == HCI_LEGACY_CMD_STATUS_UNDEFINED)
+  uint8_t mode = checkLegacyHCICmdMode(opcode);
+
+  if ((mode == HCI_LEGACY_CMD_STATUS_BT4_ADV) || (mode == HCI_LEGACY_CMD_STATUS_BT5_ADV))
+  {
+    if (legacyCmdStatusAdv == HCI_LEGACY_CMD_STATUS_UNDEFINED)
     {
-      legacyCmdStatus = mode;
-      return(0);
+      legacyCmdStatusAdv = mode;
+      return(FALSE);
     }
     else
     {
-      return(legacyCmdStatus != mode);
+      return(legacyCmdStatusAdv != mode);
     }
+  }
+  else if ((mode == HCI_LEGACY_CMD_STATUS_BT4_SCAN) || (mode == HCI_LEGACY_CMD_STATUS_BT5_SCAN))
+  {
+    if (legacyCmdStatusScan == HCI_LEGACY_CMD_STATUS_UNDEFINED)
+    {
+      legacyCmdStatusScan = mode;
+      return(FALSE);
+    }
+    else
+    {
+      return(legacyCmdStatusScan != mode);
+    }
+  }
+  else
+  {
+    return(FALSE);
+  }
 #else
-    return(0);
+  return(FALSE);
 #endif // LEGACY_CMD
 }
+
+#ifndef HOST_CONFIG
 /*********************************************************************
  * @fn      processExtraHCICmd
  *
@@ -1429,7 +1484,8 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             // calling a LL function, it is being called directly.
             // The status will be returned directly through a
             // HCI_CommandCompleteEvent call performed by HCI_ResetCmd().
-            legacyCmdStatus = HCI_LEGACY_CMD_STATUS_UNDEFINED;
+            legacyCmdStatusAdv = HCI_LEGACY_CMD_STATUS_UNDEFINED;
+            legacyCmdStatusScan = HCI_LEGACY_CMD_STATUS_UNDEFINED;
             hci_tl_ClearAdvSet();
             HCI_ResetCmd();
             return;
@@ -1439,19 +1495,22 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
         case HCI_LE_SET_ADV_PARAM:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode );
-                return;
-            }
             // Translate this legacy API to a call to the new AE API.
-
             // This information needs to be saved on behalf of the LL.
             // A linked List will be created to save this information.
             llStatus_t status;
             hci_tl_advSet_t *pAdvSet;
             aeSetParamRtn_t retParams;
+
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
 
             // 1st check if there is not already an existing adv set with the same handle.
             pAdvSet = hci_tl_GetAdvSet(ADV_LEGACY_SET_HANDLE);
@@ -1525,15 +1584,19 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         }
         case HCI_LE_SET_ADV_DATA:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode );
-                return;
-            }
             // Translate this legacy API to a call to the new AE API.
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
+
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
 
             if ( param[0] > LL_MAX_ADV_DATA_LEN )
             {
@@ -1568,15 +1631,20 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         }
         case HCI_LE_SET_SCAN_RSP_DATA:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent( LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode );
-                return;
-            }
             // Translate this legacy to a call to the new AE API.
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
+
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
+
             if ( param[0] > LL_MAX_ADV_DATA_LEN )
             {
                 status = LL_STATUS_ERROR_BAD_PARAMETER;
@@ -1610,15 +1678,19 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         }
         case HCI_LE_SET_ADV_ENABLE:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode );
-                return;
-            }
             // Translate this legacy to a call to the new AE API.
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
+
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
 
             // Check number of Set to enable, only one supported by TL.
             pAdvSet = hci_tl_GetAdvSet(ADV_LEGACY_SET_HANDLE);
@@ -1660,15 +1732,19 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & SCAN_CFG)
         case HCI_LE_SET_SCAN_PARAM:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent( LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode );
-                return;
-            }
-            // Translate this legacy API to a call to the new AE API.
             llStatus_t status;
 
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
+
+            // Translate this legacy API to a call to the new AE API.
             hci_tl_cmdScanParams.ownAddrType                  = param[5];
             hci_tl_cmdScanParams.scanFilterPolicy             = param[6];
             hci_tl_cmdScanParams.scanPhys                     = LL_PHY_1_MBPS;  //1mbps
@@ -1687,15 +1763,19 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         }
         case HCI_LE_SET_SCAN_ENABLE:
         {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode );
-                return;
-            }
-            // Translate this legacy API to a call to the new AE API.
             llStatus_t status;
 
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
+
+            // Translate this legacy API to a call to the new AE API.
             // Need to register the callback Function.
             LL_AE_RegCBack(LL_CBACK_EXT_ADV_REPORT,        (void *)hci_tl_legacyScanCback);
             LL_AE_RegCBack(LL_CBACK_EXT_SCAN_TIMEOUT,      (void *)NULL);
@@ -1726,17 +1806,21 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
 
         case HCI_LE_CREATE_CONNECTION:
-          {
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT4))
-            {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode );
-                return;
-            }
-            // Translate this legacy API to a call to the new AE API.
+        {
             llStatus_t status;
             static aeCreateConnCmd_t HCI_TL_createConnParam;
 
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
+            {
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
+                return;
+            }
+
+            // Translate this legacy API to a call to the new AE API.
             HCI_TL_createConnParam.initFilterPolicy = param[4];
             HCI_TL_createConnParam.ownAddrType      = param[12];
             HCI_TL_createConnParam.peerAddrType     = param[5];
@@ -1767,10 +1851,11 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             llStatus_t status;
             static aeCreateConnCmd_t HCI_TL_createConnParam;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
                 HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode);
+                                       cmdOpCode);
                 return;
             }
             HCI_TL_createConnParam = *((aeCreateConnCmd_t *)param);
@@ -1792,12 +1877,17 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             aeSetParamRtn_t retParams;
             int8_t rsp[2];
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode);
+                rsp[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                rsp[1] = 0;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         2,
+                                         rsp);
                 return;
             }
+
             // 1st check if there is not already an existing adv set with the same handle.
             pAdvSet = hci_tl_GetAdvSet(param[0]);
             if (pAdvSet)
@@ -1828,12 +1918,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             llStatus_t status;
             uint8 i;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             // Enable all Sets one by one
             for (i=0; i< param[1]; i++)
             {
@@ -1880,10 +1974,13 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         {
             llStatus_t status = LE_RemoveAdvSet(param[0]);
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
             // Remove it from our linked list also
@@ -1900,10 +1997,13 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         {
             llStatus_t status = LE_ClearAdvSets();
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
             if (status == LL_STATUS_SUCCESS)
@@ -1920,12 +2020,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             pAdvSet = hci_tl_GetAdvSet(param[0]);
             if (pAdvSet)
             {
@@ -1950,12 +2054,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             // 1st check if there is not already an existing adv set with the same handle.
             pAdvSet = hci_tl_GetAdvSet(param[0]);
 
@@ -1984,12 +2092,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                        cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             pAdvSet = hci_tl_GetAdvSet(param[0]);
             if (pAdvSet)
             {
@@ -2020,12 +2132,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             hci_tl_advSet_t *pAdvSet;
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             pAdvSet = hci_tl_GetAdvSet(param[0]);
             if (pAdvSet)
             {
@@ -2059,12 +2175,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
         {
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             // Need to register the callback Function.
             LL_AE_RegCBack(LL_CBACK_EXT_ADV_REPORT,        (void *)hci_tl_aeScanCback);
             LL_AE_RegCBack(LL_CBACK_EXT_SCAN_TIMEOUT,      (void *)hci_tl_aeScanCback);
@@ -2091,12 +2211,16 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             // A linked List will be created to save this information.
             llStatus_t status;
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                status = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(status),
+                                         &status);
                 return;
             }
+
             // If set already exist, the parameters will be updated,
             // even if the call to  LE_SetExtAdvParams fails
             hci_tl_cmdScanParams = *((aeSetScanParamCmd_t *)param);
@@ -2116,12 +2240,19 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             uint16_t value;
             uint8_t res[3];
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                value = 0;
+                res[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                res[1] = LO_UINT16(value);
+                res[2] = HI_UINT16(value);
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                          sizeof(res),
+                                          &res);
                 return;
             }
+
             value = LE_ReadMaxAdvDataLen();
             res[0] = LL_STATUS_SUCCESS;
             res[1] = LO_UINT16(value);
@@ -2136,12 +2267,18 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param)
             uint8_t value;
             uint8_t res[2];
 
-            if(checkLegacyHCICmdStatus(HCI_LEGACY_CMD_STATUS_BT5))
+            // Check if a legacy/extended command mixing is allowed
+            if(checkLegacyHCICmdStatus(cmdOpCode))
             {
-                HCI_CommandStatusEvent(LL_STATUS_ERROR_COMMAND_DISALLOWED,
-                                       cmdOpCode);
+                value = 0;
+                res[0] = LL_STATUS_ERROR_COMMAND_DISALLOWED;
+                res[1] = value;
+                HCI_CommandCompleteEvent(cmdOpCode,
+                                         sizeof(res),
+                                         &res);
                 return;
             }
+
             value = LE_ReadMaxAdvDataLen();
             res[0] = LL_STATUS_SUCCESS;
             res[1] = value;

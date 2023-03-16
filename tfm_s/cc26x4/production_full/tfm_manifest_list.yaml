@@ -1,0 +1,59 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2019-2022 Texas Instruments Incorporated
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    "name": "TF-M secure partition manifests",
+    "type": "manifest_list",
+    "version_major": 0,
+    "version_minor": 1,
+    "manifest_list": [
+        {
+            "name": "TI Internal Storage Service",
+            "short_name": "TI_SP_INTERNAL_STORAGE",
+            "manifest": "../../../tfm_s/cc26x4/production_full/internal_storage_sp/internal_storage_sp.yaml",
+            "tfm_extensions": true,
+            "tfm_partition_ipc": true,
+            "version_major": 0,
+            "version_minor": 1,
+            "pid": 300,
+            "linker_pattern": {
+                "library_list": [
+                ]
+            },
+        },
+        {
+            "name": "TI Crypto Service",
+            "short_name": "TI_SP_CRYPTO",
+            "manifest": "../../../tfm_s/cc26x4/production_full/crypto_sp/crypto_sp.yaml",
+            "tfm_extensions": true,
+            "tfm_partition_ipc": true,
+            "version_major": 0,
+            "version_minor": 1,
+            "pid": 301,
+            "linker_pattern": {
+                "library_list": [
+                    "*tfm_internal_trusted_storage*"
+                ]
+            }
+        },
+        {
+            "name": "TF-M Initial Attestation Service",
+            "short_name": "TFM_SP_INITIAL_ATTESTATION",
+            "manifest": "../../../tfm_s/cc26x4/production_full/attestation_sp/tfm_initial_attestation.yaml",
+            "tfm_extensions": true,
+            "tfm_partition_ipc": true,
+            "version_major": 0,
+            "version_minor": 1,
+            "pid": 261,
+            "linker_pattern": {
+                "library_list": [
+                    "*tfm_attest*"
+                ]
+            }
+        }
+    ]
+}

@@ -40,9 +40,6 @@
 /* get device specific Settings */
 let Settings = system.getScript("/freertos/Settings.syscfg.js");
 
-const device = system.deviceData.deviceId;
-const isM33 = device.match(/CC(?:13|26).[34]/) !== null;
-
 /*
  * ======== getLibs ========
  */
@@ -60,8 +57,8 @@ function getLibs(mod)
     };
 
     if (toolchain == "iar") {
-        if (mod.$static.psaEnabled) {
-            link_info.libs.push(lib_base_name + "freertos_spe.a");
+        if (system.modules["/ti/utils/TrustZone"]) {
+            link_info.libs.push(lib_base_name + "freertos_tfm.a");
         }
         else {
             link_info.libs.push(lib_base_name + "freertos.a");
@@ -80,10 +77,6 @@ function validate(mod, validation)
         validation.logError("Please configure sysconfig with --rtos freertos to use this module!", mod);
     }
 
-    if (system.modules["ti/utils/TrustZone"] && !mod.psaEnabled) {
-        validation.logError("Enable PSA Extensions must be set to true support TrustZone", mod);
-    }
-
     if (mod.idleStackSize % 4 != 0) {
         validation.logError("Stack size must be an integer number of words", mod, "idleStackSize");
     }
@@ -99,7 +92,7 @@ function validate(mod, validation)
     }
 }
 
-function getCFiles()
+function getCFiles(kernel)
 {
     let baseFiles = [
         /* FreeRTOS source files. Note that typically only an include path to
@@ -113,9 +106,11 @@ function getCFiles()
         "../../Source/timers.c",
         "../../Source/croutine.c",
         "../../Source/event_groups.c",
-        "../../Source/stream_buffer.c",
-        "../../Source/portable/MemMang/heap_4.c"
+        "../../Source/stream_buffer.c"
     ];
+    if (!kernel.useCustomHeap) {
+        baseFiles.push("../../Source/portable/MemMang/heap_4.c");
+    }
 
     return baseFiles;
 }
@@ -123,20 +118,10 @@ function getCFiles()
 function getPortableFiles()
 {
     if (system.compiler == "iar") {
-        if (system.modules["ti/utils/TrustZone"]) {
-            return Settings.iarPortableFilesTzEnabled;
-        }
-        else {
             return Settings.iarPortableFiles;
-        }
     }
     else {
-        if (system.modules["ti/utils/TrustZone"]) {
-            return Settings.gccPortableFilesTzEnabled;
-        }
-        else {
             return Settings.gccPortableFiles;
-        }
     }
 }
 
@@ -172,14 +157,6 @@ on Stack Overflow Protection for more information.`,
 When set to false, software timers are disabled and not available. See the FreeRTOS documentation on Software Timers
 for more information.`,
                 default: true
-            },
-            {
-                name: "psaEnabled",
-                displayName: "Enable PSA Extensions",
-                description: `Enables ARM's Platform Security Architecture (PSA) extensions`,
-                longDescription: `This functionality is available on only select devices.`,
-                hidden: !isM33,
-                default: false
             },
             {
                 name: "assertsEnabled",
@@ -231,6 +208,17 @@ of kernel objects used by TI code and the application. If set to 0, the queue wi
                 default: 32,
                 hidden: true
             },
+            {
+                name: "useCustomHeap",
+                displayName: "Enable Custom Heap",
+                description: `Enable the applicaion to use a custom heap`,
+                longDescription: `
+When set to true, configAPPLICAITON_ALLOCATED_HEAP will be set in FreeRTOSConfig.h. The application is
+responsible for defining vPortFree and pvPortMalloc with their custom heap configuration.`,
+                default: false,
+                onChange: onChooseCustomHeap
+
+            },
             /* Memory size controls (collapsed by default) */
             {
                 displayName: "Stack and Heap sizing",
@@ -275,6 +263,26 @@ of kernel objects used by TI code and the application. If set to 0, the queue wi
                 hidden: true
             },
             {
+                name: "maxInterruptPriority",
+                displayName: "Max FreeRTOS SysCall Interrupt Priority",
+                description: "Max FreeRTOS SysCall Interrupt Priority. Changing this value with IAR requires rebuilding the IAR port library.",
+                default: Settings.defaultMaxInterruptPriority,
+                hidden: true
+            },
+            {
+                name: "nvicPriBits",
+                displayName: "Number of NVIC Priority Bits available",
+                default: Settings.defaultNvicPriBits,
+                hidden: true
+            },
+            {
+                name: "fpuEnabled",
+                displayName: "FPU is enabled for ths device",
+                description: "Enable FPU-related handling within the kernel. Changing this value with IAR requires rebuilding the IAR port library.",
+                default: Settings.defaultFpuEnabled,
+                hidden: true
+            },
+            {
                 name: "idleSleepTicks",
                 displayName: "Idle Sleep Ticks",
                 description: "Free scheduler ticks before invoking power policy",
@@ -312,4 +320,15 @@ of kernel objects used by TI code and the application. If set to 0, the queue wi
     getPortableFiles: getPortableFiles
 };
 
+function onChooseCustomHeap(inst, ui)
+{
+    if(inst.useCustomHeap)
+    {
+        ui.heapSize.hidden = true;
+    }
+    else
+    {
+        ui.heapSize.hidden = false;
+    }
+}
 exports = base;

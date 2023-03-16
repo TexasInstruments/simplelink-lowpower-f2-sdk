@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,9 @@ void PowerCC26X2_setPeriphDependency(uint32_t prcmPeriph);
 void PowerCC26X2_releasePeriphDependency(uint32_t prcmPeriph);
 void PowerCC26X2_setPeriphDeepSleepEnable(uint32_t prcmPeriph);
 uint32_t PowerCC26X2_sysCtrlGetResetSource(void);
-void PowerCC26X2_setSubSecIncToXoscLf(void);
+void PowerCC26X2_setSubSecIncToXoscLf(uint32_t subsecinc);
+void PowerCC26X2_sysCtrlUpdateVoltageRegulator(void);
+void PowerCC26X2_sysCtrlReset(void);
 
 /* Functions implemented in PowerCC26X2_calibrateRCOSC_helpers.c */
 void PowerCC26X2_updateSubSecInc(bool firstLF);

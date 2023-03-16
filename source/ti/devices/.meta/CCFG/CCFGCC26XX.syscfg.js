@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,9 @@ const Common = system.getScript("/ti/drivers/Common.js");
 const device = system.deviceData.deviceId;
 const board = system.deviceData.board;
 const isBAW = device.match(/CC2652RB/) !== null;
-const isSIP = device.match(/CC2652.*SIP/) !== null;
-const isM33 = device.match(/CC(?:13|26).4/) !== null;
+const isSIP = device.match(/SIP/) !== null;
+const isM33 = device.match(/CC(?:13|26).[34]/) !== null;
+
 const NUM_PINS = 48;
 var isBAWBoard = false;
 
@@ -109,10 +110,7 @@ let devSpecific = {
                 // This reflects the default absence of LF crystal on the LP_CC2652RB
                 // board.
                 default: isBAWBoard ? "LF RCOSC" : "LF XOSC",
-                onChange: (inst, ui) => {
-                    ui.extClkDio.hidden = !(inst.srcClkLF === "External LF clock");
-                    ui.rtcIncrement.hidden = !(inst.srcClkLF === "External LF clock");
-                }
+                onChange: onChangesrcClkLF
             },
             {
                 name: "extClkDio",
@@ -225,6 +223,47 @@ let devSpecific = {
                     ui.useFcfgXoscHfInsertion.hidden = (inst.enableXoscHfComp === false) || isBAW || !isSIP;
                     ui.xoscSinglePointCalibration.hidden = (inst.useFcfgXoscHfInsertion === true) || (inst.enableXoscHfComp === false) || isBAW;
                 }
+            },
+            // RTC temperature compensation
+            {
+                name        : "enableXoscLfComp",
+                displayName : "RTC XOSC LF Compensation",
+                description : "Enable XOSC_LF compensation for the real-time clock",
+                default     : false,
+                onChange    : onChangeenableXoscLfComp
+            },
+            {
+                name        : "RTCCustomXOSCLFCoeff",
+                displayName : "Custom RTC XOSC Coefficients",
+                description : "Use Custome RTC Coefficients",
+                longDescription:`
+        If the ppm offset of the XOSC_LF can be described by a second order polynomial function of temperature,
+        a*T^2 + b*T + c, where the coefficients a, b, and c are known, they can be supplied below.
+        `,
+                default     : false,
+                hidden      : true,
+                onChange    : onChangeRTCCustomXOSCLFCoeff
+            },
+            {
+                name        : "rtcXOSCLFCoefficientA",
+                displayName : "XOSC LF Coefficient A",
+                description : "XOSC LF Coefficient A",
+                default     : -0.035,
+                hidden      : true
+            },
+            {
+                name        : "rtcXOSCLFCoefficientB",
+                displayName : "XOSC LF Coefficient B",
+                description : "XOSC LF Coefficient B",
+                default     : 1.75,
+                hidden      : true
+            },
+            {
+                name        : "rtcXOSCLFCoefficientC",
+                displayName : "XOSC LF Coefficient C",
+                description : "XOSC LF Coefficient C",
+                default     : -21.875,
+                hidden      : true
             },
             {
                 name: "useFcfgXoscHfInsertion",
@@ -459,16 +498,16 @@ let devSpecific = {
                     {
                         name: "disableSecureNonInvasiveDebug",
                         displayName: "Disable Invasive Non-Secure Debug",
-                        description: `Disables debug invasive debugging of non-secure masters with actions that involve
-        stopping execution, modifying registers, or reading from and writing to memory using the core.`,
+                        description: `Disables debug invasive debugging of non-secure bus controllers with actions that
+        involve stopping execution, modifying registers, or reading from and writing to memory using the core.`,
                         hidden: true,
                         default: false
                     },
                     {
                         name: "disableSecureInvasiveDebug",
                         displayName: "Disable Invasive Secure Debug",
-                        description: `Disables debug invasive debugging of secure masters with actions that involve stopping
-        execution, modifying registers, or reading from and writing to memory using the core.`,
+                        description: `Disables debug invasive debugging of secure bus controllers with actions that
+        involve stopping execution, modifying registers, or reading from and writing to memory using the core.`,
                         hidden: true,
                         default: false
                     }
@@ -566,6 +605,56 @@ let devSpecific = {
     }
 };
 
+/*
+ *  ======== onChangesrcClkLF ========
+ *  onChange callback function for the srcClkLF config
+ */
+function onChangesrcClkLF(inst, ui)
+{
+    ui.extClkDio.hidden = !(inst.srcClkLF === "External LF clock");
+    ui.rtcIncrement.hidden = !(inst.srcClkLF === "External LF clock");
+    /* CLK_LF derived from XOSC_LF? */
+    let subState = !(inst.srcClkLF === "LF XOSC");
+    /* If no, hide XOSC_LF compensation option */
+    ui.enableXoscLfComp.hidden = subState;
+    /* CLK_LF derived from XOSC_LF, and XOSC_LF compensation enabled? */
+    subState = subState || (inst.enableXoscLfComp == false);
+    /* If no, hide option to choose custom compensation coefficients */
+    ui.RTCCustomXOSCLFCoeff.hidden = subState;
+    subState = subState || (inst.RTCCustomXOSCLFCoeff == false);
+    /* Hide custom coefficient values, if custom coefficients are not enabled */
+    ui.rtcXOSCLFCoefficientA.hidden = subState;
+    ui.rtcXOSCLFCoefficientB.hidden = subState;
+    ui.rtcXOSCLFCoefficientC.hidden = subState;
+}
+
+/*
+ *  ======== onChangeenableXoscLfComp ========
+ *  onChange callback function for the enableXoscLfComp config
+ */
+function onChangeenableXoscLfComp(inst, ui)
+{
+    let subState = (inst.enableXoscLfComp == false);
+    ui.RTCCustomXOSCLFCoeff.hidden = subState;
+    subState = subState || (inst.RTCCustomXOSCLFCoeff == false);
+    ui.rtcXOSCLFCoefficientA.hidden = subState;
+    ui.rtcXOSCLFCoefficientB.hidden = subState;
+    ui.rtcXOSCLFCoefficientC.hidden = subState;
+
+}
+
+/*
+ *  ======== onChangeRTCCustomXOSCLFCoeff ========
+ *  onChange callback function for the RTCCustomXOSCLFCoeff config
+ */
+function onChangeRTCCustomXOSCLFCoeff(inst, ui)
+{
+    let subState = (inst.RTCCustomXOSCLFCoeff == false);
+    ui.rtcXOSCLFCoefficientA.hidden = subState;
+    ui.rtcXOSCLFCoefficientB.hidden = subState;
+    ui.rtcXOSCLFCoefficientC.hidden = subState;
+}
+
 /*!
  *  ======== validate ========
  *  Validate this module's configuration
@@ -643,7 +732,8 @@ function validate(inst, validation) {
 function modules(inst) {
     let tmpModules = [];
 
-    // If SCLK_LF derived from HPOSC, tell the power driver it needs to
+    // If XOSC_LF RTC compensation is enabled, include the temperature driver.
+    // If SCLK_LF is derived from HPOSC, tell the power driver it needs to
     // include the Temperature driver and setup the RTC compensation
     // Alternatively, if RF temperature compensation is enabled, always
     // include temperature regardless of SCLK_LF source.
@@ -651,7 +741,8 @@ function modules(inst) {
     // module, see https://jira.itg.ti.com/browse/RFDRIVER-474
     if (((inst.srcClkHF === "Internal High Precision Oscillator") &&
          (inst.srcClkLF === "Derived from HF XOSC")) ||
-         (inst.enableXoscHfComp === true)) {
+         (inst.enableXoscHfComp === true) ||
+         (inst.enableXoscLfComp === true)) {
 
         tmpModules.push({
                             name: "Temperature",

@@ -132,6 +132,28 @@ int_fast16_t Attestation_PSA_getToken(const uint8_t *auth_challenge,
 }
 
 /*
+ *  ======== Attestation_PSA_getTokenSize ========
+ */
+int_fast16_t Attestation_PSA_getTokenSize(size_t challenge_size, size_t *token_size)
+{
+    int_fast16_t status;
+    psa_status_t psaStatus;
+
+    status = Attestation_PSA_setup();
+
+    if (status != ATTESTATION_PSA_STATUS_SUCCESS)
+    {
+        return status;
+    }
+
+    psaStatus = psa_initial_attest_get_token_size(challenge_size, token_size);
+
+    Attestation_PSA_cleanup();
+
+    return Attestation_PSA_mapPSAToAttestationPSAStatus(psaStatus);
+}
+
+/*
  *  ======== Attestation_PSA_init ========
  */
 void Attestation_PSA_init(void)

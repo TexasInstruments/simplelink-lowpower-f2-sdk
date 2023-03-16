@@ -1,7 +1,7 @@
 # SimpleLink&trade; CC2652RSIP LaunchPad&trade; Settings & Resources
 
 The [__SimpleLink CC2652RSIP LaunchPad__][launchpad] contains a
-[__CC2652R1FSIP__][device] device.
+[__CC2652RSIP__][device] device.
 
 
 ## Jumper Settings

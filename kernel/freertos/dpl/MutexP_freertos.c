@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@
 #include <semphr.h>
 #include <queue.h>
 
+extern void vQueueAddToRegistryWrapper(QueueHandle_t xQueue, const char *pcQueueName);
+extern void vQueueUnregisterQueueWrapper(QueueHandle_t xQueue);
+
 /*
  *  ======== MutexP_construct ========
  */
@@ -48,6 +51,12 @@ MutexP_Handle MutexP_construct(MutexP_Struct *handle, MutexP_Params *params)
 
 #if (configSUPPORT_STATIC_ALLOCATION == 1)
     sem = xSemaphoreCreateRecursiveMutexStatic((StaticSemaphore_t *)handle);
+
+    if (sem != NULL)
+    {
+        /* Register Mutex for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "MutexP");
+    }
 #endif
 
     return ((MutexP_Handle)sem);
@@ -68,6 +77,12 @@ MutexP_Handle MutexP_create(MutexP_Params *params)
      */
     sem = xSemaphoreCreateRecursiveMutex();
 
+    if (sem != NULL)
+    {
+        /* Register Mutex for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "MutexP");
+    }
+
     return ((MutexP_Handle)sem);
 }
 
@@ -76,6 +91,9 @@ MutexP_Handle MutexP_create(MutexP_Params *params)
  */
 void MutexP_delete(MutexP_Handle handle)
 {
+    /* Unregister Mutex for kernel aware debugging */
+    vQueueUnregisterQueueWrapper((SemaphoreHandle_t)handle);
+
     vSemaphoreDelete((SemaphoreHandle_t)handle);
 }
 
@@ -83,7 +101,10 @@ void MutexP_delete(MutexP_Handle handle)
  *  ======== MutexP_destruct ========
  */
 void MutexP_destruct(MutexP_Struct *mutP)
-{}
+{
+    /* Unregister Mutex for kernel aware debugging */
+    vQueueUnregisterQueueWrapper((SemaphoreHandle_t)mutP);
+}
 
 /*
  *  ======== MutexP_lock ========
@@ -93,10 +114,7 @@ uintptr_t MutexP_lock(MutexP_Handle handle)
     SemaphoreHandle_t xMutex = (SemaphoreHandle_t)handle;
 
     /* Retry every 10 ticks */
-    while (xSemaphoreTakeRecursive(xMutex, (TickType_t)10) == pdFALSE)
-    {
-        ;
-    }
+    while (xSemaphoreTakeRecursive(xMutex, (TickType_t)10) == pdFALSE) {}
 
     return (0);
 }

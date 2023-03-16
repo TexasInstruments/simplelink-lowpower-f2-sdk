@@ -10,7 +10,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022, Texas Instruments Incorporated
+ Copyright (c) 2022-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,9 +58,10 @@ extern "C"
  * INCLUDES
  */
 #include <bcomdef.h>
-#include "os_dpl.h"
-#include <ti/drivers/dpl/MutexP.h>
 
+/*POSIX*/
+#include <pthread.h>
+#include <mqueue.h>
 /*********************************************************************
  * MACROS
  */
@@ -89,16 +90,25 @@ typedef struct
     struct BLEAppUtil_EventHandlersList_t   *next;
 } BLEAppUtil_EventHandlersList_t;
 
+/** @internal data structure for the thread entity */
+typedef struct
+{
+    pthread_t threadId;
+    mqd_t     queueHandle;
+} BLEAppUtil_TheardEntity_t;
+
+/** @internal data structure for callback context switch*/
+typedef struct
+{
+    // The callback that will be called from the BLE App Util context
+    InvokeFromBLEAppUtilContext_t   callback;
+    // The data that will be passed as an input to the callback
+    char                            *data;
+}BLEAppUtil_CallbackToInvoke_t;
+
 /*********************************************************************
  * GLOBAL VARIABLES
  */
-
-// Event globally used to post local events and pend on system and
-// local events.
-extern EventP_Handle BLEAppUtilSyncEvent;
-
-// Queue object used for app messages
-extern QueueP_Handle BLEAppUtilMsgQueueHandle;
 
 // BLEAppUtil parameters given in the init function
 extern BLEAppUtil_GeneralParams_t *BLEAppUtilLocal_GeneralParams;
@@ -108,7 +118,8 @@ extern ErrorHandler_t errorHandlerCb;
 extern StackInitDone_t appInitDoneHandler;
 extern BLEAppUtil_EventHandlersList_t *BLEAppUtilEventHandlersHead;
 
-extern MutexP_Handle BLEAppUtil_mutexHandle;
+extern pthread_mutex_t mutex;
+extern BLEAppUtil_TheardEntity_t BLEAppUtil_theardEntity;
 
 /*********************************************************************
  * FUNCTIONS
@@ -125,6 +136,7 @@ void BLEAppUtil_processHCISMPEvents(bleStack_msgHdt_t *pMsg);
 void BLEAppUtil_processHCISMPMetaEvents(bleStack_msgHdt_t *pMsg);
 void BLEAppUtil_processL2CAPDataMsg(bleStack_msgHdt_t *pMsg);
 void BLEAppUtil_processL2CAPSignalEvents(bleStack_msgHdt_t *pMsg);
+void BLEAppUtil_processHCICTRLToHostEvents(bleStack_msgHdt_t *pMsg);
 
 /*********************************************************************
  * Process stack callbacks
@@ -150,7 +162,7 @@ void BLEAppUtil_advCB(uint32_t event, GapAdv_data_t *pBuf, uint32_t *arg);
 /*********************************************************************
  * General Functions
  */
-TaskP_Handle BLEAppUtil_createBLEAppUtilTask(void);
+int BLEAppUtil_createBLEAppUtilTask(void);
 void BLEAppUtil_stackRegister(void);
 void BLEAppUtil_stackInit(void);
 status_t BLEAppUtil_enqueueMsg(uint8_t event, void *pData);

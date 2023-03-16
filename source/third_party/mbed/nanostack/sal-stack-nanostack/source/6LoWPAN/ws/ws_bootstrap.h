@@ -31,6 +31,21 @@ typedef enum {
 
 #ifdef HAVE_WS
 
+#define MAX_PANID_ALLOW_LIST_LEN    3
+#define MAX_PANID_DENY_LIST_LEN     5
+
+#define PANID_FLTR_UPDATE_SUCCESS   0
+#define PANID_FLTR_UPDATE_NO_MATCH -1
+#define PANID_FLTR_UPDATE_NO_SPACE -2
+
+#define PANID_UNUSED 0xFFFF
+
+typedef enum panid_list_type_s {
+    PANID_ALLOW_LIST_E = 0,
+    PANID_DENY_LIST_E = 1
+}panid_list_type_e;
+
+
 struct llc_neighbour_req;
 struct ws_us_ie;
 struct ws_bs_ie;
@@ -102,6 +117,32 @@ int ws_bootstrap_stack_info_get(protocol_interface_info_entry_t *cur, struct ws_
 int ws_bootstrap_neighbor_info_get(protocol_interface_info_entry_t *cur, struct ws_neighbour_info *neighbor_ptr, uint16_t table_max);
 
 void ws_bootstrap_mac_neighbor_short_time_set(struct protocol_interface_info_entry *interface, const uint8_t *src64, uint32_t valid_time);
+
+/*!
+ * API to restart network stack
+ * Input parameters: None
+ * Output Parameters: success or failure
+ */
+int nanostack_net_stack_restart(void);
+
+/*!
+ * API to add a single entry in panid_allow_list[] or panid_deny_list[]
+ * Input Parameters:
+ * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
+ * pan_id : pan_id to be added
+ * Output Parameters: success or failure
+ */
+int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid);
+
+/*!
+ * API to remove a single entry in panid_allow_list[] or panid_deny_list[]
+ * Input Parameters:
+ * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
+ * pan_id : pan_id to be removed; irrelevant parameter if next parameter all is set to true
+ * all : if set to true, all pan_ids are removed; set to false for individual entry removal.
+ * Output Parameters: success or failure
+ */
+int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t panid, bool all);
 
 #else
 

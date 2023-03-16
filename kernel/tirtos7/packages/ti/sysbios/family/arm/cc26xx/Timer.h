@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,12 +83,10 @@
  * The below snippets show an example of using Channel 1, with Driverlib API
  * calls to configure an RTC event at 4 seconds after boot.
  *
- * First, in the application .cfg file a hook function is defined for Channel 1:
- *
- * @code
- *    var Timer = xdc.module('ti.sysbios.family.arm.cc26xx.Timer');
- *    Timer.funcHookCH1 = "&myHookCH1";
- * @endcode
+ * With Syscfg open, the hook function for Channel 1 can be set to a user-defined
+ * function under:
+ * Clock->Other Dependencies->Clock Support->Other Dependencies->RTC Timer->
+ * RTC Channel 1 function hook
  *
  * In main(), Channel 1 is first cleared, a compare (match) value of 4 seconds
  * is set, the channel is enabled:

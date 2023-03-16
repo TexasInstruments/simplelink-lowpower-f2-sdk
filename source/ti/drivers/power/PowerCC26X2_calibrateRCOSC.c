@@ -349,8 +349,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void)
             HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCCLKCTL) = AUX_SYSIF_TDCCLKCTL_REQ;
 
             /* finish wait for AUX_SYSIF:TDCCLKCTL.ACK to be set ... */
-            while (!(HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCCLKCTL) & AUX_SYSIF_TDCCLKCTL_ACK))
-                ;
+            while (!(HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCCLKCTL) & AUX_SYSIF_TDCCLKCTL_ACK)) {}
 
             /* Enable trig count */
             HWREG(AUX_TDC_BASE + AUX_TDC_O_TRIGCNTCFG) = AUX_TDC_TRIGCNTCFG_EN;
@@ -380,8 +379,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void)
             HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) = 0;
 
             /* finish wait for AUX_SYSIFTDCREFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK) {}
 
             return PowerCC26X2_FSM_RESULT_RUN_FSM;
 
@@ -409,8 +407,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void)
             HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) = 0;
 
             /* wait for AUX_SYSIFTDCREFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK) {}
 
             return PowerCC26X2_FSM_RESULT_RUN_FSM;
 
@@ -437,8 +434,7 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void)
             HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) = 0;
 
             /* wait for AUX_SYSIFTDCREFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK) {}
 
             return PowerCC26X2_FSM_RESULT_RUN_FSM;
 
@@ -466,11 +462,9 @@ static PowerCC26X2_FsmResult runCalibrateFsm(void)
             HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) = 0;
 
             /* wait for AUX_SYSIF:TDCCLKCTL.ACK to be cleared ... */
-            while ((HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCCLKCTL) & AUX_SYSIF_TDCCLKCTL_ACK))
-                ;
+            while ((HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCCLKCTL) & AUX_SYSIF_TDCCLKCTL_ACK)) {}
             /* wait for AUX_SYSIFTDCREFCLKCTL.ACK to be cleared ... */
-            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK)
-                ;
+            while (HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK) {}
 
             /*
              * Disable all interrupts as part of AUX_COMBINED interrupt
@@ -507,8 +501,7 @@ void PowerCC26X2_RCOSC_clockFunc(uintptr_t arg)
 {
 
     /* Wait any remaining time for TDCREFCLKCTL_ACK. Should not spin here at all. */
-    while (!(HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK))
-        ;
+    while (!(HWREG(AUX_SYSIF_BASE + NONSECURE_OFFSET + AUX_SYSIF_O_TDCREFCLKCTL) & AUX_SYSIF_TDCREFCLKCTL_ACK)) {}
 
     /* Set number of periods of ACLK to count */
     if (PowerCC26X2_module.calStep == PowerCC26X2_STATE_CAL_LF_1)

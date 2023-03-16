@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Queue.h>
 #include <ti/sysbios/knl/Semaphore.h>
-#define ti_sysbios_knl_Task__internalaccess     /* modify fxn */
+#define ti_sysbios_knl_Task__internalaccess /* modify fxn */
 #include <ti/sysbios/knl/Task.h>
 
 #include <pthread.h>
@@ -59,11 +59,12 @@ static void _pthread_delete(pthread_Obj *thread);
  *  ======== defaultPthreadAttrs ========
  */
 static pthread_attr_t defaultPthreadAttrs = {
-    1,                          /* priority */
-    NULL,                       /* stack */
-    0, /* pthread_attr_init */  /* stacksize - must align for all kernels */
-    0,                          /* guardsize */
-    PTHREAD_CREATE_JOINABLE     /* detachstate */
+    1,    /* priority */
+    NULL, /* stack */
+    0,
+    /* pthread_attr_init */ /* stacksize - must align for all kernels */
+    0,                      /* guardsize */
+    PTHREAD_CREATE_JOINABLE /* detachstate */
 };
 
 /*
@@ -109,8 +110,7 @@ int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 /*
  *  ======== pthread_attr_getschedparam ========
  */
-int pthread_attr_getschedparam(const pthread_attr_t *attr,
-        struct sched_param *schedparam)
+int pthread_attr_getschedparam(const pthread_attr_t *attr, struct sched_param *schedparam)
 {
     schedparam->sched_priority = attr->priority;
     return (0);
@@ -119,8 +119,7 @@ int pthread_attr_getschedparam(const pthread_attr_t *attr,
 /*
  *  ======== pthread_attr_getstack ========
  */
-int pthread_attr_getstack (const pthread_attr_t *attr, void **stackaddr,
-        size_t *stacksize)
+int pthread_attr_getstack(const pthread_attr_t *attr, void **stackaddr, size_t *stacksize)
 {
     *stackaddr = attr->stack;
     *stacksize = attr->stacksize;
@@ -156,8 +155,8 @@ int pthread_attr_init(pthread_attr_t *attr)
  */
 int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 {
-    if ((detachstate != PTHREAD_CREATE_JOINABLE) &&
-            (detachstate != PTHREAD_CREATE_DETACHED)) {
+    if ((detachstate != PTHREAD_CREATE_JOINABLE) && (detachstate != PTHREAD_CREATE_DETACHED))
+    {
         return (EINVAL);
     }
 
@@ -177,12 +176,12 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 /*
  *  ======== pthread_attr_setschedparam ========
  */
-int pthread_attr_setschedparam(pthread_attr_t *attr,
-        const struct sched_param *schedparam)
+int pthread_attr_setschedparam(pthread_attr_t *attr, const struct sched_param *schedparam)
 {
     int priority = schedparam->sched_priority;
 
-    if ((priority >= (int)Task_numPriorities) || (priority <= 0)) {
+    if ((priority >= (int)Task_numPriorities) || (priority <= 0))
+    {
         /* Bad priority value */
         return (EINVAL);
     }
@@ -193,14 +192,13 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
 /*
  *  ======== pthread_attr_setstack ========
  */
-int pthread_attr_setstack (pthread_attr_t *attr, void *stackaddr,
-        size_t stacksize)
+int pthread_attr_setstack(pthread_attr_t *attr, void *stackaddr, size_t stacksize)
 {
     /*
      *  Don't return an error if stack is not aligned. Task_create()
      *  will adjust the stack address to be aligned.
      */
-    attr->stack = stackaddr;
+    attr->stack     = stackaddr;
     attr->stacksize = stacksize;
     return (0);
 }
@@ -229,8 +227,8 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
  */
 int pthread_cancel(pthread_t pthread)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
-    UInt          key;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    UInt key;
 
     /*
      *  Cancel the thread.  Only asynchronous cancellation is supported,
@@ -242,7 +240,8 @@ int pthread_cancel(pthread_t pthread)
     /* Indicate that cancellation is requested. */
     thread->cancelPending = 1;
 
-    if (thread->cancelState == PTHREAD_CANCEL_ENABLE) {
+    if (thread->cancelState == PTHREAD_CANCEL_ENABLE)
+    {
         /* Set this task's priority to -1 to stop it from running. */
         Task_setPri(thread->task, -1);
 
@@ -250,23 +249,27 @@ int pthread_cancel(pthread_t pthread)
         Task_restore(key);
 
         /* Pop and execute the cleanup handlers */
-        while (thread->cleanupList != NULL) {
+        while (thread->cleanupList != NULL)
+        {
             _pthread_cleanup_pop(thread->cleanupList, 1);
         }
 
         /* Cleanup any pthread specific data */
         _pthread_removeThreadKeys(pthread);
 
-        if (thread->detached) {
+        if (thread->detached)
+        {
             _pthread_delete(thread);
         }
-        else {
+        else
+        {
             /* pthread_join() will clean up. */
             thread->ret = PTHREAD_CANCELED;
             Semaphore_post(Semaphore_handle(&(thread->joinSem)));
         }
     }
-    else {
+    else
+    {
         /* Re-enable the scheduler */
         Task_restore(key);
     }
@@ -277,48 +280,46 @@ int pthread_cancel(pthread_t pthread)
 /*
  *  ======== pthread_create ========
  */
-int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
-        void *(*startroutine)(void *), void *arg)
+int pthread_create(pthread_t *newthread, const pthread_attr_t *attr, void *(*startroutine)(void *), void *arg)
 {
-    Semaphore_Params  semParams;
-    Task_Params       taskParams;
-    pthread_Obj      *thread = NULL;
-    Error_Block       eb;
-    const pthread_attr_t    *pAttr;
+    Semaphore_Params semParams;
+    Task_Params taskParams;
+    pthread_Obj *thread = NULL;
+    Error_Block eb;
+    const pthread_attr_t *pAttr;
 
     Error_init(&eb);
     Task_Params_init(&taskParams);
 
     *newthread = NULL;
 
-    thread = (pthread_Obj *)Memory_alloc(Task_Object_heap(),
-            sizeof(pthread_Obj), 0, &eb);
+    thread = (pthread_Obj *)Memory_alloc(Task_Object_heap(), sizeof(pthread_Obj), 0, &eb);
 
-    if (thread == NULL) {
+    if (thread == NULL)
+    {
         return (ENOMEM);
     }
 
     defaultPthreadAttrs.stacksize = Task_defaultStackSize;
-    pAttr = (attr == NULL) ? &defaultPthreadAttrs : attr;
+    pAttr                         = (attr == NULL) ? &defaultPthreadAttrs : attr;
 
-    taskParams.priority = pAttr->priority;
-    taskParams.stack = pAttr->stack;
-    taskParams.stackSize = pAttr->stacksize +
-            (pAttr->stack == NULL ? pAttr->guardsize : 0);
+    taskParams.priority  = pAttr->priority;
+    taskParams.stack     = pAttr->stack;
+    taskParams.stackSize = pAttr->stacksize + (pAttr->stack == NULL ? pAttr->guardsize : 0);
 
     /* Save the function in arg0 for ROV */
-    taskParams.arg0 = (UArg)startroutine;
-    taskParams.arg1 = (UArg)thread;
-    taskParams.env = arg;
+    taskParams.arg0     = (UArg)startroutine;
+    taskParams.arg1     = (UArg)thread;
+    taskParams.env      = arg;
     taskParams.priority = -1;
 
-    thread->detached = (pAttr->detachstate == PTHREAD_CREATE_JOINABLE) ? 0 : 1;
-    thread->fxn = startroutine;
-    thread->joinThread = NULL;
-    thread->cancelState = PTHREAD_CANCEL_ENABLE;
+    thread->detached      = (pAttr->detachstate == PTHREAD_CREATE_JOINABLE) ? 0 : 1;
+    thread->fxn           = startroutine;
+    thread->joinThread    = NULL;
+    thread->cancelState   = PTHREAD_CANCEL_ENABLE;
     thread->cancelPending = 0;
-    thread->priority = pAttr->priority;
-    thread->cleanupList = NULL;
+    thread->priority      = pAttr->priority;
+    thread->cleanupList   = NULL;
 
 #ifdef ti_posix_tirtos_Settings_enableMutexPriority__D
     thread->blockedMutex = NULL;
@@ -334,10 +335,10 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
 
     Semaphore_construct(&(thread->joinSem), 0, &semParams);
 
-    thread->task = Task_create((Task_FuncPtr)_pthread_runStub,
-            &taskParams, &eb);
+    thread->task = Task_create((Task_FuncPtr)_pthread_runStub, &taskParams, &eb);
 
-    if (thread->task == NULL) {
+    if (thread->task == NULL)
+    {
         _pthread_delete(thread);
 
         return (ENOMEM);
@@ -361,12 +362,13 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
  */
 int pthread_detach(pthread_t pthread)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
-    UInt          key;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    UInt key;
 
     key = Task_disable();
 
-    if ((thread->joinThread != NULL) || (thread->detached)) {
+    if ((thread->joinThread != NULL) || (thread->detached))
+    {
         Task_restore(key);
 
         /*
@@ -421,7 +423,8 @@ void pthread_exit(void *retval)
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
 
     /* pop and execute the cleanup handlers */
-    while (thread->cleanupList != NULL) {
+    while (thread->cleanupList != NULL)
+    {
         _pthread_cleanup_pop(thread->cleanupList, 1);
     }
 
@@ -429,14 +432,16 @@ void pthread_exit(void *retval)
     _pthread_removeThreadKeys((pthread_t)thread);
 
     /* if this thread is not detached, rendezvous with joining thread */
-    if (!thread->detached) {
+    if (!thread->detached)
+    {
         Semaphore_post(Semaphore_handle(&(thread->joinSem)));
 
         /*  Don't put the thread on the terminated list because
          *  pthread_join() will delete the thread.
          */
     }
-    else {
+    else
+    {
         /*  Put this thread on our private terminated list.
          *  It will be deleted by _pthread_cleanupFxn() which
          *  is invoked from the idle task.
@@ -444,7 +449,7 @@ void pthread_exit(void *retval)
         key = Task_disable();
 
         thread->qElem.next = (Queue_Elem *)terminatedList;
-        terminatedList = thread;
+        terminatedList     = thread;
 
         Task_restore(key);
     }
@@ -460,10 +465,9 @@ void pthread_exit(void *retval)
 /*
  *  ======== pthread_getschedparam ========
  */
-int pthread_getschedparam(pthread_t pthread, int *policy,
-        struct sched_param *param)
+int pthread_getschedparam(pthread_t pthread, int *policy, struct sched_param *param)
 {
-    pthread_Obj      *thread = (pthread_Obj *)pthread;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
 
     *policy = SCHED_OTHER;
 
@@ -489,12 +493,13 @@ int pthread_getschedparam(pthread_t pthread, int *policy,
  */
 int pthread_join(pthread_t pthread, void **thread_return)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
-    UInt          key;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    UInt key;
 
     key = Task_disable();
 
-    if ((thread->joinThread != NULL) || (thread->detached != 0)) {
+    if ((thread->joinThread != NULL) || (thread->detached != 0))
+    {
         /*
          *  Error - Another thread has already called pthread_join()
          *  for this thread, or the thread is in the detached state.
@@ -503,7 +508,8 @@ int pthread_join(pthread_t pthread, void **thread_return)
         return (EINVAL);
     }
 
-    if (pthread == pthread_self()) {
+    if (pthread == pthread_self())
+    {
         Task_restore(key);
         return (EDEADLK);
     }
@@ -519,7 +525,8 @@ int pthread_join(pthread_t pthread, void **thread_return)
 
     Semaphore_pend(Semaphore_handle(&(thread->joinSem)), BIOS_WAIT_FOREVER);
 
-    if (thread_return) {
+    if (thread_return)
+    {
         *thread_return = thread->ret;
     }
 
@@ -533,11 +540,12 @@ int pthread_join(pthread_t pthread, void **thread_return)
  */
 int pthread_once(pthread_once_t *once, void (*initFxn)(void))
 {
-    UInt    key;
+    UInt key;
 
     key = Task_disable();
 
-    if (*once == PTHREAD_ONCE_INIT) {
+    if (*once == PTHREAD_ONCE_INIT)
+    {
         (*initFxn)();
         *once = ~PTHREAD_ONCE_INIT;
     }
@@ -562,7 +570,8 @@ int pthread_setcancelstate(int state, int *oldstate)
 {
     pthread_Obj *thread = (pthread_Obj *)pthread_self();
 
-    if ((state != PTHREAD_CANCEL_ENABLE) && (state != PTHREAD_CANCEL_DISABLE)) {
+    if ((state != PTHREAD_CANCEL_ENABLE) && (state != PTHREAD_CANCEL_DISABLE))
+    {
         return (EINVAL);
     }
 
@@ -570,7 +579,8 @@ int pthread_setcancelstate(int state, int *oldstate)
 
     thread->cancelState = state;
 
-    if ((state == PTHREAD_CANCEL_ENABLE) && thread->cancelPending) {
+    if ((state == PTHREAD_CANCEL_ENABLE) && thread->cancelPending)
+    {
         pthread_exit((void *)PTHREAD_CANCELED);
     }
 
@@ -580,26 +590,26 @@ int pthread_setcancelstate(int state, int *oldstate)
 /*
  *  ======== pthread_setschedparam ========
  */
-int pthread_setschedparam(pthread_t pthread, int policy,
-        const struct sched_param *param)
+int pthread_setschedparam(pthread_t pthread, int policy, const struct sched_param *param)
 {
-    pthread_Obj        *thread = (pthread_Obj *)pthread;
-    Task_Handle         task = thread->task;
-    UInt                oldPri;
-    int                 priority = param->sched_priority;
-    UInt                key;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    Task_Handle task    = thread->task;
+    UInt oldPri;
+    int priority = param->sched_priority;
+    UInt key;
 #ifdef ti_posix_tirtos_Settings_enableMutexPriority__D
-    int                 maxPri;
+    int maxPri;
 #endif
 
-    if ((priority >= (int)Task_numPriorities) || (priority <= 0)) {
+    if ((priority >= (int)Task_numPriorities) || (priority <= 0))
+    {
         /* Bad priority value */
         return (EINVAL);
     }
 
     key = Task_disable();
 
-    oldPri = Task_getPri(task);
+    oldPri           = Task_getPri(task);
     thread->priority = priority;
 
 #ifdef ti_posix_tirtos_Settings_enableMutexPriority__D
@@ -610,14 +620,17 @@ int pthread_setschedparam(pthread_t pthread, int policy,
      *  new priority to set it to, once the mutexes of higher priority
      *  ceilings are released.
      */
-    if (!Queue_empty(Queue_handle(&(thread->mutexList)))) {
+    if (!Queue_empty(Queue_handle(&(thread->mutexList))))
+    {
         maxPri = _pthread_getMaxPrioCeiling(thread);
 
-        if (priority > maxPri) {
+        if (priority > maxPri)
+        {
             Task_setPri(task, priority);
         }
     }
-    else {
+    else
+    {
         /* The thread owns no mutexes */
         oldPri = Task_setPri(task, priority);
     }
@@ -632,7 +645,6 @@ int pthread_setschedparam(pthread_t pthread, int policy,
     return (0);
 }
 
-
 /*
  *************************************************************************
  *              internal functions
@@ -644,20 +656,22 @@ int pthread_setschedparam(pthread_t pthread, int policy,
  */
 void _pthread_cleanupFxn(void)
 {
-    pthread_Obj        *thread;
-    UInt                key;
+    pthread_Obj *thread;
+    UInt key;
 
     key = Task_disable();
 
     /* Delete the first pthread object on the terminated list */
     thread = terminatedList;
-    if (thread != NULL) {
+    if (thread != NULL)
+    {
         terminatedList = (pthread_Obj *)(thread->qElem.next);
     }
 
     Task_restore(key);
 
-    if (thread != NULL) {
+    if (thread != NULL)
+    {
         /* Freeing memory must be done outside of scheduler disabled block */
         _pthread_delete(thread);
     }
@@ -666,14 +680,14 @@ void _pthread_cleanupFxn(void)
 /*
  *  ======== _pthread_cleanup_pop ========
  */
-void _pthread_cleanup_pop(struct _pthread_cleanup_context *context,
-        int execute)
+void _pthread_cleanup_pop(struct _pthread_cleanup_context *context, int execute)
 {
-    pthread_Obj    *thread = (pthread_Obj *)context->thread;
+    pthread_Obj *thread = (pthread_Obj *)context->thread;
 
     thread->cleanupList = context->next;
 
-    if (execute) {
+    if (execute)
+    {
         (*(context->fxn))(context->arg);
     }
 }
@@ -681,15 +695,14 @@ void _pthread_cleanup_pop(struct _pthread_cleanup_context *context,
 /*
  *  ======== _pthread_cleanup_push ========
  */
-void _pthread_cleanup_push(struct _pthread_cleanup_context *context,
-        void (*fxn)(void *), void *arg)
+void _pthread_cleanup_push(struct _pthread_cleanup_context *context, void (*fxn)(void *), void *arg)
 {
-    pthread_Obj    *thread = (pthread_Obj *)pthread_self();
+    pthread_Obj *thread = (pthread_Obj *)pthread_self();
 
-    context->thread = (pthread_t)thread;
-    context->fxn = fxn;
-    context->arg = arg;
-    context->next = thread->cleanupList;
+    context->thread     = (pthread_t)thread;
+    context->fxn        = fxn;
+    context->arg        = arg;
+    context->next       = thread->cleanupList;
     thread->cleanupList = context;
 }
 
@@ -703,7 +716,8 @@ static void _pthread_delete(pthread_Obj *thread)
 #endif
     Semaphore_destruct(&(thread->joinSem));
 
-    if (thread->task) {
+    if (thread->task)
+    {
         Task_delete(&(thread->task));
     }
 
@@ -720,7 +734,7 @@ static void _pthread_runStub(UArg arg0, UArg arg1)
     pthread_Obj *thread = (pthread_Obj *)(xdc_uargToPtr(arg1));
 
     /* invoke thread start-routine */
-    arg = Task_getEnv(thread->task);
+    arg   = Task_getEnv(thread->task);
     xstat = thread->fxn(arg);
 
     /* thread must self-terminate */

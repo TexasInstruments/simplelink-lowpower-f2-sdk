@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,7 @@ static void nmiISR(void);
 static void faultISR(void);
 static void defaultHandler(void);
 static void busFaultHandler(void);
+static void secureFaultHandler(void);
 
 //*****************************************************************************
 //
@@ -82,28 +83,28 @@ extern unsigned long _stack_end;
 
 //*****************************************************************************
 //
-// The vector table.  Note that the proper constructs must be placed on this to
-// ensure that it ends up at physical address 0x0000.0000.
+// The vector table in Flash. Note that the proper constructs must be placed
+// on this to ensure that it ends up at physical address 0x0000.0000 or at the
+// start of the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__((section(".resetVecs"))) __attribute__((used)) static void (*const resetVectors[16])(void) = {
-    (void (*)(void))((uint32_t)&_stack_end),
-    // The initial stack pointer
-    resetISR,        // The reset handler
-    nmiISR,          // The NMI handler
-    faultISR,        // The hard fault handler
-    defaultHandler,  // The MPU fault handler
-    busFaultHandler, // The bus fault handler
-    defaultHandler,  // The usage fault handler
-    0,               // Reserved
-    0,               // Reserved
-    0,               // Reserved
-    0,               // Reserved
-    defaultHandler,  // SVCall handler
-    defaultHandler,  // Debug monitor handler
-    0,               // Reserved
-    defaultHandler,  // The PendSV handler
-    defaultHandler   // The SysTick handler
+__attribute__((section(".resetVecs"), used)) static void (*const resetVectors[16])(void) = {
+    (void (*)(void))((uint32_t)&_stack_end), // 0 The initial stack pointer
+    resetISR,                                // 1 The reset handler
+    nmiISR,                                  // 2 The NMI handler
+    faultISR,                                // 3 The hard fault handler
+    defaultHandler,                          // 4 The MPU fault handler
+    busFaultHandler,                         // 5 The bus fault handler
+    defaultHandler,                          // 6 The usage fault handler
+    secureFaultHandler,                      // 7 The secure fault handler
+    0,                                       // 8 Reserved
+    0,                                       // 9 Reserved
+    0,                                       // 10 Reserved
+    defaultHandler,                          // 11 SVCall handler
+    defaultHandler,                          // 12 Debug monitor handler
+    0,                                       // 13 Reserved
+    defaultHandler,                          // 14 The PendSV handler
+    defaultHandler                           // 15 The SysTick handler
 };
 
 //*****************************************************************************
@@ -141,7 +142,7 @@ extern uint32_t __data_load__, __data_start__, __data_end__;
 //
 //*****************************************************************************
 //
-void localProgramStart(void)
+__attribute__((used)) void localProgramStart(void)
 {
     uint32_t *bs;
     uint32_t *be;
@@ -221,7 +222,7 @@ void __attribute__((naked)) resetISR(void)
 
 //*****************************************************************************
 //
-// This is the code that gets called when the processor receives a NMI.  This
+// This is the code that gets called when the processor receives an NMI. This
 // simply enters an infinite loop, preserving the system state for examination
 // by a debugger.
 //
@@ -235,7 +236,7 @@ static void nmiISR(void)
 //*****************************************************************************
 //
 // This is the code that gets called when the processor receives a fault
-// interrupt.  This simply enters an infinite loop, preserving the system state
+// interrupt. This simply enters an infinite loop, preserving the system state
 // for examination by a debugger.
 //
 //*****************************************************************************
@@ -247,9 +248,9 @@ static void faultISR(void)
 
 //*****************************************************************************
 //
-// This is the code that gets called when the processor receives an unexpected
-// interrupt.  This simply enters an infinite loop, preserving the system state
-// for examination by a debugger.
+// This is the code that gets called when the processor receives a bus fault.
+// This simply enters an infinite loop, preserving the system state for
+// examination by a debugger.
 //
 //*****************************************************************************
 static void busFaultHandler(void)
@@ -261,11 +262,24 @@ static void busFaultHandler(void)
 //*****************************************************************************
 //
 // This is the code that gets called when the processor receives an unexpected
-// interrupt.  This simply enters an infinite loop, preserving the system state
+// interrupt. This simply enters an infinite loop, preserving the system state
 // for examination by a debugger.
 //
 //*****************************************************************************
 static void defaultHandler(void)
+{
+    /* Enter an infinite loop. */
+    while (1) {}
+}
+
+//*****************************************************************************
+//
+// This is the code that gets called when the processor receives a secure fault.
+// This simply enters an infinite loop, preserving the system state for
+// examination by a debugger.
+//
+//*****************************************************************************
+static void secureFaultHandler(void)
 {
     /* Enter an infinite loop. */
     while (1) {}

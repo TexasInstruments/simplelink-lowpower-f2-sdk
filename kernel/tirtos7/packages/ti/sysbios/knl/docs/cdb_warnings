@@ -1,0 +1,336 @@
+// handled within Heap_multiBuf.xs
+buf.cdb:255:                .error("Size should be atleast 4 words")
+buf.cdb:257:                .error("Size should be atleast 4 words")
+buf.cdb:259:                .error("Size should be atleast 2 words")
+buf.cdb:261:                .error("Size should be atleast 8 bytes")
+buf.cdb:284:                .error("Alignment should be atleast 2 ")
+buf.cdb:286:                .error("Alignment should be atleast 2 ")
+buf.cdb:288:                .error("Alignment should be atleast 1 ")
+buf.cdb:290:                .error("Alignment should be atleast 4 ")
+
+// handled within by knl/package.xs
+clkC28XX.cdb:70:	.USETIMER ? "ok" : .error ("The CLK Manager must be enabled before inserting a CLK")
+
+// handled within by knl/package.xs
+clkC28XX.cdb:110:		.error("CLK Manager must be enabled in order to do the setting.")
+
+// does not apply to this design
+clkC28XX.cdb:124:                   .error("Timer0 Interrupt already in use by CSL")
+
+// handled in Timer.xs and Hwi.xs
+clkC28XX.cdb:128:		        .error("HWI Timer interrupt already in use.")
+
+// not supported in avala-c24
+clkC28XX.cdb:144:		            .error("Current stack size inadequate to enable CLK")
+
+// handled within by knl/package.xs
+clkC28XX.cdb:177:			.error("CLK cannot be disabled until all its objects are deleted.")
+
+// does not apply to this design.
+clkC28XX.cdb:203:		.error("CLK Manager must be enabled in order to get high resolution timings.")
+
+// not supported in avala-c24
+clkC28XX.cdb:278:	        .error("The on-chip timer does not have enough range to support this value, maximum is 15.")
+
+// not supported in avala-c24
+clkC28XX.cdb:341:	  .error("Interrupt not mapped for selected timer.")
+
+// handled in Timer.xs and Hwi.xs
+clkC28XX.cdb:345:	    .error("Interrupt mapped to selected timer is already in use.")
+
+// does not apply to this design
+clkC28XX.cdb:349:	    .error("Interrupt mapped to selected timer is already in use by CSL.")
+
+// not supported in avala-c24
+clkC28XX.cdb:436:	    .error("The on-chip timer does not have enough range to support this combination of DSP MIPS and Microseconds/Int")
+
+// handled within by knl/package.xs
+clkC64XX.cdb:72:	.USETIMER ? "ok" : .error ("The CLK Manager must be enabled before inserting a CLK")
+
+// handled in c64/Timer.xs
+clkC64XX.cdb:132:			$e = .error("Must choose a timer different from the high resolution timer")
+
+// not supported in avala-c24
+clkC64XX.cdb:235:			.error("Current stack size inadequate to enable CLK")
+
+// handled within by knl/package.xs
+clkC64XX.cdb:292:		.error("CLK Manager must be enabled in order to get high resolution timings.")
+
+// out of range condition automatically handled by xdc
+clkC64XX.cdb:367:	        .error("The on-chip timer does not have enough range to support this value, maximum is 15.")
+
+// does not apply to this design
+clkC64XX.cdb:430:	  .error("Interrupt not mapped for selected timer.")
+
+// handled in Timer.xs and Hwi.xs
+clkC64XX.cdb:434:	    .error("Interrupt mapped to selected timer is already in use.")
+
+// does not apply to this design
+clkC64XX.cdb:438:	    .error("Interrupt mapped to selected timer is already in use by CSL.")
+
+// not supported in avala-c24
+clkC64XX.cdb:530:	    .error("The on-chip timer does not have enough range to support this combination of DSP MIPS and Microseconds/Int")
+
+// does not apply to this design
+clkC64XX.cdb:683:		$e = .error("Must choose a timer different from the system tick timer")
+
+// handled within by knl/package.xs
+clkC64XXPLUS.cdb:72:	.USETIMER ? "ok" : .error ("The CLK Manager must be enabled before inserting a CLK")
+
+// not supported in avala-c24
+clkC64XXPLUS.cdb:220:			.error("Current stack size inadequate to enable CLK")
+
+// handled within by knl/package.xs
+clkC64XXPLUS.cdb:277:		.error("CLK Manager must be enabled in order to get high resolution timings.")
+
+// not supported in avala-c24
+clkC64XXPLUS.cdb:432:	        .error("The on-chip timer does not have enough range to support this value, maximum is 15.")
+clkC64XXPLUS.cdb:495:	  .error("Interrupt not mapped for selected timer.")
+
+// handled in Timer.xs and Hwi.xs
+clkC64XXPLUS.cdb:499:	    .error("Interrupt mapped to selected timer is already in use.")
+// does not apply to this design
+clkC64XXPLUS.cdb:503:	    .error("Interrupt mapped to selected timer is already in use by CSL.")
+// not supported in avala-c24
+clkC64XXPLUS.cdb:595:	    .error("The on-chip timer does not have enough range to support this combination of DSP MIPS and Microseconds/Int")
+
+// modules or equivalent functionality not yet developed in avala-c24
+dhl.cdb:183:                .error("This channel is already in use.")
+dhl.cdb:111:	    .warning("No HST channels are available for a new DHL device.")
+dio.cdb:81:	    .error ("An IOM type device must be created first.")
+dpi.cdb:78:	    .error("DPI.iDevId parameter no longer settable, it is now handled automatically")
+dpi.cdb:95:			$a = .error("This DPI instance is being used by one or more SIO instances, cannot reconfigure"),
+ecm.cdb:38:	.error("Event combiner objects cannot be created")
+ecm.cdb:42:	.error("Event combiner objects cannot be deleted")
+gbl.cdb:724:                        $e = .error("Unknown cache size")
+gbl.cdb:780:                        $e = .error("Unknown cache size")
+gbl.cdb:826:                        $e = .error("Unknown cache size")
+gbl.cdb:985:            .error($e)
+gbl.cdb:1474:                .error("Cannot set OVLY bit (bit 5) to 0 when far call model is selected")
+gbl.cdb:1969:                    .error("To use the far model the OVLY bit in PMST (bit 5) must be set to 1")
+gbl.cdb:2006:                .error("Cannot set Memory Model to HUGE. RTDX needs to be disabled")
+gbl.cdb:2664:                $e = .error("This BIOS version does not support linking with ROM.")
+global.cdb:413:    prop error :: #(
+global.cdb:603:	    .warning("Maximum number of objects already created")
+global.cdb:621:		.warning("Object already deleted")
+global.cdb:625:	    .warning(.iDelMsg)
+hst.cdb:376:		        .error(" HOSTLINKTYPE cannot be RTDX for huge model")
+hst.cdb:379:                        .error("RTDX module must be enabled before it can be used by HST")
+hst.cdb:384:                        .error("RTDX buffer size too small for largest configured HST channel")
+hst.cdb:413:                        .error("Shared memory buffer too small for largest configured HST channel")
+hst.cdb:442:                           .error ("GIO must be enabled")
+hst.cdb:551:                .error("size (in MAUs) must be at least: 4 * largest configured HST channel framesize (in words)")
+hst.cdb:619:	        .error("Alignment must be greater than or equal to 4")
+hst.cdb:623:	            .error("Alignment must be a power of 2")
+hst.cdb:631:	                .error("Alignment must be a power of 2")
+hst.cdb:660:		.error("framesize must be >= 1.")
+hst.cdb:665:		        .error("size (in words) is limited to: (RTDX buffer size in MAUs) / (MAUs per word) - 3")
+hst.cdb:668:		            .error("size (in words) is limited to: shared memory frame size (in MAUs)/4")
+hst.cdb:698:		.error("Channels must contain at least 1 frame.")
+hst.cdb:719:                .error("BiosLink channel number must be [0..15]"),
+hst.cdb:720:		"error"
+hst.cdb:728:                            .error("BiosLink channel number conflict")
+hst.cdb:738:                    "error"
+
+// Does not apply to BIOS 6
+hwi.cdb:404:        .error("New hardware interrupt objects cannot be created")
+
+// RTDX undeveloped in avala-c24
+hwi.cdb:472:            .error("HWI initialization failure.")
+hwi.cdb:722:            .error("HWI initialization failure.")
+hwi.cdb:784:            .error("HWI initialization failure.")
+
+// Does not apply to BIOS 6
+hwi.cdb:1417:                .error ("The Reset interrupt source cannot be remapped")
+hwi.cdb:1421:                    .error ("The Non-Maskable interrupt source cannot be remapped")
+hwi.cdb:1425:                        .error ("The Reserved interrupt source cannot be remapped")
+
+// handled in Timer.xs and Hwi.xs
+hwi.cdb:1436:                           .error ("This interrupt is in use by CLK, settings may be changed in the CLK Manager")
+hwi.cdb:1444:                                .error ("Interrupt source is in use by CLK, settings may be changed in the CLK Manager.")
+
+// Hwi STS not developed yet in avala-c24
+hwi.cdb:1629:                .error("The monitor field must set to modify this field")
+hwi.cdb:1647:                .error("The monitor field must set to modify this field")
+
+// Handled in Hwi.xs
+hwi.cdb:1670:                    .error ("HWI dispatcher can't be used for  NMI")
+
+// range check automatic with xdc
+hwi.cdb:1733:                .error("Invalid Number")
+
+// cache support not developed yet in avala-c24
+hwi.cdb:1928:                .error("unsupported cache mode for 6x1x/64x device (cache enable must be selected)")
+hwi.cdb:1980:                .error("unsupported cache mode for 6x1x/64x device (cache enable must be selected)")
+
+// handled in Timer.xs and Hwi.xs
+hwi.cdb:2043:                .error("This HWI is being used by the system and cannot be modified")
+
+// range check automatic with xdc
+hwi.cdb:2106:                .error("Invalid Number")
+
+// Handled in Hwi.xs
+hwi.cdb:2126:                .error ("HWI dispatcher can't be used for NMI")
+
+// handled in Timer.xs and Hwi.xs
+hwi.cdb:2130:                    .error("This HWI is being used by the system and cannot be modified")
+
+// range check automatic with xdc
+hwi.cdb:2200:                .error("Invalid Number")
+hwi.cdb:2255:                .error("Invalid Number")
+
+// implemented in Hwi.xs
+hwi.cdb:2412:                    .error("Must be 0 - 31, 0 = highest priority")
+hwi.cdb:2421:                    .error("Must be 0 - 63, 0 = highest priority")
+
+// handled in Timer.xs and Hwi.xs
+hwi.cdb:2449:                .error("This HWI is being used by the system and cannot be modified")
+
+// range check automatic with xdc
+hwi.cdb:2518:                .error("Invalid Number")
+
+// Not implemented yet in avala-c24 (Chris looking into this)
+hwi.cdb:1106:                        .warning(" VMAP Mode should be 1 while PIE is enabled"),
+hwi.cdb:1148:                        .warning ("Enabling PIE requires VMAP Mode 1"),
+
+// handled in Hwi.s
+hwi.cdb:2173:                        .warning("This Interrupt is NOT maskable via IER0")
+hwi.cdb:2225:                        .warning("This Interrupt is NOT maskable via IER1")
+hwi.cdb:2281:                        .warning("This Interrupt is NOT maskable via MIR")
+hwi.cdb:2336:                        .warning("This Interrupt is NOT maskable via MIR1")
+hwi.cdb:2491:                        .warning("This Interrupt is NOT maskable via IER")
+
+// functionality undeveloped in avala-c24
+idl.cdb:202:		.error("CLK must be enabled to do idle loop intruction count")
+idl.cdb:206:		    .error("Real Time Analysis must be enabled to do idle loop instruction count")
+
+// handled in Mailbox.xs
+mbx.cdb:273:		.error ("Message size cannot be zero")
+mbx.cdb:292:		.error ("Mailbox length cannot be zero")
+
+// Not implemented yet in avala-c24
+mem.cdb:1269:		$d = .error ("Code memory cannot have a heap")
+
+// does not apply to BIOS 6
+mem.cdb:1277:	    $d = .error ("Segment for DSP/BIOS objects must be a memory segment with a heap")
+mem.cdb:1284:	    $d = .error ("Segment for malloc()/free() must be a memory segment with a heap")
+
+// applies but needs investigation
+mem.cdb:1568:		.error("The 'arguments' section must have at least 4 words.")
+mem.cdb:1588:		.error("The 'arguments' section must have at least 4 words.")
+
+// does not apply to BIOS 6 (55x)
+mem.cdb:1759:	        .error("The Sysstack section must be in the same Memory location as the Stack section") }
+
+// does not apply to BIOS 6
+mem.cdb:2699:	        .error("This heap is used by one or more of: segment for DSP/BIOS objects, segment for malloc()/free(), TSK default stack segment")
+
+// does not apply to BIOS 6
+mem.cdb:2766:		$e = .error ("This identifier label is already in use"),
+
+// applies but needs investigation (possibly goes in xdc)
+mem.cdb:2793:		$e =.error("Cannot select this space if a heap will be created")
+
+// does not apply to BIOS 6
+pie.cdb:67:	.error("New hardware interrupt objects cannot be created")
+
+// STS not developed yet in avala-c24
+pie.cdb:220:		.error("The monitor field must set to modify this field")
+pie.cdb:238:		.error("The monitor field must set to modify this field")
+
+// handled in Timer.xs and Hwi.xs
+pie.cdb:266: 		.error("This HWI is being used by the system and cannot be modified")
+
+// range check automatic with xdc
+pie.cdb:329: 		.error("Invalid Number")
+
+// No PIP in BIOS 6 yet
+pip.cdb:223:		$e = .error("Cannot set align value to 0")
+pip.cdb:249:		.error("framesize must be >= 1.")
+pip.cdb:268:		.error("Pipes must contain at least 1 frame.")
+
+// does not apply to BIOS 6
+prd.cdb:204:	    .error("PRD initialization failure")
+
+// Not supported in BIOS 6
+prd.cdb:227:	  .error(" System Stack Size too small")
+prd.cdb:292:		.error("Can't create an SWI for PRD (try deleting a SWI)")
+
+// equivalent functionality implemented in BIOS.xs
+prd.cdb:367:		    .error("In order to drive periodic functions, the CLK Manager must be enabled")
+
+// Not supported in BIOS 6
+prd.cdb:380:                      .error("Current Stack size inadequate to enable this option")
+
+// Handled in Clock.xs
+prd.cdb:485:		.error("Periodic function periods must be greater than 0 and less than 0x8000")
+
+// Not supported in BIOS 6
+pwrm.cdb:124:                              $e = .error("Idling of DSP domains (Idling page) must be disabled before disabling the Power Manager")
+pwrm.cdb:295:                    $e = .error("The DSP and I-cache domain must be idled before idling I-Port")
+pwrm.cdb:321:                    $e = .error("The DMA domain must be idled before idling M-Port")
+pwrm.cdb:348:                    $e = .error("The DMA and DSP domain must be idled before idling X-Port")
+pwrm.cdb:391:                              $e = .error("The DMA domain must be idled before idling CLKGEN")
+pwrm.cdb:395:                                  $e = .error("The CPU domain must be idled before idling CLKGEN")
+pwrm.cdb:399:                                      $e = .error("The CACHE domain must be idled before idling CLKGEN")
+pwrm.cdb:441:                              $e = .error("The CACHE domain must remain idled while CLKGEN is idled")
+pwrm.cdb:467:                              $e = .error("The DMA domain must remain idled while CLKGEN is idled")
+pwrm.cdb:493:                              $e = .error("The CPU domain must remain idled while CLKGEN is idled")
+pwrm.cdb:770:                    $e = .error("The DSP and I-cache domain must be slept before sleeping I-Port")
+pwrm.cdb:796:                    $e = .error("The DMA domain must be slept before sleeping M-Port")
+pwrm.cdb:823:                    $e = .error("The DMA and DSP domain must be slept before sleeping X-Port")
+pwrm.cdb:865:                              $e = .error("The DMA domain must be idled before idling CLKGEN")
+pwrm.cdb:869:                                  $e = .error("The CPU domain must be idled before idling CLKGEN")
+pwrm.cdb:873:                                      $e = .error("The CACHE domain must be idled before idling CLKGEN")
+pwrm.cdb:915:                              $e = .error("The CACHE domain must remain idled while CLKGEN is idled")
+pwrm.cdb:941:                              $e = .error("The DMA domain must remain idled while CLKGEN is idled")
+pwrm.cdb:967:                              $e = .error("The CPU domain must remain idled while CLKGEN is idled")
+rtdx.cdb:235:	    $e = .error("RTDX manager not enabled")
+rtdx.cdb:258:                    .error("RTDX is being used by HST; select a different host link type before attempting to disable RTDX") 
+rtdx.cdb:262:			.error("Cannot disable RTDX until all RTDX objects are deleted.")
+rtdx.cdb:291:                    .error("RTDX NOT enabled. Not supported for huge model")
+rtdx.cdb:388:                    .error("size (in MAUs) must be at least: (largest configured HST channel framesize in words + 3) * (MAUs per word)")
+sio.cdb:228:	    .error ("A driver device must be created before creating a stream.")
+sio.cdb:305:		    .error("To select a stacking device, enter first a terminal device in Device Control String")
+sio.cdb:309:		    .error("The device you have selected is a virtual instance, you must select a non-virtual device")
+sio.cdb:413:	    	    $e = .error("SIO Issue/Reclaim model support selected")
+sts.cdb:88:	    .error("STS initialization failure")
+
+// Not supported in avala-c24
+swi.cdb:260:	    .error("System stack size (see MEM) is too small to support a new SWI priority level.")
+
+// does not apply to BIOS 6
+swi.cdb:429:		    .error("KNL_swi must remain at Priority 0.")
+swi.cdb:438:		    .error("Priority 0 reserved for KNL_swi only.")
+
+// Not supported in avala-c24
+swi.cdb:444:			.error("System stack size (see MEM) is too small to support a new SWI priority level.")
+
+// handled in Swi.xs
+swi.cdb:449:			    .error("SWI can only support 15 priority levels.")
+
+// does not apply to BIOS 6
+tsk.cdb:328:	    .error ("TSK default stack segment must be a memory segment with a heap")
+
+// Handled in knl/package.xs
+tsk.cdb:409:	    $e = .error("TSK manager not enabled")
+tsk.cdb:455:		    .error("Cannot disable TSK until all TSK objects are deleted.")
+
+// Not supported in avala-c24
+tsk.cdb:480:                    $e = .error("Current stack size inadequate to enable TSK"),
+
+// does not apply to BIOS 6
+tsk.cdb:485:			$e = .error("Cannot enable TSK when there are SWI objects at Priority 0."),
+
+// does not apply to BIOS 6
+tsk.cdb:857:		    .error ("Invalid TSK tick driver selection")
+
+// Not supported in avala-c24
+tsk.cdb:1036:		    .error("Task stack size is too small.")
+tsk.cdb:1040:		        .error("Task stack size is too small.")
+
+// handled in Task.xs
+tsk.cdb:1096:		    .error("Cannot change the priority of the idle task.")
+
+// handled in Task.xs
+tsk.cdb:1101:		.error("Priority 0 is reserved for the system idle task")

@@ -39,13 +39,6 @@
     let CCFG = system.modules["/ti/devices/CCFG"];
     let enableHposcRtcCompensation = false;
 
-    let disablePowerModes = false;
-    if ("board" in system.deviceData) {
-        if (system.deviceData.board.name.match(/FPGA/)) {
-            disablePowerModes = true;
-        }
-    }
-
     if (CCFG !== undefined) {
         // If SCLK_LF derived from HPOSC, add Temperature dependency and set
         // flag to add RTC compensation to Board_init()
@@ -59,8 +52,4 @@
     Power_init();
 %   if (enableHposcRtcCompensation === true) {
     PowerCC26X2_enableHposcRtcCompensation();
-%   }
-%   if (disablePowerModes) {
-    Power_setConstraint(PowerCC26XX_DISALLOW_IDLE);
-    Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
 %   }

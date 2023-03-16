@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,87 +93,106 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 /*! The retry wait time (usec) when checking to see if XOSC_LF is stable. */
 #define PowerCC26XX_RETRYWAITXOSC_LF 5000
 
-/* resource IDs */
+/*
+ * Resource IDs
+ */
+/*! Resource ID: General Purpose Timer 0 */
 #define PowerCC26XX_PERIPH_GPT0 0
-/*!< Resource ID: General Purpose Timer 0 */
 
+/*! Resource ID: General Purpose Timer 1 */
 #define PowerCC26XX_PERIPH_GPT1 1
-/*!< Resource ID: General Purpose Timer 1 */
 
+/*! Resource ID: General Purpose Timer 2 */
 #define PowerCC26XX_PERIPH_GPT2 2
-/*!< Resource ID: General Purpose Timer 2 */
 
+/*! Resource ID: General Purpose Timer 3 */
 #define PowerCC26XX_PERIPH_GPT3 3
-/*!< Resource ID: General Purpose Timer 3 */
 
+/*! Resource ID: Synchronous Serial Interface 0 */
 #define PowerCC26XX_PERIPH_SSI0 4
-/*!< Resource ID: Synchronous Serial Interface 0 */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    /*! Resource ID: SPI0 */
+    #define PowerCC26XX_PERIPH_SPI0 PowerCC26XX_PERIPH_SSI0
+#endif
 
-#define PowerCC26XX_PERIPH_UART0 5 /*!< Resource ID: UART 0 */
+/*! Resource ID: UART 0 */
+#define PowerCC26XX_PERIPH_UART0 5
 
-#define PowerCC26XX_PERIPH_I2C0 6 /*!< Resource ID: I2C 0 */
+/*! Resource ID: I2C 0 */
+#define PowerCC26XX_PERIPH_I2C0 6
 
+/*! Resource ID: True Random Number Generator */
 #define PowerCC26XX_PERIPH_TRNG 7
-/*!< Resource ID: True Random Number Generator */
 
-#define PowerCC26XX_PERIPH_GPIO 8 /*!< Resource ID: General Purpose I/Os */
+/*! Resource ID: General Purpose I/Os */
+#define PowerCC26XX_PERIPH_GPIO 8
 
-#define PowerCC26XX_PERIPH_UDMA 9 /*!< Resource ID: uDMA Controller */
+/*! Resource ID: uDMA Controller */
+#define PowerCC26XX_PERIPH_UDMA 9
 
-#define PowerCC26XX_PERIPH_CRYPTO 10 /*!< Resource ID: AES Security Module */
+/*! Resource ID: AES Security Module */
+#define PowerCC26XX_PERIPH_CRYPTO 10
 
-#define PowerCC26XX_PERIPH_I2S 11 /*!< Resource ID: I2S */
+/*! Resource ID: I2S */
+#define PowerCC26XX_PERIPH_I2S 11
 
-#define PowerCC26XX_PERIPH_RFCORE 12 /*!< Resource ID: RF Core Module */
+/*! Resource ID: RF Core Module */
+#define PowerCC26XX_PERIPH_RFCORE 12
 
+/*! Resource ID: High Frequency Crystal Oscillator */
 #define PowerCC26XX_XOSC_HF 13
-/*!< Resource ID: High Frequency Crystal Oscillator */
 
+/*! Resource ID: Peripheral Power Domain */
 #define PowerCC26XX_DOMAIN_PERIPH 14
-/*!< Resource ID: Peripheral Power Domain */
 
+/*! Resource ID: Serial Power Domain */
 #define PowerCC26XX_DOMAIN_SERIAL 15
-/*!< Resource ID: Serial Power Domain */
 
+/*! Resource ID: RF Core Power Domain */
 #define PowerCC26XX_DOMAIN_RFCORE 16
-/*!< Resource ID: RF Core Power Domain */
 
+/*! Resource ID: System Bus Power Domain */
 #define PowerCC26XX_DOMAIN_SYSBUS 17
-/*!< Resource ID: System Bus Power Domain */
 
 /* The PKA and UART1 peripherals are not available on CC13X1 and CC26X1 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
      DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-    /*!< Resource ID: PKA Module */
+    /*! Resource ID: PKA Module */
     #define PowerCC26XX_PERIPH_PKA 18
 
-    /*!< Resource ID: UART1 */
+    /*! Resource ID: UART1 */
     #define PowerCC26XX_PERIPH_UART1 19
 
-    /*!< Resource ID: Synchronous Serial Interface 1 */
+    /*! Resource ID: Synchronous Serial Interface 1 */
     #define PowerCC26XX_PERIPH_SSI1 20
-
+    #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+        /*! Resource ID: SPI1 */
+        #define PowerCC26XX_PERIPH_SPI1 PowerCC26XX_PERIPH_SSI1
+    #endif
 #endif
 
 /* The peripherals below are only available on CC13X4 and CC26X4 devices */
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
 
-    /*!< Resource ID: UART2 */
+    /*! Resource ID: UART2 */
     #define PowerCC26XX_PERIPH_UART2 21
 
-    /*!< Resource ID: UART3 */
+    /*! Resource ID: UART3 */
     #define PowerCC26XX_PERIPH_UART3 22
 
-    /*!< Resource ID: SSI2 */
-    #define PowerCC26XX_PERIPH_SSI2 23
+    /*! Resource ID: SPI2 */
+    #define PowerCC26XX_PERIPH_SPI2 23
+    /*! Included for compatibilty. Please use \ref PowerCC26XX_PERIPH_SPI2 */
+    #define PowerCC26XX_PERIPH_SSI2 PowerCC26XX_PERIPH_SPI2
 
-    /*!< Resource ID: SSI3 */
-    #define PowerCC26XX_PERIPH_SSI3 24
+    /*! Resource ID: SPI3 */
+    #define PowerCC26XX_PERIPH_SPI3 24
+    /*! Included for compatibility. Please use \ref PowerCC26XX_PERIPH_SPI3 */
+    #define PowerCC26XX_PERIPH_SSI3 PowerCC26XX_PERIPH_SPI3
 
-    /*!< Resource ID: I2C1 */
+    /*! Resource ID: I2C1 */
     #define PowerCC26XX_PERIPH_I2C1 25
-
 #endif
 
 /* \cond */
@@ -189,7 +208,7 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 /* \endcond */
 
 /* \cond */
-/* resource record bitmasks */
+/* Resource record bitmasks */
 #define PowerCC26XX_PERIPH     0x80 /* resource is a peripheral */
 #define PowerCC26XX_SPECIAL    0x40 /* resource requires special handler */
 #define PowerCC26XX_DOMAIN     0x00 /* resource is a domain */
@@ -197,50 +216,51 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
 #define PowerCC26XX_NOPARENT   0x3F /* if resource has no parent */
 /* \endcond */
 
-#define PowerCC26XX_STANDBY 0x1 /*!< The STANDBY sleep state */
+/*! The STANDBY sleep state */
+#define PowerCC26XX_STANDBY 0x1
 /* \cond */
-/* internal flags for enabling/disabling resources */
+/* Internal flags for enabling/disabling resources */
 #define PowerCC26XX_ENABLE  1
 #define PowerCC26XX_DISABLE 0
 /* \endcond */
 
-/* constraints */
+/* Constraints */
+/*! Constraint: VIMS RAM must be retained while in STANDBY */
 #define PowerCC26XX_RETAIN_VIMS_CACHE_IN_STANDBY 0
-/*!< Constraint: VIMS RAM must be retained while in STANDBY */
 
+/*! Constraint: Disallow a transition to the SHUTDOWN state */
 #define PowerCC26XX_DISALLOW_SHUTDOWN 1
-/*!< Constraint: Disallow a transition to the SHUTDOWN state */
 
+/*! Constraint: Disallow a transition to the STANDBY sleep state */
 #define PowerCC26XX_DISALLOW_STANDBY 2
-/*!< Constraint: Disallow a transition to the STANDBY sleep state */
 
+/*! Constraint: Disallow a transition to the IDLE sleep state */
 #define PowerCC26XX_DISALLOW_IDLE 3
-/*!< Constraint: Disallow a transition to the IDLE sleep state */
 
+/*! Constraint: Flash memory needs to enabled during IDLE */
 #define PowerCC26XX_NEED_FLASH_IN_IDLE 4
-/*!< Constraint: Flash memory needs to enabled during IDLE */
 
+/*! Constraint: Prevent power driver from starting an RTOS clock and
+ *  automatically switching to the XOSC_HF when it is ready. The power
+ *  driver will turn on the XOSC_HF and return control to the application.
+ *  The application must poll the status of the XOSC_HF and make sure that it
+ *  is stable before manually switching to it.
+ *  If the constraint is released before the application has switched to the
+ *  XOSC_HF, the application is still responsible for switching to the
+ *  XOSC_HF.
+ *  Failing to do so may cause an undefined internal state in the power
+ *  driver.
+ */
 #define PowerCC26XX_SWITCH_XOSC_HF_MANUALLY 5
-/*!< Constraint: Prevent power driver from starting an RTOS clock and
- *   automatically switching to the XOSC_HF when it is ready. The power
- *   driver will turn on the XOSC_HF and return control to the application.
- *   The application must poll the status of the XOSC_HF and make sure that it
- *   is stable before manually switching to it.
- *   If the constraint is released before the application has switched to the
- *   XOSC_HF, the application is still responsible for switching to the
- *   XOSC_HF.
- *   Failing to do so may cause an undefined internal state in the power
- *   driver.
- */
 
-#define PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING 6
-/*!< Constraint: Prevent power driver from switching to XOSC_HF when the crystal is
- *   ready. The RTOS clock will be rescheduled to try again in the future.
- *   This is a workaround to prevent the flash from being accessed by a bus master
- *   other than the CPU while switching to XOSC_HF. This would cause a bus stall.
- *   This functionality is only implemented on CC26X0, CC26X0R2, and CC13X0 as the
- *   bug was fixed in hardware on later devices.
+/*! Constraint: Prevent power driver from switching to XOSC_HF when the crystal is
+ *  ready. The RTOS clock will be rescheduled to try again in the future.
+ *  This is a workaround to prevent the flash from being accessed by a bus controller
+ *  other than the CPU while switching to XOSC_HF. This would cause a bus stall.
+ *  This functionality is only implemented on CC26X0, CC26X0R2, and CC13X0 as the
+ *  bug was fixed in hardware on later devices.
  */
+#define PowerCC26XX_DISALLOW_XOSC_HF_SWITCHING 6
 
 /* \cond */
 #define PowerCC26XX_NUMCONSTRAINTS 7 /* Number of constraints supported */
@@ -261,24 +281,23 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  *  Each event must be a power of two and must be sequential
  *  without any gaps.
  */
+/*! Power event: The device is entering the STANDBY sleep state */
 #define PowerCC26XX_ENTERING_STANDBY 0x1
-/*!< Power event: The device is entering the STANDBY sleep state */
 
+/*! Power event: The device is entering the SHUTDOWN state */
 #define PowerCC26XX_ENTERING_SHUTDOWN 0x2
-/*!< Power event: The device is entering the SHUTDOWN state */
 
+/*! Power event: The device is waking up from the STANDBY sleep state */
 #define PowerCC26XX_AWAKE_STANDBY 0x4
-/*!< Power event: The device is waking up from the STANDBY sleep state */
 
-#define PowerCC26XX_AWAKE_STANDBY_LATE 0x8
-/*!< Power event: The device is waking up from STANDBY (this event is sent later during wakeup, after interrupts are
+/*! Power event: The device is waking up from STANDBY (this event is sent later during wakeup, after interrupts are
  * re-enabled) */
+#define PowerCC26XX_AWAKE_STANDBY_LATE 0x8
 
+/*! Power event: The high frequency (HF) clock source has been switched to XOSC_HF */
 #define PowerCC26XX_XOSC_HF_SWITCHED 0x10
-/*!< Power event: The high frequency (HF) clock source has been switched to XOSC_HF */
 
-#define PowerCC26XX_SCLK_LF_SWITCHED 0x20
-/*!< Power event: The low frequency (LF) clock source has been switched from
+/*! Power event: The low frequency (LF) clock source has been switched from
  * RCOSC_HF derived to the source configured in CCFG.
  *
  * Only the XOSC_LF requires a significant amount of time to turn on and switch.
@@ -288,9 +307,9 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  * interrupts are enabled to guarantee the event will not be missed by the
  * application.
  */
+#define PowerCC26XX_SCLK_LF_SWITCHED 0x20
 
-#define PowerCC26XX_JTAG_PD_TURNED_ON 0x40
-/*!< \warning Note that this power event is only supported by the CC2640R2 device!
+/*! \warning Note that this power event is only supported by the CC2640R2 device!
  *
  * The JTAG subsystem on the CC26xx devices is automatically enabled after receiving
  * 8 pulses on the TCK pin. This will cause the device to draw more power in all
@@ -358,6 +377,7 @@ typedef uint8_t PowerCC26XX_Resource; /* Resource identifier */
  *  }
  *  @endcode
  */
+#define PowerCC26XX_JTAG_PD_TURNED_ON 0x40
 
 /* \cond */
 #define PowerCC26XX_NUMEVENTS 6 /* Number of events supported */

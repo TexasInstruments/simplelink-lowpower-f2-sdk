@@ -30,11 +30,10 @@ endmacro()
 
 ####################################################################################
 
-include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM4Targets.cmake")
+
+
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM33FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartySpiffsM33FTargets.cmake")
 
 check_required_components(ThirdPartySpiffs)

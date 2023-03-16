@@ -130,13 +130,6 @@ Hwi.excHandlerFunc = "Main_excHandler";
  */
 Hwi.numInterrupts = 54;
 
-/*
- * Starting address to place the interrupt vector table.
- * Note: This is currently placed in RAM to allow for interrupts to be configured at runtime.
- */
-/* Put interrupt vector at start of RAM so interrupts can be configured at runtime */
-Hwi.vectorTableAddress = system.utils.bigInt("020000000", 16);
-
 /* ================ Idle configuration ================ */
 const Idle       = scripting.addModule("/ti/sysbios/knl/Idle");
 const powerIdle  = Idle.addInstance();

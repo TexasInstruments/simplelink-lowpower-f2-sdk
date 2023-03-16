@@ -1220,8 +1220,7 @@ IssueFsmCommand(tFlashStateCommandsType eCommand)
     ASSERT(
         eCommand == FAPI_ERASE_SECTOR    || eCommand == FAPI_ERASE_BANK ||
         eCommand == FAPI_PROGRAM_FOURWORD || eCommand == FAPI_CLEAR_STATUS ||
-        eCommand == FAPI_PROGRAM_ONEWORD  || eCommand == FAPI_PROGRAM_TWOWORD ||
-        eCommand == FAPI_READVERIFY );
+        eCommand == FAPI_PROGRAM_ONEWORD  || eCommand == FAPI_PROGRAM_TWOWORD );
 
     // write to NW COMMAND Type register
     HWREG(NVMNW_BASE + NVMNW_O_CMDTYPE) = eCommand;

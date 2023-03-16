@@ -40,7 +40,7 @@
 #include <ti/drivers/trng/TRNGCC26XX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h> /* __tfm_secure_gateway_attributes__ */
 #include <psa_manifest/crypto_sp.h>                               /* Auto-generated header */

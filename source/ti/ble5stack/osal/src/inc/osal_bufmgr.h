@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2008-2022, Texas Instruments Incorporated
+ Copyright (c) 2008-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,8 @@ extern "C"
 /*********************************************************************
  * TYPEDEFS
  */
-
+// pre release buffer callback function type
+typedef void (*bm_notify_t)(void);
 
 /*********************************************************************
  * VARIABLES
@@ -113,6 +114,10 @@ extern void *osal_bm_adjust_tail( void *payload_ptr, int16 size );
  */
 extern void osal_bm_free( void *payload_ptr );
 
+/*
+ * Register pre release buffer callback.
+ */
+extern void osal_bm_reg_callback(bm_notify_t pCBack);
 /*********************************************************************
 *********************************************************************/
 

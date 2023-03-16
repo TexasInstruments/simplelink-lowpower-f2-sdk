@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,8 @@
 /* temporary until limits.h is restored, TIRTOS-1315 */
 #define SEM_VALUE_MAX 65535
 
-typedef struct {
+typedef struct
+{
     Semaphore_Struct sem;
 } sem_obj;
 
@@ -59,7 +60,7 @@ typedef struct {
  */
 int sem_destroy(sem_t *semaphore)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     Semaphore_destruct(&(obj->sem));
     return (0);
@@ -71,9 +72,9 @@ int sem_destroy(sem_t *semaphore)
 int sem_getvalue(sem_t *semaphore, int *value)
 {
     int count;
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
-    count = Semaphore_getCount(Semaphore_handle(&(obj->sem)));
+    count  = Semaphore_getCount(Semaphore_handle(&(obj->sem)));
     *value = count;
     return (0);
 }
@@ -84,12 +85,13 @@ int sem_getvalue(sem_t *semaphore, int *value)
 int sem_init(sem_t *semaphore, int pshared, unsigned value)
 {
     int count;
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     /* object size validation */
     Assert_isTrue(sizeof(sem_obj) <= sizeof(sem_t), NULL);
 
-    if (value > SEM_VALUE_MAX) {
+    if (value > SEM_VALUE_MAX)
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -106,7 +108,7 @@ int sem_init(sem_t *semaphore, int pshared, unsigned value)
  */
 int sem_post(sem_t *semaphore)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     Semaphore_post(Semaphore_handle(&(obj->sem)));
     return (0);
@@ -119,21 +121,24 @@ int sem_timedwait(sem_t *semaphore, const struct timespec *abstime)
 {
     Bool retVal;
     UInt32 timeout;
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     /* don't bother checking the time if the semaphore is available */
-    if (Semaphore_pend(Semaphore_handle(&(obj->sem)), BIOS_NO_WAIT)) {
+    if (Semaphore_pend(Semaphore_handle(&(obj->sem)), BIOS_NO_WAIT))
+    {
         return (0);
     }
 
-    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     retVal = Semaphore_pend(Semaphore_handle(&(obj->sem)), timeout);
 
-    if (!retVal) {
+    if (!retVal)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
@@ -147,11 +152,12 @@ int sem_timedwait(sem_t *semaphore, const struct timespec *abstime)
 int sem_trywait(sem_t *semaphore)
 {
     Bool retVal;
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     retVal = Semaphore_pend(Semaphore_handle(&(obj->sem)), 0);
 
-    if (!retVal) {
+    if (!retVal)
+    {
         errno = EAGAIN;
         return (-1);
     }
@@ -164,7 +170,7 @@ int sem_trywait(sem_t *semaphore)
  */
 int sem_wait(sem_t *semaphore)
 {
-    sem_obj *obj = (sem_obj*)(&semaphore->sysbios);
+    sem_obj *obj = (sem_obj *)(&semaphore->sysbios);
 
     Semaphore_pend(Semaphore_handle(&(obj->sem)), BIOS_WAIT_FOREVER);
     return (0);

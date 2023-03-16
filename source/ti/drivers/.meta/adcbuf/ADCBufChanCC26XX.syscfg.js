@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -92,7 +92,7 @@ function pinmuxRequirements(inst)
         hidden: true,
         displayName: "ADC Peripheral",
         interfaceName: "ADC",
-        canShareWith: "ADCBuf",
+        canShareWith: "ADC",
         resources: [
             {
                 name: "adcPin",

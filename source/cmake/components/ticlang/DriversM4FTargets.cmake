@@ -56,7 +56,7 @@ add_library(Drivers::drivers_cc13x2 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc13x2 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc13x2;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc13x2;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::drivers_cc26x2
@@ -64,7 +64,7 @@ add_library(Drivers::drivers_cc26x2 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc26x2 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc26x2;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc26x2;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::drivers_cc13x2x7
@@ -72,7 +72,7 @@ add_library(Drivers::drivers_cc13x2x7 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc13x2x7 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc13x2x7;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc13x2x7;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::drivers_cc26x2x7
@@ -80,7 +80,7 @@ add_library(Drivers::drivers_cc26x2x7 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc26x2x7 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc26x2x7;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc26x2x7;TOOLCHAIN_ticlang_m4f"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
@@ -116,8 +116,24 @@ but not all the files it references.
 endforeach()
 unset(_IMPORT_CHECK_TARGETS)
 
-# This file does not depend on other imported targets which have
-# been exported from the same project but in a separate export set.
+# Make sure the targets which have been exported in some other
+# export set exist.
+unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
+foreach(_target "Tirtos7Generic::tirtos7" )
+  if(NOT TARGET "${_target}" )
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
+  endif()
+endforeach()
+
+if(DEFINED ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
+  if(CMAKE_FIND_PACKAGE_NAME)
+    set( ${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    set( ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "The following imported targets are referenced, but are missing: ${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets}")
+  else()
+    message(FATAL_ERROR "The following imported targets are referenced, but are missing: ${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets}")
+  endif()
+endif()
+unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)

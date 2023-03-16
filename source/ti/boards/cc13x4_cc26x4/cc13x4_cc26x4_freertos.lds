@@ -48,7 +48,8 @@ MEMORY
      * ARM memory map can be found here:
      * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
      */
-    LOG_DATA (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
+    LOG_DATA     (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
+    LOG_PTR      (R) : ORIGIN = 0x94000008, LENGTH = 0x40000
 }
 
 REGION_ALIAS("REGION_TEXT", FLASH);
@@ -69,11 +70,8 @@ SECTIONS {
         KEEP (*(.resetVecs))
     } > REGION_TEXT
 
-    PROVIDE (_vtable_base_address =
-        DEFINED(_vtable_base_address) ? _vtable_base_address : 0x20000000);
-
-    .vtable (_vtable_base_address) (NOLOAD) : {
-        KEEP (*(.ramVecs))
+    .ramVecs (NOLOAD) : ALIGN(256) {
+        KEEP (*(.ramVecs)) /* Section from interrupt.c (driverlib) */
     } > REGION_DATA
 
     /*
@@ -261,6 +259,9 @@ SECTIONS {
     .log_data (COPY) : {
         KEEP (*(.log_data))
     } > REGION_LOG
+    .log_ptr (COPY) : {
+        KEEP (*(.log_ptr*))
+    } > LOG_PTR
 }
 
 ENTRY(resetISR)

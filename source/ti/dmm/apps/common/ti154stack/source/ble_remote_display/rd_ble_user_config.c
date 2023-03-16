@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,9 @@
 #include <ti/drivers/TRNG.h>
 
 #include <driverlib/pka.h>
+#if !defined(DeviceFamily_CC13X4)
 #include <driverlib/rf_bt5_coex.h>
+#endif // !defined(DeviceFamily_CC13X4)
 
 #ifdef DMM_CENTRAL
 #include "central_display.h"
@@ -184,10 +186,12 @@ antennaIOEntry_t antennaTbl[ANTENNA_TABLE_SIZE] = {
                                BV(29),         // id 4, A2.2
                                BV(30)};        // id 5  A2.3
 
+#ifdef RTLS_CTE
 // Antenna properties passes to the stack
 cteAntProp_t  appCTEAntProp = {ANTENNA_IO_MASK,
                                ANTENNA_TABLE_SIZE,
                                antennaTbl};
+#endif // RTLS_CTE
 
 ECCParams_CurveParams eccParams_NISTP256 = {
     .curveType      = ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3,
@@ -353,15 +357,24 @@ const boardConfig_t boardConfig =
   .rfRegTblCoded = (regOverride_t*)pOverrides_bleCoded,
 #endif // PHY_2MBPS_CFG | PHY_LR_CFG
   .txPwrTbl      = &appTxPwrTbl,
-#if defined(CC13X2P)
+  /* The define EM_CC1354P10_1_LP is needed since it is High PA device for
+     other stacks (not for BLE) and thus needed to be defined */
+#if defined(CC13X2P) || defined(EM_CC1354P10_1_LP)
 #if defined(CC13X2P_2_LAUNCHXL)
   .txPwrBackoffTbl = &appTxPwrBackoffTbl,
 #else
   .txPwrBackoffTbl = NULL,
 #endif // defined(CC13X2P_2_LAUNCHXL)
+/* The define EM_CC1354P10_1_LP is needed since it is High PA device for
+   other stacks (not for BLE) and thus needed to be defined */
+#if defined(EM_CC1354P10_1_LP)
+  .rfRegOverrideTxStdTblptr  = NULL,
+  .rfRegOverrideTx20TblPtr   = NULL,
+#else
   .rfRegOverrideTxStdTblptr  = (regOverride_t*)pOverrides_bleTxStd,   // Default PA
   .rfRegOverrideTx20TblPtr   = (regOverride_t*)pOverrides_bleTx20   ,// High power PA
-#endif //CC13X2P
+#endif // EM_CC1354P10_1_LP
+#endif // defined(CC13X2P) || defined(EM_CC1354P10_1_LP)
 #if defined(RTLS_CTE)
   .rfRegOverrideCtePtr = (regOverride_t*)(pOverrides_bleCommon + BLE_STACK_OVERRIDES_OFFSET + CTE_OVERRIDES_OFFSET),
   .cteAntennaPropPtr   = &appCTEAntProp,

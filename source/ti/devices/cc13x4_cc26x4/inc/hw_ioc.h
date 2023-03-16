@@ -428,14 +428,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -452,10 +452,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -515,10 +515,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -535,14 +535,14 @@
 #define IOC_IOCFG0_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG0_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG0_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG0_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG0_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG0_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG0_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG0_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG0_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG0_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG0_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG0_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG0_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG0_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG0_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG0_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG0_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG0_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG0_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG0_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG0_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG0_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -559,10 +559,10 @@
 #define IOC_IOCFG0_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG0_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG0_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG0_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG0_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG0_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG0_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG0_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG0_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG0_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG0_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG0_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG0_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -582,10 +582,10 @@
 #define IOC_IOCFG0_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG0_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG0_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG0_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG0_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG0_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG0_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG0_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG0_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG0_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG0_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG0_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG0_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG0_PORT_ID_GPIO                                     0x00000000
@@ -833,14 +833,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -857,10 +857,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -920,10 +920,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -940,14 +940,14 @@
 #define IOC_IOCFG1_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG1_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG1_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG1_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG1_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG1_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG1_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG1_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG1_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG1_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG1_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG1_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG1_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG1_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG1_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG1_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG1_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG1_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG1_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG1_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG1_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG1_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -964,10 +964,10 @@
 #define IOC_IOCFG1_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG1_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG1_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG1_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG1_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG1_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG1_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG1_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG1_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG1_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG1_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG1_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG1_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -987,10 +987,10 @@
 #define IOC_IOCFG1_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG1_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG1_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG1_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG1_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG1_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG1_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG1_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG1_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG1_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG1_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG1_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG1_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG1_PORT_ID_GPIO                                     0x00000000
@@ -1238,14 +1238,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -1262,10 +1262,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -1325,10 +1325,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -1345,14 +1345,14 @@
 #define IOC_IOCFG2_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG2_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG2_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG2_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG2_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG2_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG2_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG2_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG2_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG2_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG2_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG2_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG2_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG2_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG2_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG2_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG2_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG2_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG2_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG2_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG2_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG2_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -1369,10 +1369,10 @@
 #define IOC_IOCFG2_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG2_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG2_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG2_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG2_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG2_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG2_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG2_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG2_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG2_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG2_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG2_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG2_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -1392,10 +1392,10 @@
 #define IOC_IOCFG2_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG2_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG2_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG2_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG2_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG2_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG2_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG2_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG2_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG2_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG2_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG2_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG2_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG2_PORT_ID_GPIO                                     0x00000000
@@ -1643,14 +1643,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -1667,10 +1667,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -1730,10 +1730,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -1750,14 +1750,14 @@
 #define IOC_IOCFG3_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG3_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG3_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG3_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG3_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG3_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG3_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG3_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG3_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG3_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG3_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG3_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG3_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG3_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG3_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG3_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG3_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG3_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG3_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG3_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG3_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG3_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -1774,10 +1774,10 @@
 #define IOC_IOCFG3_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG3_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG3_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG3_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG3_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG3_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG3_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG3_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG3_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG3_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG3_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG3_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG3_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -1797,10 +1797,10 @@
 #define IOC_IOCFG3_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG3_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG3_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG3_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG3_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG3_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG3_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG3_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG3_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG3_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG3_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG3_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG3_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG3_PORT_ID_GPIO                                     0x00000000
@@ -2048,14 +2048,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -2072,10 +2072,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -2135,10 +2135,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -2155,14 +2155,14 @@
 #define IOC_IOCFG4_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG4_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG4_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG4_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG4_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG4_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG4_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG4_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG4_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG4_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG4_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG4_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG4_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG4_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG4_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG4_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG4_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG4_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG4_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG4_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG4_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG4_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -2179,10 +2179,10 @@
 #define IOC_IOCFG4_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG4_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG4_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG4_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG4_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG4_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG4_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG4_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG4_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG4_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG4_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG4_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG4_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -2202,10 +2202,10 @@
 #define IOC_IOCFG4_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG4_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG4_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG4_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG4_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG4_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG4_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG4_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG4_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG4_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG4_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG4_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG4_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG4_PORT_ID_GPIO                                     0x00000000
@@ -2453,14 +2453,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -2477,10 +2477,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -2540,10 +2540,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -2560,14 +2560,14 @@
 #define IOC_IOCFG5_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG5_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG5_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG5_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG5_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG5_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG5_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG5_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG5_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG5_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG5_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG5_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG5_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG5_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG5_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG5_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG5_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG5_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG5_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG5_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG5_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG5_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -2584,10 +2584,10 @@
 #define IOC_IOCFG5_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG5_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG5_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG5_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG5_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG5_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG5_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG5_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG5_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG5_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG5_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG5_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG5_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -2607,10 +2607,10 @@
 #define IOC_IOCFG5_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG5_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG5_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG5_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG5_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG5_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG5_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG5_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG5_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG5_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG5_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG5_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG5_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG5_PORT_ID_GPIO                                     0x00000000
@@ -2858,14 +2858,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -2882,10 +2882,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -2945,10 +2945,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -2965,14 +2965,14 @@
 #define IOC_IOCFG6_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG6_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG6_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG6_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG6_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG6_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG6_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG6_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG6_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG6_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG6_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG6_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG6_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG6_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG6_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG6_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG6_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG6_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG6_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG6_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG6_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG6_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -2989,10 +2989,10 @@
 #define IOC_IOCFG6_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG6_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG6_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG6_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG6_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG6_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG6_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG6_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG6_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG6_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG6_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG6_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG6_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3012,10 +3012,10 @@
 #define IOC_IOCFG6_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG6_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG6_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG6_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG6_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG6_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG6_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG6_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG6_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG6_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG6_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG6_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG6_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG6_PORT_ID_GPIO                                     0x00000000
@@ -3263,14 +3263,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -3287,10 +3287,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -3350,10 +3350,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -3370,14 +3370,14 @@
 #define IOC_IOCFG7_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG7_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG7_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG7_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG7_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG7_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG7_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG7_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG7_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG7_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG7_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG7_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG7_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG7_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG7_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG7_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG7_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG7_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG7_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG7_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG7_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG7_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -3394,10 +3394,10 @@
 #define IOC_IOCFG7_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG7_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG7_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG7_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG7_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG7_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG7_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG7_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG7_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG7_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG7_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG7_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG7_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3417,10 +3417,10 @@
 #define IOC_IOCFG7_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG7_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG7_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG7_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG7_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG7_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG7_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG7_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG7_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG7_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG7_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG7_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG7_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG7_PORT_ID_GPIO                                     0x00000000
@@ -3668,14 +3668,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -3692,10 +3692,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -3755,10 +3755,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -3775,14 +3775,14 @@
 #define IOC_IOCFG8_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG8_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG8_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG8_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG8_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG8_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG8_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG8_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG8_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG8_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG8_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG8_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG8_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG8_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG8_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG8_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG8_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG8_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG8_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG8_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG8_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG8_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -3799,10 +3799,10 @@
 #define IOC_IOCFG8_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG8_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG8_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG8_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG8_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG8_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG8_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG8_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG8_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG8_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG8_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG8_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG8_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -3822,10 +3822,10 @@
 #define IOC_IOCFG8_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG8_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG8_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG8_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG8_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG8_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG8_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG8_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG8_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG8_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG8_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG8_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG8_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG8_PORT_ID_GPIO                                     0x00000000
@@ -4073,14 +4073,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -4097,10 +4097,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4160,10 +4160,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -4180,14 +4180,14 @@
 #define IOC_IOCFG9_PORT_ID_UART2_CTS                                0x00000043
 #define IOC_IOCFG9_PORT_ID_UART2_TX                                 0x00000042
 #define IOC_IOCFG9_PORT_ID_UART2_RX                                 0x00000041
-#define IOC_IOCFG9_PORT_ID_SSI3_CLK                                 0x00000040
-#define IOC_IOCFG9_PORT_ID_SSI3_FSS                                 0x0000003F
-#define IOC_IOCFG9_PORT_ID_SSI3_TX                                  0x0000003E
-#define IOC_IOCFG9_PORT_ID_SSI3_RX                                  0x0000003D
-#define IOC_IOCFG9_PORT_ID_SSI2_CLK                                 0x0000003C
-#define IOC_IOCFG9_PORT_ID_SSI2_FSS                                 0x0000003B
-#define IOC_IOCFG9_PORT_ID_SSI2_TX                                  0x0000003A
-#define IOC_IOCFG9_PORT_ID_SSI2_RX                                  0x00000039
+#define IOC_IOCFG9_PORT_ID_SPI3_CLK                                 0x00000040
+#define IOC_IOCFG9_PORT_ID_SPI3_CS                                  0x0000003F
+#define IOC_IOCFG9_PORT_ID_SPI3_TX                                  0x0000003E
+#define IOC_IOCFG9_PORT_ID_SPI3_RX                                  0x0000003D
+#define IOC_IOCFG9_PORT_ID_SPI2_CLK                                 0x0000003C
+#define IOC_IOCFG9_PORT_ID_SPI2_CS                                  0x0000003B
+#define IOC_IOCFG9_PORT_ID_SPI2_TX                                  0x0000003A
+#define IOC_IOCFG9_PORT_ID_SPI2_RX                                  0x00000039
 #define IOC_IOCFG9_PORT_ID_RFC_SMI_CL_IN                            0x00000038
 #define IOC_IOCFG9_PORT_ID_RFC_SMI_CL_OUT                           0x00000037
 #define IOC_IOCFG9_PORT_ID_RFC_SMI_DL_IN                            0x00000036
@@ -4204,10 +4204,10 @@
 #define IOC_IOCFG9_PORT_ID_I2S_WCLK                                 0x00000027
 #define IOC_IOCFG9_PORT_ID_I2S_AD1                                  0x00000026
 #define IOC_IOCFG9_PORT_ID_I2S_AD0                                  0x00000025
-#define IOC_IOCFG9_PORT_ID_SSI1_CLK                                 0x00000024
-#define IOC_IOCFG9_PORT_ID_SSI1_FSS                                 0x00000023
-#define IOC_IOCFG9_PORT_ID_SSI1_TX                                  0x00000022
-#define IOC_IOCFG9_PORT_ID_SSI1_RX                                  0x00000021
+#define IOC_IOCFG9_PORT_ID_SPI1_CLK                                 0x00000024
+#define IOC_IOCFG9_PORT_ID_SPI1_CS                                  0x00000023
+#define IOC_IOCFG9_PORT_ID_SPI1_TX                                  0x00000022
+#define IOC_IOCFG9_PORT_ID_SPI1_RX                                  0x00000021
 #define IOC_IOCFG9_PORT_ID_CPU_SWV                                  0x00000020
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT7                              0x0000001E
 #define IOC_IOCFG9_PORT_ID_PORT_EVENT6                              0x0000001D
@@ -4227,10 +4227,10 @@
 #define IOC_IOCFG9_PORT_ID_UART0_RX                                 0x0000000F
 #define IOC_IOCFG9_PORT_ID_I2C0_MSSCL                               0x0000000E
 #define IOC_IOCFG9_PORT_ID_I2C0_MSSDA                               0x0000000D
-#define IOC_IOCFG9_PORT_ID_SSI0_CLK                                 0x0000000C
-#define IOC_IOCFG9_PORT_ID_SSI0_FSS                                 0x0000000B
-#define IOC_IOCFG9_PORT_ID_SSI0_TX                                  0x0000000A
-#define IOC_IOCFG9_PORT_ID_SSI0_RX                                  0x00000009
+#define IOC_IOCFG9_PORT_ID_SPI0_CLK                                 0x0000000C
+#define IOC_IOCFG9_PORT_ID_SPI0_CS                                  0x0000000B
+#define IOC_IOCFG9_PORT_ID_SPI0_TX                                  0x0000000A
+#define IOC_IOCFG9_PORT_ID_SPI0_RX                                  0x00000009
 #define IOC_IOCFG9_PORT_ID_AUX_IO                                   0x00000008
 #define IOC_IOCFG9_PORT_ID_AON_CLK32K                               0x00000007
 #define IOC_IOCFG9_PORT_ID_GPIO                                     0x00000000
@@ -4478,14 +4478,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -4502,10 +4502,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4565,10 +4565,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -4585,14 +4585,14 @@
 #define IOC_IOCFG10_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG10_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG10_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG10_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG10_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG10_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG10_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG10_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG10_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG10_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG10_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG10_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG10_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG10_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG10_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG10_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG10_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG10_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG10_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG10_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG10_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG10_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -4609,10 +4609,10 @@
 #define IOC_IOCFG10_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG10_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG10_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG10_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG10_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG10_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG10_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG10_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG10_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG10_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG10_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG10_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG10_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -4632,10 +4632,10 @@
 #define IOC_IOCFG10_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG10_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG10_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG10_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG10_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG10_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG10_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG10_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG10_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG10_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG10_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG10_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG10_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG10_PORT_ID_GPIO                                    0x00000000
@@ -4883,14 +4883,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -4907,10 +4907,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -4970,10 +4970,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -4990,14 +4990,14 @@
 #define IOC_IOCFG11_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG11_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG11_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG11_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG11_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG11_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG11_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG11_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG11_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG11_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG11_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG11_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG11_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG11_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG11_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG11_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG11_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG11_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG11_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG11_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG11_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG11_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -5014,10 +5014,10 @@
 #define IOC_IOCFG11_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG11_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG11_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG11_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG11_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG11_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG11_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG11_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG11_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG11_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG11_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG11_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG11_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5037,10 +5037,10 @@
 #define IOC_IOCFG11_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG11_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG11_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG11_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG11_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG11_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG11_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG11_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG11_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG11_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG11_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG11_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG11_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG11_PORT_ID_GPIO                                    0x00000000
@@ -5288,14 +5288,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -5312,10 +5312,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -5375,10 +5375,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -5395,14 +5395,14 @@
 #define IOC_IOCFG12_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG12_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG12_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG12_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG12_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG12_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG12_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG12_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG12_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG12_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG12_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG12_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG12_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG12_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG12_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG12_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG12_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG12_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG12_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG12_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG12_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG12_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -5419,10 +5419,10 @@
 #define IOC_IOCFG12_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG12_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG12_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG12_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG12_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG12_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG12_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG12_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG12_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG12_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG12_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG12_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG12_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5442,10 +5442,10 @@
 #define IOC_IOCFG12_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG12_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG12_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG12_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG12_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG12_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG12_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG12_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG12_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG12_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG12_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG12_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG12_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG12_PORT_ID_GPIO                                    0x00000000
@@ -5693,14 +5693,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -5717,10 +5717,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -5780,10 +5780,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -5800,14 +5800,14 @@
 #define IOC_IOCFG13_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG13_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG13_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG13_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG13_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG13_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG13_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG13_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG13_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG13_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG13_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG13_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG13_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG13_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG13_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG13_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG13_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG13_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG13_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG13_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG13_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG13_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -5824,10 +5824,10 @@
 #define IOC_IOCFG13_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG13_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG13_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG13_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG13_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG13_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG13_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG13_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG13_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG13_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG13_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG13_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG13_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -5847,10 +5847,10 @@
 #define IOC_IOCFG13_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG13_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG13_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG13_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG13_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG13_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG13_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG13_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG13_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG13_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG13_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG13_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG13_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG13_PORT_ID_GPIO                                    0x00000000
@@ -6098,14 +6098,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -6122,10 +6122,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -6185,10 +6185,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -6205,14 +6205,14 @@
 #define IOC_IOCFG14_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG14_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG14_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG14_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG14_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG14_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG14_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG14_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG14_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG14_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG14_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG14_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG14_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG14_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG14_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG14_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG14_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG14_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG14_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG14_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG14_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG14_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -6229,10 +6229,10 @@
 #define IOC_IOCFG14_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG14_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG14_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG14_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG14_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG14_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG14_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG14_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG14_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG14_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG14_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG14_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG14_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -6252,10 +6252,10 @@
 #define IOC_IOCFG14_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG14_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG14_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG14_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG14_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG14_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG14_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG14_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG14_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG14_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG14_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG14_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG14_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG14_PORT_ID_GPIO                                    0x00000000
@@ -6503,14 +6503,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -6527,10 +6527,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -6590,10 +6590,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -6610,14 +6610,14 @@
 #define IOC_IOCFG15_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG15_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG15_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG15_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG15_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG15_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG15_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG15_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG15_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG15_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG15_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG15_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG15_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG15_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG15_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG15_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG15_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG15_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG15_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG15_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG15_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG15_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -6634,10 +6634,10 @@
 #define IOC_IOCFG15_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG15_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG15_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG15_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG15_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG15_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG15_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG15_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG15_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG15_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG15_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG15_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG15_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -6657,10 +6657,10 @@
 #define IOC_IOCFG15_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG15_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG15_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG15_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG15_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG15_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG15_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG15_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG15_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG15_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG15_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG15_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG15_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG15_PORT_ID_GPIO                                    0x00000000
@@ -6908,14 +6908,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -6932,10 +6932,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -6995,10 +6995,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -7015,14 +7015,14 @@
 #define IOC_IOCFG16_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG16_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG16_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG16_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG16_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG16_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG16_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG16_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG16_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG16_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG16_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG16_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG16_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG16_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG16_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG16_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG16_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG16_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG16_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG16_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG16_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG16_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -7039,10 +7039,10 @@
 #define IOC_IOCFG16_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG16_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG16_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG16_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG16_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG16_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG16_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG16_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG16_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG16_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG16_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG16_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG16_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7062,10 +7062,10 @@
 #define IOC_IOCFG16_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG16_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG16_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG16_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG16_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG16_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG16_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG16_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG16_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG16_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG16_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG16_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG16_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG16_PORT_ID_GPIO                                    0x00000000
@@ -7313,14 +7313,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -7337,10 +7337,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -7400,10 +7400,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -7420,14 +7420,14 @@
 #define IOC_IOCFG17_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG17_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG17_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG17_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG17_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG17_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG17_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG17_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG17_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG17_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG17_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG17_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG17_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG17_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG17_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG17_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG17_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG17_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG17_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG17_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG17_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG17_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -7444,10 +7444,10 @@
 #define IOC_IOCFG17_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG17_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG17_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG17_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG17_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG17_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG17_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG17_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG17_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG17_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG17_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG17_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG17_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7467,10 +7467,10 @@
 #define IOC_IOCFG17_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG17_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG17_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG17_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG17_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG17_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG17_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG17_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG17_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG17_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG17_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG17_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG17_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG17_PORT_ID_GPIO                                    0x00000000
@@ -7718,14 +7718,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -7742,10 +7742,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -7805,10 +7805,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -7825,14 +7825,14 @@
 #define IOC_IOCFG18_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG18_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG18_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG18_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG18_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG18_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG18_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG18_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG18_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG18_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG18_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG18_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG18_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG18_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG18_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG18_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG18_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG18_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG18_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG18_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG18_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG18_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -7849,10 +7849,10 @@
 #define IOC_IOCFG18_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG18_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG18_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG18_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG18_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG18_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG18_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG18_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG18_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG18_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG18_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG18_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG18_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -7872,10 +7872,10 @@
 #define IOC_IOCFG18_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG18_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG18_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG18_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG18_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG18_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG18_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG18_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG18_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG18_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG18_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG18_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG18_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG18_PORT_ID_GPIO                                    0x00000000
@@ -8123,14 +8123,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -8147,10 +8147,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -8210,10 +8210,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -8230,14 +8230,14 @@
 #define IOC_IOCFG19_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG19_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG19_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG19_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG19_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG19_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG19_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG19_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG19_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG19_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG19_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG19_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG19_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG19_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG19_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG19_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG19_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG19_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG19_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG19_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG19_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG19_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -8254,10 +8254,10 @@
 #define IOC_IOCFG19_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG19_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG19_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG19_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG19_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG19_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG19_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG19_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG19_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG19_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG19_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG19_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG19_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -8277,10 +8277,10 @@
 #define IOC_IOCFG19_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG19_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG19_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG19_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG19_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG19_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG19_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG19_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG19_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG19_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG19_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG19_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG19_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG19_PORT_ID_GPIO                                    0x00000000
@@ -8528,14 +8528,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -8552,10 +8552,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -8615,10 +8615,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -8635,14 +8635,14 @@
 #define IOC_IOCFG20_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG20_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG20_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG20_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG20_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG20_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG20_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG20_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG20_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG20_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG20_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG20_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG20_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG20_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG20_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG20_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG20_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG20_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG20_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG20_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG20_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG20_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -8659,10 +8659,10 @@
 #define IOC_IOCFG20_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG20_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG20_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG20_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG20_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG20_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG20_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG20_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG20_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG20_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG20_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG20_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG20_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -8682,10 +8682,10 @@
 #define IOC_IOCFG20_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG20_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG20_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG20_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG20_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG20_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG20_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG20_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG20_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG20_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG20_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG20_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG20_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG20_PORT_ID_GPIO                                    0x00000000
@@ -8933,14 +8933,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -8957,10 +8957,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9020,10 +9020,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -9040,14 +9040,14 @@
 #define IOC_IOCFG21_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG21_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG21_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG21_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG21_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG21_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG21_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG21_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG21_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG21_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG21_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG21_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG21_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG21_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG21_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG21_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG21_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG21_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG21_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG21_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG21_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG21_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -9064,10 +9064,10 @@
 #define IOC_IOCFG21_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG21_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG21_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG21_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG21_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG21_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG21_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG21_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG21_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG21_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG21_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG21_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG21_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -9087,10 +9087,10 @@
 #define IOC_IOCFG21_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG21_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG21_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG21_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG21_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG21_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG21_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG21_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG21_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG21_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG21_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG21_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG21_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG21_PORT_ID_GPIO                                    0x00000000
@@ -9338,14 +9338,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -9362,10 +9362,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9425,10 +9425,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -9445,14 +9445,14 @@
 #define IOC_IOCFG22_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG22_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG22_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG22_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG22_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG22_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG22_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG22_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG22_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG22_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG22_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG22_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG22_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG22_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG22_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG22_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG22_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG22_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG22_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG22_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG22_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG22_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -9469,10 +9469,10 @@
 #define IOC_IOCFG22_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG22_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG22_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG22_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG22_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG22_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG22_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG22_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG22_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG22_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG22_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG22_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG22_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -9492,10 +9492,10 @@
 #define IOC_IOCFG22_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG22_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG22_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG22_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG22_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG22_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG22_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG22_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG22_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG22_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG22_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG22_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG22_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG22_PORT_ID_GPIO                                    0x00000000
@@ -9743,14 +9743,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -9767,10 +9767,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -9830,10 +9830,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -9850,14 +9850,14 @@
 #define IOC_IOCFG23_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG23_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG23_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG23_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG23_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG23_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG23_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG23_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG23_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG23_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG23_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG23_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG23_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG23_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG23_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG23_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG23_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG23_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG23_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG23_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG23_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG23_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -9874,10 +9874,10 @@
 #define IOC_IOCFG23_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG23_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG23_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG23_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG23_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG23_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG23_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG23_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG23_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG23_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG23_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG23_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG23_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -9897,10 +9897,10 @@
 #define IOC_IOCFG23_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG23_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG23_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG23_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG23_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG23_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG23_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG23_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG23_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG23_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG23_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG23_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG23_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG23_PORT_ID_GPIO                                    0x00000000
@@ -10148,14 +10148,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -10172,10 +10172,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -10235,10 +10235,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -10255,14 +10255,14 @@
 #define IOC_IOCFG24_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG24_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG24_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG24_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG24_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG24_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG24_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG24_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG24_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG24_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG24_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG24_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG24_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG24_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG24_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG24_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG24_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG24_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG24_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG24_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG24_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG24_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -10279,10 +10279,10 @@
 #define IOC_IOCFG24_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG24_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG24_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG24_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG24_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG24_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG24_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG24_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG24_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG24_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG24_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG24_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG24_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -10302,10 +10302,10 @@
 #define IOC_IOCFG24_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG24_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG24_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG24_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG24_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG24_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG24_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG24_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG24_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG24_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG24_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG24_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG24_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG24_PORT_ID_GPIO                                    0x00000000
@@ -10553,14 +10553,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -10577,10 +10577,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -10640,10 +10640,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -10660,14 +10660,14 @@
 #define IOC_IOCFG25_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG25_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG25_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG25_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG25_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG25_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG25_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG25_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG25_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG25_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG25_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG25_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG25_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG25_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG25_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG25_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG25_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG25_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG25_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG25_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG25_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG25_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -10684,10 +10684,10 @@
 #define IOC_IOCFG25_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG25_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG25_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG25_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG25_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG25_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG25_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG25_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG25_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG25_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG25_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG25_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG25_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -10707,10 +10707,10 @@
 #define IOC_IOCFG25_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG25_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG25_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG25_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG25_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG25_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG25_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG25_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG25_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG25_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG25_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG25_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG25_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG25_PORT_ID_GPIO                                    0x00000000
@@ -10958,14 +10958,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -10982,10 +10982,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11045,10 +11045,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -11065,14 +11065,14 @@
 #define IOC_IOCFG26_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG26_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG26_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG26_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG26_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG26_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG26_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG26_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG26_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG26_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG26_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG26_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG26_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG26_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG26_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG26_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG26_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG26_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG26_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG26_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG26_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG26_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -11089,10 +11089,10 @@
 #define IOC_IOCFG26_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG26_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG26_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG26_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG26_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG26_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG26_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG26_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG26_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG26_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG26_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG26_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG26_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11112,10 +11112,10 @@
 #define IOC_IOCFG26_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG26_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG26_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG26_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG26_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG26_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG26_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG26_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG26_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG26_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG26_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG26_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG26_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG26_PORT_ID_GPIO                                    0x00000000
@@ -11363,14 +11363,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -11387,10 +11387,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11450,10 +11450,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -11470,14 +11470,14 @@
 #define IOC_IOCFG27_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG27_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG27_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG27_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG27_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG27_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG27_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG27_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG27_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG27_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG27_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG27_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG27_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG27_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG27_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG27_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG27_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG27_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG27_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG27_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG27_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG27_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -11494,10 +11494,10 @@
 #define IOC_IOCFG27_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG27_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG27_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG27_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG27_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG27_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG27_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG27_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG27_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG27_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG27_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG27_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG27_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11517,10 +11517,10 @@
 #define IOC_IOCFG27_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG27_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG27_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG27_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG27_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG27_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG27_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG27_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG27_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG27_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG27_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG27_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG27_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG27_PORT_ID_GPIO                                    0x00000000
@@ -11768,14 +11768,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -11792,10 +11792,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -11855,10 +11855,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -11875,14 +11875,14 @@
 #define IOC_IOCFG28_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG28_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG28_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG28_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG28_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG28_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG28_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG28_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG28_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG28_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG28_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG28_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG28_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG28_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG28_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG28_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG28_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG28_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG28_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG28_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG28_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG28_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -11899,10 +11899,10 @@
 #define IOC_IOCFG28_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG28_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG28_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG28_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG28_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG28_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG28_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG28_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG28_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG28_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG28_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG28_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG28_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -11922,10 +11922,10 @@
 #define IOC_IOCFG28_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG28_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG28_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG28_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG28_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG28_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG28_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG28_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG28_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG28_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG28_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG28_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG28_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG28_PORT_ID_GPIO                                    0x00000000
@@ -12173,14 +12173,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -12197,10 +12197,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -12260,10 +12260,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -12280,14 +12280,14 @@
 #define IOC_IOCFG29_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG29_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG29_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG29_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG29_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG29_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG29_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG29_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG29_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG29_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG29_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG29_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG29_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG29_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG29_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG29_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG29_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG29_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG29_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG29_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG29_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG29_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -12304,10 +12304,10 @@
 #define IOC_IOCFG29_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG29_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG29_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG29_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG29_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG29_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG29_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG29_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG29_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG29_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG29_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG29_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG29_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -12327,10 +12327,10 @@
 #define IOC_IOCFG29_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG29_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG29_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG29_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG29_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG29_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG29_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG29_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG29_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG29_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG29_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG29_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG29_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG29_PORT_ID_GPIO                                    0x00000000
@@ -12578,14 +12578,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -12602,10 +12602,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -12665,10 +12665,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -12685,14 +12685,14 @@
 #define IOC_IOCFG30_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG30_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG30_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG30_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG30_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG30_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG30_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG30_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG30_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG30_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG30_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG30_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG30_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG30_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG30_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG30_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG30_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG30_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG30_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG30_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG30_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG30_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -12709,10 +12709,10 @@
 #define IOC_IOCFG30_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG30_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG30_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG30_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG30_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG30_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG30_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG30_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG30_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG30_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG30_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG30_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG30_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -12732,10 +12732,10 @@
 #define IOC_IOCFG30_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG30_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG30_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG30_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG30_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG30_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG30_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG30_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG30_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG30_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG30_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG30_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG30_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG30_PORT_ID_GPIO                                    0x00000000
@@ -12983,14 +12983,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -13007,10 +13007,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -13070,10 +13070,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AUX_IO                   AUX IO
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
@@ -13090,14 +13090,14 @@
 #define IOC_IOCFG31_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG31_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG31_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG31_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG31_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG31_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG31_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG31_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG31_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG31_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG31_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG31_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG31_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG31_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG31_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG31_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG31_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG31_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG31_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG31_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG31_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG31_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -13114,10 +13114,10 @@
 #define IOC_IOCFG31_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG31_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG31_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG31_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG31_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG31_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG31_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG31_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG31_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG31_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG31_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG31_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG31_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -13137,10 +13137,10 @@
 #define IOC_IOCFG31_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG31_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG31_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG31_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG31_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG31_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG31_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG31_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG31_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG31_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG31_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG31_PORT_ID_AUX_IO                                  0x00000008
 #define IOC_IOCFG31_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG31_PORT_ID_GPIO                                    0x00000000
@@ -13388,14 +13388,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -13412,10 +13412,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -13475,10 +13475,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG32_PORT_ID_W                                                7
@@ -13494,14 +13494,14 @@
 #define IOC_IOCFG32_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG32_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG32_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG32_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG32_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG32_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG32_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG32_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG32_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG32_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG32_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG32_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG32_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG32_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG32_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG32_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG32_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG32_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG32_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG32_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG32_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG32_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -13518,10 +13518,10 @@
 #define IOC_IOCFG32_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG32_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG32_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG32_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG32_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG32_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG32_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG32_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG32_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG32_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG32_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG32_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG32_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG32_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -13541,10 +13541,10 @@
 #define IOC_IOCFG32_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG32_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG32_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG32_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG32_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG32_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG32_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG32_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG32_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG32_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG32_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG32_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG32_PORT_ID_GPIO                                    0x00000000
 
@@ -13791,14 +13791,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -13815,10 +13815,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -13878,10 +13878,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG33_PORT_ID_W                                                7
@@ -13897,14 +13897,14 @@
 #define IOC_IOCFG33_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG33_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG33_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG33_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG33_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG33_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG33_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG33_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG33_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG33_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG33_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG33_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG33_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG33_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG33_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG33_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG33_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG33_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG33_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG33_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG33_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG33_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -13921,10 +13921,10 @@
 #define IOC_IOCFG33_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG33_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG33_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG33_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG33_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG33_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG33_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG33_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG33_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG33_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG33_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG33_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG33_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG33_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -13944,10 +13944,10 @@
 #define IOC_IOCFG33_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG33_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG33_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG33_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG33_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG33_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG33_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG33_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG33_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG33_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG33_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG33_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG33_PORT_ID_GPIO                                    0x00000000
 
@@ -14194,14 +14194,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -14218,10 +14218,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -14281,10 +14281,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG34_PORT_ID_W                                                7
@@ -14300,14 +14300,14 @@
 #define IOC_IOCFG34_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG34_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG34_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG34_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG34_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG34_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG34_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG34_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG34_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG34_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG34_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG34_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG34_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG34_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG34_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG34_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG34_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG34_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG34_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG34_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG34_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG34_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -14324,10 +14324,10 @@
 #define IOC_IOCFG34_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG34_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG34_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG34_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG34_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG34_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG34_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG34_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG34_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG34_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG34_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG34_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG34_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG34_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -14347,10 +14347,10 @@
 #define IOC_IOCFG34_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG34_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG34_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG34_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG34_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG34_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG34_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG34_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG34_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG34_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG34_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG34_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG34_PORT_ID_GPIO                                    0x00000000
 
@@ -14597,14 +14597,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -14621,10 +14621,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -14684,10 +14684,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG35_PORT_ID_W                                                7
@@ -14703,14 +14703,14 @@
 #define IOC_IOCFG35_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG35_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG35_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG35_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG35_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG35_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG35_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG35_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG35_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG35_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG35_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG35_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG35_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG35_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG35_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG35_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG35_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG35_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG35_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG35_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG35_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG35_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -14727,10 +14727,10 @@
 #define IOC_IOCFG35_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG35_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG35_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG35_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG35_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG35_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG35_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG35_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG35_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG35_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG35_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG35_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG35_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG35_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -14750,10 +14750,10 @@
 #define IOC_IOCFG35_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG35_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG35_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG35_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG35_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG35_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG35_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG35_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG35_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG35_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG35_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG35_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG35_PORT_ID_GPIO                                    0x00000000
 
@@ -15000,14 +15000,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -15024,10 +15024,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -15087,10 +15087,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG36_PORT_ID_W                                                7
@@ -15106,14 +15106,14 @@
 #define IOC_IOCFG36_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG36_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG36_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG36_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG36_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG36_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG36_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG36_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG36_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG36_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG36_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG36_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG36_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG36_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG36_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG36_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG36_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG36_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG36_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG36_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG36_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG36_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -15130,10 +15130,10 @@
 #define IOC_IOCFG36_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG36_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG36_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG36_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG36_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG36_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG36_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG36_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG36_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG36_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG36_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG36_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG36_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG36_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -15153,10 +15153,10 @@
 #define IOC_IOCFG36_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG36_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG36_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG36_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG36_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG36_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG36_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG36_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG36_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG36_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG36_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG36_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG36_PORT_ID_GPIO                                    0x00000000
 
@@ -15403,14 +15403,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -15427,10 +15427,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -15490,10 +15490,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG37_PORT_ID_W                                                7
@@ -15509,14 +15509,14 @@
 #define IOC_IOCFG37_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG37_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG37_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG37_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG37_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG37_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG37_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG37_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG37_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG37_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG37_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG37_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG37_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG37_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG37_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG37_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG37_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG37_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG37_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG37_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG37_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG37_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -15533,10 +15533,10 @@
 #define IOC_IOCFG37_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG37_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG37_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG37_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG37_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG37_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG37_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG37_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG37_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG37_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG37_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG37_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG37_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG37_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -15556,10 +15556,10 @@
 #define IOC_IOCFG37_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG37_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG37_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG37_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG37_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG37_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG37_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG37_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG37_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG37_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG37_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG37_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG37_PORT_ID_GPIO                                    0x00000000
 
@@ -15806,14 +15806,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -15830,10 +15830,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -15893,10 +15893,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG38_PORT_ID_W                                                7
@@ -15912,14 +15912,14 @@
 #define IOC_IOCFG38_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG38_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG38_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG38_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG38_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG38_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG38_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG38_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG38_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG38_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG38_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG38_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG38_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG38_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG38_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG38_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG38_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG38_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG38_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG38_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG38_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG38_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -15936,10 +15936,10 @@
 #define IOC_IOCFG38_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG38_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG38_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG38_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG38_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG38_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG38_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG38_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG38_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG38_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG38_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG38_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG38_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG38_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -15959,10 +15959,10 @@
 #define IOC_IOCFG38_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG38_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG38_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG38_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG38_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG38_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG38_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG38_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG38_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG38_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG38_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG38_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG38_PORT_ID_GPIO                                    0x00000000
 
@@ -16209,14 +16209,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -16233,10 +16233,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -16296,10 +16296,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG39_PORT_ID_W                                                7
@@ -16315,14 +16315,14 @@
 #define IOC_IOCFG39_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG39_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG39_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG39_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG39_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG39_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG39_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG39_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG39_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG39_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG39_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG39_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG39_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG39_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG39_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG39_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG39_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG39_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG39_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG39_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG39_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG39_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -16339,10 +16339,10 @@
 #define IOC_IOCFG39_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG39_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG39_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG39_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG39_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG39_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG39_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG39_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG39_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG39_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG39_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG39_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG39_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG39_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -16362,10 +16362,10 @@
 #define IOC_IOCFG39_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG39_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG39_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG39_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG39_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG39_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG39_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG39_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG39_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG39_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG39_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG39_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG39_PORT_ID_GPIO                                    0x00000000
 
@@ -16612,14 +16612,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -16636,10 +16636,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -16699,10 +16699,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG40_PORT_ID_W                                                7
@@ -16718,14 +16718,14 @@
 #define IOC_IOCFG40_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG40_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG40_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG40_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG40_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG40_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG40_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG40_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG40_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG40_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG40_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG40_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG40_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG40_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG40_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG40_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG40_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG40_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG40_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG40_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG40_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG40_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -16742,10 +16742,10 @@
 #define IOC_IOCFG40_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG40_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG40_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG40_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG40_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG40_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG40_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG40_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG40_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG40_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG40_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG40_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG40_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG40_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -16765,10 +16765,10 @@
 #define IOC_IOCFG40_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG40_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG40_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG40_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG40_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG40_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG40_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG40_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG40_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG40_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG40_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG40_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG40_PORT_ID_GPIO                                    0x00000000
 
@@ -17015,14 +17015,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -17039,10 +17039,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -17102,10 +17102,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG41_PORT_ID_W                                                7
@@ -17121,14 +17121,14 @@
 #define IOC_IOCFG41_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG41_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG41_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG41_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG41_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG41_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG41_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG41_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG41_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG41_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG41_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG41_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG41_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG41_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG41_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG41_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG41_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG41_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG41_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG41_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG41_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG41_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -17145,10 +17145,10 @@
 #define IOC_IOCFG41_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG41_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG41_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG41_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG41_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG41_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG41_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG41_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG41_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG41_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG41_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG41_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG41_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG41_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -17168,10 +17168,10 @@
 #define IOC_IOCFG41_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG41_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG41_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG41_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG41_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG41_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG41_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG41_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG41_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG41_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG41_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG41_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG41_PORT_ID_GPIO                                    0x00000000
 
@@ -17418,14 +17418,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -17442,10 +17442,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -17505,10 +17505,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG42_PORT_ID_W                                                7
@@ -17524,14 +17524,14 @@
 #define IOC_IOCFG42_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG42_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG42_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG42_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG42_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG42_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG42_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG42_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG42_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG42_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG42_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG42_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG42_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG42_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG42_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG42_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG42_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG42_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG42_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG42_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG42_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG42_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -17548,10 +17548,10 @@
 #define IOC_IOCFG42_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG42_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG42_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG42_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG42_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG42_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG42_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG42_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG42_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG42_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG42_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG42_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG42_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG42_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -17571,10 +17571,10 @@
 #define IOC_IOCFG42_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG42_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG42_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG42_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG42_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG42_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG42_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG42_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG42_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG42_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG42_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG42_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG42_PORT_ID_GPIO                                    0x00000000
 
@@ -17811,14 +17811,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -17835,10 +17835,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -17898,10 +17898,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG43_PORT_ID_W                                                7
@@ -17917,14 +17917,14 @@
 #define IOC_IOCFG43_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG43_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG43_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG43_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG43_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG43_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG43_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG43_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG43_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG43_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG43_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG43_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG43_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG43_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG43_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG43_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG43_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG43_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG43_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG43_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG43_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG43_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -17941,10 +17941,10 @@
 #define IOC_IOCFG43_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG43_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG43_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG43_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG43_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG43_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG43_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG43_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG43_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG43_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG43_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG43_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG43_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG43_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -17964,10 +17964,10 @@
 #define IOC_IOCFG43_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG43_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG43_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG43_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG43_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG43_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG43_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG43_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG43_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG43_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG43_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG43_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG43_PORT_ID_GPIO                                    0x00000000
 
@@ -18214,14 +18214,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -18238,10 +18238,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -18301,10 +18301,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG44_PORT_ID_W                                                7
@@ -18320,14 +18320,14 @@
 #define IOC_IOCFG44_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG44_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG44_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG44_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG44_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG44_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG44_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG44_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG44_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG44_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG44_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG44_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG44_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG44_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG44_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG44_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG44_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG44_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG44_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG44_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG44_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG44_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -18344,10 +18344,10 @@
 #define IOC_IOCFG44_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG44_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG44_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG44_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG44_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG44_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG44_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG44_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG44_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG44_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG44_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG44_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG44_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG44_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -18367,10 +18367,10 @@
 #define IOC_IOCFG44_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG44_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG44_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG44_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG44_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG44_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG44_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG44_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG44_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG44_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG44_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG44_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG44_PORT_ID_GPIO                                    0x00000000
 
@@ -18617,14 +18617,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -18641,10 +18641,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -18704,10 +18704,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG45_PORT_ID_W                                                7
@@ -18723,14 +18723,14 @@
 #define IOC_IOCFG45_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG45_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG45_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG45_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG45_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG45_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG45_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG45_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG45_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG45_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG45_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG45_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG45_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG45_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG45_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG45_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG45_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG45_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG45_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG45_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG45_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG45_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -18747,10 +18747,10 @@
 #define IOC_IOCFG45_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG45_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG45_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG45_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG45_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG45_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG45_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG45_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG45_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG45_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG45_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG45_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG45_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG45_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -18770,10 +18770,10 @@
 #define IOC_IOCFG45_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG45_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG45_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG45_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG45_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG45_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG45_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG45_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG45_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG45_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG45_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG45_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG45_PORT_ID_GPIO                                    0x00000000
 
@@ -19020,14 +19020,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -19044,10 +19044,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -19107,10 +19107,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG46_PORT_ID_W                                                7
@@ -19126,14 +19126,14 @@
 #define IOC_IOCFG46_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG46_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG46_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG46_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG46_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG46_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG46_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG46_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG46_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG46_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG46_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG46_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG46_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG46_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG46_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG46_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG46_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG46_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG46_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG46_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG46_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG46_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -19150,10 +19150,10 @@
 #define IOC_IOCFG46_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG46_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG46_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG46_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG46_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG46_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG46_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG46_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG46_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG46_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG46_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG46_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG46_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG46_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -19173,10 +19173,10 @@
 #define IOC_IOCFG46_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG46_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG46_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG46_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG46_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG46_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG46_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG46_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG46_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG46_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG46_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG46_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG46_PORT_ID_GPIO                                    0x00000000
 
@@ -19423,14 +19423,14 @@
 // UART2_CTS                UART2 CTS
 // UART2_TX                 UART2 TX
 // UART2_RX                 UART2 RX
-// SSI3_CLK                 SSI3 CLK
-// SSI3_FSS                 SSI3 FSS
-// SSI3_TX                  SSI3 TX
-// SSI3_RX                  SSI3 RX
-// SSI2_CLK                 SSI2 CLK
-// SSI2_FSS                 SSI2 FSS
-// SSI2_TX                  SSI2 TX
-// SSI2_RX                  SSI2 RX
+// SPI3_CLK                 SPI3 CLK
+// SPI3_CS                  SPI3 CS
+// SPI3_TX                  SPI3 TX
+// SPI3_RX                  SPI3 RX
+// SPI2_CLK                 SPI2 CLK
+// SPI2_CS                  SPI2 CS
+// SPI2_TX                  SPI2 TX
+// SPI2_RX                  SPI2 RX
 // RFC_SMI_CL_IN            RF Core SMI Command Link In
 // RFC_SMI_CL_OUT           RF Core SMI Command Link Out
 // RFC_SMI_DL_IN            RF Core SMI Data Link In
@@ -19447,10 +19447,10 @@
 // I2S_WCLK                 I2S WCLK
 // I2S_AD1                  I2S Data 1
 // I2S_AD0                  I2S Data 0
-// SSI1_CLK                 SSI1 CLK
-// SSI1_FSS                 SSI1 FSS
-// SSI1_TX                  SSI1 TX
-// SSI1_RX                  SSI1 RX
+// SPI1_CLK                 SPI1 CLK
+// SPI1_CS                  SPI1 CS
+// SPI1_TX                  SPI1 TX
+// SPI1_RX                  SPI1 RX
 // CPU_SWV                  CPU SWV
 // PORT_EVENT7              PORT EVENT 7
 //                          Can be used as a general
@@ -19510,10 +19510,10 @@
 // UART0_RX                 UART0 RX
 // I2C0_MSSCL               I2C0 Clock
 // I2C0_MSSDA               I2C0 Data
-// SSI0_CLK                 SSI0 CLK
-// SSI0_FSS                 SSI0 FSS
-// SSI0_TX                  SSI0 TX
-// SSI0_RX                  SSI0 RX
+// SPI0_CLK                 SPI0 CLK
+// SPI0_CS                  SPI0 CS
+// SPI0_TX                  SPI0 TX
+// SPI0_RX                  SPI0 RX
 // AON_CLK32K               AON 32 KHz clock (SCLK_LF)
 // GPIO                     General Purpose IO
 #define IOC_IOCFG47_PORT_ID_W                                                7
@@ -19529,14 +19529,14 @@
 #define IOC_IOCFG47_PORT_ID_UART2_CTS                               0x00000043
 #define IOC_IOCFG47_PORT_ID_UART2_TX                                0x00000042
 #define IOC_IOCFG47_PORT_ID_UART2_RX                                0x00000041
-#define IOC_IOCFG47_PORT_ID_SSI3_CLK                                0x00000040
-#define IOC_IOCFG47_PORT_ID_SSI3_FSS                                0x0000003F
-#define IOC_IOCFG47_PORT_ID_SSI3_TX                                 0x0000003E
-#define IOC_IOCFG47_PORT_ID_SSI3_RX                                 0x0000003D
-#define IOC_IOCFG47_PORT_ID_SSI2_CLK                                0x0000003C
-#define IOC_IOCFG47_PORT_ID_SSI2_FSS                                0x0000003B
-#define IOC_IOCFG47_PORT_ID_SSI2_TX                                 0x0000003A
-#define IOC_IOCFG47_PORT_ID_SSI2_RX                                 0x00000039
+#define IOC_IOCFG47_PORT_ID_SPI3_CLK                                0x00000040
+#define IOC_IOCFG47_PORT_ID_SPI3_CS                                 0x0000003F
+#define IOC_IOCFG47_PORT_ID_SPI3_TX                                 0x0000003E
+#define IOC_IOCFG47_PORT_ID_SPI3_RX                                 0x0000003D
+#define IOC_IOCFG47_PORT_ID_SPI2_CLK                                0x0000003C
+#define IOC_IOCFG47_PORT_ID_SPI2_CS                                 0x0000003B
+#define IOC_IOCFG47_PORT_ID_SPI2_TX                                 0x0000003A
+#define IOC_IOCFG47_PORT_ID_SPI2_RX                                 0x00000039
 #define IOC_IOCFG47_PORT_ID_RFC_SMI_CL_IN                           0x00000038
 #define IOC_IOCFG47_PORT_ID_RFC_SMI_CL_OUT                          0x00000037
 #define IOC_IOCFG47_PORT_ID_RFC_SMI_DL_IN                           0x00000036
@@ -19553,10 +19553,10 @@
 #define IOC_IOCFG47_PORT_ID_I2S_WCLK                                0x00000027
 #define IOC_IOCFG47_PORT_ID_I2S_AD1                                 0x00000026
 #define IOC_IOCFG47_PORT_ID_I2S_AD0                                 0x00000025
-#define IOC_IOCFG47_PORT_ID_SSI1_CLK                                0x00000024
-#define IOC_IOCFG47_PORT_ID_SSI1_FSS                                0x00000023
-#define IOC_IOCFG47_PORT_ID_SSI1_TX                                 0x00000022
-#define IOC_IOCFG47_PORT_ID_SSI1_RX                                 0x00000021
+#define IOC_IOCFG47_PORT_ID_SPI1_CLK                                0x00000024
+#define IOC_IOCFG47_PORT_ID_SPI1_CS                                 0x00000023
+#define IOC_IOCFG47_PORT_ID_SPI1_TX                                 0x00000022
+#define IOC_IOCFG47_PORT_ID_SPI1_RX                                 0x00000021
 #define IOC_IOCFG47_PORT_ID_CPU_SWV                                 0x00000020
 #define IOC_IOCFG47_PORT_ID_PORT_EVENT7                             0x0000001E
 #define IOC_IOCFG47_PORT_ID_PORT_EVENT6                             0x0000001D
@@ -19576,10 +19576,10 @@
 #define IOC_IOCFG47_PORT_ID_UART0_RX                                0x0000000F
 #define IOC_IOCFG47_PORT_ID_I2C0_MSSCL                              0x0000000E
 #define IOC_IOCFG47_PORT_ID_I2C0_MSSDA                              0x0000000D
-#define IOC_IOCFG47_PORT_ID_SSI0_CLK                                0x0000000C
-#define IOC_IOCFG47_PORT_ID_SSI0_FSS                                0x0000000B
-#define IOC_IOCFG47_PORT_ID_SSI0_TX                                 0x0000000A
-#define IOC_IOCFG47_PORT_ID_SSI0_RX                                 0x00000009
+#define IOC_IOCFG47_PORT_ID_SPI0_CLK                                0x0000000C
+#define IOC_IOCFG47_PORT_ID_SPI0_CS                                 0x0000000B
+#define IOC_IOCFG47_PORT_ID_SPI0_TX                                 0x0000000A
+#define IOC_IOCFG47_PORT_ID_SPI0_RX                                 0x00000009
 #define IOC_IOCFG47_PORT_ID_AON_CLK32K                              0x00000007
 #define IOC_IOCFG47_PORT_ID_GPIO                                    0x00000000
 

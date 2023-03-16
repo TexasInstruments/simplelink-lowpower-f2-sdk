@@ -98,8 +98,8 @@ extern "C"
     #define IOCPinTypeGpioInput             NOROM_IOCPinTypeGpioInput
     #define IOCPinTypeGpioOutput            NOROM_IOCPinTypeGpioOutput
     #define IOCPinTypeUart                  NOROM_IOCPinTypeUart
-    #define IOCPinTypeSsiMaster             NOROM_IOCPinTypeSsiMaster
-    #define IOCPinTypeSsiSlave              NOROM_IOCPinTypeSsiSlave
+    #define IOCPinTypeSpiMaster             NOROM_IOCPinTypeSpiMaster
+    #define IOCPinTypeSpiSlave              NOROM_IOCPinTypeSpiSlave
     #define IOCPinTypeI2c                   NOROM_IOCPinTypeI2c
     #define IOCPinTypeAux                   NOROM_IOCPinTypeAux
 #endif
@@ -183,10 +183,15 @@ extern "C"
 #define IOC_PORT_GPIO             0x00000000  // Default general purpose IO usage
 #define IOC_PORT_AON_CLK32K       0x00000007  // AON External 32kHz clock
 #define IOC_PORT_AUX_IO           0x00000008  // AUX IO Pin
-#define IOC_PORT_MCU_SSI0_RX      0x00000009  // MCU SSI0 Receive Pin
-#define IOC_PORT_MCU_SSI0_TX      0x0000000A  // MCU SSI0 Transmit Pin
-#define IOC_PORT_MCU_SSI0_FSS     0x0000000B  // MCU SSI0 FSS Pin
-#define IOC_PORT_MCU_SSI0_CLK     0x0000000C  // MCU SSI0 Clock Pin
+#define IOC_PORT_MCU_SPI0_RX      0x00000009  // MCU SPI0 Receive Pin
+#define IOC_PORT_MCU_SPI0_TX      0x0000000A  // MCU SPI0 Transmit Pin
+#define IOC_PORT_MCU_SPI0_FSS     0x0000000B  // MCU SPI0 FSS Pin
+#define IOC_PORT_MCU_SPI0_CLK     0x0000000C  // MCU SPI0 Clock Pin
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define IOC_PORT_MCU_SSI0_RX      IOC_PORT_MCU_SPI0_RX
+#define IOC_PORT_MCU_SSI0_TX      IOC_PORT_MCU_SPI0_TX
+#define IOC_PORT_MCU_SSI0_FSS     IOC_PORT_MCU_SPI0_FSS
+#define IOC_PORT_MCU_SSI0_CLK     IOC_PORT_MCU_SPI0_CLK
 #define IOC_PORT_MCU_I2C_MSSDA    0x0000000D  // MCU I2C Data Pin
 #define IOC_PORT_MCU_I2C_MSSCL    0x0000000E  // MCU I2C Clock Pin
 #define IOC_PORT_MCU_UART0_RX     0x0000000F  // MCU UART0 Receive Pin
@@ -206,10 +211,15 @@ extern "C"
 #define IOC_PORT_MCU_PORT_EVENT6  0x0000001D  // MCU PORT EVENT 6
 #define IOC_PORT_MCU_PORT_EVENT7  0x0000001E  // MCU PORT EVENT 7
 #define IOC_PORT_MCU_SWV          0x00000020  // Serial Wire Viewer
-#define IOC_PORT_MCU_SSI1_RX      0x00000021  // MCU SSI1 Receive Pin
-#define IOC_PORT_MCU_SSI1_TX      0x00000022  // MCU SSI1 Transmit Pin
-#define IOC_PORT_MCU_SSI1_FSS     0x00000023  // MCU SSI1 FSS Pin
-#define IOC_PORT_MCU_SSI1_CLK     0x00000024  // MCU SSI1 Clock Pin
+#define IOC_PORT_MCU_SPI1_RX      0x00000021  // MCU SPI1 Receive Pin
+#define IOC_PORT_MCU_SPI1_TX      0x00000022  // MCU SPI1 Transmit Pin
+#define IOC_PORT_MCU_SPI1_FSS     0x00000023  // MCU SPI1 FSS Pin
+#define IOC_PORT_MCU_SPI1_CLK     0x00000024  // MCU SPI1 Clock Pin
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define IOC_PORT_MCU_SSI1_RX      IOC_PORT_MCU_SPI1_RX
+#define IOC_PORT_MCU_SSI1_TX      IOC_PORT_MCU_SPI1_TX
+#define IOC_PORT_MCU_SSI1_FSS     IOC_PORT_MCU_SPI1_FSS
+#define IOC_PORT_MCU_SSI1_CLK     IOC_PORT_MCU_SPI1_CLK
 #define IOC_PORT_MCU_I2S_AD0      0x00000025  // MCU I2S Data Pin 0
 #define IOC_PORT_MCU_I2S_AD1      0x00000026  // MCU I2S Data Pin 1
 #define IOC_PORT_MCU_I2S_WCLK     0x00000027  // MCU I2S Frame/Word Clock
@@ -226,14 +236,24 @@ extern "C"
 #define IOC_PORT_RFC_SMI_DL_IN    0x00000036  // RF Core SMI Data Link in
 #define IOC_PORT_RFC_SMI_CL_OUT   0x00000037  // RF Core SMI Command Link Out
 #define IOC_PORT_RFC_SMI_CL_IN    0x00000038  // RF Core SMI Command Link In
-#define IOC_PORT_MCU_SSI2_RX      0x00000039  // MCU SSI3 Receive Pin
-#define IOC_PORT_MCU_SSI2_TX      0x0000003A  // MCU SSI3 Transmit Pin
-#define IOC_PORT_MCU_SSI2_FSS     0x0000003B  // MCU SSI3 FSS Pin
-#define IOC_PORT_MCU_SSI2_CLK     0x0000003C  // MCU SSI3 Clock Pin
-#define IOC_PORT_MCU_SSI3_RX      0x0000003D  // MCU SSI4 Receive Pin
-#define IOC_PORT_MCU_SSI3_TX      0x0000003E  // MCU SSI4 Transmit Pin
-#define IOC_PORT_MCU_SSI3_FSS     0x0000003F  // MCU SSI4 FSS Pin
-#define IOC_PORT_MCU_SSI3_CLK     0x00000040  // MCU SSI4 Clock Pin
+#define IOC_PORT_MCU_SPI2_RX      0x00000039  // MCU SPI2 Receive Pin
+#define IOC_PORT_MCU_SPI2_TX      0x0000003A  // MCU SPI2 Transmit Pin
+#define IOC_PORT_MCU_SPI2_FSS     0x0000003B  // MCU SPI2 FSS Pin
+#define IOC_PORT_MCU_SPI2_CLK     0x0000003C  // MCU SPI2 Clock Pin
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define IOC_PORT_MCU_SSI2_RX      IOC_PORT_MCU_SPI2_RX
+#define IOC_PORT_MCU_SSI2_TX      IOC_PORT_MCU_SPI2_TX
+#define IOC_PORT_MCU_SSI2_FSS     IOC_PORT_MCU_SPI2_FSS
+#define IOC_PORT_MCU_SSI2_CLK     IOC_PORT_MCU_SPI2_CLK
+#define IOC_PORT_MCU_SPI3_RX      0x0000003D  // MCU SPI3 Receive Pin
+#define IOC_PORT_MCU_SPI3_TX      0x0000003E  // MCU SPI3 Transmit Pin
+#define IOC_PORT_MCU_SPI3_FSS     0x0000003F  // MCU SPI3 FSS Pin
+#define IOC_PORT_MCU_SPI3_CLK     0x00000040  // MCU SPI3 Clock Pin
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define IOC_PORT_MCU_SSI3_RX      IOC_PORT_MCU_SPI3_RX
+#define IOC_PORT_MCU_SSI3_TX      IOC_PORT_MCU_SPI3_TX
+#define IOC_PORT_MCU_SSI3_FSS     IOC_PORT_MCU_SPI3_FSS
+#define IOC_PORT_MCU_SSI3_CLK     IOC_PORT_MCU_SPI3_CLK
 #define IOC_PORT_MCU_UART2_RX     0x00000041  // MCU UART2 Receive Pin
 #define IOC_PORT_MCU_UART2_TX     0x00000042  // MCU UART2 Transmit Pin
 #define IOC_PORT_MCU_UART2_CTS    0x00000043  // MCU UART2 Clear To Send Pin
@@ -243,7 +263,7 @@ extern "C"
 #define IOC_PORT_MCU_UART3_CTS    0x00000047  // MCU UART3 Clear To Send Pin
 #define IOC_PORT_MCU_UART3_RTS    0x00000048  // MCU UART3 Request To Send Pin
 #define IOC_PORT_MCU_I2C1_MSSDA   0x00000049  // MCU I2C1 Data Pin
-#define IOC_PORT_MCU_I2C1_MSSCL   0x00000050  // MCU I2C1 Clock Pin
+#define IOC_PORT_MCU_I2C1_MSSCL   0x0000004A  // MCU I2C1 Clock Pin
 
 //*****************************************************************************
 //
@@ -385,16 +405,16 @@ extern "C"
 //! \param ui32IOId defines the IO to configure and must be one of the following:
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32PortId selects the functional IO port to connect.
 //! The available IO ports are:
 //! - \ref IOC_PORT_GPIO
 //! - \ref IOC_PORT_AON_CLK32K
 //! - \ref IOC_PORT_AUX_IO
-//! - \ref IOC_PORT_MCU_SSI0_RX
-//! - \ref IOC_PORT_MCU_SSI0_TX
-//! - \ref IOC_PORT_MCU_SSI0_FSS
-//! - \ref IOC_PORT_MCU_SSI0_CLK
+//! - \ref IOC_PORT_MCU_SPI0_RX
+//! - \ref IOC_PORT_MCU_SPI0_TX
+//! - \ref IOC_PORT_MCU_SPI0_FSS
+//! - \ref IOC_PORT_MCU_SPI0_CLK
 //! - \ref IOC_PORT_MCU_I2C_MSSDA
 //! - \ref IOC_PORT_MCU_I2C_MSSCL
 //! - \ref IOC_PORT_MCU_UART0_RX
@@ -414,10 +434,10 @@ extern "C"
 //! - \ref IOC_PORT_MCU_PORT_EVENT6
 //! - \ref IOC_PORT_MCU_PORT_EVENT7
 //! - \ref IOC_PORT_MCU_SWV
-//! - \ref IOC_PORT_MCU_SSI1_RX
-//! - \ref IOC_PORT_MCU_SSI1_TX
-//! - \ref IOC_PORT_MCU_SSI1_FSS
-//! - \ref IOC_PORT_MCU_SSI1_CLK
+//! - \ref IOC_PORT_MCU_SPI1_RX
+//! - \ref IOC_PORT_MCU_SPI1_TX
+//! - \ref IOC_PORT_MCU_SPI1_FSS
+//! - \ref IOC_PORT_MCU_SPI1_CLK
 //! - \ref IOC_PORT_MCU_I2S_AD0
 //! - \ref IOC_PORT_MCU_I2S_AD1
 //! - \ref IOC_PORT_MCU_I2S_WCLK
@@ -430,6 +450,24 @@ extern "C"
 //! - \ref IOC_PORT_RFC_GPO3
 //! - \ref IOC_PORT_RFC_GPI0
 //! - \ref IOC_PORT_RFC_GPI1
+//! - \ref IOC_PORT_MCU_SPI2_RX
+//! - \ref IOC_PORT_MCU_SPI2_TX
+//! - \ref IOC_PORT_MCU_SPI2_FSS
+//! - \ref IOC_PORT_MCU_SPI2_CLK
+//! - \ref IOC_PORT_MCU_SPI3_RX
+//! - \ref IOC_PORT_MCU_SPI3_TX
+//! - \ref IOC_PORT_MCU_SPI3_FSS
+//! - \ref IOC_PORT_MCU_SPI3_CLK
+//! - \ref IOC_PORT_MCU_UART2_RX
+//! - \ref IOC_PORT_MCU_UART2_TX
+//! - \ref IOC_PORT_MCU_UART2_CTS
+//! - \ref IOC_PORT_MCU_UART2_RTS
+//! - \ref IOC_PORT_MCU_UART3_RX
+//! - \ref IOC_PORT_MCU_UART3_TX
+//! - \ref IOC_PORT_MCU_UART3_CTS
+//! - \ref IOC_PORT_MCU_UART3_RTS
+//! - \ref IOC_PORT_MCU_I2C1_MSSDA
+//! - \ref IOC_PORT_MCU_I2C1_MSSCL
 //! \param ui32IOConfig is the IO configuration consisting of
 //! the bitwise OR of all configuration modes:
 //! - Input/output mode:
@@ -507,7 +545,7 @@ extern void IOCPortConfigureSet(uint32_t ui32IOId, uint32_t ui32PortId,
 //! \param ui32IOId selects the IO to return the configuration for.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return Returns the IO Port configuration.
 //! See \ref IOCPortConfigureSet() for configuration options.
@@ -526,7 +564,7 @@ extern uint32_t IOCPortConfigureGet(uint32_t ui32IOId);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32IOShutdown enables wake-up from shutdown on LOW/HIGH by this IO port.
 //! - \ref IOC_NO_WAKE_UP
 //! - \ref IOC_WAKE_ON_LOW
@@ -547,7 +585,7 @@ extern void IOCIOShutdownSet(uint32_t ui32IOId, uint32_t ui32IOShutdown);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32IOMode sets the port IO Mode.
 //! - \ref IOC_IOMODE_NORMAL
 //! - \ref IOC_IOMODE_INV
@@ -570,7 +608,7 @@ extern void IOCIOModeSet(uint32_t ui32IOId, uint32_t ui32IOMode);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32Int enables/disables interrupt generation on this IO port.
 //! - \ref IOC_INT_ENABLE
 //! - \ref IOC_INT_DISABLE
@@ -596,7 +634,7 @@ extern void IOCIOIntSet(uint32_t ui32IOId, uint32_t ui32Int,
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32Evt is a bitwise OR of the IO events to generate when an IO edge detection occurs.
 //! All other IO event generations are disabled.
 //! - \ref IOC_EVT_AON_PROG2_ENABLE : AON_PROG2 event.
@@ -618,7 +656,7 @@ extern void IOCIOEvtSet(uint32_t ui32IOId, uint32_t ui32Evt);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32Pull enables/disables pull on this IO port.
 //! - \ref IOC_NO_IOPULL
 //! - \ref IOC_IOPULL_UP
@@ -638,7 +676,7 @@ extern void IOCIOPortPullSet(uint32_t ui32IOId, uint32_t ui32Pull);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32Hysteresis enable/disable input hysteresis on IO.
 //! - \ref IOC_HYST_ENABLE
 //! - \ref IOC_HYST_DISABLE
@@ -657,7 +695,7 @@ extern void IOCIOHystSet(uint32_t ui32IOId, uint32_t ui32Hysteresis);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32Input enable/disable input on IO.
 //! - \ref IOC_INPUT_ENABLE
 //! - \ref IOC_INPUT_DISABLE
@@ -676,7 +714,7 @@ extern void IOCIOInputSet(uint32_t ui32IOId, uint32_t ui32Input);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32SlewEnable enables/disables reduced slew rate on an output.
 //! - \ref IOC_SLEW_ENABLE
 //! - \ref IOC_SLEW_DISABLE
@@ -708,7 +746,7 @@ extern void IOCIOSlewCtrlSet(uint32_t ui32IOId, uint32_t ui32SlewEnable);
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32IOCurrent selects the IO current mode.
 //! - \ref IOC_CURRENT_2MA : Low-Current mode. Min 2 mA when \ti_code{ui32DrvStrength} is set to \ref IOC_STRENGTH_AUTO.
 //! - \ref IOC_CURRENT_4MA : High-Current mode. Min 4 mA when \ti_code{ui32DrvStrength} is set to \ref IOC_STRENGTH_AUTO.
@@ -735,15 +773,15 @@ extern void IOCIODrvStrengthSet(uint32_t ui32IOId, uint32_t ui32IOCurrent,
 //! \param ui32IOId defines the IO to configure.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! \param ui32PortId selects the port to map to the IO.
 //! - \ref IOC_PORT_GPIO
 //! - \ref IOC_PORT_AON_CLK32K
 //! - \ref IOC_PORT_AUX_IO
-//! - \ref IOC_PORT_MCU_SSI0_RX
-//! - \ref IOC_PORT_MCU_SSI0_TX
-//! - \ref IOC_PORT_MCU_SSI0_FSS
-//! - \ref IOC_PORT_MCU_SSI0_CLK
+//! - \ref IOC_PORT_MCU_SPI0_RX
+//! - \ref IOC_PORT_MCU_SPI0_TX
+//! - \ref IOC_PORT_MCU_SPI0_FSS
+//! - \ref IOC_PORT_MCU_SPI0_CLK
 //! - \ref IOC_PORT_MCU_I2C_MSSDA
 //! - \ref IOC_PORT_MCU_I2C_MSSCL
 //! - \ref IOC_PORT_MCU_UART0_RX
@@ -763,10 +801,10 @@ extern void IOCIODrvStrengthSet(uint32_t ui32IOId, uint32_t ui32IOCurrent,
 //! - \ref IOC_PORT_MCU_PORT_EVENT6
 //! - \ref IOC_PORT_MCU_PORT_EVENT7
 //! - \ref IOC_PORT_MCU_SWV
-//! - \ref IOC_PORT_MCU_SSI1_RX
-//! - \ref IOC_PORT_MCU_SSI1_TX
-//! - \ref IOC_PORT_MCU_SSI1_FSS
-//! - \ref IOC_PORT_MCU_SSI1_CLK
+//! - \ref IOC_PORT_MCU_SPI1_RX
+//! - \ref IOC_PORT_MCU_SPI1_TX
+//! - \ref IOC_PORT_MCU_SPI1_FSS
+//! - \ref IOC_PORT_MCU_SPI1_CLK
 //! - \ref IOC_PORT_MCU_I2S_AD0
 //! - \ref IOC_PORT_MCU_I2S_AD1
 //! - \ref IOC_PORT_MCU_I2S_WCLK
@@ -779,6 +817,24 @@ extern void IOCIODrvStrengthSet(uint32_t ui32IOId, uint32_t ui32IOCurrent,
 //! - \ref IOC_PORT_RFC_GPO3
 //! - \ref IOC_PORT_RFC_GPI0
 //! - \ref IOC_PORT_RFC_GPI1
+//! - \ref IOC_PORT_MCU_SPI2_RX
+//! - \ref IOC_PORT_MCU_SPI2_TX
+//! - \ref IOC_PORT_MCU_SPI2_FSS
+//! - \ref IOC_PORT_MCU_SPI2_CLK
+//! - \ref IOC_PORT_MCU_SPI3_RX
+//! - \ref IOC_PORT_MCU_SPI3_TX
+//! - \ref IOC_PORT_MCU_SPI3_FSS
+//! - \ref IOC_PORT_MCU_SPI3_CLK
+//! - \ref IOC_PORT_MCU_UART2_RX
+//! - \ref IOC_PORT_MCU_UART2_TX
+//! - \ref IOC_PORT_MCU_UART2_CTS
+//! - \ref IOC_PORT_MCU_UART2_RTS
+//! - \ref IOC_PORT_MCU_UART3_RX
+//! - \ref IOC_PORT_MCU_UART3_TX
+//! - \ref IOC_PORT_MCU_UART3_CTS
+//! - \ref IOC_PORT_MCU_UART3_RTS
+//! - \ref IOC_PORT_MCU_I2C1_MSSDA
+//! - \ref IOC_PORT_MCU_I2C1_MSSCL
 //!
 //! \return None
 //
@@ -865,7 +921,7 @@ extern void IOCIntEnable(uint32_t ui32IOId);
 //! \param ui32IOId is the IO edge interrupt source to be disabled.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return None
 //
@@ -898,7 +954,7 @@ extern void IOCIntDisable(uint32_t ui32IOId);
 //! \param ui32IOId is the IO causing the interrupt.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return None
 //
@@ -907,7 +963,7 @@ __STATIC_INLINE void
 IOCIntClear(uint32_t ui32IOId)
 {
     // Check the arguments.
-    ASSERT(ui32IOId <= IOID_31);
+    ASSERT(ui32IOId < NUM_IO_MAX);
 
     // Clear the requested interrupt source by clearing the event.
     GPIO_clearEventDio(ui32IOId);
@@ -920,7 +976,7 @@ IOCIntClear(uint32_t ui32IOId)
 //! \param ui32IOId is the IO to get the status for.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return None
 //
@@ -929,7 +985,7 @@ __STATIC_INLINE uint32_t
 IOCIntStatus(uint32_t ui32IOId)
 {
     // Check the arguments.
-    ASSERT(ui32IOId <= IOID_31);
+    ASSERT(ui32IOId < NUM_IO_MAX);
 
     // Get the event status.
     return (GPIO_getEventDio(ui32IOId));
@@ -958,7 +1014,7 @@ IOCIntStatus(uint32_t ui32IOId)
 //! \param ui32IOId is the IO to setup for GPIO input
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return None
 //
@@ -987,7 +1043,7 @@ extern void IOCPinTypeGpioInput(uint32_t ui32IOId);
 //! \param ui32IOId is the IO to setup for GPIO output
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //!
 //! \return None
 //
@@ -1010,22 +1066,22 @@ extern void IOCPinTypeGpioOutput(uint32_t ui32IOId);
 //! \param ui32Rx is the IO Id of the IO to use as UART Receive.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //! \param ui32Tx is the IO Id of the IO to use as UART Transmit.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //! \param ui32Cts is the IO Id of the IO to use for UART Clear to send.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //! \param ui32Rts is the IO Id of the IO to use for UART Request to send.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //!
 //! \return None
@@ -1037,65 +1093,137 @@ extern void IOCPinTypeUart(uint32_t ui32Base, uint32_t ui32Rx,
 
 //*****************************************************************************
 //
-//! \brief Configure a set of IOs for standard SSI peripheral master control.
+//! \brief Configure a set of IOs for standard SPI peripheral master control.
 //!
-//! \param ui32Base is the base address of the SSI module to connect to the IOs
-//! \param ui32Rx is the IO to connect to the SSI MISO line.
+//! \param ui32Base is the base address of the SPI module to connect to the IOs
+//! \param ui32Rx is the IO to connect to the SPI MISO line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Tx is the IO to connect to the SSI MOSI line.
+//! \param ui32Tx is the IO to connect to the SPI MOSI line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Fss is the IO to connect to the SSI FSS line.
+//! \param ui32Fss is the IO to connect to the SPI FSS line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Clk is the IO to connect to the SSI Clock output line.
+//! \param ui32Clk is the IO to connect to the SPI Clock output line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //!
 //! \return None
 //
 //*****************************************************************************
-extern void IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
+extern void IOCPinTypeSpiMaster(uint32_t ui32Base, uint32_t ui32Rx,
                                 uint32_t ui32Tx, uint32_t ui32Fss,
                                 uint32_t ui32Clk);
 
+#ifndef DOXYGEN // Do not document this function in Doxygen
 //*****************************************************************************
 //
-//! \brief Configure a set of IOs for standard SSI peripheral slave control.
+//! \brief Included for compatibility, please use \ref IOCPinTypeSpiMaster.
 //!
-//! \param ui32Base is the base address of the SSI module to connect to the IOs
-//! \param ui32Rx is the IO to connect to the SSI MOSI line.
+//! \param ui32Base is the base address of the SPI module to connect to the IOs
+//! \param ui32Rx is the IO to connect to the SPI MISO line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Tx is the IO to connect to the SSI MISO line.
+//! \param ui32Tx is the IO to connect to the SPI MOSI line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Fss is the IO to connect to the SSI FSS line.
+//! \param ui32Fss is the IO to connect to the SPI FSS line.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
-//! \param ui32Clk is the IO to connect to the SSI Clock input line.
+//! \param ui32Clk is the IO to connect to the SPI Clock output line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
 //!
 //! \return None
 //
 //*****************************************************************************
-extern void IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
+__STATIC_INLINE void IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
+                                         uint32_t ui32Tx, uint32_t ui32Fss,
+                                         uint32_t ui32Clk)
+{
+    IOCPinTypeSpiMaster(ui32Base, ui32Rx, ui32Tx, ui32Fss, ui32Clk);
+}
+#endif // #ifndef DOXYGEN
+
+//*****************************************************************************
+//
+//! \brief Configure a set of IOs for standard SPI peripheral slave control.
+//!
+//! \param ui32Base is the base address of the SPI module to connect to the IOs
+//! \param ui32Rx is the IO to connect to the SPI MOSI line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Tx is the IO to connect to the SPI MISO line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Fss is the IO to connect to the SPI FSS line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Clk is the IO to connect to the SPI Clock input line.
+//!
+//! \return None
+//
+//*****************************************************************************
+extern void IOCPinTypeSpiSlave(uint32_t ui32Base, uint32_t ui32Rx,
                                uint32_t ui32Tx, uint32_t ui32Fss,
                                uint32_t ui32Clk);
+
+#ifndef DOXYGEN // Do not document this function in Doxygen
+//*****************************************************************************
+//
+//! \brief Included for compatibility, please use \ref IOCPinTypeSpiSlave.
+//!
+//! \param ui32Base is the base address of the SPI module to connect to the IOs
+//! \param ui32Rx is the IO to connect to the SPI MOSI line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Tx is the IO to connect to the SPI MISO line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Fss is the IO to connect to the SPI FSS line.
+//! - \ref IOID_0
+//! - ...
+//! - \ref IOID_47
+//! - \ref IOID_UNUSED
+//! \param ui32Clk is the IO to connect to the SPI Clock input line.
+//!
+//! \return None
+//
+//*****************************************************************************
+__STATIC_INLINE void IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
+                                        uint32_t ui32Tx, uint32_t ui32Fss,
+                                        uint32_t ui32Clk)
+{
+    IOCPinTypeSpiSlave(ui32Base, ui32Rx, ui32Tx, ui32Fss, ui32Clk);
+}
+#endif // #ifndef DOXYGEN
 
 //*****************************************************************************
 //
@@ -1105,12 +1233,12 @@ extern void IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
 //! \param ui32Data is the I2C data line
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //! \param ui32Clk is the I2C input clock
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //!
 //! \return None
@@ -1133,7 +1261,7 @@ extern void IOCPinTypeI2c(uint32_t ui32Base, uint32_t ui32Data,
 //! \param ui32IOId is the IO to setup for AUX usage.
 //! - \ref IOID_0
 //! - ...
-//! - \ref IOID_31
+//! - \ref IOID_47
 //! - \ref IOID_UNUSED
 //!
 //! \return None
@@ -1217,13 +1345,13 @@ extern void IOCPinTypeAux(uint32_t ui32IOId);
         #undef  IOCPinTypeUart
         #define IOCPinTypeUart                  ROM_IOCPinTypeUart
     #endif
-    #ifdef ROM_IOCPinTypeSsiMaster
-        #undef  IOCPinTypeSsiMaster
-        #define IOCPinTypeSsiMaster             ROM_IOCPinTypeSsiMaster
+    #ifdef ROM_IOCPinTypeSpiMaster
+        #undef  IOCPinTypeSpiMaster
+        #define IOCPinTypeSpiMaster             ROM_IOCPinTypeSpiMaster
     #endif
-    #ifdef ROM_IOCPinTypeSsiSlave
-        #undef  IOCPinTypeSsiSlave
-        #define IOCPinTypeSsiSlave              ROM_IOCPinTypeSsiSlave
+    #ifdef ROM_IOCPinTypeSpiSlave
+        #undef  IOCPinTypeSpiSlave
+        #define IOCPinTypeSpiSlave              ROM_IOCPinTypeSpiSlave
     #endif
     #ifdef ROM_IOCPinTypeI2c
         #undef  IOCPinTypeI2c

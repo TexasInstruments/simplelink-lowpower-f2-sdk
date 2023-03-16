@@ -30,7 +30,13 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*! @cond NODOC */
+/*!
+ * @file ti/sysbios/hal/Hwi.h
+ * @brief Hwi header file for the HAL.
+ *
+ * This module contains definitions for the static inline Hwi functions.
+ *
+ */
 
 #ifndef ti_sysbios_hal_Hwi__include
 #define ti_sysbios_hal_Hwi__include
@@ -77,19 +83,21 @@ extern const unsigned int Hwi_disablePriority;
 
 #if defined(__TI_COMPILER_VERSION__) && !defined(__clang__)
 
+/* \static Disable Hardware Interrupts
+ */
 static inline unsigned int Hwi_disable()
 {
     return ((unsigned int)__set_PRIMASK(1));
 }
 
-/*!
+/* \static Enable Hardware Interrupts
  */
 static inline unsigned int Hwi_enable()
 {
     return ((unsigned int)__set_PRIMASK(0));
 }
 
-/*!
+/* \static Restore Hardware Interrupts to previous setting
  */
 static inline void Hwi_restore(unsigned int key)
 {
@@ -275,4 +283,3 @@ static inline void Hwi_restore(unsigned int key)
 
 #endif /* ti_sysbios_hal_Hwi__include */
 
-/*! @endcond */

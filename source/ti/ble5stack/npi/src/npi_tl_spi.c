@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2022, Texas Instruments Incorporated
+ Copyright (c) 2015-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -146,7 +146,7 @@ void NPITLSPI_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack)
     SPI_Params_init(&spiParams);
 
     // Slave mode
-    spiParams.mode = SPI_SLAVE;
+    spiParams.mode = SPI_PERIPHERAL;
     spiParams.bitRate = SPI_SLAVE_BAUD_RATE;
     spiParams.frameFormat = SPI_POL1_PHA1;
     spiParams.transferMode = SPI_MODE_CALLBACK;

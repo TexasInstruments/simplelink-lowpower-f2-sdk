@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC13x4, CC26x4 device family for use with GCC.
 *
-*  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2020-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -73,6 +73,7 @@ void FaultISR(void) WEAK_ALIAS(FaultISRHandler);
 void MPUFaultIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void BusFaultIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void UsageFaultIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
+void SecureFaultIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void SVCallIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void DebugMonIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
 void PendSVIntHandler(void) WEAK_ALIAS(IntDefaultHandler);
@@ -146,7 +147,7 @@ extern uint32_t _estack;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__ ((section(".vectors"), used))
+__attribute__ ((section(".resetVecs"), used))
 void (* const g_pfnVectors[])(void) =
 {
     (void (*)(void))((unsigned long)&_estack),
@@ -157,7 +158,7 @@ void (* const g_pfnVectors[])(void) =
     MPUFaultIntHandler,                     //  4 Memory Management (MemManage) Fault
     BusFaultIntHandler,                     //  5 The bus fault handler
     UsageFaultIntHandler,                   //  6 The usage fault handler
-    0,                                      //  7 Reserved
+    SecureFaultIntHandler,                  //  7 The secure fault handler
     0,                                      //  8 Reserved
     0,                                      //  9 Reserved
     0,                                      // 10 Reserved

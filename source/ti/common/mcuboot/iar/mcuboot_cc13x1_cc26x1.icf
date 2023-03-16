@@ -52,8 +52,8 @@ define region RAM_region     = mem:[from RAM_start__ to RAM_end__];
 define region GPRAM_region     = mem:[from GPRAM_start__ to GPRAM_end__];
 
 /* Place the interrupt vectors at the start of flash */
-place at address mem:__intvec_start__ { readonly section .intvec };
-keep { section .intvec};
+place at address mem:__intvec_start__ { readonly section .resetVecs };
+keep { section .resetVecs};
 
 /* Place the CCA area at the end of flash */
 place at end of FLASH_region { readonly section .ccfg };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ let config = [
         default: "DisplayUart2",
         options: [
             {name: "DisplayUart2"},
-            {name: "DisplayDogm1286"},
+            {name: "DisplaySharp"},
             {name: "DisplayHost"}
         ],
         readOnly: true,
@@ -80,6 +80,33 @@ value that cannot be changed. Please refer to the
         displayName : "LCD Size",
         description : "Size of the LCD in pixels.",
         default     : 128,
+        hidden      : true
+    },
+    {
+        name        : "lcdFont",
+        displayName : "LCD Font",
+        description : "Font to be used on LCD.",
+        default     : "Fixed",
+        onChange    : onChange,
+        hidden      : true,
+        options     : [
+            { name : "Fixed", description: "Custom designed 6x8 fixed-point font" },
+            { name : "CMTT", description: "Computer Modern Typewriter font, compressed with a pixel RLE scheme. Multiple font sizes are available."},
+            { name : "Custom" }
+        ]
+    },
+    {
+        name        : "lcdFontSize",
+        displayName : "LCD Font Size",
+        description : "Font size to be used on LCD. Valid options are even numbers between 12 and 48, both included.",
+        default     : 12,
+        hidden      : true
+    },
+    {
+        name        : "lcdCustomFontName",
+        displayName : "Custom Font Name",
+        description : "Name of the symbol containing a custom font. The Graphics_Font or Graphics_FontEx structure must be used.",
+        default     : "",
         hidden      : true
     },
     {
@@ -163,8 +190,9 @@ function pinmuxRequirements(inst)
             signalTypes: ["DOUT"]
         },
         {
-            name: "lcdSSPin",
-            displayName: "LCD Slave Select",
+            name: "lcdCSPin",
+            legacyNames: ["lcdSSPin"],
+            displayName: "LCD Chip Select",
             interfaceName: "GPIO",
             signalTypes: ["DOUT"]
         }
@@ -174,7 +202,7 @@ function pinmuxRequirements(inst)
     if (inst.$hardware) {
         lcdPins[0].signalTypes = ["LCD_ENABLE"];
         lcdPins[1].signalTypes = ["LCD_POWER"];
-        lcdPins[2].signalTypes = ["SPI_SS"];
+        lcdPins[2].signalTypes = ["SPI_CSN"];
     }
 
     return lcdPins;
@@ -210,7 +238,7 @@ function moduleInstances(inst)
         let enableHardware = null;
         let powerName = "LCD Power";
         let powerHardware = null;
-        let selectName = "LCD Slave Select";
+        let selectName = "LCD Chip Select";
         let selectHardware = null;
 
         let shortName = inst.$name.replace("CONFIG_", "");
@@ -270,7 +298,8 @@ function moduleInstances(inst)
                 }
             },
             {
-                name: "lcdSS",
+                name: "lcdCS",
+                legacyNames: ["lcdSS"],
                 displayName: selectName,
                 moduleName: "/ti/drivers/GPIO",
                 args: {
@@ -281,7 +310,7 @@ function moduleInstances(inst)
                 requiredArgs: {
                     /* Can't be changed by the user */
                     parentInterfaceName: "GPIO",
-                    parentSignalName: "lcdSSPin",
+                    parentSignalName: "lcdCSPin",
                     parentSignalDisplayName: selectName,
                     $hardware: selectHardware
                 }
@@ -376,9 +405,25 @@ function onChange(inst, ui)
         ui.uartBufferSize.hidden = true;
         ui.baudRate.hidden = true;
         ui.lcdSize.hidden = false;
+        ui.lcdFont.hidden = false;
         ui.mutexTimeout.hidden = true;
         ui.mutexTimeoutValue.hidden = true;
-        inst.displayImplementation = "DisplayDogm1286";
+        inst.displayImplementation = "DisplaySharp";
+        
+        if(inst.lcdFont == "Fixed")
+        {
+            ui.lcdFontSize.hidden = true;
+            ui.lcdCustomFontName.hidden = true;
+        }else if(inst.lcdFont == "CMTT")
+        {
+            ui.lcdFontSize.hidden = false;
+            ui.lcdCustomFontName.hidden = true;
+        }
+        else if (inst.lcdFont == "Custom")
+        {
+            ui.lcdFontSize.hidden = true;
+            ui.lcdCustomFontName.hidden = false;
+        }
     }
     else if (inst.displayType == "Host") {
         ui.enableANSI.hidden = true;
@@ -386,6 +431,9 @@ function onChange(inst, ui)
         ui.uartBufferSize.hidden = true;
         ui.baudRate.hidden = true;
         ui.lcdSize.hidden = true;
+        ui.lcdFont.hidden = true;
+        ui.lcdFontSize.hidden = true;
+        ui.lcdCustomFontName.hidden = true;
         ui.mutexTimeout.hidden = true;
         ui.mutexTimeoutValue.hidden = true;
         inst.displayImplementation = "DisplayHost";
@@ -396,6 +444,9 @@ function onChange(inst, ui)
         ui.uartBufferSize.hidden = false;
         ui.baudRate.hidden = false;
         ui.lcdSize.hidden = true;
+        ui.lcdFont.hidden = true;
+        ui.lcdFontSize.hidden = true;
+        ui.lcdCustomFontName.hidden = true;
         ui.mutexTimeout.hidden = false;
         onChangeMutexTimeout(inst, ui);
         inst.displayImplementation = "DisplayUart2";

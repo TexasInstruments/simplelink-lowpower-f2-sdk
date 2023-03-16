@@ -35,13 +35,17 @@
 --entry_point resetISR
 
 /* Retain interrupt vector table variable                                    */
---retain=resetVectors
+--retain "*(.resetVecs)"
 
 /* Suppress warnings and errors:                                             */
 /* - 10063: Warning about entry point not being _c_int00                     */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
 --diag_suppress=10063,16011,16012
+
+/* Set severity of diagnostics to Remark instead of Warning                  */
+/* - 10068: Warning about no matching log_ptr* sections                      */
+--diag_remark=10068
 
 /* This flash is reserved for the secure image                               */
 #define FLASH_S_BASE            0x0
@@ -50,7 +54,7 @@
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
 #define FLASH_BASE              0x00038100
-#define FLASH_SIZE              0xC7F00
+#define FLASH_SIZE              0xC6F00  /* Reduced by 0x1000 for the image trailer when using SecureBoot */
 #define RAM_BASE                0x2000C000
 #define RAM_SIZE                0x34000
 #define GPRAM_BASE              0x11000000
@@ -78,6 +82,7 @@ MEMORY
      * Unlikely that all of this will be used, so we are using the upper parts of the region.
      * ARM memory map: https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map*/
     LOG_DATA (R) : origin = 0x90000000, length = 0x40000        /* 256 KB */
+    LOG_PTR  (R) : origin = 0x94000008, length = 0x40000        /* 256 KB */
 }
 
 /* Section allocation in memory */
@@ -97,8 +102,7 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > CCFG
 
-    .vtable_ram     :   > RAM_BASE, type=NOINIT
-    vtable_ram      :   > RAM_BASE, type=NOINIT
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM
@@ -107,4 +111,5 @@ SECTIONS
     .gpram          :   > GPRAM
 
     .log_data       :   > LOG_DATA, type = COPY
+    .log_ptr        : { *(.log_ptr*) } > LOG_PTR align 4, type = COPY
 }

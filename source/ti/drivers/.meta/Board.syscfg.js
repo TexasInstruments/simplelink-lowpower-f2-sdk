@@ -71,8 +71,10 @@ function getLibs(mod)
 
     if (family != "") {
         /* Check for TrustZone module */
-        if(family.match(/(cc.*4)/) && system.modules["/ti/utils/TrustZone"]){
-            libs.push(libPath("ti/drivers","drivers_" + family + "_spe" + ".a"));
+        let tfmEnabled = family.match(/(cc.*4)/) && system.modules["/ti/utils/TrustZone"];
+
+        if(tfmEnabled){
+            libs.push(libPath("ti/drivers","drivers_" + family + "_ns" + ".a"));
         }
         else{
             libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
@@ -83,7 +85,12 @@ function getLibs(mod)
         }
 
         if (rtos == "nortos") {
-            libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
+            if(tfmEnabled){
+                libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + "_ns.a");
+            }
+            else{
+                libs.push("lib/" + getToolchainDir() + "/" + getDeviceIsa() + "/nortos_" + family + ".a");
+            }
         }
 
     }
@@ -113,7 +120,7 @@ function getLibs(mod)
     }
 
     if (system.modules["/ti/drivers/ECDH"] || system.modules["/ti/drivers/ECDSA"]) {
-        /* Add dependency on ECC library for Agama-Lite and Loki-Low */
+        /* Add dependency on ECC library for CC13x1/CC26x1 and CC23x0 */
         if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/)) {
             linkOpts.deps.push("/third_party/ecc");
         }

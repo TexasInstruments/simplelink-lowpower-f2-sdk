@@ -99,9 +99,9 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > CCFG
 
+    .ramVecs        :   > SRAM
     .vtable         :   > SRAM
     .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM

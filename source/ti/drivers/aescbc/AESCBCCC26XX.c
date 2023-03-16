@@ -315,6 +315,7 @@ static int_fast16_t AESCBC_startOperation(AESCBC_Handle handle,
     {
         if (!CryptoResourceCC26XX_acquireLock(object->semaphoreTimeout))
         {
+            object->operationInProgress = false;
             return AESCBC_STATUS_RESOURCE_UNAVAILABLE;
         }
 
@@ -336,6 +337,7 @@ static int_fast16_t AESCBC_startOperation(AESCBC_Handle handle,
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
+        object->operationInProgress  = false;
     }
 
     return result;
@@ -618,6 +620,26 @@ int_fast16_t AESCBC_addData(AESCBC_Handle handle, AESCBC_SegmentedOperation *ope
     return result;
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+/*
+ *  ======== AESCBC_getKeyStoreKeyUsage ========
+ */
+static KeyStore_PSA_KeyUsage AESCBC_getKeyStoreKeyUsage(AESCBC_Mode direction)
+{
+    switch (direction)
+    {
+        case AESCBC_MODE_ENCRYPT:
+            return KEYSTORE_PSA_KEY_USAGE_ENCRYPT;
+
+        case AESCBC_MODE_DECRYPT:
+            return KEYSTORE_PSA_KEY_USAGE_DECRYPT;
+
+        default:
+            return 0;
+    }
+}
+#endif /* (ENABLE_KEY_STORAGE == 1) */
+
 /*
  *  ======== AESCBC_addDataInternal ========
  */
@@ -638,6 +660,7 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus;
     KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage keyUsage;
     uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
 #endif
 
@@ -661,12 +684,19 @@ static int_fast16_t AESCBC_addDataInternal(AESCBC_Handle handle,
     {
         GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyUsage = AESCBC_getKeyStoreKeyUsage(direction);
+
+        if (!keyUsage)
+        {
+            return AESCBC_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
                                              KEYSTORE_PSA_ALG_CBC_NO_PADDING,
-                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                                             keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
         {

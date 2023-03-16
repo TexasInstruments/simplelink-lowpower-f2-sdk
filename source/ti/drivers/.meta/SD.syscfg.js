@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,9 +87,9 @@ function _getPinResources(inst)
         pin = mod._getPinResources(inst.spiInstance);
     }
 
-    if (inst.slaveSelect) {
+    if (inst.chipSelect) {
         let mod = system.getScript("/ti/drivers/GPIO.syscfg.js");
-        pin += "\nSS: " + mod._getPinResources(inst.slaveSelect);
+        pin += "\nCS: " + mod._getPinResources(inst.chipSelect);
     }
 
     return (pin);
@@ -138,19 +138,20 @@ function pinmuxRequirements(inst)
         return inst.$module.devSpecificPinmuxRequirements(inst);
     }
 
-    let ssPin = {
-        name: "sdSSPin",
-        displayName: "SD SPI Slave Select",
+    let csnPin = {
+        name: "sdCSPin",
+        legacyNames: ["sdSSPin"],
+        displayName: "SD SPI Chip Select",
         interfaceName: "GPIO",
         signalTypes: ["DOUT"]
     };
 
     /* If we have hardware, require the specific pins instead of generic DOUT pins */
     if (inst.$hardware) {
-        ssPin.signalTypes = ["SPI_SS"];
+        csnPin.signalTypes = ["SPI_CSN"];
     }
 
-    return [ssPin];
+    return [csnPin];
 }
 
 /*
@@ -164,7 +165,7 @@ function moduleInstances(inst)
     }
 
     let selectHardware = null;
-    let selectName = "SD Slave Select";
+    let selectName = "SD Chip Select";
 
     /* Speculatively get hardware and displayName */
     if (inst.$hardware && inst.$hardware.subComponents) {
@@ -177,7 +178,8 @@ function moduleInstances(inst)
     }
 
     return ([{
-        name: "slaveSelect",
+        name: "chipSelect",
+        legacyNames: ["slaveSelect"],
         displayName: selectName,
         moduleName: "/ti/drivers/GPIO",
         args: {
@@ -188,7 +190,7 @@ function moduleInstances(inst)
         requiredArgs: {
             /* Can't be changed by the user */
             parentInterfaceName: "GPIO",
-            parentSignalName: "sdSSPin",
+            parentSignalName: "sdCSPin",
             parentSignalDisplayName: selectName,
             $hardware: selectHardware
         }

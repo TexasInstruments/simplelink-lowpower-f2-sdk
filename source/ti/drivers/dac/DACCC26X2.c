@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,6 @@
 #include DeviceFamily_constructPath(driverlib/aux_dac.h)
 #include DeviceFamily_constructPath(driverlib/aux_smph.h)
 
-#define DAC_CLOCK_FREQ_24MHZ     0U
 #define MICROVOLTS_PER_MILLIVOLT 1000
 #define CALIBRATION_VDDS         3000
 
@@ -283,8 +282,12 @@ int_fast16_t DAC_enable(DAC_Handle handle)
         return status;
     }
 
-    /* Configure the frequency of the DAC's sample clock. */
-    AUXDACSetSampleClock(DAC_CLOCK_FREQ_24MHZ);
+    /* AUX Bus frequency (24 MHz) divided by (dacSmplClkDivider + 1) determines
+     * the sample base clock (SBCLK) frequency. The DAC sample clock is configured
+     * to be high for 4 SBCLK periods, and low for 4 SBCLK periods. This means
+     * that the DAC sample clock has a frequency of that equal to (SBCLK freq)/8.
+     */
+    AUXDACSetSampleClock(hwAttrs->dacSmplClkDivider);
 
     /* Set the DAC's output code. */
     AUXDACSetCode((uint8_t)object->currCode);

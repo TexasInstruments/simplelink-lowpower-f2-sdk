@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022, Texas Instruments Incorporated
+ Copyright (c) 2022-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -517,6 +517,50 @@ void BLEAppUtil_processHCISMPEvents(bleStack_msgHdt_t *pMsg)
  *
  * @return  None
  */
+void BLEAppUtil_processHCICTRLToHostEvents(BLEAppUtil_msgHdr_t *pMsg)
+{
+    hciPacket_t *pBuf = (hciPacket_t *)pMsg;
+    uint32_t event = 0;
+
+    switch(pBuf->pData[0])
+    {
+        case HCI_EVENT_PACKET:
+        {
+            event = BLEAPPUTIL_HCI_EVENT_PACKET;
+            break;
+        }
+
+        case HCI_ACL_DATA_PACKET:
+        {
+           event = BLEAPPUTIL_HCI_ACL_DATA_PACKET;
+           break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    // Pass the event and msg to BLEAppUtil_callEventHandler which calls the
+    // handler of the application
+    BLEAppUtil_callEventHandler(event, pMsg, BLEAPPUTIL_HCI_CTRL_TO_HOST_TYPE);
+}
+/*********************************************************************
+ * @fn      BLEAppUtil_processHCISMPMetaEvents
+ *
+ * @brief   Process HCI SMP Meta events received from the BLE stack, called
+ *          from BLEAppUtil task context.
+ *          This function converts the BLE stack events to BLEAppUtil
+ *          events (which are bit mask events) and calls @ref
+ *          BLEAppUtil_callEventHandler.
+ *          All the events processed in this function will be received by
+ *          handlers form type of BLEAPPUTIL_HCI_SMP_META_TYPE
+ *
+ * @param   pMsg - the message the process
+ *
+ * @return  None
+ */
 void BLEAppUtil_processHCISMPMetaEvents(bleStack_msgHdt_t *pMsg)
 {
     ICall_HciExtEvt * pMsgData = (ICall_HciExtEvt *)pMsg;
@@ -754,7 +798,7 @@ void BLEAppUtil_callEventHandler(uint32_t event, BLEAppUtil_msgHdr_t *pMsg, BLEA
     BLEAppUtil_EventHandlersList_t *iter = BLEAppUtilEventHandlersHead;
 
     // Lock the Mutex
-    uintptr_t key = MutexP_lock(BLEAppUtil_mutexHandle);
+    pthread_mutex_lock(&mutex);
 
     // Iterat over the handlers list
     while(iter != NULL)
@@ -778,5 +822,5 @@ void BLEAppUtil_callEventHandler(uint32_t event, BLEAppUtil_msgHdr_t *pMsg, BLEA
     }
 
     // Unlock the Mutex - handlers were called
-    MutexP_unlock(BLEAppUtil_mutexHandle, key);
+    pthread_mutex_unlock(&mutex);
 }

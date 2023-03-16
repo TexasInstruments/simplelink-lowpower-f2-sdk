@@ -212,7 +212,7 @@ extern "C" {
     + defined(DeviceFamily_CC26X1) + defined(DeviceFamily_CC26X2)           \
     + defined(DeviceFamily_CC26X2X7) + defined(DeviceFamily_CC26X3)         \
     + defined(DeviceFamily_CC26X4) + defined(DeviceFamily_CC13X4)           \
-    + defined(DeviceFamily_CC23X0)                                          \
+    + defined(DeviceFamily_CC23X0) + defined(DeviceFamily_CC23X0R2)         \
     + defined(DeviceFamily_CC3200) + defined(DeviceFamily_CC3220)           \
     ) > 1
     #error More then one DeviceFamily has been defined!

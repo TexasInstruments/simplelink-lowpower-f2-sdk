@@ -39,7 +39,7 @@
 #include <ti/drivers/aesecb/AESECBCC26XX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 

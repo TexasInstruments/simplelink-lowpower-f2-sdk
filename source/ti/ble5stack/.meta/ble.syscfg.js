@@ -115,7 +115,6 @@ const moduleStatic = {
             displayName: "Hide PTM",
             default: false,
             hidden: true,
-            onChange: onHidePtmChange,
             description: "Used to hide the PTM configurable. Always hidden"
         },
         {
@@ -448,17 +447,6 @@ function ondeviceRoleChange(inst,ui)
         }
     }
 
-    // Use ptm only in the relevant roles
-    if(_.isEqual(inst.deviceRole, "PERIPHERAL_CFG") && !inst.hidePtm)
-    {
-        inst.ptm = false;
-        ui.ptm.hidden = false;
-    }
-    else
-    {
-        ui.ptm.hidden = true;
-    }
-
     // Enable bondFailAction only when using Central role
     if(inst.deviceRole.includes("CENTRAL_CFG"))
     {
@@ -533,26 +521,6 @@ function ondisableConfigChange(inst, ui)
     }
 
     changeGroupsState(inst,ui);
-}
-
-/*
- *  ======== onHidePtmChange ========
- * Show/hide the ptm configurable
- * @param inst  - Module instance containing the config that changed
- * @param ui    - The User Interface object
- */
-function onHidePtmChange(inst,ui)
-{
-    // Use ptm only in the relevant roles
-    if(_.isEqual(inst.deviceRole, "PERIPHERAL_CFG") && !inst.hidePtm)
-    {
-        inst.ptm = false;
-        ui.ptm.hidden = false;
-    }
-    else
-    {
-        ui.ptm.hidden = true;
-    }
 }
 
 /*

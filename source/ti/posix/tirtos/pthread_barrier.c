@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,12 +47,12 @@
 /*
  *  ======== pthread_barrier_obj ========
  */
-typedef struct {
+typedef struct
+{
     Semaphore_Struct sem;
     int count;
     int pendCount;
 } pthread_barrier_obj;
-
 
 /*
  *************************************************************************
@@ -96,19 +96,19 @@ int pthread_barrier_destroy(pthread_barrier_t *barrier)
 /*
  *  ======== pthread_barrier_init ========
  */
-int pthread_barrier_init(pthread_barrier_t *barrier,
-        const pthread_barrierattr_t *attr, unsigned count)
+int pthread_barrier_init(pthread_barrier_t *barrier, const pthread_barrierattr_t *attr, unsigned count)
 {
     pthread_barrier_obj *obj = (pthread_barrier_obj *)(&barrier->sysbios);
 
     /* object size validation */
-    Assert_isTrue(sizeof(pthread_barrier_obj)<=sizeof(pthread_barrier_t),NULL);
+    Assert_isTrue(sizeof(pthread_barrier_obj) <= sizeof(pthread_barrier_t), NULL);
 
-    if (count == 0) {
+    if (count == 0)
+    {
         return (EINVAL);
     }
 
-    obj->count = count;
+    obj->count     = count;
     obj->pendCount = 0;
 
     /* default semaphore mode is Semaphore_Mode_COUNTING */
@@ -128,13 +128,16 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
 
     key = Task_disable();
 
-    if (++obj->pendCount < obj->count) {
+    if (++obj->pendCount < obj->count)
+    {
         Task_restore(key);
         Semaphore_pend(Semaphore_handle(&(obj->sem)), BIOS_WAIT_FOREVER);
         return (0);
     }
-    else {
-        for (i = 0; i < obj->count - 1; i++) {
+    else
+    {
+        for (i = 0; i < obj->count - 1; i++)
+        {
             Semaphore_post(Semaphore_handle(&(obj->sem)));
         }
 

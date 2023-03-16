@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,7 @@
 #include DeviceFamily_constructPath(driverlib/vims.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/setup.h)
+#include DeviceFamily_constructPath(driverlib/setup_rom.h)
 #include DeviceFamily_constructPath(driverlib/ccfgread.h)
 
 static unsigned int configureXOSCHF(unsigned int action);
@@ -84,6 +85,10 @@ static void hposcRtcCompensateFxn(int16_t currentTemperature,
                                   int16_t thresholdTemperature,
                                   uintptr_t clientArg,
                                   Temperature_NotifyObj *notifyObject);
+static void xosclfRtcCompensateFxn(int16_t currentTemperature,
+                                   int16_t thresholdTemperature,
+                                   uintptr_t clientArg,
+                                   Temperature_NotifyObj *notifyObject);
 
 /* RCOSC calibration functions functions */
 extern void PowerCC26X2_calibrate(void);
@@ -131,6 +136,23 @@ PowerCC26X2_ModuleState PowerCC26X2_module = {
  *  from SCLK_HF when SCLK_HF is configured as HPOSC.
  */
 static Temperature_NotifyObj PowerCC26X2_hposcRtcCompNotifyObj = {0};
+
+/*! Temperature notification to compensate the RTC when SCLK_LF is derived
+ *  from XOSC_LF
+ */
+static Temperature_NotifyObj PowerCC26X2_xosclfRtcCompNotifyObj = {0};
+
+/*! Default RTC subsecond increment corresponding to precisely 32768 Hz
+ *  increment frequency
+ */
+#define RTC_SUBSECINC_32768_HZ 0x800000
+
+/*! This internal variable to the power-driver keeps track of the most recent
+ *  RTC increment value, whenever it is compensated due to temperature drift.
+ *  In case of a clock-switch from XOSC_LF to RCOSC_LF or vice versa, this
+ *  value is used to reprogram the RTC with a correct compensated value.
+ */
+static volatile uint32_t PowerCC26X2_rtcSubSecInc = RTC_SUBSECINC_32768_HZ;
 
 /* resource database */
 const PowerCC26XX_ResourceRecord resourceDB[PowerCC26X2_NUMRESOURCES] = {
@@ -960,6 +982,14 @@ void Power_unregisterNotify(Power_NotifyObj *pNotifyObj)
     HwiP_restore(key);
 }
 
+/*
+ *  ======== Power_reset ========
+ */
+void Power_reset(void)
+{
+    PowerCC26X2_sysCtrlReset();
+}
+
 /* ****************** CC26XX specific APIs ******************** */
 
 /*
@@ -989,6 +1019,34 @@ void PowerCC26X2_enableHposcRtcCompensation(void)
                               currentTemperature + PowerCC26X2_HPOSC_RTC_COMPENSATION_DELTA,
                               (uintptr_t)NULL,
                               &PowerCC26X2_hposcRtcCompNotifyObj);
+    }
+}
+
+/*
+ *  ======== PowerCC26X2_enableXoscLfRtcCompensation ========
+ *  This function enables temperature based compensation of the RTC when
+ *  SCLK_LF is derived from XOSC_LF.
+ */
+void PowerCC26X2_enableXoscLfRtcCompensation(void)
+{
+    /* Check that SCLK_LF is derived from XOSC_LF */
+    if (CCFGRead_SCLK_LF_OPTION() == CCFGREAD_SCLK_LF_OPTION_XOSC_LF)
+    {
+        Temperature_init();
+
+        int16_t currentTemperature = Temperature_getTemperature();
+
+        /* This must be called before xosclfRtcCompensateFxn, as the compensation parameters must be initialised
+         * with respect to device-specifc temperature trim values.
+         */
+        OSC_LFXOSCInitStaticOffset();
+
+        /* The compensation fxn will register itself with updated thresholds
+         * based on the current temperature each time it is invoked. If we
+         * call it from the init function, it will register itself for the
+         * first time and handle initial RTC compensation.
+         */
+        xosclfRtcCompensateFxn(currentTemperature, 0, (uintptr_t)NULL, &PowerCC26X2_xosclfRtcCompNotifyObj);
     }
 }
 
@@ -1177,6 +1235,44 @@ static void hposcRtcCompensateFxn(int16_t currentTemperature,
 }
 
 /*
+ *  ======== xosclfRtcCompensateFxn ========
+ */
+static void xosclfRtcCompensateFxn(int16_t currentTemperature,
+                                   int16_t thresholdTemperature,
+                                   uintptr_t clientArg,
+                                   Temperature_NotifyObj *notifyObject)
+{
+    int_fast16_t status;
+    int32_t xoscLfTemperatureOffset;
+    int32_t subsecIncCompensated;
+
+    /* Get PPM offset of crystal */
+    xoscLfTemperatureOffset = OSC_LFXOSCRelativeFrequencyOffsetGet(currentTemperature);
+
+    /* Calculate new subsecond increment, given offset value */
+    subsecIncCompensated = RTC_SUBSECINC_32768_HZ -
+                           (int32_t)((RTC_SUBSECINC_32768_HZ * (int64_t)xoscLfTemperatureOffset) / 1000000LL);
+
+    /* Update global RTC subsecond increment value, used by the Oscillator ISR when switching clocks */
+    PowerCC26X2_rtcSubSecInc = subsecIncCompensated;
+
+    /* Apply new RTC increment value */
+    PowerCC26X2_setSubSecIncToXoscLf(subsecIncCompensated);
+
+    /* Register the notification again with updated thresholds */
+    status = Temperature_registerNotifyRange(notifyObject,
+                                             currentTemperature + PowerCC26X2_XOSC_LF_RTC_COMPENSATION_DELTA,
+                                             currentTemperature - PowerCC26X2_XOSC_LF_RTC_COMPENSATION_DELTA,
+                                             xosclfRtcCompensateFxn,
+                                             (uintptr_t)NULL);
+
+    if (status != Temperature_STATUS_SUCCESS)
+    {
+        while (1) {}
+    }
+}
+
+/*
  *  ======== oscillatorISR ========
  */
 static void oscillatorISR(uintptr_t arg)
@@ -1201,7 +1297,7 @@ static void oscillatorISR(uintptr_t arg)
             /* Set SubSecInc back to 32.768 kHz now that we have switched to
              * the RCOSC_LF or XOSC_LF target clock.
              */
-            PowerCC26X2_setSubSecIncToXoscLf();
+            PowerCC26X2_setSubSecIncToXoscLf(PowerCC26X2_rtcSubSecInc);
         }
 
         disableLFClockQualifiers();

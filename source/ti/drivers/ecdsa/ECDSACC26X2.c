@@ -97,7 +97,7 @@ static uint32_t scratchBuffer1Size = SCRATCH_BUFFER_SIZE;
 
 static void ECDSACC26X2_enableIRQ(void)
 {
-#if (SPE_ENABLED == 0)
+#if (TFM_ENABLED == 0)
     IntEnable(INT_PKA_IRQ);
 #endif
 }
@@ -816,7 +816,7 @@ static int_fast16_t ECDSACC26X2_waitForResult(ECDSA_Handle handle)
     switch (object->returnBehavior)
     {
         case ECDSA_RETURN_BEHAVIOR_POLLING:
-#if (SPE_ENABLED == 0)
+#if (TFM_ENABLED == 0)
             while (!PKAResourceCC26XX_pollingFlag) {}
 #else
             /*
@@ -968,7 +968,7 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
     object->trngConfig.object       = &object->trngObject;
     object->trngConfig.hwAttrs      = &object->trngHwAttrs;
 
-#if (SPE_ENABLED == 1)
+#if (TFM_ENABLED == 1)
     /* Only polling mode calls can be made on secure side */
     trngParams.returnBehavior = TRNG_RETURN_BEHAVIOR_POLLING;
 #else
@@ -1006,7 +1006,7 @@ int_fast16_t ECDSA_sign(ECDSA_Handle handle, ECDSA_OperationSign *operation)
         return ECDSA_STATUS_ERROR;
     }
 
-#if (SPE_ENABLED == 1)
+#if (TFM_ENABLED == 1)
     /* TRNG was used in polling mode so callback must be manually called */
     ECDSACC26X2_trngCallback(object->trngHandle, trngStatus, &object->pmsnKey);
 #endif

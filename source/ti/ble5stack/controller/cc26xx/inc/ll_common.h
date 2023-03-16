@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -228,6 +228,10 @@ extern "C"
 #define LL_STATE_MODEM_TEST_TX                         0x0B
 #define LL_STATE_MODEM_TEST_RX                         0x0C
 #define LL_STATE_MODEM_TEST_TX_FREQ_HOPPING            0x0D
+
+// Pre release flag for the health check
+#define LL_PRE_REALSE_INDICATION                       0x0F
+
 // Extended Advertising
 // TEMP: CONSOLIDATE BACK INTO EXISTING STATES
 #define LL_STATE_EXT_ADV                               0x11
@@ -664,43 +668,61 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_MAX_FEATURE_SET_SIZE                        8         // in bytes
 //
 #define LL_FEATURE_NONE                                0x00
+
+// "Send to Peer" column description:
+// "Y" indicates that the bit shall be set correctly when sent to the peer.
+// "O" indicates that the bit shall either be zero or set correctly when sent to the
+//      peer. The peer device shall ignore the value of this bit.
+// "N" indicates that the bit shall be set to zero when sent to the peer.
+// If a bit does not have "Y" for "Send to Peer", it shall not be used to determine
+// whether a peer device supports any associated procedure.
+//                                                                   // "Send to Peer"
 // Byte 0
-#define LL_FEATURE_ENCRYPTION                          0x01
-#define LL_FEATURE_CONN_PARAMS_REQ                     0x02
-#define LL_FEATURE_REJECT_EXT_IND                      0x04
-#define LL_FEATURE_SLV_FEATURES_EXCHANGE               0x08
-#define LL_FEATURE_PING                                0x10
-#define LL_FEATURE_DATA_PACKET_LENGTH_EXTENSION        0x20
-#define LL_FEATURE_PRIVACY                             0x40
-#define LL_FEATURE_EXTENDED_SCANNER_FILTER_POLICIES    0x80
+#define LL_FEATURE_ENCRYPTION                          0x01          //     "Y"
+#define LL_FEATURE_CONN_PARAMS_REQ                     0x02          //     "Y"
+#define LL_FEATURE_REJECT_EXT_IND                      0x04          //     "Y"
+#define LL_FEATURE_SLV_FEATURES_EXCHANGE               0x08          //     "Y"
+#define LL_FEATURE_PING                                0x10          //     "O"
+#define LL_FEATURE_DATA_PACKET_LENGTH_EXTENSION        0x20          //     "Y"
+#define LL_FEATURE_PRIVACY                             0x40          //     "O"
+#define LL_FEATURE_EXTENDED_SCANNER_FILTER_POLICIES    0x80          //     "O"
 // Byte 1
-#define LL_FEATURE_2M_PHY                              0x01
-#define LL_FEATURE_STABLE_MODULATION_INDEX_TX          0x02
-#define LL_FEATURE_STABLE_MODULATION_INDEX_RX          0x04
-#define LL_FEATURE_CODED_PHY                           0x08
-#define LL_FEATURE_EXTENDED_ADVERTISING                0x10
-#define LL_FEATURE_PERIODIC_ADVERTISING                0x20
-#define LL_FEATURE_CHAN_ALGO_2                         0x40
-#define LL_FEATURE_LE_POWER_CLASS_1                    0x80
+#define LL_FEATURE_2M_PHY                              0x01          //     "Y"
+#define LL_FEATURE_STABLE_MODULATION_INDEX_TX          0x02          //     "Y"
+#define LL_FEATURE_STABLE_MODULATION_INDEX_RX          0x04          //     "Y"
+#define LL_FEATURE_CODED_PHY                           0x08          //     "Y"
+#define LL_FEATURE_EXTENDED_ADVERTISING                0x10          //     "O"
+#define LL_FEATURE_PERIODIC_ADVERTISING                0x20          //     "O"
+#define LL_FEATURE_CHAN_ALGO_2                         0x40          //     "Y"
+#define LL_FEATURE_LE_POWER_CLASS_1                    0x80          //     "Y"
 // Byte 2
-#define LL_FEATURE_MINIMUM_NUMBER_OF_USED_CHANNELS     0x01
-#define LL_FEATURE_CONNECTION_CTE_REQUEST              0x02  // support CTE request procedure as initiator
-#define LL_FEATURE_CONNECTION_CTE_RESPONSE             0x04  // support CTE request procedure as responder
-#define LL_FEATURE_CONNECTIONLESS_CTE_TRANSMITTER      0x08
-#define LL_FEATURE_CONNECTIONLESS_CTE_RECEIVER         0x10
-#define LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_TX     0x20  // support LL_FEATURE_RECEIVING_CTE and switching antennas for AoD
-#define LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_RX     0x40  // support LL_FEATURE_RECEIVING_CTE and switching antennas for AoA
-#define LL_FEATURE_RECEIVING_CTE                       0x80  // support receiving CTE in data PDUs and IQ sampling
+#define LL_FEATURE_MINIMUM_NUMBER_OF_USED_CHANNELS     0x01          //     "Y"
+#define LL_FEATURE_CONNECTION_CTE_REQUEST              0x02          //     "Y"     // support CTE request procedure as initiator
+#define LL_FEATURE_CONNECTION_CTE_RESPONSE             0x04          //     "Y"     // support CTE request procedure as responder
+#define LL_FEATURE_CONNECTIONLESS_CTE_TRANSMITTER      0x08          //     "O"
+#define LL_FEATURE_CONNECTIONLESS_CTE_RECEIVER         0x10          //     "O"
+#define LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_TX     0x20          //     "O"     // support LL_FEATURE_RECEIVING_CTE and switching antennas for AoD
+#define LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_RX     0x40          //     "O"     // support LL_FEATURE_RECEIVING_CTE and switching antennas for AoA
+#define LL_FEATURE_RECEIVING_CTE                       0x80          //     "Y"     // support receiving CTE in data PDUs and IQ sampling
 // Byte 3
-#define LL_FEATURE_PERIODIC_ADV_SYNC_TRANSFER_SEND     0x01
-#define LL_FEATURE_PERIODIC_ADV_SYNC_TRANSFER_RECV     0x02
-#define LL_FEATURE_SLEEP_CLOCK_ACCURACY_UPDATES        0x04
-#define LL_FEATURE_REMOTE_PUBLIC_KEY_VALIDATION        0x08
-#define LL_FEATURE_RESERVED4                           0x10
-#define LL_FEATURE_RESERVED5                           0x20
-#define LL_FEATURE_RESERVED6                           0x40
-#define LL_FEATURE_RESERVED7                           0x80
-// Byte 4 - Byte 7
+#define LL_FEATURE_PERIODIC_ADV_SYNC_TRANSFER_SEND     0x01          //     "Y"
+#define LL_FEATURE_PERIODIC_ADV_SYNC_TRANSFER_RECV     0x02          //     "Y"
+#define LL_FEATURE_SLEEP_CLOCK_ACCURACY_UPDATES        0x04          //     "Y"
+#define LL_FEATURE_REMOTE_PUBLIC_KEY_VALIDATION        0x08          //     "N"
+#define LL_FEATURE_CONNECTED_ISOCHROOUS_STREAM_CENTRAL 0x10          //     "Y"
+#define LL_FEATURE_CONNECTED_ISOCHROOUS_STREAM_PERIPHERAL 0x20       //     "Y"
+#define LL_FEATURE_ISOCHRONOUS_BROADCASTER             0x40          //     "Y"
+#define LL_FEATURE_SYNCRONIZED_RECEIVER                0x80          //     "Y"
+// Byte 4
+#define LL_FEATURE_CONNECTED_ISOCHROOUS_STREAM_HOST    0x01          //     "Y"
+#define LL_FEATURE_LE_POWER_CONTROL_REQUEST            0x02          //     "Y"
+#define LL_FEATURE_LE_POWER_CONTROL_REQUEST_2          0x04          //     "Y"
+#define LL_FEATURE_LE_PATH_LOSS_MONITORING             0x08          //     "Y"
+#define LL_FEATURE_PERIODIC_ADVERTISING_ADI_SUPPORT    0x10          //     "O"
+#define LL_FEATURE_CONNECTION_SUBRATING                0x20          //     "Y"
+#define LL_FEATURE_CONNECTION_SUBRAING_HOST_SUPPORT    0x40          //     "Y"
+#define LL_FEATURE_CHANNEL_CLASSIFICATION              0x80          //     "Y"
+// Byte 5 - Byte 7
 #define LL_FEATURE_RESERVED0                           0x01
 #define LL_FEATURE_RESERVED1                           0x02
 #define LL_FEATURE_RESERVED2                           0x04
@@ -709,12 +731,6 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_FEATURE_RESERVED5                           0x20
 #define LL_FEATURE_RESERVED6                           0x40
 #define LL_FEATURE_RESERVED7                           0x80
-
-//
-// !!! Update the following defines in case of adding a new feature
-//
-#define LL_FEATURE_MAX_FEATURES_LSB                    0x0FFFFFFF // number of spec features 0 - 3 bytes (bits 28 - 31 are invalid)
-#define LL_FEATURE_MAX_FEATURES_MSB                    0x00000000 // number of spec features 4 - 7 bytes (bits 0 - 31 are invalid)
 
 // Feature Set Masks
 // Note: BLE V5.0, Vol.6, Part B, Section 4.6, Table 4.4 indicates which bits
@@ -732,7 +748,7 @@ extern char *llCtrl_BleLogStrings[];
                                                         LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_TX    |  \
                                                         LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_RX)
 #define LL_FEATURE_MASK_BYTE3                          LL_FEATURE_REMOTE_PUBLIC_KEY_VALIDATION
-#define LL_FEATURE_MASK_BYTE4                          LL_FEATURE_NONE
+#define LL_FEATURE_MASK_BYTE4                          LL_FEATURE_PERIODIC_ADVERTISING_ADI_SUPPORT
 #define LL_FEATURE_MASK_BYTE5                          LL_FEATURE_NONE
 #define LL_FEATURE_MASK_BYTE6                          LL_FEATURE_NONE
 #define LL_FEATURE_MASK_BYTE7                          LL_FEATURE_NONE
@@ -948,6 +964,7 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_HEALTH_CHECK_SCAN_FAILURE    -2
 #define LL_HEALTH_CHECK_INIT_FAILURE    -3
 #define LL_HEALTH_CHECK_ADV_FAILURE     -4
+#define LL_HEALTH_CHECK_PRE_RELEASE     -5
 
 // Health check default time threshold
 #define LL_HEALTH_CHECK_CONN_DEFAULT_THRESHOLD  (RAT_TICKS_IN_32S)           //32 sec - max LSTO
@@ -1092,11 +1109,20 @@ typedef struct
 } encInfo_t;
 
 // Feature Set Data
+// This structure has a single global instance per device (called deviceFeatureSet)
+// and one instance per each connection (part of connPtr, called featureSetInfo).
 typedef struct
 {
-  uint8 featureRspRcved;                             // flag to indicate the Feature Request has been responded to
-  uint8 featureSet[ LL_MAX_FEATURE_SET_SIZE ];       // features supported by this device
-  uint8 featureSetMask[ LL_MAX_FEATURE_SET_SIZE ];   // peer features to be ignored
+  uint8 featureRspRcved;                             // indicates that the peer feature set was received (in Feature Request PDU)
+  uint8 featureSet[ LL_MAX_FEATURE_SET_SIZE ];       // in deviceFeatureSet, this indicates the features list, supported by this device
+                                                     // in featureSetInfo, this is the active feature set - the combination (logical AND)
+                                                     //                    of this device's feature set and the peer's device feature set.
+  uint8 featureSetMask[ LL_MAX_FEATURE_SET_SIZE ];   // in deviceFeatureSet, this is the mask for peer's features, which we shall ignore when
+                                                     //                    calculating active feature set.
+                                                     // in featureSetInfo, this is the peer's device feature set.
+                                                     //                    Remote feature procedure should to be called for this to be valid;
+                                                     //                    doesn't matter who initiates the procedure - the central or the peripheral.
+                                                     //                    Valid in case featureRspRcved is true.
 } featureSet_t;
 
 // Connection Termination
@@ -1279,7 +1305,8 @@ struct llConnExtraParams_t
   /* Starvation Handling */
   uint8   StarvationMode:1;               // connection starvation mode on/off
   uint8   numLSTORetries:3;               // connection number of retries in LSTO state
-  uint8   reserved:4;					  // reserved
+  uint8   paramUpdateNotifyHost:1;        // indicates that there was a param update with param change in connInterval, connTimeout or slaveLatency
+  uint8   reserved:3;                     // reserved
   uint8   phyUpdatedNoChange;             // indicates that there was a phy update without phy change (Timesync Procedure 1)
 }; 
 
@@ -1737,6 +1764,11 @@ typedef struct
 #define LL_TEST_MODE_TP_CON_MAS_BV65                 68
 #define LL_TEST_MODE_TP_CON_INI_BV03                 69
 #define LL_TEST_MODE_TP_DDI_SCN_BV36                 70
+// TS V5.3
+#define LL_TEST_MODE_TP_CON_ADV_BI_01                71
+#define LL_TEST_MODE_TP_CON_ADV_BI_02                72
+#define LL_TEST_MODE_TP_ENC_INI_BI_01                80
+#define LL_TEST_MODE_TP_CON_INI_BI_02                81
 // Tickets
 #define LL_TEST_MODE_JIRA_220                        200
 #define LL_TEST_MODE_MISSED_SLV_EVT                  201
@@ -1871,11 +1903,6 @@ extern llCteTest_t llCteTest;
 // DMM Policy feature
 extern dmmPolicyManager_t dmmPolicyManager;
 
-// Remote feature set cache
-#ifdef QUAL_TEST
-extern featureRsp_t *remoteFeatureSet;
-#endif
-
 // Current Mapped Channel
 extern uint8 *llCurrentMappedChan;
 
@@ -1964,7 +1991,7 @@ extern uint8                llMoveBackCtrlPkt( llConnState_t *, uint8 *, uint8 )
 extern void                 llSendReject( llConnState_t *, uint8, uint8 );
 extern uint8                llPendingUpdateParam( void );
 extern void                 llInitFeatureSet( void );
-extern void                 llRemoveFromFeatureSet( uint8 feature );
+extern void                 llRemoveFromFeatureSet( uint8 byte, uint8 feature );
 extern void                 llConvertCtrlProcTimeoutToEvent( llConnState_t * );
 extern uint8                llVerifyConnParamReqParams( uint16, uint16, uint16, uint8, uint16, uint16 *);
 extern uint8                llValidateConnParams( llConnState_t *, uint16, uint16, uint16, uint16, uint16, uint8, uint16, uint16 *);
@@ -2093,10 +2120,17 @@ extern void                 llDmmDynamicFree(void);
 extern llStatus_t           llDmmDynamicAlloc(void);
 
 // Health check api
+extern void llHealthUpdateWrapperForOsal(void);
 extern int8 llHealthCheck(void);
 extern void llHealthSetThreshold(uint32 connTime,uint32 scanTime,uint32 initTime,uint32 advTime);
 // Health check internal
 extern void llHealthUpdate(uint8 state);
+
+extern void llCreateCommonFeatureSet( llConnState_t *connPtr, uint8 *pBuf );
+extern void LL_ReadRemoteUsedFeaturesCompleteCback_sPatch( uint8 status, uint16 connHandle, uint8 *featureSet );
+
+// Tx queue api
+extern uint8 llQueryTxQueue(uint32 addr);
 
 #ifdef __cplusplus
 }

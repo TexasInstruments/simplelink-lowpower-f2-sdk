@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -475,6 +475,7 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
 
     if (resourceAcquired != SemaphoreP_OK)
     {
+        object->operationInProgress = false;
         return AESGCM_STATUS_RESOURCE_UNAVAILABLE;
     }
     else
@@ -542,6 +543,7 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
     {
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
         object->cryptoResourceLocked = false;
+        object->operationInProgress  = false;
     }
 
     return result;
@@ -970,6 +972,26 @@ int_fast16_t AESGCM_addAAD(AESGCM_Handle handle, AESGCM_SegmentedAADOperation *o
     return result;
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+/*
+ *  ======== AESGCM_getKeyStoreKeyUsage ========
+ */
+static KeyStore_PSA_KeyUsage AESGCM_getKeyStoreKeyUsage(AESGCM_Mode mode)
+{
+    switch (mode)
+    {
+        case AESGCM_MODE_ENCRYPT:
+            return KEYSTORE_PSA_KEY_USAGE_ENCRYPT;
+
+        case AESGCM_MODE_DECRYPT:
+            return KEYSTORE_PSA_KEY_USAGE_DECRYPT;
+
+        default:
+            return 0;
+    }
+}
+#endif /* (ENABLE_KEY_STORAGE == 1) */
+
 /*
  *  ======== AESGCM_addAADInternal ========
  */
@@ -984,6 +1006,7 @@ static int_fast16_t AESGCM_addAADInternal(AESGCM_Handle handle, uint8_t *aad, si
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus;
     KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage keyUsage;
     uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
 #endif
 
@@ -1005,12 +1028,19 @@ static int_fast16_t AESGCM_addAADInternal(AESGCM_Handle handle, uint8_t *aad, si
     {
         GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyUsage = AESGCM_getKeyStoreKeyUsage(direction);
+
+        if (!keyUsage)
+        {
+            return AESGCM_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
                                              KEYSTORE_PSA_ALG_GCM,
-                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                                             keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
         {
@@ -1325,6 +1355,7 @@ static int_fast16_t AESGCM_addDataInternal(AESGCM_Handle handle,
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus;
     KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage keyUsage;
     uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
 #endif
 
@@ -1346,12 +1377,19 @@ static int_fast16_t AESGCM_addDataInternal(AESGCM_Handle handle,
     {
         GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyUsage = AESGCM_getKeyStoreKeyUsage(direction);
+
+        if (!keyUsage)
+        {
+            return AESGCM_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
                                              KEYSTORE_PSA_ALG_GCM,
-                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                                             keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
         {

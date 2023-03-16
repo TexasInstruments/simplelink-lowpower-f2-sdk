@@ -31,16 +31,16 @@
  */
 /*
  *  ======== PowerCC26X4_stubs.c ========
- *  Contains power function stubs which are used for drivers built into Secure
- *  Processing Environment (SPE) binary.
+ *  Contains power function stubs which are used for drivers built into the
+ *  TF-M binary.
  */
 
 #include <stdint.h>
 
 #include <ti/drivers/Power.h>
 
-#ifndef TFM_PSA_API /* TFM_PSA_API indicates this is a SPE build */
-    #error "Power function stubs are for SPE builds only"
+#ifndef TFM_PSA_API /* TFM_PSA_API indicates this is a TF-M build */
+    #error "Power function stubs are for TF-M builds only"
 #endif
 
 /*

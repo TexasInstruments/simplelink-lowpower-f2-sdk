@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2022, Texas Instruments Incorporated
+ Copyright (c) 2010-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1053,6 +1053,41 @@ extern uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
                               uint8_t* pSRK,
                               uint32_t signCount,
                               gapBondCharCfg_t* charCfg);
+
+/**
+ * @fn          GapBondMgr_GetPrevAuth
+ *
+ * @brief       If previously bonded, the function returns the authentication
+ *              flags from the bond information and the encryption key size
+ *
+ * @param       connHandle -The connection handle associated the remote device
+ * @param       pMitmReq - Pointer to store if MITM requires
+ * @param       pKeySize - Pointer to store the encryption key size
+ *
+ * @return      SUCCESS - The address was found in the link DB table and the
+ *                        bonding table
+ * @return      FAILURE - Failed to find the connection in the link DB
+ * @return      INVALIDPARAMETER - If a NULL address is passed in
+ * @return      bleGAPNotFound - If the address was not found
+ */
+extern uint8_t GapBondMgr_GetPrevAuth(uint16_t connHandle, uint8_t *pMitmReq, uint8_t *pKeySize);
+
+/**
+ * @fn          GapBondMgr_StartEnc
+ *
+ * @brief       Start encryption process to a peer device if the peer
+ *              bond information was found
+ *
+ * @param       connHandle -The connection handle associated the remote device
+ *
+ * @return      SUCCESS - The address was found in the link DB table and the
+ *                        bonding table
+ * @return      FAILURE - Failed to find the connection in the link DB
+ * @return      INVALIDPARAMETER - If a NULL address is passed in
+ * @return      bleGAPNotFound - If the address was not found
+ */
+extern uint8_t GapBondMgr_StartEnc(uint16_t connHandle);
+
 /*-------------------------------------------------------------------
 -------------------------------------------------------------------*/
 #ifdef __cplusplus

@@ -32,7 +32,7 @@
 
 /*-Memory Regions-*/
 define symbol ROM_start__ = 0x00038100;
-define symbol ROM_end__   = 0x000FFFFF;
+define symbol ROM_end__   = 0x000FEFFF;  /* Reduced by 0x1000 for the image trailer when using SecureBoot */
 define symbol RAM_start__ = 0x2000C000;
 define symbol RAM_end__   = 0x2003FFFF;
 define symbol GPRAM_start__ = 0x11000000;
@@ -50,18 +50,18 @@ define memory mem with size = 4G;
 define region FLASH_region = mem:[from ROM_start__ to ROM_end__];
 
 /* Define a region for the on-chip SRAM */
-define region RAM_region     = mem:[from RAM_start__ to RAM_end__];
+define region RAM_region = mem:[from RAM_start__ to RAM_end__];
 
 /* Define a region for the on-chip GPRAM */
-define region GPRAM_region     = mem:[from GPRAM_start__ to GPRAM_end__];
+define region GPRAM_region = mem:[from GPRAM_start__ to GPRAM_end__];
 
 /* Place the interrupt vectors at the start of flash */
-place at address mem:__intvec_start__ { readonly section .intvec };
-keep { section .intvec};
+place at address mem:__intvec_start__ { readonly section .resetVecs };
+keep { section .resetVecs };
 
 /* Define a region for CCFG */
-define region CCFG_region    = mem:[from CCFG_START__ to CCFG_END__];
-place in CCFG_region {section .ccfg};
+define region CCFG_region = mem:[from CCFG_START__ to CCFG_END__];
+place in CCFG_region {section .ccfg };
 keep { section .ccfg };
 
 /* Place remaining 'read only' in Flash */
@@ -77,7 +77,7 @@ place in FLASH_region { readonly };
 define symbol STACKSIZE = 2048;
 define block CSTACK with alignment = 8, size = STACKSIZE { section .stack };
 place at end of RAM_region { block CSTACK };
-do not initialize { section .stack, section .noinit};
+do not initialize { section .stack, section .noinit };
 
 /* Export stack top symbol. Used by startup file */
 define exported symbol STACK_TOP = RAM_end__ + 1;
@@ -85,8 +85,9 @@ define exported symbol STACK_TOP = RAM_end__ + 1;
 /* Ensure RW data is not placed in stack */
 define exported symbol __stack_start__ = end(RAM_region) - STACKSIZE;
 define region RWRAM_region   = mem:[from RAM_start__   to __stack_start__];
-place in RWRAM_region   { readwrite };
+place in RWRAM_region   { readwrite, section .ramVecs };
 initialize by copy { readwrite };
+do not initialize { section .ramVecs };
 
 /* Explicitly placed off target for the storage of logging data.
  * The data placed here is NOT  loaded ont the target device.
@@ -95,4 +96,8 @@ initialize by copy { readwrite };
  * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
  */
 define region LOG_DATA = mem:[from 0x90000000 to 0x9003FFFF];
-".log_data": place noload in LOG_DATA { readonly section .log_data };
+define region LOG_PTR = mem:[from 0x94000008 to 0x94040007];
+define block LOG_DATA  with size = 0x40000 { readonly section .log_data  };
+define block LOG_PTR   with size = 0x40000 { readonly section .log_ptr* };
+".log_data": place noload in LOG_DATA { block LOG_DATA };
+".log_ptr": place noload in LOG_PTR { block LOG_PTR };

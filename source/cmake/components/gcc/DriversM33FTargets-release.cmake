@@ -15,15 +15,15 @@ set_target_properties(Drivers::drivers_cc13x4 PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc13x4 )
 list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc13x4 "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc13x4.a" )
 
-# Import target "Drivers::drivers_cc13x4_spe" for configuration "Release"
-set_property(TARGET Drivers::drivers_cc13x4_spe APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-set_target_properties(Drivers::drivers_cc13x4_spe PROPERTIES
+# Import target "Drivers::drivers_cc13x4_ns" for configuration "Release"
+set_property(TARGET Drivers::drivers_cc13x4_ns APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(Drivers::drivers_cc13x4_ns PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "ASM;C"
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc13x4_spe.a"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc13x4_ns.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc13x4_spe )
-list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc13x4_spe "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc13x4_spe.a" )
+list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc13x4_ns )
+list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc13x4_ns "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc13x4_ns.a" )
 
 # Import target "Drivers::drivers_cc26x4" for configuration "Release"
 set_property(TARGET Drivers::drivers_cc26x4 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
@@ -35,15 +35,15 @@ set_target_properties(Drivers::drivers_cc26x4 PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc26x4 )
 list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc26x4 "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc26x4.a" )
 
-# Import target "Drivers::drivers_cc26x4_spe" for configuration "Release"
-set_property(TARGET Drivers::drivers_cc26x4_spe APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-set_target_properties(Drivers::drivers_cc26x4_spe PROPERTIES
+# Import target "Drivers::drivers_cc26x4_ns" for configuration "Release"
+set_property(TARGET Drivers::drivers_cc26x4_ns APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+set_target_properties(Drivers::drivers_cc26x4_ns PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "ASM;C"
-  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc26x4_spe.a"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc26x4_ns.a"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc26x4_spe )
-list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc26x4_spe "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc26x4_spe.a" )
+list(APPEND _IMPORT_CHECK_TARGETS Drivers::drivers_cc26x4_ns )
+list(APPEND _IMPORT_CHECK_FILES_FOR_Drivers::drivers_cc26x4_ns "${_IMPORT_PREFIX}/source/ti/drivers/lib/gcc/m33f/drivers_cc26x4_ns.a" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)

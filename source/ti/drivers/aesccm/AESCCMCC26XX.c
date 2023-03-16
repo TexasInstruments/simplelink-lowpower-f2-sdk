@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -304,6 +304,8 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
         /* Release the CRYPTO mutex */
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
 
+        object->operationInProgress = false;
+
         return AESCCM_STATUS_ERROR;
     }
 
@@ -328,6 +330,8 @@ static int_fast16_t AESCCM_startOperation(AESCCM_Handle handle,
 
         /* Release the CRYPTO mutex */
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
+
+        object->operationInProgress = false;
 
         return AESCCM_STATUS_ERROR;
     }

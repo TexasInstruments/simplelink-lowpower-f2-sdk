@@ -240,13 +240,13 @@
                     "number" : 15,
                     "ball"   : "19",
                     "name"   : "DIO9",
-                    "preferredType" : ["SPI_MOSI"]
+                    "preferredType" : ["SPI_PICO"]
                 },
                 {
                     "number" : 14,
                     "ball"   : "18",
                     "name"   : "DIO8",
-                    "preferredType" : ["SPI_MISO"]
+                    "preferredType" : ["SPI_POCI"]
                 },
                 {
                     "number" : 13,
@@ -346,8 +346,8 @@
             "definition"  : "/ti/boards/components/spiBus.json",
             "connections" : {
                 "SCLK"    : "20",
-                "MOSI"    : "19",
-                "MISO"    : "18"
+                "PICO"    : "19",
+                "POCI"    : "18"
             }
         },
 
@@ -365,7 +365,7 @@
                     "description" : "Standard BoosterPack header SPI Chip Select",
                     "longDescription" : "Standard BoosterPack header SPI Chip Select",
                     "connections" : {
-                        "SS": "21"
+                        "CSN": "21"
                     }
                 }
             }
@@ -383,11 +383,11 @@
                 "SPI": {
                     "displayName" : "MX25R8035F SPI Bus",
                     "description" : "MX25R8035F SPI Bus",
-                    "longDescription" : "MX25R8035F SPI Bus (SCLK, MOSI, MISO)",
+                    "longDescription" : "MX25R8035F SPI Bus (SCLK, PICO, POCI)",
                     "connections" : {
                         "SCLK"    : "25",
-                        "MOSI"    : "22",
-                        "MISO"    : "23"
+                        "PICO"    : "22",
+                        "POCI"    : "23"
                     }
                 },
                 "SELECT": {
@@ -396,7 +396,7 @@
                     "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
-                        "SS": "24"
+                        "CSN": "24"
                     }
                 }
             }

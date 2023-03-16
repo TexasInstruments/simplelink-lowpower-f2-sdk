@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,17 +63,18 @@
  *  task context. These macros improves the code presentation.
  */
 #define GATE_ENTER(gate, key, use_gate) \
-    if (use_gate) {                     \
+    if (use_gate)                       \
+    {                                   \
         key = GateMutex_enter(gate);    \
     }
 
 #define GATE_LEAVE(gate, key, use_gate) \
-    if (use_gate) {                     \
+    if (use_gate)                       \
+    {                                   \
         GateMutex_leave(gate, key);     \
     }
 
-#define GATE_INIT(use_gate) \
-    use_gate = (BIOS_getThreadType() == BIOS_ThreadType_Task);
+#define GATE_INIT(use_gate) use_gate = (BIOS_getThreadType() == BIOS_ThreadType_Task);
 
 static GateMutex_Struct tiposix_mqGateStruct;
 static GateMutex_Handle tiposix_mqGate = NULL;
@@ -83,13 +84,14 @@ static GateMutex_Handle tiposix_mqGate = NULL;
  *  The message queue object, created the first time the message queue is
  *  opened.
  */
-typedef struct MQueueObj {
-    struct MQueueObj  *next;
-    struct MQueueObj  *prev;
-    Mailbox_Handle     mailbox;
-    struct mq_attr     attrs;
-    int                refCount;
-    char              *name;
+typedef struct MQueueObj
+{
+    struct MQueueObj *next;
+    struct MQueueObj *prev;
+    Mailbox_Handle mailbox;
+    struct mq_attr attrs;
+    int refCount;
+    char *name;
 } MQueueObj;
 
 /*
@@ -97,9 +99,10 @@ typedef struct MQueueObj {
  *  Threads that call mq_open() get a descriptor handle.  This allows
  *  passing of different flags to mq_open().
  */
-typedef struct MQueueDesc {
-    MQueueObj *msgQueue;  /* The actual message queue object */
-    long       flags;
+typedef struct MQueueDesc
+{
+    MQueueObj *msgQueue; /* The actual message queue object */
+    long flags;
 } MQueueDesc;
 
 static MQueueObj *findInList(const char *name);
@@ -117,10 +120,10 @@ static MQueueObj *mqList = NULL;
  *  number of messages would be 32 bytes.
  */
 static mq_attr defaultAttrs = {
-    0,      /* mq_flags */
-    4,      /* mq_maxmsg - number of messages */
-    8,      /* mq_msgsize - size of message */
-    0       /* mq_curmsgs */
+    0, /* mq_flags */
+    4, /* mq_maxmsg - number of messages */
+    8, /* mq_msgsize - size of message */
+    0  /* mq_curmsgs */
 };
 
 /*
@@ -128,8 +131,8 @@ static mq_attr defaultAttrs = {
  */
 int mq_close(mqd_t mqdes)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
     IArg key;
     bool use_gate;
 
@@ -148,12 +151,12 @@ int mq_close(mqd_t mqdes)
  */
 int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
 
     msgQueue->attrs.mq_curmsgs = Mailbox_getNumPendingMsgs(msgQueue->mailbox);
 
-    *mqstat = msgQueue->attrs;
+    *mqstat          = msgQueue->attrs;
     mqstat->mq_flags = mqd->flags;
 
     return (0);
@@ -164,17 +167,17 @@ int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat)
  */
 mqd_t mq_open(const char *name, int oflags, ...)
 {
-    va_list             va;
-    mode_t              mode;
-    struct mq_attr     *attrs = NULL;
-    MQueueObj          *msgQueue;
-    MQueueDesc         *msgQueueDesc = NULL;
-    Error_Block         eb;
-    IArg                key;
-    IHeap_Handle        heap = Task_Object_heap();
-    size_t              nameLen;
-    bool                use_gate;
-    UInt                taskKey;
+    va_list va;
+    mode_t mode;
+    struct mq_attr *attrs = NULL;
+    MQueueObj *msgQueue;
+    MQueueDesc *msgQueueDesc = NULL;
+    Error_Block eb;
+    IArg key;
+    IHeap_Handle heap = Task_Object_heap();
+    size_t nameLen;
+    bool use_gate;
+    UInt taskKey;
 
     GATE_INIT(use_gate)
 
@@ -183,7 +186,8 @@ mqd_t mq_open(const char *name, int oflags, ...)
      * GateMutex_construct cannot block so it's OK to call it with the
      * Task scheduler disabled.
      */
-    if (tiposix_mqGate == NULL) {
+    if (tiposix_mqGate == NULL)
+    {
         GateMutex_construct(&tiposix_mqGateStruct, NULL);
         tiposix_mqGate = GateMutex_handle(&tiposix_mqGateStruct);
     }
@@ -191,25 +195,28 @@ mqd_t mq_open(const char *name, int oflags, ...)
 
     va_start(va, oflags);
 
-    if (oflags & O_CREAT) {
-        mode = (mode_t)va_arg(va, unsigned int);
+    if (oflags & O_CREAT)
+    {
+        mode  = (mode_t)va_arg(va, unsigned int);
         attrs = va_arg(va, struct mq_attr *);
 
-        if (attrs == NULL) {
+        if (attrs == NULL)
+        {
             attrs = &defaultAttrs;
         }
     }
 
     va_end(va);
 
-    if (name == NULL) {
+    if (name == NULL)
+    {
         errno = EINVAL;
         return ((mqd_t)(-1));
     }
     nameLen = strlen(name);
 
-    if ((oflags & O_CREAT) && ((attrs->mq_maxmsg <= 0)
-            || (attrs->mq_msgsize <= 0))) {
+    if ((oflags & O_CREAT) && ((attrs->mq_maxmsg <= 0) || (attrs->mq_msgsize <= 0)))
+    {
         errno = EINVAL;
         return ((mqd_t)(-1));
     }
@@ -220,13 +227,15 @@ mqd_t mq_open(const char *name, int oflags, ...)
 
     msgQueue = findInList(name);
 
-    if ((msgQueue != NULL) && (oflags & O_CREAT) && (oflags & O_EXCL)) {
+    if ((msgQueue != NULL) && (oflags & O_CREAT) && (oflags & O_EXCL))
+    {
         /* Error: Message queue has already been opened and O_EXCL is set */
         errno = EEXIST;
         goto error_leave;
     }
 
-    if (!(oflags & O_CREAT) && (msgQueue == NULL)) {
+    if (!(oflags & O_CREAT) && (msgQueue == NULL))
+    {
         errno = ENOENT;
         goto error_leave;
     }
@@ -234,56 +243,62 @@ mqd_t mq_open(const char *name, int oflags, ...)
     /* allocate the MQueueDesc */
     msgQueueDesc = (MQueueDesc *)Memory_alloc(heap, sizeof(MQueueDesc), 0, &eb);
 
-    if (msgQueueDesc == NULL) {
+    if (msgQueueDesc == NULL)
+    {
         errno = ENOMEM;
         goto error_leave;
     }
 
-    if (msgQueue == NULL) {
+    if (msgQueue == NULL)
+    {
         /* allocate the MQueueObj */
         msgQueue = (MQueueObj *)Memory_alloc(heap, sizeof(MQueueObj), 0, &eb);
 
-        if (msgQueue == NULL) {
+        if (msgQueue == NULL)
+        {
             goto error_handler;
         }
 
-        msgQueue->refCount = 1;
+        msgQueue->refCount         = 1;
         msgQueue->attrs.mq_msgsize = attrs->mq_msgsize;
-        msgQueue->attrs.mq_maxmsg = attrs->mq_maxmsg;
+        msgQueue->attrs.mq_maxmsg  = attrs->mq_maxmsg;
 
         msgQueue->name = (char *)Memory_alloc(heap, nameLen + 1, 0, &eb);
 
-        if (msgQueue->name == NULL) {
+        if (msgQueue->name == NULL)
+        {
             goto error_handler;
         }
 
         strcpy(msgQueue->name, name);
 
-        msgQueue->mailbox = Mailbox_create(attrs->mq_msgsize,
-                attrs->mq_maxmsg, NULL, &eb);
+        msgQueue->mailbox = Mailbox_create(attrs->mq_msgsize, attrs->mq_maxmsg, NULL, &eb);
 
-        if (msgQueue->mailbox == NULL) {
+        if (msgQueue->mailbox == NULL)
+        {
             goto error_handler;
         }
 
         /* add the message queue to the list now */
         msgQueue->prev = NULL;
 
-        if (mqList != NULL) {
+        if (mqList != NULL)
+        {
             mqList->prev = msgQueue;
         }
 
         msgQueue->next = mqList;
-        mqList = msgQueue;
+        mqList         = msgQueue;
     }
-    else {
+    else
+    {
         msgQueue->refCount++;
     }
 
     GATE_LEAVE(tiposix_mqGate, key, use_gate)
 
     msgQueueDesc->msgQueue = msgQueue;
-    msgQueueDesc->flags = ((oflags & O_NONBLOCK) ? O_NONBLOCK : 0);
+    msgQueueDesc->flags    = ((oflags & O_NONBLOCK) ? O_NONBLOCK : 0);
 
     (void)mode;
 
@@ -293,13 +308,16 @@ error_handler:
     /*  We only get here if we attempted to allocate msgQueue (i.e., it
      *  was not already in the list), so we're ok to free it.
      */
-    if (msgQueue != NULL) {
-        if (msgQueue->name != NULL) {
+    if (msgQueue != NULL)
+    {
+        if (msgQueue->name != NULL)
+        {
             Memory_free(heap, msgQueue->name, nameLen + 1);
         }
         Memory_free(heap, msgQueue, sizeof(MQueueObj));
     }
-    if (msgQueueDesc != NULL) {
+    if (msgQueueDesc != NULL)
+    {
         Memory_free(heap, msgQueueDesc, sizeof(MQueueDesc));
     }
     errno = ENOMEM;
@@ -312,35 +330,81 @@ error_leave:
 /*
  *  ======== mq_receive ========
  */
-ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio)
+ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    UInt32      timeout;
-    int         retVal = -1;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    UInt32 timeout;
+    int retVal = -1;
 
     /*
      *  If msg_len is less than the message size attribute of the message
      *  queue, return an error.
      */
-    if (msg_len < (size_t)((msgQueue->attrs).mq_msgsize)) {
+    if (msg_len < (size_t)((msgQueue->attrs).mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
 
-    if (mqd->flags & O_NONBLOCK) {
+    if (mqd->flags & O_NONBLOCK)
+    {
         timeout = BIOS_NO_WAIT;
     }
-    else {
+    else
+    {
         timeout = BIOS_WAIT_FOREVER;
     }
 
     /* Receive a message */
-    if (Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, timeout)) {
+    if (Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
         retVal = (msgQueue->attrs).mq_msgsize;
     }
-    else {
+    else
+    {
+        errno = EAGAIN;
+    }
+
+    return (retVal);
+}
+
+/*
+ *  ======== mq_peek ========
+ */
+ssize_t mq_peek(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int msg_prio)
+{
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    UInt32 timeout;
+    int retVal = -1;
+
+    /*
+     *  If msg_len is less than the message size attribute of the message
+     *  queue, return an error.
+     */
+    if (msg_len < (size_t)((msgQueue->attrs).mq_msgsize))
+    {
+        errno = EMSGSIZE;
+        return (-1);
+    }
+
+    if (mqd->flags & O_NONBLOCK)
+    {
+        timeout = BIOS_NO_WAIT;
+    }
+    else
+    {
+        timeout = BIOS_WAIT_FOREVER;
+    }
+
+    /* Peek a message */
+    if (Mailbox_peek(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
+        retVal = (msgQueue->attrs).mq_msgsize;
+    }
+    else
+    {
         errno = EAGAIN;
     }
 
@@ -350,31 +414,75 @@ ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
 /*
  *  ======== mq_send ========
  */
-int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio)
+int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
     UInt32 timeout;
 
-    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize)) {
-        if (BIOS_getThreadType() == BIOS_ThreadType_Task) {
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
+        if (BIOS_getThreadType() == BIOS_ThreadType_Task)
+        {
             errno = EMSGSIZE;
         }
         return (-1);
     }
 
-    if ((mqd->flags & O_NONBLOCK) ||
-        (BIOS_getThreadType() != BIOS_ThreadType_Task)) {
+    if ((mqd->flags & O_NONBLOCK) || (BIOS_getThreadType() != BIOS_ThreadType_Task))
+    {
         timeout = BIOS_NO_WAIT;
     }
-    else {
+    else
+    {
         timeout = BIOS_WAIT_FOREVER;
     }
 
     /* Send a message */
-    if (!Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, timeout)) {
-        if (BIOS_getThreadType() == BIOS_ThreadType_Task) {
+    if (!Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
+        if (BIOS_getThreadType() == BIOS_ThreadType_Task)
+        {
+            errno = EAGAIN;
+        }
+        return (-1);
+    }
+
+    return (0);
+}
+
+/*
+ *  ===== mq_send_to_front =====
+ */
+int mq_send_to_front(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
+{
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    UInt32 timeout;
+
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
+        if (BIOS_getThreadType() == BIOS_ThreadType_Task)
+        {
+            errno = EMSGSIZE;
+        }
+        return (-1);
+    }
+
+    if ((mqd->flags & O_NONBLOCK) || (BIOS_getThreadType() != BIOS_ThreadType_Task))
+    {
+        timeout = BIOS_NO_WAIT;
+    }
+    else
+    {
+        timeout = BIOS_WAIT_FOREVER;
+    }
+
+    /* Send a message */
+    if (!Mailbox_putHead(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
+        if (BIOS_getThreadType() == BIOS_ThreadType_Task)
+        {
             errno = EAGAIN;
         }
         return (-1);
@@ -386,24 +494,24 @@ int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
 /*
  *  ======== mq_setattr ========
  */
-int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr,
-        struct mq_attr *oldattr)
+int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr, struct mq_attr *oldattr)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
 
     /* mq_flags should be 0 or O_NONBLOCK */
-    if ((newattr->mq_flags != 0) && (newattr->mq_flags != O_NONBLOCK)) {
+    if ((newattr->mq_flags != 0) && (newattr->mq_flags != O_NONBLOCK))
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* save old attribute values before updating message queue description */
-    if (oldattr != NULL) {
-        msgQueue->attrs.mq_curmsgs = Mailbox_getNumPendingMsgs(
-                msgQueue->mailbox);
-        *oldattr = msgQueue->attrs;
-        oldattr->mq_flags = mqd->flags; /* overwrite with mqueue desc flag */
+    if (oldattr != NULL)
+    {
+        msgQueue->attrs.mq_curmsgs = Mailbox_getNumPendingMsgs(msgQueue->mailbox);
+        *oldattr                   = msgQueue->attrs;
+        oldattr->mq_flags          = mqd->flags; /* overwrite with mqueue desc flag */
     }
 
     /*  Only mq_flags is used to set the message queue description, the
@@ -417,47 +525,57 @@ int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr,
 /*
  *  ======== mq_timedreceive ========
  */
-ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio, const struct timespec *abstime)
+ssize_t mq_timedreceive(mqd_t mqdes,
+                        char *msg_ptr,
+                        size_t msg_len,
+                        unsigned int *msg_prio,
+                        const struct timespec *abstime)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    UInt32      timeout;
-    int         msgsize = msgQueue->attrs.mq_msgsize;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    UInt32 timeout;
+    int msgsize = msgQueue->attrs.mq_msgsize;
 
     /*
      *  If msg_len is less than the message size attribute of the message
      *  queue, return an error.
      */
-    if (msg_len < (size_t)(msgQueue->attrs.mq_msgsize)) {
+    if (msg_len < (size_t)(msgQueue->attrs.mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
 
     /* should not fail if message already available (don't validate abstime) */
-    if (Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, BIOS_NO_WAIT)) {
+    if (Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, BIOS_NO_WAIT))
+    {
         return (msgsize);
     }
-    else {
+    else
+    {
         /* message queue is empty */
-        if (mqd->flags & O_NONBLOCK) {
+        if (mqd->flags & O_NONBLOCK)
+        {
             errno = EAGAIN;
             return (-1);
         }
     }
 
-    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* requested abstime has already passed */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
 
-    if (!Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, timeout)) {
+    if (!Mailbox_pend(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
@@ -468,42 +586,52 @@ ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
 /*
  *  ======== mq_timedsend ========
  */
-int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio, const struct timespec *abstime)
+int mq_timedsend(mqd_t mqdes,
+                 const char *msg_ptr,
+                 size_t msg_len,
+                 unsigned int msg_prio,
+                 const struct timespec *abstime)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    UInt32      timeout;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    UInt32 timeout;
 
-    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize)) {
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
 
     /* should not fail if able to send message (don't validate abstime) */
-    if (Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, BIOS_NO_WAIT)) {
+    if (Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, BIOS_NO_WAIT))
+    {
         return (0);
     }
-    else {
+    else
+    {
         /* message queue is full */
-        if (mqd->flags & O_NONBLOCK) {
+        if (mqd->flags & O_NONBLOCK)
+        {
             errno = EAGAIN;
             return (-1);
         }
     }
 
-    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_pthread_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* requested abstime has already passed */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
 
-    if (!Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, timeout)) {
+    if (!Mailbox_post(msgQueue->mailbox, (Ptr)msg_ptr, timeout))
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
@@ -516,34 +644,40 @@ int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
  */
 int mq_unlink(const char *name)
 {
-    MQueueObj  *msgQueue;
-    MQueueObj  *nextMQ, *prevMQ;
-    IArg        key;
-    bool        use_gate;
+    MQueueObj *msgQueue;
+    MQueueObj *nextMQ, *prevMQ;
+    IArg key;
+    bool use_gate;
 
     GATE_INIT(use_gate)
     GATE_ENTER(tiposix_mqGate, key, use_gate)
 
     msgQueue = findInList(name);
 
-    if (msgQueue == NULL) {
+    if (msgQueue == NULL)
+    {
         errno = ENOENT;
         goto done_leave;
     }
 
-    if (msgQueue->refCount == 0) {
+    if (msgQueue->refCount == 0)
+    {
         /* remove message queue from list */
-        if (mqList == msgQueue) {
+        if (mqList == msgQueue)
+        {
             mqList = msgQueue->next;
         }
-        else {
+        else
+        {
             prevMQ = msgQueue->prev;
             nextMQ = msgQueue->next;
 
-            if (prevMQ != NULL) {
+            if (prevMQ != NULL)
+            {
                 prevMQ->next = nextMQ;
             }
-            if (nextMQ != NULL) {
+            if (nextMQ != NULL)
+            {
                 nextMQ->prev = prevMQ;
             }
         }
@@ -552,20 +686,22 @@ int mq_unlink(const char *name)
 
         GATE_LEAVE(tiposix_mqGate, key, use_gate)
 
-        if (msgQueue->mailbox != NULL) {
+        if (msgQueue->mailbox != NULL)
+        {
             Mailbox_delete(&msgQueue->mailbox);
         }
 
-        if (msgQueue->name != NULL) {
-            Memory_free(Task_Object_heap(), msgQueue->name,
-                    strlen(msgQueue->name) + 1);
+        if (msgQueue->name != NULL)
+        {
+            Memory_free(Task_Object_heap(), msgQueue->name, strlen(msgQueue->name) + 1);
         }
 
         Memory_free(Task_Object_heap(), msgQueue, sizeof(MQueueObj));
 
         return (0);
     }
-    else {
+    else
+    {
         /* temporary fix until TIRTOS-1323 is fixed */
         errno = EBUSY;
     }
@@ -594,8 +730,10 @@ static MQueueObj *findInList(const char *name)
 
     mq = mqList;
 
-    while (mq != NULL) {
-        if (strcmp(mq->name, name) == 0) {
+    while (mq != NULL)
+    {
+        if (strcmp(mq->name, name) == 0)
+        {
             return (mq);
         }
         mq = mq->next;

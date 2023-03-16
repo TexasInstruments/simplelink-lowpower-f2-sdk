@@ -108,8 +108,6 @@
 //
 // They must be closed prior to power off the domain(s) controlling the IOs in
 // order to preserve IO values on external pins.
-// INTERNAL NOTE:
-// RTL Name = enable
 // ENUMs:
 // TRANSP                   Latches are transparent, meaning the value of the
 //                          IO is directly controlled by the GPIO or

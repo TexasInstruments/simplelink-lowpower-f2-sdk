@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC13x1, CC26x1 device family for use with GCC.
 *
-*  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2020-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@ extern uint32_t _estack;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__ ((section(".vectors"), used))
+__attribute__ ((section(".resetVecs"), used))
 void (* const g_pfnVectors[])(void) =
 {
     (void (*)(void))((unsigned long)&_estack),

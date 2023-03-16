@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -628,9 +628,13 @@ static void SharpGrLib_clearScreen(const Graphics_Display *pDisplay, uint16_t ul
     GPIO_write(lcdChipSelect, 0x00);
 
     if (ClrBlack == ulValue)
+    {
         SharpGrLib_initializeDisplayBuffer(pDisplay, SHARP_BLACK);
+    }
     else
+    {
         SharpGrLib_initializeDisplayBuffer(pDisplay, SHARP_WHITE);
+    }
 }
 
 //*****************************************************************************
@@ -706,8 +710,12 @@ static void SharpGrLib_initializeDisplayBuffer(const Graphics_Display *pDisplay,
 
 #else
     for (i = 0; i < pDisplay->heigth; i++)
+    {
         for (j = 0; j < (pDisplay->width >> 3); j++)
+        {
             *pucData++ = ucValue;
+        }
+    }
 #endif // USE_FLASH_BUFFER
 }
 

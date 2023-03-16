@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -96,8 +96,8 @@ define region RAM_region = mem:[from RAM_base__ size RAM_size__];
 //
 
 /* Place the interrupt vectors at the start of flash */
-place at address mem:FLASH_BASE__ { readonly section .intvec };
-keep { section .intvec};
+place at address mem:FLASH_BASE__ { readonly section .resetVecs };
+keep { section .resetVecs};
 
 /* Place the CCA area at the end of flash */
 place at end of CCFG_region__ { readonly section .ccfg };
@@ -129,15 +129,13 @@ place in FLASH_region { readonly };
 // Memory Placement in RAM
 //
 
-/* Place .vtable_ram in start of RAM */
-place at start of RAM_region { section .vtable_ram };
+/* Place .ramVecs in start of RAM */
+place at start of RAM_region { section .ramVecs };
 /*
 place in RAM_region  {
 	section .data,
 	section .bss,
-	section .vtable,
-	section .vtable_ram,
-	section .vtable_ram,
+	section .ramVecs,
 	section .sysmem,
 	section .nonretenvar,
 };

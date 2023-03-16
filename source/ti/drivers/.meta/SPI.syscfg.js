@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,14 +50,14 @@ let config = [
         name: "mode",
         displayName: "Mode",
         default: "Three Pin",
-        description: "In three pin mode the SS signal is not used.",
+        description: "In three pin mode the CS signal is not used.",
         longDescription: "In __Three Pin__ mode, the user is responsible for"
-            + " controlling the slave select line.",
+            + " controlling the chip select line.",
         getDisabledOptions: disabledModeOptions,
         options: [
             { name: "Three Pin" },
-            { name: "Four Pin SS Active Low" },
-            { name: "Four Pin SS Active High" }
+            { name: "Four Pin CS Active Low", legacyNames: ["Four Pin SS Active Low"] },
+            { name: "Four Pin CS Active High", legacyNames: ["Four Pin SS Active High"] }
         ]
     },
     {
@@ -91,10 +91,10 @@ let config = [
         default: "Full",
         options: [
             { name: "Full" },
-            { name: "Master TX Only" },
-            { name: "Master RX Only" },
-            { name: "Slave TX Only" },
-            { name: "Slave RX Only" }
+            { name: "Controller TX Only", legacyNames: ["Master TX Only"] },
+            { name: "Controller RX Only", legacyNames: ["Master RX Only"] },
+            { name: "Peripheral TX Only", legacyNames: ["Slave TX Only"] },
+            { name: "Peripheral RX Only", legacyNames: ["Slave RX Only"] }
 
         ]
     }
@@ -112,17 +112,17 @@ function disabledModeOptions(inst)
 
         /*
          * 3 Pin hardware can be used in 4 Pin mode; however, the user
-         * would be responsible for manually selecting the SS pin.
+         * would be responsible for manually selecting the CS pin.
          */
-        if (!Common.findSignalTypes(inst.$hardware, ["SPI_SS"])) {
+        if (!Common.findSignalTypes(inst.$hardware, ["SPI_CSN"])) {
             return ([
                 {
-                    name: "Four Pin SS Active Low",
+                    name: "Four Pin CS Active Low",
                     reason: "Disabled by " + inst.$hardware.displayName +
                     ". See: " + system.getReference(inst, "$hardware")
                 },
                 {
-                    name: "Four Pin SS Active High",
+                    name: "Four Pin CS Active High",
                     reason: "Disabled by " + inst.$hardware.displayName +
                     ". See: " + system.getReference(inst, "$hardware")
                 }
@@ -139,7 +139,7 @@ function disabledModeOptions(inst)
 function onHardwareChanged(inst, ui)
 {
     if (inst.$hardware) {
-        if (!Common.findSignalTypes(inst.$hardware, ["SPI_SS"])) {
+        if (!Common.findSignalTypes(inst.$hardware, ["SPI_CSN"])) {
             inst.mode = "Three Pin";
         }
     }
@@ -189,7 +189,7 @@ function validate(inst, validation)
             'Must be in hex format.');
     }
 
-    if (inst.$hardware && Common.findSignalTypes(inst.$hardware, ["SPI_SS"])) {
+    if (inst.$hardware && Common.findSignalTypes(inst.$hardware, ["SPI_CSN"])) {
         if (inst.mode === "Three Pin") {
             logError(validation, inst, 'mode', "Using 'Three Pin' mode with "
                 + " hardware requiring a 'Four Pin' mode.");

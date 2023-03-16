@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -155,8 +155,7 @@ extern "C"
 #define SMP_PAIRING_FAILED_NUM_COMPARISON_FAILED  0x0C //!< Indicates that the confirm value in the numeric comparison protocol do not match.
 #define SMP_PAIRING_FAILED_BREDR_PAIR_IN_PROGRESS 0x0D //!< Indicates that the pairing over the LE transport failed due to a Pairing Request sent over the BR/EDR transport in process.
 #define SMP_PAIRING_FAILED_CT_KEYDER_NOT_ALLOWED  0x0E //!< Indicates that the BR/EDR Link Key generated on the BR/EDR transport cannot be used to derive and distribute keys for the LE transport.
-
-#define SMP_PAIRING_FAILED_LOCAL_KEY_FAILURE      0x0F    // Local value - not sent over the air
+#define SMP_PAIRING_FAILED_KEY_REJECTED           0x0F //!< Indicates that the device chose not to accept a distributed key.
 
 // LE Secure Connections Keypress Notification values
 #define SMP_KEYPRESS_NOTI_STARTED                 0x00

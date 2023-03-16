@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #if !defined(__ti_version__) && !defined(__clang__)
-#error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
+    #error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
 only with a Texas Instruments clang compiler. You appear to be using a \
 different compiler.
 #endif
@@ -50,98 +50,98 @@ different compiler.
 /* These are in errno.h but commented out. Values match GNU ARM compiler. */
 
 #ifndef EADDRINUSE
-#define EADDRINUSE              112
+    #define EADDRINUSE 112
 #endif
 
 #ifndef EADDRNOTAVAIL
-#define EADDRNOTAVAIL           125
+    #define EADDRNOTAVAIL 125
 #endif
 
 #ifndef EAFNOSUPPORT
-#define EAFNOSUPPORT            106
+    #define EAFNOSUPPORT 106
 #endif
 
 #ifndef EALREADY
-#define EALREADY                120
+    #define EALREADY 120
 #endif
 
 #ifndef ECONNABORTED
-#define ECONNABORTED            113
+    #define ECONNABORTED 113
 #endif
 
 #ifndef ECONNREFUSED
-#define ECONNREFUSED            111
+    #define ECONNREFUSED 111
 #endif
 
 #ifndef ECONNRESET
-#define ECONNRESET              104
+    #define ECONNRESET 104
 #endif
 
 #ifndef EDESTADDRREQ
-#define EDESTADDRREQ            121
+    #define EDESTADDRREQ 121
 #endif
 
 #ifndef EHOSTUNREACH
-#define EHOSTUNREACH            118
+    #define EHOSTUNREACH 118
 #endif
 
 #ifndef EISCONN
-#define EISCONN                 127
+    #define EISCONN 127
 #endif
 
 #ifndef ENETDOWN
-#define ENETDOWN                115
+    #define ENETDOWN 115
 #endif
 
 #ifndef ENETRESET
-#define ENETRESET               102
+    #define ENETRESET 102
 #endif
 
 #ifndef ENETUNREACH
-#define ENETUNREACH             114
+    #define ENETUNREACH 114
 #endif
 
 #ifndef ENOBUFS
-#define ENOBUFS                 105
+    #define ENOBUFS 105
 #endif
 
 #ifndef ENOPROTOOPT
-#define ENOPROTOOPT             109
+    #define ENOPROTOOPT 109
 #endif
 
 #ifndef ENOTCONN
-#define ENOTCONN                128
+    #define ENOTCONN 128
 #endif
 
 #ifndef ENOTSOCK
-#define ENOTSOCK                108
+    #define ENOTSOCK 108
 #endif
 
 #ifndef EOPNOTSUPP
-#define EOPNOTSUPP              95
+    #define EOPNOTSUPP 95
 #endif
 
 #ifndef EOVERFLOW
-#define EOVERFLOW               139
+    #define EOVERFLOW 139
 #endif
 
 #ifndef EPROTO
-#define EPROTO                  71
+    #define EPROTO 71
 #endif
 
 #ifndef EPROTONOSUPPORT
-#define EPROTONOSUPPORT         123
+    #define EPROTONOSUPPORT 123
 #endif
 
 #ifndef EPROTOTYPE
-#define EPROTOTYPE              107
+    #define EPROTOTYPE 107
 #endif
 
 #ifndef EWOULDBLOCK
-#define EWOULDBLOCK             EAGAIN
+    #define EWOULDBLOCK EAGAIN
 #endif
 
 /* custom error codes */
-#define EFREERTOS    2001       /* FreeRTOS function failure */
+#define EFREERTOS 2001 /* FreeRTOS function failure */
 
 #endif /* ti_posix_ticlang_errno__include */

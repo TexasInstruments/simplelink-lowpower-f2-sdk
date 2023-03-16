@@ -34,9 +34,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <ti/devices/DeviceFamily.h>
-#include DeviceFamily_constructPath(inc/hw_types.h)
-
 #include <ti/drivers/AESCCM.h>
 #include <ti/drivers/aesccm/AESCCMCC26X4_ns.h>
 #include <ti/drivers/aesccm/AESCCMCC26X4_s.h>

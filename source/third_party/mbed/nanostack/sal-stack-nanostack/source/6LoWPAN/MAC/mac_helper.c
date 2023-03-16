@@ -414,6 +414,7 @@ int8_t mac_helper_security_key_descriptor_clear(protocol_interface_info_entry_t 
 
     mlme_set_t set_req;
     mlme_key_descriptor_entry_t key_description;
+    mlme_device_frame_count_t device_frame_count;
     memset(&key_description, 0, sizeof(mlme_key_descriptor_entry_t));
 
     set_req.attr = macKeyTable;
@@ -421,6 +422,14 @@ int8_t mac_helper_security_key_descriptor_clear(protocol_interface_info_entry_t 
     set_req.value_size = sizeof(mlme_key_descriptor_entry_t);
     set_req.attr_index = descriptor;
     interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+
+    device_frame_count.frameCount = 0;
+    device_frame_count.frameCountIndex = descriptor;
+    set_req.attr = macDeviceTableFrameCount;
+    set_req.value_pointer = &device_frame_count;
+    set_req.value_size = sizeof(mlme_device_frame_count_t);
+    interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+
     return 0;
 }
 
@@ -456,6 +465,7 @@ void mac_helper_security_key_clean(protocol_interface_info_entry_t *interface)
     if (interface->mac_api) {
         mlme_set_t set_req;
         mlme_key_descriptor_entry_t key_description;
+        mlme_device_frame_count_t device_frame_count;
         memset(&key_description, 0, sizeof(mlme_key_descriptor_entry_t));
 
         set_req.attr = macKeyTable;
@@ -468,6 +478,18 @@ void mac_helper_security_key_clean(protocol_interface_info_entry_t *interface)
         interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
         set_req.attr_index = interface->mac_parameters->mac_next_key_attribute_id;
         interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+
+        device_frame_count.frameCount = 0;
+        set_req.attr = macDeviceTableFrameCount;
+        set_req.value_pointer = &device_frame_count;
+        set_req.value_size = sizeof(mlme_device_frame_count_t);
+        device_frame_count.frameCountIndex = interface->mac_parameters->mac_prev_key_attribute_id;
+        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+        device_frame_count.frameCountIndex = interface->mac_parameters->mac_default_key_attribute_id;
+        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+        device_frame_count.frameCountIndex = interface->mac_parameters->mac_next_key_attribute_id;
+        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+
     }
     interface->mac_parameters->mac_prev_key_index = 0;
     interface->mac_parameters->mac_default_key_index = 0;

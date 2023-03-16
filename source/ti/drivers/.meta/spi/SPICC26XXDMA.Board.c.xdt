@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,17 +52,12 @@
     /* localize the object names with this device ID */
     let devId = system.deviceData.deviceId;
 
-    let attrsVer = '';
     let driver = '';  /* String to attach to the driver include name */
-    if (devId.match(/CC13.[12]/) || devId.match(/CC26.[12]/)) {
-        driver = 'CC26X2';
-    }
-    else if (devId.match(/CC13.4/) || devId.match(/CC26.4/) || devId.match(/CC2653/)) {
+    if (devId.match(/CC13.4/) || devId.match(/CC26.4/) || devId.match(/CC2653/)) {
         driver = 'CC26X4';
     }
     else {
-        driver = 'CC26XX';
-        attrsVer = 'V1';
+        driver = 'CC26X2';
     }
 
 %%}
@@ -92,26 +87,24 @@ SPI`driver`DMA_Object spi`driver`DMAObjects[`countDef`];
     % let name = spi.$solution.peripheralName;
     % /* Get the index of the SPI instance by extracting the last character */
     % let spiIndex = name.slice(name.length - 1);
-    % /* Use SSI for driverlib access since CC26X4 changed the peripheral name but we did not change driverlib */
-    % let ssiName = name.replace("SPI", "SSI");
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxControlTableEntry, UDMA_CHAN_`ssiName`_TX);
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxControlTableEntry, UDMA_CHAN_`ssiName`_RX);
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxAltControlTableEntry, (UDMA_CHAN_`ssiName`_TX | UDMA_ALT_SELECT));
-ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxAltControlTableEntry, (UDMA_CHAN_`ssiName`_RX | UDMA_ALT_SELECT));
+ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxControlTableEntry, UDMA_CHAN_`name`_TX);
+ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxControlTableEntry, UDMA_CHAN_`name`_RX);
+ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`TxAltControlTableEntry, (UDMA_CHAN_`name`_TX | UDMA_ALT_SELECT));
+ALLOCATE_CONTROL_TABLE_ENTRY(dmaSpi`spiIndex`RxAltControlTableEntry, (UDMA_CHAN_`name`_RX | UDMA_ALT_SELECT));
 
 %}
 
 /*
  *  ======== spi`driver`DMAHWAttrs ========
  */
-const SPI`driver`DMA_HWAttrs`attrsVer` spi`driver`DMAHWAttrs[`countDef`] = {
+const SPI`driver`DMA_HWAttrs spi`driver`DMAHWAttrs[`countDef`] = {
 % for (let i = 0; i < instances.length; i++) {
     % let inst = instances[i];
     % let spi = inst.spi;
     % let name = spi.$solution.peripheralName;
     % /* Get the index of the SPI instance by extracting the last character */
     % let spiIndex = name.slice(name.length - 1);
-    % /* Use SSI for driverlib access since CC26X4 changed the peripheral name but we did not change driverlib */
+    % /* Force SSI name in some places */
     % let ssiName = name.replace("SPI", "SSI");
     /* `inst.$name` */
     % if (inst.$hardware) {
@@ -121,27 +114,27 @@ const SPI`driver`DMA_HWAttrs`attrsVer` spi`driver`DMAHWAttrs[`countDef`] = {
     % }
     {
         .baseAddr = `name`_BASE,
-        .intNum = INT_`ssiName`_COMB,
+        .intNum = INT_`name`_COMB,
         .intPriority = `Common.intPriority2Hex(inst.dmaInterruptPriority)`,
         .swiPriority = `Common.swiPriority2Int(inst.softwareInterruptPriority)`,
         .powerMngrId = PowerCC26XX_PERIPH_`ssiName`,
         .defaultTxBufValue = `inst.defaultTxBufferValue`,
-        .rxChannelBitMask = 1<<UDMA_CHAN_`ssiName`_RX,
-        .txChannelBitMask = 1<<UDMA_CHAN_`ssiName`_TX,
+        .rxChannelBitMask = 1<<UDMA_CHAN_`name`_RX,
+        .txChannelBitMask = 1<<UDMA_CHAN_`name`_TX,
         .dmaTxTableEntryPri = &dmaSpi`spiIndex`TxControlTableEntry,
         .dmaRxTableEntryPri = &dmaSpi`spiIndex`RxControlTableEntry,
         .dmaTxTableEntryAlt = &dmaSpi`spiIndex`TxAltControlTableEntry,
         .dmaRxTableEntryAlt = &dmaSpi`spiIndex`RxAltControlTableEntry,
         .minDmaTransferSize = `inst.minDmaTransferSize`,
-        .txPinMux   = IOC_PORT_MCU_`ssiName`_TX,
-        .rxPinMux   = IOC_PORT_MCU_`ssiName`_RX,
-        .clkPinMux  = IOC_PORT_MCU_`ssiName`_CLK,
-        .csnPinMux  = IOC_PORT_MCU_`ssiName`_FSS,
-        .mosiPin = `inst.mosiPinInstance.$name`,
-        .misoPin = `inst.misoPinInstance.$name`,
+        .txPinMux    = IOC_PORT_MCU_`name`_TX,
+        .rxPinMux    = IOC_PORT_MCU_`name`_RX,
+        .clkPinMux   = IOC_PORT_MCU_`name`_CLK,
+        .csnPinMux   = IOC_PORT_MCU_`name`_FSS,
+        .picoPin = `inst.picoPinInstance.$name`,
+        .pociPin = `inst.pociPinInstance.$name`,
         .clkPin  = `inst.sclkPinInstance.$name`,
     % if (inst.mode != 'Three Pin') {
-        .csnPin  = `inst.ssPinInstance.$name`
+        .csnPin  = `inst.csnPinInstance.$name`
     % } else {
         .csnPin  = GPIO_INVALID_INDEX
     % }

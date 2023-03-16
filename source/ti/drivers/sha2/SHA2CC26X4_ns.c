@@ -34,9 +34,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <ti/devices/DeviceFamily.h>
-#include DeviceFamily_constructPath(inc/hw_types.h)
-
 #include <ti/drivers/crypto/CryptoCC26X4_ns.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26X2.h>

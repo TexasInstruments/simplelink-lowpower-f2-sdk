@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@
  *  The maximum number of ticks before the tick count rolls over. We use
  *  0xFFFFFFFF instead of 0x100000000 to avoid 64-bit math.
  */
-#define MAX_TICKS 0xFFFFFFFF
+#define MAX_TICKS     0xFFFFFFFF
 #define TICKS_PER_SEC (1000000 / Clock_tickPeriod)
 
 /* The integral number of seconds in a period of MAX_TICKS */
@@ -103,7 +103,7 @@ extern "C" {
 /**
  * @brief Compute a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
- * 
+ *
  * @param[in] clockId CLOCK_MONOTONIC or CLOCK_REALTIME
  * @param[in] abstime time for which the number of ticks should be calculated
  * @param[out] ticks number of ticks until \a abstime
@@ -111,8 +111,7 @@ extern "C" {
  * @retval 0 The call was successful
  * @retval -1 Invalid input arguments
  */
-extern int _pthread_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, uint32_t *ticks);
+extern int _pthread_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks);
 
 #ifdef __cplusplus
 }

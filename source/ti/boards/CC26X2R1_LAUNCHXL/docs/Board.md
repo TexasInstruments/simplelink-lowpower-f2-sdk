@@ -1,7 +1,7 @@
-# SimpleLink&trade; CC2652R1 LaunchPad&trade; Settings & Resources
+# SimpleLink&trade; CC26x2R LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink CC2652R1 LaunchPad__][launchpad] contains a
-[__CC2652F128__][device] device.
+The [__SimpleLink CC26x2R LaunchPad__][launchpad] contains a
+[__CC2652R__][device] device.
 
 
 ## Jumper Settings

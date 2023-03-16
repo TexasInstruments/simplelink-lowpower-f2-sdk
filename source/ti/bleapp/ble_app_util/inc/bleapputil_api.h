@@ -10,7 +10,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022, Texas Instruments Incorporated
+ Copyright (c) 2022-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -59,8 +59,7 @@ extern "C"
  */
 #include <bcomdef.h>
 #include "ble_stack_api.h"
-#include "simple_gatt_profile.h"
-#include "os_dpl.h"
+#include <ti/display/Display.h>
 
 /*********************************************************************
  * MACROS
@@ -77,6 +76,8 @@ typedef uint8_t                 BLEAppUtil_BDaddr[B_ADDR_LEN];
 typedef void (*EventHandler_t)(uint32 event, BLEAppUtil_msgHdr_t *pMsgData);
 typedef void (*ErrorHandler_t)(int32 errorCode , void* pInfo);
 typedef void (*StackInitDone_t)(gapDeviceInitDoneEvent_t *deviceInitDoneData);
+// Profile/Service Invoke from BLE App Util context type
+typedef void (*InvokeFromBLEAppUtilContext_t)(char *pData);
 
 // Event Handler Types
 typedef enum BLEAppUtil_eventHandlerType_e
@@ -94,7 +95,8 @@ typedef enum BLEAppUtil_eventHandlerType_e
     BLEAPPUTIL_HCI_DATA_TYPE,
     BLEAPPUTIL_HCI_GAP_TYPE,
     BLEAPPUTIL_HCI_SMP_TYPE,
-    BLEAPPUTIL_HCI_SMP_META_TYPE
+    BLEAPPUTIL_HCI_SMP_META_TYPE,
+    BLEAPPUTIL_HCI_CTRL_TO_HOST_TYPE
 } BLEAppUtil_eventHandlerType_e;
 
 // GAP Conn event mask
@@ -248,7 +250,9 @@ typedef enum BLEAppUtil_HciEventMaskFlags_e
     BLEAPPUTIL_HCI_VE_EVENT_CODE                        = (uint32_t)BV(4),
     BLEAPPUTIL_HCI_BLE_HARDWARE_ERROR_EVENT_CODE        = (uint32_t)BV(5),
     BLEAPPUTIL_HCI_NUM_OF_COMPLETED_PACKETS_EVENT_CODE  = (uint32_t)BV(6),
-    BLEAPPUTIL_HCI_APTO_EXPIRED_EVENT_CODE              = (uint32_t)BV(7)
+    BLEAPPUTIL_HCI_APTO_EXPIRED_EVENT_CODE              = (uint32_t)BV(7),
+    BLEAPPUTIL_HCI_EVENT_PACKET                         = (uint32_t)BV(8),
+    BLEAPPUTIL_HCI_ACL_DATA_PACKET                      = (uint32_t)BV(9)
 } BLEAppUtil_HciEventMaskFlags_e;
 
 // Profile role mask
@@ -540,17 +544,27 @@ typedef struct
 } BLEAppUtil_EventHandler_t;
 
 /*********************************************************************
+ * GLOBAL VARIABLES
+ */
+// Display Interface
+extern Display_Handle dispHandle;
+extern uint8_t dispIndex;
+
+/*********************************************************************
  * FUNCTIONS
  */
 
 void BLEAppUtil_init(ErrorHandler_t errorHandler, StackInitDone_t initDoneHandler,
                      BLEAppUtil_GeneralParams_t *initGeneralParams,
                      BLEAppUtil_PeriCentParams_t *initPeriCentParams);
-BLEAppUtil_entityId_t BLEAppUtil_getSelfEntity();
+BLEAppUtil_entityId_t BLEAppUtil_getSelfEntity(void);
 
 // Register function for BLE stack events
 bStatus_t BLEAppUtil_registerEventHandler(BLEAppUtil_EventHandler_t *eventHandler);
 bStatus_t BLEAppUtil_unRegisterEventHandler(BLEAppUtil_EventHandler_t *eventHandler);
+
+// Profiles/Services APIs
+bStatus_t BLEAppUtil_invokeFunction(InvokeFromBLEAppUtilContext_t callback, char* pData);
 
 // Adv functions
 bStatus_t BLEAppUtil_initAdvSet(uint8 *advHandle, const BLEAppUtil_AdvInit_t *advInitInfo);
@@ -580,8 +594,8 @@ bStatus_t BLEAppUtil_Connect(BLEAppUtil_ConnectParams_t *connParams);
 bStatus_t BLEAppUtil_CancelConnect(void);
 
 // Connection Event notifications
-bStatus_t BLEAppUtil_RegisterConnNotiHandler(BLEAppUtil_ConnEventNotiEventMaskFlags_e event, uint16_t connHandle);
-bStatus_t BLEAppUtil_UnRegisterConnNotiHandler(void);
+bStatus_t BLEAppUtil_registerConnNotifHandler(BLEAppUtil_EventHandler_t *eventHandler, uint16_t connHandle);
+bStatus_t BLEAppUtil_unRegisterConnNotifHandler(void);
 bStatus_t BLEAppUtil_paramUpdateRsp(gapUpdateLinkParamReqEvent_t *pReq, uint8 accept);
 
 char *BLEAppUtil_convertBdAddr2Str(uint8_t *pAddr);

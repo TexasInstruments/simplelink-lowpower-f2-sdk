@@ -76,7 +76,7 @@ DACCC26XX_Object dacCC26xxObjects[`countDef`];
 const DACCC26XX_HWAttrs dacCC26xxHWAttrs[`countDef`] = {
 % for (let i = 0; i < instances.length; i++) {
     % let inst = instances[i];
-    % let packagePin, auxOut;
+    % let packagePin, auxOut, clkDivider;
     %
     % packagePin = parseInt(inst.dac.dacPin.$solution.packagePinName);
     % auxOut = system.deviceData.devicePins[packagePin].attributes.alias_name;
@@ -90,11 +90,18 @@ const DACCC26XX_HWAttrs dacCC26xxHWAttrs[`countDef`] = {
     /* `inst.$hardware.displayName` */
     %    }
     % }
+    % if (inst.dacFreqSel == "intLoad") {
+    %    clkDivider = '2';
+    % }
+    % else {
+    %    clkDivider = '11';
+    % }
     {
-        .outputPin        = `inst.dacPinInstance.$name`,
-        .dacCompAInput    = `auxOut`,
-        .dacVrefSource    = `map[inst.voltageRefSource]`,
-        .dacPrecharge     = `inst.preCharge`,
+        .outputPin         = `inst.dacPinInstance.$name`,
+        .dacCompAInput     = `auxOut`,
+        .dacVrefSource     = `map[inst.voltageRefSource]`,
+        .dacPrecharge      = `inst.preCharge`,
+        .dacSmplClkDivider = `clkDivider`
     },
 % }
 };

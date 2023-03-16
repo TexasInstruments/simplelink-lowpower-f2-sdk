@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -798,7 +798,7 @@ LCD_Handle LCD_open(LCD_Buffer *buffers, uint8_t nBuffers, LCD_Params *lcdParams
         return (NULL);
     }
 
-    /* Initialize SPI parameters. Master mode, blocking mode
+    /* Initialize SPI parameters. Controller mode, blocking mode
      * and dataSize=8 is default and should not be changed.
      * The other parameters can be set from LCD parameters.
      */
@@ -893,9 +893,13 @@ void LCD_writeLine(LCD_Handle handle,
         /* Check that there is a null termination in the string */
         const char *end = (const char *)memchr(str, '\0', maxLen);
         if (end == NULL)
+        {
             strLength = maxLen;
+        }
         else
+        {
             strLength = end - str;
+        }
 
         memset(buf, ' ', maxLen);
         memcpy(buf, str, strLength);

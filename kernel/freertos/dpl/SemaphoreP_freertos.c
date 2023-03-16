@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,9 @@
  */
 #define MAXCOUNT 0xffff
 
+extern void vQueueAddToRegistryWrapper(QueueHandle_t xQueue, const char *pcQueueName);
+extern void vQueueUnregisterQueueWrapper(QueueHandle_t xQueue);
+
 /*
  *  ======== SemaphoreP_construct ========
  */
@@ -88,6 +91,12 @@ SemaphoreP_Handle SemaphoreP_construct(SemaphoreP_Struct *handle, unsigned int c
             xSemaphoreGive(sem);
         }
     }
+
+    if (sem != NULL)
+    {
+        /* Register Semaphore for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "SemaphoreP");
+    }
 #endif
 
     return ((SemaphoreP_Handle)sem);
@@ -105,6 +114,12 @@ SemaphoreP_Handle SemaphoreP_constructBinary(SemaphoreP_Struct *handle, unsigned
     if ((sem != NULL) && (count != 0))
     {
         xSemaphoreGive(sem);
+    }
+
+    if (sem != NULL)
+    {
+        /* Register Semaphore for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "SemaphoreP");
     }
 #endif
 
@@ -152,6 +167,12 @@ SemaphoreP_Handle SemaphoreP_create(unsigned int count, SemaphoreP_Params *param
         }
     }
 
+    if (sem != NULL)
+    {
+        /* Register Semaphore for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "SemaphoreP");
+    }
+
     return ((SemaphoreP_Handle)sem);
 }
 
@@ -168,6 +189,12 @@ SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count)
         xSemaphoreGive(sem);
     }
 
+    if (sem != NULL)
+    {
+        /* Register Semaphore for kernel aware debugging */
+        vQueueAddToRegistryWrapper(sem, "SemaphoreP");
+    }
+
     return ((SemaphoreP_Handle)sem);
 }
 
@@ -176,6 +203,9 @@ SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count)
  */
 void SemaphoreP_delete(SemaphoreP_Handle handle)
 {
+    /* Unregister Semaphore for kernel aware debugging */
+    vQueueUnregisterQueueWrapper((SemaphoreHandle_t)handle);
+
     vSemaphoreDelete((SemaphoreHandle_t)handle);
 }
 
@@ -183,7 +213,10 @@ void SemaphoreP_delete(SemaphoreP_Handle handle)
  *  ======== SemaphoreP_destruct ========
  */
 void SemaphoreP_destruct(SemaphoreP_Struct *semP)
-{}
+{
+    /* Unregister Semaphore for kernel aware debugging */
+    vQueueUnregisterQueueWrapper((SemaphoreHandle_t)semP);
+}
 
 /*
  *  ======== SemaphoreP_Params_init ========

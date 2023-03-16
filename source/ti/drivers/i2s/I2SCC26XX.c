@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -471,7 +471,7 @@ static void initHw(I2S_Handle handle)
     configSerialFormat(handle);
     /* Configure the channels used on each data interface. */
     configChannels(handle);
-    /* Configure the clocks for the MCLK, SCK and WS signals. */
+    /* Configure the clocks for the CCLK, SCK and WS signals. */
     configClocks(handle);
 }
 
@@ -631,11 +631,11 @@ static bool initObject(I2S_Handle handle, I2S_Params *params)
         SD1->channelsUsed         = params->SD1Channels;
         SD1->numberOfChannelsUsed = getNumberOfChannels((uint8_t)SD1->channelsUsed);
 
-        if (params->MCLKDivider == 1U)
+        if (params->CCLKDivider == 1U)
         {
             retVal = (bool)false;
         }
-        object->MCLKDivider = params->MCLKDivider;
+        object->CCLKDivider = params->CCLKDivider;
         uint16_t SCKDivider = 0U;
         if (!computeSCKDivider(handle, params, &SCKDivider))
         {
@@ -727,9 +727,16 @@ static void initIO(I2S_Handle handle)
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
 
+    /* Make sure all pins have their input buffers enabled */
+    GPIO_setConfig(hwAttrs->pinWS, GPIO_CFG_INPUT);
+    GPIO_setConfig(hwAttrs->pinSCK, GPIO_CFG_INPUT);
+    GPIO_setConfig(hwAttrs->pinCCLK, GPIO_CFG_INPUT);
+    GPIO_setConfig(hwAttrs->pinSD0, GPIO_CFG_INPUT);
+    GPIO_setConfig(hwAttrs->pinSD1, GPIO_CFG_INPUT);
+
     GPIO_setMux(hwAttrs->pinWS, IOC_PORT_MCU_I2S_WCLK);
     GPIO_setMux(hwAttrs->pinSCK, IOC_PORT_MCU_I2S_BCLK);
-    GPIO_setMux(hwAttrs->pinMCLK, IOC_PORT_MCU_I2S_MCLK);
+    GPIO_setMux(hwAttrs->pinCCLK, IOC_PORT_MCU_I2S_MCLK);
     GPIO_setMux(hwAttrs->pinSD0, IOC_PORT_MCU_I2S_AD0);
     GPIO_setMux(hwAttrs->pinSD1, IOC_PORT_MCU_I2S_AD1);
 }
@@ -746,7 +753,7 @@ static void finalizeIO(I2S_Handle handle)
 
     GPIO_resetConfig(hwAttrs->pinWS);
     GPIO_resetConfig(hwAttrs->pinSCK);
-    GPIO_resetConfig(hwAttrs->pinMCLK);
+    GPIO_resetConfig(hwAttrs->pinCCLK);
     GPIO_resetConfig(hwAttrs->pinSD0);
     GPIO_resetConfig(hwAttrs->pinSD1);
 }
@@ -1023,7 +1030,7 @@ static void configClocks(I2S_Handle handle)
         PRCMAudioClockInternalSource();
         PRCMAudioClockConfigOverride((uint8_t)object->samplingEdge,
                                      (uint8_t)object->phaseType,
-                                     (uint32_t)object->MCLKDivider,
+                                     (uint32_t)object->CCLKDivider,
                                      (uint32_t)object->SCKDivider,
                                      (uint32_t)object->WSDivider);
     }

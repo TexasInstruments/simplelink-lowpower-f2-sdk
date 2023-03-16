@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@
 static Void clockFxn(UArg arg);
 static UInt32 getClockTicks(Void);
 
-static UInt32 prevTicks = 0;
+static UInt32 prevTicks     = 0;
 static UInt32 rolloverCount = 0;
 static Clock_Struct clockStruct;
 static Bool firstTime = TRUE;
@@ -61,23 +61,24 @@ static Bool firstTime = TRUE;
 int clock_gettime(clockid_t clockId, struct timespec *ts)
 {
     Seconds_Time t;
-    UInt32       secs;
-    UInt32       ticks;
-    UInt32       remTicks;
-    UInt32       remSecs;
-    UInt         key;
-    UInt32       numRollovers;
+    UInt32 secs;
+    UInt32 ticks;
+    UInt32 remTicks;
+    UInt32 remSecs;
+    UInt key;
+    UInt32 numRollovers;
 
-    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME)) {
+    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME))
+    {
         errno = EINVAL;
         return (-1);
     }
 
-    if (clockId == CLOCK_REALTIME) {
+    if (clockId == CLOCK_REALTIME)
+    {
         Seconds_getTime(&t);
 
-#if defined(_TARGET_DEFAULTS_TO_TIME64) || \
-    (defined(__TI_TIME_USES_64) && __TI_TIME_USES_64)
+#if defined(_TARGET_DEFAULTS_TO_TIME64) || (defined(__TI_TIME_USES_64) && __TI_TIME_USES_64)
         ts->tv_sec = t.secsHi;
         ts->tv_sec = ts->tv_sec << 32;
         ts->tv_sec = ts->tv_sec | t.secs;
@@ -86,19 +87,20 @@ int clock_gettime(clockid_t clockId, struct timespec *ts)
 #endif
         ts->tv_nsec = t.nsecs;
     }
-    else {
+    else
+    {
         /* CLOCK_MONOTONIC */
         key = Hwi_disable();
 
-        if (firstTime) {
-            Clock_addI(Clock_handle(&clockStruct), (Clock_FuncPtr)clockFxn,
-                    (UInt)0xFFFFFFFF, (UArg)0);
+        if (firstTime)
+        {
+            Clock_addI(Clock_handle(&clockStruct), (Clock_FuncPtr)clockFxn, (UInt)0xFFFFFFFF, (UArg)0);
             Clock_setPeriod(Clock_handle(&clockStruct), 0xFFFFFFFF);
             Clock_startI(Clock_handle(&clockStruct));
             firstTime = FALSE;
         }
 
-        ticks = getClockTicks();
+        ticks        = getClockTicks();
         numRollovers = rolloverCount;
 
         Hwi_restore(key);
@@ -114,8 +116,8 @@ int clock_gettime(clockid_t clockId, struct timespec *ts)
         remSecs = remTicks / TICKS_PER_SEC;
         remTicks -= remSecs * TICKS_PER_SEC;
 
-        ts->tv_sec = (time_t)secs + remSecs + (MAX_SECONDS * numRollovers);
-        ts->tv_nsec = (unsigned long)(remTicks * Clock_tickPeriod  * 1000);
+        ts->tv_sec  = (time_t)secs + remSecs + (MAX_SECONDS * numRollovers);
+        ts->tv_nsec = (unsigned long)(remTicks * Clock_tickPeriod * 1000);
     }
 
     return (0);
@@ -124,16 +126,17 @@ int clock_gettime(clockid_t clockId, struct timespec *ts)
 /*
  *  ======== clock_nanosleep ========
  */
-int clock_nanosleep(clockid_t clockId, int flags,
-        const struct timespec *rqtp, struct timespec *rmtp)
+int clock_nanosleep(clockid_t clockId, int flags, const struct timespec *rqtp, struct timespec *rmtp)
 {
     uint32_t ticks;
 
-    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME)) {
+    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME))
+    {
         return (EINVAL);
     }
 
-    if ((rmtp != NULL) && (flags & TIMER_ABSTIME) == 0) {
+    if ((rmtp != NULL) && (flags & TIMER_ABSTIME) == 0)
+    {
         /*
          *  In the relative case, rmtp will contain the amount of time
          *  remaining (requested time - actual time slept).  For BIOS,
@@ -142,30 +145,35 @@ int clock_nanosleep(clockid_t clockId, int flags,
         rmtp->tv_nsec = rmtp->tv_sec = 0;
     }
 
-    if (flags & TIMER_ABSTIME) {
-        if (_pthread_abstime2ticks(clockId, rqtp, &ticks) != 0) {
+    if (flags & TIMER_ABSTIME)
+    {
+        if (_pthread_abstime2ticks(clockId, rqtp, &ticks) != 0)
+        {
             return (EINVAL);
         }
 
-        if (ticks == 0) {
+        if (ticks == 0)
+        {
             return (0);
         }
     }
-    else {
+    else
+    {
         /* max interval, needs to be fixed: TIRTOS-1314 */
-        if (rqtp->tv_sec >= MAX_SECONDS) {
+        if (rqtp->tv_sec >= MAX_SECONDS)
+        {
             return (EINVAL);
         }
 
-        if ((rqtp->tv_sec == 0) && (rqtp->tv_nsec == 0)) {
+        if ((rqtp->tv_sec == 0) && (rqtp->tv_nsec == 0))
+        {
             return (0);
         }
 
         ticks = rqtp->tv_sec * (1000000 / Clock_tickPeriod);
 
         /* Take the ceiling */
-        ticks += (rqtp->tv_nsec + Clock_tickPeriod * 1000 - 1) /
-                (Clock_tickPeriod * 1000);
+        ticks += (rqtp->tv_nsec + Clock_tickPeriod * 1000 - 1) / (Clock_tickPeriod * 1000);
 
         /*
          *  Add one tick to ensure the timeout is not less than the
@@ -187,12 +195,14 @@ int clock_nanosleep(clockid_t clockId, int flags,
 int clock_settime(clockid_t clock_id, const struct timespec *ts)
 {
 
-    if (clock_id != CLOCK_REALTIME) {
+    if (clock_id != CLOCK_REALTIME)
+    {
         errno = EINVAL;
         return (-1);
     }
 
-    if ((ts->tv_nsec < 0) || (ts->tv_nsec >= 1000000000)) {
+    if ((ts->tv_nsec < 0) || (ts->tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -200,20 +210,19 @@ int clock_settime(clockid_t clock_id, const struct timespec *ts)
 #if BIOS_version < 0x67500
     Seconds_set(ts->tv_sec);
 #else
-{
-    Seconds_Time its;
+    {
+        Seconds_Time its;
 
-#if defined(_TARGET_DEFAULTS_TO_TIME64) || \
-    (defined(__TI_TIME_USES_64) && __TI_TIME_USES_64)
-    its.secsHi = (UInt32)(ts->tv_sec >> 32);
-    its.secs = (UInt32)(ts->tv_sec);
-#else
-    its.secsHi = 0;
-    its.secs = (UInt32)(ts->tv_sec);
-#endif
-    its.nsecs = (UInt32)(ts->tv_nsec);
-    Seconds_setTime(&its);
-}
+    #if defined(_TARGET_DEFAULTS_TO_TIME64) || (defined(__TI_TIME_USES_64) && __TI_TIME_USES_64)
+        its.secsHi = (UInt32)(ts->tv_sec >> 32);
+        its.secs = (UInt32)(ts->tv_sec);
+    #else
+        its.secsHi = 0;
+        its.secs   = (UInt32)(ts->tv_sec);
+    #endif
+        its.nsecs = (UInt32)(ts->tv_nsec);
+        Seconds_setTime(&its);
+    }
 #endif
 
     return (0);
@@ -225,7 +234,7 @@ int clock_settime(clockid_t clock_id, const struct timespec *ts)
  */
 void ti_sysbios_posix_clock_getticks(UInt32 *ticksLo, UInt32 *ticksHi)
 {
-    UInt         key;
+    UInt key;
 
     key = Hwi_disable();
 
@@ -240,11 +249,11 @@ void ti_sysbios_posix_clock_getticks(UInt32 *ticksLo, UInt32 *ticksHi)
  */
 static Void clockFxn(UArg arg)
 {
-    UInt         key;
+    UInt key;
 
     key = Hwi_disable();
 
-    (Void)getClockTicks();
+    (Void) getClockTicks();
 
     Hwi_restore(key);
 }
@@ -255,10 +264,11 @@ static Void clockFxn(UArg arg)
  */
 static UInt32 getClockTicks(Void)
 {
-    UInt32       ticks;
+    UInt32 ticks;
 
     ticks = Clock_getTicks();
-    if (ticks < prevTicks) {
+    if (ticks < prevTicks)
+    {
         rolloverCount++;
     }
     prevTicks = ticks;

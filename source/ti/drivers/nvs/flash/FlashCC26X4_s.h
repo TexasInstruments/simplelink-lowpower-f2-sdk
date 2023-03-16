@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
  *  @anchor ti_drivers_nvs_FlashCC26X4_s_Overview
  *  # Overview
  *      The Secure Flash Service is used to access the flash driver when using
- *      SPE configuration.
+ *      TF-M configuration.
  *
  *******************************************************************************
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,7 @@ void resetISR(void);
 static void nmiISR(void);
 static void faultISR(void);
 static void intDefaultHandler(void);
+static void secureFaultHandler(void);
 
 //*****************************************************************************
 //
@@ -73,24 +74,23 @@ extern unsigned long __STACK_END;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__((section(".intvecs"))) __attribute__((used)) void (*const g_pfnVectors[])(void) = {
-    (void (*)(void))((unsigned long)&__STACK_END),
-    //  0 The initial stack pointer
-    resetISR,          //  1 The reset handler
-    nmiISR,            //  2 The NMI handler
-    faultISR,          //  3 The hard fault handler
-    intDefaultHandler, //  4 The MPU fault handler
-    intDefaultHandler, //  5 The bus fault handler
-    intDefaultHandler, //  6 The usage fault handler
-    0,                 //  7 Reserved
-    0,                 //  8 Reserved
-    0,                 //  9 Reserved
-    0,                 // 10 Reserved
-    intDefaultHandler, // 11 SVCall handler
-    intDefaultHandler, // 12 Debug monitor handler
-    0,                 // 13 Reserved
-    intDefaultHandler, // 14 The PendSV handler
-    intDefaultHandler, // 15 The SysTick handler
+__attribute__((section(".resetVecs"), retain)) void (*const g_pfnVectors[])(void) = {
+    (void (*)(void))((unsigned long)&__STACK_END), //  0 The initial stack pointer
+    resetISR,                                      //  1 The reset handler
+    nmiISR,                                        //  2 The NMI handler
+    faultISR,                                      //  3 The hard fault handler
+    intDefaultHandler,                             //  4 The MPU fault handler
+    intDefaultHandler,                             //  5 The bus fault handler
+    intDefaultHandler,                             //  6 The usage fault handler
+    secureFaultHandler,                            //  7 The secure fault handler
+    0,                                             //  8 Reserved
+    0,                                             //  9 Reserved
+    0,                                             // 10 Reserved
+    intDefaultHandler,                             // 11 SVCall handler
+    intDefaultHandler,                             // 12 Debug monitor handler
+    0,                                             // 13 Reserved
+    intDefaultHandler,                             // 14 The PendSV handler
+    intDefaultHandler,                             // 15 The SysTick handler
     //--- External interrupts ---
     intDefaultHandler, // 16 AON edge detect
     intDefaultHandler, // 17 Interrupt event from I2C0
@@ -183,7 +183,7 @@ void resetISR(void)
 
 //*****************************************************************************
 //
-//! This is the code that gets called when the processor receives a NMI. This
+//! This is the code that gets called when the processor receives an NMI. This
 //! simply enters an infinite loop, preserving the system state for examination
 //! by a debugger.
 //
@@ -213,6 +213,21 @@ static void faultISR(void)
 
 //*****************************************************************************
 //
+//! This is the code that gets called when the processor receives a secure fault
+//! interrupt. This simply enters an infinite loop, preserving the system state
+//! for examination by a debugger.
+//
+//*****************************************************************************
+static void secureFaultHandler(void)
+{
+    //
+    // Enter an infinite loop.
+    //
+    while (1) {}
+}
+
+//*****************************************************************************
+//
 //! This is the code that gets called when the processor receives an unexpected
 //! interrupt. This simply enters an infinite loop, preserving the system state
 //! for examination by a debugger.
@@ -220,8 +235,6 @@ static void faultISR(void)
 //*****************************************************************************
 static void intDefaultHandler(void)
 {
-    //
-    // Enter an infinite loop.
-    //
+    /* Enters an infinite loop */
     while (1) {}
 }

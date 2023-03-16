@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #ifndef __GNUC__
-#error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
 #endif
 
 #include <stdint.h>
@@ -57,18 +57,19 @@
 extern "C" {
 #endif
 
-typedef union {
+typedef union
+{
     struct sysbios_Semaphore sysbios;
     struct freertos_Semaphore freertos;
 } sem_t;
 
-int    sem_destroy(sem_t *sem);
-int    sem_getvalue(sem_t *sem, int *value);
-int    sem_init(sem_t *sem, int pshared, unsigned value);
-int    sem_post(sem_t *sem);
-int    sem_timedwait(sem_t *sem, const struct timespec *abstime);
-int    sem_trywait(sem_t *sem);
-int    sem_wait(sem_t *sem);
+int sem_destroy(sem_t *sem);
+int sem_getvalue(sem_t *sem, int *value);
+int sem_init(sem_t *sem, int pshared, unsigned value);
+int sem_post(sem_t *sem);
+int sem_timedwait(sem_t *sem, const struct timespec *abstime);
+int sem_trywait(sem_t *sem);
+int sem_wait(sem_t *sem);
 
 #ifdef __cplusplus
 }

@@ -1144,8 +1144,8 @@
 
 // Field:    [23] CC13
 //
-// 0: CC26xx device type
-// 1: CC13xx device type
+// 0: CC26x4x10 device type
+// 1: CC13x4x10 device type
 #define FCFG1_USER_ID_CC13                                          0x00800000
 #define FCFG1_USER_ID_CC13_BITN                                             23
 #define FCFG1_USER_ID_CC13_M                                        0x00800000
@@ -1165,12 +1165,8 @@
 //
 // Package type.
 //
-// 0x0: 4x4mm QFN (RHB) package
-// 0x1: 5x5mm QFN (RSM) package
 // 0x2: 7x7mm QFN (RGZ) package
-// 0x3: Wafer sale package (naked die)
-// 0x4: WCSP (YFV)
-// 0x5: 7x7mm QFN package with Wettable Flanks
+// 0x7: 8x8mm QFN (RSK) package
 //
 // Other values are reserved for future use.
 // Packages available for a specific device are shown in the device datasheet.

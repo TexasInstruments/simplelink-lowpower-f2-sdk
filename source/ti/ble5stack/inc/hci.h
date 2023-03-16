@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -2898,13 +2898,13 @@ extern hciStatus_t HCI_LE_ReadAntennaInformationCmd( void );
  * @par Corresponding Events
  * @ref hciEvt_CmdComplete_t with cmdOpcode HCI_LE_SET_PERIODIC_ADV_PARAMETERS
  *
- * @param advHandle – Used to identify a periodic advertising train
+ * @param advHandle - Used to identify a periodic advertising train
  *                  Created by LE Set Extended Advertising Parameters command
- * @param periodicAdvIntervalMin – Minimum advertising interval for periodic advertising
+ * @param periodicAdvIntervalMin - Minimum advertising interval for periodic advertising
  *                  Range: 0x0006 to 0xFFFF Time = N * 1.25 ms Time Range: 7.5ms to 81.91875 s
- * @param periodicAdvIntervalMax – Maximum advertising interval for periodic advertising
+ * @param periodicAdvIntervalMax - Maximum advertising interval for periodic advertising
  *                  Range: 0x0006 to 0xFFFF Time = N * 1.25 ms Time Range: 7.5ms to 81.91875 s
- * @param periodicAdvProp – Periodic advertising properties
+ * @param periodicAdvProp - Periodic advertising properties
  *                  Set bit 6 for include TxPower in the advertising PDU
  *
  * @return  HCI status
@@ -2927,13 +2927,13 @@ extern hciStatus_t HCI_LE_SetPeriodicAdvParamsCmd( uint8 advHandle,
  * @par Corresponding Events
  * @ref hciEvt_CmdComplete_t with cmdOpcode HCI_LE_SET_PERIODIC_ADV_DATA
  *
- * @param   advHandle  – Used to identify a periodic advertising train
- * @param   operation  – 0x00 - Intermediate fragment of fragmented periodic advertising data
+ * @param   advHandle  - Used to identify a periodic advertising train
+ * @param   operation  - 0x00 - Intermediate fragment of fragmented periodic advertising data
  *                       0x01 - First fragment of fragmented periodic advertising data
  *                       0x02 - Last fragment of fragmented periodic advertising data
  *                       0x03 - Complete periodic advertising data
- * @param   dataLength – The number of bytes in the Advertising Data parameter
- * @param   data       – Periodic advertising data
+ * @param   dataLength - The number of bytes in the Advertising Data parameter
+ * @param   data       - Periodic advertising data
  *
  * @return  HCI status
  */
@@ -2951,9 +2951,9 @@ extern hciStatus_t HCI_LE_SetPeriodicAdvDataCmd( uint8 advHandle,
  * @par Corresponding Events
  * @ref hciEvt_CmdComplete_t with cmdOpcode HCI_LE_SET_PERIODIC_ADV_ENABLE
  *
- * @param   enable    – 0x00 - Periodic advertising is disabled (default)
+ * @param   enable    - 0x00 - Periodic advertising is disabled (default)
  *                      0x01 - Periodic advertising is enabled
- * @param   advHandle – Used to identify a periodic advertising train
+ * @param   advHandle - Used to identify a periodic advertising train
  *
  * @return  HCI status
  */
@@ -2968,12 +2968,12 @@ extern hciStatus_t HCI_LE_SetPeriodicAdvEnableCmd( uint8 enable,
  * @par Corresponding Events
  * @ref hciEvt_CmdComplete_t with cmdOpcode HCI_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_PARAMS
  *
- * @param   advHandle – Used to identify a periodic advertising train
- * @param   cteLen    – CTE length (0x02 - 0x14) 16 usec - 160 usec
- * @param   cteType   – CTE type (0 - AoA, 1 - AoD 1usec, 2 - AoD 2usec)
- * @param   cteCount  – Number of CTE's to transmit in the same periodic event
- * @param   length    – Number of items in Antenna array (relevant to AoD only)
- * @param   pAntenna  – Pointer to Antenna array (relevant to AoD only)
+ * @param   advHandle - Used to identify a periodic advertising train
+ * @param   cteLen    - CTE length (0x02 - 0x14) 16 usec - 160 usec
+ * @param   cteType   - CTE type (0 - AoA, 1 - AoD 1usec, 2 - AoD 2usec)
+ * @param   cteCount  - Number of CTE's to transmit in the same periodic event
+ * @param   length    - Number of items in Antenna array (relevant to AoD only)
+ * @param   pAntenna  - Pointer to Antenna array (relevant to AoD only)
  *
  * @return  HCI status
  */
@@ -2992,8 +2992,8 @@ extern hciStatus_t HCI_LE_SetConnectionlessCteTransmitParamsCmd( uint8 advHandle
  * @par Corresponding Events
  * @ref hciEvt_CmdComplete_t with cmdOpcode HCI_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_ENABLE
  *
- * @param   advHandle – Used to identify a periodic advertising train
- * @param   enable    – 0x00 - Advertising with CTE is disabled (default)
+ * @param   advHandle - Used to identify a periodic advertising train
+ * @param   enable    - 0x00 - Advertising with CTE is disabled (default)
  *                      0x01 - Advertising with CTE is enabled
  *
  * @return  HCI status
@@ -3009,21 +3009,21 @@ extern hciStatus_t HCI_LE_SetConnectionlessCteTransmitEnableCmd( uint8 advHandle
  *
  * @design /ref did_286039104
  *
- * @param   options     – Clear Bit 0 - Use the advSID, advAddrType, and advAddress
+ * @param   options     - Clear Bit 0 - Use the advSID, advAddrType, and advAddress
  *                                      parameters to determine which advertiser to listen to.
  *                        Set Bit 0   - Use the Periodic Advertiser List to determine which
  *                                      advertiser to listen to.
  *                        Clear Bit 1 - Reporting initially enabled.
  *                        Set Bit 1   - Reporting initially disabled.
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advSID      - Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
- * @param   advAddrType – Advertiser address type - 0x00 - public ; 0x01 - random
- * @param   advAddress  – Advertiser address (6 bytes)
- * @param   skip        – The maximum number of periodic advertising events that can be
+ * @param   advAddrType - Advertiser address type - 0x00 - public ; 0x01 - random
+ * @param   advAddress  - Advertiser address (6 bytes)
+ * @param   skip        - The maximum number of periodic advertising events that can be
  *                        skipped after a successful receive (Range: 0x0000 to 0x01F3)
- * @param   syncTimeout – Synchronization timeout for the periodic advertising train
+ * @param   syncTimeout - Synchronization timeout for the periodic advertising train
  *                           Range: 0x000A to 0x4000 Time = N*10 ms Time Range: 100 ms to 163.84 s
- * @param   syncCteType – Set Bit 0 - Do not sync to packets with an AoA CTE
+ * @param   syncCteType - Set Bit 0 - Do not sync to packets with an AoA CTE
  *                        Set Bit 1 - Do not sync to packets with an AoD CTE with 1 us slots
  *                        Set Bit 2 - Do not sync to packets with an AoD CTE with 2 us slots
  *                        Set Bit 4 - Do not sync to packets without a CTE
@@ -3075,10 +3075,10 @@ extern hciStatus_t HCI_LE_PeriodicAdvTerminateSyncCmd( uint16 syncHandle );
  *
  * @design  /ref did_286039104
  *
- * @param   advAddrType – Advertiser address type - 0x00 - Public or Public Identity Address
+ * @param   advAddrType - Advertiser address type - 0x00 - Public or Public Identity Address
  *                                                  0x01 - Random or Random (static) Identity Address
- * @param   advAddress  – Advertiser address (6 bytes)
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advAddress  - Advertiser address (6 bytes)
+ * @param   advSID      - Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
  *
  * @return  HCI status
@@ -3095,11 +3095,11 @@ extern hciStatus_t HCI_LE_AddDeviceToPeriodicAdvListCmd( uint8 advAddrType,
  *
  * @design  /ref did_286039104
  *
- * @param   advAddrType – Advertiser address type -
+ * @param   advAddrType - Advertiser address type -
  *                        0x00 - Public or Public Identity Address
  *                        0x01 - Random or Random (static) Identity Address
- * @param   advAddress  – Advertiser address (6 bytes)
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advAddress  - Advertiser address (6 bytes)
+ * @param   advSID      - Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
  *
  * @return  HCI status
@@ -3163,10 +3163,10 @@ extern hciStatus_t HCI_LE_SetPeriodicAdvReceiveEnableCmd( uint16 syncHandle,
  * @param   syncHandle - Handle identifying the periodic advertising train (Range: 0x0000 to 0x0EFF)
  * @param   samplingEnable - Sample CTE on a received periodic advertising and report the samples to the Host.
  * @param   slotDurations - Switching and sampling slots in 1 us or 2 us each (1 or 2).
- * @param   maxSampledCtes – 0 - Sample and report all available CTEs
+ * @param   maxSampledCtes - 0 - Sample and report all available CTEs
  *                           1 to 16 - Max number of CTEs to sample and report in each periodic event
- * @param   length    – Number of items in Antenna array (relevant to AoA only)
- * @param   pAntenna  – Pointer to Antenna array (relevant to AoA only)
+ * @param   length    - Number of items in Antenna array (relevant to AoA only)
+ * @param   pAntenna  - Pointer to Antenna array (relevant to AoA only)
  *
  * @return  HCI status
  */

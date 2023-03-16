@@ -54,7 +54,7 @@ typedef enum
 } TestMode_Status;
 
 // Function type to print messages
-typedef void (*printMsgFxn)(uint32_t mode, uint16_t packetCount, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
+typedef void (*printMsgFxn)(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
 
 /***************************************************************************************************
  *

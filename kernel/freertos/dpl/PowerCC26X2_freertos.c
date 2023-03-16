@@ -37,6 +37,7 @@
 #include <ti/drivers/ITM.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26X2.h>
+#include <ti/drivers/power/PowerCC26X2_helpers.h>
 #include <ti/drivers/dpl/ClockP.h>
 
 #include <FreeRTOS.h>
@@ -89,7 +90,7 @@ void PowerCC26XX_standbyPolicy(void)
     }
 
     /* check operating conditions, optimally choose DCDC versus GLDO */
-    SysCtrl_DCDC_VoltageConditionalControl();
+    PowerCC26X2_sysCtrlUpdateVoltageRegulator();
 
     /* query the declared constraints */
     constraints = Power_getConstraintMask();

@@ -3,7 +3,7 @@
 *
 *  Description:    CC13x4/CC26x4 API for IEEE 802.15.4 commands
 *
-*  Copyright (c) 2015 - 2022, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2023, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -217,6 +217,10 @@ struct __RFC_STRUCT rfc_CMD_IEEE_RX_s {
                                         //!<        1: Auto-pend enabled on PAN 0
       uint16_t autoPendEn1:1;           //!< \brief 0: Auto-pend disabled on PAN 1<br>
                                         //!<        1: Auto-pend enabled on PAN 1
+      uint16_t defaultPend0:1;          //!< \brief The value of the pending data bit in auto ACK packets that are not
+                                        //!<        subject to auto-pend on PAN 0
+      uint16_t defaultPend1:1;          //!< \brief The value of the pending data bit in auto ACK packets that are not
+                                        //!<        subject to auto-pend on PAN 1
       uint16_t bPendDataReqOnly0:1;     //!< \brief 0: Use auto-pend for any packet on PAN 0<br>
                                         //!<        1: Use auto-pend for data request packets only on PAN 0
       uint16_t bPendDataReqOnly1:1;     //!< \brief 0: Use auto-pend for any packet on PAN 1<br>

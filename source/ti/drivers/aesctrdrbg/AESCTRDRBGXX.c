@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,10 +47,16 @@
 #include <ti/drivers/cryptoutils/utils/CryptoUtils.h>
 
 #include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/aes.h)
 
 #if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
+#endif
+
+#if (TFM_ENABLED == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
 #endif
 
 #if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
@@ -210,16 +216,27 @@ static void AESCTRDRBG_uninstantiate(AESCTRDRBG_Handle handle)
  */
 AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDRBG_Params *params)
 {
-    AESCTRDRBG_Handle handle;
+    AESCTRDRBG_Handle handle = (AESCTRDRBG_Handle)config;
     AESCTRDRBGXX_Object *object;
     const AESCTRDRBGXX_HWAttrs *hwAttrs;
     AESCTR_Params ctrParams;
     uintptr_t key;
     int_fast16_t status;
 
-    handle  = (AESCTRDRBG_Handle)config;
+    /* There are no valid default params for this driver */
+    if (params == NULL)
+    {
+        return NULL;
+    }
+
+    DebugP_assert(handle);
     object  = handle->object;
     hwAttrs = handle->hwAttrs;
+
+    /* Zero out the AESCTR object to ensure AESCTR_construct() will not fail */
+    memset(&object->aesctrObject, 0, sizeof(object->aesctrObject));
+    object->ctrConfig.object  = &object->aesctrObject;
+    object->ctrConfig.hwAttrs = &hwAttrs->aesctrHWAttrs;
 
     key = HwiP_disable();
 
@@ -233,13 +250,8 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
 
     HwiP_restore(key);
 
-    /* There are no valid default params for this driver */
-    if (params == NULL)
-    {
-        return NULL;
-    }
-
-    /* personalizationDataLength must be within
+    /*
+     * personalizationDataLength must be within
      * [0, AESCTRDRBG_AES_BLOCK_SIZE_BYTES + KeyLength] bytes.
      */
     if (params->personalizationDataLength > params->keyLength + AESCTRDRBG_AES_BLOCK_SIZE_BYTES)
@@ -249,18 +261,18 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
 
     /* Open the driver's AESCTR instance */
     AESCTR_Params_init(&ctrParams);
-#if (SPE_ENABLED == 0)
+#if (TFM_ENABLED == 0)
     ctrParams.returnBehavior = (AESCTR_ReturnBehavior)(params->returnBehavior);
 #else
     /*
      * For the secure-only implementation, AESCTRDRBG supports blocking or
-     * polling return behavior.  However, when SPE is enabled, polling return
-     * behavior must be forced since drivers cannot block inside the SPE.
+     * polling return behavior.  However, when TF-M is enabled, polling return
+     * behavior must be forced since drivers cannot block inside the TF-M.
      */
     ctrParams.returnBehavior = AESCTR_RETURN_BEHAVIOR_POLLING;
 #endif
 
-    object->ctrHandle = AESCTR_open(hwAttrs->aesctrIndex, &ctrParams);
+    object->ctrHandle = AESCTR_construct(&object->ctrConfig, &ctrParams);
 
     if (object->ctrHandle == NULL)
     {
@@ -283,7 +295,7 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     /* Ideally this should be set only after instantiation is complete. However
      * since this implementation uses the reseed function, this flag is set here
      * to ensure it doesn't fail with AESCTRDRBG_STATUS_UNINSTANTIATED.
-     * Note that if reesed fails due to other reasons, the following call to
+     * Note that if reseed fails due to other reasons, the following call to
      * uninstantiate will clear this flag.
      */
     object->isInstantiated = true;
@@ -340,7 +352,11 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     uint8_t KeyStore_keyingMaterial[AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE];
-    KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyAttributes attributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+    KeyStore_PSA_KeyAttributes *attributesPtr;
+
+    attributesPtr = &attributes;
+
 #endif /* ENABLE_KEY_STORAGE */
 
     if (randomKey != NULL)
@@ -361,20 +377,32 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
             if ((randomKey->u.keyStore.keyLength != 0) &&
                 (randomKey->u.keyStore.keyLength <= AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE))
             {
+                /* Copy keyAttributes from CryptoKey structure */
+    #if (TFM_ENABLED == 0)
+                attributesPtr = (KeyStore_PSA_KeyAttributes *)randomKey->u.keyStore.keyAttributes;
+    #else
+                keyStoreStatus = KeyStore_s_copyKeyAttributesFromClient((struct psa_client_key_attributes_s *)
+                                                                            randomKey->u.keyStore.keyAttributes,
+                                                                        KEYSTORE_PSA_DEFAULT_OWNER,
+                                                                        attributesPtr);
+    #endif
                 status = AESCTRDRBG_getRandomBytes(handle, KeyStore_keyingMaterial, randomKey->u.keyStore.keyLength);
 
                 if (status == AESCTRDRBG_STATUS_SUCCESS)
                 {
-                    keyStoreStatus = KeyStore_PSA_importKey(&randomKey->u.keyStore.attributes,
+                    keyStoreStatus = KeyStore_PSA_importKey(attributesPtr,
                                                             KeyStore_keyingMaterial,
                                                             randomKey->u.keyStore.keyLength,
-                                                            &keyID);
+                                                            &attributesPtr->core.id);
                     if (keyStoreStatus == KEYSTORE_PSA_STATUS_SUCCESS)
                     {
-                        if (randomKey->u.keyStore.attributes.core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
+                        if (attributesPtr->core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
                         {
                             /* Set the keyID of volatile keys provided by KeyStore driver in the cryptokey structure */
-                            KeyStore_PSA_initKey(randomKey, keyID, randomKey->u.keyStore.keyLength);
+                            KeyStore_PSA_initKey(randomKey,
+                                                 attributesPtr->core.id,
+                                                 randomKey->u.keyStore.keyLength,
+                                                 NULL);
                         }
                         else
                         {

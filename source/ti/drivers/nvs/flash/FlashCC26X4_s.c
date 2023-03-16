@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,11 +37,13 @@
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
+#include DeviceFamily_constructPath(driverlib/rom.h)
 
 #include <assert.h>
 #include "cmse.h"
 #include <tfm_secure_api.h>
 #include <psa_manifest/internal_storage_sp.h>
+#include <ti/drivers/dpl/HwiP.h>
 
 /*!
  *  @brief      Process a PSA Command
@@ -58,6 +60,7 @@ __attribute__((noinline)) static psa_status_t FlashCC26X4_s_processPsaMsg(psa_ms
 
     uint32_t sectorAddress;
     uint32_t output;
+    uintptr_t key;
 
     /* set default PSA Status */
     psa_status_t psaStatus = PSA_ERROR_PROGRAMMER_ERROR;
@@ -96,37 +99,18 @@ __attribute__((noinline)) static psa_status_t FlashCC26X4_s_processPsaMsg(psa_ms
                     break;
                 }
 
-                output = FlashSectorErase(sectorAddress);
+                /* Disable interrupts */
+                key    = HwiP_disable();
+                output = HapiSectorErase(sectorAddress);
+                /* Re-enable the interrupts if required */
+                HwiP_restore(key);
+
                 psa_write(msg->handle, 0, &output, msg->out_size[0]);
                 psaStatus = PSA_SUCCESS;
             }
             break;
 
         case FLASH_SP_MSG_TYPE_PROGRAM:
-            if ((msg->in_size[0] == sizeof(flashProgramSecureArgs)) && (msg->out_size[0] == sizeof(uint32_t)))
-            {
-                psa_read(msg->handle, 0, &flashProgramSecureArgs, sizeof(flashProgramSecureArgs));
-
-                /* Non-secure callers have negative client ID */
-                /* check the dataBuffer address to ensure its not secure memory */
-                /* check the sectorAddress to esnure the destination is not secure memory */
-                if ((msg->client_id < 0) &&
-                    ((!cmse_has_unpriv_nonsecure_read_access(flashProgramSecureArgs.dataBuffer,
-                                                             flashProgramSecureArgs.count)) ||
-                     (!cmse_has_unpriv_nonsecure_rw_access((void *)flashProgramSecureArgs.sectorAddress,
-                                                           flashProgramSecureArgs.count))))
-                {
-                    break;
-                }
-
-                output = FlashProgram((uint8_t *)flashProgramSecureArgs.dataBuffer,
-                                      flashProgramSecureArgs.sectorAddress,
-                                      flashProgramSecureArgs.count);
-                psa_write(msg->handle, 0, &output, msg->out_size[0]);
-                psaStatus = PSA_SUCCESS;
-            }
-            break;
-
         case FLASH_SP_MSG_TYPE_PROGRAM_4X:
             if ((msg->in_size[0] == sizeof(flashProgramSecureArgs)) && (msg->out_size[0] == sizeof(uint32_t)))
             {
@@ -144,9 +128,14 @@ __attribute__((noinline)) static psa_status_t FlashCC26X4_s_processPsaMsg(psa_ms
                     break;
                 }
 
-                output = FlashProgram4X((uint8_t *)flashProgramSecureArgs.dataBuffer,
-                                        flashProgramSecureArgs.sectorAddress,
-                                        flashProgramSecureArgs.count);
+                /* Disable interrupts */
+                key    = HwiP_disable();
+                output = HapiProgramFlash((uint8_t *)flashProgramSecureArgs.dataBuffer,
+                                          flashProgramSecureArgs.sectorAddress,
+                                          flashProgramSecureArgs.count);
+                /* Re-enable the interrupts if required */
+                HwiP_restore(key);
+
                 psa_write(msg->handle, 0, &output, msg->out_size[0]);
                 psaStatus = PSA_SUCCESS;
             }

@@ -53,6 +53,7 @@
 /* General options */
 #define configCPU_CLOCK_HZ ((unsigned long)(48000000))
 #define configTOTAL_HEAP_SIZE ((size_t)(0x2000))
+#define configAPPLICATION_ALLOCATED_HEAP 0
 #define configCHECK_FOR_STACK_OVERFLOW 2
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
 #define configEXPECTED_IDLE_TIME_BEFORE_SLEEP 2
@@ -68,10 +69,6 @@
 #define configTIMER_QUEUE_LENGTH (20)
 #define configTIMER_TASK_STACK_DEPTH ((unsigned short)(128))
 
-/* TrustZone/PSA settings */
-/* We do not set ENABLE_TRUSTZONE, as this is only for Secure Side function call support */
-#define configENABLE_TRUSTZONE 0
-#define configRUN_FREERTOS_SECURE_ONLY 1
 
 /*
  * The ISR stack will be initialized in the startup_<device>_<compiler>.c file
@@ -89,7 +86,14 @@
             ;                     \
     }
 
+/* Floating point unit enabled or disabled */
+#define configENABLE_FPU 0
+
 /* Modifying the options below is not permitted or currently unsupported */
+
+/* MPU is disabled */
+#define configENABLE_MPU 0
+
 
 /* Constants related to the behaviour or the scheduler. */
 #define configTICK_RATE_HZ ((TickType_t)1000)
@@ -183,16 +187,14 @@
 #define INCLUDE_xTaskGetCurrentTaskHandle 1
 #define INCLUDE_xTaskGetSchedulerState 1
 #define INCLUDE_xSemaphoreGetMutexHolder 0
-#define INCLUDE_xTimerPendFunctionCall 0
+#define INCLUDE_xTimerPendFunctionCall 1
 
 /* Cortex-M3/4 interrupt priority configuration follows...................... */
 
-/* Use the system definition, if there is one. */
-#ifdef __NVIC_PRIO_BITS
-#define configPRIO_BITS __NVIC_PRIO_BITS
-#else
-#define configPRIO_BITS 3 /* 8 priority levels */
-#endif
+/* Use the system definition.
+ * The number of priority bits is reduced by one for TFM-enabled configurations.
+ */
+#define configPRIO_BITS 3
 
 /*
  * The lowest interrupt priority that can be used in a call to a "set priority"

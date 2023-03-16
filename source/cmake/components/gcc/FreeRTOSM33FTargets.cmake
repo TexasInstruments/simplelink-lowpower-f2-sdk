@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget FreeRTOS::freertos_m33f FreeRTOS::freertos_m33f_spe)
+foreach(_expectedTarget FreeRTOS::freertos_m33f FreeRTOS::freertos_m33f_tfm)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -58,10 +58,10 @@ set_target_properties(FreeRTOS::freertos_m33f PROPERTIES
   INTERFACE_LINK_LIBRARIES "FreeRTOS::freertos"
 )
 
-# Create imported target FreeRTOS::freertos_m33f_spe
-add_library(FreeRTOS::freertos_m33f_spe INTERFACE IMPORTED)
+# Create imported target FreeRTOS::freertos_m33f_tfm
+add_library(FreeRTOS::freertos_m33f_tfm INTERFACE IMPORTED)
 
-set_target_properties(FreeRTOS::freertos_m33f_spe PROPERTIES
+set_target_properties(FreeRTOS::freertos_m33f_tfm PROPERTIES
   INTERFACE_LINK_LIBRARIES "FreeRTOS::freertos"
 )
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,10 @@
 
 /* compiler vendor check */
 #ifndef __IAR_SYSTEMS_ICC__
-#error Incompatible compiler: use this include path (.../ti/posix/iar) only with an IAR compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/iar) only with an IAR compiler. You appear to be using a different compiler.
 #endif
 
-#include <stdint.h>     /* C99 standard integer types */
+#include <stdint.h> /* C99 standard integer types */
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,7 +54,8 @@ extern "C" {
  *  object in order to guarantee the opaque object is correctly sized
  *  and aligned with respect to the kernel objects.
  */
-enum Opaque_Mode {
+enum Opaque_Mode
+{
     Opaque_Mode_1,
     Opaque_Mode_2,
     Opaque_Mode_3,
@@ -63,17 +64,20 @@ enum Opaque_Mode {
 
 struct Opaque_Struct__;
 
-struct Opaque_QueueElem {
+struct Opaque_QueueElem
+{
     struct Opaque_QueueElem *volatile next;
     struct Opaque_QueueElem *volatile prev;
 };
 
-struct Opaque_QueueStruct {
+struct Opaque_QueueStruct
+{
     struct Opaque_QueueElem __f0;
     struct Opaque_Struct__ *__f1;
 };
 
-struct sysbios_Semaphore {
+struct sysbios_Semaphore
+{
     struct Opaque_Struct__ *__f0;
     unsigned int __f1;
     enum Opaque_Mode __f2;
@@ -82,24 +86,28 @@ struct sysbios_Semaphore {
     struct Opaque_Struct__ *__f5;
 };
 
-struct freertos_Semaphore {
+struct freertos_Semaphore
+{
     void *__f0;
 };
 
-struct sysbios_Barrier {
+struct sysbios_Barrier
+{
     struct sysbios_Semaphore sem;
     int count;
     int pendCount;
 };
 
-struct freertos_Barrier {
+struct freertos_Barrier
+{
     int count;
     int pendCount;
     struct Opaque_Struct__ *waitList;
     struct Opaque_Struct__ *last;
 };
 
-struct sysbios_Mutex {
+struct sysbios_Mutex
+{
     struct Opaque_Struct__ *owner;
     int lockCnt;
     int type;
@@ -107,14 +115,16 @@ struct sysbios_Mutex {
     struct Opaque_Struct__ *mpo;
 };
 
-struct freertos_Mutex {
+struct freertos_Mutex
+{
     int protocol;
     void *owner;
     int type;
     void *sem; /* struct freertos_Semaphore */
 };
 
-struct sysbios_RWLock {
+struct sysbios_RWLock
+{
     struct sysbios_Semaphore sem;
     struct sysbios_Semaphore readSem;
     int activeReaderCnt;
@@ -122,7 +132,8 @@ struct sysbios_RWLock {
     void *owner;
 };
 
-struct freertos_RWLock {
+struct freertos_RWLock
+{
     struct freertos_Semaphore sem;
     struct freertos_Semaphore readSem;
     int activeReaderCnt;
@@ -130,16 +141,17 @@ struct freertos_RWLock {
     void *owner;
 };
 
-struct sysbios_Cond {
+struct sysbios_Cond
+{
     struct Opaque_QueueStruct waitList;
     uint32_t clockId;
 };
 
-struct freertos_Cond {
+struct freertos_Cond
+{
     struct Opaque_QueueElem waitList;
     uint32_t clockId;
 };
-
 
 #ifdef __cplusplus
 }

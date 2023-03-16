@@ -74,13 +74,13 @@
 % if (deviceId.match(/CC13.4|CC26.4/)) {
 #define BOARD_EXT_FLASH_SPI_CS      38
 #define BOARD_EXT_FLASH_SPI_CLK     39
-#define BOARD_EXT_FLASH_SPI_MOSI    36
-#define BOARD_EXT_FLASH_SPI_MISO    37
+#define BOARD_EXT_FLASH_SPI_PICO    36
+#define BOARD_EXT_FLASH_SPI_POCI    37
 % } else {
 #define BOARD_EXT_FLASH_SPI_CS      20
 #define BOARD_EXT_FLASH_SPI_CLK     10
-#define BOARD_EXT_FLASH_SPI_MOSI    9
-#define BOARD_EXT_FLASH_SPI_MISO    8
+#define BOARD_EXT_FLASH_SPI_PICO    9
+#define BOARD_EXT_FLASH_SPI_POCI    8
 % }
 
 
@@ -97,8 +97,8 @@ void Board_sendExtFlashByte(uint8_t byte)
     for (i = 0; i < 8; i++) {
         GPIO_write(BOARD_EXT_FLASH_SPI_CLK, 0); /* SPI Flash CLK */
 
-        /* SPI Flash MOSI */
-        GPIO_write(BOARD_EXT_FLASH_SPI_MOSI, (byte >> (7 - i)) & 0x01);
+        /* SPI Flash PICO */
+        GPIO_write(BOARD_EXT_FLASH_SPI_PICO, (byte >> (7 - i)) & 0x01);
         GPIO_write(BOARD_EXT_FLASH_SPI_CLK, 1);  /* SPI Flash CLK */
 
         /*
@@ -156,10 +156,10 @@ void Board_shutDownExtFlash(void)
     GPIO_setConfig(BOARD_EXT_FLASH_SPI_CS, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH | GPIO_CFG_OUT_STR_MED);
     /* SPI Flash CLK */
     GPIO_setConfig(BOARD_EXT_FLASH_SPI_CLK, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_MED);
-    /* SPI Flash MOSI */
-    GPIO_setConfig(BOARD_EXT_FLASH_SPI_MOSI, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_MED);
-    /* SPI Flash MISO */
-    GPIO_setConfig(BOARD_EXT_FLASH_SPI_MISO, GPIO_CFG_IN_PD);
+    /* SPI Flash PICO */
+    GPIO_setConfig(BOARD_EXT_FLASH_SPI_PICO, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_LOW | GPIO_CFG_OUT_STR_MED);
+    /* SPI Flash POCI */
+    GPIO_setConfig(BOARD_EXT_FLASH_SPI_POCI, GPIO_CFG_IN_PD);
 
     uint8_t extFlashShutdown = 0xB9;
 
@@ -167,8 +167,8 @@ void Board_shutDownExtFlash(void)
 
     GPIO_resetConfig(BOARD_EXT_FLASH_SPI_CS);
     GPIO_resetConfig(BOARD_EXT_FLASH_SPI_CLK);
-    GPIO_resetConfig(BOARD_EXT_FLASH_SPI_MOSI);
-    GPIO_resetConfig(BOARD_EXT_FLASH_SPI_MISO);
+    GPIO_resetConfig(BOARD_EXT_FLASH_SPI_PICO);
+    GPIO_resetConfig(BOARD_EXT_FLASH_SPI_POCI);
 }
 
 % }

@@ -36,7 +36,7 @@
  *  @anchor ti_drivers_crypto_CryptoCC26X4_s_Overview
  *  # Overview
  *      The Secure Crypto Service is used to access all cryptographic functions
- *      when using the Secure Processing Environment (SPE).
+ *      when using the TF-M.
  *
  *******************************************************************************
  */

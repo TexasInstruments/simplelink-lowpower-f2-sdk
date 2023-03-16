@@ -70,7 +70,7 @@ SECTIONS {
     } > REGION_TEXT
 
     .ramVecs (NOLOAD) : ALIGN(1024){
-        KEEP (*(vtable_ram))
+        KEEP (*(.ramVecs))
     } > REGION_DATA
 
     /*

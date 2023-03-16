@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,28 +80,28 @@ let devSpecific = {
 function _getPinResources(inst)
 {
     let pin;
-    let mosi = "Unassigned";
-    let miso = "Unassigned";
+    let pico = "Unassigned";
+    let poci = "Unassigned";
     let sclk;
-    let ss;
+    let csn;
 
     if (inst.spi) {
-        if (inst.spi.mosiPin) {
-            mosi = inst.spi.mosiPin.$solution.devicePinName.replace("_", "");
+        if (inst.spi.picoPin) {
+            pico = inst.spi.picoPin.$solution.devicePinName.replace("_", "");
         }
-        if (inst.spi.misoPin) {
-            miso = inst.spi.misoPin.$solution.devicePinName.replace("_", "");
+        if (inst.spi.pociPin) {
+            poci = inst.spi.pociPin.$solution.devicePinName.replace("_", "");
         }
 
-        pin = "\nMOSI: " + mosi + "\nMISO: " + miso;
+        pin = "\nPICO: " + pico + "\nPOCI: " + poci;
 
         if (inst.spi.sclkPin) {
             sclk = inst.spi.sclkPin.$solution.devicePinName.replace("_", "");
             pin += "\nSCLK: " + sclk;
         }
-        if (inst.spi.ssPin) {
-            ss = inst.spi.ssPin.$solution.devicePinName.replace("_", "");
-            pin += "\nSS: " + ss;
+        if (inst.spi.csnPin) {
+            csn = inst.spi.csnPin.$solution.devicePinName.replace("_", "");
+            pin += "\nCSN: " + csn;
         }
 
         if (inst.$hardware && inst.$hardware.displayName) {
@@ -118,34 +118,34 @@ function _getPinResources(inst)
  */
 function pinmuxRequirements(inst)
 {
-    let misoRequired = false;
-    let mosiRequired = false;
+    let pociRequired = false;
+    let picoRequired = false;
     let txRequired   = true;
     let rxRequired   = true;
 
     switch (inst.duplex) {
         case "Full":
-            misoRequired = true;
-            mosiRequired = true;
+            pociRequired = true;
+            picoRequired = true;
             break;
-        case "Master TX Only":
-            misoRequired = false;
-            mosiRequired = true;
+        case "Controller TX Only":
+            pociRequired = false;
+            picoRequired = true;
             rxRequired   = false;
             break;
-        case "Slave RX Only":
-            misoRequired = false;
-            mosiRequired = true;
+        case "Peripheral RX Only":
+            pociRequired = false;
+            picoRequired = true;
             txRequired   = false;
             break;
-        case "Master RX Only":
-            misoRequired = true;
-            mosiRequired = false;
+        case "Controller RX Only":
+            pociRequired = true;
+            picoRequired = false;
             txRequired   = false;
             break;
-        case "Slave TX Only":
-            misoRequired = true;
-            mosiRequired = false;
+        case "Peripheral TX Only":
+            pociRequired = true;
+            picoRequired = false;
             rxRequired   = false;
             break;
     }
@@ -184,28 +184,31 @@ function pinmuxRequirements(inst)
         ]
     };
 
-    if (misoRequired) {
+    if (pociRequired) {
         spi.resources.push({
-            name: "misoPin",
-            displayName: "MISO Pin",
-            description: "Master Input Slave Output pin",
+            name: "pociPin",
+            legacyNames: ["misoPin"],
+            displayName: "POCI Pin",
+            description: "Peripheral Output Controller Input pin",
             interfaceNames: ["RX"]});
     }
 
-    if (mosiRequired) {
+    if (picoRequired) {
         spi.resources.push({
-            name: "mosiPin",
-            displayName: "MOSI Pin",
-            description: "Master Output Slave Input pin",
+            name: "picoPin",
+            legacyNames: ["mosiPin"],
+            displayName: "PICO Pin",
+            description: "Peripheral Input Controller Output pin",
             interfaceNames: ["TX"]});
     }
 
     /* add CS pin if one of the four pin modes is selected */
     if (inst.mode != "Three Pin") {
         spi.resources.push({
-                name: "ssPin",
-                displayName: "SS Pin",
-                description: "Slave Select / Chip Select",
+                name: "csnPin",
+                legacyNames: ["ssPin"],
+                displayName: "CSN Pin",
+                description: "Chip Select",
                 interfaceNames: ["FSS"]
             });
     }
@@ -228,9 +231,9 @@ function pinmuxRequirements(inst)
 
     spi.signalTypes = {
         sclkPin: ["SPI_SCLK"],
-        mosiPin: ["SPI_MOSI"],
-        misoPin: ["SPI_MISO"],
-        ssPin:   ["DOUT", "SPI_SS"]
+        picoPin: ["SPI_PICO"],
+        pociPin: ["SPI_POCI"],
+        csnPin:   ["DOUT", "SPI_CSN"]
     };
 
     return ([spi]);
@@ -267,17 +270,18 @@ function moduleInstances(inst)
 
     pinInstances.push(
         {
-            name: "misoPinInstance",
-            displayName: "SPI MISO configuration when not in use",
+            name: "pociPinInstance",
+            legacyNames: ["misoPinInstance"],
+            displayName: "SPI POCI configuration when not in use",
             moduleName: "/ti/drivers/GPIO",
             collapsed: true,
             requiredArgs: {
                 parentInterfaceName: "spi",
-                parentSignalName: "misoPin",
-                parentSignalDisplayName: "MISO"
+                parentSignalName: "pociPin",
+                parentSignalDisplayName: "POCI"
             },
             args: {
-                $name: "CONFIG_GPIO_" + shortName + "_MISO",
+                $name: "CONFIG_GPIO_" + shortName + "_POCI",
                 mode: "Input",
                 pull: "None"
             }
@@ -286,17 +290,18 @@ function moduleInstances(inst)
 
     pinInstances.push(
         {
-            name: "mosiPinInstance",
-            displayName: "SPI MOSI configuration when not in use",
+            name: "picoPinInstance",
+            legacyNames: ["mosiPinInstance"],
+            displayName: "SPI PICO configuration when not in use",
             moduleName: "/ti/drivers/GPIO",
             collapsed: true,
             requiredArgs: {
                 parentInterfaceName: "spi",
-                parentSignalName: "mosiPin",
-                parentSignalDisplayName: "MOSI"
+                parentSignalName: "picoPin",
+                parentSignalDisplayName: "PICO"
             },
             args: {
-                $name: "CONFIG_GPIO_" + shortName + "_MOSI",
+                $name: "CONFIG_GPIO_" + shortName + "_PICO",
                 initialOutputState: "Low",
                 mode: "Output",
                 pull: "None"
@@ -307,17 +312,18 @@ function moduleInstances(inst)
     if (inst.mode != "Three Pin") {
         pinInstances.push(
             {
-                name: "ssPinInstance",
-                displayName: "SPI CS configuration when not in use",
+                name: "csnPinInstance",
+                legacyNames: ["ssPinInstance"],
+                displayName: "SPI CSN configuration when not in use",
                 moduleName: "/ti/drivers/GPIO",
                 collapsed: true,
                 requiredArgs: {
                     parentInterfaceName: "spi",
-                    parentSignalName: "ssPin",
-                    parentSignalDisplayName: "SS"
+                    parentSignalName: "csnPin",
+                    parentSignalDisplayName: "CSN"
                 },
                 args: {
-                    $name: "CONFIG_GPIO_" + shortName + "_SS",
+                    $name: "CONFIG_GPIO_" + shortName + "_CSN",
                     initialOutputState: inst.mode.match("high") ? "Low" : "High",
                     mode: "Output",
                     pull: "None"

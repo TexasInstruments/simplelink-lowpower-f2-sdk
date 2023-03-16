@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -361,7 +361,7 @@ bool ITM_enableWatchpoint(ITM_WatchpointAction function, const uintptr_t address
     for (dwtIndex = 0; dwtIndex < object.numDwtComparators; dwtIndex++)
     {
         uint32_t offset = 16 * dwtIndex;
-        if (0 == HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_FUNCTION0 + offset))
+        if (0 == (HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_FUNCTION0 + offset) & 0x7FFFFFF))
         {
             HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_COMP0 + offset)     = address;
             HWREG(ITM_DWT_BASE_ADDR  + CPU_DWT_O_MASK0 + offset)     = 0;
@@ -446,8 +446,7 @@ void ITM_commonFlush(void)
         ITM_send32Atomic(0, dummy);
 
         /* Wait until the ITM events has drained */
-        while (HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) & (1 << 23))
-            ;
+        while (HWREG(ITM_BASE_ADDR + CPU_ITM_O_TCR) & (1 << 23)) {}
 
         /* Flush TPIU FIFO
          * Now, the ITM is flushed, but the TPIU also has a FIFO to be empty

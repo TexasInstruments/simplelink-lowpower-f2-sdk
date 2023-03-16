@@ -186,6 +186,11 @@
 #define SET_CCFG_MODE_CONF_XOSC_CAP_MOD                 0x1        // Don't apply cap-array delta
 #endif
 
+#ifndef SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND
+// #define SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND  0x0 // Enable the CAP ARRAY DELTA workaround (recommend on new products where backward compatibility is not an issue)
+#define SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND     0x1 // Default: Disable the CAP ARRAY DELTA workaround (preserve backward compatibility)
+#endif
+
 #ifndef SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA
 #define SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA          0xFF       // Signed 8-bit value, directly modifying trimmed XOSC cap-array value
 #endif
@@ -416,6 +421,9 @@
 #define DEFAULT_CCFG_SIZE_AND_DIS_FLAGS  ( \
      ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_SIZE_OF_CCFG         )) << CCFG_SIZE_AND_DIS_FLAGS_SIZE_OF_CCFG_S         ) | ~CCFG_SIZE_AND_DIS_FLAGS_SIZE_OF_CCFG_M         ) & \
      ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS        )) << CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS_S        ) | ~CCFG_SIZE_AND_DIS_FLAGS_DISABLE_FLAGS_M        ) & \
+     ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND )) << \
+                                                                           CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND_S ) | \
+                                                                                                                              ~CCFG_SIZE_AND_DIS_FLAGS_DIS_LINEAR_CAPARRAY_DELTA_WORKAROUND_M ) & \
      ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_TCXO             )) << CCFG_SIZE_AND_DIS_FLAGS_DIS_TCXO_S             ) | ~CCFG_SIZE_AND_DIS_FLAGS_DIS_TCXO_M             ) & \
      ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM            )) << CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM_S            ) | ~CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM_M            ) & \
      ((((uint32_t)( SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING )) << CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING_S ) | ~CCFG_SIZE_AND_DIS_FLAGS_DIS_ALT_DCDC_SETTING_M ) & \

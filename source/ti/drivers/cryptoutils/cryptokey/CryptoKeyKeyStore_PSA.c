@@ -40,7 +40,10 @@
 /*
  *  ======== KeyStore_PSA_initKey ========
  */
-int_fast16_t KeyStore_PSA_initKey(CryptoKey *keyHandle, KeyStore_PSA_KeyFileId keyID, size_t keyLength)
+int_fast16_t KeyStore_PSA_initKey(CryptoKey *keyHandle,
+                                  KeyStore_PSA_KeyFileId keyID,
+                                  size_t keyLength,
+                                  void *keyAttributes)
 {
     keyHandle->encoding = CryptoKey_KEYSTORE;
 
@@ -48,19 +51,26 @@ int_fast16_t KeyStore_PSA_initKey(CryptoKey *keyHandle, KeyStore_PSA_KeyFileId k
 
     keyHandle->u.keyStore.keyLength = keyLength;
 
+    keyHandle->u.keyStore.keyAttributes = keyAttributes;
+
     return CryptoKey_STATUS_SUCCESS;
 }
 
 /*
  *  ======== KeyStore_PSA_initBlankKey ========
  */
-int_fast16_t KeyStore_PSA_initBlankKey(CryptoKey *keyHandle, KeyStore_PSA_KeyFileId keyID, size_t keyLength)
+int_fast16_t KeyStore_PSA_initBlankKey(CryptoKey *keyHandle,
+                                       KeyStore_PSA_KeyFileId keyID,
+                                       size_t keyLength,
+                                       void *keyAttributes)
 {
     keyHandle->encoding = CryptoKey_BLANK_KEYSTORE;
 
     SET_KEY_ID(keyHandle->u.keyStore.keyID, keyID);
 
     keyHandle->u.keyStore.keyLength = keyLength;
+
+    keyHandle->u.keyStore.keyAttributes = keyAttributes;
 
     return CryptoKey_STATUS_SUCCESS;
 }

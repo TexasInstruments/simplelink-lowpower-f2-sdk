@@ -188,17 +188,21 @@ extern "C"
 // Defines used for enabling and disabling peripheral modules in the MCU domain
 // bits[11:8] Defines the index into the register offset constant tables:
 //            g_pui32RCGCRegs, g_pui32SCGCRegs and g_pui32DCGCRegs
-// bits[4:0]  Defines the bit position within the register pointet on in [11:8]
+// bits[4:0]  Defines the bit position within the register pointed on in [11:8]
 //
 //*****************************************************************************
 #define PRCM_PERIPH_TIMER0 ( 0x00000000 | ( PRCM_GPTCLKGR_CLK_EN_S           )) // Peripheral ID for GPT module 0
 #define PRCM_PERIPH_TIMER1 ( 0x00000000 | ( PRCM_GPTCLKGR_CLK_EN_S       + 1 )) // Peripheral ID for GPT module 1
 #define PRCM_PERIPH_TIMER2 ( 0x00000000 | ( PRCM_GPTCLKGR_CLK_EN_S       + 2 )) // Peripheral ID for GPT module 2
 #define PRCM_PERIPH_TIMER3 ( 0x00000000 | ( PRCM_GPTCLKGR_CLK_EN_S       + 3 )) // Peripheral ID for GPT module 3
-#define PRCM_PERIPH_SSI0   ( 0x00000100 | ( PRCM_SSICLKGR_CLK_EN_S           )) // Peripheral ID for SSI module 0
-#define PRCM_PERIPH_SSI1   ( 0x00000100 | ( PRCM_SSICLKGR_CLK_EN_S       + 1 )) // Peripheral ID for SSI module 1
-#define PRCM_PERIPH_SSI2   ( 0x00000100 | ( PRCM_SSICLKGR_CLK_EN_S       + 2 )) // Peripheral ID for SSI module 2
-#define PRCM_PERIPH_SSI3   ( 0x00000100 | ( PRCM_SSICLKGR_CLK_EN_S       + 3 )) // Peripheral ID for SSI module 3
+#define PRCM_PERIPH_SPI0   ( 0x00000100 | ( PRCM_SPICLKGR_CLK_EN_S           )) // Peripheral ID for SPI module 0
+#define PRCM_PERIPH_SPI1   ( 0x00000100 | ( PRCM_SPICLKGR_CLK_EN_S       + 1 )) // Peripheral ID for SPI module 1
+#define PRCM_PERIPH_SPI2   ( 0x00000100 | ( PRCM_SPICLKGR_CLK_EN_S       + 2 )) // Peripheral ID for SPI module 2
+#define PRCM_PERIPH_SPI3   ( 0x00000100 | ( PRCM_SPICLKGR_CLK_EN_S       + 3 )) // Peripheral ID for SPI module 3
+#define PRCM_PERIPH_SSI0   PRCM_PERIPH_SPI0 // Peripheral ID for SPI module 0 (included for compatibility with CC13x2/CC26x2)
+#define PRCM_PERIPH_SSI1   PRCM_PERIPH_SPI1 // Peripheral ID for SPI module 1 (included for compatibility with CC13x2/CC26x2)
+#define PRCM_PERIPH_SSI2   PRCM_PERIPH_SPI2 // Peripheral ID for SPI module 2 (included for compatibility with CC13x2/CC26x2)
+#define PRCM_PERIPH_SSI3   PRCM_PERIPH_SPI3 // Peripheral ID for SPI module 3 (included for compatibility with CC13x2/CC26x2)
 #define PRCM_PERIPH_UART0  ( 0x00000200 | ( PRCM_UARTCLKGR_CLK_EN_S          )) // Peripheral ID for UART module 0
 #define PRCM_PERIPH_UART1  ( 0x00000200 | ( PRCM_UARTCLKGR_CLK_EN_S      + 1 )) // Peripheral ID for UART module 1
 #define PRCM_PERIPH_UART2  ( 0x00000200 | ( PRCM_UARTCLKGR_CLK_EN_S      + 2 )) // Peripheral ID for UART module 2
@@ -239,12 +243,17 @@ PRCMPeripheralValid(uint32_t ui32Peripheral)
            (ui32Peripheral == PRCM_PERIPH_TIMER1)   ||
            (ui32Peripheral == PRCM_PERIPH_TIMER2)   ||
            (ui32Peripheral == PRCM_PERIPH_TIMER3)   ||
-           (ui32Peripheral == PRCM_PERIPH_SSI0)     ||
+           (ui32Peripheral == PRCM_PERIPH_SPI0)     ||
+           (ui32Peripheral == PRCM_PERIPH_SPI1)     ||
+           (ui32Peripheral == PRCM_PERIPH_SPI2)     ||
+           (ui32Peripheral == PRCM_PERIPH_SPI3)     ||
            (ui32Peripheral == PRCM_PERIPH_UART0)    ||
-           (ui32Peripheral == PRCM_PERIPH_SSI1)     ||
            (ui32Peripheral == PRCM_PERIPH_UART1)    ||
            (ui32Peripheral == PRCM_PERIPH_PKA)      ||
            (ui32Peripheral == PRCM_PERIPH_I2C0)     ||
+           (ui32Peripheral == PRCM_PERIPH_I2C1)     ||
+           (ui32Peripheral == PRCM_PERIPH_UART2)    ||
+           (ui32Peripheral == PRCM_PERIPH_UART3)    ||
            (ui32Peripheral == PRCM_PERIPH_CRYPTO)   ||
            (ui32Peripheral == PRCM_PERIPH_TRNG)     ||
            (ui32Peripheral == PRCM_PERIPH_UDMA)     ||
@@ -809,11 +818,16 @@ PRCMRfPowerDownWhenIdle(void)
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA
@@ -851,11 +865,16 @@ extern void PRCMPeripheralRunEnable(uint32_t ui32Peripheral);
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA
@@ -891,11 +910,16 @@ extern void PRCMPeripheralRunDisable(uint32_t ui32Peripheral);
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA
@@ -932,11 +956,16 @@ extern void PRCMPeripheralSleepEnable(uint32_t ui32Peripheral);
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA
@@ -972,11 +1001,16 @@ extern void PRCMPeripheralSleepDisable(uint32_t ui32Peripheral);
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA
@@ -1015,11 +1049,16 @@ extern void PRCMPeripheralDeepSleepEnable(uint32_t ui32Peripheral);
 //! - \ref PRCM_PERIPH_TIMER1
 //! - \ref PRCM_PERIPH_TIMER2
 //! - \ref PRCM_PERIPH_TIMER3
-//! - \ref PRCM_PERIPH_SSI0
-//! - \ref PRCM_PERIPH_SSI1
+//! - \ref PRCM_PERIPH_SPI0
+//! - \ref PRCM_PERIPH_SPI1
+//! - \ref PRCM_PERIPH_SPI2
+//! - \ref PRCM_PERIPH_SPI3
 //! - \ref PRCM_PERIPH_UART0
 //! - \ref PRCM_PERIPH_UART1
+//! - \ref PRCM_PERIPH_UART2
+//! - \ref PRCM_PERIPH_UART3
 //! - \ref PRCM_PERIPH_I2C0
+//! - \ref PRCM_PERIPH_I2C1
 //! - \ref PRCM_PERIPH_CRYPTO
 //! - \ref PRCM_PERIPH_TRNG
 //! - \ref PRCM_PERIPH_PKA

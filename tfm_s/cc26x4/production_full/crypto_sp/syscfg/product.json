@@ -1,0 +1,19 @@
+{
+    "name": "TF-M Crypto SP",
+    "version": "00.00.00.00_eng",
+
+    "includePaths": [
+        "../../../../../source",
+        "../../../../../kernel/tirtos7/packages"
+    ],
+    "components": [
+        "/ti/drivers/drivers.component.js"
+    ],
+    "devices": [
+        ".*"
+    ],
+    "rtos": [
+        "none"
+    ],
+    "minToolVersion": "1.12.0"
+}

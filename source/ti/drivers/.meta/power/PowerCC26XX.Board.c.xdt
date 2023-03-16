@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,8 @@
     let enablePolicy              = pow.enablePolicy;
     let policyInitFxn             = pow.policyInitFunction;
     let policyFxn                 = pow.policyFunction;
+    var ccfgModule                = system.modules['/ti/devices/CCFG'];
+    var ccfgInst                  = ccfgModule.$static;
 
     if (policyInitFxn === 'Custom') {
         policyInitFxn = pow.policyInitCustomFunction;
@@ -107,3 +109,50 @@ const Power`driver`_Config Power`driver`_config = {
     .enableTCXOFxn            = `enableTCXOFxn`
 % }
 };
+
+%%{
+/* Function that returns the absolute value of the shifted ppm offset for a given temperature.
+ * Used to establish what the maximum shift value can be for highest possible precision without overflowing
+ */
+function ppmAbs(x, shift) {
+    return Math.abs((ccfgInst.rtcXOSCLFCoefficientA * Math.pow(2,shift)) * x * x + (ccfgInst.rtcXOSCLFCoefficientB * Math.pow(2,shift)) * x + (ccfgInst.rtcXOSCLFCoefficientC * Math.pow(2,shift)));
+}
+
+if (ccfgInst.enableXoscLfComp == true) {
+
+    /* Default values for XOSC_LF temperature compensation polynomial.
+     * Coefficients are scaled up by 2^22 for maximum precision
+     */
+    var rtcCoefficientA = -0.035;
+    var rtcCoefficientB = 1.7;
+    var rtcCoefficientC = -21.875;
+    var maxShift = 22;
+
+    if(ccfgInst.RTCCustomXOSCLFCoeff == true) {
+
+        /* If custom coefficients are used, we dynamically find the maximum scale-factor for maximum precision */
+
+        let maxShiftTemp = 1;
+
+        for(; maxShiftTemp < 32; maxShiftTemp++)
+        {
+            if (ppmAbs(-40, maxShiftTemp) > 0xFFFFFFFF) break;
+            if (ppmAbs(120, maxShiftTemp) > 0xFFFFFFFF) break;
+            if (ppmAbs(-ccfgInst.rtcXOSCLFCoefficientB / (2*ccfgInst.rtcXOSCLFCoefficientA), maxShiftTemp) > 0xFFFFFFFF) break;
+        }
+
+        maxShift = maxShiftTemp - 2;
+        rtcCoefficientA = ccfgInst.rtcXOSCLFCoefficientA;
+        rtcCoefficientB = ccfgInst.rtcXOSCLFCoefficientB;
+        rtcCoefficientC = ccfgInst.rtcXOSCLFCoefficientC;
+    }
+%%}
+
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/osc.h)
+XoscLf_Params_t _lfXoscParams = {.coeffA = `Math.trunc(rtcCoefficientA * Math.pow(2,maxShift))`,        /* `rtcCoefficientA` * 2^`maxShift` */
+                                 .coeffB = `Math.trunc(rtcCoefficientB * Math.pow(2,maxShift))`,        /* `rtcCoefficientB` * 2^`maxShift` */
+                                 .coeffC = `Math.trunc(rtcCoefficientC * Math.pow(2,maxShift))`,        /* `rtcCoefficientC` * 2^`maxShift` */
+                                 .coeffD = 0,
+                                 .shift = `maxShift`};
+% }

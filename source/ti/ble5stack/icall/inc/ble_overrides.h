@@ -37,12 +37,12 @@
     0xC0080341, \
     (uint32_t) NULL, \
     (uint32_t) NULL
-#else
+#else // !RTLS_CTE
 #define BLE_STACK_OVERRIDES()\
     (uint32_t) OVR_1,\
     (uint32_t) 0xC0040361,\
     (uint32_t) 0x00000000
-#endif
+#endif // RTLS_CTE
 
 
 #endif // _INCLUDE_STACK_OVERRIDE_H_

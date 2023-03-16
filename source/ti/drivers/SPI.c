@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ const SPI_Params SPI_defaultParams = {
     SPI_MODE_BLOCKING, /* transferMode */
     SPI_WAIT_FOREVER,  /* transferTimeout */
     NULL,              /* transferCallbackFxn */
-    SPI_MASTER,        /* mode */
+    SPI_CONTROLLER,    /* mode */
     1000000,           /* bitRate */
     8,                 /* dataSize */
     SPI_POL0_PHA0,     /* frameFormat */

@@ -159,17 +159,13 @@ else
 % {
 -DUARTLOG_ENABLE
 % }
-% if(ble.ptm)
-% {
--DPTM_MODE
-% }
-% if (_.isEqual(ble.deviceRole, "PERIPHERAL_CFG"))
+% if ((_.isEqual(ble.deviceRole, "PERIPHERAL_CFG")) || (ble.ptm))
 % {
 -DNPI_USE_UART
 % }
-%
 % if(ble.ptm)
 % {
+-DPTM_MODE
 -DNPI_FLOW_CTRL=`ble.flowControl == "0" ? 0 : 1`
 % }
 %

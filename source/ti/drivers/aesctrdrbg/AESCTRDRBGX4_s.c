@@ -38,7 +38,6 @@
 #include <ti/drivers/AESCTRDRBG.h>
 #include <ti/drivers/aesctrdrbg/AESCTRDRBGXX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
-#include <ti/drivers/cryptoutils/cryptokey/CryptoKey_s.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
@@ -512,8 +511,8 @@ static inline psa_status_t AESCTRDRBG_s_generateKey(psa_msg_t *msg)
             return PSA_ERROR_PROGRAMMER_ERROR;
         }
 
-        /* Make a secure copy of the crypto key struct */
-        CryptoKey_s_copyCryptoKeyFromClient(&randomKey_s, genKeyMsg.randomKey, msg->client_id);
+        /* Copy randomKey to secure memory */
+        (void)tfm_memcpy(&randomKey_s, genKeyMsg.randomKey, sizeof(CryptoKey));
 
         if (CryptoKey_verifySecureOutputKey(&randomKey_s) != CryptoKey_STATUS_SUCCESS)
         {

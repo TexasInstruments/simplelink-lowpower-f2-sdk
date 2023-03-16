@@ -27,7 +27,6 @@
             -Oz
             -g
             -gdwarf-3
-            -gstrict-dwarf
             -Wall
             -Wno-ti-macros
             -ffunction-sections

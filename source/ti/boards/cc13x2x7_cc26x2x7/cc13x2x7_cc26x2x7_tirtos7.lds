@@ -51,7 +51,8 @@ MEMORY
      * ARM memory map can be found here:
      * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
      */
-    LOG_DATA (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
+    LOG_DATA     (R) : ORIGIN = 0x90000000, LENGTH = 0x40000
+    LOG_PTR      (R) : ORIGIN = 0x94000008, LENGTH = 0x40000
 }
 
 REGION_ALIAS("REGION_TEXT", FLASH);
@@ -68,15 +69,12 @@ SECTIONS {
     PROVIDE (_intvecs_base_address =
         DEFINED(_intvecs_base_address) ? _intvecs_base_address : 0x0);
 
-    .intvecs (_intvecs_base_address) : AT (_intvecs_base_address) {
-        KEEP (*(.intvecs))
+    .resetVecs (_intvecs_base_address) : AT (_intvecs_base_address) {
+        KEEP (*(.resetVecs))
     } > REGION_TEXT
 
-    PROVIDE (_vtable_base_address =
-        DEFINED(_vtable_base_address) ? _vtable_base_address : 0x20000000);
-
-    .vtable (_vtable_base_address) (NOLOAD) : {
-        KEEP (*(.vtable))
+    .ramVecs (NOLOAD) : ALIGN(256) {
+        KEEP (*(.ramVecs))
     } > REGION_DATA
 
     /* if a ROM-only symbol is present, then ROM is being used.
@@ -280,4 +278,7 @@ SECTIONS {
     .log_data (COPY) : {
         KEEP (*(.log_data))
     } > REGION_LOG
+    .log_ptr (COPY) : {
+        KEEP (*(.log_ptr*))
+    } > LOG_PTR
 }

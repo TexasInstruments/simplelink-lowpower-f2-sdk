@@ -58,11 +58,12 @@ extern int32_t AtTerm_init(void);
 
 /***************************************************************************************************
  *
- * Gets a char from the AT Terminal
+ * Gets a char from the AT Terminal. In SPI mode this will block until a SPI transaction
+ * occurs then return the entirety of the received command
  *
  * param ch - Pointer to an uint8_t where the character will be read in to
  *
- * return bytes read (0 or 1)
+ * return bytes read
  *
  ***************************************************************************************************/
 extern int32_t AtTerm_getChar(char* ch);
@@ -178,7 +179,6 @@ extern void AtTerm_sendStringI32Value(char *string, int32_t value, uint8_t forma
  ***************************************************************************************************/
 extern void AtTerm_clearTerm(void);
 
-
 /***************************************************************************************************
  *
  * Extract the radio ID and AT command parameter from the string entered into the terminal
@@ -193,6 +193,7 @@ extern void AtTerm_clearTerm(void);
  *
  ***************************************************************************************************/
 extern void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, size_t fxnParamLen);
+
 
 #ifdef __cplusplus
 }

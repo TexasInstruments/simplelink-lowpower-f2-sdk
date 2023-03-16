@@ -41,4 +41,6 @@ if (system.getRTOS() === "tirtos7") {
     system.getScript("tirtos7/builds/tirtos7_release.syscfg.js");
 } else if (system.getRTOS() === "freertos") {
     system.getScript("freertos/builds/freertos_release.syscfg.js");
+} else if (system.getRTOS() === "nortos") {
+    system.getScript("nortos/builds/nortos_release.syscfg.js");
 }

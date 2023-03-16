@@ -88,7 +88,7 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs        :   > FLASH_BASE
+    .resetVecs      :   > FLASH_BASE
     .text           :   > FLASH
     .const          :   > FLASH
     .constdata      :   > FLASH
@@ -100,9 +100,7 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > CCFG
 
-    .vtable         :   > SRAM
-    .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM

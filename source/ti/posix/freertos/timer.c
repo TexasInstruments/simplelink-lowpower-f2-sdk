@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,20 +54,19 @@
 /*
  *  ======== TimerObj ========
  */
-typedef struct TimerObj {
-    void               (*sigev_notify_function)(union sigval val);
-    union sigval       val;
-    struct timespec    interval;   /* Reload value */
-    TickType_t         timeout;    /* Expiration time (absolute) in ticks */
-    TickType_t         reload;     /* Reload value in ticks */
-    TimerHandle_t      xTimer;
-    bool               isActive;   /* TRUE if timer is armed */
-    clockid_t          clockId;
+typedef struct TimerObj
+{
+    void (*sigev_notify_function)(union sigval val);
+    union sigval val;
+    struct timespec interval; /* Reload value */
+    TickType_t timeout;       /* Expiration time (absolute) in ticks */
+    TickType_t reload;        /* Reload value in ticks */
+    TimerHandle_t xTimer;
+    bool isActive; /* TRUE if timer is armed */
+    clockid_t clockId;
 } TimerObj;
 
-
-extern int _clock_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, TickType_t *ticks);
+extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, TickType_t *ticks);
 
 static void callbackFxn(TimerHandle_t xTimer);
 static TickType_t timespecToTicks(const struct timespec *ts);
@@ -79,7 +78,8 @@ int timer_create(clockid_t clockId, struct sigevent *evp, timer_t *timerid)
 {
     TimerObj *timer;
 
-    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME)) {
+    if ((clockId != CLOCK_MONOTONIC) && (clockId != CLOCK_REALTIME))
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -93,17 +93,18 @@ int timer_create(clockid_t clockId, struct sigevent *evp, timer_t *timerid)
     *timerid = (timer_t)NULL;
 
     timer = pvPortMalloc(sizeof(TimerObj));
-    if (timer == NULL) {
+    if (timer == NULL)
+    {
         errno = ENOMEM;
         return (-1);
     }
 
     timer->sigev_notify_function = evp->sigev_notify_function;
-    timer->val = evp->sigev_value;  /* Passed to user's callback function */
+    timer->val                   = evp->sigev_value; /* Passed to user's callback function */
     timer->interval.tv_sec = timer->interval.tv_nsec = 0;
     timer->timeout = timer->reload = 0;
-    timer->isActive = false;
-    timer->clockId = clockId;
+    timer->isActive                = false;
+    timer->clockId                 = clockId;
 
     /*
      *  Create timer with autoReload = pdTRUE, period = -1, since for posix
@@ -112,12 +113,13 @@ int timer_create(clockid_t clockId, struct sigevent *evp, timer_t *timerid)
      *  with xTimerStart().
      */
     timer->xTimer = xTimerCreate(NULL /* name */,
-            (TickType_t)-1,           /* Timer period (ticks) */
-            pdTRUE,                   /* autoReload*/
-            (void *)timer,            /* pvTimerID */
-            callbackFxn);
+                                 (TickType_t)-1, /* Timer period (ticks) */
+                                 pdTRUE,         /* autoReload*/
+                                 (void *)timer,  /* pvTimerID */
+                                 callbackFxn);
 
-    if (timer->xTimer == NULL) {
+    if (timer->xTimer == NULL)
+    {
         vPortFree(timer);
         errno = ENOMEM;
         return (-1);
@@ -135,7 +137,8 @@ int timer_delete(timer_t timerid)
 {
     TimerObj *timer = (TimerObj *)timerid;
 
-    if (timer->xTimer) {
+    if (timer->xTimer)
+    {
         /*
          *  Block until delete command has been sent to timer command
          *  queue.
@@ -155,33 +158,33 @@ int timer_gettime(timer_t timerid, struct itimerspec *its)
 {
     TimerObj *timer = (TimerObj *)timerid;
     TickType_t xTicksRemaining, xLeftOverTicks;
-    uint64_t   nsecs, secs;
+    uint64_t nsecs, secs;
 
-    if (timer->isActive) {
+    if (timer->isActive)
+    {
         /*
          *  Calculate the time that remains before the timer expires.
          *  TickType_t is unsigned, so subtraction results in the
          *  correct answer even if the timer will not expire until
          *  after the tick count has wrapped.
          */
-        xTicksRemaining = xTimerGetExpiryTime(timer->xTimer) -
-                xTaskGetTickCount();
-        secs = xTicksRemaining / (TickType_t)configTICK_RATE_HZ;
+        xTicksRemaining = xTimerGetExpiryTime(timer->xTimer) - xTaskGetTickCount();
+        secs            = xTicksRemaining / (TickType_t)configTICK_RATE_HZ;
 
         /* Left over ticks when we subtract off the seconds part */
-        xLeftOverTicks = xTicksRemaining -
-                (secs * (TickType_t)configTICK_RATE_HZ);
-        nsecs = xLeftOverTicks * (1000000000 / configTICK_RATE_HZ);
+        xLeftOverTicks = xTicksRemaining - (secs * (TickType_t)configTICK_RATE_HZ);
+        nsecs          = xLeftOverTicks * (1000000000 / configTICK_RATE_HZ);
 
         /*
          *  Store the amount of time remaining until the timer expires
          *  (regardless of whether or not the timer was armed with an
          *  absolute time).
          */
-        its->it_value.tv_sec = (time_t)secs;
+        its->it_value.tv_sec  = (time_t)secs;
         its->it_value.tv_nsec = nsecs;
     }
-    else {
+    else
+    {
         /* Timer is disarmed, store 0. */
         its->it_value.tv_sec = its->it_value.tv_nsec = 0;
     }
@@ -196,22 +199,21 @@ int timer_gettime(timer_t timerid, struct itimerspec *its)
  *  ======== timer_settime ========
  *  This is a blocking call.
  */
-int timer_settime(timer_t timerid, int flags,
-        const struct itimerspec *value, struct itimerspec *ovalue)
+int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, struct itimerspec *ovalue)
 {
-    TimerObj  *timer = (TimerObj *)timerid;
+    TimerObj *timer = (TimerObj *)timerid;
     TickType_t timeoutTicks;
     BaseType_t xHigherPriorityTaskWoken;
     BaseType_t status;
 
-    if ((value->it_interval.tv_nsec < 0) ||
-            (value->it_interval.tv_nsec >= 1000000000)) {
+    if ((value->it_interval.tv_nsec < 0) || (value->it_interval.tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
 
-    if ((value->it_value.tv_nsec < 0) ||
-            (value->it_value.tv_nsec >= 1000000000)) {
+    if ((value->it_value.tv_nsec < 0) || (value->it_value.tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -220,7 +222,8 @@ int timer_settime(timer_t timerid, int flags,
      *  If ovalue is non-NULL, save the time before the timer
      *  would have expired, and the timer's old reload value.
      */
-    if (ovalue) {
+    if (ovalue)
+    {
         timer_gettime(timerid, ovalue);
     }
 
@@ -233,24 +236,29 @@ int timer_settime(timer_t timerid, int flags,
      */
 
     /* Stop the timer if the value is 0 */
-    if ((value->it_value.tv_sec == 0) && (value->it_value.tv_nsec == 0)) {
-        if (HwiP_inISR()) {
-            status = xTimerStopFromISR(timer->xTimer,
-                    &xHigherPriorityTaskWoken);
+    if ((value->it_value.tv_sec == 0) && (value->it_value.tv_nsec == 0))
+    {
+        if (HwiP_inISR())
+        {
+            status = xTimerStopFromISR(timer->xTimer, &xHigherPriorityTaskWoken);
         }
-        else {
+        else
+        {
             /* Block until stop command is sent to timer command queue */
             status = xTimerStop(timer->xTimer, (TickType_t)-1);
         }
-        if (status == pdPASS) {
+        if (status == pdPASS)
+        {
             timer->isActive = false;
             return (0);
         }
-        else  if (status == errQUEUE_FULL) {
+        else if (status == errQUEUE_FULL)
+        {
             errno = EAGAIN; /* timer queue is full, try again */
             return (-1);
         }
-        else {
+        else
+        {
             errno = ENOMEM; /* timer initialization failed */
             return (-1);
         }
@@ -262,9 +270,10 @@ int timer_settime(timer_t timerid, int flags,
      *  a timeout, so if it_interval is non-zero, we'll ignore the it_value.
      */
 
-    if ((value->it_interval.tv_sec != 0) || (value->it_interval.tv_nsec != 0)) {
+    if ((value->it_interval.tv_sec != 0) || (value->it_interval.tv_nsec != 0))
+    {
         /* Non-zero reload value, so change period */
-        timeoutTicks = timespecToTicks(&(value->it_interval));
+        timeoutTicks  = timespecToTicks(&(value->it_interval));
         /*
          *  Change the timer period.  FreeRTOS timers only have a
          *  period, so we'll ignore value->it_value.
@@ -276,49 +285,57 @@ int timer_settime(timer_t timerid, int flags,
         timer->reload = timeoutTicks;
 
         /* Save the new interval for timer_gettime() */
-        timer->interval.tv_sec = value->it_interval.tv_sec;
+        timer->interval.tv_sec  = value->it_interval.tv_sec;
         timer->interval.tv_nsec = value->it_interval.tv_nsec;
     }
-    else {
-        if (flags & TIMER_ABSTIME) {
-            _clock_abstime2ticks(timer->clockId, &(value->it_value),
-                    &timeoutTicks);
+    else
+    {
+        if (flags & TIMER_ABSTIME)
+        {
+            _clock_abstime2ticks(timer->clockId, &(value->it_value), &timeoutTicks);
 
-            if (timeoutTicks <= 0) {
+            if (timeoutTicks <= 0)
+            {
                 /* Timeout has already expired */
                 (timer->sigev_notify_function)(timer->val);
                 return (0);
             }
         }
-        else {
+        else
+        {
             timeoutTicks = timespecToTicks(&(value->it_value));
         }
     }
 
-    if (HwiP_inISR()) {
-        status = xTimerChangePeriodFromISR(timer->xTimer, timeoutTicks,
-                &xHigherPriorityTaskWoken);
-        if (status == pdPASS) {
+    if (HwiP_inISR())
+    {
+        status = xTimerChangePeriodFromISR(timer->xTimer, timeoutTicks, &xHigherPriorityTaskWoken);
+        if (status == pdPASS)
+        {
             xTimerStartFromISR(timer->xTimer, &xHigherPriorityTaskWoken);
         }
     }
-    else {
-        status = xTimerChangePeriod(timer->xTimer, timeoutTicks,
-                (TickType_t)-1);
-        if (status == pdPASS) {
+    else
+    {
+        status = xTimerChangePeriod(timer->xTimer, timeoutTicks, (TickType_t)-1);
+        if (status == pdPASS)
+        {
             status = xTimerStart(timer->xTimer, (TickType_t)-1);
         }
     }
 
-    if (status == pdPASS) {
+    if (status == pdPASS)
+    {
         timer->isActive = true;
         return (0);
     }
-    else  if (status == errQUEUE_FULL) {
+    else if (status == errQUEUE_FULL)
+    {
         errno = EAGAIN; /* timer queue is full, try again */
         return (-1);
     }
-    else {
+    else
+    {
         errno = ENOMEM; /* timer initialization failed */
         return (-1);
     }
@@ -333,7 +350,8 @@ static void callbackFxn(TimerHandle_t xTimer)
 
     timer = (TimerObj *)pvTimerGetTimerID(xTimer);
 
-    if (timer->reload == 0) {
+    if (timer->reload == 0)
+    {
         xTimerStop(timer->xTimer, (TickType_t)-1);
         timer->isActive = false;
     }
@@ -348,7 +366,6 @@ static TickType_t timespecToTicks(const struct timespec *ts)
 {
     uint64_t ticks;
 
-    ticks = ts->tv_sec * configTICK_RATE_HZ +
-            ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / 1000000000L;
+    ticks = ts->tv_sec * configTICK_RATE_HZ + ts->tv_nsec * (uint64_t)configTICK_RATE_HZ / 1000000000L;
     return ((TickType_t)ticks);
 }

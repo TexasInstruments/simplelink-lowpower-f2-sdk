@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -228,12 +228,9 @@ int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, s
      */
     UART2Support_dmaStartRx(handle);
 
-    HwiP_restore(key);
-
     /* Read data from the ring buffer */
     do
     {
-        key       = HwiP_disable();
         available = RingBuf_getPointer(&object->rxBuffer, &srcAddr);
 
         if (available > object->readCount)
@@ -247,10 +244,7 @@ int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, s
         object->readCount -= available;
         object->bytesRead += available;
 
-        HwiP_restore(key);
     } while ((available > 0) && (object->readCount > 0));
-
-    key = HwiP_disable();
 
     /* If we are in nonblocking mode, the read operation is done. Update state variables */
     if (object->state.readMode == UART2_Mode_NONBLOCKING)
@@ -299,40 +293,49 @@ int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, s
 
     HwiP_restore(key);
 
-    /* If the driver is in blocking mode, and there are bytes still left to read */
-    if ((object->state.readMode == UART2_Mode_BLOCKING) && (object->readCount > 0))
+    if (object->state.readMode == UART2_Mode_BLOCKING)
     {
-        /* Wait for more data, with given timeout */
-        if (SemaphoreP_pend(&object->readSem, timeout) != SemaphoreP_OK)
+        /* If the driver still has bytes to read */
+        if (object->readCount > 0)
         {
-            /* The semaphore-pend returned with a timeout */
-            object->state.readTimedOut = true;
+            /* Wait for more data, with given timeout */
+            if (SemaphoreP_pend(&object->readSem, timeout) != SemaphoreP_OK)
+            {
+                /* The semaphore-pend returned with a timeout */
+                object->state.readTimedOut = true;
+            }
+
+            key = HwiP_disable();
+
+            /* Stop RX temporarily*/
+            UART2Support_dmaStopRx(handle);
+
+            /* Update state variables */
+            object->readCount = 0;
+            object->readBuf   = NULL;
+            object->readInUse = false;
+
+            /* In case RX was cancelled or timed out, start a new RX. This will start a transaction into the ring buffer
+             */
+            UART2Support_dmaStartRx(handle);
+
+            if (object->state.readTimedOut)
+            {
+                status = UART2_STATUS_ETIMEOUT;
+            }
+
+            if (object->state.rxCancelled)
+            {
+                status = UART2_STATUS_ECANCELLED;
+            }
+
+            HwiP_restore(key);
         }
-
-        key = HwiP_disable();
-
-        /* Stop RX temporarily*/
-        UART2Support_dmaStopRx(handle);
-
-        /* Update state variables */
-        object->readCount = 0;
-        object->readBuf   = NULL;
-        object->readInUse = false;
-
-        /* In case RX was cancelled or timed out, start a new RX. This will start a transaction into the ring buffer */
-        UART2Support_dmaStartRx(handle);
-
-        if (object->state.readTimedOut)
+        else
         {
-            status = UART2_STATUS_ETIMEOUT;
+            /* Flush read-semaphore */
+            SemaphoreP_pend(&object->readSem, SemaphoreP_NO_WAIT);
         }
-
-        if (object->state.rxCancelled)
-        {
-            status = UART2_STATUS_ECANCELLED;
-        }
-
-        HwiP_restore(key);
     }
 
     key = HwiP_disable();

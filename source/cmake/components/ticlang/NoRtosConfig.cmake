@@ -30,13 +30,18 @@ endmacro()
 
 ####################################################################################
 
+find_package("Driverlib" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4Targets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM33FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/NoRtosM33FTargets.cmake")
 
 check_required_components(NoRtos)

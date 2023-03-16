@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,18 +53,18 @@
 static Void timerFxn(UArg arg);
 static Void *timerThreadFxn(Void *arg);
 
-
 /*
  *  ======== TimerObj ========
  */
-typedef struct TimerObj {
-    Clock_Struct      clock;
-    void             (*sigev_notify_function)(union sigval val);
-    union sigval     val;
-    pthread_t        thread;
+typedef struct TimerObj
+{
+    Clock_Struct clock;
+    void (*sigev_notify_function)(union sigval val);
+    union sigval val;
+    pthread_t thread;
     Semaphore_Handle sem;
-    Int              notifyType;    /* e.g., SIGEV_SIGNAL */
-    clockid_t        clockId;
+    Int notifyType; /* e.g., SIGEV_SIGNAL */
+    clockid_t clockId;
 } TimerObj;
 
 /*
@@ -83,20 +83,20 @@ typedef struct TimerObj {
  */
 int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid)
 {
-    Semaphore_Params   semParams;
-    Clock_Params       params;
-    Error_Block        eb;
-    TimerObj          *timer;
-    pthread_attr_t     pDefAttrs;
-    pthread_attr_t    *pAttrs;
-    Int                retc;
+    Semaphore_Params semParams;
+    Clock_Params params;
+    Error_Block eb;
+    TimerObj *timer;
+    pthread_attr_t pDefAttrs;
+    pthread_attr_t *pAttrs;
+    Int retc;
 
     Assert_isTrue(evp != NULL, 0);
     Assert_isTrue(evp->sigev_notify_function != NULL, 0);
-    Assert_isTrue((evp->sigev_notify == SIGEV_THREAD) ||
-            (evp->sigev_notify == SIGEV_SIGNAL), 0);
+    Assert_isTrue((evp->sigev_notify == SIGEV_THREAD) || (evp->sigev_notify == SIGEV_SIGNAL), 0);
 
-    if ((clockid != CLOCK_MONOTONIC) && (clockid != CLOCK_REALTIME)) {
+    if ((clockid != CLOCK_MONOTONIC) && (clockid != CLOCK_REALTIME))
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -105,10 +105,10 @@ int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid)
 
     *timerid = (timer_t)NULL;
 
-    timer = (TimerObj *)Memory_alloc(Task_Object_heap(),
-            sizeof(TimerObj), 0, &eb);
+    timer = (TimerObj *)Memory_alloc(Task_Object_heap(), sizeof(TimerObj), 0, &eb);
 
-    if (timer == NULL) {
+    if (timer == NULL)
+    {
         errno = ENOMEM;
         return (-1);
     }
@@ -119,28 +119,32 @@ int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid)
     Clock_construct(&(timer->clock), timerFxn, 0, &params);
 
     timer->sigev_notify_function = evp->sigev_notify_function;
-    timer->val = evp->sigev_value;
-    timer->notifyType = evp->sigev_notify;
-    timer->thread = NULL;
-    timer->sem = NULL;
-    timer->clockId = clockid;
+    timer->val                   = evp->sigev_value;
+    timer->notifyType            = evp->sigev_notify;
+    timer->thread                = NULL;
+    timer->sem                   = NULL;
+    timer->clockId               = clockid;
 
-    if (evp->sigev_notify == SIGEV_THREAD) {
+    if (evp->sigev_notify == SIGEV_THREAD)
+    {
         /* Create semaphore that will be posted when timer expires */
         Semaphore_Params_init(&semParams);
         semParams.mode = Semaphore_Mode_BINARY;
-        timer->sem = Semaphore_create(0, &semParams, NULL);
+        timer->sem     = Semaphore_create(0, &semParams, NULL);
 
-        if (timer->sem == NULL) {
+        if (timer->sem == NULL)
+        {
             timer_delete((timer_t)timer);
             errno = ENOMEM;
             return (-1);
         }
 
-        if (evp->sigev_notify_attributes != NULL) {
+        if (evp->sigev_notify_attributes != NULL)
+        {
             pAttrs = evp->sigev_notify_attributes;
         }
-        else {
+        else
+        {
             pthread_attr_init(&pDefAttrs);
             pAttrs = &pDefAttrs;
         }
@@ -148,22 +152,22 @@ int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid)
         /* Timer notification threads must be detached */
         pthread_attr_setdetachstate(pAttrs, PTHREAD_CREATE_DETACHED);
 
-        retc = pthread_create(&(timer->thread), pAttrs, timerThreadFxn,
-                (void *)timer);
+        retc = pthread_create(&(timer->thread), pAttrs, timerThreadFxn, (void *)timer);
 
-        if (pAttrs == &pDefAttrs) {
+        if (pAttrs == &pDefAttrs)
+        {
             pthread_attr_destroy(&pDefAttrs);
         }
 
-        if (retc != 0) {
+        if (retc != 0)
+        {
             timer_delete((timer_t)timer);
             errno = ENOMEM;
             return (-1);
         }
 
         /* help ROV display the correct thread function */
-        Task_setArg0(((pthread_Obj *)(timer->thread))->task,
-                (UArg)timer->sigev_notify_function);
+        Task_setArg0(((pthread_Obj *)(timer->thread))->task, (UArg)timer->sigev_notify_function);
     }
 
     *timerid = (timer_t)timer;
@@ -175,15 +179,17 @@ int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid)
  */
 int timer_delete(timer_t timerid)
 {
-    TimerObj    *timer = (TimerObj *)timerid;
+    TimerObj *timer = (TimerObj *)timerid;
 
     Clock_destruct(&(timer->clock));
 
-    if (timer->thread) {
+    if (timer->thread)
+    {
         pthread_cancel(timer->thread);
     }
 
-    if (timer->sem) {
+    if (timer->sem)
+    {
         Semaphore_delete(&(timer->sem));
     }
 
@@ -199,10 +205,10 @@ int timer_delete(timer_t timerid)
  */
 int timer_gettime(timer_t timerid, struct itimerspec *its)
 {
-    TimerObj    *timer = (TimerObj *)timerid;
-    UInt32       timeout;
-    long         timeoutUs;
-    long         periodUs;
+    TimerObj *timer = (TimerObj *)timerid;
+    UInt32 timeout;
+    long timeoutUs;
+    long periodUs;
 
     /*
      *  Clock_getTimeout() returns number of clock ticks until timer expires.
@@ -210,17 +216,15 @@ int timer_gettime(timer_t timerid, struct itimerspec *its)
     timeout = Clock_getTimeout(Clock_handle(&(timer->clock)));
 
     timeoutUs = timeout * Clock_tickPeriod;
-    periodUs = Clock_getPeriod(Clock_handle(&timer->clock)) * Clock_tickPeriod;
+    periodUs  = Clock_getPeriod(Clock_handle(&timer->clock)) * Clock_tickPeriod;
 
     /* Store the time until timer expires */
-    its->it_value.tv_sec = timeoutUs / 1000000;
-    its->it_value.tv_nsec = (timeoutUs - (timeoutUs / 1000000) * 1000000) *
-            1000;
+    its->it_value.tv_sec  = timeoutUs / 1000000;
+    its->it_value.tv_nsec = (timeoutUs - (timeoutUs / 1000000) * 1000000) * 1000;
 
     /* Store the timer period */
-    its->it_interval.tv_sec = periodUs / 1000000;
-    its->it_interval.tv_nsec = (periodUs - (periodUs / 1000000) * 1000000) *
-            1000;
+    its->it_interval.tv_sec  = periodUs / 1000000;
+    its->it_interval.tv_nsec = (periodUs - (periodUs / 1000000) * 1000000) * 1000;
 
     return (0);
 }
@@ -228,25 +232,24 @@ int timer_gettime(timer_t timerid, struct itimerspec *its)
 /*
  *  ======== timer_settime ========
  */
-int timer_settime(timer_t timerid, int flags,
-        const struct itimerspec *value, struct itimerspec *ovalue)
+int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, struct itimerspec *ovalue)
 {
-    TimerObj       *timer = (TimerObj *)timerid;
+    TimerObj *timer = (TimerObj *)timerid;
     struct timespec reltime;
     struct timespec curtime;
-    long            timeoutUs;
-    long            periodUs;
-    UInt32          timeout;
-    UInt32          period;
+    long timeoutUs;
+    long periodUs;
+    UInt32 timeout;
+    UInt32 period;
 
-    if ((value->it_interval.tv_nsec < 0) ||
-            (value->it_interval.tv_nsec >= 1000000000)) {
+    if ((value->it_interval.tv_nsec < 0) || (value->it_interval.tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
 
-    if ((value->it_value.tv_nsec < 0) ||
-            (value->it_value.tv_nsec >= 1000000000)) {
+    if ((value->it_value.tv_nsec < 0) || (value->it_value.tv_nsec >= 1000000000))
+    {
         errno = EINVAL;
         return (-1);
     }
@@ -255,7 +258,8 @@ int timer_settime(timer_t timerid, int flags,
      *  If ovalue is non-NULL, save the time before the timer
      *  would have expired, and the timer's old reload value.
      */
-    if (ovalue) {
+    if (ovalue)
+    {
         timer_gettime(timerid, ovalue);
     }
 
@@ -270,45 +274,48 @@ int timer_settime(timer_t timerid, int flags,
      *  If the expiration time has already passed, call the notification
      *  function and return success.
      */
-    if ((value->it_value.tv_sec == 0) && (value->it_value.tv_nsec == 0)) {
+    if ((value->it_value.tv_sec == 0) && (value->it_value.tv_nsec == 0))
+    {
         Clock_stop(Clock_handle(&(timer->clock)));
         return (0);
     }
 
-    if (flags & TIMER_ABSTIME) {
+    if (flags & TIMER_ABSTIME)
+    {
         clock_gettime(timer->clockId, &curtime);
 
         if ((curtime.tv_sec > value->it_value.tv_sec) ||
-                ((curtime.tv_sec == value->it_value.tv_sec) &&
-                        (curtime.tv_nsec >= value->it_value.tv_nsec))) {
+            ((curtime.tv_sec == value->it_value.tv_sec) && (curtime.tv_nsec >= value->it_value.tv_nsec)))
+        {
             /* The time has already passed */
             (timer->sigev_notify_function)(timer->val);
             return (0);
         }
 
-        reltime.tv_sec = value->it_value.tv_sec - curtime.tv_sec;
+        reltime.tv_sec  = value->it_value.tv_sec - curtime.tv_sec;
         reltime.tv_nsec = value->it_value.tv_nsec - curtime.tv_nsec;
 
-        if (reltime.tv_nsec < 0) {
+        if (reltime.tv_nsec < 0)
+        {
             reltime.tv_nsec += 1000000000;
             reltime.tv_sec--;
         }
     }
-    else {
-        reltime.tv_sec = value->it_value.tv_sec;
+    else
+    {
+        reltime.tv_sec  = value->it_value.tv_sec;
         reltime.tv_nsec = value->it_value.tv_nsec;
     }
 
     timeoutUs = reltime.tv_nsec / 1000 + reltime.tv_sec * 1000000;
-    periodUs = value->it_interval.tv_sec * 1000000 +
-        value->it_interval.tv_nsec / 1000;
+    periodUs  = value->it_interval.tv_sec * 1000000 + value->it_interval.tv_nsec / 1000;
 
     /*
      *  Calculate period and timeout in Clock ticks.  Take the
      *  ceiling if the value in microseconds is not a multiple of
      *  the Clock tick period.
      */
-    period = (periodUs + Clock_tickPeriod - 1) / Clock_tickPeriod;
+    period  = (periodUs + Clock_tickPeriod - 1) / Clock_tickPeriod;
     timeout = (timeoutUs + Clock_tickPeriod - 1) / Clock_tickPeriod;
 
     Clock_setPeriod((Clock_handle)(&(timer->clock)), period);
@@ -325,10 +332,12 @@ static Void timerFxn(UArg arg)
 {
     TimerObj *timer = (TimerObj *)arg;
 
-    if (timer->thread) {
+    if (timer->thread)
+    {
         Semaphore_post(timer->sem);
     }
-    else {
+    else
+    {
         (timer->sigev_notify_function)(timer->val);
     }
 }
@@ -340,7 +349,8 @@ static Void *timerThreadFxn(Void *arg)
 {
     TimerObj *timer = (TimerObj *)arg;
 
-    for (;;) {
+    for (;;)
+    {
         Semaphore_pend(timer->sem, BIOS_WAIT_FOREVER);
         (timer->sigev_notify_function)(timer->val);
     }

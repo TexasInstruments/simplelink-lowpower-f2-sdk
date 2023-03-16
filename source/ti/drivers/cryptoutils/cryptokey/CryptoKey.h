@@ -84,10 +84,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
-    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -183,9 +179,7 @@ typedef struct
 {
     uint32_t keyLength;
     uint32_t keyID;
-#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
-    KeyStore_PSA_KeyAttributes attributes;
-#endif
+    void *keyAttributes;
 } CryptoKey_KeyStore;
 
 /*!

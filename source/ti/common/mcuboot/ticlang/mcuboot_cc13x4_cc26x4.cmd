@@ -91,7 +91,7 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs        :   > FLASH_BASE
+    .resetVecs      :   > FLASH_BASE
     .text           :   > FLASH
     .TI.ramfunc     : {} load=FLASH, run=SRAM, table(BINIT)
     .const          :   > FLASH
@@ -104,9 +104,9 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > CCFG
 
+    .ramVecs        :   > SRAM
     .vtable         :   > SRAM
     .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM

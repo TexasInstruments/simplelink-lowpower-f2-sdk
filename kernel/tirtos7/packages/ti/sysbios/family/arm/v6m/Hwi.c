@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2023 Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,24 +81,20 @@ uint32_t Hwi_dispatchTable[Hwi_numSparseInterrupts_D * 3 + 1];
 uint32_t Hwi_dispatchTable[Hwi_NUM_INTERRUPTS_D];
 #endif
 
+/* Place RAM vector table in ".ramVecs" section and set alignment to the minimum
+ * required alignment.
+ */
 #ifdef __IAR_SYSTEMS_ICC__
-
-/* place holder for RAM vector table */
-#pragma location=Hwi_vectorTableAddress_D
-__root __no_init uint32_t Hwi_ramVectors[Hwi_NUM_INTERRUPTS_D];
-
-#else /* __IAR_SYSTEMS_ICC__ */
-
-#if defined(__GNUC__) && !defined(__ti__)
-__attribute__ ((section (".vtable")))
+#pragma location=".ramVecs"
+#pragma data_alignment=Hwi_vectorTableAlignment_D
+__root __no_init
+#elif(defined(__GNUC__)||defined(__clang__))
+__attribute__ ((section (".ramVecs"), aligned(Hwi_vectorTableAlignment_D)))
 #else
-__attribute__ ((section (".vecs")))
+#error Unsupported Compiler
 #endif
-
 /* place holder for RAM vector table */
 uint32_t Hwi_ramVectors[Hwi_NUM_INTERRUPTS_D];
-
-#endif /* __IAR_SYSTEMS_ICC__ */
 
 Hwi_Module_State Hwi_Module_state = {
     .taskSP = ((char*)NULL),
@@ -143,7 +139,7 @@ extern void __iar_program_start();
 #pragma segment="CSTACK"
 typedef union {uint32_t __uint32; void * __ptr;} intvec_elem;
 
-#pragma location = ".intvec"
+#pragma location = ".resetVecs"
 const uint32_t __vector_table[] =
 {
     (uint32_t)(&CSTACK$$Limit),
@@ -165,17 +161,10 @@ const uint32_t __vector_table[] =
 
 #define ti_sysbios_family_arm_v6m_Hwi_resetVectors __vector_table
 
-#else /* __IAR_SYSTEMS_ICC__ */
-
+#elif (defined(__GNUC__) || defined(__clang__))
 extern void _c_int00(void);
 
-#if defined(__clang__)
 __attribute__ ((section (".resetVecs")))
-#elif defined(__GNUC__) && !defined(__ti__)
-__attribute__ ((section (".intvecs")))
-#elif defined(__ti__)
-__attribute__ ((section (".resetVecs")))
-#endif
 /* const because it is meant to be placed in ROM */
 const uint32_t Hwi_resetVectors[] = {
     (uint32_t)(&__TI_STACK_BASE),
@@ -195,7 +184,9 @@ const uint32_t Hwi_resetVectors[] = {
     (uint32_t)(&Hwi_pendSV),              /* pendSV */
 };
 
-#endif /* __IAR_SYSTEMS_ICC__ */
+#else
+#error Unsupported Compiler
+#endif
 
 #if 0
 /*

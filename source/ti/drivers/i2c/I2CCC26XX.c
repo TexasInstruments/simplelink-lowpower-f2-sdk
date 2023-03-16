@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,16 +63,16 @@
  * equivalent values are taken from the existing MACROs in I2C.h
  *
  */
-#ifndef I2C_MASTER_CMD_BURST_RECEIVE_START_NACK
-    #define I2C_MASTER_CMD_BURST_RECEIVE_START_NACK I2C_MASTER_CMD_BURST_SEND_START
+#ifndef I2C_CONTROLLER_CMD_BURST_RECEIVE_START_NACK
+    #define I2C_CONTROLLER_CMD_BURST_RECEIVE_START_NACK I2C_MASTER_CMD_BURST_SEND_START
 #endif
 
-#ifndef I2C_MASTER_CMD_BURST_RECEIVE_STOP
-    #define I2C_MASTER_CMD_BURST_RECEIVE_STOP I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
+#ifndef I2C_CONTROLLER_CMD_BURST_RECEIVE_STOP
+    #define I2C_CONTROLLER_CMD_BURST_RECEIVE_STOP I2C_MASTER_CMD_BURST_RECEIVE_ERROR_STOP
 #endif
 
-#ifndef I2C_MASTER_CMD_BURST_RECEIVE_CONT_NACK
-    #define I2C_MASTER_CMD_BURST_RECEIVE_CONT_NACK I2C_MASTER_CMD_BURST_SEND_CONT
+#ifndef I2C_CONTROLLER_CMD_BURST_RECEIVE_CONT_NACK
+    #define I2C_CONTROLLER_CMD_BURST_RECEIVE_CONT_NACK I2C_MASTER_CMD_BURST_SEND_CONT
 #endif
 
 /* Prototypes */
@@ -124,7 +124,7 @@ void I2C_close(I2C_Handle handle)
     /* Mask I2C interrupts */
     I2CMasterIntDisable(hwAttrs->baseAddr);
 
-    /* Disable the I2C Master */
+    /* Disable the I2C Controller */
     I2CMasterDisable(hwAttrs->baseAddr);
 
     /* Deallocate pins */
@@ -329,7 +329,7 @@ static void I2CCC26XX_hwiFxn(uintptr_t arg)
     I2CMasterIntClear(hwAttrs->baseAddr);
 
     /*
-     * Check if the Master is busy. If busy, the MSTAT is invalid as
+     * Check if the Controller is busy. If busy, the MSTAT is invalid as
      * the controller is still transmitting or receiving. In that case,
      * we should wait for the next interrupt.
      */
@@ -338,7 +338,7 @@ static void I2CCC26XX_hwiFxn(uintptr_t arg)
         return;
     }
 
-    uint32_t status = HWREG(I2C0_BASE + I2C_O_MSTAT);
+    uint32_t status = HWREG(hwAttrs->baseAddr + I2C_O_MSTAT);
 
     /* Current transaction is cancelled */
     if (object->currentTransaction->status == I2C_STATUS_CANCEL)
@@ -351,7 +351,7 @@ static void I2CCC26XX_hwiFxn(uintptr_t arg)
     /* Handle errors. ERR bit is not set if arbitration lost.
      * The I2C peripheral has an issue where the DATACK_N bit
      * is not updated if the previous command sets the ACK bit
-     * (Master automatically ACK's received data). This condition
+     * (Controller automatically ACK's received data). This condition
      * can be detected by the state of writeCount, readCount, and
      * the status register. If the condition is true, don't enter
      * the error-handling block, but carry on reading instead.
@@ -400,11 +400,11 @@ static void I2CCC26XX_hwiFxn(uintptr_t arg)
         else if (object->readCount)
         {
             /* Place controller in receive mode */
-            I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->slaveAddress, true);
+            I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->targetAddress, true);
 
             if (object->readCount > 1)
             {
-                /* RUN and generate ACK to slave */
+                /* RUN and generate ACK to target */
                 command |= I2C_MCTRL_ACK;
             }
 
@@ -562,9 +562,9 @@ static void I2CCC26XX_swiFxn(uintptr_t arg0, uintptr_t arg1)
 }
 
 /*
- *  ======== I2CSupport_masterFinish ========
+ *  ======== I2CSupport_controllerFinish ========
  */
-void I2CSupport_masterFinish(I2C_HWAttrs const *hwAttrs)
+void I2CSupport_controllerFinish(I2C_HWAttrs const *hwAttrs)
 {
     /* Asynchronously generate a STOP condition. */
     I2CMasterControl(hwAttrs->baseAddr, I2C_MCTRL_STOP);
@@ -612,7 +612,7 @@ int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle, I2C_Transaction *transa
      */
     object->currentTransaction->status = I2C_STATUS_INCOMPLETE;
 
-    /* Determine if the bus is in use by another I2C Master */
+    /* Determine if the bus is in use by another I2C Controller */
     if (I2CMasterBusBusy(hwAttrs->baseAddr))
     {
         transaction->status = I2C_STATUS_BUS_BUSY;
@@ -623,8 +623,8 @@ int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle, I2C_Transaction *transa
     {
         I2CMasterIntEnable(hwAttrs->baseAddr);
 
-        /* Specify slave address and transmit mode */
-        I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->slaveAddress, false);
+        /* Specify target address and transmit mode */
+        I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->targetAddress, false);
 
         I2CMasterDataPut(hwAttrs->baseAddr, *((object->writeBuf)++));
         I2CMasterControl(hwAttrs->baseAddr, I2C_MASTER_CMD_BURST_SEND_START);
@@ -633,17 +633,17 @@ int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle, I2C_Transaction *transa
     {
         I2CMasterIntEnable(hwAttrs->baseAddr);
 
-        /* Specify slave address and receive mode */
-        I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->slaveAddress, true);
+        /* Specify target address and receive mode */
+        I2CMasterSlaveAddrSet(hwAttrs->baseAddr, object->currentTransaction->targetAddress, true);
 
         if (object->readCount == 1)
         {
             /* Send START, read 1 data byte, and NACK */
-            I2CMasterControl(hwAttrs->baseAddr, I2C_MASTER_CMD_BURST_RECEIVE_START_NACK);
+            I2CMasterControl(hwAttrs->baseAddr, I2C_CONTROLLER_CMD_BURST_RECEIVE_START_NACK);
         }
         else
         {
-            /* Start the I2C transfer in master receive mode */
+            /* Start the I2C transfer in controller receive mode */
             I2CMasterControl(hwAttrs->baseAddr, I2C_MASTER_CMD_BURST_RECEIVE_START);
         }
     }
@@ -698,7 +698,7 @@ static void I2CCC26XX_initHw(I2C_Handle handle)
     ClockP_getCpuFreq(&freq);
     I2CMasterInitExpClk(hwAttrs->baseAddr, freq.lo, object->bitRate > I2C_100kHz);
 
-    /* Enable the I2C Master for operation */
+    /* Enable the I2C Controller for operation */
     I2CMasterEnable(hwAttrs->baseAddr);
 }
 

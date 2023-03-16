@@ -87,6 +87,15 @@
 
 #define TRACE_GROUP "wsbs"
 
+//The pan id filtering changes are being done in the ws_bootstrap.c file, which
+//is common to both router & border router logic to keep the changes contained
+
+//These will be updated based on information received from a BR on joining it
+//These globals are not used in BR logic - keeping them in so that BR logic compiles
+
+uint16_t panid_allow_list[MAX_PANID_ALLOW_LIST_LEN] = {0};
+uint16_t panid_deny_list[MAX_PANID_DENY_LIST_LEN] = {0};
+
 extern configurable_props_t cfg_props;
 
 static void ws_bootstrap_event_handler(arm_event_s *event);
@@ -130,6 +139,8 @@ static void ws_bootstrap_advertise_start(protocol_interface_info_entry_t *cur);
 static void ws_bootstrap_rpl_scan_start(protocol_interface_info_entry_t *cur);
 
 static uint16_t ws_randomize_fixed_channel(uint16_t configured_fixed_channel, uint8_t number_of_channels, uint32_t *channel_mask);
+static void ws_bootstrap_panid_filter_lists_init();
+static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list_type);
 
 typedef enum {
     WS_PARENT_SOFT_SYNCH = 0,  /**< let FHSS make decision if synchronization is needed*/
@@ -1956,6 +1967,8 @@ bool ws_bootstrap_validate_channel_function(ws_us_ie_t *ws_us, ws_bs_ie_t *ws_bs
 
 static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, const struct mcps_data_ie_list *ie_ext, uint8_t message_type)
 {
+    uint8_t i = 0;
+
     // Store weakest heard packet RSSI
     if (cur->ws_info->weakest_received_rssi > data->signal_dbm) {
         cur->ws_info->weakest_received_rssi = data->signal_dbm;
@@ -1975,6 +1988,41 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
             if (!ws_bootstrap_network_name_matches(ie_ext, cur->ws_info->cfg->gen.network_name)) {
                 // Not in our network
                 return;
+            }
+
+            //added code for pan id filtering feature
+            if((MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_ROUTER)&&(message_type == WS_FT_PAN_ADVERT))
+            {
+                if( ws_bootstrap_panid_filter_list_is_empty(PANID_ALLOW_LIST_E) == false)
+                {
+                    for(i = 0; i < MAX_PANID_ALLOW_LIST_LEN; i++)
+                    {
+                        if(data->SrcPANId == panid_allow_list[i])
+                        {
+                            //match found in allow list
+                            break;
+                        }
+                    }
+
+                    if(i == MAX_PANID_ALLOW_LIST_LEN)
+                    {
+                        //traversed whole list without match
+                        //do not process this frame
+                        return;
+                    }
+                    //else : match found: proceed to processing the frame further
+                }
+                else if( ws_bootstrap_panid_filter_list_is_empty(PANID_DENY_LIST_E) == false)
+                {
+                    for(i = 0; i < MAX_PANID_DENY_LIST_LEN; i++)
+                    {
+                        if(data->SrcPANId == panid_deny_list[i]) //match found in deny list
+                        {
+                            //do not process the frame further
+                            return;
+                        }
+                    }
+                }
             }
             break;
         case WS_FT_PAN_CONF:
@@ -2351,6 +2399,9 @@ int ws_bootstrap_init(int8_t interface_id, net_6lowpan_mode_e bootstrap_mode)
         tr_err("MLE blacklist init failed.");
         return -1;
     }
+
+    //Initialize pan id allow and deny lists for pan id filtering feature
+    ws_bootstrap_panid_filter_lists_init();
 
     switch (bootstrap_mode) {
         //        case NET_6LOWPAN_SLEEPY_HOST:
@@ -4434,6 +4485,236 @@ static void ws_bootstrap_packet_congestion_init(protocol_interface_info_entry_t 
     tr_info("Wi-SUN packet congestion minTh %u, maxTh %u, drop probability %u weight %u, Packet/Seconds %u", min_th, max_th, WS_CONGESTION_RED_DROP_PROBABILITY, RED_AVERAGE_WEIGHT_EIGHTH, packet_per_seconds);
     cur->random_early_detection = random_early_detection_create(min_th, max_th, WS_CONGESTION_RED_DROP_PROBABILITY, RED_AVERAGE_WEIGHT_EIGHTH);
 
+}
+
+/*!
+ * API to restart network stack
+ * Input parameters: None
+ * Output Parameters: success or failure
+ */
+int nanostack_net_stack_restart(void)
+{
+    int retVal = 0;
+    uint8_t i = 0;
+    protocol_interface_info_entry_t *cur;
+    cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+
+    //for router node - check if current pan id is in allow list or not.
+    //based on that - take appropriate action
+    if(MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_ROUTER)
+    {
+        //checks for current pan id against pan id allow list or deny list :
+        //if allow list is non-empty:
+        //if current pan id is in allow list : all good: do nothing
+        //if current pan id is not in allow list: restart (deny list content is irrelevant)
+        //if allow list is empty & deny list is not empty
+        //if current pan id is in deny list : restart
+        //if current pan id is not in deny list : all good: do nothing
+        //if both allow and deny lists are empty : do nothing
+
+        if(ws_bootstrap_panid_filter_list_is_empty(PANID_ALLOW_LIST_E) == false)
+        {
+            //First check against allow list entries if list is non-empty
+            for(i = 0; i < MAX_PANID_ALLOW_LIST_LEN; i++)
+            {
+               if(cur->ws_info->network_pan_id == panid_allow_list[i])
+               {
+                   //match found
+                   return(0);
+               }
+            }
+        }
+        else if(ws_bootstrap_panid_filter_list_is_empty(PANID_DENY_LIST_E) == false)
+        {
+            // check against deny list entries
+            for(i = 0; i < MAX_PANID_DENY_LIST_LEN; i++)
+            {
+               if(cur->ws_info->network_pan_id == panid_deny_list[i])
+               {
+                   //match found
+                   break;
+               }
+            }
+
+            if(i == MAX_PANID_DENY_LIST_LEN)
+            {
+                //traversed deny list without finding match; No need to restart
+                return(0);
+            }
+        }
+        else
+        {
+            //both panid allow and deny lists are empty: nothing to do: return
+            return(0);
+        }
+
+        //if we are here: either allow list or deny list is non empty AND
+        //match was not found in allow list or match was found in deny list
+        retVal = ws_bootstrap_restart_delayed(cur->id);
+        return(retVal);
+    }
+    else //border router which has no pan id filtering logic
+    {
+        retVal = ws_bootstrap_restart_delayed(cur->id);
+        return(retVal);
+    }
+}
+
+/*
+ * Helper function to initialize pan id allow and deny lists
+ * Input Parameter: None
+ * Output Parameter: None
+*/
+static void ws_bootstrap_panid_filter_lists_init()
+{
+    uint8_t i = 0;
+
+    for(i = 0; i < MAX_PANID_ALLOW_LIST_LEN; i++)
+    {
+        panid_allow_list[i] = PANID_UNUSED;
+    }
+
+    for(i = 0; i < MAX_PANID_DENY_LIST_LEN; i++)
+    {
+        panid_deny_list[i] = PANID_UNUSED;
+    }
+}
+
+
+/*
+ * Helper function to check if the list is empty or not
+ * Input Parameter: pan id filter list type - allow list or deny list
+ * Output Parameter: true if allow list or deny list is empty and false other wise
+*/
+
+static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list_type)
+{
+    uint8_t i = 0, panid_list_len = 0;
+    uint16_t* ptr_panid_list = NULL;
+
+    if(panid_list_type == PANID_ALLOW_LIST_E)
+    {
+        ptr_panid_list = &panid_allow_list[0];
+        panid_list_len = MAX_PANID_ALLOW_LIST_LEN;
+    }
+    else
+    {
+        ptr_panid_list = &panid_deny_list[0];
+        panid_list_len = MAX_PANID_DENY_LIST_LEN;
+    }
+
+    for(i = 0; i < panid_list_len; i++)
+    {
+        if(ptr_panid_list[i] != PANID_UNUSED)
+        {
+            return(false);
+        }
+    }
+
+    return(true);
+}
+
+/*!
+ * API to add a single entry in panid_allow_list[] or panid_deny_list[]
+ * Input Parameters:
+ * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
+ * pan_id : pan_id to be added
+ * Output Parameters: success or failure
+ */
+int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
+{
+    uint8_t i= 0, panid_list_len = 0;
+    uint16_t* ptr_panid_list = NULL;
+    int idx = -1;
+
+    if(panid_list_type == PANID_ALLOW_LIST_E)
+    {
+        ptr_panid_list = &panid_allow_list[0];
+        panid_list_len = MAX_PANID_ALLOW_LIST_LEN;
+    }
+    else
+    {
+        ptr_panid_list = &panid_deny_list[0];
+        panid_list_len = MAX_PANID_DENY_LIST_LEN;
+    }
+
+    for( i = 0; i < panid_list_len; i++)
+    {
+        //find first location where the current value is 0xFFFF
+        if((idx == -1) && (ptr_panid_list[i] == PANID_UNUSED))
+        {
+            idx = i;
+        }
+        else if(ptr_panid_list[i] == panid)
+        {
+            //already present
+            return(PANID_FLTR_UPDATE_SUCCESS);
+        }
+    }
+
+    if(idx == -1)
+    {
+        //already full
+        return(PANID_FLTR_UPDATE_NO_SPACE);
+    }
+    else
+    {
+        //insert the pan_id
+        ptr_panid_list[idx] = panid;
+        return(PANID_FLTR_UPDATE_SUCCESS);
+    }
+}
+
+
+/*!
+ * API to remove a single entry in panid_allow_list[] or panid_deny_list[]
+ * Input Parameters:
+ * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
+ * pan_id : pan_id to be removed; irrelevant parameter if next parameter all is set to true
+ * all : if set to true, all pan_ids are removed; set to false for individual entry removal.
+ * Output Parameters: success or failure
+ */
+int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t panid, bool all)
+{
+
+    uint8_t i= 0, panid_list_len = 0;
+    uint16_t* ptr_panid_list = NULL;
+
+    if(panid_list_type == PANID_ALLOW_LIST_E)
+    {
+        ptr_panid_list = &panid_allow_list[0];
+        panid_list_len = MAX_PANID_ALLOW_LIST_LEN;
+    }
+    else
+    {
+        ptr_panid_list = &panid_deny_list[0];
+        panid_list_len = MAX_PANID_DENY_LIST_LEN;
+    }
+
+    if( all == true) //purge whole list
+    {
+        //purge whole list
+        for( i = 0; i < panid_list_len; i++)
+        {
+            ptr_panid_list[i] = PANID_UNUSED;
+        }
+        return(PANID_FLTR_UPDATE_SUCCESS);
+    }
+    else //individual entry update
+    {
+        for( i = 0; i < panid_list_len; i++)
+        {
+            if(panid == ptr_panid_list[i])
+            {
+                //match found
+                ptr_panid_list[i] = PANID_UNUSED;
+                return(PANID_FLTR_UPDATE_SUCCESS);
+            }
+        }
+
+        //traversed the list without finding a match
+        return(PANID_FLTR_UPDATE_NO_MATCH);
+    }
 }
 
 #endif //HAVE_WS

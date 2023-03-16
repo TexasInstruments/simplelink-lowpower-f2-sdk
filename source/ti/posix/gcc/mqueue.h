@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #ifndef __GNUC__
-#error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
 #endif
 
 #include <stddef.h>
@@ -58,12 +58,13 @@ typedef void *mqd_t;
 /*
  *  ======== mq_attr ========
  */
-struct mq_attr {
-    long    mq_flags;    /* Message queue description flags: 0 or O_NONBLOCK.
-                            Initialized from oflag argument of mq_open(). */
-    long    mq_maxmsg;   /* Maximum number of messages on queue.  */
-    long    mq_msgsize;  /* Maximum message size. */
-    long    mq_curmsgs;  /* Number of messages currently queued. */
+struct mq_attr
+{
+    long mq_flags;   /* Message queue description flags: 0 or O_NONBLOCK.
+                        Initialized from oflag argument of mq_open(). */
+    long mq_maxmsg;  /* Maximum number of messages on queue.  */
+    long mq_msgsize; /* Maximum message size. */
+    long mq_curmsgs; /* Number of messages currently queued. */
 };
 
 /*  Deprecated. This typedef is for compatibility with old SDKs. It is
@@ -73,26 +74,31 @@ struct mq_attr {
 typedef struct mq_attr mq_attr;
 
 /* For mq_open() */
-#define O_CREAT         0x200   /* TODO: sys/fcntl.h? */
-#define O_EXCL          0x0800  /* Error on open if queue exists */
-#define O_RDONLY        0
-#define O_WRONLY        1
-#define O_RDWR          2
-#define O_NONBLOCK      0x4000  /* Fail with EAGAIN if resources unavailable */
+#define O_CREAT    0x200  /* TODO: sys/fcntl.h? */
+#define O_EXCL     0x0800 /* Error on open if queue exists */
+#define O_RDONLY   0
+#define O_WRONLY   1
+#define O_RDWR     2
+#define O_NONBLOCK 0x4000 /* Fail with EAGAIN if resources unavailable */
 
 extern int mq_close(mqd_t mqdes);
 extern int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat);
 extern mqd_t mq_open(const char *name, int oflags, ...);
-extern ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio);
-extern int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio);
-extern int mq_setattr(mqd_t mqdes, const struct mq_attr *mqstat,
-        struct mq_attr *omqstat);
-extern ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio, const struct timespec *abstime);
-extern int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio, const struct timespec *abstime);
+extern ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio);
+extern int mq_peek(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int msg_prio);
+extern int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio);
+extern int mq_send_to_front(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio);
+extern int mq_setattr(mqd_t mqdes, const struct mq_attr *mqstat, struct mq_attr *omqstat);
+extern ssize_t mq_timedreceive(mqd_t mqdes,
+                               char *msg_ptr,
+                               size_t msg_len,
+                               unsigned int *msg_prio,
+                               const struct timespec *abstime);
+extern int mq_timedsend(mqd_t mqdes,
+                        const char *msg_ptr,
+                        size_t msg_len,
+                        unsigned int msg_prio,
+                        const struct timespec *abstime);
 extern int mq_unlink(const char *name);
 
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ extern unsigned long __STACK_END;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__((section(".intvecs"))) __attribute__((used)) void (*const g_pfnVectors[])(void) = {
+__attribute__((section(".resetVecs"), retain)) void (*const g_pfnVectors[])(void) = {
     (void (*)(void))((unsigned long)&__STACK_END),
     //  0 The initial stack pointer
     resetISR,          //  1 The reset handler

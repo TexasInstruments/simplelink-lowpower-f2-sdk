@@ -48,12 +48,12 @@ else ()
 endif ()
 
 # Specify how the compilers should be invoked
-set(CMAKE_C_COMPILE_OBJECT "<CMAKE_C_COMPILER> -c <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> <SOURCE>")
+set(CMAKE_C_COMPILE_OBJECT "<CMAKE_C_COMPILER> -c <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -MD -MF <OBJECT>.d <SOURCE>")
 set(CMAKE_ASM_COMPILE_OBJECT
     "<CMAKE_ASM_COMPILER> <DEFINES> <INCLUDES> -c -x assembler-with-cpp <FLAGS> -o <OBJECT> -c <SOURCE>"
 )
 set(CMAKE_AR_FLAGS -c -q)
-set(CMAKE_C_FLAGS "-gdwarf-3 -gstrict-dwarf" CACHE INTERNAL "C Compiler options")
+set(CMAKE_C_FLAGS "" CACHE INTERNAL "C Compiler options")
 set(CMAKE_STATIC_LIBRARY_PREFIX "")
 
 # Needed otherwise the CMake compiler checks will complain and abort
@@ -64,23 +64,37 @@ set(CMAKE_C_COMPILER_WORKS TRUE CACHE PATH "" FORCE)
 if (NOT TARGET TOOLCHAIN_ticlang)
     add_library(TOOLCHAIN_ticlang INTERFACE IMPORTED)
     target_compile_options(
-        TOOLCHAIN_ticlang INTERFACE -std=c11 $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-Oz>
-                                    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Debug>>:-Og -g>
+        TOOLCHAIN_ticlang
+        INTERFACE $<$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>:
+                  # This part included if TI_CFLAGS_OVERRIDE not defined
+                  -std=c11
+                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-Oz
+                  -flto>
+                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Debug>>:-Og>
+                  -g
+                  >
+                  # If TI_CFLAGS_OVERRIDE, use it exclusively
+                  $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>>
     )
     target_link_options(
         TOOLCHAIN_ticlang
         INTERFACE
+        $<$<STREQUAL:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>,>:
+        # This part included if TI_LFLAGS_OVERRIDE not defined
         -Wl,--rom_model
         # If linker-file property exists, add linker file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>,>>:-Wl,$<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>>
         # If map-file property exists, set map file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_MAP_FILE>,>>:-Wl,-m,$<TARGET_PROPERTY:TI_LINKER_MAP_FILE>>
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_REFERENCE_FILE>,>>:-Wl,--emit_references:file=$<TARGET_PROPERTY:TI_LINKER_REFERENCE_FILE>>
+        >
+        # If TI_CFLAGS_OVERRIDE, use it exclusively
+        $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>>
     )
 
     add_library(TOOLCHAIN_ticlang_m0p INTERFACE IMPORTED)
     target_link_libraries(TOOLCHAIN_ticlang_m0p INTERFACE TOOLCHAIN_ticlang)
-    target_compile_options(TOOLCHAIN_ticlang_m0p INTERFACE -mcpu=cortex-m0 -mfloat-abi=soft -mfpu=none)
+    target_compile_options(TOOLCHAIN_ticlang_m0p INTERFACE -mcpu=cortex-m0plus -mfloat-abi=soft -mfpu=none)
     add_library(CMakeCommon::ticlang_m0p ALIAS TOOLCHAIN_ticlang_m0p)
 
     add_library(TOOLCHAIN_ticlang_m4 INTERFACE IMPORTED)

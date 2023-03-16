@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,8 @@
 #include <pthread.h>
 #include <errno.h>
 
-struct WaitElem {
+struct WaitElem
+{
     TaskHandle_t task;
     struct WaitElem *next;
 };
@@ -54,13 +55,13 @@ struct WaitElem {
 /*
  *  ======== pthread_barrier_obj ========
  */
-typedef struct {
-    int               count;
-    int               pendCount;
-    struct WaitElem  *waitList;
-    struct WaitElem  *last;
+typedef struct
+{
+    int count;
+    int pendCount;
+    struct WaitElem *waitList;
+    struct WaitElem *last;
 } pthread_barrier_obj;
-
 
 /*
  *************************************************************************
@@ -94,7 +95,7 @@ int pthread_barrierattr_init(pthread_barrierattr_t *attr)
  */
 int pthread_barrier_destroy(pthread_barrier_t *barrier)
 {
-/*  pthread_barrier_obj *obj = (pthread_barrier_obj *)(&barrier->freertos); */
+    /*  pthread_barrier_obj *obj = (pthread_barrier_obj *)(&barrier->freertos); */
 
     return (0);
 }
@@ -102,21 +103,21 @@ int pthread_barrier_destroy(pthread_barrier_t *barrier)
 /*
  *  ======== pthread_barrier_init ========
  */
-int pthread_barrier_init(pthread_barrier_t *barrier,
-        const pthread_barrierattr_t *attr, unsigned count)
+int pthread_barrier_init(pthread_barrier_t *barrier, const pthread_barrierattr_t *attr, unsigned count)
 {
     pthread_barrier_obj *obj = (pthread_barrier_obj *)(&barrier->freertos);
 
     /* TODO object size validation */
-/*  assert(sizeof(pthread_barrier_obj) <= sizeof(pthread_barrier_t)); */
+    /*  assert(sizeof(pthread_barrier_obj) <= sizeof(pthread_barrier_t)); */
 
-    if (count == 0) {
+    if (count == 0)
+    {
         return (EINVAL);
     }
 
-    obj->count = count;
+    obj->count     = count;
     obj->pendCount = 0;
-    obj->waitList = NULL;
+    obj->waitList  = NULL;
 
     return (0);
 }
@@ -138,16 +139,19 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
     priority = uxTaskPriorityGet(NULL);
     vTaskPrioritySet(NULL, configMAX_PRIORITIES - 1);
 
-    if (++obj->pendCount < obj->count) {
+    if (++obj->pendCount < obj->count)
+    {
 
         /* add myself to the wait list */
         myself.task = xTaskGetCurrentTaskHandle();
         myself.next = NULL;
 
-        if (obj->waitList == NULL) {
+        if (obj->waitList == NULL)
+        {
             obj->waitList = &myself;
         }
-        else {
+        else
+        {
             obj->last->next = &myself;
         }
         obj->last = &myself;
@@ -159,15 +163,17 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
         vTaskPrioritySet(NULL, priority);
         return (0);
     }
-    else {
+    else
+    {
         /* release everyone on the wait list */
-        for (other = obj->waitList; other != NULL; other = other->next) {
+        for (other = obj->waitList; other != NULL; other = other->next)
+        {
             vTaskResume(other->task);
         }
 
         /* re-initialize the barrier */
         obj->pendCount = 0;
-        obj->waitList = NULL;
+        obj->waitList  = NULL;
 
         /* restore my priority */
         vTaskPrioritySet(NULL, priority);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,40 +44,43 @@
 #include "pthread_util.h"
 
 /* mqueue.c */
-int _pthread_abstime2ticks(clockid_t clockId, const struct timespec *abstime,
-        uint32_t *ticks)
+int _pthread_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks)
 {
-    struct timespec     curtime;
-    uint32_t            timeout;
-    long                usecs = 0;
-    long                nsecs;
-    time_t              secs = 0;
+    struct timespec curtime;
+    uint32_t timeout;
+    long usecs = 0;
+    long nsecs;
+    time_t secs = 0;
 
-    if ((abstime->tv_nsec < 0) || (1000000000 <= abstime->tv_nsec)) {
+    if ((abstime->tv_nsec < 0) || (1000000000 <= abstime->tv_nsec))
+    {
         /* EINVAL */
         return (-1);
     }
 
-    if (clock_gettime(clockId, &curtime) != 0) {
+    if (clock_gettime(clockId, &curtime) != 0)
+    {
         /* EINVAL */
         return (-1);
     }
-    
+
     secs = abstime->tv_sec - curtime.tv_sec;
 
-    if ((abstime->tv_sec < curtime.tv_sec) ||
-            ((secs == 0) && (abstime->tv_nsec <= curtime.tv_nsec))) {
+    if ((abstime->tv_sec < curtime.tv_sec) || ((secs == 0) && (abstime->tv_nsec <= curtime.tv_nsec)))
+    {
         timeout = 0;
     }
-    else {
+    else
+    {
         nsecs = abstime->tv_nsec - curtime.tv_nsec;
-        if (nsecs < 0) {
+        if (nsecs < 0)
+        {
             nsecs += 1000000000;
             secs--;
         }
 
         /* Take the ceiling: 1 to 1000 nsecs -> 1 usec */
-        usecs = (nsecs + 999) / 1000;
+        usecs   = (nsecs + 999) / 1000;
         timeout = secs * (1000000 / Clock_tickPeriod);
 
         /* Take the ceiling: 1 to Clock_tickPeriod usecs -> 1 tick */

@@ -41,187 +41,149 @@
 // NVMNW component
 //
 //*****************************************************************************
-// Interrupt Index Register:
+// Internal
 #define NVMNW_O_IIDX                                                0x00000020
 
-// Interrupt Mask Register:
+// Internal
 #define NVMNW_O_IMASK                                               0x00000028
 
-// Raw Interrupt Status Register:
+// Internal
 #define NVMNW_O_RIS                                                 0x00000030
 
-// Masked Interrupt Status Register:
+// Internal
 #define NVMNW_O_MIS                                                 0x00000038
 
-// Interrupt Set Register:
+// Internal
 #define NVMNW_O_ISET                                                0x00000040
 
-// Interrupt Clear Register.
+// Internal
 #define NVMNW_O_ICLR                                                0x00000048
 
-// Event mode register. It is used to select whether each line is disabled, in
+// Internal
 #define NVMNW_O_EVT_MODE                                            0x000000E0
 
-// Hardware Version Description Register:
+// Internal
 #define NVMNW_O_DESC                                                0x000000FC
 
-// Command Execute Register:
+// Internal
 #define NVMNW_O_CMDEXEC                                             0x00000100
 
-// Command Type Register
+// Internal
 #define NVMNW_O_CMDTYPE                                             0x00000104
 
-// Command Control Register
+// Internal
 #define NVMNW_O_CMDCTL                                              0x00000108
 
-// Command Address Register:
+// Internal
 #define NVMNW_O_CMDADDR                                             0x00000120
 
-// Command Program Byte Enable Register:
+// Internal
 #define NVMNW_O_CMDBYTEN                                            0x00000124
 
-// Command Program Data Index Register:
+// Internal
 #define NVMNW_O_CMDDATAINDEX                                        0x0000012C
 
-// Command Data Register 0
+// Internal
 #define NVMNW_O_CMDDATA0                                            0x00000130
 
-// Command Data Register 1
+// Internal
 #define NVMNW_O_CMDDATA1                                            0x00000134
 
-// Command Data Register 2
+// Internal
 #define NVMNW_O_CMDDATA2                                            0x00000138
 
-// Command Data Register 3
+// Internal
 #define NVMNW_O_CMDDATA3                                            0x0000013C
 
-// Command Data Register 4
+// Internal
 #define NVMNW_O_CMDDATA4                                            0x00000140
 
-// Command Data Register 5
+// Internal
 #define NVMNW_O_CMDDATA5                                            0x00000144
 
-// Command Data Register 6
+// Internal
 #define NVMNW_O_CMDDATA6                                            0x00000148
 
-// Command Data Register 7
+// Internal
 #define NVMNW_O_CMDDATA7                                            0x0000014C
 
-// Command Data Register 8
+// Internal
 #define NVMNW_O_CMDDATA8                                            0x00000150
 
-// Command Data Register 9
+// Internal
 #define NVMNW_O_CMDDATA9                                            0x00000154
 
-// Command Data Register 10
+// Internal
 #define NVMNW_O_CMDDATA10                                           0x00000158
 
-// Command Data Register 11
+// Internal
 #define NVMNW_O_CMDDATA11                                           0x0000015C
 
-// Command Data Register 12
+// Internal
 #define NVMNW_O_CMDDATA12                                           0x00000160
 
-// Command Data Register 13
+// Internal
 #define NVMNW_O_CMDDATA13                                           0x00000164
 
-// Command Data Register 14
+// Internal
 #define NVMNW_O_CMDDATA14                                           0x00000168
 
-// Command Data Register 15
+// Internal
 #define NVMNW_O_CMDDATA15                                           0x0000016C
 
-// Command WriteErase Protect A Register
+// Internal
 #define NVMNW_O_CMDWEPROTA                                          0x000001D0
 
-// Command WriteErase Protect B Register
+// Internal
 #define NVMNW_O_CMDWEPROTB                                          0x000001D4
 
-// Command WriteErase Protect Non-Main
+// Internal
 #define NVMNW_O_CMDWEPROTNM                                         0x00000210
 
-// Command WriteErase Protect Trim
+// Internal
 #define NVMNW_O_CMDWEPROTTR                                         0x00000214
 
-// Command WriteErase Protect Engr
+// Internal
 #define NVMNW_O_CMDWEPROTEN                                         0x00000218
 
-// Command Configuration Register
+// Internal
 #define NVMNW_O_CFGCMD                                              0x000003B0
 
-// Pulse Counter Configuration Register
+// Internal
 #define NVMNW_O_CFGPCNT                                             0x000003B4
 
-// Command Status Register
+// Internal
 #define NVMNW_O_STATCMD                                             0x000003D0
 
-// Current Address Counter Value
+// Internal
 #define NVMNW_O_STATADDR                                            0x000003D4
 
-// Current Pulse Count Register:
+// Internal
 #define NVMNW_O_STATPCNT                                            0x000003D8
 
-// Mode Status Register
+// Internal
 #define NVMNW_O_STATMODE                                            0x000003DC
 
-// Global Info 0 Register
+// Internal
 #define NVMNW_O_GBLINFO0                                            0x000003F0
 
-// Global Info 1 Register
+// Internal
 #define NVMNW_O_GBLINFO1                                            0x000003F4
 
-// Global Info 2 Register
+// Internal
 #define NVMNW_O_GBLINFO2                                            0x000003F8
 
-// Bank Info 0 Register for bank 0.
+// Internal
 #define NVMNW_O_BANK0INFO0                                          0x00000400
 
-// Bank Info1 Register for bank 0.
+// Internal
 #define NVMNW_O_BANK0INFO1                                          0x00000404
 
-// Bank Info 0 Register for bank 1.
+// Internal
 #define NVMNW_O_BANK1INFO0                                          0x00000410
 
-// Bank Info1 Register for bank 1.
+// Internal
 #define NVMNW_O_BANK1INFO1                                          0x00000414
-
-// DFT Enable Register
-#define NVMNW_O_DFTEN                                               0x00000500
-
-// DFT Command Control Register
-#define NVMNW_O_DFTCMDCTL                                           0x00000504
-
-// DFT Timer Control Register
-#define NVMNW_O_DFTTIMERCTL                                         0x00000508
-
-// DFT EXECUTEZ control register.  This register allows direct control of the
-#define NVMNW_O_DFTEXECZCTL                                         0x0000050C
-
-// DFT Pump Clock Test Control Register.  This register controls hardware
-// features
-#define NVMNW_O_DFTPCLKTESTCTL                                      0x00000510
-
-// DFT Pump Clock Test Status Register.  This register shows status reported by
-// the
-#define NVMNW_O_DFTPCLKTESTSTAT                                     0x00000514
-
-// DFT Redundancy Data Register 0
-#define NVMNW_O_DFTDATARED0                                         0x00000540
-
-// DFT Redundancy Data Register 1
-#define NVMNW_O_DFTDATARED1                                         0x00000544
-
-// DFT Redundancy Data Register 2
-#define NVMNW_O_DFTDATARED2                                         0x00000548
-
-// DFT Redundancy Data Register 3
-#define NVMNW_O_DFTDATARED3                                         0x0000054C
-
-// DFT Pump Control Register
-#define NVMNW_O_DFTPUMPCTL                                          0x00000560
-
-// DFT Bank Control Register
-#define NVMNW_O_DFTBANKCTL                                          0x00000564
 
 //*****************************************************************************
 //
@@ -230,15 +192,10 @@
 //*****************************************************************************
 // Field:     [0] STAT
 //
-// Indicates which interrupt has fired. 0x0 means no event pending. The
-// priority order is fixed. On each read, only one interrupt is indicated. On a
-// read, the current interrupt (highest priority) is automatically cleared by
-// the hardware and the corresponding interrupt flags in the RIS and MIS are
-// cleared as well. After a read from the CPU (not from the debug interface),
-// the register must be updated with the next highest priority interrupt.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// DONE                     DONE Interrupt Pending
-// NO_INTR                  No Interrupt Pending
+// DONE                     Internal. Only to be used through TI provided API.
+// NO_INTR                  Internal. Only to be used through TI provided API.
 #define NVMNW_IIDX_STAT                                             0x00000001
 #define NVMNW_IIDX_STAT_BITN                                                 0
 #define NVMNW_IIDX_STAT_M                                           0x00000001
@@ -253,14 +210,10 @@
 //*****************************************************************************
 // Field:     [0] DONE
 //
-// Interrupt mask for DONE:
-// 0: Interrupt is disabled in MIS register
-// 1: Interrupt is enabled in MIS register
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENABLED                  Interrupt will request an interrupt service
-//                          routine and corresponding bit in IPSTANDARD.MIS
-//                          will be set
-// DISABLED                 Interrupt is masked out
+// ENABLED                  Internal. Only to be used through TI provided API.
+// DISABLED                 Internal. Only to be used through TI provided API.
 #define NVMNW_IMASK_DONE                                            0x00000001
 #define NVMNW_IMASK_DONE_BITN                                                0
 #define NVMNW_IMASK_DONE_M                                          0x00000001
@@ -275,14 +228,10 @@
 //*****************************************************************************
 // Field:     [0] DONE
 //
-// NoWrapper operation completed.
-// This interrupt bit is set by firmware or the corresponding bit in the ISET
-// register.
-// It is cleared by the corresponding bit in in the ICLR register or reading
-// the IIDX register when this interrupt is the highest priority.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// SET                      Interrupt occurred
-// CLR                      Interrupt did not occur
+// SET                      Internal. Only to be used through TI provided API.
+// CLR                      Internal. Only to be used through TI provided API.
 #define NVMNW_RIS_DONE                                              0x00000001
 #define NVMNW_RIS_DONE_BITN                                                  0
 #define NVMNW_RIS_DONE_M                                            0x00000001
@@ -297,12 +246,10 @@
 //*****************************************************************************
 // Field:     [0] DONE
 //
-// NoWrapper operation completed.
-// This masked interrupt bit reflects the bitwise AND of the corresponding RIS
-// and IMASK bits.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// SET                      Masked interrupt occurred
-// CLR                      Masked interrupt did not occur
+// SET                      Internal. Only to be used through TI provided API.
+// CLR                      Internal. Only to be used through TI provided API.
 #define NVMNW_MIS_DONE                                              0x00000001
 #define NVMNW_MIS_DONE_BITN                                                  0
 #define NVMNW_MIS_DONE_M                                            0x00000001
@@ -317,11 +264,10 @@
 //*****************************************************************************
 // Field:     [0] DONE
 //
-// 0: No effect
-// 1: Set the DONE interrupt in the RIS register
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// SET                      Set IPSTANDARD.RIS bit
-// NO_EFFECT                Writing a 0 has no effect
+// SET                      Internal. Only to be used through TI provided API.
+// NO_EFFECT                Internal. Only to be used through TI provided API.
 #define NVMNW_ISET_DONE                                             0x00000001
 #define NVMNW_ISET_DONE_BITN                                                 0
 #define NVMNW_ISET_DONE_M                                           0x00000001
@@ -336,11 +282,10 @@
 //*****************************************************************************
 // Field:     [0] DONE
 //
-// 0: No effect
-// 1: Clear the DONE interrupt in the RIS register
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// CLR                      Clear IPSTANDARD.RIS bit
-// NO_EFFECT                Writing a 0 has no effect
+// CLR                      Internal. Only to be used through TI provided API.
+// NO_EFFECT                Internal. Only to be used through TI provided API.
 #define NVMNW_ICLR_DONE                                             0x00000001
 #define NVMNW_ICLR_DONE_BITN                                                 0
 #define NVMNW_ICLR_DONE_M                                           0x00000001
@@ -355,13 +300,11 @@
 //*****************************************************************************
 // Field:   [1:0] INT0_CFG
 //
-// Event line mode select for peripheral event
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// HARDWARE                 The interrupt or event line is in hardware mode.
-//                          Hardware should clear the RIS.
-// SOFTWARE                 The interrupt or event line is in software mode.
-//                          Software must clear the RIS.
-// DISABLE                  The interrupt or event line is disabled.
+// HARDWARE                 Internal. Only to be used through TI provided API.
+// SOFTWARE                 Internal. Only to be used through TI provided API.
+// DISABLE                  Internal. Only to be used through TI provided API.
 #define NVMNW_EVT_MODE_INT0_CFG_W                                            2
 #define NVMNW_EVT_MODE_INT0_CFG_M                                   0x00000003
 #define NVMNW_EVT_MODE_INT0_CFG_S                                            0
@@ -376,10 +319,10 @@
 //*****************************************************************************
 // Field: [31:16] MODULEID
 //
-// Module ID
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_DESC_MODULEID_W                                               16
 #define NVMNW_DESC_MODULEID_M                                       0xFFFF0000
 #define NVMNW_DESC_MODULEID_S                                               16
@@ -388,10 +331,10 @@
 
 // Field: [15:12] FEATUREVER
 //
-// Feature set
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum Value
-// MINIMUM                  Minimum Value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_DESC_FEATUREVER_W                                              4
 #define NVMNW_DESC_FEATUREVER_M                                     0x0000F000
 #define NVMNW_DESC_FEATUREVER_S                                             12
@@ -400,10 +343,10 @@
 
 // Field:  [11:8] INSTNUM
 //
-// Instance number
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_DESC_INSTNUM_W                                                 4
 #define NVMNW_DESC_INSTNUM_M                                        0x00000F00
 #define NVMNW_DESC_INSTNUM_S                                                 8
@@ -412,10 +355,10 @@
 
 // Field:   [7:4] MAJREV
 //
-// Major Revision
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_DESC_MAJREV_W                                                  4
 #define NVMNW_DESC_MAJREV_M                                         0x000000F0
 #define NVMNW_DESC_MAJREV_S                                                  4
@@ -424,10 +367,10 @@
 
 // Field:   [3:0] MINREV
 //
-// Minor Revision
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_DESC_MINREV_W                                                  4
 #define NVMNW_DESC_MINREV_M                                         0x0000000F
 #define NVMNW_DESC_MINREV_S                                                  0
@@ -441,12 +384,10 @@
 //*****************************************************************************
 // Field:     [0] VAL
 //
-// Command Execute value
-// Initiates execution of the command specified in the CMDTYPE register.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// EXECUTE                  Command will execute or is executing in NoWrapper
-// NOEXECUTE                Command will not execute or is not executing in
-//                          NoWrapper
+// EXECUTE                  Internal. Only to be used through TI provided API.
+// NOEXECUTE                Internal. Only to be used through TI provided API.
 #define NVMNW_CMDEXEC_VAL                                           0x00000001
 #define NVMNW_CMDEXEC_VAL_BITN                                               0
 #define NVMNW_CMDEXEC_VAL_M                                         0x00000001
@@ -461,14 +402,14 @@
 //*****************************************************************************
 // Field:   [6:4] SIZE
 //
-// Command size
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// BANK                     Operate on an entire flash bank
-// SECTOR                   Operate on a flash sector
-// EIGHTWORD                Operate on 8 flash words
-// FOURWORD                 Operate on 4 flash words
-// TWOWORD                  Operate on 2 flash words
-// ONEWORD                  Operate on 1 flash word
+// BANK                     Internal. Only to be used through TI provided API.
+// SECTOR                   Internal. Only to be used through TI provided API.
+// EIGHTWORD                Internal. Only to be used through TI provided API.
+// FOURWORD                 Internal. Only to be used through TI provided API.
+// TWOWORD                  Internal. Only to be used through TI provided API.
+// ONEWORD                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDTYPE_SIZE_W                                                 3
 #define NVMNW_CMDTYPE_SIZE_M                                        0x00000070
 #define NVMNW_CMDTYPE_SIZE_S                                                 4
@@ -481,28 +422,20 @@
 
 // Field:   [2:0] COMMAND
 //
-// Command type
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// BLANKVERIFY              Blank Verify - Check whether a flash word is in
-//                          the erased state.
-//                          This command may only be
-//                          used with CMDTYPE.SIZE = ONEWORD
-// CLEARSTATUS              Clear Status - Clear status bits in FW_SMSTAT
-//                          only.
-// MODECHANGE               Mode Change - Perform a mode change only, no other
-//                          operation.
-// READVERIFY               Read Verify - Perform a standalone read verify
-//                          operation.
-// ERASE                    Erase
-// PROGRAM                  Program
-// NOOP                     No Operation
+// BLANKVERIFY              Internal. Only to be used through TI provided API.
+// CLEARSTATUS              Internal. Only to be used through TI provided API.
+// MODECHANGE               Internal. Only to be used through TI provided API.
+// ERASE                    Internal. Only to be used through TI provided API.
+// PROGRAM                  Internal. Only to be used through TI provided API.
+// NOOP                     Internal. Only to be used through TI provided API.
 #define NVMNW_CMDTYPE_COMMAND_W                                              3
 #define NVMNW_CMDTYPE_COMMAND_M                                     0x00000007
 #define NVMNW_CMDTYPE_COMMAND_S                                              0
 #define NVMNW_CMDTYPE_COMMAND_BLANKVERIFY                           0x00000006
 #define NVMNW_CMDTYPE_COMMAND_CLEARSTATUS                           0x00000005
 #define NVMNW_CMDTYPE_COMMAND_MODECHANGE                            0x00000004
-#define NVMNW_CMDTYPE_COMMAND_READVERIFY                            0x00000003
 #define NVMNW_CMDTYPE_COMMAND_ERASE                                 0x00000002
 #define NVMNW_CMDTYPE_COMMAND_PROGRAM                               0x00000001
 #define NVMNW_CMDTYPE_COMMAND_NOOP                                  0x00000000
@@ -514,14 +447,10 @@
 //*****************************************************************************
 // Field:    [21] DATAVEREN
 //
-// Enable invalid data verify.
-// This checks for 0->1 transitions in the memory when
-// a program operation is initiated.  If such a transition is found, the
-// program will
-// fail with an error without doing any programming.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
+// ENABLE                   Internal. Only to be used through TI provided API.
+// DISABLE                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_DATAVEREN                                      0x00200000
 #define NVMNW_CMDCTL_DATAVEREN_BITN                                         21
 #define NVMNW_CMDCTL_DATAVEREN_M                                    0x00200000
@@ -531,17 +460,10 @@
 
 // Field:    [20] SSERASEDIS
 //
-// Disable Stair-Step Erase.  If set, the default VHV trim voltage setting will
-// be used
-// for all erase pulses.
-// By default, this bit is reset, meaning that the VHV voltage will be stepped
-// during
-// successive erase pulses.  The step count, step voltage, begin and end
-// voltages
-// are all hard-wired.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
+// DISABLE                  Internal. Only to be used through TI provided API.
+// ENABLE                   Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_SSERASEDIS                                     0x00100000
 #define NVMNW_CMDCTL_SSERASEDIS_BITN                                        20
 #define NVMNW_CMDCTL_SSERASEDIS_M                                   0x00100000
@@ -551,14 +473,10 @@
 
 // Field:    [19] ERASEMASKDIS
 //
-// Disable use of erase mask for erase
-// Bit masking will not be used during erase verify.  If any sectors fail the
-// verify either before (prever) or after (postver) the operation, then all
-// specified
-// flash sectors will receive subsequent erase pulse.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
+// DISABLE                  Internal. Only to be used through TI provided API.
+// ENABLE                   Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_ERASEMASKDIS                                   0x00080000
 #define NVMNW_CMDCTL_ERASEMASKDIS_BITN                                      19
 #define NVMNW_CMDCTL_ERASEMASKDIS_M                                 0x00080000
@@ -568,14 +486,10 @@
 
 // Field:    [18] PROGMASKDIS
 //
-// Disable use of program mask for programming.
-// Bit masking will not be used during program verify.  If any bits fail the
-// verify either before (prever) or after (postver) the operation, then all
-// specified
-// flash entries will receive subsequent program pulse.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
+// DISABLE                  Internal. Only to be used through TI provided API.
+// ENABLE                   Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_PROGMASKDIS                                    0x00040000
 #define NVMNW_CMDCTL_PROGMASKDIS_BITN                                       18
 #define NVMNW_CMDCTL_PROGMASKDIS_M                                  0x00040000
@@ -585,14 +499,10 @@
 
 // Field:    [16] ADDRXLATEOVR
 //
-// Override hardware address translation of address in CMDADDR from a
-// system address to a bank address and bank ID.  Use data written to
-// CMDADDR directly as the bank address.  Use the value written to
-// CMDCTL.BANKSEL directly as the bank ID.  Use the value written to
-// CMDCTL.REGIONSEL directly as the region ID.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// OVERRIDE                 Override
-// NOOVERRIDE               Do not override
+// OVERRIDE                 Internal. Only to be used through TI provided API.
+// NOOVERRIDE               Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_ADDRXLATEOVR                                   0x00010000
 #define NVMNW_CMDCTL_ADDRXLATEOVR_BITN                                      16
 #define NVMNW_CMDCTL_ADDRXLATEOVR_M                                 0x00010000
@@ -602,10 +512,10 @@
 
 // Field:    [15] POSTVEREN
 //
-// Enable verify after program or erase
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
+// ENABLE                   Internal. Only to be used through TI provided API.
+// DISABLE                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_POSTVEREN                                      0x00008000
 #define NVMNW_CMDCTL_POSTVEREN_BITN                                         15
 #define NVMNW_CMDCTL_POSTVEREN_M                                    0x00008000
@@ -615,13 +525,10 @@
 
 // Field:    [14] PREVEREN
 //
-// Enable verify before program or erase.  For program, bits already programmed
-// to the requested value will be masked.  For erase, sectors already erased
-// will be
-// masked.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
+// ENABLE                   Internal. Only to be used through TI provided API.
+// DISABLE                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_PREVEREN                                       0x00004000
 #define NVMNW_CMDCTL_PREVEREN_BITN                                          14
 #define NVMNW_CMDCTL_PREVEREN_M                                     0x00004000
@@ -631,15 +538,12 @@
 
 // Field:  [12:9] REGIONSEL
 //
-// Bank Region
-// A specific region ID can be written to this field to indicate to which
-// region an
-// operation should be applied if CMDCTL.ADDRXLATEOVR is set.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENGR                     Engr Region
-// TRIM                     Trim Region
-// NONMAIN                  Non-Main Region
-// MAIN                     Main Region
+// ENGR                     Internal. Only to be used through TI provided API.
+// TRIM                     Internal. Only to be used through TI provided API.
+// NONMAIN                  Internal. Only to be used through TI provided API.
+// MAIN                     Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_REGIONSEL_W                                             4
 #define NVMNW_CMDCTL_REGIONSEL_M                                    0x00001E00
 #define NVMNW_CMDCTL_REGIONSEL_S                                             9
@@ -650,15 +554,13 @@
 
 // Field:     [4] BANKSEL
 //
-// Bank Select
-// A specific Bank ID can be written to this field to indicate to which bank an
-// operation should be applied if CMDCTL.ADDRXLATEOVR is set.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// BANK4                    Bank 4
-// BANK3                    Bank 3
-// BANK2                    Bank 2
-// BANK1                    Bank 1
-// BANK0                    Bank 0
+// BANK4                    Internal. Only to be used through TI provided API.
+// BANK3                    Internal. Only to be used through TI provided API.
+// BANK2                    Internal. Only to be used through TI provided API.
+// BANK1                    Internal. Only to be used through TI provided API.
+// BANK0                    Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_BANKSEL                                        0x00000010
 #define NVMNW_CMDCTL_BANKSEL_BITN                                            4
 #define NVMNW_CMDCTL_BANKSEL_M                                      0x00000010
@@ -671,21 +573,19 @@
 
 // Field:   [3:0] MODESEL
 //
-// Mode
-// This field is only used for the Mode Change command type.  Otherwise, bank
-// and pump modes are set automaticlly via the NW hardware.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ERASEBNK                 Erase Bank
-// PGMMW                    Program Multiple Word
-// ERASESECT                Erase Sector
-// ERASEVER                 Erase Verify Mode
-// PGMSW                    Program Single Word
-// PGMVER                   Program Verify Mode
-// RDMARG1B                 Read Margin 1B Mode
-// RDMARG0B                 Read Margin 0B Mode
-// RDMARG1                  Read Margin 1 Mode
-// RDMARG0                  Read Margin 0 Mode
-// READ                     Read Mode
+// ERASEBNK                 Internal. Only to be used through TI provided API.
+// PGMMW                    Internal. Only to be used through TI provided API.
+// ERASESECT                Internal. Only to be used through TI provided API.
+// ERASEVER                 Internal. Only to be used through TI provided API.
+// PGMSW                    Internal. Only to be used through TI provided API.
+// PGMVER                   Internal. Only to be used through TI provided API.
+// RDMARG1B                 Internal. Only to be used through TI provided API.
+// RDMARG0B                 Internal. Only to be used through TI provided API.
+// RDMARG1                  Internal. Only to be used through TI provided API.
+// RDMARG0                  Internal. Only to be used through TI provided API.
+// READ                     Internal. Only to be used through TI provided API.
 #define NVMNW_CMDCTL_MODESEL_W                                               4
 #define NVMNW_CMDCTL_MODESEL_M                                      0x0000000F
 #define NVMNW_CMDCTL_MODESEL_S                                               0
@@ -708,10 +608,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// Address value
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDADDR_VAL_W                                                 32
 #define NVMNW_CMDADDR_VAL_M                                         0xFFFFFFFF
 #define NVMNW_CMDADDR_VAL_S                                                  0
@@ -725,11 +625,10 @@
 //*****************************************************************************
 // Field:  [15:0] VAL
 //
-// Command Byte Enable value.
-// A 1-bit per flash word byte value is placed in this register.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDBYTEN_VAL_W                                                16
 #define NVMNW_CMDBYTEN_VAL_M                                        0x0000FFFF
 #define NVMNW_CMDBYTEN_VAL_S                                                 0
@@ -743,10 +642,10 @@
 //*****************************************************************************
 // Field:   [1:0] VAL
 //
-// Data register index
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATAINDEX_VAL_W                                             2
 #define NVMNW_CMDDATAINDEX_VAL_M                                    0x00000003
 #define NVMNW_CMDDATAINDEX_VAL_S                                             0
@@ -760,10 +659,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA0_VAL_W                                                32
 #define NVMNW_CMDDATA0_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA0_VAL_S                                                 0
@@ -777,10 +676,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA1_VAL_W                                                32
 #define NVMNW_CMDDATA1_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA1_VAL_S                                                 0
@@ -794,10 +693,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA2_VAL_W                                                32
 #define NVMNW_CMDDATA2_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA2_VAL_S                                                 0
@@ -811,10 +710,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA3_VAL_W                                                32
 #define NVMNW_CMDDATA3_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA3_VAL_S                                                 0
@@ -828,11 +727,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
-// T
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA4_VAL_W                                                32
 #define NVMNW_CMDDATA4_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA4_VAL_S                                                 0
@@ -846,10 +744,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA5_VAL_W                                                32
 #define NVMNW_CMDDATA5_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA5_VAL_S                                                 0
@@ -863,10 +761,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA6_VAL_W                                                32
 #define NVMNW_CMDDATA6_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA6_VAL_S                                                 0
@@ -880,10 +778,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA7_VAL_W                                                32
 #define NVMNW_CMDDATA7_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA7_VAL_S                                                 0
@@ -897,10 +795,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA8_VAL_W                                                32
 #define NVMNW_CMDDATA8_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA8_VAL_S                                                 0
@@ -914,10 +812,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA9_VAL_W                                                32
 #define NVMNW_CMDDATA9_VAL_M                                        0xFFFFFFFF
 #define NVMNW_CMDDATA9_VAL_S                                                 0
@@ -931,10 +829,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA10_VAL_W                                               32
 #define NVMNW_CMDDATA10_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA10_VAL_S                                                0
@@ -948,10 +846,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA11_VAL_W                                               32
 #define NVMNW_CMDDATA11_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA11_VAL_S                                                0
@@ -965,10 +863,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA12_VAL_W                                               32
 #define NVMNW_CMDDATA12_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA12_VAL_S                                                0
@@ -982,10 +880,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA13_VAL_W                                               32
 #define NVMNW_CMDDATA13_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA13_VAL_S                                                0
@@ -999,10 +897,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA14_VAL_W                                               32
 #define NVMNW_CMDDATA14_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA14_VAL_S                                                0
@@ -1016,10 +914,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// A 32-bit data value is placed in this field.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDDATA15_VAL_W                                               32
 #define NVMNW_CMDDATA15_VAL_M                                       0xFFFFFFFF
 #define NVMNW_CMDDATA15_VAL_S                                                0
@@ -1033,20 +931,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// Each bit protects 1 sector.
-//
-// bit [0]:When 1, sector 0 of the flash memory will be protected from program
-// and erase.
-// bit [1]:When 1, sector 1 of the flash memory will be protected from program
-// and erase.
-// :
-// :
-// bit [31]:When 1, sector 31 of the flash memory will be protected from
-// program
-// and erase.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDWEPROTA_VAL_W                                              32
 #define NVMNW_CMDWEPROTA_VAL_M                                      0xFFFFFFFF
 #define NVMNW_CMDWEPROTA_VAL_S                                               0
@@ -1060,13 +948,10 @@
 //*****************************************************************************
 // Field:  [31:0] VAL
 //
-// Each bit protects a group of 8 sectors.  When a bit is 1, the associated 8
-// sectors
-// in the flash will be protected from program and erase.  A maximum of 256
-// sectors can be protected with this register.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDWEPROTB_VAL_W                                              32
 #define NVMNW_CMDWEPROTB_VAL_M                                      0xFFFFFFFF
 #define NVMNW_CMDWEPROTB_VAL_S                                               0
@@ -1080,21 +965,10 @@
 //*****************************************************************************
 // Field:     [0] VAL
 //
-// Each bit protects 1 sector.
-//
-// bit [0]:When 1, sector 0 of the non-main region will be protected from
-// program
-// and erase.
-// bit [1]:When 1, sector 1 of the non-main region will be protected from
-// program
-// and erase.
-// :
-// :
-// bit [31]:When 1, sector 31 of the non-main will be protected from program
-// and erase.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDWEPROTNM_VAL                                       0x00000001
 #define NVMNW_CMDWEPROTNM_VAL_BITN                                           0
 #define NVMNW_CMDWEPROTNM_VAL_M                                     0x00000001
@@ -1109,19 +983,10 @@
 //*****************************************************************************
 // Field:     [0] VAL
 //
-// Each bit protects 1 sector.
-//
-// bit [0]:When 1, sector 0 of the engr region will be protected from program
-// and erase.
-// bit [1]:When 1, sector 1 of the engr region will be protected from program
-// and erase.
-// :
-// :
-// bit [31]:When 1, sector 31 of the engr region will be protected from program
-// and erase.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDWEPROTTR_VAL                                       0x00000001
 #define NVMNW_CMDWEPROTTR_VAL_BITN                                           0
 #define NVMNW_CMDWEPROTTR_VAL_M                                     0x00000001
@@ -1136,19 +1001,10 @@
 //*****************************************************************************
 // Field:     [0] VAL
 //
-// Each bit protects 1 sector.
-//
-// bit [0]:When 1, sector 0 of the engr region will be protected from program
-// and erase.
-// bit [1]:When 1, sector 1 of the engr region will be protected from program
-// and erase.
-// :
-// :
-// bit [31]:When 1, sector 31 of the engr region will be protected from program
-// and erase.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of VAL
-// MINIMUM                  Minimum value of VAL
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CMDWEPROTEN_VAL                                       0x00000001
 #define NVMNW_CMDWEPROTEN_VAL_BITN                                           0
 #define NVMNW_CMDWEPROTEN_VAL_M                                     0x00000001
@@ -1163,10 +1019,10 @@
 //*****************************************************************************
 // Field:   [3:0] WAITSTATE
 //
-// Wait State setting for program verify, erase verify and read verify
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CFGCMD_WAITSTATE_W                                             4
 #define NVMNW_CFGCMD_WAITSTATE_M                                    0x0000000F
 #define NVMNW_CFGCMD_WAITSTATE_S                                             0
@@ -1180,17 +1036,10 @@
 //*****************************************************************************
 // Field:  [11:4] MAXPCNTVAL
 //
-// Override maximum pulse counter with this value.
-// If MAXPCNTOVR = 0, then this field is ignored.
-// If MAXPCNTOVR = 1 and MAXERSPCNTOVR = 0, then this value will be used
-// to override the max pulse count for both program and erase.  Full max value
-// will be {4'h0, MAXPCNTVAL} .
-// If MAXPCNTOVR = 1 and MAXERSPCNTOVR = 1, then this value will be used
-// to override the max pulse count for program only.  Full max value will be
-// {4'h0, MAXPCNTVAL}.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_CFGPCNT_MAXPCNTVAL_W                                           8
 #define NVMNW_CFGPCNT_MAXPCNTVAL_M                                  0x00000FF0
 #define NVMNW_CFGPCNT_MAXPCNTVAL_S                                           4
@@ -1199,17 +1048,10 @@
 
 // Field:     [0] MAXPCNTOVR
 //
-// Override hard-wired maximum pulse count.  If MAXERSPCNTOVR
-// is not set, then setting this value alone will override the max pulse count
-// for
-// both program and erase.  If MAXERSPCNTOVR is set, then this bit will only
-// control the max pulse count setting for program.
-// By default, this bit is 0, and a hard-wired max pulse count is used.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// OVERRIDE                 Use value from MAXPCNTVAL field as maximum puse
-//                          count
-// DEFAULT                  Use hard-wired (default) value for maximum pulse
-//                          count
+// OVERRIDE                 Internal. Only to be used through TI provided API.
+// DEFAULT                  Internal. Only to be used through TI provided API.
 #define NVMNW_CFGPCNT_MAXPCNTOVR                                    0x00000001
 #define NVMNW_CFGPCNT_MAXPCNTOVR_BITN                                        0
 #define NVMNW_CFGPCNT_MAXPCNTOVR_M                                  0x00000001
@@ -1224,13 +1066,10 @@
 //*****************************************************************************
 // Field:    [12] FAILMISC
 //
-// Command failed due to error other than write/erase protect violation or
-// verify
-// error.  This is an extra bit in case a new failure mechanism is added which
-// requires a status bit.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILMISC                                      0x00001000
 #define NVMNW_STATCMD_FAILMISC_BITN                                         12
 #define NVMNW_STATCMD_FAILMISC_M                                    0x00001000
@@ -1240,11 +1079,10 @@
 
 // Field:     [8] FAILINVDATA
 //
-// Program command failed because an attempt was made to program a stored
-// 0 value to a 1.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILINVDATA                                   0x00000100
 #define NVMNW_STATCMD_FAILINVDATA_BITN                                       8
 #define NVMNW_STATCMD_FAILINVDATA_M                                 0x00000100
@@ -1254,12 +1092,10 @@
 
 // Field:     [7] FAILMODE
 //
-// Command failed because a bank has been set to a mode other than READ.
-// Program and Erase commands cannot be initiated unless all banks are in READ
-// mode.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILMODE                                      0x00000080
 #define NVMNW_STATCMD_FAILMODE_BITN                                          7
 #define NVMNW_STATCMD_FAILMODE_M                                    0x00000080
@@ -1269,10 +1105,10 @@
 
 // Field:     [6] FAILILLADDR
 //
-// Command failed due to the use of an illegal address
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILILLADDR                                   0x00000040
 #define NVMNW_STATCMD_FAILILLADDR_BITN                                       6
 #define NVMNW_STATCMD_FAILILLADDR_M                                 0x00000040
@@ -1282,10 +1118,10 @@
 
 // Field:     [5] FAILVERIFY
 //
-// Command failed due to verify error
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILVERIFY                                    0x00000020
 #define NVMNW_STATCMD_FAILVERIFY_BITN                                        5
 #define NVMNW_STATCMD_FAILVERIFY_M                                  0x00000020
@@ -1295,10 +1131,10 @@
 
 // Field:     [4] FAILWEPROT
 //
-// Command failed due to Write/Erase Protect Sector Violation
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATFAIL                 Fail
-// STATNOFAIL               No Fail
+// STATFAIL                 Internal. Only to be used through TI provided API.
+// STATNOFAIL               Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_FAILWEPROT                                    0x00000010
 #define NVMNW_STATCMD_FAILWEPROT_BITN                                        4
 #define NVMNW_STATCMD_FAILWEPROT_M                                  0x00000010
@@ -1308,10 +1144,10 @@
 
 // Field:     [2] CMDINPROGRESS
 //
-// Command In Progress
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATINPROGRESS           In Progress
-// STATCOMPLETE             Complete
+// STATINPROGRESS           Internal. Only to be used through TI provided API.
+// STATCOMPLETE             Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_CMDINPROGRESS                                 0x00000004
 #define NVMNW_STATCMD_CMDINPROGRESS_BITN                                     2
 #define NVMNW_STATCMD_CMDINPROGRESS_M                               0x00000004
@@ -1321,10 +1157,10 @@
 
 // Field:     [1] CMDPASS
 //
-// Command Pass - valid when CMD_DONE field is 1
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATPASS                 Pass
-// STATFAIL                 Fail
+// STATPASS                 Internal. Only to be used through TI provided API.
+// STATFAIL                 Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_CMDPASS                                       0x00000002
 #define NVMNW_STATCMD_CMDPASS_BITN                                           1
 #define NVMNW_STATCMD_CMDPASS_M                                     0x00000002
@@ -1334,10 +1170,10 @@
 
 // Field:     [0] CMDDONE
 //
-// Command Done
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// STATDONE                 Done
-// STATNOTDONE              Not Done
+// STATDONE                 Internal. Only to be used through TI provided API.
+// STATNOTDONE              Internal. Only to be used through TI provided API.
 #define NVMNW_STATCMD_CMDDONE                                       0x00000001
 #define NVMNW_STATCMD_CMDDONE_BITN                                           0
 #define NVMNW_STATCMD_CMDDONE_M                                     0x00000001
@@ -1352,16 +1188,13 @@
 //*****************************************************************************
 // Field: [25:21] BANKID
 //
-// Current Bank ID
-// A bank indicator is stored in this register which represents the current
-// bank on
-// which the state  machine is operating.  There is 1 bit per bank.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// BANK4                    Bank 4
-// BANK3                    Bank 3
-// BANK2                    Bank 2
-// BANK1                    Bank 1
-// BANK0                    Bank 0
+// BANK4                    Internal. Only to be used through TI provided API.
+// BANK3                    Internal. Only to be used through TI provided API.
+// BANK2                    Internal. Only to be used through TI provided API.
+// BANK1                    Internal. Only to be used through TI provided API.
+// BANK0                    Internal. Only to be used through TI provided API.
 #define NVMNW_STATADDR_BANKID_W                                              5
 #define NVMNW_STATADDR_BANKID_M                                     0x03E00000
 #define NVMNW_STATADDR_BANKID_S                                             21
@@ -1373,15 +1206,12 @@
 
 // Field: [20:16] REGIONID
 //
-// Current Region ID
-// A region indicator is stored in this register which represents the current
-// flash
-// region on which the state  machine is operating.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ENGR                     Engr Region
-// TRIM                     Trim Region
-// NONMAIN                  Non-Main Region
-// MAIN                     Main Region
+// ENGR                     Internal. Only to be used through TI provided API.
+// TRIM                     Internal. Only to be used through TI provided API.
+// NONMAIN                  Internal. Only to be used through TI provided API.
+// MAIN                     Internal. Only to be used through TI provided API.
 #define NVMNW_STATADDR_REGIONID_W                                            5
 #define NVMNW_STATADDR_REGIONID_M                                   0x001F0000
 #define NVMNW_STATADDR_REGIONID_S                                           16
@@ -1392,11 +1222,10 @@
 
 // Field:  [15:0] BANKADDR
 //
-// Current Bank Address
-// A bank offset address is stored in this register.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_STATADDR_BANKADDR_W                                           16
 #define NVMNW_STATADDR_BANKADDR_M                                   0x0000FFFF
 #define NVMNW_STATADDR_BANKADDR_S                                            0
@@ -1410,10 +1239,10 @@
 //*****************************************************************************
 // Field:  [11:0] PULSECNT
 //
-// Current Pulse Counter Value
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_STATPCNT_PULSECNT_W                                           12
 #define NVMNW_STATPCNT_PULSECNT_M                                   0x00000FFF
 #define NVMNW_STATPCNT_PULSECNT_S                                            0
@@ -1427,13 +1256,10 @@
 //*****************************************************************************
 // Field:    [17] BANK1TRDY
 //
-// Bank 1T Ready.
-// Bank(s) are ready for 1T access.  This is accomplished when the bank and
-// pump
-// have been trimmed.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// TRUE                     Ready
-// FALSE                    Not ready
+// TRUE                     Internal. Only to be used through TI provided API.
+// FALSE                    Internal. Only to be used through TI provided API.
 #define NVMNW_STATMODE_BANK1TRDY                                    0x00020000
 #define NVMNW_STATMODE_BANK1TRDY_BITN                                       17
 #define NVMNW_STATMODE_BANK1TRDY_M                                  0x00020000
@@ -1443,12 +1269,10 @@
 
 // Field:    [16] BANK2TRDY
 //
-// Bank 2T Ready.
-// Bank(s) are ready for 2T access.  This is accomplished when the pump has
-// fully driven power rails to the bank(s).
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// TRUE                     Ready
-// FALSE                    Not ready
+// TRUE                     Internal. Only to be used through TI provided API.
+// FALSE                    Internal. Only to be used through TI provided API.
 #define NVMNW_STATMODE_BANK2TRDY                                    0x00010000
 #define NVMNW_STATMODE_BANK2TRDY_BITN                                       16
 #define NVMNW_STATMODE_BANK2TRDY_M                                  0x00010000
@@ -1458,19 +1282,19 @@
 
 // Field:  [11:8] BANKMODE
 //
-// Indicates mode of bank(s) that are not in READ mode
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// ERASEBNK                 Erase Bank
-// PGMMW                    Program Multiple Word
-// ERASESECT                Erase Sector
-// ERASEVER                 Erase Verify Mode
-// PGMSW                    Program Single Word
-// PGMVER                   Program Verify Mode
-// RDMARG1B                 Read Margin 1B Mode
-// RDMARG0B                 Read Margin 0B Mode
-// RDMARG1                  Read Margin 1 Mode
-// RDMARG0                  Read Margin 0 Mode
-// READ                     Read Mode
+// ERASEBNK                 Internal. Only to be used through TI provided API.
+// PGMMW                    Internal. Only to be used through TI provided API.
+// ERASESECT                Internal. Only to be used through TI provided API.
+// ERASEVER                 Internal. Only to be used through TI provided API.
+// PGMSW                    Internal. Only to be used through TI provided API.
+// PGMVER                   Internal. Only to be used through TI provided API.
+// RDMARG1B                 Internal. Only to be used through TI provided API.
+// RDMARG0B                 Internal. Only to be used through TI provided API.
+// RDMARG1                  Internal. Only to be used through TI provided API.
+// RDMARG0                  Internal. Only to be used through TI provided API.
+// READ                     Internal. Only to be used through TI provided API.
 #define NVMNW_STATMODE_BANKMODE_W                                            4
 #define NVMNW_STATMODE_BANKMODE_M                                   0x00000F00
 #define NVMNW_STATMODE_BANKMODE_S                                            8
@@ -1488,14 +1312,13 @@
 
 // Field:     [0] BANKNOTINRD
 //
-// Bank not in read mode.
-// Indicates which banks are not in READ mode.  There is 1 bit per bank.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// BANK4                    Bank 4
-// BANK3                    Bank 3
-// BANK2                    Bank 2
-// BANK1                    Bank 1
-// BANK0                    Bank 0
+// BANK4                    Internal. Only to be used through TI provided API.
+// BANK3                    Internal. Only to be used through TI provided API.
+// BANK2                    Internal. Only to be used through TI provided API.
+// BANK1                    Internal. Only to be used through TI provided API.
+// BANK0                    Internal. Only to be used through TI provided API.
 #define NVMNW_STATMODE_BANKNOTINRD                                  0x00000001
 #define NVMNW_STATMODE_BANKNOTINRD_BITN                                      0
 #define NVMNW_STATMODE_BANKNOTINRD_M                                0x00000001
@@ -1513,12 +1336,10 @@
 //*****************************************************************************
 // Field: [18:16] NUMBANKS
 //
-// Number of banks instantiated
-// Minimum:1
-// Maximum:5
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO0_NUMBANKS_W                                            3
 #define NVMNW_GBLINFO0_NUMBANKS_M                                   0x00070000
 #define NVMNW_GBLINFO0_NUMBANKS_S                                           16
@@ -1527,10 +1348,10 @@
 
 // Field:  [15:0] SECTORSIZE
 //
-// Sector size in bytes
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// TWOKB                    Sector size is TWOKB
-// ONEKB                    Sector size is ONEKB
+// TWOKB                    Internal. Only to be used through TI provided API.
+// ONEKB                    Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO0_SECTORSIZE_W                                         16
 #define NVMNW_GBLINFO0_SECTORSIZE_M                                 0x0000FFFF
 #define NVMNW_GBLINFO0_SECTORSIZE_S                                          0
@@ -1544,12 +1365,11 @@
 //*****************************************************************************
 // Field: [18:16] REDWIDTH
 //
-// Redundant data width in bits
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// W4BIT                    Redundant data width is 4 bits
-// W2BIT                    Redundant data width is 2 bits
-// W0BIT                    Redundant data width is 0.  Redundancy/Repair not
-//                          present.
+// W4BIT                    Internal. Only to be used through TI provided API.
+// W2BIT                    Internal. Only to be used through TI provided API.
+// W0BIT                    Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO1_REDWIDTH_W                                            3
 #define NVMNW_GBLINFO1_REDWIDTH_M                                   0x00070000
 #define NVMNW_GBLINFO1_REDWIDTH_S                                           16
@@ -1559,11 +1379,11 @@
 
 // Field:  [12:8] ECCWIDTH
 //
-// ECC data width in bits
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// W16BIT                   ECC data width is 16 bits
-// W8BIT                    ECC data width is 8 bits
-// W0BIT                    ECC data width is 0.  ECC not used.
+// W16BIT                   Internal. Only to be used through TI provided API.
+// W8BIT                    Internal. Only to be used through TI provided API.
+// W0BIT                    Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO1_ECCWIDTH_W                                            5
 #define NVMNW_GBLINFO1_ECCWIDTH_M                                   0x00001F00
 #define NVMNW_GBLINFO1_ECCWIDTH_S                                            8
@@ -1573,10 +1393,10 @@
 
 // Field:   [7:0] DATAWIDTH
 //
-// Data width in bits
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// W128BIT                  Data width is 128 bits
-// W64BIT                   Data width is 64 bits
+// W128BIT                  Internal. Only to be used through TI provided API.
+// W64BIT                   Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO1_DATAWIDTH_W                                           8
 #define NVMNW_GBLINFO1_DATAWIDTH_M                                  0x000000FF
 #define NVMNW_GBLINFO1_DATAWIDTH_S                                           0
@@ -1590,10 +1410,10 @@
 //*****************************************************************************
 // Field:   [3:0] DATAREGISTERS
 //
-// Number of data registers present.
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXIMUM                  Maximum value of DATAREGISTERS
-// MINIMUM                  Minimum value of DATAREGISTERS
+// MAXIMUM                  Internal. Only to be used through TI provided API.
+// MINIMUM                  Internal. Only to be used through TI provided API.
 #define NVMNW_GBLINFO2_DATAREGISTERS_W                                       4
 #define NVMNW_GBLINFO2_DATAREGISTERS_M                              0x0000000F
 #define NVMNW_GBLINFO2_DATAREGISTERS_S                                       0
@@ -1607,12 +1427,10 @@
 //*****************************************************************************
 // Field:  [11:0] MAINSIZE
 //
-// Main region size in sectors
-// Minimum:0x8 (8)
-// Maximum:0x200 (512)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of MAINSIZE
-// MINSECTORS               Minimum value of MAINSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK0INFO0_MAINSIZE_W                                         12
 #define NVMNW_BANK0INFO0_MAINSIZE_M                                 0x00000FFF
 #define NVMNW_BANK0INFO0_MAINSIZE_S                                          0
@@ -1626,12 +1444,10 @@
 //*****************************************************************************
 // Field: [23:16] ENGRSIZE
 //
-// Engr region size in sectors
-// Minimum:0x0 (0)
-// Maximum:0x10 (16)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of ENGRSIZE
-// MINSECTORS               Minimum value of ENGRSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK0INFO1_ENGRSIZE_W                                          8
 #define NVMNW_BANK0INFO1_ENGRSIZE_M                                 0x00FF0000
 #define NVMNW_BANK0INFO1_ENGRSIZE_S                                         16
@@ -1640,12 +1456,10 @@
 
 // Field:  [15:8] TRIMSIZE
 //
-// Trim region size in sectors
-// Minimum:0x0 (0)
-// Maximum:0x10 (16)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of TRIMSIZE
-// MINSECTORS               Minimum value of TRIMSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK0INFO1_TRIMSIZE_W                                          8
 #define NVMNW_BANK0INFO1_TRIMSIZE_M                                 0x0000FF00
 #define NVMNW_BANK0INFO1_TRIMSIZE_S                                          8
@@ -1654,12 +1468,10 @@
 
 // Field:   [7:0] NONMAINSIZE
 //
-// Non-main region size in sectors
-// Minimum:0x0 (0)
-// Maximum:0x10 (16)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of NONMAINSIZE
-// MINSECTORS               Minimum value of NONMAINSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK0INFO1_NONMAINSIZE_W                                       8
 #define NVMNW_BANK0INFO1_NONMAINSIZE_M                              0x000000FF
 #define NVMNW_BANK0INFO1_NONMAINSIZE_S                                       0
@@ -1673,12 +1485,10 @@
 //*****************************************************************************
 // Field:  [11:0] MAINSIZE
 //
-// Main region size in sectors
-// Minimum:0x8 (8)
-// Maximum:0x200 (512)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of MAINSIZE
-// MINSECTORS               Minimum value of MAINSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK1INFO0_MAINSIZE_W                                         12
 #define NVMNW_BANK1INFO0_MAINSIZE_M                                 0x00000FFF
 #define NVMNW_BANK1INFO0_MAINSIZE_S                                          0
@@ -1692,12 +1502,10 @@
 //*****************************************************************************
 // Field: [23:16] ENGRSIZE
 //
-// Engr region size in sectors
-// Minimum:0x0 (0)
-// Maximum:0x10 (16)
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of ENGRSIZE
-// MINSECTORS               Minimum value of ENGRSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK1INFO1_ENGRSIZE_W                                          8
 #define NVMNW_BANK1INFO1_ENGRSIZE_M                                 0x00FF0000
 #define NVMNW_BANK1INFO1_ENGRSIZE_S                                         16
@@ -1706,10 +1514,10 @@
 
 // Field:  [15:8] TRIMSIZE
 //
-// Trim region size in sectors
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of TRIMSIZE
-// MINSECTORS               Minimum value of TRIMSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK1INFO1_TRIMSIZE_W                                          8
 #define NVMNW_BANK1INFO1_TRIMSIZE_M                                 0x0000FF00
 #define NVMNW_BANK1INFO1_TRIMSIZE_S                                          8
@@ -1718,659 +1526,15 @@
 
 // Field:   [7:0] NONMAINSIZE
 //
-// Non-main region size in sectors
+// Internal. Only to be used through TI provided API.
 // ENUMs:
-// MAXSECTORS               Maximum value of NONMAINSIZE
-// MINSECTORS               Minimum value of NONMAINSIZE
+// MAXSECTORS               Internal. Only to be used through TI provided API.
+// MINSECTORS               Internal. Only to be used through TI provided API.
 #define NVMNW_BANK1INFO1_NONMAINSIZE_W                                       8
 #define NVMNW_BANK1INFO1_NONMAINSIZE_M                              0x000000FF
 #define NVMNW_BANK1INFO1_NONMAINSIZE_S                                       0
 #define NVMNW_BANK1INFO1_NONMAINSIZE_MAXSECTORS                     0x00000020
 #define NVMNW_BANK1INFO1_NONMAINSIZE_MINSECTORS                     0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTEN
-//
-//*****************************************************************************
-// Field:     [0] ENABLE
-//
-// Enable Test Features
-// ENUMs:
-// ENABLED                  Command
-// DISABLED                 Command
-#define NVMNW_DFTEN_ENABLE                                          0x00000001
-#define NVMNW_DFTEN_ENABLE_BITN                                              0
-#define NVMNW_DFTEN_ENABLE_M                                        0x00000001
-#define NVMNW_DFTEN_ENABLE_S                                                 0
-#define NVMNW_DFTEN_ENABLE_ENABLED                                  0x00000001
-#define NVMNW_DFTEN_ENABLE_DISABLED                                 0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTCMDCTL
-//
-//*****************************************************************************
-// Field: [31:28] DTBMUXSEL
-//
-// DTB Mux Select
-// This field will form the select for the primary DTB mux.  This mux selects
-// up to
-// 16 sets of 32-bit fields of internal signals to be present to the 32-bit DTB
-// output.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_DFTCMDCTL_DTBMUXSEL_W                                          4
-#define NVMNW_DFTCMDCTL_DTBMUXSEL_M                                 0xF0000000
-#define NVMNW_DFTCMDCTL_DTBMUXSEL_S                                         28
-#define NVMNW_DFTCMDCTL_DTBMUXSEL_MAXIMUM                           0xF0000000
-#define NVMNW_DFTCMDCTL_DTBMUXSEL_MINIMUM                           0x00000000
-
-// Field:    [20] STOPVERONFAIL
-//
-// Stop read verify on fail.  If this bit is set, read verify will halt when
-// the first verify
-// fail is detected.  If command is program or erase, another program or erase
-// pulse will be executed.  If command is read verify, comand will terminate.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL                               0x00100000
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL_BITN                                  20
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL_M                             0x00100000
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL_S                                     20
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL_ENABLE                        0x00100000
-#define NVMNW_DFTCMDCTL_STOPVERONFAIL_DISABLE                       0x00000000
-
-// Field:    [18] ODDROWINVDATA
-//
-// Invert data at odd row addresses for program or verify.  The LSB of the row
-// address is bit [4] of the bank address.  This bit only applies when pattern
-// data
-// is used; i.e. the DATAPATEN bit is set.  It will have no effect if CMDDATA
-// is used.
-// ENUMs:
-// INVERT                   Use inverted data
-// TRUE                     Use true data
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA                               0x00040000
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA_BITN                                  18
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA_M                             0x00040000
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA_S                                     18
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA_INVERT                        0x00040000
-#define NVMNW_DFTCMDCTL_ODDROWINVDATA_TRUE                          0x00000000
-
-// Field:    [17] ODDWORDINVDATA
-//
-// Invert data at odd bank addresses for program or verify. This bit only
-// applies
-// when pattern data is used; i.e. the DATAPATEN bit is set.  It will have no
-// effect
-// if CMDDATA is used.
-// ENUMs:
-// INVERT                   Use inverted data
-// TRUE                     Use true data
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA                              0x00020000
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA_BITN                                 17
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA_M                            0x00020000
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA_S                                    17
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA_INVERT                       0x00020000
-#define NVMNW_DFTCMDCTL_ODDWORDINVDATA_TRUE                         0x00000000
-
-// Field:    [16] ALWAYSINVDATA
-//
-// Invert data always for program or verify.  This bit only applies when
-// pattern data
-// is used; i.e. the DATAPATEN bit is set.  It will have no effect if CMDDATA
-// is used.
-// ENUMs:
-// INVERT                   Use inverted data
-// TRUE                     Use true data
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA                               0x00010000
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA_BITN                                  16
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA_M                             0x00010000
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA_S                                     16
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA_INVERT                        0x00010000
-#define NVMNW_DFTCMDCTL_ALWAYSINVDATA_TRUE                          0x00000000
-
-// Field: [15:13] DATAPATSEL
-//
-// Select data pattern.  Valid when DATAPATEN bit is set to 1.  Overrides
-// CMDDATA
-// registers for program or verify.
-// ENUMs:
-// LOGCHKBRD                Set to logical checkerboard (0x01010101...)
-// ALL1                     Set to all 1
-// ALL0                     Set to all 0
-#define NVMNW_DFTCMDCTL_DATAPATSEL_W                                         3
-#define NVMNW_DFTCMDCTL_DATAPATSEL_M                                0x0000E000
-#define NVMNW_DFTCMDCTL_DATAPATSEL_S                                        13
-#define NVMNW_DFTCMDCTL_DATAPATSEL_LOGCHKBRD                        0x00004000
-#define NVMNW_DFTCMDCTL_DATAPATSEL_ALL1                             0x00002000
-#define NVMNW_DFTCMDCTL_DATAPATSEL_ALL0                             0x00000000
-
-// Field:    [12] DATAPATEN
-//
-// Enable data pattern.  Data pattern select in DATAPATSEL field will override
-// data
-// from CMDDATA registers for use as program or verify data.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTCMDCTL_DATAPATEN                                   0x00001000
-#define NVMNW_DFTCMDCTL_DATAPATEN_BITN                                      12
-#define NVMNW_DFTCMDCTL_DATAPATEN_M                                 0x00001000
-#define NVMNW_DFTCMDCTL_DATAPATEN_S                                         12
-#define NVMNW_DFTCMDCTL_DATAPATEN_ENABLE                            0x00001000
-#define NVMNW_DFTCMDCTL_DATAPATEN_DISABLE                           0x00000000
-
-// Field:     [9] PULSECNTLDDIS
-//
-// Override pulse counter enable.
-// When set, the state machine pulse counter will not be loaded when a
-// command is initiated.
-// ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS                               0x00000200
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS_BITN                                   9
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS_M                             0x00000200
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS_S                                      9
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS_DISABLE                       0x00000200
-#define NVMNW_DFTCMDCTL_PULSECNTLDDIS_ENABLE                        0x00000000
-
-// Field:     [8] ADDRCNTLDDIS
-//
-// Override address counter enable.
-// When set, the state machine address counter will not be loaded when a
-// command is initiated.
-// ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS                                0x00000100
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS_BITN                                    8
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS_M                              0x00000100
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS_S                                       8
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS_DISABLE                        0x00000100
-#define NVMNW_DFTCMDCTL_ADDRCNTLDDIS_ENABLE                         0x00000000
-
-// Field:     [5] REDMATCHFORCE
-//
-// Force redundancy match.  If set to 1, repair configuration encoded in the
-// flash
-// bank trim will be forced for every access.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE                               0x00000020
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE_BITN                                   5
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE_M                             0x00000020
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE_S                                      5
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE_ENABLE                        0x00000020
-#define NVMNW_DFTCMDCTL_REDMATCHFORCE_DISABLE                       0x00000000
-
-// Field:     [4] REDMATCHDIS
-//
-// Disable redundancy matching.  Any repair configuration encoded into the
-// bank trim bits is disabled.
-// ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
-#define NVMNW_DFTCMDCTL_REDMATCHDIS                                 0x00000010
-#define NVMNW_DFTCMDCTL_REDMATCHDIS_BITN                                     4
-#define NVMNW_DFTCMDCTL_REDMATCHDIS_M                               0x00000010
-#define NVMNW_DFTCMDCTL_REDMATCHDIS_S                                        4
-#define NVMNW_DFTCMDCTL_REDMATCHDIS_DISABLE                         0x00000010
-#define NVMNW_DFTCMDCTL_REDMATCHDIS_ENABLE                          0x00000000
-
-// Field:     [2] AMX2TDIS
-//
-// 2T address mux disable control. When set to 1 2T address shifting is
-// disabled.  This bit should only be enabled for reads.  Indeterminate
-// behavior
-// will result if this bit is set during program/erase.  Furthermore, only
-// reads done
-// via a READVERIFY command will be guaranteed to work properly.  Reads via
-// the FBAP port are not guaranteed to operate.
-// ENUMs:
-// DISABLE                  Disable
-// ENABLE                   Enable
-#define NVMNW_DFTCMDCTL_AMX2TDIS                                    0x00000004
-#define NVMNW_DFTCMDCTL_AMX2TDIS_BITN                                        2
-#define NVMNW_DFTCMDCTL_AMX2TDIS_M                                  0x00000004
-#define NVMNW_DFTCMDCTL_AMX2TDIS_S                                           2
-#define NVMNW_DFTCMDCTL_AMX2TDIS_DISABLE                            0x00000004
-#define NVMNW_DFTCMDCTL_AMX2TDIS_ENABLE                             0x00000000
-
-// Field:     [1] FORCE2TEN
-//
-// Force 2T Enable - Force 2T access to regions that are designated as 1T.
-// Regions
-// designated as 2T will still be accessed as 2T.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTCMDCTL_FORCE2TEN                                   0x00000002
-#define NVMNW_DFTCMDCTL_FORCE2TEN_BITN                                       1
-#define NVMNW_DFTCMDCTL_FORCE2TEN_M                                 0x00000002
-#define NVMNW_DFTCMDCTL_FORCE2TEN_S                                          1
-#define NVMNW_DFTCMDCTL_FORCE2TEN_ENABLE                            0x00000002
-#define NVMNW_DFTCMDCTL_FORCE2TEN_DISABLE                           0x00000000
-
-// Field:     [0] FORCE1TEN
-//
-// Force 1T Enable - Force 1T access to regions that are designated as 2T.
-// Regions
-// designated as 1T will still be accessed as 1T.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTCMDCTL_FORCE1TEN                                   0x00000001
-#define NVMNW_DFTCMDCTL_FORCE1TEN_BITN                                       0
-#define NVMNW_DFTCMDCTL_FORCE1TEN_M                                 0x00000001
-#define NVMNW_DFTCMDCTL_FORCE1TEN_S                                          0
-#define NVMNW_DFTCMDCTL_FORCE1TEN_ENABLE                            0x00000001
-#define NVMNW_DFTCMDCTL_FORCE1TEN_DISABLE                           0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTTIMERCTL
-//
-//*****************************************************************************
-// Field: [30:28] TIMERCLOCKOVR
-//
-// Override Timer clock frequency using an ICG-based clock divide mechanism.
-// To divide the timer clock, pulses can be skipped based on settings in this
-// field.
-// By default, this field is 0, which corresponds to no division on the timer
-// clock.
-// ENUMs:
-// DIVIDEBY8                Divide timer clock by 8
-// DIVIDEBY7                Divide timer clock by 7
-// DIVIDEBY6                Divide timer clock by 6
-// DIVIDEBY5                Divide timer clock by 5
-// DIVIDEBY4                Divide timer clock by 4
-// DIVIDEBY3                Divide timer clock by 3
-// DIVIDEBY2                Divide timer clock by 2
-// NODIVIDE                 No divide on timer clock.
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_W                                    3
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_M                           0x70000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_S                                   28
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY8                   0x70000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY7                   0x60000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY6                   0x50000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY5                   0x40000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY4                   0x30000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY3                   0x20000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_DIVIDEBY2                   0x10000000
-#define NVMNW_DFTTIMERCTL_TIMERCLOCKOVR_NODIVIDE                    0x00000000
-
-// Field: [27:12] PEPULSETIMEVAL
-//
-// Program/Erase Pulse Time Value
-// If operation is a program, this value gets loaded into bits [15:0] of the
-// timer
-// when the PEPULSETIMEVALOVR field is set to 1.
-// If operation is an erase, this value gets loaded into bits [19:4] of the
-// timer
-// when the PEPULSETIMEVALOVR field is set to 1.
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEVAL_W                                  16
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEVAL_M                          0x0FFFF000
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEVAL_S                                  12
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEVAL_MAXIMUM                    0x0FFFF000
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEVAL_MINIMUM                    0x00001000
-
-// Field:     [8] PEPULSETIMEOVR
-//
-// Override Program/Erase Pulse Time
-// If set, this will force the program or erase pulse time to be overridden
-// with the
-// value in the PEPULSETIMEVAL field.  If not set, then a hard-coded value will
-// be
-// used for this pulse time.
-// ENUMs:
-// OVERRIDE                 Use value from the PE_PULSE_TIME field for time
-//                          value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR                            0x00000100
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR_BITN                                8
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR_M                          0x00000100
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR_S                                   8
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR_OVERRIDE                   0x00000100
-#define NVMNW_DFTTIMERCTL_PEPULSETIMEOVR_FUNCTIONAL                 0x00000000
-
-// Field:     [7] READMODETIME
-//
-// Read Mode Change Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_READMODETIME                              0x00000080
-#define NVMNW_DFTTIMERCTL_READMODETIME_BITN                                  7
-#define NVMNW_DFTTIMERCTL_READMODETIME_M                            0x00000080
-#define NVMNW_DFTTIMERCTL_READMODETIME_S                                     7
-#define NVMNW_DFTTIMERCTL_READMODETIME_TWOXFUNCTIONAL               0x00000080
-#define NVMNW_DFTTIMERCTL_READMODETIME_FUNCTIONAL                   0x00000000
-
-// Field:     [6] PEVHOLDTIME
-//
-// Program/Erase Verify Hold Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME                               0x00000040
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME_BITN                                   6
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME_M                             0x00000040
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME_S                                      6
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME_TWOXFUNCTIONAL                0x00000040
-#define NVMNW_DFTTIMERCTL_PEVHOLDTIME_FUNCTIONAL                    0x00000000
-
-// Field:     [5] PEVSETUPTIME
-//
-// Program/Erase Verify Setup Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME                              0x00000020
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME_BITN                                  5
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME_M                            0x00000020
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME_S                                     5
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME_TWOXFUNCTIONAL               0x00000020
-#define NVMNW_DFTTIMERCTL_PEVSETUPTIME_FUNCTIONAL                   0x00000000
-
-// Field:     [4] PEVMODETIME
-//
-// Program/Erase Verify Mode Change Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PEVMODETIME                               0x00000010
-#define NVMNW_DFTTIMERCTL_PEVMODETIME_BITN                                   4
-#define NVMNW_DFTTIMERCTL_PEVMODETIME_M                             0x00000010
-#define NVMNW_DFTTIMERCTL_PEVMODETIME_S                                      4
-#define NVMNW_DFTTIMERCTL_PEVMODETIME_TWOXFUNCTIONAL                0x00000010
-#define NVMNW_DFTTIMERCTL_PEVMODETIME_FUNCTIONAL                    0x00000000
-
-// Field:     [3] PEHOLDTIME
-//
-// Program/Erase Hold Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME                                0x00000008
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME_BITN                                    3
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME_M                              0x00000008
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME_S                                       3
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME_TWOXFUNCTIONAL                 0x00000008
-#define NVMNW_DFTTIMERCTL_PEHOLDTIME_FUNCTIONAL                     0x00000000
-
-// Field:     [2] PPVWORDLINETIME
-//
-// Program and Program Verify Wordline Switching Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME                           0x00000004
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME_BITN                               2
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME_M                         0x00000004
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME_S                                  2
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME_TWOXFUNCTIONAL            0x00000004
-#define NVMNW_DFTTIMERCTL_PPVWORDLINETIME_FUNCTIONAL                0x00000000
-
-// Field:     [1] PVHVSETUPTIME
-//
-// Program VHV Setup Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME                             0x00000002
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME_BITN                                 1
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME_M                           0x00000002
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME_S                                    1
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME_TWOXFUNCTIONAL              0x00000002
-#define NVMNW_DFTTIMERCTL_PVHVSETUPTIME_FUNCTIONAL                  0x00000000
-
-// Field:     [0] PESETUPTIME
-//
-// Program/Erase Setup Time
-// ENUMs:
-// TWOXFUNCTIONAL           Use 2x the hard-wired (functional) time value
-// FUNCTIONAL               Use hard-wired (Functional) timer value
-#define NVMNW_DFTTIMERCTL_PESETUPTIME                               0x00000001
-#define NVMNW_DFTTIMERCTL_PESETUPTIME_BITN                                   0
-#define NVMNW_DFTTIMERCTL_PESETUPTIME_M                             0x00000001
-#define NVMNW_DFTTIMERCTL_PESETUPTIME_S                                      0
-#define NVMNW_DFTTIMERCTL_PESETUPTIME_TWOXFUNCTIONAL                0x00000001
-#define NVMNW_DFTTIMERCTL_PESETUPTIME_FUNCTIONAL                    0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTEXECZCTL
-//
-//*****************************************************************************
-// Field:     [1] EXEZ_OVR
-//
-// Override value to be applied to EXECUTEZ
-// ENUMs:
-// ONE                      Set EXECUTEZ to 1
-// ZERO                     Set EXECUTEZ to 0
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR                                  0x00000002
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR_BITN                                      1
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR_M                                0x00000002
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR_S                                         1
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR_ONE                              0x00000002
-#define NVMNW_DFTEXECZCTL_EXEZ_OVR_ZERO                             0x00000000
-
-// Field:     [0] EXEZOVREN
-//
-// Enable override of EXECUTEZ
-// Note that when this bit is set, NoWrapper has control of the bank pins.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTEXECZCTL_EXEZOVREN                                 0x00000001
-#define NVMNW_DFTEXECZCTL_EXEZOVREN_BITN                                     0
-#define NVMNW_DFTEXECZCTL_EXEZOVREN_M                               0x00000001
-#define NVMNW_DFTEXECZCTL_EXEZOVREN_S                                        0
-#define NVMNW_DFTEXECZCTL_EXEZOVREN_ENABLE                          0x00000001
-#define NVMNW_DFTEXECZCTL_EXEZOVREN_DISABLE                         0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTPCLKTESTCTL
-//
-//*****************************************************************************
-// Field:     [0] ENABLE
-//
-// Enable the state machine which sequences measurement of pump clock
-// frequency.
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTPCLKTESTCTL_ENABLE                                 0x00000001
-#define NVMNW_DFTPCLKTESTCTL_ENABLE_BITN                                     0
-#define NVMNW_DFTPCLKTESTCTL_ENABLE_M                               0x00000001
-#define NVMNW_DFTPCLKTESTCTL_ENABLE_S                                        0
-#define NVMNW_DFTPCLKTESTCTL_ENABLE_ENABLE                          0x00000001
-#define NVMNW_DFTPCLKTESTCTL_ENABLE_DISABLE                         0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTPCLKTESTSTAT
-//
-//*****************************************************************************
-// Field:  [15:4] CLOCKCNT
-//
-// Indicates the core clock count captured during the pump clock measurement.
-// ENUMs:
-// MAXIMUM                  Maximum count value
-// MINIMUM                  Minimum count value
-#define NVMNW_DFTPCLKTESTSTAT_CLOCKCNT_W                                    12
-#define NVMNW_DFTPCLKTESTSTAT_CLOCKCNT_M                            0x0000FFF0
-#define NVMNW_DFTPCLKTESTSTAT_CLOCKCNT_S                                     4
-#define NVMNW_DFTPCLKTESTSTAT_CLOCKCNT_MAXIMUM                      0x0000FFF0
-#define NVMNW_DFTPCLKTESTSTAT_CLOCKCNT_MINIMUM                      0x00000000
-
-// Field:     [0] BUSY
-//
-// Indicates that a pump clock measurement is in progress.
-// ENUMs:
-// INPROGRESS               Indicates test in progress
-// COMPLETE                 Indicates test complete
-#define NVMNW_DFTPCLKTESTSTAT_BUSY                                  0x00000001
-#define NVMNW_DFTPCLKTESTSTAT_BUSY_BITN                                      0
-#define NVMNW_DFTPCLKTESTSTAT_BUSY_M                                0x00000001
-#define NVMNW_DFTPCLKTESTSTAT_BUSY_S                                         0
-#define NVMNW_DFTPCLKTESTSTAT_BUSY_INPROGRESS                       0x00000001
-#define NVMNW_DFTPCLKTESTSTAT_BUSY_COMPLETE                         0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED0
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED0_VAL_W                                              4
-#define NVMNW_DFTDATARED0_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED0_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED1
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED1_VAL_W                                              4
-#define NVMNW_DFTDATARED1_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED1_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED2
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED2_VAL_W                                              4
-#define NVMNW_DFTDATARED2_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED2_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTDATARED3
-//
-//*****************************************************************************
-// Field:   [3:0] VAL
-//
-// Data for redundant bits
-#define NVMNW_DFTDATARED3_VAL_W                                              4
-#define NVMNW_DFTDATARED3_VAL_M                                     0x0000000F
-#define NVMNW_DFTDATARED3_VAL_S                                              0
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTPUMPCTL
-//
-//*****************************************************************************
-// Field: [18:16] IREFEVCTL
-//
-// IREFEV control IREFVRD, REFTC, IREFCONST, IREFCCOR blocks in IREFEV
-#define NVMNW_DFTPUMPCTL_IREFEVCTL_W                                         3
-#define NVMNW_DFTPUMPCTL_IREFEVCTL_M                                0x00070000
-#define NVMNW_DFTPUMPCTL_IREFEVCTL_S                                        16
-
-// Field: [15:12] CONFIGPMP
-//
-// Pump configuration control. LP, HP operation
-#define NVMNW_DFTPUMPCTL_CONFIGPMP_W                                         4
-#define NVMNW_DFTPUMPCTL_CONFIGPMP_M                                0x0000F000
-#define NVMNW_DFTPUMPCTL_CONFIGPMP_S                                        12
-
-// Field:     [9] SSEN
-//
-// Dither control for oscillator
-// Enumeration:
-// 0: Disable Dither
-// 1: Enable Dither
-// ENUMs:
-// ENABLE                   Enable
-// DISABLE                  Disable
-#define NVMNW_DFTPUMPCTL_SSEN                                       0x00000200
-#define NVMNW_DFTPUMPCTL_SSEN_BITN                                           9
-#define NVMNW_DFTPUMPCTL_SSEN_M                                     0x00000200
-#define NVMNW_DFTPUMPCTL_SSEN_S                                              9
-#define NVMNW_DFTPUMPCTL_SSEN_ENABLE                                0x00000200
-#define NVMNW_DFTPUMPCTL_SSEN_DISABLE                               0x00000000
-
-// Field:     [8] PUMPCLKEN
-//
-// Allows direct control of the pump oscillator which is used to generate
-// pumpclk.
-// Normally, enable/disable of pumpclk is under NoWrapper state machine
-// control.  This bit allows system to enable the clock independently.
-// ENUMs:
-// ENABLE                   Force pump clock oscillator to be enabled.
-// HWCTL                    Allow pump clock oscillator to be controlled by
-//                          hardware.
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN                                  0x00000100
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN_BITN                                      8
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN_M                                0x00000100
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN_S                                         8
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN_ENABLE                           0x00000100
-#define NVMNW_DFTPUMPCTL_PUMPCLKEN_HWCTL                            0x00000000
-
-// Field:   [6:0] TCR
-//
-// TCR test mode to be applied to the pump
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_DFTPUMPCTL_TCR_W                                               7
-#define NVMNW_DFTPUMPCTL_TCR_M                                      0x0000007F
-#define NVMNW_DFTPUMPCTL_TCR_S                                               0
-#define NVMNW_DFTPUMPCTL_TCR_MAXIMUM                                0x0000007F
-#define NVMNW_DFTPUMPCTL_TCR_MINIMUM                                0x00000000
-
-//*****************************************************************************
-//
-// Register: NVMNW_O_DFTBANKCTL
-//
-//*****************************************************************************
-// Field:     [8] TEZ
-//
-// When set, TEZ is asserted to the flash banks.  Which banks get the asserted
-// signal is determined by the BANKSELECT field in CMDCTL.
-// 0x0 Do no assert TEZ
-// 0x1 Assert TEZ
-// ENUMs:
-// NEGATE                   Do not assert TEZ
-// ASSERT                   Assert TEZ
-#define NVMNW_DFTBANKCTL_TEZ                                        0x00000100
-#define NVMNW_DFTBANKCTL_TEZ_BITN                                            8
-#define NVMNW_DFTBANKCTL_TEZ_M                                      0x00000100
-#define NVMNW_DFTBANKCTL_TEZ_S                                               8
-#define NVMNW_DFTBANKCTL_TEZ_NEGATE                                 0x00000100
-#define NVMNW_DFTBANKCTL_TEZ_ASSERT                                 0x00000000
-
-// Field:   [6:0] TCR
-//
-// TCR test mode to be applied to the bank
-// ENUMs:
-// MAXIMUM                  Maximum value
-// MINIMUM                  Minimum value
-#define NVMNW_DFTBANKCTL_TCR_W                                               7
-#define NVMNW_DFTBANKCTL_TCR_M                                      0x0000007F
-#define NVMNW_DFTBANKCTL_TCR_S                                               0
-#define NVMNW_DFTBANKCTL_TCR_MAXIMUM                                0x0000007F
-#define NVMNW_DFTBANKCTL_TCR_MINIMUM                                0x00000000
 
 
 #endif // __NVMNW__

@@ -38,12 +38,14 @@
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26X2.h>
+#include <ti/drivers/power/PowerCC26X2_helpers.h>
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/utils/List.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_memmap_common.h)
 #include DeviceFamily_constructPath(inc/hw_ints.h)
 #include DeviceFamily_constructPath(inc/hw_types.h)
 #include DeviceFamily_constructPath(inc/hw_rfc_rat.h)
@@ -826,7 +828,7 @@ static bool RF_ratIsRunning(void)
     bool status = false;
 
     /* If the RF core power domain is ON, read the clock of the RAT. */
-    if (HWREG(PRCM_BASE + PRCM_O_PDSTAT0) & PRCM_PDSTAT0_RFC_ON)
+    if (HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT0) & PRCM_PDSTAT0_RFC_ON)
     {
         status = (bool)(HWREG(RFC_PWR_BASE + RFC_PWR_O_PWMCLKEN) & RFC_PWR_PWMCLKEN_RAT_M);
     }
@@ -2851,7 +2853,7 @@ static void RF_setInactivityTimeout(void)
     uint8_t tmp = RF_RADIOFREECB_PREEMPT_FLAG | RF_RADIOFREECB_CMDREJECT_FLAG;
 
     /* If the radio was yielded, add the flag */
-    if (RF_currClient->state.bYielded)
+    if (RF_currClient && RF_currClient->state.bYielded)
     {
         tmp |= RF_RADIOFREECB_REQACCESS_FLAG;
     }
@@ -3101,7 +3103,7 @@ static void RF_fsmPowerUpState(RF_Object *pObj, RF_FsmEvent e)
         }
 
         /* Set the RF mode in the PRCM register (RF_open already verified that it is valid) */
-        HWREG(PRCM_BASE + PRCM_O_RFCMODESEL) = RF_currClient->clientConfig.pRfMode->rfMode;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCMODESEL) = RF_currClient->clientConfig.pRfMode->rfMode;
 
         /* Notiy the power driver that Standby is not allowed and RF core need to be powered */
         Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
@@ -3232,7 +3234,7 @@ static void RF_fsmSetupState(RF_Object *pObj, RF_FsmEvent e)
             /* Invoke the XOSC_HF switching */
             PowerCC26XX_switchXOSC_HF();
         }
-        else if (OSCClockSourceGet(OSC_SRC_CLK_HF) != OSC_XOSC_HF)
+        else if (PowerCC26X2_oscClockSourceGet(OSC_SRC_CLK_HF) != OSC_XOSC_HF)
         {
             /* If the XOSC_HF is not ready yet, only execute the first hal of the chain*/
             tmp->condition.rule = COND_NEVER;
@@ -3261,7 +3263,7 @@ static void RF_fsmXOSCState(RF_Object *pObj, RF_FsmEvent e)
     if ((e & RF_FsmEventPowerStep) || (e & RF_FsmEventWakeup))
     {
         /* If XOSC_HF is now ready */
-        if (OSCClockSourceGet(OSC_SRC_CLK_HF) == OSC_XOSC_HF)
+        if (PowerCC26X2_oscClockSourceGet(OSC_SRC_CLK_HF) == OSC_XOSC_HF)
         {
             /* Next state: RF_fsmActiveState */
             RF_core.fxn = RF_fsmActiveState;
@@ -3330,7 +3332,7 @@ static void RF_fsmActiveState(RF_Object *pObj, RF_FsmEvent e)
     else if (e & RF_FsmEventPowerStep)
     {
         /* RF core boot process is now finished */
-        HWREG(PRCM_BASE + PRCM_O_RFCBITS) |= RF_BOOT1;
+        HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCBITS) |= RF_BOOT1;
 
         /* Release the constraint on the FLASH in IDLE */
         if (bDisableFlashInIdleConstraint)
@@ -3345,7 +3347,7 @@ static void RF_fsmActiveState(RF_Object *pObj, RF_FsmEvent e)
         /* Init last LF clock source to default boot source */
         static uint32_t lfClockSourceLast = OSC_RCOSC_HF;
 
-        uint32_t lfClockSource = OSCClockSourceGet(OSC_SRC_CLK_LF);
+        uint32_t lfClockSource = PowerCC26X2_oscClockSourceGet(OSC_SRC_CLK_LF);
 
         /* Update power up duration if the LF clock is derived from the same source as the last check.
             Reset the calculation if the LF clock source has changed */
@@ -3708,11 +3710,18 @@ static void RF_init(void)
     /* Power init */
     Power_init();
 
-    /* Enable output RTC clock for Radio Timer Synchronization */
+#if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT != DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    /* Enable output RTC clock for Radio Timer Synchronization
+     *
+     * This is done by setup.c which executes on the secure side for
+     * CC13X4_CC26X3_CC26X4 devices. For all other devices it is not done by
+     * setup and needs to be done by the RF driver.
+     */
     HWREG(AON_RTC_BASE + AON_RTC_O_CTL) |= AON_RTC_CTL_RTC_UPD_EN_M;
+#endif
 
     /* Set the automatic bus request */
-    HWREG(PRCM_BASE + PRCM_O_RFCBITS) = RF_BOOT0;
+    HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCBITS) = RF_BOOT0;
 
     /* Initialize SWI used by the RF driver. */
     SwiP_Params_init(&params.sp);
@@ -4488,7 +4497,7 @@ RF_Handle RF_open(RF_Object *pObj, RF_Mode* pRfMode, RF_RadioSetup* pRadioSetup,
     DebugP_assert(pObj != NULL);
 
     /* Read available RF modes from the PRCM register */
-    uint32_t availableRfModes = HWREG(PRCM_BASE + PRCM_O_RFCMODEHWOPT);
+    uint32_t availableRfModes = HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_RFCMODEHWOPT);
 
     /* Check for illegal PHY mode in CC2672 device */
     #if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2)

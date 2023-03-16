@@ -353,31 +353,22 @@ if (system.modules["/ti/utils/TrustZone"]) {
     */
     BIOS.psaEnabled = true;
 
-    /* ================ Hwi configuration ================ */
-    /*
-    * Both these values must match the SPE expectations for the vector table. The
-    * base of RAM is reserved for the secure image. These values do not affect
-    * TICLANG or GCC, as they place vector tables using the linker file.
-    */
-    Hwi.vectorTableAddress = bigInt(0x2000C000);
-    Hwi.resetVectorAddress = bigInt(0x2000C000);
-
     /* ================ Boot configuration ================ */
     const Boot = scripting.addModule("/ti/sysbios/family/arm/cc26xx/Boot");
     /*
     * Disable the execution of SetupTrimDevice(), which is already called by the
-    * SPE before the application boots and requires access to secure resources.
+    * TF-M before the application boots and requires access to secure resources.
     */
     Boot.trimDevice = false;
 
     /*
     * Enable the secure callback module
     */
-    const SecureCallback = scripting.addModule("/ti/drivers/spe/SecureCallback");
+    const SecureCallback = scripting.addModule("/ti/drivers/tfm/SecureCallback");
 
     /* Set Secure image reset vector table address */
     const CCFG = scripting.addModule("/ti/devices/CCFG");
 
     CCFG.setFlashVectorTable = true;
-    CCFG.addressFlashVectorTable = 0x00006900;
+    CCFG.addressFlashVectorTable = 0x0000D100;
 }

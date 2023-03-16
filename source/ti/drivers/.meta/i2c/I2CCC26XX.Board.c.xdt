@@ -81,10 +81,13 @@ const I2CCC26XX_HWAttrsV1 i2cCC26xxHWAttrs[`countDef`] = {
     % let index = peripheral.name.slice(peripheral.name.length - 1);
     %
     % let mux_name;
+    % let int_name;
     % if (index == 0) {
     %    mux_name = "IOC_PORT_MCU_I2C";
+    %    int_name = "INT_I2C_IRQ";
     % } else {
     %    mux_name = "IOC_PORT_MCU_I2C" + index;
+    %    int_name = "INT_I2C" + index + "_IRQ";
     % }
     %
     /* `inst.$name` */
@@ -96,7 +99,7 @@ const I2CCC26XX_HWAttrsV1 i2cCC26xxHWAttrs[`countDef`] = {
     {
         .baseAddr    = `hwName`_BASE,
         .powerMngrId = PowerCC26XX_PERIPH_`hwName`,
-        .intNum      = INT_I2C_IRQ,
+        .intNum      = `int_name`,
         .intPriority = `Common.intPriority2Hex(inst.interruptPriority)`,
         .swiPriority = `Common.swiPriority2Int(inst.softwareInterruptPriority)`,
         .sclPin      = `inst.sclPinInstance.$name`,

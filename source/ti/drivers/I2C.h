@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,11 +36,11 @@
  *  @anchor ti_drivers_I2C_Overview
  *  # Overview
  *
- *  The I2C driver is designed to operate as an I2C master and will not
- *  function as an I2C slave. Multi-master arbitration is not supported;
- *  therefore, this driver assumes it is the only I2C master on the bus.
+ *  The I2C driver is designed to operate as an I2C controller and will not
+ *  function as an I2C target. Multi-controller arbitration is not supported;
+ *  therefore, this driver assumes it is the only I2C controller on the bus.
  *  This I2C driver's API set provides the ability to transmit and receive
- *  data over an I2C bus between the I2C master and I2C slave(s). The
+ *  data over an I2C bus between the I2C controller and I2C target(s). The
  *  application is responsible for manipulating and interpreting the data.
  *
  *
@@ -63,7 +63,7 @@
  *  // Define name for an index of an I2C bus
  *  #define SENSORS 0
  *
- *  // Define the slave address of device on the SENSORS bus
+ *  // Define the target address of device on the SENSORS bus
  *  #define OPT_ADDR 0x47
  *
  *  // One-time init of I2C driver
@@ -77,17 +77,17 @@
  *  // Open I2C bus for usage
  *  I2C_Handle i2cHandle = I2C_open(SENSORS, &params);
  *
- *  // Initialize slave address of transaction
+ *  // Initialize target address of transaction
  *  I2C_Transaction transaction = {0};
- *  transaction.slaveAddress = OPT_ADDR;
+ *  transaction.targetAddress = OPT_ADDR;
  *
- *  // Read from I2C slave device
+ *  // Read from I2C target device
  *  transaction.readBuf = data;
  *  transaction.readCount = sizeof(data);
  *  transaction.writeCount = 0;
  *  I2C_transfer(i2cHandle, &transaction);
  *
- *  // Write to I2C slave device
+ *  // Write to I2C target device
  *  transaction.writeBuf = command;
  *  transaction.writeCount = sizeof(command);
  *  transaction.readCount = 0;
@@ -135,7 +135,7 @@
  *  writeBuffer[1] = 0xCD;
  *  writeBuffer[2] = 0xEF;
  *
- *  i2cTransaction.slaveAddress = 0x50;
+ *  i2cTransaction.targetAddress = 0x50;
  *  i2cTransaction.writeBuf = writeBuffer;
  *  i2cTransaction.writeCount = 3;
  *  i2cTransaction.readBuf = NULL;
@@ -146,7 +146,7 @@
  *  if (status == false) {
  *      // Unsuccessful I2C transfer
  *      if (i2cTransaction.status == I2C_STATUS_ADDR_NACK) {
- *          // I2C slave address not acknowledged
+ *          // I2C target address not acknowledged
  *      }
  *  }
  *  @endcode
@@ -158,7 +158,7 @@
  *  I2C_Transaction i2cTransaction = {0};
  *  uint8_t readBuffer[5];
  *
- *  i2cTransaction.slaveAddress = 0x50;
+ *  i2cTransaction.targetAddress = 0x50;
  *  i2cTransaction.writeBuf = NULL;
  *  i2cTransaction.writeCount = 0;
  *  i2cTransaction.readBuf = readBuffer;
@@ -168,7 +168,7 @@
  *
  *  if (status == false) {
  *      if (i2cTransaction.status == I2C_STATUS_ADDR_NACK) {
- *          // I2C slave address not acknowledged
+ *          // I2C target address not acknowledged
  *      }
  *  }
  *  @endcode
@@ -184,7 +184,7 @@
  *  writeBuffer[0] = 0xAB;
  *  writeBuffer[1] = 0xCD;
  *
- *  i2cTransaction.slaveAddress = 0x50;
+ *  i2cTransaction.targetAddress = 0x50;
  *  i2cTransaction.writeBuf = writeBuffer;
  *  i2cTransaction.writeCount = 2;
  *  i2cTransaction.readBuf = readBuffer;
@@ -194,7 +194,7 @@
  *
  *  if (status == false) {
  *       if (i2cTransaction->status == I2C_STATUS_ADDR_NACK) {
- *           // slave address not acknowledged
+ *           // target address not acknowledged
  *       }
  *  }
  *  @endcode
@@ -219,7 +219,7 @@
  *      // if transaction failed
  *      if (status == false) {
  *          if (msg->status == I2C_STATUS_ADDR_NACK) {
- *              // slave address not acknowledged
+ *              // target address not acknowledged
  *          }
  *          else if (msg->status == I2C_STATUS_CANCEL) {
  *              // transaction canceled by I2C_cancel()
@@ -293,6 +293,11 @@
 
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/SemaphoreP.h>
+
+/* Enable backwards-compatibility for legacy terminology if specified. */
+#ifdef ENABLE_LEGACY_TERMINOLOGY
+    #include <ti/drivers/LegacyTerminology.h>
+#endif
 /*! @endcond */
 
 #ifdef __cplusplus
@@ -354,7 +359,7 @@ extern "C" {
 #define I2C_STATUS_CLOCK_TIMEOUT (-4)
 
 /*!
- * @brief  I2C slave address not acknowledged
+ * @brief  I2C target address not acknowledged
  */
 #define I2C_STATUS_ADDR_NACK (-5)
 
@@ -364,7 +369,7 @@ extern "C" {
 #define I2C_STATUS_DATA_NACK (-6)
 
 /*!
- * @brief  I2C multi-master arbitration lost
+ * @brief  I2C multi-controller arbitration lost
  */
 #define I2C_STATUS_ARB_LOST (-7)
 
@@ -422,12 +427,12 @@ typedef struct
     void *writeBuf;
 
     /*!
-     *  Number of bytes to write to the I2C slave device. A value of 0
-     *  indicates no data will be written to the slave device and only a read
+     *  Number of bytes to write to the I2C target device. A value of 0
+     *  indicates no data will be written to the target device and only a read
      *  will occur. If this value
      *  is not 0, the driver will always perform the write transfer first.
      *  The data written to the I2C bus is preceded by the
-     *  #I2C_Transaction.slaveAddress with the write bit set. If
+     *  #I2C_Transaction.targetAddress with the write bit set. If
      *  @p writeCount bytes are successfully sent and
      *  acknowledged, the transfer will complete or perform a read--depending
      *  on #I2C_Transaction.readCount.
@@ -444,11 +449,11 @@ typedef struct
     void *readBuf;
 
     /*!
-     *  Number of bytes to read from the I2C slave device. A value of 0
+     *  Number of bytes to read from the I2C target device. A value of 0
      *  indicates no data will be read and only a write will occur. If
      *  #I2C_Transaction.writeCount is not 0, this driver will perform the
      *  write first, followed by the read. The data read from the bus is
-     *  preceded by the #I2C_Transaction.slaveAddress with the read bit set.
+     *  preceded by the #I2C_Transaction.targetAddress with the read bit set.
      *  After @p readCount bytes are successfully read, the transfer will
      *  complete.
      *
@@ -490,12 +495,12 @@ typedef struct
     volatile int_fast16_t status;
 
     /*!
-     *  I2C slave address used for the transaction. The slave address is
+     *  I2C target address used for the transaction. The target address is
      *  the first byte transmitted during an I2C transfer. The read/write bit
      *  is automatically set based upon the #I2C_Transaction.writeCount and
      *  #I2C_Transaction.readCount.
      */
-    uint_least8_t slaveAddress;
+    uint_least8_t targetAddress;
 
     /*!
      *  @private This is reserved for use by the driver and must never be
@@ -720,16 +725,16 @@ extern const uint_least8_t I2C_count;
  *  A canceled transaction may be identified when the #I2C_Transaction.status
  *  is set to #I2C_STATUS_CANCEL.
  *
- *  @note This API may not handle cases where the I2C slave holds the clock
+ *  @note This API may not handle cases where the I2C target holds the clock
  *  line indefinitely.
  *
  *  @pre    I2C_Transfer() has been called.
  *
  *  @param[in]  handle  An #I2C_Handle returned from I2C_open()
  *
- *  @note   Different I2C slave devices will behave differently when an
- *          in-progress transfer fails and needs to be canceled. The slave
- *          may need to be reset, or there may be other slave-specific
+ *  @note   Different I2C target devices will behave differently when an
+ *          in-progress transfer fails and needs to be canceled. The target
+ *          may need to be reset, or there may be other target-specific
  *          steps that can be used to successfully resume communication.
  *
  *  @sa  I2C_transfer()
@@ -810,10 +815,10 @@ extern void I2C_Params_init(I2C_Params *params);
 /*!
  *  @brief  Set the I2C SCL clock timeout.
  *
- *  An I2C slave can extend a I2C transaction by periodically pulling the
+ *  An I2C target can extend a I2C transaction by periodically pulling the
  *  clock low to create a slow bit transfer rate. The application can use this
  *  API to program a counter in the I2C module. The count is used to force a
- *  timeout if an I2C slave holds the clock line low for longer than the
+ *  timeout if an I2C target holds the clock line low for longer than the
  *  @p timeout duration. An #I2C_STATUS_CLOCK_TIMEOUT status indicates a
  *  timeout event occured.
  *
@@ -832,7 +837,7 @@ extern void I2C_Params_init(I2C_Params *params);
 extern int_fast16_t I2C_setClockTimeout(I2C_Handle handle, uint32_t timeout);
 
 /*!
- *  @brief  Perform an I2C transaction with an I2C slave peripheral.
+ *  @brief  Perform an I2C transaction with an I2C target peripheral.
  *
  *  This function will perform an I2C transfer, as specified by an
  *  #I2C_Transaction structure.
@@ -866,7 +871,7 @@ extern int_fast16_t I2C_setClockTimeout(I2C_Handle handle, uint32_t timeout);
 extern bool I2C_transfer(I2C_Handle handle, I2C_Transaction *transaction);
 
 /*!
- *  @brief  Perform an I2C transaction with an I2C slave peripheral.
+ *  @brief  Perform an I2C transaction with an I2C target peripheral.
  *
  *  This function will perform an I2C transfer, as specified by an
  *  #I2C_Transaction structure. If the timeout is exceeded, then the
@@ -878,7 +883,7 @@ extern bool I2C_transfer(I2C_Handle handle, I2C_Transaction *transaction);
  *  @note  The timeout restriction is only applied when using
  *  #I2C_MODE_BLOCKING. If using #I2C_MODE_CALLBACK, the application should
  *  manage timeouts using I2C_cancel(). Additionally, this timeout may not
- *  handle cases where the I2C slave holds the clock line indefinitely.
+ *  handle cases where the I2C target holds the clock line indefinitely.
  *
  *  @param[in]  handle    An #I2C_Handle returned from I2C_open()
  *

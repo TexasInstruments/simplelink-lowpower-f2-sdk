@@ -50,6 +50,9 @@ else ()
 endif ()
 
 # Specify how the compilers should be invoked
+if (NOT IAR_AR_FLAGS)
+    set(IAR_AR_FLAGS --create) # Need this option to avoid error on rebuild
+endif ()
 set(CMAKE_ASM_CREATE_STATIC_LIBRARY "<CMAKE_AR> ${IAR_AR_FLAGS} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
 set(CMAKE_C_CREATE_STATIC_LIBRARY "<CMAKE_AR> ${IAR_AR_FLAGS} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
 set(CMAKE_AR_FLAGS)
@@ -72,7 +75,9 @@ if (NOT TARGET TOOLCHAIN_iar)
     add_library(TOOLCHAIN_iar INTERFACE IMPORTED)
     target_compile_options(
         TOOLCHAIN_iar
-        INTERFACE $<$<COMPILE_LANGUAGE:C>:--aeabi
+        INTERFACE $<$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>:
+                  # This part included if TI_CFLAGS_OVERRIDE not defined
+                  $<$<COMPILE_LANGUAGE:C>:--aeabi
                   --endian=little
                   -e
                   --thumb
@@ -82,21 +87,29 @@ if (NOT TARGET TOOLCHAIN_iar)
                   little>
                   $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-Oh>
                   $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Debug>>:-On>
+                  >
+                  # If TI_CFLAGS_OVERRIDE, use it exclusively
+                  $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>>
     )
     target_link_options(
         TOOLCHAIN_iar
         INTERFACE
+        $<$<STREQUAL:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>,>:
+        # This part included if TI_LFLAGS_OVERRIDE not defined
         # If linker-file property exists, add linker file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>,>>:--config
         $<TARGET_PROPERTY:TI_LINKER_COMMAND_FILE>>
         # If map-file property exists, set map file
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_LINKER_MAP_FILE>,>>:--map
         $<TARGET_PROPERTY:TI_LINKER_MAP_FILE>>
+        >
+        # If TI_CFLAGS_OVERRIDE, use it exclusively
+        $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>>
     )
 
     add_library(TOOLCHAIN_iar_m0p INTERFACE IMPORTED)
     target_link_libraries(TOOLCHAIN_iar_m0p INTERFACE TOOLCHAIN_iar)
-    target_compile_options(TOOLCHAIN_iar_m0p INTERFACE --cpu Cortex-M0)
+    target_compile_options(TOOLCHAIN_iar_m0p INTERFACE --cpu Cortex-M0+)
     add_library(CMakeCommon::iar_m0p ALIAS TOOLCHAIN_iar_m0p)
 
     add_library(TOOLCHAIN_iar_m4 INTERFACE IMPORTED)

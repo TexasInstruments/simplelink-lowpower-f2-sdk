@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -229,13 +229,18 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
            ((timeout == SemaphoreP_WAIT_FOREVER) || ClockP_isActive((ClockP_Handle)&clockStruct)))
     {
 
-        HwiP_restore(key);
+        /* HwiP must be disabled while checking the loop-condition and calling the callback function.
+         * Otherwise, the count could increase at this point, and no further interrupts occur to
+         * wake up the CPU and proceed from the callback.
+         */
 
         /* Call the registered callback */
         if (pSemaphore->params.callback != NULL)
         {
             pSemaphore->params.callback();
         }
+
+        HwiP_restore(key);
 
         if (doEnablePolicy)
         {

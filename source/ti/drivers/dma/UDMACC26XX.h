@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,17 +42,17 @@
  *
  * # Overview #
  * The UDMACC26XX driver currently only supports internal use by the drivers
- * that use the uDMA peripheral (e.g., SPICC26XXDMA).
+ * that use the uDMA peripheral (e.g., SPICC26X2DMA).
  * In other words, the application should never call any of the functions in this file.
  *
  * # General Behavior #
- * This driver is used implicitly by other drivers (e.g., the SPICC26XXDMA
+ * This driver is used implicitly by other drivers (e.g., the SPICC26X2DMA
  * driver) so users should not have to interface to this driver from the
  * application.
  * The uDMA HW makes use of a control table in RAM which must be 1024 bytes aligned.
  * The default base address of this control table is 0x20000400, however this
  * can be changed by simply changing UDMACC26XX_CONFIG_BASE.
- * The SPICC26XXDMA.h supports SPI0 and SPI1, and uses both TX and RX DMA channels.
+ * The SPICC26X2DMA.h supports SPI0 and SPI1, and uses both TX and RX DMA channels.
  * Each control table entry is 16 bytes, so if an application uses both SSI0 and SSI1
  * the total RAM usage will be 4*16=64 bytes. If only one SSI module is used
  * only 2*16=32 bytes of RAM is used. Please see [Use cases] (@ref UDMA_26XX_USE_CASES)
@@ -77,7 +77,8 @@
  *       by drivers who're using the DMA.
  *
  * # Unsupported Functionality #
- * No known limitations
+ * The DMA peripheral is unable to access flash memory in the address range 0x0000 - 0x2000
+ * on devices based on the Cortex M33+ core (CC26X3/CC26X4) due to security constraints.
  *
  * # Use Cases @anchor UDMA_26XX_USE_CASES #
  * The DMA is only used internally by other drivers, so the application
@@ -166,7 +167,7 @@ extern "C" {
          * can move the uDMA table closer to the start of SRAM. This improves the
          * linker efficiency when using dynamically sized heaps.
          */
-        #if (SPE_ENABLED == 0)
+        #if (TFM_ENABLED == 0)
             #define UDMACC26XX_CONFIG_BASE 0x20000400
         #else
             #define UDMACC26XX_CONFIG_BASE 0x2000C400

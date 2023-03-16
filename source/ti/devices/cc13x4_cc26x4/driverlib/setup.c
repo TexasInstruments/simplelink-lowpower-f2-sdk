@@ -242,31 +242,53 @@ SetupTrimDevice(void)
         // Do nothing - wait for an eventual ongoing mode change to complete.
     }
 
-    // Configure the NONSECWRn registers to allow manipulation of
-    // ADI_3_REFSYS_DCDCCTL5_IPEAK and ADI_3_REFSYS_DCDCCTL5_DITHER from the
-    // non-secure side. This is required by the radio for proper operation.
-    // The ADI_3_REFSYS_O_DCDCCTL5 register byte-offset is divided by two
-    // since the the ADDR field is encoded as a half-word index
+    // Configure the NONSECWRn registers to allow manipulation of the following
+    // DCDC control registers from the non-secure side:
+    // * DCDCCTL3
+    // * DCDCCTL4
+    // * DCDCCTL5
+    // See below for the the specific bitfields that are modified in each
+    // register. These values are used by the CPE to adjust the DCDC during RF
 
-    // Dither disabled, IPEAK = 0
+    // DITHER_EN = 0 (Dither disabled), IPEAK = 0 (Inductor peak)
     HWREG( ADI3_BASE + ADI_O_NONSECWR0) = (( 0x00 << ADI_NONSECWR0_DATA_S) & ADI_NONSECWR0_DATA_M ) |
-                                          ((( ( ADI_3_REFSYS_O_DCDCCTL5) ) << ADI_NONSECWR0_ADDR_S ) & ADI_NONSECWR0_ADDR_M) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL5 ) << ADI_NONSECWR0_ADDR_S ) & ADI_NONSECWR0_ADDR_M) |
                                           (( 0x0F << ADI_NONSECWR0_WR_MASK_S) & ADI_NONSECWR0_WR_MASK_M);
 
-    // Dither enabled, IPEAK = 0
+    // DITHER_EN = 1 (Dither enabled), IPEAK = 0 (Inductor peak)
     HWREG( ADI3_BASE + ADI_O_NONSECWR1) = (( 0x08 << ADI_NONSECWR1_DATA_S) & ADI_NONSECWR1_DATA_M ) |
-                                          ((( ( ADI_3_REFSYS_O_DCDCCTL5) ) << ADI_NONSECWR1_ADDR_S ) & ADI_NONSECWR1_ADDR_M) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL5 ) << ADI_NONSECWR1_ADDR_S ) & ADI_NONSECWR1_ADDR_M) |
                                           (( 0x0F << ADI_NONSECWR1_WR_MASK_S) & ADI_NONSECWR1_WR_MASK_M);
 
-    // Dither disabled, IPEAK = 3
+    // DITHER_EN = 0 (Dither disabled), IPEAK = 3 (Inductor peak)
     HWREG( ADI3_BASE + ADI_O_NONSECWR2) = (( 0x03 << ADI_NONSECWR2_DATA_S) & ADI_NONSECWR2_DATA_M ) |
-                                          ((( ( ADI_3_REFSYS_O_DCDCCTL5)  ) << ADI_NONSECWR2_ADDR_S ) & ADI_NONSECWR2_ADDR_M) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL5 ) << ADI_NONSECWR2_ADDR_S ) & ADI_NONSECWR2_ADDR_M) |
                                           (( 0x0F << ADI_NONSECWR2_WR_MASK_S) & ADI_NONSECWR2_WR_MASK_M);
 
-    // Dither disabled, IPEAK = 7
+    // DITHER_EN = 0 (Dither disabled), IPEAK = 7 (Inductor peak)
     HWREG( ADI3_BASE + ADI_O_NONSECWR3) = (( 0x07 << ADI_NONSECWR3_DATA_S) & ADI_NONSECWR3_DATA_M ) |
-                                          ((( ( ADI_3_REFSYS_O_DCDCCTL5) ) << ADI_NONSECWR3_ADDR_S ) & ADI_NONSECWR3_ADDR_M) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL5 ) << ADI_NONSECWR3_ADDR_S ) & ADI_NONSECWR3_ADDR_M) |
                                           (( 0x0F << ADI_NONSECWR3_WR_MASK_S) & ADI_NONSECWR3_WR_MASK_M);
+
+    // DCDC_DRV_DS = 7 (DCDC Driver Strenth programmability)
+    HWREG( ADI3_BASE + ADI_O_NONSECWR4) = (( 0x1C << ADI_NONSECWR4_DATA_S) & ADI_NONSECWR4_DATA_M ) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL3 ) << ADI_NONSECWR4_ADDR_S ) & ADI_NONSECWR4_ADDR_M) |
+                                          (( 0x1C << ADI_NONSECWR4_WR_MASK_S) & ADI_NONSECWR4_WR_MASK_M);
+
+    // DCDC_DRV_DS = 0 (DCDC Driver Strenth programmability)
+    HWREG( ADI3_BASE + ADI_O_NONSECWR5) = (( 0x00 << ADI_NONSECWR5_DATA_S) & ADI_NONSECWR5_DATA_M ) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL3 ) << ADI_NONSECWR5_ADDR_S ) & ADI_NONSECWR5_ADDR_M) |
+                                          (( 0x1C << ADI_NONSECWR5_WR_MASK_S) & ADI_NONSECWR5_WR_MASK_M);
+
+    // DEADTIME_TRIM = 1 (Dead time between top switch OFF to bottom switch ON)
+    HWREG( ADI3_BASE + ADI_O_NONSECWR6) = (( 0x40 << ADI_NONSECWR6_DATA_S) & ADI_NONSECWR6_DATA_M ) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL4 ) << ADI_NONSECWR6_ADDR_S ) & ADI_NONSECWR6_ADDR_M) |
+                                          (( 0xC0 << ADI_NONSECWR6_WR_MASK_S) & ADI_NONSECWR6_WR_MASK_M);
+
+    // DEADTIME_TRIM = 2 (Dead time between top switch OFF to bottom switch ON)
+    HWREG( ADI3_BASE + ADI_O_NONSECWR7) = (( 0x80 << ADI_NONSECWR7_DATA_S) & ADI_NONSECWR7_DATA_M ) |
+                                          ((( ADI_3_REFSYS_O_DCDCCTL4 ) << ADI_NONSECWR7_ADDR_S ) & ADI_NONSECWR7_ADDR_M) |
+                                          (( 0xC0 << ADI_NONSECWR7_WR_MASK_S) & ADI_NONSECWR7_WR_MASK_M);
 
     // Configure Sensor Controller access to TDC clock control
     // Allow read and write ACLK_TDC_SRC_SEL and ACLK_REF_SRC_SEL fields in

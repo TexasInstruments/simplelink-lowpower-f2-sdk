@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2022, Texas Instruments Incorporated
+ Copyright (c) 2012-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -57,14 +57,12 @@
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 #include "led_debug.h"
 
-#if 0 /* To be enabled in cc23xx Core SDK 6.40 */
 #ifdef DeviceFamily_CC23X0
 /* Remap driverlib API names that changed only for cc23x0
  */
 #define GPIO_setDio             GPIOSetDio
 #define GPIO_clearDio           GPIOClearDio
 #define GPIO_setOutputEnableDio GPIOSetOutputEnableDio
-#endif
 #endif
 
 /*******************************************************************************

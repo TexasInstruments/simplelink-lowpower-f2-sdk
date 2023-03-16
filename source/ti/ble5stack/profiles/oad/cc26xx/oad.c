@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -51,15 +51,24 @@
 #include <driverlib/chipinfo.h>
 #include <driverlib/flash.h>
 
-#include <icall.h>
+#include <mqueue.h>
 #include "util.h"
 /* This Header file contains all BLE API and icall structure definition */
 #include "icall_ble_api.h"
 
-#include <common/cc26xx/flash_interface/flash_interface.h>
+#ifdef MCUBOOT_ENABLE
+#include "bootutil/bootutil.h"
+#include "bootutil/image.h"
+#define   MCUBOOT_TLV_SIZE   0x120
+typedef struct image_header imgHdr_t;  // continue using imgHdr_t name to reduce differences
+#else
 #include <common/cc26xx/crc/crc32.h>
 #include <common/cc26xx/oad/oad_image_header.h>
 #include <common/cc26xx/oad/ext_flash_layout.h>
+#endif
+
+#include <common/cc26xx/flash_interface/flash_interface.h>
+
 #include "oad_defines.h"
 #include "oad.h"
 
@@ -88,6 +97,17 @@ typedef struct
     uint32_t length;
 }ImageSizeInfo_t;
 
+/*!
+ * Stores information related to OAD write event
+ */
+typedef struct
+{
+    oadEvent_e  event;          //!< Event that occurred
+    uint16_t connHandle;        //!< Connection event was received on
+    uint16_t len;               //!< Length of data received
+    uint16_t offset;            //!< GATT offset into blob
+    uint8_t  *pData;            //!< Pointer to data received
+} oadTargetWrite_t;
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -110,14 +130,17 @@ static const uint8_t oadCharUUID[OAD_CHAR_CNT][ATT_UUID_SIZE] =
     TI_BASE_UUID_128(OAD_EXT_CTRL_UUID)
 };
 
+#ifdef MCUBOOT_ENABLE
+static struct image_header primary_mcubootHdr __attribute__((section(".primary_mcuboot_hdr")));
+#else
 // The current image's header is initialized in oad_image_header_app.c
 extern const imgHdr_t _imgHdr;
-
 
 #ifndef STACK_LIBRARY
 // The stack's image header is located in the main function
 extern const imgHdr_t *stackImageHeader;
 #endif // STACK_LIBRARY
+#endif // MCUBOOT_ENABLE
 
 /*********************************************************************
  * Profile Attributes - variables
@@ -292,8 +315,7 @@ static uint16_t activeOadCxnHandle = LINKDB_CONNHANDLE_INVALID;
 uint16_t metaPage = 0;
 
 // OAD Queue
-static Queue_Struct oadQ;
-static Queue_Handle hOadQ;
+static mqd_t hOadQ;
 
 // OAD Activity Clock
 static Clock_Struct oadActivityClk;
@@ -338,18 +360,17 @@ static uint8_t oadSendNotification(uint16_t connHandle, gattCharCfg_t *charCfg,
                                     uint8_t charIdx, uint8_t *pData,
                                     uint8_t len);
 
-static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader);
-
-static uint8_t oadFindCurrentImageHdr(void);
-
-static uint8_t oadCheckDL(void);
-
-static void oadResetState(void);
-
-static void oadInactivityTimeout(UArg param);
-
+#ifdef MCUBOOT_ENABLE
+static uint8_t oadCheckImageID(struct image_header *idPld);
+#else
 static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld);
+static uint8_t oadCheckDL(void);
+static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader);
+static uint8_t oadFindCurrentImageHdr(void);
+#endif //MCUBOOT_ENABLE
 
+#ifndef EXCLUDE_OAD_OFFCHIP
+static bool oadCheckFactoryImage(void);
 static uint32_t oadFindFactImgAddr();
 static uint8_t oadFindExtFlMetaPage(uint16_t *metaPg, ImageSizeInfo_t *imgInfo);
 static uint32_t oadFindExtFlImgAddr(ImageSizeInfo_t *extImgInfo,
@@ -357,9 +378,16 @@ static uint32_t oadFindExtFlImgAddr(ImageSizeInfo_t *extImgInfo,
 static void oadSortImgInfo(ImageSizeInfo_t *extImgInfo, uint8_t numImgs);
 static uint16_t oadFindleastRecentlyUsedIdx(ImageSizeInfo_t *extImgInfo, uint8_t numImgs);
 
+#endif //EXCLUDE_OAD_OFFCHIP
 static uint8_t oadEraseExtFlashPages(uint8_t startAddr, uint32_t imgLen,
                                      uint32_t pageSize);
-static bool oadCheckFactoryImage(void);
+static void oadResetState(void);
+
+#ifdef FREERTOS
+static void oadInactivityTimeout(void);
+#else
+static void oadInactivityTimeout(UArg param);
+#endif //FREERTOS
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -429,11 +457,18 @@ uint8_t OAD_open(uint32_t oadTimeout)
     state = OAD_IDLE;
     nextState = OAD_IDLE;
 
-    // Construct the OAD Queue
-    Queue_construct(&oadQ, NULL);
+    /*
+     * Construct the OAD Queue,
+     * This queue defined as a non-blocking queue,
+     * because the blocking is done in the main application.
+     */
+    struct mq_attr attr;
 
-    // Get the handle to the newly constructed Queue
-    hOadQ = Queue_handle(&oadQ);
+    attr.mq_flags = 0;
+    attr.mq_curmsgs = 0;
+    attr.mq_maxmsg = 32; //Maybe need to decrease
+    attr.mq_msgsize = sizeof(oadTargetWrite_t);
+    hOadQ = mq_open("/OADQueue", O_CREAT | O_NONBLOCK , 0, &attr);
 
     // Create OAD activity timer
     Util_constructClock(&oadActivityClk, oadInactivityTimeout,
@@ -457,6 +492,7 @@ uint8_t OAD_open(uint32_t oadTimeout)
     // This variable controls whether the OAD module uses internal or external flash memory
     useExternalFlash = hasExternalFlash();
 
+#ifndef EXCLUDE_OAD_OFFCHIP
     if(( status == OAD_SUCCESS) && (useExternalFlash == true))
     {
         // Create factory image if there isn't one
@@ -465,6 +501,7 @@ uint8_t OAD_open(uint32_t oadTimeout)
             status = oadCreateFactoryImageBackup();
         }
     }
+#endif //EXCLUDE_OAD_OFFCHIP
 
     if(oadTimeout > OAD_MIN_INACTIVITY_TIME)
     {
@@ -523,15 +560,26 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
         // Set status to true
         status = true;
 
+#ifdef MCUBOOT_ENABLE
+        // Populate the software version field
+        uint8_t swVerCombined[OAD_SW_VER_LEN] = {candidateImageHeader.ih_ver.iv_major,
+                                                 candidateImageHeader.ih_ver.iv_minor,
+                                                 HI_UINT16(candidateImageHeader.ih_ver.iv_revision),
+                                                 LO_UINT16(candidateImageHeader.ih_ver.iv_revision),
+                                                 };
+
+        // Copy into the return buffer
+        memcpy(swVer, swVerCombined, OAD_SW_VER_LEN);
+#else
         // Read in the current image header
         uint8_t currentImgPg = oadFindCurrentImageHdr();
         if(currentImgPg != OAD_IMG_PG_INVALID)
         {
-          const imgHdr_t *currentImgHdr = (imgHdr_t *)(currentImgPg * HAL_FLASH_PAGE_SIZE);
+          const imgHdr_t *currentImgHdr = (imgHdr_t *)(currentImgPg * INTFLASH_PAGE_SIZE);
 
 #ifdef STACK_LIBRARY
           // Populate the software version field
-          uint8_t swVerCombined[4] = {currentImgHdr->fixedHdr.softVer[0],
+          uint8_t swVerCombined[OAD_SW_VER_LEN] = {currentImgHdr->fixedHdr.softVer[0],
                                       currentImgHdr->fixedHdr.softVer[1],
                                       currentImgHdr->fixedHdr.softVer[2],
                                       currentImgHdr->fixedHdr.softVer[3]};
@@ -540,7 +588,7 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
         }
 #else
           // Populate the software version field
-          uint8_t swVerCombined[4] = {stackImageHeader->fixedHdr.softVer[0],
+          uint8_t swVerCombined[OAD_SW_VER_LEN] = {stackImageHeader->fixedHdr.softVer[0],
                                       stackImageHeader->fixedHdr.softVer[1],
                                       currentImgHdr->fixedHdr.softVer[2],
                                       currentImgHdr->fixedHdr.softVer[3]};
@@ -551,7 +599,7 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
         else
         {
           // Application version not available, populate just the stck version
-          uint8_t swVerCombined[4] = {stackImageHeader->fixedHdr.softVer[0],
+          uint8_t swVerCombined[OAD_SW_VER_LEN] = {stackImageHeader->fixedHdr.softVer[0],
                                       stackImageHeader->fixedHdr.softVer[1],
                                       0xFF,
                                       0xFF};
@@ -559,6 +607,7 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
           memcpy(swVer, &swVerCombined, OAD_SW_VER_LEN);
         }
 #endif //STACK_LIBRARY
+#endif //MCUBOOT_ENABLE
     }
     else
     {
@@ -582,173 +631,168 @@ uint8_t OAD_processQueue(void)
     // Status of the event
     uint8_t status = OAD_IDLE;
 
+    oadTargetWrite_t oadWriteEvt;
+    ssize_t msgSize;
     // Get the message at the Queue head
-    oadTargetWrite_t *oadWriteEvt = Queue_get(hOadQ);
-
+    msgSize = mq_receive(hOadQ,(char *)&oadWriteEvt, sizeof(oadTargetWrite_t),NULL);
     // Iterate over all the messages in the queue, in a threadsafe manner
-    while (oadWriteEvt != (oadTargetWrite_t *)hOadQ)
-    {
-        if(oadWriteEvt != NULL)
-        {
-            // Extract the event from the message
-            oadEvent_e event = oadWriteEvt->event;
+    while (msgSize > 0)
 
-            // Timeout is state independent. Always results in OAD state reset
-            if(event == OAD_TIMEOUT)
+    {
+        // Extract the event from the message
+        oadEvent_e event = oadWriteEvt.event;
+
+        // Timeout is state independent. Always results in OAD state reset
+        if(event == OAD_TIMEOUT)
+        {
+            // Clear Queue and reset variables
+            oadResetState();
+            // Move to IDLE state
+            nextState = OAD_IDLE;
+        }
+        else if(state == OAD_IDLE)
+        {
+
+            // Identify new image.
+            if (event == OAD_WRITE_IDENTIFY_REQ)
             {
-                // Clear Queue and reset variables
-                oadResetState();
-                // Move to IDLE state
+                // Open flash
+                bool flashStat = flash_open();
+
+                if(flashStat != true)
+                {
+                    status = OAD_FLASH_ERR;
+                }
+                else
+                {
+                    status = oadImgIdentifyWrite(oadWriteEvt.connHandle,
+                                                    oadWriteEvt.pData,
+                                                    oadWriteEvt.len,
+                                                    oadWriteEvt.offset);
+
+                    // Advance the state based on status
+                    nextState = (status == OAD_SUCCESS) ? OAD_CONFIG: OAD_IDLE;
+                }
+            }
+            else if (event == OAD_EXT_CTRL_WRITE_CMD)
+            {
+                status = oadProcessExtControlCmd(oadWriteEvt.connHandle,
+                                                    oadWriteEvt.pData,
+                                                    oadWriteEvt.len);
                 nextState = OAD_IDLE;
             }
-            else if(state == OAD_IDLE)
+            else
             {
-
-                // Identify new image.
-                if (event == OAD_WRITE_IDENTIFY_REQ)
-                {
-                    // Open flash
-                    bool flashStat = flash_open();
-
-                    if(flashStat != true)
-                    {
-                        status = OAD_FLASH_ERR;
-                    }
-                    else
-                    {
-                        status = oadImgIdentifyWrite(oadWriteEvt->connHandle,
-                                                     oadWriteEvt->pData,
-                                                     oadWriteEvt->len,
-                                                     oadWriteEvt->offset);
-
-                       // Advance the state based on status
-                       nextState = (status == OAD_SUCCESS) ? OAD_CONFIG: OAD_IDLE;
-                    }
-                }
-                else if (event == OAD_EXT_CTRL_WRITE_CMD)
-                {
-                    status = oadProcessExtControlCmd(oadWriteEvt->connHandle,
-                                                        oadWriteEvt->pData,
-                                                        oadWriteEvt->len);
-                    nextState = OAD_IDLE;
-                }
-                else
-                {
-                    // Send a notification to the peer
-                    oadGetNextBlockReq(oadWriteEvt->connHandle, 0x00000000,
-                                        OAD_NOT_STARTED);
-                    // An error has occured, reset and go back to idle
-                    oadResetState();
-                    nextState = OAD_IDLE;
-                }
+                // Send a notification to the peer
+                oadGetNextBlockReq(oadWriteEvt.connHandle, 0x00000000,
+                                    OAD_NOT_STARTED);
+                // An error has occured, reset and go back to idle
+                oadResetState();
+                nextState = OAD_IDLE;
             }
-            else if (state == OAD_CONFIG)
-            {
-                if(event == OAD_EXT_CTRL_WRITE_CMD)
-                {
-                    uint8_t opCode = EXT_CTRL_OP_CODE(oadWriteEvt->pData);
-
-                    if(opCode == OAD_EXT_CTRL_START_OAD)
-                    {
-                        nextState = OAD_DOWNLOAD;
-                    }
-                    else
-                    {
-                        nextState = OAD_CONFIG;
-                    }
-
-                    status = oadProcessExtControlCmd(oadWriteEvt->connHandle,
-                                                        oadWriteEvt->pData,
-                                                        oadWriteEvt->len);
-
-
-                }
-                else
-                {
-                    // Send a notification to the peer
-                    oadGetNextBlockReq(oadWriteEvt->connHandle, 0x00000000,
-                                        OAD_NOT_STARTED);
-                    // An error has occured, reset and go back to idle
-                    oadResetState();
-                    nextState = OAD_IDLE;
-                }
-            }
-            else if (state == OAD_DOWNLOAD)
-            {
-                if(event == OAD_WRITE_BLOCK_REQ)
-                {
-                    status = oadImgBlockWrite(oadWriteEvt->connHandle,
-                                                oadWriteEvt->pData,
-                                                oadWriteEvt->len);
-
-                    // Request the next block
-                    oadGetNextBlockReq(oadWriteEvt->connHandle, oadBlkNum,
-                                        status);
-
-                    if(status == OAD_SUCCESS)
-                    {
-                        // If the block write was successful but the process
-                        // is not complete then stay in download state
-                        nextState = OAD_DOWNLOAD;
-                    }
-                    else if(status == OAD_DL_COMPLETE)
-                    {
-                        // Image download is complete, now wait for enable command
-                        nextState = OAD_COMPLETE;
-                    }
-                    else
-                    {
-                        // An error has occured, reset and go back to idle
-                        oadResetState();
-                        nextState = OAD_IDLE;
-                    }
-                }
-                else if (event == OAD_EXT_CTRL_WRITE_CMD)
-                {
-                    status = oadProcessExtControlCmd(oadWriteEvt->connHandle,
-                                                        oadWriteEvt->pData,
-                                                        oadWriteEvt->len);
-                }
-                else
-                {
-                    // An error has occured, reset and go back to idle
-                    oadResetState();
-                    nextState = OAD_IDLE;
-                }
-            }
-            else if (state == OAD_COMPLETE)
-            {
-                if(event == OAD_EXT_CTRL_WRITE_CMD)
-                {
-                    status = oadProcessExtControlCmd(oadWriteEvt->connHandle,
-                                                        oadWriteEvt->pData,
-                                                        oadWriteEvt->len);
-                }
-                else
-                {
-                    // An error has occured, reset and go back to idle
-                    oadResetState();
-                    nextState = OAD_IDLE;
-                }
-            }
-
-
-            // Free buffer.
-            ICall_free(oadWriteEvt);
         }
-        else
+        else if (state == OAD_CONFIG)
         {
-            oadResetState();
-            nextState = OAD_IDLE;
+            if(event == OAD_EXT_CTRL_WRITE_CMD)
+            {
+                uint8_t opCode = EXT_CTRL_OP_CODE(oadWriteEvt.pData);
 
-            status = OAD_NO_RESOURCES;
+                if(opCode == OAD_EXT_CTRL_START_OAD)
+                {
+                    nextState = OAD_DOWNLOAD;
+                }
+                else
+                {
+                    nextState = OAD_CONFIG;
+                }
+
+                status = oadProcessExtControlCmd(oadWriteEvt.connHandle,
+                                                    oadWriteEvt.pData,
+                                                    oadWriteEvt.len);
+
+
+            }
+            else
+            {
+                // Send a notification to the peer
+                oadGetNextBlockReq(oadWriteEvt.connHandle, 0x00000000,
+                                    OAD_NOT_STARTED);
+                // An error has occured, reset and go back to idle
+                oadResetState();
+                nextState = OAD_IDLE;
+            }
+        }
+        else if (state == OAD_DOWNLOAD)
+        {
+            if(event == OAD_WRITE_BLOCK_REQ)
+            {
+                status = oadImgBlockWrite(oadWriteEvt.connHandle,
+                                            oadWriteEvt.pData,
+                                            oadWriteEvt.len);
+
+                // Request the next block
+                oadGetNextBlockReq(oadWriteEvt.connHandle, oadBlkNum,
+                                    status);
+
+                if(status == OAD_SUCCESS)
+                {
+                    // If the block write was successful but the process
+                    // is not complete then stay in download state
+                    nextState = OAD_DOWNLOAD;
+                }
+                else if(status == OAD_DL_COMPLETE)
+                {
+                    // Image download is complete, now wait for enable command
+                    nextState = OAD_COMPLETE;
+                }
+                else
+                {
+                    // An error has occured, reset and go back to idle
+                    oadResetState();
+                    nextState = OAD_IDLE;
+                }
+            }
+            else if (event == OAD_EXT_CTRL_WRITE_CMD)
+            {
+                status = oadProcessExtControlCmd(oadWriteEvt.connHandle,
+                                                    oadWriteEvt.pData,
+                                                    oadWriteEvt.len);
+            }
+            else
+            {
+                // An error has occured, reset and go back to idle
+                oadResetState();
+                nextState = OAD_IDLE;
+            }
+        }
+        else if (state == OAD_COMPLETE)
+        {
+            if(event == OAD_EXT_CTRL_WRITE_CMD)
+            {
+                status = oadProcessExtControlCmd(oadWriteEvt.connHandle,
+                                                    oadWriteEvt.pData,
+                                                    oadWriteEvt.len);
+            }
+            else
+            {
+                // An error has occured, reset and go back to idle
+                oadResetState();
+                nextState = OAD_IDLE;
+            }
         }
 
-        // Advance the state machine
-        state = nextState;
 
-        // Get the next Queue Element
-        oadWriteEvt = Queue_get(hOadQ);
+        // Free buffer.
+        if(oadWriteEvt.pData != NULL){
+            ICall_free(oadWriteEvt.pData);
+        }
+
+
+    // Advance the state machine
+    state = nextState;
+
+    // Get the next Queue Element
+    msgSize = mq_receive(hOadQ,(char *)&oadWriteEvt, sizeof(oadTargetWrite_t),NULL);
     }
 
     // Store the global status
@@ -885,13 +929,13 @@ uint8_t OAD_setBlockSize(uint16_t mtuSize)
  */
 bool OAD_evenBitCount(uint32_t value)
 {
-  uint8_t count; 
-  
+  uint8_t count;
+
   for (count = 0; value; count++)
   {
     value &= value - 1;
   }
-  
+
   if (count % 2)
   {
     return false;
@@ -923,14 +967,18 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
 {
     uint8_t idStatus;
     uint8_t notifStat;
-	uint8_t verifStatus = OAD_SUCCESS;
-	
+    uint8_t verifStatus = OAD_SUCCESS;
+
     // Find the number of blocks in the image header, round up if necessary
     numBlksInImgHdr = sizeof(imgHdr_t) / (oadImgBytesPerBlock)  +  \
                         (sizeof(imgHdr_t) % (oadImgBytesPerBlock) != 0);
 
+#ifdef MCUBOOT_ENABLE
+    struct image_header *idPld = (struct image_header *)(pValue);
+#else
     // Cast the pValue byte array to imgIdentifyPld_t
     imgIdentifyPld_t *idPld = (imgIdentifyPld_t *)(pValue);
+#endif /* MCUBOOT_ENABLE */
 
     // Validate the ID
     idStatus = oadCheckImageID(idPld);
@@ -952,6 +1000,7 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
             imagePage = 0;
             metaPage = 0;
         }
+#ifndef EXCLUDE_OAD_OFFCHIP
         else
         {
             ImageSizeInfo_t extFlInfo[OAD_EFL_MAX_META] = {0};
@@ -964,7 +1013,7 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
             imageAddress = oadFindExtFlImgAddr(extFlInfo , idPld->len);
             imagePage = EXT_FLASH_PAGE(imageAddress);
         }
-
+#endif //EXCLUDE_OAD_OFFCHIP
         // Calculate total number of OAD blocks, round up if needed
         oadBlkTot = candidateImageLength / (oadImgBytesPerBlock);
 
@@ -1029,19 +1078,22 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
     activeOadCxnHandle = LINKDB_CONNHANDLE_INVALID;
 
     // Remove the element from the head of the Queue
-    oadTargetWrite_t *oadWriteEvt = Queue_get(hOadQ);
+    oadTargetWrite_t oadWriteEvt;
+
+    ssize_t msgSize;
+    msgSize = mq_receive(hOadQ,(char *)&oadWriteEvt, sizeof(char *),NULL);
 
     // Clear out any remaining messages in the queue
-    while (oadWriteEvt != (oadTargetWrite_t *)hOadQ)
+    while (msgSize > 0)
     {
         // Free buffer.
-        if(oadWriteEvt != NULL)
+        if(oadWriteEvt.pData != NULL)
         {
-            ICall_free(oadWriteEvt);
+            ICall_free(oadWriteEvt.pData);
         }
 
         // Retrieve the next message in the Queue
-        oadWriteEvt = Queue_get(hOadQ);
+        msgSize = mq_receive(hOadQ,(char *)&oadWriteEvt, sizeof(char *),NULL);;
     }
 
     // Stop the inactivity timer if running
@@ -1083,11 +1135,19 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
     uint8_t expectedBlkSz;
     if(blkNum == (oadBlkTot- 1))
     {
+#ifdef MCUBOOT_ENABLE
+        if(candidateImageLength % (oadImgBytesPerBlock) != 0)
+        {
+            expectedBlkSz = (candidateImageLength % (oadImgBytesPerBlock)) + \
+                                OAD_BLK_NUM_HDR_SZ;
+        }
+#else
         if(candidateImageHeader.fixedHdr.len % (oadImgBytesPerBlock) != 0)
         {
             expectedBlkSz = (candidateImageHeader.fixedHdr.len % (oadImgBytesPerBlock)) + \
                                 OAD_BLK_NUM_HDR_SZ;
         }
+#endif // MCUBOOT_ENABLE
         else
         {
             expectedBlkSz = oadBlkSize;
@@ -1150,13 +1210,24 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
                 memcpy(destAddr, pValue+OAD_BLK_NUM_HDR_SZ, remainder);
             }
 
+#ifndef MCUBOOT_ENABLE //MCUBOOT make validition instead of crc process
             status = oadValidateCandidateHdr((imgHdr_t * )&candidateImageHeader);
+#endif
             if(status == OAD_SUCCESS)
             {
                 // Calculate number of flash pages to pre-erase
-                uint32_t pageSize = (useExternalFlash)?EFL_PAGE_SIZE:HAL_FLASH_PAGE_SIZE;
+                uint32_t pageSize = (useExternalFlash)?EFL_PAGE_SIZE:INTFLASH_PAGE_SIZE;
 
-                oadEraseExtFlashPages(imagePage, candidateImageHeader.fixedHdr.len, pageSize);
+#ifdef MCUBOOT_ENABLE
+                status = oadEraseExtFlashPages(imagePage, candidateImageHeader.ih_img_size + candidateImageHeader.ih_hdr_size + MCUBOOT_TLV_SIZE, pageSize);
+#else
+                status = oadEraseExtFlashPages(imagePage, candidateImageHeader.fixedHdr.len, pageSize);
+#endif
+                // Cancel OAD due to flash erase error
+                if(FLASH_SUCCESS != status)
+                {
+                    return (OAD_FLASH_ERR);
+                }
 
                 // at this point we have erased the user app
                 if(!useExternalFlash)
@@ -1242,6 +1313,10 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
     // Check if the OAD Image is complete.
     if (oadBlkNum == oadBlkTot)
     {
+#ifdef MCUBOOT_ENABLE
+        // The MCUboot bootloader will validate the image and will check CRC
+        return (OAD_DL_COMPLETE);
+#else
         // Run CRC check on new image.
         if (OAD_SUCCESS != oadCheckDL())
         {
@@ -1305,6 +1380,7 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
         // Indicate a successful download and CRC
         oadBlkNum = 0;
         return (OAD_DL_COMPLETE);
+#endif //MCUBOOT_ENABLE
     }
     else
     {
@@ -1435,7 +1511,17 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             // Setup the payload rsp
             rsp->status = OAD_SUCCESS;
-
+#ifdef MCUBOOT_ENABLE
+            if (state == OAD_COMPLETE)
+            {
+                // We're about to reset, close the flash interface
+                flash_close();
+                if (oadTargetWriteCB != NULL)
+                {
+                    (*oadTargetWriteCB)(OAD_DL_COMPLETE_EVT, 0);
+                }
+            }
+#else
             uint16_t bim_var = 0x0001;
 
             // An enable command with zero payload means the
@@ -1603,6 +1689,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
                     rsp->status = OAD_EXT_CTRL_CMD_NOT_SUPPORTED;
                 }
             }
+#endif // MCUBOOT_ENABLE
 
             break;
         }
@@ -1690,7 +1777,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
             OAD_getSWVersion(swVer, OAD_SW_VER_LEN);
 
             // Copy combined version string into the response payload
-            memcpy(rsp->swVer, &swVer, OAD_SW_VER_LEN);
+            memcpy(rsp->swVer, swVer, OAD_SW_VER_LEN);
 
             break;
         }
@@ -1757,10 +1844,11 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             // Pack up the payload
             rsp->cmdID = OAD_EXT_CTRL_GET_DEV_TYPE;
-
+#ifndef DeviceFamily_CC23X0
             rsp->chipType = (uint8_t )ChipInfo_GetChipType();
             rsp->chipFamily = (uint8_t )ChipInfo_GetChipFamily();
             rsp->hardwareRev = (uint8_t )ChipInfo_GetHwRevision();
+#endif //DeviceFamily_CC23X0
             rsp->rsvd = 0xFF;
 
             break;
@@ -1770,6 +1858,30 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             if(pData[1] == OAD_IMG_INFO_ONCHIP)
             {
+#ifdef MCUBOOT_ENABLE // New OAD header
+                pRspPldlen = sizeof(imageInfoRspPld_t);
+
+                // Allocate memory for the ext ctrl rsp message
+                pCmdRsp = ICall_malloc(pRspPldlen);
+
+                if(pCmdRsp == NULL)
+                {
+                    // Ensure the allocation succeeded
+                    return (OAD_NO_RESOURCES);
+                }
+
+                imageInfoRspPld_t *rsp = (imageInfoRspPld_t *)pCmdRsp;
+
+                // Pack up the payload
+                rsp->cmdID = OAD_EXT_CTRL_GET_IMG_INFO;
+                // There is only image for on-chip
+                rsp->numImages = 0x01;
+                rsp->imgCpStat = 0;
+                rsp->crcStat = 0;
+                rsp->imgType = 0;
+                rsp->imgNo = 0;
+            }
+#else
                 // Read the active app's image header
                 uint8_t  appImageHdrPage = oadFindCurrentImageHdr();
                 uint32_t appImageHeaderAddr = FLASH_ADDRESS(appImageHdrPage, 0);
@@ -1854,6 +1966,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
                     flash_close();
                 }
             }
+#endif // MCUBOOT_ENABLE
             break;
         }
         case OAD_EXT_CTRL_ERASE_BONDS:
@@ -1933,19 +2046,18 @@ uint8_t oadEnqueueMsg(oadEvent_e event, uint16_t connHandle,
 {
     uint8_t status = OAD_SUCCESS;
 
-    oadTargetWrite_t *oadWriteEvt = ICall_malloc( sizeof(oadTargetWrite_t) + \
-                                             sizeof(uint8_t) * len);
+    oadTargetWrite_t oadWriteEvt;
+    oadWriteEvt.pData = ICall_malloc(sizeof(uint8_t) * len);
 
-    if ( oadWriteEvt != NULL )
+    if ( oadWriteEvt.pData != NULL )
     {
-        oadWriteEvt->event = event;
-        oadWriteEvt->connHandle = connHandle;
+        oadWriteEvt.event = event;
+        oadWriteEvt.connHandle = connHandle;
+        oadWriteEvt.len = len;
+        memcpy(oadWriteEvt.pData, pData, len);
 
-        oadWriteEvt->pData = (uint8_t *)(&oadWriteEvt->pData + 1);
-        oadWriteEvt->len = len;
-        memcpy(oadWriteEvt->pData, pData, len);
+        status = mq_send(hOadQ, (const char*)&oadWriteEvt, sizeof(oadTargetWrite_t), 1);
 
-        Queue_put(hOadQ, (Queue_Elem *)oadWriteEvt);
     }
     else
     {
@@ -1955,6 +2067,7 @@ uint8_t oadEnqueueMsg(oadEvent_e event, uint16_t connHandle,
     return (status);
 }
 
+#ifndef MCUBOOT_ENABLE
 /*********************************************************************
  * @fn      oadFindCurrentImageHdr
  *
@@ -2033,7 +2146,7 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
             uint32_t appImageHeaderAddr = FLASH_ADDRESS(appImageHdrPage, 0);
             currentImageHeader = (imgHdr_t *)(appImageHeaderAddr);
         }
-       
+
         // If on-chip and the user app is erased, use persist app
         else if(!useExternalFlash && (appImageHdrPage == OAD_IMG_PG_INVALID))
         {
@@ -2062,7 +2175,7 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
     }
 
     // Check that the incoming image is page aligned
-    if((receivedHeader->imgPayload.startAddr & (HAL_FLASH_PAGE_SIZE - 1)) != 0)
+    if((receivedHeader->imgPayload.startAddr & (INTFLASH_PAGE_SIZE - 1)) != 0)
     {
         status = OAD_INCOMPATIBLE_IMAGE;
     }
@@ -2091,7 +2204,7 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
     }
     else if (receivedHeader->imgType == OAD_IMG_TYPE_STACK)
     {
-        uint32_t nvSize = HAL_FLASH_PAGE_SIZE * OAD_NUM_NV_PGS;
+        uint32_t nvSize = INTFLASH_PAGE_SIZE * OAD_NUM_NV_PGS;
         /*
          * In on-chip OAD, stack only OAD requires the app to be udpated as well
          * so the currently app will be wiped out, but the new stack cannot
@@ -2163,6 +2276,7 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
     // Merged image types and images not targed to run on CC26xx are not checked
     return (status);
 }
+#endif //MCUBOOT_ENABLE
 
 /*********************************************************************
  * @fn      oadCheckImageID
@@ -2173,6 +2287,17 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
  *
  * @return  headerValid - SUCCESS or fail code
  */
+#ifdef MCUBOOT_ENABLE
+static uint8_t oadCheckImageID(struct image_header *idPld)
+{
+    uint8_t status = OAD_SUCCESS;
+    if(status == OAD_SUCCESS)
+    {
+        candidateImageLength = idPld->ih_img_size;
+    }
+    return (status);
+}
+#else
 static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
 {
     uint8_t status = OAD_SUCCESS;
@@ -2297,6 +2422,7 @@ static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
     }
     return (status);
 }
+#endif // MCUBOOT_ENABLE
 
 /*********************************************************************
  * @fn      oadGetNextBlockReq
@@ -2395,7 +2521,7 @@ static uint8_t oadSendNotification(uint16_t connHandle, gattCharCfg_t *charCfg,
 
     return (status);
 }
-
+#ifndef EXCLUDE_OAD_OFFCHIP
 /*********************************************************************
  * @fn      oadFindExtFlMetaPage
  *
@@ -2641,7 +2767,8 @@ static uint32_t oadFindFactImgAddr()
     // workaround to leave last page
     return (EFL_FLASH_SIZE - EXT_FLASH_ADDRESS(numFlashPages + 1, 0));
 }
-
+#endif // EXCLUDE_OAD_OFFCHIP
+#ifndef MCUBOOT_ENABLE
 /*********************************************************************
  * @fn      oadCheckDL
  *
@@ -2689,7 +2816,7 @@ static uint8_t oadCheckDL(void)
     }
     else
     {
-        crcCalculated = CRC32_calc(imagePage, HAL_FLASH_PAGE_SIZE, 0, imgHdr.fixedHdr.len, useExternalFlash);
+        crcCalculated = CRC32_calc(imagePage, INTFLASH_PAGE_SIZE, 0, imgHdr.fixedHdr.len, useExternalFlash);
     }
 
     if (crcCalculated == crcFromHdr)
@@ -2714,7 +2841,7 @@ static uint8_t oadCheckDL(void)
 
     return (status);
 }
-
+#endif // MCUBOOT_ENABLE
 /*********************************************************************
  * Callback Functions - These run in the BLE-Stack context!
  *********************************************************************/
@@ -2894,7 +3021,11 @@ static bStatus_t oadWriteAttrCB(uint16_t connHandle, gattAttribute_t *pAttr,
  *
  * @return  TRUE or FALSE for image valid.
  */
+#ifdef FREERTOS
+static void oadInactivityTimeout(void)
+#else
 static void oadInactivityTimeout(UArg param)
+#endif //FREERTOS
 {
     // Notify the application.
     if (oadTargetWriteCB != NULL)
@@ -2950,7 +3081,7 @@ static uint8_t oadEraseExtFlashPages(uint8_t imgStartPage, uint32_t imgLen, uint
     }
     return status;
 }
-
+#ifndef EXCLUDE_OAD_OFFCHIP
 /*********************************************************************
  * @fn      oadCheckFactoryImage
  *
@@ -3079,7 +3210,7 @@ uint8_t oadCreateFactoryImageBackup(void)
 
     return(rtn);
 }
-
+#endif //EXCLUDE_OAD_OFFCHIP
 #ifdef DMM_OAD
 void OAD_getProgressInfo(imgProgressInfo_t* pImgInfo)
 {

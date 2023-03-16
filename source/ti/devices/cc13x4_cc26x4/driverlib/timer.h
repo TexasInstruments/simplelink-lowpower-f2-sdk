@@ -63,6 +63,9 @@ extern "C"
 #include "../inc/hw_gpt.h"
 #include "interrupt.h"
 #include "debug.h"
+#ifdef DRIVERLIB_DEBUG
+#include "chipinfo.h"
+#endif
 
 //*****************************************************************************
 //
@@ -208,8 +211,15 @@ extern "C"
 static bool
 TimerBaseValid(uint32_t ui32Base)
 {
-    return((ui32Base == GPT0_BASE) || (ui32Base == GPT1_BASE) ||
-           (ui32Base == GPT2_BASE) || (ui32Base == GPT3_BASE));
+    if (ChipInfo_GetChipType() == CHIP_TYPE_CC2653P10)
+    {
+        return((ui32Base == GPT0_BASE) || (ui32Base == GPT1_BASE));
+    }
+    else
+    {
+        return((ui32Base == GPT0_BASE) || (ui32Base == GPT1_BASE) ||
+               (ui32Base == GPT2_BASE) || (ui32Base == GPT3_BASE));
+    }
 }
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,17 +49,17 @@
 #include <ti/devices/DeviceFamily.h>
 
 /*
- *  If SPE_ENABLED is defined, use the Secure Flash Client Interface to
+ *  If TFM_ENABLED is defined, use the Secure Flash Client Interface to
  *  access the Flash driver. In a Secure-Only environment use flash.h
  *  directly to access Flash driver.
  *
  *  This is possible due to the driverlib not containing symbols for the
  *  Flash API itself. The driverlib only contains the ROM and NOROM Flash
- *  symbols. As a result, when SPE_ENABLED is defined, the Flash API
+ *  symbols. As a result, when TFM_ENABLED is defined, the Flash API
  *  symbols are only defined by FlashCC26X4_ns.h, therefore there is no
  *  overlap of symbols.
  */
-#if SPE_ENABLED
+#if TFM_ENABLED
     #include <ti/drivers/nvs/flash/FlashCC26X4_ns.h>
 #else
     #include DeviceFamily_constructPath(driverlib/flash.h)
@@ -158,7 +158,7 @@ void NVSCC26XX_init(void)
     unsigned int key;
     SemaphoreP_Handle sem;
 
-#if SPE_ENABLED
+#if TFM_ENABLED
     FlashOpen();
 #endif
 
@@ -184,7 +184,9 @@ void NVSCC26XX_init(void)
         HwiP_restore(key);
         /* delete unused Semaphore */
         if (sem)
+        {
             SemaphoreP_delete(sem);
+        }
     }
 }
 
@@ -592,8 +594,7 @@ static uint8_t disableFlashCache(void)
     if (mode != VIMS_MODE_DISABLED)
     {
         VIMSModeSet(VIMS_BASE, VIMS_MODE_DISABLED);
-        while (VIMSModeGet(VIMS_BASE) != VIMS_MODE_DISABLED)
-            ;
+        while (VIMSModeGet(VIMS_BASE) != VIMS_MODE_DISABLED) {}
     }
 
     return (mode);

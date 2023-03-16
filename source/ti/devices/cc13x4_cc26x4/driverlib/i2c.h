@@ -67,6 +67,9 @@ extern "C"
 #include "debug.h"
 #include "interrupt.h"
 #include "cpu.h"
+#ifdef DRIVERLIB_DEBUG
+#include "chipinfo.h"
+#endif
 
 //*****************************************************************************
 //
@@ -167,7 +170,15 @@ extern "C"
 static bool
 I2CBaseValid(uint32_t ui32Base)
 {
-    return(ui32Base == I2C0_BASE);
+    if (ChipInfo_GetChipType() == CHIP_TYPE_CC2653P10)
+    {
+        // CC2653 does not have I2C0, only I2C1.
+        return(ui32Base == I2C1_BASE);
+    }
+    else
+    {
+        return((ui32Base == I2C0_BASE) || (ui32Base == I2C1_BASE));
+    }
 }
 #endif
 

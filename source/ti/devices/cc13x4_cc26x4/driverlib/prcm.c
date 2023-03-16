@@ -92,7 +92,7 @@
 static const uint32_t g_pui32RCGCRegs[] =
 {
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGR),  // Index 0
-    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGR),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SPICLKGR),  // Index 1
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGR), // Index 2
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGR),  // Index 3
     (PRCM_BASE + PRCM_O_SECDMACLKGR),                  // Index 4
@@ -104,7 +104,7 @@ static const uint32_t g_pui32RCGCRegs[] =
 static const uint32_t g_pui32SCGCRegs[] =
 {
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGS),  // Index 0
-    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGS),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SPICLKGS),  // Index 1
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGS), // Index 2
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGS),  // Index 3
     (PRCM_BASE + PRCM_O_SECDMACLKGS),                  // Index 4
@@ -116,7 +116,7 @@ static const uint32_t g_pui32SCGCRegs[] =
 static const uint32_t g_pui32DCGCRegs[] =
 {
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_GPTCLKGDS),  // Index 0
-    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SSICLKGDS),  // Index 1
+    (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_SPICLKGDS),  // Index 1
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_UARTCLKGDS), // Index 2
     (PRCM_BASE + NONSECURE_OFFSET + PRCM_O_I2CCLKGDS),  // Index 3
     (PRCM_BASE + PRCM_O_SECDMACLKGDS),                  // Index 4

@@ -33,4 +33,3 @@ set(SOURCES_M0P_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM0
 set(SOURCES_M4_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM3/portasm.s)
 set(SOURCES_M4F_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM4F/portasm.s)
 set(SOURCES_M33F_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure/portasm.s)
-set(SOURCES_M33F_SPE_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM33/non_secure/portasm.s)

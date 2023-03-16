@@ -38,7 +38,7 @@
 #include <ti/drivers/crypto/CryptoCC26X4_s.h>
 #include <ti/drivers/AESGCM.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>

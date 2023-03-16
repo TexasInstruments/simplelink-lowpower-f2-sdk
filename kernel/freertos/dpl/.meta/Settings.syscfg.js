@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,35 +47,53 @@ var dplFiles = [
     "dpl/StaticAllocs_freertos.c",
     "dpl/SwiP_freertos.c",
     "dpl/SystemP_freertos.c",
+    "dpl/TaskP_freertos.c"
 ];
 
 var cc13xxcc26xxDeviceFiles = [
     "dpl/ClockPCC26X2_freertos.c",
     "dpl/HwiPCC26X2_freertos.c",
     "dpl/PowerCC26X2_freertos.c",
-    "dpl/TimerPCC26XX_freertos.c"
+    "dpl/TimerPCC26XX_freertos.c",
+    "dpl/TimestampPCC26XX_freertos.c"
 ];
 
 var cc32xxDeviceFiles = [
     "dpl/ClockP_freertos.c",
     "dpl/HwiPCC32XX_freertos.c",
-    "dpl/PowerCC32XX_freertos.c"
+    "dpl/PowerCC32XX_freertos.c",
+    "dpl/TimestampPCC32XX_freertos.c"
 ];
 
 var cc23x0DeviceFiles = [
     "dpl/ClockPCC23XX_freertos.c",
     "dpl/HwiPCC23XX_freertos.c",
-    "dpl/PowerCC23X0_freertos.c"
+    "dpl/PowerCC23X0_freertos.c",
+    "dpl/TimestampPCC23XX_freertos.c"
+];
+
+var cc23x0r2DeviceFiles = [
+    "dpl/ClockPCC23XX_freertos.c",
+    "dpl/HwiPCC23XX_freertos.c",
+    "dpl/PowerCC23X0R2_freertos.c"
 ];
 
 function getStartupFiles(family)
 {
+    var startupFile;
+    if (system.modules["/ti/utils/TrustZone"]) {
+        // TFM-enabled startup files have the suffix "_ns"
+        startupFile = `startup/startup_${family}_${system.compiler}_ns.c`
+    }
+    else {
+        startupFile = `startup/startup_${family}_${system.compiler}.c`
+    }
     return [
-        `startup/startup_${family}_${system.compiler}.c`
+        startupFile
     ]
 }
 
-function getCFiles()
+function getCFiles(kernel)
 {
     if (system.deviceData.deviceId.match(/CC(13|26).[12]/)) {
         return dplFiles.concat(cc13xxcc26xxDeviceFiles, getStartupFiles("cc13x2_cc26x2"));
@@ -83,6 +101,8 @@ function getCFiles()
         return dplFiles.concat(cc13xxcc26xxDeviceFiles, getStartupFiles("cc13x4_cc26x4"));
     } else if (system.deviceData.deviceId.match(/CC32../)) {
         return dplFiles.concat(cc32xxDeviceFiles, getStartupFiles("cc32xx"));
+    } else if (system.deviceData.deviceId.match(/CC23.0R2/)) {
+        return dplFiles.concat(cc23x0r2DeviceFiles, getStartupFiles("cc23x0r2"));
     } else if (system.deviceData.deviceId.match(/CC23.0/)) {
         return dplFiles.concat(cc23x0DeviceFiles, getStartupFiles("cc23x0"));
     } else {

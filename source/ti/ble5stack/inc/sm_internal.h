@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -140,6 +140,7 @@ extern "C"
 #define SM_PAIRING_STATE_WAIT_MASTER_SIGNING_INFO          16 // Waiting for Master Signing Info to be sent
 #define SM_PAIRING_STATE_WAIT_ENCRYPT                      17 // Waiting for LTK process to finish
 #define SM_PAIRING_STATE_DONE                              18 // Closing out the pairing process
+#define SM_PAIRING_STATE_WAIT_PAIRING_FAIL                 31 // Waiting for two connection events to pairing failed if raised
 
 // LE Secure Connection Pairing States
 #define SM_PAIRING_STATE_WAIT_LOCAL_REMOTE_PUBLICKEY       19 // Waiting for the Public Key of the local device

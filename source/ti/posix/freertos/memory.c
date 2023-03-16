@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,22 +37,22 @@
 
 #if defined(__ti__) && !defined(__clang__)
 
-#pragma FUNC_EXT_CALLED(malloc);
-#pragma FUNC_EXT_CALLED(memalign);
-#pragma FUNC_EXT_CALLED(free);
-#pragma FUNC_EXT_CALLED(calloc);
-#pragma FUNC_EXT_CALLED(realloc);
-#pragma FUNC_EXT_CALLED(aligned_alloc);
+    #pragma FUNC_EXT_CALLED(malloc);
+    #pragma FUNC_EXT_CALLED(memalign);
+    #pragma FUNC_EXT_CALLED(free);
+    #pragma FUNC_EXT_CALLED(calloc);
+    #pragma FUNC_EXT_CALLED(realloc);
+    #pragma FUNC_EXT_CALLED(aligned_alloc);
 
-#define ATTRIBUTE
+    #define ATTRIBUTE
 
 #elif defined(__IAR_SYSTEMS_ICC__)
 
-#define ATTRIBUTE
+    #define ATTRIBUTE
 
 #else
 
-#define ATTRIBUTE __attribute__ ((used))
+    #define ATTRIBUTE __attribute__((used))
 
 #endif
 
@@ -66,29 +66,39 @@
 
 #if defined(__GNUC__) && !defined(__ti__)
 
-#include <reent.h>
+    #include <reent.h>
 
 #endif
 
+/*
+ * This Header is only needed to support advanced memory services - namely
+ * realloc() and memalign().  If the user doesn't require those features, they
+ * can remove the overhead and save both code and data.
+ */
+#if defined(TI_POSIX_FREERTOS_MEMORY_ENABLEADV)
 /*
  * Header is a union to make sure that the size is a power of 2.
  *
  * On the MSP430 small model (MSP430X), size_t is 2 bytes, which makes
  * the size of this struct 6 bytes.
  */
-typedef union Header {
-    struct {
+typedef union Header
+{
+    struct
+    {
         void *actualBuf;
         size_t size;
     } header;
-    int pad[2];        /* 4 words on 28L, 8 bytes on most others */
+    int pad[2]; /* 4 words on 28L, 8 bytes on most others */
 } Header;
+#endif
 
 /*
  *  ======== malloc ========
  */
 void ATTRIBUTE *malloc(size_t size)
 {
+#if defined(TI_POSIX_FREERTOS_MEMORY_ENABLEADV)
     Header *packet;
     size_t allocSize;
 
@@ -98,22 +108,43 @@ void ATTRIBUTE *malloc(size_t size)
      * If size is very large and allocSize overflows, the result will be
      * smaller than size. In this case, don't try to allocate.
      */
-    if ((size == 0) || (allocSize < size)) {
+    if ((size == 0) || (allocSize < size))
+    {
         errno = EINVAL;
         return (NULL);
     }
 
     packet = (Header *)pvPortMalloc(allocSize);
 
-    if (packet == NULL) {
+    if (packet == NULL)
+    {
         errno = ENOMEM;
         return (NULL);
     }
 
     packet->header.actualBuf = (void *)packet;
-    packet->header.size = allocSize;
+    packet->header.size      = allocSize;
 
     return (packet + 1);
+#else
+    void *packet;
+
+    if (size == 0)
+    {
+        errno = EINVAL;
+        return (NULL);
+    }
+
+    packet = pvPortMalloc(size);
+
+    if (packet == NULL)
+    {
+        errno = ENOMEM;
+        return (NULL);
+    }
+
+    return (packet);
+#endif
 }
 
 /*
@@ -125,7 +156,8 @@ void ATTRIBUTE *calloc(size_t nmemb, size_t size)
     void *retval;
 
     /* guard against divide by zero exception below */
-    if (nmemb == 0) {
+    if (nmemb == 0)
+    {
         errno = EINVAL;
         return (NULL);
     }
@@ -133,13 +165,15 @@ void ATTRIBUTE *calloc(size_t nmemb, size_t size)
     nbytes = nmemb * size;
 
     /* return NULL if there's an overflow */
-    if (nmemb && size != (nbytes / nmemb)) {
+    if (nmemb && size != (nbytes / nmemb))
+    {
         errno = EOVERFLOW;
         return (NULL);
     }
 
     retval = malloc(nbytes);
-    if (retval != NULL) {
+    if (retval != NULL)
+    {
         (void)memset(retval, (int)'\0', nbytes);
     }
 
@@ -151,21 +185,26 @@ void ATTRIBUTE *calloc(size_t nmemb, size_t size)
  */
 void ATTRIBUTE *realloc(void *ptr, size_t size)
 {
+#if defined(TI_POSIX_FREERTOS_MEMORY_ENABLEADV)
     void *retval;
     Header *packet;
     size_t oldSize;
 
-    if (ptr == NULL) {
+    if (ptr == NULL)
+    {
         retval = malloc(size);
     }
-    else if (size == 0) {
-        errno = EINVAL;
+    else if (size == 0)
+    {
+        errno  = EINVAL;
         retval = NULL;
     }
-    else {
+    else
+    {
         packet = (Header *)ptr - 1;
         retval = malloc(size);
-        if (retval != NULL) {
+        if (retval != NULL)
+        {
             oldSize = packet->header.size - sizeof(Header);
             (void)memcpy(retval, ptr, (size < oldSize) ? size : oldSize);
             free(ptr);
@@ -173,6 +212,10 @@ void ATTRIBUTE *realloc(void *ptr, size_t size)
     }
 
     return (retval);
+#else
+    /* user called an unsupported function */
+    return (NULL);
+#endif
 }
 
 /*
@@ -180,12 +223,17 @@ void ATTRIBUTE *realloc(void *ptr, size_t size)
  */
 void ATTRIBUTE free(void *ptr)
 {
+#if defined(TI_POSIX_FREERTOS_MEMORY_ENABLEADV)
     Header *packet;
 
-    if (ptr != NULL) {
+    if (ptr != NULL)
+    {
         packet = ((Header *)ptr) - 1;
         vPortFree(packet->header.actualBuf);
     }
+#else
+    vPortFree(ptr);
+#endif
 }
 
 /*
@@ -193,16 +241,19 @@ void ATTRIBUTE free(void *ptr)
  */
 void ATTRIBUTE *memalign(size_t boundary, size_t size)
 {
+#if defined(TI_POSIX_FREERTOS_MEMORY_ENABLEADV)
     Header *packet;
-    void   *tmp;
+    void *tmp;
 
     /* return NULL if size is 0, or alignment is not a power-of-2 */
-    if (size == 0 || (boundary & (boundary - 1))) {
+    if (size == 0 || (boundary & (boundary - 1)))
+    {
         errno = EINVAL;
         return (NULL);
     }
 
-    if (boundary < sizeof(Header)) {
+    if (boundary < sizeof(Header))
+    {
         boundary = sizeof(Header);
     }
 
@@ -212,28 +263,36 @@ void ATTRIBUTE *memalign(size_t boundary, size_t size)
      */
     tmp = pvPortMalloc(boundary + size + sizeof(Header));
 
-    if (tmp == NULL) {
+    if (tmp == NULL)
+    {
         errno = ENOMEM;
         return (NULL);
     }
 
-    if ((unsigned int)tmp & (boundary - 1)) {
+    if ((unsigned int)tmp & (boundary - 1))
+    {
         /* tmp is not already aligned */
         packet = (Header *)(((unsigned int)tmp + boundary) & ~(boundary - 1)) - 1;
-        if (packet < (Header *)tmp) {
+        if (packet < (Header *)tmp)
+        {
             /* don't have room for Header before aligned address */
             packet = (Header *)((unsigned int)packet + boundary);
         }
     }
-    else {
+    else
+    {
         /* tmp is already aligned to boundary (by chance) */
         packet = ((Header *)(((unsigned int)tmp + boundary))) - 1;
     }
 
     packet->header.actualBuf = tmp;
-    packet->header.size = size + sizeof(Header);
+    packet->header.size      = size + sizeof(Header);
 
     return (packet + 1);
+#else
+    /* user called an unsupported function */
+    return (NULL);
+#endif
 }
 
 /*

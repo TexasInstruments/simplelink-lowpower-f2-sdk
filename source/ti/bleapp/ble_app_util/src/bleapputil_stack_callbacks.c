@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022, Texas Instruments Incorporated
+ Copyright (c) 2022-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,8 @@ Target Device: cc13xx_cc26xx
 /*********************************************************************
  * INCLUDES
  */
+#include <string.h>
+#include <stdarg.h>
 #include <ti/bleapp/ble_app_util/inc/bleapputil_api.h>
 #include <ti/bleapp/ble_app_util/inc/bleapputil_internal.h>
 
@@ -102,7 +104,10 @@ uint8_t BLEAppUtil_processStackMsgCB(uint8_t event, uint8_t *pMessage)
 {
   // ignore the event
   // Enqueue the msg in order to be excuted in the application context
-  BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_STACK_CALLBACK, pMessage);
+  if (BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_STACK_CALLBACK, pMessage) != SUCCESS)
+  {
+      BLEAppUtil_free(pMessage);
+  }
 
   // Not safe to dealloc, the application BleAppUtil module will free the msg
   return FALSE;
@@ -193,8 +198,10 @@ void BLEAppUtil_passcodeCB(uint8_t *pDeviceAddr,
 void BLEAppUtil_connEventCB(Gap_ConnEventRpt_t *pReport)
 {
     // Enqueue the event msg
-    BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_CONN_EVENT_CB, pReport);
-
+    if ( BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_CONN_EVENT_CB, pReport) != SUCCESS)
+    {
+        BLEAppUtil_free(pReport);
+    }
 }
 
 /*********************************************************************

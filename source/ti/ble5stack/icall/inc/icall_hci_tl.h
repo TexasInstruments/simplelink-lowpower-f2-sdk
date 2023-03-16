@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -64,8 +64,10 @@ extern "C"
 #define HOST_TL_ID                                 1
 
 #define HCI_LEGACY_CMD_STATUS_UNDEFINED            0
-#define HCI_LEGACY_CMD_STATUS_BT4                  1
-#define HCI_LEGACY_CMD_STATUS_BT5                  2
+#define HCI_LEGACY_CMD_STATUS_BT4_ADV              1
+#define HCI_LEGACY_CMD_STATUS_BT5_ADV              2
+#define HCI_LEGACY_CMD_STATUS_BT4_SCAN             3
+#define HCI_LEGACY_CMD_STATUS_BT5_SCAN             4
 
 #ifdef BLE3_CMD
 // Advertising event types

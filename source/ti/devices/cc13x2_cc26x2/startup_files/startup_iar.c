@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC26x2 device family for use with IAR.
 *
-*  Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2017-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@ __root static void* dummy_stack @ ".stack";
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__root void (* const __vector_table[])(void) @ ".intvec" =
+__root void (* const __vector_table[])(void) @ ".resetVecs" =
 {
     (void (*)(void))&STACK_TOP,             //  0 The initial stack pointer
     ResetISR,                               //  1 The reset handler

@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2013-2022, Texas Instruments Incorporated
+ Copyright (c) 2013-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,8 @@ Target Device: cc13xx_cc26xx
 /*********************************************************************
  * INCLUDES
  */
+#include <string.h>
+#include <stdarg.h>
 #include "ble_stack_api.h"
 #include <icall_ble_api.h>
 #ifndef NO_TI_BLE_CONFIG
@@ -128,13 +130,14 @@ void bleStack_createTasks()
 bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pfnGapScanCB_t scanCallback, uint16_t paramUpdateDecision)
 {
   bStatus_t status;
-  if (role & (GAP_PROFILE_PERIPHERAL | GAP_PROFILE_CENTRAL))
-  {
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
+
     // Pass all parameter update requests to the app for it to decide
     GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, paramUpdateDecision);
-  }
+#endif //#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
 
-  if((scanCallback != NULL) && (role & (GAP_PROFILE_OBSERVER | GAP_PROFILE_CENTRAL)))
+#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
+  if(scanCallback != NULL)
   {
     // Register scan callback to process scanner events
     status = GapScan_registerCb(scanCallback, NULL);
@@ -146,6 +149,7 @@ bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pf
     // Set Scanner Event Mask
     GapScan_setEventMask(GAP_EVT_SCAN_EVT_MASK);
   }
+#endif //#if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | OBSERVER_CFG ) )
 
   // Register with GAP for HCI/Host messages. This is needed to receive HCI
   // events. For more information, see the HCI section in the User's Guide:
@@ -284,7 +288,7 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
   if (role & (GAP_PROFILE_PERIPHERAL | GAP_PROFILE_CENTRAL))
   {
       // Initialize GATT Client
-      GATT_InitClient("");
+      GATT_InitClient();
   }
 
   if (role & (GAP_PROFILE_CENTRAL | GAP_PROFILE_OBSERVER))

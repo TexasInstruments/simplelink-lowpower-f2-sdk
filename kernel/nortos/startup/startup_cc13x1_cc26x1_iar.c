@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -167,7 +167,7 @@ __root static void *dummy_stack @ ".stack";
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__root void (*const __vector_table[])(void) @ ".intvec" = {
+__root void (*const __vector_table[])(void) @ ".resetVecs" = {
     (void (*)(void)) & STACK_TOP, //  0 The initial stack pointer
     __iar_program_start,          //  1 The reset handler
     nmiISR,                       //  2 The NMI handler

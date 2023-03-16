@@ -28,6 +28,9 @@
 #include "6LoWPAN/ws/ws_bootstrap.h"
 #include "6LoWPAN/ws/ws_cfg_settings.h"
 
+#include "application.h"
+extern configurable_props_t cfg_props;
+
 #define TRACE_GROUP "wsmg"
 
 #ifdef HAVE_WS
@@ -67,6 +70,9 @@ int ws_management_node_init(
     }
 
     strncpy(gen_cfg.network_name, network_name_ptr, 32);
+
+    /* use the cfg_props network_PAN ID and set ws_cfg's pan ID */
+    gen_cfg.network_pan_id = cfg_props.pan_id;
 
     if (ws_cfg_gen_set(cur, NULL, &gen_cfg, 0) < 0) {
         return -4;

@@ -26,7 +26,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -271,10 +271,9 @@ SECTIONS
   GROUP > ENTRY
   {
     .resetVecs
-    .intvecs
     EntrySection  LOAD_START(prgEntryAddr)
   }
- // .intvecs        :   >  FLASH_START
+  
   GROUP >>  FLASH
   {
     .text
@@ -295,9 +294,7 @@ SECTIONS
     #ifndef CACHE_AS_RAM
     .bss
     #endif /* CACHE_AS_RAM */
-    .vtable
-    .vtable_ram
-    vtable_ram
+    .ramVecs
     .sysmem
     .nonretenvar
     /*This keeps ll.o objects out of GPRAM, if no ll.o would be placed here

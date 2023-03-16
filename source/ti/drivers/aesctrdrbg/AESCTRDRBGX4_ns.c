@@ -34,9 +34,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <ti/devices/DeviceFamily.h>
-#include DeviceFamily_constructPath(inc/hw_types.h)
-
 #include <ti/drivers/AESCTRDRBG.h>
 #include <ti/drivers/AESCTR.h>
 #include <ti/drivers/aesctrdrbg/AESCTRDRBGX4_ns.h>

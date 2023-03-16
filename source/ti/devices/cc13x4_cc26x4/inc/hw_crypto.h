@@ -170,22 +170,17 @@
 // AES Tag Out 0
 #define CRYPTO_O_AESTAGOUT3                                         0x0000057C
 
-// This register needs to be read and stored when an AES-CCM operation is
-// interrupted. This value needs to be restored by writing this register, when
-// resuming that AES-CCM operation in a later session
+// AES CCM AAD Alignment Data Word
 #define CRYPTO_O_AESCCMALNWRD                                       0x000005D4
 
-// This counter keeps track of the number of data blocks during AES-CCM and
-// AES-GCM operations. Reading and writing this counter allows interruption and
-// resuming of long CCM or GCM operations. Note that internally, the block
-// counter is used for AAD data as well as encryption/decryption data
+// AES Block Counter Word 0
 #define CRYPTO_O_AESBLKCNT0                                         0x000005D8
 
-// This counter keeps track of the number of data blocks during AES-CCM and
-// AES-GCM operations. Reading and writing this counter allows interruption and
-// resuming of long CCM or GCM operations. Note that internally, the block
-// counter is used for AAD data as well as encryption/decryption data
+// AES Block Counter Word 1
 #define CRYPTO_O_AESBLKCNT1                                         0x000005DC
+
+// HASH Data Input 0
+#define CRYPTO_O_HASHDATAIN0                                        0x00000600
 
 // HASH Data Input 1
 #define CRYPTO_O_HASHDATAIN1                                        0x00000604
@@ -2207,24 +2202,55 @@
 
 //*****************************************************************************
 //
+// Register: CRYPTO_O_HASHDATAIN0
+//
+//*****************************************************************************
+// Field:  [31:0] HASH_DATA_IN
+//
+// HASH_DATA_IN[31:0]
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
+// Note: The host may only write the input data buffer when
+// HASHIOBUFCTRL.RFD_IN is 1. If the HASHIOBUFCTRL.RFD_IN is 0, the engine is
+// busy with processing. During processing, it is not allowed to write new
+// input data.
+// For message lengths larger than a block size, multiple blocks of data are
+// written to this input buffer using a handshake through flags of the
+// HASHIOBUFCTRL register. All blocks except the last are required to be 512
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
+// significant bits of data must be written, but they must be padded with 0s to
+// the next 32-bit boundary.
+// Host read operations from these register addresses return 0s.
+#define CRYPTO_HASHDATAIN0_HASH_DATA_IN_W                                   32
+#define CRYPTO_HASHDATAIN0_HASH_DATA_IN_M                           0xFFFFFFFF
+#define CRYPTO_HASHDATAIN0_HASH_DATA_IN_S                                    0
+
+//*****************************************************************************
+//
 // Register: CRYPTO_O_HASHDATAIN1
 //
 //*****************************************************************************
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[63:32]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN is 1. If the HASHIOBUFCTRL.RFD_IN is 0, the engine is
 // busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2240,18 +2266,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[95:64]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN is 1. If the HASHIOBUFCTRL.RFD_IN is 0, the engine is
 // busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2267,18 +2295,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[127:96]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when the rfd_in bit of
 // the HASH_IO_BUF_CTRL register is high. If the rfd_in bit is 0, the engine is
 // busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASH_IO_BUF_CTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2294,18 +2324,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[159:128]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is '1'. If the HASHIOBUFCTRL.RFD_IN  is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2321,18 +2353,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[191:160]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2348,18 +2382,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[223:192]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2375,18 +2411,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[255:224]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2402,18 +2440,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[287:256]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2429,18 +2469,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[319:288]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2456,18 +2498,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[351:320]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2483,18 +2527,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[383:352]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2510,18 +2556,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[415:384]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2537,18 +2585,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[447:416]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2564,18 +2614,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[479:448]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2591,18 +2643,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[511:480]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2618,18 +2672,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[543:512]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2645,18 +2701,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[575:544]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2672,18 +2730,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[607:576]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2699,18 +2759,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[639:608]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2726,18 +2788,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[671:640]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2753,18 +2817,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[703:672]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2780,18 +2846,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[735:704]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2807,18 +2875,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[767:736]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2834,18 +2904,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[799:768]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2861,18 +2933,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[831:800]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2888,18 +2962,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[863:832]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2915,18 +2991,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[895:864]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2942,18 +3020,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[923:896]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2969,18 +3049,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[959:924]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -2996,18 +3078,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[991:960]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -3023,18 +3107,20 @@
 // Field:  [31:0] HASH_DATA_IN
 //
 // HASH_DATA_IN[1023:992]
-// These registers must be written with the 512-bit input data. The data lines
-// are connected directly to the data input of the hash module and hence into
-// the engine's internal data buffer. Writing to each of the registers triggers
-// a corresponding 32-bit write enable to the internal buffer.
+// These registers must be written with the 512-bit or 1024-bit (depending on
+// block size of chosen SHA-2 algorithm) input data. The data lines are
+// connected directly to the data input of the hash module and hence into the
+// engine's internal data buffer. Writing to each of the registers triggers a
+// corresponding 32-bit write enable to the internal buffer.
 // Note: The host may only write the input data buffer when
 // HASHIOBUFCTRL.RFD_IN  is 1. If the HASHIOBUFCTRL.RFD_IN   is 0, the engine
 // is busy with processing. During processing, it is not allowed to write new
 // input data.
-// For message lengths larger than 64 bytes, multiple blocks of data are
+// For message lengths larger than a block size, multiple blocks of data are
 // written to this input buffer using a handshake through flags of the
 // HASHIOBUFCTRL register. All blocks except the last are required to be 512
-// bits in size. If the last block is not 512 bits long, only the least
+// bits (or 1024 bits depending on block size) in size. If the last block is
+// not 512 bits ( or 1024 bits depending on block size) long, only the least
 // significant bits of data must be written, but they must be padded with 0s to
 // the next 32-bit boundary.
 // Host read operations from these register addresses return 0s.
@@ -3097,12 +3183,13 @@
 // that the HASHDATAINn register currently holds the last data of the message.
 // When pad_message is set to 1, the hash engine will add padding bits to the
 // data currently in the HASHDATAINn register.
-// When the last message block is smaller than 512 bits, the pad_message bit
-// must be set to 1 together with the data_in_av bit.
-// When the last message block is equal to 512 bits, pad_message may be set
-// together with data_in_av. In this case the pad_message bit may also be set
-// after the last data block has been written to the hash engine (so when the
-// rfd_in bit has become 1 again after writing the last data block).
+// When the last message block is smaller than 1024 bits for SHA-512/384 or 512
+// bits for SHA-256/224, the pad_message bit must be set to ‘1’ together with
+// the data_in_av bit.
+// When the last message block is equal to the block size, pad_message may be
+// set together with data_in_av. In this case, the pad_message bit may also be
+// set after the last data block has been written to the hash engine (so when
+// the rfd_in bit has become ‘1’ again after writing the last data block).
 // Writing 0 to this bit has no effect.
 // This bit is automatically cleared (i.e. reads 0) by the hash engine. This
 // bit reads 1 between the time it was set by the host and the hash engine
@@ -3249,8 +3336,10 @@
 //
 // Non-final hash operations:
 // For hash operations that do not require finalization (input data length is
-// multiple of 512-bits which is SHA-256 data block size), the length field
-// does not need to be programmed since not used by the operation.
+// multiple of 1024-bits for SHA-512, which is SHA-512 data block size. Or
+// multiple of 512-bits for SHA-256, which is SHA-256 data block size), the
+// length field does not need to be programmed since it is not used by the
+// operation
 //
 // If the message length in bits is below (2^32-1), then only this register
 // needs to be written. The hardware automatically sets HASH_LENGTH_IN_H to 0s
@@ -3293,8 +3382,10 @@
 //
 // Non-final hash operations:
 // For hash operations that do not require finalization (input data length is
-// multiple of 512-bits which is SHA-256 data block size), the length field
-// does not need to be programmed since not used by the operation.
+// multiple of 1024-bits for SHA-512, which is SHA-512 data block size. Or
+// multiple of 512-bits for SHA-256, which is SHA-256 data block size), the
+// length field does not need to be programmed since it is not used by the
+// operation.
 //
 // If the message length in bits is below (2^32-1), then only HASHINLENL needs
 // to be written. The hardware automatically sets HASH_LENGTH_IN_H to 0s in
@@ -3768,7 +3859,7 @@
 // If this bit is cleared to 0, the DMA operation involves only data.
 // If this bit is set, the DMA operation includes a TAG (Authentication Result
 // / Digest).
-// For SHA-256 operation, a DMA must be set up for both input data and TAG. For
+// For SHA-2 operation, a DMA must be set up for both input data and TAG. For
 // any other selected module, setting this bit only allows a DMA that reads the
 // TAG. No data allowed to be transferred to or from the selected module via
 // the DMA.
@@ -3779,11 +3870,10 @@
 
 // Field:     [3] HASH_SHA_512
 //
-// If set to one, selects the hash engine in 512B mode as destination for the
-// DMA
-// The maximum transfer size to DMA engine is set to 64 bytes for reading and
-// 32 bytes for writing (the latter is only applicable if the hash result is
-// written out through the DMA).
+// If set to one, selects the Hash engine as destination for the DMA.
+// The maximum transfer size to DMA engine is set to 128 bytes for reading and
+// 64 bytes for writing (the latter is only applicable if the hash result is
+// written out via DMA).
 #define CRYPTO_ALGSEL_HASH_SHA_512                                  0x00000008
 #define CRYPTO_ALGSEL_HASH_SHA_512_BITN                                      3
 #define CRYPTO_ALGSEL_HASH_SHA_512_M                                0x00000008

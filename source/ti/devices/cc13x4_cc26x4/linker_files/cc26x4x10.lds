@@ -4,7 +4,7 @@
 
  This file is auto-generated.
 
-  Copyright (C) 2020 Texas Instruments Incorporated - http:www.ti.com/
+  Copyright (C) 2020-2022 Texas Instruments Incorporated - http:www.ti.com/
 
 
   Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ SECTIONS
     .text :
     {
         _text = .;
-        KEEP(*(.vectors))
+        KEEP(*(.resetVecs))
         *(.text*)
         *(.rodata*)
         *(.init)
@@ -98,11 +98,15 @@ SECTIONS
     .data :
     {
         _data = .;
-        *(vtable)
         *(.data*)
         _edata = .;
     } > SRAM AT > FLASH
     _ldata = LOADADDR(.data);
+
+    .ramVecs (NOLOAD) : ALIGN(256)
+    {
+    	*(.ramVecs)
+    } > SRAM
 
     .bss :
     {

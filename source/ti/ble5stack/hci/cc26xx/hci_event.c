@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -2455,11 +2455,7 @@ void LL_ReadRemoteUsedFeaturesCompleteCback( hciStatus_t  status,
     msg->pData[6] = HI_UINT16(connHandle);  // connection handle (MSB)
 
     // feature set
-#ifdef QUAL_TEST
-    (void)MAP_osal_memcpy (&msg->pData[7], remoteFeatureSet[connHandle].featureSet, B_FEATURE_SUPPORT_LENGTH);
-#else
     (void)MAP_osal_memcpy (&msg->pData[7], featureSet, B_FEATURE_SUPPORT_LENGTH);
-#endif
     // send the message
     (void)MAP_osal_msg_send( hciTaskID, (uint8 *)msg );
   }

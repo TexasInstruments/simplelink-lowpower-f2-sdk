@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,9 @@ let Common = system.getScript("/ti/drivers/Common.js");
 let devSpecific = {
     config: [
         {
-            name        : "enableMCLK",
-            displayName : "Enable MCLK",
+            name        : "enableCCLK",
+            legacyNames : ["enableMCLK"],
+            displayName : "Enable CCLK",
             default     : false
         }
     ],
@@ -72,7 +73,7 @@ function _getPinResources(inst)
 {
     let pin;
     let sckPin;
-    let mclkPin;
+    let cclkPin;
     let wsPin;
     let sd0Pin;
     let sd1Pin;
@@ -84,9 +85,9 @@ function _getPinResources(inst)
             pin = "\nSCK: " + sckPin;
         }
 
-        if (inst.i2s.MCLKPin) {
-            mclkPin = inst.i2s.MCLKPin.$solution.devicePinName.replace("_", "");
-            pin += "\nMCLK: " + mclkPin;
+        if (inst.i2s.CCLKPin) {
+            cclkPin = inst.i2s.CCLKPin.$solution.devicePinName.replace("_", "");
+            pin += "\nCCLK: " + cclkPin;
         }
 
         if (inst.i2s.WSPin) {
@@ -180,7 +181,7 @@ function moduleInstances(inst)
         });
     }
 
-    if(inst.masterSlaveSelection == "Master") {
+    if(inst.controllerTargetSelection == "Controller") {
         pinInstances.push({
             name: "sckPinInstance",
             displayName: "I2S SCK GPIO Driver Instance - Output",
@@ -207,16 +208,17 @@ function moduleInstances(inst)
             }
         });
 
-        if(inst.enableMCLK) {
+        if(inst.enableCCLK) {
             pinInstances.push({
-                name: "mclkPinInstance",
-                displayName: "I2S MCLK GPIO Driver Instance - Output",
+                name: "cclkPinInstance",
+                legacyNames: ["mclkPinInstance"],
+                displayName: "I2S CCLK GPIO Driver Instance - Output",
                 moduleName: "/ti/drivers/GPIO",
                 readOnly: true,
                 requiredArgs: {
                     parentInterfaceName: "i2s",
-                    parentSignalName: "MCLKPin",
-                    parentSignalDisplayName: "MCLK",
+                    parentSignalName: "CCLKPin",
+                    parentSignalDisplayName: "CCLK",
                     mode: "Output"
                 }
             });
@@ -249,16 +251,17 @@ function moduleInstances(inst)
             }
         });
 
-        if(inst.enableMCLK) {
+        if(inst.enableCCLK) {
             pinInstances.push({
-                name: "mclkPinInstance",
-                displayName: "I2S MCLK GPIO Driver Instance - Input",
+                name: "cclkPinInstance",
+                legacyNames: ["mclkPinInstance"],
+                displayName: "I2S CCLK GPIO Driver Instance - Input",
                 moduleName: "/ti/drivers/GPIO",
                 readOnly: true,
                 args: {
                     parentInterfaceName: "i2s",
-                    parentSignalName: "MCLKPin",
-                    parentSignalDisplayName: "MCLK",
+                    parentSignalName: "CCLKPin",
+                    parentSignalDisplayName: "CCLK",
                     mode: "Input"
                 }
             });
@@ -298,9 +301,10 @@ function pinmuxRequirements(inst)
         interfaceNames: ["WCLK"]
     };
 
-    let mclk = {
-        name: "MCLKPin",
-        displayName: "MCLK Pin",
+    let cclk = {
+        name: "CCLKPin",
+        legacyNames: ["MCLKPin"],
+        displayName: "CCLK Pin",
         interfaceNames: ["MCLK"]
     };
 
@@ -317,8 +321,8 @@ function pinmuxRequirements(inst)
     resources.push(sck);
     resources.push(ws);
 
-    if (inst.enableMCLK == true) {
-        resources.push(mclk);
+    if (inst.enableCCLK == true) {
+        resources.push(cclk);
     }
 
     let i2s = {
@@ -332,7 +336,7 @@ function pinmuxRequirements(inst)
             SD1Pin     : ['I2S_SD1'],
             SCKPin     : ['I2S_SCK'],
             WSPin      : ['I2S_WS'],
-            MCLKPin    : ['I2S_MCLK']
+            CCLKPin    : ['I2S_CCLK']
         }
     };
 

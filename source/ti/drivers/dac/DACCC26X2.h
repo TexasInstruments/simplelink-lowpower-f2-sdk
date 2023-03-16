@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,6 +81,8 @@ typedef struct
     DAC_VrefSource dacVrefSource;
     /*!< Internal signal routed to COMPA_IN */
     uint8_t dacCompAInput;
+    /*!< Valid divider to set the sample clock for the DAC */
+    uint8_t dacSmplClkDivider;
     /*!< Flag to determine precharge state when DCOUPL has been selected as voltage reference */
     bool dacPrecharge;
 } DACCC26XX_HWAttrs;

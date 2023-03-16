@@ -87,6 +87,7 @@ AtProcess_Status AtParams_parseIncoming( char *param, uint8_t len );
  *
  * param mode        - The test mode that needs a message printed
  * param packetCount - Number of packets
+ * param txDone      - Flag for if tx test mode is done
  * param avgRssi     - Average RSSI
  * param minRssi     - Minimum RSSI
  * param maxRSSI     - Maximum RSSI
@@ -94,7 +95,7 @@ AtProcess_Status AtParams_parseIncoming( char *param, uint8_t len );
  *return none
  *
  ***************************************************************************************************/
-void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
+void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
 
 /***************************************************************************************************
  ***************************************************************************************************/

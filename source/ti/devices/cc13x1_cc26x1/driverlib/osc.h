@@ -100,7 +100,43 @@ extern "C"
     #define OSC_AdjustXoscHfCapArray        NOROM_OSC_AdjustXoscHfCapArray
     #define OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert NOROM_OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert
     #define OSC_HPOSCRtcCompensate          NOROM_OSC_HPOSCRtcCompensate
+    #define OSC_LFXOSCInitStaticOffset      NOROM_OSC_LFXOSCInitStaticOffset
+    #define OSC_LFXOSCRelativeFrequencyOffsetGet NOROM_OSC_LFXOSCRelativeFrequencyOffsetGet
 #endif
+
+//*****************************************************************************
+//
+//! \brief A structure that defines the polynomial coefficients for calculating
+//! the XOSC LF ppm offset as function of temperature.
+//!
+//! ppm(T) = (a*T^2 + b*T + c - d) >> shift
+//!
+//! The coefficients a, b, and c are typically defined by the application,
+//! while d is calculated by calling \ref OSC_LFXOSCInitStaticOffset. The fixed point
+//! coefficients stored in this structure are the rounded result of the true
+//! floating point coefficients, multiplied by a factor of 2^shift.
+//! This struct is used in \ref OSC_LFXOSCRelativeFrequencyOffsetGet.
+//!
+//! \note Before calling \ref OSC_LFXOSCInitStaticOffset, the symbol _lfXoscParams
+//! must be defined with type XoscLf_Params_t
+//!
+/*!
+\verbatim
+// Example of _lfXoscParams definition
+XoscLf_Params_t _lfXoscParams = {.coeffA = -167772, .coeffB = 6710886, .coeffC = -62914560, .shift = 22};
+\endverbatim
+*/
+//!
+//
+//*****************************************************************************
+typedef struct
+{
+    int32_t coeffA;
+    int32_t coeffB;
+    int32_t coeffC;
+    int32_t coeffD;
+    uint8_t shift;
+} XoscLf_Params_t;
 
 //*****************************************************************************
 //
@@ -686,6 +722,45 @@ extern void OSC_HPOSCRtcCompensate( int32_t relFreqOffset );
 
 //*****************************************************************************
 //
+//! \brief Initialize device specific coefficient for XOSC LF RTC compensation.
+//!
+//! Calculates the device specific static offset of XOSC LF and stores it as a coefficient in the internal _lfXoscParams
+//! polynomial structure.
+//!
+//! \warning _lfXoscParams must be defined and populated with polynomial coefficients a, b, and c if this function is called.
+//!
+//! \note This function must be called once, before calling \ref OSC_LFXOSCRelativeFrequencyOffsetGet.
+//!
+//! \return None
+//!
+//
+//*****************************************************************************
+extern void OSC_LFXOSCInitStaticOffset(void);
+
+//*****************************************************************************
+//
+//! \brief Calculates the ppm offset of XOSC LF for a given temperature.
+//!
+//! The offset (measured in ppm) is given by a second order polynomial function of temperature, T:
+//! ppm(T) = a*T^2 + b*T + c - d.
+//! The coefficients a, b, c, and d are taken from _lfXoscParams.coeffA, _lfoXscParams.coeffB,
+//! _lfXoscParams.coeffC and _lfXoscParams.coeffD and scaled down for fixed point arithmetic
+//! by a factor of 2^_lfXoscParams.shift.
+//! _lfXoscParams must be defined by the application, and must be fully initialized by calling
+//! \ref OSC_LFXOSCInitStaticOffset once, before this function is called.
+//!
+//! \note \ref OSC_LFXOSCInitStaticOffset should be called once, before this function is used.
+//!
+//! \param temperature is the on-chip temperature in degrees Celcius.
+//!
+//! \return Returns the offset in XOSC LF from the nominal frequency, in ppm.
+//!
+//
+//*****************************************************************************
+extern int32_t OSC_LFXOSCRelativeFrequencyOffsetGet(int32_t temperature);
+
+//*****************************************************************************
+//
 // Support for DriverLib in ROM:
 // Redirect to implementation in ROM when available.
 //
@@ -755,6 +830,14 @@ extern void OSC_HPOSCRtcCompensate( int32_t relFreqOffset );
     #ifdef ROM_OSC_HPOSCRtcCompensate
         #undef  OSC_HPOSCRtcCompensate
         #define OSC_HPOSCRtcCompensate          ROM_OSC_HPOSCRtcCompensate
+    #endif
+    #ifdef ROM_OSC_LFXOSCInitStaticOffset
+        #undef  OSC_LFXOSCInitStaticOffset
+        #define OSC_LFXOSCInitStaticOffset      ROM_OSC_LFXOSCInitStaticOffset
+    #endif
+    #ifdef ROM_OSC_LFXOSCRelativeFrequencyOffsetGet
+        #undef  OSC_LFXOSCRelativeFrequencyOffsetGet
+        #define OSC_LFXOSCRelativeFrequencyOffsetGet ROM_OSC_LFXOSCRelativeFrequencyOffsetGet
     #endif
 #endif
 

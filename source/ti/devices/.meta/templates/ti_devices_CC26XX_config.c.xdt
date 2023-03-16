@@ -312,9 +312,12 @@
 % }
 
 % const device = system.deviceData.deviceId;
-% if(device.match(/CC(?:13|26).4/)) {
+% if(device.match(/CC(?:13|26).[34]/)) {
 
-% if(inst.markAllFlashSecure) {
+% if(!(system.modules["/ti/utils/TrustZone"])) {
+// Set all of flash to non-secure, except the lowest 8 KB
+#define SET_CCFG_TRUSTZONE_FLASH_CFG_NSADDR_BOUNDARY    0x1
+% } else if(inst.markAllFlashSecure) {
 // Set all of flash to secure-only access, using the special value of 0
 #define SET_CCFG_TRUSTZONE_FLASH_CFG_NSADDR_BOUNDARY    0x0
 % }

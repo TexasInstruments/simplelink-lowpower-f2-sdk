@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,6 @@
 
 #include "_pthread.h"
 
-
 /*
  *  ======== pthread_key_Obj ========
  *  Each key will have a list of threads that have called pthread_setspecific()
@@ -60,9 +59,10 @@
  *  If the destructor is non-NULL, it will be called when a thread
  *  exits and passed the thread-specific data for that key (if non-NULL).
  */
-typedef struct pthread_key_Obj {
+typedef struct pthread_key_Obj
+{
     void (*destructor)(void *);
-    Queue_Struct threadList;    /* Queue of pthread_KeyData objects */
+    Queue_Struct threadList; /* Queue of pthread_KeyData objects */
 } pthread_key_Obj;
 
 /*
@@ -70,12 +70,13 @@ typedef struct pthread_key_Obj {
  *  Each thread maintains a list of the key specific data it has set.  Objects
  *  of this type are queued in the thread's key list.
  */
-typedef struct pthread_ThreadData {
-    Queue_Elem               qElem;
-    pthread_key_Obj         *key;
-    void                    *specData;  /* Pointer to thread specific data */
-    struct pthread_KeyData  *keyData;   /* Back pointer for easy removal of
-                                         * thread data from key's thread list */
+typedef struct pthread_ThreadData
+{
+    Queue_Elem qElem;
+    pthread_key_Obj *key;
+    void *specData;                  /* Pointer to thread specific data */
+    struct pthread_KeyData *keyData; /* Back pointer for easy removal of
+                                      * thread data from key's thread list */
 } pthread_ThreadData;
 
 /*
@@ -84,13 +85,14 @@ typedef struct pthread_ThreadData {
  *  specific data for that key.  This way, when the key is deleted, we
  *  can easily remove the key specific object from the thread's key list.
  */
-typedef struct pthread_KeyData {
-    Queue_Elem            qElem;
-    pthread_ThreadData    threadData;
+typedef struct pthread_KeyData
+{
+    Queue_Elem qElem;
+    pthread_ThreadData threadData;
 } pthread_KeyData;
 
-static Semaphore_Struct  sem;         /* Semaphore to protect key lists */
-static Bool isInitialized = FALSE;    /* Set to true when sem is constructed */
+static Semaphore_Struct sem;       /* Semaphore to protect key lists */
+static Bool isInitialized = FALSE; /* Set to true when sem is constructed */
 
 /*
  *************************************************************************
@@ -101,24 +103,25 @@ static Bool isInitialized = FALSE;    /* Set to true when sem is constructed */
 /*
  *  ======== pthread_key_create ========
  */
-int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
+int pthread_key_create(pthread_key_t *key, void (*destructor)(void *))
 {
     pthread_key_Obj *newKey;
-    Error_Block      eb;
-    UInt             taskKey;
+    Error_Block eb;
+    UInt taskKey;
 
     taskKey = Task_disable();
-    if (!isInitialized) {
+    if (!isInitialized)
+    {
         Semaphore_construct(&sem, 1, NULL);
         isInitialized = TRUE;
     }
     Task_restore(taskKey);
 
     Error_init(&eb);
-    newKey = (pthread_key_Obj *)Memory_alloc(Task_Object_heap(),
-            sizeof(pthread_key_Obj), 0, &eb);
+    newKey = (pthread_key_Obj *)Memory_alloc(Task_Object_heap(), sizeof(pthread_key_Obj), 0, &eb);
 
-    if (newKey == NULL) {
+    if (newKey == NULL)
+    {
         *key = NULL;
         return (ENOMEM);
     }
@@ -137,9 +140,9 @@ int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
  */
 int pthread_key_delete(pthread_key_t key)
 {
-    pthread_key_Obj    *keyObj = (pthread_key_Obj *)key;
-    pthread_KeyData    *keyData;
-    int                 oldState;
+    pthread_key_Obj *keyObj = (pthread_key_Obj *)key;
+    pthread_KeyData *keyData;
+    int oldState;
 
     /* prevent thread cancellation while holding the mutex */
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
@@ -147,7 +150,8 @@ int pthread_key_delete(pthread_key_t key)
     Semaphore_pend(Semaphore_handle(&sem), BIOS_WAIT_FOREVER);
 
     /* Delete thread-specific elements associated with the key */
-    while (!Queue_empty(Queue_handle(&(keyObj->threadList)))) {
+    while (!Queue_empty(Queue_handle(&(keyObj->threadList))))
+    {
         keyData = Queue_get(Queue_handle(&keyObj->threadList));
 
         /* Remove the object from the thread's list */
@@ -171,11 +175,11 @@ int pthread_key_delete(pthread_key_t key)
  */
 void *pthread_getspecific(pthread_key_t key)
 {
-    Queue_Elem         *elem;
+    Queue_Elem *elem;
     pthread_ThreadData *threadSpec;
-    pthread_Obj        *thread = (pthread_Obj *)pthread_self();
-    void               *threadData = NULL;
-    int                 oldState;
+    pthread_Obj *thread = (pthread_Obj *)pthread_self();
+    void *threadData    = NULL;
+    int oldState;
 
     /* prevent thread cancellation while holding the mutex */
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
@@ -190,9 +194,11 @@ void *pthread_getspecific(pthread_key_t key)
     Semaphore_pend(Semaphore_handle(&sem), BIOS_WAIT_FOREVER);
 
     elem = Queue_head(Queue_handle(&(thread->keyList)));
-    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList)) {
+    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList))
+    {
         threadSpec = (pthread_ThreadData *)elem;
-        if (threadSpec->key == (pthread_key_Obj *)key) {
+        if (threadSpec->key == (pthread_key_Obj *)key)
+        {
             /* Found the key */
             threadData = threadSpec->specData;
             break;
@@ -213,15 +219,15 @@ void *pthread_getspecific(pthread_key_t key)
  */
 int pthread_setspecific(pthread_key_t key, const void *value)
 {
-    Queue_Elem          *elem;
-    pthread_key_Obj     *keyObj;
-    pthread_KeyData     *keyData;
-    pthread_ThreadData  *threadSpec;
-    Error_Block          eb;
-    Bool                 found = FALSE;
-    int                  retVal = 0;
-    pthread_Obj         *thread = (pthread_Obj *)pthread_self();
-    int                 oldState;
+    Queue_Elem *elem;
+    pthread_key_Obj *keyObj;
+    pthread_KeyData *keyData;
+    pthread_ThreadData *threadSpec;
+    Error_Block eb;
+    Bool found          = FALSE;
+    int retVal          = 0;
+    pthread_Obj *thread = (pthread_Obj *)pthread_self();
+    int oldState;
 
     Error_init(&eb);
 
@@ -235,37 +241,39 @@ int pthread_setspecific(pthread_key_t key, const void *value)
     Semaphore_pend(Semaphore_handle(&sem), BIOS_WAIT_FOREVER);
 
     elem = Queue_head(Queue_handle(&(thread->keyList)));
-    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList)) {
+    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList))
+    {
         threadSpec = (pthread_ThreadData *)elem;
-        if (threadSpec->key == (pthread_key_Obj *)key) {
+        if (threadSpec->key == (pthread_key_Obj *)key)
+        {
             /* Found the key */
             threadSpec->specData = (void *)value;
-            found = TRUE;
+            found                = TRUE;
             break;
         }
         elem = Queue_next(elem);
     }
 
-    if (!found) {
+    if (!found)
+    {
         /*
          *  Allocate object for thread data and add to the key's list.
          *  The threadData part will be added to the thread's list.
          */
-        keyData = (pthread_KeyData *)Memory_alloc(
-            Task_Object_heap(), sizeof(pthread_KeyData), 0, &eb);
-        if (keyData == NULL) {
+        keyData = (pthread_KeyData *)Memory_alloc(Task_Object_heap(), sizeof(pthread_KeyData), 0, &eb);
+        if (keyData == NULL)
+        {
             retVal = ENOMEM;
         }
-        else {
-            keyData->threadData.key = key;
+        else
+        {
+            keyData->threadData.key      = key;
             keyData->threadData.specData = (void *)value;
-            keyData->threadData.keyData = keyData;
-            Queue_put(Queue_handle(&(thread->keyList)),
-                    (Queue_Elem *)(&(keyData->threadData)));
+            keyData->threadData.keyData  = keyData;
+            Queue_put(Queue_handle(&(thread->keyList)), (Queue_Elem *)(&(keyData->threadData)));
 
             keyObj = (pthread_key_Obj *)key;
-            Queue_put(Queue_handle(&(keyObj->threadList)),
-                            (Queue_Elem *)keyData);
+            Queue_put(Queue_handle(&(keyObj->threadList)), (Queue_Elem *)keyData);
         }
     }
 
@@ -284,16 +292,17 @@ int pthread_setspecific(pthread_key_t key, const void *value)
  */
 void _pthread_removeThreadKeys(pthread_t pthread)
 {
-    pthread_Obj            *thread = (pthread_Obj *)pthread;
-    Queue_Elem             *elem;
-    pthread_key_Obj        *keyObj;
-    pthread_KeyData        *keyData;
-    pthread_ThreadData     *threadData;
-    UInt                    taskKey;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    Queue_Elem *elem;
+    pthread_key_Obj *keyObj;
+    pthread_KeyData *keyData;
+    pthread_ThreadData *threadData;
+    UInt taskKey;
 
     taskKey = Task_disable();
 
-    if (Queue_empty(Queue_handle(&(thread->keyList)))) {
+    if (Queue_empty(Queue_handle(&(thread->keyList))))
+    {
         Task_restore(taskKey);
         return;
     }
@@ -302,10 +311,11 @@ void _pthread_removeThreadKeys(pthread_t pthread)
     Semaphore_pend(Semaphore_handle(&sem), BIOS_WAIT_FOREVER);
 
     elem = Queue_head(Queue_handle(&(thread->keyList)));
-    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList)) {
+    while (elem != (Queue_Elem *)Queue_handle(&thread->keyList))
+    {
         threadData = (pthread_ThreadData *)elem;
-        keyData = threadData->keyData;
-        keyObj = threadData->key;
+        keyData    = threadData->keyData;
+        keyObj     = threadData->key;
 
         /* Get the next in the queue before we free this one */
         elem = Queue_next(elem);
@@ -316,7 +326,8 @@ void _pthread_removeThreadKeys(pthread_t pthread)
         /* Remove from the key's queue */
         Queue_remove((Queue_Elem *)keyData);
 
-        if ((keyObj->destructor != NULL) && (threadData->specData != NULL)) {
+        if ((keyObj->destructor != NULL) && (threadData->specData != NULL))
+        {
             (keyObj->destructor)(threadData->specData);
         }
         Memory_free(Task_Object_heap(), keyData, sizeof(pthread_KeyData));

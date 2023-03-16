@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -216,7 +216,7 @@
 #define MAP_LL_ReadPeerResolvableAddress                             LL_ReadPeerResolvableAddress
 #define MAP_LL_ReadPhy                                               LL_ReadPhy
 #define MAP_LL_ReadRemoteUsedFeatures                                LL_ReadRemoteUsedFeatures
-#define MAP_LL_ReadRemoteUsedFeaturesCompleteCback                   LL_ReadRemoteUsedFeaturesCompleteCback
+#define MAP_LL_ReadRemoteUsedFeaturesCompleteCback                   LL_ReadRemoteUsedFeaturesCompleteCback_sPatch
 #define MAP_LL_ReadRemoteVersionInfo                                 LL_ReadRemoteVersionInfo
 #define MAP_LL_ReadRemoteVersionInfoCback                            LL_ReadRemoteVersionInfoCback
 #define MAP_LL_ReadResolvingListSize                                 LL_ReadResolvingListSize
@@ -418,6 +418,8 @@
 #define MAP_llVerifyConnParamReqParams                               llVerifyConnParamReqParams
 #define MAP_llValidateConnParams                                     llValidateConnParams
 #define MAP_llWriteTxData                                            llWriteTxData
+#define MAP_llHealthUpdateWrapperForOsal                             llHealthUpdateWrapperForOsal
+#define MAP_llQueryTxQueue                                           llQueryTxQueue
 #define MAP_LL_PM_Init                                               LL_PM_Init
 #define MAP_LL_PM_GetRfCoreState                                     LL_PM_GetRfCoreState
 #define MAP_LL_PM_StartRfTask                                        LL_PM_StartRfTask
@@ -1499,6 +1501,7 @@ extern uint8 llNextChanIndex_hook( uint16 eventCounter );
 extern void  MAP_llUpdateExtAdvTx( void *pAdvSet );
 extern void  MAP_llPrepareNextExtAdv( void *pAdvSet );
 extern void  MAP_llInitFeatureSet( void );
+
 /*******************************************************************************
  * Secure Manager hooks
  */
@@ -1509,12 +1512,23 @@ extern uint8 smpResponderProcessPairingPublicKey_hook( void *pParsedMsg );
 extern uint8 smResponderProcessLTKReq_hook( uint16 connectionHandle, uint8 *pRandom, uint16 encDiv );
 extern uint8 smGeneratePairingReqRsp_hook( void );
 extern void  gapSendSlaveSecurityReqEvent_hook( uint8 taskID, uint16 connHandle, uint8 *pDevAddr, uint8 authReq );
+
 /*******************************************************************************
  * Health check
  */
 extern int8 MAP_llHealthCheck(void);
 extern void MAP_llHealthUpdate(uint8 state);
 extern void MAP_llHealthSetThreshold(uint32 connTime,uint32 scanTime,uint32 initTime,uint32 advTime);
+
+/*******************************************************************************
+ * Check legacy command status
+ */
+extern uint8_t MAP_checkLegacyHCICmdStatus(uint16_t opcode);
+
+/*******************************************************************************
+ * Check vendor specific events status
+ */
+extern uint8_t MAP_checkVsEventsStatus(void);
 
 /*******************************************************************************/
 #endif // MAP_DIRECT_H

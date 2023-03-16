@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -131,7 +131,9 @@ void _itoa(unsigned int uiNum, unsigned char *buf, unsigned char uiRadix)
         *p = c + ((c < 10) ? '0' : '7');
         uiNum /= uiRadix;
         if (!uiNum)
+        {
             break;
+        }
     }
 
     for (c = 0; c <= i; c++)

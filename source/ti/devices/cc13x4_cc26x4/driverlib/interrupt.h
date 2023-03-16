@@ -153,7 +153,7 @@ extern "C"
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
-//!   - INT_SSI0_COMB
+//!   - INT_SPI0_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -182,9 +182,18 @@ extern "C"
 //!   - INT_OSC_COMB
 //!   - INT_BATMON_COMB
 //!   - INT_PKA_IRQ
-//!   - INT_SSI1_COMB
+//!   - INT_SPI1_COMB
 //!   - INT_UART1_COMB
 //!   - INT_AUX_TIMER2_EV0
+//!   - INT_SPI2_COMB
+//!   - INT_SPI3_COMB
+//!   - INT_UART2_COMB
+//!   - INT_UART3_COMB
+//!   - INT_I2C1_IRQ
+//!   - INT_SWEV1
+//!   - INT_SWEV2
+//!   - INT_SWEV3
+//!   - INT_SWEV4
 //! \param pfnHandler is a pointer to the function to register as interrupt handler.
 //!
 //! \return None.
@@ -285,7 +294,7 @@ extern uint32_t IntPriorityGroupingGet(void);
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
-//!   - INT_SSI0_COMB
+//!   - INT_SPI0_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -314,9 +323,18 @@ extern uint32_t IntPriorityGroupingGet(void);
 //!   - INT_OSC_COMB
 //!   - INT_BATMON_COMB
 //!   - INT_PKA_IRQ
-//!   - INT_SSI1_COMB
+//!   - INT_SPI1_COMB
 //!   - INT_UART1_COMB
 //!   - INT_AUX_TIMER2_EV0
+//!   - INT_SPI2_COMB
+//!   - INT_SPI3_COMB
+//!   - INT_UART2_COMB
+//!   - INT_UART3_COMB
+//!   - INT_I2C1_IRQ
+//!   - INT_SWEV1
+//!   - INT_SWEV2
+//!   - INT_SWEV3
+//!   - INT_SWEV4
 //! \param ui8Priority specifies the priority of the interrupt.
 //! - \ref INT_PRI_LEVEL0 : Highest priority.
 //! - \ref INT_PRI_LEVEL1
@@ -384,7 +402,7 @@ extern int32_t IntPriorityGet(uint32_t ui32Interrupt);
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
-//!   - INT_SSI0_COMB
+//!   - INT_SPI0_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -413,9 +431,18 @@ extern int32_t IntPriorityGet(uint32_t ui32Interrupt);
 //!   - INT_OSC_COMB
 //!   - INT_BATMON_COMB
 //!   - INT_PKA_IRQ
-//!   - INT_SSI1_COMB
+//!   - INT_SPI1_COMB
 //!   - INT_UART1_COMB
 //!   - INT_AUX_TIMER2_EV0
+//!   - INT_SPI2_COMB
+//!   - INT_SPI3_COMB
+//!   - INT_UART2_COMB
+//!   - INT_UART3_COMB
+//!   - INT_I2C1_IRQ
+//!   - INT_SWEV1
+//!   - INT_SWEV2
+//!   - INT_SWEV3
+//!   - INT_SWEV4
 //!
 //! \return None
 //!
@@ -464,7 +491,7 @@ extern void IntDisable(uint32_t ui32Interrupt);
 //!   - INT_AON_RTC_COMB
 //!   - INT_UART0_COMB
 //!   - INT_AUX_SWEV0
-//!   - INT_SSI0_COMB
+//!   - INT_SPI0_COMB
 //!   - INT_RFC_CPE_0
 //!   - INT_RFC_HW_COMB
 //!   - INT_RFC_CMD_ACK
@@ -493,9 +520,18 @@ extern void IntDisable(uint32_t ui32Interrupt);
 //!   - INT_OSC_COMB
 //!   - INT_BATMON_COMB
 //!   - INT_PKA_IRQ
-//!   - INT_SSI1_COMB
+//!   - INT_SPI1_COMB
 //!   - INT_UART1_COMB
 //!   - INT_AUX_TIMER2_EV0
+//!   - INT_SPI2_COMB
+//!   - INT_SPI3_COMB
+//!   - INT_UART2_COMB
+//!   - INT_UART3_COMB
+//!   - INT_I2C1_IRQ
+//!   - INT_SWEV1
+//!   - INT_SWEV2
+//!   - INT_SWEV3
+//!   - INT_SWEV4
 //!
 //! \return None
 //!

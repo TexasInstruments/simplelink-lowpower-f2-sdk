@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -283,7 +283,7 @@ typedef struct
 /// @brief GATT Attribute Type format.
 typedef struct
 {
-  uint8 len;         //!< Length of UUID (2 or 6)
+  uint8 len;         //!< Length of UUID (2 or 16)
   const uint8 *uuid; //!< Pointer to UUID
 } gattAttrType_t;
 
@@ -311,6 +311,49 @@ typedef struct
   uint8 encKeySize;//!< Minimum encryption key size required by service (7-16 bytes)
   gattAttribute_t *attrs; //!< Array of attribute records;
 } gattService_t;
+
+/*
+* @brief GATT security Callbacks
+*
+* @note
+* This callback it used to return the security level required based on a
+* the security flags saved in the previous bond
+* IMPORTANT: This is called from the stack. Do not call to a stack APIs from
+* this function
+*
+* @param connHandle - Connection Handle
+* @param pMitmReq - Pointer that will store TRUE if authentication (MITM protection)
+*                   is required
+* @param pKeySize - Pointer that will store the key size required
+*
+* @return SUCCESS - A bond was found and data restored correctly
+*/
+typedef bStatus_t (*pfnGATTBondInfoCB_t)(uint16_t connHandle, uint8_t *pMitmReq, uint8_t *pKeySize);
+
+/*
+* @brief GATT security Callbacks
+*
+* @note
+* This callback will trigger an encryption process with a bonded device
+* IMPORTANT: This is called from the stack. Do not call to a stack APIs from
+* this function
+*
+* @param connHandle - Connection Handle
+*
+* @return SUCCESS - A bond was found and the encryption process started
+*/
+typedef bStatus_t (*pfnGATTStartEncCB_t)(uint16_t connHandle);
+
+/**
+ * @brief GATT Structure for client security callbacks
+ *
+ *        Must be setup by the application
+ */
+typedef struct
+{
+  pfnGATTBondInfoCB_t pfnBondInfoCB;      //!< callback function pointer
+  pfnGATTStartEncCB_t pfnStartEncCB;      //!< callback function pointer
+} gattClientSecCBs_t;
 
 /** @} */ // end of ATT_GATT_Structs
 
@@ -354,6 +397,19 @@ extern bStatus_t GATT_InitClient( void );
  * @param   taskId - task to forward indications or notifications to
  */
 extern void GATT_RegisterForInd( uint8 taskId );
+
+/******************************************************************************
+ * @fn      GATT_RegisterClientSecurityCBs
+ *
+ * @brief   Saves the Security related callbacks
+ *
+ * @param   pClientCbs - Pointer to two functions needed for checking the security
+ *                       flags for a bonded device and to a function that starts
+ *                       encryption
+ *
+ * @return  void
+ */
+extern void GATT_RegisterClientSecurityCBs( gattClientSecCBs_t *pClientCallbacks );
 
 /**
  * @brief   Request the server to prepare to write the value of an attribute.

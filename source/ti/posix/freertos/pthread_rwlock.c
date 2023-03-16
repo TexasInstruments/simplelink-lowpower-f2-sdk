@@ -34,7 +34,6 @@
  *  ======== pthread_rwlock.c ========
  */
 
-
 #include <stdint.h>
 
 #include <FreeRTOS.h>
@@ -51,22 +50,23 @@
 /*
  *  ======== pthread_rwlock_obj ========
  */
-typedef struct {
+typedef struct
+{
     /*
      *  This semaphore must be acquired to obtain a write lock.
      *  A readlock can be obtained if there is already a read lock
      *  acquired, or by acquiring this semaphore.
      */
-    SemaphoreHandle_t  sem;
+    SemaphoreHandle_t sem;
 
     /*
      *  This semaphore is used to block readers when sem is in use
      *  by a write lock.
      */
-    SemaphoreHandle_t  readSem;
+    SemaphoreHandle_t readSem;
 
-    int       activeReaderCnt;   /* Number of read locks acquired */
-    int       blockedReaderCnt;  /* Number of readers blocked on readSem */
+    int activeReaderCnt;  /* Number of read locks acquired */
+    int blockedReaderCnt; /* Number of readers blocked on readSem */
 
     /*
      *  The 'owner' is the writer holding the lock, or the first reader
@@ -79,8 +79,7 @@ typedef struct {
  *  Function for obtaining a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
  */
-extern int _clock_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, uint32_t *ticks);
+extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks);
 
 static int rdlockAcquire(pthread_rwlock_obj *lock, uint32_t timeout);
 
@@ -105,7 +104,6 @@ int pthread_rwlockattr_init(pthread_rwlockattr_t *attr)
     return (0);
 }
 
-
 /*
  *************************************************************************
  *                      pthread_rwlock
@@ -120,7 +118,8 @@ int pthread_rwlock_destroy(pthread_rwlock_t *rwlock)
     pthread_rwlock_obj *obj = (pthread_rwlock_obj *)(&rwlock->freertos);
 
     /* return EBUSY if the lock is in use */
-    if (obj->owner != NULL) {
+    if (obj->owner != NULL)
+    {
         return (EBUSY);
     }
 
@@ -132,13 +131,12 @@ int pthread_rwlock_destroy(pthread_rwlock_t *rwlock)
 /*
  *  ======== pthread_rwlock_init ========
  */
-int pthread_rwlock_init(pthread_rwlock_t *rwlock,
-        const pthread_rwlockattr_t *attr)
+int pthread_rwlock_init(pthread_rwlock_t *rwlock, const pthread_rwlockattr_t *attr)
 {
     pthread_rwlock_obj *obj = (pthread_rwlock_obj *)(&rwlock->freertos);
 
     /* TODO object size validation */
-//  assert(sizeof(pthread_rwlock_obj) <= sizeof(pthread_rwlock_t));
+    //  assert(sizeof(pthread_rwlock_obj) <= sizeof(pthread_rwlock_t));
 
     /*  FreeRTOS xSemaphoreCreateCounting() creates a queue of
      *  length PTHREAD_RWLOCK_MAXCOUNT, where PTHREAD_RWLOCK_MAXCOUNT is the maximum count that
@@ -148,24 +146,25 @@ int pthread_rwlock_init(pthread_rwlock_t *rwlock,
      */
     /* create semaphore with count of 1 */
     obj->sem = xSemaphoreCreateCounting(PTHREAD_RWLOCK_MAXCOUNT, 1);
-    if (obj->sem == NULL) {
+    if (obj->sem == NULL)
+    {
         return (ENOMEM);
     }
 
     /* create semaphore with count of 0 */
     obj->readSem = xSemaphoreCreateCounting(PTHREAD_RWLOCK_MAXCOUNT, 0);
-    if (obj->readSem == NULL) {
+    if (obj->readSem == NULL)
+    {
         vPortFree(obj->sem);
         obj->sem = NULL;
         return (ENOMEM);
     }
 
-    obj->activeReaderCnt = 0;
+    obj->activeReaderCnt  = 0;
     obj->blockedReaderCnt = 0;
-    obj->owner = NULL;
+    obj->owner            = NULL;
     return (0);
 }
-
 
 /*
  *  ======== pthread_rwlock_rdlock ========
@@ -180,13 +179,13 @@ int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
 /*
  *  ======== pthread_rwlock_timedrdlock ========
  */
-int pthread_rwlock_timedrdlock(pthread_rwlock_t *rwlock,
-        const struct timespec *abstime)
+int pthread_rwlock_timedrdlock(pthread_rwlock_t *rwlock, const struct timespec *abstime)
 {
     uint32_t timeout;
     pthread_rwlock_obj *obj = (pthread_rwlock_obj *)(&rwlock->freertos);
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         return (EINVAL);
     }
 
@@ -196,17 +195,18 @@ int pthread_rwlock_timedrdlock(pthread_rwlock_t *rwlock,
 /*
  *  ======== pthread_rwlock_timedwrlock ========
  */
-int pthread_rwlock_timedwrlock(pthread_rwlock_t *rwlock,
-        const struct timespec *abstime)
+int pthread_rwlock_timedwrlock(pthread_rwlock_t *rwlock, const struct timespec *abstime)
 {
     uint32_t timeout;
     pthread_rwlock_obj *obj = (pthread_rwlock_obj *)(&rwlock->freertos);
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         return (EINVAL);
     }
 
-    if (xSemaphoreTake(obj->sem, (TickType_t)timeout) == pdTRUE) {
+    if (xSemaphoreTake(obj->sem, (TickType_t)timeout) == pdTRUE)
+    {
         obj->owner = pthread_self();
         return (0);
     }
@@ -231,7 +231,8 @@ int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock)
 {
     pthread_rwlock_obj *obj = (pthread_rwlock_obj *)(&rwlock->freertos);
 
-    if (xSemaphoreTake(obj->sem, 0) == pdTRUE) {
+    if (xSemaphoreTake(obj->sem, 0) == pdTRUE)
+    {
         obj->owner = pthread_self();
         return (0);
     }
@@ -250,16 +251,19 @@ int pthread_rwlock_unlock(pthread_rwlock_t *rwlock)
     /* disable the scheduler */
     vTaskSuspendAll();
 
-    if (obj->activeReaderCnt) {
+    if (obj->activeReaderCnt)
+    {
         /*  Lock is held by a reader.  The last active reader
          *  releases the semaphore.
          */
-        if (--obj->activeReaderCnt == 0) {
+        if (--obj->activeReaderCnt == 0)
+        {
             obj->owner = NULL;
             xSemaphoreGive(obj->sem);
         }
     }
-    else {
+    else
+    {
         /*  Lock is held by a writer.  Release the semaphore and
          *  if there are any blocked readers, unblock all of them.
          *  By unblocking all readers, we ensure that the highest
@@ -268,7 +272,8 @@ int pthread_rwlock_unlock(pthread_rwlock_t *rwlock)
         xSemaphoreGive(obj->sem);
 
         /* unblock all readers */
-        for (i = 0; i < obj->blockedReaderCnt; i++) {
+        for (i = 0; i < obj->blockedReaderCnt; i++)
+        {
             xSemaphoreGive(obj->readSem);
         }
 
@@ -294,7 +299,6 @@ int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock)
     return (0);
 }
 
-
 /*
  *************************************************************************
  *                      internal functions
@@ -306,21 +310,23 @@ int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock)
  */
 static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
 {
-    TickType_t  curTicks;
-    TickType_t  prevTicks;
-    TickType_t  deltaTicks;
+    TickType_t curTicks;
+    TickType_t prevTicks;
+    TickType_t deltaTicks;
 
     /* disable the scheduler */
     vTaskSuspendAll();
 
-    if (rwlock->activeReaderCnt > 0) {
+    if (rwlock->activeReaderCnt > 0)
+    {
         /* The semaphore is owned by a reader, no need to pend. */
         rwlock->activeReaderCnt++;
         xTaskResumeAll();
         return (0);
     }
 
-    if (xSemaphoreTake(rwlock->sem, 0) == pdTRUE) {
+    if (xSemaphoreTake(rwlock->sem, 0) == pdTRUE)
+    {
         /* got the semaphore */
         rwlock->activeReaderCnt++;
         rwlock->owner = pthread_self();
@@ -332,7 +338,8 @@ static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
         return (0);
     }
 
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         xTaskResumeAll();
         return (EBUSY);
     }
@@ -342,8 +349,10 @@ static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
 
     xTaskResumeAll();
 
-    for (;;) {
-        if (xSemaphoreTake(rwlock->readSem, (TickType_t)timeout) != pdTRUE) {
+    for (;;)
+    {
+        if (xSemaphoreTake(rwlock->readSem, (TickType_t)timeout) != pdTRUE)
+        {
             vTaskSuspendAll();
             rwlock->blockedReaderCnt--;
             xTaskResumeAll();
@@ -355,7 +364,8 @@ static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
         /*  If another reader is active, the rwlock->sem is owned
          *  by a reader, so just increment the active reader count.
          */
-        if (rwlock->activeReaderCnt > 0) {
+        if (rwlock->activeReaderCnt > 0)
+        {
             rwlock->blockedReaderCnt--;
             rwlock->activeReaderCnt++;
             xTaskResumeAll();
@@ -366,7 +376,8 @@ static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
          *  rwlock->sem, since another writer or reader may have taken
          *  it in the meantime.
          */
-        if (xSemaphoreTake(rwlock->sem, 0) == pdTRUE) {
+        if (xSemaphoreTake(rwlock->sem, 0) == pdTRUE)
+        {
             /* got it */
             rwlock->blockedReaderCnt--;
             rwlock->activeReaderCnt++;
@@ -375,12 +386,14 @@ static int rdlockAcquire(pthread_rwlock_obj *rwlock, uint32_t timeout)
             return (0);
         }
 
-        if (timeout != portMAX_DELAY) {
-            prevTicks = curTicks;
-            curTicks = xTaskGetTickCount();
+        if (timeout != portMAX_DELAY)
+        {
+            prevTicks  = curTicks;
+            curTicks   = xTaskGetTickCount();
             deltaTicks = curTicks - prevTicks;
 
-            if (deltaTicks >= timeout) {
+            if (deltaTicks >= timeout)
+            {
                 /* timed out without acquiring the lock */
                 rwlock->blockedReaderCnt--;
                 xTaskResumeAll();

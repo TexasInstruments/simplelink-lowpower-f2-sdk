@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ extern unsigned long _stack_end;
 // ensure that it ends up at physical address 0x0000.0000.
 //
 //*****************************************************************************
-__attribute__((section(".resetVecs"))) __attribute__((used)) static void (*const resetVectors[16])(void) = {
+__attribute__((section(".resetVecs"), used)) static void (*const resetVectors[16])(void) = {
     (void (*)(void))((uint32_t)&_stack_end),
     // The initial stack pointer
     resetISR,        // The reset handler
@@ -141,7 +141,7 @@ extern uint32_t __data_load__, __data_start__, __data_end__;
 //
 //*****************************************************************************
 //
-void localProgramStart(void)
+__attribute__((used)) void localProgramStart(void)
 {
     uint32_t *bs;
     uint32_t *be;

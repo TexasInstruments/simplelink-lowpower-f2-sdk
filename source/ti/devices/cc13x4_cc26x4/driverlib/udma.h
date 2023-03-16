@@ -290,8 +290,11 @@ tDMAControlTable;
 #define UDMA_CHAN_SW_EVT0       0   // Software Event Channel 0
 #define UDMA_CHAN_UART0_RX      1   // UART0 RX Data
 #define UDMA_CHAN_UART0_TX      2   // UART0 RX Data
-#define UDMA_CHAN_SSI0_RX       3   // SSI0 RX Data
-#define UDMA_CHAN_SSI0_TX       4   // SSI0 TX Data
+#define UDMA_CHAN_SPI0_RX       3   // SPI0 RX Data
+#define UDMA_CHAN_SPI0_TX       4   // SPI0 TX Data
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define UDMA_CHAN_SSI0_RX       UDMA_CHAN_SPI0_RX
+#define UDMA_CHAN_SSI0_TX       UDMA_CHAN_SPI0_TX
 #define UDMA_CHAN_UART1_RX      5   // UART1 RX Data
 #define UDMA_CHAN_UART1_TX      6   // UART1 TX Data
 #define UDMA_CHAN_AUX_ADC       7   // AUX ADC event
@@ -303,16 +306,25 @@ tDMAControlTable;
 #define UDMA_CHAN_AON_PROG2     13
 #define UDMA_CHAN_DMA_PROG      14
 #define UDMA_CHAN_AON_RTC       15
-#define UDMA_CHAN_SSI1_RX       16  // SSI1 RX Data
-#define UDMA_CHAN_SSI1_TX       17  // SSI1 TX Data
-#define UDMA_CHAN_SSI2_RX       19  // SSI2 RX Data
-#define UDMA_CHAN_SSI2_TX       20  // SSI2 TX Data
+#define UDMA_CHAN_SPI1_RX       16  // SPI1 RX Data
+#define UDMA_CHAN_SPI1_TX       17  // SPI1 TX Data
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define UDMA_CHAN_SSI1_RX       UDMA_CHAN_SPI1_RX
+#define UDMA_CHAN_SSI1_TX       UDMA_CHAN_SPI1_TX
+#define UDMA_CHAN_SPI2_RX       19  // SPI2 RX Data
+#define UDMA_CHAN_SPI2_TX       20  // SPI2 TX Data
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define UDMA_CHAN_SSI2_RX       UDMA_CHAN_SPI2_RX
+#define UDMA_CHAN_SSI2_TX       UDMA_CHAN_SPI2_TX
 #define UDMA_CHAN_SW_EVT1       21  // Software Event Channel 1
 #define UDMA_CHAN_SW_EVT2       22  // Software Event Channel 2
 #define UDMA_CHAN_SW_EVT3       23  // Software Event Channel 3
 #define UDMA_CHAN_SW_EVT4       24  // Software Event Channel 4
-#define UDMA_CHAN_SSI3_RX       25  // SSI3 RX Data
-#define UDMA_CHAN_SSI3_TX       26  // SSI3 TX Data
+#define UDMA_CHAN_SPI3_RX       25  // SPI3 RX Data
+#define UDMA_CHAN_SPI3_TX       26  // SPI3 TX Data
+// SSI defines included for compatibility with CC13x2/CC26x2 devices
+#define UDMA_CHAN_SSI3_RX       UDMA_CHAN_SPI3_RX
+#define UDMA_CHAN_SSI3_TX       UDMA_CHAN_SPI3_TX
 #define UDMA_CHAN_UART2_RX      28  // UART2 RX Data
 #define UDMA_CHAN_UART2_TX      29  // UART2 TX Data
 #define UDMA_CHAN_UART3_RX      30  // UART3 RX Data
@@ -1064,7 +1076,7 @@ uDMAIntSwEventEnable(uint32_t ui32Base, uint32_t ui32IntChannel)
     ASSERT(ui32IntChannel < UDMA_NUM_CHANNELS);
 
     // Enable the channel.
-    HWREG(ui32Base + UDMA_O_DONEMASK) |= ui32IntChannel;
+    HWREG(ui32Base + UDMA_O_DONEMASK) |= (1 << ui32IntChannel);
 }
 
 //*****************************************************************************
@@ -1091,7 +1103,7 @@ uDMAIntSwEventDisable(uint32_t ui32Base, uint32_t ui32IntChannel)
     ASSERT(ui32IntChannel < UDMA_NUM_CHANNELS);
 
     // Disable the SW channel.
-    HWREG(ui32Base + UDMA_O_DONEMASK) &= ~ui32IntChannel;
+    HWREG(ui32Base + UDMA_O_DONEMASK) &= ~(1 << ui32IntChannel);
 }
 
 //*****************************************************************************

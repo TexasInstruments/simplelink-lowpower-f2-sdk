@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,24 +34,25 @@
  *
  *  @brief      Generic AESCTRDRBG implementation based on the AESCTR driver
  *
- *  This file should only be included in the board file to fill the AESCTR_config
- *  struct.
+ * This file should only be included in the board file to fill the AESCTR_config
+ * struct.
  *
  *  # Use of AESCTR #
- *  This implementation uses the AESCTR driver to generate the random bitstream
- *  required to mutate the internal AESCTRDRBG state and provide random output
- *  bits. The driver will open an instance of the AESCTR driver based on the index
- *  specified in #AESCTRDRBGXX_HWAttrs:aesctrIndex. Mutual exclusion and hardware
- *  access are all handled by the AESCTR driver instance.
+ * This implementation uses the AESCTR driver to generate the random bitstream
+ * required to mutate the internal AESCTRDRBG state and provide random output
+ * bits. The driver will construct a dynamic instance of the AESCTR driver.
+ * Mutual exclusion and hardware access are all handled by the AESCTR driver
+ * instance.
  *
  *  # Implementation Limitations
- *  - Only plaintext CryptoKeys are supported by this implementation.
+ * - Only plaintext CryptoKeys are supported by this implementation.
  *
  *  # Runtime Parameter Validation #
- *  The driver implementation does not perform runtime checks for most input parameters.
- *  Only values that are likely to have a stochastic element to them are checked (such
- *  as whether a driver is already open). Higher input paramter validation coverage is
- *  achieved by turning on assertions when compiling the driver.
+ * The driver implementation does not perform runtime checks for most input
+ * parameters. Only values that are likely to have a stochastic element to them
+ * are checked (such as whether a driver is already open). Higher input
+ * parameter validation coverage is achieved by turning on assertions when
+ * compiling the driver.
  */
 
 #ifndef ti_drivers_aesctrdrbg_AESCTRDRBGXX__include
@@ -61,6 +62,14 @@
 #include <stdbool.h>
 
 #include <ti/drivers/AESCTRDRBG.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/aes.h)
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    #include <ti/drivers/aesctr/AESCTRCC23XX.h>
+#else
+    #include <ti/drivers/aesctr/AESCTRCC26XX.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,7 +91,7 @@ extern "C" {
 /*! @brief Define that specifies the maximum seed length used by the driver */
 #define AESCTRDRBG_MAX_SEED_LENGTH (AESCTRDRBG_MAX_KEY_LENGTH + AESCTRDRBG_AES_BLOCK_SIZE_BYTES)
 
-#if (ENABLE_KEY_STORAGE == 1) || (SPE_ENABLED == 1)
+#if (ENABLE_KEY_STORAGE == 1) || (TFM_ENABLED == 1)
     /*! @brief Maximum output key size in bytes when using KeyStore */
     #define AESCTRDRBG_MAX_KEYSTORE_KEY_SIZE 64
 #endif
@@ -95,7 +104,14 @@ extern "C" {
  */
 typedef struct
 {
-    uint_least8_t aesctrIndex; /*! Index into AESCTR_config array */
+    /*
+     * Priority in HWAttrs will be passed to AESCTR instance upon construct
+     */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    AESCTRCC23XX_HWAttrs aesctrHWAttrs;
+#else
+    AESCTRCC26XX_HWAttrs aesctrHWAttrs;
+#endif
 } AESCTRDRBGXX_HWAttrs;
 
 /*!
@@ -107,8 +123,14 @@ typedef struct
 {
     uint8_t keyingMaterial[AESCTRDRBG_AES_KEY_LENGTH_256];
     uint8_t counter[AESCTRDRBG_AES_BLOCK_SIZE_BYTES];
-    CryptoKey key;
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    AESCTRCC23XX_Object aesctrObject;
+#else
+    AESCTRCC26XX_Object aesctrObject;
+#endif
+    AESCTR_Config ctrConfig;
     AESCTR_Handle ctrHandle;
+    CryptoKey key;
     size_t seedLength;
     uint32_t reseedCounter;
     uint32_t reseedInterval;

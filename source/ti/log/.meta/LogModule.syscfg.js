@@ -1,0 +1,321 @@
+/*
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ *  ======== LogModule.syscfg.js ========
+ */
+
+"use strict";
+
+const topModuleDisplayName = "Logging";
+const topModuleDescription = "TI Log Configuration";
+
+/*
+ *  ======== objectValuesToArray ========
+ *  Recursively iterate all values in an object and return them as an array
+ */
+function objectValuesToArray(obj, stack) {
+    for (var property in obj) {
+        if (obj.hasOwnProperty(property)) {
+            if (typeof obj[property] == "object") {
+                objectValuesToArray(obj[property], stack);
+            } else {
+                stack.push(obj[property]);
+            }
+        }
+    }
+}
+
+/*
+ *  ======== getLogSinks ========
+ *  Get all LogSinks that exist in current product. The LogSink must exist in
+ *  the current product (typically defined in a *.component.js file) with the
+ *  format "/LogSink[A-Z]..."
+ */
+function getLogSinks() {
+    let logSinks = []
+    // Get all components in product
+    let components = system.getProducts()[0].components;
+    for (var i = 0; i < components.length; i++) {
+        let temp = system.getScript(components[i]);
+        // Get all modules in component topModule
+        let modules = []
+        if ('topModules' in temp) {
+            objectValuesToArray(temp.topModules, modules);
+            for (var j = 0; j < modules.length; j++) {
+                if(typeof modules[j] === 'string' && modules[j].match(/\/LogSink[A-Z]/)){
+                    logSinks.push({name: modules[j]});
+                }
+            }
+        }
+    }
+    return logSinks;
+}
+
+/*
+ *  ======== sinksToTopModule ========
+ *  This function can be called from a components.js file to add a LogSink
+ *  as a topmodule to the product, to make sure it appears in the correct place
+ *  under "Logging". See log.component.js for example usage.
+ */
+function sinksToTopModule(sinks)
+{
+    let loggingTopModule = {
+        displayName: topModuleDisplayName,
+        description: topModuleDescription,
+        categories: [
+            {
+                displayName: "Log Sinks",
+                modules: sinks
+            }
+        ]
+    }
+    return loggingTopModule;
+}
+
+let logLevels = [
+    {
+        name: "enable_DEBUG",
+        onChange: onLevelChanged,
+        displayName: "Enable Level DEBUG",
+        default: true
+    },
+    {
+        name: "enable_VERBOSE",
+        onChange: onLevelChanged,
+        displayName: "Enable Level VERBOSE",
+        default: false
+    },
+    {
+        name: "enable_INFO",
+        onChange: onLevelChanged,
+        displayName: "Enable Level INFO",
+        default: false
+    },
+    {
+        name: "enable_WARNING",
+        onChange: onLevelChanged,
+        displayName: "Enable Level WARNING",
+        default: false
+    },
+    {
+        name: "enable_ERROR",
+        onChange: onLevelChanged,
+        displayName: "Enable Level ERROR",
+        default: false
+    },
+    {
+        name: "enable_ALL",
+        onChange: onEnableAllChanged,
+        displayName: "Enable All Log Levels",
+        default: false
+    }
+];
+
+/*
+ *  ======== config_instance ========
+ *  Define the config params of the module instance
+ */
+let config_instance = [
+    {
+        name: "enableModule",
+        displayName: "Enable Module",
+        description: "Enable or disable module. If disabled, no logs will be generated by this module",
+        default: true
+    },
+    {
+        name: "logLevelGroup",
+        displayName: "Log Level Configuration",
+        description: "Set a filter for which levels this module should generate logs",
+        collapsed: false,
+        config: logLevels
+    },
+    {
+        name: "loggerSink",
+        displayName: "Sink",
+        description: "Choose which sink the log output should be handled by",
+        default: "/ti/log/LogSinkBuf",
+        options: getLogSinks
+    }
+];
+
+/*
+ *  ======== static_config ========
+ *  Define the global config params
+ */
+let static_config = [
+    {
+        name: "enableGlobal",
+        displayName: "Global Enable Module",
+        default: true
+    },
+    {
+        name: "globalLogLevelGroup",
+        displayName: "Global Log Level Configuration",
+        collapsed: false,
+        config: logLevels
+    }
+];
+
+let module_static = {
+    collapsed: false,
+    config: static_config
+};
+
+/*
+ *  ======== onEnableAllChanged ========
+ *  Enable all button handler
+ */
+function onEnableAllChanged(inst, ui)
+{
+    if (inst.enable_ALL === true) {
+        inst.enable_ERROR = true;
+        inst.enable_WARNING = true;
+        inst.enable_INFO = true;
+        inst.enable_VERBOSE = true;
+        inst.enable_DEBUG = true;
+    }
+}
+
+/*
+ *  ======== onLevelChanged ========
+ *  Level changed all button handler
+ */
+function onLevelChanged(inst, ui)
+{
+    let logEnables = [
+        inst.enable_ERROR,
+        inst.enable_WARNING,
+        inst.enable_INFO,
+        inst.enable_VERBOSE,
+        inst.enable_DEBUG
+    ];
+
+    let anyDisabled = logEnables.some((val) => val === false);
+    if (anyDisabled) {
+        inst.enable_ALL = false;
+    }
+}
+
+/*
+ *  ======== sharedModuleInstances ========
+ *  Express dependencies for shared instances of other modules
+ */
+function sharedModuleInstances(inst)
+{
+    let modules = new Array();
+
+    modules.push({
+        name: "logger",
+        displayName: "Logger Sink instance",
+        moduleName: inst.loggerSink
+    });
+
+    return (modules);
+}
+
+
+function getLibs(mod)
+{
+    let libGroup = {
+        name: "/ti/log",
+        vers: "1.0.0.0",
+        deps: [],
+        libs: []
+    };
+
+    /* Get device information from GenLibs */
+    let GenLibs = system.getScript("/ti/utils/build/GenLibs");
+    let libPath = GenLibs.libPath;
+
+    /* get library name from DriverLib */
+    var DriverLib = system.getScript("/ti/devices/DriverLib");
+    let devId = system.deviceData.deviceId;
+    let libFamilyName = DriverLib.getAttrs(devId).libName;
+
+    /* add the log library to libGroup's libs */
+    libGroup.libs.push(libPath("ti/log", "log_" + libFamilyName + ".a"));
+
+    /* add dependency on /ti/drivers (if needed) */
+    let needDrivers = false;
+    for (let i = 0; i < mod.$instances.length; i++) {
+        let inst =  mod.$instances[i];
+        if (inst.loggerSink != "/ti/log/LogSinkBuf") {
+            needDrivers = true;
+            break;
+        }
+    }
+    libGroup.deps = needDrivers ? ["/ti/drivers"] : [];
+
+    return (libGroup);
+}
+
+/*
+ *  ======== base ========
+ *  Module definition object
+ */
+let base = {
+    displayName: "Log Modules",
+    description: "Log Module Configuration",
+    longDescription: `
+The [__Log framework__][1] provides an API for generating formatted debug output,
+which can be either stored on target, or transported to a host-side tool.
+It is meant to be an easy-to-use and low-overhead tool for debugging embedded applications.
+This module relies on Log sinks, which can be found a subsection to this SysConfig module.
+
+* [Log API][2]
+* [Log Tools][3]
+
+[1]: /drivers/doxygen/html/index.html#log "Log framework"
+[2]: /tiutils/html/group__ti__log__LOG.html "Log API"
+[3]: /../tools/log/tiutils/Readme.html "Log Tools"
+`,
+    config: config_instance,
+    moduleStatic: module_static,
+    defaultInstanceName: "LogModule",
+    sharedModuleInstances: sharedModuleInstances,
+    templates: {
+        /* contribute libraries to linker command file */
+        "/ti/utils/build/GenLibs.cmd.xdt"   :
+            {modName: "/ti/log/LogModule", getLibs: getLibs},
+        "/ti/log/templates/ti_log_config.c.xdt":
+            "/ti/log/templates/LogModule.Config.c.xdt",
+        "/ti/log/templates/ti_log_config.h.xdt":
+            "/ti/log/templates/LogModule.Config.h.xdt"
+    },
+    sinksToTopModule: sinksToTopModule,
+    topModuleDisplayName: topModuleDisplayName,
+    topModuleDescription: topModuleDescription
+};
+
+/* export the module */
+exports = base;

@@ -388,9 +388,10 @@
 // equals PDA.
 //
 // The System CPU must not use the DAC when AUX_SYSIF:OPMODEREQ.REQ equals PDA
-// in Standby TI-RTOS power mode. The System CPU must set
+// in Standby mode. The System CPU must set
 // AUX_SYSIF:PEROPRATE.ANAIF_DAC_OP_RATE to BUS_RATE to use the DAC in Active
-// and Idle TI-RTOS power modes.
+// and Idle modes. Standby, Active, and Idle are power modes defined in TI’s
+// Power Manager.
 #define AUX_ANAIF_DACCTL_DAC_EN                                     0x00000020
 #define AUX_ANAIF_DACCTL_DAC_EN_BITN                                         5
 #define AUX_ANAIF_DACCTL_DAC_EN_M                                   0x00000020

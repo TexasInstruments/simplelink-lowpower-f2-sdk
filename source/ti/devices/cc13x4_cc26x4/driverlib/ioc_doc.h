@@ -83,8 +83,8 @@
 //! - \ref IOCPinTypeGpioInput()
 //! - \ref IOCPinTypeGpioOutput()
 //! - \ref IOCPinTypeI2c()
-//! - \ref IOCPinTypeSsiMaster()
-//! - \ref IOCPinTypeSsiSlave()
+//! - \ref IOCPinTypeSpiMaster()
+//! - \ref IOCPinTypeSpiSlave()
 //! - \ref IOCPinTypeUart()
 //!
 //! @}

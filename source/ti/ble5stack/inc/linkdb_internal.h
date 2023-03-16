@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -367,6 +367,17 @@ extern linkDBItem_t *linkDB_Find( uint16 connectionHandle );
  *              Unknown behaviour If no connection for this connection handle.
  */
   extern uint8_t *linkDB_getAddrByConnHandle( uint16 connHandle );
+
+/**
+ * Returns the TRUE if the the device is in central role
+ *
+ * @param       connectionHandle - Connection handle
+ *
+ * @return      TRUE - The device is in Central Role in this connection
+ *              FALSE - Not in Central Role
+ *
+ */
+  extern uint8_t linkDB_isCentralRole( uint16 connectionHandle );
 
 /*********************************************************************
 *********************************************************************/

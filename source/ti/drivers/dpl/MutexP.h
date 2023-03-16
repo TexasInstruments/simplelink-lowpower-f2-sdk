@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -181,7 +181,7 @@ extern void MutexP_Params_init(MutexP_Params *params);
  *  that they have it locked. This is to minimize latency. It is recommended
  *  that the users of the mutex do not block while they have the mutex locked.
  *
- *  This function unlocks the mutex. If the mutex is locked multiple times
+ *  This function locks the mutex. If the mutex is locked multiple times
  *  by the caller, the same number of unlocks must be called.
  *
  *  @param  handle  A MutexP_Handle returned from ::MutexP_create

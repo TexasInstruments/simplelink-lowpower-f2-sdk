@@ -42,12 +42,11 @@
 //
 //*****************************************************************************
 // This register provides the highest priority enabled interrupt index. Value
-// 0x00 means no event pending. Interrupt 1 is the highest priority, IIDX next
-// highest, 4, 8, … IIDX^31 is the least priority. That is, the least bit
-// position that is set to 1 denotes the highest priority pending interrupt.
-// The priority order is fixed. However, users can implement their own
-// prioritization schemes using other registers that expose the full set of
-// interrupts that have occurred.
+// 0x00 means no event pending. Interrupt 1 is the highest priority, and 31 is
+// the least priority. That is, the least bit position that is set to 1 denotes
+// the highest priority pending interrupt. The priority order is fixed.
+// However, users can implement their own prioritization schemes using other
+// registers that expose the full set of interrupts that have occurred.
 #define SPI_O_IIDX                                                  0x00000020
 
 // Interrupt Mask. If a bit is set, then corresponding interrupt is un-masked.
@@ -70,7 +69,7 @@
 // enabled through the mask, then the corresponding MIS bit is also set.
 #define SPI_O_ISET                                                  0x00000040
 
-// Interrupt clear. Write a 1 to clear corresponding Interrupt.
+// Interrupt clear. Write a 1 to clear the corresponding Interrupt.
 #define SPI_O_ICLR                                                  0x00000048
 
 // Event mode register. It is used to select whether each line is disabled, in
@@ -81,41 +80,39 @@
 // This register identifies the peripheral and its exact version.
 #define SPI_O_DESC                                                  0x000000FC
 
-// SPI control register 0
+// SPI Control Register 0
 #define SPI_O_CTL0                                                  0x00000100
 
-// SPI control register 1
+// SPI Control Register 1
 #define SPI_O_CTL1                                                  0x00000104
 
 // Clock prescaler and divider register. This register contains the settings
 // for the Clock prescaler and divider settings.
 #define SPI_O_CLKCTL                                                0x00000108
 
-// The IFLS register is the interrupt FIFO level select register. You can use
-// this register to define the levels at which the TX, RX and timeout interrupt
-// flags are triggered. The interrupts are generated based on a transition
-// through a level rather than being based on the level. That is, the
-// interrupts are generated when the fill level progresses through the trigger
-// level. For example, if the receive trigger level is set to the half-way
-// mark, the interrupt is triggered when the receive FIFO is filled with two or
-// more characters. Out of reset, the TXIFLSEL and RXIFLSEL bits are configured
+// The IFLS register is the interrupt FIFO level select register. This register
+// can be used to define the levels at which the TX, RX FIFO interrupt flags
+// are triggered. Out of reset, the TXIFLSEL and RXIFLSEL bits are configured
 // so that the FIFOs trigger an interrupt at the half-way mark.
 #define SPI_O_IFLS                                                  0x0000010C
 
 // Status Register
 #define SPI_O_STAT                                                  0x00000110
 
-// This register is used to specify module-specific divide ratio of the
-// functional clock.
+// This register is used to specify a divide ratio of the SPI functional clock.
 #define SPI_O_CLKDIV2                                               0x00000114
 
 // DMA Control Register
 #define SPI_O_DMACR                                                 0x00000118
 
-// RXDATA Register
+// RXDATA Register. Reading this register returns value in the RX FIFO pointed
+// by the current FIFO read pointer. If the RX FIFO is empty, the last read
+// value is returned. Writing has not effect and is ignored.
 #define SPI_O_RXDATA                                                0x00000130
 
-// TXDATA Register
+// TXDATA Register. Writing into this register puts the data into the TX FIFO.
+// Reading this register returns the last written value, pointed by the current
+// FIFO write pointer.
 #define SPI_O_TXDATA                                                0x00000140
 
 //*****************************************************************************
@@ -133,7 +130,7 @@
 // TX_EMPTY                 Transmit Buffer Empty Event/interrupt pending
 // TX_EVT                   Transmit Event/interrupt pending
 // RX_EVT                   Receive Event/interrupt pending
-// RTOUT_EVT                SPI receive time-out interrupt
+// RTOUT_EVT                SPI Receive Time-Out Event/interrupt pending
 // PER_EVT                  Transmit Parity Event/interrupt pending
 // RXFIFO_OFV_EVT           RX FIFO Overflow Event/interrupt pending
 // NO_INTR                  No interrupt pending
@@ -158,7 +155,7 @@
 //*****************************************************************************
 // Field:     [8] DMA_DONE_TX
 //
-// DMA Done 1 event for TX event mask.
+// DMA Done event for TX event mask.
 // ENUMs:
 // SET                      Set Interrupt Mask
 // CLR                      Clear Interrupt Mask
@@ -171,7 +168,7 @@
 
 // Field:     [7] DMA_DONE_RX
 //
-// DMA Done 1 event for RX event mask.
+// DMA Done event for RX event mask.
 // ENUMs:
 // SET                      Set Interrupt Mask
 // CLR                      Clear Interrupt Mask
@@ -237,7 +234,7 @@
 
 // Field:     [2] RTOUT
 //
-//  Enable SPI Receive Time-Out event mask.
+// SPI Receive Time-Out event mask.
 // ENUMs:
 // SET                      Set Interrupt Mask
 // CLR                      Clear Interrupt Mask
@@ -281,8 +278,8 @@
 //*****************************************************************************
 // Field:     [8] DMA_DONE_TX
 //
-// DMA Done 1 event for TX. This interrupt is set if the TX DMA channel sends
-// the DONE signal. This allows the handling of the DMA event inside the mapped
+// DMA Done event for TX. This interrupt is set if the TX DMA channel sends the
+// DONE signal. This allows the handling of the DMA event inside the mapped
 // peripheral.
 // ENUMs:
 // SET                      Interrupt occurred
@@ -296,8 +293,8 @@
 
 // Field:     [7] DMA_DONE_RX
 //
-// DMA Done 1 event for RX. This interrupt is set if the RX DMA channel sends
-// the DONE signal. This allows the handling of the DMA event inside the mapped
+// DMA Done event for RX. This interrupt is set if the RX DMA channel sends the
+// DONE signal. This allows the handling of the DMA event inside the mapped
 // peripheral.
 // ENUMs:
 // SET                      Interrupt occurred
@@ -311,8 +308,8 @@
 
 // Field:     [6] IDLE
 //
-// SPI has done finished transfers and changed into IDLE mode. This bit is set
-// when BUSY goes low.
+// SPI has completed transfers and changed into IDLE mode. This bit is set when
+// STAT.BUSY goes low.
 // ENUMs:
 // SET                      Interrupt occurred
 // CLR                      Interrupt did not occur
@@ -367,10 +364,10 @@
 
 // Field:     [2] RTOUT
 //
-//  SPI Receive Time-Out event.
+// SPI Receive Time-Out event.
 // ENUMs:
-// SET                      Set Interrupt Mask
-// CLR                      Clear Interrupt Mask
+// SET                      Interrupt occurred
+// CLR                      Interrupt did not occur
 #define SPI_RIS_RTOUT                                               0x00000004
 #define SPI_RIS_RTOUT_BITN                                                   2
 #define SPI_RIS_RTOUT_M                                             0x00000004
@@ -380,7 +377,7 @@
 
 // Field:     [1] PER
 //
-// Parity error event: this bit is set if a Parity error has been detected
+// Parity error event: this bit is set if a parity error has been detected
 // ENUMs:
 // SET                      Interrupt occurred
 // CLR                      Interrupt did not occur
@@ -412,7 +409,7 @@
 //*****************************************************************************
 // Field:     [8] DMA_DONE_TX
 //
-// Masked DMA Done 1 event for TX.
+// Masked DMA Done event for TX.
 // ENUMs:
 // SET                      Interrupt occurred
 // CLR                      Interrupt did not occur
@@ -425,7 +422,7 @@
 
 // Field:     [7] DMA_DONE_RX
 //
-// Masked DMA Done 1 event for RX.
+// Masked DMA Done event for RX.
 // ENUMs:
 // SET                      Interrupt occurred
 // CLR                      Interrupt did not occur
@@ -494,8 +491,8 @@
 //
 // Masked SPI Receive Time-Out Interrupt.
 // ENUMs:
-// SET                      Set Interrupt Mask
-// CLR                      Clear Interrupt Mask
+// SET                      Interrupt occurred
+// CLR                      Interrupt did not occur
 #define SPI_MIS_RTOUT                                               0x00000004
 #define SPI_MIS_RTOUT_BITN                                                   2
 #define SPI_MIS_RTOUT_M                                             0x00000004
@@ -505,7 +502,7 @@
 
 // Field:     [1] PER
 //
-// Masked Parity error event: this bit if a Parity error has been detected
+// Masked Parity error event: this bit if a parity error has been detected
 // ENUMs:
 // SET                      Interrupt occurred
 // CLR                      Interrupt did not occur
@@ -537,7 +534,7 @@
 //*****************************************************************************
 // Field:     [8] DMA_DONE_TX
 //
-// Set DMA Done 1 event for TX.
+// Set DMA Done event for TX.
 // ENUMs:
 // SET                      Set Interrupt
 // NO_EFFECT                Writing 0 has no effect
@@ -550,7 +547,7 @@
 
 // Field:     [7] DMA_DONE_RX
 //
-// Set DMA Done 1 event for RX.
+// Set DMA Done event for RX.
 // ENUMs:
 // SET                      Set Interrupt
 // NO_EFFECT                Writing 0 has no effect
@@ -615,9 +612,9 @@
 
 // Field:     [2] RTOUT
 //
-// Set SPI Receive Time-Out Event.
+// Set SPI Receive Time-Out event.
 // ENUMs:
-// SET                      Set Interrupt Mask
+// SET                      Set Interrupt
 // NO_EFFECT                Writing 0 has no effect
 #define SPI_ISET_RTOUT                                              0x00000004
 #define SPI_ISET_RTOUT_BITN                                                  2
@@ -659,7 +656,7 @@
 //*****************************************************************************
 // Field:     [8] DMA_DONE_TX
 //
-// Clear DMA Done 1 event for TX.
+// Clear DMA Done event for TX.
 // ENUMs:
 // CLR                      Clear Interrupt
 // NO_EFFECT                Writing 0 has no effect
@@ -672,7 +669,7 @@
 
 // Field:     [7] DMA_DONE_RX
 //
-// Clear DMA Done 1 event for RX.
+// Clear DMA Done event for RX.
 // ENUMs:
 // CLR                      Clear Interrupt
 // NO_EFFECT                Writing 0 has no effect
@@ -737,9 +734,9 @@
 
 // Field:     [2] RTOUT
 //
-// Clear SPI Receive Time-Out Event.
+// Clear SPI Receive Time-Out event.
 // ENUMs:
-// CLR                      Set Interrupt Mask
+// CLR                      Clear Interrupt
 // NO_EFFECT                Writing 0 has no effect
 #define SPI_ICLR_RTOUT                                              0x00000004
 #define SPI_ICLR_RTOUT_BITN                                                  2
@@ -784,8 +781,8 @@
 // Event line mode select for event corresponding to IPSTANDARD.INT_EVENT0
 // ENUMs:
 // HARDWARE                 The interrupt or event line is in hardware mode.
-//                          The hardware (another module) clears
-//                          automatically the associated RIS flag.
+//                          The hardware  automatically clears the RIS
+//                          flag.
 // SOFTWARE                 The interrupt or event line is in software mode.
 //                          Software must clear the RIS.
 // DISABLE                  The interrupt or event line is disabled.
@@ -806,50 +803,30 @@
 // Module identification contains a unique peripheral identification number.
 // The assignments are maintained in a central database for all of the platform
 // modules to ensure uniqueness.
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
 #define SPI_DESC_MODULEID_W                                                 16
 #define SPI_DESC_MODULEID_M                                         0xFFFF0000
 #define SPI_DESC_MODULEID_S                                                 16
-#define SPI_DESC_MODULEID_MAXIMUM                                   0xFFFF0000
-#define SPI_DESC_MODULEID_MINIMUM                                   0x00000000
 
 // Field: [15:12] FEATUREVER
 //
-// Feature Set for the module *instance*
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// Feature set version for this module instance.
 #define SPI_DESC_FEATUREVER_W                                                4
 #define SPI_DESC_FEATUREVER_M                                       0x0000F000
 #define SPI_DESC_FEATUREVER_S                                               12
-#define SPI_DESC_FEATUREVER_MAXIMUM                                 0x0000F000
-#define SPI_DESC_FEATUREVER_MINIMUM                                 0x00000000
 
 // Field:   [7:4] MAJREV
 //
-// Major rev of the IP
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// Major revision of the IP
 #define SPI_DESC_MAJREV_W                                                    4
 #define SPI_DESC_MAJREV_M                                           0x000000F0
 #define SPI_DESC_MAJREV_S                                                    4
-#define SPI_DESC_MAJREV_MAXIMUM                                     0x000000F0
-#define SPI_DESC_MAJREV_MINIMUM                                     0x00000000
 
 // Field:   [3:0] MINREV
 //
-// Minor rev of the IP
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// Minor revision of the IP
 #define SPI_DESC_MINREV_W                                                    4
 #define SPI_DESC_MINREV_M                                           0x0000000F
 #define SPI_DESC_MINREV_S                                                    0
-#define SPI_DESC_MINREV_MAXIMUM                                     0x0000000F
-#define SPI_DESC_MINREV_MINIMUM                                     0x00000000
 
 //*****************************************************************************
 //
@@ -858,15 +835,13 @@
 //*****************************************************************************
 // Field:    [14] CSCLR
 //
-// Clear shift register counter on CS inactive
-// This bit is relevant only in the slave mode, MS=0.
-// 0: The shift counter will keep its state when CS goes low
-// 1: The shift counter will be clear when CS goes low
+// Clear shift register counter when CS gets inactive. This bit is relevant
+// only in the slave mode, CTL1.MS = 0.
 // ENUMs:
 // ENABLE                   Enable automatic clear of shift register when CS
-//                          goes to disable.
+//                          gets inactive.
 // DISABLE                  Disable automatic clear of shift register when CS
-//                          goes to disable.
+//                          gets inactive.
 #define SPI_CTL0_CSCLR                                              0x00004000
 #define SPI_CTL0_CSCLR_BITN                                                 14
 #define SPI_CTL0_CSCLR_M                                            0x00004000
@@ -878,11 +853,9 @@
 //
 // CLKOUT phase (Motorola SPI frame format only)
 // This bit selects the clock edge that captures data and enables it to change
-// state. It
-// has the most impact on the first bit transmitted by either permitting or not
-// permitting a clock transition before the first data capture edge.
-// 0h = 1ST_CLK_EDGE : Data is captured on the first clock edge transition.
-// 1h = 2ND_CLK_EDGE : Data is captured on the second clock edge transition.
+// state. It has the most impact on the first bit transmitted by either
+// permitting or not permitting a clock transition before the first data
+// capture edge.
 // ENUMs:
 // SECOND                   Data is captured on the second clock edge
 //                          transition.
@@ -898,15 +871,11 @@
 // Field:     [8] SPO
 //
 // CLKOUT polarity (Motorola SPI frame format only)
-// 0h = SPI produces a steady state LOW value on the CLKOUT pin when data is
-// not being transferred.
-// 1h = SPI produces a steady state HIGH value on the CLKOUT pin when data is
-// not being transferred.
 // ENUMs:
 // HIGH                     SPI produces a steady state HIGH value on the
-//                          CLKOUT
+//                          CLKOUT when data is not being transferred.
 // LOW                      SPI produces a steady state LOW value on the
-//                          CLKOUT
+//                          CLKOUT when data is not being transferred.
 #define SPI_CTL0_SPO                                                0x00000100
 #define SPI_CTL0_SPO_BITN                                                    8
 #define SPI_CTL0_SPO_M                                              0x00000100
@@ -918,7 +887,7 @@
 //
 // Frame format Select
 // ENUMs:
-// MIRCOWIRE                National Microwire frame format
+// MIRCOWIRE                National MICROWIRE frame format
 // TI_SYNC                  TI synchronous serial frame format
 // MOTOROLA_4WIRE           Motorola SPI frame format (4 wire mode)
 // MOTOROLA_3WIRE           Motorola SPI frame format (3 wire mode)
@@ -935,7 +904,7 @@
 // Data Size Select.
 // Note:
 // Master mode: Values 0 - 2 are reserved and shall not be used. This will map
-// to 4 bit  mode. 3h = 4_BIT : 4-bit data
+// to 4 bit mode. A value of 3h corresponds to 4-bit data (and so on).
 // Slave mode: DSS should be no less than 6 which means the minimum frame
 // length is 7 bits.
 // ENUMs:
@@ -1008,11 +977,8 @@
 //*****************************************************************************
 // Field: [29:24] RXTIMEOUT
 //
-// Receive Timeout (only for Slave mode)
-// Defines the number of Clock Cycles before after which the Receive Timeout
-// flag RTOUT is set.
-// The time is calculated using the control register for the clock selection
-// and divider in the Master mode configuration.
+// Receive Timeout (only for Slave mode). This register defines the number of
+// clock cycles after which the Receive Timeout interrupt is set.
 // A value of 0 disables this function.
 // ENUMs:
 // MAXIMUM                  Highest possible value
@@ -1025,29 +991,25 @@
 
 // Field: [23:16] REPEATTX
 //
-// Counter to repeat last transfer
-// 0: repeat last transfer is disabled.
-// x: repeat the last transfer with the given number.
-// The transfer will be started with writing a data into the TX Buffer. Sending
-// the data will be repeated with the given value, so the data will be
-// transferred X+1 times in total.
-// The behavior is identical as if the data would be written into the TX Buffer
-// that many times as defined by the value here.
+// Counter to repeat last transfer. A value of 0 disables this feature. After a
+// non-zero value (X) is written to this register, SPI transfer can be started
+// with writing a data into the TX Buffer. The data will be transferred X+1
+// times in total. The behavior is identical as if the data were be written
+// into the TX Buffer that many times as defined by the value here
+// additionally.
 // It can be used to clean a transfer or to pull a certain amount of data by a
-// slave.
+// slave. This feature can be used only in the master mode.
 // ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// DISABLE                  REPEATTX disable
 #define SPI_CTL1_REPEATTX_W                                                  8
 #define SPI_CTL1_REPEATTX_M                                         0x00FF0000
 #define SPI_CTL1_REPEATTX_S                                                 16
-#define SPI_CTL1_REPEATTX_MAXIMUM                                   0x00FF0000
-#define SPI_CTL1_REPEATTX_MINIMUM                                   0x00000000
+#define SPI_CTL1_REPEATTX_DISABLE                                   0x00000000
 
 // Field:    [10] FIFORST
 //
 // This bit is used to reset transmit and receive FIFO pointers. The pointers
-// are held at a reset value until bit is cleared to zero.
+// are held at a reset value until this bit is cleared to zero.
 // ENUMs:
 // SET                      Set FIFO pointers reset trigger
 // CLR                      Clear FIFO pointers reset trigger
@@ -1058,27 +1020,9 @@
 #define SPI_CTL1_FIFORST_SET                                        0x00000400
 #define SPI_CTL1_FIFORST_CLR                                        0x00000000
 
-// Field:   [9:8] MODE
-//
-// SPI Communication Mode Select
-// Note: Reserved/undefined Modes are identical to Legacy mode. MultiSPI mode
-// is not supported
-// ENUMs:
-// MULTISPI4                multiSPI Mode with 4 Data Bits (not supported)
-// MULTISPI2                multiSPI Mode with 2 Data Bits (not supported)
-// LEGACY                   Legacy Mode
-#define SPI_CTL1_MODE_W                                                      2
-#define SPI_CTL1_MODE_M                                             0x00000300
-#define SPI_CTL1_MODE_S                                                      8
-#define SPI_CTL1_MODE_MULTISPI4                                     0x00000300
-#define SPI_CTL1_MODE_MULTISPI2                                     0x00000200
-#define SPI_CTL1_MODE_LEGACY                                        0x00000000
-
 // Field:     [7] PBS
 //
-// Parity Bit Select:
-// Disabled: Bit 0 is used for Parity
-// Enabled: Bit 1 is used for Parity, Bit 0 is ignored
+// Parity Bit Select
 // ENUMs:
 // ENABLE                   Bit 1 is used for Parity, Bit 0 is ignored
 // DISABLE                  Bit 0 is used for Parity
@@ -1107,7 +1051,7 @@
 // Parity enable
 // if enabled the last bit will be used as parity to evaluate the right
 // transmission of the previous bits.
-// In case of a parity miss-match the parity error flag RIS.PER will be set.
+// In case of a parity mismatch the parity error flag RIS.PER will be set.
 // ENUMs:
 // ENABLE                   Enable Parity function
 // DISABLE                  Disable Parity function
@@ -1122,8 +1066,6 @@
 //
 // MSB first select. Controls the direction of the receive and transmit shift
 // register.
-// 0b = LSB first
-// 1b = MSB first
 // ENUMs:
 // ENABLE                   MSB first
 // DISABLE                  LSB first
@@ -1140,14 +1082,14 @@
 // This bit is relevant only in the slave mode, MS=0. In multiple-slave
 // systems, it is possible for an SPI master to broadcast a message to all
 // slaves in the system while ensuring that only one slave drives data onto its
-// serial output line. In such systems the RXD lines from multiple slaves could
+// serial output line. In such systems the RX lines from multiple slaves could
 // be tied together. To operate in such systems, this bitfield can be set if
-// the SPI slave is not supposed to drive the TXD line:
-// 0: SPI can drive the MISO output in slave mode.
-// 1: SPI cannot drive the MISO output in slave mode.
+// the SPI slave is not supposed to drive the TX line.
 // ENUMs:
-// ENABLE                   SPI cannot drive the MISO output in slave mode.
-// DISABLE                  SPI can drive the MISO output in slave mode.
+// ENABLE                   SPI cannot drive the MISO output via TX in slave
+//                          mode.
+// DISABLE                  SPI can drive the MISO output via TX in slave
+//                          mode.
 #define SPI_CTL1_SOD                                                0x00000008
 #define SPI_CTL1_SOD_BITN                                                    3
 #define SPI_CTL1_SOD_M                                              0x00000008
@@ -1158,9 +1100,7 @@
 // Field:     [2] MS
 //
 // Master or slave mode select. This bit can be modified only when SPI is
-// disabled, CTL1.ENABLE=0.
-// 0h = Device configured as slave
-// 1h = Device configured as master
+// disabled, CTL1.ENABLE = 0.
 // ENUMs:
 // ENABLE                   Select Master Mode
 // DISABLE                  Select Slave Mode
@@ -1173,13 +1113,13 @@
 
 // Field:     [1] LBM
 //
-// Loop back mode:
-// 0: Normal serial port operation enabled.
-// 1: Output of transmit serial shifter is connected to input of receive serial
-// shifter internally.
+// Loop back mode
 // ENUMs:
-// ENABLE                   Enable loopback mode
-// DISABLE                  Disable loopback mode
+// ENABLE                   Enable loopback mode.Output of transmit serial
+//                          shifter is connected to input of receive serial
+//                          shifter internally.
+// DISABLE                  Disable loopback mode. Normal serial port
+//                          operation enabled.
 #define SPI_CTL1_LBM                                                0x00000002
 #define SPI_CTL1_LBM_BITN                                                    1
 #define SPI_CTL1_LBM_M                                              0x00000002
@@ -1190,8 +1130,6 @@
 // Field:     [0] ENABLE
 //
 // SPI enable
-// 0b = Disabled. SPI is disabled and logic held in reset state.
-// 1b = Enabled. SPI  released for operation.
 // ENUMs:
 // ENABLE                   Enable module function
 // DISABLE                  Disable module function
@@ -1209,18 +1147,13 @@
 //*****************************************************************************
 // Field: [31:28] DSAMPLE
 //
-// Delayed sampling. In master mode the data on the input pin will be delayed
-// sampled by the defined clock cycles.
-// Note: As an example, if the SPI transmit frequency is set to 12 MHz  in the
-// master mode, DSAMPLE should be set to a value of 2
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MINIMUM                  Smallest value
+// Delayed sampling. In master mode the data on the input pin will be sampled
+// after the defined clock cycles. Note: As an example, if the SPI transmit
+// frequency is set to 12 MHz in the master mode, DSAMPLE should be set to a
+// value of 2
 #define SPI_CLKCTL_DSAMPLE_W                                                 4
 #define SPI_CLKCTL_DSAMPLE_M                                        0xF0000000
 #define SPI_CLKCTL_DSAMPLE_S                                                28
-#define SPI_CLKCTL_DSAMPLE_MAXIMUM                                  0xF0000000
-#define SPI_CLKCTL_DSAMPLE_MINIMUM                                  0x00000000
 
 // Field:   [9:0] SCR
 //
@@ -1249,7 +1182,6 @@
 // interrupt are as follows:
 // ENUMs:
 // LEVEL_1                  Trigger when RX FIFO contains >= 1 byte
-//                          Should be used with DMA
 // LVL_RES6                 Reserved
 // LVL_FULL                 RX FIFO is full
 // LVL_RES4                 Reserved
@@ -1275,7 +1207,6 @@
 // transmit interrupt are as follows:
 // ENUMs:
 // LEVEL_1                  Trigger when TX FIFO has >= 1 byte free
-//                          Should be used with DMA
 // LVL_RES6                 Reserved
 // LVL_EMPTY                TX FIFO is empty
 // LVL_RES4                 Reserved
@@ -1342,7 +1273,7 @@
 
 // Field:     [1] TNF
 //
-// Transmit FIFI not full
+// Transmit FIFO not full
 // ENUMs:
 // NOT_FULL                 Transmit FIFO is not full.
 // FULL                     Transmit FIFO is full.
@@ -1402,8 +1333,7 @@
 //*****************************************************************************
 // Field:     [1] TXDMAE
 //
-// Transmit DMA enable. If this bit is set to 1, DMA for the transmit FIFO is
-// enabled.
+// Transmit FIFO DMA enable when set.
 #define SPI_DMACR_TXDMAE                                            0x00000002
 #define SPI_DMACR_TXDMAE_BITN                                                1
 #define SPI_DMACR_TXDMAE_M                                          0x00000002
@@ -1411,8 +1341,7 @@
 
 // Field:     [0] RXDMAE
 //
-// Receive DMA enable. If this bit is set to 1, DMA for the receive FIFO is
-// enabled.
+// Receive FIFO DMA enable when set.
 #define SPI_DMACR_RXDMAE                                            0x00000001
 #define SPI_DMACR_RXDMAE_BITN                                                0
 #define SPI_DMACR_RXDMAE_M                                          0x00000001
@@ -1426,24 +1355,9 @@
 // Field:  [31:0] DATA
 //
 // Received Data
-// Core Domain SPI: 32-bits wide data register
-// ULL Domain SPI: 16-bits wide data register
-// When read, the entry in the receive FIFO, pointed to by the current FIFO
-// read pointer, is accessed. As data values are removed by the receive logic
-// from the incoming data frame, they are placed into the entry in the receive
-// FIFO, pointed to by the current FIFO write pointer.
-// Received data less than 16 bits is automatically right justified in the
-// receive buffer.
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MAX16BIT                 Highest possible value
-// MINIMUM                  Smallest value
 #define SPI_RXDATA_DATA_W                                                   32
 #define SPI_RXDATA_DATA_M                                           0xFFFFFFFF
 #define SPI_RXDATA_DATA_S                                                    0
-#define SPI_RXDATA_DATA_MAXIMUM                                     0xFFFFFFFF
-#define SPI_RXDATA_DATA_MAX16BIT                                    0x0000FFFF
-#define SPI_RXDATA_DATA_MINIMUM                                     0x00000000
 
 //*****************************************************************************
 //
@@ -1453,27 +1367,9 @@
 // Field:  [31:0] DATA
 //
 // Transmit Data
-// 32-bits wide data register:
-// When read, the last entry in the transmit FIFO, pointed to by the current
-// FIFO write pointer, is accessed.
-// When written, the entry in the transmit FIFO, pointed to by the write
-// pointer, is written to. Data values are removed from the transmit FIFO one
-// value at a time by the transmit logic. It is loaded into the transmit serial
-// shifter, then serially shifted out onto the TXD output pin at the programmed
-// bit rate.
-// When a data size of less than 32 bits is selected, the user must
-// right-justify data written to the transmit FIFO. The transmit logic ignores
-// the unused bits.
-// ENUMs:
-// MAXIMUM                  Highest possible value
-// MAX16BIT                 Highest possible value
-// MINIMUM                  Smallest value
 #define SPI_TXDATA_DATA_W                                                   32
 #define SPI_TXDATA_DATA_M                                           0xFFFFFFFF
 #define SPI_TXDATA_DATA_S                                                    0
-#define SPI_TXDATA_DATA_MAXIMUM                                     0xFFFFFFFF
-#define SPI_TXDATA_DATA_MAX16BIT                                    0x0000FFFF
-#define SPI_TXDATA_DATA_MINIMUM                                     0x00000000
 
 
 #endif // __SPI__

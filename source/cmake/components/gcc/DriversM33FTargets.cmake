@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget Drivers::drivers_cc13x4 Drivers::drivers_cc13x4_spe Drivers::drivers_cc26x4 Drivers::drivers_cc26x4_spe)
+foreach(_expectedTarget Drivers::drivers_cc13x4 Drivers::drivers_cc13x4_ns Drivers::drivers_cc26x4 Drivers::drivers_cc26x4_ns)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -56,15 +56,15 @@ add_library(Drivers::drivers_cc13x4 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc13x4 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc13x4;TOOLCHAIN_gcc_m33f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc13x4;TOOLCHAIN_gcc_m33f"
 )
 
-# Create imported target Drivers::drivers_cc13x4_spe
-add_library(Drivers::drivers_cc13x4_spe STATIC IMPORTED)
+# Create imported target Drivers::drivers_cc13x4_ns
+add_library(Drivers::drivers_cc13x4_ns STATIC IMPORTED)
 
-set_target_properties(Drivers::drivers_cc13x4_spe PROPERTIES
+set_target_properties(Drivers::drivers_cc13x4_ns PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc13x4;DriversUtils::spe_enabled;TrustZone::tfm_dependencies_cc26x4;TOOLCHAIN_gcc_m33f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc13x4;DriversUtils::tfm_enabled;TrustZone::tfm_dependencies_cc26x4;TOOLCHAIN_gcc_m33f"
 )
 
 # Create imported target Drivers::drivers_cc26x4
@@ -72,15 +72,15 @@ add_library(Drivers::drivers_cc26x4 STATIC IMPORTED)
 
 set_target_properties(Drivers::drivers_cc26x4 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc26x4;TOOLCHAIN_gcc_m33f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc26x4;TOOLCHAIN_gcc_m33f"
 )
 
-# Create imported target Drivers::drivers_cc26x4_spe
-add_library(Drivers::drivers_cc26x4_spe STATIC IMPORTED)
+# Create imported target Drivers::drivers_cc26x4_ns
+add_library(Drivers::drivers_cc26x4_ns STATIC IMPORTED)
 
-set_target_properties(Drivers::drivers_cc26x4_spe PROPERTIES
+set_target_properties(Drivers::drivers_cc26x4_ns PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:tirtos>;driverlib_cc26x4;DriversUtils::spe_enabled;TrustZone::tfm_dependencies_cc26x4;TOOLCHAIN_gcc_m33f"
+  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:Tirtos7Generic::tirtos7>;driverlib_cc26x4;DriversUtils::tfm_enabled;TrustZone::tfm_dependencies_cc26x4;TOOLCHAIN_gcc_m33f"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
@@ -119,7 +119,7 @@ unset(_IMPORT_CHECK_TARGETS)
 # Make sure the targets which have been exported in some other
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "DriversUtils::spe_enabled" "TrustZone::tfm_dependencies_cc26x4" )
+foreach(_target "Tirtos7Generic::tirtos7" "DriversUtils::tfm_enabled" "TrustZone::tfm_dependencies_cc26x4" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

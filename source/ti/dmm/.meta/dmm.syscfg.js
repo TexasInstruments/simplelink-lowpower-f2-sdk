@@ -516,16 +516,23 @@ function getLibs(mod) {
 
         let compiler = system.compiler;
 
-        lib += compiler + "/m4f/";
+        if (boardName.includes("CC1354P"))
+        {
+            lib += compiler + "/m33f/";
+        }
+        else
+        {
+            lib += compiler + "/m4f/";
+        }
 
-	if (compiler == "gcc")
-	{
-	    lib += "libdmmlib" +  rtosSuffix + ".a";
-	}
-	else
-	{
+        if (compiler == "gcc")
+        {
+            lib += "libdmmlib" +  rtosSuffix + ".a";
+        }
+        else
+        {
             lib += "dmmlib" + rtosSuffix + ".a";
-	}
+        }
         result.libs.push(lib);
     }
     return result;

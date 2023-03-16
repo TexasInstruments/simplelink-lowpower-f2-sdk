@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,6 @@
 
 #include <psa/client.h>
 #include <psa_manifest/sid.h>
-
-#include <xdc/std.h>
 
 static psa_handle_t spHandle = 0;
 

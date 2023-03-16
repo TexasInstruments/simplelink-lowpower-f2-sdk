@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,22 +60,23 @@ let config = [
         onChange: updateConfigs
     },
     {
-        name: "slaveSelectManager",
-        displayName: "Slave Select Manager",
-        description: "Manager of the SPI slave select pin",
+        name: "chipSelectManager",
+        legacyNames: ["slaveSelectManager"],
+        displayName: "Chip Select Manager",
+        description: "Manager of the SPI chip select pin",
         default: "NVS",
         options: [
             {
                 name: "NVS",
-                description: "NVS driver asserts SPI flash slave select."
+                description: "NVS driver asserts SPI flash chip select."
             },
             {
                 name: "SPI",
-                description: "SPI driver asserts SPI flash slave select."
+                description: "SPI driver asserts SPI flash chip select."
             },
             {
                 name: "User",
-                description: "User application asserts SPI flash slave select."
+                description: "User application asserts SPI flash chip select."
                 + " The user application must include implementations to"
                 + " NVSSPI25X_initSpiCs, NVSSPI25X_deinitSpiCs,"
                 + " NVSSPI25X_assertSpiCs, and NVSSPI25X_deassertSpiCs"
@@ -145,11 +146,12 @@ function validate(inst, validation) {
 function pinmuxRequirements(inst)
 {
     let requirements = [];
-    if (inst.slaveSelectManager == "NVS") {
+    if (inst.chipSelectManager == "NVS") {
         requirements.push({
-            name: "slaveSelect",
+            name: "chipSelect",
+            legacyNames: ["slaveSelect"],
             hidden: true,
-            displayName: "Slave Select",
+            displayName: "Chip Select",
             interfaceName: "GPIO",
             signalTypes: ["DOUT"]
         });
@@ -163,12 +165,13 @@ function pinmuxRequirements(inst)
  */
 function moduleInstances(inst) {
     let modules = new Array();
-    /* Add GPIO instance if NVS driver asserts SS */
-    if (inst.slaveSelectManager == "NVS") {
+    /* Add GPIO instance if NVS driver asserts CS */
+    if (inst.chipSelectManager == "NVS") {
         modules.push(
             {
-                name: "slaveSelectPinInstance",
-                displayName: "Slave Select GPIO Instance",
+                name: "chipSelectPinInstance",
+                legacyNames: ["slaveSelectPinInstance"],
+                displayName: "Chip Select GPIO Instance",
                 moduleName: "/ti/drivers/GPIO",
                 args: {
                     mode: "Output",
@@ -177,7 +180,7 @@ function moduleInstances(inst) {
                 },
                 requiredArgs: {
                     parentInterfaceName: "GPIO",
-                    parentSignalName: "slaveSelect",
+                    parentSignalName: "chipSelect",
                     parentSignalDisplayName: "Button GPIO"
                 },
                 hardware: inst.$hardware ? inst.$hardware.subComponents.SELECT : null
@@ -185,18 +188,18 @@ function moduleInstances(inst) {
         );
     }
 
-    if (inst.manager == "NVS" && inst.slaveSelectManager == "SPI") {
+    if (inst.manager == "NVS" && inst.chipSelectManager == "SPI") {
         modules.push(
             {
                 name: "spiInstance",
                 displayName: "SPI Flash SPI Instance",
                 moduleName: "/ti/drivers/SPI",
                 hardware: inst.$hardware ? inst.$hardware : null,
-                args: { mode: "Four Pin SS Active Low" }
+                args: { mode: "Four Pin CS Active Low" }
             }
         );
     }
-    else if (inst.manager == "NVS" && inst.slaveSelectManager == "User") {
+    else if (inst.manager == "NVS" && inst.chipSelectManager == "User") {
         modules.push(
             {
                 name: "spiInstance",
@@ -237,7 +240,7 @@ function sharedModuleInstances(inst) {
     let sharedModules = new Array();
 
     /* Add SPI instance if NVS driver opens the SPI */
-    if (inst.manager == "NVS" && inst.slaveSelectManager == "NVS") {
+    if (inst.manager == "NVS" && inst.chipSelectManager == "NVS") {
         sharedModules.push(
             {
                 name: "sharedSpiInstance",

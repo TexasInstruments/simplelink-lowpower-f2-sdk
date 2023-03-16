@@ -45,7 +45,7 @@
 #define TRACE_LOG_LEVEL TRACE_LEVEL_DEBUG
 #endif
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #define TRACE_MAX_LEVEL TRACE_LOG_LEVEL
 #else
 #define TRACE_MAX_LEVEL 0

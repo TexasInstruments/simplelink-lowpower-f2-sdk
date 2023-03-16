@@ -51,11 +51,11 @@
  *            o Ultra Fast-mode (UFm), with a bit rate up to 5 Mbit/s
  *
  * Each device connected to the bus is software addressable by a unique
- * address and simple master/slave relationships exist at all times.
+ * address and simple controller/target relationships exist at all times.
  *
- * A master is the device which initiates a data transfer on the bus and
+ * A controller is the device which initiates a data transfer on the bus and
  * generates the clock signals to permit that transfer. At that time,
- * any device addressed is considered a slave.
+ * any device addressed is considered a target.
  */
 
 "use strict";
@@ -74,7 +74,7 @@ let config = [
     {
         name        : "maxBitRate",
         displayName : "Maximum Bit Rate",
-        description : "Maximum bit rate (Kbps) supported by this bus",
+        description : "Maximum bit rate (kbps) supported by this bus",
         longDescription: "This parameter determines the value of a 'maximum"
             + " bitrate' symbol declared in the generated"
             + " `ti_drivers_config.h` file:"
@@ -84,8 +84,8 @@ let config = [
             + " portably open the bus at a speed that's likely to work."
             + "\n\nIf this configuration parameter is set to zero,"
             + " the maximum speed for this instance is the maximum"
-            + " speed supported by the slowest attached slave.  If no slave"
-            + " devices are attached, the maximum bit rate is 100 Kbps."
+            + " speed supported by the slowest attached target.  If no target"
+            + " devices are attached, the maximum bit rate is 100 kbps."
             + "\n[More ...](/drivers/syscfg/html/ConfigDoc.html"
             + "#ti_drivers_I2C_maxBitRate \"Full description of"
             + " this parameter\")\n",
@@ -105,14 +105,14 @@ let config = [
             + "        I2C_Handle i2cHandle = I2C_open(SENSORS, &params);\n"
             + "\n"
             + "By default, SysConfig triggers an error in the event that"
-            + " the declared maximum speed of an attached slave is less then"
+            + " the declared maximum speed of an attached target is less than"
             + " this value.  You can disable this error by setting the "
             + " [speedChecks](/drivers/syscfg/html/ConfigDoc.html"
             + "#ti_drivers_I2C_speedChecks) configuration parameter to either"
             + " `'Warn'` or `'Remark'`.\n"
             + "\n**Note**: The maximum bit rate for an I2C bus is a function"
             + " of the electrical capacitance and resistance on the I2C signal"
-            + " lines and the speed supported by the slowest slave.  Even if"
+            + " lines and the speed supported by the slowest target.  Even if"
             + " all devices on the bus are capable of"
             + " supporting the specified bit rate, you may need to lower it"
             + " if the electrical characteristics of your hardware imply large"
@@ -159,7 +159,7 @@ let config = [
         displayName : "Speed Checks",
         description : "How to handle detected bit rate conflicts",
         longDescription: " By default, SysConfig triggers an error if a"
-                         + " slave device on the bus has a maximum speed below"
+                         + " target device on the bus has a maximum speed below"
                          + " the maximum bit rate specified for the bus."
                          + " You can override this error by setting this"
                          + " configuration parameter to either `'Warn'` or"
@@ -167,14 +167,14 @@ let config = [
         default     : "Fail",
         options     : [
             { name:  "Fail", description:
-                     "Trigger an error if the bus speed exceeds a slave's"
+                     "Trigger an error if the bus speed exceeds a target's"
                      + " maximum speed"
             },
             { name:  "Warn", description:
-                     "Warn if the bus speed exceeds any slave's maximum speed"
+                     "Warn if the bus speed exceeds any target's maximum speed"
             },
             { name:  "Remark", description:
-                     "Emit a remark if the bus speed exceeds a slave's"
+                     "Emit a remark if the bus speed exceeds a target's"
                      + " maximum speed"
             }
         ]
@@ -327,7 +327,7 @@ function getCompSpeed(comp, unknownDefault)
         return (speed);
     }
     if (unknownDefault === undefined) {
-        return (100); /* standard mode 100 Kbps */
+        return (100); /* standard mode 100 kbps */
     }
 
     return (unknownDefault);
@@ -974,7 +974,7 @@ function _validateAddrs(inst, components, vo)
  * https://hackaday.com/2016/07/19/what-could-go-wrong-i2c-edition
  *     "my solution to multi-mastering and clock-stretching issues is
  *      to avoid them."
- *     "Are you running the bus at the right speed for the slowest slave?"
+ *     "Are you running the bus at the right speed for the slowest target?"
  */
 function _validateSpeed(inst, components, vo)
 {
@@ -985,7 +985,7 @@ function _validateSpeed(inst, components, vo)
         let speed = getCompSpeed(comp, 5000);
         if (speed < inst.maxBitRate) {
             let msg = "the component " + comp.name
-                + " can only support speeds up to " + speed + " Kbps";
+                + " can only support speeds up to " + speed + " kbps";
             logConflict(vo, inst, "maxBitRate", msg);
         }
     }

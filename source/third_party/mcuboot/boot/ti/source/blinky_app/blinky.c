@@ -43,7 +43,7 @@
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #else
 #include DeviceFamily_constructPath(driverlib/hapi.h)
@@ -64,7 +64,7 @@
 extern int MCUBOOT_HDR_BASE;
 struct image_header *mcubootHdr = (struct image_header *)&MCUBOOT_HDR_BASE;
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 /*
  *  ======== disableFlashCache ========
  */
@@ -97,7 +97,7 @@ static void restoreFlashCache(uint8_t mode)
 }
 #endif
 
-#ifdef DeviceFamily_CC23X0 /* Temporary, while TIDRIVERS-5670 for usleep() is implemented */
+#ifdef DeviceFamily_CC23X0R5 /* Temporary, while TIDRIVERS-5670 for usleep() is implemented */
 static void localDelay (uint32_t delayMs)
 {
     uint32_t j;
@@ -122,20 +122,20 @@ void gpioButtonFxn0(uint_least8_t index)
     struct image_version versionZero = {0};
     uint32_t flashStat;
     unsigned int key;
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     uint8_t mode;
 #endif
 
     TRACE_LOG_INF("blinky_app invalidating image");
 
     /* Set mcuboot header ver to 0 to invalidate the image */
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     mode = disableFlashCache();
 #endif
     key = HwiP_disable();
     flashStat = FlashProgram((uint8_t *) &versionZero, (uint32_t) &(mcubootHdr->ih_ver), sizeof(mcubootHdr->ih_ver));
     HwiP_restore(key);
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     restoreFlashCache(mode);
 #endif
 
@@ -145,7 +145,7 @@ void gpioButtonFxn0(uint_least8_t index)
     }
 
     /* Reset and run mcuboot */
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     SysCtrlSystemReset();
 #else
     HapiResetDevice();
@@ -179,7 +179,7 @@ void *mainThread(void *arg0)
 
     while(1)
     {
-#ifndef DeviceFamily_CC23X0  /* Temporary, while fix for usleep() is implemented */
+#ifndef DeviceFamily_CC23X0R5  /* Temporary, while fix for usleep() is implemented */
         usleep(BLINK_INTERVAL);
 #else
         localDelay(BLINK_INTERVAL);

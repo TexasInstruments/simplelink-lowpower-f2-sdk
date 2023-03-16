@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -118,7 +118,6 @@ of the [__UART driver__][5].
     defaultInstanceName: "CONFIG_UART2_",
     config        : Common.addNameConfig(config, "/ti/drivers/UART2", "CONFIG_UART2_"),
     modules       : Common.autoForceModules(["Board", "Power", "DMA"]),
-
     _getPinResources: _getPinResources
 };
 

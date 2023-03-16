@@ -41,6 +41,9 @@ let deviceSettingsTable = {
         defaultCpuFrequency: 48000000,
         defaultIdleSleepTicks: 2,
         defaultPortTaskSelection: 1,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: false,
         gccPortableFiles: ["../portable/GCC/ARM_CM3/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM3/port.c"]
     },
@@ -49,6 +52,9 @@ let deviceSettingsTable = {
         defaultCpuFrequency: 48000000,
         defaultIdleSleepTicks: 2,
         defaultPortTaskSelection: 1,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
         gccPortableFiles: ["../portable/GCC/ARM_CM4F/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM4F/port.c"]
     },
@@ -58,19 +64,32 @@ let deviceSettingsTable = {
         defaultIdleSleepTicks: 2,
         /* The CM33 port does not have optimised task selection */
         defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
         gccPortableFiles: [
             "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
             "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
         ],
         iarPortableFiles: [
             "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
+        ]
+    },
+    "cc13x4_cc26x4_tfm": {
+        defaultHeapSize: 0x8000,
+        defaultCpuFrequency: 48000000,
+        defaultIdleSleepTicks: 2,
+        /* The CM33 port does not have optimised task selection */
+        defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 2,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
+        gccPortableFiles: [
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
         ],
-        gccPortableFilesTzEnabled: [
-            "../portable/GCC/ARM_CM33/non_secure/port.c",
-            "../portable/GCC/ARM_CM33/non_secure/portasm.c"
-        ],
-        iarPortableFilesTzEnabled: [
-            "../portable/IAR/ARM_CM33/non_secure/port.c"
+        iarPortableFiles: [
+            "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
         ]
     },
     "cc32xx": {
@@ -78,6 +97,9 @@ let deviceSettingsTable = {
         defaultCpuFrequency: 80000000,
         defaultIdleSleepTicks: 5,
         defaultPortTaskSelection: 1,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: false,
         gccPortableFiles: ["../portable/GCC/ARM_CM3/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM3/port.c"]
     },
@@ -86,6 +108,9 @@ let deviceSettingsTable = {
         defaultCpuFrequency: 80000000,
         defaultIdleSleepTicks: 5,
         defaultPortTaskSelection: 1,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: false,
         gccPortableFiles: ["../portable/GCC/ARM_CM3/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM3/port.c"]
     },
@@ -94,8 +119,79 @@ let deviceSettingsTable = {
         defaultCpuFrequency: 48000000,
         defaultIdleSleepTicks: 2,
         defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: false,
         gccPortableFiles: ["../portable/GCC/ARM_CM0/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM0/port.c"]
+    },
+    "cc35xx": {
+        defaultHeapSize: 0x8000,
+        defaultCpuFrequency: 160000000,
+        defaultIdleSleepTicks: 2,
+        /* The CM33 port does not have optimised task selection */
+        defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
+        gccPortableFiles: [
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
+        ],
+        iarPortableFiles: [
+            "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
+        ]
+    },
+    "cc35xx_tfm": {
+        defaultHeapSize: 0x8000,
+        defaultCpuFrequency: 160000000,
+        defaultIdleSleepTicks: 2,
+        /* The CM33 port does not have optimised task selection */
+        defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 2,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
+        gccPortableFiles: [
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
+        ],
+        iarPortableFiles: [
+            "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
+        ]
+    },
+    "cc27xx": {
+        defaultHeapSize: 0x8000,
+        defaultCpuFrequency: 96000000,
+        defaultIdleSleepTicks: 2,
+        /* The CM33 port does not have optimised task selection */
+        defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 1,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
+        gccPortableFiles: [
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
+        ],
+        iarPortableFiles: [
+            "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
+        ]
+    },
+    "cc27xx_tfm": {
+        defaultHeapSize: 0x8000,
+        defaultCpuFrequency: 96000000,
+        defaultIdleSleepTicks: 2,
+        /* The CM33 port does not have optimised task selection */
+        defaultPortTaskSelection: 0,
+        defaultMaxInterruptPriority: 2,
+        defaultNvicPriBits: 3,
+        defaultFpuEnabled: true,
+        gccPortableFiles: [
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/port.c",
+            "../portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c"
+        ],
+        iarPortableFiles: [
+            "../portable/IAR/ARM_CM33_NTZ/non_secure/port.c"
+        ]
     }
 };
 let deviceId = system.deviceData.deviceId;
@@ -114,8 +210,15 @@ else if (deviceId.match(/CC13.2.*|CC26.2.*/)) {
     deviceSettings = deviceSettingsTable.cc13x2_cc26x2;
 }
 else if (deviceId.match(/CC13.4.*|CC26.4.*|CC2653.*/)) {
-    /* CC13X4/CC26X4 */
-    deviceSettings = deviceSettingsTable.cc13x4_cc26x4;
+    /* CC13X4/CC26X4. Choose between a TFM-enabled or TFM-disabled
+     * configuration
+     */
+    if (system.modules["/ti/utils/TrustZone"]) {
+        deviceSettings = deviceSettingsTable.cc13x4_cc26x4_tfm;
+    }
+    else {
+        deviceSettings = deviceSettingsTable.cc13x4_cc26x4;
+    }
 }
 else if (deviceId.match(/CC32..SF.*/)) {
     /* CC32XXSF */
@@ -125,12 +228,37 @@ else if (deviceId.match(/CC32.*/)) {
     /* CC32XX */
     deviceSettings = deviceSettingsTable.cc32xx;
 }
+else if (deviceId.match(/CC35.*/)) {
+    /* CC35XX. Choose between a TFM-enabled or TFM-disabled
+     * configuration
+     */
+    if (system.modules["/ti/utils/TrustZone"]) {
+        deviceSettings = deviceSettingsTable.cc35xx_tfm;
+    }
+    else {
+        deviceSettings = deviceSettingsTable.cc35xx;
+    }
+}
+else if (deviceId.match(/CC27.*/)) {
+    /* CC27XX. Choose between a TFM-enabled or TFM-disabled
+     * configuration
+     */
+    if (system.modules["/ti/utils/TrustZone"]) {
+        deviceSettings = deviceSettingsTable.cc27xx_tfm;
+    }
+    else {
+        deviceSettings = deviceSettingsTable.cc27xx;
+    }
+}
 
 exports = {
     defaultHeapSize: deviceSettings.defaultHeapSize,
     defaultCpuFrequency: deviceSettings.defaultCpuFrequency,
     defaultIdleSleepTicks: deviceSettings.defaultIdleSleepTicks,
     defaultPortTaskSelection: deviceSettings.defaultPortTaskSelection,
+    defaultMaxInterruptPriority: deviceSettings.defaultMaxInterruptPriority,
+    defaultNvicPriBits: deviceSettings.defaultNvicPriBits,
+    defaultFpuEnabled: deviceSettings.defaultFpuEnabled,
     gccPortableFiles: deviceSettings.gccPortableFiles,
     gccPortableFilesTzEnabled: deviceSettings.gccPortableFilesTzEnabled,
     iarPortableFiles: deviceSettings.iarPortableFiles,

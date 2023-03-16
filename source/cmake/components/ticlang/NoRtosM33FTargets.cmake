@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget NoRtos::nortos_cc13x4 NoRtos::nortos_cc26x4)
+foreach(_expectedTarget NoRtos::nortos_cc13x4 NoRtos::nortos_cc26x4 NoRtos::nortos_cc13x4_ns NoRtos::nortos_cc26x4_ns)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -63,6 +63,22 @@ set_target_properties(NoRtos::nortos_cc13x4 PROPERTIES
 add_library(NoRtos::nortos_cc26x4 STATIC IMPORTED)
 
 set_target_properties(NoRtos::nortos_cc26x4 PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
+  INTERFACE_LINK_LIBRARIES "driverlib_cc26x4;TOOLCHAIN_ticlang_m33f"
+)
+
+# Create imported target NoRtos::nortos_cc13x4_ns
+add_library(NoRtos::nortos_cc13x4_ns STATIC IMPORTED)
+
+set_target_properties(NoRtos::nortos_cc13x4_ns PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
+  INTERFACE_LINK_LIBRARIES "driverlib_cc13x4;TOOLCHAIN_ticlang_m33f"
+)
+
+# Create imported target NoRtos::nortos_cc26x4_ns
+add_library(NoRtos::nortos_cc26x4_ns STATIC IMPORTED)
+
+set_target_properties(NoRtos::nortos_cc26x4_ns PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
   INTERFACE_LINK_LIBRARIES "driverlib_cc26x4;TOOLCHAIN_ticlang_m33f"
 )

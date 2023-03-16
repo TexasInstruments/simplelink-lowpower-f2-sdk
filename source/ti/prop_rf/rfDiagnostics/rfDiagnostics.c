@@ -43,6 +43,7 @@
 #include <ti/sysbios/knl/Task.h>
 
 /* TI-RTOS Header files */
+#include <ti/drivers/SPI.h>
 #include <ti/drivers/GPIO.h>
 
 /* Board Header files */
@@ -66,6 +67,7 @@ static uint8_t atTaskStack[atTaskStackSize];
 
 static void atFxn(UArg arg0, UArg arg1)
 {
+
     AtTerm_init();
 
     AtTerm_clearTerm();

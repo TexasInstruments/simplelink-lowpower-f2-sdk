@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,9 @@
  *
  *  @brief      I2S driver implementation for a CC26XX I2S controller
  *
+ * # Unsupported Functionality #
+ * The I2S driver is unable to access flash memory in the address range 0x0000 - 0x2000
+ * on devices based on the Cortex M33+ core (CC26X3/CC26X4) due to security constraints.
  *  ============================================================================
  */
 #ifndef ti_drivers_i2s_I2SCC26XX__include
@@ -55,7 +58,7 @@ extern "C" {
  *  TI-RTOS kernel. This value is passed unmodified to Hwi_create().
  *
  *  pinSD1 and pinSD0 define the SD0 and SD1 data pin mapping, respectively.
- *  pinSCK, pinMCLK and pinWS define the SCK, MCLK and WS clock pin mapping, respectively.
+ *  pinSCK, pinCCLK and pinWS define the SCK, CCLK and WS clock pin mapping, respectively.
  *  All these pins are typically defined with a macro in a header file, which maps to an IOID.
  *
  *  A sample structure is shown below:
@@ -65,7 +68,7 @@ extern "C" {
  *         .pinSD1      =  CONFIG_I2S_ADI,
  *         .pinSD0      =  CONFIG_I2S_ADO,
  *         .pinSCK      =  CONFIG_I2S_BCLK,
- *         .pinMCLK     =  CONFIG_I2S_MCLK,
+ *         .pinCCLK     =  CONFIG_I2S_CCLK,
  *         .pinWS       =  CONFIG_I2S_WCLK,
  *         .intPriority =  ~0,
  *      },
@@ -77,7 +80,7 @@ typedef struct
     uint_least8_t pinSD1;  /*!< Pin used for SD1 signal. */
     uint_least8_t pinSD0;  /*!< Pin used for SD0 signal. */
     uint_least8_t pinSCK;  /*!< Pin used for SCK signal. */
-    uint_least8_t pinMCLK; /*!< Pin used for MCLK signal. Non used in most of the applications. */
+    uint_least8_t pinCCLK; /*!< Pin used for CCLK signal. Not used in most of the applications. */
     uint_least8_t pinWS;   /*!< Pin used for WS signal. */
     uint8_t intPriority;   /*!< I2S Peripheral's interrupt priority. */
 } I2SCC26XX_HWAttrs;
@@ -161,13 +164,13 @@ typedef struct
     I2S_SamplingEdge samplingEdge;            /*!< Select edge sampling type.
                                                      I2S_SAMPLING_EDGE_FALLING: Sampling on falling edges.
                                                      I2S_SAMPLING_EDGE_RISING:  Sampling on raising edges. */
-    I2S_Role moduleRole;                      /*!< Select if the current device is a Slave or a Master.
-                                                     I2S_SLAVE:  The device is a slave (clocks are generated externally).
-                                                     I2S_MASTER: The device is a master (clocks are generated internally). */
+    I2S_Role moduleRole;                      /*!< Select if the current device is a Target or a Controller.
+                                                     I2S_TARGET:  The device is a target (clocks are generated externally).
+                                                     I2S_CONTROLLER: The device is a controller (clocks are generated internally). */
     I2S_PhaseType phaseType;                  /*!< Select phase type.
                                                      I2S_PHASE_TYPE_SINGLE: Single phase.
                                                      I2S_PHASE_TYPE_DUAL:   Dual phase.*/
-    uint16_t MCLKDivider;                     /*!< Frequency divider for the MCLK signal. */
+    uint16_t CCLKDivider;                     /*!< Frequency divider for the CCLK signal. */
     uint16_t SCKDivider;                      /*!< Frequency divider for the SCK signal. */
     uint16_t WSDivider;                       /*!< Frequency divider for the WS signal. */
     uint16_t startUpDelay;                    /*!< Time (in number of WS cycles) to wait before the first transfer. */

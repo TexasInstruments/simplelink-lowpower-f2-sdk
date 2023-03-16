@@ -1410,6 +1410,21 @@ function readOnlyValue()
     return false;
 }
 
+/* ======== defaultBondValue ========
+* Returns maxBonds default value based on the
+* device type
+*
+* @returns 5 - for CC23X0, else, 10
+*/
+function defaultBondValue()
+{
+    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    {
+        return 5;
+    }
+    return 10;
+}
+
 /* ======== hiddenValue ========
 * Returns the parmeter hidden value
 *
@@ -1463,5 +1478,6 @@ exports = {
     getMigrationMarkdown: getMigrationMarkdown,
     hiddenValue: hiddenValue,
     readOnlyValue: readOnlyValue,
-    defaultValue: defaultValue
+    defaultValue: defaultValue,
+    defaultBondValue: defaultBondValue
 };

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -112,13 +112,13 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_ReadRssiCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadRssiCmd , ##__VA_ARGS__))
 #define HCI_SetEventMaskCmd(...)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_SetEventMaskCmd , ##__VA_ARGS__))
 #define HCI_SetEventMaskPage2Cmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_SetEventMaskPage2Cmd , ##__VA_ARGS__))
-#define HCI_ResetCmd(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ResetCmd , ##__VA_ARGS__))
-#define HCI_ReadLocalVersionInfoCmd(...)            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalVersionInfoCmd , ##__VA_ARGS__))
-#define HCI_ReadLocalSupportedCommandsCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalSupportedCommandsCmd , ##__VA_ARGS__))
-#define HCI_ReadLocalSupportedFeaturesCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalSupportedFeaturesCmd , ##__VA_ARGS__))
-#define HCI_ReadBDADDRCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadBDADDRCmd , ##__VA_ARGS__))
+#define HCI_ResetCmd(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ResetCmd))
+#define HCI_ReadLocalVersionInfoCmd(...)            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalVersionInfoCmd))
+#define HCI_ReadLocalSupportedCommandsCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalSupportedCommandsCmd))
+#define HCI_ReadLocalSupportedFeaturesCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadLocalSupportedFeaturesCmd))
+#define HCI_ReadBDADDRCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadBDADDRCmd))
 #define HCI_HostNumCompletedPktCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_HostNumCompletedPktCmd , ##__VA_ARGS__))
-#define HCI_HostBufferSizeCmd(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_HostBufferSizeCmd , ##__VA_ARGS__))
+#define HCI_HostBufferSizeCmd(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_HostBufferSizeCmd))
 #define HCI_SetControllerToHostFlowCtrlCmd(...)     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_SetControllerToHostFlowCtrlCmd , ##__VA_ARGS__))
 #define HCI_ReadRemoteVersionInfoCmd(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadRemoteVersionInfoCmd , ##__VA_ARGS__))
 #define HCI_DisconnectCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_DisconnectCmd , ##__VA_ARGS__))
@@ -126,28 +126,28 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 
 #define HCI_LE_ReceiverTestCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReceiverTestCmd , ##__VA_ARGS__))
 #define HCI_LE_TransmitterTestCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_TransmitterTestCmd , ##__VA_ARGS__))
-#define HCI_LE_TestEndCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_TestEndCmd , ##__VA_ARGS__))
+#define HCI_LE_TestEndCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_TestEndCmd))
 #define HCI_LE_EncryptCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_EncryptCmd , ##__VA_ARGS__))
-#define HCI_LE_RandCmd(...)                         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_RandCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadSupportedStatesCmd(...)          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadSupportedStatesCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadWhiteListSizeCmd(...)            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadWhiteListSizeCmd , ##__VA_ARGS__))
-#define HCI_LE_ClearWhiteListCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearWhiteListCmd , ##__VA_ARGS__))
+#define HCI_LE_RandCmd(...)                         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_RandCmd))
+#define HCI_LE_ReadSupportedStatesCmd(...)          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadSupportedStatesCmd))
+#define HCI_LE_ReadWhiteListSizeCmd(...)            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadWhiteListSizeCmd))
+#define HCI_LE_ClearWhiteListCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearWhiteListCmd))
 #define HCI_LE_AddWhiteListCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_AddWhiteListCmd , ##__VA_ARGS__))
 #define HCI_LE_RemoveWhiteListCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_RemoveWhiteListCmd , ##__VA_ARGS__))
 #define HCI_LE_SetEventMaskCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetEventMaskCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadLocalSupportedFeaturesCmd(...)   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadLocalSupportedFeaturesCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadLocalSupportedFeaturesCmd(...)   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadLocalSupportedFeaturesCmd))
 #define HCI_LE_ReadBufSizeCmd(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadBufSizeCmd , ##__VA_ARGS__))
 #define HCI_LE_SetRandomAddressCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetRandomAddressCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadAdvChanTxPowerCmd(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadAdvChanTxPowerCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadAdvChanTxPowerCmd(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadAdvChanTxPowerCmd))
 #define HCI_LE_ReadChannelMapCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadChannelMapCmd , ##__VA_ARGS__))
 #define HCI_LE_ReadRemoteUsedFeaturesCmd(...)       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadRemoteUsedFeaturesCmd , ##__VA_ARGS__))
 #define HCI_LE_SetHostChanClassificationCmd(...)    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetHostChanClassificationCmd , ##__VA_ARGS__))
 /* HCI V4.2 DLE API */
 /*******************/
 #define HCI_LE_SetDataLenCmd(...)                   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetDataLenCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadSuggestedDefaultDataLenCmd(...)  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadSuggestedDefaultDataLenCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadSuggestedDefaultDataLenCmd(...)  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadSuggestedDefaultDataLenCmd))
 #define HCI_LE_WriteSuggestedDefaultDataLenCmd(...) (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_WriteSuggestedDefaultDataLenCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadMaxDataLenCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadMaxDataLenCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadMaxDataLenCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadMaxDataLenCmd))
 /* HCI V4.1 API */
 /****************/
 #define HCI_ReadAuthPayloadTimeoutCmd(...)          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_ReadAuthPayloadTimeoutCmd , ##__VA_ARGS__))
@@ -160,8 +160,8 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 /************************/
 #define HCI_LE_AddDeviceToResolvingListCmd(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_AddDeviceToResolvingListCmd , ##__VA_ARGS__))
 #define HCI_LE_RemoveDeviceFromResolvingListCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_RemoveDeviceFromResolvingListCmd , ##__VA_ARGS__))
-#define HCI_LE_ClearResolvingListCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearResolvingListCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadResolvingListSizeCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadResolvingListSizeCmd , ##__VA_ARGS__))
+#define HCI_LE_ClearResolvingListCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearResolvingListCmd))
+#define HCI_LE_ReadResolvingListSizeCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadResolvingListSizeCmd))
 #define HCI_LE_ReadPeerResolvableAddressCmd(...)          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadPeerResolvableAddressCmd , ##__VA_ARGS__))
 #define HCI_LE_ReadLocalResolvableAddressCmd(...)         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadLocalResolvableAddressCmd , ##__VA_ARGS__))
 #define HCI_LE_SetAddressResolutionEnableCmd(...)         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetAddressResolutionEnableCmd , ##__VA_ARGS__))
@@ -169,7 +169,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_LE_SetPrivacyModeCmd(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetPrivacyModeCmd , ##__VA_ARGS__))
 /* HCI V4.2 SC API */
 /********************/
-#define HCI_LE_ReadLocalP256PublicKeyCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadLocalP256PublicKeyCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadLocalP256PublicKeyCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadLocalP256PublicKeyCmd))
 #define HCI_LE_GenerateDHKeyCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_GenerateDHKeyCmd , ##__VA_ARGS__))
 /* HCI V5.0 - 2M and Coded PHY */
 /************************/
@@ -205,13 +205,13 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_LE_SetScanParamCmd(...)                       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetScanParamCmd , ##__VA_ARGS__))
 #define HCI_LE_SetScanEnableCmd(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetScanEnableCmd , ##__VA_ARGS__))
 #define HCI_LE_CreateConnCmd(...)                         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_CreateConnCmd , ##__VA_ARGS__))
-#define HCI_LE_CreateConnCancelCmd(...)                   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_CreateConnCancelCmd , ##__VA_ARGS__))
+#define HCI_LE_CreateConnCancelCmd(...)                   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_CreateConnCancelCmd))
 #define HCI_LE_StartEncyptCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_StartEncyptCmd , ##__VA_ARGS__))
 #define HCI_LE_ConnUpdateCmd(...)                         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ConnUpdateCmd , ##__VA_ARGS__))
 #define HCI_LE_LtkReqReplyCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_LtkReqReplyCmd , ##__VA_ARGS__))
 #define HCI_LE_LtkReqNegReplyCmd(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_LtkReqNegReplyCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadTxPowerCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadTxPowerCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadRfPathCompCmd(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadRfPathCompCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadTxPowerCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadTxPowerCmd))
+#define HCI_LE_ReadRfPathCompCmd(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadRfPathCompCmd))
 #define HCI_LE_WriteRfPathCompCmd(...)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_WriteRfPathCompCmd , ##__VA_ARGS__))
 
 /* HCI V5.1 - Constant Tone Extension */
@@ -219,17 +219,17 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_LE_SetConnectionCteTransmitParamsCmd(...)     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetConnectionCteTransmitParamsCmd , ##__VA_ARGS__))
 #define HCI_LE_SetConnectionCteRequestEnableCmd(...)      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetConnectionCteRequestEnableCmd , ##__VA_ARGS__))
 #define HCI_LE_SetConnectionCteResponseEnableCmd(...)     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetConnectionCteResponseEnableCmd , ##__VA_ARGS__))
-#define HCI_LE_ReadAntennaInformationCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadAntennaInformationCmd , ##__VA_ARGS__))
+#define HCI_LE_ReadAntennaInformationCmd(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadAntennaInformationCmd))
 /* Periodic Adv */
 #define HCI_LE_SetPeriodicAdvParamsCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetPeriodicAdvParamsCmd , ##__VA_ARGS__))
 #define HCI_LE_SetPeriodicAdvDataCmd(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetPeriodicAdvDataCmd , ##__VA_ARGS__))
 #define HCI_LE_SetPeriodicAdvEnableCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetPeriodicAdvEnableCmd , ##__VA_ARGS__))
-#define HCI_LE_PeriodicAdvCreateSyncCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_PeriodicAdvCreateSyncCmd , ##__VA_ARGS__))
-#define HCI_LE_PeriodicAdvCreateSyncCancelCmd(...)        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_PeriodicAdvCreateSyncCancelCmd , ##__VA_ARGS__))
+#define HCI_LE_PeriodicAdvCreateSyncCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_PeriodicAdvCreateSyncCmd))
+#define HCI_LE_PeriodicAdvCreateSyncCancelCmd(...)        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_PeriodicAdvCreateSyncCancelCmd))
 #define HCI_LE_PeriodicAdvTerminateSyncCmd(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_PeriodicAdvTerminateSyncCmd , ##__VA_ARGS__))
 #define HCI_LE_AddDeviceToPeriodicAdvListCmd(...)         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_AddDeviceToPeriodicAdvListCmd , ##__VA_ARGS__))
 #define HCI_LE_RemoveDeviceFromPeriodicAdvListCmd(...)    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_RemoveDeviceFromPeriodicAdvListCmd , ##__VA_ARGS__))
-#define HCI_LE_ClearPeriodicAdvListCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearPeriodicAdvListCmd , ##__VA_ARGS__))
+#define HCI_LE_ClearPeriodicAdvListCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ClearPeriodicAdvListCmd))
 #define HCI_LE_ReadPeriodicAdvListSizeCmd(...)            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_ReadPeriodicAdvListSizeCmd , ##__VA_ARGS__))
 #define HCI_LE_SetPeriodicAdvReceiveEnableCmd(...)        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetPeriodicAdvReceiveEnableCmd , ##__VA_ARGS__))
 #define HCI_LE_SetConnectionlessCteTransmitParamsCmd(...) (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_LE_SetConnectionlessCteTransmitParamsCmd , ##__VA_ARGS__))
@@ -247,26 +247,26 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_EXT_BuildRevisionCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_BuildRevisionCmd , ##__VA_ARGS__))
 #define HCI_EXT_DelaySleepCmd(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DelaySleepCmd , ##__VA_ARGS__))
 #define HCI_EXT_DecryptCmd(...)                                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DecryptCmd , ##__VA_ARGS__))
-#define HCI_EXT_EnablePTMCmd(...)                                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EnablePTMCmd , ##__VA_ARGS__))
+#define HCI_EXT_EnablePTMCmd(...)                                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EnablePTMCmd))
 #define HCI_EXT_ModemTestTxCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ModemTestTxCmd , ##__VA_ARGS__))
-#define HCI_EXT_ModemHopTestTxCmd(...)                             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ModemHopTestTxCmd , ##__VA_ARGS__))
+#define HCI_EXT_ModemHopTestTxCmd(...)                             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ModemHopTestTxCmd))
 #define HCI_EXT_ModemTestRxCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ModemTestRxCmd , ##__VA_ARGS__))
 #define HCI_EXT_EnhancedModemTestTxCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EnhancedModemTestTxCmd , ##__VA_ARGS__))
 #define HCI_EXT_EnhancedModemHopTestTxCmd(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EnhancedModemHopTestTxCmd , ##__VA_ARGS__))
 #define HCI_EXT_EnhancedModemTestRxCmd(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EnhancedModemTestRxCmd , ##__VA_ARGS__))
-#define HCI_EXT_EndModemTestCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EndModemTestCmd , ##__VA_ARGS__))
+#define HCI_EXT_EndModemTestCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_EndModemTestCmd))
 #define HCI_EXT_SetBDADDRCmd(...)                                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetBDADDRCmd , ##__VA_ARGS__))
 #define HCI_EXT_ResetSystemCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ResetSystemCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetLocalSupportedFeaturesCmd(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetLocalSupportedFeaturesCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetMaxDtmTxPowerCmd(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetMaxDtmTxPowerCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetRxGainCmd(...)                                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetRxGainCmd , ##__VA_ARGS__))
-#define HCI_EXT_ExtendRfRangeCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ExtendRfRangeCmd , ##__VA_ARGS__))
+#define HCI_EXT_ExtendRfRangeCmd(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ExtendRfRangeCmd))
 #define HCI_EXT_HaltDuringRfCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_HaltDuringRfCmd , ##__VA_ARGS__))
 #define HCI_EXT_ClkDivOnHaltCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_ClkDivOnHaltCmd , ##__VA_ARGS__))
 #define HCI_EXT_DeclareNvUsageCmd(...)                             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DeclareNvUsageCmd , ##__VA_ARGS__))
 #define HCI_EXT_MapPmIoPortCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_MapPmIoPortCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetFreqTuneCmd(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetFreqTuneCmd , ##__VA_ARGS__))
-#define HCI_EXT_SaveFreqTuneCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SaveFreqTuneCmd , ##__VA_ARGS__))
+#define HCI_EXT_SaveFreqTuneCmd(...)                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SaveFreqTuneCmd))
 #define HCI_EXT_DisconnectImmedCmd(...)                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_DisconnectImmedCmd , ##__VA_ARGS__))
 #define HCI_EXT_PacketErrorRateCmd(...)                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_PacketErrorRateCmd , ##__VA_ARGS__))
 #define HCI_EXT_NumComplPktsLimitCmd(...)                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_NumComplPktsLimitCmd , ##__VA_ARGS__))
@@ -329,10 +329,10 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 /************************/
 #define GGS_SetParameter(...)   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_SetParameter  , ##__VA_ARGS__))
 #define GGS_AddService(...)     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_AddService , ##__VA_ARGS__))
-#define GGS_GetParameter(...)   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_GetParameter , ##__VA_ARGS__))
+#define GGS_GetParameter(...)   (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_GetParameter))
 #define GGS_RegisterAppCBs(...) (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_RegisterAppCBs , ##__VA_ARGS__))
 #define GGS_SetParamValue(...)  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_SetParamValue , ##__VA_ARGS__))
-#define GGS_GetParamValue(...)  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_GetParamValue , ##__VA_ARGS__))
+#define GGS_GetParamValue(...)  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GGS_GetParamValue))
 /* the following API are not available for now */
 #define GGS_DelService(...)     (AssertHandler(0,0))
 
@@ -349,7 +349,10 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define GAPBondMgr_ProcessGAPMsg(...)           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAPBondMgr_ProcessGAPMsg , ##__VA_ARGS__))
 #define GAPBondMgr_SCGetLocalOOBParameters(...) (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAPBondMgr_SCGetLocalOOBParameters, ##__VA_ARGS__))
 #define GAPBondMgr_SCSetRemoteOOBParameters(...)(icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAPBondMgr_SCSetRemoteOOBParameters, ##__VA_ARGS__))
-#define GAPBondMgr_GenerateEccKeys(...)         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAPBondMgr_GenerateEccKeys, ##__VA_ARGS__))
+#define GAPBondMgr_GenerateEccKeys(...)         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAPBondMgr_GenerateEccKeys))
+#define GapBondMgr_GetPrevAuth(...)             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapBondMgr_GetPrevAuth, ##__VA_ARGS__))
+#define GapBondMgr_StartEnc(...)                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapBondMgr_StartEnc, ##__VA_ARGS__))
+
 /* the following API are not available for now */
 #define GAPBondMgr_ReadCentAddrResChar(...)     (AssertHandler(0,0))
 
@@ -361,15 +364,15 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define GAP_RegisterForMsgs(taskID)                                                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_RegisterForMsgs, ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, taskID)))
 
 #define GAP_SetParamValue(...)                                                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_SetParamValue , ##__VA_ARGS__))
-#define GAP_GetParamValue(...)                                                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetParamValue , ##__VA_ARGS__))
+#define GAP_GetParamValue(...)                                                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetParamValue))
 #define GapConfig_SetParameter(...)                                                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapConfig_SetParameter , ##__VA_ARGS__))
-#define GAP_GetIRK(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetIRK , ##__VA_ARGS__))
-#define GAP_GetSRK(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetSRK , ##__VA_ARGS__))
+#define GAP_GetIRK(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetIRK))
+#define GAP_GetSRK(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_GetSRK))
 /* the following API are not available for now */
 #define GAP_RegisterBondMgrCBs(...)                                                     (AssertHandler(0,0))
 
-#define GAP_DeInit(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_DeInit, ##__VA_ARGS__))
-#define GAP_ReInit(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_ReInit, ##__VA_ARGS__))
+#define GAP_DeInit(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_DeInit))
+#define GAP_ReInit(...)                                                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_ReInit))
 // Link Establishment
 #define GAP_TerminateLinkReq(...)                                                       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_TerminateLinkReq , ##__VA_ARGS__))
 #define GAP_UpdateLinkParamReq(...)                                                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GAP_UpdateLinkParamReq , ##__VA_ARGS__))
@@ -415,7 +418,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define GapScan_getParam(...)                                                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_getParam , ##__VA_ARGS__))
 #define GapScan_setEventMask(...)                                                       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_setEventMask , ##__VA_ARGS__))
 #define GapScan_enable(...)                                                             (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_enable , ##__VA_ARGS__))
-#define GapScan_disable(...)                                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_disable , ##__VA_ARGS__))
+#define GapScan_disable(...)                                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_disable))
 #define GapScan_getAdvReport(...)                                                       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_getAdvReport , ##__VA_ARGS__))
 #define GapScan_discardAdvReportList(...)                                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_discardAdvReportList , ##__VA_ARGS__))
 #define GapScan_PeriodicAdvCreateSync(...)                                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_PeriodicAdvCreateSync , ##__VA_ARGS__))
@@ -424,15 +427,15 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define GapScan_SetPeriodicAdvReceiveEnable(...)                                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_SetPeriodicAdvReceiveEnable , ##__VA_ARGS__))
 #define GapScan_AddDeviceToPeriodicAdvList(...)                                         (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_AddDeviceToPeriodicAdvList , ##__VA_ARGS__))
 #define GapScan_RemoveDeviceFromPeriodicAdvList(...)                                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_RemoveDeviceFromPeriodicAdvList , ##__VA_ARGS__))
-#define GapScan_ReadPeriodicAdvListSize(...)                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_ReadPeriodicAdvListSize , ##__VA_ARGS__))
-#define GapScan_ClearPeriodicAdvList(...)                                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_ClearPeriodicAdvList , ##__VA_ARGS__))
+#define GapScan_ReadPeriodicAdvListSize(...)                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_ReadPeriodicAdvListSize))
+#define GapScan_ClearPeriodicAdvList(...)                                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapScan_ClearPeriodicAdvList))
 
 // GAP Initiator Module
 #define GapInit_setPhyParam(...)                                                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_setPhyParam , ##__VA_ARGS__))
 #define GapInit_getPhyParam(...)                                                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_getPhyParam , ##__VA_ARGS__))
 #define GapInit_connect(...)                                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_connect , ##__VA_ARGS__))
 #define GapInit_connectWl(...)                                                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_connectWl , ##__VA_ARGS__))
-#define GapInit_cancelConnect(...)                                                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_cancelConnect , ##__VA_ARGS__))
+#define GapInit_cancelConnect(...)                                                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GapInit_cancelConnect))
 
 // RTLS Services Module
 #define RTLSSrv_init(...)                                                               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_RTLSSrv_init , ##__VA_ARGS__))
@@ -470,11 +473,11 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define L2CAP_ConnParamUpdateRsp(...)                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_ConnParamUpdateRsp , ##__VA_ARGS__))           //(AssertHandler(0,0)) //icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_ConnParamUpdateRsp , ##__VA_ARGS__)
 #define L2CAP_SetUserConfig(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_SetUserConfig , ##__VA_ARGS__))                //(AssertHandler(0,0)) //icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_SetUserConfig , ##__VA_ARGS__)
 #define L2CAP_SetBufSize(...)                                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_SetBufSize , ##__VA_ARGS__))                   //(AssertHandler(0,0)) //icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_SetBufSize , ##__VA_ARGS__)
-#define L2CAP_GetMTU(...)                                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetMTU , ##__VA_ARGS__))                       //(AssertHandler(0,0)) //icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetMTU , ##__VA_ARGS__)
+#define L2CAP_GetMTU(...)                                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetMTU))                       //(AssertHandler(0,0)) //icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetMTU , ##__VA_ARGS__)
 
 // L2CAP Utility API Functions
 #define L2CAP_SetParamValue(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_SetParamValue , ##__VA_ARGS__))
-#define L2CAP_GetParamValue(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetParamValue , ##__VA_ARGS__))
+#define L2CAP_GetParamValue(...)                                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_L2CAP_GetParamValue))
 /* the following API are not available for now */
 #define L2CAP_RegisterApp(...)                                   (AssertHandler(0,0)) // =>need taskId
 #define L2CAP_SendData(...)                                      (AssertHandler(0,0))
@@ -487,11 +490,11 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 // GATT Client
 #define GATT_RegisterForInd(taskID)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_RegisterForInd, ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, taskID)))
 #define GATT_RegisterForReq(taskID)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_RegisterForReq, ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, taskID)))
-#define GATT_InitClient(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_InitClient , ##__VA_ARGS__))
+#define GATT_InitClient(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_InitClient))
 
 // GATT Server API
 #define GATT_SendRsp(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_SendRsp   , ##__VA_ARGS__))
-#define GATT_GetNextHandle(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_GetNextHandle   , ##__VA_ARGS__))
+#define GATT_GetNextHandle(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_GetNextHandle))
 #define GATT_ServiceNumAttrs(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_ServiceNumAttrs  , ##__VA_ARGS__))
 #define GATT_FindHandle(...)                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_FindHandle  , ##__VA_ARGS__))
 
@@ -541,6 +544,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 
 // GATT Client and Server Common APIs
 #define GATT_RegisterForMsgs(taskID)                                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_RegisterForMsgs, ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, taskID)))
+#define GATT_RegisterClientSecurityCBs(...)                                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_RegisterClientSecurityCBs,  ##__VA_ARGS__))
 #define GATT_UpdateMTU(...)                                                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATT_UpdateMTU , ##__VA_ARGS__))
 /* the following API are not available for now */
 #define GATT_NotifyEvent(...)                                                   (AssertHandler(0,0))
@@ -571,7 +575,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define GATTServApp_ReadRsp(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTServApp_ReadRsp , ##__VA_ARGS__))
 #define GATTQual_AddService(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTQual_AddService , ##__VA_ARGS__))
 #define GATTTest_AddService(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTTest_AddService , ##__VA_ARGS__))
-#define GATTServApp_GetParamValue(...)                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTServApp_GetParamValue , ##__VA_ARGS__))
+#define GATTServApp_GetParamValue(...)                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTServApp_GetParamValue))
 #define GATTServApp_SetParamValue(...)                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_GATTServApp_SetParamValue , ##__VA_ARGS__))
 
 /* the following API are not available for now */
@@ -590,10 +594,10 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 
 /* LINK DB API */
 /***************/
-#define linkDB_NumActive(...)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_NumActive , ##__VA_ARGS__))
+#define linkDB_NumActive(...)                    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_NumActive))
 #define linkDB_GetInfo(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_GetInfo , ##__VA_ARGS__))
 #define linkDB_State(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_State , ##__VA_ARGS__))
-#define linkDB_NumConns(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_NumConns , ##__VA_ARGS__))
+#define linkDB_NumConns(...)                     (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_linkDB_NumConns))
 /* the following API are not available for now */
 #define linkDB_Init(...)                         (AssertHandler(0,0))
 #define linkDB_Register(...)                     (AssertHandler(0,0))
@@ -647,7 +651,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 
 // Attribute Common Public APIs
 #define ATT_SetParamValue(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_ATT_SetParamValue , ##__VA_ARGS__))
-#define ATT_GetParamValue(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_ATT_GetParamValue , ##__VA_ARGS__))
+#define ATT_GetParamValue(...)                  (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_ATT_GetParamValue))
 /* the following API are not available for now */
 #define ATT_UpdateMTU(...)                      (AssertHandler(0,0))
 #define ATT_GetMTU(...)                         (AssertHandler(0,0))
@@ -657,11 +661,15 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 /* Security Manager API */
 /************************/
 #define SM_GetScConfirmOob(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_GetScConfirmOob , ##__VA_ARGS__))
-#define SM_GetEccKeys(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_GetEccKeys , ##__VA_ARGS__))
+#define SM_GetEccKeys(...)                      (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_GetEccKeys))
 #define SM_GetDHKey(...)                        (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_GetDHKey , ##__VA_ARGS__))
 #define SM_RegisterTask(taskID)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_RegisterTask, ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, taskID)))
 #define SM_GenerateRandBuf(...)                 (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_GenerateRandBuf, ##__VA_ARGS__))
-#define SM_AuthenticatedPairingOnlyMode(...)    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_AuthenticatedPairingOnlyMode, ##__VA_ARGS__))
+#define SM_AuthenticatedPairingOnlyMode(...)    (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_SM_AuthenticatedPairingOnlyMode))
+
+/* Osal Bufmgr API      */
+/************************/
+#define osal_bm_reg_callback(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_osal_bm_reg_callback , ##__VA_ARGS__))
 
 #endif /* ICALL_LITE */
 #ifdef __cplusplus

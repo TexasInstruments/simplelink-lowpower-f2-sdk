@@ -73,7 +73,7 @@ ecdh.$name = "CONFIG_ECDH0"
 var AESCTRDRBG = scripting.addModule("/ti/drivers/AESCTRDRBG");
 var aesctrdrbg = AESCTRDRBG.addInstance();
 aesctrdrbg.$name = "CONFIG_AESCTRDRBG_0";
-aesctrdrbg.aesctrObject.$name = "CONFIG_AESCTR_0";
+//aesctrdrbg.aesctrObject.$name = "CONFIG_AESCTR_0";
 
 /* ======== Display ======== */
 var Display = scripting.addModule("/ti/display/Display");

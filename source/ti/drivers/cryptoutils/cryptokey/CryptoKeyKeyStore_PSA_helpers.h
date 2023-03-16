@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@
  *
  *  @anchor ti_drivers_cryptoutils_cryptokey_CryptoKeyKeyStore_PSA_helpers_Overview
  *  # Overview
- *      The CryptoKeyKeyStore driver provides API to initialize key and get plaintext
+ *      The CryptoKeyKeyStore driver provides API to initialize keys and get plaintext
  *      keys from KeyStore. This file provides definitions that are only available to the
- *      the secure side, un both secure only environament and secure/non-secure environment.
+ *      the secure side, in both TF-M disabled and TF-M enabled environments.
  *
  *******************************************************************************
  */
@@ -53,9 +53,9 @@
 
 #include <ti/drivers/dpl/SemaphoreP.h>
 
-#include <third_party/mbedtls/library/psa_crypto_core.h>
-#include <third_party/mbedtls/library/psa_crypto_slot_management.h>
-#include <third_party/mbedtls/library/psa_crypto_storage.h>
+#include <third_party/mbedcrypto/library/psa_crypto_core.h>
+#include <third_party/mbedcrypto/library/psa_crypto_slot_management.h>
+#include <third_party/mbedcrypto/library/psa_crypto_storage.h>
 
 #ifdef __cplusplus
 extern "C" {

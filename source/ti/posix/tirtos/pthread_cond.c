@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,8 @@
 
 #include "pthread_util.h"
 
-typedef struct CondElem {
+typedef struct CondElem
+{
     Queue_Elem qElem;
     Semaphore_Struct sem;
 } CondElem;
@@ -57,13 +58,13 @@ typedef struct CondElem {
 /*
  *  ======== pthread_cond_obj ========
  */
-typedef struct {
+typedef struct
+{
     Queue_Struct waitList;
     clockid_t clockId;
 } pthread_cond_obj;
 
-static int condWait(pthread_cond_obj *cond, pthread_mutex_t *mutex,
-        UInt32 timeout);
+static int condWait(pthread_cond_obj *cond, pthread_mutex_t *mutex, UInt32 timeout);
 
 /*
  *************************************************************************
@@ -81,8 +82,7 @@ int pthread_condattr_destroy(pthread_condattr_t *attr)
 /*
  *  ======== pthread_condattr_getclock ========
  */
-int pthread_condattr_getclock(const pthread_condattr_t *attr,
-        clockid_t *clock_id)
+int pthread_condattr_getclock(const pthread_condattr_t *attr, clockid_t *clock_id)
 {
     *clock_id = (clockid_t)(*attr);
     return (0);
@@ -91,7 +91,7 @@ int pthread_condattr_getclock(const pthread_condattr_t *attr,
 /*
  *  ======== pthread_condattr_init ========
  */
-int pthread_condattr_init(pthread_condattr_t * attr)
+int pthread_condattr_init(pthread_condattr_t *attr)
 {
     *attr = (pthread_condattr_t)CLOCK_REALTIME;
     return (0);
@@ -100,10 +100,10 @@ int pthread_condattr_init(pthread_condattr_t * attr)
 /*
  *  ======== pthread_condattr_setclock ========
  */
-int pthread_condattr_setclock(pthread_condattr_t *attr,
-        clockid_t clock_id)
+int pthread_condattr_setclock(pthread_condattr_t *attr, clockid_t clock_id)
 {
-    if ((clock_id != CLOCK_REALTIME) && (clock_id != CLOCK_MONOTONIC)) {
+    if ((clock_id != CLOCK_REALTIME) && (clock_id != CLOCK_MONOTONIC))
+    {
         return (EINVAL);
     }
 
@@ -130,7 +130,8 @@ int pthread_cond_broadcast(pthread_cond_t *cond)
      */
     key = Task_disable();
 
-    while (!Queue_empty(Queue_handle(&(obj->waitList)))) {
+    while (!Queue_empty(Queue_handle(&(obj->waitList))))
+    {
         condElem = (CondElem *)Queue_dequeue(Queue_handle(&(obj->waitList)));
         Semaphore_post(Semaphore_handle(&condElem->sem));
     }
@@ -146,7 +147,8 @@ int pthread_cond_destroy(pthread_cond_t *cond)
 {
     pthread_cond_obj *obj = (pthread_cond_obj *)(&cond->sysbios);
 
-    if (!Queue_empty(Queue_handle(&(obj->waitList)))) {
+    if (!Queue_empty(Queue_handle(&(obj->waitList))))
+    {
         return (EBUSY);
     }
 
@@ -166,10 +168,12 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr)
 
     Queue_construct(&obj->waitList, NULL);
 
-    if (attr != NULL) {
+    if (attr != NULL)
+    {
         obj->clockId = (clockid_t)(*attr);
     }
-    else {
+    else
+    {
         obj->clockId = CLOCK_REALTIME;
     }
 
@@ -190,7 +194,8 @@ int pthread_cond_signal(pthread_cond_t *cond)
      */
     key = Task_disable();
 
-    if (!Queue_empty(Queue_handle(&obj->waitList))) {
+    if (!Queue_empty(Queue_handle(&obj->waitList)))
+    {
         /* the calling thread is holding the mutex */
         elem = (CondElem *)Queue_dequeue(Queue_handle(&obj->waitList));
         Queue_elemClear(&elem->qElem);
@@ -204,14 +209,14 @@ int pthread_cond_signal(pthread_cond_t *cond)
 /*
  *  ======== pthread_cond_timedwait ========
  */
-int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
-        const struct timespec *abstime)
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
 {
     UInt32 timeout;
     pthread_cond_obj *obj = (pthread_cond_obj *)(&cond->sysbios);
 
     /* must validate abstime before modifying mutex state */
-    if (_pthread_abstime2ticks(obj->clockId, abstime, &timeout) != 0) {
+    if (_pthread_abstime2ticks(obj->clockId, abstime, &timeout) != 0)
+    {
         return (EINVAL);
     }
 
@@ -231,8 +236,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
 /*
  *  ======== condWait ========
  */
-static int condWait(pthread_cond_obj *cond, pthread_mutex_t *mutex,
-        UInt32 timeout)
+static int condWait(pthread_cond_obj *cond, pthread_mutex_t *mutex, UInt32 timeout)
 {
     CondElem condElem;
     Semaphore_Params semParams;
@@ -257,7 +261,8 @@ static int condWait(pthread_cond_obj *cond, pthread_mutex_t *mutex,
 
     pthread_mutex_unlock(mutex);
 
-    if (!Semaphore_pend(Semaphore_handle(&condElem.sem), timeout)) {
+    if (!Semaphore_pend(Semaphore_handle(&condElem.sem), timeout))
+    {
         key = Task_disable();
         Queue_remove((Queue_Elem *)&condElem);
         Task_restore(key);

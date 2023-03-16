@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,8 @@ typedef void *(*pthread_RunFxn)(void *);
 /*
  *  ======== pthread_Obj ========
  */
-typedef struct pthread_Obj {
+typedef struct pthread_Obj
+{
     /*
      *  Queue_Elem for mutex.  This is also used to put the thread
      *  on a list of terminated threads.
@@ -61,7 +62,7 @@ typedef struct pthread_Obj {
      *  waiting on the mutex, so it can adjust its priority ceiling
      *  when pthread_mutex_timedlock() times out.
      */
-    Queue_Elem        qElem;
+    Queue_Elem qElem;
 
 #ifdef ti_posix_tirtos_Settings_enableMutexPriority__D
     /*
@@ -75,41 +76,38 @@ typedef struct pthread_Obj {
      *  its original priority.  So we need to keep track of its acquired
      *  mutexes and original priority before acquiring any mutexes.
      */
-    Queue_Struct      mutexList;
+    Queue_Struct mutexList;
 
     /* PTHREAD_PRIO_INHERIT mutex the thread is blocked on */
-    pthread_mutex_t  *blockedMutex;
+    pthread_mutex_t *blockedMutex;
 #endif
-    int               priority;
+    int priority;
 
-    Task_Handle       task;
-    Semaphore_Struct  joinSem;
+    Task_Handle task;
+    Semaphore_Struct joinSem;
 
-    pthread_t         joinThread;
+    pthread_t joinThread;
 
-    int               detached;
-    pthread_RunFxn    fxn;
-    int               cancelState;
-    int               cancelPending;
+    int detached;
+    pthread_RunFxn fxn;
+    int cancelState;
+    int cancelPending;
 
     /* Thread function return value */
-    void             *ret;
+    void *ret;
 
     /* Cleanup handlers */
     struct _pthread_cleanup_context *cleanupList;
 
     /* List of keys that the thread has called pthread_setspecific() on */
-    Queue_Struct      keyList;
+    Queue_Struct keyList;
 } pthread_Obj;
 
-#define _pthread_getRunningPriority(pthread) \
-    (Task_getPri(((pthread_Obj *)(pthread))->task))
+#define _pthread_getRunningPriority(pthread) (Task_getPri(((pthread_Obj *)(pthread))->task))
 
-#define _pthread_getTaskHandle(pthread) \
-    (((pthread_Obj *)(pthread))->task)
+#define _pthread_getTaskHandle(pthread) (((pthread_Obj *)(pthread))->task)
 
-#define _pthread_setRunningPriority(pthread, pri) \
-    (Task_setPri(((pthread_Obj *)(pthread))->task, (pri)))
+#define _pthread_setRunningPriority(pthread, pri) (Task_setPri(((pthread_Obj *)(pthread))->task, (pri)))
 
 #ifdef ti_posix_tirtos_Settings_enableMutexPriority__D
 extern int _pthread_getMaxPrioCeiling(pthread_Obj *thread);

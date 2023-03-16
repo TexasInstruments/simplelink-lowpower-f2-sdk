@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@
  *      Clock (LRCLK) or Multichannel Audio Clock (McACLK)
  *  @li <b>Serial Data (SD0)</b> also called AD0, AD1, McAXR0, or possibly SDI
  *  @li <b>Serial Data (SD1)</b> also called AD1, ADI, McAXR1, or possibly SDI
- *  @li <b>Master Clock (MCLK)</b>
+ *  @li <b>Controller Clock (CCLK)</b>
  *
  *  <hr>
  *  @anchor ti_drivers_I2S_Usage
@@ -128,8 +128,8 @@
  *  @li I2S_stopRead() @li I2S_stopWrite() @li I2S_stopClocks()
  *
  *  @note
- *  @li In #I2S_SLAVE mode, clocks must be started and stopped exactly like
- *  it is done in #I2S_MASTER mode.
+ *  @li In #I2S_TARGET mode, clocks must be started and stopped exactly like
+ *  it is done in #I2S_CONTROLLER mode.
  *  @li If the queue of transaction is not empty, the calls to #I2S_stopRead()
  *  and #I2S_stopWrite() are blocking and potentially long.
  *
@@ -575,6 +575,11 @@
 
 #include <ti/drivers/utils/List.h>
 
+/* Enable backwards-compatibility for legacy terminology if specified. */
+#ifdef ENABLE_LEGACY_TERMINOLOGY
+    #include <ti/drivers/LegacyTerminology.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -742,16 +747,16 @@ typedef enum
 } I2S_MemoryLength;
 
 /*!
- *  @brief      I2S master / slave selection
+ *  @brief      I2S controller / target selection
  *
- *  The enum defines if the module acts like a master (clocks are internally generated)
- *  or a slave (the clocks are externally generated).
+ *  The enum defines if the module acts like a controller (clocks are internally generated)
+ *  or a target (the clocks are externally generated).
  */
 typedef enum
 {
 
-    I2S_SLAVE  = 0, /*!<    Module is a slave, clocks are externally generated. */
-    I2S_MASTER = 1  /*!<    Module is a master, clocks are internally generated. */
+    I2S_TARGET     = 0, /*!<    Module is a target, clocks are externally generated. */
+    I2S_CONTROLLER = 1  /*!<    Module is a controller, clocks are internally generated. */
 
 } I2S_Role;
 
@@ -875,9 +880,9 @@ typedef struct
     /*!< Bits per sample (Word length): must be between 8 and 24 bits. */
 
     I2S_Role moduleRole;
-    /*!< Select if the I2S module is a Slave or a Master.
-     *   - #I2S_SLAVE:  The device is a slave (clocks are generated externally).
-     *   - #I2S_MASTER: The device is a master (clocks are generated internally). */
+    /*!< Select if the I2S module is a Target or a Controller.
+     *   - #I2S_TARGET:  The device is a target (clocks are generated externally).
+     *   - #I2S_CONTROLLER: The device is a controller (clocks are generated internally). */
 
     I2S_SamplingEdge samplingEdge;
     /*!< Select edge sampling type.
@@ -959,8 +964,8 @@ typedef struct
     uint16_t startUpDelay;
     /*!< Number of WS periods to wait before the first transfer. */
 
-    uint16_t MCLKDivider;
-    /*!< Select the frequency divider for MCLK signal. Final value of MCLK is 48MHz/MCLKDivider. Value must be selected
+    uint16_t CCLKDivider;
+    /*!< Select the frequency divider for CCLK signal. Final value of CCLK is 48MHz/CCLKDivider. Value must be selected
      * between 2 and 1024. */
 
     uint32_t samplingFrequency;
@@ -1043,7 +1048,7 @@ extern I2S_Handle I2S_open(uint_least8_t index, I2S_Params *params);
  *  @code
  *  params.samplingFrequency    = 8000;
  *  params.memorySlotLength     = I2S_MEMORY_LENGTH_16BITS;
- *  params.moduleRole           = I2S_MASTER;
+ *  params.moduleRole           = I2S_CONTROLLER;
  *  params.trueI2sFormat        = (bool)true;
  *  params.invertWS             = (bool)true;
  *  params.isMSBFirst           = (bool)true;
@@ -1059,7 +1064,7 @@ extern I2S_Handle I2S_open(uint_least8_t index, I2S_Params *params);
  *  params.SD1Channels          = I2S_CHANNELS_STEREO;
  *  params.phaseType            = I2S_PHASE_TYPE_DUAL;
  *  params.startUpDelay         = 0;
- *  params.MCLKDivider          = 40;
+ *  params.CCLKDivider          = 40;
  *  params.readCallback         = NULL;
  *  params.writeCallback        = NULL;
  *  params.errorCallback        = NULL;
@@ -1126,11 +1131,11 @@ extern void I2S_setReadQueueHead(I2S_Handle handle, I2S_Transaction *transaction
 extern void I2S_setWriteQueueHead(I2S_Handle handle, I2S_Transaction *transaction);
 
 /*!
- *  @brief Start the WS, SCK and MCLK clocks.
+ *  @brief Start the WS, SCK and CCLK clocks.
  *
- *  This function enable WS, SCK and MCLK (if activated) clocks. This is required before starting
+ *  This function enable WS, SCK and CCLK (if activated) clocks. This is required before starting
  *  any reading or a writing transaction.
- *  This function is supposed to be executed both in slave and master mode.
+ *  This function is supposed to be executed both in target and controller mode.
  *
  *  @param  [in]    handle  An I2S_Handle.
  *
@@ -1141,12 +1146,12 @@ extern void I2S_setWriteQueueHead(I2S_Handle handle, I2S_Transaction *transactio
 extern void I2S_startClocks(I2S_Handle handle);
 
 /*!
- *  @brief Stops the WS, SCK and MCLK clocks.
+ *  @brief Stops the WS, SCK and CCLK clocks.
  *
- *  This function disable WS, SCK and MCLK clocks.
+ *  This function disable WS, SCK and CCLK clocks.
  *  This function must be executed only if no transaction is in progress.
  *  This function is supposed to be executed in a Task context (NOT in a HWI or Callback context).
- *  This function is supposed to be executed both in slave and master mode.
+ *  This function is supposed to be executed both in target and controller mode.
  *
  *  @warning This function is supposed to be executed in a Task context
  *  (NOT in a HWI or Callback context).

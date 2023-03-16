@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -179,7 +179,7 @@ void AESCTR_init(void)
 }
 
 /*
- *  ======== AESCTR_open ========
+ *  ======== AESCTR_construct ========
  */
 AESCTR_Handle AESCTR_construct(AESCTR_Config *config, const AESCTR_Params *params)
 {
@@ -250,6 +250,30 @@ void AESCTR_close(AESCTR_Handle handle)
     Power_releaseDependency(PowerCC26XX_PERIPH_CRYPTO);
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+/*
+ *  ======== AESCTR_getKeyStoreKeyUsage ========
+ */
+static KeyStore_PSA_KeyUsage AESCTR_getKeyStoreKeyUsage(AESCTR_OperationType operationType)
+{
+    switch (operationType)
+    {
+        case AESCTR_OPERATION_TYPE_ENCRYPT:
+        case AESCTR_OPERATION_TYPE_ENCRYPT_SEGMENTED:
+        case AESCTR_OPERATION_TYPE_ENCRYPT_FINALIZE:
+            return KEYSTORE_PSA_KEY_USAGE_ENCRYPT;
+
+        case AESCTR_OPERATION_TYPE_DECRYPT:
+        case AESCTR_OPERATION_TYPE_DECRYPT_SEGMENTED:
+        case AESCTR_OPERATION_TYPE_DECRYPT_FINALIZE:
+            return KEYSTORE_PSA_KEY_USAGE_DECRYPT;
+
+        default:
+            return 0;
+    }
+}
+#endif /* (ENABLE_KEY_STORAGE == 1) */
+
 /*
  *  ======== AESCTR_processData ========
  */
@@ -264,6 +288,7 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus;
     KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage keyUsage;
     uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
 #endif
 
@@ -284,12 +309,19 @@ static int_fast16_t AESCTR_processData(AESCTR_Handle handle)
     {
         GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyUsage = AESCTR_getKeyStoreKeyUsage(object->operationType);
+
+        if (!keyUsage)
+        {
+            return AESCTR_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
                                              KEYSTORE_PSA_ALG_CTR,
-                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                                             keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
         {
@@ -484,6 +516,7 @@ static int_fast16_t AESCTR_startOneStepOperation(AESCTR_Handle handle,
     {
         if (!CryptoResourceCC26XX_acquireLock(object->semaphoreTimeout))
         {
+            object->operationInProgress = false;
             return AESCTR_STATUS_RESOURCE_UNAVAILABLE;
         }
 
@@ -509,6 +542,7 @@ static int_fast16_t AESCTR_startOneStepOperation(AESCTR_Handle handle,
     {
         CryptoResourceCC26XX_releaseLock();
         object->cryptoResourceLocked = false;
+        object->operationInProgress  = false;
     }
 
     return status;

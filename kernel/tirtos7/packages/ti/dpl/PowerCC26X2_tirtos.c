@@ -70,7 +70,7 @@ void PowerCC26XX_standbyPolicy(void)
     CPUcpsid();
 
     /* check operating conditions, optimally choose DCDC versus GLDO */
-    PowerCC26X2_sysCtrlVoltageConditionalControl();
+    PowerCC26X2_sysCtrlUpdateVoltageRegulator();
 
     /* query the declared constraints */
     constraints = Power_getConstraintMask();

@@ -6,6 +6,8 @@
 
 @PACKAGE_INIT@
 
+@GENERATED_TARGET_DEPENDENCIES@
+
 @GENERATED_TARGET_INCLUDES@
 
 check_required_components(Drivers)

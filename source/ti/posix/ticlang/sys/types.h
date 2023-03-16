@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #if !defined(__ti_version__) && !defined(__clang__)
-#error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
+    #error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
 only with a Texas Instruments clang compiler. You appear to be using a \
 different compiler.
 #endif
@@ -65,12 +65,13 @@ extern "C" {
 /*
  *  ======== pthread_attr_t ========
  */
-typedef struct pthread_attr_t {
+typedef struct pthread_attr_t
+{
     int priority;
     void *stack;
     size_t stacksize;
     size_t guardsize;
-    int  detachstate;
+    int detachstate;
 } pthread_attr_t;
 
 typedef uint32_t pthread_barrierattr_t;
@@ -78,7 +79,8 @@ typedef uint32_t pthread_condattr_t;
 
 typedef void *pthread_key_t;
 
-typedef struct pthread_mutexattr_t {
+typedef struct pthread_mutexattr_t
+{
     int type;
     int protocol;
     int prioceiling;
@@ -88,33 +90,38 @@ typedef uint32_t pthread_rwlockattr_t;
 
 typedef void *pthread_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Barrier sysbios;
     struct freertos_Barrier freertos;
 } pthread_barrier_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Cond sysbios;
     struct freertos_Cond freertos;
 } pthread_cond_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_Mutex sysbios;
     struct freertos_Mutex freertos;
 } pthread_mutex_t;
 
 typedef uint32_t pthread_once_t;
 
-typedef union {
+typedef union
+{
     struct sysbios_RWLock sysbios;
     struct freertos_RWLock freertos;
 } pthread_rwlock_t;
 
-struct _pthread_cleanup_context {
-    pthread_t  thread;
-    void       (*fxn)(void *);
-    void      *arg;
-    int        cancelType;
+struct _pthread_cleanup_context
+{
+    pthread_t thread;
+    void (*fxn)(void *);
+    void *arg;
+    int cancelType;
     struct _pthread_cleanup_context *next;
 };
 

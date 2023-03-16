@@ -849,7 +849,7 @@ __STATIC_INLINE void
 IOCIntClear(uint32_t ui32IOId)
 {
     // Check the arguments.
-    ASSERT(ui32IOId <= IOID_31);
+    ASSERT(ui32IOId < NUM_IO_MAX);
 
     // Clear the requested interrupt source by clearing the event.
     GPIO_clearEventDio(ui32IOId);
@@ -871,7 +871,7 @@ __STATIC_INLINE uint32_t
 IOCIntStatus(uint32_t ui32IOId)
 {
     // Check the arguments.
-    ASSERT(ui32IOId <= IOID_31);
+    ASSERT(ui32IOId < NUM_IO_MAX);
 
     // Get the event status.
     return (GPIO_getEventDio(ui32IOId));

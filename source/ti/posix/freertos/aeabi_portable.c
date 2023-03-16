@@ -43,12 +43,12 @@
  *  ======== posix_reent ========
  *  POSIX thread local reentrant structure
  */
-typedef struct {
-    int     errnum; /* Note: errno is #defined by tiarmclang so cannot be used */
+typedef struct
+{
+    int errnum; /* Note: errno is #defined by tiarmclang so cannot be used */
 } posix_reent;
 
 static posix_reent main_reent; /* used only while in main thread */
-
 
 /*
  *  ======== __aeabi_errno_addr ========
@@ -63,21 +63,26 @@ volatile int *__aeabi_errno_addr(void)
     void *buf;
 
     /* when running in main thread, use private reent storage */
-    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
+    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+    {
         reent = &main_reent;
     }
-    else {
+    else
+    {
         /* get thread local storage buffer */
         reent = (posix_reent *)PTLS_getBuf();
 
         /* allocate buffer if needed */
-        if (reent == NULL) {
+        if (reent == NULL)
+        {
             buf = pvPortMalloc(sizeof(posix_reent));
-            if (buf != NULL) {
+            if (buf != NULL)
+            {
                 PTLS_setBuf(buf);
                 reent = (posix_reent *)buf;
             }
-            else {
+            else
+            {
                 /* out of memory: fall back to using private storage */
                 reent = &main_reent;
             }

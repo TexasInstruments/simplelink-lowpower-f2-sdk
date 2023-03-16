@@ -40,7 +40,7 @@
 #include <ti/drivers/sha2/SHA2CC26X2.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 

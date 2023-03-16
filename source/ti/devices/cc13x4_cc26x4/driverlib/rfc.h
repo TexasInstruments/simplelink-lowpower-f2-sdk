@@ -62,6 +62,7 @@ extern "C"
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_memmap_common.h)
 #include DeviceFamily_constructPath(inc/hw_rfc_pwr.h)
 #include DeviceFamily_constructPath(inc/hw_rfc_dbell.h)
 #include DeviceFamily_constructPath(inc/hw_fcfg1.h)
@@ -407,8 +408,8 @@ RFCGetPaGain(void)
 __STATIC_INLINE uint32_t
 RFCGetPowerDomainStatus(void)
 {
-    return (HWREG(PRCM_BASE + PRCM_O_PDCTL1RFC) |
-            HWREG(PRCM_BASE + PRCM_O_PDSTAT0RFC));
+    return (HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDCTL1RFC) |
+            HWREG(PRCM_BASE + NONSECURE_OFFSET + PRCM_O_PDSTAT0RFC));
 }
 
 //*****************************************************************************************

@@ -180,6 +180,36 @@ SPIDataGetNonBlocking(uint32_t ui32Base, uint32_t *pui32Data)
 
 //*****************************************************************************
 //
+// Get SPI interrupt port from SPI instance base address
+//
+//*****************************************************************************
+static uint32_t
+SPIIntNumberGet(uint32_t ui32Base)
+{
+    // Check the arguments
+    ASSERT(SPIBaseValid(ui32Base));
+
+    // Determine the interrupt number based on the SPI port
+    if(ui32Base == SPI3_BASE)
+    {
+        return INT_SPI3_COMB;
+    }
+    else if(ui32Base == SPI2_BASE)
+    {
+        return INT_SPI2_COMB;
+    }
+    else if(ui32Base == SPI1_BASE)
+    {
+        return INT_SPI1_COMB;
+    }
+    else
+    {
+        return INT_SPI0_COMB;
+    }
+}
+
+//*****************************************************************************
+//
 // Registers an interrupt handler for the serial peripheral port
 //
 //*****************************************************************************
@@ -188,11 +218,8 @@ SPIIntRegister(uint32_t ui32Base, void (*pfnHandler)(void))
 {
     uint32_t ui32Int;
 
-    // Check the arguments
-    ASSERT(SPIBaseValid(ui32Base));
-
     // Determine the interrupt number based on the SPI port
-    ui32Int = (ui32Base == SPI0_BASE) ? INT_SSI0_COMB : INT_SSI1_COMB;
+    ui32Int = SPIIntNumberGet(ui32Base);
 
     // Register the interrupt handler
     IntRegister(ui32Int, pfnHandler);
@@ -211,11 +238,8 @@ SPIIntUnregister(uint32_t ui32Base)
 {
     uint32_t ui32Int;
 
-    // Check the arguments
-    ASSERT(SPIBaseValid(ui32Base));
-
     // Determine the interrupt number based on the SPI port
-    ui32Int = (ui32Base == SPI0_BASE) ? INT_SSI0_COMB : INT_SSI1_COMB;
+    ui32Int = SPIIntNumberGet(ui32Base);
 
     // Disable the interrupt
     IntDisable(ui32Int);

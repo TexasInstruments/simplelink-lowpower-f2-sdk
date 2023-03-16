@@ -83,6 +83,10 @@
     #define OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert NOROM_OSC_HPOSCRelativeFrequencyOffsetToRFCoreFormatConvert
     #undef  OSC_HPOSCRtcCompensate
     #define OSC_HPOSCRtcCompensate          NOROM_OSC_HPOSCRtcCompensate
+    #undef  OSC_LFXOSCInitStaticOffset
+    #define OSC_LFXOSCInitStaticOffset      NOROM_OSC_LFXOSCInitStaticOffset
+    #undef  OSC_LFXOSCRelativeFrequencyOffsetGet
+    #define OSC_LFXOSCRelativeFrequencyOffsetGet NOROM_OSC_LFXOSCRelativeFrequencyOffsetGet
 #endif
 
 //*****************************************************************************
@@ -103,6 +107,14 @@ typedef struct {
 } OscHfGlobals_t;
 
 static OscHfGlobals_t oscHfGlobals;
+
+//*****************************************************************************
+//
+// XOSC_LF coefficients and scale factor for temperature-dependent ppm offset.
+// Must be defined in application before calling OSC_LFXOSCInitStaticOffset
+//
+//*****************************************************************************
+extern XoscLf_Params_t _lfXoscParams __attribute__((weak));
 
 //*****************************************************************************
 //
@@ -583,6 +595,62 @@ OSC_HPOSCInitializeSingleInsertionFreqOffsParams( uint32_t measFieldAddress )
 }
 
 //*****************************************************************************
+// XOSC_LF compensation initialization function
+// - Should be called once, and before OSC_LFXOSCRelativeFrequencyOffsetGet
+// - _lfXoscParams must be defined before calling this function
+//*****************************************************************************
+void OSC_LFXOSCInitStaticOffset(void)
+{
+    int16_t xoscLfCorrection;
+    int8_t xoscLfCorrectionTemperature;
+
+    /* If device is untrimmed, apply default values */
+    if (HWREG(FCFG1_BASE + FCFG1_O_HPOSC_MEAS_5) == 0xFFFFFFFF)
+    {
+        /* These values correspond to a 0 ppm offset measurement at 25 degC */
+        xoscLfCorrection            = 0;
+        xoscLfCorrectionTemperature = 25;
+    }
+    else
+    {
+        xoscLfCorrection = (int16_t)((HWREG(FCFG1_BASE + FCFG1_O_HPOSC_MEAS_5) & FCFG1_HPOSC_MEAS_5_HPOSC_D5_M) >>
+                                      FCFG1_HPOSC_MEAS_5_HPOSC_D5_S);
+        xoscLfCorrectionTemperature = (int8_t)((
+            HWREG(FCFG1_BASE + FCFG1_O_HPOSC_MEAS_5) & FCFG1_HPOSC_MEAS_5_HPOSC_T5_M) >>
+            FCFG1_HPOSC_MEAS_5_HPOSC_T5_S);
+        /* Temperature in FCFG is offset by 27 degrees */
+        xoscLfCorrectionTemperature += 27;
+    }
+
+    /* Calculate the difference between expected offset at FCFG1 temperature, vs actual offset at FCFG1 temperature.
+     * This becomes a static offset whenever a new temperature offset is calculated.
+     * ppm(T) = a*T^2 + b*T + c - d, where d represents a device specific offset from the ideal polynomial
+     * d = ppm(T_trim) - ppm_trim, where ppm_trim is the actual ppm offset measured at production, at the temperature T_trim
+     * ppm_trim is found from FCFG1_HPOSC_MEAS_5_HPOSC_D5 in FCFG, where FCFG1_HPOSC_MEAS_5_HPOSC_D5 = (f/32768 - 1) * 2^22
+     */
+    _lfXoscParams.coeffD = (_lfXoscParams.coeffA * xoscLfCorrectionTemperature * xoscLfCorrectionTemperature +
+                            _lfXoscParams.coeffB * xoscLfCorrectionTemperature + _lfXoscParams.coeffC) -
+                           (int32_t)((int64_t)xoscLfCorrection * (1000000LL << _lfXoscParams.shift) / 4194304LL);
+}
+
+//*****************************************************************************
+//
+// Calculate the temperature dependent relative frequency offset of XOSC_LF
+//
+//*****************************************************************************
+int32_t OSC_LFXOSCRelativeFrequencyOffsetGet(int32_t temperature)
+{
+    /* The offset (ppm) is given by
+     * ppm(T) = a*T^2 + b*T + c - d
+     * The coefficients a, b, c and d are taken from the internal structure _lfXoscParams, which
+     * must be defined and initialised before this function is called.
+     */
+    return ((_lfXoscParams.coeffA * temperature * temperature) + (_lfXoscParams.coeffB * temperature) +
+            _lfXoscParams.coeffC - _lfXoscParams.coeffD) >>
+           _lfXoscParams.shift;
+}
+
+//*****************************************************************************
 //
 // Calculate the temperature dependent relative frequency offset of HPOSC
 //
@@ -717,8 +785,10 @@ OSCHF_DebugGetCrystalAmplitude( void )
    // 3. Read out the crystal amplitude value from the peek detector.
    // 4. Restore original oscillator amplitude calibrations interval.
    // 5. Return crystal amplitude value converted to millivolt.
+
    oscCfgRegCopy = HWREG( AON_PMCTL_BASE + AON_PMCTL_O_OSCCFG );
    HWREG( AON_PMCTL_BASE + AON_PMCTL_O_OSCCFG ) = ( 1 << AON_PMCTL_OSCCFG_PER_E_S );
+
    startTime = AONRTCCurrentCompareValueGet();
    do {
       deltaTime = AONRTCCurrentCompareValueGet() - startTime;
@@ -726,6 +796,7 @@ OSCHF_DebugGetCrystalAmplitude( void )
    ampValue = ( HWREG( AUX_DDI0_OSC_BASE + DDI_0_OSC_O_STAT1 ) &
       DDI_0_OSC_STAT1_HPM_UPDATE_AMP_M ) >>
       DDI_0_OSC_STAT1_HPM_UPDATE_AMP_S ;
+
    HWREG( AON_PMCTL_BASE + AON_PMCTL_O_OSCCFG ) = oscCfgRegCopy;
 
    return ( ampValue * 15 );

@@ -449,6 +449,30 @@ int_fast16_t AESECB_addData(AESECB_Handle handle, AESECB_Operation *operation)
     return AESECB_addDataInternal(handle, operation, object->operationType);
 }
 
+#if (ENABLE_KEY_STORAGE == 1)
+/*
+ *  ======== AESECB_getKeyStoreKeyUsage ========
+ */
+static KeyStore_PSA_KeyUsage AESECB_getKeyStoreKeyUsage(AESECB_OperationType operationType)
+{
+    switch (operationType)
+    {
+        case AESECB_OPERATION_TYPE_ENCRYPT:
+        case AESECB_OPERATION_TYPE_ENCRYPT_SEGMENTED:
+        case AESECB_OPERATION_TYPE_FINALIZE_ENCRYPT_SEGMENTED:
+            return KEYSTORE_PSA_KEY_USAGE_ENCRYPT;
+
+        case AESECB_OPERATION_TYPE_DECRYPT:
+        case AESECB_OPERATION_TYPE_DECRYPT_SEGMENTED:
+        case AESECB_OPERATION_TYPE_FINALIZE_DECRYPT_SEGMENTED:
+            return KEYSTORE_PSA_KEY_USAGE_DECRYPT;
+
+        default:
+            return 0;
+    }
+}
+#endif /* (ENABLE_KEY_STORAGE == 1) */
+
 /*
  *  ======== AESECB_addDataInternal ========
  */
@@ -468,6 +492,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
 #if (ENABLE_KEY_STORAGE == 1)
     int_fast16_t keyStoreStatus;
     KeyStore_PSA_KeyFileId keyID;
+    KeyStore_PSA_KeyUsage keyUsage;
     uint8_t KeyStore_keyingMaterial[AES_256_KEY_LENGTH_BYTES];
 #endif
 
@@ -482,12 +507,19 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
     {
         GET_KEY_ID(keyID, object->key.u.keyStore.keyID);
 
+        keyUsage = AESECB_getKeyStoreKeyUsage(operationType);
+
+        if (!keyUsage)
+        {
+            return AESECB_STATUS_KEYSTORE_GENERIC_ERROR;
+        }
+
         keyStoreStatus = KeyStore_PSA_getKey(keyID,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
                                              KEYSTORE_PSA_ALG_CCM,
-                                             KEYSTORE_PSA_KEY_USAGE_DECRYPT | KEYSTORE_PSA_KEY_USAGE_ENCRYPT);
+                                             keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)
         {
@@ -526,6 +558,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
 
         if (resourceAcquired != SemaphoreP_OK)
         {
+            object->operationInProgress = false;
             /* Do not capture this status in object->returnStatus to facilitate
              * a retry later. */
             return AESECB_STATUS_RESOURCE_UNAVAILABLE;
@@ -559,6 +592,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
             /* Release the CRYPTO mutex */
             SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
             object->cryptoResourceLocked = false;
+            object->operationInProgress  = false;
         }
 
         object->returnStatus = AESECB_STATUS_ERROR;
@@ -605,6 +639,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
             /* Release the CRYPTO mutex */
             SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);
             object->cryptoResourceLocked = false;
+            object->operationInProgress  = false;
         }
 
         AESSelectAlgorithm(0);

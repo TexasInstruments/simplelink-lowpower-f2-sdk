@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -945,8 +945,8 @@ typedef enum
  * @defgroup GAP_PRIVACY_MODES GAP Privacy Modes
  * @{
  */
-#define GAP_PRIVACY_MODE_NETWORK                0 //!< Device Privacy Mode
-#define GAP_PRIVACY_MODE_DEVICE                 1 //!< Network Privacy Mode
+#define GAP_PRIVACY_MODE_NETWORK                0 //!< Network Privacy Mode
+#define GAP_PRIVACY_MODE_DEVICE                 1 //!< Device Privacy Mode
 /** @} End GAP_PRIVACY_MODES */
 
 /**

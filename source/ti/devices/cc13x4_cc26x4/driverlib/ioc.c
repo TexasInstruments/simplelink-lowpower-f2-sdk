@@ -77,10 +77,10 @@
     #define IOCPinTypeGpioOutput            NOROM_IOCPinTypeGpioOutput
     #undef  IOCPinTypeUart
     #define IOCPinTypeUart                  NOROM_IOCPinTypeUart
-    #undef  IOCPinTypeSsiMaster
-    #define IOCPinTypeSsiMaster             NOROM_IOCPinTypeSsiMaster
-    #undef  IOCPinTypeSsiSlave
-    #define IOCPinTypeSsiSlave              NOROM_IOCPinTypeSsiSlave
+    #undef  IOCPinTypeSpiMaster
+    #define IOCPinTypeSpiMaster             NOROM_IOCPinTypeSpiMaster
+    #undef  IOCPinTypeSpiSlave
+    #define IOCPinTypeSpiSlave              NOROM_IOCPinTypeSpiSlave
     #undef  IOCPinTypeI2c
     #define IOCPinTypeI2c                   NOROM_IOCPinTypeI2c
     #undef  IOCPinTypeAux
@@ -525,20 +525,19 @@ IOCPinTypeUart(uint32_t ui32Base, uint32_t ui32Rx, uint32_t ui32Tx,
 
 //*****************************************************************************
 //
-// Configure a set of IOs for standard SSI peripheral master control
+// Configure a set of IOs for standard SPI peripheral master control
 //
 //*****************************************************************************
 void
-IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
+IOCPinTypeSpiMaster(uint32_t ui32Base, uint32_t ui32Rx,
                     uint32_t ui32Tx, uint32_t ui32Fss,
                     uint32_t ui32Clk)
 {
     // Check the arguments.
-
     ASSERT((ui32Base == SPI0_BASE) ||
            (ui32Base == SPI1_BASE) ||
            (ui32Base == SPI2_BASE) ||
-           (ui32Base == SPI3_BASE));
+           (ui32Base == SPI3_BASE) );
     ASSERT((ui32Rx < NUM_IO_MAX) || (ui32Rx == IOID_UNUSED));
     ASSERT((ui32Tx < NUM_IO_MAX) || (ui32Tx == IOID_UNUSED));
     ASSERT((ui32Fss < NUM_IO_MAX) || (ui32Fss == IOID_UNUSED));
@@ -549,92 +548,94 @@ IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI0_RX, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI0_RX, IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI0_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI0_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI0_FSS, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI0_FSS, IOC_STD_OUTPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI0_CLK, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI0_CLK, IOC_STD_OUTPUT);
+        }
+    }
+    else if (ui32Base == SPI1_BASE)
+    {
+        if(ui32Rx != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI1_RX, IOC_STD_INPUT);
+        }
+        if(ui32Tx != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI1_TX, IOC_STD_OUTPUT);
+        }
+        if(ui32Fss != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI1_FSS, IOC_STD_OUTPUT);
+        }
+        if(ui32Clk != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI1_CLK, IOC_STD_OUTPUT);
         }
     }
     else if (ui32Base == SPI2_BASE)
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI2_RX, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI2_RX, IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI2_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI2_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI2_FSS, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI2_FSS, IOC_STD_OUTPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI2_CLK, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI2_CLK, IOC_STD_OUTPUT);
         }
     }
     else if (ui32Base == SPI3_BASE)
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI3_RX, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI3_RX, IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI3_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI3_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI3_FSS, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI3_FSS, IOC_STD_OUTPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI3_CLK, IOC_STD_OUTPUT);
-        }
-    }
-    else
-    {
-        if(ui32Rx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI1_RX, IOC_STD_INPUT);
-        }
-        if(ui32Tx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI1_TX, IOC_STD_OUTPUT);
-        }
-        if(ui32Fss != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI1_FSS, IOC_STD_OUTPUT);
-        }
-        if(ui32Clk != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI1_CLK, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI3_CLK, IOC_STD_OUTPUT);
         }
     }
 }
 
 //*****************************************************************************
 //
-// Configure a set of IOs for standard SSI peripheral slave control
+// Configure a set of IOs for standard SPI peripheral slave control
 //
 //*****************************************************************************
-void
-IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
-                   uint32_t ui32Tx, uint32_t ui32Fss,
-                   uint32_t ui32Clk)
+void IOCPinTypeSpiSlave(uint32_t ui32Base, uint32_t ui32Rx,
+                        uint32_t ui32Tx, uint32_t ui32Fss,
+                        uint32_t ui32Clk)
 {
     // Check the arguments.
-    ASSERT((ui32Base == SSI0_BASE) || (ui32Base == SSI1_BASE));
+    ASSERT((ui32Base == SPI0_BASE) ||
+           (ui32Base == SPI1_BASE) ||
+           (ui32Base == SPI2_BASE) ||
+           (ui32Base == SPI3_BASE) );
     ASSERT((ui32Rx < NUM_IO_MAX) || (ui32Rx == IOID_UNUSED));
     ASSERT((ui32Tx < NUM_IO_MAX) || (ui32Tx == IOID_UNUSED));
     ASSERT((ui32Fss < NUM_IO_MAX) || (ui32Fss == IOID_UNUSED));
@@ -645,76 +646,76 @@ IOCPinTypeSsiSlave(uint32_t ui32Base, uint32_t ui32Rx,
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI0_RX,  IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI0_RX,  IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI0_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI0_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI0_FSS, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI0_FSS, IOC_STD_INPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI0_CLK, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI0_CLK, IOC_STD_INPUT);
+        }
+    }
+    else if(ui32Base == SPI1_BASE)
+    {
+        if(ui32Rx != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI1_RX, IOC_STD_INPUT);
+        }
+        if(ui32Tx != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI1_TX, IOC_STD_OUTPUT);
+        }
+        if(ui32Fss != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI1_FSS, IOC_STD_INPUT);
+        }
+        if(ui32Clk != IOID_UNUSED)
+        {
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI1_CLK, IOC_STD_INPUT);
         }
     }
     else if (ui32Base == SPI2_BASE)
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI2_RX, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI2_RX, IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI2_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI2_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI2_FSS, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI2_FSS, IOC_STD_INPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI2_CLK, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI2_CLK, IOC_STD_INPUT);
         }
     }
     else if (ui32Base == SPI3_BASE)
     {
         if(ui32Rx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI3_RX, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SPI3_RX, IOC_STD_INPUT);
         }
         if(ui32Tx != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI3_TX, IOC_STD_OUTPUT);
+            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SPI3_TX, IOC_STD_OUTPUT);
         }
         if(ui32Fss != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI3_FSS, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SPI3_FSS, IOC_STD_INPUT);
         }
         if(ui32Clk != IOID_UNUSED)
         {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI3_CLK, IOC_STD_INPUT);
-        }
-    }
-    else
-    {
-        if(ui32Rx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Rx, IOC_PORT_MCU_SSI1_RX, IOC_STD_INPUT);
-        }
-        if(ui32Tx != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Tx, IOC_PORT_MCU_SSI1_TX, IOC_STD_OUTPUT);
-        }
-        if(ui32Fss != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Fss, IOC_PORT_MCU_SSI1_FSS, IOC_STD_INPUT);
-        }
-        if(ui32Clk != IOID_UNUSED)
-        {
-            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SSI1_CLK, IOC_STD_INPUT);
+            IOCPortConfigureSet(ui32Clk, IOC_PORT_MCU_SPI3_CLK, IOC_STD_INPUT);
         }
     }
 }

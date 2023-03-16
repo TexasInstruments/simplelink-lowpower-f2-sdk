@@ -51,9 +51,9 @@ let config = []; /* nothing (yet) beyond generic driver configs */
 function validate(inst, validation)
 {
     if (system.modules["/ti/utils/TrustZone"]) {
-        if (inst.$module.$instances.length > 1) {
+        if (inst.$module.$instances.length != 1) {
             validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
-                                driver instances are fixed in the SPE image. One AESCTRDRBG instance is supported.`, inst);
+                                driver instances are fixed in the TF-M image. One AESCTRDRBG instance is supported.`, inst);
         }
     }
 }

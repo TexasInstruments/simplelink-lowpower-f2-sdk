@@ -1,0 +1,44 @@
+/**
+ * Import the modules used in the TF-M configuration.
+ */
+const Power       = scripting.addModule("/ti/drivers/Power");
+
+const AESCBC      = scripting.addModule("/ti/drivers/AESCBC");
+const AESCBC1     = AESCBC.addInstance();
+
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM");
+const AESCCM1     = AESCCM.addInstance();
+
+const AESCMAC     = scripting.addModule("/ti/drivers/AESCMAC");
+const AESCMAC1    = AESCMAC.addInstance();
+const AESCMAC2    = AESCMAC.addInstance();
+
+const AESCTR      = scripting.addModule("/ti/drivers/AESCTR");
+const AESCTR1     = AESCTR.addInstance();
+
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG");
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+
+const AESECB      = scripting.addModule("/ti/drivers/AESECB");
+const AESECB1     = AESECB.addInstance();
+
+const AESGCM      = scripting.addModule("/ti/drivers/AESGCM");
+const AESGCM1     = AESGCM.addInstance();
+
+const ECDH        = scripting.addModule("/ti/drivers/ECDH");
+const ECDH1       = ECDH.addInstance();
+
+const ECDSA       = scripting.addModule("/ti/drivers/ECDSA");
+const ECDSA1      = ECDSA.addInstance();
+const ECDSA2      = ECDSA.addInstance();
+
+const SHA2        = scripting.addModule("/ti/drivers/SHA2");
+const SHA2_1      = SHA2.addInstance();
+const SHA2_2      = SHA2.addInstance();
+
+const TRNG        = scripting.addModule("/ti/drivers/TRNG");
+const TRNG1       = TRNG.addInstance();
+const TRNG2       = TRNG.addInstance();
+
+const SecureCallback    = scripting.addModule("/ti/drivers/tfm/SecureCallback")
+SecureCallback.intLine = 59;

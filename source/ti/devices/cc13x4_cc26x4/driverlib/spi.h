@@ -65,6 +65,9 @@ extern "C"
 #include "../inc/hw_spi.h"
 #include "debug.h"
 #include "interrupt.h"
+#ifdef DRIVERLIB_DEBUG
+#include "chipinfo.h"
+#endif
 
 //*****************************************************************************
 //
@@ -165,7 +168,16 @@ extern "C"
 static bool
 SPIBaseValid(uint32_t ui32Base)
 {
-    return(ui32Base == SPI0_BASE || ui32Base == SPI1_BASE);
+    if (ChipInfo_GetChipType() == CHIP_TYPE_CC2653P10)
+    {
+        return((ui32Base == SPI0_BASE) || (ui32Base == SPI1_BASE));
+    }
+    else{
+        return((ui32Base == SPI0_BASE) || \
+               (ui32Base == SPI1_BASE) || \
+               (ui32Base == SPI2_BASE) || \
+               (ui32Base == SPI3_BASE));
+    }
 }
 #endif
 

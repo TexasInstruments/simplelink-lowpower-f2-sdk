@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -92,6 +92,7 @@ typedef struct DisplaySharp_HWAttrsV1
     uint16_t pixelHeight;
     uint16_t pixelWidth;
     void *displayBuf;
+    const Graphics_Font *font;
 } DisplaySharp_HWAttrsV1;
 
 typedef uint8_t DisplaySharp_Buf_96x96[96 * 96 / 8];

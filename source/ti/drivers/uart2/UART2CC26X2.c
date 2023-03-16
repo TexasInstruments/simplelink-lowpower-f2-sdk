@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1142,11 +1142,16 @@ static void UART2CC26X2_initIO(UART2_Handle handle)
 {
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
+    /* Make sure all pins have their input buffers enabled, then apply the correct mux */
+    GPIO_setConfig(hwAttrs->txPin, GPIO_CFG_NO_DIR);
+    GPIO_setConfig(hwAttrs->rxPin, GPIO_CFG_INPUT);
     GPIO_setMux(hwAttrs->txPin, hwAttrs->txPinMux);
     GPIO_setMux(hwAttrs->rxPin, hwAttrs->rxPinMux);
 
     if (UART2CC26X2_isFlowControlEnabled(hwAttrs))
     {
+        GPIO_setConfig(hwAttrs->ctsPin, GPIO_CFG_INPUT);
+        GPIO_setConfig(hwAttrs->rtsPin, GPIO_CFG_NO_DIR);
         GPIO_setMux(hwAttrs->ctsPin, hwAttrs->ctsPinMux);
         GPIO_setMux(hwAttrs->rtsPin, hwAttrs->rtsPinMux);
     }

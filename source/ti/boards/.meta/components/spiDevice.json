@@ -38,8 +38,8 @@
 {
     "type": ["SPI_DEVICE"],
     "displayName": "Generic 4-wire SPI device",
-    "description": "Generic 4-wire SPI device with SCLK, MOSI, MISO, and CS",
-    "longDescription": "Generic 4-wire Serial Peripheral Interface (SPI) bus SCLK , MOSI, MISO and CS.",
+    "description": "Generic 4-wire SPI device with SCLK, PICO, POCI, and CS",
+    "longDescription": "Generic 4-wire Serial Peripheral Interface (SPI) bus SCLK , PICO, POCI and CS.",
     "subComponents": {
         "SPI" : {
             "definition": "ti/boards/components/spiBus.json"

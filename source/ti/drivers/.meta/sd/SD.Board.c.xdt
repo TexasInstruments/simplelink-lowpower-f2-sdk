@@ -117,7 +117,7 @@ static const SDSPI_HWAttrs sdspiHWAttrs[`countDef`] = {
     % }
     {
         .spiIndex = `inst.spiInstance.$name`,
-        .spiCsGpioIndex = `inst.slaveSelect.$name`
+        .spiCsGpioIndex = `inst.chipSelect.$name`
     },
 % }
 };

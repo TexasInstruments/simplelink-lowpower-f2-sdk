@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated - https://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - https://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/GPIO",
                 "/ti/drivers/I2C",
                 "/ti/drivers/I2S",
-                //"/ti/drivers/ITM",  // example itmwrite is not working on CC26X4 family devices (TIDRIVERS-5334)
+                "/ti/drivers/ITM",
                 "/ti/drivers/NVS",
                 "/ti/drivers/Power",
                 "/ti/drivers/PWM",

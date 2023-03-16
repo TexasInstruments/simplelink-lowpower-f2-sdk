@@ -45,11 +45,11 @@
         "SCLK": {
             "type": "SPI_SCLK"
         },
-        "MOSI": {
-            "type": "SPI_MOSI"
+        "PICO": {
+            "type": "SPI_PICO"
         },
-        "MISO": {
-            "type": "SPI_MISO"
+        "POCI": {
+            "type": "SPI_POCI"
         }
     }
 }

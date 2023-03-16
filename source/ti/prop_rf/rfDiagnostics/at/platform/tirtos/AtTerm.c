@@ -32,9 +32,18 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include <xdc/runtime/System.h>
 #include <ti/drivers/UART2.h>
+#include <ti/drivers/SPI.h>
+#include <ti/drivers/spi/SPICC26X2DMA.h>
+#include <ti/sysbios/knl/Clock.h>
+#include <ti/drivers/GPIO.h>
+#include <semaphore.h>
 #include <ti/sysbios/knl/Clock.h>
 
 #include "ti_drivers_config.h"
@@ -42,10 +51,24 @@
 #include "at/platform/inc/AtTerm.h"
 #include "at/AtProcess.h"
 
+#ifdef AT_SPI
+#define SPI_MSG_LENGTH   (1024)
+#define SPI_BITRATE      (1000000U)
+#define SPI_FRAME_FORMAT (SPI_POL0_PHA1)
+static char spiRxBuffer[SPI_MSG_LENGTH];
+static char spiTxBuffer[SPI_MSG_LENGTH];
+static sem_t spiSem;
+static SPI_Handle spiHandle;
+static SPI_Transaction spiTransaction;
+static void spiTransferCompleteFxn(SPI_Handle handle, SPI_Transaction *transaction);
+#else
+#define UART_BAUD (115200)
 static UART2_Handle uartHandle;
+#endif
 
 int32_t AtTerm_init(void)
 {
+#ifndef AT_SPI
     UART2_Params uartParams;
 
     // Create a UART with data processing off
@@ -53,32 +76,113 @@ int32_t AtTerm_init(void)
     uartParams.readMode         = UART2_Mode_BLOCKING;
     uartParams.writeMode        = UART2_Mode_NONBLOCKING;
     uartParams.readReturnMode   = UART2_ReadReturnMode_FULL;
-    uartParams.baudRate         = 115200;
+    uartParams.baudRate         = UART_BAUD;
 
     uartHandle = UART2_open(CONFIG_UART_0, &uartParams);
 
-    if (uartHandle == NULL)
+    if(uartHandle == NULL)
     {
         System_abort("Error opening the UART");
     }
+#else
+    // SPI peripheral set up
+    SPI_init();
+
+    SPI_Params spiParams;
+    SPI_Params_init(&spiParams);
+    spiParams.frameFormat = SPI_FRAME_FORMAT;
+    spiParams.transferCallbackFxn = spiTransferCompleteFxn;
+    spiParams.transferMode = SPI_MODE_CALLBACK;
+    spiParams.mode = SPI_PERIPHERAL;
+    spiParams.bitRate = SPI_BITRATE;
+    spiParams.dataSize = 8;
+
+    spiHandle = SPI_open(CONFIG_SPI_0, &spiParams);
+    if(spiHandle == NULL)
+    {
+        System_abort("Error opening the SPI");
+    }
+
+    memset((void *) spiTxBuffer,0, SPI_MSG_LENGTH);
+    SPI_control(spiHandle, SPICC26X2DMA_CMD_RETURN_PARTIAL_ENABLE, NULL);
+
+    sem_init(&spiSem, 0, 0);
+#endif
     return 0;
 }
 
 int32_t AtTerm_getChar(char* ch)
 {
+    int32_t bytes = 0;
+#ifndef AT_SPI
     char c = '\r';
-    uint32_t bytes = 0;
-
     (void)UART2_read(uartHandle, &c, 1, (size_t *)&bytes);
-
     *ch = c;
+#else
+    uint16_t        i;
+    uint16_t        j;
+    bool           validCmdFmt =false;
 
+    /* Initialize peripheral SPI transaction structure */
+    memset(spiRxBuffer, 0, SPI_MSG_LENGTH);
+    while(1)
+    {
+        if(validCmdFmt == false)
+        {
+            spiTransaction.count = SPI_MSG_LENGTH;
+            spiTransaction.txBuf = spiTxBuffer;
+            spiTransaction.rxBuf = spiRxBuffer;
+
+            // Only start a SPI transfer when CS is de-asserted
+            uint_fast8_t csValue = 0U;
+            while(csValue == 0U)
+            {
+                csValue = GPIO_read(CONFIG_GPIO_SPI_0_CSN);
+            }
+
+            SPI_transfer(spiHandle, &spiTransaction);
+            sem_wait(&spiSem);
+            memset((void *) spiTxBuffer,0, SPI_MSG_LENGTH);
+
+            //make sure cmd starts with AT and end with a '\r'
+            for(i = 0; i< SPI_MSG_LENGTH;i++)
+            {
+                if((spiRxBuffer[i] == 'A' || spiRxBuffer[i] == 'a')  && (spiRxBuffer[i+1] == 'T' || spiRxBuffer[i+1] == 't'))
+                {
+                    for(j = i; j < SPI_MSG_LENGTH; j++)
+                    {
+                        // '\r 'check
+                        if(spiRxBuffer[j] == '\r')
+                        {
+                            validCmdFmt = true;
+                            break;
+                        }
+                    }
+                }
+                if(validCmdFmt == true)
+                {
+                    bytes = (j + 1) - i;
+                    memcpy((uint8_t *)ch, (uint8_t *)&spiRxBuffer[i], bytes);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+#endif
     return bytes;
 }
 
 void AtTerm_putChar(char ch)
 {
+#ifndef AT_SPI
     UART2_write(uartHandle, &ch, 1, NULL);
+#else
+    strncat(spiTxBuffer, &ch, 1);
+#endif
 }
 
 void AtTerm_sendStringUi8Value(char *string, uint8_t value, uint8_t format)
@@ -94,7 +198,11 @@ void AtTerm_sendStringUi8Value(char *string, uint8_t value, uint8_t format)
         sprintf(strVal, "%s%2x", (char*) string, value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendStringI8Value(char *string, int8_t value, uint8_t format)
@@ -110,7 +218,11 @@ void AtTerm_sendStringI8Value(char *string, int8_t value, uint8_t format)
         sprintf(strVal, "%s%2x", (char*) string, value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendStringUi16Value(char *string, uint16_t value, uint8_t format)
@@ -126,7 +238,11 @@ void AtTerm_sendStringUi16Value(char *string, uint16_t value, uint8_t format)
         sprintf(strVal, "%s%4x", (char*) string, value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendStringI16Value(char *string, int16_t value, uint8_t format)
@@ -142,7 +258,11 @@ void AtTerm_sendStringI16Value(char *string, int16_t value, uint8_t format)
         sprintf(strVal, "%s%4x", (char*) string, value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendStringUi32Value(char *string, uint32_t value, uint8_t format)
@@ -158,7 +278,11 @@ void AtTerm_sendStringUi32Value(char *string, uint32_t value, uint8_t format)
         sprintf(strVal, "%s%8x", (char*) string, (unsigned int)value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendStringI32Value(char *string, int32_t value, uint8_t format)
@@ -174,20 +298,32 @@ void AtTerm_sendStringI32Value(char *string, int32_t value, uint8_t format)
         sprintf(strVal, "%s%8x", (char*) string, (unsigned int)value);
     }
 
+#ifndef AT_SPI
     UART2_write(uartHandle, strVal, strlen(strVal), NULL);
+#else
+    strncat(spiTxBuffer, strVal, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_sendString(char *string)
 {
+#ifndef AT_SPI
     uint32_t len = strlen(string);
     UART2_write(uartHandle, string, len, NULL);
+#else
+    strncat(spiTxBuffer, string, (SPI_MSG_LENGTH - strlen(spiTxBuffer) - 1));
+#endif
 }
 
 void AtTerm_clearTerm(void)
 {
+#ifndef AT_SPI
     //char clear[] = {0x0C};
     char c = '\f';
     UART2_write(uartHandle, &c, 1, NULL);
+#else
+    memset((void *) spiTxBuffer,0, SPI_MSG_LENGTH);
+#endif
 }
 
 void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, size_t fxnParamLen)
@@ -229,3 +365,13 @@ void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, 
     if(NULL != radioId)
         *radioId = _radioId;
 }
+
+#ifdef AT_SPI
+void spiTransferCompleteFxn(SPI_Handle handle, SPI_Transaction *transaction)
+{
+    if ((transaction->status == SPI_TRANSFER_CSN_DEASSERT) || (transaction->status == SPI_STATUS_SUCCESS))
+    {
+        sem_post(&spiSem);
+    }
+}
+#endif

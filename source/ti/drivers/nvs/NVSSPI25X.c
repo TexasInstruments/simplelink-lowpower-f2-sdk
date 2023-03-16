@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -175,7 +175,9 @@ int_fast16_t NVSSPI25X_control(NVS_Handle handle, uint_fast16_t cmd, uintptr_t a
     NVSSPI25X_Object *object;
 
     if (cmd != NVSSPI25X_CMD_MASS_ERASE)
+    {
         return (NVS_STATUS_UNDEFINEDCMD);
+    }
 
     hwAttrs = handle->hwAttrs;
     object  = handle->object;
@@ -212,7 +214,6 @@ void NVSSPI25X_getAttrs(NVS_Handle handle, NVS_Attrs *attrs)
 
     hwAttrs = handle->hwAttrs;
 
-    /* FlashSectorSizeGet() returns the size of a flash sector in bytes. */
     attrs->regionBase = NVS_REGION_NOT_ADDRESSABLE;
     attrs->regionSize = hwAttrs->regionSize;
     attrs->sectorSize = hwAttrs->sectorSize;
@@ -348,7 +349,7 @@ NVS_Handle NVSSPI25X_open(uint_least8_t index, NVS_Params *params)
 
             SPI_Params_init(&spiParams);
             spiParams.bitRate      = hwAttrs->spiBitRate;
-            spiParams.mode         = SPI_MASTER;
+            spiParams.mode         = SPI_CONTROLLER;
             spiParams.transferMode = SPI_MODE_BLOCKING;
 
             /* Attempt to open SPI. */
@@ -608,7 +609,9 @@ static int_fast16_t doWriteVerify(NVS_Handle handle,
             bad = srcBuf[i] != dstBuf[j];
         }
         if (bad)
+        {
             return (NVS_STATUS_INV_WRITE);
+        }
     }
     return (NVS_STATUS_SUCCESS);
 }
@@ -908,9 +911,9 @@ static int_fast16_t extFlashWriteEnable(NVS_Handle nvsHandle)
  */
 static int_fast16_t extFlashSpiWrite(const uint8_t *buf, size_t len)
 {
-    SPI_Transaction masterTransaction;
+    SPI_Transaction controllerTransaction;
 
-    masterTransaction.rxBuf = NULL;
+    controllerTransaction.rxBuf = NULL;
 
     /*
      * Work around SPI transfer from address 0x0
@@ -919,10 +922,10 @@ static int_fast16_t extFlashSpiWrite(const uint8_t *buf, size_t len)
     if (buf == NULL)
     {
         uint8_t byte0;
-        byte0                   = *buf++;
-        masterTransaction.count = 1;
-        masterTransaction.txBuf = (void *)&byte0;
-        if (!SPI_transfer(spiHandle, &masterTransaction))
+        byte0                       = *buf++;
+        controllerTransaction.count = 1;
+        controllerTransaction.txBuf = (void *)&byte0;
+        if (!SPI_transfer(spiHandle, &controllerTransaction))
         {
             return (NVS_STATUS_ERROR);
         }
@@ -933,10 +936,10 @@ static int_fast16_t extFlashSpiWrite(const uint8_t *buf, size_t len)
         }
     }
 
-    masterTransaction.count = len;
-    masterTransaction.txBuf = (void *)buf;
+    controllerTransaction.count = len;
+    controllerTransaction.txBuf = (void *)buf;
 
-    return (SPI_transfer(spiHandle, &masterTransaction) ? NVS_STATUS_SUCCESS : NVS_STATUS_ERROR);
+    return (SPI_transfer(spiHandle, &controllerTransaction) ? NVS_STATUS_SUCCESS : NVS_STATUS_ERROR);
 }
 
 /*
@@ -944,13 +947,13 @@ static int_fast16_t extFlashSpiWrite(const uint8_t *buf, size_t len)
  */
 static int_fast16_t extFlashSpiRead(uint8_t *buf, size_t len)
 {
-    SPI_Transaction masterTransaction;
+    SPI_Transaction controllerTransaction;
 
-    masterTransaction.txBuf = NULL;
-    masterTransaction.count = len;
-    masterTransaction.rxBuf = buf;
+    controllerTransaction.txBuf = NULL;
+    controllerTransaction.count = len;
+    controllerTransaction.rxBuf = buf;
 
-    return (SPI_transfer(spiHandle, &masterTransaction) ? NVS_STATUS_SUCCESS : NVS_STATUS_ERROR);
+    return (SPI_transfer(spiHandle, &controllerTransaction) ? NVS_STATUS_SUCCESS : NVS_STATUS_ERROR);
 }
 
 /*

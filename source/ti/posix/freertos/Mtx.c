@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,47 +37,48 @@
 
 /* make sure this is IAR compiler */
 #ifndef __IAR_SYSTEMS_ICC__
-#error Must use IAR compiler.
+    #error Must use IAR compiler.
 #endif
 
 #include <yvals.h>
 #include <DLib_Threads.h>
 
-#include <FreeRTOS.h>   /* defines MTX_TLS_INDEX via FreeRTOSConfig.h */
+#include <FreeRTOS.h> /* defines MTX_TLS_INDEX via FreeRTOSConfig.h */
 #include <portmacro.h>
 #include <task.h>
 #include <semphr.h>
 
 #include "Mtx.h"
 
-
 /* lock struct definition */
-typedef struct {
+typedef struct
+{
     TaskHandle_t owner;
     int count;
     SemaphoreHandle_t mutex;
 } Mtx_Lock;
 
-
 /*
  *  ======== Mtx_getTlsPtr ========
  */
-#pragma section="__iar_tls$$DATA"
+#pragma section = "__iar_tls$$DATA"
 void *Mtx_getTlsPtr(void)
 {
     TaskHandle_t task;
     void *buf;
 
     /* check if still running in main() */
-    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
+    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+    {
         return (__section_begin("__iar_tls$$DATA"));
     }
 
     /* running in a secondary thread */
     task = xTaskGetCurrentTaskHandle();
-    buf = pvTaskGetThreadLocalStoragePointer(task, MTX_TLS_INDEX);
+    buf  = pvTaskGetThreadLocalStoragePointer(task, MTX_TLS_INDEX);
 
-    if (buf == NULL) {
+    if (buf == NULL)
+    {
         /*  If memory allocation fails, the error path may return to this
          *  function, resulting in an infinite call loop. To prevent this
          *  loop, temporarily assign the global TLS buffer to the current
@@ -89,14 +90,17 @@ void *Mtx_getTlsPtr(void)
 
         buf = pvPortMalloc(__iar_tls_size());
 
-        if (buf != NULL) {
+        if (buf != NULL)
+        {
             __iar_tls_init((char *)buf);
             vTaskSetThreadLocalStoragePointer(task, MTX_TLS_INDEX, buf);
         }
-        else {
+        else
+        {
             /* error: out of memory */
             volatile int spin = 1;
-            while (spin);
+            while (spin)
+                ;
         }
     }
 
@@ -113,7 +117,8 @@ void Mtx_taskDeleteHook(void *task)
 
     __call_thread_dtors();
 
-    if (buf != NULL) {
+    if (buf != NULL)
+    {
         vPortFree(buf);
     }
 }
@@ -128,21 +133,25 @@ void Mtx_initLock(void **ptr)
     /* allocate the lock object */
     lock = pvPortMalloc(sizeof(Mtx_Lock));
 
-    if (lock == NULL) {
+    if (lock == NULL)
+    {
         /* error: out of memory */
         volatile int spin = 1;
-        while (spin);
+        while (spin)
+            ;
     }
 
     /* create a mutex */
     lock->mutex = xSemaphoreCreateMutex();
 
-    if (lock->mutex == NULL) {
+    if (lock->mutex == NULL)
+    {
         vPortFree(lock);
 
         /* error: out of memory */
         volatile int spin = 1;
-        while (spin);
+        while (spin)
+            ;
     }
 
     /* initialize owner and count */
@@ -177,18 +186,22 @@ void Mtx_acquireLock(void **ptr)
     lock = (Mtx_Lock *)*ptr;
 
     /* check if still running in main() */
-    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
+    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED)
+    {
         self = (TaskHandle_t)(~0);
     }
-    else {
+    else
+    {
         self = xTaskGetCurrentTaskHandle();
     }
 
     /* if nested call is detected, increment lock count */
-    if (lock->owner == self) {
+    if (lock->owner == self)
+    {
         (lock->count)++;
     }
-    else {
+    else
+    {
         /* acquire the lock */
         xSemaphoreTake(lock->mutex, portMAX_DELAY);
         lock->count = 1;
@@ -201,7 +214,7 @@ void Mtx_acquireLock(void **ptr)
  */
 void Mtx_releaseLock(void **ptr)
 {
-    Mtx_Lock  *lock;
+    Mtx_Lock *lock;
 
     /* get the lock pointer */
     lock = (Mtx_Lock *)*ptr;
@@ -210,7 +223,8 @@ void Mtx_releaseLock(void **ptr)
     (lock->count)--;
 
     /* release the lock */
-    if (lock->count == 0) {
+    if (lock->count == 0)
+    {
         lock->owner = NULL;
         xSemaphoreGive(&(lock->mutex));
     }
@@ -281,5 +295,5 @@ void __iar_Unlockdynamiclock(void **ptr)
 
 void *__aeabi_read_tp(void)
 {
-    return(Mtx_getTlsPtr());
+    return (Mtx_getTlsPtr());
 }

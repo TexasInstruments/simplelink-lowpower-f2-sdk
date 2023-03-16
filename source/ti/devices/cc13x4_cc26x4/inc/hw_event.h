@@ -530,12 +530,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 #define EVENT_CPUIRQSEL7_EV_W                                                8
 #define EVENT_CPUIRQSEL7_EV_M                                       0x000000FF
 #define EVENT_CPUIRQSEL7_EV_S                                                0
-#define EVENT_CPUIRQSEL7_EV_SSI0_COMB                               0x00000022
+#define EVENT_CPUIRQSEL7_EV_SPI0_COMB                               0x00000022
 
 //*****************************************************************************
 //
@@ -546,12 +546,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
 #define EVENT_CPUIRQSEL8_EV_W                                                8
 #define EVENT_CPUIRQSEL8_EV_M                                       0x000000FF
 #define EVENT_CPUIRQSEL8_EV_S                                                0
-#define EVENT_CPUIRQSEL8_EV_SSI1_COMB                               0x00000023
+#define EVENT_CPUIRQSEL8_EV_SPI1_COMB                               0x00000023
 
 //*****************************************************************************
 //
@@ -1095,12 +1095,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 #define EVENT_CPUIRQSEL38_EV_W                                               8
 #define EVENT_CPUIRQSEL38_EV_M                                      0x000000FF
 #define EVENT_CPUIRQSEL38_EV_S                                               0
-#define EVENT_CPUIRQSEL38_EV_SSI2_COMB                              0x0000007A
+#define EVENT_CPUIRQSEL38_EV_SPI2_COMB                              0x0000007A
 
 //*****************************************************************************
 //
@@ -1111,12 +1111,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
 #define EVENT_CPUIRQSEL39_EV_W                                               8
 #define EVENT_CPUIRQSEL39_EV_M                                      0x000000FF
 #define EVENT_CPUIRQSEL39_EV_S                                               0
-#define EVENT_CPUIRQSEL39_EV_SSI3_COMB                              0x0000007B
+#define EVENT_CPUIRQSEL39_EV_SPI3_COMB                              0x0000007B
 
 //*****************************************************************************
 //
@@ -1317,10 +1317,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AUX_ADC_IRQ              AUX ADC interrupt event, corresponds to
 //                          AUX_EVCTL:EVTOMCUFLAGS.AUX_ADC_IRQ. Status
@@ -1368,10 +1368,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // WDT_IRQ                  Watchdog interrupt event, controlled by
 //                          WDT:CTL.INTEN
 // AON_AUX_SWEV0            AUX Software event 0, AUX_EVCTL:SWEVSET.SWEV0
@@ -1388,8 +1388,8 @@
 #define EVENT_RFCSEL9_EV_S                                                   0
 #define EVENT_RFCSEL9_EV_UART3_COMB                                 0x0000007D
 #define EVENT_RFCSEL9_EV_UART2_COMB                                 0x0000007C
-#define EVENT_RFCSEL9_EV_SSI3_COMB                                  0x0000007B
-#define EVENT_RFCSEL9_EV_SSI2_COMB                                  0x0000007A
+#define EVENT_RFCSEL9_EV_SPI3_COMB                                  0x0000007B
+#define EVENT_RFCSEL9_EV_SPI2_COMB                                  0x0000007A
 #define EVENT_RFCSEL9_EV_ALWAYS_ACTIVE                              0x00000079
 #define EVENT_RFCSEL9_EV_AUX_ADC_IRQ                                0x00000073
 #define EVENT_RFCSEL9_EV_AUX_OBSMUX0                                0x00000072
@@ -1413,8 +1413,8 @@
 #define EVENT_RFCSEL9_EV_DMA_DONE_COMB                              0x00000027
 #define EVENT_RFCSEL9_EV_UART1_COMB                                 0x00000025
 #define EVENT_RFCSEL9_EV_UART0_COMB                                 0x00000024
-#define EVENT_RFCSEL9_EV_SSI1_COMB                                  0x00000023
-#define EVENT_RFCSEL9_EV_SSI0_COMB                                  0x00000022
+#define EVENT_RFCSEL9_EV_SPI1_COMB                                  0x00000023
+#define EVENT_RFCSEL9_EV_SPI0_COMB                                  0x00000022
 #define EVENT_RFCSEL9_EV_WDT_IRQ                                    0x00000018
 #define EVENT_RFCSEL9_EV_AON_AUX_SWEV0                              0x0000000A
 #define EVENT_RFCSEL9_EV_I2S_IRQ                                    0x00000008
@@ -1439,10 +1439,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -1498,10 +1498,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -1536,8 +1536,8 @@
 #define EVENT_GPT0ACAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT0ACAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT0ACAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT0ACAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT0ACAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT0ACAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT0ACAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT0ACAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT0ACAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT0ACAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -1568,8 +1568,8 @@
 #define EVENT_GPT0ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT0ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT0ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT0ACAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT0ACAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT0ACAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT0ACAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT0ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT0ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT0ACAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -1600,10 +1600,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -1659,10 +1659,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -1697,8 +1697,8 @@
 #define EVENT_GPT0BCAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT0BCAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT0BCAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT0BCAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT0BCAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT0BCAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT0BCAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT0BCAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT0BCAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT0BCAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -1729,8 +1729,8 @@
 #define EVENT_GPT0BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT0BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT0BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT0BCAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT0BCAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT0BCAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT0BCAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT0BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT0BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT0BCAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -1761,10 +1761,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -1820,10 +1820,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -1858,8 +1858,8 @@
 #define EVENT_GPT1ACAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT1ACAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT1ACAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT1ACAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT1ACAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT1ACAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT1ACAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT1ACAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT1ACAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT1ACAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -1890,8 +1890,8 @@
 #define EVENT_GPT1ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT1ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT1ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT1ACAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT1ACAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT1ACAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT1ACAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT1ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT1ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT1ACAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -1922,10 +1922,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -1981,10 +1981,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -2019,8 +2019,8 @@
 #define EVENT_GPT1BCAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT1BCAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT1BCAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT1BCAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT1BCAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT1BCAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT1BCAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT1BCAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT1BCAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT1BCAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -2051,8 +2051,8 @@
 #define EVENT_GPT1BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT1BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT1BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT1BCAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT1BCAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT1BCAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT1BCAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT1BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT1BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT1BCAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -2083,10 +2083,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -2142,10 +2142,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -2180,8 +2180,8 @@
 #define EVENT_GPT2ACAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT2ACAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT2ACAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT2ACAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT2ACAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT2ACAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT2ACAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT2ACAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT2ACAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT2ACAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -2212,8 +2212,8 @@
 #define EVENT_GPT2ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT2ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT2ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT2ACAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT2ACAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT2ACAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT2ACAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT2ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT2ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT2ACAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -2244,10 +2244,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -2303,10 +2303,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -2341,8 +2341,8 @@
 #define EVENT_GPT2BCAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT2BCAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT2BCAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT2BCAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT2BCAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT2BCAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT2BCAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT2BCAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT2BCAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT2BCAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -2373,8 +2373,8 @@
 #define EVENT_GPT2BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT2BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT2BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT2BCAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT2BCAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT2BCAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT2BCAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT2BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT2BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT2BCAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -2461,12 +2461,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI0_RX_DMASREQ          SSI0 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
+// SPI0_RX_DMASREQ          SPI0 RX DMA single request, controlled by
+//                          SPI0:DMACR.RXDMAE
 #define EVENT_UDMACH3SSEL_EV_W                                               8
 #define EVENT_UDMACH3SSEL_EV_M                                      0x000000FF
 #define EVENT_UDMACH3SSEL_EV_S                                               0
-#define EVENT_UDMACH3SSEL_EV_SSI0_RX_DMASREQ                        0x00000029
+#define EVENT_UDMACH3SSEL_EV_SPI0_RX_DMASREQ                        0x00000029
 
 //*****************************************************************************
 //
@@ -2477,12 +2477,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI0_RX_DMABREQ          SSI0 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
+// SPI0_RX_DMABREQ          SPI0 RX DMA burst request , controlled by
+//                          SPI0:DMACR.RXDMAE
 #define EVENT_UDMACH3BSEL_EV_W                                               8
 #define EVENT_UDMACH3BSEL_EV_M                                      0x000000FF
 #define EVENT_UDMACH3BSEL_EV_S                                               0
-#define EVENT_UDMACH3BSEL_EV_SSI0_RX_DMABREQ                        0x00000028
+#define EVENT_UDMACH3BSEL_EV_SPI0_RX_DMABREQ                        0x00000028
 
 //*****************************************************************************
 //
@@ -2493,12 +2493,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI0_TX_DMASREQ          SSI0 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
+// SPI0_TX_DMASREQ          SPI0 TX DMA single request, controlled by
+//                          SPI0:DMACR.TXDMAE
 #define EVENT_UDMACH4SSEL_EV_W                                               8
 #define EVENT_UDMACH4SSEL_EV_M                                      0x000000FF
 #define EVENT_UDMACH4SSEL_EV_S                                               0
-#define EVENT_UDMACH4SSEL_EV_SSI0_TX_DMASREQ                        0x0000002B
+#define EVENT_UDMACH4SSEL_EV_SPI0_TX_DMASREQ                        0x0000002B
 
 //*****************************************************************************
 //
@@ -2509,12 +2509,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI0_TX_DMABREQ          SSI0 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
+// SPI0_TX_DMABREQ          SPI0 TX DMA burst request , controlled by
+//                          SPI0:DMACR.TXDMAE
 #define EVENT_UDMACH4BSEL_EV_W                                               8
 #define EVENT_UDMACH4BSEL_EV_M                                      0x000000FF
 #define EVENT_UDMACH4BSEL_EV_S                                               0
-#define EVENT_UDMACH4BSEL_EV_SSI0_TX_DMABREQ                        0x0000002A
+#define EVENT_UDMACH4BSEL_EV_SPI0_TX_DMABREQ                        0x0000002A
 
 //*****************************************************************************
 //
@@ -2985,31 +2985,31 @@
 //                          UART2:DMACTL.RXDMAE
 // UART2_RX_DMABREQ         UART2 RX DMA burst request, controlled by
 //                          UART2:DMACTL.RXDMAE
-// SSI3_TX_DMASREQ          SSI3 TX DMA single request, controlled by
-//                          SSI2:DMACR.TXDMAE
-// SSI3_TX_DMABREQ          SSI3 TX DMA burst request , controlled by
-//                          SSI2:DMACR.TXDMAE
-// SSI3_RX_DMASREQ          SSI3 RX DMA single request, controlled by
-//                          SSI2:DMACR.RXDMAE
-// SSI3_RX_DMABREQ          SSI3 RX DMA burst request , controlled by
-//                          SSI2:DMACR.RXDMAE
-// SSI2_TX_DMASREQ          SSI2 TX DMA single request, controlled by
-//                          SSI2:DMACR.TXDMAE
-// SSI2_TX_DMABREQ          SSI2 TX DMA burst request , controlled by
-//                          SSI2:DMACR.TXDMAE
-// SSI2_RX_DMASREQ          SSI2 RX DMA single request, controlled by
-//                          SSI2:DMACR.RXDMAE
-// SSI2_RX_DMABREQ          SSI2 RX DMA burst request , controlled by
-//                          SSI2:DMACR.RXDMAE
+// SPI3_TX_DMASREQ          SPI3 TX DMA single request, controlled by
+//                          SPI2:DMACR.TXDMAE
+// SPI3_TX_DMABREQ          SPI3 TX DMA burst request , controlled by
+//                          SPI2:DMACR.TXDMAE
+// SPI3_RX_DMASREQ          SPI3 RX DMA single request, controlled by
+//                          SPI2:DMACR.RXDMAE
+// SPI3_RX_DMABREQ          SPI3 RX DMA burst request , controlled by
+//                          SPI2:DMACR.RXDMAE
+// SPI2_TX_DMASREQ          SPI2 TX DMA single request, controlled by
+//                          SPI2:DMACR.TXDMAE
+// SPI2_TX_DMABREQ          SPI2 TX DMA burst request , controlled by
+//                          SPI2:DMACR.TXDMAE
+// SPI2_RX_DMASREQ          SPI2 RX DMA single request, controlled by
+//                          SPI2:DMACR.RXDMAE
+// SPI2_RX_DMABREQ          SPI2 RX DMA burst request , controlled by
+//                          SPI2:DMACR.RXDMAE
 // I2C1_IRQ                 Interrupt event from I2C1
 // UART3_COMB               UART3 combined interrupt, interrupt flags are
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // CPU_HALTED               CPU halted
 // AON_RTC_UPD              RTC periodic event controlled by
@@ -3124,22 +3124,22 @@
 //                          UART0:DMACTL.RXDMAE
 // UART0_RX_DMABREQ         UART0 RX DMA burst request, controlled by
 //                          UART0:DMACTL.RXDMAE
-// SSI1_TX_DMASREQ          SSI1 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI1_TX_DMABREQ          SSI1 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI1_RX_DMASREQ          SSI1 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
-// SSI1_RX_DMABREQ          SSI1 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
-// SSI0_TX_DMASREQ          SSI0 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI0_TX_DMABREQ          SSI0 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
-// SSI0_RX_DMASREQ          SSI0 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
-// SSI0_RX_DMABREQ          SSI0 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
+// SPI1_TX_DMASREQ          SPI1 TX DMA single request, controlled by
+//                          SPI0:DMACR.TXDMAE
+// SPI1_TX_DMABREQ          SPI1 TX DMA burst request , controlled by
+//                          SPI0:DMACR.TXDMAE
+// SPI1_RX_DMASREQ          SPI1 RX DMA single request, controlled by
+//                          SPI0:DMACR.RXDMAE
+// SPI1_RX_DMABREQ          SPI1 RX DMA burst request , controlled by
+//                          SPI0:DMACR.RXDMAE
+// SPI0_TX_DMASREQ          SPI0 TX DMA single request, controlled by
+//                          SPI0:DMACR.TXDMAE
+// SPI0_TX_DMABREQ          SPI0 TX DMA burst request , controlled by
+//                          SPI0:DMACR.TXDMAE
+// SPI0_RX_DMASREQ          SPI0 RX DMA single request, controlled by
+//                          SPI0:DMACR.RXDMAE
+// SPI0_RX_DMABREQ          SPI0 RX DMA burst request , controlled by
+//                          SPI0:DMACR.RXDMAE
 // DMA_DONE_COMB            Combined DMA done, corresponding flags are here
 //                          UDMA0:REQDONE
 // DMA_ERR                  DMA bus error, corresponds to UDMA0:ERROR.STATUS
@@ -3147,10 +3147,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // PKA_IRQ                  PKA Interrupt event
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
@@ -3221,19 +3221,19 @@
 #define EVENT_UDMACH14BSEL_EV_UART2_TX_DMABREQ                      0x00000089
 #define EVENT_UDMACH14BSEL_EV_UART2_RX_DMASREQ                      0x00000088
 #define EVENT_UDMACH14BSEL_EV_UART2_RX_DMABREQ                      0x00000087
-#define EVENT_UDMACH14BSEL_EV_SSI3_TX_DMASREQ                       0x00000086
-#define EVENT_UDMACH14BSEL_EV_SSI3_TX_DMABREQ                       0x00000085
-#define EVENT_UDMACH14BSEL_EV_SSI3_RX_DMASREQ                       0x00000084
-#define EVENT_UDMACH14BSEL_EV_SSI3_RX_DMABREQ                       0x00000083
-#define EVENT_UDMACH14BSEL_EV_SSI2_TX_DMASREQ                       0x00000082
-#define EVENT_UDMACH14BSEL_EV_SSI2_TX_DMABREQ                       0x00000081
-#define EVENT_UDMACH14BSEL_EV_SSI2_RX_DMASREQ                       0x00000080
-#define EVENT_UDMACH14BSEL_EV_SSI2_RX_DMABREQ                       0x0000007F
+#define EVENT_UDMACH14BSEL_EV_SPI3_TX_DMASREQ                       0x00000086
+#define EVENT_UDMACH14BSEL_EV_SPI3_TX_DMABREQ                       0x00000085
+#define EVENT_UDMACH14BSEL_EV_SPI3_RX_DMASREQ                       0x00000084
+#define EVENT_UDMACH14BSEL_EV_SPI3_RX_DMABREQ                       0x00000083
+#define EVENT_UDMACH14BSEL_EV_SPI2_TX_DMASREQ                       0x00000082
+#define EVENT_UDMACH14BSEL_EV_SPI2_TX_DMABREQ                       0x00000081
+#define EVENT_UDMACH14BSEL_EV_SPI2_RX_DMASREQ                       0x00000080
+#define EVENT_UDMACH14BSEL_EV_SPI2_RX_DMABREQ                       0x0000007F
 #define EVENT_UDMACH14BSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_UDMACH14BSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_UDMACH14BSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_UDMACH14BSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_UDMACH14BSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_UDMACH14BSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_UDMACH14BSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_UDMACH14BSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_UDMACH14BSEL_EV_CPU_HALTED                            0x00000078
 #define EVENT_UDMACH14BSEL_EV_AON_RTC_UPD                           0x00000077
@@ -3296,20 +3296,20 @@
 #define EVENT_UDMACH14BSEL_EV_UART0_TX_DMABREQ                      0x00000032
 #define EVENT_UDMACH14BSEL_EV_UART0_RX_DMASREQ                      0x00000031
 #define EVENT_UDMACH14BSEL_EV_UART0_RX_DMABREQ                      0x00000030
-#define EVENT_UDMACH14BSEL_EV_SSI1_TX_DMASREQ                       0x0000002F
-#define EVENT_UDMACH14BSEL_EV_SSI1_TX_DMABREQ                       0x0000002E
-#define EVENT_UDMACH14BSEL_EV_SSI1_RX_DMASREQ                       0x0000002D
-#define EVENT_UDMACH14BSEL_EV_SSI1_RX_DMABREQ                       0x0000002C
-#define EVENT_UDMACH14BSEL_EV_SSI0_TX_DMASREQ                       0x0000002B
-#define EVENT_UDMACH14BSEL_EV_SSI0_TX_DMABREQ                       0x0000002A
-#define EVENT_UDMACH14BSEL_EV_SSI0_RX_DMASREQ                       0x00000029
-#define EVENT_UDMACH14BSEL_EV_SSI0_RX_DMABREQ                       0x00000028
+#define EVENT_UDMACH14BSEL_EV_SPI1_TX_DMASREQ                       0x0000002F
+#define EVENT_UDMACH14BSEL_EV_SPI1_TX_DMABREQ                       0x0000002E
+#define EVENT_UDMACH14BSEL_EV_SPI1_RX_DMASREQ                       0x0000002D
+#define EVENT_UDMACH14BSEL_EV_SPI1_RX_DMABREQ                       0x0000002C
+#define EVENT_UDMACH14BSEL_EV_SPI0_TX_DMASREQ                       0x0000002B
+#define EVENT_UDMACH14BSEL_EV_SPI0_TX_DMABREQ                       0x0000002A
+#define EVENT_UDMACH14BSEL_EV_SPI0_RX_DMASREQ                       0x00000029
+#define EVENT_UDMACH14BSEL_EV_SPI0_RX_DMABREQ                       0x00000028
 #define EVENT_UDMACH14BSEL_EV_DMA_DONE_COMB                         0x00000027
 #define EVENT_UDMACH14BSEL_EV_DMA_ERR                               0x00000026
 #define EVENT_UDMACH14BSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_UDMACH14BSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_UDMACH14BSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_UDMACH14BSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_UDMACH14BSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_UDMACH14BSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_UDMACH14BSEL_EV_PKA_IRQ                               0x0000001F
 #define EVENT_UDMACH14BSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_UDMACH14BSEL_EV_AUX_SWEV1                             0x0000001D
@@ -3366,12 +3366,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_RX_DMASREQ          SSI1 RX DMA single request, controlled by
-//                          SSI0:DMACR.RXDMAE
+// SPI1_RX_DMASREQ          SPI1 RX DMA single request, controlled by
+//                          SPI0:DMACR.RXDMAE
 #define EVENT_UDMACH16SSEL_EV_W                                              8
 #define EVENT_UDMACH16SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH16SSEL_EV_S                                              0
-#define EVENT_UDMACH16SSEL_EV_SSI1_RX_DMASREQ                       0x0000002D
+#define EVENT_UDMACH16SSEL_EV_SPI1_RX_DMASREQ                       0x0000002D
 
 //*****************************************************************************
 //
@@ -3382,12 +3382,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_RX_DMABREQ          SSI1 RX DMA burst request , controlled by
-//                          SSI0:DMACR.RXDMAE
+// SPI1_RX_DMABREQ          SPI1 RX DMA burst request , controlled by
+//                          SPI0:DMACR.RXDMAE
 #define EVENT_UDMACH16BSEL_EV_W                                              8
 #define EVENT_UDMACH16BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH16BSEL_EV_S                                              0
-#define EVENT_UDMACH16BSEL_EV_SSI1_RX_DMABREQ                       0x0000002C
+#define EVENT_UDMACH16BSEL_EV_SPI1_RX_DMABREQ                       0x0000002C
 
 //*****************************************************************************
 //
@@ -3398,12 +3398,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_TX_DMASREQ          SSI1 TX DMA single request, controlled by
-//                          SSI0:DMACR.TXDMAE
+// SPI1_TX_DMASREQ          SPI1 TX DMA single request, controlled by
+//                          SPI0:DMACR.TXDMAE
 #define EVENT_UDMACH17SSEL_EV_W                                              8
 #define EVENT_UDMACH17SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH17SSEL_EV_S                                              0
-#define EVENT_UDMACH17SSEL_EV_SSI1_TX_DMASREQ                       0x0000002F
+#define EVENT_UDMACH17SSEL_EV_SPI1_TX_DMASREQ                       0x0000002F
 
 //*****************************************************************************
 //
@@ -3414,12 +3414,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI1_TX_DMABREQ          SSI1 TX DMA burst request , controlled by
-//                          SSI0:DMACR.TXDMAE
+// SPI1_TX_DMABREQ          SPI1 TX DMA burst request , controlled by
+//                          SPI0:DMACR.TXDMAE
 #define EVENT_UDMACH17BSEL_EV_W                                              8
 #define EVENT_UDMACH17BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH17BSEL_EV_S                                              0
-#define EVENT_UDMACH17BSEL_EV_SSI1_TX_DMABREQ                       0x0000002E
+#define EVENT_UDMACH17BSEL_EV_SPI1_TX_DMABREQ                       0x0000002E
 
 //*****************************************************************************
 //
@@ -3430,12 +3430,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI2_RX_DMASREQ          SSI2 RX DMA single request, controlled by
-//                          SSI2:DMACR.RXDMAE
+// SPI2_RX_DMASREQ          SPI2 RX DMA single request, controlled by
+//                          SPI2:DMACR.RXDMAE
 #define EVENT_UDMACH19SSEL_EV_W                                              8
 #define EVENT_UDMACH19SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH19SSEL_EV_S                                              0
-#define EVENT_UDMACH19SSEL_EV_SSI2_RX_DMASREQ                       0x00000080
+#define EVENT_UDMACH19SSEL_EV_SPI2_RX_DMASREQ                       0x00000080
 
 //*****************************************************************************
 //
@@ -3446,12 +3446,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI2_RX_DMABREQ          SSI2 RX DMA burst request , controlled by
-//                          SSI2:DMACR.RXDMAE
+// SPI2_RX_DMABREQ          SPI2 RX DMA burst request , controlled by
+//                          SPI2:DMACR.RXDMAE
 #define EVENT_UDMACH19BSEL_EV_W                                              8
 #define EVENT_UDMACH19BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH19BSEL_EV_S                                              0
-#define EVENT_UDMACH19BSEL_EV_SSI2_RX_DMABREQ                       0x0000007F
+#define EVENT_UDMACH19BSEL_EV_SPI2_RX_DMABREQ                       0x0000007F
 
 //*****************************************************************************
 //
@@ -3462,12 +3462,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI2_TX_DMASREQ          SSI2 TX DMA single request, controlled by
-//                          SSI2:DMACR.TXDMAE
+// SPI2_TX_DMASREQ          SPI2 TX DMA single request, controlled by
+//                          SPI2:DMACR.TXDMAE
 #define EVENT_UDMACH20SSEL_EV_W                                              8
 #define EVENT_UDMACH20SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH20SSEL_EV_S                                              0
-#define EVENT_UDMACH20SSEL_EV_SSI2_TX_DMASREQ                       0x00000082
+#define EVENT_UDMACH20SSEL_EV_SPI2_TX_DMASREQ                       0x00000082
 
 //*****************************************************************************
 //
@@ -3478,12 +3478,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI2_TX_DMABREQ          SSI2 TX DMA burst request , controlled by
-//                          SSI2:DMACR.TXDMAE
+// SPI2_TX_DMABREQ          SPI2 TX DMA burst request , controlled by
+//                          SPI2:DMACR.TXDMAE
 #define EVENT_UDMACH20BSEL_EV_W                                              8
 #define EVENT_UDMACH20BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH20BSEL_EV_S                                              0
-#define EVENT_UDMACH20BSEL_EV_SSI2_TX_DMABREQ                       0x00000081
+#define EVENT_UDMACH20BSEL_EV_SPI2_TX_DMABREQ                       0x00000081
 
 //*****************************************************************************
 //
@@ -3614,12 +3614,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI3_RX_DMASREQ          SSI3 RX DMA single request, controlled by
-//                          SSI2:DMACR.RXDMAE
+// SPI3_RX_DMASREQ          SPI3 RX DMA single request, controlled by
+//                          SPI2:DMACR.RXDMAE
 #define EVENT_UDMACH25SSEL_EV_W                                              8
 #define EVENT_UDMACH25SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH25SSEL_EV_S                                              0
-#define EVENT_UDMACH25SSEL_EV_SSI3_RX_DMASREQ                       0x00000084
+#define EVENT_UDMACH25SSEL_EV_SPI3_RX_DMASREQ                       0x00000084
 
 //*****************************************************************************
 //
@@ -3630,12 +3630,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI3_RX_DMABREQ          SSI3 RX DMA burst request , controlled by
-//                          SSI2:DMACR.RXDMAE
+// SPI3_RX_DMABREQ          SPI3 RX DMA burst request , controlled by
+//                          SPI2:DMACR.RXDMAE
 #define EVENT_UDMACH25BSEL_EV_W                                              8
 #define EVENT_UDMACH25BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH25BSEL_EV_S                                              0
-#define EVENT_UDMACH25BSEL_EV_SSI3_RX_DMABREQ                       0x00000083
+#define EVENT_UDMACH25BSEL_EV_SPI3_RX_DMABREQ                       0x00000083
 
 //*****************************************************************************
 //
@@ -3646,12 +3646,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI3_TX_DMASREQ          SSI3 TX DMA single request, controlled by
-//                          SSI2:DMACR.TXDMAE
+// SPI3_TX_DMASREQ          SPI3 TX DMA single request, controlled by
+//                          SPI2:DMACR.TXDMAE
 #define EVENT_UDMACH26SSEL_EV_W                                              8
 #define EVENT_UDMACH26SSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH26SSEL_EV_S                                              0
-#define EVENT_UDMACH26SSEL_EV_SSI3_TX_DMASREQ                       0x00000086
+#define EVENT_UDMACH26SSEL_EV_SPI3_TX_DMASREQ                       0x00000086
 
 //*****************************************************************************
 //
@@ -3662,12 +3662,12 @@
 //
 // Read only selection value
 // ENUMs:
-// SSI3_TX_DMABREQ          SSI3 TX DMA burst request , controlled by
-//                          SSI2:DMACR.TXDMAE
+// SPI3_TX_DMABREQ          SPI3 TX DMA burst request , controlled by
+//                          SPI2:DMACR.TXDMAE
 #define EVENT_UDMACH26BSEL_EV_W                                              8
 #define EVENT_UDMACH26BSEL_EV_M                                     0x000000FF
 #define EVENT_UDMACH26BSEL_EV_S                                              0
-#define EVENT_UDMACH26BSEL_EV_SSI3_TX_DMABREQ                       0x00000085
+#define EVENT_UDMACH26BSEL_EV_SPI3_TX_DMABREQ                       0x00000085
 
 //*****************************************************************************
 //
@@ -3814,10 +3814,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -3873,10 +3873,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -3911,8 +3911,8 @@
 #define EVENT_GPT3ACAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT3ACAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT3ACAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT3ACAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT3ACAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT3ACAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT3ACAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT3ACAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT3ACAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT3ACAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -3943,8 +3943,8 @@
 #define EVENT_GPT3ACAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT3ACAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT3ACAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT3ACAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT3ACAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT3ACAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT3ACAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT3ACAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT3ACAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT3ACAPTSEL_EV_RFC_HW_COMB                           0x0000001A
@@ -3975,10 +3975,10 @@
 //                          found here UART3:MIS
 // UART2_COMB               UART2 combined interrupt, interrupt flags are
 //                          found here UART2:MIS
-// SSI3_COMB                SSI3 combined interrupt, interrupt flags are found
-//                          here SSI3:MIS
-// SSI2_COMB                SSI2 combined interrupt, interrupt flags are found
-//                          here SSI2:MIS
+// SPI3_COMB                SPI3 combined interrupt, interrupt flags are found
+//                          here SPI3:MIS
+// SPI2_COMB                SPI2 combined interrupt, interrupt flags are found
+//                          here SPI2:MIS
 // ALWAYS_ACTIVE            Always asserted
 // AON_RTC_UPD              RTC periodic event controlled by
 //                          AON_RTC:CTL.RTC_UPD_EN
@@ -4034,10 +4034,10 @@
 //                          found here UART1:MIS
 // UART0_COMB               UART0 combined interrupt, interrupt flags are
 //                          found here UART0:MIS
-// SSI1_COMB                SSI1 combined interrupt, interrupt flags are found
-//                          here SSI1:MIS
-// SSI0_COMB                SSI0 combined interrupt, interrupt flags are found
-//                          here SSI0:MIS
+// SPI1_COMB                SPI1 combined interrupt, interrupt flags are found
+//                          here SPI1:MIS
+// SPI0_COMB                SPI0 combined interrupt, interrupt flags are found
+//                          here SPI0:MIS
 // RFC_CPE_1                Combined Interrupt for CPE Generated events.
 //                          Corresponding flags are here
 //                          RFC_DBELL:RFCPEIFG. Only interrupts selected
@@ -4072,8 +4072,8 @@
 #define EVENT_GPT3BCAPTSEL_EV_I2C1_IRQ                              0x0000007E
 #define EVENT_GPT3BCAPTSEL_EV_UART3_COMB                            0x0000007D
 #define EVENT_GPT3BCAPTSEL_EV_UART2_COMB                            0x0000007C
-#define EVENT_GPT3BCAPTSEL_EV_SSI3_COMB                             0x0000007B
-#define EVENT_GPT3BCAPTSEL_EV_SSI2_COMB                             0x0000007A
+#define EVENT_GPT3BCAPTSEL_EV_SPI3_COMB                             0x0000007B
+#define EVENT_GPT3BCAPTSEL_EV_SPI2_COMB                             0x0000007A
 #define EVENT_GPT3BCAPTSEL_EV_ALWAYS_ACTIVE                         0x00000079
 #define EVENT_GPT3BCAPTSEL_EV_AON_RTC_UPD                           0x00000077
 #define EVENT_GPT3BCAPTSEL_EV_AUX_ADC_IRQ                           0x00000073
@@ -4104,8 +4104,8 @@
 #define EVENT_GPT3BCAPTSEL_EV_AUX_TIMER2_EV0                        0x00000038
 #define EVENT_GPT3BCAPTSEL_EV_UART1_COMB                            0x00000025
 #define EVENT_GPT3BCAPTSEL_EV_UART0_COMB                            0x00000024
-#define EVENT_GPT3BCAPTSEL_EV_SSI1_COMB                             0x00000023
-#define EVENT_GPT3BCAPTSEL_EV_SSI0_COMB                             0x00000022
+#define EVENT_GPT3BCAPTSEL_EV_SPI1_COMB                             0x00000023
+#define EVENT_GPT3BCAPTSEL_EV_SPI0_COMB                             0x00000022
 #define EVENT_GPT3BCAPTSEL_EV_RFC_CPE_1                             0x0000001E
 #define EVENT_GPT3BCAPTSEL_EV_RFC_CPE_0                             0x0000001B
 #define EVENT_GPT3BCAPTSEL_EV_RFC_HW_COMB                           0x0000001A

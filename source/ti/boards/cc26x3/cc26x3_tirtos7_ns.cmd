@@ -35,7 +35,8 @@
 HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 
 /* Retain interrupt vector table variable                                    */
---retain=g_pfnVectors
+--retain "*(.resetVecs)"
+
 /* Allow main() to take args                                                 */
 --args 0x8
 /* Suppress warnings and errors:                                             */
@@ -43,6 +44,10 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
 --diag_suppress=10063,16011,16012
+
+/* Set severity of diagnostics to Remark instead of Warning                  */
+/* - 10068: Warning about no matching log_ptr* sections                      */
+--diag_remark=10068
 
 /* The following command line options are set as part of the CCS project.    */
 /* If you are building using the command line, or for some reason want to    */
@@ -59,9 +64,9 @@ HEAPSIZE = 0x4000;  /* Size of heap buffer used by HeapMem */
 #define FLASH_SCSIZE            0x38000
 
 /* The starting address of the application.  Must match the NS application   */
-/* base address defined in the SPE memory layouts.                           */
+/* base address defined in the TF-M memory layouts.                          */
 #define FLASH_BASE              0x00038100
-#define FLASH_SIZE              0xC7F00
+#define FLASH_SIZE              0xC6F00  /* Reduced by 0x1000 for the image trailer when using SecureBoot */
 #define RAM_BASE                0x2000C000
 #define RAM_SIZE                0x14000
 #define GPRAM_BASE              0x11000000
@@ -88,13 +93,13 @@ MEMORY
      * Unlikely that all of this will be used, so we are using the upper parts of the region.
      * ARM memory map: https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map*/
     LOG_DATA (R) : origin = 0x90000000, length = 0x40000        /* 256 KB */
+    LOG_PTR  (R) : origin = 0x94000008, length = 0x40000        /* 256 KB */
 }
 
 /* Section allocation in memory */
-
 SECTIONS
 {
-    .intvecs        :   > FLASH_BASE
+    .resetVecs      :   > FLASH_BASE
     .text           :   >> FLASH
     .TI.ramfunc     : {} load=FLASH, run=SRAM, table(BINIT)
     .const          :   >> FLASH
@@ -107,9 +112,7 @@ SECTIONS
     .emb_text       :   >> FLASH
     .ccfg           :   > CCFG
 
-    .vtable         :   > SRAM
-    .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM
@@ -124,18 +127,10 @@ SECTIONS
     .gpram          :   > GPRAM
 
     .log_data       :   > LOG_DATA, type = COPY
+    .log_ptr        : { *(.log_ptr*) } > LOG_PTR align 4, type = COPY
 }
 
 --symbol_map __TI_STACK_SIZE=__STACK_SIZE
 --symbol_map __TI_STACK_BASE=__stack
 
 -u_c_int00
---retain "*(.resetVecs)"
---retain "*(.vecs)"
-
-SECTIONS
-{
-    /* Place initial vector table at 256-byte boundary */
-    .resetVecs: load > FLASH_BASE
-    .vecs: load > 0x2000C000, type = NOLOAD
-}

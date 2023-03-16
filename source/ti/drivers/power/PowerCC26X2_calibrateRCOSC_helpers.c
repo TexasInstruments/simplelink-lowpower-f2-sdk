@@ -58,7 +58,7 @@
 #define ACLK_REF_SRC_RCOSC_HF 0 /* Use RCOSC_HF for ACLK REF */
 #define ACLK_REF_SRC_RCOSC_LF 2 /* Use RCOSC_LF for ACLK REF */
 
-#if SPE_ENABLED
+#if TFM_ENABLED
     #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
 #else
     /* Define the gateway attributes to nothing instead of ifdefs on each function */

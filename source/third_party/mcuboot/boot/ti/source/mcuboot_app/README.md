@@ -46,7 +46,7 @@ particular needs.
     #define BOOT_BOOTLOADER_SIZE        0x0003FA8
     #define BOOT_PRIMARY_1_SIZE         0x56000
     #define BOOT_SECONDARY_1_SIZE       0x56000
-#elif defined DeviceFamily_CC23X0
+#elif defined DeviceFamily_CC23X0R5
     #define BOOTLOADER_BASE_ADDRESS     0
     #define BOOT_BOOTLOADER_SIZE        0x06000
     #define BOOT_PRIMARY_1_SIZE         0x3d000
@@ -138,7 +138,7 @@ See [MCUBoot Project imgtool](https://github.com/mcu-tools/mcuboot/blob/main/doc
 
 For 1 upgradeable image:
 
-**NOTE**: When using the **Single Slot** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000000, under syscfg **Device Configuration**.
+**NOTE**: When using the **TZ Disabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000000, under syscfg **Device Configuration**.
 
 Images: 1, slots: 2, states: 4, permutations: 16
 
@@ -187,7 +187,7 @@ table, th, td {
 
 For 2 upgradeable images:
 
-**NOTE 1**: When using the **Dual Slot** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000800, under syscfg **Device Configuration**.</br>
+**NOTE 1**: When using the **TZ Enabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000800, under syscfg **Device Configuration**.</br>
 **NOTE 2**: The SDK includes the **Secure Image** ELF file (tfm_s.axf) and a **Non-Secure example** project called tfm_aescbc, which can be imported into CCS, so that both secure and non-secure images be used in MCUBoot 2-image upgrade mode. </br></br>
 Per section **How to build an image that is compatible with MCUBOOT** above, find file `<SDK_DIR>/tfm_s/build/cc26x4/production_full/tfm_s.axf` and run the following steps:<br><br>
 

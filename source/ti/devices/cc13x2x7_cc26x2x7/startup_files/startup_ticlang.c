@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC13x2x7, CC26x2x7 device family for use with CCS.
 *
-*  Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2021-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ extern unsigned long __STACK_END;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__ ((section(".intvecs"))) __attribute__ ((used))
+__attribute__ ((section(".resetVecs"), retain))
 void (* const g_pfnVectors[])(void) =
 {
     (void (*)(void))((unsigned long)&__STACK_END),

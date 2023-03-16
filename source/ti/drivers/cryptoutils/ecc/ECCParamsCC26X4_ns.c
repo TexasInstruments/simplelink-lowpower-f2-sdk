@@ -33,7 +33,7 @@
  *  ======== ECCParamsCC26X4_ns.c ========
  *
  *  This file contains structure definitions for various ECC curves for use
- *  on CC26X4 devices when utilizing the Secure Processing Environment (SPE).
+ *  on CC26X4 devices when utilizing the TF-M.
  */
 
 #include <stddef.h>

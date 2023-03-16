@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -120,8 +120,7 @@ int_fast16_t ECJPAKECC26X2_generatePublicKeyStart(const CryptoKey *privateKey,
 
     PKABigNumCmpStart((uint8_t *)SCRATCH_PRIVATE_KEY, curve->order, curve->length);
 
-    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
-        ;
+    while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
 
     pkaResult = PKABigNumCmpGetResult();
 
@@ -950,8 +949,7 @@ static int_fast16_t ECJPAKECC26X2_runFSM(ECJPAKE_Handle handle)
                               object->operation.generateRoundTwoKeys->curve->order,
                               object->operation.generateRoundTwoKeys->curve->length);
 
-            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY)
-                ;
+            while (PKAGetOpsStatus() == PKA_STATUS_OPERATION_BUSY) {}
 
             pkaResult = PKABigNumCmpGetResult();
 
@@ -1246,8 +1244,7 @@ static int_fast16_t ECJPAKECC26X2_waitForResult(ECJPAKE_Handle handle)
     switch (object->returnBehavior)
     {
         case ECJPAKE_RETURN_BEHAVIOR_POLLING:
-            while (!PKAResourceCC26XX_pollingFlag)
-                ;
+            while (!PKAResourceCC26XX_pollingFlag) {}
             return object->operationStatus;
 
         case ECJPAKE_RETURN_BEHAVIOR_BLOCKING:

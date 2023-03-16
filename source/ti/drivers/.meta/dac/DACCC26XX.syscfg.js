@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,6 +72,29 @@ The selected voltage reference determines the output voltage range.
                     inst.preCharge = false;
                 }
             }
+        },
+        {
+            name: "dacFreqSel",
+            displayName: "Dac Load Selector",
+            default: "intLoad",
+            description: "Allows for choosing DAC sample clock frequency depending on the load driven",
+            longDescription: `
+ The maximum DAC sample clock frequency supported varies depending on whether the
+ load to be driven is external or internal. Choosing to drive an internal load
+ from the DAC sets the sample clock frequency to 1MHz. If an external load is to
+ be driven, however, the sample clock frequency is set to 250kHz. The difference
+ arises because using the buffer imposes stricter timing restrictions on the
+ sample clock.
+
+* External Load: Highest possible DAC sample clock frequency for an external load
+ is 250kHz.
+* Internal Load: Highest possible DAC sample clock frequency for an internal load
+is 1MHz.
+            `,
+            options: [
+                { displayName: "Internal", name: "intLoad" },
+                { displayName: "External", name: "extLoad" }
+            ]
         },
         {
             name: "preCharge",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Texas Instruments Incorporated
+ * Copyright (c) 2021-2023 Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/* clang-format off */
 /*!*****************************************************************************
  *  @file       SPICC26X4DMA.h
  *
@@ -73,7 +74,7 @@
  *     can be disabled by using command #SPICC26X4DMA_CMD_CLR_MANUAL. See the
  *     @ref USE_CASE_MANUAL_START_X4 "Manual Start Example".
  *
- * The following is true for slave operation:
+ * The following is true for peripheral operation:
  *   - RX overrun IRQ, SPI and UDMA modules are enabled by calling SPI_transfer().
  *   - All received bytes are ignored after SPI_open() is called, until
  *     the first SPI_transfer().
@@ -83,19 +84,19 @@
  *     SPI_transfer() must be called again before RX FIFO fills up in order to
  *     avoid overflow. If the TX buffer overflows, zeros will be output.
  *     It is safe to call another SPI_transfer() from the transfer callback,
- *     see [Continuous Slave Transfer] (@ref USE_CASE_CST_X4) use case below.
+ *     see [Continuous Peripheral Transfer] (@ref USE_CASE_CST_X4) use case below.
  *   - The SPI driver supports partial return, that can be used if the
  *     transfer size is unknown. If #SPICC26X4DMA_CMD_RETURN_PARTIAL_ENABLE is
  *     passed to SPI_control(), the transfer will end when chip select is
  *     deasserted. The #SPI_Transaction.status and the #SPI_Transaction.count
  *     will be updated to indicate whether the transfer ended due to a chip
  *     select deassertion and how many bytes were transferred. See
- *     [Slave Mode With Return Partial] (@ref USE_CASE_RP_X4) use case below.
+ *     [Peripheral Mode With Return Partial] (@ref USE_CASE_RP_X4) use case below.
  *   - When queueing several transactions if the first is a 'short'
  *     transaction (8 or fewer frames), it is required to use
  *     @ref USE_CASE_MANUAL_START_X4 "Manual Start mode."
  *
- * The following apply for master operation:
+ * The following apply for controller operation:
  *   - SPI and UDMA modules are enabled by calling SPI_transfer().
  *   - If the SPI_transfer() succeeds, SPI module is enabled and UDMA module is disabled.
  *   - If SPI_transferCancel() is called, SPI and UDMA modules are disabled and
@@ -107,7 +108,7 @@
  * The callback function is always called in a SWI context.
  *
  * # Error handling #
- * If an RX overrun occurs during slave operation:
+ * If an RX overrun occurs during peripheral operation:
  *   - If a transfer is ongoing, all bytes received up until the error occurs will be returned, with the
  *     error signaled in the #SPI_Transaction.status field. RX overrun IRQ, SPI and UDMA modules are then disabled,
  *     TX and RX FIFOs are flushed and all bytes will be ignored until a new transfer is issued.
@@ -117,13 +118,13 @@
  * # Timeout #
  * Timeout can occur in #SPI_MODE_BLOCKING, there's no timeout in #SPI_MODE_CALLBACK.
  * When in #SPI_MODE_CALLBACK, the transfer must be cancelled by calling SPI_transferCancel().@n
- * If a timeout happens in either  #SPI_SLAVE or #SPI_MASTER mode,
+ * If a timeout happens in either  #SPI_PERIPHERAL or #SPI_CONTROLLER mode,
  * the receive buffer will contain the bytes received up until the timeout occurred.
  * The SPI transaction status will be set to #SPI_TRANSFER_FAILED.
  * The SPI transaction count will be set to the number of bytes sent/received before timeout.
  * The remaining bytes will be flushed from the TX FIFO so that the subsequent transfer
  * can be executed correctly. Note that specifying a timeout prevents the
- * driver from performing a polling transfer when in slave mode.
+ * driver from performing a polling transfer when in peripheral mode.
  *
  * # Power Management #
  * The TI-RTOS power management framework will try to put the device into the most
@@ -135,12 +136,12 @@
  * constraint is released.
  * The following statements are valid:
  *   - After SPI_open(): the device is still allowed to enter standby.
- *   - In slave mode:
+ *   - In peripheral mode:
  *     - During SPI_transfer(): the device cannot enter standby, only idle.
  *     - After an RX overflow: device is allowed to enter standby.
  *     - After a successful SPI_transfer(): the device is allowed
  *       to enter standby, but SPI module remains enabled.
- *       - _Note_: In slave mode, the device might enter standby while a byte is being
+ *       - _Note_: In peripheral mode, the device might enter standby while a byte is being
  *                 transferred if SPI_transfer() is not called again after a successful
  *                 transfer. This could result in corrupt data being transferred.
  *     - Application thread should typically either issue another transfer after
@@ -148,7 +149,7 @@
  *       SPI_transferCancel() to disable the SPI module and thus assuring that no data
  *       is received while entering standby.
  *     .
- *   - In master mode:
+ *   - In controller mode:
  *     - During SPI_transfer(): the device cannot enter standby, only idle.
  *     - After SPI_transfer() succeeds: the device can enter standby.
  *     - If SPI_transferCancel() is called: the device can enter standby.
@@ -168,8 +169,8 @@
  *  <table>
  *  <tr>
  *  <th>Chip select type</th>
- *  <th>SPI_MASTER mode</th>
- *  <th>SPI_SLAVE mode</th>
+ *  <th>SPI_CONTROLLER mode</th>
+ *  <th>SPI_PERIPHERAL mode</th>
  *  </tr>
  *  <tr>
  *  <td>Hardware chip select</td>
@@ -178,35 +179,39 @@
  *  </tr>
  *  <tr>
  *  <td>Software chip select</td>
- *  <td>The application is responsible to ensure that correct SPI slave is
+ *  <td>The application is responsible to ensure that correct SPI peripheral is
  *      selected before performing a SPI_transfer().</td>
  *  <td>See the device documentation on it's chip select requirements.</td>
  *  </tr>
  *  </table>
  *
- *  ### Multiple slaves when operating in master mode #
- *  In a scenario where the SPI module is operating in master mode with multiple
- *  SPI slaves, the chip select pin can be reallocated at runtime to select the
- *  appropriate slave device. See [Master Mode With Multiple Slaves](@ref USE_CASE_MMMS_X4) use case below.
+ *  ### Multiple peripherals when operating in controller mode #
+ *  In a scenario where the SPI module is operating in controller mode with multiple
+ *  SPI peripherals, the chip select pin can be reallocated at runtime to select the
+ *  appropriate peripheral device. See [Controller Mode With Multiple Peripherals](@ref USE_CASE_MMMS_X4) use case below.
  *  This is only relevant when chip select is a hardware chip select. Otherwise the application
  *  can control the chip select pins directly using the GPIO driver.
  *
  *  ## Data Frames #
  *
- *  SPI data frames can be any size from 4-bits to 16-bits. If the dataSize in
- *  #SPI_Params is greater that 8-bits, then the SPICC26X4DMA driver
+ *  When the SPI is configured as SPI controller, the data frame can be any size from 4-bits to 32-bits.
+ *  When the SPI is configured as SPI peripheral , the minimum data frame is 7-bits and the maximum is 32-bits.
+ *  If the dataSize in #SPI_Params is greater that 8-bits, then the SPICC26X4DMA driver
  *  implementation will assume that the #SPI_Transaction txBuf and rxBuf
- *  point to an array of 16-bit uint16_t elements.
+ *  point to an array of 16-bit uint16_t elements. Similarly, if the dataSize in
+ *  #SPI_Params is greater than 16-bits, the SPICC26X4DMA driver will assume buffers
+ *  of uint32_t elements are used.
  *
- *  dataSize  | buffer element size |
- *  --------  | ------------------- |
- *  4-8 bits  | uint8_t             |
- *  9-16 bits | uint16_t            |
+ *  dataSize   | buffer element size |
+ *  --------   | ------------------- |
+ *  4-8 bits   | uint8_t             |
+ *  9-16 bits  | uint16_t            |
+ *  17-32 bits | uint32_t            |
  *
  *  ## Bit Rate ##
- *  When the SPI is configured as SPI slave, the maximum bit rate is 8MHz.
+ *  When the SPI is configured as SPI peripheral, the maximum bit rate is 8MHz.
  *
- *  When the SPI is configured as SPI master, the maximum bit rate is 12MHz.
+ *  When the SPI is configured as SPI controller, the maximum bit rate is 12MHz.
  *
  *
  *  ## UDMA #
@@ -219,7 +224,7 @@
  *  The UDMA controller only supports data transfers of up to 1024 data frames.
  *  A transfer with more than 1024 frames will be transmitted/received in
  *  multiple 1024 sized portions until all data has been transmitted/received.
- *  A data frame can be 4 to 16 bits in length.
+ *  A data frame can be 4 to 32 bits in length depending on SPI controller or peripheral mode.
  *
  *  ### Scratch Buffers #
  *  A uint16_t scratch buffer is used to allow SPI_transfers where txBuf or rxBuf
@@ -241,8 +246,8 @@
  *
  *  ## Polling SPI transfers #
  *  When used in blocking mode small SPI transfers are can be done by polling
- *  the peripheral & sending data frame-by-frame. A master device can perform
- *  the transfer immediately and return, but a slave will block until it
+ *  the peripheral & sending data frame-by-frame. A controller device can perform
+ *  the transfer immediately and return, but a peripheral will block until it
  *  receives the number of frames specified in the SPI_Transfer() call.
  *  The minDmaTransferSize field in the hardware attributes is
  *  the threshold; if the transaction count is below the threshold a polling
@@ -251,25 +256,28 @@
  *  data frames.
  *
  *  Notes:
- *  - Specifying a timeout prevents slave devices from using polling transfers.
+ *  - Specifying a timeout prevents peripheral devices from using polling transfers.
  *  - Keep in mind that during polling transfers the current task
  *  is still being executed; there is no context switch to another task.
  *
  * # Supported Functions #
- * | Generic API function  | API function                   | Description |
- * |-----------------------|-------------------------------
- * |-------------------------------------------------------------| | SPI_init()            | SPICC26X4DMA_init() |
- * Initialize SPI driver                                       | | SPI_open()            | SPICC26X4DMA_open() |
- * Initialize SPI HW and set system dependencies               | | SPI_close()           | SPICC26X4DMA_close() |
- * Disable SPI and UDMA HW and release system dependencies     | | SPI_control()         | SPICC26X4DMA_control() |
- * Configure an already opened SPI handle                      | | SPI_transfer()        | SPICC26X4DMA_transfer() |
- * Start transfer from SPI                                     | | SPI_transferCancel()  | SPICC26X4DMA_transferCancel()
- * | Cancel ongoing transfer from SPI                            |
+ *  Generic API function  | API function                   | Description
+ *  ----------------------|------------------------------- |------------------------------------------------------------
+ *  SPI_init()            | SPICC26X4DMA_init()            | Initialize SPI driver
+ *  SPI_open()            | SPICC26X4DMA_open()            | Initialize SPI HW and set system dependencies
+ *  SPI_close()           | SPICC26X4DMA_close()           | Disable SPI and UDMA HW and release system dependencies
+ *  SPI_control()         | SPICC26X4DMA_control()         | Configure an already opened SPI handle
+ *  SPI_transfer()        | SPICC26X4DMA_transfer()        | Start transfer from SPI
+ *  SPI_transferCancel()  | SPICC26X4DMA_transferCancel()  | Cancel ongoing transfer from SPI
  *
  *  @note All calls should go through the generic API
  *
+ * # Unsupported Functionality #
+ * The SPI driver is unable to access flash memory in the address range 0x0000 - 0x2000
+ * on devices based on the Cortex M33+ core (CC26X3/CC26X4) due to security constraints.
+ *
  * ## Use Cases @anchor USE_CASES_SPI_X4 ##
- * ### Basic Slave Mode #
+ * ### Basic Peripheral Mode #
  *  Receive 100 bytes over SPI in #SPI_MODE_BLOCKING.
  *  @code
  *  SPI_Handle handle;
@@ -281,7 +289,7 @@
  *  SPI_Params_init(&params);
  *  params.bitRate     = 1000000;
  *  params.frameFormat = SPI_POL1_PHA1;
- *  params.mode        = SPI_SLAVE;
+ *  params.mode        = SPI_PERIPHERAL;
  *
  *  // Configure the transaction
  *  transaction.count = 100;
@@ -293,13 +301,16 @@
  *  SPI_transfer(handle, &transaction);
  *  @endcode
  *
- * ### Slave Mode With Return Partial @anchor USE_CASE_RP_X4 #
- *  This use case will perform a transfer in #SPI_MODE_BLOCKING until the wanted amount of bytes is
- *  transferred or until chip select is deasserted by the SPI master.
+ * ### Peripheral Mode With Return Partial @anchor USE_CASE_RP_X4 #
+ *  This use case will perform a transfer in #SPI_MODE_BLOCKING until the wanted
+ *  amount of bytes is transferred or until chip select is deasserted by the SPI
+ *  controller.
  *  This SPI_transfer() call can be used when unknown amount of bytes shall
  *  be transferred.
- *  Note: The partial return is also possible in #SPI_MODE_CALLBACK mode.
- *  Note: Polling transfers are not available when using return partial mode.
+ *  <br> Note: Partial return is also possible in #SPI_MODE_CALLBACK mode.
+ *  In callback mode, partial transfers can be queued by calling SPI_transfer()
+ *  multiple times.
+ *  <br> Note: Polling transfers are not available when using return partial mode.
  *  @code
  *  SPI_Handle handle;
  *  SPI_Params params;
@@ -310,7 +321,7 @@
  *  SPI_Params_init(&params);
  *  params.bitRate     = 1000000;
  *  params.frameFormat = SPI_POL1_PHA1;
- *  params.mode        = SPI_SLAVE;
+ *  params.mode        = SPI_PERIPHERAL;
  *
  *  // Configure the transaction
  *  transaction.count = 100;
@@ -327,7 +338,7 @@
  *  SPI_transfer(handle, &transaction);
  *  @endcode
  *
- * ### Continuous Slave Transfer In #SPI_MODE_CALLBACK @anchor USE_CASE_CST_X4 #
+ * ### Continuous Peripheral Transfer In #SPI_MODE_CALLBACK @anchor USE_CASE_CST_X4 #
  *  This use case will configure the SPI driver to transfer continuously in
  *  #SPI_MODE_CALLBACK, 16 bytes at the time and echoing received data after every
  *  16 bytes.
@@ -350,7 +361,7 @@
  *      SPI_Params_init(&params);
  *      params.bitRate             = 1000000;
  *      params.frameFormat         = SPI_POL1_PHA1;
- *      params.mode                = SPI_SLAVE;
+ *      params.mode                = SPI_PERIPHERAL;
  *      params.transferMode        = SPI_MODE_CALLBACK;
  *      params.transferCallbackFxn = transferCallback;
  *
@@ -368,8 +379,8 @@
  *  }
  *  @endcode
  *
- * ### Basic Master Mode #
- *  This use case will configure a SPI master to send the data in txBuf while receiving data to rxBuf in
+ * ### Basic Controller Mode #
+ *  This use case will configure a SPI controller to send the data in txBuf while receiving data to rxBuf in
  *  BLOCKING_MODE.
  *  @code
  *  SPI_Handle handle;
@@ -382,7 +393,7 @@
  *  SPI_Params_init(&params);
  *  params.bitRate     = 1000000;
  *  params.frameFormat = SPI_POL1_PHA1;
- *  params.mode        = SPI_MASTER;
+ *  params.mode        = SPI_CONTROLLER;
  *
  *  // Configure the transaction
  *  transaction.count = sizeof(txBuf);
@@ -394,8 +405,8 @@
  *  SPI_transfer(handle, &transaction);
  *  @endcode
  *
- *  ### Master Mode With Multiple Slaves @anchor USE_CASE_MMMS_X4 #
- *  This use case will configure a SPI master to send data to one slave and then to another in
+ *  ### Controller Mode With Multiple Peripherals @anchor USE_CASE_MMMS_X4 #
+ *  This use case will configure a SPI controller to send data to one peripheral and then to another in
  *  BLOCKING_MODE. It is assumed that SysConfig is configured so that the two chip select
  *  pins have a default setting of a high output and that the #SPICC26X4DMA_HWAttrs used points
  *  to one of them since the SPI driver will revert to this default setting when switching the
@@ -413,18 +424,27 @@
  *
  *  const SPICC26X4DMA_HWAttrs SPICC26X4DMAHWAttrs[CONFIG_SPI_COUNT] = {
  *  {   // Use SPI0 module with default chip select on CONFIG_CSN_0
- *      .baseAddr = SSI0_BASE,
- *      .intNum = INT_SSI0,
- *      .intPriority = ~0,
+ *      .baseAddr = SPI0_BASE,
+ *      .intNum = INT_SSI0_COMB,
+ *      .intPriority = (~0),
  *      .swiPriority = 0,
- *      .defaultTxBufValue = 0,
- *      .powerMngrId = PERIPH_SSI0,
- *      .rxChannelIndex = UDMA_CHAN_SSI0_RX,
- *      .txChannelIndex = UDMA_CHAN_SSI0_TX,
- *      .mosiPin = CONFIG_SPI0_MOSI,
- *      .misoPin = CONFIG_SPI0_MISO,
- *      .clkPin = CONFIG_SPI0_CLK,
- *      .csnPin = CONFIG_CSN_0
+ *      .powerMngrId = PowerCC26XX_PERIPH_SSI0,
+ *      .defaultTxBufValue = 0xFF,
+ *      .rxChannelBitMask = 1<<UDMA_CHAN_SSI0_RX,
+ *      .txChannelBitMask = 1<<UDMA_CHAN_SSI0_TX,
+ *      .dmaTxTableEntryPri = &dmaSpi0TxControlTableEntry,
+ *      .dmaRxTableEntryPri = &dmaSpi0RxControlTableEntry,
+ *      .dmaTxTableEntryAlt = &dmaSpi0TxAltControlTableEntry,
+ *      .dmaRxTableEntryAlt = &dmaSpi0RxAltControlTableEntry,
+ *      .minDmaTransferSize = 10,
+ *      .txPinMux   = IOC_PORT_MCU_SSI0_TX,
+ *      .rxPinMux   = IOC_PORT_MCU_SSI0_RX,
+ *      .clkPinMux  = IOC_PORT_MCU_SSI0_CLK,
+ *      .csnPinMux  = IOC_PORT_MCU_SSI0_FSS,
+ *      .picoPin = CONFIG_GPIO_SPI_CONTROLLER_PICO,
+ *      .pociPin = CONFIG_GPIO_SPI_CONTROLLER_POCI,
+ *      .clkPin  = CONFIG_GPIO_SPI_CONTROLLER_SCLK,
+ *      .csnPin  = CONFIG_CSN_0
  *  }
  *
  *  // From your_application.c
@@ -440,18 +460,18 @@
  *      SPI_Params_init(&params);
  *      params.bitRate     = 1000000;
  *      params.frameFormat = SPI_POL1_PHA1;
- *      params.mode        = SPI_MASTER;
+ *      params.mode        = SPI_CONTROLLER;
  *
  *      // Configure the transaction
  *      transaction.count = sizeof(txBuf);
  *      transaction.txBuf = txBuf;
  *      transaction.rxBuf = NULL;
  *
- *      // Open the SPI and perform transfer to the first slave
+ *      // Open the SPI and perform transfer to the first peripheral
  *      handle = SPI_open(CONFIG_SPI, &params);
  *      SPI_transfer(handle, &transaction);
  *
- *      // Then switch chip select pin and perform transfer to the second slave
+ *      // Then switch chip select pin and perform transfer to the second peripheral
  *      SPI_control(handle, SPICC26X4DMA_SET_CSN_PIN, &csnPin1);
  *      SPI_transfer(handle, &transaction);
  *  }
@@ -487,10 +507,10 @@
  *  @endcode
  *
  *  ### Queueing in Manual Start Mode#
- *  This example shows a slave device queueing two transactions that will
- *  complete one after the other. From the master's perspective there will be
+ *  This example shows a peripheral device queueing two transactions that will
+ *  complete one after the other. From the controller's perspective there will be
  *  one long transfer.
- *  @note Manual mode also works while the device is in #SPI_MASTER mode. The
+ *  @note Manual mode also works while the device is in #SPI_CONTROLLER mode. The
  *  control call to MANUAL_START will start the transfers.
  *
  *  @warning Manual start mode should not be enabled or disabled while a
@@ -504,7 +524,7 @@
  *  uint8_t status = SPI_STATUS_SUCCESS;
  *
  *  SPI_Params_init(&params);
- *  params.mode = SPI_SLAVE;
+ *  params.mode = SPI_PERIPHERAL;
  *  spi = SPI_open(CONFIG_SPI, &params);
  *
  *  if (spi == NULL) {
@@ -537,7 +557,7 @@
  *      status = SPI_STATUS_FAILURE;
  *  }
  *
- *  // At this point the slave is ready for the master to start the transfer
+ *  // At this point the peripheral is ready for the controller to start the transfer
  *  // Assume the callback implementation (not shown) posts a semaphore when
  *  // the last transaction completes
  *  sem_wait(&spiSemaphore);
@@ -548,7 +568,7 @@
  *  @endcode
  *
  *  ### Ensure low power during inactive periods @anchor USE_CASE_LPWR_X4 #
- *  External hardware connected on the SPI, i.e. SPI host/slave, might have configured
+ *  External hardware connected on the SPI, i.e. SPI controller/peripheral, might have configured
  *  a pull on one or more of the SPI lines. Dependent on the hardware, it might conflict
  *  with the pull used for the CC26X4 SPI. To avoid increased leakage and ensure the lowest
  *  possible power consumption when the SPI is inactive, the application must configure a
@@ -566,7 +586,7 @@
  *  SPI_Params_init(&params);
  *  params.bitRate     = 1000000;
  *  params.frameFormat = SPI_POL1_PHA1;
- *  params.mode        = SPI_MASTER;
+ *  params.mode        = SPI_CONTROLLER;
  *
  *  // Configure the transaction
  *  transaction.count = sizeof(txBuf);
@@ -576,8 +596,8 @@
  *  // Open the SPI and perform the transfer
  *  handle = SPI_open(CONFIG_SPI_0, &params);
  *
- *  // Apply low power sleep pull config for MISO
- *  GPIO_setConfig(CONFIG_GPIO_SPI_0_MISO, GPIO_CFG_IN_PU);
+ *  // Apply low power sleep pull config for POCI
+ *  GPIO_setConfig(CONFIG_GPIO_SPI_0_POCI, GPIO_CFG_IN_PU);
  *
  *  // Do forever
  *  while(1) {
@@ -588,7 +608,7 @@
  *  }
  *  @endcode
  *
- *  ### Wake Up On Chip Select Deassertion In Slave Mode Using #SPI_MODE_CALLBACK #
+ *  ### Wake Up On Chip Select Deassertion In Peripheral Mode Using #SPI_MODE_CALLBACK #
  *  This example demonstrates using a GPIO callback on Chip Select to wake up the device
  *  to allow low power modes while waiting for a chip select edge.
  *
@@ -596,8 +616,8 @@
  *  as input/pull up with an interrupt on falling edge. Otherwise, SPI_close()
  *  will reset the pin to the wrong settings and you may see line glitches.
  *
- *  *Note: The SPI master must allow enough time between deasserting the chip select and the
- *  start of the transaction for the SPI slave to wake up and open up the SPI driver.
+ *  *Note: The SPI controller must allow enough time between deasserting the chip select and the
+ *  start of the transaction for the SPI peripheral to wake up and open up the SPI driver.
  *
  *  @code
  *  // Global variables
@@ -639,7 +659,7 @@
  *      SPI_Params_init(&spiParams);
  *      spiParams.bitRate     = 1000000;
  *      spiParams.frameFormat = SPI_POL1_PHA1;
- *      spiParams.mode        = SPI_SLAVE;
+ *      spiParams.mode        = SPI_PERIPHERAL;
  *      spiParams.dataSize    = transferSize;
  *      spiParams.transferMode = SPI_MODE_CALLBACK;
  *      spiParams.transferCallbackFxn = transferCallback;
@@ -666,7 +686,7 @@
  *
  *  <hr>
  */
-
+/* clang-format on */
 #ifndef ti_drivers_spi_SPICC26X4DMA__include
 #define ti_drivers_spi_SPICC26X4DMA__include
 
@@ -712,7 +732,7 @@ extern "C" {
  * @brief Command used by SPI_control() to enable partial return
  *
  * Enabling this command allows SPI_transfer to return partial data if the
- * master de-asserts the CS line before the expected number of frames were
+ * controller de-asserts the CS line before the expected number of frames were
  * received. This command @b arg is of type @a don't @a care and it returns
  * SPI_STATUS_SUCCESS or SPI_STATUS_ERROR.
  */
@@ -750,7 +770,7 @@ extern "C" {
  * transfer until another control call is made with
  * #SPICC26X4DMA_CMD_MANUAL_START. This allows multiple transactions to be
  * queued and executed seamlessly using the DMA's ping pong mechanism. This
- * mode is MANDATORY for slaves queueing multiple short transactions. Manual
+ * mode is MANDATORY for peripherals queueing multiple short transactions. Manual
  * start mode can only be enabled or disabled when no transactions are queued.
  *
  * Returns #SPI_STATUS_SUCCESS or #SPI_STATUS_ERROR.
@@ -773,27 +793,27 @@ extern "C" {
  *
  * This command is used with manual start mode enabled. If transactions have
  * been queued and the driver is in manual mode, this command will enable the
- * SSI and DMA. For master devices, the transfer will start. For slave devices,
- * the transfer will start when the master initiates.
+ * SPI and DMA. For controller devices, the transfer will start. For peripheral devices,
+ * the transfer will start when the controller initiates.
  *
  * Returns #SPI_STATUS_SUCCESS or #SPI_STATUS_ERROR.
  */
 #define SPICC26X4DMA_CMD_MANUAL_START (SPI_CMD_RESERVED + 6)
 
 /*!
- * @brief Command used by SPI_control() to set the sample delay in master mode
+ * @brief Command used by SPI_control() to set the sample delay in controller mode
  *
- * This command is only used when in master mode. After SPI_open() is called,
+ * This command is only used when in controller mode. After SPI_open() is called,
  * the default DSAMPLE value is set as follows.
  *   * (bitRate <  4MHz) -> delay = 0
  *   * (bitRate >= 4MHz) -> delay = 1
  *   * (bitRate >= 8MHz) -> delay = 2
  *
- * The sample delay is a measurement of clock cycles. In master mode the data
+ * The sample delay is a measurement of clock cycles. In controller mode the data
  * on the input pin will delay sampling by the defined clock cycles. At lower
  * bitRates a delay is usually not necessary. At higher bitRates a delay may
- * become necessary if the slave device is not keeping pace with the master
- * device. In this case, the delay can be used to ensure the master device
+ * become necessary if the peripheral device is not keeping pace with the controller
+ * device. In this case, the delay can be used to ensure the controller device
  * captures the data on the input pin.
  * This command @b arg is of type uint8_t.
  *
@@ -869,7 +889,7 @@ typedef enum
  *  @code
  *  const SPICC26X4DMA_HWAttrs SPICC26X4DMAobjects[] = {
  *      {
- *          .baseAddr = SSI0_BASE,
+ *          .baseAddr = SPI0_BASE,
  *          .intNum = INT_SPI0,
  *          .intPriority = ~0,
  *          .swiPriority = 0,
@@ -877,13 +897,13 @@ typedef enum
  *          .defaultTxBufValue = 0,
  *          .rxChannelBitMask = UDMA_CHAN_SPI0_RX,
  *          .txChannelBitMask = UDMA_CHAN_SPI0_TX,
- *          .mosiPin = CONFIG_SPI0_MISO,
- *          .misoPin = CONFIG_SPI0_MOSI,
+ *          .picoPin = CONFIG_SPI0_POCI,
+ *          .pociPin = CONFIG_SPI0_PICO,
  *          .clkPin = CONFIG_SPI0_CLK,
  *          .csnPin = CONFIG_SPI0_CSN
  *      },
  *      {
- *          .baseAddr = SSI1_BASE,
+ *          .baseAddr = SPI1_BASE,
  *          .intNum = INT_SPI1,
  *          .intPriority = ~0,
  *          .swiPriority = 0,
@@ -891,8 +911,8 @@ typedef enum
  *          .defaultTxBufValue = 0,
  *          .rxChannelBitMask = UDMA_CHAN_SPI1_RX,
  *          .txChannelBitMask = UDMA_CHAN_SPI1_TX,
- *          .mosiPin = CONFIG_SPI1_MISO,
- *          .misoPin = CONFIG_SPI1_MOSI,
+ *          .picoPin = CONFIG_SPI1_POCI,
+ *          .pociPin = CONFIG_SPI1_PICO,
  *          .clkPin = CONFIG_SPI1_CLK,
  *          .csnPin = CONFIG_SPI1_CSN
  *      },
@@ -943,18 +963,18 @@ typedef struct
     volatile tDMAControlTable *dmaTxTableEntryAlt;
     /*! uDMA controlTable alternate rx entry */
     volatile tDMAControlTable *dmaRxTableEntryAlt;
-    /*! Tx PIN mux value. Can be applied to either MOSI or MISO */
+    /*! Tx PIN mux value. Can be applied to either PICO or POCI */
     int32_t txPinMux;
-    /*! Rx PIN mux value. Can be applied to either MOSI or MISO */
+    /*! Rx PIN mux value. Can be applied to either PICO or POCI */
     int32_t rxPinMux;
     /*! CLK PIN mux value for flow control */
     int32_t clkPinMux;
     /*! CSN PIN mux value for flow control */
     int32_t csnPinMux;
-    /*! SPI MOSI pin */
-    uint_least8_t mosiPin;
-    /*! SPI MISO pin */
-    uint_least8_t misoPin;
+    /*! SPI PICO pin */
+    uint_least8_t picoPin;
+    /*! SPI POCI pin */
+    uint_least8_t pociPin;
     /*! SPI CLK pin */
     uint_least8_t clkPin;
     /*! SPI CSN pin */

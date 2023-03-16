@@ -43,6 +43,10 @@
  *  Refer to @ref UART2.h for a complete description of APIs and examples
  *  of use.
  *
+ * # Unsupported Functionality #
+ * The UART2 driver is unable to access flash memory in the address range 0x0000 - 0x2000
+ * on devices based on the Cortex M33+ core (CC26X3/CC26X4) due to security constraints.
+ *
  *  ============================================================================
  */
 

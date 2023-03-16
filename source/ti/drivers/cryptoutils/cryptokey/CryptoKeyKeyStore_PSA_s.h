@@ -37,7 +37,7 @@
  *  @anchor ti_drivers_cryptoutils_cryptokey_CryptoKeyKeyStore_PSA_s_Overview
  *  # Overview
  *      The Secure KeyStore driver is used to access all KeyStore functions
- *      when using the Secure Processing Environment (SPE).
+ *      when using the TF-M.
  *
  *******************************************************************************
  */

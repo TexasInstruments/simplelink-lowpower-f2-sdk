@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
     let lcdPowerIndex;
     let lcdEnableIndex;
     let lcdChipSelectIndex;
+    let lcdFontName;
 
     let host = false;
     let uart2 = false;
@@ -100,7 +101,19 @@
             spiIndex = inst.spi.$name;
             lcdEnableIndex = inst.lcdEnable.$name;
             lcdPowerIndex = inst.lcdPower.$name;
-            lcdChipSelectIndex = inst.lcdSS.$name;
+            lcdChipSelectIndex = inst.lcdCS.$name;
+            if(inst.lcdFont == "Fixed")
+            {
+                lcdFontName = "g_sFontFixed6x8";
+            }
+            else if(inst.lcdFont == "CMTT")
+            {
+                lcdFontName = "g_sFontCmtt" + inst.lcdFontSize;
+            }
+            else if(inst.lcdFont == "Custom")
+            {
+                lcdFontName = inst.lcdCustomFontName;
+            }
             instAttrs[instances[i].$name] = {
                 object: "displayLcdObject",
                 hwAttrs: "displayLcdHWattrs",
@@ -141,6 +154,9 @@ static char displayHostBuffer[Display_HOSTBUFFERSIZE];
 % if (lcd) {
 #define Display_LCDSIZE `instances[lcdInstance].lcdSize`
 static uint_least8_t displayLCDBuffer[Display_LCDSIZE * Display_LCDSIZE / 8];
+% if (instances[lcdInstance].lcdFont == "Custom") {
+extern const Graphics_Font `lcdFontName`;
+% }
 % }
 
 % if (uart2) {
@@ -179,6 +195,7 @@ const DisplaySharp_HWAttrsV1 displayLcdHWattrs = {
     .pixelWidth  = Display_LCDSIZE,
     .pixelHeight = Display_LCDSIZE,
     .displayBuf  = displayLCDBuffer,
+    .font        = (const Graphics_Font *) &`lcdFontName`
 };
 
 % }

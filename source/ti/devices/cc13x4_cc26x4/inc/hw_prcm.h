@@ -107,14 +107,14 @@
 // UART Clock Gate For Deep Sleep Mode
 #define PRCM_O_UARTCLKGDS                                           0x00000074
 
-// SSI Clock Gate For Run And All Modes
-#define PRCM_O_SSICLKGR                                             0x00000078
+// SPI Clock Gate For Run And All Modes
+#define PRCM_O_SPICLKGR                                             0x00000078
 
-// SSI Clock Gate For Sleep Mode
-#define PRCM_O_SSICLKGS                                             0x0000007C
+// SPI Clock Gate For Sleep Mode
+#define PRCM_O_SPICLKGS                                             0x0000007C
 
-// SSI Clock Gate For Deep Sleep Mode
-#define PRCM_O_SSICLKGDS                                            0x00000080
+// SPI Clock Gate For Deep Sleep Mode
+#define PRCM_O_SPICLKGDS                                            0x00000080
 
 // I2S Clock Gate For Run And All Modes
 #define PRCM_O_I2SCLKGR                                             0x00000084
@@ -170,8 +170,8 @@
 // RESET For UART IPs
 #define PRCM_O_RESETUART                                            0x00000100
 
-// RESET For SSI IPs
-#define PRCM_O_RESETSSI                                             0x00000104
+// RESET For SPI IPs
+#define PRCM_O_RESETSPI                                             0x00000104
 
 // RESET For I2S IP
 #define PRCM_O_RESETI2S                                             0x00000108
@@ -422,9 +422,9 @@
 // - I2CCLKGR
 // - I2CCLKGS
 // - I2CCLKGDS
-// - SSICLKGR
-// - SSICLKGS
-// - SSICLKGDS
+// - SPICLKGR
+// - SPICLKGS
+// - SPICLKGDS
 // - UARTCLKGR
 // - UARTCLKGS
 // - UARTCLKGDS
@@ -1115,7 +1115,7 @@
 
 //*****************************************************************************
 //
-// Register: PRCM_O_SSICLKGR
+// Register: PRCM_O_SPICLKGR
 //
 //*****************************************************************************
 // Field:  [11:8] AM_CLK_EN
@@ -1124,21 +1124,21 @@
 // 0: No force
 // 1: Force clock on for all modes (Run, Sleep and Deep Sleep)
 //
-// Overrides CLK_EN,  SSICLKGS.CLK_EN and  SSICLKGDS.CLK_EN when enabled.
+// Overrides CLK_EN,  SPICLKGS.CLK_EN and  SPICLKGDS.CLK_EN when enabled.
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
 // ENUMs:
-// SSI3                     Enable clock for SSI3
-// SSI2                     Enable clock for SSI2
-// SSI1                     Enable clock for SSI1
-// SSI0                     Enable clock for SSI0
-#define PRCM_SSICLKGR_AM_CLK_EN_W                                            4
-#define PRCM_SSICLKGR_AM_CLK_EN_M                                   0x00000F00
-#define PRCM_SSICLKGR_AM_CLK_EN_S                                            8
-#define PRCM_SSICLKGR_AM_CLK_EN_SSI3                                0x00000800
-#define PRCM_SSICLKGR_AM_CLK_EN_SSI2                                0x00000400
-#define PRCM_SSICLKGR_AM_CLK_EN_SSI1                                0x00000200
-#define PRCM_SSICLKGR_AM_CLK_EN_SSI0                                0x00000100
+// SPI3                     Enable clock for SPI3
+// SPI2                     Enable clock for SPI2
+// SPI1                     Enable clock for SPI1
+// SPI0                     Enable clock for SPI0
+#define PRCM_SPICLKGR_AM_CLK_EN_W                                            4
+#define PRCM_SPICLKGR_AM_CLK_EN_M                                   0x00000F00
+#define PRCM_SPICLKGR_AM_CLK_EN_S                                            8
+#define PRCM_SPICLKGR_AM_CLK_EN_SPI3                                0x00000800
+#define PRCM_SPICLKGR_AM_CLK_EN_SPI2                                0x00000400
+#define PRCM_SPICLKGR_AM_CLK_EN_SPI1                                0x00000200
+#define PRCM_SPICLKGR_AM_CLK_EN_SPI0                                0x00000100
 
 // Field:   [3:0] CLK_EN
 //
@@ -1150,21 +1150,21 @@
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
 // ENUMs:
-// SSI3                     Enable clock for SSI3
-// SSI2                     Enable clock for SSI2
-// SSI1                     Enable clock for SSI1
-// SSI0                     Enable clock for SSI0
-#define PRCM_SSICLKGR_CLK_EN_W                                               4
-#define PRCM_SSICLKGR_CLK_EN_M                                      0x0000000F
-#define PRCM_SSICLKGR_CLK_EN_S                                               0
-#define PRCM_SSICLKGR_CLK_EN_SSI3                                   0x00000008
-#define PRCM_SSICLKGR_CLK_EN_SSI2                                   0x00000004
-#define PRCM_SSICLKGR_CLK_EN_SSI1                                   0x00000002
-#define PRCM_SSICLKGR_CLK_EN_SSI0                                   0x00000001
+// SPI3                     Enable clock for SPI3
+// SPI2                     Enable clock for SPI2
+// SPI1                     Enable clock for SPI1
+// SPI0                     Enable clock for SPI0
+#define PRCM_SPICLKGR_CLK_EN_W                                               4
+#define PRCM_SPICLKGR_CLK_EN_M                                      0x0000000F
+#define PRCM_SPICLKGR_CLK_EN_S                                               0
+#define PRCM_SPICLKGR_CLK_EN_SPI3                                   0x00000008
+#define PRCM_SPICLKGR_CLK_EN_SPI2                                   0x00000004
+#define PRCM_SPICLKGR_CLK_EN_SPI1                                   0x00000002
+#define PRCM_SPICLKGR_CLK_EN_SPI0                                   0x00000001
 
 //*****************************************************************************
 //
-// Register: PRCM_O_SSICLKGS
+// Register: PRCM_O_SPICLKGS
 //
 //*****************************************************************************
 // Field:   [3:0] CLK_EN
@@ -1173,25 +1173,25 @@
 // 0: Disable clock
 // 1: Enable clock
 //
-// Can be forced on by SSICLKGR.AM_CLK_EN
+// Can be forced on by SPICLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
 // ENUMs:
-// SSI3                     Enable clock for SSI3
-// SSI2                     Enable clock for SSI2
-// SSI1                     Enable clock for SSI1
-// SSI0                     Enable clock for SSI0
-#define PRCM_SSICLKGS_CLK_EN_W                                               4
-#define PRCM_SSICLKGS_CLK_EN_M                                      0x0000000F
-#define PRCM_SSICLKGS_CLK_EN_S                                               0
-#define PRCM_SSICLKGS_CLK_EN_SSI3                                   0x00000008
-#define PRCM_SSICLKGS_CLK_EN_SSI2                                   0x00000004
-#define PRCM_SSICLKGS_CLK_EN_SSI1                                   0x00000002
-#define PRCM_SSICLKGS_CLK_EN_SSI0                                   0x00000001
+// SPI3                     Enable clock for SPI3
+// SPI2                     Enable clock for SPI2
+// SPI1                     Enable clock for SPI1
+// SPI0                     Enable clock for SPI0
+#define PRCM_SPICLKGS_CLK_EN_W                                               4
+#define PRCM_SPICLKGS_CLK_EN_M                                      0x0000000F
+#define PRCM_SPICLKGS_CLK_EN_S                                               0
+#define PRCM_SPICLKGS_CLK_EN_SPI3                                   0x00000008
+#define PRCM_SPICLKGS_CLK_EN_SPI2                                   0x00000004
+#define PRCM_SPICLKGS_CLK_EN_SPI1                                   0x00000002
+#define PRCM_SPICLKGS_CLK_EN_SPI0                                   0x00000001
 
 //*****************************************************************************
 //
-// Register: PRCM_O_SSICLKGDS
+// Register: PRCM_O_SPICLKGDS
 //
 //*****************************************************************************
 // Field:   [3:0] CLK_EN
@@ -1200,21 +1200,21 @@
 // 0: Disable clock
 // 1: Enable clock
 //
-// Can be forced on by SSICLKGR.AM_CLK_EN
+// Can be forced on by SPICLKGR.AM_CLK_EN
 //
 // For changes to take effect, CLKLOADCTL.LOAD needs to be written
 // ENUMs:
-// SSI3                     Enable clock for SSI3
-// SSI2                     Enable clock for SSI2
-// SSI1                     Enable clock for SSI1
-// SSI0                     Enable clock for SSI0
-#define PRCM_SSICLKGDS_CLK_EN_W                                              4
-#define PRCM_SSICLKGDS_CLK_EN_M                                     0x0000000F
-#define PRCM_SSICLKGDS_CLK_EN_S                                              0
-#define PRCM_SSICLKGDS_CLK_EN_SSI3                                  0x00000008
-#define PRCM_SSICLKGDS_CLK_EN_SSI2                                  0x00000004
-#define PRCM_SSICLKGDS_CLK_EN_SSI1                                  0x00000002
-#define PRCM_SSICLKGDS_CLK_EN_SSI0                                  0x00000001
+// SPI3                     Enable clock for SPI3
+// SPI2                     Enable clock for SPI2
+// SPI1                     Enable clock for SPI1
+// SPI0                     Enable clock for SPI0
+#define PRCM_SPICLKGDS_CLK_EN_W                                              4
+#define PRCM_SPICLKGDS_CLK_EN_M                                     0x0000000F
+#define PRCM_SPICLKGDS_CLK_EN_S                                              0
+#define PRCM_SPICLKGDS_CLK_EN_SPI3                                  0x00000008
+#define PRCM_SPICLKGDS_CLK_EN_SPI2                                  0x00000004
+#define PRCM_SPICLKGDS_CLK_EN_SPI1                                  0x00000002
+#define PRCM_SPICLKGDS_CLK_EN_SPI0                                  0x00000001
 
 //*****************************************************************************
 //
@@ -1768,68 +1768,68 @@
 
 //*****************************************************************************
 //
-// Register: PRCM_O_RESETSSI
+// Register: PRCM_O_RESETSPI
 //
 //*****************************************************************************
-// Field:     [3] SSI3
+// Field:     [3] SPI3
 //
 // 0: No action
-// 1: Reset SSI3. HW cleared.
+// 1: Reset SPI3. HW cleared.
 //
 // Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
-#define PRCM_RESETSSI_SSI3                                          0x00000008
-#define PRCM_RESETSSI_SSI3_BITN                                              3
-#define PRCM_RESETSSI_SSI3_M                                        0x00000008
-#define PRCM_RESETSSI_SSI3_S                                                 3
+#define PRCM_RESETSPI_SPI3                                          0x00000008
+#define PRCM_RESETSPI_SPI3_BITN                                              3
+#define PRCM_RESETSPI_SPI3_M                                        0x00000008
+#define PRCM_RESETSPI_SPI3_S                                                 3
 
-// Field:     [2] SSI2
+// Field:     [2] SPI2
 //
 // 0: No action
-// 1: Reset SSI2. HW cleared.
+// 1: Reset SPI2. HW cleared.
 //
 // Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
-#define PRCM_RESETSSI_SSI2                                          0x00000004
-#define PRCM_RESETSSI_SSI2_BITN                                              2
-#define PRCM_RESETSSI_SSI2_M                                        0x00000004
-#define PRCM_RESETSSI_SSI2_S                                                 2
+#define PRCM_RESETSPI_SPI2                                          0x00000004
+#define PRCM_RESETSPI_SPI2_BITN                                              2
+#define PRCM_RESETSPI_SPI2_M                                        0x00000004
+#define PRCM_RESETSPI_SPI2_S                                                 2
 
-// Field:     [1] SSI1
+// Field:     [1] SPI1
 //
 // 0: No action
-// 1: Reset SSI1. HW cleared.
+// 1: Reset SPI1. HW cleared.
 //
 // Access will only have effect when PERIPH power domain is on,
 // PDSTAT0.PERIPH_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
-#define PRCM_RESETSSI_SSI1                                          0x00000002
-#define PRCM_RESETSSI_SSI1_BITN                                              1
-#define PRCM_RESETSSI_SSI1_M                                        0x00000002
-#define PRCM_RESETSSI_SSI1_S                                                 1
+#define PRCM_RESETSPI_SPI1                                          0x00000002
+#define PRCM_RESETSPI_SPI1_BITN                                              1
+#define PRCM_RESETSPI_SPI1_M                                        0x00000002
+#define PRCM_RESETSPI_SPI1_S                                                 1
 
-// Field:     [0] SSI0
+// Field:     [0] SPI0
 //
 // 0: No action
-// 1: Reset SSI0. HW cleared.
+// 1: Reset SPI0. HW cleared.
 //
 // Access will only have effect when SERIAL power domain is on,
 // PDSTAT0.SERIAL_ON = 1
 // Before writing set FLASH:CFG.DIS_READACCESS = 1 to ensure the reset is not
 // activated while executing from flash. This means one cannot execute from
 // flash when using the SW reset.
-#define PRCM_RESETSSI_SSI0                                          0x00000001
-#define PRCM_RESETSSI_SSI0_BITN                                              0
-#define PRCM_RESETSSI_SSI0_M                                        0x00000001
-#define PRCM_RESETSSI_SSI0_S                                                 0
+#define PRCM_RESETSPI_SPI0                                          0x00000001
+#define PRCM_RESETSPI_SPI0_BITN                                              0
+#define PRCM_RESETSPI_SPI0_M                                        0x00000001
+#define PRCM_RESETSPI_SPI0_S                                                 0
 
 //*****************************************************************************
 //
@@ -2885,6 +2885,13 @@
 // Field:   [7:0] BUS_CFG
 //
 // Bus interconnect security and firewall configuration
+//
+// 0xFF :   Trustzone enabled
+// 0xF9 :   Trustzone disabled
+// Others: Reserved.
+//
+// Software should not rely on the value of reserved and should not write
+// reserved settings.
 #define PRCM_BUSSECCFG_BUS_CFG_W                                             8
 #define PRCM_BUSSECCFG_BUS_CFG_M                                    0x000000FF
 #define PRCM_BUSSECCFG_BUS_CFG_S                                             0

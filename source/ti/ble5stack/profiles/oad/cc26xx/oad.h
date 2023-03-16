@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -161,9 +161,13 @@ extern "C"
  * INCLUDES
  */
 #include "hal_types.h"
-#include <ti/sysbios/knl/Queue.h>
 
+#ifdef MCUBOOT_ENABLE
+#define OAD_SW_VER_LEN          4  //taken from oad_image_header.h
+#define OAD_IMG_TYPE_APP        1  //taken from oad_image_header.h
+#else
 #include <common/cc26xx/oad/oad_image_header.h>
+#endif // MCUBOOT_ENABLE
 
 /*********************************************************************
  * CONSTANTS
@@ -195,21 +199,21 @@ extern "C"
  * queue from the BLE-Stack. Messages in the OAD queue must be processed in the
  * application context
  */
-#define OAD_QUEUE_EVT                       Event_Id_01
+#define OAD_QUEUE_EVT                       (0x2)
 
 /*!
  * The download complete signifies that the OAD has completed and the candidate
  * image has passed verification. When this event is received, the application
  * should reset the device so that the BIM can perform further processing.
  */
-#define OAD_DL_COMPLETE_EVT                 Event_Id_02
+#define OAD_DL_COMPLETE_EVT                 (0x4)
 
 /*!
- * The out of memory event signifies that the OAD has run out of memory and 
- * could not allocate memory for a message to notify the application 
+ * The out of memory event signifies that the OAD has run out of memory and
+ * could not allocate memory for a message to notify the application
  * (for example in the case of a timeout).
  */
-#define OAD_OUT_OF_MEM_EVT                  Event_Id_03
+#define OAD_OUT_OF_MEM_EVT                  (0x8)
 /** @} End OAD_EVTS */
 
 /*!
@@ -556,18 +560,6 @@ typedef enum
     OAD_TIMEOUT                 //!< OAD peer timed out
 }oadEvent_e;
 
-/*!
- * Stores information related to OAD write event
- */
-typedef struct
-{
-    Queue_Elem _elem;           //!< New queue element to contain write evt info
-    oadEvent_e  event;          //!< Event that occurred
-    uint16_t connHandle;        //!< Connection event was received on
-    uint16_t len;               //!< Length of data received
-    uint16_t offset;            //!< GATT offset into blob
-    uint8_t  *pData;            //!< Pointer to data received
-} oadTargetWrite_t;
 
 /*!
  * OAD state types

@@ -135,8 +135,7 @@ void WatchdogCC26X4_clear(Watchdog_Handle handle)
     WatchdogCC26X4_unlock();
 
     /* make sure the Watchdog is unlocked before continuing */
-    while (WatchdogCC26X4_isLocked())
-        ;
+    while (WatchdogCC26X4_isLocked()) {}
 
     WatchdogCC26X4_setReloadValue(reloadValue);
 
@@ -246,8 +245,7 @@ int_fast16_t WatchdogCC26X4_setReload(Watchdog_Handle handle, uint32_t ticks)
     WatchdogCC26X4_unlock();
 
     /* make sure the Watchdog is unlocked before continuing */
-    while (WatchdogCC26X4_isLocked())
-        ;
+    while (WatchdogCC26X4_isLocked()) {}
 
     /* update the reload value */
     reloadValue = ticks;
@@ -291,8 +289,7 @@ static void WatchdogCC26X4_initHw(Watchdog_Handle handle)
     WatchdogCC26X4_unlock();
 
     /* make sure the Watchdog is unlocked before continuing */
-    while (WatchdogCC26X4_isLocked())
-        ;
+    while (WatchdogCC26X4_isLocked()) {}
 
     /* set debug stall mode */
     if (object->debugStallMode == Watchdog_DEBUG_STALL_ON)

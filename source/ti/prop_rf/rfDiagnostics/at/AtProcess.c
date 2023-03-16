@@ -89,7 +89,6 @@ static void processCmd(char* cmdBuffer, uint8_t cmdLen)
 /***************************************************************************************************
  * INTERFACE FUNCTIONS
  ***************************************************************************************************/
-
 void AtProcess_processingLoop(void)
 {
     char ch;
@@ -97,8 +96,18 @@ void AtProcess_processingLoop(void)
     static uint8_t state = ATPROCESS_STATE_A;
     static uint8_t cmdLen = 0;
 
+#ifndef AT_SPI
     if(AtTerm_getChar(&ch) > 0)
     {
+#else
+    char spiCmdBuffer[ATPROCESS_MAX_AT_MSG_LEN];
+    uint8_t spiCmdLen = 0;
+    uint8_t cmdIdx = 0;
+    spiCmdLen = AtTerm_getChar(spiCmdBuffer);
+    for(cmdIdx = 0; cmdIdx < spiCmdLen; cmdIdx++)
+    {
+        ch = spiCmdBuffer[cmdIdx];
+#endif
         if(AtParams_echoEnabled)
         {
             AtTerm_putChar(ch);

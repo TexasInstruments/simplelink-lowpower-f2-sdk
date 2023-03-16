@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,11 +76,6 @@ function modules(inst)
 {
     let modules = new Array();
 
-    modules.push({
-        name: "GetLibs",
-        moduleName: "/ti/utils/runtime/GetLibs"
-    });
-
     return (modules);
 }
 
@@ -89,7 +84,7 @@ function modules(inst)
  *  Intro splash on GUI
  */
 let longDescription = `
-The TrustZone module links the SPE-enabled drivers library and the secure veneers 
+The TrustZone module links the SPE-enabled drivers library and the secure veneers
 required for Secure/Non-Secure features.
 `;
 
@@ -118,7 +113,7 @@ let base = {
                 ]
             }
         ],
-    }, 
+    },
     templates: {
         /* contribute secure veneers object to linker command file */
         "/ti/utils/build/GenLibs.cmd.xdt"   :

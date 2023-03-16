@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -161,7 +161,14 @@ Display_Handle DisplaySharp_open(Display_Handle hDisplay, Display_Params *params
     // Graphics properties
     Graphics_setForegroundColor(&object->g_sContext, object->displayColor.fg);
     Graphics_setBackgroundColor(&object->g_sContext, object->displayColor.bg);
-    Graphics_setFont(&object->g_sContext, &g_sFontFixed6x8);
+    if (hwAttrs->font == NULL)
+    {
+        Graphics_setFont(&object->g_sContext, &g_sFontFixed6x8);
+    }
+    else
+    {
+        Graphics_setFont(&object->g_sContext, hwAttrs->font);
+    }
 
     // Clear display
     Graphics_clearDisplay(&object->g_sContext);

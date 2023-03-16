@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Texas Instruments Incorporated
+ * Copyright (c) 2014-2022 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -131,24 +131,36 @@ uint8_t Codec1_encodeSingle(int16_t audSample)
     if (tic1_nibble_4bits & 8)
     {
         if (Codec1_pvEnc < (-32768 + cum_diff))
+        {
             (Codec1_pvEnc) = -32768;
+        }
         else
+        {
             Codec1_pvEnc -= cum_diff;
+        }
     }
     else
     {
         if (Codec1_pvEnc > (0x7fff - cum_diff))
+        {
             (Codec1_pvEnc) = 0x7fff;
+        }
         else
+        {
             Codec1_pvEnc += cum_diff;
+        }
     }
 
     Codec1_siEnc += Codec1_IndexLut[tic1_nibble_4bits];
 
     if (Codec1_siEnc < 0)
+    {
         Codec1_siEnc = 0;
+    }
     else if (Codec1_siEnc > 88)
+    {
         Codec1_siEnc = 88;
+    }
 
     return tic1_nibble_4bits;
 }
@@ -163,30 +175,48 @@ int16_t Codec1_decodeSingle(uint8_t nibble_4bits)
 
     Codec1_siDec += Codec1_IndexLut[nibble_4bits];
     if (Codec1_siDec < 0)
+    {
         Codec1_siDec = 0;
+    }
     else if (Codec1_siDec > 88)
+    {
         Codec1_siDec = 88;
+    }
 
     if (nibble_4bits & 4)
+    {
         cum_diff += step;
+    }
     if (nibble_4bits & 2)
+    {
         cum_diff += step >> 1;
+    }
     if (nibble_4bits & 1)
+    {
         cum_diff += step >> 2;
+    }
 
     if (nibble_4bits & 8)
     {
         if (Codec1_pvDec < (-32767 + cum_diff))
+        {
             (Codec1_pvDec) = -32767;
+        }
         else
+        {
             Codec1_pvDec -= cum_diff;
+        }
     }
     else
     {
         if (Codec1_pvDec > (0x7fff - cum_diff))
+        {
             (Codec1_pvDec) = 0x7fff;
+        }
         else
+        {
             Codec1_pvDec += cum_diff;
+        }
     }
     return Codec1_pvDec;
 }

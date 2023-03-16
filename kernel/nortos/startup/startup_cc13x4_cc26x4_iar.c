@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@ static void nmiISR(void);
 static void faultISR(void);
 static void intDefaultHandler(void);
 extern int main(void);
+static void secureFaultHandler(void);
 
 extern void MPUFaultIntHandler(void);
 extern void BusFaultIntHandler(void);
@@ -193,7 +194,7 @@ __root static void *dummy_stack @ ".stack";
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__root void (*const __vector_table[])(void) @ ".intvec" = {
+__root void (*const __vector_table[])(void) @ ".resetVecs" = {
     (void (*)(void)) & STACK_TOP, //  0 The initial stack pointer
     __iar_program_start,          //  1 The reset handler
     nmiISR,                       //  2 The NMI handler
@@ -201,7 +202,7 @@ __root void (*const __vector_table[])(void) @ ".intvec" = {
     MPUFaultIntHandler,           //  4 The MPU fault handler
     BusFaultIntHandler,           //  5 The bus fault handler
     UsageFaultIntHandler,         //  6 The usage fault handler
-    0,                            //  7 Reserved
+    secureFaultHandler,           //  7 The secure fault handler
     0,                            //  8 Reserved
     0,                            //  9 Reserved
     0,                            // 10 Reserved
@@ -309,7 +310,7 @@ int __low_level_init(void)
 
 //*****************************************************************************
 //
-//! This is the code that gets called when the processor receives a NMI. This
+//! This is the code that gets called when the processor receives an NMI. This
 //! simply enters an infinite loop, preserving the system state for examination
 //! by a debugger.
 //
@@ -330,6 +331,21 @@ static void nmiISR(void)
 //
 //*****************************************************************************
 static void faultISR(void)
+{
+    //
+    // Enter an infinite loop.
+    //
+    while (1) {}
+}
+
+//*****************************************************************************
+//
+//! This is the code that gets called when the processor receives a secure fault
+//! interrupt. This simply enters an infinite loop, preserving the system state
+//! for examination by a debugger.
+//
+//*****************************************************************************
+static void secureFaultHandler(void)
 {
     //
     // Enter an infinite loop.

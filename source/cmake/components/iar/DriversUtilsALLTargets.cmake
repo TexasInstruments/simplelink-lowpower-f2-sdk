@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget DriversUtils::secure_key_storage_enabled DriversUtils::spe_enabled)
+foreach(_expectedTarget DriversUtils::secure_key_storage_enabled DriversUtils::tfm_enabled)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -58,11 +58,11 @@ set_target_properties(DriversUtils::secure_key_storage_enabled PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "\$<\$<COMPILE_LANGUAGE:C>:ENABLE_KEY_STORAGE=1>"
 )
 
-# Create imported target DriversUtils::spe_enabled
-add_library(DriversUtils::spe_enabled INTERFACE IMPORTED)
+# Create imported target DriversUtils::tfm_enabled
+add_library(DriversUtils::tfm_enabled INTERFACE IMPORTED)
 
-set_target_properties(DriversUtils::spe_enabled PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "\$<\$<COMPILE_LANGUAGE:C>:SPE_ENABLED=1>;\$<\$<COMPILE_LANGUAGE:C>:ITS_CREATE_FLASH_LAYOUT=1>;\$<\$<COMPILE_LANGUAGE:C>:ENABLE_KEY_STORAGE=1>"
+set_target_properties(DriversUtils::tfm_enabled PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS "\$<\$<COMPILE_LANGUAGE:C>:TFM_ENABLED=1>;\$<\$<COMPILE_LANGUAGE:C>:ITS_CREATE_FLASH_LAYOUT=1>;\$<\$<COMPILE_LANGUAGE:C>:ENABLE_KEY_STORAGE=1>"
 )
 
 if(CMAKE_VERSION VERSION_LESS 3.0.0)

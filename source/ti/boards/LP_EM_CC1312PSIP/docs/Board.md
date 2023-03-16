@@ -32,7 +32,7 @@ The following BoosterPack(s) are used with some driver examples.
 
 #### [__BOOSTXL-SHARP128 LCD & SD Card BoosterPack__][boostxl-sharp128]
   * The SD_CS pin must be jumpered from BP.8 to BP.28 (DIO30) when using the SD
-    card
+    card.
 
 #### [__BP-BASSENSORSMKII BoosterPack__][bp-bassensorsmkii]
   * No modifications are needed.
@@ -40,6 +40,8 @@ The following BoosterPack(s) are used with some driver examples.
 #### [__CC3200 Audio BoosterPack__][cc3200audboost]
   * No modifications are needed.
 
+[device]: https://www.ti.com/product/CC1312PSIP
+[launchpad]: https://www.ti.com/tool/LP-EM-CC1312PSIP
 [boostxl-sharp128]: http://www.ti.com/tool/boostxl-sharp128
 [bp-bassensorsmkii]: http://www.ti.com/tool/bp-bassensorsmkii
 [cc3200audboost]: http://www.ti.com/tool/CC3200AUDBOOST

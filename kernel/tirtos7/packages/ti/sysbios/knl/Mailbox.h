@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -444,6 +444,50 @@ extern int Mailbox_getNumPendingMsgs(Mailbox_Handle mailbox);
 extern bool Mailbox_pend(Mailbox_Handle mailbox, void * msg, uint32_t timeout);
 
 /*!
+ * @brief Peek a message from the mailbox
+ *
+ * If the mailbox is not empty, Mailbox_peek copies the first message into msg
+ * and returns true. Otherwise, Mailbox_peek suspends the execution of the
+ * current task until Mailbox_post is called or the timeout expires. Unlike
+ * Mailbox_pend, Mailbox_peek does not remove the message from the queue after
+ * copying it to the destination.
+ *
+ * A timeout value of @link BIOS_WAIT_FOREVER @endlink
+ * causes the task to wait indefinitely  for a message.
+ *
+ * A timeout value of @link BIOS_NO_WAIT @endlink causes
+ * Mailbox_peek to return immediately.
+ *
+ * The timeout value of @link BIOS_NO_WAIT @endlink should be
+ * passed to Mailbox_peek to retrieve a message after Event_pend() is called
+ * outside of Mailbox_peek to wait on an incoming message.
+ *
+ * Mailbox_peek's return value indicates whether the mailbox was signaled
+ * successfully.
+ *
+ * <h3>Event Object Note</h3>
+ * If the Mailbox object has been configured with an embedded readerEvent Event
+ * object, then prior to returnig from this function, the Event object's state
+ * is updated to reflect whether messages are available in the Mailbox after the
+ * current message is removed. If there are no more messages available, then the
+ * readerEventId is cleared in the Event object. If more messages are available,
+ * then the readerEventId is set in the Event object.
+ *
+ * @warning
+ * Be careful with the 'msg' parameter!  The size of the buffer that 'msg'
+ * points to must match the 'msgSize' that was specified when the mailbox was
+ * created.  This function does a blind copy of the message from the mailbox to
+ * the destination pointer, so the destination buffer must be big enough to
+ * handle this copy.
+ *
+ * @param mailbox Mailbox handle
+ * @param msg message pointer
+ * @param timeout maximum duration in system clock ticks
+ * @retval true if successful, false if timeout
+ */
+extern bool Mailbox_peek(Mailbox_Handle mailbox, void * msg, uint32_t timeout);
+
+/*!
  * @brief Post a message to mailbox
  *
  * Mailbox_post checks to see if there are any free message slots before copying
@@ -487,6 +531,51 @@ extern bool Mailbox_pend(Mailbox_Handle mailbox, void * msg, uint32_t timeout);
  * @retval true if successful, false if timeout
  */
 extern bool Mailbox_post(Mailbox_Handle mailbox, void * msg, uint32_t timeout);
+
+/*!
+ * @brief Post a message to mailbox
+ *
+ * Mailbox_putHead checks to see if there are any free message slots before
+ * posting a msg to the head position of the mailbox. Mailbox_putHead readies
+ * the first task (if any) waiting on the mailbox. If the mailbox is full and a
+ * timeout is specified  the task remains suspended until Mailbox_pend is called
+ * or the timeout expires. A timeout value of @link BIOS_WAIT_FOREVER @endlink
+ * causes the task to wait indefinitely for a free slot.
+ *
+ * A timeout value of @link BIOS_NO_WAIT @endlink causes
+ * Mailbox_putHead to return immediately.
+ *
+ * The timeout value of @link BIOS_NO_WAIT @endlink should be
+ * passed to Mailbox_putHead() to post a message to the front of the mailbox
+ * after Event_pend() is called outside of Mailbox_putHead to wait on an
+ * available message buffer.
+ *
+ * Mailbox_putHead's return value indicates whether the msg was copied or not.
+ *
+ * <h3>Event Object Note</h3>
+ * If the Mailbox object has been configured with an embedded writerEvent Event
+ * object, then prior to returnig from this function, the Event object's state
+ * is updated to reflect whether more messages can be posted to the Mailbox
+ * after the current message has been posted. If no more room is available, then
+ * the writerEventId is cleared in the Event object. If more room is available,
+ * then the writerEventId is set in the Event object.
+ *
+ * @note
+ * The operation of adding a message to the mailbox and signalling the task (if
+ * any) waiting on the mailbox is not atomic. This can result in a priority
+ * inversion with respect to message delivery. This can for example affect the
+ * order of message delivery for 2 tasks with different priorities. The lower
+ * priority task's message may be delivered first while the higher priority
+ * task's message may not unblock the task waiting on the mailbox until the
+ * lower priority task resumes and completes its Mailbox_putHead() call.
+ *
+ * @param mailbox Mailbox handle
+ * @param msg message pointer
+ * @param timeout maximum duration in system clock ticks
+ *
+ * @retval true if successful, false if timeout
+ */
+extern bool Mailbox_putHead(Mailbox_Handle mailbox, void * msg, uint32_t timeout);
 
 /*!
  * @brief Initialize the Mailbox_Params structure with default values.

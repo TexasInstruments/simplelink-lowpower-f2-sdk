@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,11 @@ extern "C" {
 #endif
 
 /*!
- *  @brief  Function to send a finish command to the master module
+ *  @brief  Function to send a finish command to the controller module
  *
  *  @param[in]  hwAttrs    A pointer to an I2C_HWAttrs structure
  */
-extern void I2CSupport_masterFinish(I2C_HWAttrs const *hwAttrs);
+extern void I2CSupport_controllerFinish(I2C_HWAttrs const *hwAttrs);
 
 /*!
  *  @brief  Function to set power constraint
@@ -78,7 +78,7 @@ extern void I2CSupport_powerRelConstraint(void);
  *  @retval I2C_STATUS_SUCCESS    The transfer was successful
  *  @retval I2C_STATUS_INCOMPLETE I2C transaction is in progress or returned
  *                                without completing
- *  @retval I2C_STATUS_BUS_BUSY   I2C bus already in use by another I2C Master
+ *  @retval I2C_STATUS_BUS_BUSY   I2C bus already in use by another I2C Controller
  */
 extern int_fast16_t I2CSupport_primeTransfer(I2C_Handle handle, I2C_Transaction *transaction);
 

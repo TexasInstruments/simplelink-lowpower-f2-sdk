@@ -64,7 +64,7 @@ const I2SCC26XX_HWAttrs i2sCC26XXHWAttrs[`countDef`] = {
     % let inst = instances[i];
     % let sckPin = inst.sckPinInstance.$name;
     % let wsPin = inst.wsPinInstance.$name;
-    % let mclkPin = "GPIO_INVALID_INDEX";
+    % let cclkPin = "GPIO_INVALID_INDEX";
     % let sd0Pin = "GPIO_INVALID_INDEX";
     % let sd1Pin = "GPIO_INVALID_INDEX";
     %
@@ -74,8 +74,8 @@ const I2SCC26XX_HWAttrs i2sCC26XXHWAttrs[`countDef`] = {
     % if (inst.sd1PinInstance) {
     %     sd1Pin = inst.sd1PinInstance.$name;
     % }
-    % if (inst.mclkPinInstance) {
-    %     mclkPin = inst.mclkPinInstance.$name;
+    % if (inst.cclkPinInstance) {
+    %     cclkPin = inst.cclkPinInstance.$name;
     % }
     %
     /* `inst.$name` */
@@ -88,7 +88,7 @@ const I2SCC26XX_HWAttrs i2sCC26XXHWAttrs[`countDef`] = {
         .pinSD1      =  `sd1Pin`,
         .pinSD0      =  `sd0Pin`,
         .pinSCK      =  `sckPin`,
-        .pinMCLK     =  `mclkPin`,
+        .pinCCLK     =  `cclkPin`,
         .pinWS       =  `wsPin`,
         .intPriority =  `Common.intPriority2Hex(inst.interruptPriority)`
     }

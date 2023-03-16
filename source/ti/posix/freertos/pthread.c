@@ -53,7 +53,7 @@ typedef void *(*pthread_RunFxn)(void *);
 /*  FreeRTOS 10.1.0 requires a valid name (when asserts are enabled).
  *  configMAX_TASK_NAME_LEN may be as small as one character.
  */
-static const char * const tname = "x";
+static const char *const tname = "x";
 
 /*
  *  ======== pthread_key_Obj ========
@@ -68,7 +68,8 @@ static const char * const tname = "x";
  *  If the destructor is non-NULL, it will be called when a thread
  *  exits and passed the thread-specific data for that key.
  */
-typedef struct pthread_key_Obj {
+typedef struct pthread_key_Obj
+{
     /* Optional destructor passed to pthread_key_create() */
     void (*destructor)(void *);
 
@@ -81,18 +82,19 @@ typedef struct pthread_key_Obj {
  *  Each thread maintains a list of the key specific data it has set.  Objects
  *  of this type are queued in the thread's key list.
  */
-typedef struct ThreadKeyData {
-    ListElem              elem;
+typedef struct ThreadKeyData
+{
+    ListElem elem;
 
     /* The key and data passed to pthread_setspecific() */
-    pthread_key_Obj      *key;
-    void                 *specData;
+    pthread_key_Obj *key;
+    void *specData;
 
     /*
      *  Back pointer for easy removal of thread data from key's list when
      *  the thread exits.
      */
-    struct KeyData       *keyData;
+    struct KeyData *keyData;
 } ThreadKeyData;
 
 /*
@@ -101,58 +103,58 @@ typedef struct ThreadKeyData {
  *  specific data for that key.  This way, when the key is deleted, we
  *  can easily remove the key specific object from the thread's key list.
  */
-typedef struct KeyData {
-    ListElem         elem;
-    ThreadKeyData    threadKeyData;
+typedef struct KeyData
+{
+    ListElem elem;
+    ThreadKeyData threadKeyData;
 } KeyData;
-
 
 /*
  *  ======== pthread_Obj ========
  */
-typedef struct pthread_Obj {
-    TaskHandle_t       freeRTOSTask;
-    int                priority;
+typedef struct pthread_Obj
+{
+    TaskHandle_t freeRTOSTask;
+    int priority;
 
-    SemaphoreHandle_t  joinSem;
+    SemaphoreHandle_t joinSem;
 
-    pthread_t          joinThread;
+    pthread_t joinThread;
 
-    bool               detached;
-    pthread_RunFxn     fxn;
-    void              *arg;
-    int                cancelState;
-    int                cancelPending;
+    bool detached;
+    pthread_RunFxn fxn;
+    void *arg;
+    int cancelState;
+    int cancelPending;
 
     /* Thread function return value */
-    void              *ret;
+    void *ret;
 
     /* Cleanup handlers */
     struct _pthread_cleanup_context *cleanupList;
 
     /* List of keys that the thread has called pthread_setspecific() on */
-    List               keyList;
+    List keyList;
 } pthread_Obj;
 
-static void _pthread_runStub(void  *arg);
+static void _pthread_runStub(void *arg);
 
 /*
  *  ======== defaultPthreadAttrs ========
  */
 static pthread_attr_t defaultPthreadAttrs = {
-    1,                          /* priority */
-    NULL,                       /* stack */
-    configPOSIX_STACK_SIZE      /* stacksize - must align for all kernels */
+    1,                     /* priority */
+    NULL,                  /* stack */
+    configPOSIX_STACK_SIZE /* stacksize - must align for all kernels */
         * sizeof(portSTACK_TYPE),
-    0,                          /* guardsize */
-    PTHREAD_CREATE_JOINABLE     /* detachstate */
+    0,                      /* guardsize */
+    PTHREAD_CREATE_JOINABLE /* detachstate */
 };
 
 static void removeThreadKeys(pthread_t pthread);
 
-
 static SemaphoreHandle_t mutex = NULL;
-static bool isInitialized = false;
+static bool isInitialized      = false;
 
 /*
  *************************************************************************
@@ -188,8 +190,7 @@ int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 /*
  *  ======== pthread_attr_getschedparam ========
  */
-int pthread_attr_getschedparam(const pthread_attr_t *attr,
-        struct sched_param *schedparam)
+int pthread_attr_getschedparam(const pthread_attr_t *attr, struct sched_param *schedparam)
 {
     schedparam->sched_priority = attr->priority;
     return (0);
@@ -198,8 +199,7 @@ int pthread_attr_getschedparam(const pthread_attr_t *attr,
 /*
  *  ======== pthread_attr_getstack ========
  */
-int pthread_attr_getstack (const pthread_attr_t *attr, void **stackaddr,
-        size_t *stacksize)
+int pthread_attr_getstack(const pthread_attr_t *attr, void **stackaddr, size_t *stacksize)
 {
     // TODO: This should be removed.  Can't pass stack to xTaskCreate()
     *stackaddr = attr->stack;
@@ -231,8 +231,8 @@ int pthread_attr_init(pthread_attr_t *attr)
  */
 int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 {
-    if ((detachstate != PTHREAD_CREATE_JOINABLE) &&
-            (detachstate != PTHREAD_CREATE_DETACHED)) {
+    if ((detachstate != PTHREAD_CREATE_JOINABLE) && (detachstate != PTHREAD_CREATE_DETACHED))
+    {
         return (EINVAL);
     }
 
@@ -252,10 +252,9 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 /*
  *  ======== pthread_attr_setschedparam ========
  */
-int pthread_attr_setschedparam(pthread_attr_t *attr,
-        const struct sched_param *schedparam)
+int pthread_attr_setschedparam(pthread_attr_t *attr, const struct sched_param *schedparam)
 {
-    int     priority = schedparam->sched_priority;
+    int priority = schedparam->sched_priority;
 
     /*
      *  Task priorities can range from 0 to configMAX_PRIORITIES - 1,
@@ -266,7 +265,8 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
      *  for freeing up memory of deleted tasks.
      */
 
-    if ((priority >= configMAX_PRIORITIES) || (priority <= tskIDLE_PRIORITY)) {
+    if ((priority >= configMAX_PRIORITIES) || (priority <= tskIDLE_PRIORITY))
+    {
         /* Bad priority value */
         return (EINVAL);
     }
@@ -283,10 +283,9 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
  *  Any allocated memory area for the pointer attr->stack will
  *  therefore be unused.
  */
-int pthread_attr_setstack (pthread_attr_t *attr, void *stackaddr,
-        size_t stacksize)
+int pthread_attr_setstack(pthread_attr_t *attr, void *stackaddr, size_t stacksize)
 {
-    attr->stack = stackaddr;
+    attr->stack     = stackaddr;
     attr->stacksize = stacksize;
     return (0);
 }
@@ -318,7 +317,7 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
  */
 int pthread_cancel(pthread_t pthread)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
 
     /* Disable the scheduler */
     vTaskSuspendAll();
@@ -326,7 +325,8 @@ int pthread_cancel(pthread_t pthread)
     /* Indicate that cancellation is requested. */
     thread->cancelPending = 1;
 
-    if (thread->cancelState == PTHREAD_CANCEL_ENABLE) {
+    if (thread->cancelState == PTHREAD_CANCEL_ENABLE)
+    {
         /* suspend given thread to stop it from running */
         vTaskSuspend(thread->freeRTOSTask);
 
@@ -334,14 +334,16 @@ int pthread_cancel(pthread_t pthread)
         xTaskResumeAll();
 
         /* Pop and execute the cleanup handlers */
-        while (thread->cleanupList != NULL) {
+        while (thread->cleanupList != NULL)
+        {
             _pthread_cleanup_pop(thread->cleanupList, 1);
         }
 
         /* Cleanup any pthread specific data */
         removeThreadKeys(pthread);
 
-        if (thread->detached) {
+        if (thread->detached)
+        {
             /*  Tasks must not return (attempting to do so will result
              *  in configASSERT() if defined).  If the task must exit, it
              *  must call vTaskDelete(NULL) to ensure a clean exit.
@@ -349,13 +351,15 @@ int pthread_cancel(pthread_t pthread)
             vTaskDelete(thread->freeRTOSTask);
             vPortFree(thread);
         }
-        else {
+        else
+        {
             /* The joining thread will clean up */
             thread->ret = PTHREAD_CANCELED;
             xSemaphoreGive(thread->joinSem);
         }
     }
-    else {
+    else
+    {
         /* Re-enable the scheduler */
         xTaskResumeAll();
     }
@@ -366,67 +370,73 @@ int pthread_cancel(pthread_t pthread)
 /*
  *  ======== pthread_create ========
  */
-int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
-        void *(*startroutine)(void *), void *arg)
+int pthread_create(pthread_t *newthread, const pthread_attr_t *attr, void *(*startroutine)(void *), void *arg)
 {
-    BaseType_t        status;
-    pthread_Obj      *thread = NULL;
-    const pthread_attr_t   *pAttr;
-    int               retVal = 0;
-    bool              schedulerStarted;
+    BaseType_t status;
+    pthread_Obj *thread = NULL;
+    const pthread_attr_t *pAttr;
+    int retVal = 0;
+    bool schedulerStarted;
 
     pAttr = (attr == NULL) ? &defaultPthreadAttrs : attr;
 
     thread = pvPortMalloc(sizeof(pthread_Obj));
-    if (thread == NULL) {
+    if (thread == NULL)
+    {
         return (ENOMEM);
     }
 
-    thread->detached = (pAttr->detachstate == PTHREAD_CREATE_JOINABLE) ?
-            false : true;
-    thread->fxn = startroutine;
-    thread->arg = arg;
-    thread->joinThread = NULL;
-    thread->joinSem = NULL;
-    thread->cancelState = PTHREAD_CANCEL_ENABLE;
+    thread->detached      = (pAttr->detachstate == PTHREAD_CREATE_JOINABLE) ? false : true;
+    thread->fxn           = startroutine;
+    thread->arg           = arg;
+    thread->joinThread    = NULL;
+    thread->joinSem       = NULL;
+    thread->cancelState   = PTHREAD_CANCEL_ENABLE;
     thread->cancelPending = 0;
-    thread->priority = pAttr->priority;
-    thread->cleanupList = NULL;
+    thread->priority      = pAttr->priority;
+    thread->cleanupList   = NULL;
     thread->keyList.next = thread->keyList.prev = NULL;
 
-    if (pAttr->detachstate == PTHREAD_CREATE_JOINABLE) {
+    if (pAttr->detachstate == PTHREAD_CREATE_JOINABLE)
+    {
         /*
          *  Create the join semaphore for pthread_join().  The semaphore
          *  is created in the 'empty' state.
          */
         thread->joinSem = xSemaphoreCreateBinary();
-        if (thread->joinSem == NULL) {
+        if (thread->joinSem == NULL)
+        {
             vPortFree(thread);
             return (ENOMEM);
         }
     }
 
-    schedulerStarted =
-        (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) ? false : true;
+    schedulerStarted = (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) ? false : true;
 
-    if (schedulerStarted) {
+    if (schedulerStarted)
+    {
         /* Disable the scheduler */
         vTaskSuspendAll();
     }
 
-    status = xTaskCreate((TaskFunction_t)_pthread_runStub, tname,
-            ((uint16_t)pAttr->stacksize) / sizeof(portSTACK_TYPE),
-            (void *)thread, pAttr->priority, &(thread->freeRTOSTask));
+    status = xTaskCreate((TaskFunction_t)_pthread_runStub,
+                         tname,
+                         ((uint16_t)pAttr->stacksize) / sizeof(portSTACK_TYPE),
+                         (void *)thread,
+                         pAttr->priority,
+                         &(thread->freeRTOSTask));
 
-    if (status == pdPASS) {
+    if (status == pdPASS)
+    {
         /*  Set the task tag to the pthread object so we can use it
          *  in pthread_self().
          */
-        vTaskSetApplicationTaskTag(thread->freeRTOSTask,
-                (TaskHookFunction_t)thread);
+        vTaskSetApplicationTaskTag(thread->freeRTOSTask, (TaskHookFunction_t)thread);
     }
-    else {
-        if (thread->joinSem != NULL) {
+    else
+    {
+        if (thread->joinSem != NULL)
+        {
             vSemaphoreDelete(thread->joinSem);
         }
         vPortFree(thread);
@@ -437,7 +447,8 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
     /* store thread handle before releasing the scheduler */
     *newthread = (pthread_t)thread;
 
-    if (schedulerStarted) {
+    if (schedulerStarted)
+    {
         /* Re-enable the scheduler */
         xTaskResumeAll();
     }
@@ -450,17 +461,19 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr,
  */
 int pthread_detach(pthread_t pthread)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
 
     /* Disable the scheduler */
     vTaskSuspendAll();
 
-    if (!thread->detached) {
+    if (!thread->detached)
+    {
         /*
          *  If a thread has already joined this thread, the joining
          *  thread must have been canceled before this thread is detached.
          */
-        if (thread->joinSem) {
+        if (thread->joinSem)
+        {
             vSemaphoreDelete(thread->joinSem);
         }
         thread->detached = true;
@@ -503,7 +516,8 @@ void pthread_exit(void *retval)
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
 
     /* pop and execute the cleanup handlers */
-    while (thread->cleanupList != NULL) {
+    while (thread->cleanupList != NULL)
+    {
         _pthread_cleanup_pop(thread->cleanupList, 1);
     }
 
@@ -511,13 +525,15 @@ void pthread_exit(void *retval)
     removeThreadKeys((pthread_t)thread);
 
     /* if this thread is not detached, rendezvous with joining thread */
-    if (!thread->detached) {
+    if (!thread->detached)
+    {
         xSemaphoreGive(thread->joinSem);
 
         /* suspend ourself, the joining thread will clean up */
         vTaskSuspend(NULL);
     }
-    else {
+    else
+    {
         vPortFree(thread);
 
         /*  Tasks must not return (attempting to do so will result
@@ -531,10 +547,9 @@ void pthread_exit(void *retval)
 /*
  *  ======== pthread_getschedparam ========
  */
-int pthread_getschedparam(pthread_t pthread, int *policy,
-        struct sched_param *param)
+int pthread_getschedparam(pthread_t pthread, int *policy, struct sched_param *param)
 {
-    pthread_Obj      *thread = (pthread_Obj *)pthread;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
 
     *policy = SCHED_OTHER;
 
@@ -553,10 +568,10 @@ int pthread_getschedparam(pthread_t pthread, int *policy,
  */
 void *pthread_getspecific(pthread_key_t key)
 {
-    pthread_Obj        *thread = (pthread_Obj *)pthread_self();
-    ThreadKeyData      *threadData;
-    void               *specData = NULL;
-    int                 oldState;
+    pthread_Obj *thread = (pthread_Obj *)pthread_self();
+    ThreadKeyData *threadData;
+    void *specData = NULL;
+    int oldState;
 
     /* prevent thread cancellation while holding the mutex */
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
@@ -565,8 +580,10 @@ void *pthread_getspecific(pthread_key_t key)
 
     threadData = (ThreadKeyData *)(thread->keyList.next);
 
-    while (threadData != NULL) {
-        if (threadData->key == (pthread_key_Obj *)key) {
+    while (threadData != NULL)
+    {
+        if (threadData->key == (pthread_key_Obj *)key)
+        {
             specData = threadData->specData;
             break;
         }
@@ -582,7 +599,6 @@ void *pthread_getspecific(pthread_key_t key)
     return (specData);
 }
 
-
 /*
  *  ======== pthread_join ========
  *  Wait for thread to terminate.
@@ -595,12 +611,13 @@ void *pthread_getspecific(pthread_key_t key)
  */
 int pthread_join(pthread_t pthread, void **thread_return)
 {
-    pthread_Obj  *thread = (pthread_Obj *)pthread;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
 
     /* Disable the scheduler */
     vTaskSuspendAll();
 
-    if ((thread->joinThread != NULL) || (thread->detached != 0)) {
+    if ((thread->joinThread != NULL) || (thread->detached != 0))
+    {
         /*
          *  Error - Another thread has already called pthread_join()
          *  for this thread, or the thread is in the detached state.
@@ -611,7 +628,8 @@ int pthread_join(pthread_t pthread, void **thread_return)
         return (EINVAL);
     }
 
-    if (pthread == pthread_self()) {
+    if (pthread == pthread_self())
+    {
         /* Re-enable the scheduler */
         xTaskResumeAll();
 
@@ -625,7 +643,8 @@ int pthread_join(pthread_t pthread, void **thread_return)
 
     xSemaphoreTake(thread->joinSem, portMAX_DELAY);
 
-    if (thread_return) {
+    if (thread_return)
+    {
         *thread_return = thread->ret;
     }
 
@@ -642,7 +661,7 @@ int pthread_join(pthread_t pthread, void **thread_return)
 /*
  *  ======== pthread_key_create ========
  */
-int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
+int pthread_key_create(pthread_key_t *key, void (*destructor)(void *))
 {
     pthread_key_Obj *newKey;
 
@@ -651,10 +670,12 @@ int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
     /* Disable the scheduler */
     vTaskSuspendAll();
 
-    if (!isInitialized) {
+    if (!isInitialized)
+    {
         /* Create mutex for protecting key lists */
         mutex = xSemaphoreCreateMutex();
-        if (mutex == NULL) {
+        if (mutex == NULL)
+        {
             xTaskResumeAll();
             return (ENOMEM);
         }
@@ -666,11 +687,12 @@ int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
     xTaskResumeAll();
 
     newKey = pvPortMalloc(sizeof(pthread_key_Obj));
-    if (newKey == NULL) {
+    if (newKey == NULL)
+    {
         return (ENOMEM);
     }
 
-    newKey->destructor = destructor;
+    newKey->destructor       = destructor;
     newKey->keyDataList.next = newKey->keyDataList.prev = NULL;
 
     *key = (pthread_key_t)newKey;
@@ -683,10 +705,10 @@ int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
  */
 int pthread_key_delete(pthread_key_t key)
 {
-    pthread_key_Obj    *keyObj = (pthread_key_Obj *)key;
-    KeyData            *keyData, *next;
-    ThreadKeyData      *threadData; //, *tmpThreadData;
-    int                 oldState;
+    pthread_key_Obj *keyObj = (pthread_key_Obj *)key;
+    KeyData *keyData, *next;
+    ThreadKeyData *threadData; //, *tmpThreadData;
+    int oldState;
 
     /* prevent thread cancellation while holding the mutex */
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
@@ -695,12 +717,14 @@ int pthread_key_delete(pthread_key_t key)
 
     keyData = (KeyData *)(keyObj->keyDataList.next);
 
-    while (keyData != NULL) {
+    while (keyData != NULL)
+    {
         next = (KeyData *)(keyData->elem.next);
 
         /* Remove the key from thread's list */
         threadData = (ThreadKeyData *)&(keyData->threadKeyData);
-        if (threadData->elem.next != NULL) {
+        if (threadData->elem.next != NULL)
+        {
             threadData->elem.next->prev = threadData->elem.prev;
         }
         threadData->elem.prev->next = threadData->elem.next;
@@ -725,22 +749,24 @@ int pthread_key_delete(pthread_key_t key)
  */
 int pthread_once(pthread_once_t *once, void (*initFxn)(void))
 {
-    bool              schedulerStarted;
+    bool schedulerStarted;
 
-    schedulerStarted = (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) ?
-            false : true;
+    schedulerStarted = (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) ? false : true;
 
-    if (schedulerStarted) {
+    if (schedulerStarted)
+    {
         /* Disable the scheduler */
         vTaskSuspendAll();
     }
 
-    if (*once == PTHREAD_ONCE_INIT) {
+    if (*once == PTHREAD_ONCE_INIT)
+    {
         (*initFxn)();
         *once = ~PTHREAD_ONCE_INIT;
     }
 
-    if (schedulerStarted) {
+    if (schedulerStarted)
+    {
         /* Re-enable the scheduler */
         xTaskResumeAll();
     }
@@ -754,9 +780,9 @@ int pthread_once(pthread_once_t *once, void (*initFxn)(void))
 pthread_t pthread_self(void)
 {
     TaskHandle_t task;
-    pthread_t    thread;
+    pthread_t thread;
 
-    task = xTaskGetCurrentTaskHandle();
+    task   = xTaskGetCurrentTaskHandle();
     thread = (pthread_t)xTaskGetApplicationTaskTag(task);
 
     return (thread);
@@ -769,14 +795,16 @@ int pthread_setcancelstate(int state, int *oldState)
 {
     pthread_Obj *thread = (pthread_Obj *)pthread_self();
 
-    if ((state != PTHREAD_CANCEL_ENABLE) && (state != PTHREAD_CANCEL_DISABLE)) {
+    if ((state != PTHREAD_CANCEL_ENABLE) && (state != PTHREAD_CANCEL_DISABLE))
+    {
         return (EINVAL);
     }
 
-    *oldState = thread->cancelState;
+    *oldState           = thread->cancelState;
     thread->cancelState = state;
 
-    if ((state == PTHREAD_CANCEL_ENABLE) && thread->cancelPending) {
+    if ((state == PTHREAD_CANCEL_ENABLE) && thread->cancelPending)
+    {
         pthread_exit((void *)PTHREAD_CANCELED);
     }
 
@@ -786,15 +814,15 @@ int pthread_setcancelstate(int state, int *oldState)
 /*
  *  ======== pthread_setschedparam ========
  */
-int pthread_setschedparam(pthread_t pthread, int policy,
-        const struct sched_param *param)
+int pthread_setschedparam(pthread_t pthread, int policy, const struct sched_param *param)
 {
-#if ( INCLUDE_vTaskPrioritySet == 1 )
-    pthread_Obj     *thread = (pthread_Obj *)pthread;
-    TaskHandle_t     task = thread->freeRTOSTask;
-    int              priority = param->sched_priority;
+#if (INCLUDE_vTaskPrioritySet == 1)
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    TaskHandle_t task   = thread->freeRTOSTask;
+    int priority        = param->sched_priority;
 
-    if ((priority >= configMAX_PRIORITIES) || (priority <= tskIDLE_PRIORITY)) {
+    if ((priority >= configMAX_PRIORITIES) || (priority <= tskIDLE_PRIORITY))
+    {
         return (EINVAL);
     }
 
@@ -812,13 +840,13 @@ int pthread_setschedparam(pthread_t pthread, int policy,
  */
 int pthread_setspecific(pthread_key_t key, const void *value)
 {
-    pthread_Obj        *thread = (pthread_Obj *)pthread_self();
-    pthread_key_Obj    *keyObj = (pthread_key_Obj *)key;
-    ThreadKeyData      *threadData;
-    KeyData            *newKeyData;
-    bool                found = false;
-    int                 retVal = 0;
-    int                 oldState;
+    pthread_Obj *thread     = (pthread_Obj *)pthread_self();
+    pthread_key_Obj *keyObj = (pthread_key_Obj *)key;
+    ThreadKeyData *threadData;
+    KeyData *newKeyData;
+    bool found = false;
+    int retVal = 0;
+    int oldState;
 
     /* prevent thread cancellation while holding the mutex */
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldState);
@@ -831,41 +859,47 @@ int pthread_setspecific(pthread_key_t key, const void *value)
 
     threadData = (ThreadKeyData *)(thread->keyList.next);
 
-    while (threadData != NULL) {
-        if (threadData->key == keyObj) {
+    while (threadData != NULL)
+    {
+        if (threadData->key == keyObj)
+        {
             /* Found the key */
             threadData->specData = (void *)value;
-            found = true;
+            found                = true;
             break;
         }
 
         threadData = (ThreadKeyData *)(threadData->elem.next);
     }
 
-    if (!found) {
+    if (!found)
+    {
         newKeyData = pvPortMalloc(sizeof(KeyData));
-        if (newKeyData == NULL) {
+        if (newKeyData == NULL)
+        {
             retVal = ENOMEM;
         }
-        else {
-            newKeyData->threadKeyData.key = keyObj;
+        else
+        {
+            newKeyData->threadKeyData.key      = keyObj;
             newKeyData->threadKeyData.specData = (void *)value;
-            newKeyData->threadKeyData.keyData = newKeyData;
+            newKeyData->threadKeyData.keyData  = newKeyData;
 
             /* Put newKeyData on the key object's list */
             newKeyData->elem.next = keyObj->keyDataList.next;
-            if (keyObj->keyDataList.next) {
+            if (keyObj->keyDataList.next)
+            {
                 keyObj->keyDataList.next->prev = (ListElem *)newKeyData;
             }
-            newKeyData->elem.prev = &(keyObj->keyDataList);
+            newKeyData->elem.prev    = &(keyObj->keyDataList);
             keyObj->keyDataList.next = (ListElem *)newKeyData;
 
             /* Put the threadKeyData part on the thread's key list */
             newKeyData->threadKeyData.elem.next = thread->keyList.next;
             newKeyData->threadKeyData.elem.prev = &(thread->keyList);
-            if (thread->keyList.next) {
-                thread->keyList.next->prev =
-                    (ListElem *)&(newKeyData->threadKeyData);
+            if (thread->keyList.next)
+            {
+                thread->keyList.next->prev = (ListElem *)&(newKeyData->threadKeyData);
             }
             thread->keyList.next = (ListElem *)&(newKeyData->threadKeyData);
         }
@@ -879,7 +913,6 @@ int pthread_setspecific(pthread_key_t key, const void *value)
     return (retVal);
 }
 
-
 /*
  *************************************************************************
  *              internal functions
@@ -889,14 +922,14 @@ int pthread_setspecific(pthread_key_t key, const void *value)
 /*
  *  ======== _pthread_cleanup_pop ========
  */
-void _pthread_cleanup_pop(struct _pthread_cleanup_context *context,
-        int execute)
+void _pthread_cleanup_pop(struct _pthread_cleanup_context *context, int execute)
 {
-    pthread_Obj    *thread = (pthread_Obj *)context->thread;
+    pthread_Obj *thread = (pthread_Obj *)context->thread;
 
     thread->cleanupList = context->next;
 
-    if (execute) {
+    if (execute)
+    {
         (*(context->fxn))(context->arg);
     }
 }
@@ -904,15 +937,14 @@ void _pthread_cleanup_pop(struct _pthread_cleanup_context *context,
 /*
  *  ======== _pthread_cleanup_push ========
  */
-void _pthread_cleanup_push(struct _pthread_cleanup_context *context,
-        void (*fxn)(void *), void *arg)
+void _pthread_cleanup_push(struct _pthread_cleanup_context *context, void (*fxn)(void *), void *arg)
 {
-    pthread_Obj    *thread = (pthread_Obj *)pthread_self();
+    pthread_Obj *thread = (pthread_Obj *)pthread_self();
 
-    context->fxn = fxn;
-    context->arg = arg;
-    context->thread = (pthread_t)thread;
-    context->next = thread->cleanupList;
+    context->fxn        = fxn;
+    context->arg        = arg;
+    context->thread     = (pthread_t)thread;
+    context->next       = thread->cleanupList;
     thread->cleanupList = context;
 }
 
@@ -931,7 +963,6 @@ static void _pthread_runStub(void *arg)
     pthread_exit(xstat);
 }
 
-
 /*
  *  ======== removeThreadKeys ========
  *  This function is called when a thread exits.  We go through the list
@@ -939,32 +970,36 @@ static void _pthread_runStub(void *arg)
  */
 static void removeThreadKeys(pthread_t pthread)
 {
-    pthread_Obj        *thread = (pthread_Obj *)pthread;
-    ThreadKeyData      *threadData;
-    KeyData            *keyData;
-    pthread_key_Obj    *keyObj;
+    pthread_Obj *thread = (pthread_Obj *)pthread;
+    ThreadKeyData *threadData;
+    KeyData *keyData;
+    pthread_key_Obj *keyObj;
 
     /* Disable the scheduler */
     vTaskSuspendAll();
 
-    while (thread->keyList.next) {
-        threadData = (ThreadKeyData *)thread->keyList.next;
+    while (thread->keyList.next)
+    {
+        threadData           = (ThreadKeyData *)thread->keyList.next;
         thread->keyList.next = threadData->elem.next;
 
         keyData = threadData->keyData;
 
         /* Remove keyData from the pthread_key_Obj's list */
-        if (keyData->elem.prev) {
+        if (keyData->elem.prev)
+        {
             keyData->elem.prev->next = keyData->elem.next;
         }
-        if (keyData->elem.next) {
+        if (keyData->elem.next)
+        {
             keyData->elem.next->prev = keyData->elem.prev;
         }
 
         /* invoke destructor if provided by the key object */
         keyObj = threadData->key;
 
-        if ((keyObj->destructor != NULL) && (threadData->specData != NULL)) {
+        if ((keyObj->destructor != NULL) && (threadData->specData != NULL))
+        {
             (keyObj->destructor)(threadData->specData);
         }
 

@@ -226,7 +226,7 @@
                     "number" : 18,
                     "ball"   : "29",
                     "name"   : "DIO11",
-                    "preferredType": ["SPI_SS"]
+                    "preferredType": ["SPI_CSN"]
                 },
                 {
                     "number" : 17,
@@ -241,13 +241,13 @@
                     "number" : 15,
                     "ball"   : "27",
                     "name"   : "DIO9",
-                    "preferredType" : ["SPI_MOSI"]
+                    "preferredType" : ["SPI_PICO"]
                 },
                 {
                     "number" : 14,
                     "ball"   : "26",
                     "name"   : "DIO8",
-                    "preferredType" : ["SPI_MISO"]
+                    "preferredType" : ["SPI_POCI"]
                 },
                 {
                     "number" : 13,
@@ -348,8 +348,8 @@
             "definition"  : "/ti/boards/components/spiBus.json",
             "connections" : {
                 "SCLK"    : "28",
-                "MOSI"    : "27",
-                "MISO"    : "26"
+                "PICO"    : "27",
+                "POCI"    : "26"
             }
         },
 
@@ -367,7 +367,7 @@
                     "description" : "Standard BoosterPack header SPI Chip Select",
                     "longDescription" : "Standard BoosterPack header SPI Chip Select",
                     "connections" : {
-                        "SS": "29"
+                        "CSN": "29"
                     }
                 }
             }
@@ -391,7 +391,7 @@
                     "longDescription" : "MX25R8035F SPI flash Chip Select",
                     "definition"  : "/ti/boards/components/spiSelect.json",
                     "connections" : {
-                        "SS": "41"
+                        "CSN": "41"
                     }
                 }
             }

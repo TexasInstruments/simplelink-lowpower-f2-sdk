@@ -50,6 +50,7 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/imports.conan.mak)
     read_makefile_vars(${CMAKE_CURRENT_SOURCE_DIR}/imports.conan.mak)
     # And set the internal build flag so components can make decisions
     set(TI_INTERNAL_BUILD 1 CACHE BOOL INTERNAL)
+    message(VERBOSE "This is an internal build")
 else ()
     # Clear the internal build flag
     unset(TI_INTERNAL_BUILD CACHE)
@@ -95,6 +96,33 @@ endif ()
 
 # This project call is mandatory - it configures the toolchain files and checks the ASM compiler
 project(common_cmake LANGUAGES C ASM)
+
+define_property(
+    DIRECTORY PROPERTY TI_NAMESPACE BRIEF_DOCS "Current package namespace"
+    FULL_DOCS "Set by ti_init_package, used by ti_add_library and ti_export_package"
+)
+define_property(
+    DIRECTORY PROPERTY TI_PACKAGE_NAME BRIEF_DOCS "Current package name"
+    FULL_DOCS "Set by ti_init_package, used by ti_add_library and ti_export_package"
+)
+define_property(
+    DIRECTORY PROPERTY TI_PACKAGE_TYPE BRIEF_DOCS "Current package type"
+    FULL_DOCS "Set by ti_init_package, used by ti_add_library and ti_export_package"
+)
+define_property(
+    DIRECTORY PROPERTY TI_PACKAGE_DEPENDENCIES BRIEF_DOCS "Current package dependencies"
+    FULL_DOCS "All packages in this list will have find_package() called by the generated Config file"
+)
+
+define_property(
+    DIRECTORY PROPERTY TI_PACKAGE_LIBRARIES BRIEF_DOCS "Current package generated libraries"
+    FULL_DOCS "A list of libraries created by ti_add_library. This property can be used by callers to "
+              "perform operations on all current libraries. Reset by ti_init_package()."
+)
+define_property(
+    DIRECTORY PROPERTY TI_PACKAGE_TARGET_FILES BRIEF_DOCS "Current package generated target files"
+    FULL_DOCS "A list of Targets.cmake files created by ti_add_library"
+)
 
 ################################################################################
 ## STEP 2: Locate device files and generate SUPPORTED_PLATFORMS/SUPPORTED_ARCHITECTURES
@@ -189,19 +217,10 @@ endif ()
 foreach (component_dir ${CMAKE_COMPONENT_FOLDERS})
     list(APPEND CMAKE_PREFIX_PATH "${component_dir}/${TI_TOOLCHAIN_NAME}")
 endforeach ()
-# Find and add all packages
-foreach (component_dir ${CMAKE_COMPONENT_FOLDERS})
-    message(DEBUG "Scanning folder ${component_dir}/${TI_TOOLCHAIN_NAME}")
-    file(GLOB pkgconfigs ${component_dir}/${TI_TOOLCHAIN_NAME}/*Config.cmake)
-    foreach (pkgconfig ${pkgconfigs})
-        get_filename_component(confbase ${pkgconfig} NAME_WE)
-        string(REGEX REPLACE "(.*)Config" "\\1" pkgname ${confbase})
-        message(DEBUG "-- Found ${pkgname}")
-        unset(${pkgname}_DIR CACHE) # Force a new search in case new conan install
-        find_package(${pkgname})
-    endforeach ()
-endforeach ()
+
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING INTERNAL)
+message(VERBOSE "Supported components: ${CMAKE_PREFIX_PATH}")
 
 # Print the list of located components
-string(REPLACE ";" ", " COMPONENTS_PRINTABLE "${SUPPORTED_COMPONENTS}")
-message(VERBOSE "Supported components: ${COMPONENTS_PRINTABLE}")
+string(REPLACE ";" ", " PREFIX_PATH_PRINTABLE "${CMAKE_PREFIX_PATH}")
+message(VERBOSE "Package search paths: ${PREFIX_PATH_PRINTABLE}")

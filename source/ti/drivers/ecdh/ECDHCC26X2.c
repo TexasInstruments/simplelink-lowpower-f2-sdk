@@ -63,9 +63,13 @@
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
 #endif
 
+#if (TFM_ENABLED == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+#endif
+
 /* Forward declarations */
 static void ECDHCC26X2_hwiFxn(uintptr_t arg0);
-#if (SPE_ENABLED == 0)
+#if (TFM_ENABLED == 0)
 static void ECDHCC26X2_internalCallbackFxn(ECDH_Handle handle,
                                            int_fast16_t returnStatus,
                                            ECDH_Operation operation,
@@ -110,7 +114,7 @@ static uint32_t resultPKAMemAddr;
 /* Octet string format requires an extra byte at the start of the public key */
 #define OCTET_STRING_OFFSET 1
 
-#if (SPE_ENABLED == 0)
+#if (TFM_ENABLED == 0)
 /*
  *  ======== ECDHCC26X2_internalCallbackFxn ========
  */
@@ -137,6 +141,7 @@ static void ECDHCC26X2_internalCallbackFxn(ECDH_Handle handle,
 #endif
 
 #if (ENABLE_KEY_STORAGE == 1)
+
 /*
  *  ======== ECDHCC26X2_importSecureKey ========
  */
@@ -146,48 +151,29 @@ static int_fast16_t ECDHCC26X2_importSecureKey(CryptoKey *key,
                                                ECDH_OperationType opType)
 {
     KeyStore_PSA_KeyFileId keyID;
-    KeyStore_PSA_KeyType keyType;
-    KeyStore_PSA_KeyUsage keyUsage = (KEYSTORE_PSA_KEY_USAGE_ENCRYPT | KEYSTORE_PSA_KEY_USAGE_EXPORT);
     int_fast16_t status;
-    int_fast16_t pkaResult                = ECDH_STATUS_KEYSTORE_ERROR;
+    int_fast16_t pkaResult = ECDH_STATUS_KEYSTORE_ERROR;
+    KeyStore_PSA_KeyAttributes *attributesPtr;
     KeyStore_PSA_KeyAttributes attributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
-
-    KeyStore_PSA_setKeyAlgorithm(&attributes, KEYSTORE_PSA_ALG_ECDH);
-
-    if (curveType == ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3)
-    {
-        keyType = (KEYSTORE_PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | KEYSTORE_PSA_ECC_CURVE_SECP256K1);
-    }
-    else if (curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
-    {
-        keyType = (KEYSTORE_PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | KEYSTORE_PSA_ECC_CURVE_CURVE25519);
-    }
-    else
-    {
-        return ECDH_STATUS_KEYSTORE_ERROR;
-    }
-
-    if (opType == ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET)
-    {
-        keyUsage |= KEYSTORE_PSA_KEY_USAGE_DECRYPT;
-    }
-
-    KeyStore_PSA_setKeyType(&attributes, keyType);
-    KeyStore_PSA_setKeyUsageFlags(&attributes, keyUsage);
 
     if (key->u.keyStore.keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
     {
         GET_KEY_ID(keyID, key->u.keyStore.keyID);
-
-        KeyStore_PSA_setKeyId(&attributes, keyID);
-        KeyStore_PSA_setKeyLifetime(&attributes, KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT);
     }
 
-    status = KeyStore_PSA_importKey(&attributes, keyingMaterial, key->u.keyStore.keyLength, &keyID);
+    #if (TFM_ENABLED == 0)
+    attributesPtr = (KeyStore_PSA_KeyAttributes *)key->u.keyStore.keyAttributes;
+    #else
+    attributesPtr = &attributes;
+    status = KeyStore_s_copyKeyAttributesFromClient((struct psa_client_key_attributes_s *)key->u.keyStore.keyAttributes,
+                                                    KEYSTORE_PSA_DEFAULT_OWNER,
+                                                    attributesPtr);
+    #endif
+    status = KeyStore_PSA_importKey(attributesPtr, keyingMaterial, key->u.keyStore.keyLength, &keyID);
 
     if (status == KEYSTORE_PSA_STATUS_SUCCESS)
     {
-        KeyStore_PSA_initKey(key, keyID, key->u.keyStore.keyLength);
+        KeyStore_PSA_initKey(key, keyID, key->u.keyStore.keyLength, attributesPtr);
         pkaResult = ECDH_STATUS_SUCCESS;
     }
 
@@ -255,61 +241,13 @@ static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey *key,
          * without OCTET_STRING_OFFSET for little-endian keys
          */
         pkaResult = PKAEccMultiplyGetResult(keyMaterial, keyMaterial + curve->length, resultPKAMemAddr, curve->length);
-        if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
-        {
-            /* Zero-out the Y coordinate */
-            memset(keyMaterial + curve->length + OCTET_STRING_OFFSET, 0x00, curve->length);
-        }
     }
 
-    status = ECDHCC26X2_convertReturnValue(pkaResult);
-
-#if (ENABLE_KEY_STORAGE == 1)
-    if ((status == ECDHCC26X2_STATUS_FSM_RUN_FSM) && (key->encoding == CryptoKey_BLANK_KEYSTORE))
+    if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
     {
-        status = ECDHCC26X2_importSecureKey(key, KeyStore_keyingMaterial, curve->curveType, opType);
+        /* Zero-out the Y coordinate */
+        memset(keyMaterial + curve->length + OCTET_STRING_OFFSET, 0x00, curve->length);
     }
-#endif
-
-    return status;
-}
-
-/*
- *  ======== ECDHCC26X2_getKeyResultMontgomery ========
- */
-static int_fast16_t ECDHCC26X2_getKeyResultMontgomery(CryptoKey *key,
-                                                      const ECCParams_CurveParams *curve,
-                                                      ECDH_OperationType opType)
-{
-    uint32_t pkaResult;
-    int_fast16_t status;
-    uint8_t *keyMaterial;
-#if (ENABLE_KEY_STORAGE == 1)
-    uint8_t KeyStore_keyingMaterial[ECDH_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
-#endif
-
-    /*
-     * Support for both Plaintext and KeyStore keys for myPrivateKey
-     */
-    if (key->encoding == CryptoKey_BLANK_PLAINTEXT)
-    {
-        keyMaterial = key->u.plaintext.keyMaterial;
-    }
-#if (ENABLE_KEY_STORAGE == 1)
-    else if (key->encoding == CryptoKey_BLANK_KEYSTORE)
-    {
-        keyMaterial = KeyStore_keyingMaterial;
-    }
-#endif
-    else
-    {
-        return ECDH_STATUS_ERROR;
-    }
-    /* Montgomery curves use X-only little-endian public keys */
-    pkaResult = PKAEccMultiplyGetResult(keyMaterial,
-                                        NULL, /* No Y-Coordinate */
-                                        resultPKAMemAddr,
-                                        curve->length);
 
     status = ECDHCC26X2_convertReturnValue(pkaResult);
 
@@ -512,21 +450,10 @@ static int_fast16_t ECDHCC26X2_runFSM(ECDH_Handle handle)
             break;
 
         case ECDHCC26X2_FSM_GEN_PUB_KEY_MULT_PRIVATE_KEY_BY_GENERATOR_RESULT_MONTGOMERY:
-
-            if ((object->operation.generatePublicKey->keyMaterialEndianness == ECDH_LITTLE_ENDIAN_KEY) &&
-                (object->operation.generatePublicKey->curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY))
-            {
-                status = ECDHCC26X2_getKeyResultMontgomery(object->operation.generatePublicKey->myPublicKey,
-                                                           object->operation.generatePublicKey->curve,
-                                                           ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY);
-            }
-            else
-            {
-                status = ECDHCC26X2_getKeyResult(object->operation.generatePublicKey->myPublicKey,
-                                                 object->operation.generatePublicKey->curve,
-                                                 object->operation.generatePublicKey->keyMaterialEndianness,
-                                                 ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY);
-            }
+            status = ECDHCC26X2_getKeyResult(object->operation.generatePublicKey->myPublicKey,
+                                             object->operation.generatePublicKey->curve,
+                                             object->operation.generatePublicKey->keyMaterialEndianness,
+                                             ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY);
 
             return status;
 
@@ -601,21 +528,10 @@ static int_fast16_t ECDHCC26X2_runFSM(ECDH_Handle handle)
             break;
 
         case ECDHCC26X2_FSM_COMPUTE_SHARED_SECRET_MULT_PRIVATE_KEY_BY_PUB_KEY_RESULT_MONTGOMERY:
-
-            if ((object->operation.computeSharedSecret->keyMaterialEndianness == ECDH_LITTLE_ENDIAN_KEY) &&
-                (object->operation.computeSharedSecret->curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY))
-            {
-                status = ECDHCC26X2_getKeyResultMontgomery(object->operation.computeSharedSecret->sharedSecret,
-                                                           object->operation.computeSharedSecret->curve,
-                                                           ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET);
-            }
-            else
-            {
-                status = ECDHCC26X2_getKeyResult(object->operation.computeSharedSecret->sharedSecret,
-                                                 object->operation.computeSharedSecret->curve,
-                                                 object->operation.computeSharedSecret->keyMaterialEndianness,
-                                                 ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET);
-            }
+            status = ECDHCC26X2_getKeyResult(object->operation.computeSharedSecret->sharedSecret,
+                                             object->operation.computeSharedSecret->curve,
+                                             object->operation.computeSharedSecret->keyMaterialEndianness,
+                                             ECDH_OPERATION_TYPE_COMPUTE_SHARED_SECRET);
 
             return status;
 
@@ -749,7 +665,7 @@ ECDH_Handle ECDH_construct(ECDH_Config *config, const ECDH_Params *params)
     DebugP_assert((params->returnBehavior == ECDH_RETURN_BEHAVIOR_CALLBACK) ? params->callbackFxn : true);
 
     object->returnBehavior = params->returnBehavior;
-#if (SPE_ENABLED == 1)
+#if (TFM_ENABLED == 1)
     /* Always use the secure callback function */
     object->callbackFxn = params->callbackFxn;
 #else

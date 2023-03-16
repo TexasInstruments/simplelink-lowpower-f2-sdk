@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -427,6 +427,11 @@ void Temperature_init(void)
          * We use WU2 since WU0 is the RTC and WU1 is a pad (GPIO) event.
          */
         AONEventMcuWakeUpSet(AON_EVENT_MCU_WU2, AON_EVENT_BATMON_COMBINED);
+
+        /* Wait until first measurement is ready to prevent
+         * Temperature_getTemperature from returning an invalid value
+         */
+        while (AONBatMonNewTempMeasureReady() == false) {}
 
         isInitialized = true;
     }

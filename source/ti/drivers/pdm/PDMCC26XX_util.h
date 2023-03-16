@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,11 @@
 
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/SemaphoreP.h>
+
+/* Enable backwards-compatibility for legacy terminology if specified. */
+#ifdef ENABLE_LEGACY_TERMINOLOGY
+    #include <ti/drivers/LegacyTerminology.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -430,7 +435,7 @@ typedef uint32_t PDMCC26XX_I2S_TransferSize;
  *          I2S0_BASE,
  *          INT_I2S,
  *          PERIPH_I2S,
- *          CONFIG_I2S_MCLK,
+ *          CONFIG_I2S_CCLK,
  *          CONFIG_I2S_BCLK,
  *          CONFIG_I2S_WCLK,
  *          CONFIG_I2S_ADI,
@@ -447,8 +452,8 @@ typedef struct
     uint8_t intPriority;
     /*! I2S Peripheral's power manager ID */
     PowerCC26XX_Resource powerMngrId;
-    /*! I2S MCLK pin */
-    uint_least8_t mclkPin;
+    /*! I2S CCLK pin */
+    uint_least8_t cclkPin;
     /*! I2S BCLK pin */
     uint_least8_t bclkPin;
     /*! I2S WCLK pin */
@@ -475,7 +480,7 @@ typedef struct
  *          47, // Bit clock division
  *          0, // Reserved
  *          PDMCC26XX_I2S_BitClockSource_Int
- *          6, // Master clock division
+ *          6, // Controller clock division
  *  };
  *  @endcode
  */
@@ -500,8 +505,8 @@ typedef struct
     uint16_t reserved:5;
     /*! I2S Bit Clock source (PDMCC26XX_I2S_BitClockSource_Ext or PDMCC26XX_I2S_BitClockSource_Int) */
     uint16_t bclkSource:1;
-    /*! I2S Master Clock divider override */
-    uint16_t mclkDiv:10;
+    /*! I2S Controller Clock divider override */
+    uint16_t cclkDiv:10;
 } PDMCC26XX_I2S_AudioClockConfig;
 
 /*!
@@ -540,8 +545,8 @@ typedef union PDMCC26XX_I2S_AudioPinConfig
     {
         /*! I2S AD1 usage (0: Disabled, 1: Input, 2: Output) */
         uint8_t ad1Usage:2;
-        /*! I2S Enable Master clock output on pin (0: Disabled, 1: Enabled) */
-        uint8_t enableMclkPin:1;
+        /*! I2S Enable Controller clock output on pin (0: Disabled, 1: Enabled) */
+        uint8_t enableCclkPin:1;
         /*! Reserved bit field */
         uint8_t reserved:1;
         /*! I2S AD1 number of channels (1 - 8). !Must match channel mask */

@@ -1,0 +1,80 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2022 Texas Instruments Incorporated
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+#-------------------------------------------------------------------------------
+
+{
+    "psa_framework_version": 1.0,
+    "name": "CRYPTO_SP",
+    "type": "PSA-ROT",
+    "description": "Crypto Secure Partition",
+    "priority": "HIGH",
+    "entry_point": "Crypto_sp_main",
+    "stack_size": "0x1000",
+    "tfm_partition_ipc": true,
+    "services" : [
+        {
+            "name": "CRYPTO_SP_SERVICE",
+            "sid": "0xAE000080",  # VendorID = 0xAE000, FunctionID = 0x80 (crypto)
+            "non_secure_clients": true,
+            "minor_version": 1,
+            "minor_policy": "STRICT",
+            "description": "Crypto Secure Service"
+        },
+
+        # Note: ITS services are only available if ENABLE_ITS_IPC_INTEGRATION is set.
+        {
+            "name": "TFM_ITS_SET",
+            "sid": "0x00000070",
+            "non_secure_clients": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_GET",
+            "sid": "0x00000071",
+            "non_secure_clients": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_GET_INFO",
+            "sid": "0x00000072",
+            "non_secure_clients": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        },
+        {
+            "name": "TFM_ITS_REMOVE",
+            "sid": "0x00000073",
+            "non_secure_clients": true,
+            "version": 1,
+            "version_policy": "STRICT"
+        }
+    ],
+    "irqs": [
+        {
+            # AES Engine IRQ
+            "line_name": "INT_CRYPTO_RESULT_AVAIL_IRQ_Handler",
+            "line_num": "CRYPTO_RESULT_AVAIL_IRQ_IRQn",
+            "signal": "CryptoResultAvail_IRQn_SIGNAL",
+            "tfm_irq_priority": 7
+        },
+        {
+            # PKA Engine IRQ
+            "line_name": "INT_PKA_IRQ_Handler",
+            "line_num": "PKA_IRQ_IRQn",
+            "signal": "PKA_IRQn_SIGNAL",
+            "tfm_irq_priority": 7
+        },
+        {
+            # TRNG IRQ
+            "line_name": "INT_TRNG_IRQ_Handler",
+            "line_num": "TRNG_IRQ_IRQn",
+            "signal": "TRNG_IRQn_SIGNAL",
+            "tfm_irq_priority": 7
+        }
+    ],
+}

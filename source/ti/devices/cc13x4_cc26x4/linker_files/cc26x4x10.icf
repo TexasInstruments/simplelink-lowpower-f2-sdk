@@ -4,7 +4,7 @@
 //
 //  This file is auto-generated.
 //
-//  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+//  Copyright (C) 2020-2022 Texas Instruments Incorporated - http://www.ti.com/
 //
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -76,8 +76,8 @@ define region SRAM_region     = mem:[from __ICFEDIT_region_RAM_start__ to __ICFE
 //
 // Place the interrupt vectors at the start of flash.
 //
-place at address mem:__ICFEDIT_intvec_start__ { readonly section .intvec };
-keep { section .intvec };
+place at address mem:__ICFEDIT_intvec_start__ { readonly section .resetVecs };
+keep { section .resetVecs };
 
 //
 // Place remaining 'read only' in Flash
@@ -86,9 +86,9 @@ place in FLASH_region { readonly };
 
 
 //
-// Place .vtable_ram in start of RAM
+// Place .ramVecs in RAM
 //
-place at start of SRAM_region { section .vtable_ram };
+place in SRAM_region { section .ramVecs };
 
 //
 // Define CSTACK block to contain .stack section. This enables the IAR IDE

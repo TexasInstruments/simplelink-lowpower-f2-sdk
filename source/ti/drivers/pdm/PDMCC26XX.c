@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -609,8 +609,7 @@ void PDMCC26XX_Params_init(PDMCC26XX_Params *params)
 static void PDMCC26XX_taskFxn(UArg a0, UArg a1)
 {
     Event_Params eventParams;
-    PDMCC26XX_Object *object = pdmHandle->object;
-    ;
+    PDMCC26XX_Object *object         = pdmHandle->object;
     PDMCC26XX_HWAttrs const *hwAttrs = pdmHandle->hwAttrs;
     uint32_t events                  = 0;
     int16_t tempPcmBuf[32]           = {0};

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 --heap_size=8192
 
 /* Retain interrupt vector table variable                                    */
---retain=g_pfnVectors
+--retain "*(.resetVecs)"
 /* Override default entry point.                                             */
 --entry_point resetISR
 /* Allow main() to take args                                                 */
@@ -45,6 +45,10 @@
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
 --diag_suppress=10063,16011,16012
+
+/* Set severity of diagnostics to Remark instead of Warning                  */
+/* - 10068: Warning about no matching log_ptr* sections                      */
+--diag_remark=10068
 
 /* The following command line options are set as part of the CCS project.    */
 /* If you are building using the command line, or for some reason want to    */
@@ -84,14 +88,15 @@ MEMORY
      * ARM memory map can be found here:
      * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
      */
-    LOG_DATA (R) : origin = 0x90000000, length = 0x40000
+    LOG_DATA (R) : origin = 0x90000000, length = 0x40000        /* 256 KB */
+    LOG_PTR  (R) : origin = 0x94000008, length = 0x40000        /* 256 KB */
 }
 
 /* Section allocation in memory */
 
 SECTIONS
 {
-    .intvecs        :   > FLASH_BASE
+    .resetVecs      :   > FLASH_BASE
     .text           :   > FLASH
     .TI.ramfunc     : {} load=FLASH, run=SRAM, table(BINIT)
     .const          :   > FLASH
@@ -104,9 +109,7 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > FLASH (HIGH)
 
-    .vtable         :   > SRAM
-    .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM
@@ -115,4 +118,5 @@ SECTIONS
 
     .gpram          :   > GPRAM
     .log_data       :   > LOG_DATA, type = COPY
+    .log_ptr        : { *(.log_ptr*) } > LOG_PTR align 4, type = COPY
 }

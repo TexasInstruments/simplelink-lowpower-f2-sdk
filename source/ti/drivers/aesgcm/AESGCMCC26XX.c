@@ -286,6 +286,7 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
 
     if (resourceAcquired != SemaphoreP_OK)
     {
+        object->operationInProgress = false;
         return AESGCM_STATUS_RESOURCE_UNAVAILABLE;
     }
 
@@ -329,6 +330,8 @@ static int_fast16_t AESGCM_startOperation(AESGCM_Handle handle,
          */
         AESInvalidateKey(AES_KEY_AREA_6);
         AESInvalidateKey(AES_KEY_AREA_7);
+
+        object->operationInProgress = false;
 
         /* Release the CRYPTO mutex */
         SemaphoreP_post(&CryptoResourceCC26XX_accessSemaphore);

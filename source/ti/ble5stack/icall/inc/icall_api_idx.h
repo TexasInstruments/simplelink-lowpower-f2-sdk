@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2022, Texas Instruments Incorporated
+ Copyright (c) 2016-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -73,6 +73,8 @@
 #define IDX_GAPBondMgr_SCSetRemoteOOBParameters       GAPBondMgr_SCSetRemoteOOBParameters
 #define IDX_GAPBondMgr_SCGetLocalOOBParameters        GAPBondMgr_SCGetLocalOOBParameters
 #define IDX_GAPBondMgr_GenerateEccKeys                GAPBondMgr_GenerateEccKeys
+#define IDX_GapBondMgr_GetPrevAuth                    GapBondMgr_GetPrevAuth
+#define IDX_GapBondMgr_StartEnc                       GapBondMgr_StartEnc
 
 /* GAP API */
 /***********/
@@ -385,6 +387,7 @@
 #define IDX_GATT_WriteNoRsp                           GATT_WriteNoRsp
 #define IDX_GATT_SignedWriteNoRsp                     GATT_SignedWriteNoRsp
 #define IDX_GATT_RegisterForMsgs                      GATT_RegisterForMsgs
+#define IDX_GATT_RegisterClientSecurityCBs            GATT_RegisterClientSecurityCBs
 #define IDX_GATT_UpdateMTU                            GATT_UpdateMTU
 #define IDX_GATT_SetHostToAppFlowCtrl                 GATT_SetHostToAppFlowCtrl
 #define IDX_GATT_AppCompletedMsg                      GATT_AppCompletedMsg
@@ -445,6 +448,10 @@
 /***********/
 #define IDX_osal_snv_read                             osal_snv_read
 #define IDX_osal_snv_write                            osal_snv_write
+
+/* Osal Bufmgr API */
+/***********/
+#define IDX_osal_bm_reg_callback                      osal_bm_reg_callback
 
 /* UTIL API */
 /************/

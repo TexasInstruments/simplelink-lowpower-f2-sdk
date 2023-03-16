@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,15 +40,23 @@
 /* get Common /ti/drivers utility functions */
 let Common = system.getScript("/ti/drivers/Common.js");
 
+/* get /ti/drivers family name from device object */
+let family = Common.device2Family(system.deviceData, "Board");
+
+/* Interrupt Priority for internal AESCTR instance */
+let intPriority = Common.newIntPri()[0];
+intPriority.name = "interruptPriority";
+intPriority.displayName = "Interrupt Priority";
+intPriority.description = "Crypto peripheral interrupt priority";
+
 /*
  *  ======== devSpecific ========
  *  Device-specific extensions to be added to base AESCTRDRBG configuration
  */
 let devSpecific = {
-    config: [],
-
-    /* referenced AESCTR module instances */
-    moduleInstances: moduleInstances,
+    config: [
+        intPriority
+    ],
 
     filterHardware: filterHardware,
 
@@ -58,7 +66,16 @@ let devSpecific = {
         boardc: "/ti/drivers/aesctrdrbg/AESCTRDRBGXX.Board.c.xdt"
     },
 
-    modules :  Common.autoForceModules(["Board", "Power"])
+    modules: (inst) => {
+        if (family.match(/CC23/))
+        {
+            return Common.autoForceModules(["Board", "Power", "DMA"])();
+        }
+        else
+        {
+            return Common.autoForceModules(["Board", "Power"])();
+        }
+    }
 };
 
 /*
@@ -80,26 +97,6 @@ function filterHardware(component)
     }
 
     return (false);
-}
-
-/*
- *  ======== moduleInstances ========
- *  returns a shared AESCTR instance
- */
-function moduleInstances(inst)
-{
-    let aesctr = new Array();
-
-    aesctr.push({
-            name: "aesctrObject",
-            displayName: "AESCTR Instance",
-            moduleName: "/ti/drivers/AESCTR",
-            hidden: false,
-            collapsed: false,
-            hardware: inst.$hardware ? inst.$hardware : null
-    });
-
-    return (aesctr);
 }
 
 /*

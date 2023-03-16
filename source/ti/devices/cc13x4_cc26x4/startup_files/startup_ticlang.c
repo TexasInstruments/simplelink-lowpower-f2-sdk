@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC13x4, CC26x4 device family for use with CCS.
 *
-*  Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2021-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ extern unsigned long __STACK_END;
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__attribute__ ((section(".intvecs"))) __attribute__ ((used))
+__attribute__ ((section(".resetVecs"), retain))
 void (* const g_pfnVectors[])(void) =
 {
     (void (*)(void))((unsigned long)&__STACK_END),
@@ -93,7 +93,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      //  4 Memory Management (MemManage) Fault
     IntDefaultHandler,                      //  5 The bus fault handler
     IntDefaultHandler,                      //  6 The usage fault handler
-    0,                                      //  7 Reserved
+    IntDefaultHandler,                      //  7 The secure fault handler
     0,                                      //  8 Reserved
     0,                                      //  9 Reserved
     0,                                      // 10 Reserved

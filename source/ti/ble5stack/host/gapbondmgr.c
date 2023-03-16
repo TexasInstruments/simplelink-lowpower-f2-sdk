@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2022, Texas Instruments Incorporated
+ Copyright (c) 2011-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -280,6 +280,12 @@ uint8_t *gapBond_lruBondList = NULL;    //will hold gapBond_maxBonds elements
 // Global used to indicate whether Resolving List must be resynched with
 // bond records once controller is no longer adv/init/scanning
 uint8_t gapBond_syncRL = FALSE;
+
+gattClientSecCBs_t clientCbs =
+{
+  GapBondMgr_GetPrevAuth,
+  GapBondMgr_StartEnc
+};
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -1327,6 +1333,12 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
           {
             smIdentityInfo_t *pInfo = pPkt->pIdentityInfo;
 
+            if( MAP_LL_PRIV_IsRPA(pItem->addrType, pItem->addr) == FALSE )
+            {
+              // This is a Random/Public ID addr the IRK must be all-zeros
+              MAP_osal_memset(pInfo->irk, 0x00,  KEYLEN);
+            }
+
             // Store identity address type and address in bonding table
             bondRec.addrType = (GAP_Peer_Addr_Types_t)(pInfo->addrType &
                                                        MASK_ADDRTYPE_ID);
@@ -2293,17 +2305,22 @@ static uint8_t gapBondMgrSaveBond(uint8_t bondIdx,
   // Update Bond RAM Shadow just with the newly added bond entry
   VOID MAP_osal_memcpy(&(bonds[bondIdx]), pBondRec, sizeof(gapBondRec_t));
 
-  if(pIRK)
+  // Check if the IRK is not all zeros. If so, the address if public don't
+  // add it to the resolving List
+  if (pIRK)
   {
-    // Add device to resolving list
-    if ((HCI_LE_AddDeviceToResolvingListCmd((pBondRec->addrType & MASK_ADDRTYPE_ID),
-                                             pBondRec->addr, pIRK, NULL) != SUCCESS) && syncRL)
+    if (MAP_osal_isbufset(pIRK, 0x00, KEYLEN) == FALSE)
     {
-      gapBond_syncRL = TRUE;
-    }
+      // Add device to resolving list
+      if ((HCI_LE_AddDeviceToResolvingListCmd((pBondRec->addrType & MASK_ADDRTYPE_ID),
+                                               pBondRec->addr, pIRK, NULL) != SUCCESS) && syncRL)
+      {
+        gapBond_syncRL = TRUE;
+      }
 
-    // If available, save the connected device's IRK
-    snvErrorCode |= osal_snv_write(DEV_IRK_NV_ID(bondIdx), KEYLEN, pIRK);
+      // If available, save the connected device's IRK
+      snvErrorCode |= osal_snv_write(DEV_IRK_NV_ID(bondIdx), KEYLEN, pIRK);
+    }
   }
 
   // If available, save the LTK information
@@ -3006,9 +3023,9 @@ static bStatus_t gapBondMgrEraseLocalInfo( void )
   if (tempLRUList == NULL)
   {
     HAL_ASSERT( HAL_ASSERT_CAUSE_OUT_OF_MEMORY );
-    return (NV_OPER_FAILED); 
+    return (NV_OPER_FAILED);
   }
-  
+
   uint8_t tempAddr[B_ADDR_LEN];
 
   VOID MAP_osal_memset(tempKey, 0xFF, KEYLEN);
@@ -3040,13 +3057,13 @@ void GAPBondMgr_Init(uint8_t task_id, uint8_t cfg_gapBond_maxBonds, uint8_t cfg_
   gapBond_maxCharCfg = cfg_gapBond_maxCharCfg;
   gapBond_gatt_no_client = cfg_gapBond_gatt_no_client;
   gapBond_gatt_no_service_changed = cfg_gapBond_gatt_no_service_changed;
-  
+
   //static gapBondRec_t bonds[GAP_BONDINGS_MAX] = {0};
   bonds = (gapBondRec_t *)MAP_osal_mem_alloc( sizeof (gapBondRec_t) * gapBond_maxBonds );
   if (bonds == NULL)
   {
     HAL_ASSERT( HAL_ASSERT_CAUSE_OUT_OF_MEMORY );
-    return; 
+    return;
   }
   MAP_osal_memset(bonds, 0, sizeof (gapBondRec_t) * gapBond_maxBonds);
 
@@ -3056,10 +3073,10 @@ void GAPBondMgr_Init(uint8_t task_id, uint8_t cfg_gapBond_maxBonds, uint8_t cfg_
   {
     MAP_osal_mem_free(bonds);
     HAL_ASSERT( HAL_ASSERT_CAUSE_OUT_OF_MEMORY );
-    return; 
+    return;
   }
   MAP_osal_memset(bondsToDelete, FALSE, sizeof (uint8_t) * gapBond_maxBonds);
-  
+
   //uint8_t gapBond_lruBondList[GAP_BONDINGS_MAX] = {0};
   gapBond_lruBondList = (uint8_t *)MAP_osal_mem_alloc( sizeof (uint8_t) * gapBond_maxBonds );
   if (gapBond_lruBondList == NULL)
@@ -3067,15 +3084,18 @@ void GAPBondMgr_Init(uint8_t task_id, uint8_t cfg_gapBond_maxBonds, uint8_t cfg_
     MAP_osal_mem_free(bonds);
     MAP_osal_mem_free(bondsToDelete);
     HAL_ASSERT( HAL_ASSERT_CAUSE_OUT_OF_MEMORY );
-    return; 
+    return;
   }
   MAP_osal_memset(gapBond_lruBondList, 0, sizeof (uint8_t) * gapBond_maxBonds);
-  
+
   // Register Call Back functions for GAP
   MAP_GAP_RegisterBondMgrCBs(&gapCBs);
 
   // Register as auth task
   MAP_GAP_SetParamValue(GAP_PARAM_AUTH_TASK_ID, gapBondMgr_TaskID);
+
+  // Register to client CBs
+  GATT_RegisterClientSecurityCBs(&clientCbs);
 
   // Setup Bond RAM Shadow
   gapBondMgrReadBonds();
@@ -3315,19 +3335,24 @@ bStatus_t gapBondMgr_syncResolvingList(void)
         // Make sure read NV IRK is valid
         if(MAP_osal_isbufset(IRK, 0xFF, KEYLEN) == FALSE)
         {
-          // Resolving list does not use ID addr types so must mask away bit
-          // prior to adding device to list
-          HCI_LE_AddDeviceToResolvingListCmd((bonds[i].addrType &
-                                             MASK_ADDRTYPE_ID),
-                                             bonds[i].addr, IRK, NULL);
-
-          // If not explicitly Network Privacy Mode, set to Device Privacy Mode
-          if(!(bonds[i].stateFlags & GAP_BONDED_STATE_RPA_ONLY))
+          // If IRK is all Zeros than this is Identity address don't
+          // add it to the Resolving List
+          if( MAP_osal_isbufset(IRK, 0x00, KEYLEN) == FALSE )
           {
-            MAP_HCI_LE_SetPrivacyModeCmd((bonds[i].addrType &
-                                           MASK_ADDRTYPE_ID),
-                                          bonds[i].addr,
-                                          GAP_PRIVACY_MODE_DEVICE);
+            // Resolving list does not use ID addr types so must mask away bit
+            // prior to adding device to list
+            HCI_LE_AddDeviceToResolvingListCmd((bonds[i].addrType &
+                                               MASK_ADDRTYPE_ID),
+                                               bonds[i].addr, IRK, NULL);
+
+            // If not explicitly Network Privacy Mode, set to Device Privacy Mode
+            if(!(bonds[i].stateFlags & GAP_BONDED_STATE_RPA_ONLY))
+            {
+              MAP_HCI_LE_SetPrivacyModeCmd((bonds[i].addrType &
+                                            MASK_ADDRTYPE_ID),
+                                            bonds[i].addr,
+                                            GAP_PRIVACY_MODE_DEVICE);
+            }
           }
         }
       }
@@ -4160,7 +4185,7 @@ static uint8_t gapBondPreprocessIdentityInformation(gapAuthCompleteEvent_t
   if(MAP_osal_isbufset(pInfo->bd_addr, 0x00, B_ADDR_LEN))
   {
     // If the IRK is all zeroes
-    if(MAP_osal_isbufset(pInfo->irk, 0x00, B_ADDR_LEN))
+    if(MAP_osal_isbufset(pInfo->irk, 0x00, KEYLEN))
     {
       ret = FAILURE;
     }
@@ -4646,6 +4671,104 @@ static gapBondStateNodePtr_t gapBondFindPairReadyNode(void)
   }
 
   return NULL;
+}
+
+/*********************************************************************
+ * @fn          GapBondMgr_GetPrevAuth
+ *
+ * @brief       If previously bonded, the function returns the authentication
+ *              flags from the bond information and the encryption key size
+ *
+ * @param       connHandle -The connection handle associated the remote device
+ * @param       pMitmReq - Pointer to store if MITM requires
+ * @param       pKeySize - Pointer to store the encryption key size
+ *
+ * @return      SUCCESS - The address was found in the link DB table and the
+ *                        bonding table
+ * @return      FAILURE - Failed to find the connection in the link DB
+ * @return      INVALIDPARAMETER - If a NULL address is passed in
+ * @return      bleGAPNotFound - If the address was not found
+ */
+uint8_t GapBondMgr_GetPrevAuth( uint16_t connHandle, uint8_t *pMitmReq, uint8_t *pKeySize )
+{
+  // Find connection info
+  linkDBInfo_t linkInfo;
+  gapBondLTK_t ltkInfo;
+  uint8_t prevAuthReq;
+  uint8_t status;
+  uint8_t idx;
+
+  status = linkDB_GetInfo(connHandle, &linkInfo);
+
+  if ( status == SUCCESS )
+  {
+    // Search for bond
+    status = GAPBondMgr_FindAddr(linkInfo.addr,
+                                (GAP_Peer_Addr_Types_t)(linkInfo.addrType &
+                                                        MASK_ADDRTYPE_ID),
+                                &idx, NULL, NULL);
+    if ( status == SUCCESS )
+    {
+      VOID osal_snv_read(DEV_LTK_NV_ID(idx), sizeof(gapBondLTK_t), &ltkInfo);
+
+	  // Check what it the authentication level saved in the bond information
+      prevAuthReq = gapBondMgrGetStateFlags(idx);
+
+      if ( prevAuthReq == GAP_BONDED_STATE_AUTHENTICATED )
+      {
+        // Return TRUE if authentication is required
+        *pMitmReq = TRUE;
+      }
+      *pKeySize = ltkInfo.keySize;
+    }
+  }
+
+  return status;
+}
+
+/*********************************************************************
+ * @fn          GapBondMgr_StartEnc
+ *
+ * @brief       Start encryption process to a peer device if the peer
+ *              bond information was found
+ *
+ * @param       connHandle -The connection handle associated the remote device
+ *
+ * @return      SUCCESS - The address was found in the link DB table and the
+ *                        bonding table
+ * @return      FAILURE - Failed to find the connection in the link DB
+ * @return      INVALIDPARAMETER - If a NULL address is passed in
+ * @return      bleGAPNotFound - If the address was not found
+ */
+uint8_t GapBondMgr_StartEnc( uint16_t connHandle )
+{
+  uint8_t status = SUCCESS;
+  linkDBInfo_t linkInfo;
+  uint8_t prevAuthReq;
+  uint8_t idx;
+
+  status = linkDB_GetInfo(connHandle, &linkInfo);
+  // if we are in central role - prepare and call MAP_GAP_Bond
+  if ( status == SUCCESS )
+  {
+    if ( linkInfo.connRole == GAP_PROFILE_CENTRAL )
+    {
+      // Search for bond
+      status = GAPBondMgr_FindAddr(linkInfo.addr,
+                                  (GAP_Peer_Addr_Types_t)(linkInfo.addrType &
+                                                         MASK_ADDRTYPE_ID),
+                                   &idx, NULL, NULL);
+
+      if ( status == SUCCESS )
+      {
+        prevAuthReq = gapBondMgrGetStateFlags(idx);
+		// Start encryption
+        gapBondMgrBondReq(connHandle, idx, prevAuthReq, linkInfo.connRole, TRUE);
+      }
+    }
+  }
+
+  return status;
 }
 
 #endif // GAP_BOND_MGR

@@ -58,9 +58,9 @@ let config = [];
 function validate(inst, validation)
 {
     if (system.modules["/ti/utils/TrustZone"]) {
-        if (inst.$module.$instances.length > 2) {
+        if (inst.$module.$instances.length != 2) {
             validation.logError(`When using Secure/Non-secure features (TrustZone is enabled), the number of Crypto
-                                driver instances are fixed in the SPE image. Two SHA2 instance are supported.`, inst);
+                                driver instances are fixed in the TF-M image. Two SHA2 instance are supported.`, inst);
         }
     }
 }

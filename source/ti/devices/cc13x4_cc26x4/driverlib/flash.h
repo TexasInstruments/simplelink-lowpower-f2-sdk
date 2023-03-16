@@ -179,8 +179,6 @@ typedef enum
     FAPI_ERASE_SECTOR       = 0x0042, //!< Erase sector.
     FAPI_ERASE_BANK         = 0x0052, //!< Erase bank.
     FAPI_CLEAR_STATUS       = 0x0005, //!< Clear status.
-    FAPI_READVERIFY         = 0x0003   //!< Read and Verify
-
 } tFlashStateCommandsType;
 
 //*****************************************************************************

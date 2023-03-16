@@ -40,7 +40,7 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 #include <ti/drivers/cryptoutils/ecc/ECCParamsCC26X4_s.h>
 
-#include <ti/drivers/spe/SecureCallback.h>
+#include <ti/drivers/tfm/SecureCallback.h>
 
 #include <psa_manifest/crypto_sp.h> /* Auto-generated header */
 
@@ -172,10 +172,24 @@ static void ECDH_s_hwiCallback(ECDH_Handle handle_s,
             if (operationType == ECDH_OPERATION_TYPE_GENERATE_PUBLIC_KEY)
             {
                 ECDH_s_operation.resultKey_ns->encoding = operation.generatePublicKey->myPublicKey->encoding;
+
+                if (ECDH_s_operation.resultKey_ns->encoding == CryptoKey_KEYSTORE)
+                {
+                    /* Copy the updated keyID to the non-secure public key struct */
+                    ECDH_s_operation.resultKey_ns->u.keyStore.keyID = operation.generatePublicKey->myPublicKey->u
+                                                                          .keyStore.keyID;
+                }
             }
             else
             {
                 ECDH_s_operation.resultKey_ns->encoding = operation.computeSharedSecret->sharedSecret->encoding;
+
+                if (ECDH_s_operation.resultKey_ns->encoding == CryptoKey_KEYSTORE)
+                {
+                    /* Copy the updated keyID to the non-secure shared secret struct */
+                    ECDH_s_operation.resultKey_ns->u.keyStore.keyID = operation.computeSharedSecret->sharedSecret->u
+                                                                          .keyStore.keyID;
+                }
             }
 
             /* Trigger the interrupt for the non-secure callback dispatcher */

@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -227,6 +227,42 @@ extern "C"
 
 /// @brief Client Characteristic Configuration table (from CCC attribute value pointer)
 #define GATT_CCC_TBL( pValue )           ( (gattCharCfg_t *)(*((PTR_TYPE)(pValue))) )
+
+/// @brief GATT BT Attribute Type format
+#define GATT_ATT_BT_UUID_TYPE(type) {ATT_BT_UUID_SIZE,type}
+
+/// @brief GATT Custom Attribute Type format
+#define GATT_ATT_UUID_TYPE(type) {ATT_UUID_SIZE,type}
+
+/// @brief GATT BT UUID
+#define GATT_BT_UUID(name, UUID) CONST uint8 name[ATT_BT_UUID_SIZE] =\
+{\
+  LO_UINT16(UUID), HI_UINT16(UUID)\
+}
+
+/// @brief GATT Custom UUID
+#define GATT_UUID(name, UUID) CONST uint8 name[ATT_UUID_SIZE] =\
+{\
+  TI_BASE_UUID_128(UUID)\
+}
+
+/// @brief GATT BT Attribute
+#define GATT_BT_ATT(type, permission, value)\
+{\
+    GATT_ATT_BT_UUID_TYPE(type),\
+    permission,\
+    0,\
+    value\
+}
+
+/// @brief GATT Custom Attribute
+#define GATT_ATT(type, permission, value)\
+{\
+    GATT_ATT_UUID_TYPE(type),\
+    permission,\
+    0,\
+    value\
+}
 
 /*********************************************************************
  * TYPEDEFS

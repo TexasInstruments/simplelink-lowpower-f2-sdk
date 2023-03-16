@@ -103,8 +103,7 @@ typedef uint32_t ECCParams_CurveType;
 #define ECCParams_CURVE_TYPE_EDWARDS               4U
 
 /*!
- *  @brief Enumeration of ECC curve names supported by Secure Processing
- *         Environment (SPE).
+ *  @brief Enumeration of ECC curve names supported by TF-M.
  */
 typedef enum
 {
@@ -129,7 +128,7 @@ typedef enum
  * ECCParams_CurveParams have different struct members depending on the context
  * of the build (Secure-only, Non-secure, or Secure)
  */
-#if (SPE_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
 
 /*!
  *  @brief A structure containing the parameters of an elliptic curve.
@@ -161,9 +160,9 @@ typedef struct ECCParams_CurveParams
     ECCParams_SecureCurve secureCurve;
 } ECCParams_CurveParams;
 
-#endif /* (SPE_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
 
-#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a SPE build */
+#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
 
 /*!
  *  @brief A structure containing the curve name to reference elliptic curve

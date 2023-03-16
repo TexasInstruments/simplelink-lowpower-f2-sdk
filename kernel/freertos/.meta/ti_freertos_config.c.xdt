@@ -60,8 +60,9 @@
  */
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wnonnull"
-% }
 
+% }
+%
 % /* compute a canonical order for the used modules */
 % let keys = Object.keys(system.modules).sort();
 % /* loop over all modules in the current configuration */
@@ -69,13 +70,22 @@
 %     let mod = system.modules[keys[i]];
 %     /* Find modules that contribute to the FreeRTOS configuration */
 %     if (mod.getCFiles) {
-%         let files = mod.getCFiles();
+/* C files contributed by `keys[i]` */
+%         if (mod.getCSrcPrelude) {
+%             let prelude = mod.getCSrcPrelude();
+%             if ((prelude != undefined) && (prelude != "")){
+`prelude`
+
+%             }
+%         }
+%         let files = mod.getCFiles(kernel);
 %         for (let index in files) {
 #include <`files[index]`>
 %         }
+
 %     }
 % }
-
+%
 % if (system.compiler == "gcc") {
 #pragma GCC diagnostic pop
 % }

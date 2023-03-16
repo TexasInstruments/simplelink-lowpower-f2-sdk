@@ -26,7 +26,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -249,7 +249,7 @@ MEMORY
  ******************************************************************************/
 SECTIONS
 {
-  .intvecs        :   >  FLASH_START
+  .resetVecs      :   >  FLASH_START
   .text           :   >> FLASH | FLASH_LAST_PAGE
   .const          :   >> FLASH | FLASH_LAST_PAGE
   .constdata      :   >> FLASH | FLASH_LAST_PAGE
@@ -266,9 +266,7 @@ SECTIONS
     #ifndef CACHE_AS_RAM
     .bss
     #endif /* CACHE_AS_RAM */
-    .vtable
-    .vtable_ram
-    vtable_ram
+    .ramVecs
     .sysmem
     .nonretenvar
     /*This keeps ll.o objects out of GPRAM, if no ll.o would be placed here
@@ -298,10 +296,10 @@ SECTIONS
 
 -u_c_int00
 --retain "*(.resetVecs)"
---retain "*(.vecs)"
+--retain "*(.ramVecs)"
 
 SECTIONS
 {
     .resetVecs: load > 0
-    .vecs: load > 0x20000000, type = NOLOAD
+    .ramVecs: load > 0x20000000, type = NOLOAD
 }

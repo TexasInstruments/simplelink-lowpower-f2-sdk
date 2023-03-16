@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2022, Texas Instruments Incorporated
+ Copyright (c) 2015-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -178,7 +178,7 @@ static void extFlashSelect(void)
 */
 static void extFlashDeselect(void)
 {
-#ifndef DeviceFamily_CC23X0	
+#ifndef DeviceFamily_CC23X0
     GPIO_setDio(BSP_IOID_FLASH_CS);
 #else
     bspGpioWrite(BSP_IOID_FLASH_CS, 1);

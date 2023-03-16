@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -478,10 +478,7 @@ int_fast16_t Power_releaseDependency(uint_fast16_t resourceId)
             PRCMPeripheralSleepDisable(id);
             PRCMPeripheralDeepSleepDisable(id);
             PRCMLoadSet();
-            while (!PRCMLoadGet())
-            {
-                ;
-            }
+            while (!PRCMLoadGet()) {}
         }
         /* else, does resource require a special handler?... */
         else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
@@ -494,10 +491,7 @@ int_fast16_t Power_releaseDependency(uint_fast16_t resourceId)
         else
         {
             PRCMPowerDomainOff(id);
-            while (PRCMPowerDomainsAllOff(id) != PRCM_DOMAIN_POWER_OFF)
-            {
-                ;
-            }
+            while (PRCMPowerDomainsAllOff(id) != PRCM_DOMAIN_POWER_OFF) {}
         }
 
         /* propagate release up the dependency tree ... */
@@ -586,10 +580,7 @@ int_fast16_t Power_setDependency(uint_fast16_t resourceId)
             PRCMPeripheralSleepEnable(id);
             PRCMPeripheralDeepSleepEnable(id);
             PRCMLoadSet();
-            while (!PRCMLoadGet())
-            {
-                ;
-            }
+            while (!PRCMLoadGet()) {}
         }
         /* else, does resource require a special handler?... */
         else if (resourceDB[resourceId].flags & PowerCC26XX_SPECIAL)
@@ -601,10 +592,7 @@ int_fast16_t Power_setDependency(uint_fast16_t resourceId)
         else
         {
             PRCMPowerDomainOn(id);
-            while (PRCMPowerDomainsAllOn(id) != PRCM_DOMAIN_POWER_ON)
-            {
-                ;
-            }
+            while (PRCMPowerDomainsAllOn(id) != PRCM_DOMAIN_POWER_ON) {}
         }
     }
 
@@ -690,23 +678,18 @@ int_fast16_t Power_shutdown(uint_fast16_t shutdownState, uint_fast32_t shutdownT
         {
             /* 1.1. Source HF and MF from RCOSC_HF */
             OSCClockSourceSet(OSC_SRC_CLK_HF | OSC_SRC_CLK_MF, OSC_RCOSC_HF);
-            while (!OSCHfSourceReady())
-                ;
+            while (!OSCHfSourceReady()) {}
             OSCHfSourceSwitch();
         }
         /* 1.2. Source LF from RCOSC_LF */
         OSCClockSourceSet(OSC_SRC_CLK_LF, OSC_RCOSC_LF);
-        while (OSCClockSourceGet(OSC_SRC_CLK_LF) != OSC_RCOSC_LF)
-            ;
+        while (OSCClockSourceGet(OSC_SRC_CLK_LF) != OSC_RCOSC_LF) {}
 
         /* 2. Make sure DMA and CRYTO clocks are off in deep-sleep */
         PRCMPeripheralDeepSleepDisable(PRCM_PERIPH_CRYPTO);
         PRCMPeripheralDeepSleepDisable(PRCM_PERIPH_UDMA);
         PRCMLoadSet();
-        while (!PRCMLoadGet())
-        {
-            ;
-        }
+        while (!PRCMLoadGet()) {}
 
         /* 3. Power OFF AUX and disconnect from bus */
         AUXWUCPowerCtrl(AUX_WUC_POWER_OFF);
@@ -734,8 +717,7 @@ int_fast16_t Power_shutdown(uint_fast16_t shutdownState, uint_fast32_t shutdownT
         SysCtrlAonSync();
 
         /* 8. Wait until AUX powered off */
-        while (AONWUCPowerStatusGet() & AONWUC_AUX_POWER_ON)
-            ;
+        while (AONWUCPowerStatusGet() & AONWUC_AUX_POWER_ON) {}
 
         /* 9. Request to power off MCU when go to deep sleep */
         PRCMMcuPowerOff();
@@ -964,10 +946,7 @@ int_fast16_t Power_sleep(uint_fast16_t sleepState)
             PowerCC26XX_module.state = Power_EXITING_SLEEP;
 
             /* 21. Wait until all power domains are back on */
-            while (PRCMPowerDomainsAllOn(poweredDomains) != PRCM_DOMAIN_POWER_ON)
-            {
-                ;
-            }
+            while (PRCMPowerDomainsAllOn(poweredDomains) != PRCM_DOMAIN_POWER_ON) {}
 
             /* 22. Wait for the RTC shadow values to be updated so that
              * the early notification callbacks can read out valid RTC values
@@ -1175,7 +1154,7 @@ void PowerCC26XX_switchXOSC_HF(void)
      * the XOSC_HF clock. This way, if the switching does fail because a constraint
      * stopped it from switching, a clock will be scheduled into the future to try
      * again. This could happen if there is an ongoing operation from another bus
-     * master that reads from flash such as SPI or AES DMA operations.
+     * controller that reads from flash such as SPI or AES DMA operations.
      */
     switchXOSCHFclockFunc((uintptr_t)NULL);
 }

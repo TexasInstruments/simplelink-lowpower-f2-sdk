@@ -13,8 +13,7 @@ const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
 
 -DUSE_AE
 %}
-% else if(!ble.extAdv && devFamily != "DeviceFamily_CC26X1"){
-
+% else if(!ble.extAdv && devFamily != "DeviceFamily_CC26X1" && devFamily != "DeviceFamily_CC23X0" ){
 -DEXCLUDE_AE
 %}
 % if(ble.extAdv)

@@ -162,6 +162,8 @@ typedef struct mlme_key_descriptor_entry_s {
     uint8_t Key[16];                                    /**< Actual value of Security key*/
 } mlme_key_descriptor_entry_t;
 
+
+
 /**
  * @brief MLME primitive error statuses
  *
@@ -267,6 +269,7 @@ typedef enum {
 
     macPanCoordExtendedAddress = 0x8a,
     macPanCoordShortAddress = 0x8b,
+    macDeviceTableFrameCount = 0x8c,  /* Set only the frame count entry at the provided index of the device table */
 
     /* Proprietary Security PIB */
     macKeyIdLookupEntry = 0xd0,
@@ -625,5 +628,15 @@ typedef struct mlme_request_restart_config_s {
     uint16_t blacklist_min_ms;          /**< Blacklist min, which is doubled by every restart */
     uint16_t blacklist_max_ms;          /**< Blacklist max, largest allowed blacklist time */
 } mlme_request_restart_config_t;
+
+/**
+ * @brief struct mlme_set_device_frame_counter_s Used with <> to set a specific device descriptor RX frame count
+ *
+ * Non standard extension to to set a specific device descriptor RX frame count
+ */
+typedef struct mlme_set_device_frame_count_s {
+    uint32_t frameCount;     /**< Frame count value */
+    uint8_t  frameCountIndex; /**< Index of frame count to set */
+} mlme_device_frame_count_t;
 
 #endif /* MLME_H_ */

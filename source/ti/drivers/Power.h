@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -754,6 +754,17 @@ int_fast16_t Power_releaseConstraint(uint_fast16_t constraintId);
  *  @sa  @ref ti_drivers_Power_Examples_dependency "Using power dependency"
  */
 int_fast16_t Power_releaseDependency(uint_fast16_t resourceId);
+
+/*!
+ *  @brief  Resets the system and causes it to reboot
+ *
+ *  This function causes the system to reset and then boot up again. The impact
+ *  this has on the existing system state such as what memory is retained is
+ *  device-specific. Unless otherwise specified in the device-specific
+ *  documentation, this function will trigger the most comprehensive reset of
+ *  the system triggerable from software.
+ */
+void Power_reset(void);
 
 /*!
  *  @brief  Declare an operational constraint

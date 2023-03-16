@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #ifndef __GNUC__
-#error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
 #endif
 
 #include "sys/types.h"
@@ -52,17 +52,16 @@ extern "C" {
 #endif
 
 #ifndef SIGEV_NONE
-#define SIGEV_NONE 1
+    #define SIGEV_NONE 1
 #endif
 
 #ifndef SIGEV_SIGNAL
-#define SIGEV_SIGNAL 2
+    #define SIGEV_SIGNAL 2
 #endif
 
 #ifndef SIGEV_THREAD
-#define SIGEV_THREAD 3
+    #define SIGEV_THREAD 3
 #endif
-
 
 /*
  *************************************************************************
@@ -73,9 +72,10 @@ extern "C" {
 /*
  *  ======== sigval ========
  */
-union sigval {
-    int     sival_int;      /* integer signal value */
-    void   *sival_ptr;      /* pointer signal value */
+union sigval
+{
+    int sival_int;   /* integer signal value */
+    void *sival_ptr; /* pointer signal value */
 };
 
 /*  Deprecated. This typedef is for compatibility with old SDKs. It is
@@ -87,13 +87,14 @@ typedef union sigval sigval;
 /*
  *  ======== sigevent ========
  */
-struct sigevent {
-    int             sigev_notify;       /* notification type */
-    int             sigev_signo;        /* signal number */
-    union sigval    sigev_value;        /* signal value */
+struct sigevent
+{
+    int sigev_notify;         /* notification type */
+    int sigev_signo;          /* signal number */
+    union sigval sigev_value; /* signal value */
 
-    void (*sigev_notify_function)(union sigval val);    /* notify function */
-    pthread_attr_t *sigev_notify_attributes;            /* notify attributes */
+    void (*sigev_notify_function)(union sigval val); /* notify function */
+    pthread_attr_t *sigev_notify_attributes;         /* notify attributes */
 };
 
 /*  Deprecated. This typedef is for compatibility with old SDKs. It is
@@ -101,7 +102,6 @@ struct sigevent {
  *  release. TIRTOS-1317
  */
 typedef struct sigevent sigevent;
-
 
 #ifdef __cplusplus
 }

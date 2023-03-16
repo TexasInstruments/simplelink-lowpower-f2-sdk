@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #ifndef __GNUC__
-#error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
+    #error Incompatible compiler: use this include path (.../ti/posix/gcc) only with a GNU compiler. You appear to be using a different compiler.
 #endif
 
 #include <stdint.h>
@@ -53,23 +53,24 @@ extern "C" {
  *  toolchains don't have.
  */
 #ifndef SCHED_FIFO
-#define SCHED_FIFO 0
+    #define SCHED_FIFO 0
 #endif
 
 #ifndef SCHED_RR
-#define SCHED_RR 0
+    #define SCHED_RR 0
 #endif
 
 #ifndef SCHED_OTHER
-#define SCHED_OTHER 0
+    #define SCHED_OTHER 0
 #endif
 
 /*
  *  ======== sched_param ========
  *  This was taken from sys/sched.h
  */
-struct sched_param {
-  int sched_priority; /* Thread execution priority */
+struct sched_param
+{
+    int sched_priority; /* Thread execution priority */
 };
 
 /*

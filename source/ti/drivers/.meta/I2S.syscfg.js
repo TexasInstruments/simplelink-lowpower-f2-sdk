@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,17 +74,20 @@ let config = [
         ]
     },
     {
-        name        : "masterSlaveSelection",
-        displayName : "Master Slave Selection",
+        name        : "controllerTargetSelection",
+        legacyNames : ["masterSlaveSelection"],
+        displayName : "Controller Target Selection",
         description : "Select the I2S module role",
-        default     : 'Master',
+        default     : 'Controller',
         options     : [
             {
-                name: 'Master',
+                name: 'Controller',
+                legacyNames: ["Master"],
                 description: "Clocks internally generated"
             },
             {
-                name: 'Slave',
+                name: 'Target',
+                legacyNames: ["Slave"],
                 description: "Clocks externally generated"
             }
         ]

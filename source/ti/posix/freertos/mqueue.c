@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,14 +57,16 @@
  *  Check the scheduler state and only use the gate when scheduler
  *  is running. These macros improves the code presentation.
  */
-#define GATE_ENTER(gate)                                        \
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {    \
-        xSemaphoreTake(gate, portMAX_DELAY);                    \
+#define GATE_ENTER(gate)                                   \
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) \
+    {                                                      \
+        xSemaphoreTake(gate, portMAX_DELAY);               \
     }
 
-#define GATE_LEAVE(gate)                                        \
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {    \
-        xSemaphoreGive(gate);                                   \
+#define GATE_LEAVE(gate)                                   \
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) \
+    {                                                      \
+        xSemaphoreGive(gate);                              \
     }
 
 /*
@@ -72,13 +74,14 @@
  *  The message queue object, created the first time the message queue is
  *  opened.
  */
-typedef struct MQueueObj {
-    struct MQueueObj  *next;
-    struct MQueueObj  *prev;
-    QueueHandle_t      queue;
-    struct mq_attr     attrs;
-    int                refCount;
-    char              *name;
+typedef struct MQueueObj
+{
+    struct MQueueObj *next;
+    struct MQueueObj *prev;
+    QueueHandle_t queue;
+    struct mq_attr attrs;
+    int refCount;
+    char *name;
 } MQueueObj;
 
 /*
@@ -86,17 +89,17 @@ typedef struct MQueueObj {
  *  Threads that call mq_open() get a descriptor handle.  This allows
  *  passing of different flags to mq_open().
  */
-typedef struct MQueueDesc {
-    MQueueObj *msgQueue;  /* The actual message queue object */
-    long       flags;
+typedef struct MQueueDesc
+{
+    MQueueObj *msgQueue; /* The actual message queue object */
+    long flags;
 } MQueueDesc;
 
 /*
  *  Function for obtaining a timeout in Clock ticks from the difference of
  *  an absolute time and the current time.
  */
-extern int _clock_abstime2ticks(clockid_t clockId,
-        const struct timespec *abstime, uint32_t *ticks);
+extern int _clock_abstime2ticks(clockid_t clockId, const struct timespec *abstime, uint32_t *ticks);
 
 static MQueueObj *findInList(const char *name);
 
@@ -115,10 +118,10 @@ static SemaphoreHandle_t mqGate = NULL;
  *  number of messages would be 32 bytes.
  */
 static mq_attr defaultAttrs = {
-    0,      /* mq_flags */
-    4,      /* mq_maxmsg - number of messages */
-    8,      /* mq_msgsize - size of message */
-    0       /* mq_curmsgs */
+    0, /* mq_flags */
+    4, /* mq_maxmsg - number of messages */
+    8, /* mq_msgsize - size of message */
+    0  /* mq_curmsgs */
 };
 
 /*
@@ -126,8 +129,8 @@ static mq_attr defaultAttrs = {
  */
 int mq_close(mqd_t mqdes)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
 
     vPortFree(mqd);
 
@@ -143,19 +146,20 @@ int mq_close(mqd_t mqdes)
  */
 int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
 
     /* Get the number of messages in the queue */
-    if (HwiP_inISR()) {
-        msgQueue->attrs.mq_curmsgs =
-                uxQueueMessagesWaitingFromISR(msgQueue->queue);
+    if (HwiP_inISR())
+    {
+        msgQueue->attrs.mq_curmsgs = uxQueueMessagesWaitingFromISR(msgQueue->queue);
     }
-    else {
+    else
+    {
         msgQueue->attrs.mq_curmsgs = uxQueueMessagesWaiting(msgQueue->queue);
     }
 
-    *mqstat = msgQueue->attrs;
+    *mqstat          = msgQueue->attrs;
     mqstat->mq_flags = mqd->flags;
 
     return (0);
@@ -166,28 +170,33 @@ int mq_getattr(mqd_t mqdes, struct mq_attr *mqstat)
  */
 mqd_t mq_open(const char *name, int oflags, ...)
 {
-    va_list             va;
-    unsigned int        mode;
-    struct mq_attr     *attrs = NULL;
-    MQueueObj          *msgQueue;
-    MQueueDesc         *msgQueueDesc = NULL;
-    bool                schedulerStarted;
-    bool                rc = false;
+    va_list va;
+    unsigned int mode;
+    struct mq_attr *attrs = NULL;
+    MQueueObj *msgQueue;
+    MQueueDesc *msgQueueDesc = NULL;
+    bool schedulerStarted;
+    bool rc = false;
 
     /* create gate, this is never deleted */
-    if (mqGate == NULL) {
+    if (mqGate == NULL)
+    {
         schedulerStarted = (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING);
 
-        if (schedulerStarted) {
+        if (schedulerStarted)
+        {
             vTaskSuspendAll();
         }
-        if (mqGate == NULL) {
+        if (mqGate == NULL)
+        {
             rc = ((mqGate = xSemaphoreCreateMutex()) == NULL);
         }
-        if (schedulerStarted) {
+        if (schedulerStarted)
+        {
             xTaskResumeAll();
         }
-        if (rc) {
+        if (rc)
+        {
             errno = ENOMEM;
             return ((mqd_t)(-1));
         }
@@ -195,24 +204,27 @@ mqd_t mq_open(const char *name, int oflags, ...)
 
     va_start(va, oflags);
 
-    if (oflags & O_CREAT) {
-        mode = va_arg(va, unsigned int);
+    if (oflags & O_CREAT)
+    {
+        mode  = va_arg(va, unsigned int);
         attrs = va_arg(va, struct mq_attr *);
 
-        if (attrs == NULL) {
+        if (attrs == NULL)
+        {
             attrs = &defaultAttrs;
         }
     }
 
     va_end(va);
 
-    if (name == NULL) {
+    if (name == NULL)
+    {
         errno = EINVAL;
         return ((mqd_t)(-1));
     }
 
-    if ((oflags & O_CREAT) && ((attrs->mq_maxmsg <= 0)
-            || (attrs->mq_msgsize <= 0))) {
+    if ((oflags & O_CREAT) && ((attrs->mq_maxmsg <= 0) || (attrs->mq_msgsize <= 0)))
+    {
         errno = EINVAL;
         return ((mqd_t)(-1));
     }
@@ -221,13 +233,15 @@ mqd_t mq_open(const char *name, int oflags, ...)
 
     msgQueue = findInList(name);
 
-    if ((msgQueue != NULL) && (oflags & O_CREAT) && (oflags & O_EXCL)) {
+    if ((msgQueue != NULL) && (oflags & O_CREAT) && (oflags & O_EXCL))
+    {
         /* Error: Message queue has already been opened and O_EXCL is set */
         errno = EEXIST;
         goto error_leave;
     }
 
-    if (!(oflags & O_CREAT) && (msgQueue == NULL)) {
+    if (!(oflags & O_CREAT) && (msgQueue == NULL))
+    {
         errno = ENOENT;
         goto error_leave;
     }
@@ -235,56 +249,62 @@ mqd_t mq_open(const char *name, int oflags, ...)
     /* allocate the MQueueDesc */
     msgQueueDesc = pvPortMalloc(sizeof(MQueueDesc));
 
-    if (msgQueueDesc == NULL) {
+    if (msgQueueDesc == NULL)
+    {
         errno = ENOMEM;
         goto error_leave;
     }
 
-    if (msgQueue == NULL) {
+    if (msgQueue == NULL)
+    {
         /* allocate the MQueueObj */
         msgQueue = pvPortMalloc(sizeof(MQueueObj));
 
-        if (msgQueue == NULL) {
+        if (msgQueue == NULL)
+        {
             goto error_handler;
         }
 
-        msgQueue->refCount = 1;
+        msgQueue->refCount         = 1;
         msgQueue->attrs.mq_msgsize = attrs->mq_msgsize;
-        msgQueue->attrs.mq_maxmsg = attrs->mq_maxmsg;
+        msgQueue->attrs.mq_maxmsg  = attrs->mq_maxmsg;
 
         msgQueue->name = pvPortMalloc(strlen(name) + 1);
 
-        if (msgQueue->name == NULL) {
+        if (msgQueue->name == NULL)
+        {
             goto error_handler;
         }
 
         strcpy(msgQueue->name, name);
 
-        msgQueue->queue = xQueueCreate((UBaseType_t)attrs->mq_maxmsg,
-                (UBaseType_t)attrs->mq_msgsize);
+        msgQueue->queue = xQueueCreate((UBaseType_t)attrs->mq_maxmsg, (UBaseType_t)attrs->mq_msgsize);
 
-        if (msgQueue->queue == NULL) {
+        if (msgQueue->queue == NULL)
+        {
             goto error_handler;
         }
 
         /* add the message queue to the list now */
         msgQueue->prev = NULL;
 
-        if (mqList != NULL) {
+        if (mqList != NULL)
+        {
             mqList->prev = msgQueue;
         }
 
         msgQueue->next = mqList;
-        mqList = msgQueue;
+        mqList         = msgQueue;
     }
-    else {
+    else
+    {
         msgQueue->refCount++;
     }
 
     GATE_LEAVE(mqGate)
 
     msgQueueDesc->msgQueue = msgQueue;
-    msgQueueDesc->flags = ((oflags & O_NONBLOCK) ? O_NONBLOCK : 0);
+    msgQueueDesc->flags    = ((oflags & O_NONBLOCK) ? O_NONBLOCK : 0);
 
     (void)mode;
 
@@ -294,13 +314,16 @@ error_handler:
     /*  We only get here if we attempted to allocate msgQueue (i.e., it
      *  was not already in the list), so we're ok to free it.
      */
-    if (msgQueue != NULL) {
-        if (msgQueue->name != NULL) {
+    if (msgQueue != NULL)
+    {
+        if (msgQueue->name != NULL)
+        {
             vPortFree(msgQueue->name);
         }
         vPortFree(msgQueue);
     }
-    if (msgQueueDesc != NULL) {
+    if (msgQueueDesc != NULL)
+    {
         vPortFree(msgQueueDesc);
     }
     errno = ENOMEM;
@@ -313,20 +336,20 @@ error_leave:
 /*
  *  ======== mq_receive ========
  */
-ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio)
+ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    BaseType_t  status;
-    TickType_t  timeout;
-    int         msgsize = msgQueue->attrs.mq_msgsize;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    BaseType_t status;
+    TickType_t timeout;
+    int msgsize = msgQueue->attrs.mq_msgsize;
 
     /*
      *  If msg_len is less than the message size attribute of the message
      *  queue, return an error.
      */
-    if (msg_len < (size_t)((msgQueue->attrs).mq_msgsize)) {
+    if (msg_len < (size_t)((msgQueue->attrs).mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
@@ -336,21 +359,26 @@ ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
      *  no message is available.
      *  Otherwise, wait forever to receive a message.
      */
-    if (mqd->flags & O_NONBLOCK) {
+    if (mqd->flags & O_NONBLOCK)
+    {
         timeout = 0;
     }
-    else {
+    else
+    {
         timeout = portMAX_DELAY;
     }
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xQueueReceiveFromISR(msgQueue->queue, msg_ptr, NULL);
     }
-    else {
+    else
+    {
         status = xQueueReceive(msgQueue->queue, msg_ptr, timeout);
     }
 
-    if (status != pdTRUE) {
+    if (status != pdTRUE)
+    {
         errno = EAGAIN;
         return (-1);
     }
@@ -359,18 +387,79 @@ ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
 }
 
 /*
+ * ========= mq_peek ========
+ */
+int mq_peek(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int msg_prio)
+{
+    /* Function to receive an item, without removing it from the
+     * queue*/
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    BaseType_t status;
+    TickType_t timeout;
+
+    /*
+     *  If msg_len is less than the message size attribute of the message
+     *  queue, return an error.
+     */
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
+        if (!HwiP_inISR())
+        {
+            errno = EMSGSIZE;
+        }
+        return (-1);
+    }
+
+    /*
+     *  If the message queue is non-blocking, return an error (-1) if
+     *  no message is available.
+     *  Otherwise, wait forever to receive a message.
+     */
+    if (mqd->flags & O_NONBLOCK)
+    {
+        timeout = 0;
+    }
+    else
+    {
+        timeout = portMAX_DELAY;
+    }
+
+    if (HwiP_inISR())
+    {
+        status = xQueuePeekFromISR(msgQueue->queue, msg_ptr);
+    }
+    else
+    {
+        status = xQueuePeek(msgQueue->queue, msg_ptr, timeout);
+    }
+
+    if (status != pdTRUE)
+    {
+        if (!HwiP_inISR())
+        {
+            errno = EAGAIN;
+        }
+        return (-1);
+    }
+
+    return (0);
+}
+
+/*
  *  ======== mq_send ========
  */
-int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio)
+int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    BaseType_t  status;
-    TickType_t  timeout;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    BaseType_t status;
+    TickType_t timeout;
 
-    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize)) {
-        if (!HwiP_inISR()) {
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
+        if (!HwiP_inISR())
+        {
             errno = EMSGSIZE;
         }
         return (-1);
@@ -380,22 +469,87 @@ int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
      *  If O_NONBLOCK is not set, block until space is available in the
      *  queue.  Otherwise, return -1 if no space is available.
      */
-    if (mqd->flags & O_NONBLOCK) {
+    if (mqd->flags & O_NONBLOCK)
+    {
         timeout = 0;
     }
-    else {
+    else
+    {
         timeout = portMAX_DELAY;
     }
 
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xQueueSendFromISR(msgQueue->queue, msg_ptr, NULL);
     }
-    else {
+    else
+    {
         status = xQueueSend(msgQueue->queue, msg_ptr, timeout);
     }
 
-    if (status != pdTRUE) {
-        if (!HwiP_inISR()) {
+    if (status != pdTRUE)
+    {
+        if (!HwiP_inISR())
+        {
+            errno = EAGAIN;
+        }
+        return (-1);
+    }
+
+    return (0);
+}
+
+/*
+ *  ======== mq_send_to_front ========
+ */
+
+int mq_send_to_front(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
+{
+    /* Function to send a message to the front of the queue*/
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    BaseType_t status;
+    TickType_t timeout;
+
+    /*
+     *  If msg_len is less than the message size attribute of the message
+     *  queue, return an error.
+     */
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
+        if (!HwiP_inISR())
+        {
+            errno = EMSGSIZE;
+        }
+        return (-1);
+    }
+
+    /*
+     *  If O_NONBLOCK is not set, block until space is available in the
+     *  queue.  Otherwise, return -1 if no space is available.
+     */
+    if (mqd->flags & O_NONBLOCK)
+    {
+        timeout = 0;
+    }
+    else
+    {
+        timeout = portMAX_DELAY;
+    }
+
+    if (HwiP_inISR())
+    {
+        status = xQueueSendToFrontFromISR(msgQueue->queue, msg_ptr, NULL);
+    }
+    else
+    {
+        status = xQueueSendToFront(msgQueue->queue, msg_ptr, timeout);
+    }
+
+    if (status != pdTRUE)
+    {
+        if (!HwiP_inISR())
+        {
             errno = EAGAIN;
         }
         return (-1);
@@ -407,23 +561,24 @@ int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
 /*
  *  ======== mq_setattr ========
  */
-int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr,
-        struct mq_attr *oldattr)
+int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr, struct mq_attr *oldattr)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
 
     /* mq_flags should be 0 or O_NONBLOCK */
-    if ((newattr->mq_flags != 0) && (newattr->mq_flags != O_NONBLOCK)) {
+    if ((newattr->mq_flags != 0) && (newattr->mq_flags != O_NONBLOCK))
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* save old attribute values before updating message queue description */
-    if (oldattr != NULL) {
+    if (oldattr != NULL)
+    {
         msgQueue->attrs.mq_curmsgs = uxQueueMessagesWaiting(msgQueue->queue);
-        *oldattr = msgQueue->attrs;
-        oldattr->mq_flags = mqd->flags; /* overwrite with mqueue desc flag */
+        *oldattr                   = msgQueue->attrs;
+        oldattr->mq_flags          = mqd->flags; /* overwrite with mqueue desc flag */
     }
 
     /*  Only mq_flags is used to set the message queue description, the
@@ -456,57 +611,69 @@ int mq_setattr(mqd_t mqdes, const struct mq_attr *newattr,
  *  The validity of the abs_timeout parameter need not be checked if a
  *  message can be removed from the message queue immediately.
  */
-ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
-        unsigned int *msg_prio, const struct timespec *abstime)
+ssize_t mq_timedreceive(mqd_t mqdes,
+                        char *msg_ptr,
+                        size_t msg_len,
+                        unsigned int *msg_prio,
+                        const struct timespec *abstime)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    uint32_t    timeout;
-    BaseType_t  status;
-    int         msgsize = msgQueue->attrs.mq_msgsize;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    uint32_t timeout;
+    BaseType_t status;
+    int msgsize = msgQueue->attrs.mq_msgsize;
 
     /*
      *  If msg_len is less than the message size attribute of the message
      *  queue, return an error.
      */
-    if (msg_len < (size_t)(msgQueue->attrs.mq_msgsize)) {
+    if (msg_len < (size_t)(msgQueue->attrs.mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
 
     /* should not fail if message already available (don't validate abstime) */
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xQueueReceiveFromISR(msgQueue->queue, msg_ptr, NULL);
     }
-    else {
+    else
+    {
         status = xQueueReceive(msgQueue->queue, msg_ptr, 0);
     }
 
-    if (status == pdTRUE) {
+    if (status == pdTRUE)
+    {
         return (msgsize);
     }
-    else {
+    else
+    {
         /* message queue is empty */
-        if (HwiP_inISR() || (mqd->flags & O_NONBLOCK)) {
+        if (HwiP_inISR() || (mqd->flags & O_NONBLOCK))
+        {
             errno = EAGAIN;
             return (-1);
         }
     }
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* requested abstime has already passed */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
 
     status = xQueueReceive(msgQueue->queue, msg_ptr, timeout);
 
-    if (status != pdTRUE) {
+    if (status != pdTRUE)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
@@ -536,51 +703,63 @@ ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
  *  The validity of the abstime parameter need not be checked when there
  *  is sufficient room in the queue.
  */
-int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
-        unsigned int msg_prio, const struct timespec *abstime)
+int mq_timedsend(mqd_t mqdes,
+                 const char *msg_ptr,
+                 size_t msg_len,
+                 unsigned int msg_prio,
+                 const struct timespec *abstime)
 {
-    MQueueDesc *mqd = (MQueueDesc *)mqdes;
-    MQueueObj  *msgQueue = mqd->msgQueue;
-    uint32_t    timeout;
-    BaseType_t  status;
+    MQueueDesc *mqd     = (MQueueDesc *)mqdes;
+    MQueueObj *msgQueue = mqd->msgQueue;
+    uint32_t timeout;
+    BaseType_t status;
 
-    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize)) {
+    if (msg_len > (size_t)(msgQueue->attrs.mq_msgsize))
+    {
         errno = EMSGSIZE;
         return (-1);
     }
 
     /* should not fail if able to send message (don't validate abstime) */
-    if (HwiP_inISR()) {
+    if (HwiP_inISR())
+    {
         status = xQueueSendFromISR(msgQueue->queue, msg_ptr, NULL);
     }
-    else {
+    else
+    {
         status = xQueueSend(msgQueue->queue, msg_ptr, 0);
     }
 
-    if (status == pdTRUE) {
+    if (status == pdTRUE)
+    {
         return (0);
     }
-    else {
-        if (HwiP_inISR() || (mqd->flags & O_NONBLOCK)) {
+    else
+    {
+        if (HwiP_inISR() || (mqd->flags & O_NONBLOCK))
+        {
             errno = EAGAIN;
             return (-1);
         }
     }
 
-    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0) {
+    if (_clock_abstime2ticks(CLOCK_REALTIME, abstime, &timeout) != 0)
+    {
         errno = EINVAL;
         return (-1);
     }
 
     /* requested abstime has already passed */
-    if (timeout == 0) {
+    if (timeout == 0)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
 
     status = xQueueSend(msgQueue->queue, msg_ptr, timeout);
 
-    if (status != pdTRUE) {
+    if (status != pdTRUE)
+    {
         errno = ETIMEDOUT;
         return (-1);
     }
@@ -593,31 +772,37 @@ int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
  */
 int mq_unlink(const char *name)
 {
-    MQueueObj  *msgQueue;
-    MQueueObj  *nextMQ, *prevMQ;
+    MQueueObj *msgQueue;
+    MQueueObj *nextMQ, *prevMQ;
 
     GATE_ENTER(mqGate)
 
     msgQueue = findInList(name);
 
-    if (msgQueue == NULL) {
+    if (msgQueue == NULL)
+    {
         errno = ENOENT;
         goto done_leave;
     }
 
-    if (msgQueue->refCount == 0) {
+    if (msgQueue->refCount == 0)
+    {
         /* remove message queue from list */
-        if (mqList == msgQueue) {
+        if (mqList == msgQueue)
+        {
             mqList = msgQueue->next;
         }
-        else {
+        else
+        {
             prevMQ = msgQueue->prev;
             nextMQ = msgQueue->next;
 
-            if (prevMQ != NULL) {
+            if (prevMQ != NULL)
+            {
                 prevMQ->next = nextMQ;
             }
-            if (nextMQ != NULL) {
+            if (nextMQ != NULL)
+            {
                 nextMQ->prev = prevMQ;
             }
         }
@@ -626,11 +811,13 @@ int mq_unlink(const char *name)
 
         GATE_LEAVE(mqGate)
 
-        if (msgQueue->queue != NULL) {
+        if (msgQueue->queue != NULL)
+        {
             vQueueDelete(msgQueue->queue);
         }
 
-        if (msgQueue->name != NULL) {
+        if (msgQueue->name != NULL)
+        {
             vPortFree(msgQueue->name);
         }
 
@@ -638,7 +825,8 @@ int mq_unlink(const char *name)
 
         return (0);
     }
-    else {
+    else
+    {
         /* temporary fix until TIRTOS-1323 is fixed */
         errno = EBUSY;
     }
@@ -667,8 +855,10 @@ static MQueueObj *findInList(const char *name)
 
     mq = mqList;
 
-    while (mq != NULL) {
-        if (strcmp(mq->name, name) == 0) {
+    while (mq != NULL)
+    {
+        if (strcmp(mq->name, name) == 0)
+        {
             return (mq);
         }
         mq = mq->next;

@@ -3,7 +3,7 @@
 *
 *  Description:    Startup code for CC13x4, CC26x4 device family for use with IAR.
 *
-*  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+*  Copyright (C) 2020-2022 Texas Instruments Incorporated - http://www.ti.com/
 *
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,7 @@ extern void FaultISR( void );
 extern void MPUFaultIntHandler( void );
 extern void BusFaultIntHandler( void );
 extern void UsageFaultIntHandler( void );
+extern void SecureFaultIntHandler( void );
 extern void SVCallIntHandler( void );
 extern void DebugMonIntHandler( void );
 extern void PendSVIntHandler( void );
@@ -126,6 +127,7 @@ extern void SWEV4IntHandler( void );
 #pragma weak MPUFaultIntHandler = IntDefaultHandler
 #pragma weak BusFaultIntHandler = IntDefaultHandler
 #pragma weak UsageFaultIntHandler = IntDefaultHandler
+#pragma weak SecureFaultIntHandler = IntDefaultHandler
 #pragma weak SVCallIntHandler = IntDefaultHandler
 #pragma weak DebugMonIntHandler = IntDefaultHandler
 #pragma weak PendSVIntHandler = IntDefaultHandler
@@ -204,7 +206,7 @@ __root static void* dummy_stack @ ".stack";
 //! the program if located at a start address other than 0.
 //
 //*****************************************************************************
-__root void (* const __vector_table[])(void) @ ".intvec" =
+__root void (* const __vector_table[])(void) @ ".resetVecs" =
 {
     (void (*)(void))&STACK_TOP,             //  0 The initial stack pointer
     ResetISR,                               //  1 The reset handler
@@ -213,7 +215,7 @@ __root void (* const __vector_table[])(void) @ ".intvec" =
     MPUFaultIntHandler,                     //  4 Memory Management (MemManage) Fault
     BusFaultIntHandler,                     //  5 The bus fault handler
     UsageFaultIntHandler,                   //  6 The usage fault handler
-    0,                                      //  7 Reserved
+    SecureFaultIntHandler,                  //  7 The secure fault handler
     0,                                      //  8 Reserved
     0,                                      //  9 Reserved
     0,                                      // 10 Reserved

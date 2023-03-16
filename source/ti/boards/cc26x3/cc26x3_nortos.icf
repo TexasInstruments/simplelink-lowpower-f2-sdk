@@ -48,17 +48,17 @@ define memory mem with size = 4G;
 define region FLASH_region = mem:[from ROM_start__ to ROM_end__];
 
 /* Define a region for the on-chip SRAM */
-define region RAM_region     = mem:[from RAM_start__ to RAM_end__];
+define region RAM_region = mem:[from RAM_start__ to RAM_end__];
 
 /* Define a region for the on-chip GPRAM */
-define region GPRAM_region     = mem:[from GPRAM_start__ to GPRAM_end__];
+define region GPRAM_region = mem:[from GPRAM_start__ to GPRAM_end__];
 
 /* Place the interrupt vectors at the start of flash */
-place at address mem:__intvec_start__ { readonly section .intvec };
-keep { section .intvec};
+place at address mem:__intvec_start__ { readonly section .resetVecs };
+keep { section .resetVecs};
 
 /* Define a region for CCFG */
-define region CCFG_region    = mem:[from CCFG_START__ to CCFG_END__];
+define region CCFG_region = mem:[from CCFG_START__ to CCFG_END__];
 place in CCFG_region {section .ccfg};
 keep { section .ccfg };
 
@@ -66,8 +66,9 @@ keep { section .ccfg };
 place in FLASH_region { readonly };
 
 /* Place all read/write items into RAM */
-place in RAM_region   { readwrite };
+place in RAM_region   { readwrite, section .ramVecs };
 initialize by copy { readwrite };
+do not initialize { section .ramVecs };
 
 /*
  * Define CSTACK block to contain .stack section. This enables the IAR IDE
@@ -97,4 +98,8 @@ place in RAM_region { block HEAP };
  * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
  */
 define region LOG_DATA = mem:[from 0x90000000 to 0x9003FFFF];
-".log_data": place noload in LOG_DATA { readonly section .log_data };
+define region LOG_PTR = mem:[from 0x94000008 to 0x94040007];
+define block LOG_DATA  with size = 0x40000 { readonly section .log_data  };
+define block LOG_PTR   with size = 0x40000 { readonly section .log_ptr* };
+".log_data": place noload in LOG_DATA { block LOG_DATA };
+".log_ptr": place noload in LOG_PTR { block LOG_PTR };

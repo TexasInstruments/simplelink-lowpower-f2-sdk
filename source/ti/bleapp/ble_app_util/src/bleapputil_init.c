@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022, Texas Instruments Incorporated
+ Copyright (c) 2022-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -67,19 +67,13 @@ Target Device: cc13xx_cc26xx
 /*********************************************************************
 * GLOBAL VARIABLES
 */
+BLEAppUtil_TheardEntity_t BLEAppUtil_theardEntity;
 
 /*********************************************************************
 * LOCAL VARIABLES
 */
 // Entity ID globally used to check for source and/or destination of messages
 static BLEAppUtil_entityId_t BLEAppUtilSelfEntity;
-
-// Event globally used to post local events and pend on system and
-// local events.
-EventP_Handle BLEAppUtilSyncEvent;
-
-// Queue object used for app messages
-QueueP_Handle BLEAppUtilMsgQueueHandle;
 
 // BLEAppUtil parameters given in the init function
 BLEAppUtil_GeneralParams_t *BLEAppUtilLocal_GeneralParams = NULL;
@@ -97,12 +91,12 @@ gapBondCBs_t BLEAppUtil_bondMgrCBs =
     BLEAppUtil_pairStateCB // Pairing/Bonding state Callback
 };
 
-MutexP_Handle BLEAppUtil_mutexHandle;
-MutexP_Struct BLEAppUtil_mutexStruct;
+pthread_mutex_t mutex;
 
 /*********************************************************************
 * LOCAL FUNCTIONS
 */
+static bStatus_t BLEAppUtil_createQueue(void);
 
 /*********************************************************************
  * EXTERN FUNCTIONS
@@ -145,6 +139,9 @@ void BLEAppUtil_init(ErrorHandler_t errorHandler, StackInitDone_t initDoneHandle
     BLEAppUtilLocal_GeneralParams = initGeneralParams;
     BLEAppUtilLocal_PeriCentParams = initPeriCentParams;
 
+    // Create a message queue for message to be sent to BLEAppUtil
+    BLEAppUtil_createQueue();
+
     // Create BLE stack task
     bleStack_createTasks();
 
@@ -155,7 +152,7 @@ void BLEAppUtil_init(ErrorHandler_t errorHandler, StackInitDone_t initDoneHandle
     // BLEAppUtil_registerEventHandler
     // BLEAppUtil_unRegisterEventHandler
     // BLEAppUtil_callEventHandler
-    BLEAppUtil_mutexHandle = MutexP_construct(&BLEAppUtil_mutexStruct, NULL);
+    pthread_mutex_init(&mutex, NULL);
 }
 
 /*********************************************************************
@@ -172,7 +169,7 @@ bStatus_t BLEAppUtil_registerEventHandler(BLEAppUtil_EventHandler_t *eventHandle
     BLEAppUtil_EventHandlersList_t *newHandler;
 
     // Lock the Mutex
-    uintptr_t key = MutexP_lock(BLEAppUtil_mutexHandle);
+    pthread_mutex_lock(&mutex);
 
     // Allocate the new handler space
     newHandler = (BLEAppUtil_EventHandlersList_t *)BLEAppUtil_malloc(sizeof(BLEAppUtil_EventHandlersList_t));
@@ -208,7 +205,7 @@ bStatus_t BLEAppUtil_registerEventHandler(BLEAppUtil_EventHandler_t *eventHandle
     }
 
     // Unlock the Mutex - item was added to the list
-    MutexP_unlock(BLEAppUtil_mutexHandle, key);
+    pthread_mutex_unlock(&mutex);
 
     return SUCCESS;
 }
@@ -229,7 +226,7 @@ bStatus_t BLEAppUtil_unRegisterEventHandler(BLEAppUtil_EventHandler_t *eventHand
     bStatus_t status = INVALIDPARAMETER;
 
     // Lock the Mutex
-    uintptr_t key = MutexP_lock(BLEAppUtil_mutexHandle);
+    pthread_mutex_lock(&mutex);
 
     // Go over the handlers list
     while(curr != NULL)
@@ -264,9 +261,57 @@ bStatus_t BLEAppUtil_unRegisterEventHandler(BLEAppUtil_EventHandler_t *eventHand
     }
 
     // Unlock the Mutex - handler was removed from the list
-    MutexP_unlock(BLEAppUtil_mutexHandle, key);
+    pthread_mutex_unlock(&mutex);
 
     return status;
+}
+
+
+/*********************************************************************
+ * @fn      BLEAppUtil_invokeFunction
+ *
+ * @brief   This function receives a callback and data and switches
+ *          the context in order to call the callback from the BLE
+ *          App Util module context
+ *
+ * @param   callback - The callback to invoke from the BLE App Util
+ *                     module context
+ * @param   pData    - The data to provide the callback
+ *
+ * @return  SUCCESS, FAILURE
+ */
+bStatus_t BLEAppUtil_invokeFunction(InvokeFromBLEAppUtilContext_t callback, char* pData)
+{
+    BLEAppUtil_CallbackToInvoke_t *pDataMsg = NULL;
+
+    // If the callback doesn't exist retun an error
+    if(callback == NULL)
+    {
+        return FAILURE;
+    }
+
+    // Create a BLEAppUtil_CallbackToInvoke_t and assign parameters
+    pDataMsg = BLEAppUtil_malloc(sizeof(BLEAppUtil_CallbackToInvoke_t));
+
+    // If the allocation failed, return an error
+    if(pDataMsg == NULL)
+    {
+        return FAILURE;
+    }
+
+    pDataMsg->callback = callback;
+    pDataMsg->data     = pData;
+
+    // Queue the event and data to switch context
+    if (BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_CALL_IN_BLEAPPUTIL_CONTEXT, pDataMsg) != SUCCESS)
+    {
+        if(pDataMsg != NULL)
+        {
+            BLEAppUtil_free(pDataMsg);
+        }
+        return FAILURE;
+    }
+    return SUCCESS;
 }
 
 /*********************************************************************
@@ -276,20 +321,13 @@ bStatus_t BLEAppUtil_unRegisterEventHandler(BLEAppUtil_EventHandler_t *eventHand
 /*********************************************************************
  * @fn      BLEAppUtil_stackRegister
  *
- * @brief   Create queue, create event, and register to stack messages
- *          callback
+ * @brief   Register to stack messages callback
  *
  * @return  None
  */
 void BLEAppUtil_stackRegister(void)
 {
     bleStack_errno_t status;
-
-    // Create the application BLEAppUtilSyncEvent
-    BLEAppUtilSyncEvent = EventP_create();
-
-    // Create an RTOS queue for message to be sent to BLEAppUtil
-    BLEAppUtilMsgQueueHandle = QueueP_create();
 
     // ******************************************************************
     // NO STACK API CALLS CAN OCCUR BEFORE THIS CALL TO bleStack_register
@@ -347,9 +385,35 @@ void BLEAppUtil_stackInit(void)
  *
  * @return  The entityId
  */
-BLEAppUtil_entityId_t BLEAppUtil_getSelfEntity()
+BLEAppUtil_entityId_t BLEAppUtil_getSelfEntity(void)
 {
     return BLEAppUtilSelfEntity;
+}
+
+/*********************************************************************
+ * @fn      BLEAppUtil_createQueue
+ *
+ * @brief   Create a message queue for message to be sent to BLEAppUtil
+ *
+ * @return  SUCCESS, FAILURE
+ */
+static bStatus_t BLEAppUtil_createQueue(void)
+{
+     struct mq_attr attr;
+
+     attr.mq_flags = 0; //Blocking
+     attr.mq_curmsgs = 0;
+     attr.mq_maxmsg = 8;
+     attr.mq_msgsize = sizeof(BLEAppUtil_appEvt_t);
+
+     /* Create the message queue */
+     BLEAppUtil_theardEntity.queueHandle = mq_open("BLEAppUtil_theardQueue", O_CREAT , 0, &attr);
+
+     if (BLEAppUtil_theardEntity.queueHandle == (mqd_t)-1)
+     {
+         return FAILURE;
+     }
+     return SUCCESS;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -480,11 +544,14 @@ bStatus_t BLEAppUtil_Connect(BLEAppUtil_ConnectParams_t *connParams)
                            connParams->phys, connParams->timeout);
 }
 
-bStatus_t BLEAppUtil_RegisterConnEventNoti(GAP_CB_Action_t action, GAP_CB_Event_e event, uint16_t connHandle)
+bStatus_t BLEAppUtil_registerConnNotifHandler(BLEAppUtil_EventHandler_t *eventHandler, uint16_t connHandle)
 {
-    return Gap_RegisterConnEventCb(BLEAppUtil_connEventCB, action, event, connHandle);
+    return Gap_RegisterConnEventCb(BLEAppUtil_connEventCB, GAP_CB_REGISTER, GAP_CB_CONN_EVENT_ALL, connHandle);
 }
-
+bStatus_t BLEAppUtil_unRegisterConnNotifHandler()
+{
+    return Gap_RegisterConnEventCb(BLEAppUtil_connEventCB, GAP_CB_UNREGISTER, GAP_CB_CONN_EVENT_ALL, LINKDB_CONNHANDLE_INVALID);
+}
 /*********************************************************************
  * @fn      BLEAppUtil_paramUpdateRsp
  *

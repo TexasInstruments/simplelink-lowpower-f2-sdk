@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2022, Texas Instruments Incorporated
+ Copyright (c) 2017-2023, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -158,6 +158,10 @@ extern void rfCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 #if defined(CTRL_V42_CONFIG) && (CTRL_V42_CONFIG & EXT_DATA_LEN_CFG)
 extern void rfPUpCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 #endif // EXT_DATA_LEN_CFG
+
+#ifdef LEGACY_CMD
+extern uint8_t checkLegacyHCICmdStatus(uint16_t opcode);
+#endif
 
 // Jump Table Function Externs: Needed to access internal system functions.
 extern void ll_eccInit(void);
@@ -554,7 +558,7 @@ const uint32 ROM_Flash_JT[] =
   (uint32)LL_ReadLocalVersionInfo,                           // ROM_JT_OFFSET[144]
   (uint32)LL_ReadPhy,                                        // ROM_JT_OFFSET[145]
   (uint32)LL_ReadRemoteUsedFeatures,                         // ROM_JT_OFFSET[146]
-  (uint32)LL_ReadRemoteUsedFeaturesCompleteCback,            // ROM_JT_OFFSET[147]
+  (uint32)LL_ReadRemoteUsedFeaturesCompleteCback_sPatch,     // ROM_JT_OFFSET[147]
   (uint32)LL_ReadRemoteVersionInfo,                          // ROM_JT_OFFSET[148]
   (uint32)LL_ReadRemoteVersionInfoCback,                     // ROM_JT_OFFSET[149]
   (uint32)LL_ReadRssi,                                       // ROM_JT_OFFSET[150]
@@ -2378,9 +2382,31 @@ void MAP_llSlave_TaskEnd(void)
 void MAP_llInitFeatureSet( void )
 {
   llInitFeatureSet();
+
 #ifdef EXCLUDE_AE
-  MAP_llRemoveFromFeatureSet(LL_FEATURE_EXTENDED_ADVERTISING);
-#endif
+  MAP_llRemoveFromFeatureSet(1, LL_FEATURE_EXTENDED_ADVERTISING);
+#endif // EXCLUDE_AE
+
+#if !defined(USE_PERIODIC_ADV) && !defined(USE_PERIODIC_SCAN)
+  MAP_llRemoveFromFeatureSet(1, LL_FEATURE_PERIODIC_ADVERTISING);
+#endif // !USE_PERIODIC_ADV && !USE_PERIODIC_SCAN
+
+#ifndef USE_PERIODIC_ADV
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTIONLESS_CTE_TRANSMITTER);
+#endif //USE_PERIODIC_ADV
+
+#ifndef USE_PERIODIC_SCAN
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTIONLESS_CTE_RECEIVER);
+#endif //USE_PERIODIC_SCAN
+
+#ifndef RTLS_CTE
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTION_CTE_REQUEST);
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTION_CTE_RESPONSE);
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_ANTENNA_SWITCHING_DURING_CTE_RX);
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_RECEIVING_CTE);
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTIONLESS_CTE_TRANSMITTER);
+  MAP_llRemoveFromFeatureSet(2, LL_FEATURE_CONNECTIONLESS_CTE_RECEIVER);
+#endif // RTLS_CTE
 }
 
 /*******************************************************************************
@@ -3028,6 +3054,30 @@ void MAP_llHealthSetThreshold(uint32 connTime, uint32 scanTime, uint32 initTime,
 {
 #ifdef USE_HEALTH_CHECK
   llHealthSetThreshold(connTime, scanTime, initTime, advTime);
+#endif
+}
+
+/*******************************************************************************
+ * Check legacy command status
+ */
+uint8_t MAP_checkLegacyHCICmdStatus(uint16_t opcode)
+{
+#ifdef LEGACY_CMD
+  return checkLegacyHCICmdStatus(opcode);
+#else
+  return FALSE;
+#endif
+}
+
+/*******************************************************************************
+ * Check vendor specific events status
+ */
+uint8_t MAP_checkVsEventsStatus(void)
+{
+#ifdef DISABLE_VS_EVENTS
+  return FALSE;
+#else
+  return TRUE;
 #endif
 }
 

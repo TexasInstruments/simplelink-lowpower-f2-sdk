@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,51 @@
  *  @file       Attestation_PSA.h
  *
  *  @brief      Attestation driver header
+ *
+ * # Overview #
+ * This file contains the APIs to generate an attestation token and obtain the
+ * expected token size to create a buffer to store the generated token.
+ * Attestation_PSA APIs are only available when TF-M is enabled and this file provides
+ * the non-secure interface to the Attestation_PSA driver.
+ *
+ * # Usage #
+ *
+ * After calling the Attestation initialization function, a token can be generated
+ * using the challenge provided by the attestation service to Attestation_PSA API.
+ * To generate a token, Attestation_PSA APIs assume that attestation keys are
+ * pre-provisioned in the pre-provisioned key sector.
+ *
+ * @anchor ti_drivers_attestation_Attestation_PSA_Example
+ *
+ * ## Generating an attestation token #
+ *
+ * @code
+ *
+ * #include <ti/drivers/attestation/Attestation_PSA.h>
+ * ....
+ *
+ * // Initialize Attestation_PSA driver
+ * Attestation_PSA_init();
+ *
+ * // A buffer of maximum allowed token size to store the generated token
+ * // Alternatively, application can obtain the size of token using Attestation_PSA_getTokenSize()
+ * // to dynamically allocate buffer of required size
+ * uint8_t token[ATTESTATION_PSA_MAX_TOKEN_SIZE];
+ *
+ * // A buffer for nonce or challenge provided by the attestation service to prevent replay or re-use of token
+ * uint8_t nonce[32];
+ *
+ * int_fast16_t status;
+ * size_t tokenLength;
+ *
+ * // Generate the token
+ * status = Attestation_PSA_getToken(&nonce[0], sizeof(nonce), &token[0], sizeof(token), &tokenLength);
+ *
+ * if (status != ATTESTATION_PSA_STATUS_SUCCESS)
+ * {
+ *      // Handle error
+ * }
+ * @endcode
  *
  */
 
@@ -115,6 +160,25 @@ int_fast16_t Attestation_PSA_getToken(const uint8_t *auth_challenge,
                                       uint8_t *token_buf,
                                       size_t token_buf_size,
                                       size_t *token_size);
+
+/**
+ *  @brief Get the exact size of initial attestation token in bytes.
+ *
+ *  Returns the size of the IAT token. It can be used if the caller
+ *  dynamically allocates memory for the token buffer.
+ *
+ *  @param[in]   challenge_size  Size of challenge object in bytes.
+ *                               Must be 32, 48, or 64-bytes.
+ *  @param[out]  token_size      Size of the token in bytes, which is created by
+ *                               initial attestation service.
+ *
+ *  @retval #ATTESTATION_PSA_STATUS_SUCCESS                 The operation succeeded.
+ *  @retval #ATTESTATION_PSA_STATUS_ERROR                   The operation failed.
+ *  @retval #ATTESTATION_PSA_STATUS_RESOURCE_UNAVAILABLE    The required hardware resource was not available.
+ *                                                          Try again later.
+ *  @retval #ATTESTATION_PSA_STATUS_INVALID_INPUTS          Input validation failed.
+ */
+int_fast16_t Attestation_PSA_getTokenSize(size_t challenge_size, size_t *token_size);
 
 /*!
  *  @brief  This function initializes the Attestation module.

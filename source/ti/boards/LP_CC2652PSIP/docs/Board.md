@@ -1,7 +1,7 @@
 # SimpleLink&trade; CC2652PSIP LaunchPad&trade; Settings & Resources
 
 The [__SimpleLink CC2652PSIP LaunchPad__][launchpad] contains a
-[__CC2652P1FSIP__][device] device.
+[__CC2652PSIP__][device] device.
 
 
 ## Jumper Settings
@@ -40,6 +40,8 @@ The following BoosterPack(s) are used with some driver examples.
 #### [__CC3200 Audio BoosterPack__][cc3200audboost]
   * No modifications are needed.
 
+[device]: https://www.ti.com/product/CC2652PSIP
+[launchpad]: https://www.ti.com/tool/LP-CC2652PSIP
 [boostxl-sharp128]: http://www.ti.com/tool/boostxl-sharp128
 [bp-bassensorsmkii]: http://www.ti.com/tool/bp-bassensorsmkii
 [cc3200audboost]: http://www.ti.com/tool/CC3200AUDBOOST

@@ -50,6 +50,7 @@ uint8_t AtParams_echoEnabled = 1;
 
 static uint32_t perNumPkts = NUMBER_OF_PACKETS;
 static uint32_t perPktLen = PACKET_LENGTH;
+static uint16_t packetTxCount = 0;
 
 /***************************************************************************************************
  * LOCAL FUNCTIONS
@@ -449,12 +450,26 @@ AtProcess_Status AtParams_parseIncoming(char *param, uint8_t paramLen)
     return status;
 }
 
-void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, int32_t avgRssi, int32_t minRssi, int32_t maxRssi)
+void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi)
 {
     if(mode == TestMode_PER_TX)
     {
-        AtTerm_sendStringUi16Value("    Packet: ", packetCount, 10);
-        AtTerm_sendString("\r");
+
+        if(txDone)
+        {
+            AtTerm_sendStringUi16Value("Packets Transmitted: ", packetTxCount, 10);
+            AtTerm_sendString("\r");
+            packetTxCount = 0;
+        }
+        else
+        {
+            packetTxCount = packetCount;
+
+            if(packetTxCount == 1)
+            {
+                AtTerm_sendString("Sending packets....\r");
+            }
+        }
     }
     else if(mode == TestMode_PER_RX)
     {

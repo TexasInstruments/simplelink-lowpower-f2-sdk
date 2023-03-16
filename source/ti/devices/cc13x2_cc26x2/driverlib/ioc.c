@@ -534,7 +534,6 @@ IOCPinTypeSsiMaster(uint32_t ui32Base, uint32_t ui32Rx,
                     uint32_t ui32Clk)
 {
     // Check the arguments.
-
     ASSERT((ui32Base == SSI0_BASE) || (ui32Base == SSI1_BASE));
     ASSERT((ui32Rx < NUM_IO_MAX) || (ui32Rx == IOID_UNUSED));
     ASSERT((ui32Tx < NUM_IO_MAX) || (ui32Tx == IOID_UNUSED));

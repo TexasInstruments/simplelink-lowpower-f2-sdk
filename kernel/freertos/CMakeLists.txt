@@ -55,38 +55,63 @@ if (${TI_TOOLCHAIN_NAME} STREQUAL iar)
         freertos_m0p ARCH m0p OUTPUT_NAME freertos SOURCES ${SOURCES_M0P_IAR} LINK_PRIVATE CMakeCommon::iar_m0p
         LINK_PUBLIC FreeRTOS::freertos
     )
+    # Internal include needed for FreeRTOSConfig.h
+    target_include_directories(
+        freertos_m0p PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal/fpu_0_max_syscall_pri_1>"
+        # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
+        # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
+    )
+
     ti_add_library(
         freertos_m4 ARCH m4 OUTPUT_NAME freertos SOURCES ${SOURCES_M4_IAR} LINK_PRIVATE CMakeCommon::iar_m4
         LINK_PUBLIC FreeRTOS::freertos
     )
+    # Internal include needed for FreeRTOSConfig.h
+    target_include_directories(
+        freertos_m4 PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal/fpu_0_max_syscall_pri_1>"
+        # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
+        # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
+    )
+
     ti_add_library(
         freertos_m4f ARCH m4f OUTPUT_NAME freertos SOURCES ${SOURCES_M4F_IAR} LINK_PRIVATE CMakeCommon::iar_m4f
         LINK_PUBLIC FreeRTOS::freertos
     )
+    # Internal include needed for FreeRTOSConfig.h
+    target_include_directories(
+        freertos_m4f PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal/fpu_1_max_syscall_pri_1>"
+        # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
+        # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
+    )
+
     ti_add_library(
         freertos_m33f ARCH m33f OUTPUT_NAME freertos SOURCES ${SOURCES_M33F_IAR} LINK_PRIVATE CMakeCommon::iar_m33f
         LINK_PUBLIC FreeRTOS::freertos
     )
-    ti_add_library(
-        freertos_m33f_spe ARCH m33f OUTPUT_NAME freertos_spe SOURCES ${SOURCES_M33F_SPE_IAR}
-        LINK_PRIVATE CMakeCommon::iar_m33f LINK_PUBLIC FreeRTOS::freertos
+    # Internal include needed for FreeRTOSConfig.h
+    target_include_directories(
+        freertos_m33f PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal/fpu_1_max_syscall_pri_1>"
+        # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
+        # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
     )
 
-    foreach (LIBRARY_NAME ${TI_LIBRARIES})
-        # Internal include needed for FreeRTOSConfig.h
-        target_include_directories(
-            ${LIBRARY_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal>"
-            # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
-            # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
-        )
-    endforeach ()
+    ti_add_library(
+        freertos_m33f_tfm ARCH m33f OUTPUT_NAME freertos_tfm SOURCES ${SOURCES_M33F_IAR}
+        LINK_PRIVATE CMakeCommon::iar_m33f LINK_PUBLIC FreeRTOS::freertos
+    )
+    # Internal include needed for FreeRTOSConfig.h
+    target_include_directories(
+        freertos_m33f_tfm PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/internal/fpu_1_max_syscall_pri_2>"
+        # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
+        # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
+    )
 else ()
     # The other libraries are interfaces primarily used for including the correct portable implementation
     ti_add_library(freertos_m0p ARCH m0p INTERFACE LINK_INTERFACE FreeRTOS::freertos)
     ti_add_library(freertos_m4 ARCH m4 INTERFACE LINK_INTERFACE FreeRTOS::freertos)
     ti_add_library(freertos_m4f ARCH m4f INTERFACE LINK_INTERFACE FreeRTOS::freertos)
     ti_add_library(freertos_m33f ARCH m33f INTERFACE LINK_INTERFACE FreeRTOS::freertos)
-    ti_add_library(freertos_m33f_spe ARCH m33f INTERFACE LINK_INTERFACE FreeRTOS::freertos)
+    ti_add_library(freertos_m33f_tfm ARCH m33f INTERFACE LINK_INTERFACE FreeRTOS::freertos)
 
     # Since we usually clean the ticlang variant of the build, we need to explicitly clean the lib folder here
     # Interface libraries do not appear to contribute ADDITIONAL_CLEAN_FILES if set as a target property
@@ -99,6 +124,6 @@ set(freertos_m0p_PORT_TOOL_FOLDER "IAR/ARM_CM0")
 set(freertos_m4_PORT_TOOL_FOLDER "IAR/ARM_CM3")
 set(freertos_m4f_PORT_TOOL_FOLDER "IAR/ARM_CM4F")
 set(freertos_m33f_PORT_TOOL_FOLDER "IAR/ARM_CM33F_NTZ/non_secure")
-set(freertos_m33f_spe_PORT_TOOL_FOLDER "IAR/ARM_CM33F/non_secure")
+set(freertos_m33f_tfm_PORT_TOOL_FOLDER "IAR/ARM_CM33F_NTZ/non_secure")
 
 ti_export_package()

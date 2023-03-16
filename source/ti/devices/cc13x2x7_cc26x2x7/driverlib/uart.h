@@ -210,7 +210,7 @@ UARTBaseValid(uint32_t ui32Base)
     return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ) ||
            ( ui32Base == UART1_BASE ) || ( ui32Base == UART1_NONBUF_BASE )    );
 }
-#endif
+#endif // #ifdef DRIVERLIB_DEBUG
 
 //*****************************************************************************
 //

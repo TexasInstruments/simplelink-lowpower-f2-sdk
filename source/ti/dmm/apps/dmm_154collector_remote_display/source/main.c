@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2022, Texas Instruments Incorporated
+ Copyright (c) 2013-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -123,10 +123,17 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #define EXTADDR_OFFSET 0x2F0
 
 #define MAC_APP_TASK_PRIORITY   1
-#if defined(CC13X2R1_LAUNCHXL) || defined(CC26X2R1_LAUNCHXL) || defined(CC13X2P1_LAUNCHXL) || defined(CC13X2P_2_LAUNCHXL ) || defined(CC13X2P_4_LAUNCHXL) || defined(CC2652RB_LAUNCHXL)
-#define MAC_APP_TASK_STACK_SIZE 1536
+#if defined(CC13X2R1_LAUNCHXL) || \
+    defined(CC26X2R1_LAUNCHXL) || \
+    defined(CC13X2P1_LAUNCHXL) || \
+    defined(CC13X2P_2_LAUNCHXL ) || \
+    defined(CC13X2P_4_LAUNCHXL) || \
+    defined(CC2652RB_LAUNCHXL) || \
+    defined(EM_CC1354P10_1_LP)   || \
+    defined(EM_CC1354P10_6_LP)
+#define MAC_APP_TASK_STACK_SIZE 2048
 #else
-#define MAC_APP_TASK_STACK_SIZE 900
+#define MAC_APP_TASK_STACK_SIZE 1024
 #endif
 
 #define MAIN_ASSERT_HWI_TIRTOS   4

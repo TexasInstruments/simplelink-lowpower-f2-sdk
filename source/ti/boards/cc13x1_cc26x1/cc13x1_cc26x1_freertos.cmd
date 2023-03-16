@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,17 @@
 --entry_point resetISR
 
 /* Retain interrupt vector table variable                                    */
---retain=resetVectors
+--retain "*(.resetVecs)"
 
 /* Suppress warnings and errors:                                             */
 /* - 10063: Warning about entry point not being _c_int00                     */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
 /*   files compiled using Keil (ARM compiler)                                */
 --diag_suppress=10063,16011,16012
+
+/* Set severity of diagnostics to Remark instead of Warning                  */
+/* - 10068: Warning about no matching log_ptr* sections                      */
+--diag_remark=10068
 
 /* The starting address of the application.  Normally the interrupt vectors  */
 /* must be located at the beginning of the application.                      */
@@ -72,7 +76,8 @@ MEMORY
      * ARM memory map can be found here:
      * https://developer.arm.com/documentation/ddi0337/e/memory-map/about-the-memory-map
      */
-    LOG_DATA (R) : origin = 0x90000000, length = 0x40000
+    LOG_DATA (R) : origin = 0x90000000, length = 0x40000        /* 256 KB */
+    LOG_PTR  (R) : origin = 0x94000008, length = 0x40000        /* 256 KB */
 }
 
 /* Section allocation in memory */
@@ -91,8 +96,7 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > FLASH (HIGH)
 
-    .vtable_ram     :   > RAM_BASE, type=NOINIT
-    vtable_ram      :   > RAM_BASE, type=NOINIT
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM
@@ -101,4 +105,5 @@ SECTIONS
     .gpram          :   > GPRAM
 
     .log_data       :   > LOG_DATA, type = COPY
+    .log_ptr        : { *(.log_ptr*) } > LOG_PTR align 4, type = COPY
 }

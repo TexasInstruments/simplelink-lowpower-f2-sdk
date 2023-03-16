@@ -30,15 +30,21 @@ endmacro()
 
 ####################################################################################
 
+find_package("DriversUtils" REQUIRED)
+find_package("TrustZone" REQUIRED)
+find_package("ThirdPartyEccLib" REQUIRED)
+find_package("Tirtos7Generic" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+find_package("DriverlibCC13XXCC26XX" REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/DriversM4Targets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/DriversM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM4FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM33FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM33FTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/DriversM33FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/DriversM33FTargets.cmake")
 
 check_required_components(Drivers)

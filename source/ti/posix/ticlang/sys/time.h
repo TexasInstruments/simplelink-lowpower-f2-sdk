@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2022 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 /* compiler vendor check */
 #if !defined(__ti_version__) && !defined(__clang__)
-#error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
+    #error Incompatible compiler: use this include path (.../ti/posix/ticlang) \
 only with a Texas Instruments clang compiler. You appear to be using a \
 different compiler.
 #endif

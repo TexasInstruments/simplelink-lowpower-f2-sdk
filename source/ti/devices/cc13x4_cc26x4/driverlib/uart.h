@@ -65,6 +65,9 @@ extern "C"
 #include "../inc/hw_ints.h"
 #include "interrupt.h"
 #include "debug.h"
+#ifdef DRIVERLIB_DEBUG
+#include "chipinfo.h"
+#endif
 
 //*****************************************************************************
 //
@@ -207,12 +210,19 @@ extern "C"
 static bool
 UARTBaseValid(uint32_t ui32Base)
 {
-    return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ) ||
-           ( ui32Base == UART1_BASE ) || ( ui32Base == UART1_NONBUF_BASE ) ||
-           ( ui32Base == UART2_BASE ) || ( ui32Base == UART2_NONBUF_BASE ) ||
-           ( ui32Base == UART3_BASE ) || ( ui32Base == UART3_NONBUF_BASE )    );
+    if (ChipInfo_GetChipType() == CHIP_TYPE_CC2653P10)
+    {
+        return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ) ||
+               ( ui32Base == UART1_BASE ) || ( ui32Base == UART1_NONBUF_BASE )    );
+    }
+    else {
+        return(( ui32Base == UART0_BASE ) || ( ui32Base == UART0_NONBUF_BASE ) ||
+               ( ui32Base == UART1_BASE ) || ( ui32Base == UART1_NONBUF_BASE ) ||
+               ( ui32Base == UART2_BASE ) || ( ui32Base == UART2_NONBUF_BASE ) ||
+               ( ui32Base == UART3_BASE ) || ( ui32Base == UART3_NONBUF_BASE )    );
+    }
 }
-#endif
+#endif // #ifdef DRIVERLIB_DEBUG
 
 //*****************************************************************************
 //

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,8 @@ if (TI_INTERNAL_BUILD)
         endif ()
     endif ()
 
-    foreach (library_name ${TI_LIBRARIES})
+    get_property(libraries DIRECTORY PROPERTY TI_PACKAGE_LIBRARIES)
+    foreach (library_name ${libraries})
         target_include_directories(${library_name} PRIVATE "$<BUILD_INTERFACE:${INVIA_LIB_INSTALL_DIR}/ecc/include>")
     endforeach ()
 

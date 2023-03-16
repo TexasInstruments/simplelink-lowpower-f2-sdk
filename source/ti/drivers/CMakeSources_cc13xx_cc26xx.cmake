@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.21.3)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_common.cmake)
 
-set(SOURCES_CC13XX_CC26XX_COMMON ${SOURCES_COMMON}
+set(SOURCES_CC13XX_CC26XX_COMMON
+    ${SOURCES_COMMON}
     ADC.c
     adc/ADCCC26XX.c
     ADCBuf.c
@@ -58,7 +59,8 @@ set(SOURCES_CC13XX_CC26XX_COMMON ${SOURCES_COMMON}
     Watchdog.c
 )
 
-set(SOURCES_CC13X1_CC26X1 ${SOURCES_CC13XX_CC26XX_COMMON}
+set(SOURCES_CC13X1_CC26X1
+    ${SOURCES_CC13XX_CC26XX_COMMON}
     aescbc/AESCBCCC26XX.c
     aesccm/AESCCMCC26XX.c
     aescmac/AESCMACCC26XX.c
@@ -78,7 +80,8 @@ set(SOURCES_CC13X1_CC26X1 ${SOURCES_CC13XX_CC26XX_COMMON}
     watchdog/WatchdogCC26XX.c
 )
 
-set(SOURCES_CC13X2_CC26X2 ${SOURCES_CC13XX_CC26XX_COMMON}
+set(SOURCES_CC13X2_CC26X2
+    ${SOURCES_CC13XX_CC26XX_COMMON}
     aescbc/AESCBCCC26XX.c
     aesccm/AESCCMCC26XX.c
     aescmac/AESCMACCC26XX.c
@@ -104,7 +107,8 @@ set(SOURCES_CC13X2_CC26X2 ${SOURCES_CC13XX_CC26XX_COMMON}
     watchdog/WatchdogCC26XX.c
 )
 
-set(SOURCES_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13XX_CC26XX_COMMON}
+set(SOURCES_CC13X4_CC26X3_CC26X4
+    ${SOURCES_CC13XX_CC26XX_COMMON}
     AESGCM.c
     cryptoutils/sharedresources/PKAResourceCC26XX.c
     ECJPAKE.c
@@ -114,12 +118,12 @@ set(SOURCES_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13XX_CC26XX_COMMON}
     watchdog/WatchdogCC26X4.c
 )
 
-set(SOURCES_TFM_NS_API
-    ${SPE_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
-    ${SPE_INSTALL_DIR}/source/third_party/tfm/platform/ext/target/ti/common/tfm_ns_interface.c
+set(SOURCES_TFM_NS_API ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
+                       ${TFM_INSTALL_DIR}/source/third_party/tfm/platform/ext/target/ti/common/tfm_ns_interface.c
 )
 
-set(SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4}
+set(SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4
+    ${SOURCES_CC13X4_CC26X3_CC26X4}
     aescbc/AESCBCCC26XX.c
     aesccm/AESCCMCC26X4.c
     aescmac/AESCMACCC26XX.c
@@ -138,7 +142,9 @@ set(SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4}
     trng/TRNGCC26XX.c
 )
 
-set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4} ${SOURCES_TFM_NS_API}
+set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4
+    ${SOURCES_CC13X4_CC26X3_CC26X4}
+    ${SOURCES_TFM_NS_API}
     aescbc/AESCBCCC26X4_ns.c
     aesccm/AESCCMCC26X4_ns.c
     aescmac/AESCMACCC26X4_ns.c
@@ -154,7 +160,7 @@ set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4 ${SOURCES_CC13X4_CC26X3_CC26X4} ${SOURCE
     ecdh/ECDHCC26X4_ns.c
     nvs/flash/FlashCC26X4_ns.c
     sha2/SHA2CC26X4_ns.c
-    spe/SecureCallback.c
+    tfm/SecureCallback.c
     trng/TRNGCC26X4_ns.c
-    ${SPE_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_initial_attestation_ipc_api.c
+    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_initial_attestation_ipc_api.c
 )

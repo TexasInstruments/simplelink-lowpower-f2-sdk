@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2022, Texas Instruments Incorporated
+ Copyright (c) 2009-2023, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -516,6 +516,12 @@ static void Sensors_performDeferred(def_params_t *def_params)
   if (def_params->pParams != NULL)
   {
       ICall_free(def_params->pParams);
+  }
+
+  // Free data container of def_params
+  if (def_params != NULL)
+  {
+      ICall_free(def_params);
   }
 }
 

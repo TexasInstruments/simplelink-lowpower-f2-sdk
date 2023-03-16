@@ -50,7 +50,7 @@
         if (fmt == null) {
             fmt = "%b_%l";
         }
- 
+
         /* generate a long & short C-name for the I2C component */
         let sname = cname.substring(cname.lastIndexOf('/') + 1);
         sname = sname.replace(/[/\-+. ]/g, '_');
@@ -92,11 +92,11 @@
 %        let components = bus.$hardware.$parents;
 %        for (j = 0; j < components.length; j++) {
 %            let comp = components[j];
-%            let comment = "Kbps";
+%            let comment = "kbps";
 %            let addr = I2C.getCompAddress(comp);
 %            let speed = I2C.getCompSpeed(comp, 0);
 %            if (speed == 0) {
-%                comment = " speed unspecified, defaulting to 100 Kbps";
+%                comment = " speed unspecified, defaulting to 100 kbps";
 %                speed = 100;
 %            }
 %            if (speed < minSpeed) {
@@ -117,7 +117,7 @@
 %        let bitRateEnum = getBitRateEnum(minSpeed);
 
 /* `bus.$name` max speed (`comment`) */
-#define `bus.$name + "_MAXSPEED"`   (`minSpeed`U) /* Kbps */
+#define `bus.$name + "_MAXSPEED"`   (`minSpeed`U) /* kbps */
 #define `bus.$name + "_MAXBITRATE"` ((I2C_BitRate)`bitRateEnum`)
 %    }
 %    else {
@@ -126,13 +126,13 @@
 
 %        if (bus.maxBitRate > 0) {
 %            let bitRateEnum = getBitRateEnum(bus.maxBitRate);
-/* `bus.$name`.maxBitRate configuration specified `bus.maxBitRate` Kbps */
-#define `bus.$name + "_MAXSPEED"`   (`bus.maxBitRate`U) /* Kbps */
+/* `bus.$name`.maxBitRate configuration specified `bus.maxBitRate` kbps */
+#define `bus.$name + "_MAXSPEED"`   (`bus.maxBitRate`U) /* kbps */
 #define `bus.$name + "_MAXBITRATE"` ((I2C_BitRate)`bitRateEnum`)
 %        }
 %        else {
-/* max speed unspecified, defaulting to 100 Kbps */
-#define `bus.$name + "_MAXSPEED"`   (100U) /* Kbps */
+/* max speed unspecified, defaulting to 100 kbps */
+#define `bus.$name + "_MAXSPEED"`   (100U) /* kbps */
 #define `bus.$name + "_MAXBITRATE"` ((I2C_BitRate)I2C_100kHz)
 %        }
 %    }

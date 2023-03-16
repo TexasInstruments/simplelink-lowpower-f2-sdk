@@ -36,31 +36,18 @@ set(ARCH_cc13x4 m33f)
 set(ARCH_cc26x4 m33f)
 set(ARCH_cc26x3 m33f)
 list(APPEND SUPPORTED_PLATFORMS cc13x4 cc26x3 cc26x4)
+list(REMOVE_DUPLICATES SUPPORTED_PLATFORMS)
 list(APPEND SUPPORTED_ARCHITECTURES m33f)
+list(REMOVE_DUPLICATES SUPPORTED_ARCHITECTURES)
 
 add_library(device_cc13x4 INTERFACE IMPORTED)
 add_library(Device::cc13x4 ALIAS device_cc13x4)
 target_compile_definitions(device_cc13x4 INTERFACE DeviceFamily_CC13X4)
 
-add_library(driverlib_cc13x4 INTERFACE IMPORTED)
-add_library(Driverlib::cc13x4 ALIAS driverlib_cc13x4)
-target_link_libraries(driverlib_cc13x4 INTERFACE Device::cc13x4 ${CMAKE_CURRENT_LIST_DIR}/../../../source/ti/devices/cc13x4_cc26x4/driverlib/bin/${TI_TOOLCHAIN_NAME}/driverlib.lib)
-target_include_directories(driverlib_cc13x4 INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../../..)
-
 add_library(device_cc26x3 INTERFACE IMPORTED)
 add_library(Device::cc26x3 ALIAS device_cc26x3)
 target_compile_definitions(device_cc26x3 INTERFACE DeviceFamily_CC26X3)
 
-add_library(driverlib_cc26x3 INTERFACE IMPORTED)
-add_library(Driverlib::cc26x3 ALIAS driverlib_cc26x3)
-target_link_libraries(driverlib_cc26x3 INTERFACE Device::cc26x3 ${CMAKE_CURRENT_LIST_DIR}/../../../source/ti/devices/cc13x4_cc26x4/driverlib/bin/${TI_TOOLCHAIN_NAME}/driverlib.lib)
-target_include_directories(driverlib_cc26x3 INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../../..)
-
 add_library(device_cc26x4 INTERFACE IMPORTED)
 add_library(Device::cc26x4 ALIAS device_cc26x4)
 target_compile_definitions(device_cc26x4 INTERFACE DeviceFamily_CC26X4)
-
-add_library(driverlib_cc26x4 INTERFACE IMPORTED)
-add_library(Driverlib::cc26x4 ALIAS driverlib_cc26x4)
-target_link_libraries(driverlib_cc26x4 INTERFACE Device::cc26x4 ${CMAKE_CURRENT_LIST_DIR}/../../../source/ti/devices/cc13x4_cc26x4/driverlib/bin/${TI_TOOLCHAIN_NAME}/driverlib.lib)
-target_include_directories(driverlib_cc26x4 INTERFACE ${CMAKE_CURRENT_LIST_DIR}/../../..)

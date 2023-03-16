@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -165,6 +165,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <ti/devices/DeviceFamily.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -200,6 +202,31 @@ extern "C" {
  *
  */
 #define ITM_LAR_UNLOCK (0xC5ACCE55)
+
+/**
+ * @brief   Device-specific values that implement the generic ITM-functions
+ *          in ITM_WatchpointAction
+ *
+ */
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #define ITM_FUNCTION_DISABLED                  (0x00)
+    #define ITM_FUNCTION_EMIT_PC                   (0x30 | 0x4)
+    #define ITM_FUNCTION_EMIT_DATA_ON_READ_WRITE   (0x800 | 0x20 | 0xc)
+    #define ITM_FUNCTION_EMIT_PC_ON_READ_WRITE     (0x800 | 0x30 | 0x2)
+    #define ITM_FUNCTION_EMIT_DATA_ON_READ         (0x800 | 0x20 | 0xe)
+    #define ITM_FUNCTION_EMIT_DATA_ON_WRITE        (0x800 | 0x20 | 0xd)
+    #define ITM_FUNCTION_EMIT_PC_AND_DATA_ON_READ  (0x800 | 0x30 | 0xe)
+    #define ITM_FUNCTION_EMIT_PC_AND_DATA_ON_WRITE (0x800 | 0x30 | 0xd)
+#else
+    #define ITM_FUNCTION_DISABLED                  0x00
+    #define ITM_FUNCTION_EMIT_PC                   0x01
+    #define ITM_FUNCTION_EMIT_DATA_ON_READ_WRITE   0x02
+    #define ITM_FUNCTION_EMIT_PC_ON_READ_WRITE     0x03
+    #define ITM_FUNCTION_EMIT_DATA_ON_READ         0x0C
+    #define ITM_FUNCTION_EMIT_DATA_ON_WRITE        0x0D
+    #define ITM_FUNCTION_EMIT_PC_AND_DATA_ON_READ  0x0E
+    #define ITM_FUNCTION_EMIT_PC_AND_DATA_ON_WRITE 0x0F
+#endif
 
 /**
  * @brief Write a 32-bit word to stimulus port n
@@ -304,14 +331,15 @@ typedef struct
  */
 typedef enum
 {
-    ITM_Disabled                       = 0x0, /*!< Disabled */
-    ITM_EmitPc                         = 0x1, /*!< Emit Program Counter */
-    ITM_EmitDataOnReadWrite            = 0x2, /*!< Emit Data on Read or Write */
-    ITM_SamplePcAndEmitDataOnReadWrite = 0x3, /*!< Emit Program Counter on Read or Write */
-    ITM_SampleDataOnRead               = 0xC, /*!< Sample Data on Read */
-    ITM_SampleDataOnWrite              = 0xD, /*!< Sample Data on Write */
-    ITM_SamplePcAndDataOnRead          = 0xE, /*!< Sample PC and Data on Read */
-    ITM_SamplePcAndDataOnWrite         = 0xF, /*!< Sample PC and Data on Write */
+    ITM_Disabled                       = ITM_FUNCTION_DISABLED,                /*!< Disabled */
+    ITM_EmitPc                         = ITM_FUNCTION_EMIT_PC,                 /*!< Emit Program Counter */
+    ITM_EmitDataOnReadWrite            = ITM_FUNCTION_EMIT_DATA_ON_READ_WRITE, /*!< Emit Data on Read or Write */
+    ITM_SamplePcAndEmitDataOnReadWrite = ITM_FUNCTION_EMIT_PC_ON_READ_WRITE, /*!< Emit Program Counter on Read or Write
+                                                                              */
+    ITM_SampleDataOnRead               = ITM_FUNCTION_EMIT_DATA_ON_READ,     /*!< Sample Data on Read */
+    ITM_SampleDataOnWrite              = ITM_FUNCTION_EMIT_DATA_ON_WRITE,    /*!< Sample Data on Write */
+    ITM_SamplePcAndDataOnRead          = ITM_FUNCTION_EMIT_PC_AND_DATA_ON_READ,  /*!< Sample PC and Data on Read */
+    ITM_SamplePcAndDataOnWrite         = ITM_FUNCTION_EMIT_PC_AND_DATA_ON_WRITE, /*!< Sample PC and Data on Write */
 } ITM_WatchpointAction;
 
 /**

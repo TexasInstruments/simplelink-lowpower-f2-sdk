@@ -40,7 +40,8 @@
 /*
  *  ======== ListElem ========
  */
-typedef struct ListElem {
+typedef struct ListElem
+{
     struct ListElem *next;
     struct ListElem *prev;
 } ListElem, List;

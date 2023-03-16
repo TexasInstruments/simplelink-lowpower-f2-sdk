@@ -56,8 +56,8 @@ REGION_ALIAS("REGION_ARM_EXTAB", FLASH);
 
 SECTIONS {
 
-	.vectors : {
-		KEEP (*(.vectors))
+	.resetVecs : {
+		KEEP (*(.resetVecs))
 	} > REGION_FLASH_START
 
     .ramVecs (NOLOAD) : ALIGN(1024){

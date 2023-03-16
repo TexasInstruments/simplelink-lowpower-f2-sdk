@@ -44,30 +44,42 @@ extern "C" {
 /*!
  *  @brief Initializes a CryptoKey type
  *
- *  @param [in]     keyHandle   Pointer to a CryptoKey which will be initialized
- *                              to type CryptoKey_KEYSTORE
- *                              and ready for use
- *  @param [in]     keyID       Key ID of the key in Key Store
+ *  @param [in]     keyHandle       Pointer to a CryptoKey which will be initialized
+ *                                  to type CryptoKey_KEYSTORE
+ *                                  and ready for use
+ *  @param [in]     keyID           Key ID of the key in Key Store
  *
- *  @param [in]     keyLength   Length of keying material in bytes
+ *  @param [in]     keyLength       Length of keying material in bytes
+ *  @param [in]     keyAttributes   Pointer to the attributes for KeyStore key,
+ *                                  use NULL if CryptoKey structure will not
+ *                                  be used to generate keys
  *
  *  @return Returns a status code from CryptoKey.h
  */
-int_fast16_t KeyStore_PSA_initKey(CryptoKey *keyHandle, KeyStore_PSA_KeyFileId keyID, size_t keyLength);
+int_fast16_t KeyStore_PSA_initKey(CryptoKey *keyHandle,
+                                  KeyStore_PSA_KeyFileId keyID,
+                                  size_t keyLength,
+                                  void *keyAttributes);
 
 /*!
  *  @brief Initializes a Blank CryptoKey type
  *
- *  @param [in]     keyHandle   Pointer to a CryptoKey which will be initialized
- *                              to type CryptoKey_BLANK_KEYSTORE
- *                              and ready for use
- *  @param [in]     keyID       Key ID of the key in Key Store
+ *  @param [in]     keyHandle       Pointer to a CryptoKey which will be initialized
+ *                                  to type CryptoKey_BLANK_KEYSTORE
+ *                                  and ready for use
+ *  @param [in]     keyID           Key ID of the key in Key Store
  *
- *  @param [in]     keyLength   Length of keying material in bytes
+ *  @param [in]     keyLength       Length of keying material in bytes
+ *  @param [in]     keyAttributes   Pointer to the attributes for KeyStore key,
+ *                                  use NULL if CryptoKey structure will not
+ *                                  be used to generate keys
  *
  *  @return Returns a status code from CryptoKey.h
  */
-int_fast16_t KeyStore_PSA_initBlankKey(CryptoKey *keyHandle, KeyStore_PSA_KeyFileId keyID, size_t keyLength);
+int_fast16_t KeyStore_PSA_initBlankKey(CryptoKey *keyHandle,
+                                       KeyStore_PSA_KeyFileId keyID,
+                                       size_t keyLength,
+                                       void *keyAttributes);
 
 #ifdef __cplusplus
 }

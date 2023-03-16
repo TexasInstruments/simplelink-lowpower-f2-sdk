@@ -4,7 +4,7 @@
 //
 //  This file is auto-generated.
 //
-//  Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+//  Copyright (C) 2020-2022 Texas Instruments Incorporated - http://www.ti.com/
 //
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ MEMORY
 
 SECTIONS
 {
-    .intvecs        :   > FLASH_BASE
+    .resetVecs      :   > FLASH_BASE
     .text           :   > FLASH
     .const          :   > FLASH
     .constdata      :   > FLASH
@@ -96,9 +96,7 @@ SECTIONS
     .emb_text       :   > FLASH
     .ccfg           :   > FLASH (HIGH)
 
-    .vtable         :   > SRAM
-    .vtable_ram     :   > SRAM
-     vtable_ram     :   > SRAM
+    .ramVecs        :   > SRAM, type = NOLOAD, ALIGN(256)
     .data           :   > SRAM
     .bss            :   > SRAM
     .sysmem         :   > SRAM

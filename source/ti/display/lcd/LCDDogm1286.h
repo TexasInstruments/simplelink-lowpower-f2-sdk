@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,8 +82,8 @@
  *
  * In total the following pins are required to operate the LCD on the SmartRF06EB:
  *  @verbatim
- *  Board_SPI0_MOSI     (Serial peripheral interface, Master-Out-Slave-In, controlled by LCD driver)
- *  Board_SPI0_MISO     (Serial peripheral interface, Master-In-Slave-Out, controlled by LCD driver)
+ *  Board_SPI0_PICO     (Serial peripheral interface, Peripheral-In-Controller-Out, controlled by LCD driver)
+ *  Board_SPI0_POCI     (Serial peripheral interface, Peripheral-Out-Controller-In, controlled by LCD driver)
  *  Board_SPI0_CLK      (Serial peripheral interface, Clock, controlled by LCD driver)
  *  Board_LCD_CSN       (Serial peripheral interface, Chip select, controlled by LCD driver)
  *  Board_LCD_RST       (LCD reset signal, active low, controlled by LCD driver)
@@ -94,7 +94,7 @@
  * The following SPI parameters will be fixed by the LCD driver:
  *   - transferMode    = ::SPI_MODE_BLOCKING
  *   - transferTimeout = BIOS_WAIT_FOREVER
- *   - mode            = ::SPI_MASTER
+ *   - mode            = ::SPI_CONTROLLER
  *   - dataSize        = 8
  *
  * The APIs in this driver serve as an interface to a typical TI-RTOS
@@ -579,7 +579,7 @@ extern void LCD_Params_init(LCD_Params *params);
  *
  *  @param  uiValue    Value to print
  *
- *  @param  ucFormat   Base of the value to print – 2,8,16 etc.
+ *  @param  ucFormat   Base of the value to print ï¿½ 2,8,16 etc.
  *                     ucFormat must be between 2 and 36, where 10 means decimal base,
  *                     16 hexadecimal, 8 octal, and 2 binary.
  *                     If ucFormat is zero, only the string will get printed.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ extern const uint_least8_t I2S_count;
 const I2S_Params I2S_defaultParams = {
     .samplingFrequency = 8000,                     /* Sampling Freq */
     .memorySlotLength  = I2S_MEMORY_LENGTH_16BITS, /* Memory slot length */
-    .moduleRole        = I2S_MASTER,               /* Master / Slave selection */
+    .moduleRole        = I2S_CONTROLLER,           /* Controller / Target selection */
     .trueI2sFormat     = (bool)true,               /* Activate true I2S format */
     .invertWS          = (bool)true,               /* WS inversion */
     .isMSBFirst        = (bool)true,               /* Endianness selection */
@@ -58,7 +58,7 @@ const I2S_Params I2S_defaultParams = {
     .SD1Channels       = I2S_CHANNELS_STEREO,      /* Channels activated on SD1 */
     .phaseType         = I2S_PHASE_TYPE_DUAL,      /* Phase type */
     .startUpDelay      = 2,                        /* Start up delay in number of WS periods */
-    .MCLKDivider       = 40,                       /* MCLK divider */
+    .CCLKDivider       = 40,                       /* CCLK divider */
     .readCallback      = NULL,                     /* Read callback */
     .writeCallback     = NULL,                     /* Write callback */
     .errorCallback     = NULL,                     /* Error callback */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -169,12 +169,12 @@ PDMCC26XX_I2S_Handle PDMCC26XX_I2S_open(PDMCC26XX_I2S_Handle handle, PDMCC26XX_I
     object->audioClkCfg.bclkDiv              = 47;                                /* I2S Bit Clock divider override */
     object->audioClkCfg.reserved             = 0;
     object->audioClkCfg.bclkSource           = PDMCC26XX_I2S_BitClockSource_Int; /* I2S Bit Clock source */
-    object->audioClkCfg.mclkDiv              = 6;                                /* I2S Master Clock divider override */
+    object->audioClkCfg.cclkDiv              = 6; /* I2S Controller Clock divider override */
 
     object->audioPinCfg.bitFields.ad1Usage = PDMCC26XX_I2S_ADUsageDisabled; /* I2S AD1 usage (0: Disabled, 1: Input, 2:
                                                                                Output) */
-    object->audioPinCfg.bitFields.enableMclkPin = PDMCC26XX_I2S_GENERIC_DISABLED; /* I2S Enable Master clock output on
-                                                                                     pin */
+    object->audioPinCfg.bitFields.enableCclkPin = PDMCC26XX_I2S_GENERIC_DISABLED; /* I2S Enable Controller clock output
+                                                                                     on pin */
     object->audioPinCfg.bitFields.reserved      = 0;
     object->audioPinCfg.bitFields.ad1NumOfChannels = 0; /* I2S AD1 number of channels (1 - 8). !Must match channel mask
                                                          */
@@ -796,7 +796,7 @@ static void PDMCC26XX_I2S_initHw(PDMCC26XX_I2S_Handle handle)
     uint32_t clkCfg = object->audioClkCfg.wclkSource;
     clkCfg |= (object->audioClkCfg.wclkInverted) ? I2S_INVERT_WCLK : 0;
     I2SClockConfigure(hwAttrs->baseAddr, clkCfg);
-    uint32_t mstDiv  = object->audioClkCfg.mclkDiv;
+    uint32_t ctlDiv  = object->audioClkCfg.cclkDiv;
     uint32_t bitDiv  = object->audioClkCfg.bclkDiv;
     uint32_t wordDiv = object->audioClkCfg.wclkDiv;
     clkCfg           = (object->audioClkCfg.wclkPhase << PRCM_I2SCLKCTL_WCLK_PHASE_S);
@@ -807,7 +807,7 @@ static void PDMCC26XX_I2S_initHw(PDMCC26XX_I2S_Handle handle)
     }
     else
     {
-        PRCMAudioClockConfigSetOverride(clkCfg, mstDiv, bitDiv, wordDiv);
+        PRCMAudioClockConfigSetOverride(clkCfg, ctlDiv, bitDiv, wordDiv);
     }
     /* TODO: Replace this with Driverlib code */
     HWREG(PRCM_BASE + PRCM_O_I2SBCLKSEL) = (object->audioClkCfg.bclkSource & PRCM_I2SBCLKSEL_SRC_M);
@@ -836,10 +836,10 @@ static void PDMCC26XX_I2S_initIO(PDMCC26XX_I2S_Handle handle)
 
     /* Configure IOs */
     /* Build local list of pins, allocate through PIN driver and map HW ports */
-    if (object->audioPinCfg.bitFields.enableMclkPin)
+    if (object->audioPinCfg.bitFields.enableCclkPin)
     {
-        GPIO_setConfig(hwAttrs->mclkPin, GPIO_CFG_OUTPUT);
-        GPIO_setMux(hwAttrs->mclkPin, IOC_PORT_MCU_I2S_MCLK);
+        GPIO_setConfig(hwAttrs->cclkPin, GPIO_CFG_OUTPUT);
+        GPIO_setMux(hwAttrs->cclkPin, IOC_PORT_MCU_I2S_MCLK);
     }
     if (object->audioPinCfg.bitFields.enableWclkPin)
     {
@@ -876,9 +876,9 @@ static void PDMCC26XX_I2S_finalizeIO(PDMCC26XX_I2S_Handle handle)
 
     /* Configure IOs */
     /* Build local list of pins, allocate through PIN driver and map HW ports */
-    if (object->audioPinCfg.bitFields.enableMclkPin)
+    if (object->audioPinCfg.bitFields.enableCclkPin)
     {
-        GPIO_resetConfig(hwAttrs->mclkPin);
+        GPIO_resetConfig(hwAttrs->cclkPin);
     }
     if (object->audioPinCfg.bitFields.enableWclkPin)
     {
