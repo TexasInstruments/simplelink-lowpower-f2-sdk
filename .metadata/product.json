@@ -11,7 +11,6 @@
     ],
     "components": [
         "/ti/ble5stack/ble.component.js",
-        "/ti/thread/thread.component.js",
         "/ti/dmm/dmm.component.js",
         "/ti/common/migration.component.js",
         "/ti/devices/devices.component.js",
