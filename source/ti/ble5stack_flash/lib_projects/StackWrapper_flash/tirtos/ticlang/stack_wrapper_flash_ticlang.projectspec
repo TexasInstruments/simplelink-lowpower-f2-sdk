@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectSpec>
+    <project
+        name="Stack_Wrapper_ticlang"
+        device="Cortex M.CC2651P3"
+        connection="common/targetdb/connections/TIXDS110_Connection.xml"
+        toolChain="TICLANG"
+        linkerCommandFile="cc13x1_cc26x1_app.cmd"
+        outputType="staticLibrary"
+        preBuildStep=""
+        postBuildStep=""
+        description=""
+        launchWizard="false"
+    >
+
+        <!-- Project properties -->
+        <property name="products" value="com.ti.rtsc.XDCtools:3.62.01.15_core"/>
+        <property name="target" value="ti.targets.arm.clang.M4"/>
+        <property name="platform" value="ti.platforms.simplelink:CC2651P3"/>
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <property name="configuroOptions" value="--compileOptions ${COMPILER_FLAGS}"/>
+
+        <configuration
+            name="Stack_Wrapper_ticlang"
+            compilerBuildOptions="
+            @${PROJECT_LOC}/TOOLS/Defines/Stack_Wrapper_26p3.opt
+            @${SRC_BLE_DIR}/config/build_components.opt
+            @${SRC_BLE_DIR}/config/factory_config.opt
+            @${PROJECT_LOC}/TOOLS/build_config.opt
+            -mcpu=cortex-m4
+            -mthumb
+            -mlittle-endian
+            -std=gnu99
+            -std=c99
+            -ffunction-sections
+            -g
+            -Oz
+            -gdwarf-3
+            -march=armv7e-m
+            -mfloat-abi=soft
+            -mfpu=none
+            -DDeviceFamily_CC26X1
+            -DFLASH_ONLY_BUILD
+            -D${XDC_SYMBOLS}
+            -I${CG_TOOL_ROOT}/include
+            -I${XDC_INCLUDE_PATH}
+            -I${SRC_BLE_DIR}/controller/cc26xx/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/rom
+            -I${SRC_BLE_DIR}/common/cc26xx
+            -I${SRC_BLE_DIR}/common/cc26xx/npi/stack
+            -I${SRC_BLE_DIR}/icall/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/hal/src/target/_common
+            -I${SRC_BLE_DIR}/hal/src/target/_common/cc26xx
+            -I${SRC_BLE_DIR}/hal/src/target/cc2650tirtos
+            -I${SRC_BLE_DIR}/hal/src/target
+            -I${SRC_BLE_DIR}/hal/src/inc
+            -I${SRC_BLE_DIR}/icall/src/inc
+            -I${SRC_BLE_DIR}/npi/src
+            -I${SRC_BLE_DIR}/osal/src/inc
+            -I${SRC_BLE_DIR}/../common/nv
+            -I${SRC_BLE_DIR}/services/src/aes/cc26xx
+            -I${SRC_BLE_DIR}/services/src/nv/cc26xx
+            -I${SRC_BLE_DIR}/services/src/nv
+            -I${SRC_BLE_DIR}/services/src/saddr
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x1_cc26x1
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x1_cc26x1/rf_patches
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x1_cc26x1/inc
+            -I${SRC_BLE_DIR}/../../../source
+            -I${SRC_BLE_DIR}/../../../kernel/tirtos7/packages
+            -I${XDC_CG_ROOT}/packages"
+        />
+
+        <pathVariable name="EXAMPLE_BLE_ROOT" path=".." scope="project"/>
+        <pathVariable name="SRC_BLE_DIR" path="../../../../" scope="project"/>
+        <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/ble5stack" scope="project"/>
+
+        <!-- HAL/API Folder -->
+        <file path="SRC_BLE_DIR/hal/src/target/_common/crypto_api.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/API" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/ecc_api.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/API" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/rf_api.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/API" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/rtos_drivers.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/API" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/trng_api.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/API" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- HAL/Common Folder -->
+        <file path="SRC_BLE_DIR/hal/src/common/hal_assert.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Common" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+
+        <!-- HAL/Include Folder -->
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_adc.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_assert.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_board.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_defs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_lcd.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_led.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_sleep.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_timer.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/inc/hal_uart.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- HAL/Target/CC2650/_common Folder -->
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_mcu.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/cc26xx/mb.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/cc26xx/rf_hal.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- HAL/Target/CC2650/Config Folder -->
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_board_cfg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Config" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- HAL/Target/CC2650/Drivers Folder -->
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_flash_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_rtc_wrapper.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_trng_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/hal_trng_wrapper.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- Host Folder -->
+        <file path="SRC_BLE_DIR/host/gap.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/host/gapbondmgr.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/inc/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/host/gatt_uuid.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/inc/gatt_uuid.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/inc/gattservapp.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/host/sm_ecc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/host/rtls_srv.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/inc/rtls_srv_api.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Host" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- ICallBLE Folder -->
+        <file path="SRC_BLE_DIR/icall/inc/ble_dispatch.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/icall/stack/ble_dispatch_JT.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/icall/stack/ble_dispatch_lite.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/icall/src/icall_lite_translation.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- NPI Folder -->
+        <file path="SRC_BLE_DIR/common/cc26xx/npi/stack/npi.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="NPI" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- OSAL Folder -->
+        <file path="SRC_BLE_DIR/osal/src/inc/comdef.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_bufmgr.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_bufmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_cbtimer.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_cbtimer.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_clock.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_clock.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_list.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_list.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_memory.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_memory_icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_pwrmgr.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_pwrmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/mcu/cc26xx/osal_snv_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_task.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/common/osal_timers.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_timers.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- ROM Folder -->
+        <file path="SRC_BLE_DIR/rom/agama_r1/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/rom/agama_r1/rom_flash_jt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- Startup Folder -->
+        <file path="SRC_BLE_DIR/common/cc26xx/icall_startup.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- TOOLS/Defines Folder -->
+        <file path="EXAMPLE_BLE_ROOT/../Stack_Wrapper_26p3.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS/Defines" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+        <!-- TOOLS Folder -->
+        <file path="SRC_BLE_DIR/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="EXAMPLE_BLE_ROOT/../build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/onboard.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/onboard.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="Stack_Wrapper_ticlang"/>
+
+    </project>
+</projectSpec>

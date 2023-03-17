@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iarUserArgVars>
+    <group name="SIMPLELINK_CC13XX_CC26XX_SDK" active="true">
+        <variable>
+            <name>SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR</name>
+            <value>$PROJ_DIR$\..\..\..\..\..\..\..</value>
+        </variable>
+        <variable>
+            <name>XDCROOT</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\..\xdctools_3_62_01_15_core</value>
+        </variable>
+        <variable>
+            <name>XDCPATH</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\kernel\tirtos7\packages;$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source</value>
+        </variable>
+        <variable>
+            <name>SYSCONFIG_ROOT</name>
+            <value>c:/ti/sysconfig_1.15.0</value>
+        </variable>
+        <variable>
+            <name>OUT_DIR_26P3</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source\ti\ble5stack_flash\libraries\cc2651p3</value>
+        </variable>
+        <variable>
+            <name>OUT_DIR_26R3</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source\ti\ble5stack_flash\libraries\cc2651r3</value>
+        </variable>
+        <variable>
+            <name>OUT_DIR_13P10_1</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source\ti\ble5stack_flash\libraries\cc1354p10_1</value>
+        </variable>
+        <variable>
+            <name>OUT_DIR_13P10_6</name>
+            <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source\ti\ble5stack_flash\libraries\cc1354p10_6</value>
+        </variable>
+        <variable>
+            <name>BUILD_CONFIG_DIR</name>
+            <value>$PROJ_DIR$\..\..</value>
+        </variable>
+    </group>
+</iarUserArgVars>
