@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
     "displayName": "simplelink_cc13xx_cc26xx_sdk",
-    "version": "6.30.00.83_s",
+    "version": "7.10.00.35_eng",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",
