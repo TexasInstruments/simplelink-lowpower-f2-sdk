@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "BLE, 2 Mbps, LE 2M (Release Candidate)",
-        "Description": "Bluetooth 5, LE 2M PHY (2 Msym\/s GFSK, 2 Mbps data rate) for the 2.4 GHz ISM band (Release Candidate).",
+        "Name": "BLE, 2 Mbps, LE 2M",
+        "Description": "Bluetooth 5, LE 2M PHY (2 Msym\/s GFSK, 2 Mbps data rate) for the 2.4 GHz ISM band.",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -116,6 +116,11 @@
                         "Block": {
                             "_name": "override_ble5_setup_override_common.json",
                             "Element32b": [
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "Rx: Set DCDC settings drive strength and deadtime trim",
+                                    "$": "0x00C188C3"
+                                },
                                 {
                                     "_type": "ELEMENT",
                                     "_comment": "Synth: Increase mid code calibration time to 5 us",
@@ -249,6 +254,11 @@
                                         "_type": "HW_REG_OVERRIDE",
                                         "_comment": "Bluetooth 5: increase low gain AGC delay for 2 Mbps",
                                         "$": "0x60A4,0x7D00"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Rx: increase AGC hysteresis (HIGH_GAIN=15, LOW_GAIN=11)",
+                                        "$": "0x6098,0x75FB"
                                     },
                                     {
                                         "_type": "HW_REG_OVERRIDE",

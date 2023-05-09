@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -190,11 +190,24 @@ static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey *key,
                                             ECDH_OperationType opType)
 {
     uint32_t pkaResult;
-    int_fast16_t status;
+    int_fast16_t status = ECDH_STATUS_ERROR;
     uint8_t *keyMaterial;
+    uint8_t *xCoordinate;
+    uint8_t *yCoordinate;
+    size_t keyLength;
+    size_t bytesToBeWritten;
 #if (ENABLE_KEY_STORAGE == 1)
     uint8_t KeyStore_keyingMaterial[ECDH_MAX_KEYSTORE_PUBLIC_KEY_SIZE];
 #endif
+
+    /* Keep track of number of bytes of key written using driverlib function and check if it does not exceed the length
+     * of the keyMaterial provided in CryptoKey
+     */
+    bytesToBeWritten = 0;
+
+    /* Initialize the coordinates to NULL */
+    xCoordinate = NULL;
+    yCoordinate = NULL;
 
     /*
      * Support for both Plaintext and KeyStore keys for myPrivateKey
@@ -202,11 +215,13 @@ static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey *key,
     if (key->encoding == CryptoKey_BLANK_PLAINTEXT)
     {
         keyMaterial = key->u.plaintext.keyMaterial;
+        keyLength   = key->u.plaintext.keyLength;
     }
 #if (ENABLE_KEY_STORAGE == 1)
     else if (key->encoding == CryptoKey_BLANK_KEYSTORE)
     {
         keyMaterial = KeyStore_keyingMaterial;
+        keyLength   = key->u.keyStore.keyLength;
     }
 #endif
     else
@@ -216,47 +231,84 @@ static int_fast16_t ECDHCC26X2_getKeyResult(CryptoKey *key,
 
     if (keyMaterialEndianness == ECDH_BIG_ENDIAN_KEY)
     {
-        /* Get X and Y coordinates with OCTET_STRING_OFFSET for big-endian keys */
-        pkaResult = PKAEccMultiplyGetResult(keyMaterial + OCTET_STRING_OFFSET,
-                                            keyMaterial + curve->length + OCTET_STRING_OFFSET,
-                                            resultPKAMemAddr,
-                                            curve->length);
-
         /*
          * Set first byte of output public key to 0x04 to indicate x,y
          * big-endian coordinates in octet string format
          */
-        keyMaterial[0] = 0x04;
+        bytesToBeWritten = OCTET_STRING_OFFSET;
+        keyMaterial[0]   = 0x04;
 
-        /* Byte-reverse integer X coordinate for octet string format */
-        CryptoUtils_reverseBufferBytewise(keyMaterial + OCTET_STRING_OFFSET, curve->length);
+        /* Get X and Y coordinates with OCTET_STRING_OFFSET for big-endian keys */
+        bytesToBeWritten += 2 * curve->length;
+        if (bytesToBeWritten == keyLength)
+        {
+            xCoordinate = keyMaterial + OCTET_STRING_OFFSET;
+            yCoordinate = keyMaterial + curve->length + OCTET_STRING_OFFSET;
 
-        /* Byte-reverse integer Y coordinate for octet string format */
-        CryptoUtils_reverseBufferBytewise(keyMaterial + curve->length + OCTET_STRING_OFFSET, curve->length);
+            pkaResult = PKAEccMultiplyGetResult(xCoordinate, yCoordinate, resultPKAMemAddr, curve->length);
+
+            /* Byte-reverse integer X coordinate for octet string format */
+            CryptoUtils_reverseBufferBytewise(xCoordinate, curve->length);
+
+            if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
+            {
+                /* Zero-out the Y coordinate as it not required for Montgomery curves */
+                memset(yCoordinate, 0x00, curve->length);
+            }
+            else
+            {
+                /* Byte-reverse integer Y coordinate for octet string format */
+                CryptoUtils_reverseBufferBytewise(yCoordinate, curve->length);
+            }
+
+            status = ECDH_STATUS_SUCCESS;
+        }
     }
     else
     {
-        /*
-         * Get X and Y coordinates without byte-reverse and
-         * without OCTET_STRING_OFFSET for little-endian keys
-         */
-        pkaResult = PKAEccMultiplyGetResult(keyMaterial, keyMaterial + curve->length, resultPKAMemAddr, curve->length);
+        if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
+        {
+            /* Y coordinate is not required for Montgomery curves */
+            bytesToBeWritten = curve->length;
+            if (bytesToBeWritten == keyLength)
+            {
+                xCoordinate = keyMaterial;
+
+                pkaResult = PKAEccMultiplyGetResult(xCoordinate, yCoordinate, resultPKAMemAddr, curve->length);
+
+                status = ECDH_STATUS_SUCCESS;
+            }
+        }
+        else
+        {
+            /*
+             * Get X and Y coordinates without byte-reverse and
+             * without OCTET_STRING_OFFSET for Weierstrass curves
+             */
+            bytesToBeWritten = 2 * curve->length;
+            if (bytesToBeWritten == keyLength)
+            {
+                xCoordinate = keyMaterial;
+                yCoordinate = keyMaterial + curve->length;
+
+                pkaResult = PKAEccMultiplyGetResult(xCoordinate, yCoordinate, resultPKAMemAddr, curve->length);
+
+                status = ECDH_STATUS_SUCCESS;
+            }
+        }
     }
 
-    if (curve->curveType == ECCParams_CURVE_TYPE_MONTGOMERY)
+    if (status == ECDH_STATUS_SUCCESS)
     {
-        /* Zero-out the Y coordinate */
-        memset(keyMaterial + curve->length + OCTET_STRING_OFFSET, 0x00, curve->length);
-    }
-
-    status = ECDHCC26X2_convertReturnValue(pkaResult);
+        status = ECDHCC26X2_convertReturnValue(pkaResult);
 
 #if (ENABLE_KEY_STORAGE == 1)
-    if ((status == ECDHCC26X2_STATUS_FSM_RUN_FSM) && (key->encoding == CryptoKey_BLANK_KEYSTORE))
-    {
-        status = ECDHCC26X2_importSecureKey(key, KeyStore_keyingMaterial, curve->curveType, opType);
-    }
+        if ((status == ECDHCC26X2_STATUS_FSM_RUN_FSM) && (key->encoding == CryptoKey_BLANK_KEYSTORE))
+        {
+            status = ECDHCC26X2_importSecureKey(key, KeyStore_keyingMaterial, curve->curveType, opType);
+        }
 #endif
+    }
 
     return status;
 }
@@ -989,7 +1041,7 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
         if ((operation->keyMaterialEndianness == ECDH_LITTLE_ENDIAN_KEY) &&
             (operation->curve->curveType == ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3))
         {
-            /* mbedcrypto adds octet offset prefix to Weirstrauss/big endian public keys while exporting */
+            /* mbedcrypto adds octet offset prefix to Weierstrass public keys in big-endian format while exporting */
             theirPublicKeyMaterial = KeyStore_theirPublicKeyMaterial + 1;
             theirPublicKeyLength--;
         }

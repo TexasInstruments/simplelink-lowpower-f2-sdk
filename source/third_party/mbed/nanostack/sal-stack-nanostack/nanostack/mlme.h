@@ -383,6 +383,7 @@ typedef struct mlme_scan_s {
  * See IEEE standard 802.15.4-2006 (table 70) for more details
  */
 typedef struct mlme_set_s {
+    uint8_t status;             /**< status of operation*/
     mlme_attr_t attr;           /**<PIB attribute for operation*/
     uint8_t attr_index;         /**< attribute index to to table (use only for PIB attributes which are tables)*/
     const void *value_pointer;  /**< Pointer to value*/
@@ -395,34 +396,12 @@ typedef struct mlme_set_s {
  * See IEEE standard 802.15.4-2006 (table 56) for more details
  */
 typedef struct mlme_get_s {
-    mlme_attr_t attr;       /**<PIB attribute for operation*/
-    uint8_t attr_index;     /**< attribute index to to table (use only for PIB attributes which are tables)*/
-} mlme_get_t;
-
-/**
- * @brief struct mlme_get_conf_t Get confirm structure
- *
- * See IEEE standard 802.15.4-2006 (table 57) for more details
- */
-typedef struct mlme_get_conf_s {
     uint8_t status;             /**< status of operation*/
     mlme_attr_t attr;           /**<PIB attribute for operation*/
     uint8_t attr_index;         /**< attribute index to to table (valid only for PIB attributes which are tables)*/
     void *value_pointer;        /**< Pointer to data when status is MLME_SUCCESS */
     uint8_t value_size;         /**< define data length in bytes behind pointer*/
-} mlme_get_conf_t;
-
-/**
- * @brief struct mlme_set_conf_t Set confirm structure
- *
- * See IEEE standard 802.15.4-2006 (table 71) for more details
- */
-typedef struct mlme_set_conf_s {
-    uint8_t status;         /**< status of operation*/
-    mlme_attr_t attr;       /**<PIB attribute for operation*/
-    uint8_t attr_index;     /**< attribute index to to table (valid only for PIB attributes which are tables)*/
-} mlme_set_conf_t;
-
+} mlme_get_t;
 
 #define MLME_MAC_RES_SIZE_MAX 16 /**< Mac scan response max supported list size */
 

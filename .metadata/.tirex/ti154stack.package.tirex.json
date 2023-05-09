@@ -1,0 +1,25 @@
+[
+    {
+        "metadataVersion": "3.0.0",
+        "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK_TI154STACK_MODULE",
+        "name": "TI 15.4-Stack Stack Core",
+        "version": "7.10.00.98",
+        "type": "software",
+        "devices": [
+            "CC13x1",
+            "CC13x2",
+            "CC13x2x7",
+            "CC13X4",
+            "CC26x1",
+            "CC26x2",
+            "CC26x2x7"
+        ],
+        "image": "metadata/cc13xx_cc26xx-tirex.png",
+        "description": "CC13XX/CC26XX TI 15.4-Stack Stack",
+        "allowPartialDownload": "false",
+        "moduleOf": {
+            "packageId": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
+            "semver": "7.10.0"
+        }
+    }
+]

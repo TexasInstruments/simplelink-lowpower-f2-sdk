@@ -108,20 +108,18 @@ extern RF_Handle rfHandle;
  */
 
 // HCI Version and Revision
-#if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 ) || defined ( CC33xx )
-  #define HCI_VERSION                                0x0B    // BT Core Specification V5.2
-#else // !CC26XX
-  #define HCI_VERSION                                0x06    // BT Core Specification V4.0
-#endif // CC26XX/CC13XX
+#if defined ( CC23X0 ) || defined( CC13X4 ) || defined ( CC33xx )
+  #define HCI_VERSION                                0x0C    // BT Core Specification V5.3
+#else
+  #define HCI_VERSION                                0x0A    // BT Core Specification V5.1
+#endif
 
 // Major Version (8 bits) . Minor Version (4 bits) . SubMinor Version (4 bits)
-#if defined( CC26X2 ) || defined( CC13X2 ) || defined( CC13X2P ) || defined( CC23X0 ) || defined ( CC33xx )
-#define HCI_REVISION                                 0x0228  // HCI Version BLE5 2.2.8
-#elif defined( CC26XX )
-#define HCI_REVISION                                 0x0111  // HCI Version BLE5 1.1.1
-#else // !CC26X2 && !CC13X2 && !CC26XX && !CC13XX
-#define HCI_REVISION                                 0x0141  // HCI Version 1.4.1
-#endif // CC26X2/CC13X2/CC26XX/CC13XX
+#if defined( CC23X0 )
+  #define HCI_REVISION                               0x0321  // HCI Version BLE5 3.2.1
+#else
+  #define HCI_REVISION                               0x0228  // HCI Version BLE5 2.2.8
+#endif
 
 // Internal Only Status Values
 #define HCI_STATUS_WARNING_FLAG_UNCHANGED            LL_STATUS_WARNING_FLAG_UNCHANGED

@@ -1,0 +1,1489 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- ***************************************************************************************************************** -->
+<!--
+BTool Gatt UUID Data Items XML file
+
+Summary of XML tags:
+=====================
+<btool_gatt_uuid>BTool Gatt UUid Data</btool_gatt_uuid> 
+
+  <version>XML layout version</version>
+    Do Not Modify
+
+  ===================================================================
+
+  <cfg_data> Start config data
+
+    <indents>
+      <unknown_indl>Unknown indent level</unknown_indl>
+        Valid Range:
+          0 to 255
+    </indents>
+
+    <column_widths>
+      <key_width>Key column width</key_width>
+        Valid Range:
+          0 to 255
+      
+      <con_hnd_width>Connection Handle column width</con_hnd_width>
+        Valid Range:
+          0 to 255
+      
+      <handle_width>Handle column width</handle_width>
+        Valid Range:
+          0 to 255
+      
+      <uuid_width>UUID column width</uuid_width>
+        Valid Range:
+          0 to 255
+      
+      <uuid_desc_width>UUID Decription column width</uuid_desc_width>
+        Valid Range:
+          0 to 255
+      
+      <value_width>Value column width</value_width>
+        Valid Range:
+          0 to 255
+      
+      <value_desc_width>Value Description column width</value_desc_width>
+        Valid Range:
+          0 to 255
+      
+      <properties_width>Properties column width</properties_width>
+        Valid Range:
+          0 to 255
+    </column_widths>
+
+    <attr_write_limits>
+      <max_packet_size>Maximum Write Packet Size</max_packet_size>
+      Valid Range:
+        16 to 512
+        (Note: This value must not exceed the value that is supported by the firmware for proper operation)
+
+      <max_num_prepare_writes>Maximum Number Of Prepare Writes</max_num_prepare_writes>
+      Valid Range:
+        1 to 28
+        (Note: This value must not exceed the value used to build the firmware for proper operation)
+    </attr_write_limits>
+
+  </cfg_data>  End config data 
+
+  ===================================================================
+
+  <data_set> Start set of data objects
+
+    <data_set_name>Name for the data set</data_set_name> 
+      Valid Entries:
+      Ascii Text
+
+    <uuid>UUID value</uuid>
+      Valid Entries:
+        0x00 to 0x00..n (Valid string 1 byte or longer)
+        Note: No duplicate uuid's allowed across all data_sets 
+              Value must contain an even number of characters to convert to bytes
+    
+    <indl>Indent level</indl>
+      Valid Range:
+        0 to 255
+
+    <vopt>Value options</vopt>
+      Valid Entries:
+        Hex - Byte hex value(s) seperated by colons
+        Dec - A unsigned 32 bit value
+        Asc - ASCII string value
+
+    <vedt>Value edit</vedt>
+      Valid Entries:
+        Edit - User entry ok
+        Read - Read only
+
+     <udsc>UUID description text</udsc>
+      Valid Entries:
+        Ascii Text
+    
+    <vdsc>UUID value description text</vdsc>
+      Valid Entries:
+        Ascii Text
+    
+    <fore>Foreground Color</fore>
+      Valid Entries:
+        Color Names: at end of file 
+    
+    <back>Background Color</back>
+      Valid Entries:
+        Color Names: at end of file 
+
+  </data_set>  Start set of data objects 
+
+  ===================================================================
+
+  ===================================================================
+
+  <vmatch_date_set> Start set of uuid value matching data objects
+
+    <vmatch_set_name>Name for the data set</vmatch_set_name> 
+      Valid Entries:
+      Ascii Text
+
+    <uuid>Uuid to trigger match a value</uuid>
+      Valid Entries:
+        0x00 to 0x00..n (Valid string 1 byte or longer) 
+        Note: No duplicate uuid's allowed across all vmatch_data_sets 
+
+    <rval>Reverse value byte by byte</rval>
+      Valid Entries:
+      Y - Reverse value
+      N - Leave value as is
+
+    <value>Value to match</value>
+      Valid Entries:
+        0x00 to 0x00..n (Valid string 1 byte or longer) 
+        Note: No duplicate value's allowed using the same uuid 
+              The string is reversed before matching
+    
+    <vdsc>Value matching description text</vdsc>
+      Valid Entries:
+        Ascii Text
+    
+  </vmatch_data_set>  End of uuid value matching data objects 
+
+  ===================================================================
+
+-->
+<!-- ***************************************************************************************************************** -->
+
+<btool_gatt_uuid>
+  <version>1.00.01</version>
+  <cfg_data>
+    <indents>
+      <unknown_indl>4</unknown_indl>
+    </indents>
+    <column_widths>
+      <key_width>70</key_width>
+      <con_hnd_width>55</con_hnd_width>
+      <handle_width>55</handle_width>
+      <uuid_width>55</uuid_width>
+      <uuid_desc_width>240</uuid_desc_width>
+      <value_width>162</value_width>
+      <value_desc_width>175</value_desc_width>
+      <properties_width>145</properties_width>
+    </column_widths>
+    <attr_write_limits>
+      <max_packet_size>127</max_packet_size>
+      <max_num_prepare_writes>5</max_num_prepare_writes>
+    </attr_write_limits>
+  </cfg_data>
+  <data_name>Gatt UUID Data Items</data_name>
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+  <!-- SIG UUID DATA -->
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>SIG Declarations</data_set_name>
+    <uuid>0x2800</uuid><indl>0</indl><vdsp>Hex</vdsp><vedt>Read</vedt><udsc>GATT Primary Service Declaration</udsc>                   <vdsc></vdsc><fore>Black</fore><back>LightPink</back> 
+    <uuid>0x2801</uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Read</vedt><udsc>GATT Secondary Service Declaration</udsc>                 <vdsc></vdsc><fore>Black</fore><back>PaleGreen</back> 
+    <uuid>0x2802</uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Read</vedt><udsc>GATT Include Declaration</udsc>                           <vdsc></vdsc><fore>Black</fore><back>LightBlue</back> 
+    <uuid>0x2803</uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Read</vedt><udsc>GATT Characteristic Declaration</udsc>                    <vdsc></vdsc><fore>Black</fore><back>PaleGoldenrod</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>SIG Descriptors</data_set_name>
+    <uuid>0x2900</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Characteristic Extended Properties</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2901</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Characteristic User Description</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2902</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Client Characteristic Configuration</udsc>                <vdsc>Write 01:00(Notifications) 02:00(Indications)</vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2903</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Server Characteristic Configuration</udsc>                <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2904</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Characteristic Presentation Format</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2905</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Characteristic Aggregate Format</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2906</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Valid Range</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2907</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>External Report Reference</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2908</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Report Reference</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2909</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Number of Digitals</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back>  
+    <uuid>0x290A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Trigger Setting</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 	    
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>SIG Characteristics</data_set_name>
+    <uuid>0x2A00</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Device Name</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A01</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Appearance</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A02</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Peripheral Privacy Flag</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A03</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reconnection Address</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A04</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Peripheral Preferred Connection Parameters</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A05</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service Changed</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A06</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Level</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A07</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Tx Power Level</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A08</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Date Time</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A09</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Day of Week</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Day Date Time</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Exact Time 100</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Exact Time 256</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>DST Offset</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Zone</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A0F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Local Time Information</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A11</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time with DST</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A12</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Accuracy</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A13</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Source</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A14</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reference Time Information</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A15</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Broadcast</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A16</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Update Control Point</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A17</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Time Update State</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A18</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Glucose Measurement</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A19</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Level</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Power State</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Level State</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Temperature Measurement</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Temperature Type</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Intermediate Temperature</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A1F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Temperature In Celsius</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A20</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Temperature In Fahrenheit</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A21</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Measurement Interval</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A22</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Boot Keyboard Input Report</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A23</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>System ID</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A24</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Model Number String</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A25</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Serial Number String</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A26</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Firmware Revision String</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A27</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Hardware Revision String</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A28</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Software Revision String</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A29</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>Manufacturer Name String</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A2A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IEEE 11073-20601 Regulatory Certification Data List</udsc><vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x2A2B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Current Time</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A31</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Scan Refresh</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A32</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Boot Keyboard Output Report</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A33</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Boot Mouse Input Report</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A34</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Glucose Measurement Context</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A35</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Blood Pressure Measurement</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A36</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Intermediate Cuff Pressure</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A37</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Heart Rate Measurement</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A38</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Body Sensor Location</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A39</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Heart Rate Control Point</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Removable</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service Required</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Scientific Temperature In Celsius</udsc>                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>String</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Network Availabilty</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A3F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Status</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A40</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Ringer Control Point</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A41</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Ringer Setting</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A42</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Category ID Bit Mask</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A43</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Category ID</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A44</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Notification Control Point</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A45</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Unread Alert Status</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A46</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>New Alert</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A47</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Supported New Alert Category</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A48</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Supported Unread Alert Category</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A49</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Blood Pressure Feature</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Information</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Report Map</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Control Point</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Report</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Protocol Mode</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A4F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Scan Interval Window</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A50</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>PnP ID</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A51</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Glucose Feature</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A52</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Record Access Control Point</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A53</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>RSC Measurement</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A54</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>RSC Feature</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A55</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>SC Control Point</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A56</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Digital</udsc>                                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A58</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Analog</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Aggregatet</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CSC Measurement</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CSC Feature</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Sensor Location</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>PLX Spot-Check Measurement</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A5F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>PLX Continuous Measurement</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A60</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>PLX Features</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A63</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Power Measurement</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A64</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Power Vector</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A65</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Power Feature</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A66</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Power Control Point</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A67</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Location and Speed</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 	
+    <uuid>0x2A68</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Navigation</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 	        
+    <uuid>0x2A69</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Position Quality</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 	  
+    <uuid>0x2A6A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>LN Feature</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back>           
+    <uuid>0x2A6B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>LN Control Point</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 	  
+    <uuid>0x2A6C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Elevation</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A6D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Pressure</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A6E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Temperature</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A6F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A70</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>True Wind Speed</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A71</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>True Wind Direction</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A72</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Apparent Wind Speed</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A73</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Apparent Wind Direction</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A74</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gust Factor</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A75</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Pollen Concentration</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A76</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>UV Index</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A77</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Irradiance</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A78</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Rainfall</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A79</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Wind Chill</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A7A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Heat Index</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A7B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Dew Point</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A7D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Descriptor Value Changed</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A7E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Aerobic Heart Rate Lower Limit</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A7F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Aerobic Threshold</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A80</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Age</udsc>                                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A81</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Anaerobic Heart Rate Lower Limit</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A82</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Anaerobic Heart Rate Upper Limit</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A83</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Anaerobic Threshold</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A84</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Aerobic Heart Rate Upper Limit</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A85</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Date of Birth</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A86</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Date of Threshold Assessment</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A87</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Email Address</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A88</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Fat Burn Heart Rate Lower Limit</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A89</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Fat Burn Heart Rate Upper Limit</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>First Name</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Five Zone Heart Rate Limits</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gender</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Heart Rate Max</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Height</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A8F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Hip Circumference</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A90</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Last Name</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A91</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Maximum Recommended Heart Rate</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A92</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Resting Heart Rate</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A93</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Sport Type for Aerobic and Anaerobic Thresholds</udsc>    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A94</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Three Zone Heart Rate Limits</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A95</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Two Zone Heart Rate Limit</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A96</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>VO2 Max</udsc>                                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A97</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Waist Circumference</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A98</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Weight</udsc>                                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A99</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Database Change Increment</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>User Index</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Body Composition Feature</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Body Composition Measurement</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Weight Measurement</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Weight Scale Feature</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2A9F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>User Control Point</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetic Flux Density - 2D</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetic Flux Density - 3D</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Language</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometric Pressure Trend</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Bond Management Control Point</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Bond Management Feature</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA6</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Central Address Resolution</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA7</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Measurement</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA8</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Feature</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AA9</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Status</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAA</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Session Start Time</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAB</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Session Run Time</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAC</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>CGM Specific Ops Control Point</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAD</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Indoor Positioning Configuration</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAE</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Latitude</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AAF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Longitude</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Local North Coordinate</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Local East Coordinate</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Floor Number</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Altitude</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Uncertainty</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Location Name</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB6</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>URI</udsc>                                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB7</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HTTP Headers</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB8</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HTTP Status Code</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AB9</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HTTP Entity Body</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABA</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HTTP Control Point</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABB</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HTTPS Security</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABC</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>TDS Control Point</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABD</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>OTS Feature</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABE</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Name</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2ABF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Type</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Size</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object First-Created</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Last-Modified</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object ID</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Properties</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Action Control Point</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC6</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object List Control Point</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC7</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object List Filter</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2AC8</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Object Changed</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>SIG Services</data_set_name>
+    <uuid>0x1800</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Generic Access</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1801</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Generic Attribute</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1802</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Immediate Alert</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1803</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Link Loss</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1804</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Tx Power</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1805</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Current Time Service</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1806</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reference Time Update Service</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1807</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Next DST Change Service</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1808</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Glucose</udsc>                                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1809</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Health Thermometer</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x180A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Device Information</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x180B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Network Availability Service</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x180D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Heart Rate</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x180E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Phone Alert Status Service</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x180F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Service</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1810</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Blood Pressure</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1811</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Alert Notification Service</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1812</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Human Interface Device</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1813</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Scan Parameters</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1814</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Running Speed and Cadence</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1815</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Automation IO</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1816</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Speed and Cadence</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1818</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Cycling Power</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1819</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Location and Navigation</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x181A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Environmental Sensing</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x181B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Body Composition</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x181C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>User Data</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x181D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Weight Scale</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x181E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Bond Management</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back>
+    <uuid>0x181F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Continuous Glucose Monitoring</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back>
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>SIG Units</data_set_name>
+    <uuid>0x2700</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>unitless</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2701</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (metre)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2702</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>mass (kilogram)</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2703</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (second)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2704</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric current (ampere)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2705</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>thermodynamic temperature (kelvin)</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2706</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>amount of substance (mole)</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2707</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>luminous intensity (candela)</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2710</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>area (square metres)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2711</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>volume (cubic metres)</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2712</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>velocity (metres per second)</udsc>                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2713</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>acceleration (metres per second squared)</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2714</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>wavenumber (reciprocal metre)</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2715</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>density (kilogram per cubic metre)</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2716</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>surface density (kilogram per square metre)</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2717</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>specific volume (cubic metre per kilogram)</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2718</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>current density (ampere per square metre)</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2719</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>magnetic field strength (ampere per metre)</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x271A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>amount concentration (mole per cubic metre)</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x271B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>mass concentration (kilogram per cubic metre)</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x271C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>luminance (candela per square metre)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x271D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>refractive index</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x271E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>relative permeability</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2720</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>plane angle (radian)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2721</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>solid angle (steradian)</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2722</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>frequency (hertz)</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2723</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>force (newton)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2724</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>pressure (pascal)</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2725</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>energy (joule)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2726</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>power (watt)</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2727</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric charge (coulomb)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2728</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric potential difference (volt)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2729</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>capacitance (farad)</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric resistance (ohm)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric conductance (siemens)</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>magnetic flex (weber)</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>magnetic flex density (tesla)</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>inductance (henry)</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x272F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Celsius temperature (degree Celsius)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2730</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>luminous flux (lumen)</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2731</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>illuminance (lux)</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2732</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>activity referred to a radionuclide (becquerel)</udsc>    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2733</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>absorbed dose (gray)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2734</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>dose equivalent (sievert)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2735</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>catalytic activity (katal)</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2740</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>dynamic viscosity (pascal second)</udsc>                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2741</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>moment of force (newton metre)</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2742</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>surface tension (newton per metre)</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2743</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>angular velocity (radian per second)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2744</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>angular acceleration (radian per second squared)</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2745</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>heat flux density (watt per square metre)</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2746</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>heat capacity (joule per kelvin)</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2747</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>specific heat capacity (joule per kilogram kelvin)</udsc> <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2748</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>specific energy (joule per kilogram)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2749</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>thermal conductivity (watt per metre kelvin)</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>energy density (joule per cubic metre)</udsc>             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric field strength (volt per metre)</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric charge density (coulomb per cubic metre)</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>surface charge density (coulomb per square metre)</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric flux density (coulomb per square metre)</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x274F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>permittivity (farad per metre)</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2750</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>permeability (henry per metre)</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2751</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>molar energy (joule per mole)</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2752</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>molar entropy (joule per mole kelvin)</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2753</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>exposure (coulomb per kilogram)</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2754</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>absorbed dose rate (gray per second)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2755</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>radiant intensity (watt per steradian)</udsc>             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2756</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>radiance (watt per square meter steradian)</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2757</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>catalytic activity concentration (katal per cubic metre) </udsc><vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2760</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (minute)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2761</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (hour)</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2762</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (day)</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2763</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>plane angle (degree)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2764</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>plane angle (minute)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2765</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>plane angle (second)</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2766</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>area (hectare)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2767</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>volume (litre)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2768</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>mass (tonne)</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2780</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>pressure (bar)</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2781</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>pressure (millimetre of mercury)</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2782</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (ångström)</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2783</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (nautical mile)</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2784</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>area (barn)</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2785</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>velocity (knot)</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2786</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>logarithmic radio quantity (neper)</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x2787</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>logarithmic radio quantity (bel)</udsc>                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (yard)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (parsec)</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (inch)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (foot)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>length (mile)</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>pressure (pound-force per square inch)</udsc>             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A6</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>velocity (kilometre per hour)</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A7</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>velocity (mile per hour)</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A8</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>angular velocity (revolution per minute)</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27A9</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>energy (gram calorie)</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AA</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>energy (kilogram calorie)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AB</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>energy (kilowatt hour)</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AC</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>thermodynamic temperature (degree Fahrenheit)</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AD</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>percentage</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AE</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>per mille</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27AF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>period (beats per minute)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>electric charge (ampere hours)</udsc>                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>mass density (milligram per decilitre)</udsc>             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>mass density (millimole per litre)</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27B3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (year)</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x27B4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>time (month)</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+  <!-- TI UUID DATA -->
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+    <!-- 
+      Note:
+      TI UUIDs that are in the same range as SIG UUID's have not converted into xml format data.
+      This is intentional.
+    -->
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Accelerometer</data_set_name>
+    <uuid>0xFFA0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Service</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFA1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accererometer Enable</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFA2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Range</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFA3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer X-Coordinate</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFA4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Y-Coordinate</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFA5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Z-Coordinate</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFAF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Data</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\Accelerometer\accelerometer.h
+        64 1:#define ACCEL_ENABLER_UUID            0xFFA1
+        65 1:#define ACCEL_RANGE_UUID              0xFFA2
+        66 1:#define ACCEL_X_UUID                  0xFFA3
+        67 1:#define ACCEL_Y_UUID                  0xFFA4
+        68 1:#define ACCEL_Z_UUID                  0xFFA5
+        71 1:#define ACCEL_SERVICE_UUID            0xFFA0
+      File \Projects\ble\Profiles\Accelerometer\accelerometer_mcs_mode.h
+        61 1:#define ACCEL_DATA_UUID                  0xFFAF
+        65 1:#define ACCEL_SERVICE_UUID            0xFFA0
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - AppleRemote</data_set_name>
+    <!-- Collision
+    <uuid>0xFF80</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Apple HID Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFF81</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Apple HID Data</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    -->
+    <!-- 
+      File \Projects\ble\AppleRemote\Source\appleHID.h
+        60 1:#define APPLEHID_SERV_UUID                  0xFF80
+        63 1:#define APPLEHID_KEYPRESSED_UUID            0xFF81
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Batt</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\Batt\battservice.h
+        58 1:#define BATT_SERVICE_UUID               0x180F  // Battery Service
+        59 1:#define BATT_LEVEL_UUID                 0x2A19  // Battery Level
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Battery</data_set_name>
+    <uuid>0xFFB1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Level</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFB2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery State</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFB0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Battery Service</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\Battery\battery.h
+        61 1:#define BATTERY_LEVEL_UUID            0xFFB1
+        62 1:#define BATTERY_STATE_UUID            0xFFB2
+        65 1:#define BATTERY_SERVICE_UUID          0xFFB0
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - BloodPressure</data_set_name>
+    <!-- 
+      File \Projects\ble\BloodPressure\Source\timeapp_discovery.c
+        56 1:#define CURRENT_TIME_SVC_UUID           0x1805
+        59 1:#define CT_TIME_UUID                    0x2A2B    // Time
+      File \Projects\ble\Profiles\BloodPressure\bpservice.h
+        70 1:#define BLOODPRESSURE_SERV_UUID                 0x1810
+        71 1:#define BLOODPRESSURE_MEAS_UUID                 0x2A35 //bp measurement
+        72 1:#define BLOODPRESSURE_IMEAS_UUID                0x2A36 //intermediate
+        73 1:#define BLOODPRESSURE_FEATURE_UUID              0x2A49 //intermediate 
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Connection Control</data_set_name>
+    <uuid>0xF000CCC004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Connection Control Service</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000CCC104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Connection Parameters</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000CCC204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Connection Request Parameters</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000CCC304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Connection Request Disconnect</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      SensorTag User Guide
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - CSC</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\CSC\cyclingservice.h
+        79 1:#define CSC_SERV_UUID               0x1816
+        80 1:#define CSC_MEAS_UUID               0x2A5B
+        81 1:#define CSC_FEATURE_UUID            0x2A5C
+        82 1:#define CSC_SENS_LOC_UUID           0x2A5D
+        83 1:#define CSC_COMMAND_UUID            0x2A55
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - DevInfo</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\DevInfo\devinfoservice.h
+        69 1:#define DEVINFO_SERV_UUID                 0x180A    // Service UUID
+        70 1:#define DEVINFO_SYSTEM_ID_UUID            0x2A23    // System ID
+        71 1:#define DEVINFO_MODEL_NUMBER_UUID         0x2A24    // Model Number String
+        72 1:#define DEVINFO_SERIAL_NUMBER_UUID        0x2A25    // Serial Number String
+        73 1:#define DEVINFO_FIRMWARE_REV_UUID         0x2A26    // Firmware Revision String
+        74 1:#define DEVINFO_HARDWARE_REV_UUID         0x2A27    // Hardware Revision String
+        75 1:#define DEVINFO_SOFTWARE_REV_UUID         0x2A28    // Software Revision String
+        76 1:#define DEVINFO_MANUFACTURER_NAME_UUID    0x2A29    // Manufacturer Name String
+        77 1:#define DEVINFO_11073_CERT_DATA_UUID      0x2A2A    // IEEE 11073-20601 Regulatory Certification Data List
+        78 1:#define DEVINFO_PNP_ID_UUID               0x2A50    // PnP ID
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - GATT</data_set_name>
+    <!-- Collision 
+    <uuid>0xA00A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality A Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality B Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality D Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality E Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB001</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V1</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB002</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V2</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB003</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V3</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB004</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V4</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB005</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V5</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB006</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V6</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB007</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V7</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB008</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V8</udsc>                                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V10</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V12</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Quality V13</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    -->
+    <uuid>0x9000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>GATT Test</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x9025</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Read/Write Test (No Authentication)</udsc>                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x9027</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Read/Write Test (Authenticated)</udsc>                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x9028</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Broadcast Test</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x9029</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Read Test (Authenticated)</udsc>                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902A</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Write-Only Test</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902B</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Write-Only Test - Long</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902C</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Read/Write Test - Long</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902D</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Read-Only Test - Long</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902E</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Notify/Indicate Test (No Authentication)</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x902F</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Notify/Indicate Test (Authenticated)</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x9030</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Text (attribute description)Service</udsc>                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x00000200</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>128-bit UUID 1</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x00000400</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>128-bit UUID 2</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x00000800</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>128-bit UUID 3</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\GATT\gattqual.c
+      File \Projects\ble\Profiles\GATT\gattqual1.c
+      File \Projects\ble\Profiles\GATT\gattqual1_sec.c
+      File \Projects\ble\Profiles\GATT\gattqual2.c
+      File \Projects\ble\Profiles\GATT\gattqual3.c
+        61 1:#define QUAL_A_SERVICE_UUID              0xA00A
+        62 1:#define QUAL_B_SERVICE_UUID              0xA00B
+        63 1:#define QUAL_D_SERVICE_UUID              0xA00D
+        64 1:#define QUAL_E_SERVICE_UUID              0xA00E
+        69 1:#define QUAL_V1_UUID                     0xB001
+        70 1:#define QUAL_V2_UUID                     0xB002
+        71 1:#define QUAL_V3_UUID                     0xB003
+        72 1:#define QUAL_V4_UUID                     0xB004
+        73 1:#define QUAL_V5_UUID                     0xB005
+        74 1:#define QUAL_V6_UUID                     0xB006
+        75 1:#define QUAL_V7_UUID                     0xB007
+        76 1:#define QUAL_V8_UUID                     0xB008
+        77 1:#define QUAL_V10_UUID                    0xB00A
+        78 1:#define QUAL_V12_UUID                    0xB00C
+        79 1:#define QUAL_V13_UUID                    0xB00D
+      File \Projects\ble\Profiles\GATT\gatttest.c
+        64 1:#define TEST_SERVICE_UUID                          0x9000 // GATT Test
+        69 1:#define TEST_RW_UUID                               0x9025 // Read/Write Test (No Authentication)
+        70 1:#define TEST_RW_AUTHEN_UUID                        0x9027 // Read/Write Test (Authenticated)
+        71 1:#define TEST_BCAST_UUID                            0x9028 // Broadcast Test
+        72 1:#define TEST_R_AUTHEN_UUID                         0x9029 // Read Test (Authenticated)
+        73 1:#define TEST_WO_UUID                               0x902A // Write-Only Test
+        74 1:#define TEST_WO_LONG_UUID                          0x902B // Write-Only Test - Long
+        75 1:#define TEST_RW_LONG_UUID                          0x902C // Read/Write Test - Long
+        76 1:#define TEST_RO_LONG_UUID                          0x902D // Read-Only Test - Long
+        77 1:#define TEST_NOTI_IND_UUID                         0x902E // Notify/Indicate Test (No Authentication)
+        78 1:#define TEST_NOTI_IND_AUTHEN_UUID                  0x902F // Notify/Indicate Test (Authenticated)
+        79 1:#define TEST_TEXT_UUID                             0x9030 // Text (attribute description)
+          <data_set_name>TI Profile  - </data_set_name>
+      File \Projects\ble\Include\gatttest.h
+        74 1:#define GATT_128BIT_UUID1_SERVICE        0x00000200 // 128-bit UUID 1
+        75 1:#define GATT_128BIT_UUID2_SERVICE        0x00000400 // 128-bit UUID 2
+        76 1:#define GATT_128BIT_UUID3_SERVICE        0x00000800 // 128-bit UUID 3
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Glucose</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\Glucose\glucservice.h
+        65 1:#define GLUCOSE_SERV_UUID                 0x1808
+        66 1:#define GLUCOSE_MEAS_UUID                 0x2A18
+        67 1:#define GLUCOSE_CONTEXT_UUID              0x2A34
+        68 1:#define GLUCOSE_FEATURE_UUID              0x2A51
+        69 1:#define RECORD_CONTROL_POINT_UUID         0x2A52
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - HeartRate</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\HeartRate\heartrateservice.h
+        35 1:#define HEARTRATE_SERV_UUID                 0x180D
+        36 1:#define HEARTRATE_MEAS_UUID                 0x2A37
+        37 1:#define HEARTRATE_SENS_LOC_UUID             0x2A38
+        38 1:#define HEARTRATE_COMMAND_UUID              0x2A39
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - HIDDev</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\HIDDev\hid_uuid.h
+        52 1:#define HID_SERVICE_UUID                0x1812
+        55 1:#define HID_BOOT_KEY_INPUT_UUID         0x2A22    // HID Boot Keyboard Input Report
+        56 1:#define HID_BOOT_KEY_OUTPUT_UUID        0x2A32    // HID Boot Keyboard Output Report
+        57 1:#define HID_BOOT_MOUSE_INPUT_UUID       0x2A33    // HID Boot Mouse Input Report
+        58 1:#define HID_INFORMATION_UUID            0x2A4A    // HID Information
+        59 1:#define HID_REPORT_MAP_UUID             0x2A4B    // HID Report Map
+        60 1:#define HID_CONTROL_POINT_UUID          0x2A4C    // HID Control Point
+        61 1:#define HID_REPORT_UUID                 0x2A4D    // HID Report
+        62 1:#define HID_PROTOCOL_MODE_UUID          0x2A4E    // HID Protocol Mode
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - HIDKeyboard</data_set_name>
+    <uuid>0xFF90</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Keyboard Service</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFF91</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Keyboard Data</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\HIDKeyboard\hidKeyboardProfile.h
+        60 1:#define HIDKEYBOARD_SERV_UUID               0xFF90
+        63 1:#define HIDKEYBOARD_DATA_UUID               0xFF91
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - HIDMouse</data_set_name>
+    <uuid>0xFF80</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Mouse Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFF81</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>HID Mouse Data</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\HIDMouse\hidMouseProfile.h
+        60 1:#define HIDMOUSE_SERV_UUID               0xFF80
+        63 1:#define HIDMOUSE_DATA_UUID               0xFF81
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Keys</data_set_name>
+    <uuid>0xFFE0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Keys Service</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFE1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Key Press State</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFE2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Range</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\Keys\simplekeys.h
+        60 1:#define SK_SERV_UUID                  0xFFE0
+        63 1:#define SK_KEYPRESSED_UUID            0xFFE1
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - OAD</data_set_name>
+    <uuid>0xFFC0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>OAD Service</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFC1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Identify</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFC2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Block</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFC3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Count</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFC4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Status</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFC5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Control</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Warning 
+         Profile source does not identify that a longer UUID may be used
+    -->
+    <uuid>0xF000FFC004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>OAD Service</udsc>            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFC104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Identify</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFC204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Block</udsc>            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFC304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Count</udsc>            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFC404514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Status</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFC504514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Image Control</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File C:\git\ble_examples\src\profiles\oad\cc26xx\oad_constants.h
+        #define OAD_SERVICE_UUID       0xFFC0
+        #define OAD_IMG_IDENTIFY_UUID  0xFFC1
+        #define OAD_IMG_BLOCK_UUID     0xFFC2
+        #define OAD_IMG_COUNT_UUID     0xFFC3
+        #define OAD_IMG_STATUS_UUID    0xFFC4
+        #define OAD_IMG_CONTROL_UUID   0xFFC5
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Reset</data_set_name>
+    <uuid>0xFFD0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reset Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFD1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reset Char</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFD004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reset Service</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000FFD104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Reset Char</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - PolyProfile</data_set_name>
+    <!-- Accelerometer -->
+    <uuid>0xF000AD1004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Service</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD1104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Data</udsc>     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD1204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Configuration</udsc><vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD1304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Period</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Poly -->
+    <uuid>0xF000AD2004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Poly Service</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD2104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Poly Data</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD2204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Poly Configuration</udsc>     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD2304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Poly Period</udsc>            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD2404514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Poly Threshold</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Test -->
+    <uuid>0xF000AD3004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Service</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD3104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Data</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AD3204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Configuration</udsc>     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- 
+      File \Projects\ble\Profiles\PolyProfile\accelerometerservice.h
+        62 1:#define ACCELEROMETER_SERV_UUID         0xAD10  // F0000000-0451-4000-B000-00000000-AD10
+        63 1:#define ACCELEROMETER_DATA_UUID         0xAD11
+        64 1:#define ACCELEROMETER_CONF_UUID         0xAD12
+        65 1:#define ACCELEROMETER_PERI_UUID         0xAD13
+      File \Projects\ble\Profiles\PolyProfile\polyservice.h
+        63 1:#define POLY_SERV_UUID             0xAD20 // F000AD20-0451-4000-B000-00000000-0000
+        64 1:#define POLY_DATA_UUID             0xAD21
+        65 1:#define POLY_CONF_UUID             0xAD22
+        66 1:#define POLY_PERI_UUID             0xAD23
+        67 1:#define POLY_THRS_UUID             0xAD24
+      File \Projects\ble\Profiles\PolyProfile\testservice.h
+        61 1:#define TEST_SERV_UUID                  0xAD30 // F0000000-0451-4000-B000-00000000-AD30
+        62 1:#define TEST_DATA_UUID                  0xAD31
+        63 1:#define TEST_CONF_UUID                  0xAD32
+      File \Projects\ble\PolyTag\Source\devinfoservice-pt.h
+        69 1:#define DEVINFO_SERV_UUID                 0x180A    // Service UUID
+        70 1:#define DEVINFO_SYSTEM_ID_UUID            0x2A23    // System ID
+        71 1:#define DEVINFO_MODEL_NUMBER_UUID         0x2A24    // Model Number String
+        72 1:#define DEVINFO_SERIAL_NUMBER_UUID        0x2A25    // Serial Number String
+        73 1:#define DEVINFO_FIRMWARE_REV_UUID         0x2A26    // Firmware Revision String
+        74 1:#define DEVINFO_HARDWARE_REV_UUID         0x2A27    // Hardware Revision String
+        75 1:#define DEVINFO_SOFTWARE_REV_UUID         0x2A28    // Software Revision String
+        76 1:#define DEVINFO_MANUFACTURER_NAME_UUID    0x2A29    // Manufacturer Name String
+        77 1:#define DEVINFO_11073_CERT_DATA_UUID      0x2A2A    // IEEE 11073-20601 Regulatory Certification Data List
+        78 1:#define DEVINFO_PNP_ID_UUID               0x2A50    // PnP ID
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Proximity</data_set_name>
+    <uuid>0x1500</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Link Loss Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1501</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Immediate Alert Service</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1502</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Tx Power Level Service</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1505</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Proximity Alert Level</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x1506</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Proximity Tx Power Level</udsc>                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\Proximity\proxperiph.h
+        62 1:#define LINK_LOSS_SERVICE_UUID          0x1500
+        63 1:#define IMMEDIATE_ALERT_SERVICE_UUID    0x1501
+        64 1:#define TX_PWR_LEVEL_SERVICE_UUID       0x1502
+        67 1:#define PROXIMITY_ALERT_LEVEL_UUID      0x1505
+        68 1:#define PROXIMITY_TX_PWR_LEVEL_UUID     0x1506
+      File \Projects\ble\Profiles\Proximity\proxreporter.h
+        62 1:#define LINK_LOSS_SERVICE_UUID          0x1803
+        63 1:#define IMMEDIATE_ALERT_SERVICE_UUID    0x1802
+        64 1:#define TX_PWR_LEVEL_SERVICE_UUID       0x1804
+        67 1:#define PROXIMITY_ALERT_LEVEL_UUID      0x2A06
+        68 1:#define PROXIMITY_TX_PWR_LEVEL_UUID     0x2A07
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Register</data_set_name>
+    <uuid>0xF000AC0004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Register Service</udsc>                         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AC0104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Register Data</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AC0204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Register Address</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AC0304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Register Device ID</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      CC2650 SensorTag User Guide
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - RSC</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\RSC\runningservice.h
+        77 1:#define RSC_SERV_UUID               0x1814
+        78 1:#define RSC_MEAS_UUID               0x2A53
+        79 1:#define RSC_FEATURE_UUID            0x2A54
+        80 1:#define RSC_SENS_LOC_UUID           0x2A5D
+        81 1:#define RSC_COMMAND_UUID            0x2A55
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - ScanParam</data_set_name>
+    <!-- 
+      File \Projects\ble\Profiles\ScanParam\scanparamservice.h
+        57 1:#define SCAN_PARAM_SERVICE_UUID           0x1813
+        58 1:#define SCAN_INTERVAL_WINDOW_UUID         0x2A4F
+        59 1:#define SCAN_PARAM_REFRESH_UUID           0x2A31
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - SensorProfile</data_set_name>
+    <!-- IR Temperature -->
+    <uuid>0xF000AA0004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Service</udsc> <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA0104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Data</udsc>    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA0204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Config</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA0304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Period</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Accelerometer -->
+    <uuid>0xF000AA1004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Service</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA1104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Data</udsc>     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA1204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Config</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA1304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Period</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Humidity -->
+    <uuid>0xF000AA2004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Service</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA2104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Data</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA2204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Config</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA2304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Period</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Magnetometer  -->
+    <uuid>0xF000AA3004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Service</udsc>   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA3104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Data</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA3204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Config</udsc>    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA3304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Period</udsc>    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Barometer -->
+    <uuid>0xF000AA4004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Service</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA4104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Data</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA4204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Configuration</udsc><vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA4304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Calibration</udsc>  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA4404514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Period</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Gyroscope -->
+    <uuid>0xF000AA5004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Service</udsc>      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA5104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Data</udsc>         <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA5204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Config</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA5304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Period</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Test -->
+    <uuid>0xF000AA6004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Service</udsc>           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA6104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Data</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA6204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Config</udsc>            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- IO Service -->
+    <uuid>0xF000AA6404514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IO Service</udsc>             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA6504514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IO Data</udsc>                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA6604514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IO Config</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Optical -->
+    <uuid>0xF000AA7004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Opticalt Service</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA7104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Opticalt Data</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA7204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Opticalt Config</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA7304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Opticalt Period</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- Movement -->                                                                                                                 
+    <uuid>0xF000AA8004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Movement Service</udsc>       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA8104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Movement Data</udsc>          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA8204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Movement Config</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000AA8304514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Movement Period</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <!-- 
+      File \Projects\ble\Profiles\SensorProfile\accelerometerservice.h
+        62 1:#define ACCELEROMETER_SERV_UUID         0xAA10  // F0000000-0451-4000-B000-00000000-AA10
+        63 1:#define ACCELEROMETER_DATA_UUID         0xAA11
+        64 1:#define ACCELEROMETER_CONF_UUID         0xAA12
+        65 1:#define ACCELEROMETER_PERI_UUID         0xAA13
+      File \Projects\ble\Profiles\SensorProfile\barometerservice.h
+        61 1:#define BAROMETER_SERV_UUID             0xAA40  // F0000000-0451-4000-B000-00000000-AA40
+        62 1:#define BAROMETER_DATA_UUID             0xAA41
+        63 1:#define BAROMETER_CONF_UUID             0xAA42
+        64 1:#define BAROMETER_CALI_UUID             0xAA43
+      File \Projects\ble\Profiles\SensorProfile\gyroservice.h
+        61 1:#define GYROSCOPE_SERV_UUID             0xAA50 // F0000000-0451-4000-B000-00000000-AA50
+        62 1:#define GYROSCOPE_DATA_UUID             0xAA51
+        63 1:#define GYROSCOPE_CONF_UUID             0xAA52
+      File \Projects\ble\Profiles\SensorProfile\humidityservice.h
+        61 1:#define HUMIDITY_SERV_UUID              0xAA20  // F0000000-0451-4000-B000-00000000-AA20
+        62 1:#define HUMIDITY_DATA_UUID              0xAA21
+        63 1:#define HUMIDITY_CONF_UUID              0xAA22
+      File \Projects\ble\Profiles\SensorProfile\irtempservice.h
+        61 1:#define IRTEMPERATURE_SERV_UUID         0xAA00  // F0000000-0451-4000-B000-00000000-AA00
+        62 1:#define IRTEMPERATURE_DATA_UUID         0xAA01
+        63 1:#define IRTEMPERATURE_CONF_UUID         0xAA02
+      File \Projects\ble\Profiles\SensorProfile\magnetometerservice.h
+        62 1:#define MAGNETOMETER_SERV_UUID          0xAA30  // F0000000-0451-4000-B000-00000000-AA30
+        63 1:#define MAGNETOMETER_DATA_UUID          0xAA31
+        64 1:#define MAGNETOMETER_CONF_UUID          0xAA32
+        65 1:#define MAGNETOMETER_PERI_UUID          0xAA33
+      File \Projects\ble\Profiles\SensorProfile\testservice.h
+        61 1:#define TEST_SERV_UUID                  0xAA60 // F0000000-0451-4000-B000-00000000-AA60
+        62 1:#define TEST_DATA_UUID                  0xAA61
+        63 1:#define TEST_CONF_UUID                  0xAA62
+      File \Projects\ble\SensorTag\Source\devinfoservice-st.h
+        69 1:#define DEVINFO_SERV_UUID                 0x180A    // Service UUID
+        70 1:#define DEVINFO_SYSTEM_ID_UUID            0x2A23    // System ID
+        71 1:#define DEVINFO_MODEL_NUMBER_UUID         0x2A24    // Model Number String
+        72 1:#define DEVINFO_SERIAL_NUMBER_UUID        0x2A25    // Serial Number String
+        73 1:#define DEVINFO_FIRMWARE_REV_UUID         0x2A26    // Firmware Revision String
+        74 1:#define DEVINFO_HARDWARE_REV_UUID         0x2A27    // Hardware Revision String
+        75 1:#define DEVINFO_SOFTWARE_REV_UUID         0x2A28    // Software Revision String
+        76 1:#define DEVINFO_MANUFACTURER_NAME_UUID    0x2A29    // Manufacturer Name String
+        77 1:#define DEVINFO_11073_CERT_DATA_UUID      0x2A2A    // IEEE 11073-20601 Regulatory Certification Data List
+        78 1:#define DEVINFO_PNP_ID_UUID               0x2A50    // PnP ID
+
+        SensorTag User Guide
+        CC2650 SensorTag User Guide 
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Sensor Tag - Older</data_set_name>
+    <uuid>0xF0B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Service</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF0B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Data</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF0B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IR Temperature Config</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF1B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Service</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF1B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Data</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF1B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Config</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF1B3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Accelerometer Period</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF2B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Service</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF2B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Data</udsc>                                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF2B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Humidity Config</udsc>                                    <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF3B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Service</udsc>                               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF3B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Data</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF3B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Config</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF3B3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Magnetometer Period</udsc>                                <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF4B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF4B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Data</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF4B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Calibration</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF4B3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Barometer Configuration</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF5B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Service</udsc>                                  <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF5B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Data</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF5B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Gyroscope Config</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+
+    <uuid>0xF6B0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Service</udsc>                                       <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF6B1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Data</udsc>                                          <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF6B2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Test Config</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - ServiceUUID</data_set_name>
+    <uuid>0xFF10</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IM Alert Service</udsc>                                   <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFF11</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>IM Alert Level</udsc>                                     <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\ServiceUUID\imAlert_uuid.h
+        66 1:#define IM_ALERT_SERV_UUID           0xFF10
+        72 1:#define IM_ALERT_LEVEL_UUID          0xFF11
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - SimpleProfile</data_set_name>
+    <uuid>0xFFF0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Service</udsc>                             <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFF1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Char 1</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFF2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Char 2</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFF3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Char 3</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFF4</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Char 4</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xFFF5</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Simple Profile Char 5</udsc>                              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- 
+      File \Projects\ble\Profiles\SimpleProfile\simpleGATTprofile.h
+        64 1:#define SIMPLEPROFILE_SERV_UUID             0xFFF0
+        67 1:#define SIMPLEPROFILE_CHAR1_UUID            0xFFF1
+        68 1:#define SIMPLEPROFILE_CHAR2_UUID            0xFFF2
+        69 1:#define SIMPLEPROFILE_CHAR3_UUID            0xFFF3
+        70 1:#define SIMPLEPROFILE_CHAR4_UUID            0xFFF4
+        71 1:#define SIMPLEPROFILE_CHAR5_UUID            0xFFF5
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - SoftCmd</data_set_name>
+    <uuid>0xF011</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Generic Control Service</udsc>                            <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xE010</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Command Enumeration Characteristic</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xE011</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Generic Command Control Point</udsc>                      <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF010</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Command Enumeration Service</udsc>                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <!-- Collision
+    <uuid>0xE010</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Command Enumeration Characteristic</udsc>                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    -->
+    <!-- 
+      File \Projects\ble\SoftCmd\Source\softcmd.c
+        108 1:#define GEN_CTRL_SERVICE_UUID           0xF011  // Generic Control Service
+        109 1:#define CMD_ENUM_UUID                   0xE010  // Command Enumeration characteristic
+        110 1:#define GEN_CMD_UUID                    0xE011  // Generic Command Control Point
+      File \Projects\ble\Profiles\SoftCmd\cmdenumservice.h
+        59 1:#define CMD_ENUM_SERVICE_UUID           0xF010  // Command Enumeration Service
+        60 1:#define CMD_ENUM_UUID                   0xE010  // Command Enumeration characteristic
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Thermometer</data_set_name>
+    <!-- 
+      File \Projects\ble\Thermometer\Source\timeapp_discovery.c
+        56 1:#define CURRENT_TIME_SVC_UUID           0x1805
+        59 1:#define CT_TIME_UUID                    0x2A2B    // Time
+      File \Projects\ble\Profiles\Thermometer\thermometerservice.h
+        80 1:#define THERMOMETER_SERV_UUID            0x1809 //thermometer service
+        81 1:#define THERMOMETER_TEMP_UUID            0x2A1C //temperature
+        82 1:#define THERMOMETER_TYPE_UUID            0x2A1D //meas site, type
+        83 1:#define THERMOMETER_IMEAS_UUID           0x2A1E //immediate meas
+        84 1:#define THERMOMETER_INTERVAL_UUID        0x2A21 //meas interval
+        85 1:#define THERMOMETER_IRANGE_UUID          0x2906 //valid range UUID   
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - TimeApp</data_set_name>
+    <!-- 
+      File \Projects\ble\TimeApp\Source\timeapp.h
+        155 1:#define CURRENT_TIME_SVC_UUID           0x1805
+        156 1:#define REF_TIME_UPDATE_SVC_UUID        0x1806
+        157 1:#define DST_CHANGE_SVC_UUID             0x1807
+        158 1:#define NWA_SVC_UUID                    0x180B
+        159 1:#define ALERT_NOTIF_SVC_UUID            0x1811
+        160 1:#define PHONE_ALERT_STS_SVC_UUID        0x180E
+      File \Projects\ble\TimeApp\Source\timeapp_discovery.c
+        57 1:#define CT_TIME_UUID                    0x2A2B    // Time
+        58 1:#define LOCAL_TIME_INFO_UUID            0x2A0F    // Local Time Information
+        59 1:#define TIME_WITH_DST_UUID              0x2A11    // Time with DST
+        60 1:#define REF_TIME_INFO_UUID              0x2A14    // Reference Time Information
+        61 1:#define TIME_UPDATE_CTRL_UUID           0x2A16    // Time Update Control Point
+        62 1:#define TIME_UPDATE_STATE_UUID          0x2A17    // Time Update State
+        63 1:#define NETWORK_AVAIL_UUID              0x2A3E    // Network Availability
+        64 1:#define ALERT_STATUS_UUID               0x2A3F    // Alert Status
+        65 1:#define RINGER_CP_UUID                  0x2A40    // Ringer Control Point
+        66 1:#define RINGER_SETTING_UUID             0x2A41    // Ringer Setting
+        67 1:#define ALERT_NOTIF_CP_UUID             0x2A44    // Alert Notification Control Point
+        68 1:#define UNREAD_ALERT_STATUS_UUID        0x2A45    // Unread Alert Status
+        69 1:#define NEW_ALERT_UUID                  0x2A46    // New Alert
+        70 1:#define SUP_NEW_ALERT_CAT_UUID          0x2A47    // Supported New Alert Category
+        71 1:#define SUP_UNREAD_ALERT_CAT_UUID       0x2A48    // Supported Unread Alert Category
+    -->
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Racing Car</data_set_name>
+    <uuid>0xACC0</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Racing Car Service</udsc>                                 <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xACC1</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Throttle</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xACC2</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Steering</udsc>                                           <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xACC3</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Lights/Horn</udsc>                                        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Database Services And Values</data_set_name>
+    <uuid>0xA00A                            </uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service A</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB001                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V1</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB002                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V2</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB003                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V3</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00B                            </uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service B</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB004                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V4</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB005                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V5</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB006                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V6</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB007                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V7</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB008                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V8</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000D5D4000000000123456789ABCDEF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Descriptor V5D4</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000A00C000000000123456789ABCDEF</uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service C</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000B009000000000123456789ABCDEF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V9</udsc>               <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00A                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V10</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000D9D2000000000123456789ABCDEF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Descriptor V9D2</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000D9D3000000000123456789ABCDEF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Descriptor V9D3</udsc>        <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00D                            </uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service D</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0x0000B00B000000000123456789ABCDEF</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V11</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00C                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V12</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xA00E                            </uuid><indl>2</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Service E</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xB00D                            </uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Value V13</udsc>              <vdsc></vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+  <data_set>
+    <data_set_name>TI Profile - Project Zero LED Service</data_set_name>
+    <uuid>0xF000111004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>LED Service</udsc>            <vdsc>Project Zero LED Service</vdsc>                     <fore>Black</fore><back>White</back> 
+    <uuid>0xF000111104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>LED0 State</udsc>             <vdsc>Send 00 to turn off, higher values to turn on</vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000111204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>LED1 State</udsc>             <vdsc>Send 00 to turn off, higher values to turn on</vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <data_set>
+    <data_set_name>TI Profile - Project Zero Button Service</data_set_name>
+    <uuid>0xF000112004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Button Service</udsc>         <vdsc>Project Zero Button Service</vdsc>                    <fore>Black</fore><back>White</back> 
+    <uuid>0xF000112104514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>BUTTON0 State</udsc>          <vdsc>Read or enable notification to get button state</vdsc><fore>Black</fore><back>White</back> 
+    <uuid>0xF000112204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>BUTTON1 State</udsc>          <vdsc>Read or enable notification to get button state</vdsc><fore>Black</fore><back>White</back> 
+  </data_set>
+  <data_set>
+    <data_set_name>TI Profile - Project Zero Data Service</data_set_name>
+    <uuid>0xF000113004514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Data Service</udsc>           <vdsc>Project Zero Data Service</vdsc>            <fore>Black</fore><back>White</back> 
+    <uuid>0xF000113104514000B000000000000000</uuid><indl>4</indl><vdsp>Asc</vdsp><vedt>Edit</vedt><udsc>String Char</udsc>            <vdsc>Send/receive up to 40 byte strings</vdsc>   <fore>Black</fore><back>White</back> 
+    <uuid>0xF000113204514000B000000000000000</uuid><indl>4</indl><vdsp>Hex</vdsp><vedt>Edit</vedt><udsc>Stream Char</udsc>            <vdsc>Stream with Notification/WriteNoRsp</vdsc>  <fore>Black</fore><back>White</back> 
+  </data_set>
+  <!-- ***************************************************************************************************************** -->
+
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+  <!-- GATT Uuid Value Matching Value Descriptions --> 
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+  <vmatch_data_set>
+  <vmatch_set_name>GATT Service UUIDs</vmatch_set_name>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1800</value><vdsc>Generic Access</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1801</value><vdsc>Generic Attribute</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1802</value><vdsc>Immediate Alert</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1803</value><vdsc>Link Loss</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1804</value><vdsc>Tx Power</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1805</value><vdsc>Current Time Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1806</value><vdsc>Reference Time Update Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1807</value><vdsc>Next DST Change Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1808</value><vdsc>Glucose</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1809</value><vdsc>Health Thermometer</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x180A</value><vdsc>Device Information</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x180B</value><vdsc>Network Availability Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x180D</value><vdsc>Heart Rate</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x180E</value><vdsc>Phone Alert Status Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x180F</value><vdsc>Battery Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1810</value><vdsc>Blood Pressure</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1811</value><vdsc>Alert Notification Service</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1812</value><vdsc>Human Interface Device</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1813</value><vdsc>Scan Parameters</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1814</value><vdsc>Running Speed and Cadence</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1815</value><vdsc>Automation IO</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1816</value><vdsc>Cycling Speed and Cadence</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1818</value><vdsc>Cycling Power</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x1819</value><vdsc>Location and Navigation</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181A</value><vdsc>Environmental Sensing</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181B</value><vdsc>Body Composition</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181C</value><vdsc>User Data</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181D</value><vdsc>Weight Scale</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181E</value><vdsc>Bond Management</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0x181F</value><vdsc>Continuous Glucose Monitoring</vdsc>
+    <!-- 
+      File C:\git\ble_examples\src\inc\gatt_profile_uuid.h
+      /**
+       * GATT Service UUIDs
+       */
+      #define IMMEDIATE_ALERT_SERV_UUID       0x1802  // Immediate Alert
+      #define LINK_LOSS_SERV_UUID             0x1803  // Link Loss
+      #define TX_PWR_LEVEL_SERV_UUID          0x1804  // Tx Power
+      #define CURRENT_TIME_SERV_UUID          0x1805  // Current Time Service
+      #define REF_TIME_UPDATE_SERV_UUID       0x1806  // Reference Time Update Service
+      #define NEXT_DST_CHANGE_SERV_UUID       0x1807  // Next DST Change Service
+      #define GLUCOSE_SERV_UUID               0x1808  // Glucose
+      #define THERMOMETER_SERV_UUID           0x1809  // Health Thermometer
+      #define DEVINFO_SERV_UUID               0x180A  // Device Information
+      #define NWA_SERV_UUID                   0x180B  // Network Availability
+      #define HEARTRATE_SERV_UUID             0x180D  // Heart Rate
+      #define PHONE_ALERT_STS_SERV_UUID       0x180E  // Phone Alert Status Service
+      #define BATT_SERV_UUID                  0x180F  // Battery Service
+      #define BLOODPRESSURE_SERV_UUID         0x1810  // Blood Pressure
+      #define ALERT_NOTIF_SERV_UUID           0x1811  // Alert Notification Service
+      #define HID_SERV_UUID                   0x1812  // Human Interface Device
+      #define SCAN_PARAM_SERV_UUID            0x1813  // Scan Parameters
+      #define RSC_SERV_UUID                   0x1814  // Running Speed and Cadence
+      #define CSC_SERV_UUID                   0x1816  // Cycling Speed and Cadence
+      #define CYCPWR_SERV_UUID                0x1818  // Cycling Power
+      #define LOC_NAV_SERV_UUID               0x1819  // Location and Navigation
+    -->
+  </vmatch_data_set>
+  <!-- ***************************************************************************************************************** -->
+  <vmatch_data_set>
+  <vmatch_set_name>Project Zero</vmatch_set_name>
+    <uuid>0x2800</uuid><rval>N</rval><value>0xF000111004514000B000000000000000</value><vdsc>Project Zero LED Service Declaration</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0xF000112004514000B000000000000000</value><vdsc>Project Zero Button Service Declaration</vdsc>
+    <uuid>0x2800</uuid><rval>N</rval><value>0xF000113004514000B000000000000000</value><vdsc>Project Zero Data Service Declaration</vdsc>
+
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000111104514000B000000000000000</value><vdsc>LED0 State Declaration</vdsc>
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000111204514000B000000000000000</value><vdsc>LED1 State Declaration</vdsc>
+                                                                              
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000112104514000B000000000000000</value><vdsc>BUTTON0 State Declaration</vdsc>
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000112204514000B000000000000000</value><vdsc>BUTTON1 State Declaration</vdsc>
+                                                                              
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000113104514000B000000000000000</value><vdsc>String Characteristic Declaration</vdsc>
+    <uuid>0x2803</uuid><rval>N</rval><value>0xF000113204514000B000000000000000</value><vdsc>Stream Characteristic Declaration</vdsc>
+  </vmatch_data_set>
+  <!-- ***************************************************************************************************************** -->
+  <!-- 
+  Add more UUID Value Keys Like This
+  <vmatch_data_set>
+    <vmatch_set_name>Your Data Set Name</vmatch_set_name>
+    <uuid>0x1234</uuid><rval>N</rval><value>0x5678</value><vdsc>Your value description here</vdsc>
+    <uuid>0x1234</uuid><rval>N</rval><value>0x90AB</value><vdsc>Another value description here</vdsc>
+  </vmatch_data_set>
+  -->
+  <!-- ***************************************************************************************************************** -->
+</btool_gatt_uuid>
+
+<!--
+************************************************************************************************************************
+Valid Color Names:
+
+AliceBlue
+AntiqueWhite
+Aqua
+Aquamarine
+Azure
+Beige
+Bisque
+Black
+BlanchedAlmond
+Blue
+BlueViolet
+Brown
+BurlyWood
+CadetBlue
+Chartreuse
+Chocolate
+Coral
+CornflowerBlue
+Cornsilk
+Crimson
+Cyan
+DarkBlue
+DarkCyan
+DarkGoldenrod
+DarkGray
+DarkGreen
+DarkKhaki
+DarkMagenta
+DarkOliveGreen
+DarkOrange
+DarkOrchid
+DarkRed
+DarkSalmon
+DarkSeaGreen
+DarkSlateBlue
+DarkSlateGray
+DarkTurquoise
+DarkViolet
+DeepPink
+DeepSkyBlue
+DimGray
+DodgerBlue
+Firebrick
+FloralWhite
+ForestGreen
+Fuchsia
+Gainsboro
+GhostWhite
+Gold
+Goldenrod
+Gray
+Green
+GreenYellow
+Honeydew
+HotPink
+IndianRed
+Indigo
+Ivory
+Khaki
+Lavender
+LavenderBlush
+LawnGreen
+LemonChiffon
+LightBlue
+LightCoral
+LightCyan
+LightGoldenrodYellow
+LightGray
+LightGreen
+LightPink
+LightSalmon
+LightSeaGreen
+LightSkyBlue
+LightSlateGray
+LightSteelBlue
+LightYellow
+Lime
+LimeGreen
+Linen
+Magenta
+Maroon
+MediumAquamarine
+MediumBlue
+MediumOrchid
+MediumPurple
+MediumSeaGreen
+MediumSlateBlue
+MediumSpringGreen
+MediumTurquoise
+MediumVioletRed
+MidnightBlue
+MintCream
+MistyRose
+Moccasin
+NavajoWhite
+Navy
+OldLace
+Olive
+OliveDrab
+Orange
+OrangeRed
+Orchid
+PaleGoldenrod
+PaleGreen
+PaleTurquoise
+PaleVioletRed
+PapayaWhip
+PeachPuff
+Peru
+Pink
+Plum
+PowderBlue
+Purple
+Red
+RosyBrown
+RoyalBlue
+SaddleBrown
+Salmon
+SandyBrown
+SeaGreen
+SeaShell
+Sienna
+Silver
+SkyBlue
+SlateBlue
+SlateGray
+Snow
+SpringGreen
+SteelBlue
+Tan
+Teal
+Thistle
+Tomato
+Turquoise
+Violet
+Wheat
+White
+WhiteSmoke
+Yellow
+YellowGreen
+************************************************************************************************************************
+-->
+

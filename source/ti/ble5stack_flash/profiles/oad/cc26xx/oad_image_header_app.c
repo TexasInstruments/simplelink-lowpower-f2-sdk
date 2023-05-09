@@ -99,7 +99,7 @@ extern const uint8_t  ENTRY_START;
 #pragma section = "ROSTK"
 #pragma section = "RWDATA"
 #pragma section = "ENTRY_FLASH"
-#pragma section = ".intvec"
+#pragma section = ".resetVecs"
 #endif
 
 #ifndef __IAR_SYSTEMS_ICC__
@@ -201,7 +201,7 @@ const imgHdr_t _imgHdr @ ".img_hdr" =
     .softVer = SOFTWARE_VER,               //!< Software version of the image */
     .hdrLen = offsetof(imgHdr_t, fixedHdr.rfu) + sizeof(((imgHdr_t){0}).fixedHdr.rfu),   //!< Total length of the image header */
     .rfu = 0xFFFF,                         //!< reserved bytes */
-    .prgEntry = (uint32_t)(__section_begin(".intvec")), //!< Program entry address */
+    .prgEntry = (uint32_t)(__section_begin(".resetVecs")), //!< Program entry address */
     .imgEndAddr = (uint32_t)(__section_end("ROSTK")),
 #if (!defined(STACK_LIBRARY) && (defined(SPLIT_APP_STACK_IMAGE)))
     .imgType = OAD_IMG_TYPE_APP,

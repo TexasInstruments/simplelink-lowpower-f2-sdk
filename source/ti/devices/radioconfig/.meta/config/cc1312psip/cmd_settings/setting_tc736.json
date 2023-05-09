@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "100 kbps, 2-GFSK, 50 kHz deviation WiSUN mode #2b compatible PHY. (Pre-Silicon)",
+        "Name": "Wi-SUN mode #2b, 100 kbps, 50 kHz Deviation, 2-GFSK, 196 kHz RX Bandwidth",
+        "Description": "100 kbps, 2-GFSK, 50 kHz deviation WiSUN mode #2b compatible PHY.",
         "Frequency": "920.9",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -178,7 +178,7 @@
                                 }
                             },
                             {
-                                "_name": "override_tc736_tc737.json",
+                                "_name": "override_tc736.json",
                                 "Element32b": [
                                     {
                                         "_type": "ELEMENT",
@@ -222,7 +222,7 @@
                                     },
                                     {
                                         "_type": "ELEMENT",
-                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -1 dB (default: -2), trimmed for external bias and differential configuration",
+                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -1 dB at 779-930 MHz",
                                         "$": "0x000188A3"
                                     },
                                     {
@@ -231,6 +231,14 @@
                                         "$": "0,61,0xF,0xA"
                                     }
                                 ]
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
+                                }
                             },
                             {
                                 "_name": "override_patable_14dbm.json",

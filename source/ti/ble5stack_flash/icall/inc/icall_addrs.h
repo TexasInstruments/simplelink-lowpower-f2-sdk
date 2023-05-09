@@ -139,6 +139,8 @@ extern void startup_entry( const ICall_RemoteTaskArg *arg0, void *arg1 );
  */
 #ifdef CC23X0
 #define ICALL_TASK_STACK_SIZES { 1500 }
+#elif defined ( CC2651P3_LP ) || defined ( CC2651R3SIPA_LP )
+#define ICALL_TASK_STACK_SIZES { 2048 }
 #else
 #define ICALL_TASK_STACK_SIZES { 4096 }
 #endif

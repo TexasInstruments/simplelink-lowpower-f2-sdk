@@ -503,6 +503,7 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   LP_CC2652RB: [
     {target: "CC26X2R1_LAUNCHXL"},
@@ -512,6 +513,7 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   LP_CC2652PSIP: [
     {target: "LP_CC2652PSIP"},
@@ -525,6 +527,13 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
+  ],
+  LP_EM_CC1354P10_1: [
+    {target: "LP_EM_CC1354P10_1"},
+  ],
+  LP_EM_CC1354P10_6: [
+    {target: "LP_EM_CC1354P10_6"},
   ],
 
   //Devices
@@ -546,6 +555,17 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
+  ],
+  CC2642R1FRTC: [
+    {target: "CC26X2R1_LAUNCHXL"},
+    {target: "LP_CC2652RSIP"},
+    {target: "LP_CC2652RB"},
+    {target: "CC2652RB1FRGZ"},
+    {target: "CC2652R1FRGZ"},
+    {target: "CC2642R1FRGZ"},
+    {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   CC2652R1FRGZ: [
     {target: "CC26X2R1_LAUNCHXL"},
@@ -555,6 +575,7 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   CC2652RB1FRGZ: [
     {target: "CC26X2R1_LAUNCHXL"},
@@ -564,6 +585,7 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   CC2652R1FSIP: [
     {target: "CC26X2R1_LAUNCHXL"},
@@ -573,10 +595,19 @@ const supportedMigrations = {
     {target: "CC2652R1FRGZ"},
     {target: "CC2642R1FRGZ"},
     {target: "CC2652R1FSIP"},
+    {target: "CC2642R1FRTC"},
   ],
   CC2652P1FSIP: [
     {target: "CC2652P1FSIP"},
     {target: "LP_CC2652PSIP"},
+  ],
+  "CC1354P10RSK": [
+    {target: "CC1354P10RSK"},
+    {target: "CC1354P10RGZ"},
+  ],
+  "CC1354P10RGZ": [
+    {target: "CC1354P10RGZ"},
+    {target: "CC1354P10RSK"},
   ]
 };
 
@@ -1206,6 +1237,11 @@ function getRadioScript(rfDesign, deviceId)
             + "CC1352R1_LAUNCHXL_rf_defaults.js");
     }
     else if(deviceId === "CC2642R1FRGZ")
+    {
+        radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+            + "CC26X2R1_LAUNCHXL_rf_defaults.js");
+    }
+    else if(deviceId === "CC2642R1FRTC")
     {
         radioSettings = system.getScript("/ti/ble5stack/rf_config/"
             + "CC26X2R1_LAUNCHXL_rf_defaults.js");

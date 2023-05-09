@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../rfWakeOnRadioRx.syscfg -> rfWakeOnRadioRx.syscfg",
+            "+../rfWakeOnRadioRx_nortos.c -> rfWakeOnRadioRx_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/gcc/cc13x2x7_cc26x2x7_nortos.lds -> cc13x2x7_cc26x2x7_nortos.lds"
+        ]
+    }
+]

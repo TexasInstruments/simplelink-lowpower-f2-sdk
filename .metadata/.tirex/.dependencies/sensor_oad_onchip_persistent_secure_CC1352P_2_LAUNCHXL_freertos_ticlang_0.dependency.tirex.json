@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor_oad_onchip_persistent.opts -> application/defines/sensor_oad_onchip_persistent.opts",
+            "+../sensor_oad_onchip_persistent.syscfg -> sensor_oad_onchip_persistent.syscfg",
+            "+cc13x2_cc26x2_oad_onchip.cmd -> cc13x2_cc26x2_oad_onchip.cmd"
+        ]
+    }
+]

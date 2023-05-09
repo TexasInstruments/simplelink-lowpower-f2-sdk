@@ -76,12 +76,14 @@ extern "C"
 #define NULL_OK
 #define INP
 #define OUTP
-#define UNUSED
 #define ONLY
 #define READONLY
 #define SHARED
 #define KEEP
 #define RELAX
+#ifndef UNUSED
+  #define UNUSED
+#endif
 
 /*********************************************************************
  * CONSTANTS

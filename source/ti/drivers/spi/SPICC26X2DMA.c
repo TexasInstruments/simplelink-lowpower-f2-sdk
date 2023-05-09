@@ -243,8 +243,7 @@ int_fast16_t SPICC26X2DMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
             /* Reset the previous CS pin and configure the new one */
             GPIO_resetConfig(object->csnPin);
             object->csnPin = pinIndex;
-            GPIO_setConfig(object->csnPin, GPIO_CFG_INPUT);
-            GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
+            GPIO_setConfigAndMux(object->csnPin, GPIO_CFG_INPUT, hwAttrs->csnPinMux);
 
             ret = SPI_STATUS_SUCCESS;
             break;
@@ -1319,30 +1318,21 @@ static void initIO(SPI_Handle handle)
     SPICC26X2DMA_Object *object         = handle->object;
     SPICC26X2DMA_HWAttrs const *hwAttrs = handle->hwAttrs;
 
-    /* Make sure all pins have their input buffers enabled */
-    GPIO_setConfig(hwAttrs->clkPin, GPIO_CFG_INPUT);
-    GPIO_setConfig(object->csnPin, GPIO_CFG_INPUT);
+    GPIO_setConfigAndMux(hwAttrs->clkPin, GPIO_CFG_INPUT, hwAttrs->clkPinMux);
+    GPIO_setConfigAndMux(object->csnPin, GPIO_CFG_INPUT, hwAttrs->csnPinMux);
 
     if (object->mode == SPI_PERIPHERAL)
     {
-        GPIO_setConfig(hwAttrs->picoPin, GPIO_CFG_INPUT);
-        GPIO_setConfig(hwAttrs->pociPin, GPIO_CFG_NO_DIR);
-        GPIO_setMux(hwAttrs->picoPin, hwAttrs->rxPinMux);
-        GPIO_setMux(hwAttrs->pociPin, hwAttrs->txPinMux);
-        GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
+        GPIO_setConfigAndMux(hwAttrs->picoPin, GPIO_CFG_INPUT, hwAttrs->rxPinMux);
+        GPIO_setConfigAndMux(hwAttrs->pociPin, GPIO_CFG_NO_DIR, hwAttrs->txPinMux);
 
-        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
         GPIO_setCallback(object->csnPin, csnCallback);
         GPIO_setUserArg(object->csnPin, handle);
     }
     else
     {
-        GPIO_setConfig(hwAttrs->picoPin, GPIO_CFG_NO_DIR);
-        GPIO_setConfig(hwAttrs->pociPin, GPIO_CFG_INPUT);
-        GPIO_setMux(hwAttrs->picoPin, hwAttrs->txPinMux);
-        GPIO_setMux(hwAttrs->pociPin, hwAttrs->rxPinMux);
-        GPIO_setMux(hwAttrs->clkPin, hwAttrs->clkPinMux);
-        GPIO_setMux(object->csnPin, hwAttrs->csnPinMux);
+        GPIO_setConfigAndMux(hwAttrs->picoPin, GPIO_CFG_NO_DIR, hwAttrs->txPinMux);
+        GPIO_setConfigAndMux(hwAttrs->pociPin, GPIO_CFG_INPUT, hwAttrs->rxPinMux);
     }
 }
 

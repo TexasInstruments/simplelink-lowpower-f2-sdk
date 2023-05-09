@@ -61,7 +61,7 @@ extern "C"
  * MACROS
  */
 
-#ifdef DeviceFamily_CC23X0
+#ifdef DeviceFamily_CC23X0R5
 #define RED_LED    14
 #define GREEN_LED  15
 #else

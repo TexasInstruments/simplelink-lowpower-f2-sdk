@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../../console.c -> console.c",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../portable.syscfg -> portable.syscfg",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../temperature.c -> temperature.c"
+        ]
+    }
+]

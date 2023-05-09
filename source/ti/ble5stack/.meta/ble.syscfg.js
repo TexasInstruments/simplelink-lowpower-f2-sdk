@@ -416,9 +416,6 @@ function ondeviceRoleChange(inst,ui)
             // Hide disablePairing
             ui.disablePairing.hidden = true;
         }
-
-        // Change Device Name
-        inst.deviceRole == "BROADCASTER_CFG" ? inst.deviceName = "Simple Broadcaster": inst.deviceName = "Simple Observer";
     }
     else
     {
@@ -430,20 +427,6 @@ function ondeviceRoleChange(inst,ui)
         {
             // Show disablePairing
             ui.disablePairing.hidden = false;
-        }
-
-        // Change Device Name
-        if(inst.deviceRole == "PERIPHERAL_CFG")
-        {
-            inst.deviceName = "Simple Peripheral";
-        }
-        else if(inst.deviceRole == "CENTRAL_CFG")
-        {
-            inst.deviceName = "Simple Central";
-        }
-        else
-        {
-            inst.deviceName = "Multi Role";
         }
     }
 
@@ -592,12 +575,12 @@ function onMeshChange(inst,ui)
     if(inst.mesh)
     {
         ui.meshApp.hidden = false;
-        ui.nwpMode.hidden = false;
+        // ui.nwpMode.hidden = false;
     }
     else
     {
         ui.meshApp.hidden = true;
-        ui.nwpMode.hidden = true;
+        // ui.nwpMode.hidden = true;
     }
 
     // Disable the option to configure proxy when mesh+sp app is used
@@ -878,7 +861,7 @@ function getLibs(inst)
                 libs.push(GenLibs.libPath("ti/mesh/ti/kernel/tirtos", "zephyr.a"));
             }
         }
-        libs.push(GenLibs.libPath("third_party/erpc/ti", "erpc_tirtos_release.a"));
+        // libs.push(GenLibs.libPath("third_party/erpc/ti", "erpc_tirtos_release.a"));
     }
 
     // Create a GenLibs input argument

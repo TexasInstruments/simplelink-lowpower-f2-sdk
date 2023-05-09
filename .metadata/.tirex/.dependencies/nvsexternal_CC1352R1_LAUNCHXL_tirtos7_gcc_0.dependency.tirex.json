@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../nvsexternal.c -> nvsexternal.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../nvsexternal.syscfg -> nvsexternal.syscfg",
+            "+../../../../../../../source/ti/boards/CC1352R1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.lds -> cc13x2_cc26x2_tirtos7.lds"
+        ]
+    }
+]

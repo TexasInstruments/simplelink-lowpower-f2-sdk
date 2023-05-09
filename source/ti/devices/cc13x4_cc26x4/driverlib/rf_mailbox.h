@@ -3,7 +3,7 @@
 *
 *  Description:    Definitions for interface between system and radio CPU
 *
-*  Copyright (c) 2015 - 2020, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2023, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -328,6 +328,7 @@ typedef struct {
 #define HPOSC_OVERRIDE(freqOffset) (0x000B | ((freqOffset) << 16))
 #define TX20_POWER_OVERRIDE(tx20Power) (0x002B | (((uint32_t) tx20Power) << 10))
 #define TX_STD_POWER_OVERRIDE(txPower) (0x022B | (((uint32_t) txPower) << 10))
+#define TXSUB1_POWER_OVERRIDE(txSub1Power) TX_STD_POWER_OVERRIDE(txSub1Power)
 #define MCE_RFE_SPLIT_OVERRIDE(mceRxCfg, mceTxCfg, rfeRxCfg, rfeTxCfg) \
     (0x003B | ((mceRxCfg) << 12) | ((mceTxCfg) << 17) | ((rfeRxCfg) << 22) | ((rfeTxCfg) << 27))
 #define CENTER_FREQ_OVERRIDE(centerFreq, flags) (0x004B | ((flags & 0x03) << 18) | \

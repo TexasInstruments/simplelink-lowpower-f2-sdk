@@ -2,7 +2,7 @@
 
  @file dmm_scheduler.h
 
- @brief Dual Mode Manager Scheduler
+ @brief DMM Scheduler
 
  Group: WCS LPC
  Target Device: cc13xx_cc26xx
@@ -72,27 +72,27 @@
 /*!****************************************************************************
  *  @file  dmm_scheduler.h
  *
- *  @brief      Dual Mode Manager Scheduler
- *  
- *  DMM enables devices to run multiple wireless protocol stacks concurrently. 
- *  The DMMSch is to enable concurrent operation of multiple stacks with minimized conflicts 
- *  so that it does not cause significant performance degradation.  
- *  The DMMSch uses Application Level, Stack Level information, and Global Priority Table (GPT) when scheduling a command. 
+ *  @brief      DMM Scheduler
+ *
+ *  DMM enables devices to run multiple wireless protocol stacks concurrently.
+ *  The DMMSch module enables concurrent operation of multiple stacks with minimized conflicts
+ *  so that it does not cause significant performance degradation.
+ *  The DMMSch uses Application Level, Stack Level information, and Global Priority Table (GPT) when scheduling a command.
  *  Stack Level information (provided by stack) is embedded in each RF command and it includes:
- *  - Start Type, Start Time, AllowDelay, Priority, Activity, etc.  
+ *  - Start Type, Start Time, AllowDelay, Priority, Activity, etc.
  *  Application Level information (provided by User via the Policy Table) includes:
- *  - Application State Name, Weight, AppliedActivity, Pause, etc.   
+ *  - Application State Name, Weight, AppliedActivity, Pause, etc.
  *  Global Priority Table (GPT)
  *  - GPT defines relative priorities of the two stacks
  *  The DMMSch uses Start Type, Start Time, and AllowDelay (Stack Level Information) when scheduling a RF command
- *  and tries to avoid a conflict by delaying the command if allowed. 
- *  When a command conflicts with another (during scheduling or execution), 
+ *  and tries to avoid a conflict by delaying the command if allowed.
+ *  When a command conflicts with another (during scheduling or execution),
  *  The DMMSch selects one command over the other based on the final priority of two commands as below:
- *  Final Priority = GPT (Stack level priority) +  weight (Application Level) 
- * 
+ *  Final Priority = GPT (Stack level priority) +  weight (Application Level)
+ *
  *  # DMMSch API #
  *
- *  To use the DMMSch module to schedule a tacks RF commands, the application
+ *  To use the DMMSch module to schedule a stack's RF commands, the application
  *  calls the following APIs:
  *    - DMMSch_init(): Initialize the DMMSch module/task.
  *    - DMMSch_Params_init():  Initialize a DMMSch_Params structure
@@ -100,20 +100,20 @@
  *      values as needed.
  *    - DMMSch_open():  Open an instance of the DMMSch module,
  *      passing the initialized parameters.
- *    - Stack A application - DMMSch_registerClient: Passes Task_Handle and StackRole so 
- * 							  DMMSch can map the Task_Handle to the stack role 
- *    - Stack A application - Rf_open -> DMMSch_rfOpen: DMMSch overwrites the RF_Mode and 
+ *    - Stack A application - DMMSch_registerClient(): Passes Task_Handle and StackRole so
+ * 							  DMMSch can map the Task_Handle to the stack role
+ *    - Stack A application - RF_open() -> DMMSch_rfOpen(): DMMSch overwrites the RF_Mode and
  *                            rf patches for multi-mode operation, maps RF Handle to the stack ID,
- *                            assigns phySwitchingTime for DMM operation. 
- *                            From this point, Task_Handle, StackRole, and Stack ID are all related. 
- *    - Stack B application - DMMSch_registerClient: Passes Task_Handle and StackRole so 
- * 							  DMMSch can map the Task_Handle to the stack role 
- *    - Stack B application - Rf_open -> DMMSch_rfOpen: Rf_open -> DMMSch_rfOpen: DMMSch overwrites the RF_Mode and 
+ *                            assigns phySwitchingTime for DMM operation.
+ *                            From this point, Task_Handle, StackRole, and Stack ID are all related.
+ *    - Stack B application - DMMSch_registerClient(): Passes Task_Handle and StackRole so
+ * 							  DMMSch can map the Task_Handle to the stack role
+ *    - Stack B application - RF_open() -> DMMSch_rfOpen(): DMMSch overwrites the RF_Mode and
  *                            rf patches for multi-mode operation, maps RF Handle to the stack ID,
- *                            assigns phySwitchingTime for DMM operation. 
- *                            From this point, Task_Handle, StackRole, and Stack ID are all related. 
- *    - Stack A application - RF_scheduleCmd -> DMMSch_rfScheduleCmd: DMMSch adjusted timing based on policy
- *    - Stack B application - RF_scheduleCmd -> DMMSch_rfScheduleCmd: DMMSch adjusted timing based on policy
+ *                            assigns phySwitchingTime for DMM operation.
+ *                            From this point, Task_Handle, StackRole, and Stack ID are all related.
+ *    - Stack A application - RF_scheduleCmd() -> DMMSch_rfScheduleCmd(): DMMSch adjusted timing based on policy
+ *    - Stack B application - RF_scheduleCmd() -> DMMSch_rfScheduleCmd(): DMMSch adjusted timing based on policy
  *
  *
  ********************************************************************************/
@@ -141,7 +141,7 @@ extern "C" {
  * @brief DMM Debug Logging
  * @anchor DMM_dbgLog
  *
- * Debugging for internal use only. 
+ * Debugging for internal use only.
  * @{
  */
 #define xDMM_DEBUG_LOGGING
@@ -177,16 +177,16 @@ typedef struct {
  */
 typedef enum
 {
-    DMM_NoConflict  = 0,        ///< used to define where there is no conflict in commands. 
-    DMM_ConflictWithPrev,       ///< used to define where there is a conflict with the previous command. 
-    DMM_ConflictWithNext,       ///< used to define where there is a conflict with the next command. 
-    DMM_ConfictWithBoth,        ///< used to define where there is a conflict with both previous and next command. 
+    DMM_NoConflict  = 0,        ///< No conflict in commands.
+    DMM_ConflictWithPrev,       ///< There is a conflict with the previous command.
+    DMM_ConflictWithNext,       ///< There is a conflict with the next command.
+    DMM_ConfictWithBoth,        ///< There is a conflict with both previous and next commands.
 } DMM_ConflictStatus;
 
 /*!
  * @brief Define to flush all commands
  *
- * Default option to flush all commands for a specific client for a conflict 
+ * Default option to flush all commands for a specific client for a conflict
  */
 #define CONFLICT_FLUSH_ALL       1
 
@@ -195,17 +195,20 @@ typedef enum
  *
  *  The function is invoked when a preemption occurs in DMM Scheduler.
  *
- *  The arguments are:
- *      - \a stackRolePreempted stack role for command was preempted.
+ * @param stackRolePreempted    Stack role for command was preempted.
  */
 typedef void (*DMMSch_PreemptionCb)(DMMPolicy_StackRole stackRolePreempted);
 
 /** @brief  Function to initialize the DMMSch_Params struct to its defaults
  *
- *  @param  params      An pointer to RF_Params structure for
- *                      initialization
+ *  @param  params      Pointer to DMMSch_Params structure for initialization
+ *
+ *  @note   Any initialized struct fields with invalid values must be further
+ *          initialized by the caller before calling DMMSch_open().
  *
  *  Defaults values are:
+ *    - invalid DMMSch_Params::stackRoles
+ *    - NULL DMMSch_Params::indexTable
  */
 extern void DMMSch_Params_init(DMMSch_Params *params);
 
@@ -220,9 +223,9 @@ extern void DMMSch_init(void);
  */
 extern void DMMSch_registerPreemptionCb(DMMSch_PreemptionCb dmmSchPreemptionCb);
 
-/** @brief  Function to open the DMMSch module
+/** @brief  Open the DMMSch module
  *
- *  @param  params      An pointer to RF_Params structure for initialization
+ *  @param  params      Pointer to initialized DMMSch_Params structure
  */
 extern void DMMSch_open(DMMSch_Params *params);
 
@@ -241,12 +244,12 @@ extern void DMMSch_registerClient(TaskHandle_t pTaskHndl, DMMPolicy_StackRole St
 /** @brief              Intercepts calls from a stack to RF_postCmd (re-mapped to DMMSch_rfOpen),
  *                      The DMMSch module uses this to tie
  *
- * @param pObj          pointer to RF Object
- * @param pRfMode       pointer to RF Mode
- * @param pOpSetup      pointer to Radio Setup
- * @param params        pointer to RF params
+ * @param pObj          Pointer to RF Object
+ * @param pRfMode       Pointer to RF Mode
+ * @param pOpSetup      Pointer to Radio Setup
+ * @param params        Pointer to RF params
  *
- * @return       An pointer to RF_Params structure for initialization
+ * @return              Handle to DMMSch RF instance
  */
 extern RF_Handle DMMSch_rfOpen(RF_Object *pObj, RF_Mode *pRfMode, RF_RadioSetup *pOpSetup, RF_Params *params);
 
@@ -299,7 +302,7 @@ extern RF_EventMask DMMSch_rfRunCmd(RF_Handle h, RF_Op* pOp, RF_Priority ePri, R
  *
  *  @param h         Handle previously returned by RF_open()
  *  @param pOp       Pointer to the RF_Op. Must normally be in persistent and writeable memory
- *  @param pSchParams Pointer to the schdule command parameter structure
+ *  @param pSchParams Pointer to the schedule command parameter structure
  *  @param pCb       Callback function called upon command completion (and some other events).
  *                   If RF_runScheduleCmd() fails, no callback is made.
  *  @param bmEvent   Bitmask of events that will trigger the callback.
@@ -351,7 +354,7 @@ extern RF_Stat DMMSch_rfFlushCmd(RF_Handle h, RF_CmdHandle ch, uint8_t mode);
 /**
  *  @brief Send any Immediate command. <br>
  *
- *  Immediate Comamnd is send to RDBELL, if radio is active and the RF_Handle points
+ *  Immediate Command is send to RDBELL, if radio is active and the RF_Handle points
  *  to the current client. <br>
  *  In other appropriate RF_Stat values are returned. <br>
  *
@@ -366,7 +369,7 @@ extern RF_Stat DMMSch_rfRunImmediateCmd(RF_Handle h, uint32_t* pCmdStruct);
 /**
  *  @brief Send any Direct command. <br>
  *
- *  Direct Comamnd value is send to RDBELL immediately, if radio is active and
+ *  Direct Command value is send to RDBELL immediately, if radio is active and
  *  the RF_Handle point to the current client. <br>
  *  In other appropriate RF_Stat values are returned. <br>
  *

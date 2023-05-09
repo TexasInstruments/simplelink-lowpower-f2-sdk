@@ -129,7 +129,7 @@ void bleStack_createTasks()
  */
 bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pfnGapScanCB_t scanCallback, uint16_t paramUpdateDecision)
 {
-  bStatus_t status;
+  bStatus_t status = SUCCESS;
 #if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
 
     // Pass all parameter update requests to the app for it to decide
@@ -156,7 +156,7 @@ bStatus_t bleStack_initGap(uint8_t role, ICall_EntityID appSelfEntity, bleStk_pf
   // http://software-dl.ti.com/lprf/ble5stack-latest/
   GAP_RegisterForMsgs(appSelfEntity);
 
-  return SUCCESS;
+  return (status);
 }
 
 /*********************************************************************

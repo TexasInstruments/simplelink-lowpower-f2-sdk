@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth (Release Candidate)",
-        "Description": "50 kbps, 2-GFSK, 25 kHz deviation, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band. (Release Candidate)",
+        "Name": "IEEE 802.15.4, 50 kbps, 25 kHz Deviation, 2-GFSK, 100 kHz RX Bandwidth",
+        "Description": "50 kbps, 2-GFSK, 25 kHz deviation, IEEE 802.15.4g MR-FSK PHY mode, for 863-930 MHz band.",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -169,8 +169,8 @@
                                     },
                                     {
                                         "_type": "ELEMENT",
-                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -1 dB (default: -2), trimmed for external bias and differential configuration",
-                                        "$": "0x000188A3"
+                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB (default: -2), trimmed for external bias and differential configuration",
+                                        "$": "0x000488A3"
                                     },
                                     {
                                         "_type": "ADI_HALFREG_OVERRIDE",
@@ -200,6 +200,14 @@
                                     "_type": "ELEMENT",
                                     "_comment": "DC\/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use default settings.",
                                     "$": "0x00F788D3"
+                                }
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
                                 }
                             },
                             {

@@ -71,7 +71,6 @@
 #include "npi_data.h"
 #include "npi_tl.h"
 
-
 //*****************************************************************************
 // Defines
 //*****************************************************************************
@@ -511,7 +510,7 @@ uint8_t NPITask_Params_init(uint8_t portType, NPI_Params *params)
     params->portParams.uartParams.readEcho = UART_ECHO_OFF;
 #elif defined(NPI_USE_SPI)
     SPI_Params_init(&params->portParams.spiParams);
-    params->portParams.spiParams.mode = SPI_SLAVE;
+    params->portParams.spiParams.mode = SPI_PERIPHERAL;
     params->portParams.spiParams.bitRate = 8000000;
     params->portParams.spiParams.frameFormat = SPI_POL1_PHA1;
 #endif //NPI_USE_UART
@@ -1171,7 +1170,7 @@ static void NPITask_RemRdyEventCB(uint8_t state)
     Semaphore_post(npiSem);
 #endif //ICALL_EVENTS
   }
-#ifdef NPI_MASTER
+#ifdef NPI_CONTROLLER
   else if (state == REM_RDY_DEASSERTED
 #ifdef ICALL_EVENTS
       )
@@ -1191,7 +1190,7 @@ static void NPITask_RemRdyEventCB(uint8_t state)
 #endif //ICALL_EVENTS
     }
   }
-#endif //NPI_MASTER
+#endif //NPI_CONTROLLER
 }
 
 // -----------------------------------------------------------------------------

@@ -588,6 +588,8 @@ bStatus_t SimpleGattProfile_writeAttrCB( uint16_t connHandle,
       case GATT_CLIENT_CHAR_CFG_UUID:
         status = GATTServApp_ProcessCCCWriteReq( connHandle, pAttr, pValue, len,
                                                  offset, GATT_CLIENT_CFG_NOTIFY );
+        //notify the App that a change has occurred in Char 4
+        notifyApp = SIMPLEGATTPROFILE_CHAR4;
         break;
 
       default:

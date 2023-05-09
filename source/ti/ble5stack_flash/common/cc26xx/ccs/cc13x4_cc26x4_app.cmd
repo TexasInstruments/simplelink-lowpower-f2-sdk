@@ -64,9 +64,14 @@
 /*******************************************************************************
  * CCS Linker configuration
  */
-
+#if defined(FREERTOS)
+--entry_point=resetISR
+/* Retain interrupt vector table variable                                    */
+--retain "*(.resetVecs)"
+#else
 /* Retain interrupt vector table variable                                    */
 --retain=g_pfnVectors
+#endif //defined(FREERTOS)
 /* Suppress warnings and errors:                                             */
 /* - 10063: Warning about entry point not being _c_int00                     */
 /* - 16011, 16012: 8-byte alignment errors. Observed when linking in object  */
@@ -79,8 +84,12 @@
 /* If you are using CCS for building, it is probably better to make any such */
 /* modifications in your CCS project and leave this file alone.              */
 /*                                                                           */
-/* --heap_size=0                                                             */
+#if defined(FREERTOS)
+--heap_size=0
+--stack_size=2048
+#else
 --stack_size=1024
+#endif //defined(FREERTOS)
 
 /* --library=rtsv7M3_T_le_eabi.lib                                           */
 
@@ -111,20 +120,18 @@
 #define MCU_HDR_SIZE    0x100
 #define MCUBOOT_BASE    FLASH_BASE
 #define MCUBOOT_SIZE    0x6000
-
+#define APP_HDR_BASE    APP_HDR_ADDR
 #endif //defined(OAD_APP_OFFCHIP) || defined(OAD_APP_ONCHIP) || defined(OAD_PERSISTENT)
 
 #if defined(OAD_APP_ONCHIP)|| defined(OAD_PERSISTENT)
 #define PERSISTENT_HDR_BASE 0x6000
 #define PERSISTENT_BASE     (PERSISTENT_HDR_BASE + MCU_HDR_SIZE)
-#define APP_HDR_BASE        0x2F000
 #define APP_BASE            (APP_HDR_BASE + MCU_HDR_SIZE)
 #define PERSISTENT_SIZE     (APP_HDR_BASE - PERSISTENT_BASE)
 #define APP_SIZE            (FLASH_SIZE - APP_BASE - NVS_SIZE)
 #endif //defined(OAD_APP_ONCHIP)|| defined(OAD_PERSISTENT)
 
 #ifdef OAD_APP_OFFCHIP
-#define APP_HDR_BASE    0x6000
 #define APP_BASE        (APP_HDR_BASE + MCU_HDR_SIZE)
 #define APP_SIZE        (FLASH_SIZE - APP_BASE - NVS_SIZE)
 #endif //OAD_APP_OFFCHIP
@@ -326,7 +333,6 @@ SECTIONS
 
     .ccfg           :   > CCFG
     .vecs: load > 0x20000000, type = NOLOAD
-    .ramVecs:   > SRAM, type = NOLOAD, ALIGN(256)
 
   GROUP > SRAM
   {
@@ -348,6 +354,7 @@ SECTIONS
       --library=*ll_*.a<ll_ae.o> (.bss)
     }
     #endif /* CACHE_AS_RAM */
+    .ramVecs
   } LOAD_END(heapStart)
 
   .stack            :   >  SRAM (HIGH) LOAD_START(heapEnd)

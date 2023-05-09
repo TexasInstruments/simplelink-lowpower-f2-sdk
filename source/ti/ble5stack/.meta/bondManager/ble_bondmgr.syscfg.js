@@ -156,7 +156,7 @@ const config = {
         {
             name: "bondFailAction",
             displayName: "Bond Fail Action",
-            default: "GAPBOND_FAIL_TERMINATE_LINK",
+            default: "GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND",
             longDescription: Docs.bondFailActionLongDescription,
             hidden: true,
             options: [
@@ -175,6 +175,10 @@ const config = {
                 {
                     displayName: "Terminate link and erase all existing bonds on device",
                     name: "GAPBOND_FAIL_TERMINATE_ERASE_BONDS"
+                },
+                {
+                    displayName: "Terminate link and erase rejected single bond",
+                    name: "GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND"
                 }
             ]
         },

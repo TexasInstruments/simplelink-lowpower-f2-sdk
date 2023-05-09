@@ -1,0 +1,7 @@
+gatt; sys_platform == 'linux'
+bleak==0.13.0; sys_platform == 'darwin' or sys_platform == 'linux'
+coloredlogs
+backoff
+requests
+flask
+

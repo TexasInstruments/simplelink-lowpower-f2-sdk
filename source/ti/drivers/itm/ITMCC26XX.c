@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,9 +52,7 @@ bool ITM_applyPinMux(void)
 {
     ITMCC26XX_HWAttrs *hwAttrs = (ITMCC26XX_HWAttrs *)itmHwAttrs;
 
-    GPIO_setConfig(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH);
-
-    GPIO_setMux(hwAttrs->swoPin, IOC_PORT_MCU_SWV);
+    GPIO_setConfigAndMux(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_MCU_SWV);
 
     return (bool)true;
 }
@@ -75,7 +73,7 @@ void ITMCC26XX_flush(void)
 {
     ITMCC26XX_HWAttrs *hwAttrs = (ITMCC26XX_HWAttrs *)itmHwAttrs;
     /* Release the SWO pin from the ITM */
-    GPIO_setMux(hwAttrs->swoPin, IOC_PORT_GPIO);
+    GPIO_setConfigAndMux(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_GPIO);
 }
 
 /*
@@ -85,5 +83,5 @@ void ITMCC26XX_restore(void)
 {
     ITMCC26XX_HWAttrs *hwAttrs = (ITMCC26XX_HWAttrs *)itmHwAttrs;
     /* Return SWO pin to the ITM hardware*/
-    GPIO_setMux(hwAttrs->swoPin, IOC_PORT_MCU_SWV);
+    GPIO_setConfigAndMux(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_MCU_SWV);
 }

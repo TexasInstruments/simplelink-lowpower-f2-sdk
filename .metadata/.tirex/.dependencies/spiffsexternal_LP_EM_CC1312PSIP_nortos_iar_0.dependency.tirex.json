@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_EM_CC1312PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.icf -> cc13x2_cc26x2_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.html -> README.html",
+            "+../README.md -> README.md",
+            "+../spiffsexternal.c -> spiffsexternal.c",
+            "+../spiffsexternal.syscfg -> spiffsexternal.syscfg"
+        ]
+    }
+]

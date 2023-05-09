@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,54 +110,7 @@ uint_fast8_t GPIO_read(uint_least8_t index)
  */
 int_fast16_t GPIO_setConfig(uint_least8_t index, GPIO_PinConfig pinConfig)
 {
-    uintptr_t key;
-
-    if (index == GPIO_INVALID_INDEX)
-    {
-        return GPIO_STATUS_ERROR;
-    }
-
-    uint32_t iocfgRegAddr   = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
-    uint32_t previousConfig = HWREG(iocfgRegAddr);
-
-    /* Note: Do not change this to check PIN_IS_OUTPUT, because that is 0x0 */
-    uint32_t pinWillBeOutput = !(pinConfig & GPIOCC26XX_CFG_PIN_IS_INPUT_INTERNAL);
-
-    /* Special configurations are stored in the lowest 8 bits and need to be removed
-     * We can make choices based on these values, but must not write them to hardware */
-    GPIO_PinConfig tmpConfig = pinConfig & 0xFFFFFF00;
-
-    if ((previousConfig & 0xFF) != GPIO_MUX_GPIO)
-    {
-        /* If we're updating mux as well, we can write the whole register */
-        HWREG(iocfgRegAddr) = tmpConfig | GPIO_MUX_GPIO;
-    }
-    else
-    {
-        /*
-         * Writes to the first byte of the IOCFG register will cause a glitch
-         * on the internal IO line. To avoid this, we only want to write
-         * the upper 24-bits of the IOCFG register when updating the configuration
-         * bits. We do this 1 byte at a time.
-         */
-        key                      = HwiP_disable();
-        HWREGB(iocfgRegAddr + 1) = (uint8_t)(tmpConfig >> 8);
-        HWREGB(iocfgRegAddr + 2) = (uint8_t)(tmpConfig >> 16);
-        HWREGB(iocfgRegAddr + 3) = (uint8_t)(tmpConfig >> 24);
-        HwiP_restore(key);
-    }
-
-    /* If this pin is being configured to an output, set the new output value
-     * It's important to do this before we change from INPUT to OUTPUT if
-     * applicable. If we're already an output this is fine, and if we're input
-     * changing to input this statement will not execute. */
-    if (pinWillBeOutput)
-    {
-        GPIO_write(index, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
-    }
-
-    GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
-    return GPIO_STATUS_SUCCESS;
+    return GPIO_setConfigAndMux(index, pinConfig, GPIO_MUX_GPIO);
 }
 
 /*
@@ -223,6 +176,61 @@ void GPIO_setMux(uint_least8_t index, uint32_t mux)
             HWREGB(iocfgRegAddr) = (uint8_t)(mux);
         }
     }
+}
+
+/*
+ *  ======== GPIO_setConfigAndMux ========
+ */
+int_fast16_t GPIO_setConfigAndMux(uint_least8_t index, GPIO_PinConfig pinConfig, uint32_t mux)
+{
+    uintptr_t key;
+
+    if (index == GPIO_INVALID_INDEX)
+    {
+        return GPIO_STATUS_ERROR;
+    }
+
+    uint32_t iocfgRegAddr   = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
+    uint32_t previousConfig = HWREG(iocfgRegAddr);
+
+    /* Note: Do not change this to check PIN_IS_OUTPUT, because that is 0x0 */
+    uint32_t pinWillBeOutput = !(pinConfig & GPIOCC26XX_CFG_PIN_IS_INPUT_INTERNAL);
+
+    /* Special configurations are stored in the lowest 8 bits and need to be removed
+     * We can make choices based on these values, but must not write them to hardware */
+    GPIO_PinConfig tmpConfig = pinConfig & 0xFFFFFF00;
+
+    if ((previousConfig & 0xFF) != mux)
+    {
+        /* If we're updating mux as well, we can write the whole register */
+        HWREG(iocfgRegAddr) = tmpConfig | mux;
+    }
+    else
+    {
+        /*
+         * Writes to the first byte of the IOCFG register will cause a glitch
+         * on the internal IO line. To avoid this, we only want to write
+         * the upper 24-bits of the IOCFG register when updating the configuration
+         * bits. We do this 1 byte at a time.
+         */
+        key                      = HwiP_disable();
+        HWREGB(iocfgRegAddr + 1) = (uint8_t)(tmpConfig >> 8);
+        HWREGB(iocfgRegAddr + 2) = (uint8_t)(tmpConfig >> 16);
+        HWREGB(iocfgRegAddr + 3) = (uint8_t)(tmpConfig >> 24);
+        HwiP_restore(key);
+    }
+
+    /* If this pin is being configured to an output, set the new output value
+     * It's important to do this before we change from INPUT to OUTPUT if
+     * applicable. If we're already an output this is fine, and if we're input
+     * changing to input this statement will not execute. */
+    if (pinWillBeOutput)
+    {
+        GPIO_write(index, pinConfig & GPIO_CFG_OUT_HIGH ? 1 : 0);
+    }
+
+    GPIO_setOutputEnableDio(index, pinWillBeOutput ? GPIO_OUTPUT_ENABLE : GPIO_OUTPUT_DISABLE);
+    return GPIO_STATUS_SUCCESS;
 }
 
 /*

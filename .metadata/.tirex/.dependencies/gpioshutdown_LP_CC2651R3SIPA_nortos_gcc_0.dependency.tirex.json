@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../gpioshutdown.c -> gpioshutdown.c",
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../gpioshutdown.syscfg -> gpioshutdown.syscfg",
+            "+../../../../../../source/ti/boards/LP_CC2651R3SIPA/Board.html -> Board.html",
+            "+cc13x1_cc26x1_nortos.lds -> cc13x1_cc26x1_nortos.lds"
+        ]
+    }
+]

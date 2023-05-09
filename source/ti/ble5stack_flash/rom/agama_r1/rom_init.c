@@ -916,12 +916,11 @@ void *MAP_llSelectTaskPeriodicScan( uint8 secTaskID, uint32 timeGap )
 
 void *MAP_llSelectTaskPeriodicAdv( uint8 secTaskID, uint32 timeGap )
 {
-#if ( HOST_CONFIG & ( PERIPHERAL_CFG | BROADCASTER_CFG ) )
-#ifdef USE_PERIODIC_ADV
+#if ( HOST_CONFIG & ( PERIPHERAL_CFG | BROADCASTER_CFG ) ) && defined ( USE_PERIODIC_ADV )
   return llSelectTaskPeriodicAdv(secTaskID,timeGap);
-#endif
-#endif
+#else
   return NULL;
+#endif
 }
 
 uint8 MAP_LE_ClearAdvSets(void)
@@ -1599,12 +1598,11 @@ void *MAP_llGetCurrentPeriodicAdv( void )
 
 uint8 MAP_gapAdv_periodicAdvCmdCompleteCBs( void *pMsg )
 {
-#if ( HOST_CONFIG & ( PERIPHERAL_CFG | BROADCASTER_CFG ) )
-#ifdef USE_PERIODIC_ADV
+#if ( HOST_CONFIG & ( PERIPHERAL_CFG | BROADCASTER_CFG ) ) && defined(USE_PERIODIC_ADV)
   return gapAdv_periodicAdvCmdCompleteCBs(pMsg);
-#endif // USE_PERIODIC_ADV
-#endif
+#else
   return TRUE;
+#endif
 }
 
 void MAP_llClearPeriodicAdvSets( void )

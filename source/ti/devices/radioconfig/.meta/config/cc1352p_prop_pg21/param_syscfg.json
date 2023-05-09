@@ -232,15 +232,15 @@
             "options": [
                 {
                     "name": "2gfsk100kbps",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth"
                 },
                 {
                     "name": "2gfsk250kbps",
-                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth"
+                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth"
                 },
                 {
                     "name": "2msk250kbps",
-                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth"
+                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth"
                 },
                 {
                     "name": "custom2400",
@@ -471,6 +471,11 @@
                         {
                             "name": "3767.4",
                             "key": 103
+                        },
+                        {
+                            "name": "17.1",
+                            "key": 115,
+                            "info": "decimMode=7"
                         }
                     ]
                 },
@@ -1167,19 +1172,19 @@
             {
                 "file": "setting_tc900.json",
                 "name": "2gfsk100kbps",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth",
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth",
                 "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc901.json",
                 "name": "2gfsk250kbps",
-                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth",
+                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth",
                 "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc902.json",
                 "name": "2msk250kbps",
-                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth",
+                "description": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth",
                 "options": "disable_high_pa"
             },
             {

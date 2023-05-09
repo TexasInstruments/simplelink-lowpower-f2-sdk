@@ -2,7 +2,7 @@
 
  @file  npi_tl_uart_m.c
 
- @brief NPI Transport Layer Module for UART Master
+ @brief NPI Transport Layer Module for UART Controller
 
  Group: CMCU, LPC
  Target Device: cc13xx_cc26xx
@@ -177,9 +177,9 @@ void NPITLUART_closeTransport(void)
 // -----------------------------------------------------------------------------
 void NPITLUART_stopTransfer(void)
 {
-  // This is a dummy function for the UART Master implementation
-  // The transfer will end once the master has finished sending and has
-  // received a valid packet from Slave or no data at all
+  // This is a dummy function for the UART Controller implementation
+  // The transfer will end once the controller has finished sending and has
+  // received a valid packet from peripheral or no data at all
 }
 #endif // NPI_FLOW_CTRL = 1
 
@@ -195,7 +195,7 @@ void NPITLUART_handleRemRdyEvent(void)
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
 
-  // If read has not yet been started, now is the time before Master
+  // If read has not yet been started, now is the time before controller
   // potentially starts to send data
   // There is the possibility that MRDY gets set high which
   // clears RxActive prior to us getting to this event. This will cause us to
@@ -207,7 +207,7 @@ void NPITLUART_handleRemRdyEvent(void)
   }
 
   // If write has already been initialized then kick off the driver write
-  // now that Master has signalled it is ready
+  // now that controller has signalled it is ready
   if (TxActive)
   {
     // Check to see if transport is successful. If not, reset TxLen to allow
@@ -454,7 +454,7 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
   TxActive = TRUE;
 
   // Start reading prior to impending write transaction
-  // We can only call UART_write() once MRDY has been signaled from Master
+  // We can only call UART_write() once MRDY has been signaled from controller
   // device
   NPITLUART_readTransport();
 #else

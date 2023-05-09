@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../TOOLS/defines/f8wrouter.opts -> TOOLS/defines/f8wrouter.opts",
+            "+../../TOOLS/defines/dmm_zr_light_remote_display_app.opts -> TOOLS/defines/dmm_zr_light_remote_display_app.opts",
+            "+../../README.html -> README.html",
+            "+../../TOOLS/build_components.opt -> TOOLS/build_components.opt",
+            "+../../TOOLS/factory_config.opt -> TOOLS/factory_config.opt",
+            "+../dmm_zr_light_remote_display.syscfg -> dmm_zr_light_remote_display.syscfg"
+        ]
+    }
+]

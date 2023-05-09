@@ -167,6 +167,7 @@ exports = {
 function loadConfiguration(phy) {
     const fileName = DevInfo.phyGroup[phy].paramPath + "param_syscfg.json";
     const devCfg = system.getScript(fileName);
+
     return devCfg;
 }
 

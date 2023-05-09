@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zed_light.syscfg -> zed_light.syscfg"
+        ]
+    }
+]

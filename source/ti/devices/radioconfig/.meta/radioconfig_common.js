@@ -44,7 +44,7 @@ const BasePath = "/ti/devices/radioconfig/";
 const isDeviceClass10 = Device.match(/[157]4[RP]10|2653P10/) !== null;
 
 // Manage protocol support
-const hasProp = Device.match(/CC13|CC26[457][12][RP][137]|CC2674/);
+const hasProp = Device.match(/CC13|CC26[457][12][RP][137]/);
 const hasBle = Device.match(/CC..[457][1234]/);
 const hasIeee = Device.match(/CC..[57][1234]/);
 const has24gProp = hasProp && !(Device.includes("CC131") || isDeviceClass10);

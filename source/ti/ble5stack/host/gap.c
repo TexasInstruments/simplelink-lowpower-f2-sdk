@@ -567,5 +567,20 @@ void GAP_ReInit( void )
   MAP_LL_ReInit();
 }
 
+/*******************************************************************************
+ * This API is used to update the local RPA (Resolvable Private
+ * Address) in case on demand (and not just when the RPA timeout expired).
+ *
+ * NOTE: This API would be changed / deprecated once the "HCI_LE_Set_Data_Related_Address_Changes"
+ *       Command would be supported.
+ *
+ * Defined in gap.h.
+ */
+void GAP_UpdateRPA( void )
+{
+  //UpdateRPA on demand
+  MAP_LL_UpdateRPA();
+}
+
 /*********************************************************************
 *********************************************************************/

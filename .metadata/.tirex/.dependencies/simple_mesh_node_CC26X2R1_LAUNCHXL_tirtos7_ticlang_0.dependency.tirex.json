@@ -1,0 +1,18 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/simple_mesh_node.c -> Application/simple_mesh_node.c",
+            "+../../Application/simple_mesh_node.h -> Application/simple_mesh_node.h",
+            "+../../Application/simple_mesh_node_menu.c -> Application/simple_mesh_node_menu.c",
+            "+../../Application/simple_mesh_node_menu.h -> Application/simple_mesh_node_menu.h",
+            "+../../Application/static_prov.c -> Application/static_prov.c",
+            "+../../Application/static_prov.h -> Application/static_prov.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../autoconf.h -> autoconf.h",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../simple_mesh_node.syscfg -> simple_mesh_node.syscfg",
+            "+cc13x2_cc26x2_app_tirtos7.cmd -> cc13x2_cc26x2_app_tirtos7.cmd"
+        ]
+    }
+]

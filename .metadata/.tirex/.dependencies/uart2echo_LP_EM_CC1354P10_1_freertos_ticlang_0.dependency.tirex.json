@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../uart2echo.c -> uart2echo.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../uart2echo.syscfg -> uart2echo.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.cmd -> cc13x4_cc26x4_freertos.cmd"
+        ]
+    }
+]

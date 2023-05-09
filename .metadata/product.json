@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
     "displayName": "simplelink_cc13xx_cc26xx_sdk",
-    "version": "7.10.00.35_eng",
+    "version": "7.10.00.98",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",
@@ -10,14 +10,23 @@
         "../kernel/tirtos7/packages"
     ],
     "components": [
+        "/ti/ble5stack/aoa/aoa.component.js",
         "/ti/ble5stack/ble.component.js",
+        "/ti/ti154stack/ti154stack.component.js",
+        "/ti/thread/thread.component.js",
+        "/ti/zstack/zstack.component.js",
         "/ti/dmm/dmm.component.js",
         "/ti/common/migration.component.js",
         "/ti/devices/devices.component.js",
         "/ti/devices/radioconfig/radioconfig.component.js",
         "/ti/drivers/drivers.component.js",
         "/ti/drivers/rflib.component.js",
+        "/ti/log/drivers.component.js",
+        "/ti/log/utils.component.js",
         "/ti/posix/tiposix.component.js",
+        "/ti/ti_sidewalk/ti_sidewalk.component.js",
+        "/ti/ti_wisunfan/ti_wisunfan.component.js",
+        "/ti/ti_wisunfan/wisunfan_mac/ti154stack.component.js",
         "/ti/utils/tiutils.component.js",
         "/ti/utils/build/build.component.js",
         "/ti/utils/rov/rov.component.js",
@@ -33,6 +42,5 @@
         "nortos",
         "tirtos7"
     ],
-    "minToolVersion": "1.14.0"
+    "minToolVersion": "1.15.0"
 }
-

@@ -55,46 +55,23 @@ extern "C"
 /*********************************************************************
  * INCLUDES
  */
+
 #include <ti/bleapp/ble_app_util/inc/bleapputil_api.h>
-
-/*********************************************************************
- * MACROS
- */
-// Maximum allowed length for incoming data
-#define DATASTREAM_MAX_DATA_IN_LEN 128
-
-/*********************************************************************
- * TYPEDEFS
- */
-// Data structure used to store incoming data
-typedef struct
-{
-  uint16 connHandle;
-  uint16 len;
-  char pValue[];
-} DataStream_dataIn_t;
-
-// Data structure used to store ccc update
-typedef struct
-{
-  uint16 connHandle;
-  uint16 value;
-} DataStream_cccUpdate_t;
 
 /*********************************************************************
  * Profile Callback
  */
 // Callback to indicate client characteristic configuration has been updated
-typedef void (*DataStreamProfile_cccUpdate_t)( DataStream_cccUpdate_t *cccUpdate );
+typedef void (*DSP_onCccUpdate_t)( uint16 connHandle, uint16 pValue);
 
 // Callback when receiving data
-typedef void (*DataStreamProfile_dataIn_t)( DataStream_dataIn_t *dataIn );
+typedef void (*DSP_incomingData_t)( uint16 connHandle, char *pValue, uint16 len );
 
 typedef struct
 {
-  DataStreamProfile_cccUpdate_t     pfnDataStreamCccUpdateCb;  // Called when CCC has been updated
-  DataStreamProfile_dataIn_t        pfnDataStreamDataInCb;     // Called when receiving data
-} DataStreamProfile_CBs_t;
+  DSP_onCccUpdate_t   pfnOnCccUpdateCb;  // Called when client characteristic configuration has been updated
+  DSP_incomingData_t  pfnIncomingDataCB;     // Called when receiving data
+} DSP_cb_t;
 
 /*********************************************************************
  * API FUNCTIONS
@@ -109,7 +86,7 @@ typedef struct
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks);
+bStatus_t DSP_start( DSP_cb_t *appCallbacks);
 
 /*
  * @fn      dataStreamProfile_sendData
@@ -121,7 +98,7 @@ bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks);
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamProfile_sendData( uint8 *pValue, uint16 len );
+bStatus_t DSP_sendData( uint8 *pValue, uint16 len );
 
 /*********************************************************************
 *********************************************************************/

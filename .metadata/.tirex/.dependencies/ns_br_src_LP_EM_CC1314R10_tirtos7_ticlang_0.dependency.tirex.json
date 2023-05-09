@@ -1,0 +1,10 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../application/defines/router.opts -> application/defines/router.opts",
+            "+../ti_wisunfan_border_router.syscfg -> ti_wisunfan_border_router.syscfg",
+            "+cc13x4_cc26x4.cmd -> cc13x4_cc26x4.cmd"
+        ]
+    }
+]

@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/simple_peripheral.c -> Application/simple_peripheral.c",
+            "+../../Application/simple_peripheral.h -> Application/simple_peripheral.h",
+            "+../../Application/simple_peripheral_menu.c -> Application/simple_peripheral_menu.c",
+            "+../../Application/simple_peripheral_menu.h -> Application/simple_peripheral_menu.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../simple_peripheral.syscfg -> simple_peripheral.syscfg",
+            "+cc13x2x7_cc26x2x7_app_tirtos7.cmd -> cc13x2x7_cc26x2x7_app_tirtos7.cmd"
+        ]
+    }
+]

@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zc_genericapp.syscfg -> zc_genericapp.syscfg"
+        ]
+    }
+]

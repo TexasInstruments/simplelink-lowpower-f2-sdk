@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../adcsinglechannel.c -> adcsinglechannel.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../adcsinglechannel.syscfg -> adcsinglechannel.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1312PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_freertos.lds -> cc13x2_cc26x2_freertos.lds"
+        ]
+    }
+]

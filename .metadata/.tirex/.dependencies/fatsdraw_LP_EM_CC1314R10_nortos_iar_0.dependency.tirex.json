@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_EM_CC1314R10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos.icf -> cc13x4_cc26x4_nortos.icf",
+            "+../fatsdraw.syscfg -> fatsdraw.syscfg",
+            "+../fatsdraw_nortos.c -> fatsdraw_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.html -> README.html",
+            "+../README.md -> README.md"
+        ]
+    }
+]

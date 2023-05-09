@@ -861,7 +861,9 @@ static void processExtraHCICmd(uint16_t cmdOpCode, uint8_t *param);
 
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
 static hci_tl_advSet_t *hci_tl_GetAdvSet(uint8_t handle);
+#ifdef LEGACY_CMD
 static void      hci_tl_InitAdvSetParams(hci_tl_advSet_t *pAdvSet);
+#endif // LEGACY_CMD
 static void      hci_tl_RemoveAdvSet(uint8_t handle);
 static void      hci_tl_ClearAdvSet(void);
 static void      hci_tl_removePendingData(uint8_t* pendingAdvData);
@@ -4267,7 +4269,7 @@ static hci_tl_advSet_t *hci_tl_GetAdvSet(uint8_t handle)
     return(pAdvSet);
 
 }
-
+#ifdef LEGACY_CMD
 /*********************************************************************
  * @fn      hci_tl_InitAdvSetParams
  *
@@ -4300,7 +4302,7 @@ static void hci_tl_InitAdvSetParams(hci_tl_advSet_t *pAdvSet)
   pAdvSet->advCmdParams.sid             = 0;
   pAdvSet->advCmdParams.notifyEnableFlags = 0;
 }
-
+#endif // LEGACY_CMD
 
 /*********************************************************************
  * @fn      hci_tl_RemoveAdvSet

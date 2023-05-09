@@ -113,7 +113,7 @@ extern int bspSpiRead( uint8_t *buf, size_t length);
  */
 extern int bspSpiWrite(const uint8_t *buf, size_t length);
 
-#ifdef DeviceFamily_CC23X0
+#ifdef DeviceFamily_CC23X0R5
 /*******************************************************************************
  * @fn          bspGpioSetConfig
  *

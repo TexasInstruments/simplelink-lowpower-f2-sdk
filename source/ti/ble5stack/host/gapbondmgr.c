@@ -255,7 +255,7 @@ static gapBondEccKeys_t gapBond_eccKeys =
 };
 
 #if ( HOST_CONFIG & CENTRAL_CFG )
-static uint8_t  gapBond_BondFailOption = GAPBOND_FAIL_TERMINATE_LINK;
+static uint8_t  gapBond_BondFailOption = GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND;
 #endif
 
 static uint8_t gapBond_SamelIrkOption = GAPBOND_SAME_IRK_UPDATE_BOND_REC;
@@ -312,6 +312,7 @@ static void gapBondMgrReadBonds(void);
 static uint8_t gapBondMgrFindEmpty(void);
 static uint8_t gapBondMgrBondTotal(void);
 static bStatus_t gapBondMgrEraseAllBondings(void);
+static bStatus_t gapBondMgrEraseRejectedBondAndTerm(uint16_t connHandle);
 static bStatus_t gapBondMgrEraseBonding(uint8_t idx);
 static bStatus_t gapBondMgrEraseLocalInfo( void );
 static uint8_t gapBondMgr_ProcessOSALMsg(osal_event_hdr_t *pMsg);
@@ -691,7 +692,7 @@ bStatus_t GAPBondMgr_SetParameter(uint16_t param, uint8_t len, void *pValue)
 #if ( HOST_CONFIG & CENTRAL_CFG )
     case GAPBOND_BOND_FAIL_ACTION:
       if((len == sizeof(uint8_t)) &&
-         (*((uint8_t *)pValue) <= GAPBOND_FAIL_TERMINATE_ERASE_BONDS))
+         (*((uint8_t *)pValue) <= GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND))
       {
         gapBond_BondFailOption = *((uint8_t *)pValue);
       }
@@ -1333,12 +1334,6 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
           {
             smIdentityInfo_t *pInfo = pPkt->pIdentityInfo;
 
-            if( MAP_LL_PRIV_IsRPA(pItem->addrType, pItem->addr) == FALSE )
-            {
-              // This is a Random/Public ID addr the IRK must be all-zeros
-              MAP_osal_memset(pInfo->irk, 0x00,  KEYLEN);
-            }
-
             // Store identity address type and address in bonding table
             bondRec.addrType = (GAP_Peer_Addr_Types_t)(pInfo->addrType &
                                                        MASK_ADDRTYPE_ID);
@@ -1419,7 +1414,11 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
           gapBondStateEnd(pPkt->connectionHandle);
         }
       }
-
+      if(pPkt->hdr.status == SMP_PAIRING_FAILED_DHKEY_CHECK_FAILED)
+      {
+          // Erase rejected stored bond and teminate link
+          gapBondMgrEraseRejectedBondAndTerm(pPkt->connectionHandle);
+      }
       // Call app state callback
       if ( pGapBondCB && pGapBondCB->pairStateCB )
       {
@@ -1488,6 +1487,11 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
               // Drop connection
               MAP_GAP_TerminateLinkReq(pPkt->connectionHandle,
                                        HCI_DISCONNECT_AUTH_FAILURE);
+              break;
+
+            case GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND:
+              // Erase rejected stored bond and teminate link
+              gapBondMgrEraseRejectedBondAndTerm(pPkt->connectionHandle);
               break;
 
             case GAPBOND_FAIL_NO_ACTION:
@@ -2305,10 +2309,9 @@ static uint8_t gapBondMgrSaveBond(uint8_t bondIdx,
   // Update Bond RAM Shadow just with the newly added bond entry
   VOID MAP_osal_memcpy(&(bonds[bondIdx]), pBondRec, sizeof(gapBondRec_t));
 
-  // Check if the IRK is not all zeros. If so, the address if public don't
-  // add it to the resolving List
   if (pIRK)
   {
+    // Check if the IRK is all zeros, don't add it to the resolving List
     if (MAP_osal_isbufset(pIRK, 0x00, KEYLEN) == FALSE)
     {
       // Add device to resolving list
@@ -4771,6 +4774,37 @@ uint8_t GapBondMgr_StartEnc( uint16_t connHandle )
   return status;
 }
 
+/*********************************************************************
+ * @fn      gapBondMgrEraseRejectedBondAndTerm
+ *
+ * @brief   If an authentication or encryption process is rejected
+ *          because of a bond saved in the NVS memory, this function
+ *          will delete the rejected bond and terminate link so that
+ *          the bond process will work properly on the next connection
+ *
+ * @param   connHandle - the connection handle to be erased and terminated
+ *
+ * @return  SUCCESS if successful.
+ *          Otherwise, NV_OPER_FAILED for failure.
+ */
+static bStatus_t gapBondMgrEraseRejectedBondAndTerm(uint16_t connHandle)
+{
+    bStatus_t ret;
+    gapBondRec_t bondRec;
+    uint8_t bondIdx;
+    linkDBItem_t *pLinkItem = MAP_linkDB_Find(connHandle);
+
+    bondRec.addrType = (GAP_Peer_Addr_Types_t)(pLinkItem->addrType & MASK_ADDRTYPE_ID);
+    VOID MAP_osal_memcpy(bondRec.addr, pLinkItem->addr, B_ADDR_LEN);
+
+    // Check if the bond information
+    GAPBondMgr_FindAddr(bondRec.addr, bondRec.addrType,&bondIdx, NULL, NULL);
+    ret = gapBondMgrEraseBonding(bondIdx);
+    // We must terminate the link here. This is done so that the shadow bond array stays synchronized with the NV.
+    MAP_GAP_TerminateLinkReq(connHandle, HCI_DISCONNECT_AUTH_FAILURE);
+
+    return (ret);
+}
 #endif // GAP_BOND_MGR
 
 #endif // ( CENTRAL_CFG | PERIPHERAL_CFG )

@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../uart2callback.c -> uart2callback.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../uart2callback.syscfg -> uart2callback.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_6/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.lds -> cc13x4_cc26x4_freertos.lds"
+        ]
+    }
+]

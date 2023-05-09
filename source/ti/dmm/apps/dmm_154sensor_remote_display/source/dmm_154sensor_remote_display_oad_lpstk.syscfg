@@ -145,12 +145,18 @@ const deviceName = system.getScript("/ti/ti154stack/ti154stack_common.js").getLa
 if (deviceName.includes("R7") || deviceName.includes("P7"))
 {
     nvs_int.internalFlash.regionBase = 0xAA000;
+    nvs_int.internalFlash.regionSize = 0x4000;
+}
+else if (deviceName.includes("2674") || deviceName.includes("P10") || deviceName.includes("R10"))
+{
+    nvs_int.internalFlash.regionBase = 0xFD800;
+    nvs_int.internalFlash.regionSize = 0x2800;
 }
 else
 {
     nvs_int.internalFlash.regionBase = 0x52000;
+    nvs_int.internalFlash.regionSize = 0x4000;
 }
-nvs_int.internalFlash.regionSize = 0x4000;
 
 var nvs_ext = NVS.addInstance();
 nvs_ext.nvsType = "External";

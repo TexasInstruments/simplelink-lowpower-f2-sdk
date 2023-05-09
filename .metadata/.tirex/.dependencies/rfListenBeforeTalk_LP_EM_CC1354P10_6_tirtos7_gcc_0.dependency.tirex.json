@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../application_settings.c -> application_settings.c",
+            "+../../application_settings.h -> application_settings.h",
+            "+../../README.md -> README.md",
+            "+../rfListenBeforeTalk.syscfg -> rfListenBeforeTalk.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../rfListenBeforeTalk.c -> rfListenBeforeTalk.c",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x4_cc26x4_tirtos7.lds -> cc13x4_cc26x4_tirtos7.lds"
+        ]
+    }
+]

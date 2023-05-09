@@ -201,6 +201,10 @@ place at start of RAM { section .ramVecs };
 // Runtime Stack
 define block CSTACK with alignment = 8, size = STACK_SIZE { section .stack };
 
+if (isdefinedsymbol(ROM_TIMACDataAddr)) {
+    place at address mem:ROM_TIMACDataAddr {section .data_RAM_BASE_ADDR };
+}
+
 define block RWDATA with alignment = 8 { rw };
 
 define section .heap_start            { public heapStart: };

@@ -117,7 +117,7 @@ typedef enum mac_extended_address_type {
  * @param id The identifier of the MLME primitive
  * @param data Primitive specific data (\see mlme.h)
  */
-typedef void mlme_request(const mac_api_t *api, mlme_primitive id, const void *data);
+typedef void mlme_request(const mac_api_t *api, mlme_primitive id, void *data);
 
 /**
  * @brief mcps_request MCPS_DATA request call

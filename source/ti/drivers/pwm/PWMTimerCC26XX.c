@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -402,7 +402,9 @@ void PWMTimerCC26XX_stop(PWM_Handle handle)
     GPTimerCC26XX_stop(object->hTimer);
 
     /* Route PWM pin to GPIO module */
-    GPIO_setMux(hwAttrs->pwmPin, IOC_PORT_GPIO);
+    uint32_t pinConfig;
+    GPIO_getConfig(hwAttrs->pwmPin, &pinConfig);
+    GPIO_setConfigAndMux(hwAttrs->pwmPin, pinConfig, GPIO_MUX_GPIO);
 }
 
 /* Start PWM output for given PWM peripheral.
@@ -416,7 +418,9 @@ void PWMTimerCC26XX_start(PWM_Handle handle)
     object->isRunning = 1;
 
     /* Route PWM pin to timer output */
-    GPIO_setMux(hwAttrs->pwmPin, GPTimerCC26XX_getPinMux(object->hTimer));
+    uint32_t pinConfig;
+    GPIO_getConfig(hwAttrs->pwmPin, &pinConfig);
+    GPIO_setConfigAndMux(hwAttrs->pwmPin, pinConfig, GPTimerCC26XX_getPinMux(object->hTimer));
 
     GPTimerCC26XX_start(object->hTimer);
 }

@@ -212,7 +212,7 @@ void NPITLUART_handleRemRdyEvent(void)
 
     remRdy_flag = 0;
 
-    // If we haven't already begun reading, now is the time before Master
+    // If we haven't already begun reading, now is the time before controller
     //    potentially starts to send data
     // The !TxActive condition is because we will call UART_npiRead() prior to setting
     // TxActive true. There is the possibility that REM RDY gets set high which
@@ -224,7 +224,7 @@ void NPITLUART_handleRemRdyEvent(void)
         NPITLUART_readTransport();
     }
 
-    // If we have something to write, then the Master has signalled it is ready
+    // If we have something to write, then the controller has signalled it is ready
     //    to receive. Time to write.
     if (TxActive)
     {
@@ -474,7 +474,7 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
     TxActive = TRUE;
 
     // Start reading prior to impending write transaction
-    // We can only call UART_write() once REM RDY has been signaled from Master
+    // We can only call UART_write() once REM RDY has been signaled from controller
     // device
     NPITLUART_readTransport();
 #else

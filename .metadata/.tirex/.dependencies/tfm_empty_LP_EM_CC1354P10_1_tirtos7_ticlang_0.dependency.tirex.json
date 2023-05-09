@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../empty.c -> empty.c",
+            "+../../performance.rov.json -> performance.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../empty.syscfg -> empty.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7_ns.cmd -> cc13x4_cc26x4_tirtos7_ns.cmd"
+        ]
+    }
+]

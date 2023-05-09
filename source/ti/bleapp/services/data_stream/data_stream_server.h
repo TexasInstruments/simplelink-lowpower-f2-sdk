@@ -60,47 +60,68 @@ extern "C"
  * CONSTANTS
  */
 // Service UUID
-#define DATASTREAMSERVER_SERV_UUID 0xC0C0
+#define DSS_SERV_UUID 0xC0C0
 
 // Characteristic defines
-#define DATASTREAMSERVER_DATAIN_ID   0
-#define DATASTREAMSERVER_DATAIN_UUID 0xC0C1
+#define DSS_DATAIN_ID   0
+#define DSS_DATAIN_UUID 0xC0C1
 
 // Characteristic defines
-#define DATASTREAMSERVER_DATAOUT_ID   1
-#define DATASTREAMSERVER_DATAOUT_UUID 0xC0C2
+#define DSS_DATAOUT_ID   1
+#define DSS_DATAOUT_UUID 0xC0C2
+
+// Maximum allowed length for incoming data
+#define DSS_MAX_DATA_IN_LEN 128
+
+/*********************************************************************
+ * TYPEDEFS
+ */
+// Data structure used to store incoming data
+typedef struct
+{
+  uint16 connHandle;
+  uint16 len;
+  char pValue[];
+} DSS_dataIn_t;
+
+// Data structure used to store ccc update
+typedef struct
+{
+  uint16 connHandle;
+  uint16 value;
+} DSS_cccUpdate_t;
 
 /*********************************************************************
  * Profile Callbacks
  */
 // Callback to indicate client characteristic configuration has been updated
-typedef void (*DataStreamServer_cccUpdate_t)( uint16 connHandle, uint16 value);
+typedef void (*DSS_onCccUpdate_t)( char *pValue );
 
 // Callback when data is received
-typedef void (*DataStreamServer_incomingData_t)( uint16 connHandle, uint8 *pValue, uint16 len );
+typedef void (*DSS_incomingData_t)( char *pValue );
 
 typedef struct
 {
-  DataStreamServer_cccUpdate_t           pfnCccUpdateCb;     // Called when client characteristic configuration has been updated
-  DataStreamServer_incomingData_t        pfnIncomingDataCB;  // Called when receiving data
-} DataStreamServer_CB_t;
+  DSS_onCccUpdate_t         pfnOnCccUpdateCB;     // Called when client characteristic configuration has been updated
+  DSS_incomingData_t        pfnIncomingDataCB;    // Called when receiving data
+} DSS_cb_t;
 
 /*********************************************************************
  * API FUNCTIONS
  */
 
 /*********************************************************************
- * @fn      DataStreamServer_addService
+ * @fn      DSS_addService
  *
  * @brief   This function initializes the Data Stream Server service
  *          by registering GATT attributes with the GATT server.
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamServer_addService( void );
+bStatus_t DSS_addService( void );
 
 /*
- * @fn      DataStreamServer_registerProfileCBs
+ * @fn      DSS_registerProfileCBs
  *
  * @brief   Registers the profile callback function. Only call
  *          this function once.
@@ -109,10 +130,10 @@ bStatus_t DataStreamServer_addService( void );
  *
  * @return  SUCCESS or INVALIDPARAMETER
  */
-bStatus_t DataStreamServer_registerProfileCBs( DataStreamServer_CB_t *profileCallback );
+bStatus_t DSS_registerProfileCBs( DSS_cb_t *profileCallback );
 
 /*
- * @fn      DataStreamServer_setParameter
+ * @fn      DSS_setParameter
  *
  * @brief   Set a Data Stream Service parameter.
  *
@@ -125,7 +146,7 @@ bStatus_t DataStreamServer_registerProfileCBs( DataStreamServer_CB_t *profileCal
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamServer_setParameter( uint8 param, void *pValue, uint16 len);
+bStatus_t DSS_setParameter( uint8 param, void *pValue, uint16 len);
 
 /*********************************************************************
 *********************************************************************/

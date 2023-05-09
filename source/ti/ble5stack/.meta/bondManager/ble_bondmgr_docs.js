@@ -160,7 +160,8 @@ Options |
 Take no action |
 Initiate pairing |
 Terminate link |
-Terminate link and erase all existing bonds on device |\n
+Terminate link and erase rejected single bond |\n
+Terminate link and erase all existing bonds on device |
 For more information, refer to the [BLE Stack API Reference](/ble5stack/ble_user_guide/\
 doxygen/ble/html/group___g_a_p_bond_mgr___params.html).\n`
 

@@ -1,0 +1,11 @@
+{
+    "../../../examples/rtos/LP_CC1352P7_1/ti_sidewalk/sid_demo/freertos/gcc/sid_demo_LP_CC1352P7_1_freertos_gcc.projectspec": "sid_demo_LP_CC1352P7_1_freertos_gcc_0.dependency.tirex.json",
+    "../../../examples/rtos/LP_CC2652R7/ti_sidewalk/sid_demo/freertos/gcc/sid_demo_LP_CC2652R7_freertos_gcc.projectspec": "sid_demo_LP_CC2652R7_freertos_gcc_0.dependency.tirex.json",
+    "../../../source/ti/ble5stack/common/cc26xx/freertos/release/gcc/freertos_builds_CC26X2R1_LAUNCHXL_release_gcc.projectspec": "freertos_builds_CC26X2R1_LAUNCHXL_release_gcc_0.dependency.tirex.json",
+    "../../../source/ti/ble5stack_flash/lib_projects/StackWrapper_flash/tirtos/ccs/stack_wrapper_flash.projectspec": "stack_wrapper_flash_0.dependency.tirex.json",
+    "../../../source/ti/ble5stack_flash/lib_projects/StackWrapper_flash/tirtos/ticlang/stack_wrapper_flash_ticlang.projectspec": "stack_wrapper_flash_ticlang_0.dependency.tirex.json",
+    "../../../source/ti/dmm/apps/common/freertos/freertos_builds/release/ccs/freertos_builds_CC1352R1_LAUNCHXL_release_ccs.projectspec": "freertos_builds_CC1352R1_LAUNCHXL_release_ccs_0.dependency.tirex.json",
+    "../../../source/ti/dmm/apps/common/freertos/freertos_builds/release/ccs/freertos_builds_CC26X2R1_LAUNCHXL_release_ccs.projectspec": "freertos_builds_CC26X2R1_LAUNCHXL_release_ccs_0.dependency.tirex.json",
+    "../../../source/ti/dmm/apps/common/freertos/freertos_builds/release/gcc/freertos_builds_CC1352R1_LAUNCHXL_release_gcc.projectspec": "freertos_builds_CC1352R1_LAUNCHXL_release_gcc_0.dependency.tirex.json",
+    "../../../source/ti/dmm/apps/common/freertos/freertos_builds/release/gcc/freertos_builds_CC26X2R1_LAUNCHXL_release_gcc.projectspec": "freertos_builds_CC26X2R1_LAUNCHXL_release_gcc_1.dependency.tirex.json"
+}

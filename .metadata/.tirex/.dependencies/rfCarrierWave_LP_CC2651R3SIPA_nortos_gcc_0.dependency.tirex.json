@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../rfCarrierWave.c -> rfCarrierWave.c",
+            "+../README.md -> README.md",
+            "+../rfCarrierWave.syscfg -> rfCarrierWave.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/gcc/cc13x1_cc26x1_nortos.lds -> cc13x1_cc26x1_nortos.lds"
+        ]
+    }
+]

@@ -216,6 +216,7 @@
 #define MAP_LL_ReadPeerResolvableAddress                             LL_ReadPeerResolvableAddress
 #define MAP_LL_ReadPhy                                               LL_ReadPhy
 #define MAP_LL_ReadRemoteUsedFeatures                                LL_ReadRemoteUsedFeatures
+#define MAP_LL_UpdateRPA                                             LL_UpdateRPA
 #define MAP_LL_ReadRemoteUsedFeaturesCompleteCback                   LL_ReadRemoteUsedFeaturesCompleteCback_sPatch
 #define MAP_LL_ReadRemoteVersionInfo                                 LL_ReadRemoteVersionInfo
 #define MAP_LL_ReadRemoteVersionInfoCback                            LL_ReadRemoteVersionInfoCback

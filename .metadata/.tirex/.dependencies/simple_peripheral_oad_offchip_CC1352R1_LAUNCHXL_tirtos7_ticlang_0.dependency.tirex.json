@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/simple_peripheral_oad_offchip.c -> Application/simple_peripheral_oad_offchip.c",
+            "+../../Application/simple_peripheral_oad_offchip.h -> Application/simple_peripheral_oad_offchip.h",
+            "+../../Application/simple_peripheral_oad_offchip_menu.c -> Application/simple_peripheral_oad_offchip_menu.c",
+            "+../../Application/simple_peripheral_oad_offchip_menu.h -> Application/simple_peripheral_oad_offchip_menu.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../simple_peripheral_oad_offchip.syscfg -> simple_peripheral_oad_offchip.syscfg"
+        ]
+    }
+]

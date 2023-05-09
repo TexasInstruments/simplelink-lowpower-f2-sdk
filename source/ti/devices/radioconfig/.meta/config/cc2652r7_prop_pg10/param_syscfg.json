@@ -21,15 +21,15 @@
             "options": [
                 {
                     "name": "2gfsk100kbps",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview settings)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview settings)"
                 },
                 {
                     "name": "2gfsk250kbps",
-                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview settings)"
+                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview settings)"
                 },
                 {
                     "name": "2msk250kbps",
-                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
+                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom2400",
@@ -675,17 +675,17 @@
             {
                 "file": "setting_tc900.json",
                 "name": "2gfsk100kbps",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview settings)"
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview settings)"
             },
             {
                 "file": "setting_tc901.json",
                 "name": "2gfsk250kbps",
-                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview settings)"
+                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview settings)"
             },
             {
                 "file": "setting_tc902.json",
                 "name": "2msk250kbps",
-                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
+                "description": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth (Pre-Silicon)"
             },
             {
                 "file": "setting_tc900_custom.json",

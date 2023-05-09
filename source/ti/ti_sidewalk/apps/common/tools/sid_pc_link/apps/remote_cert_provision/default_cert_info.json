@@ -1,0 +1,30 @@
+{
+    "beta": {
+        "device" : {
+             "type" : "A232AX65BNIW2J",
+             "dsn" : "3PDEV-000-00-00-00-0000000d",
+             "apid" : "JWjR",
+             "pub_key" : "078d530f886ad2eb6b39d8999858e959c6d93ee198a6f26d71ab37551058fe836ecbf13c06efdd74ba0b4f9ef527babe025d090ae8fe27135fd20471edddc361"
+        },
+        "cust_prk": "1928ecc1528868964216629fec0303b9ff7ed76ffc404074f5c19ffb365d347c217e0a852ff01c40553b677b3c017cb9"
+    },
+    "gamma": {
+        "device" : {
+             "type" : "A304J89N7PVOI",
+             "dsn" : "3PQA-000-00-00-00-00000001",
+             "apid" : "pMB5",
+             "pub_key" : "078d530f886ad2eb6b39d8999858e959c6d93ee198a6f26d71ab37551058fe836ecbf13c06efdd74ba0b4f9ef527babe025d090ae8fe27135fd20471edddc361"
+        },
+        "cust_prk": "1928ecc1528868964216629fec0303b9ff7ed76ffc404074f5c19ffb365d347c217e0a852ff01c40553b677b3c017cb9"
+    },
+    "prod": {
+        "device" : {
+             "type" : "A15EGYXZUD0XSH",
+             "dsn" : "3PPROD-000-00-00-00-00000001",
+             "apid" : "HnCJ",
+             "pub_key" : "078d530f886ad2eb6b39d8999858e959c6d93ee198a6f26d71ab37551058fe836ecbf13c06efdd74ba0b4f9ef527babe025d090ae8fe27135fd20471edddc361"
+        },
+        "cust_prk": "1928ecc1528868964216629fec0303b9ff7ed76ffc404074f5c19ffb365d347c217e0a852ff01c40553b677b3c017cb9"
+    }
+}
+

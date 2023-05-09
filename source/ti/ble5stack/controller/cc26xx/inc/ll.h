@@ -5334,6 +5334,27 @@ extern void LL_DeInit( void );
  * @return      None.
  */
 extern void LL_ReInit( void );
+
+/*******************************************************************************
+ * @fn          LL_UpdateRPA
+ *
+ * @brief       This API is used to update the local RPA (Resolvable Private
+ *              Address) in case of demand (and not just when the RPA timeout expired).
+ *
+ * NOTE:        This API would be changed / deprecated once the "HCI_LE_Set_Data_Related_Address_Changes"
+ *              Command would be supported.
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_UpdateRPA( void );
 /// @endcond // NODOC
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -178,6 +178,7 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         dbm: "",
         raw: "0"
     };
+    let TxPowerHiRes = ""; // For TX power high resolution (sub-1G)
 
     // Command definitions for this device and PHY (converted from SmartRF Studio)
     const CmdDef = system.getScript(DeviceInfo.getRfCommandDef(phyGroup));
@@ -193,6 +194,10 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
     // True if txPower configurable for 2.4 GHz band is used (only for 2.4GHz proprietary settings)
     const FreqBand = getFrequencyBand();
     const UseTxPower2400 = PhyGroup === Common.PHY_PROP && Common.HAS_24G_PROP && FreqBand === 2400;
+
+    // Use sub-1G high resolution PA table?
+    const paList = RfDesign.getPaTable(FreqBand, false);
+    const UseHiResPa = "TxSub1Pa" in paList[0];
 
     // Commands contained in the setting
     addUsedCommands();
@@ -585,6 +590,17 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
     }
 
     /*!
+     *  ======== getModulationType ========
+     *  Get the modulation type
+     *  (CMD_PROP_RADIO_DIV_SETUP)
+     *
+     *  @returns number as string
+     */
+    function getModulationType() {
+        return getCmdFieldValue("modulation.modType");
+    }
+
+    /*!
      *  ======== getSymbolRate ========
      *  Get Symbol rate based on raw CMD value
      *  (CMD_PROP_RADIO_DIV_SETUP)
@@ -630,7 +646,9 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
      *  Get RX filter bandwidth as a float, unit kHz
      */
     function getRxFilterBw() {
-        return getCmdFieldValueByOpt("rxFilterBw", "rxBw");
+        const cmdVal = Number(getCmdFieldValue("rxBw")).toString(); // Mix of both hex and decimal
+        const special = getDecimationMode() === "7" || getModulationType() === "7";
+        return ParHandler.rxBwFromRegValue(cmdVal, FreqBand, special);
     }
 
     /*!
@@ -997,7 +1015,9 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         setSymbolRate(inst.symbolRate);
 
         // RX Bandwidth
-        setCmdFieldValueByOpt("rxFilterBw", "rxBw", inst.rxFilterBw);
+        const special = getDecimationMode() === "7" || getModulationType() === "7";
+        const rxBw = ParHandler.rxBwToRegValue(inst.rxFilterBw, frequency, special);
+        setCmdFieldValue("rxFilterBw", "rxBw", rxBw);
 
         // Whitening
         setCmdFieldValueByOpt("whitening", "formatConf.whitenMode", inst.whitening);
@@ -1171,12 +1191,9 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         if (txPowerDef === "0xFFFF") {
             txPowerDef = RfDesign.getTxPowerValueDefault(freq, false);
         }
-        // Workaround for inconsistent HEX notation in pasettings.json for 2.4 GHz
-        if (!txPowerDef.includes("0x")) {
-            txPowerDef = "0x" + txPowerDef;
-        }
         const data = {
             txPower: txPowerDef,
+            txPowerSub1: RfDesign.getTxPowerValueByDbm(freq, false, TxPowerHiRes),
             txPowerHi: RfDesign.getTxPowerValueByDbm(freq, true, TxPowerHi.dbm),
             loDivider: getCmdFieldValue("loDivider"),
             freq: freq,
@@ -1962,6 +1979,11 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
             setCmdFieldValue("txPower", "txPower", "0xFFFF");
             TxPowerHi.dbm = freq433 ? inst.txPower433Hi : inst.txPowerHi;
         }
+        else if (UseHiResPa) {
+            // TX power is handled by overrides
+            TxPowerHiRes = inst.txPower;
+            setCmdFieldValue("txPower", "txPower", "0xFFFE");
+        }
         else if (freq433 && "txPower433" in inst) {
             raw = RfDesign.getTxPowerValueByDbm(freq, false, inst.txPower433);
             setCmdFieldValue("txPower", "txPower", raw);
@@ -2059,6 +2081,7 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
         getFrequencyBand: getFrequencyBand,
         getFrequency: getFrequency,
         getDecimationMode: getDecimationMode,
+        getModulationType: getModulationType,
         getUsedCommands: getUsedCommands,
         isParameterUsed: isParameterUsed
     };

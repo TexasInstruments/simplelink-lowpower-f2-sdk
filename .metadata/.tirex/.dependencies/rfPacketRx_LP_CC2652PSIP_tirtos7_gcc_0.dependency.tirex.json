@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../rfPacketRx.c -> rfPacketRx.c",
+            "+../../README.md -> README.md",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../rfPacketRx.syscfg -> rfPacketRx.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x2_cc26x2_tirtos7.lds -> cc13x2_cc26x2_tirtos7.lds"
+        ]
+    }
+]

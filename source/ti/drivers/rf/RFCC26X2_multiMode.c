@@ -218,6 +218,7 @@ typedef enum RF_ScheduleCmdStatus_ {
 #define RF_IEEE_ID_MASK                        0xFC00
 #define RF_IEEE_FG_CMD                         0x2C00
 /* Defines for to mask High-PA overrides. */
+#define RF_TXSUB1_ENABLED                      0xFFFE
 #define RF_TX20_ENABLED                        0xFFFF
 #define RF_TX20_PATYPE_ADDRESS                 0x21000345
 #define RF_TX20_PATYPE_MASK                    0x04
@@ -225,6 +226,7 @@ typedef enum RF_ScheduleCmdStatus_ {
 #define RF_TX20_GAIN_MASK                      0x003FFFFF
 #define RF_TX20_PATTERN                        TX20_POWER_OVERRIDE(0)
 #define RF_TXSTD_PATTERN                       TX_STD_POWER_OVERRIDE(0)
+#define RF_TXSUB1_PATTERN                      RF_TXSTD_PATTERN
 #define RF_TX_OVERRIDE_MASK                    0x000003FF
 #define RF_TX_OVERRIDE_SHIFT                   10
 #define RF_TX_OVERRIDE_INVALID_OFFSET          0xFF
@@ -297,6 +299,9 @@ typedef union RF_ConfigurePaCmd_u RF_ConfigurePaCmd;
 union RF_ConfigurePaCmd_u {
     rfc_CMD_SET_TX_POWER_t   tuneTxPower;
     rfc_CMD_SET_TX20_POWER_t tuneTx20Power;
+#if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    rfc_CMD_SET_TXSUB1_POWER_t tuneTxSub1Power;
+#endif
     rfc_CMD_CHANGE_PA_t      changePa;
 };
 
@@ -511,6 +516,7 @@ static bool             RF_isStateTransitionAllowed(void);
 
 /* PA management */
 static RF_Stat          RF_updatePaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTable_Value newValue, RF_ConfigurePaCmd* configurePaCmd);
+static RF_Stat          RF_updateSub1GHzPaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTable_Value newValue, RF_ConfigurePaCmd* configurePaCmd);
 static void             RF_extractPaConfiguration(RF_Handle handle);
 static bool             RF_decodeOverridePointers(RF_RadioSetup* radioSetup, uint16_t** pTxPower, uint32_t** pRegOverride, uint32_t** pRegOverrideTxStd, uint32_t** pRegOverrideTx20);
 static void             RF_attachOverrides(uint32_t* baseOverride, uint32_t* newOverride);
@@ -4110,7 +4116,7 @@ static uint8_t RF_searchAndReplacePAOverride(uint32_t* pOverride, uint32_t overr
         }
         else
         {
-            /* Replace the default PA gain with the new value. */
+            /* Replace the default or Sub-1GHz PA gain with the new value. */
             pOverride[paOffset] = TX_STD_POWER_OVERRIDE(newValue);
         }
     }
@@ -4379,6 +4385,9 @@ static RF_Stat RF_updatePaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTab
     /* Decode if High Gain PA is available. */
     bool tx20FeatureAvailable = RF_decodeOverridePointers(radioSetup, &pTxPower, &pRegOverride, &pRegOverrideTxStd, &pRegOverrideTx20);
 
+    /* Decode if the frequency band used is Sub-1GHz. */
+    bool sub1GHz = (bool)((RF_LODIVIDER_MASK & radioSetup->common.loDivider) != 0);
+
     /* The new value requires the deault PA. */
     if (newValue.paType == RF_TxPowerTable_DefaultPA)
     {
@@ -4425,6 +4434,11 @@ static RF_Stat RF_updatePaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTab
             /* Use the dedicated command to tune the gain. */
             configurePaCmd->tuneTxPower.commandNo = CMD_SET_TX_POWER;
             configurePaCmd->tuneTxPower.txPower   = newValue.rawValue;
+        }
+        /* Ensure dedicated configuration for Sub1-GHz client. */
+        if (sub1GHz && (status != RF_StatInvalidParamsError))
+        {
+            status = RF_updateSub1GHzPaConfiguration(radioSetup, newValue, configurePaCmd);
         }
     }
     else
@@ -4474,6 +4488,71 @@ static RF_Stat RF_updatePaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTab
             status = RF_StatInvalidParamsError;
         }
     }
+
+    /* Return with the status. */
+    return(status);
+}
+
+/*
+ *  Helper function to configure CC13x4 Sub-1GHz gain for the default PA
+ *
+ *  Input:  radioSetup            - Setup command belong to the client.
+ *          newValue              - The new value the PA to be set to.
+ *          configurePaCmd        - The immediate command to be used to apply the changes if the RF core is active.
+ *  Return: RF_StatSuccess        - The setup command was reconfigured.
+ *          Otherwise             - An error occured.
+ */
+static RF_Stat RF_updateSub1GHzPaConfiguration(RF_RadioSetup* radioSetup, RF_TxPowerTable_Value newValue, RF_ConfigurePaCmd* configurePaCmd)
+{
+    /* Set the default return value to indicate success. */
+    RF_Stat status = RF_StatSuccess;
+
+/* The following feature and corresponding commands are only supported by device family cc13x4_cc26x4. */
+#if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+
+    /* Local variables. */
+    uint16_t* pTxPower          = NULL;
+    uint32_t* pRegOverride      = NULL;
+    uint32_t* pRegOverrideTxStd = NULL;
+    uint32_t* pRegOverrideTx20  = NULL; /* Not used */
+    uint8_t   paOffset          = RF_TX_OVERRIDE_INVALID_OFFSET;
+
+    /* Decode if High Gain PA is available. */
+    bool tx20FeatureAvailable = RF_decodeOverridePointers(radioSetup, &pTxPower, &pRegOverride, &pRegOverrideTxStd, &pRegOverrideTx20);
+
+    /* Store the Sub-1GHz flag value in the setup command. */
+    *pTxPower = RF_TXSUB1_ENABLED;
+
+    /* Ensure that the gain within the correct override list is updated. */
+    if (tx20FeatureAvailable && pRegOverrideTxStd) {
+        paOffset = RF_searchAndReplacePAOverride(pRegOverrideTxStd, RF_TXSUB1_PATTERN, newValue.rawValue);
+
+        /* Use command CMD_CHANGE_PA to tune the gain. */
+        configurePaCmd->changePa.commandNo    = CMD_CHANGE_PA;
+        configurePaCmd->changePa.pRegOverride = pRegOverrideTxStd;
+    }
+    else if (pRegOverride)
+    {
+        paOffset = RF_searchAndReplacePAOverride(pRegOverride, RF_TXSUB1_PATTERN, newValue.rawValue);
+
+        /* Use the dedicated command to tune the gain. */
+        configurePaCmd->tuneTxSub1Power.commandNo   = CMD_SET_TXSUB1_POWER;
+        configurePaCmd->tuneTxSub1Power.txSub1Power = newValue.rawValue;
+    }
+    else
+    {
+        /* PA configuration is not possible due to no override lists. */
+        status = RF_StatInvalidParamsError;
+    }
+
+    /* Ensure that the gain within the override list was successfully updated. */
+    if (paOffset == RF_TX_OVERRIDE_INVALID_OFFSET)
+    {
+        /* PA configuration is not possible due to missing power override. */
+        status = RF_StatInvalidParamsError;
+    }
+
+#endif
 
     /* Return with the status. */
     return(status);
@@ -5821,16 +5900,14 @@ RF_TxPowerTable_Value RF_getTxPower(RF_Handle handle)
     uint32_t* pRegOverride      = NULL;
     uint32_t* pRegOverrideTxStd = NULL;
     uint32_t* pRegOverrideTx20  = NULL;
+    uint32_t  rawValue          = RF_TxPowerTable_INVALID_VALUE;
 
     /* Decode if High Gain PA is available. */
     bool tx20FeatureAvailable = RF_decodeOverridePointers(handle->clientConfig.pRadioSetup, &pTxPower, &pRegOverride, &pRegOverrideTxStd, &pRegOverrideTx20);
 
-    /* Continue the search for the poper value if the High PA is used. */
+    /* Continue the search for the proper value if the High PA is used. */
     if (*pTxPower == RF_TX20_ENABLED)
     {
-        /* Local variable. */
-        uint32_t rawValue;
-
         /* Returning the High Gain PA gain is only possible if the P device is in use. */
         if (tx20FeatureAvailable && pRegOverrideTxStd && pRegOverrideTx20)
         {
@@ -5845,13 +5922,33 @@ RF_TxPowerTable_Value RF_getTxPower(RF_Handle handle)
         {
             if (RF_getPAOverrideOffsetAndValue(pRegOverride, RF_TX20_PATTERN, &rawValue) != RF_TX_OVERRIDE_INVALID_OFFSET)
             {
-                /* As a backup option, parse the common list too. This is or backward compatibility
+                /* As a backup option, parse the common list too. This is for backward compatibility
                    and new software shall not rely on this feature. */
                 value.rawValue = rawValue;
                 value.paType   = RF_TxPowerTable_HighPA;
             }
         }
     }
+#if defined(DeviceFamily_PARENT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    else if (*pTxPower == RF_TXSUB1_ENABLED)
+    {
+        /* The Sub-1GHz gain override defualts to the regular override list, but will be in the standard TX override list when defined. */
+        if (pRegOverrideTxStd)
+        {
+            if (RF_getPAOverrideOffsetAndValue(pRegOverrideTxStd, RF_TXSUB1_PATTERN, &rawValue) != RF_TX_OVERRIDE_INVALID_OFFSET)
+            {
+                value.rawValue = rawValue;
+            }
+        }
+        else if (pRegOverride)
+        {
+            if (RF_getPAOverrideOffsetAndValue(pRegOverride, RF_TXSUB1_PATTERN, &rawValue) != RF_TX_OVERRIDE_INVALID_OFFSET)
+            {
+                value.rawValue = rawValue;
+            }
+        }
+    }
+#endif
     else
     {
         /* The value in the .txPower field represents the output power.*/

@@ -1,6 +1,6 @@
 {
     "setting": {
-        "Name": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth",
+        "Name": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth",
         "Description": "250 kbps MSK, 62.5 kHz deviation.",
         "Frequency": "2440",
         "Patch": {

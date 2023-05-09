@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,6 @@
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
 const RfDesign = Common.getScript("rfdesign");
 
-// Other dependencies
-const DevInfo = Common.getScript("device_info.js");
-
 // Constants
 const BLE_ADV_CHAN_37 = 37;
 const BLE_ADV_CHAN_38 = 38;
@@ -66,6 +63,9 @@ const IEEE_15_4_BASE_CHAN = 11;
 const IEEE_15_4_MAX_CHAN = 26;
 const IEEE_15_4_CHAN_INTV = 5;
 
+let RxBwData24G = [];
+let RxBwDataSub1G = [];
+
 // Exported functions
 exports = {
     getLoDivider: getLoDivider,
@@ -75,7 +75,13 @@ exports = {
     ieee154FreqToChan: ieee154FreqToChan,
     ieee154ChanToFreq: ieee154ChanToFreq,
     validateFreqSymrateRxBW: validateFreqSymrateRxBW,
-    validateTxPower: validateTxPower
+    validateTxPower: validateTxPower,
+    rxBwToRegValue: rxBwToRegValue,
+    rxBwFromRegValue: rxBwFromRegValue,
+    setRxBwValues: (dataSub1G, data24G) => {
+        RxBwDataSub1G = dataSub1G;
+        RxBwData24G = data24G;
+    }
 };
 
 /*!
@@ -201,11 +207,11 @@ function ieee154FreqToChan(freq) {
  * @param rxFilterBw - The bandwidth of the RX Filter [kHz]
  */
 function validateFreqSymrateRxBW(carrierFrequency, symbolRate, rxFilterBw) {
-    const decFactor = calculateDecimationFactor(rxFilterBw);
+    const decFactor = calculateDecimationFactor(rxFilterBw, carrierFrequency);
     if (decFactor === -1) {
         return {
             inst: "rxFilterBw",
-            message: "Error with rxFilterBW table"
+            message: "Error with rxFilterBW table, rxBw = " + rxFilterBw
         };
     }
 
@@ -255,6 +261,57 @@ function validateTxPower(txPower, freq, highPA) {
     return vddr;
 }
 
+/*!
+ *  ======== rxBwToRegValue ========
+ *  Returns the RF command value from the selected RX Filter Bandwidth
+ *
+ *  @param rxBw - Bandwidth of the RX Filter [KHz]
+ *  @param frequency - The selected carrier frequency [MHz]
+ *  @special - true if spcial value, search from the end of the list
+ */
+function rxBwToRegValue(rxBw, frequency, special = false) {
+    let item;
+    if (frequency > 2200) {
+        item = _.find(RxBwData24G, ["name", rxBw]);
+    }
+    else if (special) {
+        // Special cases, items searched from the end of the list
+        item = _.findLast(RxBwDataSub1G, ["name", rxBw]);
+    }
+    else {
+        // Items searched from the start of the list
+        item = _.find(RxBwDataSub1G, ["name", rxBw]);
+    }
+
+    if (typeof item !== "undefined") {
+        return item.key;
+    }
+    return null;
+}
+
+/*!
+ *  ======== rxBwFromRegValue ========
+ *  Returns the RX bandwidth [KHz] by the the RF command value.
+ *
+ *  @param regVal - RF command value to look up [KHz]
+ *  @param frequency - The selected carrier frequency [MHz]
+ */
+function rxBwFromRegValue(regVal, frequency) {
+    let item;
+    const key = Number(regVal);
+    if (frequency > 2200) {
+        item = _.find(RxBwData24G, ["key", key]);
+    }
+    else {
+        item = _.find(RxBwDataSub1G, ["key", key]);
+    }
+
+    if (typeof item !== "undefined") {
+        return item.name;
+    }
+    return null;
+}
+
 /*
  * Private functions
  */
@@ -264,13 +321,14 @@ function validateTxPower(txPower, freq, highPA) {
  *  Returns the decimation factor based on the Rx Filter Bandwidth
  *
  *  @param rxBw - RX Filter Bandwidth
+ *  @param carrierFrequency - The selected carrier frequency [MHz]
  */
-function calculateDecimationFactor(rxBw) {
+function calculateDecimationFactor(rxBw, carrierFrequency) {
     const chfLookup = [];
     let decFactor = -1;
 
     // Get the register value from the RX Filter BW
-    const rxBwReg = rxBwToRegValue(rxBw);
+    const rxBwReg = rxBwToRegValue(rxBw, carrierFrequency);
     if (rxBwReg === null) {
         return -1;
     }
@@ -328,27 +386,6 @@ function calculateDecimationFactor(rxBw) {
 }
 
 /*!
- *  ======== rxBwToRegValue ========
- *  Returns the register value from the selected RX Filter Bandwidth
- *
- *  @param RxBw - Bandwidth of the RX Filter
- */
-function rxBwToRegValue(RxBw) {
-    // Conversion table stored in SysConfig Params
-    const devCfg = DevInfo.getConfiguration(Common.PHY_PROP);
-    const paramFile = Common.flattenConfigs(devCfg.configs);
-    // Find the parameter object in the param File
-    const parameterObject = _.find(paramFile, ["name", "rxFilterBw"]);
-    // Find the RxBwValue in the parameterObjects options
-    const RxBwValue = _.find(parameterObject.options, ["name", RxBw]);
-
-    if (typeof RxBwValue !== "undefined") {
-        return RxBwValue.key;
-    }
-    return null;
-}
-
-/*!
  *  ======== calculateVcoFrequency ========
  *  The VCO frequency will be calculated deepening on the carrier frequency and
  *  the LO divider.
@@ -360,7 +397,6 @@ function calculateVcoFrequency(frequency) {
     if (factor === 0) {
         factor = 2;
     }
-
     return frequency * 1e6 * factor;
 }
 

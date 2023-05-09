@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/defines/coprocessor.opts -> application/defines/coprocessor.opts",
+            "+../coprocessor.syscfg -> coprocessor.syscfg",
+            "+cc13x1_cc26x1_tirtos7.cmd -> cc13x1_cc26x1_tirtos7.cmd"
+        ]
+    }
+]

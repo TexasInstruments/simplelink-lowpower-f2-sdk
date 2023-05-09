@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../rfSynchronizedPacket.h -> rfSynchronizedPacket.h",
+            "+../README.md -> README.md",
+            "+../state-machine.png -> state-machine.png",
+            "+../rfSynchronizedPacketTx.syscfg -> rfSynchronizedPacketTx.syscfg",
+            "+../rfSynchronizedPacketTx_nortos.c -> rfSynchronizedPacketTx_nortos.c",
+            "+../StateMachine_nortos.c -> StateMachine_nortos.c",
+            "+../StateMachine_nortos.h -> StateMachine_nortos.h",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/ticlang/cc13x2x7_cc26x2x7_nortos.cmd -> cc13x2x7_cc26x2x7_nortos.cmd"
+        ]
+    }
+]

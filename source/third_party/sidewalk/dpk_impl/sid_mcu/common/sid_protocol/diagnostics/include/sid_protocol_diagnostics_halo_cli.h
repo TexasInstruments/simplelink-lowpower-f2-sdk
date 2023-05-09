@@ -1,0 +1,71 @@
+/*
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All rights reserved.
+ *
+ * AMAZON PROPRIETARY/CONFIDENTIAL
+ *
+ * You may not use this file except in compliance with the terms and
+ * conditions set forth in the accompanying LICENSE.TXT file.  This file is a
+ * Modifiable File, as defined in the accompanying LICENSE.TXT file.
+ *
+ * THESE MATERIALS ARE PROVIDED ON AN "AS IS" BASIS. AMAZON SPECIFICALLY
+ * DISCLAIMS, WITH RESPECT TO THESE MATERIALS, ALL WARRANTIES, EXPRESS,
+ * IMPLIED, OR STATUTORY, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+ */
+
+#ifndef SID_DIAGNOSTICS_HALO_CLI_H
+#define SID_DIAGNOSTICS_HALO_CLI_H
+
+#include <sid_error.h>
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+enum diagnostics_halo_cli_cmd {
+    DIAGNOSTICS_HALO_CLI_MODEM_READ = 0,
+    DIAGNOSTICS_HALO_CLI_FREQ_READ,
+    DIAGNOSTICS_HALO_CLI_PWR_READ,
+    DIAGNOSTICS_HALO_CLI_MOD_READ,
+    DIAGNOSTICS_HALO_CLI_PKT_READ,
+    DIAGNOSTICS_HALO_CLI_CAD_READ,
+    DIAGNOSTICS_HALO_CLI_TXTIMEOUT_READ,
+    DIAGNOSTICS_HALO_CLI_RX_CNT_READ,
+    DIAGNOSTICS_HALO_CLI_SCAN_READ,
+    DIAGNOSTICS_HALO_CLI_TMONAIR_READ,
+    DIAGNOSTICS_HALO_CLI_FW_VERSION_READ,
+    DIAGNOSTICS_HALO_CLI_SERIAL_NUM_READ,
+    DIAGNOSTICS_HALO_CLI_DEV_ID_READ,
+
+    DIAGNOSTICS_HALO_CLI_MODEM_WRITE,
+    DIAGNOSTICS_HALO_CLI_FREQ_WRITE,
+    DIAGNOSTICS_HALO_CLI_PWR_WRITE,
+    DIAGNOSTICS_HALO_CLI_MOD_WRITE,
+    DIAGNOSTICS_HALO_CLI_PKT_WRITE,
+    DIAGNOSTICS_HALO_CLI_CAD_WRITE,
+    DIAGNOSTICS_HALO_CLI_TXTIMEOUT_WRITE,
+    DIAGNOSTICS_HALO_CLI_RX_CNT_RESET,
+    DIAGNOSTICS_HALO_CLI_CW_WRITE,
+    DIAGNOSTICS_HALO_CLI_MOD_ENA_WRITE,
+    DIAGNOSTICS_HALO_CLI_STATE_WRITE,
+    DIAGNOSTICS_HALO_CLI_PING_WRITE,
+    DIAGNOSTICS_HALO_CLI_FQHOP_WRITE,
+
+    DIAGNOSTICS_HALO_CLI_CMD_MAX
+};
+
+/**
+ * @brief   Process diagnostics cmd for hostlink
+ *
+ * @return  SID_ERROR_NONE if success
+ */
+sid_error_t sid_diagnostics_halo_cli_cmd_exe(enum diagnostics_halo_cli_cmd cmd, int32_t argc,
+                                             const char ** argv);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

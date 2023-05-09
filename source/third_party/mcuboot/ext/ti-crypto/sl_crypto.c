@@ -40,7 +40,7 @@
 #else
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/hapi.h)
-#include "ECDSACC1308_driverlib.h" // From SSBL, copy to source/ti/common
+#include "ecdsa_lpf3.h"
 #endif
 
 #ifdef DeviceFamily_CC23X0R5

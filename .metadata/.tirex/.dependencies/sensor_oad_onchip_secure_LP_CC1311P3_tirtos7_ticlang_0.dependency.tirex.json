@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor_oad_onchip.opts -> application/defines/sensor_oad_onchip.opts",
+            "+../sensor.syscfg -> sensor.syscfg",
+            "+cc13x1_cc26x1_oad_onchip_tirtos7.cmd -> cc13x1_cc26x1_oad_onchip_tirtos7.cmd"
+        ]
+    }
+]

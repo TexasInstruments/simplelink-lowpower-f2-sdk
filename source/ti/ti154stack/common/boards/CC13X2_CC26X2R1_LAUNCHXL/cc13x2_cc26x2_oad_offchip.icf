@@ -1,0 +1,209 @@
+/******************************************************************************
+
+ @file  cc13x2_cc26x2_oad_offchip.icf
+
+ @brief Linker configuration file for 15.4 OAD on cc13x2/cc26x2 devices
+
+ Group: WCS LPC
+ Target Device: cc13xx_cc26xx
+
+ ******************************************************************************
+ 
+ Copyright (c) 2018-2023, Texas Instruments Incorporated
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ *  Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+ *  Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+ *  Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ ******************************************************************************
+ 
+ 
+ *****************************************************************************/
+
+///////////////////////////////////////////////////////////////////////////////
+// Memory Sizes
+///////////////////////////////////////////////////////////////////////////////
+define symbol FLASH_BASE            = 0x00000000;
+define symbol RAM_BASE              = 0x20000000;
+define symbol ROM_BASE              = 0x10000000;
+if (isdefinedsymbol(FREERTOS))
+{
+  define symbol ENTRY_START         = 0x00000100;
+}
+
+define symbol RAM_SIZE              = 0x00014000; // 80K
+define symbol FLASH_SIZE            = 0x00058000; // 352K
+define symbol ROM_SIZE              = 0x00040000; // 256K
+
+define symbol RAM_SIZE1          = 0x1800;
+define symbol RAM_BASE2          = RAM_BASE + RAM_SIZE1;
+define symbol RAM_SIZE2          = RAM_SIZE - RAM_SIZE1;
+
+///////////////////////////////////////////////////////////////////////////////
+// Memory Definitions
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Flash
+//
+define symbol WORD_SIZE             = 4;
+define symbol PAGE_SIZE             = 0x2000;
+
+if (isdefinedsymbol(PAGE_ALIGN))
+{
+  define symbol FLASH_MEM_ALIGN     = PAGE_SIZE;
+}
+else
+{
+  define symbol FLASH_MEM_ALIGN     = WORD_SIZE;
+}
+
+// Last section where BIM and CCFG will be placed
+define symbol NUM_RESERVED_PAGES    = 1;
+define symbol RESERVED_SIZE         = (NUM_RESERVED_PAGES * PAGE_SIZE);
+define symbol RESERVED_END          = (FLASH_SIZE - 1);
+define symbol RESERVED_START        = (RESERVED_END - RESERVED_SIZE + 1);
+
+define symbol OAD_HDR_START         = FLASH_BASE;
+define symbol OAD_HDR_SIZE          = 0xA8;
+define symbol OAD_HDR_END           = (OAD_HDR_START + OAD_HDR_SIZE-1);
+
+if (isdefinedsymbol(FREERTOS))
+{
+  define symbol ENTRY_SIZE            = 0xD8;
+}
+else
+{
+  define symbol ENTRY_SIZE            = 0x40;
+  define symbol ENTRY_START           = OAD_HDR_END + 1;
+}
+define symbol ENTRY_END             = ENTRY_START + ENTRY_SIZE - 1;
+
+define symbol FLASH_START           = ENTRY_END + 1;
+define symbol FLASH_END             = RESERVED_START;
+
+/* Define a memory region that covers the entire 4 GB addressable space */
+define memory mem with size = 4G;
+
+/* Memory Regions */
+define region FLASH_IMG_HDR = mem:[from OAD_HDR_START  to OAD_HDR_END];
+define region ENTRY_FLASH   = mem:[from ENTRY_START    to ENTRY_END];
+define region FLASH         = mem:[from FLASH_START    to FLASH_END];
+
+///////////////////////////////////////////////////////////////////////////////
+// RAM
+//
+
+/* Internal RAM for data used by application
+ * Define two RAM regions: One before the fixed DMA region (RAM_pre_dma_region, a much smaller space),
+ * and one after (RAM_region, the majority of RAM).
+ * This allows us to place certain RAM data sections in the pre-DMA region space.
+ */
+define region RAM_pre_dma_region  = mem:[from RAM_BASE size RAM_SIZE1];
+define region RAM_region  = mem:[from RAM_BASE2 size RAM_SIZE2];
+
+///////////////////////////////////////////////////////////////////////////////
+// Memory Placement
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// Memory Placement in Flash
+//
+
+// Flash OAD Image Header
+place at start of FLASH_IMG_HDR  { section .img_hdr };
+keep                             { section .img_hdr };
+
+// Interrupt Vector Table
+place at start of ENTRY_FLASH    { readonly section .resetVecs};
+keep                             { readonly section .resetVecs};
+
+// All other pieces of codes:
+define block ROSTK with alignment=WORD_SIZE{ ro };
+place in FLASH { block ROSTK };
+
+///////////////////////////////////////////////////////////////////////////////
+// Memory Placement in RAM
+//
+
+/* Place the ram vector table in the ramVecs section in the RAM_region */
+place in RAM_region { section .ramVecs };
+do not initialize { section .ramVecs };
+
+place in RAM_pre_dma_region { section .data object main.o };
+place in RAM_pre_dma_region { section .data object mac_radio.o };
+place in RAM_pre_dma_region { section .bss object macTask.o };
+place in RAM_pre_dma_region { section .bss object osal_port.o };
+
+/*
+ * Define CSTACK block to contain .stack section. This enables the IAR IDE
+ * to properly show the stack content during debug. Place stack at end of
+ * retention RAM, do not initialize (initializing the stack will destroy the
+ * return address from the initialization code, causing the processor to branch
+ * to zero and fault)
+ */
+define symbol STACKSIZE = 1024;
+define block CSTACK with alignment = 8, size = STACKSIZE { section .stack };
+
+if (isdefinedsymbol(ROM_TIMACDataAddr)) {
+    place at address mem:ROM_TIMACDataAddr {section .data_RAM_BASE_ADDR };
+}
+
+/* Export stack top symbol. Used by startup file */
+define exported symbol STACK_TOP = end(RAM_region) + 1;
+
+define block RWDATA { rw };
+
+define section .heap_start            { public heapStart: };
+define section .heap_end              { public heapEnd: };
+define block   HEAP_END with size = 1 { section .heap_end };
+
+define block END_OF_RAM with fixed order {
+                                        block HEAP_END,
+                                        block CSTACK
+                                      };
+place at end of RAM_region { block END_OF_RAM };
+
+place in RAM_region { block RWDATA,
+               last section .heap_start};
+
+
+initialize by copy { readwrite };
+do not initialize { section .stack, section .noinit};
+
+///////////////////////////////////////////////////////////////////////////////
+// Other Linker Directives
+///////////////////////////////////////////////////////////////////////////////
+
+/*
+ * The USE_TIRTOS_ROM symbol is defined internally in the build flow (using
+ * --config_def USE_TIRTOS_ROM=1) for TI-RTOS applications whose app.cfg file
+ * specifies to use the ROM.
+ */
+if (isdefinedsymbol(USE_TIRTOS_ROM)) {
+    include "TIRTOS_ROM.icf";
+}

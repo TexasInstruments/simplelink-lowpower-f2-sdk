@@ -30,13 +30,16 @@ typedef enum {
 } ws_bootsrap_event_type_e;
 
 #ifdef HAVE_WS
-
 #define MAX_PANID_ALLOW_LIST_LEN    3
 #define MAX_PANID_DENY_LIST_LEN     5
 
 #define PANID_FLTR_UPDATE_SUCCESS   0
 #define PANID_FLTR_UPDATE_NO_MATCH -1
 #define PANID_FLTR_UPDATE_NO_SPACE -2
+
+#define PANID_STACK_RESTART_SUCCESS     0
+#define PANID_STACK_RESTART_NO_RESTART -1
+#define PANID_STACK_RESTART_FAILED     -2
 
 #define PANID_UNUSED 0xFFFF
 
@@ -52,6 +55,10 @@ struct ws_bs_ie;
 struct ws_neighbor_class_entry;
 struct ws_stack_info;
 struct ws_neighbour_info;
+
+extern uint16_t panid_allow_list[MAX_PANID_ALLOW_LIST_LEN];
+extern uint16_t panid_deny_list[MAX_PANID_DENY_LIST_LEN];
+extern uint16_t panid_list_clear_timeout_sec;
 
 int ws_bootstrap_init(int8_t interface_id, net_6lowpan_mode_e bootstrap_mode);
 
@@ -120,10 +127,12 @@ void ws_bootstrap_mac_neighbor_short_time_set(struct protocol_interface_info_ent
 
 /*!
  * API to restart network stack
- * Input parameters: None
- * Output Parameters: success or failure
+ * Input parameters: force_restart: if true, force stack restart regardless of panid filter list state,
+ * if false, do not force stack restart.
+ * Output Parameters: PANID_STACK_RESTART_SUCCESS if success. PANID_STACK_RESTART_NO_RESTART if no
+ * restart was required. PANID_STACK_RESTART_FAILED otherwise.
  */
-int nanostack_net_stack_restart(void);
+int nanostack_net_stack_restart(bool force_restart);
 
 /*!
  * API to add a single entry in panid_allow_list[] or panid_deny_list[]

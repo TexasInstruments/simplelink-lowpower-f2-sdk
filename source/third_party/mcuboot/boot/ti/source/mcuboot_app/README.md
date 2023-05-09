@@ -24,6 +24,15 @@ Mcuboot will first copy the image from the secondary to the primary slot. Afterw
 
 Note: Mcuboot also supports swap-based image upgrades. This is not currently supported by the TI but is planned in future releases.
 
+## HW Antirollback Protection
+
+MCUBoot has a hardware-based downgrade prevention feature by using a security counter that is stored in each image's protected TLV area. If MCUBoot is built with `MCUBOOT_HW_ROLLBACK_PROT` configuration enabled
+in mcuboot_config.h, in the project post-build steps for the target application, add option `-s <val>`, where `<val>` specifies the value of the security counter for the image. In this scenario, besides comparing
+the version stored in the header of each image, MCUBoot will compare the value of the image security counter against the current security counter stored in the last sector of the MCUBoot region, and accept the new
+image if its security counter has the same or higher value.</br>
+
+**Note**: This feature is not supported in CC13x2x7/CC26x2x7 devices.
+
 ## Image Slots (flash_map_backend.c)
 The flash memory is partitioned into two image slots: a primary slot and a secondary slot. Each slot must have a fixed location, which is set up in the `<example_root>/flash_map_backend/flash_map_backend.c` file.
 See the image slot configuration below, configured according to the device in use.
@@ -188,7 +197,9 @@ table, th, td {
 For 2 upgradeable images:
 
 **NOTE 1**: When using the **TZ Enabled** build configuration, make sure to set **Address of Flash Vector Table** to 0x00000800, under syscfg **Device Configuration**.</br>
-**NOTE 2**: The SDK includes the **Secure Image** ELF file (tfm_s.axf) and a **Non-Secure example** project called tfm_aescbc, which can be imported into CCS, so that both secure and non-secure images be used in MCUBoot 2-image upgrade mode. </br></br>
+**NOTE 2**: The SDK includes the **Secure Image** ELF file (tfm_s.axf) and a **Non-Secure example** project called tfm_aescbc, which can be imported into CCS, so that both secure and non-secure images be used in MCUBoot 2-image upgrade mode. </br>
+**NOTE 3**: HW Antirollback Protection is not supported in this mode.</br></br>
+
 Per section **How to build an image that is compatible with MCUBOOT** above, find file `<SDK_DIR>/tfm_s/build/cc26x4/production_full/tfm_s.axf` and run the following steps:<br><br>
 
 ```

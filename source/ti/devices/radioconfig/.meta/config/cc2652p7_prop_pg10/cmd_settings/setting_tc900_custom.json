@@ -1,6 +1,6 @@
 {
     "setting": {
-        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview settings))",
+        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview settings))",
         "Description": "100 kbps, 2-GFSK, 50 kHz deviation. (Preview settings)",
         "Frequency": "2440",
         "Patch": {

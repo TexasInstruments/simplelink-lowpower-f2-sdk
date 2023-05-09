@@ -9,7 +9,7 @@
         "DevicePackage": "MOT 7x7",
         "FrontEnd": "ID",
         "PaSettings": "pasettings.json",
-        "RfDesign": "LAUNCHXL-CC1352P1",
+        "RfDesign": "CC1312PSIP",
         "DefaultCategory": "Settings",
         "IoSettings": {
             "_name": "RF Switch",

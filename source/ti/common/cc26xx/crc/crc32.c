@@ -48,14 +48,14 @@
  *                                          Includes
  */
 
-#include "ti/common/cc26xx/flash_interface/flash_interface.h"
-#include "ti/common/cc26xx/oad/oad_image_header.h"
+#include "common/cc26xx/flash_interface/flash_interface.h"
+#include "common/cc26xx/oad/oad_image_header.h"
 
 /*******************************************************************************
  *                                          Constants
  */
 
-#define CRC32_POLYNOMIAL      ((uint32_t)0xEDB88320)  /* reveresed version or 802.3 polynomial 0x04C11DB7 */
+#define CRC32_POLYNOMIAL      ((uint32_t)0xEDB88320)  /* reversed version or 802.3 polynomial 0x04C11DB7 */
 
 /* Warning! this must be a power of 2 less than 1024 */
 #define CRC32_BUF_SZ          256

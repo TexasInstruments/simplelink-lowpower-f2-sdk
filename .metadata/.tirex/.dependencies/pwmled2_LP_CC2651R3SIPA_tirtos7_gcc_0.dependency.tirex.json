@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../pwmled2.c -> pwmled2.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../pwmled2.syscfg -> pwmled2.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2651R3SIPA/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos7.lds -> cc13x1_cc26x1_tirtos7.lds"
+        ]
+    }
+]

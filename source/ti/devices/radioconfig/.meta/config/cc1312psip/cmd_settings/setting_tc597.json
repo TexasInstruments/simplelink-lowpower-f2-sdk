@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "4.8 kbps, OOK, 39 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "4.8 kbps OOK for 868 MHz band. (Pre-Silicon)",
+        "Name": "4.8 kbps, OOK, 39 kHz RX Bandwidth",
+        "Description": "4.8 kbps OOK for 868 MHz band.",
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -165,8 +165,8 @@
                                 },
                                 {
                                     "_type": "ELEMENT",
-                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by 3 dB (default: -2), trimmed for external bias and differential configuration",
-                                    "$": "0x00FB88A3"
+                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB at 779-930 MHz",
+                                    "$": "0x000488A3"
                                 },
                                 {
                                     "_type": "ADI_HALFREG_OVERRIDE",
@@ -232,6 +232,14 @@
                                     "$": "0x60A8,0x0401"
                                 }
                             ]
+                        },
+                        {
+                            "_name": "override_hposc.json",
+                            "Element32b": {
+                                "_type": "HPOSC_OVERRIDE",
+                                "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                "$": "0"
+                            }
                         },
                         {
                             "_name": "override_patable_14dbm.json",

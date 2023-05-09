@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,8 +77,16 @@ const settingSpecific = {
     config: config
 };
 
-const RxFilterBwOptions7 = []; // For decimMode = 7
-const RxFilterBwOptions0 = []; // For decimMode = 0
+const RxFilterBwOptionsDecim7 = []; // For decimMode = 7, sub1-G
+const RxFilterBwOptionsMod7 = []; // For Q-QPSK modulation, sub1-G
+const RxFilterBwOptions0 = []; // For decimMode = 0, sub1-G
+const RxFilterBwOptions24 = []; // For decimMode = 0, 2.4 GHz
+
+const RxBwData24 = [];
+let RxBwDataSub1G = [];
+
+// Multiplication factor 2.4 GHz RX bandwidth
+const RX_BW_COEFF_24G = 1.125;
 
 // Configurables to preserve during reload
 const configPreserve = ["txPower", "txPowerHi", "txPower169", "txPower433", "txPower433Hi", "txPower2400"];
@@ -159,16 +167,19 @@ function getRxFilterBwOptions(inst) {
     const phyName = Common.getPhyType(inst);
     const cmdHandler = CmdHandler.get(PHY_GROUP, phyName);
 
-    const decimMode = cmdHandler.getDecimationMode();
-    if (decimMode === "0") {
-        // Default
-        return RxFilterBwOptions0;
+    if (cmdHandler.getModulationType() === "7") {
+        // Q-QPSK modulation
+        return RxFilterBwOptionsMod7;
     }
-    else if (decimMode === "7") {
+    if (cmdHandler.getDecimationMode() === "7") {
         // TCXO
-        return RxFilterBwOptions7;
+        return RxFilterBwOptionsDecim7;
     }
-    throw Error("Decimation mode not supported: " + decimMode);
+    if (inst.freqBand === "2400") {
+        return RxFilterBwOptions24;
+    }
+    // Default
+    return RxFilterBwOptions0;
 }
 
 /*!
@@ -181,12 +192,24 @@ function createRxFilterBwOptions(rawOptions) {
     _.each(rawOptions, (item) => {
         if ("info" in item) {
             // For now only the only info is: "decimMode=7"
-            RxFilterBwOptions7.push({name: item.name});
+            if (item.info === "decimMode=7") {
+                RxFilterBwOptionsDecim7.push({name: item.name});
+            }
+            else if (item.info === "modType=7") {
+                RxFilterBwOptionsMod7.push({name: item.name});
+            }
         }
         else {
+            if (HAS_24G) {
+                const rxBw = (Number(item.name) * RX_BW_COEFF_24G).toFixed(1);
+                RxFilterBwOptions24.push({name: rxBw});
+                RxBwData24.push({name: rxBw, key: item.key});
+            }
             RxFilterBwOptions0.push({name: item.name});
         }
     });
+    RxBwDataSub1G = rawOptions;
+    ParameterHandler.setRxBwValues(RxBwDataSub1G, RxBwData24);
 }
 
 /*!
@@ -471,14 +494,14 @@ function validateSymbolRate(inst) {
     }
 
     // Workaround for validation issues (Wi-SUN #5, and sub-1GHz ZigBee 500 kbps)
-    let phyNeedsWorkaround = false;
+    let skipRxBwValidation = false;
     if ("phyType868" in inst) {
         const phyType = inst.phyType868;
-        phyNeedsWorkaround = phyType.includes("2gfsk300kbps75dev915wsun5")
-            || phyType.includes("2gfsk500kbps154g");
+        skipRxBwValidation = phyType.includes("2gfsk300kbps75dev915wsun5")
+            || phyType.includes("2gfsk500kbps154g") || phyType.match(/qpsk/);
     }
 
-    if (phyNeedsWorkaround) {
+    if (skipRxBwValidation) {
         status.valid = true;
         return status;
     }
@@ -486,6 +509,7 @@ function validateSymbolRate(inst) {
     const result = ParameterHandler.validateFreqSymrateRxBW(inst.carrierFrequency,
         inst.symbolRate,
         inst.rxFilterBw);
+
     if (result !== null) {
         status.msg = result.message;
         return status;
@@ -711,6 +735,9 @@ function extend(base) {
     /* First configurable is "freqBands", follow by one phyType for each band */
     const nFreqBands = config[0].options.length;
 
+    /* Initialize configurables */
+    initConfigurables(settingSpecific.config);
+
     /* Initialize the default PHY in each frequency band */
     for (let i = nFreqBands; i > 0; i--) {
         const cfg = config[i].name;
@@ -725,9 +752,6 @@ function extend(base) {
     /* Initialize state of UI elements (readOnly/hidden when appropriate) */
     Common.initLongDescription(settingSpecific.config, PropDocs.propDocs);
     Common.initLongDescription(settingSpecific.config, SharedDocs.sharedDocs);
-
-    /* Initialize configurables */
-    initConfigurables(settingSpecific.config);
 
     /* Remove invalid elements from configurables */
     RFBase.pruneConfig(settingSpecific.config);

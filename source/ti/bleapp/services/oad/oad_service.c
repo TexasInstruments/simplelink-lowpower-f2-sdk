@@ -450,7 +450,7 @@ static bStatus_t OadWriteAttrCB(uint16 connHandle, gattAttribute_t *pAttr,
             case OAD_SRV_IDENTIFY_REQ:
             case OAD_SRV_BLOCK_REQ:
             case OAD_SRV_CTRL_CMD:
-                serviceChar = char_index;
+                serviceChar = (oadServiceChar_e)char_index;
                 break;
 
             default:

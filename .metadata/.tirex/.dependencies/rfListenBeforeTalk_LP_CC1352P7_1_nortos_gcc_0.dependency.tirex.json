@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../application_settings.c -> application_settings.c",
+            "+../application_settings.h -> application_settings.h",
+            "+../README.md -> README.md",
+            "+../rfListenBeforeTalk.syscfg -> rfListenBeforeTalk.syscfg",
+            "+../rfListenBeforeTalk.c -> rfListenBeforeTalk.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/gcc/cc13x2x7_cc26x2x7_nortos.lds -> cc13x2x7_cc26x2x7_nortos.lds"
+        ]
+    }
+]

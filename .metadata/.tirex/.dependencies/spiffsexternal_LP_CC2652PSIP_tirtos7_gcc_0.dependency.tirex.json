@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../spiffsexternal.c -> spiffsexternal.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_spiffs_tirtos.c -> tirtos7/main_spiffs_tirtos.c",
+            "+../spiffsexternal.syscfg -> spiffsexternal.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2652PSIP/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.lds -> cc13x2_cc26x2_tirtos7.lds"
+        ]
+    }
+]

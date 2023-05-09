@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../watchdog.c -> watchdog.c",
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../watchdog.syscfg -> watchdog.syscfg",
+            "+../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos.cmd -> cc13x4_cc26x4_nortos.cmd"
+        ]
+    }
+]

@@ -2,11 +2,6 @@
 
 Application that toggles an LED(s) using a GPIO pin interrupt.
 
-## Getting Started
-
-Install pip packages prior to building example using the following command:
-`pip install -r ./scripts/requirements.txt`
-
 ## Peripherals & Pin Assignments
 
 When this project is built, the SysConfig tool will generate the TI-Driver
@@ -40,6 +35,15 @@ initialization is complete.
 
 * `CONFIG_GPIO_LED_0` is toggled every 500ms.
 * `CONFIG_GPIO_LED_1` is toggled every 500ms.
+
+## HW Antirollback Protection
+
+MCUBoot has a hardware-based downgrade prevention feature by using a security counter that is stored in each image's protected TLV area. If MCUBoot is built with `MCUBOOT_HW_ROLLBACK_PROT` configuration enabled
+in mcuboot_config.h, in the project post-build steps for the target application, add option `-s <val>`, where `<val>` specifies the value of the security counter for the image. In this scenario, besides comparing 
+the version stored in the header of each image, MCUBoot will compare the value of the image security counter against the current security counter stored in the last sector of the MCUBoot region, and accept the new 
+image if its security counter has the same or higher value.</br>
+
+**Note**: This feature is not supported in CC13x2x7/CC26x2x7 devices.
 
 ## TZ Enabled build configuration
 

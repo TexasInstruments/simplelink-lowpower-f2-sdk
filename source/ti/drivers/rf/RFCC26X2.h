@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2020, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -974,16 +974,25 @@ extern "C" {
  * Creates a TX power table entry for the default PA.
  *
  * The values for \a bias, \a gain, \a boost and \a coefficient are usually measured by Texas Instruments
- * for a specific front-end configuration. They can then be obtained from SmartRFStudio.
+ * for a specific front-end configuration. They can then be obtained from SmartRFStudio or SysConfig.
  */
 #define RF_TxPowerTable_DEFAULT_PA_ENTRY(bias, gain, boost, coefficient) \
         { .rawValue = ((bias) << 0) | ((gain) << 6) | ((boost) << 8) | ((coefficient) << 9), .paType = RF_TxPowerTable_DefaultPA }
 
 /**
+ * Creates a TX power table Sub1-GHz entry for the default PA.
+ *
+ * The values for \a bias, \a gain, \a boost, \a coefficient and \a gain2 are usually measured by Texas Instruments
+ * for a specific front-end configuration. They can then be obtained from SmartRFStudio or SysConfig.
+ */
+#define RF_TxPowerTable_CC13x4Sub1GHz_DEFAULT_PA_ENTRY(bias, gain, boost, coefficient, gain2) \
+        { .rawValue = ((bias) << 0) | ((gain) << 6) | ((boost) << 8) | ((coefficient) << 9) | ((gain2) << 16), .paType = RF_TxPowerTable_DefaultPA }
+
+/**
  * Creates a TX power table entry for the High-power PA.
  *
  * The values for \a bias, \a ibboost, \a boost, \a coefficient and \a ldoTrim are usually measured by Texas Instruments
- * for a specific front-end configuration. They can then be obtained from SmartRFStudio.
+ * for a specific front-end configuration. They can then be obtained from SmartRFStudio or SysConfig.
  */
 #define RF_TxPowerTable_HIGH_PA_ENTRY(bias, ibboost, boost, coefficient, ldotrim) \
         { .rawValue = ((bias) << 0) | ((ibboost) << 6) | ((boost) << 8) | ((coefficient) << 9) | ((ldotrim) << 16), .paType = RF_TxPowerTable_HighPA }

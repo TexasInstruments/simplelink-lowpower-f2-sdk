@@ -70,7 +70,7 @@ const devSpecific2Gfsk50KbpsSettings = {
         freqBand: "868", // options: 868 or 433
         phyType868: "2gfsk50kbps", // phyType suffix must match freqBand
         carrierFrequency: 868.00,
-        txPower: "14",
+        txPower: "12",
         codeExportConfig: {
             cmdList_prop: ["cmdPropRadioDivSetupPa"],
             cmdPropRadioDivSetupPa: "RF_cmdPropRadioDivSetupPa_fsk_50kbps"

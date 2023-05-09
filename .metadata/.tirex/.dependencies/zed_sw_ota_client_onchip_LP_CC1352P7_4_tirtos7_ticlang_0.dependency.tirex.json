@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zed_sw_ota_client_onchip.syscfg -> zed_sw_ota_client_onchip.syscfg"
+        ]
+    }
+]

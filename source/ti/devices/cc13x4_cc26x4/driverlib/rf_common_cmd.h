@@ -3,7 +3,7 @@
 *
 *  Description:    CC13x2/CC26x2 API for common/generic commands
 *
-*  Copyright (c) 2015 - 2020, Texas Instruments Incorporated
+*  Copyright (c) 2015 - 2023, Texas Instruments Incorporated
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -100,6 +100,7 @@ typedef struct __RFC_STRUCT rfc_CMD_ARM_RAT_CH_s rfc_CMD_ARM_RAT_CH_t;
 typedef struct __RFC_STRUCT rfc_CMD_DISARM_RAT_CH_s rfc_CMD_DISARM_RAT_CH_t;
 typedef struct __RFC_STRUCT rfc_CMD_SET_TX_POWER_s rfc_CMD_SET_TX_POWER_t;
 typedef struct __RFC_STRUCT rfc_CMD_SET_TX20_POWER_s rfc_CMD_SET_TX20_POWER_t;
+typedef struct __RFC_STRUCT rfc_CMD_SET_TXSUB1_POWER_s rfc_CMD_SET_TXSUB1_POWER_t;
 typedef struct __RFC_STRUCT rfc_CMD_CHANGE_PA_s rfc_CMD_CHANGE_PA_t;
 typedef struct __RFC_STRUCT rfc_CMD_UPDATE_HPOSC_FREQ_s rfc_CMD_UPDATE_HPOSC_FREQ_t;
 typedef struct __RFC_STRUCT rfc_CMD_UPDATE_FS_s rfc_CMD_UPDATE_FS_t;
@@ -1011,6 +1012,19 @@ struct __RFC_STRUCT rfc_CMD_SET_TX20_POWER_s {
    uint16_t commandNo;                  //!<        The command ID number 0x0014
    uint16_t __dummy0;
    uint32_t tx20Power;                  //!<        New TX power setting
+} __RFC_STRUCT_ATTR;
+
+//! @}
+
+#define CMD_SET_TXSUB1_POWER                                    CMD_SET_TX20_POWER
+
+//! \addtogroup CMD_SET_TXSUB1_POWER
+//! @{
+//! Set Transmit Power for Sub-1GHz PA
+struct __RFC_STRUCT rfc_CMD_SET_TXSUB1_POWER_s {
+   uint16_t commandNo;                  //!<        The command ID number 
+   uint16_t __dummy0;
+   uint32_t txSub1Power;                //!<        New TX power setting
 } __RFC_STRUCT_ATTR;
 
 //! @}

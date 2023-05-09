@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.icf -> cc13x4_cc26x4_freertos.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../rfUARTBridge.c -> rfUARTBridge.c",
+            "+../rfUARTBridge.syscfg -> rfUARTBridge.syscfg"
+        ]
+    }
+]

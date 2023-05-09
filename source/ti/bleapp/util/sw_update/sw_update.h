@@ -56,6 +56,7 @@ extern "C"
  * INCLUDES
  */
 #include "hal_types.h"
+#include "bootutil/image.h"
 
 /*********************************************************************
  * MACROS
@@ -127,13 +128,14 @@ extern Status_t SwUpdate_RevokeImage(uint8 imageSlot);
 /*********************************************************************
  * @fn      SwUpdate_GetSWVersion
  *
- * @brief   ////
+ * @brief   This function extract sw version of MCU header from
+ *          given address
  *
- * @param   mode - //
+ * @param   hdrAdrr - Header address
  *
- * @return  SUCCESS or INVALIDPARAMETER
+ * @return  Image version struct
  */
-//extern Status_t SwUpdate_GetSWVersion(uint8_t *swVer, uint8_t len, uint8 imageSlot);
+extern uint32* SwUpdate_GetSWVersion(uint32 hdrAdrr);
 
 /*********************************************************************
  * @fn      SwUpdate_EraseFlash
@@ -183,7 +185,7 @@ extern Status_t SwUpdate_WriteBlock(uint32 blkStartAddr, uint16 len, uint8 *pVal
 #define INT_PRIMARY_SLOT          5
 #define INT_SECONDARY_SLOT        6
 
-#define MCUBOOT_SW_VER_LEN        4
+#define MCUBOOT_SW_VER_LEN        6
 /*********************************************************************
 *********************************************************************/
 

@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Release Candidate))",
-        "Description": "100 kbps, 2-GFSK, 50 kHz deviation.(Release Candidate)",
+        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth)",
+        "Description": "100 kbps, 2-GFSK, 50 kHz deviation.",
         "Frequency": "2440",
         "Patch": {
             "Define": "RF_MODE_PROPRIETARY_2_4",

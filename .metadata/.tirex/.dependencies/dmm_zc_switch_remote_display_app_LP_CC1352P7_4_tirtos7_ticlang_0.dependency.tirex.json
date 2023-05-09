@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../TOOLS/defines/f8wcoord.opts -> TOOLS/defines/f8wcoord.opts",
+            "+../../TOOLS/defines/dmm_zc_switch_remote_display_app.opts -> TOOLS/defines/dmm_zc_switch_remote_display_app.opts",
+            "+../../README.html -> README.html",
+            "+../../TOOLS/build_components.opt -> TOOLS/build_components.opt",
+            "+../../TOOLS/factory_config.opt -> TOOLS/factory_config.opt",
+            "+../dmm_zc_switch_remote_display.syscfg -> dmm_zc_switch_remote_display.syscfg",
+            "+cc13x2x7_cc26x2x7_app_tirtos7.cmd -> cc13x2x7_cc26x2x7_app_tirtos7.cmd"
+        ]
+    }
+]

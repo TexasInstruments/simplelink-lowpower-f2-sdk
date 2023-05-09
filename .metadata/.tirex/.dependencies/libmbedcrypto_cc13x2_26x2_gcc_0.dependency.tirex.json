@@ -1,0 +1,10 @@
+[
+    {
+        "files": [
+            "+../../../config/aes_alt.h -> config/aes_alt.h",
+            "+../../../config/ecjpake_alt.h -> config/ecjpake_alt.h",
+            "+../../../config/sha256_alt.h -> config/sha256_alt.h",
+            "+../../../config/mbedtls-config-cc13x2_26x2.h -> config/mbedtls-config-cc13x2_26x2.h"
+        ]
+    }
+]

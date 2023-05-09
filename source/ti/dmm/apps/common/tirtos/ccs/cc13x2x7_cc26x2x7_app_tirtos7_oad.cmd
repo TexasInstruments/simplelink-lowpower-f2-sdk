@@ -270,8 +270,8 @@ SECTIONS
 
   GROUP > ENTRY
   {
-    .resetVecs
-    EntrySection  LOAD_START(prgEntryAddr)
+    .resetVecs LOAD_START(prgEntryAddr)
+    EntrySection  
   }
 
   GROUP >>  FLASH

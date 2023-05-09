@@ -68,7 +68,7 @@
  *  The following sections describe the usage of the TI logging system
  *  implementation. This document will focus on the target (i.e. code that runs)
  *  on the embedded device. For associated PC tooling, please see the
- *  [README](../../../tools/log/tiutils/README.html) in the tools/log/tiutils/ folder.
+ *  [README](../../../tools/log/tiutils/Readme.html) in the tools/log/tiutils/ folder.
  *
  *  Desgin Philiosophy:
  *

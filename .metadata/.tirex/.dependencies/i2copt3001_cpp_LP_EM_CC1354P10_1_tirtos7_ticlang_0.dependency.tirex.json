@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../i2copt3001_cpp.cpp -> i2copt3001_cpp.cpp",
+            "+../../OPT3001.cpp -> OPT3001.cpp",
+            "+../../OPT3001.h -> OPT3001.h",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../i2copt3001_cpp.syscfg -> i2copt3001_cpp.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7.cmd -> cc13x4_cc26x4_tirtos7.cmd"
+        ]
+    }
+]

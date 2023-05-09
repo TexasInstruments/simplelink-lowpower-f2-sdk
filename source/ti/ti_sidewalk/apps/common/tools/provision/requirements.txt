@@ -1,0 +1,2 @@
+prodict==0.8.18
+pyyaml==6.0; python_version >= "3.6"

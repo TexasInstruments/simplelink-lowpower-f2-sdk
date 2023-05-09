@@ -209,13 +209,13 @@ void NPITL_openTL(NPITL_Params *params)
 
 #if (NPI_FLOW_CTRL == 1)
     // Assign PIN IDs to remRdy and locRrdy
-#ifdef NPI_MASTER
+#ifdef NPI_CONTROLLER
     remRdyPIN = (params->srdyPinID & IOC_IOID_MASK);
     locRdyPIN = (params->mrdyPinID & IOC_IOID_MASK);
 #else
     remRdyPIN = (params->mrdyPinID & IOC_IOID_MASK);
     locRdyPIN = (params->srdyPinID & IOC_IOID_MASK);
-#endif //NPI_MASTER
+#endif //NPI_CONTROLLER
 
     // Add PIN IDs to PIN Configuration
     npiHandshakePinsCfg[REM_RDY_PIN_IDX] |= remRdyPIN;
@@ -304,11 +304,11 @@ void NPITL_closeTL(void)
 bool NPITL_checkNpiBusy(void)
 {
 #if (NPI_FLOW_CTRL == 1)
-#ifdef NPI_MASTER
+#ifdef NPI_CONTROLLER
     return !PIN_getOutputValue(locRdyPIN) || npiRxActive;
 #else
     return !PIN_getOutputValue(locRdyPIN);
-#endif //NPI_MASTER
+#endif //NPI_CONTROLLER
 #else
     return npiTxActive;
 #endif // NPI_FLOW_CTRL = 1

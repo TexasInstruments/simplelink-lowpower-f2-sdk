@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../rfUARTBridge.syscfg -> rfUARTBridge.syscfg",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../rfUARTBridge.c -> rfUARTBridge.c",
+            "+cc13x1_cc26x1_freertos.cmd -> cc13x1_cc26x1_freertos.cmd"
+        ]
+    }
+]

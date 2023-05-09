@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../gpioshutdown.c -> gpioshutdown.c",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../gpioshutdown.syscfg -> gpioshutdown.syscfg",
+            "+../../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+cc13x1_cc26x1_freertos.cmd -> cc13x1_cc26x1_freertos.cmd"
+        ]
+    }
+]

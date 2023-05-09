@@ -1,0 +1,12 @@
+{
+    "REGISTRATION_ENVIRONMENT": "prod",
+    "BLUETOOTH_ADAPTER": "hci0",
+    "COMMAND_TIMEOUT": "2",
+    "GATEWAY_ID": null,
+    "ENDPOINT_ID": null,
+    "AUTH_TOKEN": null,
+    "LWA_TOKEN": null,
+    "REFRESH_TOKEN": null,
+    "SCAN_RETRIES": 5,
+    "BLUETOOTH_SCAN_TIMEOUT": 5
+}

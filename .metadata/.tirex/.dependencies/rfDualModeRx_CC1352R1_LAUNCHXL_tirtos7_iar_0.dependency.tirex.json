@@ -1,0 +1,17 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/CC1352R1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../../rfDualModeRx.c -> rfDualModeRx.c",
+            "+../rfDualModeRx.syscfg -> rfDualModeRx.syscfg",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../RFQueue.h -> RFQueue.h"
+        ]
+    }
+]

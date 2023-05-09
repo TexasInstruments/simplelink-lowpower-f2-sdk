@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "WMBUS S2-Mode, 32.768 kcps, 2-GFSK, 196 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "32.768 kcps manchester encoded, 2-GFSK, 50 kHz deviation WMBUS S2-Mode PHY for 863-930 MHz band. (Pre-Silicon)",
+        "Name": "WMBUS S2-Mode, 32.768 kcps, 2-GFSK, 196 kHz RX Bandwidth",
+        "Description": "32.768 kcps manchester encoded, 2-GFSK, 50 kHz deviation WMBUS S2-Mode PHY for 863-930 MHz band.",
         "Frequency": "868.3",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -155,8 +155,8 @@
                                 },
                                 {
                                     "_type": "ELEMENT",
-                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -1 dB (default: -2), trimmed for external bias and differential configuration",
-                                    "$": "0x000188A3"
+                                    "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB at 779-930 MHz",
+                                    "$": "0x000488A3"
                                 },
                                 {
                                     "_type": "HW_REG_OVERRIDE",
@@ -202,6 +202,14 @@
                                     "$": "0x08141131"
                                 }
                             ]
+                        },
+                        {
+                            "_name": "override_hposc.json",
+                            "Element32b": {
+                                "_type": "HPOSC_OVERRIDE",
+                                "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                "$": "0"
+                            }
                         },
                         {
                             "_name": "override_patable_14dbm.json",

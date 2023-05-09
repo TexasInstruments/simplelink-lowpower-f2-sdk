@@ -51,7 +51,7 @@
 
 static void start_app(uint32_t *vector_table) {
 
-    /* The following code restes the SP to the value specified in the
+    /* The following code resets the SP to the value specified in the
      * provided vector table, and then the Reset Handler is invoked.
      *
      * Per ARM Cortex specification:

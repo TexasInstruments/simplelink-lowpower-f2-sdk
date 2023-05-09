@@ -41,6 +41,97 @@
 #define TI_BOOT_EXTERNAL_DEVICE_INDEX            (0)
 #endif
 
+/*
+* The following definitions apply for the configuration in which
+* TI_BOOT_USE_EXTERNAL_FLASH is not defined; that is, both
+* Primary and Secondary slots are located in on-chip memory.
+*/
+#if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2)
+    #define BOOTLOADER_BASE_ADDRESS             0x00054000
+    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
+    #define BOOT_PRIMARY_1_SIZE                 0x0002A000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x0002A000
+    #define BOOT_SECONDARY_1_SIZE               0x0002A000
+#elif defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
+    #define BOOTLOADER_BASE_ADDRESS             0x000AC000
+    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
+    #define BOOT_PRIMARY_1_SIZE                 0x00056000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
+    #define BOOT_SECONDARY_1_SIZE               0x00056000
+#elif defined DeviceFamily_CC23X0R5
+    #define BOOTLOADER_BASE_ADDRESS             0x00000000
+    #define BOOT_BOOTLOADER_SIZE                0x00006000
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00006000
+    #define BOOT_PRIMARY_1_SIZE                 0x0003d000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00043000
+    #define BOOT_SECONDARY_1_SIZE               0x0003d000
+#else
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        #define BOOTLOADER_BASE_ADDRESS         0x00000800
+        #define BOOT_BOOTLOADER_SIZE            0x00006000
+
+        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x0000d000
+        #define BOOT_PRIMARY_1_SIZE             0x0002b000
+
+        #define BOOT_PRIMARY_2_BASE_ADDRESS     0x00038000
+        #define BOOT_PRIMARY_2_SIZE             0x0004e800
+
+        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00086800
+        #define BOOT_SECONDARY_1_SIZE           0x0002b000
+
+        #define BOOT_SECONDARY_2_BASE_ADDRESS   0x000b1800
+        #define BOOT_SECONDARY_2_SIZE           0x0004e800
+    #else
+        #define BOOTLOADER_BASE_ADDRESS         0x00000000
+        #define BOOT_BOOTLOADER_SIZE            0x00006000
+
+        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x00006000
+        #define BOOT_PRIMARY_1_SIZE             0x0002b000
+
+        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00031000
+        #define BOOT_SECONDARY_1_SIZE           0x0002b000
+    #endif
+#endif
+
+/*
+* The following definitions apply for the configuration in which
+* TI_BOOT_USE_EXTERNAL_FLASH is defined; that is,
+* Primary slots are located in on-chip memory, and Secondary
+* slots are located in off-chip memory. Note that only the base
+* address for Secondary slots differ from on-chip mode, but their
+* respective sizes are kept.
+*/
+#ifdef TI_BOOT_USE_EXTERNAL_FLASH
+    #ifdef BOOT_SECONDARY_1_BASE_ADDRESS
+        #undef BOOT_SECONDARY_1_BASE_ADDRESS
+    #endif
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00000000
+
+    #if (MCUBOOT_IMAGE_NUMBER == 2)
+        #ifdef BOOT_SECONDARY_2_BASE_ADDRESS
+            #undef BOOT_SECONDARY_2_BASE_ADDRESS
+        #endif
+
+         /*
+         * The base and size of the secondary 1 slot are
+         * used to compute the start address of the Secondary 2
+         * slot, to keep both slots contiguous in external
+         * flash.
+         */
+        #define BOOT_SECONDARY_2_BASE_ADDRESS   BOOT_SECONDARY_1_BASE_ADDRESS + \
+                                                BOOT_SECONDARY_1_SIZE
+    #endif
+#endif
+
 /**
  *
  * Provides abstraction of flash regions for type of use.

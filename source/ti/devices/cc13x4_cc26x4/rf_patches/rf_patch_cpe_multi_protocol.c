@@ -67,7 +67,10 @@ extern "C"
 
 
 CPE_PATCH_TYPE patchImageMultiProtocol[] = {
-   0x21004251,
+   0x21004291,
+   0x210040b1,
+   0x21004329,
+   0x21004339,
    0x00009fbd,
    0x0000a019,
    0x0000a5b5,
@@ -89,6 +92,19 @@ CPE_PATCH_TYPE patchImageMultiProtocol[] = {
    0x460cb570,
    0x47084900,
    0x0002a6a5,
+   0x4671b510,
+   0x295c0a09,
+   0x2100d101,
+   0x2101e000,
+   0xf902f000,
+   0x0000bd10,
+   0x4607b5f8,
+   0x47084900,
+   0x00005895,
+   0x4606b5f3,
+   0x4a01b081,
+   0x00004710,
+   0x00005c61,
    0x2401b5f0,
    0x2000b087,
    0x486d9000,
@@ -147,7 +163,7 @@ CPE_PATCH_TYPE patchImageMultiProtocol[] = {
    0x43080189,
    0x80089903,
    0x75302000,
-   0xff78f7ff,
+   0xff5ef7ff,
    0x29007d31,
    0x2101d13b,
    0x90019100,
@@ -181,7 +197,7 @@ CPE_PATCH_TYPE patchImageMultiProtocol[] = {
    0xd0002903,
    0x46297530,
    0xf7ff9801,
-   0x4604ff41,
+   0x4604ff27,
    0xd0162801,
    0x7d009805,
    0xd0032800,
@@ -189,8 +205,8 @@ CPE_PATCH_TYPE patchImageMultiProtocol[] = {
    0xe7f44780,
    0x9a029804,
    0x98000401,
-   0x20264301,
-   0xf826f000,
+   0x20814301,
+   0xf870f000,
    0x28009802,
    0x2001d003,
    0x0500490d,
@@ -209,12 +225,49 @@ CPE_PATCH_TYPE patchImageMultiProtocol[] = {
    0x0002a679,
    0x40041100,
    0x000291a9,
-   0x210040a5,
+   0x210040e5,
+   0x480b0742,
+   0x60020f52,
+   0x4a0a4b0b,
+   0x7b12785b,
+   0xd10b2b02,
+   0xd00909d2,
+   0xd0032900,
+   0x60012105,
+   0xe0022107,
+   0x60012104,
+   0x60012106,
+   0x00004770,
+   0x400862c0,
+   0x210000a8,
+   0x21000380,
+   0x794a4912,
+   0xd40c0752,
+   0x2a00790a,
+   0x2800d009,
+   0x6988d100,
+   0x0380490e,
+   0x18400f80,
+   0x21014a0d,
+   0x47704710,
+   0x4604b510,
+   0xfeccf7ff,
+   0xf7ff4620,
+   0xbd10ffe7,
+   0x4604b570,
+   0xf7ff460d,
+   0x2c00fec9,
+   0x4628d002,
+   0xffdcf7ff,
+   0x0000bd70,
+   0x21000380,
+   0x00002a30,
+   0x00004eaf,
    0x4801b403,
    0xbd019001,
    0x00003c87,
 };
-#define _NWORD_PATCHIMAGE_MULTI_PROTOCOL 146
+#define _NWORD_PATCHIMAGE_MULTI_PROTOCOL 199
 
 #define _NWORD_PATCHCPEHD_MULTI_PROTOCOL 0
 
@@ -273,18 +326,21 @@ PATCH_FUN_SPEC void configureMultiProtocolPatch(void)
 
 
    pPatchTab[7] = 0;
-   pPatchTab[92] = 1;
-   pPatchTab[80] = 2;
-   pPatchTab[13] = 3;
-   pPatchTab[1] = 4;
-   pPatchTab[162] = 5;
-   pPatchTab[77] = 6;
-   pPatchTab[151] = 7;
-   pPatchTab[150] = 8;
-   pPatchTab[12] = 9;
-   pPatchTab[65] = 10;
-   pPatchTab[63] = 11;
-   pPatchTab[163] = 12;
+   pPatchTab[114] = 1;
+   pPatchTab[75] = 2;
+   pPatchTab[82] = 3;
+   pPatchTab[92] = 4;
+   pPatchTab[80] = 5;
+   pPatchTab[13] = 6;
+   pPatchTab[1] = 7;
+   pPatchTab[162] = 8;
+   pPatchTab[77] = 9;
+   pPatchTab[151] = 10;
+   pPatchTab[150] = 11;
+   pPatchTab[12] = 12;
+   pPatchTab[65] = 13;
+   pPatchTab[63] = 14;
+   pPatchTab[163] = 15;
 
    pIrqPatch[1] = _IRQ_PATCH_0;
 }

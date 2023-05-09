@@ -1,0 +1,166 @@
+/*
+ * Copyright (c) 2018, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ *  coprocessor.syscfg
+ */
+
+/* ======== RF ======== */
+var RF = scripting.addModule("/ti/drivers/RF");
+
+/* If an antenna component exists, assign it to the RF instance */
+if (system.deviceData.board && system.deviceData.board.components.RF) {
+    RF.$hardware = system.deviceData.board.components.RF;
+}
+
+/* ======== UART Display ======== */
+var Display = scripting.addModule("/ti/display/Display");
+var Display_UART = Display.addInstance();
+
+/* if a xds110Uart component exists, assign it to the Display_UART instance */
+if (system.deviceData.board && system.deviceData.board.components.XDS110UART) {
+    Display_UART.$hardware = system.deviceData.board.components.XDS110UART;
+}
+
+Display_UART.$name = "CONFIG_DISPLAY";                         // Descriptive name for Display
+Display_UART.uart.$name = "CONFIG_DISPLAY_UART";               // Descriptive name for Display_UART
+
+
+/* ======== LED Red ======== */
+var GPIO = scripting.addModule("/ti/drivers/GPIO");  // Add a GPIO module for use by LEDs
+var LED_R = GPIO.addInstance();                      // Add an a GPIO module instance for LED_R
+
+/* If a red LED component exists, assign it to the LED_R instance */
+if (system.deviceData.board && system.deviceData.board.components.LED_RED) {
+    LED_R.$hardware = system.deviceData.board.components.LED_RED;
+}
+else
+{
+    LED_R.mode = "Output";  // Set the LED pin to output
+}
+
+LED_R.$name = "CONFIG_GPIO_RLED";                     // Descriptive name for the LED_R GPIO
+
+/* ======== LED Green ======== */
+var GPIO = scripting.addModule("/ti/drivers/GPIO");  // Add a GPIO module for use by LEDs
+var LED_G = GPIO.addInstance();                      // Add an a GPIO module instance for LED_G
+
+/* If a green LED component exists, assign it to the LED_G instance */
+if (system.deviceData.board && system.deviceData.board.components.LED_GREEN) {
+    LED_G.$hardware = system.deviceData.board.components.LED_GREEN;
+}
+else
+{
+    LED_G.mode = "Output";   // Set the LED pin to output
+}
+
+LED_G.$name = "CONFIG_GPIO_GLED";                     // Descriptive name for the LED_G GPIO
+
+/* ======== Left Button ======== */
+var GPIO = scripting.addModule("/ti/drivers/GPIO");  // Add a GPIO module for use by buttons
+var BUTTON_L = GPIO.addInstance();                   // Add an a GPIO module instance for BUTTON_L
+
+/* If a BUTTON0 component exists, assign it to the BUTTON_L instance */
+if (system.deviceData.board && system.deviceData.board.components["BTN-1"]) {
+    BUTTON_L.$hardware = system.deviceData.board.components["BTN-1"];
+}
+
+BUTTON_L.pull = "Pull Up";                            // Use Pull up resistor
+BUTTON_L.$name = "CONFIG_GPIO_BTN1";                  // Descriptive name for the BUTTON_L GPIO
+
+/* ======== Right Button ======== */
+var GPIO = scripting.addModule("/ti/drivers/GPIO");   // Add a GPIO module for use by buttons
+var BUTTON_R = GPIO.addInstance();                    // Add an a GPIO module instance for BUTTON_R
+
+/* If a BUTTON1 component exists, assign it to the BUTTON_R instance */
+if (system.deviceData.board && system.deviceData.board.components["BTN-2"]) {
+    BUTTON_R.$hardware = system.deviceData.board.components["BTN-2"];
+}
+
+BUTTON_R.pull = "Pull Up";                             // Use Pull up resistor
+BUTTON_R.$name = "CONFIG_GPIO_BTN2";                   // Descriptive name for the BUTTON_R GPIO
+
+/* ======== NVS ======== */
+var NVS = scripting.addModule("/ti/drivers/NVS");        // Add a NVS module
+var NVS_INT = NVS.addInstance();                         // Add an internal NVS module instance
+
+NVS_INT.$name = "CONFIG_NVSINTERNAL";                    // Internal NVS
+NVS_INT.internalFlash.regionBase = 0x4E000;              // CoP project has 4 NV pages default
+NVS_INT.internalFlash.regionSize = 0x8000;
+
+/* ======== Other Driver Modules ======== */
+var AESCCM = scripting.addModule("/ti/drivers/AESCCM");
+var AESCCM1 = AESCCM.addInstance();
+var Power = scripting.addModule("/ti/drivers/Power");
+
+/* ======== Device ======== */
+var device = scripting.addModule("ti/devices/CCFG");
+const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+for(var setting in ccfgSettings)
+{
+    device[setting] = ccfgSettings[setting];
+}
+
+/* ======== Do device specific settings ======== */
+
+const deviceName = system.getScript("/ti/ti154stack/ti154stack_common.js").getLaunchPadFromDevice();
+
+/* ======== Add forceVddr if using 26x2 device ======== */
+if(deviceName.includes("CC26"))
+{
+    device.forceVddr = true;
+}
+
+/* ======== Update LF Clock Source for CC2652RB devices ======== */ 
+if(deviceName.includes("RB"))
+{
+    device.srcClkLF = "Derived from HF XOSC";
+}
+
+/* ======== RF Design ======== */
+var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
+const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;
+for(var setting in rfDesignSettings)
+{
+    rfDesign[setting] = rfDesignSettings[setting];
+}
+
+/* ======== TI-15.4 Stack ======== */
+var TI154Stack = scripting.addModule("/ti/ti154stack/ti154stack");
+
+if(rfDesignSettings.rfDesign !== undefined)
+{
+    TI154Stack.rfDesign = rfDesignSettings.rfDesign;
+}
+
+TI154Stack.project = "coprocessor";
+TI154Stack.lockProject = true;

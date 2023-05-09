@@ -67,7 +67,7 @@ extern "C"
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
 #include DeviceFamily_constructPath(inc/hw_sysctl.h)
 #include DeviceFamily_constructPath(inc/hw_ioc.h)
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #include DeviceFamily_constructPath(driverlib/ioc.h)
 #endif
 #include DeviceFamily_constructPath(driverlib/gpio.h)
@@ -76,7 +76,7 @@ extern "C"
 * DEFINES
 */
 
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 // Board LED defines
 #define BSP_IOID_LED_1          IOID_6
 #define BSP_IOID_LED_2          IOID_7
@@ -102,7 +102,7 @@ extern "C"
 #define BSP_SPI_MISO            IOID_37
 #define BSP_SPI_CLK_FLASH       IOID_39
 
-#elif defined DeviceFamily_CC23X0
+#elif defined DeviceFamily_CC23X0R5
 
 #define BSP_IOID_FLASH_CS       6
 #define BSP_SPI_MOSI            13

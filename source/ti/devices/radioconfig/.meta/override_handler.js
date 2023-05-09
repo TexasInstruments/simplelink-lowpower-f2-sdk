@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ const RfDesign = Common.getScript("rfdesign");
 // Populated during init()
 let Overrides;
 let VddrBoost;
-
+let HighPA;
 let CCFG;
 
 // Exported functions
@@ -70,6 +70,7 @@ function init(cmds, highPA) {
     // Override table must be re-generated for each setting
     Overrides = [];
     VddrBoost = false;
+    HighPA = highPA;
 
     _.each(cmds, (gcmd) => {
         const cmd = _.cloneDeep(gcmd);
@@ -149,7 +150,7 @@ function generateCode(symName, data, custom) {
 
     let tmpCustom = custom;
     _.each(ovrTmp, (ovr) => {
-        const struct = generateStruct(ovr, data, tmpCustom);
+        const struct = generateCmdOverride(ovr, data, tmpCustom);
         ret.code += struct.code;
         if (tmpCustom !== null) {
             ret.stackOffset = struct.stackOffset;
@@ -240,22 +241,26 @@ function updateTxPowerOverride(txPower, freq, highPA) {
 }
 
 /*!
- *  ======== generateStruct ========
+ *  ======== generateCmdOverride ========
  *  Generate code for the override structure
  *
  *  @override - override symbol information
  *  @data - override data
  *  @custom - custom override info
  */
-function generateStruct(override, data, custom) {
+function generateCmdOverride(override, data, custom) {
     const ret = {
         code: "// Overrides for " + override.cmdName + "\n",
         stackOffset: 0,
         appOffset: 0
     };
-    ret.code += "uint32_t " + override.ptrName + "[] =\n{\n";
+    const ptrName = override.ptrName;
+    ret.code += "uint32_t " + ptrName + "[] =\n{\n";
     let nEntries = 0;
     const coExEnabled = Common.getCoexConfig() !== null;
+
+    const genSub1Pa = (ptrName === "pRegOverride" && !HighPA)
+        || (ptrName === "pRegOverrideTxStd" && HighPA);
 
     // Generate the code
     for (const key in override) {
@@ -299,14 +304,18 @@ function generateStruct(override, data, custom) {
                 continue;
             }
         }
-        // Name of override file
-        ret.code += "    // " + key + "\n";
 
         // If there is more than one element, use array
         const items = Common.forceArray(obuf);
 
         // Process override array
-        ret.code = processOverrideArray(items, ret.code, data);
+        const code = processOverrideArray(items, data, genSub1Pa);
+        if (code !== "") {
+            // Name of override file
+            ret.code += "    // " + key + "\n";
+            ret.code += code;
+        }
+
         nEntries += items.length;
     }
     // Add app/stack specific overrides if applicable
@@ -337,19 +346,16 @@ function generateStruct(override, data, custom) {
  *  Generate code for the override structure
  *
  *  @items - override items
- *  @codeParam - code structure
  *  @data - override data
+ *  @genSub1Pa - true if TXSUB1_POWER_OVERRIDE macro is to be generated
  */
-function processOverrideArray(items, codeParam, data) {
-    let code = codeParam;
+function processOverrideArray(items, data, genSub1Pa) {
+    let code = "";
     let hasTx20 = false;
 
     _.each(items, (el) => {
-        code += "    // " + el._comment + "\n";
-
-        let txPowStd;
-        let txPow20;
         let anaDiv;
+        let line = "";
 
         switch (el._type) {
         case "HW_REG_OVERRIDE":
@@ -359,20 +365,26 @@ function processOverrideArray(items, codeParam, data) {
         case "ADI_REG_OVERRIDE":
         case "ADI_2HALFREG_OVERRIDE":
         case "HPOSC_OVERRIDE":
-            code += "    " + el._type + "(" + el.$ + ")";
+            line = "    " + el._type + "(" + el.$ + ")";
             break;
         case "TXSTDPA":
-            txPowStd = data.txPower;
-            code += "    TX_STD_POWER_OVERRIDE(" + Common.int2hex(txPowStd, 4) + ")";
+            line = "    TX_STD_POWER_OVERRIDE(" + Common.int2hex(data.txPower, 4) + ")";
             break;
         case "TX20PA":
-            txPow20 = data.txPowerHi;
-            code += "    TX20_POWER_OVERRIDE(" + Common.int2hex(txPow20, 8) + ")";
+            line = "    TX20_POWER_OVERRIDE(" + Common.int2hex(data.txPowerHi, 8) + ")";
             hasTx20 = true;
             break;
+        case "TXSUB1PA":
+            if (genSub1Pa) {
+                const val = HighPA ? data.txPower : data.txPowerSub1;
+                line = "    TXSUB1_POWER_OVERRIDE(" + Common.int2hex(val, 6) + ")";
+            }
+            break;
         case "ANADIV":
-            anaDiv = calcAnaDiv(data, hasTx20);
-            code += "    (uint32_t)" + Common.int2hex(anaDiv, 8);
+            if ((genSub1Pa || hasTx20) && HighPA) {
+                anaDiv = calcAnaDiv(data, hasTx20);
+                line = "    (uint32_t)" + Common.int2hex(anaDiv, 8);
+            }
             break;
         case "ELEMENT":
             // Convert to uppercase HEX if a hex value, otherwise leave as is
@@ -381,14 +393,19 @@ function processOverrideArray(items, codeParam, data) {
                 if (Common.isHex(val)) {
                     val = Common.int2hex(val, 8);
                 }
-                code += "    (uint32_t)" + val;
+                line = "    (uint32_t)" + val;
             }
             break;
         default:
-            code += "//** ERROR: Element type not implemented: " + el._type;
+            line = "//** ERROR: Element type not implemented: " + el._type;
             break;
         }
-        code += ",\n";
+
+        // Generate full line
+        if (line !== "") {
+            code += "    // " + el._comment + "\n";
+            code += line + ",\n";
+        }
     });
 
     return code;
@@ -403,7 +420,7 @@ function processOverrideArray(items, codeParam, data) {
  */
 function calcAnaDiv(data, isTx20) {
     let fsOnly = 0;
-    let frontEndMode = 0;
+    let frontEndMode;
     let txSetting = 0;
 
     if (isTx20) {

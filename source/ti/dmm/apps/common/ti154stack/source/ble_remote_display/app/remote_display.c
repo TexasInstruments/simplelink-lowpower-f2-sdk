@@ -821,7 +821,7 @@ void RemoteDisplay_syncNetworkDevices(uint16_t devAddr)
  */
 void RemoteDisplay_syncProvAttr(void)
 {
-    uint8_t newGenericAttr;
+    uint8_t newGenericAttr = 0xFF;
     uint8_t newPanId[PROVPROFILE_NTWK_PAN_ID_CHAR_LEN];
     uint8_t newExtPanId[PROVPROFILE_EXT_NTWK_PAN_ID_CHAR_LEN];
     uint8_t newChannMask[PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN];
@@ -832,6 +832,13 @@ void RemoteDisplay_syncProvAttr(void)
     if (!clientProvCbs.getProvisioningAttrCb) {
         return;
     }
+
+    // Initialize arrays to known values
+    memset(newPanId, 0xFF, sizeof(newPanId)/sizeof(newPanId[0])); 
+    memset(newExtPanId, 0xFF, sizeof(newExtPanId)/sizeof(newExtPanId[0]));
+    memset(newChannMask, 0xFF, sizeof(newChannMask)/sizeof(newChannMask[0]));
+    memset(newFfdAddr, 0xFF, sizeof(newFfdAddr)/sizeof(newFfdAddr[0]));
+    memset(newNtwkKey, 0xFF, sizeof(newNtwkKey)/sizeof(newNtwkKey[0]));
 
     // Data from 15.4 Application
     clientProvCbs.getProvisioningAttrCb(ProvisionAttr_Freq, &newGenericAttr,

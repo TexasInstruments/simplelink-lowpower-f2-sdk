@@ -838,30 +838,23 @@ static void PDMCC26XX_I2S_initIO(PDMCC26XX_I2S_Handle handle)
     /* Build local list of pins, allocate through PIN driver and map HW ports */
     if (object->audioPinCfg.bitFields.enableCclkPin)
     {
-        GPIO_setConfig(hwAttrs->cclkPin, GPIO_CFG_OUTPUT);
-        GPIO_setMux(hwAttrs->cclkPin, IOC_PORT_MCU_I2S_MCLK);
+        GPIO_setConfigAndMux(hwAttrs->cclkPin, GPIO_CFG_OUTPUT, IOC_PORT_MCU_I2S_MCLK);
     }
     if (object->audioPinCfg.bitFields.enableWclkPin)
     {
-        GPIO_setConfig(hwAttrs->wclkPin, GPIO_CFG_OUTPUT);
-        GPIO_setMux(hwAttrs->wclkPin, IOC_PORT_MCU_I2S_WCLK);
+        GPIO_setConfigAndMux(hwAttrs->wclkPin, GPIO_CFG_OUTPUT, IOC_PORT_MCU_I2S_WCLK);
     }
     if (object->audioPinCfg.bitFields.enableBclkPin)
     {
-        GPIO_setConfig(hwAttrs->bclkPin, GPIO_CFG_OUTPUT);
-        GPIO_setMux(hwAttrs->bclkPin, IOC_PORT_MCU_I2S_BCLK);
+        GPIO_setConfigAndMux(hwAttrs->bclkPin, GPIO_CFG_OUTPUT, IOC_PORT_MCU_I2S_BCLK);
     }
     if (object->audioPinCfg.bitFields.ad0Usage == PDMCC26XX_I2S_ADUsageInput)
     {
-        GPIO_setConfig(hwAttrs->ad0Pin, GPIO_CFG_IN_NOPULL);
+        GPIO_setConfigAndMux(hwAttrs->ad0Pin, GPIO_CFG_IN_NOPULL, IOC_PORT_MCU_I2S_AD0);
     }
     else if (object->audioPinCfg.bitFields.ad0Usage == PDMCC26XX_I2S_ADUsageOutput)
     {
-        GPIO_setConfig(hwAttrs->ad0Pin, GPIO_CFG_OUTPUT);
-    }
-    if (object->audioPinCfg.bitFields.ad0Usage != PDMCC26XX_I2S_ADUsageDisabled)
-    {
-        GPIO_setMux(hwAttrs->ad0Pin, IOC_PORT_MCU_I2S_AD0);
+        GPIO_setConfigAndMux(hwAttrs->ad0Pin, GPIO_CFG_OUTPUT, IOC_PORT_MCU_I2S_AD0);
     }
 }
 

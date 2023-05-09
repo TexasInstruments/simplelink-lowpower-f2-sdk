@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.icf -> cc13x2_cc26x2_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.html -> README.html",
+            "+../README.md -> README.md",
+            "+../spiffsinternal.c -> spiffsinternal.c",
+            "+../spiffsinternal.syscfg -> spiffsinternal.syscfg"
+        ]
+    }
+]

@@ -1,0 +1,475 @@
+/**************************************************************************************************
+  Filename:       zcl_config.h
+
+  Description: - sample app template file
+
+  Copyright 2006-2014 Texas Instruments Incorporated. All rights reserved.
+
+  IMPORTANT: Your use of this Software is limited to those specific rights
+  granted under the terms of a software license agreement between the user
+  who downloaded the software, his/her employer (which must be your employer)
+  and Texas Instruments Incorporated (the "License").  You may not use this
+  Software unless you agree to abide by the terms of the License. The License
+  limits your use, and you acknowledge, that the Software may not be modified,
+  copied or distributed unless embedded on a Texas Instruments microcontroller
+  or used solely and exclusively in conjunction with a Texas Instruments radio
+  frequency transceiver, which is integrated into your product.  Other than for
+  the foregoing purpose, you may not use, reproduce, copy, prepare derivative
+  works of, modify, distribute, perform, display or sell this Software and/or
+  its documentation for any purpose.
+
+  YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE
+  PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
+  NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL
+  TEXAS INSTRUMENTS OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER CONTRACT,
+  NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER
+  LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
+  INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE
+  OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT
+  OF SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
+  (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
+
+  Should you have any questions regarding your right to use this Software,
+  contact Texas Instruments Incorporated at www.TI.com.
+**************************************************************************************************/
+%%{
+/*
+ *  ======== zcl_config.h.xdt ========
+ */
+
+/* Static module and submodules and scripts */
+const Common = system.getScript("/ti/zstack/zstack_common.js");
+const app = [system.modules['/ti/zstack/zstack'].$static.app, system.modules['/ti/zstack/zstack'].$static.otaClient];
+
+let devices = system.getScript("/ti/zstack/stack/zcl/ZDL.js").ZDL.devices;
+const clusters = system.getScript("/ti/zstack/stack/zcl/ZCL.js").ZCL.clusters;
+
+Common.addGlobalClusters(devices, clusters);
+
+/* Get device information */
+let deviceDict = {};
+let deviceList = [];
+for (let i=0; i<devices.length; i++) {
+  deviceDict[devices[i]._id] = devices[i];
+  deviceList.push(devices[i]._id);
+}
+//Variable declarations for code generation
+let otaDefines = '';
+let zclIncludes = '';
+let serviceTasks = '';
+let attributeVariables = '';
+let attributeList = '';
+let attributeDefaults = '';
+let attributeReset = '';
+let zclCommandsList = '';
+let callBackString = '';
+let commandCallbacks = '';
+let simpleDescriptors = '';
+let initHooks = 'extern void zclConfigInit(void);\n\n';
+
+let deviceNum;
+for(deviceNum = 0; deviceNum < app.length; deviceNum++)
+{
+  if ('otaClientEnabled' in app[deviceNum] && !app[deviceNum].otaClientEnabled)
+  {
+    break;
+  }
+  let deviceID = app[deviceNum].zigbeeDeviceType;
+  let deviceObj = deviceDict[deviceID];
+  let profileID = 'ZCL_HA_PROFILE_ID';
+  let deviceDef = 'NONE';
+  if (deviceObj && deviceObj._definition) {
+    deviceDef = deviceObj._definition;
+  }
+
+  /* Get clusters from ZCL.js */
+  let clusterDict = {};
+  let clusterList = [];
+  let attributeDict = {};
+  let commandRecDict = {};
+  let commandGenDict = {};
+  for (let i in clusters) {
+    let currCluster = clusters[i];
+    clusterDict[currCluster._id] = clusters[i];
+    clusterList.push(currCluster._id);
+    attributeDict[currCluster._id] = {};
+    commandRecDict[currCluster._id] = {};
+    commandGenDict[currCluster._id] = {};
+    if (currCluster.server) {
+      for (let j in currCluster.server.attribute) {
+        attributeDict[currCluster._id][currCluster.server.attribute[j]._id] = currCluster.server.attribute[j];
+      }
+      for (let j in currCluster.server.command) {
+        commandRecDict[currCluster._id][currCluster.server.command[j]._id] = currCluster.server.command[j];
+      }
+    }
+    if (currCluster.client) {
+      for (let j in currCluster.client.attribute) {
+        attributeDict[currCluster._id][currCluster.client.attribute[j]._id] = currCluster.client.attribute[j];
+      }
+      for (let j in currCluster.client.command) {
+        commandGenDict[currCluster._id][currCluster.client.command[j]._id] = currCluster.client.command[j];
+      }
+    }
+  }
+
+  let callbackSet = new Set();
+
+  /* Get Server-Side information */
+  let manServerClustIDs = app[deviceNum][deviceID + "manServer"];
+  let recServerClustIDs = app[deviceNum][deviceID + "recServer"];
+  let addServerClustIDs = app[deviceNum][deviceID + "addServer"];
+  let serverClusters = [];
+  let serverAttributes = {};
+  for (let i in manServerClustIDs) {
+    let currClusterID = manServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster);
+    serverAttributes[currClusterID] = [];
+    let manServerAttIDs = app[deviceNum][currClusterID + 'mcmaServer'].concat(app[deviceNum][currClusterID + 'mcoaServer']);
+    for (let j in manServerAttIDs) {
+      let currAttributeID = manServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let manServerCommRecIDs = app[deviceNum][currClusterID + "mcmcrServer"].concat(app[deviceNum][currClusterID + "mcocrServer"]);
+    for (let j in manServerCommRecIDs) {
+      let currCommandID = manServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in recServerClustIDs) {
+    let currClusterID = recServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster);
+    serverAttributes[currClusterID] = [];
+    let recServerAttIDs = app[deviceNum][currClusterID + 'rcmaServer'].concat(app[deviceNum][currClusterID + 'rcoaServer']);
+    for (let j in recServerAttIDs) {
+      let currAttributeID = recServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let recServerCommRecIDs = app[deviceNum][currClusterID + "rcmcrServer"].concat(app[deviceNum][currClusterID + "rcocrServer"]);
+    for (let j in recServerCommRecIDs) {
+      let currCommandID = recServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in addServerClustIDs) {
+    let currClusterID = addServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster);
+    serverAttributes[currClusterID] = [];
+    let addServerAttIDs = app[deviceNum][currClusterID + 'acmaServer'].concat(app[deviceNum][currClusterID + 'acoaServer']);
+    for (let j in addServerAttIDs) {
+      let currAttributeID = addServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let addServerCommRecIDs = app[deviceNum][currClusterID + "acmcrServer"].concat(app[deviceNum][currClusterID + "acocrServer"]);
+    for (let j in addServerCommRecIDs) {
+      let currCommandID = addServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+
+  /* Get Client-Side information */
+  let manClientClustIDs = app[deviceNum][deviceID + "manClient"];
+  let recClientClustIDs = app[deviceNum][deviceID + "recClient"];
+  let addClientClustIDs = app[deviceNum][deviceID + "addClient"];
+  let clientClusters = [];
+  let clientAttributes = {};
+  for (let i in manClientClustIDs) {
+    let currClusterID = manClientClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster);
+    clientAttributes[currClusterID] = [];
+    let manClientAttIDs = app[deviceNum][currClusterID + 'mcmaClient'].concat(app[deviceNum][currClusterID + 'mcoaClient']);
+    for (let j in manClientAttIDs) {
+      let currAttributeID = manClientAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let manClientCommRecIDs = app[deviceNum][currClusterID + "mcmcrClient"].concat(app[deviceNum][currClusterID + "mcocrClient"]);
+    for (let j in manClientCommRecIDs) {
+      let currCommandID = manClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in recClientClustIDs) {
+    let currClusterID = recClientClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster);
+    clientAttributes[currClusterID] = [];
+    let recClientAttIDs = app[deviceNum][currClusterID + 'rcmaClient'].concat(app[deviceNum][currClusterID + 'rcoaClient']);
+    for (let j in recClientAttIDs) {
+      let currAttributeID = recClientAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let recClientCommRecIDs = app[deviceNum][currClusterID + "rcmcrClient"].concat(app[deviceNum][currClusterID + "rcocrClient"]);
+    for (let j in recClientCommRecIDs) {
+      let currCommandID = recClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in addClientClustIDs) {
+    let currClusterID = addClientClustIDs[i]
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster)
+    clientAttributes[currClusterID] = []
+    let addClientAttIDs = app[deviceNum][currClusterID + 'acmaClient'].concat(app[deviceNum][currClusterID + 'acoaClient']);
+    for (let j in addClientAttIDs) {
+      let currAttributeID = addClientAttIDs[j]
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let addClientCommRecIDs = app[deviceNum][currClusterID + "acmcrClient"].concat(app[deviceNum][currClusterID + "acocrClient"]);
+    for (let j in addClientCommRecIDs) {
+      let currCommandID = addClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+
+  /* app[deviceNum] Names */
+  let appName = app[deviceNum].zigbeeApplicationName;
+  let appNameCaps = appName.toUpperCase().replace(/\s/g, '');
+  let appNameWords = appName.split(" ");
+  let appNameCamel = appNameWords[0].charAt(0).toLowerCase() + appNameWords[0].slice(1);
+  for (let i=1; i<appNameWords.length; i++) {
+    appNameCamel += appNameWords[i].charAt(0).toUpperCase() + appNameWords[i].slice(1);
+  }
+
+  /* Get Advanced Settings */
+  let endpoint = app[deviceNum].endpoint;
+  let deviceVersion = app[deviceNum].deviceVersion;
+  let flags = app[deviceNum].flags;
+
+  /* Variable Declarations */
+  let locationDict = {};
+  zclIncludes += '#include "' + deviceObj._location + '"\n';
+
+  /* --------------- Code Generation --------------- */
+
+  /* Server-Side */
+  for (let i in serverClusters) {
+    let currCluster = serverClusters[i];
+    let currClass = currCluster._location;
+    attributeVariables += '\n\/\/ ' + currCluster._name + ' Cluster (Server-Side)\n';
+    if (!locationDict[currClass]) {
+      locationDict[currClass] = currCluster;
+    }
+    for (let j in serverAttributes[currCluster._id]) {
+      let currAttribute = serverAttributes[currCluster._id][j];
+
+      if (currAttribute._default) {
+        let defaultName = currAttribute._definition.replace('ATTRID', 'DEFAULT');
+        if (defaultName == 'DEFAULT_CLUSTER_REVISION') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_CLUSTER_REVISION';
+        }
+        if (defaultName == 'DEFAULT_ATTRIBUTE_REPORTING_STATUS') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
+        }
+        if (currAttribute._type.endsWith('[]')) {
+          attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+        }
+        else {
+          attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+        }
+      }
+
+      let variableName = appNameCamel + '_' + currCluster._name + '_' + currAttribute._name.replace('-', '_');
+      if (currAttribute._type.endsWith('[]')) {
+        attributeVariables +=  'extern ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + variableName + '[];\n';
+      }
+      else {
+        attributeVariables +=  'extern ' + currAttribute._type + ' ' + variableName + ';\n';
+      }
+    }
+  }
+
+  /* Client-Side */
+  for (let i in clientClusters) {
+    let currCluster = clientClusters[i];
+    let currClass = currCluster._location;
+    attributeVariables += '\n\/\/ ' + currCluster._name + ' Cluster (Client-Side)\n';
+    if (!locationDict[currClass]) {
+      locationDict[currClass] = currCluster;
+    }
+    for (let j in clientAttributes[currCluster._id]) {
+      let currAttribute = clientAttributes[currCluster._id][j];
+      let variableName = appNameCamel + '_' + currCluster._name + '_' + currAttribute._name.replace('-', '_');
+
+      if (currAttribute._default) {
+        let defaultName = currAttribute._definition.replace('ATTRID', 'DEFAULT');
+        if (defaultName == 'DEFAULT_CLUSTER_REVISION') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_CLUSTER_REVISION';
+        }
+        if (defaultName == 'DEFAULT_ATTRIBUTE_REPORTING_STATUS') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
+        }
+        if (currAttribute._type.endsWith('[]')) {
+          attributeDefaults += 'extern const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[];\n';
+        }
+        else {
+          attributeDefaults += 'extern const ' + currAttribute._type + ' ' + defaultName + ';\n';
+        }
+      }
+
+      if (currAttribute._type.endsWith('[]')) {
+        attributeVariables +=  'extern ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + variableName + '[];\n';
+      }
+      else {
+        attributeVariables +=  'extern ' + currAttribute._type + ' ' + variableName + ';\n';
+      }
+    }
+  }
+
+  /* Callbacks */
+  for (let location in locationDict) {
+    let currCluster = locationDict[location];
+    let classCamel = currCluster._class.toUpperCase();
+    if (currCluster.appcallback.callbacks) {
+      commandCallbacks += '\n/* ' + classCamel + ' */\n';
+      for (let i in currCluster.appcallback.callbacks) {
+        let currCallBack = currCluster.appcallback.callbacks[i];
+        if (callbackSet.has(currCallBack._name)) {
+          commandCallbacks += 'extern ' + currCallBack._returnType + ' ' + appNameCamel + '_' + currCallBack._name + 'CB' + currCallBack._arguments + ';\n';
+        }
+      }
+      callBackString += 'extern ' + currCluster.appcallback._name + ' ' + appNameCamel + '_' + currCluster.appcallback._name.split('_')[0] + 'CmdCallbacks;\n';
+    }
+    zclIncludes += '#include "' + location + '"\n';
+  }
+
+  if ('otaClientEnabled' in app[deviceNum] && app[deviceNum].otaClientEnabled)
+  {
+    otaDefines += '#define OTA_TYPE_ID ' + app[deviceNum]["otaTypeID"] + '\n';
+    otaDefines += '#define OTA_MANUFACTURER_ID ' + app[deviceNum]["otaManufacturerID"] + '\n';
+  }
+
+  serviceTasks += "extern uint8_t " + "sampleApp_serviceTaskId;\n";
+  attributeList += "extern const zclAttrRec_t " + appNameCamel + "_Attrs[];\n";
+  attributeList += "extern const uint8_t " + appNameCamel + "_zclAttrsArraySize;\n";
+  attributeReset += "extern void " + appNameCamel + "_ResetAttributesToDefaultValues(void);\n";
+  zclCommandsList += "extern const zclCommandRec_t " + appNameCamel + "_Cmds[];\n";
+  zclCommandsList += "extern const uint8_t " + appNameCamel + "_zclCmdsArraySize;\n\n";
+
+  simpleDescriptors += "#define " + appNameCaps + "_ENDPOINT\t\t\t\t" + endpoint + "\n";
+  simpleDescriptors += "#define " + appNameCaps + "_DEVICE_VERSION\t\t" + deviceVersion + "\n";
+  simpleDescriptors += "#define " + appNameCaps + "_FLAGS\t\t\t\t\t" + flags + "\n";
+  simpleDescriptors += "extern const cId_t " + appNameCamel + "_InClusterList[];\n";
+  simpleDescriptors += "extern const cId_t " + appNameCamel + "_OutClusterList[];\n";
+  simpleDescriptors += "extern SimpleDescriptionFormat_t " + appNameCamel + "_SimpleDesc;\n\n";
+}
+
+
+%%}
+
+/**************************************************************************************************
+ DO NOT EDIT
+ DO NOT EDIT
+ DO NOT EDIT - This file was generated by the SysConfig tool.
+ DO NOT EDIT
+ DO NOT EDIT
+**************************************************************************************************/
+
+#ifndef ZCL_CONFIG_H
+#define ZCL_CONFIG_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#if defined (__IAR_SYSTEMS_ICC__)
+#define WEAK __weak
+#elif defined (__TI_COMPILER_VERSION) || defined (__TI_COMPILER_VERSION__) || defined (__clang__)
+#define WEAK __attribute__((weak))
+#endif
+
+`otaDefines`
+
+// zcl_*.h #includes
+#include "ti_zstack_config.h"
+#include "zcl_datatypes.h"
+#include "zcl_port.h"
+#include "zcl.h"
+#include "zcl_ha.h"
+
+`zclIncludes`
+
+/*********************************************************************
+ * Application Globals
+ *********************************************************************/
+`serviceTasks`
+
+/*********************************************************************
+ * ZCL Attribute Variables
+ *********************************************************************/
+`attributeVariables`
+
+/*********************************************************************
+ * ZCL Attribute List
+ *********************************************************************/
+`attributeList`
+
+/*********************************************************************
+ * ZCL Attribute Default Values (const)
+ *********************************************************************/
+`attributeDefaults`
+/*********************************************************************
+ * ZCL Attribute Reset Functionality
+ *********************************************************************/
+`attributeReset`
+
+/*********************************************************************
+ * ZCL Commands List
+ *********************************************************************/
+`zclCommandsList`
+
+/*********************************************************************
+ * ZCL Command Callback Structs
+ *********************************************************************/
+`callBackString`
+
+/*********************************************************************
+ * ZCL Command Callbacks
+ *********************************************************************/
+`commandCallbacks`
+/*********************************************************************
+ * Simple Descriptor
+ *********************************************************************/
+`simpleDescriptors`
+/*********************************************************************
+ * ZCL Initialization Hooks
+ *********************************************************************/
+`initHooks`
+
+/*********************************************************************
+*********************************************************************/
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* ZCL_CONFIG_H */

@@ -757,42 +757,39 @@ void RemoteDisplay_syncProvAttr(void)
 #if defined(DMM_ZEDSWITCH) || defined(DMM_ZRLIGHT) || defined(DMM_ZCSWITCH)
     uint8_t newExtPanId[PROVPROFILE_EXT_NTWK_PAN_ID_CHAR_LEN];
 #endif /* defined(DMM_ZEDSWITCH) || defined(DMM_ZRLIGHT) || defined(DMM_ZCSWITCH) */
-    uint8_t newChannMask[PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN];
+    uint8_t newChannMask[PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN] = {0};
 
     // Callback has not been properly initialized
     if (!clientProvCbs.getProvisioningAttrCb) {
         return;
     }
 
+    // Initialize arrays to known values
+    memset(newPanId, 0xFF, sizeof(newPanId)/sizeof(newPanId[0])); 
+    memset(newExtPanId, 0xFF, sizeof(newExtPanId)/sizeof(newExtPanId[0]));
+    memset(newChannMask, 0xFF, sizeof(newChannMask)/sizeof(newChannMask[0]));
+
     clientProvCbs.getProvisioningAttrCb(ProvisionAttr_PanId, newPanId,
                                         PROVPROFILE_NTWK_PAN_ID_CHAR_LEN);
-    if (newPanId) {
-        ProvisioningProfile_SetParameter(PROVPROFILE_NTWK_PAN_ID_CHAR, PROVPROFILE_NTWK_PAN_ID_CHAR_LEN,
-                                         newPanId);
-    }
+    ProvisioningProfile_SetParameter(PROVPROFILE_NTWK_PAN_ID_CHAR, PROVPROFILE_NTWK_PAN_ID_CHAR_LEN,
+                                     newPanId);
 
 #if defined(DMM_ZEDSWITCH) || defined(DMM_ZRLIGHT) || defined(DMM_ZCSWITCH)
     clientProvCbs.getProvisioningAttrCb(ProvisionAttr_ExtPanId, newExtPanId,
                                         PROVPROFILE_EXT_NTWK_PAN_ID_CHAR_LEN);
-    if (newExtPanId) {
-        ProvisioningProfile_SetParameter(PROVPROFILE_EXT_NTWK_PAN_ID_CHAR, PROVPROFILE_EXT_NTWK_PAN_ID_CHAR_LEN,
-                                         newExtPanId);
-    }
+    ProvisioningProfile_SetParameter(PROVPROFILE_EXT_NTWK_PAN_ID_CHAR, PROVPROFILE_EXT_NTWK_PAN_ID_CHAR_LEN,
+                                     newExtPanId);
 #endif /* defined(DMM_ZEDSWITCH) || defined(DMM_ZRLIGHT) || defined(DMM_ZCSWITCH) */
 
     clientProvCbs.getProvisioningAttrCb(ProvisionAttr_SensorChannelMask, newChannMask,
-        PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN);
-    if (newChannMask) {
-        ProvisioningProfile_SetParameter(PROVPROFILE_SENSOR_CHANNEL_CHAR, PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN,
-                                         newChannMask);
-    }
+                                        PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN);
+    ProvisioningProfile_SetParameter(PROVPROFILE_SENSOR_CHANNEL_CHAR, PROVPROFILE_SENSOR_CHANNEL_CHAR_LEN,
+                                     newChannMask);
 
     clientProvCbs.getProvisioningAttrCb(ProvisionAttr_ProvState, &newGenericAttr,
         PROVISIONING_GENERIC_CHAR_LEN);
-    if (newGenericAttr) {
-        ProvisioningProfile_SetParameter(PROVPROFILE_PROV_STATE_CHAR, sizeof(uint8_t),
-                                         &newGenericAttr);
-    }
+    ProvisioningProfile_SetParameter(PROVPROFILE_PROV_STATE_CHAR, sizeof(uint8_t),
+                                     &newGenericAttr);
 }
 
 

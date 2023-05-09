@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zc_zone.syscfg -> zc_zone.syscfg"
+        ]
+    }
+]

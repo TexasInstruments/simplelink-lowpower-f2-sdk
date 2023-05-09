@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC2652RB/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../spicontroller.c -> spicontroller.c",
+            "+../spicontroller.syscfg -> spicontroller.syscfg"
+        ]
+    }
+]

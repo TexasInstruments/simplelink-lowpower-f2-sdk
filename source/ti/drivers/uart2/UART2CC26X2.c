@@ -1143,17 +1143,13 @@ static void UART2CC26X2_initIO(UART2_Handle handle)
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* Make sure all pins have their input buffers enabled, then apply the correct mux */
-    GPIO_setConfig(hwAttrs->txPin, GPIO_CFG_NO_DIR);
-    GPIO_setConfig(hwAttrs->rxPin, GPIO_CFG_INPUT);
-    GPIO_setMux(hwAttrs->txPin, hwAttrs->txPinMux);
-    GPIO_setMux(hwAttrs->rxPin, hwAttrs->rxPinMux);
+    GPIO_setConfigAndMux(hwAttrs->txPin, GPIO_CFG_NO_DIR, hwAttrs->txPinMux);
+    GPIO_setConfigAndMux(hwAttrs->rxPin, GPIO_CFG_INPUT, hwAttrs->rxPinMux);
 
     if (UART2CC26X2_isFlowControlEnabled(hwAttrs))
     {
-        GPIO_setConfig(hwAttrs->ctsPin, GPIO_CFG_INPUT);
-        GPIO_setConfig(hwAttrs->rtsPin, GPIO_CFG_NO_DIR);
-        GPIO_setMux(hwAttrs->ctsPin, hwAttrs->ctsPinMux);
-        GPIO_setMux(hwAttrs->rtsPin, hwAttrs->rtsPinMux);
+        GPIO_setConfigAndMux(hwAttrs->ctsPin, GPIO_CFG_INPUT, hwAttrs->ctsPinMux);
+        GPIO_setConfigAndMux(hwAttrs->rtsPin, GPIO_CFG_NO_DIR, hwAttrs->rtsPinMux);
     }
 }
 

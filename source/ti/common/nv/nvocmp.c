@@ -62,7 +62,7 @@ resolution so no padding or word-alignment is necessary (2) Flash has limited
 number of writes per flash 'sector' between erases. To prevent going over this
 limit, "small" items are written in one operation.
 
-Each Flash page has a "page header" which indicates its current state ,
+Each Flash page has a "page header" which indicates its current state,
 located at the first byte of the Flash page and "compact header" which indicates
 its compaction state, located following "page header". The remainder of
 the Flash page contains NV data items which are packed together following the
@@ -141,7 +141,7 @@ provided to link the driver. The function need not be functional, but it must
 exist. NVDEBUG also exposes driver global variables for debug and testing.
 
 Not all user-defines (such as NVDEBUG) are supported when using NVOCMP in a
-Linux envrionment. If debugging/logging functionality is required, the
+Linux environment. If debugging/logging functionality is required, the
 "nv-debug" or "nv-rdwr" logging flags can be enabled in the cfg INI file.
 
 Configuration:
@@ -185,6 +185,8 @@ Requires API's in a crc.h to implement CRC functionality.
 #include <string.h>
 #ifdef NVOCMP_POSIX_MUTEX
 #include <pthread.h>
+#elif defined(NVOCMP_POSIX_SEM)
+#include <semaphore.h>
 #else
 #include <ti/sysbios/gates/GateMutexPri.h>
 #endif
@@ -194,7 +196,7 @@ Requires API's in a crc.h to implement CRC functionality.
 
 /* CC23X0 does not support GPRAM,
  * so VIMS access is not needed */
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #include <driverlib/vims.h>
 #endif
 
@@ -309,6 +311,13 @@ enum {NVOCMP_FINDANY = 0x00, NVOCMP_FINDSYSID, NVOCMP_FINDITMID, NVOCMP_FINDSTRI
 // Unlock driver access via TI-RTOS gatemutex and return error code
 #define NVOCMP_UNLOCK(err) { \
         pthread_mutex_unlock(&NVOCMP_gPosixMutex); return(err); }
+#elif defined (NVOCMP_POSIX_SEM)
+// Lock driver access via POSIX semaphore
+#define NVOCMP_LOCK() sem_wait(&NVOCMP_gPosixSem);
+
+// Unlock driver access via POSIX semaphore and return error code
+#define NVOCMP_UNLOCK(err) { \
+        sem_post(&NVOCMP_gPosixSem); return(err); }
 #else
 // Lock driver access via TI-RTOS gatemutex
 #define NVOCMP_LOCK() int32_t key = GateMutexPri_enter(NVOCMP_gMutexPri);
@@ -355,7 +364,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 //*****************************************************************************
 // Page and Header Definitions
 //*****************************************************************************
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0)
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5)
 // CC26x4/CC13x4/CC23x0 devices flash page size is (1 << 11) or 0x800
 #define PAGE_SIZE_LSHIFT 11
 #else
@@ -377,7 +386,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 #endif // NVOCMP_SIGNATURE
 
 #ifndef NVOCMP_NO_RAM_OPTIMIZATION
-#ifdef DeviceFamily_CC23X0
+#ifdef DeviceFamily_CC23X0R5
     #define NVOCMP_RAM_OPTIMIZATION
 #endif
 #endif
@@ -388,7 +397,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
         !defined (DeviceFamily_CC13X4) && \
         !defined (DeviceFamily_CC26X4) && \
         !defined (DeviceFamily_CC26X3) && \
-        !defined (DeviceFamily_CC23X0)
+        !defined (DeviceFamily_CC23X0R5)
         #define NVOCMP_GPRAM
     #endif
 
@@ -677,6 +686,8 @@ static uint8_t NVOCMP_failW;
 // TI-RTOS gateMutexPri for the NV driver API functions
 #ifdef NVOCMP_POSIX_MUTEX
 static pthread_mutex_t NVOCMP_gPosixMutex;
+#elif defined (NVOCMP_POSIX_SEM)
+static sem_t NVOCMP_gPosixSem;
 #else
 static GateMutexPri_Handle NVOCMP_gMutexPri;
 #endif
@@ -983,6 +994,7 @@ static uint8_t NVOCMP_initNvApi(void *param)
     {
 #ifdef NVOCMP_POSIX_MUTEX
         pthread_mutexattr_t attr;
+#elif defined(NVOCMP_POSIX_SEM)
 #else
         GateMutexPri_Params gateParams;
 #endif
@@ -1008,6 +1020,8 @@ static uint8_t NVOCMP_initNvApi(void *param)
             NVOCMP_failF = NVINTF_FAILURE;
             return(NVOCMP_failF);
         }
+#elif defined(NVOCMP_POSIX_SEM)
+        sem_init(&NVOCMP_gPosixSem, 0 /* ignored */, 1);
 #else
         GateMutexPri_Params_init(&gateParams);
         NVOCMP_gMutexPri = GateMutexPri_create(&gateParams, NULL);
@@ -1662,6 +1676,8 @@ static int32_t NVOCMP_lockNvApi(void)
 {
 #ifdef NVOCMP_POSIX_MUTEX
     return(pthread_mutex_lock(&NVOCMP_gPosixMutex));
+#elif defined (NVOCMP_POSIX_SEM)
+    return(sem_wait(&NVOCMP_gPosixSem));
 #else
     return(GateMutexPri_enter(NVOCMP_gMutexPri));
 #endif
@@ -1679,6 +1695,9 @@ static void NVOCMP_unlockNvApi(int32_t key)
 #ifdef NVOCMP_POSIX_MUTEX
     (void)key;
     pthread_mutex_unlock(&NVOCMP_gPosixMutex);
+#elif defined (NVOCMP_POSIX_SEM)
+    (void)key;
+    sem_post(&NVOCMP_gPosixSem);
 #else
     GateMutexPri_leave(NVOCMP_gMutexPri,key);
 #endif
@@ -4265,7 +4284,7 @@ static int16_t NVOCMP_compactPage(NVOCMP_nvHandle_t *pNvHandle, uint16_t nBytes)
 
   // mark page mode
   NVOCMP_read(srcPg, NVOCMP_PGHDROFS, (uint8_t *)&pageHdr, NVOCMP_PGHDRLEN);
-  if(pageHdr.allActive && !pNvHandle->forceCompact)
+  if((NVOCMP_ALLACTIVE == pageHdr.allActive) && !pNvHandle->forceCompact)
   {
     return(0);
   }
@@ -4483,45 +4502,46 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
             uint16_t dataLen;
             uint16_t itemSize;
 
-            // Align to start of item header
-            srcOff -= NVOCMP_ITEMHDRLEN;
+            needScan = false;
+            needSkip = false;
 
             // Read and decompress item header
-            NVOCMP_readHeader(srcPg, srcOff, &srcHdr, false);
+            NVOCMP_readHeader(srcPg, srcOff - NVOCMP_ITEMHDRLEN, &srcHdr, false);
             dataLen  = srcHdr.len;
             itemSize = NVOCMP_ITEMHDRLEN + dataLen;
+            crcOff = srcOff - NVOCMP_ITEMHDRLEN - dataLen;
 
             // Check if length is safe
-            if (srcOff < (dataLen + NVOCMP_PGDATAOFS) ||
-                    (NVOCMP_SIGNATURE != srcHdr.sig))
+            if (srcOff < (dataLen + NVOCMP_PGDATAOFS))
             {
+                NVOCMP_ALERT(false, "Item header corrupted: Data length too long")
                 needScan = true;
+                srcOff--;
+            }
+            else if (NVOCMP_SIGNATURE != srcHdr.sig)
+            {
+                NVOCMP_ALERT(false, "Item header corrupted: Invalid signature")
+                needScan = true;
+                srcOff--;
+            }
+            else if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
+            {
+                // Invalid CRC, corruption
+                NVOCMP_ALERT(false, "Item CRC incorrect!")
+                needScan = true;
+                srcOff--;
+            }
+            else if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) &&  // Item is valid
+                     (srcHdr.stats & NVOCMP_ACTIVEIDBIT))   // Item is active
+            {
+                // Valid CRC, item is active
+                srcOff -= NVOCMP_ITEMHDRLEN;
             }
             else
             {
-              if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) && srcHdr.stats & NVOCMP_ACTIVEIDBIT)
-              {
-                NVOCMP_ALERT(srcOff >= (dataLen + NVOCMP_PGDATAOFS),
-                             "Item header corrupted, data length too long.")
-                crcOff    = srcOff - dataLen;
-                if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
-                {
-                  // Invalid CRC, corruption
-                  NVOCMP_ALERT(false, "Item CRC incorrect!")
-                  needScan = true;
-                  srcOff--;
-                }
-                else
-                {
-                  needScan = false;
-                  needSkip = false;
-                }
-              }
-              else
-              {
-                needScan = false;
+                // Valid CRC but item is inactive
+                srcOff -= NVOCMP_ITEMHDRLEN;
                 needSkip = true;
-              }
             }
 
             if(needScan)
@@ -4707,44 +4727,46 @@ static NVOCMP_compactStatus_t NVOCMP_compact(NVOCMP_nvHandle_t *pNvHandle)
             uint16_t dataLen;
             uint16_t itemSize;
 
-            // Align to start of item header
-            srcOff -= NVOCMP_ITEMHDRLEN;
+            needScan = false;
+            needSkip = false;
 
             // Read and decompress item header
-            NVOCMP_readHeader(srcPg, srcOff, &srcHdr, false);
+            NVOCMP_readHeader(srcPg, srcOff - NVOCMP_ITEMHDRLEN, &srcHdr, false);
             dataLen  = srcHdr.len;
             itemSize = NVOCMP_ITEMHDRLEN + dataLen;
+            crcOff = srcOff - NVOCMP_ITEMHDRLEN - dataLen;
 
             // Check if length is safe
-            if (srcOff < (dataLen + NVOCMP_PGDATAOFS) ||
-                    (NVOCMP_SIGNATURE != srcHdr.sig))
+            if (srcOff < (dataLen + NVOCMP_PGDATAOFS))
             {
-                NVOCMP_ALERT(false, "Item header corrupted, data length too long.")
+                NVOCMP_ALERT(false, "Item header corrupted: Data length too long")
                 needScan = true;
+                srcOff--;
+            }
+            else if (NVOCMP_SIGNATURE != srcHdr.sig)
+            {
+                NVOCMP_ALERT(false, "Item header corrupted: Invalid signature")
+                needScan = true;
+                srcOff--;
+            }
+            else if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
+            {
+                // Invalid CRC, corruption
+                NVOCMP_ALERT(false, "Item CRC incorrect!")
+                needScan = true;
+                srcOff--;
+            }
+            else if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) &&  // Item is valid
+                     (srcHdr.stats & NVOCMP_ACTIVEIDBIT))   // Item is active
+            {
+                // Valid CRC, item is active
+                srcOff -= NVOCMP_ITEMHDRLEN;
             }
             else
             {
-              if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) && (srcHdr.stats & NVOCMP_ACTIVEIDBIT)) //valid bit is ok
-              {
-                crcOff    = srcOff - dataLen;
-                if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
-                {
-                  // Invalid CRC, corruption
-                  NVOCMP_ALERT(false, "Item CRC incorrect!")
-                  needScan = true;
-                  srcOff--;
-                }
-                else
-                {
-                  needScan = false;
-                  needSkip = false;
-                }
-              }
-              else
-              {
-                needScan = false;
+                // Valid CRC but item is inactive
+                srcOff -= NVOCMP_ITEMHDRLEN;
                 needSkip = true;
-              }
             }
 
             if(needScan)
@@ -4874,10 +4896,10 @@ static void NVOCMP_copyItem(uint8_t srcPg, uint8_t dstPg, uint16_t sOfs, uint16_
 #endif
 
         // Get block of bytes from source page
-        NVOCMP_read(srcPg, sOfs, (uint8_t *)&tmp, num);
+        NVOCMP_read(srcPg, sOfs, (uint8_t *)&tmp[0], num);
 
         // Write block to destination page
-        NVOCMP_failW = NVOCMP_write(dstPg, dOfs, (uint8_t *)&tmp, num);
+        NVOCMP_failW = NVOCMP_write(dstPg, dOfs, (uint8_t *)&tmp[0], num);
 
         dOfs += num;
         sOfs += num;
@@ -5082,46 +5104,49 @@ static uint32_t NVOCMP_sanityCheckApi (void)
             uint16_t dataLen;
             uint16_t itemSize;
 
-            // Align to start of item header
-            srcOff -= NVOCMP_ITEMHDRLEN;
+            needScan = false;
+            needSkip = false;
 
             // Read and decompress item header
-            NVOCMP_readHeader(srcPg, srcOff, &srcHdr, false);
+            NVOCMP_readHeader(srcPg, srcOff - NVOCMP_ITEMHDRLEN, &srcHdr, false);
             dataLen  = srcHdr.len;
             itemSize = NVOCMP_ITEMHDRLEN + dataLen;
+            crcOff = srcOff - NVOCMP_ITEMHDRLEN - dataLen;
 
             // Check if length is safe
-            if (srcOff < (dataLen + NVOCMP_PGDATAOFS) ||
-                    (NVOCMP_SIGNATURE != srcHdr.sig))
+            if (srcOff < (dataLen + NVOCMP_PGDATAOFS))
             {
-                NVOCMP_ALERT(false, "Item header corrupted, data length too long.")
+                NVOCMP_ALERT(false, "Item header corrupted: Data length too long")
                 ret |= (1 << NVINTF_BADLENGTH);
                 needScan = true;
+                srcOff--;
+            }
+            else if (NVOCMP_SIGNATURE != srcHdr.sig)
+            {
+                NVOCMP_ALERT(false, "Item header corrupted: Invalid signature")
+                ret |= (1 << NVINTF_NO_SIG);
+                needScan = true;
+                srcOff--;
+            }
+            else if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
+            {
+                // Invalid CRC, corruption
+                NVOCMP_ALERT(false, "Item CRC incorrect!")
+                ret |= (1 << NVINTF_CORRUPT);
+                needScan = true;
+                srcOff--;
+            }
+            else if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) &&  // Item is valid
+                     (srcHdr.stats & NVOCMP_ACTIVEIDBIT))   // Item is active
+            {
+                // Valid CRC, item is active
+                srcOff -= NVOCMP_ITEMHDRLEN;
             }
             else
             {
-              if(!(srcHdr.stats & NVOCMP_VALIDIDBIT) && (srcHdr.stats & NVOCMP_ACTIVEIDBIT)) //valid bit is ok
-              {
-                crcOff    = srcOff - dataLen;
-                if(NVOCMP_verifyCRC(crcOff,dataLen,srcHdr.crc8, srcPg, false))
-                {
-                  // Invalid CRC, corruption
-                  NVOCMP_ALERT(false, "Item CRC incorrect!")
-                  ret |= (1 << NVINTF_CORRUPT);
-                  needScan = true;
-                  srcOff--;
-                }
-                else
-                {
-                  needScan = false;
-                  needSkip = false;
-                }
-              }
-              else
-              {
-                needScan = false;
+                // Valid CRC but item is inactive
+                srcOff -= NVOCMP_ITEMHDRLEN;
                 needSkip = true;
-              }
             }
 
             if(needScan)

@@ -24,7 +24,7 @@
             },
             {
                 "_file": "targets.json",
-                "$": ".\/..\/config\/cc2642r\/targets"
+                "$": ".\/..\/config\/cc2642rq1\/targets"
             },
             {
                 "_file": "pasettings.json",

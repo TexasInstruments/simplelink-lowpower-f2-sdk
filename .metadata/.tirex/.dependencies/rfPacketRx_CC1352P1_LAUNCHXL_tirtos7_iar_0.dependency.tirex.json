@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfPacketRx.c -> rfPacketRx.c",
+            "+../rfPacketRx.syscfg -> rfPacketRx.syscfg",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../RFQueue.h -> RFQueue.h"
+        ]
+    }
+]

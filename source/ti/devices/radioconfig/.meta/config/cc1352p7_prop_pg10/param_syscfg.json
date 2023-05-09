@@ -49,11 +49,7 @@
                 },
                 {
                     "name": "2gfsk1mbps868",
-                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
-                },
-                {
-                    "name": "2gfsk1mbps915",
-                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
+                    "displayName": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth"
                 },
                 {
                     "name": "2gfsk50kbps154g",
@@ -82,6 +78,14 @@
                 {
                     "name": "ook48kbps",
                     "displayName": "4.8 kbps, OOK, 39 kHz RX Bandwidth"
+                },
+                {
+                    "name": "2gfsk48kbpstcxo_rx",
+                    "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth, RX"
+                },
+                {
+                    "name": "2gfsk48kbpstcxo_tx",
+                    "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth, TX"
                 },
                 {
                     "name": "2gfsk100kbpswmbust",
@@ -232,15 +236,15 @@
             "options": [
                 {
                     "name": "2gfsk100kbps",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview settings)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview settings)"
                 },
                 {
                     "name": "2gfsk250kbps",
-                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview settings)"
+                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview settings)"
                 },
                 {
                     "name": "2msk250kbps",
-                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)"
+                    "displayName": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth (Pre-Silicon)"
                 },
                 {
                     "name": "custom2400",
@@ -310,7 +314,7 @@
                     "name": "rxFilterBw",
                     "displayName": "RX Filter BW (kHz)",
                     "description": "RX Filter BW",
-                    "default": "98.0",
+                    "default": "49.0",
                     "options": [
                         {
                             "name": "4.3",
@@ -471,6 +475,11 @@
                         {
                             "name": "3767.4",
                             "key": 103
+                        },
+                        {
+                            "name": "17.1",
+                            "key": 115,
+                            "info": "decimMode=7"
                         }
                     ]
                 },
@@ -941,14 +950,9 @@
                 "options": "ieee_15_4g"
             },
             {
-                "file": "setting_tc784.json",
+                "file": "setting_tc782.json",
                 "name": "2gfsk1mbps868",
-                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
-            },
-            {
-                "file": "setting_tc785.json",
-                "name": "2gfsk1mbps915",
-                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth (Pre-Silicon)"
+                "description": "1 Mbps, 350 kHz Deviation, 2-GFSK, 2.2 MHz RX Bandwidth"
             },
             {
                 "file": "setting_tc706_154g.json",
@@ -989,6 +993,16 @@
                 "name": "ook48kbps",
                 "description": "4.8 kbps, OOK, 39 kHz RX Bandwidth",
                 "options": "disable_high_pa"
+            },
+            {
+                "file": "setting_tc594_rx.json",
+                "name": "2gfsk48kbpstcxo_rx",
+                "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth, RX"
+            },
+            {
+                "file": "setting_tc594_tx.json",
+                "name": "2gfsk48kbpstcxo_tx",
+                "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth, TX"
             },
             {
                 "file": "setting_tc210.json",
@@ -1167,19 +1181,19 @@
             {
                 "file": "setting_tc900.json",
                 "name": "2gfsk100kbps",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview settings)",
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview settings)",
                 "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc901.json",
                 "name": "2gfsk250kbps",
-                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview settings)",
+                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview settings)",
                 "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc902.json",
                 "name": "2msk250kbps",
-                "description": "250 kbps, 62.5 kHz Deviation, MSK, 471 kHz RX Bandwidth (Pre-Silicon)",
+                "description": "250 kbps, 62.5 kHz Deviation, MSK, 530 kHz RX Bandwidth (Pre-Silicon)",
                 "options": "disable_high_pa"
             },
             {

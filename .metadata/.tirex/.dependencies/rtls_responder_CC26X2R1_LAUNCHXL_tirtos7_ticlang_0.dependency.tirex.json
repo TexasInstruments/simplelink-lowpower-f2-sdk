@@ -1,0 +1,25 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../build_config.opt -> build_config.opt",
+            "+../../Application/rtls_responder.c -> Application/rtls_responder.c",
+            "+../../Application/rtls_responder.h -> Application/rtls_responder.h",
+            "+../../Tools/Defines/rtls_responder_app.opt -> Tools/Defines/rtls_responder_app.opt",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../RTLSCtrl/rtls_ble.h -> RTLSCtrl/rtls_ble.h",
+            "+../../RTLSCtrl/rtls_ctrl.c -> RTLSCtrl/rtls_ctrl.c",
+            "+../../RTLSCtrl/rtls_ctrl.h -> RTLSCtrl/rtls_ctrl.h",
+            "+../../RTLSCtrl/rtls_ctrl_api.h -> RTLSCtrl/rtls_ctrl_api.h",
+            "+../../RTLSCtrl/rtls_host.h -> RTLSCtrl/rtls_host.h",
+            "+../../RTLSCtrl/rtls_host_npi.c -> RTLSCtrl/rtls_host_npi.c",
+            "+../../RTLSCtrl/rtls_ctrl_aoa.c -> RTLSCtrl/rtls_ctrl_aoa.c",
+            "+../../RTLSCtrl/rtls_ctrl_aoa.h -> RTLSCtrl/rtls_ctrl_aoa.h",
+            "+../../RTLSCtrl/rtls_aoa_api.h -> RTLSCtrl/rtls_aoa_api.h",
+            "+../../RTLSCtrl/rtls_aoa.c -> RTLSCtrl/rtls_aoa.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../rtls_responder.syscfg -> rtls_responder.syscfg",
+            "+cc13x2_cc26x2_app_tirtos7.cmd -> cc13x2_cc26x2_app_tirtos7.cmd"
+        ]
+    }
+]

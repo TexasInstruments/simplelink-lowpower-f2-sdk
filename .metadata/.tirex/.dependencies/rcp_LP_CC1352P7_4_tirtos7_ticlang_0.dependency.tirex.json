@@ -1,0 +1,41 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../platform/alarm.c -> platform/alarm.c",
+            "+../../platform/alarm_micro.c -> platform/alarm_micro.c",
+            "+../../platform/radio.h -> platform/radio.h",
+            "+../../platform/diag.c -> platform/diag.c",
+            "+../../platform/DIAG.md -> platform/DIAG.md",
+            "+../../platform/entropy.c -> platform/entropy.c",
+            "+../../platform/misc.c -> platform/misc.c",
+            "+../../platform/settings.c -> platform/settings.c",
+            "+../../platform/system.c -> platform/system.c",
+            "+../../platform/system.h -> platform/system.h",
+            "+../../platform/radio.c -> platform/radio.c",
+            "+../../platform/uart.c -> platform/uart.c",
+            "+../../platform/nv/crc.c -> platform/nv/crc.c",
+            "+../../platform/nv/crc.h -> platform/nv/crc.h",
+            "+../../platform/nv/nvocmp.c -> platform/nv/nvocmp.c",
+            "+../../platform/nv/nvocmp.h -> platform/nv/nvocmp.h",
+            "+../../platform/nv/nvintf.h -> platform/nv/nvintf.h",
+            "+../../rcp.c -> rcp.c",
+            "+../../platform/spi_periph.c -> platform/spi_periph.c",
+            "+../../platform/ncp.c -> platform/ncp.c",
+            "+../../main.c -> main.c",
+            "+../../task_config.h -> task_config.h",
+            "+../../otstack.c -> otstack.c",
+            "+../../otstack.h -> otstack.h",
+            "+../../otsupport/otrtosapi.h -> otsupport/otrtosapi.h",
+            "+../../otsupport/otrtosapi.c -> otsupport/otrtosapi.c",
+            "+../../otsupport/otinstance.h -> otsupport/otinstance.h",
+            "+../rcp.syscfg -> rcp.syscfg",
+            "+../../platform/crypto/aes_alt.c -> platform/crypto/aes_alt.c",
+            "+../../platform/crypto/sha256_alt.c -> platform/crypto/sha256_alt.c",
+            "+../../platform/crypto/ecjpake_alt.c -> platform/crypto/ecjpake_alt.c",
+            "+../../platform/crypto/crypto_misc.c -> platform/crypto/crypto_misc.c",
+            "+cc13x2x7_cc26x2x7_tirtos7.cmd -> cc13x2x7_cc26x2x7_tirtos7.cmd"
+        ]
+    }
+]

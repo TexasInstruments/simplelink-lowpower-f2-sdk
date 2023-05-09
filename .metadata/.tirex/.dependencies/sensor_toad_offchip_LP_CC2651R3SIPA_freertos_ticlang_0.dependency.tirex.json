@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor_oad_offchip.opts -> application/defines/sensor_oad_offchip.opts",
+            "+../sensor_toad.syscfg -> sensor_toad.syscfg",
+            "+cc13x1_cc26x1_oad_offchip.cmd -> cc13x1_cc26x1_oad_offchip.cmd"
+        ]
+    }
+]

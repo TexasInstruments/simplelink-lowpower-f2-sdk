@@ -1,0 +1,865 @@
+/**************************************************************************************************
+  Filename:       zcl_config.c
+
+  Description: - sample app template file
+
+  Copyright 2006-2014 Texas Instruments Incorporated. All rights reserved.
+
+  IMPORTANT: Your use of this Software is limited to those specific rights
+  granted under the terms of a software license agreement between the user
+  who downloaded the software, his/her employer (which must be your employer)
+  and Texas Instruments Incorporated (the "License").  You may not use this
+  Software unless you agree to abide by the terms of the License. The License
+  limits your use, and you acknowledge, that the Software may not be modified,
+  copied or distributed unless embedded on a Texas Instruments microcontroller
+  or used solely and exclusively in conjunction with a Texas Instruments radio
+  frequency transceiver, which is integrated into your product.  Other than for
+  the foregoing purpose, you may not use, reproduce, copy, prepare derivative
+  works of, modify, distribute, perform, display or sell this Software and/or
+  its documentation for any purpose.
+
+  YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE
+  PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE,
+  NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL
+  TEXAS INSTRUMENTS OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER CONTRACT,
+  NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER
+  LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
+  INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE
+  OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT
+  OF SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
+  (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
+
+  Should you have any questions regarding your right to use this Software,
+  contact Texas Instruments Incorporated at www.TI.com.
+**************************************************************************************************/
+%%{
+/*
+ *  ======== zcl_config.c.xdt ========
+ */
+
+/* Static module and submodules and scripts */
+const Common = system.getScript("/ti/zstack/zstack_common.js");
+const app = [system.modules['/ti/zstack/zstack'].$static.app, system.modules['/ti/zstack/zstack'].$static.otaClient];
+
+let devices = system.getScript("/ti/zstack/stack/zcl/ZDL.js").ZDL.devices;
+const clusters = system.getScript("/ti/zstack/stack/zcl/ZCL.js").ZCL.clusters;
+
+Common.addGlobalClusters(devices, clusters);
+
+/* Get device information */
+let deviceDict = {};
+let deviceList = [];
+for (let i=0; i<devices.length; i++) {
+  deviceDict[devices[i]._id] = devices[i];
+  deviceList.push(devices[i]._id);
+}
+/* Variable Declarations */
+let includes = '#include "zcl_config.h"\n#include "zstackapi.h"\n';
+let otaFunction = '';
+let attributeDefaults = '';
+let attributeList = '';
+let attributeResets = '';
+let attributeVariables = '';
+let bdbString = '';
+let callBackString = '';
+let commandCallbacks = '';
+let commandList = '';
+let currClass = '';
+let currFlag = '';
+let registerCallbacks = '';
+
+let serviceTaskId = '';
+let appDeviceVersion = '';
+let appFlags = '';
+let appEndpoint = '';
+let inClusterLists = '';
+let outClusterLists = '';
+let maxInClusters = '';
+let maxOutClusters = '';
+let simpleDescriptions = '';
+let zclDiagFunc = '';
+
+let epDescs = '';
+let epRegister = '';
+let attrRegister = '';
+let resetAttr = '';
+let cmdRegister = '';
+
+let output = '';
+
+let deviceNum;
+for(deviceNum = 0; deviceNum < app.length; deviceNum++)
+{
+  if ('otaClientEnabled' in app[deviceNum] && !app[deviceNum].otaClientEnabled)
+  {
+    break;
+  }
+  let classDict = {};
+  let deviceID = app[deviceNum].zigbeeDeviceType;
+  let deviceObj = deviceDict[deviceID];
+  let profileID = 'ZCL_HA_PROFILE_ID';
+  let deviceDef = 'NONE';
+  let inClusterList = '';
+  let outClusterList = '';
+  if (deviceObj && deviceObj._definition) {
+    deviceDef = deviceObj._definition;
+  }
+
+  /* Get clusters from ZCL.js */
+  let clusterDict = {};
+  let clusterList = [];
+  let attributeDict = {};
+  let commandGenDict = {};
+  let commandRecDict = {};
+  for (let i in clusters) {
+    let currCluster = clusters[i];
+    clusterDict[currCluster._id] = clusters[i];
+    clusterList.push(currCluster._id);
+    attributeDict[currCluster._id] = {};
+    commandRecDict[currCluster._id] = {};
+    commandGenDict[currCluster._id] = {};
+    if (currCluster.server) {
+      for (let j in currCluster.server.attribute) {
+        attributeDict[currCluster._id][currCluster.server.attribute[j]._id] = currCluster.server.attribute[j];
+      }
+      for (let j in currCluster.server.command) {
+        commandRecDict[currCluster._id][currCluster.server.command[j]._id] = currCluster.server.command[j];
+      }
+    }
+    if (currCluster.client) {
+      for (let j in currCluster.client.attribute) {
+        attributeDict[currCluster._id][currCluster.client.attribute[j]._id] = currCluster.client.attribute[j];
+      }
+      for (let j in currCluster.client.command) {
+        commandGenDict[currCluster._id][currCluster.client.command[j]._id] = currCluster.client.command[j];
+      }
+    }
+  }
+
+  let callbackSet = new Set();
+
+  /* Get Server-Side information */
+  let manServerClustIDs = app[deviceNum][deviceID + "manServer"];
+  let recServerClustIDs = app[deviceNum][deviceID + "recServer"];
+  let addServerClustIDs = app[deviceNum][deviceID + "addServer"];
+  let serverClusters = [];
+  let serverAttributes = {};
+  let serverCommandsGen = {};
+  let serverCommandsRec = {};
+  for (let i in manServerClustIDs) {
+    let currClusterID = manServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster);
+    serverAttributes[currClusterID] = [];
+    serverCommandsGen[currClusterID] = [];
+    serverCommandsRec[currClusterID] = [];
+    let manServerAttIDs = app[deviceNum][currClusterID + 'mcmaServer'].concat(app[deviceNum][currClusterID + 'mcoaServer']);
+    for (let j in manServerAttIDs) {
+      let currAttributeID = manServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let manServerCommGenIDs = app[deviceNum][currClusterID + "mcmcgServer"].concat(app[deviceNum][currClusterID + "mcocgServer"]);
+    for (let j in manServerCommGenIDs) {
+      let currCommandID = manServerCommGenIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      serverCommandsGen[currClusterID].push(currCommand);
+    }
+    let manServerCommRecIDs = app[deviceNum][currClusterID + "mcmcrServer"].concat(app[deviceNum][currClusterID + "mcocrServer"]);
+    for (let j in manServerCommRecIDs) {
+      let currCommandID = manServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      serverCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in recServerClustIDs) {
+    let currClusterID = recServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster);
+    serverAttributes[currClusterID] = [];
+    serverCommandsGen[currClusterID] = [];
+    serverCommandsRec[currClusterID] = [];
+    let recServerAttIDs = app[deviceNum][currClusterID + 'rcmaServer'].concat(app[deviceNum][currClusterID + 'rcoaServer']);
+    for (let j in recServerAttIDs) {
+      let currAttributeID = recServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let recServerCommGenIDs = app[deviceNum][currClusterID + "rcmcgServer"].concat(app[deviceNum][currClusterID + "rcocgServer"]);
+    for (let j in recServerCommGenIDs) {
+      let currCommandID = recServerCommGenIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      serverCommandsGen[currClusterID].push(currCommand);
+    }
+    let recServerCommRecIDs = app[deviceNum][currClusterID + "rcmcrServer"].concat(app[deviceNum][currClusterID + "rcocrServer"]);
+    for (let j in recServerCommRecIDs) {
+      let currCommandID = recServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      serverCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in addServerClustIDs) {
+    let currClusterID = addServerClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    serverClusters.push(currCluster)
+    serverAttributes[currClusterID] = [];
+    serverCommandsGen[currClusterID] = [];
+    serverCommandsRec[currClusterID] = [];
+    let addServerAttIDs = app[deviceNum][currClusterID + 'acmaServer'].concat(app[deviceNum][currClusterID + 'acoaServer']);
+    for (let j in addServerAttIDs) {
+      let currAttributeID = addServerAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      serverAttributes[currClusterID].push(currAttribute);
+    }
+    let addServerCommGenIDs = app[deviceNum][currClusterID + "acmcgServer"].concat(app[deviceNum][currClusterID + "acocgServer"]);
+    for (let j in addServerCommGenIDs) {
+      let currCommandID = addServerCommGenIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      serverCommandsGen[currClusterID].push(currCommand);
+    }
+    let addServerCommRecIDs = app[deviceNum][currClusterID + "acmcrServer"].concat(app[deviceNum][currClusterID + "acocrServer"]);
+    for (let j in addServerCommRecIDs) {
+      let currCommandID = addServerCommRecIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      serverCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+
+  /* Get Client-Side information */
+  let manClientClustIDs = app[deviceNum][deviceID + "manClient"];
+  let recClientClustIDs = app[deviceNum][deviceID + "recClient"];
+  let addClientClustIDs = app[deviceNum][deviceID + "addClient"];
+  let clientClusters = [];
+  let clientAttributes = {};
+  let clientCommandsGen = {};
+  let clientCommandsRec = {};
+  for (let i in manClientClustIDs) {
+    let currClusterID = manClientClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster);
+    clientAttributes[currClusterID] = [];
+    clientCommandsGen[currClusterID] = [];
+    clientCommandsRec[currClusterID] = [];
+    let manClientAttIDs = app[deviceNum][currClusterID + 'mcmaClient'].concat(app[deviceNum][currClusterID + 'mcoaClient']);
+    for (let j in manClientAttIDs) {
+      let currAttributeID = manClientAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let manClientCommGenIDs = app[deviceNum][currClusterID + "mcmcgClient"].concat(app[deviceNum][currClusterID + "mcocgClient"]);
+    for (let j in manClientCommGenIDs) {
+      let currCommandID = manClientCommGenIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      clientCommandsGen[currClusterID].push(currCommand);
+    }
+    let manClientCommRecIDs = app[deviceNum][currClusterID + "mcmcrClient"].concat(app[deviceNum][currClusterID + "mcocrClient"]);
+    for (let j in manClientCommRecIDs) {
+      let currCommandID = manClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      clientCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in recClientClustIDs) {
+    let currClusterID = recClientClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster);
+    clientAttributes[currClusterID] = [];
+    clientCommandsGen[currClusterID] = [];
+    clientCommandsRec[currClusterID] = [];
+    let recClientAttIDs = app[deviceNum][currClusterID + 'rcmaClient'].concat(app[deviceNum][currClusterID + 'rcoaClient']);
+    for (let j in recClientAttIDs) {
+      let currAttributeID = recClientAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let recClientCommGenIDs = app[deviceNum][currClusterID + "rcmcgClient"].concat(app[deviceNum][currClusterID + "rcocgClient"]);
+    for (let j in recClientCommGenIDs) {
+      let currCommandID = recClientCommGenIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      clientCommandsGen[currClusterID].push(currCommand);
+    }
+    let recClientCommRecIDs = app[deviceNum][currClusterID + "rcmcrClient"].concat(app[deviceNum][currClusterID + "rcocrClient"]);
+    for (let j in recClientCommRecIDs) {
+      let currCommandID = recClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      clientCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+  for (let i in addClientClustIDs) {
+    let currClusterID = addClientClustIDs[i];
+    let currCluster = clusterDict[currClusterID];
+    clientClusters.push(currCluster);
+    clientAttributes[currClusterID] = [];
+    clientCommandsGen[currClusterID] = [];
+    clientCommandsRec[currClusterID] = [];
+    let addClientAttIDs = app[deviceNum][currClusterID + 'acmaClient'].concat(app[deviceNum][currClusterID + 'acoaClient']);
+    for (let j in addClientAttIDs) {
+      let currAttributeID = addClientAttIDs[j];
+      let currAttribute = attributeDict[currClusterID][currAttributeID];
+      clientAttributes[currClusterID].push(currAttribute);
+    }
+    let addClientCommGenIDs = app[deviceNum][currClusterID + "acmcgClient"].concat(app[deviceNum][currClusterID + "acocgClient"]);
+    for (let j in addClientCommGenIDs) {
+      let currCommandID = addClientCommGenIDs[j];
+      let currCommand = commandRecDict[currClusterID][currCommandID];
+      clientCommandsGen[currClusterID].push(currCommand);
+    }
+    let addClientCommRecIDs = app[deviceNum][currClusterID + "acmcrClient"].concat(app[deviceNum][currClusterID + "acocrClient"]);
+    for (let j in addClientCommRecIDs) {
+      let currCommandID = addClientCommRecIDs[j];
+      let currCommand = commandGenDict[currClusterID][currCommandID];
+      clientCommandsRec[currClusterID].push(currCommand);
+      if (currCommand._callback) {
+        callbackSet.add(currCommand._callback);
+      }
+    }
+  }
+
+  /* App Names */
+  let appName = app[deviceNum].zigbeeApplicationName;
+  let appNameCaps = appName.toUpperCase().replace(/\s/g, '');
+  let appNameWords = appName.split(" ");
+  let appNameCamel = appNameWords[0].charAt(0).toLowerCase() + appNameWords[0].slice(1);
+  for (let i=1; i<appNameWords.length; i++) {
+    appNameCamel += appNameWords[i].charAt(0).toUpperCase() + appNameWords[i].slice(1);
+  }
+
+  /* Get Advanced Settings */
+  let endpoint = app[deviceNum].endpoint;
+  let deviceVersion = app[deviceNum].deviceVersion;
+  let flags = app[deviceNum].flags;
+
+  for (let i in serverAttributes) {
+    serverAttributes[i].sort(function(a, b) {
+      return (parseInt(a._id) - parseInt(b._id));
+    });
+  }
+
+  for (let i in clientAttributes) {
+    clientAttributes[i].sort(function(a, b) {
+      return (parseInt(a._id) - parseInt(b._id));
+    });
+  }
+
+  /* --------------- Code Generation --------------- */
+
+  attributeList += 'const zclAttrRec_t ' + appNameCamel + '_Attrs[] =\n';
+  attributeList += '{\n';
+  commandList += 'const zclCommandRec_t ' + appNameCamel + '_Cmds[] =\n';
+  commandList += '{\n';
+  attributeResets += "void " + appNameCamel + "_ResetAttributesToDefaultValues(void)\n"
+  attributeResets += '{\n';
+  let endReportable = 0;
+
+  /* Server-Side */
+  for (let i in serverClusters) {
+    let currCluster = serverClusters[i];
+    inClusterList += '\t' + currCluster._definition + ',\n';
+    attributeVariables += '\n\/\/ ' + currCluster._name + ' Cluster (Server-Side)\n';
+
+    /* Server-Side Classes */
+    let currClass = currCluster._class;
+    if (!classDict[currClass] && currCluster.appcallback._name != 'Not Found') {
+      classDict[currClass] = currCluster;
+    }
+
+    /* Server-Side Attributes */
+    attributeList += '#ifdef ' + currCluster._flag + '\n';
+    for (let j in serverAttributes[currCluster._id]) {
+      let currAttribute = serverAttributes[currCluster._id][j];
+      let variableName = appNameCamel + '_' + currCluster._name + '_' + currAttribute._name.replace('-', '_');
+
+      if (currAttribute._default) {
+        let defaultName = currAttribute._definition.replace('ATTRID', 'DEFAULT_' + appNameCaps);
+        if (defaultName.endsWith('CLUSTER_REVISION')) {
+          defaultName = 'DEFAULT_' + appNameCaps + '_' + currCluster._name.toUpperCase() + '_CLUSTER_REVISION';
+        }
+        if (defaultName.endsWith('ATTRIBUTE_REPORTING_STATUS')) {
+          defaultName = 'DEFAULT_' + appNameCaps + '_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
+        }
+
+        if (currAttribute._type.endsWith('[]')) {
+          attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+        }
+        else {
+          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
+          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+        }
+      }
+
+      if (currAttribute._type.endsWith('[]')) {
+        attributeVariables +=  'WEAK ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + variableName + '[];\n';
+      }
+      else {
+        attributeVariables +=  'WEAK ' + currAttribute._type + ' ' + variableName + ';\n';
+      }
+
+      attributeList += '\t{\n';
+      attributeList += '\t\t' + currCluster._definition + ',\n';
+      attributeList += '\t\t\t{\n';
+      attributeList += '\t\t\t\t' + currAttribute._definition + ',\n';
+      attributeList += '\t\t\t\t' + currAttribute._zigbeetype + ',\n';
+
+      let accessControls = [];
+      if (currAttribute._reportable == 'true') {
+        if (currCluster._flag != currFlag) {
+          if (currFlag != '') {
+            bdbString += '#endif\n';
+          }
+          bdbString += '#ifdef ' + currCluster._flag + '\n';
+          currFlag = currCluster._flag;
+        }
+        let reportableChangeInt = app[deviceNum]["server" + currCluster._id + currAttribute._id + "reportableChange"];
+        let reportableChange = '{';
+        for (let i = 0; i < app[deviceNum]['bdbReportingMaxAnalogAttrSize']; i++) {
+          reportableChange += "0x" + ("00" + (reportableChangeInt % 0x100).toString(16).toUpperCase()).substr(-2);
+          if (i < app[deviceNum]['bdbReportingMaxAnalogAttrSize'] - 1) {
+            reportableChange += ", ";
+            reportableChangeInt = Math.floor(reportableChangeInt / 0x100);
+          }
+        }
+        reportableChange += "}";
+
+        bdbString += '\tfoo = (struct foo) { .arr = ' + reportableChange + ' };\n'
+        bdbString += '\tReq.attrID = ' + currAttribute._definition + ';\n';
+        bdbString += '\tReq.cluster = ' + currCluster._definition + ';\n';
+        bdbString += '\tReq.endpoint = ' + appNameCaps + '_ENDPOINT;\n';
+        bdbString += '\tReq.maxReportInt = 0x' + ("0000" + (app[deviceNum]["server" + currCluster._id + currAttribute._id + "maxReportInterval"]).toString(16).toUpperCase()).substr(-4) + ';\n';
+        bdbString += '\tReq.minReportInt = 0x' + ("0000" + (app[deviceNum]["server" + currCluster._id + currAttribute._id + "minReportInterval"]).toString(16).toUpperCase()).substr(-4) + ';\n';
+        bdbString += '\tOsalPort_memcpy(Req.reportableChange, foo.arr, BDBREPORTING_MAX_ANALOG_ATTR_SIZE);\n';
+        bdbString += '\tZstackapi_bdbRepAddAttrCfgRecordDefaultToListReq(' + 'sampleApp_serviceTaskId,&Req);\n\n';
+
+        accessControls.push('ACCESS_REPORTABLE');
+        endReportable = 1;
+      }
+      if (currAttribute._writable == 'true') {
+        accessControls.push('ACCESS_CONTROL_WRITE');
+      }
+      if (currAttribute._readable == 'true') {
+        accessControls.push('ACCESS_CONTROL_READ');
+      }
+      if (accessControls.length > 0) {
+        attributeList += '\t\t\t\t';
+        for (let k = 0; k < accessControls.length; k++) {
+          attributeList += accessControls[k];
+          if (k != accessControls.length - 1) {
+            attributeList += ' | ';
+          }
+        }
+        attributeList += ',\n';
+      }
+      else {
+        attributeList += '\t\t\t\t' + 'ACCESS_CONTROL_NONE' + ',\n';
+      }
+
+      attributeList += '\t\t\t\t(void *)&' + variableName + '\n';
+      attributeList += '\t\t\t}\n';
+      attributeList += '\t},\n';
+    }
+    attributeList += '#endif\n';
+
+    /* Server-Side Commands */
+    commandList += '#ifdef ' + currCluster._flag + '\n';
+    for (let j in serverCommandsGen[currCluster._id]) {
+      let currCommand = serverCommandsGen[currCluster._id][j];
+      commandList += '\t{\n';
+      commandList += '\t\t' + currCluster._definition + ',\n';
+      commandList += '\t\t' + currCommand._definition + ',\n';
+      commandList += '\t\t' + 'CMD_DIR_SERVER_GENERATED' + ',\n';
+      commandList += '\t},\n';
+    }
+    for (let j in serverCommandsRec[currCluster._id]) {
+      let currCommand = serverCommandsRec[currCluster._id][j];
+      commandList += '\t{\n';
+      commandList += '\t\t' + currCluster._definition + ',\n';
+      commandList += '\t\t' + currCommand._definition + ',\n';
+      commandList += '\t\t' + 'CMD_DIR_SERVER_RECEIVED' + ',\n';
+      commandList += '\t},\n';
+    }
+    commandList += '#endif\n';
+  }
+
+  /* Client-Side */
+  for (let i in clientClusters) {
+    let currCluster = clientClusters[i];
+    outClusterList += '\t' + currCluster._definition + ',\n';
+    attributeVariables += '\n\/\/ ' + currCluster._name + ' Cluster (Client-Side)\n';
+
+    /* Client-Side Classes */
+    let currClass = currCluster._class;
+    if (!classDict[currClass] && currCluster.appcallback._name != 'Not Found') {
+      classDict[currClass] = currCluster;
+    }
+
+    /* Client-Side Attributes */
+    attributeList += '#ifdef ' + currCluster._flag + '\n';
+    for (let j in clientAttributes[currCluster._id]) {
+      let currAttribute = clientAttributes[currCluster._id][j];
+      let variableName = appNameCamel + '_' + currCluster._name + '_' + currAttribute._name.replace('-', '_');
+
+      if (currAttribute._default) {
+        let defaultName = currAttribute._definition.replace('ATTRID', 'DEFAULT');
+        if (defaultName == 'DEFAULT_CLUSTER_REVISION') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_CLUSTER_REVISION';
+        }
+        if (defaultName == 'DEFAULT_ATTRIBUTE_REPORTING_STATUS') {
+          defaultName = 'DEFAULT_' + currCluster._name.toUpperCase() + '_ATTRIBUTE_REPORTING_STATUS';
+        }
+        if(currAttribute._default == 18446744073709551615) // Append "ULL" to DEFAULT_OTA_UPGRADE_UPGRADE_SERVER_ID
+        {
+          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + 'ULL;\n';
+          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+        }
+        else if (currAttribute._type.endsWith('[]')) {
+          attributeDefaults += 'WEAK const ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + defaultName + '[] = ' + currAttribute._default + ';\n';
+        }
+        else {
+          attributeDefaults += 'WEAK const ' + currAttribute._type + ' ' + defaultName + ' = ' + currAttribute._default + ';\n';
+          attributeResets += '\t' + variableName + ' = ' + defaultName + ';\n';
+        }
+      }
+
+      if (currAttribute._type.endsWith('[]')) {
+        attributeVariables +=  'WEAK ' + currAttribute._type.substring(0, currAttribute._type.length-2) + ' ' + variableName + '[];\n';
+      }
+      else {
+        attributeVariables +=  'WEAK ' + currAttribute._type + ' ' + variableName + ';\n';
+      }
+
+      attributeList += '\t{\n';
+      attributeList += '\t\t' + currCluster._definition + ',\n';
+      attributeList += '\t\t\t{\n';
+      attributeList += '\t\t\t\t' + currAttribute._definition + ',\n';
+      attributeList += '\t\t\t\t' + currAttribute._zigbeetype + ',\n';
+
+      let accessControls = ['ACCESS_CLIENT'];
+      if (currAttribute._reportable == 'true') {
+        if (currCluster._flag != currFlag) {
+          if (currFlag != '') {
+            bdbString += '#endif\n';
+          }
+          bdbString += '#ifdef ' + currCluster._flag + '\n';
+          currFlag = currCluster._flag;
+        }
+        let reportableChangeInt = app[deviceNum]["client" + currCluster._id + currAttribute._id + "reportableChange"];
+        let reportableChange = '{';
+        for (let i = 0; i < app[deviceNum]['bdbReportingMaxAnalogAttrSize']; i++) {
+          reportableChange += "0x" + ("00" + (reportableChangeInt % 0x100).toString(16).toUpperCase()).substr(-2);
+          if (i < app[deviceNum]['bdbReportingMaxAnalogAttrSize'] - 1) {
+            reportableChange += ", ";
+            reportableChangeInt = Math.floor(reportableChangeInt / 0x100);
+          }
+        }
+        reportableChange += "}";
+
+        bdbString += '\tReq.attrID = ' + currAttribute._definition + ';\n';
+        bdbString += '\tReq.cluster = ' + currCluster._definition + ';\n';
+        bdbString += '\tReq.endpoint = ' + appNameCaps + '_ENDPOINT;\n';
+        bdbString += '\tReq.maxReportInt = 0x' + ("0000" + (app[deviceNum]["client" + currCluster._id + currAttribute._id + "maxReportInterval"]).toString(16).toUpperCase()).substr(-4) + ';\n';
+        bdbString += '\tReq.minReportInt = 0x' + ("0000" + (app[deviceNum]["client" + currCluster._id + currAttribute._id + "minReportInterval"]).toString(16).toUpperCase()).substr(-4) + ';\n';
+        bdbString += '\tOsalPort_memcpy(Req.reportableChange,' + reportableChange + ',BDBREPORTING_MAX_ANALOG_ATTR_SIZE);\n\n';
+        bdbString += '\tZstackapi_bdbRepAddAttrCfgRecordDefaultToListReq(' + 'sampleApp_serviceTaskId,&Req);\n';
+
+        accessControls.push('ACCESS_REPORTABLE');
+        endReportable = 1;
+      }
+      if (currAttribute._writable == 'true') {
+        accessControls.push('ACCESS_CONTROL_WRITE');
+      }
+      if (currAttribute._readable == 'true') {
+        accessControls.push('ACCESS_CONTROL_READ');
+      }
+      if (accessControls.length > 0) {
+        attributeList += '\t\t\t\t';
+        for (let k = 0; k < accessControls.length; k++) {
+          attributeList += accessControls[k];
+          if (k != accessControls.length - 1) {
+            attributeList += ' | ';
+          }
+        }
+        attributeList += ',\n';
+      }
+      else {
+        attributeList += '\t\t\t\t' + 'ACCESS_CONTROL_NONE' + ',\n';
+      }
+
+      attributeList += '\t\t\t\t(void *)&' + variableName + '\n';
+      attributeList += '\t\t\t}\n';
+      attributeList += '\t},\n';
+    }
+    attributeList += '#endif\n';
+
+    /* Client-Side Commands */
+    commandList += '#ifdef ' + currCluster._flag + '\n';
+    for (let j in clientCommandsGen[currCluster._id]) {
+      let currCommand = clientCommandsGen[currCluster._id][j];
+      commandList += '\t{\n';
+      commandList += '\t\t' + currCluster._definition + ',\n';
+      commandList += '\t\t' + currCommand._definition + ',\n';
+      commandList += '\t\t' + 'CMD_DIR_CLIENT_GENERATED' + ',\n';
+      commandList += '\t},\n';
+    }
+    for (let j in clientCommandsRec[currCluster._id]) {
+      let currCommand = clientCommandsRec[currCluster._id][j];
+      commandList += '\t{\n';
+      commandList += '\t\t' + currCluster._definition + ',\n';
+      commandList += '\t\t' + currCommand._definition + ',\n';
+      commandList += '\t\t' + 'CMD_DIR_CLIENT_RECEIVED' + ',\n';
+      commandList += '\t},\n';
+    }
+    commandList += '#endif\n';
+  }
+
+  attributeResets += "}\n\n";
+  attributeList += '};\n\n';
+  attributeList += 'const uint8_t ' + appNameCamel + '_zclAttrsArraySize = ( sizeof(' + appNameCamel + '_Attrs) / sizeof(' + appNameCamel + '_Attrs[0]) );\n\n';
+  commandList += '};\n\n';
+  commandList += 'const uint8_t ' + appNameCamel + '_zclCmdsArraySize = ( sizeof(' + appNameCamel + '_Cmds) / sizeof(' + appNameCamel + '_Cmds[0]) );\n\n';
+  if (currFlag != '' && endReportable == 1) { bdbString += '#endif\n'; }
+  endReportable = 0;
+
+  /* Callbacks */
+  for (let clusterClass in classDict) {
+    let currCluster = classDict[clusterClass];
+    let classCamel = currCluster._class.toUpperCase();
+    if (currCluster.appcallback.callbacks) {
+      if (!('otaClientEnabled' in app[deviceNum])) //TODO
+      {
+        registerCallbacks += '\t' + currCluster.appcallback._register + '( ' + appNameCaps + '_ENDPOINT, &' + appNameCamel + '_' + currCluster.appcallback._name.split('_')[0] + 'CmdCallbacks );\n';
+      }
+      callBackString += '\n' + currCluster.appcallback._name + ' ' + appNameCamel + '_' + currCluster.appcallback._name.split('_')[0] + 'CmdCallbacks = \n';
+      callBackString += '{\n';
+      commandCallbacks += '\n/* ' + classCamel + ' */\n';
+      for (let i=0; i<currCluster.appcallback.callbacks.length; i++) {
+        let currCallBack = currCluster.appcallback.callbacks[i];
+        if (currCallBack._name.startsWith('#')) {
+          callBackString += currCallBack._name + '\n';
+        }
+        else {
+          if (callbackSet.has(currCallBack._name)) {
+            let functionName = appNameCamel + '_' + currCallBack._name + 'CB';
+            callBackString += '\t' + functionName + ',\n';
+            for (let comment in currCallBack.comments) {
+              commandCallbacks += currCallBack.comments[comment]._comment + '\n';
+            }
+            if (currCallBack._returnType != 'void') {
+              commandCallbacks += 'WEAK ' + currCallBack._returnType + ' ' + functionName + currCallBack._arguments + ' { return ((' + currCallBack._returnType + ') 0); }\n';
+            }
+            else {
+              commandCallbacks += 'WEAK ' + currCallBack._returnType + ' ' + functionName + currCallBack._arguments + ' { }\n';
+            }
+          }
+          else {
+            callBackString += '\t' + 'NULL' + ',\n';
+          }
+        }
+      }
+      callBackString += '};\n';
+    }
+  }
+
+  appDeviceVersion += "WEAK uint8_t " + appNameCamel + "_Device_Version = " + appNameCaps + "_DEVICE_VERSION;\n";
+  appFlags += "WEAK uint8_t " + appNameCamel + "_Flags = " + appNameCaps + "_FLAGS;\n";
+  appEndpoint += "WEAK uint8_t " + appNameCamel + "_EndPoint = " + appNameCaps + "_ENDPOINT;\n";
+
+  if( inClusterList != '' )
+  {
+    inClusterLists += "const cId_t " + appNameCamel + "_InClusterList[] =\n{\n" + inClusterList + "};\n";
+    maxInClusters += "#define " + appNameCaps + "_MAX_INCLUSTERS\t( sizeof( " + appNameCamel + "_InClusterList ) / sizeof( " + appNameCamel + "_InClusterList[0] ))\n";
+  }
+  if( outClusterList != '' )
+  {
+    outClusterLists += "const cId_t " + appNameCamel + "_OutClusterList[] =\n{\n" + outClusterList + "};\n";
+    maxOutClusters += "#define " + appNameCaps + "_MAX_OUTCLUSTERS\t( sizeof( " + appNameCamel + "_OutClusterList ) / sizeof( " + appNameCamel + "_OutClusterList[0] ))\n";
+  }
+
+  simpleDescriptions += "SimpleDescriptionFormat_t " + appNameCamel + "_SimpleDesc =\n{\n\t" +
+                        appNameCaps + "_ENDPOINT,\t\t\t//  int EndPoint\n\t" +
+                        profileID + ",\t\t\t//  uint16_t AppProfId[2]\n\t" +
+                        deviceDef + ",\t\t\t//  uint16_t AppDeviceId[2];\n\t" +
+                        appNameCaps + "_DEVICE_VERSION,\t\t\t//  int   AppDevVer:4;\n\t" +
+                        appNameCaps + "_FLAGS,\t\t\t//  int   AppFlags:4;\n\t";
+
+  if( inClusterLists != '' && outClusterList != '' )
+  {
+
+    simpleDescriptions += appNameCaps + "_MAX_INCLUSTERS,\t\t\t//  byte  AppNumInClusters;\n\t" +
+                          "(cId_t *)" + appNameCamel + "_InClusterList,\t\t\t//  byte *pAppInClusterList;\n\t" +
+                          appNameCaps + "_MAX_OUTCLUSTERS,\t\t\t//  byte  AppNumOutClusters;\n\t" +
+                          "(cId_t *)" + appNameCamel + "_OutClusterList,\t\t\t//  byte *pAppOutClusterList;\n" +
+                          "};\n\n";
+  }
+  else if ( inClusterLists == '' && outClusterList != '' )
+  {
+    simpleDescriptions += "0,\t\t\t//  byte  AppNumInClusters;\n\t" +
+                          "NULL,\t\t\t//  byte *pAppInClusterList;\n\t" +
+                          appNameCaps + "_MAX_OUTCLUSTERS,\t\t\t//  byte  AppNumOutClusters;\n\t" +
+                          "(cId_t *)" + appNameCamel + "_OutClusterList,\t\t\t//  byte *pAppOutClusterList;\n" +
+                          "};\n\n";
+  }
+  else if ( inClusterLists != '' && outClusterList == '' )
+  {
+    simpleDescriptions += appNameCaps + "_MAX_INCLUSTERS,\t\t\t//  byte  AppNumInClusters;\n\t" +
+                          "(cId_t *)" + appNameCamel + "_InClusterList,\t\t\t//  byte *pAppInClusterList;\n\t" +
+                          "0,\t\t\t//  byte  AppNumOutClusters;\n\t" +
+                          "NULL\t\t\t//  byte *pAppOutClusterList;\n" +
+                          "};\n\n";
+  }
+
+  zclDiagFunc += "zcl_registerReadWriteCB( " + appNameCaps + "_ENDPOINT, zclDiagnostic_ReadWriteAttrCB, NULL );\n  ";
+
+  epDescs += "static endPointDesc_t " + appNameCamel + "EpDesc = {0};\n\t";
+  epRegister += appNameCamel + "EpDesc.endPoint = " + appNameCamel + "_EndPoint;\n\t";
+  epRegister += appNameCamel + "EpDesc.simpleDesc = &" + appNameCamel + "_SimpleDesc;\n\t";
+
+  //Adds ota specific functions
+  if ('otaClientEnabled' in app[deviceNum] && app[deviceNum].otaClientEnabled)
+  {
+    includes += '#include "ota_client.h"';
+    otaFunction += appNameCamel + "_ResetAttributesToDefaultValues();\n\t";
+    otaFunction += "otaClient_OTAUpgrade_CurrentFileVersion = " + app[deviceNum]["otaCurrentFileVersion"] + ";\n\t"
+    otaFunction += "otaClient_CreateTask(" + appNameCamel + "_EndPoint, " + appNameCamel + "EpDesc, " +
+                    appNameCamel + "_zclAttrsArraySize,\n\t\t\t\t\t\t " + appNameCamel + "_Attrs, " +
+                    appNameCamel + "_zclCmdsArraySize, " + appNameCamel + "_Cmds);\n";
+  }
+  else
+  {
+    serviceTaskId += "WEAK uint8_t " + "sampleApp_serviceTaskId;\n";
+
+    epRegister += "zclport_registerEndpoint(" + "sampleApp_serviceTaskId, &" + appNameCamel + "EpDesc);\n\n\t";
+
+    attrRegister += "zcl_registerAttrList( " + appNameCamel + "_EndPoint, " + appNameCamel + "_zclAttrsArraySize, " + appNameCamel + "_Attrs );\n\t";
+
+    resetAttr += appNameCamel + "_ResetAttributesToDefaultValues();\n\t";
+
+    cmdRegister += "zcl_registerCmdList( " + appNameCamel + "_EndPoint, " + appNameCamel + "_zclCmdsArraySize, " + appNameCamel + "_Cmds );\n\t";
+  }
+}
+
+%%}
+/**************************************************************************************************
+ DO NOT EDIT
+ DO NOT EDIT
+ DO NOT EDIT - This file was generated by the SysConfig tool.
+ DO NOT EDIT
+ DO NOT EDIT
+**************************************************************************************************/
+
+`includes`
+
+/*********************************************************************
+ * Application Globals
+ *********************************************************************/
+`serviceTaskId`
+`epDescs`
+
+/*********************************************************************
+ * ZCL Attribute Variables
+ *********************************************************************/
+`attributeVariables`
+/*********************************************************************
+ * ZCL Attribute List
+ *********************************************************************/
+// NOTE: The attributes listed in the AttrRec must be in ascending order
+// per cluster to allow right function of the Foundation discovery commands
+`attributeList`
+/*********************************************************************
+ * ZCL Attribute Default Values (const)
+ *********************************************************************/
+`attributeDefaults`
+/*********************************************************************
+ * ZCL Attribute Reset Functionality
+ *********************************************************************/
+`attributeResets`
+
+/*********************************************************************
+ * ZCL Commands List
+ *********************************************************************/
+`commandList`
+/*********************************************************************
+ * ZCL Command Callback Structs
+ *********************************************************************/
+`callBackString`
+/*********************************************************************
+ * ZCL Command Callbacks
+ *********************************************************************/
+`commandCallbacks`
+/*********************************************************************
+ * Simple Descriptor
+ *********************************************************************/
+`appDeviceVersion`
+`appFlags`
+`appEndpoint`
+
+`inClusterLists`
+
+`maxInClusters`
+
+`outClusterLists`
+
+`maxOutClusters`
+
+`simpleDescriptions`
+
+/*********************************************************************
+ * ZCL Initialization Hooks
+ *********************************************************************/
+#ifdef ZCL_DIAGNOSTIC
+  // Register the application's callback function to read/write attribute data.
+  // This is only required when the attribute data format is unknown to ZCL.
+  `zclDiagFunc`
+#endif
+
+/*********************************************************************
+ * @fn          zclConfigInit
+ *
+ * @brief       This is called to initialize the statically-generated
+ *              SysConfig ZCL code. This API should not be modified by
+ *              the user.
+ *
+ * @param       none
+ *
+ * @return      none
+ *********************************************************************/
+void zclConfigInit(void)
+{
+    // register endpoint with ZCL
+    `epRegister`
+    `otaFunction`
+    // register the applications attribute list with ZCL
+    `attrRegister`
+    // reset attributes to their default values
+    `resetAttr`
+
+#ifdef ZCL_DISCOVER
+    // register the applications command list with ZCL
+    `cmdRegister`
+#endif
+
+`registerCallbacks`
+
+#ifdef BDB_REPORTING
+    zstack_bdbRepAddAttrCfgRecordDefaultToListReq_t Req = {0};
+    struct foo {
+      uint8_t arr[BDBREPORTING_MAX_ANALOG_ATTR_SIZE];
+    };
+    struct foo foo;
+`bdbString`
+#endif
+}

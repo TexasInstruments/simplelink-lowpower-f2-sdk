@@ -50,14 +50,14 @@
  */
 
 #include <ti/devices/DeviceFamily.h>
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
 #include DeviceFamily_constructPath(driverlib/prcm.h)
 #include DeviceFamily_constructPath(driverlib/ioc.h)
 #endif
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 #include "led_debug.h"
 
-#ifdef DeviceFamily_CC23X0
+#ifdef DeviceFamily_CC23X0R5
 /* Remap driverlib API names that changed only for cc23x0
  */
 #define GPIO_setDio             GPIOSetDio
@@ -161,7 +161,7 @@ void delay(uint32_t delayMs)
  */
 void powerUpGpio(void)
 {
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     /* GPIO power up*/
     PRCMPowerDomainOn(PRCM_DOMAIN_PERIPH);
     while (PRCMPowerDomainsAllOn(PRCM_DOMAIN_PERIPH)
@@ -189,7 +189,7 @@ void powerUpGpio(void)
  */
 void powerDownGpio(void)
 {
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
     /* GPIO power down */
     PRCMPeripheralRunDisable(PRCM_PERIPH_GPIO);
     PRCMLoadSet();

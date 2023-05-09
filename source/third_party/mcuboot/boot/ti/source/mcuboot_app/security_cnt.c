@@ -22,11 +22,18 @@
 
 #ifdef MCUBOOT_HW_ROLLBACK_PROT
 
+#if (DeviceFamily_PARENT != DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4) || \
+    (DeviceFamily_PARENT != DeviceFamily_PARENT_CC23X0)
+    #error "MCUBOOT_HW_ROLLBACK_PROT not allowed in this device family"
+#endif
 
-#define BIMINFO_SIZE                    0x800       // one sector
-#define BIMINFO_BASE_ADDRESS            0x10000 - BIMINFO_SIZE  // make sure to update this value based on BOOT_BOOTLOADER_SIZE in flash_map_backend.c
+#if defined (DUAL_SLOT) && (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #error "MCUBOOT_HW_ROLLBACK_PROT not supported for TZ_Enabled build config"
+#endif
+
+#define BIMINFO_SIZE                    0x800 // One sector (last sector in MCUBoot region)
+#define BIMINFO_BASE_ADDRESS            BOOTLOADER_BASE_ADDRESS + BOOT_BOOTLOADER_SIZE - BIMINFO_SIZE
 #define MAX_SECURITY_CNT                (BIMINFO_SIZE - BIM_INFO_MAGIC_SZ) / BIM_ITEM_SZ
-
 
 static const struct flash_area bimInfo =
 {

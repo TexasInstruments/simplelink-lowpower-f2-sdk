@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/host_test_app.c -> Application/host_test_app.c",
+            "+../../Application/host_test_app.h -> Application/host_test_app.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Tools/build_config.opt -> Tools/build_config.opt",
+            "+../../Tools/Defines/host_test.opt -> Tools/Defines/host_test.opt",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../host_test.syscfg -> host_test.syscfg",
+            "+cc13x2x7_cc26x2x7_app_tirtos7.cmd -> cc13x2x7_cc26x2x7_app_tirtos7.cmd"
+        ]
+    }
+]

@@ -1,0 +1,21 @@
+Copyright 2020 Amazon.com, Inc., Ring, LLC and/or their affiliates, referred to herein collectively as "Amazon". All Rights Reserved.
+
+These materials are licensed to you as "Program Materials" under the Program Materials License Agreement (the "Agreement") in connection with the Amazon Sidewalk Program and related services. The Agreement is available at https://developer.amazon.com/support/legal/pml. See the Agreement for the specific terms and conditions of the Agreement. Capitalized terms not defined in this file have the meanings given to them in the Agreement.
+
+In addition to the terms and conditions of the Agreement, the following terms and conditions ("Additional Terms" and collectively with the Agreement, the "Terms") apply to these materials. In the event of a conflict between the terms and conditions of the Agreement and these Additional Terms, these Additional Terms will apply.
+
+If these materials are being provided to you in connection with a beta program, then they are "Restricted Program Materials" under the Agreement. This means, among other terms set forth in the Agreement, that: You may not distribute any of Your Products that incorporate or were developed using Restricted Program Materials unless: (a) you submit Your Product to us for approval and we specifically approve the distribution in writing and (b) if any Restricted Program Materials incorporated in Your Product were provided to you in source code form, such Restricted Program Materials (and modifications thereof) are distributed solely in binary form as incorporated in Your Products.
+
+You may only use these materials to (a) evaluate, develop, test, and troubleshoot the operation and compatibility of the materials with Your Products; and (b) integrate the materials into Your Products that include access to the Sidewalk Service.
+
+WITH THE EXCEPTION OF FILES IDENTIFIED AS A "MODIFIABLE FILE" WITHIN THE FILE HEADER, YOU MAY NOT MODIFY ANY SOURCE CODE IN ANY FILE IN THIS PACKAGE.
+
+EXTERNAL DEPENDENCIES
+=====================
+These materials may include and/or be dependent upon certain third-party libraries or other software packages ("EXTERNAL DEPENDENCIES").  If you do not agree with every term in the license file associated with the External Dependencies, you should not use these materials.
+
+THIS INFORMATION IS PROVIDED FOR CONVENIENCE ONLY. AMAZON DOES NOT PROMISE THAT THE EXTERNAL DEPENDENCIES AND THEIR APPLICABLE TERMS ARE COMPLETE, ACCURATE, OR UP-TO-DATE, AND AMAZON WILL HAVE NO LIABILITY FOR ANY OMISSIONS OR INACCURACIES. YOU SHOULD CONSULT THE DOWNLOAD SITES FOR THE EXTERNAL DEPENDENCIES FOR THE MOST COMPLETE AND UP-TO-DATE LICENSING INFORMATION.
+
+YOUR USE OF THE EXTERNAL DEPENDENCIES IS AT YOUR SOLE RISK. IN NO EVENT WILL AMAZON BE LIABLE FOR ANY DAMAGES, INCLUDING WITHOUT LIMITATION ANY DIRECT, INDIRECT, CONSEQUENTIAL, SPECIAL, INCIDENTAL, OR PUNITIVE DAMAGES (INCLUDING FOR ANY LOSS OF GOODWILL, BUSINESS INTERRUPTION, LOST PROFITS OR DATA, OR COMPUTER FAILURE OR MALFUNCTION) ARISING FROM OR RELATING TO THE EXTERNAL DEPENDENCIES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, EVEN IF AMAZON HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THESE LIMITATIONS AND DISCLAIMERS APPLY EXCEPT TO THE EXTENT PROHIBITED BY APPLICABLE LAW.
+
+If you do not agree to the above terms and conditions, you may not use any file in this package.

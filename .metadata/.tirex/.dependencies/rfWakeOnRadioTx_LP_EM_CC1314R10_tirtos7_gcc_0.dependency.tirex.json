@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../rfWakeOnRadioTx.syscfg -> rfWakeOnRadioTx.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../rfWakeOnRadioTx.c -> rfWakeOnRadioTx.c",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x4_cc26x4_tirtos7.lds -> cc13x4_cc26x4_tirtos7.lds"
+        ]
+    }
+]

@@ -1,0 +1,40 @@
+
+/* ================ TrustZone configuration ================ */
+const TrustZone = scripting.addModule("/ti/utils/TrustZone");
+
+/* ================ Kernel (SYS/BIOS) configuration ================ */
+
+/*
+ * Enable the TrustZone PSA extensions
+ */
+BIOS.psaEnabled = true;
+
+/* ================ Hwi configuration ================ */
+const HWI = scripting.addModule("/ti/sysbios/family/arm/v8m/Hwi");
+
+/*
+ * Both these values must match the SPE expectations for the vector table. The
+ * base of RAM is reserved for the secure image. These values do not affect
+ * TICLANG or GCC, as they place vector tables using the linker file.
+ */
+HWI.vectorTableAddress = 0x2000C000;
+HWI.resetVectorAddress = 0x2000C000;
+
+/*
+ * Disable the execution of SetupTrimDevice(), which is already called by the
+ * SPE before the application boots and requires access to secure resources.
+ */
+Boot.trimDevice = false;
+
+/*
+ * Enable the secure callback module
+ */
+TI154Stack.tfmEnabled = true;
+const SecureCallback = scripting.addModule("/ti/drivers/tfm/SecureCallback");
+
+const TRNG           = scripting.addModule("/ti/drivers/TRNG", {}, false);
+const TRNG1          = TRNG.addInstance();
+const TRNG2          = TRNG.addInstance();
+
+device.setFlashVectorTable = true;
+device.addressFlashVectorTable = 0x0000D100; 

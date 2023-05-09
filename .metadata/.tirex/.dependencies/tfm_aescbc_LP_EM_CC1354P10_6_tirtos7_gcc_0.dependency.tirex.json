@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../encrypt.c -> encrypt.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../encrypt.syscfg -> encrypt.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_6/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7_ns.lds -> cc13x4_cc26x4_tirtos7_ns.lds"
+        ]
+    }
+]

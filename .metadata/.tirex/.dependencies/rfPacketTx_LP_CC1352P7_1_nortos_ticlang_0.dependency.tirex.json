@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../rfPacketTx.c -> rfPacketTx.c",
+            "+../README.md -> README.md",
+            "+../rfPacketTx.syscfg -> rfPacketTx.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/ticlang/cc13x2x7_cc26x2x7_nortos.cmd -> cc13x2x7_cc26x2x7_nortos.cmd"
+        ]
+    }
+]

@@ -1,0 +1,10 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../application/defines/router.opts -> application/defines/router.opts",
+            "+../ti_wisunfan_coap_oad_onchip.syscfg -> ti_wisunfan_coap_oad_onchip.syscfg",
+            "+cc13x4_cc26x4_oad_onchip.cmd -> cc13x4_cc26x4_oad_onchip.cmd"
+        ]
+    }
+]

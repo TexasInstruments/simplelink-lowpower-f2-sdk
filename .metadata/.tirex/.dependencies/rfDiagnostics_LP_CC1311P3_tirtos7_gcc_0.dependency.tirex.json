@@ -1,0 +1,31 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../at/AtControl.c -> at/AtControl.c",
+            "+../../at/AtControl.h -> at/AtControl.h",
+            "+../../at/AtParams.c -> at/AtParams.c",
+            "+../../at/AtParams.h -> at/AtParams.h",
+            "+../../at/AtProcess.c -> at/AtProcess.c",
+            "+../../at/AtProcess.h -> at/AtProcess.h",
+            "+../../at/platform/inc/AtTerm.h -> at/platform/inc/AtTerm.h",
+            "+../../at/platform/tirtos/AtTerm.c -> at/platform/tirtos/AtTerm.c",
+            "+../../at/platform/tirtos/DbgPrint.h -> at/platform/tirtos/DbgPrint.h",
+            "+../../radio/radio_common.c -> radio/radio_common.c",
+            "+../../radio/radio.h -> radio/radio.h",
+            "+../../radio/radio_pvt.h -> radio/radio_pvt.h",
+            "+../../radio/builtin/radio.c -> radio/builtin/radio.c",
+            "+../../radio/builtin/PhySettings.c -> radio/builtin/PhySettings.c",
+            "+../../radio/builtin/PhySettings.h -> radio/builtin/PhySettings.h",
+            "+../../radio/builtin/RFQueue.h -> radio/builtin/RFQueue.h",
+            "+../../radio/builtin/RFQueue.c -> radio/builtin/RFQueue.c",
+            "+../../TestMode.c -> TestMode.c",
+            "+../../TestMode.h -> TestMode.h",
+            "+../rfDiagnostics.syscfg -> rfDiagnostics.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../rfDiagnostics.c -> rfDiagnostics.c",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x1_cc26x1_tirtos7.lds -> cc13x1_cc26x1_tirtos7.lds"
+        ]
+    }
+]

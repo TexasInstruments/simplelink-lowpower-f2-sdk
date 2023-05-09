@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/mcuboot_app/mcuboot_config/trace.c -> trace.c",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/mcuboot_app/mcuboot_config/trace.h -> trace.h",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/blinky.c -> blinky.c",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/main_nortos.c -> main_nortos.c",
+            "+../mcuboot_blinky.syscfg -> mcuboot_blinky.syscfg",
+            "+../mcuboot_blinky_cc13x4_cc26x4.icf -> mcuboot_blinky_cc13x4_cc26x4.icf",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/README.md -> README.md"
+        ]
+    }
+]

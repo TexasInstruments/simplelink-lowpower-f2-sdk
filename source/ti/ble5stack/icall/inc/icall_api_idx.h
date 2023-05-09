@@ -85,6 +85,7 @@
 #endif
 #define IDX_GAP_DeInit                                GAP_DeInit
 #define IDX_GAP_ReInit                                GAP_ReInit
+#define IDX_GAP_UpdateRPA							  GAP_UpdateRPA
 #define IDX_GAP_RegisterForMsgs                       GAP_RegisterForMsgs
 #define IDX_GAP_SetParamValue                         GAP_SetParamValue
 #define IDX_GAP_GetParamValue                         GAP_GetParamValue

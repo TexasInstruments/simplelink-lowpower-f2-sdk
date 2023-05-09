@@ -2,7 +2,6 @@
     "cc13x1_cc26x1": [
         "rf_patch_cpe_bt5",
         "rf_patch_cpe_ieee_802_15_4",
-        "rf_patch_cpe_multi_protocol",
         "rf_patch_cpe_prop",
         "rf_patch_mce_bt5"
     ],
@@ -43,6 +42,9 @@
     ],
     "cc13x4_cc26x4": [
         "rf_patch_cpe_ieee_coex",
-        "rf_patch_cpe_multi_protocol"
+        "rf_patch_cpe_multi_protocol",
+        "rf_patch_mce_genook",
+        "rf_patch_rfe_genook",
+        "rf_patch_rfe_sun_oqpsk"
     ]
 }

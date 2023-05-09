@@ -48,6 +48,10 @@
                     "displayName": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
                 },
                 {
+                    "name": "ook16kbps",
+                    "displayName": "16.384 kbps, OOK, 100 kHz RX Bandwidth, Manchester encoding"
+                },
+                {
                     "name": "2gfsk48kbpstcxo",
                     "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth"
                 },
@@ -90,6 +94,22 @@
                 {
                     "name": "fskc20kbps10dev915sun",
                     "displayName": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth"
+                },
+                {
+                    "name": "qpsk50kbpsrm3",
+                    "displayName": "SUN O-QPSK, 50 kbps, 100 kchip\/s, Rate Mode 3, 170 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "qpsk25kbpsrm2",
+                    "displayName": "SUN O-QPSK, 25 kbps, 100 kchip\/s, Rate Mode 2, 170 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "qpsk12kbpsrm1",
+                    "displayName": "SUN O-QPSK, 12.5 kbps, 100 kchip\/s, Rate Mode 1, 170 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "qpsk6kbpsrm0",
+                    "displayName": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)"
                 },
                 {
                     "name": "custom868",
@@ -161,6 +181,11 @@
                     "description": "RX Filter BW",
                     "default": "98.0",
                     "options": [
+                        {
+                            "name": "170.0",
+                            "key": 4,
+                            "info": "modType=7"
+                        },
                         {
                             "name": "4.3",
                             "key": 64
@@ -777,6 +802,11 @@
                 "description": "SimpleLink Long Range, 5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
             },
             {
+                "file": "setting_tc600.json",
+                "name": "ook16kbps",
+                "description": "16.384 kbps, OOK, 100 kHz RX Bandwidth, Manchester encoding"
+            },
+            {
                 "file": "setting_tc594.json",
                 "name": "2gfsk48kbpstcxo",
                 "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth"
@@ -839,6 +869,30 @@
                 "file": "setting_tc123.json",
                 "name": "fskc20kbps10dev915sun",
                 "description": "SUN FSK, 20 kbps, 10 kHz Deviation, FSK-C, 49 kHz RX Bandwidth",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc246.json",
+                "name": "qpsk50kbpsrm3",
+                "description": "SUN O-QPSK, 50 kbps, 100 kchip\/s, Rate Mode 3, 170 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc247.json",
+                "name": "qpsk25kbpsrm2",
+                "description": "SUN O-QPSK, 25 kbps, 100 kchip\/s, Rate Mode 2, 170 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc248.json",
+                "name": "qpsk12kbpsrm1",
+                "description": "SUN O-QPSK, 12.5 kbps, 100 kchip\/s, Rate Mode 1, 170 kHz RX Bandwidth (Release Candidate)",
+                "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc249.json",
+                "name": "qpsk6kbpsrm0",
+                "description": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)",
                 "options": "ieee_15_4g"
             },
             {

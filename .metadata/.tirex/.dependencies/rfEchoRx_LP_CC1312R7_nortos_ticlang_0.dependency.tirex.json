@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../rfEcho_PerfectEcho.png -> rfEcho_PerfectEcho.png",
+            "+../rfEcho_ErrorTxRx.png -> rfEcho_ErrorTxRx.png",
+            "+../rfEchoRx.syscfg -> rfEchoRx.syscfg",
+            "+../rfEchoRx.c -> rfEchoRx.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/ticlang/cc13x2x7_cc26x2x7_nortos.cmd -> cc13x2x7_cc26x2x7_nortos.cmd"
+        ]
+    }
+]

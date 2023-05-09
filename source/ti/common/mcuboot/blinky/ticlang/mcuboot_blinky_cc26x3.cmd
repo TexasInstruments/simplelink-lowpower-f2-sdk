@@ -68,8 +68,8 @@
 /* Export the header address to the blinky app */
 
 #ifdef DUAL_SLOT
-#define FLASH_BASE  0x6880
-MCUBOOT_HDR_BASE  = 0x6800;
+#define FLASH_BASE  0xd080
+MCUBOOT_HDR_BASE  = 0xd000;
 #else
 #define FLASH_BASE  0x6080
 MCUBOOT_HDR_BASE  = 0x6000;

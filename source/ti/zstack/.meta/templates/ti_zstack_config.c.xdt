@@ -1,0 +1,90 @@
+/*
+ * Copyright (c) 2018, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+%%{
+/*
+ *  ======== ti_zstack_config.c.xdt ========
+ */
+
+// Get radio settings script
+const radioScript = system.getScript("/ti/zstack/rf/zstack_rf");
+
+// Get the TI Zstack module
+const inst = system.modules["/ti/zstack/zstack"].$static;
+
+// Get the RF module
+const RF = system.modules["/ti/drivers/RF"].$static;
+%%}
+
+ /******************************************************************************
+ Includes
+ *****************************************************************************/
+ #include "ti_zstack_config.h"
+ #include <ti/drivers/rf/RF.h>
+ #include "mac.h"
+
+/*
+ *  ========================== zstack Coex Config ==========================
+ */
+% if (RF.coexEnable && RF.coexPhy.includes("ieee_15_4")) {
+%   if (RF.coexMode === "coexMode3Wire") {
+/*
+ * CoEx use case configuration structure for zstack
+ */
+% const { ieeeInitiatorTx: ieeeIniTx, ieeeConnectedTx: ieeeConTx, ieeeInitiatorRx: ieeeIniRx, ieeeConnectedRx: ieeeConRx } = radioScript.getCoexConfigIeee();
+RF_CoexOverride_IEEEUseCases coexConfigIeee = {
+    .ieeeInitiatorTx = {
+        .priority = `ieeeIniTx.defaultPriority`,
+        .request = `ieeeIniTx.assertRequestForRx`
+    },
+    .ieeeConnectedTx = {
+        .priority = `ieeeConTx.defaultPriority`,
+        .request = `ieeeConTx.assertRequestForRx`
+    },
+    .ieeeInitiatorRx = {
+        .priority = `ieeeIniRx.defaultPriority`,
+        .request = `ieeeIniRx.assertRequestForRx`
+    },
+    .ieeeConnectedRx = {
+        .priority = `ieeeConRx.defaultPriority`,
+        .request = `ieeeConRx.assertRequestForRx`
+    }
+};
+%   }
+% }
+% else
+% {
+/*
+ * 3-wire coexistence not enabled in this application
+ */
+% }

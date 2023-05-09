@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../rfPacketTx.c -> rfPacketTx.c",
+            "+../../README.md -> README.md",
+            "+../rfPacketTx.syscfg -> rfPacketTx.syscfg",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+cc13x4_cc26x4_freertos.lds -> cc13x4_cc26x4_freertos.lds"
+        ]
+    }
+]

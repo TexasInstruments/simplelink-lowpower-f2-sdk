@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <!--Import LWA SDK-->
+        <div id="amazon-root"></div>
+        <script type="text/javascript">
+            window.onAmazonLoginReady = function() {
+                amazon.Login.setClientId('{{client_id}}');
+            };
+            (function(d) {
+                var a = d.createElement('script');
+                a.type = 'text/javascript';
+                a.async = true;
+                a.id = 'amazon-login-sdk';
+                a.src = 'https://assets.loginwithamazon.com/sdk/na/login1.js';
+                d.getElementById('amazon-root').appendChild(a);
+            })(document);
+        </script>
+
+        <textarea id="TokenText" rows="10" cols="100" style="display:none;"></textarea>
+
+        <script type="text/javascript">
+            window.onload = function() {
+                options = { } ;
+                options.scope = 'sidewalk::manage_endpoint';
+                options.interactive = 'always';
+                options.response_type = 'code';
+                amazon.Login.authorize(options, function(response){
+                    if ( response.error ) {
+                        alert('oauth error ' + response.error);
+                        return;
+                    }
+                    fetch('http://localhost:8000/auth_code?' + new URLSearchParams({
+                        'authorization_code': response.code
+                    }),
+                        {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        }
+                    })
+                    document.getElementById('TokenText').style.display = '';
+                    document.getElementById('TokenText').value = response.code;
+                });
+            };
+        </script>
+    </body>
+</html>

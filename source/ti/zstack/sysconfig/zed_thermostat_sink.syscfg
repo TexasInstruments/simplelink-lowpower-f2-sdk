@@ -1,0 +1,186 @@
+/*
+ * Copyright (c) 2018, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ *  zed_thermostat_sink.syscfg
+ */
+
+/* Modules */
+var AESCBC  = scripting.addModule("/ti/drivers/AESCBC");
+var AESCCM  = scripting.addModule("/ti/drivers/AESCCM");
+var AESECB  = scripting.addModule("/ti/drivers/AESECB");
+var device  = scripting.addModule("/ti/devices/CCFG");
+var DMA     = scripting.addModule("/ti/drivers/DMA");
+var ECDH    = scripting.addModule("/ti/drivers/ECDH");
+var ECDSA   = scripting.addModule("/ti/drivers/ECDSA");
+var Button  = scripting.addModule("/ti/drivers/apps/Button");
+var LED     = scripting.addModule("/ti/drivers/apps/LED");
+var NVS     = scripting.addModule("/ti/drivers/NVS");
+var Power   = scripting.addModule("/ti/drivers/Power");
+var RF      = scripting.addModule("/ti/drivers/RF");
+var SHA2    = scripting.addModule("/ti/drivers/SHA2");
+var TRNG    = scripting.addModule("/ti/drivers/TRNG");
+var Display = scripting.addModule("/ti/display/Display");
+var zstack  = scripting.addModule("/ti/zstack/zstack");
+
+
+/* Instances */
+var AESCBC1  = AESCBC.addInstance();
+var AESCCM1  = AESCCM.addInstance();
+var AESECB1  = AESECB.addInstance();
+var ECDH1    = ECDH.addInstance();
+var ECDSA1   = ECDSA.addInstance();
+var Button1  = Button.addInstance();
+var Button2  = Button.addInstance();
+var LED1     = LED.addInstance();
+var LED2     = LED.addInstance();
+var NVS1     = NVS.addInstance();
+var NVS2     = NVS.addInstance();
+var SHA21    = SHA2.addInstance();
+var TRNG1    = TRNG.addInstance();
+var Display_UART = Display.addInstance();
+
+
+/* AESCCM */
+AESCCM1.interruptPriority = "2";
+
+
+/* AESECB */
+AESECB1.interruptPriority = "1";
+
+/* ======== RF Design ======== */
+var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
+const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;
+for(var setting in rfDesignSettings)
+{
+    rfDesign[setting] = rfDesignSettings[setting];
+}
+
+
+/* CCFG */
+const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+for(var setting in ccfgSettings)
+{
+    device[setting] = ccfgSettings[setting];
+}
+
+
+/* Red LED */
+LED1.$name                      = "CONFIG_LED_RED";
+LED1.$hardware                  = system.deviceData.board.components.LED_RED;
+LED1.gpioPin.$name              = "CONFIG_GPIO_RLED";
+LED1.gpioPin.mode               = "Output";
+LED1.gpioPin.callbackFunction   = "";
+
+/* Green LED */
+LED2.$name                      = "CONFIG_LED_GREEN";
+LED2.$hardware                  = system.deviceData.board.components.LED_GREEN;
+LED2.gpioPin.$name              = "CONFIG_GPIO_GLED";
+LED2.gpioPin.mode               = "Output";
+LED2.gpioPin.callbackFunction   = "";
+
+/* Left Button */
+Button1.$name                       = "CONFIG_BTN_LEFT";
+Button1.$hardware                   = system.deviceData.board.components["BTN-1"];
+Button1.gpioPin.$name               = "CONFIG_GPIO_BTN1";
+Button1.gpioPin.pull                = "Pull Up";
+
+/* Left Button */
+Button2.$name                       = "CONFIG_BTN_RIGHT";
+Button2.$hardware                   = system.deviceData.board.components["BTN-2"];
+Button2.gpioPin.$name               = "CONFIG_GPIO_BTN2";
+Button2.gpioPin.pull                = "Pull Up";
+
+
+/* Internal NVS */
+NVS1.$name                    = "CONFIG_NVSINTERNAL";
+NVS1.nvsType                  = "Internal";
+NVS1.internalFlash.regionSize = 0x4000;
+
+
+/* External NVS */
+NVS2.$name                          = "CONFIG_NVSEXTERNAL";
+NVS2.nvsType                        = "External";
+NVS2.$hardware                      = system.deviceData.board.components.MX25R8035F;
+NVS2.externalFlash.regionBase       = 0;
+NVS2.externalFlash.regionSize       = 0x256000;
+NVS2.externalFlash.sectorSize       = 0x1000;
+NVS2.externalFlash.verifyBufferSize = 64;
+
+
+/* External NVS SPI instance */
+var NVSSPI25XDevice1 = NVS2.externalFlash.spiFlashDevice;
+var SPI1                   = NVSSPI25XDevice1.sharedSpiInstance;
+SPI1.$name                 = "CONFIG_SPI_0";
+SPI1.sclkPinInstance.$name = "CONFIG_PIN_SPI_SCLK";
+SPI1.misoPinInstance.$name = "CONFIG_PIN_SPI_MISO";
+SPI1.mosiPinInstance.$name = "CONFIG_PIN_SPI_MOSI";
+
+
+/* RF */
+/* if an antenna component exists, assign it to the RF instance */
+if (system.deviceData.board && system.deviceData.board.components.RF) {
+    RF.$hardware = system.deviceData.board.components.RF;
+}
+
+/* UART Display */
+/* If a xds110Uart component exists, assign it to the Display_UART instance */
+if (system.deviceData.board && system.deviceData.board.components.XDS110UART) {
+    Display_UART.$hardware = system.deviceData.board.components.XDS110UART;
+}
+Display_UART.$name = "CONFIG_DISPLAY";                         // Descriptive name for Display
+Display_UART.uart.$name = "CONFIG_DISPLAY_UART";               // Descriptive name for Display_UART
+
+
+/* Z-Stack */
+zstack.deviceType = "zed";
+zstack.deviceTypeReadOnly = true;
+zstack.rf.rfDesign = rfDesignSettings.rfDesign;
+
+/* ======== Do device specific settings ======== */
+const deviceName = system.getScript("/ti/ti154stack/ti154stack_common.js").getLaunchPadFromDevice();
+
+if (deviceName.includes("R7") || deviceName.includes("P7"))
+{
+    NVS1.internalFlash.regionBase = 0xAA000;
+    NVS1.internalFlash.regionSize = 0x4000;
+}
+else if (deviceName.includes("2674") || deviceName.includes("P10") || deviceName.includes("R10"))
+{
+    NVS1.internalFlash.regionBase = 0xFD800;
+    NVS1.internalFlash.regionSize = 0x2800;
+}
+else
+{
+    NVS1.internalFlash.regionBase = 0x52000;
+    NVS1.internalFlash.regionSize = 0x4000;
+}

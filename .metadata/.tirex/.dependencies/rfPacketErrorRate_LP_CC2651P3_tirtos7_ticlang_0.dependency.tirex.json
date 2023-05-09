@@ -1,0 +1,20 @@
+[
+    {
+        "files": [
+            "+../../config.c -> config.c",
+            "+../../config.h -> config.h",
+            "+../../menu.h -> menu.h",
+            "+../../README.md -> README.md",
+            "+../../rx.c -> rx.c",
+            "+../../tx.c -> tx.c",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../menu.c -> menu.c",
+            "+../../rfPacketErrorRate.c -> rfPacketErrorRate.c",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../rfPacketErrorRate.syscfg -> rfPacketErrorRate.syscfg",
+            "+cc13x1_cc26x1_tirtos7.cmd -> cc13x1_cc26x1_tirtos7.cmd"
+        ]
+    }
+]

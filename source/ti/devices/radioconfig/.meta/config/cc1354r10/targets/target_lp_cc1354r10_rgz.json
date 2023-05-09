@@ -7,7 +7,7 @@
         "DevicePackage": "RGZ 7x7",
         "FrontEnd": "XD",
         "PaSettings": "pasettings.json",
-        "RfDesign": "LP-CC1354R10-7x7-XD7793-XD24",
+        "RfDesign": "CC1354R10-7x7-XD7793-XD24",
         "DefaultCategory": "Settings for 779 - 930 MHz band"
     }
 }

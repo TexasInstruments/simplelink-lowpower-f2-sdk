@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable guard-for-in */
 /*
- * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,11 @@ const Docs = Common.getScript("radioconfig_docs.js");
 
 // Configurable prefix
 const Prefix = "fb";
+
+// PA entry types
+const PA_STD = 0; // Standard, directly in setup command
+const PA_SUB1 = 1; // CC13x4 sub1-G, via standard override
+const PA_HPA = 2; // High PA, via TX power overrides
 
 // Mapping official names to internal SmartRF Studio names (where these are not equal)
 const LaunchPadMap = {
@@ -1168,12 +1173,14 @@ function getFrequencyBandByFreq(frequency, highPA) {
  *  @param combined - true if default and high output PA settings are combined
  */
 function generatePaTableCode(paList, combined) {
+    // Lowest values first in generated code
+    const revList = _.cloneDeep(paList).reverse();
+
+    // Generate PA table code
     let code = "";
     let val = -100;
 
-    // Generate code
-    _.eachRight(paList, (pv) => {
-        const paEntry = generatePaEntryString(pv);
+    for (const pv of revList) {
         if ("Option" in pv && !combined) {
             code += "    // This setting requires CCFG_FORCE_VDDR_HH = 1.\n";
         }
@@ -1186,55 +1193,68 @@ function generatePaTableCode(paList, combined) {
         if (iDbm === val) {
             iDbm += 1;
         }
-
-        // Raw value as comment
-        let value = parseInt(pv.Value, 16);
-        const highPA = value === 0xFFFF;
-        let rawValue;
-        if (highPA) {
-            value = parseInt(pv.TxHighPa, 16);
-            rawValue = Common.int2hex(value, 6);
-        }
-        else {
-            rawValue = Common.int2hex(value, 4);
-        }
+        val = iDbm;
 
         // Generate PA entry
-        const str = "    {" + iDbm + ", " + paEntry + " }, // " + rawValue + "\n";
+        const paEntry = generatePaEntry(pv);
+        const paCode = paEntry.code;
+        const paLine = "    {" + iDbm + ", " + paCode + " }, // " + paEntry.hex + "\n";
 
-        code += str;
-        val = iDbm;
-    });
+        code += paLine;
+    }
     return code;
 }
 
 /*!
- *  ======== generatePaEntryString ========
- *  Generate the PA entry code string
+ *  ======== generatePaEntry ========
+ *  Generate PA entry information
  *
- *  @param pv - PA table entry
+ *  @param pv - PA table raw entry (from JSON file)
  */
 /* eslint-disable no-bitwise */
-function generatePaEntryString(pv) {
-    const value = parseInt(pv.Value, 16);
-    const highPA = value === 0xFFFF;
-    const val = highPA ? pv.TxHighPa : value;
+function generatePaEntry(pv) {
+    // Calculate PA table entry fields (for macro)
+    const pa = getPaData(pv);
+    const val = pa.value;
     const bias = val & 0x3f; /* bit 0..5 */
     const gain = (val >> 6) & 0x03; /* bit 6..7 */
     const boost = (val >> 8) & 0x01; /* bit 8 */
-    const coefficient = (val >> 9) & 0x7f; /* bit 9..15 */
-    let paEntry;
+    const coeff = (val >> 9) & 0x7f; /* bit 9..15 */
 
-    if (highPA) {
-        const ldoTrim = (val >> 16) & 0x3f; /* bit 16..21 */
-        paEntry = "RF_TxPowerTable_HIGH_PA_ENTRY(" + bias + ", " + gain + ", "
-            + boost + ", " + coefficient + ", " + ldoTrim + ")";
+    if (pa.type === PA_STD) {
+        // Standard (default)
+        pa.code = `${pa.macro}(${bias}, ${gain}, ${boost}, ${coeff})`;
+        pa.hex = Common.int2hex(val, 4);
     }
     else {
-        paEntry = "RF_TxPowerTable_DEFAULT_PA_ENTRY(" + bias + ", " + gain + ", "
-            + boost + ", " + coefficient + ")";
+        // Assume High PA or SUB1 PA
+        const ldoTrim = (val >> 16) & 0x3f; /* bit 16..21 */
+        pa.code = `${pa.macro}(${bias}, ${gain}, ${boost}, ${coeff}, ${ldoTrim})`;
+        pa.hex = Common.int2hex(val, 6);
     }
-    return paEntry;
+    return pa;
+
+    function getPaData(paEntry) {
+        const el = {};
+
+        const value = Number(paEntry.Value);
+        if (value === 0xFFFF) {
+            el.value = paEntry.TxHighPa;
+            el.macro = "RF_TxPowerTable_HIGH_PA_ENTRY";
+            el.type = PA_HPA;
+        }
+        else if (value === 0xFFFE) {
+            el.value = paEntry.TxSub1Pa;
+            el.macro = "RF_TxPowerTable_CC13x4Sub1GHz_DEFAULT_PA_ENTRY";
+            el.type = PA_SUB1;
+        }
+        else {
+            el.value = value;
+            el.macro = "RF_TxPowerTable_DEFAULT_PA_ENTRY";
+            el.type = PA_STD;
+        }
+        return el;
+    }
 }
 /* eslint-enable no-bitwise */
 
@@ -1520,6 +1540,9 @@ function getTxPowerValueByDbm(freqStr, highPA, dbm) {
             if ("TxHighPa" in pa) {
                 raw = pa.TxHighPa;
             }
+            else if ("TxSub1Pa" in pa) {
+                raw = pa.TxSub1Pa;
+            }
             else {
                 raw = pa.Value;
             }
@@ -1566,19 +1589,18 @@ function getTxPowerDbmByRegValue(freqStr, raw) {
  */
 function getTxPowerValueDefault(freqStr, highPA) {
     const freq = parseFloat(freqStr);
-    let ret;
 
-    // Pick settings according to PA
+    // Pick settings according to PA, the first element in the PA list is the default
     const paList = getPaTable(freq, highPA);
     const pa = paList[0];
 
     if ("TxHighPa" in pa) {
-        ret = pa.TxHighPa;
+        return pa.TxHighPa;
     }
-    else {
-        ret = pa.Value;
+    if ("TxSub1Pa" in pa) {
+        return pa.TxSub1Pa;
     }
-    return ret;
+    return pa.Value;
 }
 
 /*!

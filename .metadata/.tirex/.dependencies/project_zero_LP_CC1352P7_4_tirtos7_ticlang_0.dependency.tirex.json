@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/project_zero.c -> Application/project_zero.c",
+            "+../../Application/project_zero.h -> Application/project_zero.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../project_zero.syscfg -> project_zero.syscfg"
+        ]
+    }
+]

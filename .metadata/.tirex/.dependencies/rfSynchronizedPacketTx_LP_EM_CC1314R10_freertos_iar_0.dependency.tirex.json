@@ -1,0 +1,17 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC1314R10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.icf -> cc13x4_cc26x4_freertos.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfSynchronizedPacket.h -> rfSynchronizedPacket.h",
+            "+../../rfSynchronizedPacketTx.c -> rfSynchronizedPacketTx.c",
+            "+../rfSynchronizedPacketTx.syscfg -> rfSynchronizedPacketTx.syscfg",
+            "+../../state-machine.png -> state-machine.png",
+            "+../../StateMachine.c -> StateMachine.c",
+            "+../../StateMachine.h -> StateMachine.h"
+        ]
+    }
+]

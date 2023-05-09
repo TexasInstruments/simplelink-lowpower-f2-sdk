@@ -105,7 +105,7 @@ extern RF_Handle rfHandle;
 // HCI Version and Revision
 #if defined( CC26XX ) || defined( CC13XX )
   #if defined(BLE_V50_FEATURES)
-    #define HCI_VERSION                              0x0B    // BT Core Specification V5.2
+    #define HCI_VERSION                              0x0A    // BT Core Specification V5.1
   #elif defined(CTRL_V42_CONFIG)
     #define HCI_VERSION                              0x08    // BT Core Specification V4.2
   #elif defined(CTRL_V41_CONFIG)

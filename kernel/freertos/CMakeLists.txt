@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -126,4 +126,4 @@ set(freertos_m4f_PORT_TOOL_FOLDER "IAR/ARM_CM4F")
 set(freertos_m33f_PORT_TOOL_FOLDER "IAR/ARM_CM33F_NTZ/non_secure")
 set(freertos_m33f_tfm_PORT_TOOL_FOLDER "IAR/ARM_CM33F_NTZ/non_secure")
 
-ti_export_package()
+ti_export_package(CUSTOM_TEMPLATE)

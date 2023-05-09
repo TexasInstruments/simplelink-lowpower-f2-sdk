@@ -155,6 +155,21 @@
                         "_name": "pRegOverride",
                         "Block": [
                             {
+                                "_name": "override_txsub1_placeholder.json",
+                                "Element32b": [
+                                    {
+                                        "_type": "TXSUB1PA",
+                                        "_comment": "TX sub-1GHz power override",
+                                        "$": "0x00000000"
+                                    },
+                                    {
+                                        "_type": "ANADIV",
+                                        "_comment": "The ANADIV radio parameter based on LO divider and front end settings",
+                                        "$": "0x00000000"
+                                    }
+                                ]
+                            },
+                            {
                                 "_name": "override_prop_common.json",
                                 "Element32b": {
                                     "_type": "ELEMENT",

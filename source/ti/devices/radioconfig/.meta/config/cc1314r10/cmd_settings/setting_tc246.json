@@ -1,0 +1,659 @@
+{
+    "setting": {
+        "Name": "SUN O-QPSK, 50 kbps, 100 kchip\/s, Rate Mode 3, 170 kHz RX Bandwidth (Release Candidate)",
+        "Description": "50 kbps, O-QPSK, Rate Mode 3, IEEE 802.15.4 SUN O-QPSK compatible PHY. (Release Candidate)",
+        "Frequency": "915",
+        "Patch": {
+            "Define": "RF_MODE_AUTO",
+            "Cpe": "rf_patch_cpe_multi_protocol",
+            "Mce": [],
+            "Rfe": "rf_patch_rfe_sun_oqpsk"
+        },
+        "Command": [
+            {
+                "_name": "CMD_PROP_RADIO_DIV_SETUP",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_PROP_RADIO_DIV_SETUP"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "modulation.modType",
+                        "$": "7"
+                    },
+                    {
+                        "_name": "modulation.deviation",
+                        "$": "750"
+                    },
+                    {
+                        "_name": "symbolRate.preScale",
+                        "$": "15"
+                    },
+                    {
+                        "_name": "symbolRate.rateWord",
+                        "$": "65536"
+                    },
+                    {
+                        "_name": "symbolRate.decimMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxBw",
+                        "$": "4"
+                    },
+                    {
+                        "_name": "preamConf.nPreamBytes",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "preamConf.preamMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "formatConf.nSwBits",
+                        "$": "32"
+                    },
+                    {
+                        "_name": "formatConf.bBitReversal",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "formatConf.bMsbFirst",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "formatConf.fecMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "formatConf.whitenMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.frontEndMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.biasMode",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "config.analogCfgMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bNoFsPowerUp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "txPower",
+                        "$": "0xFFFF"
+                    },
+                    {
+                        "_name": "pRegOverride",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "centerFreq",
+                        "$": "915"
+                    },
+                    {
+                        "_name": "intFreq",
+                        "$": "0x8000"
+                    },
+                    {
+                        "_name": "loDivider",
+                        "$": "5"
+                    }
+                ],
+                "OverrideField": {
+                    "_name": "pRegOverride",
+                    "Block": [
+                        {
+                            "_name": "override_tc246.json",
+                            "Element32b": [
+                                {
+                                    "_type": "MCE_RFE_OVERRIDE",
+                                    "_comment": "PHY: Use MCE ROM, RFE RAM patch",
+                                    "$": "0,0xF,0,1,0,0"
+                                },
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "PHY: Configure DSSS FOC gain",
+                                    "$": "0x5338,0x1001"
+                                },
+                                {
+                                    "_type": "HW_REG_OVERRIDE",
+                                    "_comment": "PHY: Configure DSSS factor=1",
+                                    "$": "0x5068,0x0001"
+                                }
+                            ]
+                        },
+                        {
+                            "_name": "override_txsub1_placeholder.json",
+                            "Element32b": {
+                                "_type": "TXSUB1PA",
+                                "_comment": "TX sub-1GHz power override",
+                                "$": "0x00000000"
+                            }
+                        },
+                        {
+                            "_name": "override_prop_common.json",
+                            "Element32b": {
+                                "_type": "ELEMENT",
+                                "_comment": "Tx: Set DCDC settings IPEAK=7, dither = off",
+                                "$": "0x004388D3"
+                            }
+                        },
+                        {
+                            "_name": "override_prop_common_sub1g.json",
+                            "Element32b": [
+                                {
+                                    "_type": "HW32_ARRAY_OVERRIDE",
+                                    "_comment": "TX: Set FSCA divider bias to 1",
+                                    "$": "0x405C,0x0001"
+                                },
+                                {
+                                    "_type": "ELEMENT",
+                                    "_comment": "TX: Set FSCA divider bias to 1",
+                                    "$": "0x08141131"
+                                }
+                            ]
+                        },
+                        {
+                            "_name": "override_patable_14dbm.json",
+                            "Element32b": {
+                                "_type": "ADI_REG_OVERRIDE",
+                                "_comment": "Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)",
+                                "$": "0,12,0xF8"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "_name": "CMD_FS",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_FS"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "frequency",
+                        "$": "915"
+                    },
+                    {
+                        "_name": "fractFreq",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "synthConf.bTxMode",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "synthConf.refFreq",
+                        "$": "0"
+                    }
+                ]
+            },
+            {
+                "_name": "CMD_TX_TEST",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_TX_TEST"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bUseCw",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bFsOff",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "config.whitenMode",
+                        "$": "2"
+                    },
+                    {
+                        "_name": "txWord",
+                        "$": "0xABCD"
+                    },
+                    {
+                        "_name": "endTrigger.triggerType",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "endTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "syncWord",
+                        "$": "0x930B51DE"
+                    },
+                    {
+                        "_name": "endTime",
+                        "$": "0"
+                    }
+                ]
+            },
+            {
+                "_name": "CMD_RX_TEST",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_RX_TEST"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bEnaFifo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bFsOff",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "config.bNoSync",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "endTrigger.triggerType",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "endTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "syncWord",
+                        "$": "0x930B51DE"
+                    },
+                    {
+                        "_name": "endTime",
+                        "$": "0"
+                    }
+                ]
+            },
+            {
+                "_name": "CMD_PROP_TX",
+                "_function": "SendPacket",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_PROP_TX"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bFsOff",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bUseCrc",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "pktConf.bVarLen",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "pktLen",
+                        "$": "20"
+                    },
+                    {
+                        "_name": "syncWord",
+                        "_tfOverride": "no",
+                        "$": "0x930B51DE"
+                    },
+                    {
+                        "_name": "pPkt",
+                        "$": "0"
+                    }
+                ]
+            },
+            {
+                "_name": "CMD_PROP_RX",
+                "Field": [
+                    {
+                        "_name": "commandNo",
+                        "$": "CMD_PROP_RX"
+                    },
+                    {
+                        "_name": "status",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pNextOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "startTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "condition.rule",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "condition.nSkip",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bFsOff",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bRepeatOk",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bRepeatNok",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.bUseCrc",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "pktConf.bVarLen",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "pktConf.bChkAddress",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.endType",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pktConf.filterOp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bAutoFlushIgnored",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bAutoFlushCrcErr",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bIncludeHdr",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "rxConf.bIncludeCrc",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bAppendRssi",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bAppendTimestamp",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "rxConf.bAppendStatus",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "syncWord",
+                        "$": "0x930B51DE"
+                    },
+                    {
+                        "_name": "maxPktLen",
+                        "$": "255"
+                    },
+                    {
+                        "_name": "address0",
+                        "$": "0xAA"
+                    },
+                    {
+                        "_name": "address1",
+                        "$": "0xBB"
+                    },
+                    {
+                        "_name": "endTrigger.triggerType",
+                        "$": "1"
+                    },
+                    {
+                        "_name": "endTrigger.bEnaCmd",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.triggerNo",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTrigger.pastTrig",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "endTime",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pQueue",
+                        "$": "0"
+                    },
+                    {
+                        "_name": "pOutput",
+                        "$": "0"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zr_ota_server.syscfg -> zr_ota_server.syscfg"
+        ]
+    }
+]

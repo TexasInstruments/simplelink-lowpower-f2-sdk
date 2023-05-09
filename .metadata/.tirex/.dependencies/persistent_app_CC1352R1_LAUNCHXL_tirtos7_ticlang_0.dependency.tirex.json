@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../build_config.opt -> build_config.opt",
+            "+../../Application/oad_persistent_app.c -> Application/oad_persistent_app.c",
+            "+../../Application/oad_persistent_app.h -> Application/oad_persistent_app.h",
+            "+../../Tools/Defines/persistent_app.opt -> Tools/Defines/persistent_app.opt",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../persistent_app.syscfg -> persistent_app.syscfg"
+        ]
+    }
+]

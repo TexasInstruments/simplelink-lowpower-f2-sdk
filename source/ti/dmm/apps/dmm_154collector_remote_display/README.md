@@ -39,9 +39,7 @@ All application configurations use the stack library configuration,
 FlashROM_Library. This build configuration will yield additional flash
 footprint optimizations by the linker since the application and stack can share
 contiguous flash pages. This configuration is further discussed in the Stack
-Library Configuration section of the  [BLE5-Stack User's
-Guide](../../../../../docs/ble5stack/ble_user_guide/ble5stack-users-guide.html) provided in
-the SDK.
+Library Configuration section of the BLE5-Stack User's Guide.
 
 This document discusses the procedure for using the DMM 15.4 Collector Remote Display
 application when the FlashROM_Release configuration is used.
@@ -55,8 +53,7 @@ configuration is shown in the below image:
 <img src="resource/hardware_setup.jpg" width="300"/>
 
 For custom hardware, see the **Running the SDK on Custom Hardware** section of
-the [BLE5-Stack User's
-Guide](../../../../../docs/ble5stack/ble_user_guide/ble5stack-users-guide.html).
+the BLE5-Stack User's Guide.
 
 ## <a name="SoftwarePrerequisites"></a>Software Prerequisites
 
@@ -65,13 +62,12 @@ Workbench to use, see the dependencies section of the Release Notes located
 in the root folder of the SDK. 
 
 For information on how to import this project into your IDE workspace and
-build/run, please refer to the device's Platform section in the [BLE5-Stack
-Quick Start
-Guide](../../../../../docs/simplelink_mcu_sdk/html/quickstart-guide/ble5-quick-start.html).
+build/run, please refer to the device's Platform section in the BLE5-Stack Quick
+Start Guide.
 
->Note: If you are running an OAD example, be sure to first build and flash a BIM project located in `/examples/nortos/<BOARD>/bim`. For more instructions on how to do this, please refer to the [BLE5-Stack
-Quick Start
-Guide](../../../../../docs/simplelink_mcu_sdk/html/quickstart-guide/ble5-quick-start.html).
+>Note: If you are running an OAD example, be sure to first build and flash a BIM
+>project located in `/examples/nortos/<BOARD>/bim`. For more instructions on how
+>to do this, please refer to the BLE5-Stack Quick Start Guide.
 
 ## <a name="DynamicMultiprotocolManager"></a>Dynamic Multi-protocol Manager
 
@@ -109,7 +105,7 @@ based on the activity and priority of RF commands.  For details of the GPT,
 refer to `<SDK_DIR>\source\ti\common\dmm\dmm_priority_ble_154collector.c/h`.
 
 The Application Level information is the user defined information via the policy
-table and inludes: Application State Name, Weight, AppliedActivity, Pause, etc;
+table and includes: Application State Name, Weight, AppliedActivity, Pause, etc;
 the policy table can have multiple policies. A policy defines a specific state
 of the DMM application where the user wants to apply different priority based on
 an action.  A simplified policy table is shown below, it defines the behavior
@@ -329,7 +325,7 @@ This characteristic sets PAN ID of the 15.4 network. This is the same as
 setting CONFIG_PAN_ID as configured with the SysConfig Tool.
 
 Setting CONFIG_PAN_ID or Node Data Characteristic to 0xFFFF (the default) on
-the Collector allows it to join any network, setting it to a specific valeue
+the Collector allows it to join any network, setting it to a specific value
 forces it to only join a network with that PAN ID.  Setting CONFIG_PAN_ID to
 0xFFFF on the Collector allows it to form a network with a random PAN ID,
 setting it to a specific value forces it to form a network with that specific
@@ -379,7 +375,7 @@ the IEEE 802.15.4g network. The BLE connection can be resumed once the 15.4
 Sensor is associated to a 15.4 network, and full concurrent IEEE 802.15.4g
 Frequency Hopping and BLE advertisements or connection can be demonstrated.
 
-#### <a name="CollectorProvisioingState"></a>Collector Provisioning State (UUID: 1198)
+#### <a name="CollectorProvisioningState"></a>Collector Provisioning State (UUID: 1198)
 
 This characteristic is used to read the Collector's IEEE 802.15.4g network
 state. The following states will be observed:
@@ -577,7 +573,7 @@ By default, the DMM examples can support connecting up to 4 BLE centrals devices
 
 ### SM Commissioning BLE Service
 
-A separate BLE profile `sm_commisioning_gatt_profile` is enabled to control and track all SM related activities. The `sm_commisioning_gatt_profile` has the following characeristics and permissions.
+A separate BLE profile `sm_commissioning_gatt_profile` is enabled to control and track all SM related activities. The `sm_commissioning_gatt_profile` has the following characteristics and permissions.
 
 Service UUID: 0xf000baaa-0451-4000-b000-000000000000
 
@@ -643,7 +639,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
 -DCUI_DISABLE
 ```
 
-> Please Note: particular features that are dependednt on the CUI wil be unavailable when this feature is enabled.
+> Please Note: particular features that are dependent on the CUI wil be unavailable when this feature is enabled.
 
 
 ## <a name="DMMCollectorRebootAndReset"></a>DMM Collector Reboot and Reset

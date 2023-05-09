@@ -331,7 +331,7 @@ const extflashDrvTblPtr_t extflashDriverTable[] =
 #endif // OSAL_SNV_EXTFLASH
 
 // Table for Driver can be found in icall_user_config.c
-// if a driver is not to be used, then the pointer shoul dbe set to NULL,
+// if a driver is not to be used, then the pointer should be set to NULL,
 // for this example, this is done in ble_user_config.h
 const drvTblPtr_t driverTable =
 {

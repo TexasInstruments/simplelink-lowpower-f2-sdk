@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_EM_CC1354P10_6/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos.icf -> cc13x4_cc26x4_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.html -> README.html",
+            "+../README.md -> README.md",
+            "+../sha2hash.c -> sha2hash.c",
+            "+../sha2hash.syscfg -> sha2hash.syscfg"
+        ]
+    }
+]

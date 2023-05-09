@@ -728,17 +728,11 @@ static void initIO(I2S_Handle handle)
     hwAttrs = handle->hwAttrs;
 
     /* Make sure all pins have their input buffers enabled */
-    GPIO_setConfig(hwAttrs->pinWS, GPIO_CFG_INPUT);
-    GPIO_setConfig(hwAttrs->pinSCK, GPIO_CFG_INPUT);
-    GPIO_setConfig(hwAttrs->pinCCLK, GPIO_CFG_INPUT);
-    GPIO_setConfig(hwAttrs->pinSD0, GPIO_CFG_INPUT);
-    GPIO_setConfig(hwAttrs->pinSD1, GPIO_CFG_INPUT);
-
-    GPIO_setMux(hwAttrs->pinWS, IOC_PORT_MCU_I2S_WCLK);
-    GPIO_setMux(hwAttrs->pinSCK, IOC_PORT_MCU_I2S_BCLK);
-    GPIO_setMux(hwAttrs->pinCCLK, IOC_PORT_MCU_I2S_MCLK);
-    GPIO_setMux(hwAttrs->pinSD0, IOC_PORT_MCU_I2S_AD0);
-    GPIO_setMux(hwAttrs->pinSD1, IOC_PORT_MCU_I2S_AD1);
+    GPIO_setConfigAndMux(hwAttrs->pinWS, GPIO_CFG_INPUT, IOC_PORT_MCU_I2S_WCLK);
+    GPIO_setConfigAndMux(hwAttrs->pinSCK, GPIO_CFG_INPUT, IOC_PORT_MCU_I2S_BCLK);
+    GPIO_setConfigAndMux(hwAttrs->pinCCLK, GPIO_CFG_INPUT, IOC_PORT_MCU_I2S_MCLK);
+    GPIO_setConfigAndMux(hwAttrs->pinSD0, GPIO_CFG_INPUT, IOC_PORT_MCU_I2S_AD0);
+    GPIO_setConfigAndMux(hwAttrs->pinSD1, GPIO_CFG_INPUT, IOC_PORT_MCU_I2S_AD1);
 }
 
 /*

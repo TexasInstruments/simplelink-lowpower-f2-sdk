@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -194,7 +194,7 @@
  *  (interrupt enabled) pins on a port will be read, cleared, and the
  *  respective callbacks will be executed. Callbacks will be called in order
  *  from least significant bit to most significant bit.
- *  Below is an MSP432 device specific example of the GPIO_CallbackFxn array:
+ *  Below is a device specific example of the GPIO_CallbackFxn array:
  *  @code
  *  //
  *  // Array of callback function pointers
@@ -688,6 +688,26 @@ extern void GPIO_setMux(uint_least8_t index, uint32_t mux);
  *  @return     A device-specific mux value or GPIO_MUX_GPIO.
  */
 extern uint32_t GPIO_getMux(uint_least8_t index);
+
+/*!
+ *  @brief      Configure the gpio pin's config and mux in a single write
+ *
+ *  Dynamically configure a gpio pin to a device specific setting.
+ *  For many applications, the pin configurations provided in the static
+ *  GPIO_PinConfig array is sufficient.
+ *
+ *  For some devices, configuring the pin and then muxing it can create a small
+ *  drop on the line, which is enough to trigger some communication protocols.
+ *  This helper function sets the pin configuration and the mux in a single access.
+ *
+ *  @param      index       GPIO index
+ *  @param      pinConfig   Device specific pin configuration settings
+ *  @param      mux         Device-specific mux value to use a special mode,
+ *                          or GPIO_MUX_GPIO to reset the pin to standard IO.
+ *
+ *  @return     GPIO_STATUS_SUCCESS or an error if the pin cannot be configured
+ */
+extern int_fast16_t GPIO_setConfigAndMux(uint_least8_t index, GPIO_PinConfig pinConfig, uint32_t mux);
 
 /*!
  *  @brief      Set the user argument for a gpio pin

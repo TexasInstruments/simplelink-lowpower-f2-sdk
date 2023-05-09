@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_freertos.icf -> cc13x4_cc26x4_freertos.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../pwmled2.c -> pwmled2.c",
+            "+../pwmled2.syscfg -> pwmled2.syscfg",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

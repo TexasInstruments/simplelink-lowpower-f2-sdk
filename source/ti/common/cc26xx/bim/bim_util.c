@@ -84,19 +84,37 @@ const uint8_t OAD_EXTFL_ID[OAD_IMG_ID_LEN] = OAD_EXTFL_ID_VAL;
  *
  * @return      None.
  */
+
 void jumpToPrgEntry(uint32_t *vectorTable)
 {
-    // Set SP to vectorTable[0]
-#ifdef __ICCARM__
-    __asm volatile (
-        "LDR R5,[R0,#0x0] \n"
-        "MOV SP, R5       \n"
-    );
-#else
-    __asm volatile (" LDR SP, [R0, #0x0] ");
-#endif
+    /* The following code resets the SP to the value specified in the
+     * provided vector table, and then the Reset Handler is invoked.
+     *
+     * Per ARM Cortex specification:
+     *
+     *           ARM Cortex VTOR
+     *
+     *
+     *   Offset             Vector
+     *
+     * 0x00000000  ++++++++++++++++++++++++++
+     *             |    Initial SP value    |
+     * 0x00000004  ++++++++++++++++++++++++++
+     *             |         Reset          |
+     * 0x00000008  ++++++++++++++++++++++++++
+     *             |          NMI           |
+     *             ++++++++++++++++++++++++++
+     *             |           .            |
+     *             |           .            |
+     *             |           .            |
+     *
+     * */
 
-    // Jump to vectorTable[1]
+    /* Reset the SP with the value stored at vector_table[0] */
+    __asm volatile ("MSR msp, %0" : : "r" (vectorTable[0]) : );
+
+    /* Jump to the Reset Handler address at vector_table[1] */
+
     ( (void (*)(void)) (*(vectorTable + 1)) )();
 }
 

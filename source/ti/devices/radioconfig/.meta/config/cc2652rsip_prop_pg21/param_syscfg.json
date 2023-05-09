@@ -21,11 +21,11 @@
             "options": [
                 {
                     "name": "2gfsk100kbps",
-                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview)"
+                    "displayName": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview)"
                 },
                 {
                     "name": "2gfsk250kbps",
-                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview)"
+                    "displayName": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview)"
                 },
                 {
                     "name": "custom2400",
@@ -671,12 +671,12 @@
             {
                 "file": "setting_tc900.json",
                 "name": "2gfsk100kbps",
-                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Preview)"
+                "description": "100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Preview)"
             },
             {
                 "file": "setting_tc901.json",
                 "name": "2gfsk250kbps",
-                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth (Preview)"
+                "description": "250 kpbs, 125 kHz Deviation, 2-GFSK, 530 kHz RX Bandwidth (Preview)"
             },
             {
                 "file": "setting_tc900_custom.json",

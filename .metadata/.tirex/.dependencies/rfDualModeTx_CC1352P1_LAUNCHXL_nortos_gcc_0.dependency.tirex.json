@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../rfDualModeTx.c -> rfDualModeTx.c",
+            "+../README.md -> README.md",
+            "+../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../rfDualModeTx.syscfg -> rfDualModeTx.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+cc13x2_cc26x2_nortos.lds -> cc13x2_cc26x2_nortos.lds"
+        ]
+    }
+]

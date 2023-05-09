@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../rfUARTBridge.syscfg -> rfUARTBridge.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../rfUARTBridge.c -> rfUARTBridge.c",
+            "+cc13x4_cc26x4_nortos.cmd -> cc13x4_cc26x4_nortos.cmd"
+        ]
+    }
+]

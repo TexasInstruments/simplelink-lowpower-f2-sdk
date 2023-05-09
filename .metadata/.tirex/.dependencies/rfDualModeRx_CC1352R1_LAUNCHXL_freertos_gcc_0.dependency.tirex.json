@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../rfDualModeRx.c -> rfDualModeRx.c",
+            "+../../README.md -> README.md",
+            "+../../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../rfDualModeRx.syscfg -> rfDualModeRx.syscfg",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+cc13x2_cc26x2_freertos.lds -> cc13x2_cc26x2_freertos.lds"
+        ]
+    }
+]

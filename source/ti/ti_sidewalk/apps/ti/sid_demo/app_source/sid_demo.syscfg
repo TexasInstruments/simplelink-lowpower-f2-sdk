@@ -1,0 +1,176 @@
+
+/******************************************************************************
+ Group: CMCU LPRF
+ $Target Device: DEVICES $
+
+ ******************************************************************************
+ $License: BSD3 2021 $
+ ******************************************************************************
+ $Release Name: PACKAGE NAME $
+ $Release Date: PACKAGE RELEASE DATE $
+ *****************************************************************************/
+
+/**
+ * Import the modules used in this configuration.
+ */
+const ti_sidewalk = scripting.addModule("/ti/ti_sidewalk/ti_sidewalk");
+const ble         = scripting.addModule("/ti/ble5stack/ble");
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM", {}, false);
+const AESCCM1     = AESCCM.addInstance();
+const AESCMAC     = scripting.addModule("/ti/drivers/AESCMAC", {}, false);
+const AESCMAC1    = AESCMAC.addInstance();
+const AESCTR      = scripting.addModule("/ti/drivers/AESCTR", {}, false);
+const AESCTR1     = AESCTR.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG", {}, false);
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESCTRDRBG2 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB", {}, false);
+const AESECB1     = AESECB.addInstance();
+const AESGCM      = scripting.addModule("/ti/drivers/AESGCM", {}, false);
+const AESGCM1     = AESGCM.addInstance();
+const ECDH        = scripting.addModule("/ti/drivers/ECDH", {}, false);
+const ECDH1       = ECDH.addInstance();
+const ECDH2       = ECDH.addInstance();
+const ECDSA       = scripting.addModule("/ti/drivers/ECDSA", {}, false);
+const ECDSA1      = ECDSA.addInstance();
+const EDDSA       = scripting.addModule("/ti/drivers/EDDSA", {}, false);
+const EDDSA1      = EDDSA.addInstance();
+const Power       = scripting.addModule("/ti/drivers/Power");
+const SHA2        = scripting.addModule("/ti/drivers/SHA2", {}, false);
+const SHA21       = SHA2.addInstance();
+const TRNG        = scripting.addModule("/ti/drivers/TRNG", {}, false);
+const TRNG1       = TRNG.addInstance();
+const TRNG2       = TRNG.addInstance();
+const Temperature = scripting.addModule("/ti/drivers/Temperature");
+const Button      = scripting.addModule("/ti/drivers/apps/Button", {}, false);
+const Button1     = Button.addInstance();
+const Button2     = Button.addInstance();
+const LED         = scripting.addModule("/ti/drivers/apps/LED", {}, false);
+const LED1        = LED.addInstance();
+const LED2        = LED.addInstance();
+var NVS        = scripting.addModule("/ti/drivers/NVS");
+var NVS1       = NVS.addInstance();
+var NVS2       = NVS.addInstance();
+const FreeRTOS    = scripting.addModule("/freertos/FreeRTOS");
+const Settings    = scripting.addModule("/ti/posix/freertos/Settings");
+
+
+FreeRTOS.idleStackSize = 0x00000400;
+FreeRTOS.timerStackSize = 0x00000800;
+FreeRTOS.posixThreadStackSize = 0x00000800;
+FreeRTOS.heapSize             = 0x00000000;
+FreeRTOS.assertsEnabled       = false;
+FreeRTOS.useCustomHeap        = true;
+FreeRTOS.isrStackInitEnabled  = false;
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+ble.lockProject                        = true;
+ble.maxConnNum                         = 1;
+ble.extAdv                             = false;
+/*ble.disableConfig                      = true;*/
+ble.addressMode                        = "ADDRMODE_PUBLIC";
+ble.maxPDUNum                          = 3;
+ble.maxPDUSize                         = 255;
+ble.genLibs                            = false;
+/*ble.maxBonds                           = 1;*/
+ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+ble.connUpdateParamsPeripheral.$name   = "ti_ble5stack_general_ble_conn_update_params0";
+ble.advSet1.$name                      = "ti_ble5stack_broadcaster_advertisement_set0";
+ble.advSet1.advParam1.$name            = "ti_ble5stack_broadcaster_advertisement_params0";
+ble.advSet1.advData1.$name             = "ti_ble5stack_broadcaster_advertisement_data0";
+ble.advSet1.scanRes1.$name             = "ti_ble5stack_broadcaster_advertisement_data1";
+ble.advSet2.$name                      = "ti_ble5stack_broadcaster_advertisement_set1";
+ble.advSet2.advParam2.$name            = "ti_ble5stack_broadcaster_advertisement_params1";
+ble.advSet2.advData2.$name             = "ti_ble5stack_broadcaster_advertisement_data2";
+ble.advSet2.scanRes2.$name             = "ti_ble5stack_broadcaster_advertisement_data3";
+
+/* ======== Device ======== */
+var device = scripting.addModule("ti/devices/CCFG");
+const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+for(var setting in ccfgSettings)
+{
+    device[setting] = ccfgSettings[setting];
+}
+
+/* ======== RF Design ======== */
+var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
+const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;
+for(var setting in rfDesignSettings)
+{
+    rfDesign[setting] = rfDesignSettings[setting];
+}
+
+/* ======== RF ======== */
+var RF = scripting.addModule("/ti/drivers/RF");
+
+/* if an antenna component exists, assign it to the rf instance */
+if (system.deviceData.board && system.deviceData.board.components.RF) {
+    RF.$hardware = system.deviceData.board.components.RF;
+}
+
+LED1.$name         = "CONFIG_LED_0";
+LED1.$hardware     = system.deviceData.board.components.LED_RED;
+LED1.gpioPin.$name = "CONFIG_GPIO_RLED";
+
+LED2.$name         = "CONFIG_LED_1";
+LED2.$hardware     = system.deviceData.board.components.LED_GREEN;
+LED2.gpioPin.$name = "CONFIG_GPIO_GLED";
+
+AESCCM1.$name = "CONFIG_AESCCM_0";
+
+AESCMAC1.$name = "CONFIG_AESCMAC_0";
+
+AESCTRDRBG1.$name              = "CONFIG_AESCTRDRBG_0";
+// AESCTRDRBG1.aesctrObject.$name = "CONFIG_AESCTR_0";
+
+AESCTRDRBG2.$name              = "CONFIG_AESCTRDRBG_1";
+// AESCTRDRBG2.aesctrObject.$name = "CONFIG_AESCTR_1";
+
+AESECB1.$name = "CONFIG_AESECB_0";
+
+AESGCM1.$name = "CONFIG_AESGCM_0";
+
+ECDH1.$name = "CONFIG_ECDH_0";
+
+ECDH2.$name = "CONFIG_ECDH_1";
+
+ECDSA1.$name = "CONFIG_ECDSA_0";
+
+EDDSA1.$name = "CONFIG_EDDSA_0";
+
+SHA21.$name = "CONFIG_SHA2_0";
+
+TRNG1.$name = "CONFIG_TRNG_0";
+
+TRNG2.$name = "CONFIG_TRNG_1";
+
+Button1.$name     = "CONFIG_BUTTON_0";
+Button1.$hardware = system.deviceData.board.components["BTN-1"];
+
+Button2.$name     = "CONFIG_BUTTON_1";
+Button2.$hardware = system.deviceData.board.components["BTN-2"];
+
+if("fsk" in ti_sidewalk.enabledPhys)
+{
+    ti_sidewalk.enabledPhys = ["ble","fsk"];
+}
+else
+{
+    ti_sidewalk.enabledPhys = ["ble"];
+}
+
+
+/* NVS */
+NVS1.$name                    = "CONFIG_CFG";
+NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
+NVS1.internalFlash.regionBase = 0xAA000;
+NVS1.internalFlash.regionType = "Pointer";
+NVS1.internalFlash.regionSize = 0x4000;
+
+NVS2.$name                    = "CONFIG_MFG";
+NVS2.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX1";
+NVS2.internalFlash.regionType = "Pointer";
+NVS2.internalFlash.regionBase = 0xAE000;
+NVS2.internalFlash.regionSize = 0x2000;

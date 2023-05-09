@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../gpd_temperaturesensor.syscfg -> gpd_temperaturesensor.syscfg"
+        ]
+    }
+]

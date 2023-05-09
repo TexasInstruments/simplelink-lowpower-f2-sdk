@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_EM_CC1354P10_6/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos_ns.icf -> cc13x4_cc26x4_nortos_ns.icf",
+            "+../encrypt.c -> encrypt.c",
+            "+../encrypt.syscfg -> encrypt.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.html -> README.html",
+            "+../README.md -> README.md"
+        ]
+    }
+]

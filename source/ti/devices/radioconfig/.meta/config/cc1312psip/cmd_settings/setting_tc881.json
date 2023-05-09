@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4 (Pre-Silicon)",
-        "Description": "2.5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 4, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*4=8 chips per data bit). (Pre-Silicon)",
+        "Name": "SimpleLink Long Range, 2.5 kbps (20 ksps), 5 kHz Deviation, 2-GFSK, 34 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4",
+        "Description": "2.5 kbps, SimpleLink Long Range PHY using 20 kchip\/s, 2-GFSK, 5-kHz deviation (h=0.5), convolutional FEC (rate=1\/2, K=7), DSSS spreading factor 4, and 34 kHz Rx bandwidth for 863-930 MHz frequency band. NOTE: This PHY format uses a fixed-length and fixed-value preamble and sync word -- this means that the API parameters for \"preamConf.nPreamBytes\", \"formatConf.nSwBits\" and \"syncWord\" can not be configured for this setting. The rest of the packet, which consists of the variable or fixed length payload data, an appended CRC-16 for the payload data, and 1 extra byte for trellis termination in the convolutional FEC decoder, is both FEC-encoded and spread into chips (i.e. 2*4=8 chips per data bit).",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -178,7 +178,7 @@
                                 ]
                             },
                             {
-                                "_name": "override_tc880_tc881_tc882.json",
+                                "_name": "override_tc880_tc881.json",
                                 "Element32b": [
                                     {
                                         "_type": "ADI_2HALFREG_OVERRIDE",
@@ -192,8 +192,8 @@
                                     },
                                     {
                                         "_type": "ELEMENT",
-                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -2 dB (default: -2), trimmed for external bias and differential configuration",
-                                        "$": "0x000288A3"
+                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -5 dB at 779-930 MHz",
+                                        "$": "0x000588A3"
                                     },
                                     {
                                         "_type": "ADI_HALFREG_OVERRIDE",
@@ -208,6 +208,14 @@
                                     "_type": "ELEMENT",
                                     "_comment": "DC\/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use default settings.",
                                     "$": "0x00F788D3"
+                                }
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
                                 }
                             },
                             {

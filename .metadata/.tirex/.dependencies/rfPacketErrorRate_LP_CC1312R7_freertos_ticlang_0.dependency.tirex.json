@@ -1,0 +1,20 @@
+[
+    {
+        "files": [
+            "+../../config.c -> config.c",
+            "+../../config.h -> config.h",
+            "+../../menu.h -> menu.h",
+            "+../../README.md -> README.md",
+            "+../../rx.c -> rx.c",
+            "+../../tx.c -> tx.c",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../menu.c -> menu.c",
+            "+../../rfPacketErrorRate.c -> rfPacketErrorRate.c",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../rfPacketErrorRate.syscfg -> rfPacketErrorRate.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+cc13x2x7_cc26x2x7_freertos.cmd -> cc13x2x7_cc26x2x7_freertos.cmd"
+        ]
+    }
+]

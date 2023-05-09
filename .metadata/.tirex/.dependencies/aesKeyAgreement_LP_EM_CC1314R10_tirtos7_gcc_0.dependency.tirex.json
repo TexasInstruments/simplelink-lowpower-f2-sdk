@@ -1,0 +1,17 @@
+[
+    {
+        "files": [
+            "+../../rxTask.c -> rxTask.c",
+            "+../../txTask.c -> txTask.c",
+            "+../../common.c -> common.c",
+            "+../../common.h -> common.h",
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../aesKeyAgreement.syscfg -> aesKeyAgreement.syscfg",
+            "+../../../../../../../source/ti/boards/LP_EM_CC1314R10/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7.lds -> cc13x4_cc26x4_tirtos7.lds"
+        ]
+    }
+]

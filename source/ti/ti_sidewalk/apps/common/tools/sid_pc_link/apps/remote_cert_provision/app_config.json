@@ -1,0 +1,8 @@
+{
+    "REGISTRATION_ENVIRONMENT": "prod",
+    "BLUETOOTH_ADAPTER": "hci0",
+    "DEVICE_IDENTIFIER": null,
+    "GATEWAY_ID": null,
+    "AUTH_TOKEN": null,
+    "LWA_TOKEN": null,
+}

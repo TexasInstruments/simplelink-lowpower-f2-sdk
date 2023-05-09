@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/CC1352R1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_freertos.icf -> cc13x2_cc26x2_freertos.icf",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md",
+            "+../../timerled.c -> timerled.c",
+            "+../timerled.syscfg -> timerled.syscfg"
+        ]
+    }
+]

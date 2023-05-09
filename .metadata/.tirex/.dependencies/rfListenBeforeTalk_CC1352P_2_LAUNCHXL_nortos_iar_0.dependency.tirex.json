@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../application_settings.c -> application_settings.c",
+            "+../application_settings.h -> application_settings.h",
+            "+../../../../../../source/ti/boards/CC1352P_2_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_nortos.icf -> cc13x2_cc26x2_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.md -> README.md",
+            "+../rfListenBeforeTalk.c -> rfListenBeforeTalk.c",
+            "+../rfListenBeforeTalk.syscfg -> rfListenBeforeTalk.syscfg"
+        ]
+    }
+]

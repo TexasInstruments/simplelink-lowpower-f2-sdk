@@ -600,7 +600,11 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
                 /* Read in the header to check if the signature has already been denied */
                 readFlashPg(flashPageNum, 0, &readSecurityByte[0], (SEC_VERIF_STAT_OFFSET + 1));
 
+#ifndef BIM_DUAL_ONCHIP_IMAGE
                 if(readSecurityByte[SEC_VERIF_STAT_OFFSET] == DEFAULT_STATE)
+#else
+                if(readSecurityByte[SEC_VERIF_STAT_OFFSET] != VERIFY_FAIL)
+#endif
                 {
                     signVrfyStatus = Bim_verifyImage(iFlStrAddr);
 
@@ -610,6 +614,7 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
                         readSecurityByte[SEC_VERIF_STAT_OFFSET] = VERIFY_FAIL;
                         writeFlashPg(flashPageNum, SEC_VERIF_STAT_OFFSET,  &readSecurityByte[SEC_VERIF_STAT_OFFSET], 1);
                     }
+#ifndef BIM_DUAL_ONCHIP_IMAGE
                     else
                     {
                         readSecurityByte[SEC_VERIF_STAT_OFFSET] = VERIFY_PASS;
@@ -619,6 +624,7 @@ static void Bim_findImage(uint8_t flashPageNum, uint8_t imgType)
                 else if (readSecurityByte[SEC_VERIF_STAT_OFFSET] == VERIFY_PASS)
                 {
                     signVrfyStatus = SUCCESS;
+#endif
                 }
             } /* if(securityPresence) */
         }

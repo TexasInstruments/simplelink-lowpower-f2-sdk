@@ -486,7 +486,7 @@ boot_is_header_valid(const struct image_header *hdr, const struct flash_area *fa
 static inline bool
 boot_data_is_set_to(uint8_t val, void *data, size_t len)
 {
-    uint8_t i;
+    uint32_t i;
     uint8_t *p = (uint8_t *)data;
     for (i = 0; i < len; i++) {
         if (val != p[i]) {

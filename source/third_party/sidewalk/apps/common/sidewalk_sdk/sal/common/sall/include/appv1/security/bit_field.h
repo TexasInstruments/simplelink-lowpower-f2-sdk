@@ -1,0 +1,34 @@
+/*
+ * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All rights reserved.
+ *
+ * AMAZON PROPRIETARY/CONFIDENTIAL
+ *
+ * You may not use this file except in compliance with the terms and
+ * conditions set forth in the accompanying LICENSE.TXT file.
+ *
+ * THESE MATERIALS ARE PROVIDED ON AN "AS IS" BASIS. AMAZON SPECIFICALLY
+ * DISCLAIMS, WITH RESPECT TO THESE MATERIALS, ALL WARRANTIES, EXPRESS,
+ * IMPLIED, OR STATUTORY, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+ */
+
+#ifndef HALO_LIB_HALL_INCLUDE_APPV1_SECURITY_BIT_FIELD_H_
+#define HALO_LIB_HALL_INCLUDE_APPV1_SECURITY_BIT_FIELD_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef enum {
+    HALO_HALL_APPV1_SECURITY_PARAMS_TIME_FORMAT_MASK = 0x1,
+    HALO_HALL_APPV1_SECURITY_PARAMS_TIME_FORMAT_OFFSET = 15,
+
+    HALO_HALL_APPV1_SECURITY_PARAMS_TIME_VALUE_MASK = 0x7fff,
+    HALO_HALL_APPV1_SECURITY_PARAMS_TIME_VALUE_OFFSET = 0
+} halo_hall_appv1_security_params_time;
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif /* HALO_LIB_HALL_INCLUDE_APPV1_SECURITY_BIT_FIELD_H_ */

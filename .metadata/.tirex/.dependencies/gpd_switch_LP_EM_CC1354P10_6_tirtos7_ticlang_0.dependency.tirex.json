@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../gpd_switch.syscfg -> gpd_switch.syscfg"
+        ]
+    }
+]

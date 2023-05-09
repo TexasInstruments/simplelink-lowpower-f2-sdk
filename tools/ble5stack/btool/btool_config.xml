@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- ***************************************************************************************************************** -->
+<!--
+BTool Config XML file
+
+<For Advanced User's Only>
+Valid ranges only indicate the range accepted by BTool.
+Values in the valid range may not work with target hardware. 
+
+Summary of XML tags:
+====================
+<btool_config>Config File Data<\btool_config>
+  
+  ===================================================================
+  XML Version
+  ===================================================================
+
+  <version>XML layout version</version> 
+    Do Not Modify 
+  
+  ===================================================================
+  General Settings
+  ===================================================================
+
+  <general_cfg_data> Start general config data
+
+    <max_scan_responses>Max scan responses during discovery scan</max_scan_responses> 
+      Valid Range:
+        0 to Max byte
+          
+  </general_cfg_data> End general config data
+
+  <ota_max_pdu_size> Start general config data
+
+    <ota_max_pdu_size>Max ota pdu size</ota_max_pdu_size> 
+      Valid Range:
+        27 to Max byte 
+        Default = 251
+          
+  </general_cfg_data> End general config data
+
+  ===================================================================
+  ===================================================================
+   -->
+<!-- ***************************************************************************************************************** -->
+<btool_config>
+  <!-- ***************************************************************************************************************** -->
+  <!-- XML Version --> 
+  <!-- ***************************************************************************************************************** -->
+  <version>1.00.01</version>
+  <!-- ***************************************************************************************************************** -->
+  <!-- General --> 
+  <!-- ***************************************************************************************************************** -->
+  <general_cfg_data>
+    <max_scan_responses>20</max_scan_responses> 
+    <ota_max_pdu_size>251</ota_max_pdu_size> 
+  </general_cfg_data>
+  <!-- ***************************************************************************************************************** -->
+  <!-- ***************************************************************************************************************** -->
+</btool_config>
+

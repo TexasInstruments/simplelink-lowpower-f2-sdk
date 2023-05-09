@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../main.c -> main.c",
+            "+../../README.html -> README.html",
+            "+../../ti_cc13x2_pal_crypto_config.h -> ti_cc13x2_pal_crypto_config.h",
+            "+../../application/app_900_config.h -> application/app_900_config.h",
+            "+../../application/app_ble_config.h -> application/app_ble_config.h",
+            "+../../application/heap.c -> application/heap.c",
+            "+../../config/ti_cc13x2_pal_crypto_config.h -> config/ti_cc13x2_pal_crypto_config.h",
+            "+../../application/app_ble_config.c -> application/app_ble_config.c",
+            "+../sid_demo.syscfg -> sid_demo.syscfg",
+            "+cc13x2x7_cc26x2x7_freertos.lds -> cc13x2x7_cc26x2x7_freertos.lds"
+        ]
+    }
+]

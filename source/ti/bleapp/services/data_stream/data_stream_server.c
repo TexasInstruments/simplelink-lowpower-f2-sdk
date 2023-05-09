@@ -58,13 +58,14 @@
 #endif
 
 #include <ti/bleapp/services/data_stream/data_stream_server.h>
+#include <ti/bleapp/ble_app_util/inc/bleapputil_api.h>
 #include "ble_stack_api.h"
 
 /*********************************************************************
  * CONSTANTS
  */
 // The size of the notification header is opcode + handle
-#define DATASTREAM_NOTI_HDR_SIZE   (ATT_OPCODE_SIZE + 2)
+#define DSS_NOTI_HDR_SIZE   (ATT_OPCODE_SIZE + 2)
 
 /*********************************************************************
  * TYPEDEFS
@@ -75,83 +76,83 @@
  */
 
 // Data Stream Server Service UUID: 0xC0C0
-GATT_UUID( dataStreamServer_serv_UUID, DATASTREAMSERVER_SERV_UUID );
+GATT_UUID( dss_serv_UUID, DSS_SERV_UUID );
 
 // Data In Characteristic UUID: 0xC0C1
-GATT_UUID( dataStreamServer_dataIn_UUID, DATASTREAMSERVER_DATAIN_UUID );
+GATT_UUID( dss_dataIn_UUID, DSS_DATAIN_UUID );
 
 // Data Out Characteristic UUID: 0xC0C2
-GATT_UUID( dataStreamServer_dataOut_UUID, DATASTREAMSERVER_DATAOUT_UUID );
+GATT_UUID( dss_dataOut_UUID, DSS_DATAOUT_UUID );
 
-static DataStreamServer_CB_t *dataStreamServer_profileCBs = NULL;
+static DSS_cb_t *dss_profileCBs = NULL;
 
 /*********************************************************************
  * Profile Attributes - variables
  */
 
 // Data Stream Server Service declaration
-static CONST gattAttrType_t dataStreamServer_service = { ATT_UUID_SIZE, dataStreamServer_serv_UUID };
+static CONST gattAttrType_t dss_service = { ATT_UUID_SIZE, dss_serv_UUID };
 
 // Characteristic "DataIn" Properties
-static uint8 dataStreamServer_dataIn_props = GATT_PROP_WRITE;
+static uint8 dss_dataIn_props = GATT_PROP_WRITE;
 
 // Characteristic "DataIn" Value variable
-static uint8 dataStreamServer_dataIn_val = 0;
+static uint8 dss_dataIn_val = 0;
 
 // Characteristic "DataIn" User Description
-static uint8 dataStreamServer_dataIn_userDesp[] = "Write Data";
+static uint8 dss_dataIn_userDesp[] = "Write Data";
 
 // Characteristic "DataOut" Properties
-static uint8 dataStreamServer_dataOut_props = GATT_PROP_NOTIFY;
+static uint8 dss_dataOut_props = GATT_PROP_NOTIFY;
 
 // Characteristic "DataOut" Value variable
-static uint8 dataStreamServer_dataOut_val = 0;
+static uint8 dss_dataOut_val = 0;
 
 // Characteristic "DataOut" Configuration each client has its own
 // instantiation of the Client Characteristic Configuration. Reads of the
 // Client Characteristic Configuration only shows the configuration for
 // that client and writes only affect the configuration of that client.
-static gattCharCfg_t *dataStreamServer_dataOut_config;
+static gattCharCfg_t *dss_dataOut_config;
 
 // Characteristic "DataOut" User Description
-static uint8 dataStreamServer_dataOut_userDesp[] = "Server Data";
+static uint8 dss_dataOut_userDesp[] = "Server Data";
 
 /*********************************************************************
  * Profile Attributes - Table
  */
 
-static gattAttribute_t dataStreamServer_attrTbl[] =
+static gattAttribute_t dss_attrTbl[] =
 {
  /*--------------------type-------------------*/ /*------------permissions-------------*/ /*------------------pValue--------------------*/
    // Data Stream Service
-   GATT_BT_ATT( primaryServiceUUID,                 GATT_PERMIT_READ,                        (uint8 *) &dataStreamServer_service ),
+   GATT_BT_ATT( primaryServiceUUID,                 GATT_PERMIT_READ,                        (uint8 *) &dss_service ),
 
    // DataIn Characteristic Properties
-   GATT_BT_ATT( characterUUID,                      GATT_PERMIT_READ,                        &dataStreamServer_dataIn_props ),
+   GATT_BT_ATT( characterUUID,                      GATT_PERMIT_READ,                        &dss_dataIn_props ),
    // DataIn Characteristic Value
-   GATT_ATT( dataStreamServer_dataIn_UUID,          GATT_PERMIT_WRITE,                        &dataStreamServer_dataIn_val ),
+   GATT_ATT( dss_dataIn_UUID,                       GATT_PERMIT_WRITE,                       &dss_dataIn_val ),
    // DataIn Characteristic User Description
-   GATT_BT_ATT( charUserDescUUID,                   GATT_PERMIT_READ,                        dataStreamServer_dataIn_userDesp ),
+   GATT_BT_ATT( charUserDescUUID,                   GATT_PERMIT_READ,                        dss_dataIn_userDesp ),
 
    // DataOut Characteristic Properties
-   GATT_BT_ATT( characterUUID,                      GATT_PERMIT_READ,                        &dataStreamServer_dataOut_props ),
+   GATT_BT_ATT( characterUUID,                      GATT_PERMIT_READ,                        &dss_dataOut_props ),
    // DataOut Characteristic Value
-   GATT_ATT( dataStreamServer_dataOut_UUID,         0,                                        &dataStreamServer_dataOut_val ),
+   GATT_ATT( dss_dataOut_UUID,                      0,                                       &dss_dataOut_val ),
    // DataOut Characteristic configuration
-   GATT_BT_ATT( clientCharCfgUUID,                  GATT_PERMIT_READ | GATT_PERMIT_WRITE,    (uint8 *) &dataStreamServer_dataOut_config ),
+   GATT_BT_ATT( clientCharCfgUUID,                  GATT_PERMIT_READ | GATT_PERMIT_WRITE,    (uint8 *) &dss_dataOut_config ),
    // DataOut Characteristic User Description
-   GATT_BT_ATT( charUserDescUUID,                   GATT_PERMIT_READ,                        dataStreamServer_dataOut_userDesp ),
+   GATT_BT_ATT( charUserDescUUID,                   GATT_PERMIT_READ,                        dss_dataOut_userDesp ),
 };
 
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
-bStatus_t DataStreamServer_writeAttrCB( uint16 connHandle,
-                                        gattAttribute_t *pAttr,
-                                        uint8 *pValue, uint16 len,
-                                        uint16 offset, uint8 method );
+static bStatus_t DSS_writeAttrCB( uint16 connHandle,
+                                  gattAttribute_t *pAttr,
+                                  uint8 *pValue, uint16 len,
+                                  uint16 offset, uint8 method );
 
-static bStatus_t DataStreamServer_sendNotification( uint8 *pValue, uint16 len );
+static bStatus_t DSS_sendNotification( uint8 *pValue, uint16 len );
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -165,10 +166,10 @@ static bStatus_t DataStreamServer_sendNotification( uint8 *pValue, uint16 len );
 // pfnAuthorizeAttrCB to check a client's authorization prior to calling
 // pfnReadAttrCB or pfnWriteAttrCB, so no checks for authorization need to be
 // made within these functions.
-CONST gattServiceCBs_t dataStreamServer_servCBs =
+CONST gattServiceCBs_t dss_servCBs =
 {
   NULL,                           // Read callback function pointer
-  DataStreamServer_writeAttrCB,  // Write callback function pointer
+  DSS_writeAttrCB,                // Write callback function pointer
   NULL                            // Authorization callback function pointer
 };
 
@@ -177,53 +178,52 @@ CONST gattServiceCBs_t dataStreamServer_servCBs =
  */
 
 /*********************************************************************
- * @fn      DataStreamServer_addService
+ * @fn      DSS_addService
  *
  * @brief   This function initializes the Data Stream Server service
  *          by registering GATT attributes with the GATT server.
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamServer_addService( void )
+bStatus_t DSS_addService( void )
 {
-  uint8 status = SUCCESS;
+  bStatus_t status = SUCCESS;
 
   // Allocate Client Characteristic Configuration table
-  dataStreamServer_dataOut_config = (gattCharCfg_t *)ICall_malloc( sizeof(gattCharCfg_t) *
-                                                                   MAX_NUM_BLE_CONNS );
-  if ( dataStreamServer_dataOut_config == NULL )
+  dss_dataOut_config = (gattCharCfg_t *)ICall_malloc( sizeof(gattCharCfg_t) * MAX_NUM_BLE_CONNS );
+  if ( dss_dataOut_config == NULL )
   {
     return ( bleMemAllocError );
   }
 
   // Initialize Client Characteristic Configuration attributes
-  GATTServApp_InitCharCfg( LINKDB_CONNHANDLE_INVALID, dataStreamServer_dataOut_config );
+  GATTServApp_InitCharCfg( LINKDB_CONNHANDLE_INVALID, dss_dataOut_config );
 
   // Register GATT attribute list and CBs with GATT Server
-  status = GATTServApp_RegisterService( dataStreamServer_attrTbl,
-                                        GATT_NUM_ATTRS( dataStreamServer_attrTbl ),
+  status = GATTServApp_RegisterService( dss_attrTbl,
+                                        GATT_NUM_ATTRS( dss_attrTbl ),
                                         GATT_MAX_ENCRYPT_KEY_SIZE,
-                                        &dataStreamServer_servCBs );
+                                        &dss_servCBs );
 
   // Return status value
   return ( status );
 }
 
 /*********************************************************************
- * @fn      DataStreamServer_registerProfileCBs
+ * @fn      DSS_registerProfileCBs
  *
  * @brief   Registers the profile callback function. Only call
  *          this function once.
  *
- * @param   profileCallback - pointer to profile callback.
+ * @param   profileCallback - pointer to profile callback functions.
  *
  * @return  SUCCESS or INVALIDPARAMETER
  */
-bStatus_t DataStreamServer_registerProfileCBs( DataStreamServer_CB_t *profileCallback )
+bStatus_t DSS_registerProfileCBs( DSS_cb_t *profileCallback )
 {
   if ( profileCallback )
   {
-    dataStreamServer_profileCBs = profileCallback;
+    dss_profileCBs = profileCallback;
 
     return ( SUCCESS );
   }
@@ -232,7 +232,7 @@ bStatus_t DataStreamServer_registerProfileCBs( DataStreamServer_CB_t *profileCal
 }
 
 /*********************************************************************
- * @fn      DataStreamServer_setParameter
+ * @fn      DSS_setParameter
  *
  * @brief   Set a Data Stream Service parameter.
  *
@@ -245,14 +245,20 @@ bStatus_t DataStreamServer_registerProfileCBs( DataStreamServer_CB_t *profileCal
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamServer_setParameter(uint8 param, void *pValue, uint16 len)
+bStatus_t DSS_setParameter(uint8 param, void *pValue, uint16 len)
 {
   bStatus_t status = SUCCESS;
 
+  // Verify input parameters
+  if ( pValue == NULL )
+  {
+    return ( INVALIDPARAMETER );
+  }
+
   switch ( param )
   {
-    case DATASTREAMSERVER_DATAOUT_ID:
-      status = DataStreamServer_sendNotification( (uint8 *)pValue, len );
+    case DSS_DATAOUT_ID:
+      status = DSS_sendNotification( (uint8 *)pValue, len );
       break;
 
     default:
@@ -265,7 +271,7 @@ bStatus_t DataStreamServer_setParameter(uint8 param, void *pValue, uint16 len)
 }
 
 /*********************************************************************
- * @fn      DataStreamServer_writeAttrCB
+ * @fn      DSS_writeAttrCB
  *
  * @brief   Validate attribute data prior to a write operation
  *
@@ -278,16 +284,27 @@ bStatus_t DataStreamServer_setParameter(uint8 param, void *pValue, uint16 len)
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamServer_writeAttrCB( uint16 connHandle,
+static bStatus_t DSS_writeAttrCB( uint16 connHandle,
                                         gattAttribute_t *pAttr,
                                         uint8 *pValue, uint16 len,
                                         uint16 offset, uint8 method )
 {
   bStatus_t status = SUCCESS;
 
-  // See if request is regarding a Client Characteristic Configuration
+  // Verify input parameters
+  if ( pAttr == NULL || pValue == NULL )
+  {
+    return ( INVALIDPARAMETER );
+  }
+
+  /******************************************************/
+  /****** Client Characteristic Configuration ***********/
+  /******************************************************/
+
   if ( ! memcmp( pAttr->type.uuid, clientCharCfgUUID, pAttr->type.len ) )
   {
+     DSS_cccUpdate_t *cccUpdate;
+
     // Allow only notifications
     status = GATTServApp_ProcessCCCWriteReq( connHandle, pAttr, pValue, len,
                                              offset, GATT_CLIENT_CFG_NOTIFY );
@@ -295,33 +312,64 @@ bStatus_t DataStreamServer_writeAttrCB( uint16 connHandle,
     // Notify profile
     if ( status == SUCCESS )
     {
-      uint16 value = BUILD_UINT16( pValue[0], pValue[1] );
-
-      if ( dataStreamServer_profileCBs && dataStreamServer_profileCBs->pfnCccUpdateCb )
+      // This allocation will be free by bleapp_util
+      cccUpdate = (DSS_cccUpdate_t *)ICall_malloc( sizeof( DSS_cccUpdate_t ) );
+      if ( cccUpdate == NULL )
       {
-        // Call profile function from stack task context.
-        dataStreamServer_profileCBs->pfnCccUpdateCb( connHandle, value );
+        // Return error status
+        return ( bleMemAllocError );
       }
+
+      // Copy the data and send it to the profile
+      cccUpdate->connHandle = connHandle;
+      cccUpdate->value = BUILD_UINT16( pValue[0], pValue[1] );
+
+      // Callback function to notify profile of change on the client characteristic configuration
+      BLEAppUtil_invokeFunction( dss_profileCBs->pfnOnCccUpdateCB, (char *)cccUpdate );
     }
   }
 
-  // See if request is regarding the DataIn Characteristic Value
-  else if ( ! memcmp( pAttr->type.uuid, dataStreamServer_dataIn_UUID, pAttr->type.len ) )
+  /******************************************************/
+  /*********** Data In Characteristic  ******************/
+  /******************************************************/
+  else if ( ! memcmp( pAttr->type.uuid, dss_dataIn_UUID, pAttr->type.len ) )
   {
     // Only notify profile if there is any data in the payload
-    if ( len > 0 )
+    if ( len > 0  && dss_profileCBs && dss_profileCBs->pfnIncomingDataCB)
     {
-      if ( dataStreamServer_profileCBs && dataStreamServer_profileCBs->pfnIncomingDataCB )
+      DSS_dataIn_t *dataIn;
+
+      if ( len > DSS_MAX_DATA_IN_LEN )
       {
-        // Call profile function from stack task context.
-        dataStreamServer_profileCBs->pfnIncomingDataCB( connHandle, pValue, len );
+        len = 0;
       }
+
+      // This allocation will be free by bleapp_util
+      dataIn = (DSS_dataIn_t *)ICall_malloc( sizeof( DSS_dataIn_t ) + len);
+      if ( dataIn == NULL )
+      {
+        // Return error status
+        return ( bleMemAllocError );
+      }
+
+      // If allocation was successful,
+      // Copy the data and send it to the profile
+      if ( len > 0 )
+      {
+        memcpy( dataIn->pValue, pValue, len );
+      }
+      dataIn->connHandle = connHandle;
+      dataIn->len = len;
+
+      // Callback function to notify profile of change on the client characteristic configuration
+      status = BLEAppUtil_invokeFunction( dss_profileCBs->pfnIncomingDataCB, (char *)dataIn );
     }
   }
+
+  // If we get here, that means you've forgotten to add an if clause for a
+  // characteristic value attribute in the attribute table that has WRITE permissions.
   else
   {
-    // If we get here, that means you've forgotten to add an if clause for a
-    // characteristic value attribute in the attribute table that has WRITE permissions.
     status = ATT_ERR_ATTR_NOT_FOUND;
   }
 
@@ -330,7 +378,7 @@ bStatus_t DataStreamServer_writeAttrCB( uint16 connHandle,
 }
 
 /*********************************************************************
- * @fn      DataStreamServer_sendNotification
+ * @fn      DSS_sendNotification
  *
  * @brief   Transmits data over BLE notifications.
  *
@@ -339,7 +387,7 @@ bStatus_t DataStreamServer_writeAttrCB( uint16 connHandle,
  *
  * @return  SUCCESS, or stack call status
  */
-static bStatus_t DataStreamServer_sendNotification(uint8 *pValue, uint16 len)
+static bStatus_t DSS_sendNotification(uint8 *pValue, uint16 len)
 {
   bStatus_t status = SUCCESS;
   gattAttribute_t *pAttr = NULL;
@@ -348,16 +396,23 @@ static bStatus_t DataStreamServer_sendNotification(uint8 *pValue, uint16 len)
   uint16 offset = 0;
   uint8 i = 0;
 
+  // Verify input parameters
+  if ( pValue == NULL )
+  {
+    return ( INVALIDPARAMETER );
+  }
+
   // Find the characteristic value attribute
-  pAttr = GATTServApp_FindAttr(dataStreamServer_attrTbl,
-                               GATT_NUM_ATTRS(dataStreamServer_attrTbl),
-                               &dataStreamServer_dataOut_val);
+  pAttr = GATTServApp_FindAttr(dss_attrTbl, GATT_NUM_ATTRS(dss_attrTbl), &dss_dataOut_val);
   if ( pAttr != NULL )
   {
+
+    // Check the ccc value for each BLE connection
     for ( i = 0; i < MAX_NUM_BLE_CONNS; i++ )
     {
-      gattCharCfg_t *pItem = &( dataStreamServer_dataOut_config[i] );
+      gattCharCfg_t *pItem = &( dss_dataOut_config[i] );
 
+      // If the connection has register for notifications
       if ( ( pItem->connHandle != LINKDB_CONNHANDLE_INVALID ) &&
            ( pItem->value == GATT_CLIENT_CFG_NOTIFY) )
       {
@@ -369,10 +424,10 @@ static bStatus_t DataStreamServer_sendNotification(uint8 *pValue, uint16 len)
         {
           // Determine allocation size
           uint16_t allocLen = (len - offset);
-          if ( allocLen > ( connInfo.MTU - DATASTREAM_NOTI_HDR_SIZE ) )
+          if ( allocLen > ( connInfo.MTU - DSS_NOTI_HDR_SIZE ) )
           {
             // If len > MTU split data to chunks of MTU size
-            allocLen = connInfo.MTU - DATASTREAM_NOTI_HDR_SIZE;
+            allocLen = connInfo.MTU - DSS_NOTI_HDR_SIZE;
           }
 
           noti.len = allocLen;

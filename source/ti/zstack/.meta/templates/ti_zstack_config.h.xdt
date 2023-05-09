@@ -1,0 +1,557 @@
+/*
+ * Copyright (c) 2018, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+%%{
+/*
+ *  ======== ti_zstack_config.h.xdt ========
+ */
+
+/* Static module and submodules and scripts */
+const zstack = system.modules['/ti/zstack/zstack'].$static;
+const Common = system.getScript("/ti/zstack/zstack_common.js");
+const RF = system.modules["/ti/drivers/RF"].$static;
+
+/* Channel bitmasks */
+const defaultChanlist = Common.chanArrToBitmask(zstack.rf.primaryChannels);
+const secondaryChanlist = Common.chanArrToBitmask(zstack.rf.secondaryChannels);
+
+let devices = system.getScript("/ti/zstack/stack/zcl/ZDL.js").ZDL.devices;
+const clusters = system.getScript("/ti/zstack/stack/zcl/ZCL.js").ZCL.clusters;
+
+Common.addGlobalClusters(devices, clusters);
+
+/* EPID */
+let epid = "{";
+let i;
+for(i = 0; i < Common.EPID_LEN; i++)
+{
+    epid += "0x";
+    epid += zstack.network.epid.substring((2*i), (2*i)+2);
+    epid += ",";
+}
+epid = epid.slice(0,-1);
+epid += "}";
+
+/* Default network key */
+let defaultNwkKey = "{";
+for(i = 0; i < Common.NWK_KEY_LEN; i++)
+{
+    defaultNwkKey += "0x";
+    defaultNwkKey += zstack.network.defaultNwkKey.substring((2*i), (2*i)+2);
+    defaultNwkKey += ",";
+}
+defaultNwkKey = defaultNwkKey.slice(0,-1);
+defaultNwkKey += "}";
+
+/* Distributed Global Link key */
+let distGlobKey = "{";
+for(i = 0; i < Common.NWK_KEY_LEN; i++)
+{
+    distGlobKey += "0x";
+    distGlobKey += zstack.network.distributedGlobalLinkKey.substring((2*i), (2*i)+2);
+    distGlobKey += ",";
+}
+distGlobKey = distGlobKey.slice(0,-1);
+distGlobKey += "}";
+
+/* TC Link key */
+let tcLinkKey = "{";
+for(i = 0; i < Common.NWK_KEY_LEN  ; i++)
+{
+    tcLinkKey += "0x";
+    tcLinkKey += zstack.network.tcLinkKey.substring((2*i), (2*i)+2);
+    tcLinkKey += ",";
+}
+tcLinkKey = tcLinkKey.slice(0,-1);
+tcLinkKey += "}";
+
+/* APP BUILDER START */
+
+let flags = '';
+let maxAttrSize = '';
+
+if( zstack.appBuilder == true )
+{
+  const app = [system.modules['/ti/zstack/zstack'].$static.app, system.modules['/ti/zstack/zstack'].$static.otaClient];
+
+  /* Get device information */
+  let deviceDict = {};
+  let deviceList = [];
+  for (i=0; i<devices.length; i++) {
+    deviceDict[devices[i]._id] = devices[i];
+    deviceList.push(devices[i]._id);
+  }
+
+  /* Get clusters from ZCL.js */
+  let clusterDict = {};
+  let clusterList = [];
+  let attributeDict = {};
+  let commandDict = {};
+  for (i in clusters) {
+    let currCluster = clusters[i];
+    clusterDict[currCluster._id] = clusters[i];
+    clusterList.push(currCluster._id);
+    attributeDict[currCluster._id] = {};
+    commandDict[currCluster._id] = {};
+    if (currCluster.server) {
+      for (let j in currCluster.server.attribute) {
+        attributeDict[currCluster._id][currCluster.server.attribute[j]._id] = currCluster.server.attribute[j];
+      }
+      for (let j in currCluster.server.command) {
+        commandDict[currCluster._id][currCluster.server.command[j]._id] = currCluster.server.command[j];
+      }
+    }
+    if (currCluster.client) {
+      for (let j in currCluster.client.attribute) {
+        attributeDict[currCluster._id][currCluster.client.attribute[j]._id] = currCluster.client.attribute[j];
+      }
+      for (let j in currCluster.client.command) {
+        commandDict[currCluster._id][currCluster.client.command[j]._id] = currCluster.client.command[j];
+      }
+    }
+  }
+
+  /* Variable Declarations */
+  let clusterFlags = {};
+  let bdbReporting = false;
+  let serverClusters = [];
+  let serverAttributes = {};
+  let clientClusters = [];
+  let clientAttributes = {};
+
+  flags += '#define ZCL_SYSCONFIG\n';
+  flags += '#define ZCL_READ\n';
+  flags += '#define ZCL_WRITE\n';
+  flags += '#define ZCL_DISCOVER\n';
+
+  let deviceNum;
+  for(deviceNum = 0; deviceNum < app.length; deviceNum++)
+  {
+    if ('otaClientEnabled' in app[deviceNum] && !app[deviceNum].otaClientEnabled) //TODO Add more generic checking
+    {
+      break;
+    }
+    let deviceID = app[deviceNum].zigbeeDeviceType;
+    let deviceObj = deviceDict[deviceID];
+    let profileID = 'ZCL_HA_PROFILE_ID';
+    let deviceDef = 'NONE';
+    if (deviceObj && deviceObj._definition) {
+      deviceDef = deviceObj._definition;
+    }
+
+    /* Get Server-Side information */
+    let manServerClustIDs = app[deviceNum][deviceID + "manServer"];
+    let recServerClustIDs = app[deviceNum][deviceID + "recServer"];
+    let addServerClustIDs = app[deviceNum][deviceID + "addServer"];
+    for (i in manServerClustIDs) {
+      let currClusterID = manServerClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      serverClusters.push(currCluster);
+      serverAttributes[currClusterID] = [];
+      let manServerAttIDs = app[deviceNum][currClusterID + 'mcmaServer'].concat(app[deviceNum][currClusterID + 'mcoaServer']);
+      for (let j in manServerAttIDs) {
+        let currAttributeID = manServerAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        serverAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+    for (i in recServerClustIDs) {
+      let currClusterID = recServerClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      serverClusters.push(currCluster);
+      serverAttributes[currClusterID] = [];
+      let recServerAttIDs = app[deviceNum][currClusterID + 'rcmaServer'].concat(app[deviceNum][currClusterID + 'rcoaServer']);
+      for (let j in recServerAttIDs) {
+        let currAttributeID = recServerAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        serverAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+    for (i in addServerClustIDs) {
+      let currClusterID = addServerClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      serverClusters.push(currCluster);
+      serverAttributes[currClusterID] = [];
+      let addServerAttIDs = app[deviceNum][currClusterID + 'acmaServer'].concat(app[deviceNum][currClusterID + 'acoaServer']);
+      for (let j in addServerAttIDs) {
+        let currAttributeID = addServerAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        serverAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+
+    /* Get Client-Side information */
+    let manClientClustIDs = app[deviceNum][deviceID + "manClient"];
+    let recClientClustIDs = app[deviceNum][deviceID + "recClient"];
+    let addClientClustIDs = app[deviceNum][deviceID + "addClient"];
+    for (i in manClientClustIDs) {
+      let currClusterID = manClientClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      clientClusters.push(currCluster);
+      clientAttributes[currClusterID] = [];
+      let manClientAttIDs = app[deviceNum][currClusterID + 'mcmaClient'].concat(app[deviceNum][currClusterID + 'mcoaClient']);
+      for (let j in manClientAttIDs) {
+        let currAttributeID = manClientAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        clientAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+    for (i in recClientClustIDs) {
+      let currClusterID = recClientClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      clientClusters.push(currCluster);
+      clientAttributes[currClusterID] = [];
+      let recClientAttIDs = app[deviceNum][currClusterID + 'rcmaClient'].concat(app[deviceNum][currClusterID + 'rcoaClient']);
+      for (let j in recClientAttIDs) {
+        let currAttributeID = recClientAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        clientAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+    for (i in addClientClustIDs) {
+      let currClusterID = addClientClustIDs[i];
+      let currCluster = clusterDict[currClusterID];
+      clientClusters.push(currCluster);
+      clientAttributes[currClusterID] = [];
+      let addClientAttIDs = app[deviceNum][currClusterID + 'acmaClient'].concat(app[deviceNum][currClusterID + 'acoaClient']);
+      for (let j in addClientAttIDs) {
+        let currAttributeID = addClientAttIDs[j];
+        let currAttribute = attributeDict[currClusterID][currAttributeID];
+        clientAttributes[currClusterID].push(currAttribute);
+        if (currAttribute._reportable == 'true') {
+          bdbReporting = true;
+        }
+      }
+    }
+
+    /* App Names */
+    let appName = app[deviceNum].zigbeeApplicationName;
+    let appNameCaps = appName.toUpperCase().replace(/\s/g, '');
+    let appNameWords = appName.split(" ");
+    let appNameCamel = appNameWords[0].charAt(0).toLowerCase() + appNameWords[0].slice(1);
+    for (i=1; i<appNameWords.length; i++) {
+      appNameCamel += appNameWords[i].charAt(0).toUpperCase() + appNameWords[i].slice(1);
+    }
+
+    /* Get Advanced Settings */
+    let endpoint = app[deviceNum].endpoint;
+    let deviceVersion = app[deviceNum].deviceVersion;
+
+    /* --------------- Code Generation --------------- */
+
+    /* Server-Side */
+    for (i in serverClusters) {
+      let currCluster = serverClusters[i];
+      if(!(currCluster._flag in clusterFlags))
+      {
+        clusterFlags[currCluster._flag] = currCluster._flag;
+      }
+    }
+
+    /* Client-Side */
+    for (i in clientClusters) {
+      let currCluster = clientClusters[i];
+      if(!(currCluster._flag in clusterFlags))
+      {
+        clusterFlags[currCluster._flag] = currCluster._flag;
+      }
+    }
+
+    maxAttrSize = app[deviceNum]['bdbReportingMaxAnalogAttrSize'].toString();
+
+    if ('otaClientEnabled' in app[deviceNum] && app[deviceNum].otaClientEnabled) //TODO Add more generic checking
+    {
+      flags += '#define OTA_CLIENT_STANDALONE\n';
+    }
+  }
+  /* Flags */
+  for (let flag in clusterFlags) { flags += '#define ' + flag + '\n'; }
+
+  if (bdbReporting == true)
+  {
+    flags += '#define BDB_REPORTING\n';
+  }
+}
+
+var tlFlag = "";
+
+if (zstack.touchlink.touchlinkEnabled == true)
+{
+  if(zstack.touchlink.touchlinkMode == 'initiator')
+  {
+    tlFlag += '#define BDB_TL_INITIATOR\n';
+  }
+  else if(zstack.touchlink.touchlinkMode == 'target')
+  {
+    tlFlag += '#define BDB_TL_TARGET\n';
+  }
+}
+
+/* APP BUILDER END */
+
+%%}
+/*
+ *                           ti_zstack_config.h
+ *
+ *  DO NOT EDIT - This file was generated by the SysConfig tool.
+ *
+ *  Macros used to define a TI Z-Stack ZigBee device. New user defined
+ *  options may be added to this file, as necessary.
+ *
+ */
+
+#ifndef TI_ZSTACK_CONFIG_H
+#define TI_ZSTACK_CONFIG_H
+
+/* Default (primary) and secondary channel masks. Secondary mask is used when the
+ * default channels fail.
+ * Channels are defined in the following:
+ *        11 - 26 : 2.4 GHz     0x07FFF800
+ */
+#ifndef DEFAULT_CHANLIST
+#define DEFAULT_CHANLIST              `defaultChanlist`
+#endif
+
+#ifndef SECONDARY_CHANLIST
+#define SECONDARY_CHANLIST            `secondaryChanlist`
+#endif
+
+/* Define the default PAN ID.
+ *
+ * Setting this to a value other than 0xFFFF causes
+ * ZDO_COORD to use this value as its PAN ID and
+ * Routers and end devices to join PAN with this ID
+ */
+#ifndef ZDAPP_CONFIG_PAN_ID
+#define ZDAPP_CONFIG_PAN_ID           `zstack.network.panID`
+#endif
+
+/* Specifiy whether to set the EPID to the Extended Address, or to use the
+ * custom Extended Pan ID (EPID) defined by ZDAPP_CONFIG_EPID
+ */
+#ifndef SET_EPID_AS_EXT_ADDR
+#define SET_EPID_AS_EXT_ADDR          `(zstack.network.epidAsExtAddr) ? "TRUE" : "FALSE"`
+#endif
+
+/* Define the default Extended Pan ID (EPID)
+ * ZDAPP_CONFIG_EPID is only used if SET_EPID_AS_EXT_ADDR is FALSE. Otherwise,
+ * the EPID is set to the Extended Address.
+ */
+#ifndef ZDAPP_CONFIG_EPID
+#define ZDAPP_CONFIG_EPID             `epid`
+#endif
+
+/* in seconds; set to 255 to turn off route expiry */
+#ifndef ROUTE_EXPIRY_TIME
+#define ROUTE_EXPIRY_TIME             `zstack.advanced.routing.routeExpiryTime`
+#endif
+
+/*  Default indirect message holding timeout value:
+ *  1-65535 (0 -> 65536) X CNT_RTG_TIMER X RTG_TIMER_INTERVAL
+ */
+#ifndef NWK_INDIRECT_MSG_TIMEOUT
+#define NWK_INDIRECT_MSG_TIMEOUT      `zstack.advanced.routing.nwkIndirectMsgTimeout`
+#endif
+
+/* The number of simultaneous route discoveries in network */
+#ifndef MAX_RREQ_ENTRIES
+#define MAX_RREQ_ENTRIES              `zstack.advanced.routing.maxRouteReqEntries`
+#endif
+
+/* The maximum number of MAC frame transmission attempts allowed */
+#ifndef ZMAC_MAX_FRAME_RETRIES
+#define ZMAC_MAX_FRAME_RETRIES          `zstack.advanced.packetSending.macFrameRetries`
+#endif
+
+/* Max number of times attempts looking for the next hop address of a message */
+#ifndef NWK_MAX_DATA_RETRIES
+#define NWK_MAX_DATA_RETRIES          `zstack.advanced.packetSending.nwkDataRetries`
+#endif
+
+/* The maximum number of times APS frames are retried after not receiving an APS ACK */
+#ifndef APSC_MAX_FRAME_RETRIES
+#define APSC_MAX_FRAME_RETRIES        `zstack.advanced.packetSending.apscMaxFrameRetries`
+#endif
+
+/* This number is used by polled devices, since the spec'd formula
+ * doesn't work for sleeping end devices.  For non-polled devices,
+ * a formula is used. Value is in 2 milliseconds periods
+ */
+#ifndef APSC_ACK_WAIT_DURATION_POLLED
+#define APSC_ACK_WAIT_DURATION_POLLED `(zstack.advanced.packetSending.apsAckWaitDurationPolled)/2`
+#endif
+
+/* The maximum number of groups in the groups table */
+#ifndef APS_MAX_GROUPS
+#define APS_MAX_GROUPS                `zstack.advanced.tableSize.groupTableSize`
+#endif
+
+/* Number of entries in the regular routing table plus additional
+ * entries for route repair
+ */
+#ifndef MAX_RTG_ENTRIES
+#define MAX_RTG_ENTRIES               `zstack.advanced.tableSize.routingTableSize`
+#endif
+
+/* Maximum number of entries in the Binding table. */
+#ifndef NWK_MAX_BINDING_ENTRIES
+#define NWK_MAX_BINDING_ENTRIES       `zstack.advanced.tableSize.bindingTableSize`
+#endif
+
+/* Default security key. */
+#ifndef DEFAULT_KEY
+#define DEFAULT_KEY                   `defaultNwkKey`
+#endif
+
+/* ZigBee Alliance Pre-configured Distributed Link Key (for Distributed networks) */
+#ifndef DISTRIBUTED_GLOBAL_LINK_KEY
+#define DISTRIBUTED_GLOBAL_LINK_KEY   `distGlobKey`
+#endif
+
+/* ZigBee Alliance Pre-configured TC Link Key - 'ZigBeeAlliance09' (for Centralized networks) */
+#ifndef DEFAULT_TC_LINK_KEY
+#define DEFAULT_TC_LINK_KEY           `tcLinkKey`
+#endif
+
+/* The number of milliseconds to wait between data request polls to the coordinator. */
+#ifndef TXPOWER
+#define TXPOWER                     `zstack.rf.txPower`
+#endif
+
+/****************************************
+ * The following are for End Devices only
+ ***************************************/
+
+/* Determine whether the radio on an End Device is always on */
+#ifndef RFD_RX_ALWAYS_ON_CAPABLE
+#define RFD_RX_ALWAYS_ON_CAPABLE            `(zstack.pm.powerModeCapabilities === "alwaysOn") ? "TRUE" : "FALSE"`
+#endif
+
+#ifndef RFD_RX_ALWAYS_ON
+#define RFD_RX_ALWAYS_ON                    `(zstack.pm.powerModeOperation === "alwaysOn") ? "TRUE" : "FALSE"`
+#endif
+
+/* The minimum poll rate. */
+#ifndef MINIMUM_APP_POLL_RATE
+#define MINIMUM_APP_POLL_RATE                     `zstack.pm.minPollPeriod`
+#endif
+
+/* The number of milliseconds to wait between data request polls to the coordinator. */
+#ifndef POLL_RATE
+#define POLL_RATE                     `zstack.pm.pollPeriod`
+#endif
+
+/* This is used after receiving a data indication to poll immediately
+ * for queued messages...in milliseconds.
+ */
+#ifndef QUEUED_POLL_RATE
+#define QUEUED_POLL_RATE              `zstack.pm.queuedMessagePollPeriod`
+#endif
+
+/* This is used after receiving a data confirmation to poll immediately
+ * for response messages...in milliseconds
+ */
+#ifndef RESPONSE_POLL_RATE
+#define RESPONSE_POLL_RATE            `zstack.pm.dataResponsePollPeriod`
+#endif
+
+/* This is used as an alternate response poll rate only for rejoin request.
+ * This rate is determined by the response time of the parent that the device
+ * is trying to join.
+ */
+#ifndef REJOIN_POLL_RATE
+#define REJOIN_POLL_RATE              `zstack.pm.rejoinMessagePollPeriod`
+#endif
+
+/* Maximum number of devices in the Assoc/Device list. */
+#ifndef NWK_MAX_DEVICE_LIST
+#define NWK_MAX_DEVICE_LIST           `zstack.network.nwkMaxDeviceList`
+#endif
+
+/* Total Number of APS keys that a TC can manage. This is equal to the number of devices a ZC can allow to join the network */
+#ifndef ZDSECMGR_TC_DEVICE_MAX
+#define ZDSECMGR_TC_DEVICE_MAX        `zstack.network.zdsecmgrTcDeviceMax`
+#endif
+
+/* Value used by end device when sending End Device Timeout Request */
+/* This is an index into table timeoutValue[] defined in nwk_globals.c */
+#ifndef END_DEV_TIMEOUT_VALUE
+#define END_DEV_TIMEOUT_VALUE        `zstack.network.endDeviceTimeout`
+#endif
+
+% if (RF.coexEnable && RF.coexPhy.includes("ieee_15_4")) {
+
+/* Builds the image with Wifi Coexistence Enabled */
+#define IEEE_COEX_ENABLED
+
+% if (RF.coexMode === "coexMode3Wire") {
+/* IEEE 3 Wire Coexistence is enabled */
+#define IEEE_COEX_3_WIRE
+
+% } // End if (RF.coexMode === "coexMode3Wire")
+% } // End if (RF.coexEnable && RF.coexPhy.includes("ieee_15_4"))
+
+`tlFlag`
+
+%%{
+  if ( zstack.appBuilder == true )
+  {
+%%}
+
+/* Maximum size in bytes used by reportable attributes registered in any endpoint for the application (for analog attributes) */
+#ifndef BDBREPORTING_MAX_ANALOG_ATTR_SIZE
+#define BDBREPORTING_MAX_ANALOG_ATTR_SIZE                   `maxAttrSize`
+#endif
+
+/* Cluster Flags */
+`flags`
+%%{
+  }
+%%}
+
+#endif /* TI_ZSTACK_CONFIG_H */

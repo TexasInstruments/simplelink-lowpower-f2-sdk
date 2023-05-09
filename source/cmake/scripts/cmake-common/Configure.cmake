@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -219,8 +219,7 @@ foreach (component_dir ${CMAKE_COMPONENT_FOLDERS})
 endforeach ()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING INTERNAL)
-message(VERBOSE "Supported components: ${CMAKE_PREFIX_PATH}")
 
 # Print the list of located components
-string(REPLACE ";" ", " PREFIX_PATH_PRINTABLE "${CMAKE_PREFIX_PATH}")
-message(VERBOSE "Package search paths: ${PREFIX_PATH_PRINTABLE}")
+string(REPLACE ";" "\n   -- " PREFIX_PATH_PRINTABLE "${CMAKE_PREFIX_PATH}")
+message(VERBOSE "Package search paths: \n   -- ${PREFIX_PATH_PRINTABLE}")

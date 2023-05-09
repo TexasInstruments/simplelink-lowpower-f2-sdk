@@ -731,11 +731,8 @@ static int I2CCC26XX_initIO(I2C_Handle handle, void *pinCfg)
     }
 
     /* Configure I2C pins SDA and SCL and set their muxes */
-    GPIO_setConfig(object->sdaPin, GPIO_CFG_OUT_OD_PU);
-    GPIO_setMux(object->sdaPin, hwAttrs->sdaPinMux);
-
-    GPIO_setConfig(object->sclPin, GPIO_CFG_OUT_OD_PU);
-    GPIO_setMux(object->sclPin, hwAttrs->sclPinMux);
+    GPIO_setConfigAndMux(object->sdaPin, GPIO_CFG_OUT_OD_PU, hwAttrs->sdaPinMux);
+    GPIO_setConfigAndMux(object->sclPin, GPIO_CFG_OUT_OD_PU, hwAttrs->sclPinMux);
 
     return I2C_STATUS_SUCCESS;
 }

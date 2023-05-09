@@ -235,7 +235,7 @@ extern "C"
  *
  * size: uint8_t
  *
- * default: @ref GAPBOND_FAIL_TERMINATE_LINK
+ * default: @ref GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND
  *
  * range: @ref GAPBondMgr_Bond_Failure_Actions
  */
@@ -664,6 +664,11 @@ extern "C"
  * bonding
  */
 #define GAPBOND_FAIL_TERMINATE_ERASE_BONDS             0x03
+
+/**
+ * Terminate link and erase ONLY the failed bond on device upon unsuccessful bond
+ */
+#define GAPBOND_FAIL_TERMINATE_ERASE_SINGLE_BOND       0x04
 /** @} End GAPBondMgr_Bond_Failure_Actions */
 
 /**

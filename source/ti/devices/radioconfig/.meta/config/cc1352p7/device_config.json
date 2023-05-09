@@ -51,17 +51,17 @@
             },
             {
                 "_file": "param_definition.json",
-                "$": ".\/..\/config\/cc1352p7_prop_pg10"
+                "$": ".\/..\/config\/cc1352p_prop_pg21"
             },
             {
                 "_file": "param_definition.json",
                 "_phy": "ble",
-                "$": ".\/..\/config\/cc1352p7_ble_pg10"
+                "$": ".\/..\/config\/cc1352p_ble_pg21"
             },
             {
                 "_file": "param_definition.json",
                 "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc1352p7_ieee_15_4_pg10"
+                "$": ".\/..\/config\/cc1352p_ieee_15_4_pg21"
             },
             {
                 "_file": "param_cmd_mapping.json",

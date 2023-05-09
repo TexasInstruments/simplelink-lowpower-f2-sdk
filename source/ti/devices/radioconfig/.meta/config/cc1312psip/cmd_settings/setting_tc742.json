@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "Wi-SUN mode #3, 150 kbps, 37.5 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth (Pre-Silicon)",
-        "Description": "150 kbps, 2-GFSK, 37.5 kHz deviation WiSUN mode #3 compatible PHY. (Pre-Silicon)",
+        "Name": "Wi-SUN mode #3, 150 kbps, 37.5 kHz Deviation, 2-GFSK, 273 kHz RX Bandwidth",
+        "Description": "150 kbps, 2-GFSK, 37.5 kHz deviation WiSUN mode #3 compatible PHY.",
         "Frequency": "915.2",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -237,7 +237,7 @@
                                     },
                                     {
                                         "_type": "ELEMENT",
-                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB (default: -2), trimmed for external bias and differential configuration",
+                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -4 dB at 779-930 MHz",
                                         "$": "0x000488A3"
                                     },
                                     {
@@ -251,6 +251,14 @@
                                         "$": "0,5,0xF,0x2"
                                     }
                                 ]
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
+                                }
                             },
                             {
                                 "_name": "override_patable_14dbm.json",

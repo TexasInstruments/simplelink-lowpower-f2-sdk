@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zr_doorlock.syscfg -> zr_doorlock.syscfg"
+        ]
+    }
+]

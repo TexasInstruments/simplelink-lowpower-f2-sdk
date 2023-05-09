@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC2651R3SIPA/Board.html -> Board.html",
+            "+cc13x1_cc26x1_tirtos7.icf -> cc13x1_cc26x1_tirtos7.icf",
+            "+../../log.c -> log.c",
+            "+../log.syscfg -> log.syscfg",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../../config/openthread-config-cc13x2_26x2-ftd.h -> config/openthread-config-cc13x2_26x2-ftd.h",
+            "+../../../config/openthread-core-cc13x2_26x2-config.h -> config/openthread-core-cc13x2_26x2-config.h"
+        ]
+    }
+]

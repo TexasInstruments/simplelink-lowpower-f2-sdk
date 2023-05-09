@@ -336,7 +336,10 @@ void BLEAppUtil_stackRegister(void)
     // See ble_stack_api.c - #ifdef ICALL_NO_APP_EVENTS
     status = bleStack_register(&BLEAppUtilSelfEntity,
                                BLEAppUtil_processStackMsgCB);
-    // TODO: Call Error Handler
+    if(status != SUCCESS)
+    {
+        // TODO: Call Error Handler
+    }
 }
 
 /*********************************************************************
@@ -356,25 +359,37 @@ void BLEAppUtil_stackInit(void)
     status = bleStack_initGap(BLEAppUtilLocal_GeneralParams->profileRole,
                               BLEAppUtilSelfEntity, BLEAppUtil_scanCB,
                               BLEAppUtilLocal_PeriCentParams->connParamUpdateDecision);
-    // TODO: Call Error Handler
+    if(status != SUCCESS)
+    {
+        // TODO: Call Error Handler
+    }
 
     // Init GapBond
     status = bleStack_initGapBond(BLEAppUtilLocal_PeriCentParams->gapBondParams,
                                   &BLEAppUtil_bondMgrCBs);
-    // TODO: Call Error Handler
+    if(status != SUCCESS)
+    {
+        // TODO: Call Error Handler
+    }
 
     // Init GATT
     status = bleStack_initGatt(BLEAppUtilLocal_GeneralParams->profileRole,
                                BLEAppUtilSelfEntity,
                                BLEAppUtilLocal_GeneralParams->deviceNameAtt);
-    // TODO: Call Error Handler
+    if(status != SUCCESS)
+    {
+        // TODO: Call Error Handler
+    }
 
     // Initialize GAP layer to receive GAP events
     status = GAP_DeviceInit(BLEAppUtilLocal_GeneralParams->profileRole,
                             BLEAppUtilSelfEntity,
                             BLEAppUtilLocal_GeneralParams->addressMode,
                             BLEAppUtilLocal_GeneralParams->pDeviceRandomAddress);
-    // TODO: Call Error Handler
+    if(status != SUCCESS)
+    {
+        // TODO: Call Error Handler
+    }
 }
 
 /*********************************************************************
@@ -430,8 +445,8 @@ bStatus_t BLEAppUtil_initAdvSet(uint8 *advHandle, const BLEAppUtil_AdvInit_t *ad
 
 bStatus_t BLEAppUtil_advStart(uint8 handle, const BLEAppUtil_AdvStart_t *advStartInfo)
 {
-	return GapAdv_enable(handle, advStartInfo->enableOptions ,
-	                     advStartInfo->durationOrMaxEvents);
+    return GapAdv_enable(handle, advStartInfo->enableOptions ,
+                         advStartInfo->durationOrMaxEvents);
 }
 
 bStatus_t BLEAppUtil_advStop(uint8 handle)
@@ -497,7 +512,7 @@ bStatus_t BLEAppUtil_scanStart(const BLEAppUtil_ScanStart_t *scanStartInfo)
 
 bStatus_t BLEAppUtil_scanStop(void)
 {
-	return GapScan_disable();
+    return GapScan_disable();
 }
 
 bStatus_t BLEAppUtil_SetConnParams(const BLEAppUtil_ConnParams_t *connParams)
@@ -566,7 +581,7 @@ bStatus_t BLEAppUtil_unRegisterConnNotifHandler()
  */
 bStatus_t BLEAppUtil_paramUpdateRsp(gapUpdateLinkParamReqEvent_t *pReq, uint8 accept)
 {
-    bStatus_t status;
+    bStatus_t status = SUCCESS;
     gapUpdateLinkParamReqReply_t rsp;
 
     rsp.connectionHandle = pReq->req.connectionHandle;
@@ -584,7 +599,8 @@ bStatus_t BLEAppUtil_paramUpdateRsp(gapUpdateLinkParamReqEvent_t *pReq, uint8 ac
     {
         rsp.accepted = FALSE;
     }
-
+    status = GAP_UpdateLinkParamReqReply(&rsp);
     // Send Reply and return
-    return GAP_UpdateLinkParamReqReply(&rsp);
+
+    return (status);
 }

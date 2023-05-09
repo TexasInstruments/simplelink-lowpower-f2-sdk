@@ -15,6 +15,9 @@ hide ICall_enterCriticalSection
 hide ICall_leaveCriticalSection
 hide abort
 hide smpInitiatorProcessPairingConfirm
+hide smpResponderProcessPairingConfirm
+hide smpResponderProcessPairingRandom
+hide smpResponderProcessPairingDHKeyCheck
 hide HCI_ReadLocalVersionInfoCmd
 hide abort
 hide rfMode

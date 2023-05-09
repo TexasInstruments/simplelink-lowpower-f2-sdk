@@ -1,0 +1,19 @@
+[
+    {
+        "files": [
+            "+../config.c -> config.c",
+            "+../config.h -> config.h",
+            "+../menu.h -> menu.h",
+            "+../README.md -> README.md",
+            "+../rx.c -> rx.c",
+            "+../tx.c -> tx.c",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../menu_nortos.c -> menu_nortos.c",
+            "+../rfPacketErrorRate_nortos.c -> rfPacketErrorRate_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../rfPacketErrorRate.syscfg -> rfPacketErrorRate.syscfg",
+            "+../nortos/ticlang/cc13x1_cc26x1_nortos.cmd -> cc13x1_cc26x1_nortos.cmd"
+        ]
+    }
+]

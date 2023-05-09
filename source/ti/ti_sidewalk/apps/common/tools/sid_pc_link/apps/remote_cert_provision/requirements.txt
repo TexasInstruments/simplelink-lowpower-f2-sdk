@@ -1,0 +1,8 @@
+gatt; sys_platform == 'linux'
+pycairo ; sys_platform == 'linux'
+PyGObject ; sys_platform == 'linux'
+bleak; sys_platform == 'darwin' or sys_platform == 'linux'
+coloredlogs
+requests
+protobuf3
+

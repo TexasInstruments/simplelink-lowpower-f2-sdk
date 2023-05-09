@@ -69,8 +69,11 @@
 #include <inc/hw_memmap.h>
 #include <driverlib/vims.h>
 
+/* Header files related to CCFG */
 #include <inc/hw_ccfg.h>
-#include <inc/hw_ccfg_simple_struct.h>
+#ifndef DMM_OAD
+#include <inc/hw_ccfg_simple_struct.h> // also include for non-OAD projects
+#endif
 
 #ifdef NV_RESTORE
 #include "macconfig.h"
@@ -202,8 +205,13 @@ Void macAppTaskFxn(UArg a0, UArg a1)
      * Assumption: the memory in CCFG_IEEE_MAC_0 and CCFG_IEEE_MAC_1
      * is contiguous and LSB first.
      */
+#ifndef DMM_OAD
     memcpy(ApiMac_extAddr, (uint8_t *)&(__ccfg.CCFG_IEEE_MAC_0),
            (APIMAC_SADDR_EXT_LEN));
+#else
+    memcpy(ApiMac_extAddr, (uint8_t *)(CCFG_BASE + CCFG_O_IEEE_MAC_0),
+           (APIMAC_SADDR_EXT_LEN));
+#endif
 
     /* Check to see if the CCFG IEEE is valid */
     if(memcmp(ApiMac_extAddr, dummyExtAddr, APIMAC_SADDR_EXT_LEN) == 0)

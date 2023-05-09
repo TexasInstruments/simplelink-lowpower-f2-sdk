@@ -142,12 +142,12 @@ typedef enum
 
     OAD_REQ_DISABLE_BLK_NOTIF = 0x06,  //Disable block notification - This command is used to disable the image
                                        //block request notifications.
+    OAD_REQ_GET_SW_VER        = 0x07,  //Get software version - This command is used to query the OAD target
+                                       //device for its software version.
     OAD_REQ_GET_OAD_STAT      = 0x08,  //Get oad  publiv state machine - This command is used to query the status of the OAD
                                        //process OAD_PROFILE_NOT_STARTED/OAD_PROFILE_ALREADY_STARTED.
-  //these opcodes are not supported yet
-  //OAD_REQ_GET_SW_VER        = 0x07,  //Get software version - This command is used to query the OAD target
-                                       //device for its software version.
 
+  //these opcodes are not supported yet
   //OAD_REQ_GET_PROF_VER      = 0x09,  //Get profile version - This command is used to query the version of
                                             //the OAD profile.
 
@@ -195,6 +195,15 @@ PACKED_TYPEDEF_STRUCT
     uint8              prevBlkStat;      //!< Status of previous block write
     uint32             requestedBlk;     //!< Requested block number
 }blockReqPld_t;
+
+/*!
+ * Response to a @ref OAD_REQ_GET_SW_VER command
+ */
+PACKED_TYPEDEF_STRUCT
+{
+    uint8       cmdID;                     //!< Ctrl Op-code
+    uint8       swVer[MCUBOOT_SW_VER_LEN]; //!< App version
+} swVersionPld_t;
 
 /*!
  * This struct contains all the global information that the module needs
@@ -313,6 +322,7 @@ static OADProfile_Status_e oadEventHandleStateComplete(oadEvent_e event, uint16 
 static OADProfile_Status_e oadSendGenericExtCtrlRsp(uint8 cmdID ,uint8 stat);
 static OADProfile_Status_e oadSendBlockSizeRsp(oadProtocolOPCode_e cmdID ,uint16 oadBlkSz);
 static OADProfile_Status_e oadSendNextBlockReq(uint32 blkNum, uint8 status);
+static OADProfile_Status_e oadSendswVersionRsp();
 
 static void oadResetState(void);
 static OADProfile_Status_e oadImgIdentifyWrite(uint16 len, uint8 *pValue);
@@ -390,7 +400,12 @@ bStatus_t OADProfile_start(OADProfile_AppCallback_t pOADAppCB)
     HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE, APP_SUGGESTED_TX_TIME);
 
     // Create OAD activity timer
-    Util_constructClock(&oadActivityClk, oadInactivityTimeout,
+    Util_constructClock(&oadActivityClk,
+#ifdef FREERTOS
+                       (void*)oadInactivityTimeout,
+#else
+                        oadInactivityTimeout,
+#endif
                         pOADModuleGlobalData->stateTimeout, 0, false,0);
 
 #endif //OAD_APP_ONCHIP
@@ -468,7 +483,7 @@ void oadInvokeFromFWContextOAD(char *pData)
                 case OAD_EVT_ENABLE_IMG:
                 case OAD_EVT_CANCEL_OAD:
                 {
-                    oadStateMachine(opcode, pOADSrvWriteReq.len, pOADSrvWriteReq.pData);
+                    oadStateMachine((oadEvent_e)opcode, pOADSrvWriteReq.len, pOADSrvWriteReq.pData);
                     break;
                 }
                 case OAD_REQ_GET_BLK_SZ:
@@ -486,6 +501,11 @@ void oadInvokeFromFWContextOAD(char *pData)
                 case OAD_REQ_GET_OAD_STAT:
                 {
                     oadSendGenericExtCtrlRsp(OAD_REQ_GET_OAD_STAT,pOADModuleGlobalData->publicState);
+                    break;
+                }
+                case OAD_REQ_GET_SW_VER:
+                {
+                    oadSendswVersionRsp();
                     break;
                 }
                 case OAD_REQ_ERASE_BONDS:
@@ -533,7 +553,7 @@ void oadInvokeFromFWContextTimeout(char *pData)
  */
 static OADProfile_Status_e oadStateMachine(oadEvent_e event, uint16 dataLen, uint8* pData)
 {
-    uint8 status = OAD_PROFILE_SUCCESS;
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
 
     // Timeout is state independent. Always results in OAD state reset
     if(OAD_EVT_TIMEOUT == event)
@@ -602,7 +622,7 @@ static OADProfile_Status_e oadEventHandleStateIdle(oadEvent_e event, uint16 data
     {
         case OAD_EVT_IMG_IDENTIFY_REQ:
         {
-            status = SwUpdate_Open(SW_UPDATE_SOURCE_OAD);
+            status = (OADProfile_Status_e)SwUpdate_Open(SW_UPDATE_SOURCE_OAD);
             if(OAD_PROFILE_SUCCESS == status)
             {
                 status = oadImgIdentifyWrite(dataLen,pData);
@@ -618,7 +638,7 @@ static OADProfile_Status_e oadEventHandleStateIdle(oadEvent_e event, uint16 data
                 }
                 // Send a response to the ImgID command
                 statusid = status;
-                status = OADService_setParameter(OAD_SRV_IDENTIFY_REQ,OAD_IMAGE_ID_RSP_LEN,(void *)&statusid);
+                status = (OADProfile_Status_e)OADService_setParameter(OAD_SRV_IDENTIFY_REQ,OAD_IMAGE_ID_RSP_LEN,(void *)&statusid);
             }
             break;
         }
@@ -846,10 +866,10 @@ static OADProfile_Status_e oadEventHandleStateComplete(oadEvent_e event, uint16 
  */
 static OADProfile_Status_e oadSendGenericExtCtrlRsp(uint8 cmdID ,uint8 stat)
 {
-    uint8 status = OAD_PROFILE_SUCCESS;
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
     genericExtCtrlRsp_t rsp = {cmdID,stat};
 
-    status = OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(genericExtCtrlRsp_t),(void *)&rsp);
+    status = (OADProfile_Status_e)OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(genericExtCtrlRsp_t),(void *)&rsp);
 
     return (status);
 }
@@ -866,10 +886,10 @@ static OADProfile_Status_e oadSendGenericExtCtrlRsp(uint8 cmdID ,uint8 stat)
  */
 static OADProfile_Status_e oadSendBlockSizeRsp(oadProtocolOPCode_e cmdID ,uint16 oadBlkSz)
 {
-    uint8 status = OAD_PROFILE_SUCCESS;
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
     blockSizeRspPld_t rsp = {cmdID,oadBlkSz};
 
-    status = OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(blockSizeRspPld_t),(void *)&rsp);
+    status = (OADProfile_Status_e)OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(blockSizeRspPld_t),(void *)&rsp);
 
     return (status);
 }
@@ -885,7 +905,7 @@ static OADProfile_Status_e oadSendBlockSizeRsp(oadProtocolOPCode_e cmdID ,uint16
  */
 static OADProfile_Status_e oadSendNextBlockReq(uint32 blkNum, uint8 stat)
 {
-    uint8 status = OAD_PROFILE_SUCCESS;
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
 
     //There is no need to check that pOADModuleGlobalData does exist,
     //details are found next to the declaration of the variable
@@ -893,7 +913,44 @@ static OADProfile_Status_e oadSendNextBlockReq(uint32 blkNum, uint8 stat)
     {
         blockReqPld_t rsp = {OAD_RSP_BLK_RSP_NOTIF,stat,blkNum};
 
-        status = OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(blockReqPld_t),(void *)&rsp);
+        status = (OADProfile_Status_e)OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(blockReqPld_t),(void *)&rsp);
+    }
+
+    return (status);
+}
+
+/*********************************************************************
+ * @fn      oadSendswVersionRsp
+ *
+ * @brief   Respond for software version request.
+ *
+ * @return  OAD_PROFILE_SUCCESS or INVALIDPARAMETER
+ */
+static OADProfile_Status_e oadSendswVersionRsp()
+{
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
+    uint8 *pCmdRsp = ICall_malloc(sizeof(swVersionPld_t));
+
+    swVersionPld_t *rsp = (swVersionPld_t *)pCmdRsp;
+    struct image_version * img_ver = (struct image_version *)SwUpdate_GetSWVersion(APP_HDR_ADDR);
+    // Populate the software version field
+    uint8 swVerCombined[MCUBOOT_SW_VER_LEN] = {img_ver->iv_major,
+                                               img_ver->iv_minor,
+                                               HI_UINT16(img_ver->iv_revision),
+                                               LO_UINT16(img_ver->iv_revision),
+                                               HI_UINT16(img_ver->iv_build_num),
+                                               LO_UINT16(img_ver->iv_build_num),
+                                              };
+    // Pack up the payload
+    rsp->cmdID = OAD_REQ_GET_SW_VER;
+    // Copy combined version string into the response payload
+    memcpy(rsp->swVer, swVerCombined, MCUBOOT_SW_VER_LEN);
+    //swVersionPld_t rsp = {OAD_REQ_GET_SW_VER,swVerCombined};
+    if(pCmdRsp != NULL)
+    {
+        // Send out the populated command structure
+        status = (OADProfile_Status_e)OADService_setParameter(OAD_SRV_CTRL_CMD,sizeof(swVersionPld_t),(void *)rsp);
+        ICall_free(pCmdRsp);
     }
 
     return (status);
@@ -957,7 +1014,7 @@ static OADProfile_Status_e oadImgIdentifyWrite(uint16 len, uint8 *pValue)
 
     // Validate the Header
     swUpdateStatus = SwUpdate_CheckImageHeader(pValue);
-    if(pOADModuleGlobalData->candidateImgLen < 0)
+    if(swUpdateStatus < 0)
     {
         status = OAD_PROFILE_INVALID_FILE;
         pOADModuleGlobalData->imgIDRetries--;
@@ -1040,7 +1097,7 @@ static OADProfile_Status_e oadImgBlockWrite(uint8 len, uint8 *pValue)
     {
         // Calculate address to write as (start of OAD range) + (offset into range)
         uint32 blkStartAddr = (pOADModuleGlobalData->imgBytesPerBlock)*blkNum;
-        status = SwUpdate_WriteBlock(blkStartAddr,(len - OAD_BLK_NUM_HDR_SZ),(pValue+OAD_BLK_NUM_HDR_SZ));
+        status = (OADProfile_Status_e)SwUpdate_WriteBlock(blkStartAddr,(len - OAD_BLK_NUM_HDR_SZ),(pValue+OAD_BLK_NUM_HDR_SZ));
 
         // Increment received block count.
         pOADModuleGlobalData->currentBlkNum++;
@@ -1172,12 +1229,12 @@ BLEAppUtil_EventHandler_t oadConnHandler =
  */
 static OADProfile_Status_e oadResetDevice(uint16 connHandle)
 {
-    bStatus_t status = SUCCESS;
+    OADProfile_Status_e status = OAD_PROFILE_SUCCESS;
 
-    status = BLEAppUtil_registerEventHandler(&oadConnHandler);
+    status = (OADProfile_Status_e)BLEAppUtil_registerEventHandler(&oadConnHandler);
     if(SUCCESS == status)
     {
-        status = GAP_TerminateLinkReq(connHandle, HCI_DISCONNECT_REMOTE_USER_TERM);
+        status = (OADProfile_Status_e)GAP_TerminateLinkReq(connHandle, HCI_DISCONNECT_REMOTE_USER_TERM);
     }
 
     return(status);

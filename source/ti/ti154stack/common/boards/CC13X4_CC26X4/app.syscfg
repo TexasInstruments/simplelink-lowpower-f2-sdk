@@ -1,0 +1,7 @@
+/*
+ * Address to place reset vector on target device.
+ * See the application's linker command file for further section
+ * information.
+ */
+const Hwi = scripting.addModule("/ti/sysbios/family/arm/v8m/Hwi");
+

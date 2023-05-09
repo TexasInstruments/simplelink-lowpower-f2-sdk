@@ -150,11 +150,11 @@ const propRfCCFGSettings = {
         enableBootloaderBackdoor: false
     },
     LP_EM_CC1354P10_1_CCFG_SETTINGS: {
-        forceVddr: true,
+        forceVddr: false,
         enableBootloaderBackdoor: false
     },
     LP_EM_CC1354P10_6_CCFG_SETTINGS: {
-        forceVddr: true,
+        forceVddr: false,
         enableBootloaderBackdoor: false
     },
     LP_CC2653P10_CCFG_SETTINGS: {

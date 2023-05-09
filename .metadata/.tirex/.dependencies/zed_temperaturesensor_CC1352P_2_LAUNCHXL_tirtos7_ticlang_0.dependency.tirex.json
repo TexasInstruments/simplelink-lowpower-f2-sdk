@@ -1,0 +1,8 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../zed_temperaturesensor.syscfg -> zed_temperaturesensor.syscfg"
+        ]
+    }
+]

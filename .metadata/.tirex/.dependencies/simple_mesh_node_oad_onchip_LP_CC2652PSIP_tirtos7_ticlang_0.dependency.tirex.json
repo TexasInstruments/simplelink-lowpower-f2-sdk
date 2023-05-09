@@ -1,0 +1,19 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/simple_mesh_node.c -> Application/simple_mesh_node.c",
+            "+../../Application/simple_mesh_node.h -> Application/simple_mesh_node.h",
+            "+../../Application/simple_mesh_node_menu.c -> Application/simple_mesh_node_menu.c",
+            "+../../Application/simple_mesh_node_menu.h -> Application/simple_mesh_node_menu.h",
+            "+../../Application/static_prov.c -> Application/static_prov.c",
+            "+../../Application/static_prov.h -> Application/static_prov.h",
+            "+../../Application/oad_app_support.c -> Application/oad_app_support.c",
+            "+../../Application/oad_app_support.h -> Application/oad_app_support.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../autoconf.h -> autoconf.h",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../simple_mesh_node_oad_onchip.syscfg -> simple_mesh_node_oad_onchip.syscfg"
+        ]
+    }
+]

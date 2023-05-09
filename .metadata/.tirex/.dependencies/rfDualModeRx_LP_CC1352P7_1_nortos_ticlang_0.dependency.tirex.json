@@ -1,0 +1,15 @@
+[
+    {
+        "files": [
+            "+../rfDualModeRx.c -> rfDualModeRx.c",
+            "+../README.md -> README.md",
+            "+../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../rfDualModeRx.syscfg -> rfDualModeRx.syscfg",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../nortos/ticlang/cc13x2x7_cc26x2x7_nortos.cmd -> cc13x2x7_cc26x2x7_nortos.cmd"
+        ]
+    }
+]

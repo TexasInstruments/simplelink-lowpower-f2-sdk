@@ -1,0 +1,12 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../README.html -> README.html",
+            "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
+            "+../../application/defines/sensor_2_4g.opts -> application/defines/sensor_2_4g.opts",
+            "+../sensor.syscfg -> sensor.syscfg",
+            "+cc13x4_cc26x4.cmd -> cc13x4_cc26x4.cmd"
+        ]
+    }
+]

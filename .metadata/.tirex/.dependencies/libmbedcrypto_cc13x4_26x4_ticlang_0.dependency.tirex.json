@@ -1,0 +1,7 @@
+[
+    {
+        "files": [
+            "+../../../config/mbedtls-config-cc13x4_26x4.h -> config/mbedtls-config-cc13x4_26x4.h"
+        ]
+    }
+]

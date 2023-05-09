@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../rfSynchronizedPacket.h -> rfSynchronizedPacket.h",
+            "+../../README.md -> README.md",
+            "+../../state-machine.png -> state-machine.png",
+            "+../rfSynchronizedPacketRx.syscfg -> rfSynchronizedPacketRx.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../rfSynchronizedPacketRx.c -> rfSynchronizedPacketRx.c",
+            "+../../StateMachine.c -> StateMachine.c",
+            "+../../StateMachine.h -> StateMachine.h",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x4_cc26x4_tirtos7.cmd -> cc13x4_cc26x4_tirtos7.cmd"
+        ]
+    }
+]

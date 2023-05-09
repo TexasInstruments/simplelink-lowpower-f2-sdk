@@ -1,0 +1,11 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../rfWakeOnRadioTx.syscfg -> rfWakeOnRadioTx.syscfg",
+            "+../rfWakeOnRadioTx_nortos.c -> rfWakeOnRadioTx_nortos.c",
+            "+../main_nortos.c -> main_nortos.c",
+            "+cc13x2_cc26x2_nortos.cmd -> cc13x2_cc26x2_nortos.cmd"
+        ]
+    }
+]

@@ -6,54 +6,54 @@
                 "parameter": [
                     {
                         "_names": "SYMBOLRATE",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "RXFILTERBW",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "DEVIATION",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "MODULATION",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "WHITENING",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "PREAMBLEMODE",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "PREAMBLECOUNT",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "SYNCWORDLENGTH",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "SYNCWORDMSBFIRST",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "TXPOWER",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "CARRIER_FREQUENCY",
                         "rfCommand": [
-                            "CMD_PROP_RADIO_DIV_SETUP",
+                            "CMD_PROP_RADIO_DIV_SETUP_PA",
                             "CMD_FS"
                         ]
                     },
                     {
                         "_names": "LODIVIDER",
-                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP"
+                        "rfCommand": "CMD_PROP_RADIO_DIV_SETUP_PA"
                     },
                     {
                         "_names": "SYNCWORD",

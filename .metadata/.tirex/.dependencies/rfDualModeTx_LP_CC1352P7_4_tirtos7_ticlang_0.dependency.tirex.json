@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../rfDualModeTx.c -> rfDualModeTx.c",
+            "+../../README.md -> README.md",
+            "+../../rfDualMode_MissedBlePacket.png -> rfDualMode_MissedBlePacket.png",
+            "+../../rfDualMode_MissedPropPacket.png -> rfDualMode_MissedPropPacket.png",
+            "+../rfDualModeTx.syscfg -> rfDualModeTx.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x2x7_cc26x2x7_tirtos7.cmd -> cc13x2x7_cc26x2x7_tirtos7.cmd"
+        ]
+    }
+]

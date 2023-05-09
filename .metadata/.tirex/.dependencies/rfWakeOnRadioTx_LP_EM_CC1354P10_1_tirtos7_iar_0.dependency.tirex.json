@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_EM_CC1354P10_1/Board.html -> Board.html",
+            "+cc13x4_cc26x4_tirtos7.icf -> cc13x4_cc26x4_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../../rfWakeOnRadioTx.c -> rfWakeOnRadioTx.c",
+            "+../rfWakeOnRadioTx.syscfg -> rfWakeOnRadioTx.syscfg"
+        ]
+    }
+]

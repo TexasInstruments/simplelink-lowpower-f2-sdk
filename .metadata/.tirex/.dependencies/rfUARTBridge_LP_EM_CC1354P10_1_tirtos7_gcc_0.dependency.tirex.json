@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../rfUARTBridge.syscfg -> rfUARTBridge.syscfg",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../rfUARTBridge.c -> rfUARTBridge.c",
+            "+cc13x4_cc26x4_tirtos7.lds -> cc13x4_cc26x4_tirtos7.lds"
+        ]
+    }
+]

@@ -265,6 +265,7 @@ SECTIONS
       --library=*ll_*.a<ll_ae.o> (.bss)
     }
     #endif /* CACHE_AS_RAM */
+    .ramVecs
   } LOAD_END(heapStart)
 
   .stack            :   >  SRAM (HIGH) LOAD_START(heapEnd)
@@ -288,5 +289,4 @@ SECTIONS
 {
     .resetVecs: load > 0
     .vecs: load > 0x20000000, type = NOLOAD
-    .ramVecs:   > SRAM, type = NOLOAD, ALIGN(256)
 }

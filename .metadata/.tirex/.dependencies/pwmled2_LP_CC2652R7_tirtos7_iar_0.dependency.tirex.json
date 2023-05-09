@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../../source/ti/boards/LP_CC2652R7/Board.html -> Board.html",
+            "+cc13x2x7_cc26x2x7_tirtos7.icf -> cc13x2x7_cc26x2x7_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../pwmled2.c -> pwmled2.c",
+            "+../pwmled2.syscfg -> pwmled2.syscfg",
+            "+../../README.html -> README.html",
+            "+../../README.md -> README.md"
+        ]
+    }
+]

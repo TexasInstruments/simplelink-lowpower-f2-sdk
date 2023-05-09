@@ -1,6 +1,6 @@
 {
     "setting": {
-        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 311 kHz RX Bandwidth (Pre-Silicon))",
+        "Name": "Custom (100 kbps, 50 kHz Deviation, 2-GFSK, 350 kHz RX Bandwidth (Pre-Silicon))",
         "Description": "100 kbps, 2-GFSK, 50 kHz deviation. (Pre-Silicon)",
         "Frequency": "2440",
         "Patch": {

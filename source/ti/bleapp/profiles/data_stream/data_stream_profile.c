@@ -71,24 +71,22 @@
 /*********************************************************************
  * LOCAL VARIABLES
  */
-static DataStreamProfile_CBs_t *dataStreamProfile_appCB = NULL;
+static DSP_cb_t *dsp_appCB = NULL;
 
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
-static void DataStreamProfile_cccUpdateCB( uint16 connHandle, uint16 pValue );
-static void DataStreamProfile_incomingDataCB( uint16 connHandle, uint8 *pValue, uint16 len );
-static void DataStreamProfile_cccUpdateInvokeFromFWContext( char *pData );
-static void DataStreamProfile_incomingDataInvokeFromFWContext( char *pData );
+static void DSP_onCccUpdateCB( char *pValue );
+static void DSP_incomingDataCB( char *pValue );
 
 /*********************************************************************
  * PROFILE CALLBACKS
  */
 // Data Stream profile callback function for incoming data
-static DataStreamServer_CB_t dataStreamProfile_serverCB =
+static DSS_cb_t dsp_serverCB =
 {
-  DataStreamProfile_cccUpdateCB,
-  DataStreamProfile_incomingDataCB
+  DSP_onCccUpdateCB,
+  DSP_incomingDataCB
 };
 
 /*********************************************************************
@@ -96,7 +94,7 @@ static DataStreamServer_CB_t dataStreamProfile_serverCB =
  */
 
 /*********************************************************************
- * @fn      DataStreamProfile_start
+ * @fn      DSP_start
  *
  * @brief   This function adds the Data Stream Server service,
  *          registers the service and profile callback function and allocates
@@ -104,12 +102,12 @@ static DataStreamServer_CB_t dataStreamProfile_serverCB =
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks )
+bStatus_t DSP_start( DSP_cb_t *appCallbacks )
 {
   uint8 status = SUCCESS;
 
   // Add data stream service
-  status = DataStreamServer_addService();
+  status = DSS_addService();
   if ( status != SUCCESS )
   {
     // Return status value
@@ -117,7 +115,7 @@ bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks )
   }
 
   // Register to service callback function
-  status = DataStreamServer_registerProfileCBs( &dataStreamProfile_serverCB );
+  status = DSS_registerProfileCBs( &dsp_serverCB );
   if ( status != SUCCESS )
   {
     // Return status value
@@ -127,7 +125,7 @@ bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks )
   // Registers the application callback function
   if ( appCallbacks )
   {
-    dataStreamProfile_appCB = appCallbacks;
+    dsp_appCB = appCallbacks;
   }
   else
   {
@@ -139,7 +137,7 @@ bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks )
 }
 
 /*********************************************************************
- * @fn      DataStreamProfile_SendData
+ * @fn      DSP_SendData
  *
  * @brief   Send data over the GATT notification
  *
@@ -148,18 +146,18 @@ bStatus_t DataStreamProfile_start( DataStreamProfile_CBs_t *appCallbacks )
  *
  * @return  SUCCESS or stack call status
  */
-bStatus_t DataStreamProfile_sendData( uint8 *pValue, uint16 len )
+bStatus_t DSP_sendData( uint8 *pValue, uint16 len )
 {
   uint8 status = SUCCESS;
 
-  status = DataStreamServer_setParameter( DATASTREAMSERVER_DATAOUT_ID, pValue, len );
+  status = DSS_setParameter( DSS_DATAOUT_ID, pValue, len );
 
   // Return status value
   return ( status );
 }
 
 /*********************************************************************
- * @fn      DataStreamProfile_cccUpdateCB
+ * @fn      DSP_onCccUpdateCB
  *
  * @brief   Callback from Data_Stream_Server indicating CCC has been update
  *
@@ -168,98 +166,33 @@ bStatus_t DataStreamProfile_sendData( uint8 *pValue, uint16 len )
  *
  * @return  none
  */
-static void DataStreamProfile_cccUpdateCB( uint16 connHandle, uint16 pValue )
+static void DSP_onCccUpdateCB( char *pValue  )
 {
-  DataStream_cccUpdate_t *cccUpdate = NULL;
+  DSS_cccUpdate_t *cccUpdate = ( DSS_cccUpdate_t *)pValue;
 
-  if ( dataStreamProfile_appCB && dataStreamProfile_appCB->pfnDataStreamCccUpdateCb )
+  if ( dsp_appCB && dsp_appCB->pfnOnCccUpdateCb )
   {
-    // This allocation will be free by bleapp_util
-    cccUpdate = (DataStream_cccUpdate_t *)ICall_malloc( sizeof( DataStream_cccUpdate_t ) );
-    if ( cccUpdate != NULL )
-    {
-      // If allocation was successful,
-      cccUpdate->connHandle = connHandle;
-      cccUpdate->value = pValue;
-
-      // Callback function to notify application of change
-      BLEAppUtil_invokeFunction( DataStreamProfile_cccUpdateInvokeFromFWContext, (char *)cccUpdate );
-    }
+    dsp_appCB->pfnOnCccUpdateCb( cccUpdate->connHandle, cccUpdate->value );
   }
 }
 
 /*********************************************************************
- * @fn      DataStreamProfile_IncomingDataCB
+ * @fn      DSP_IncomingDataCB
  *
  * @brief   Callback from Data_Stream_Server indicating incoming data
  *
- * @param   connHandle - connection message was received on
- * @param   pValue - pointer to data to write
- * @param   len - length of data to write
+ * @param   pValue - pointer to the incoming data
  *
  * @return  none
  */
-static void DataStreamProfile_incomingDataCB( uint16 connHandle, uint8 *pValue, uint16 len )
+static void DSP_incomingDataCB( char *pValue )
 {
-  DataStream_dataIn_t *dataIn = NULL;
+  DSS_dataIn_t *dataIn = ( DSS_dataIn_t * )pValue;
 
-  if ( dataStreamProfile_appCB && dataStreamProfile_appCB->pfnDataStreamDataInCb )
+  if ( dsp_appCB && dsp_appCB->pfnIncomingDataCB )
   {
-    // Check if the data length is no longer than the allowed maximum
-    if ( len > DATASTREAM_MAX_DATA_IN_LEN )
-    {
-      len = 0;
-    }
-
-   // This allocation will be free by bleapp_util
-   dataIn = (DataStream_dataIn_t *)ICall_malloc( sizeof( DataStream_dataIn_t ) + len );
-   if ( dataIn != NULL )
-   {
-     // If allocation was successful,
-     // copy out data out of the buffer and send it to the application
-     if ( len > 0 )
-     {
-       memcpy( dataIn->pValue, pValue, len );
-     }
-     dataIn->connHandle = connHandle;
-     dataIn->len = len;
-
-     // Callback function to notify application of change
-     BLEAppUtil_invokeFunction( DataStreamProfile_incomingDataInvokeFromFWContext, (char *)dataIn );
-    }
+    dsp_appCB->pfnIncomingDataCB( dataIn->connHandle, dataIn->pValue, dataIn->len );
   }
-}
-
-/*********************************************************************
- * @fn      DataStreamProfile_cccUpdateInvokeFromFWContext
- *
- * @brief   This function will be called from the BLE App Util module
- *          context.
- *          Calling the application callback
- *
- * @param   pData - data
- *
- * @return  None
- */
-static void DataStreamProfile_cccUpdateInvokeFromFWContext( char *pData )
-{
-  dataStreamProfile_appCB->pfnDataStreamCccUpdateCb( (DataStream_cccUpdate_t *)pData );
-}
-
-/*********************************************************************
- * @fn      DataStreamProfile_incomingDataInvokeFromFWContext
- *
- * @brief   This function will be called from the BLE App Util module
- *          context.
- *          Calling the application callback
- *
- * @param   pData - data
- *
- * @return  None
- */
-static void DataStreamProfile_incomingDataInvokeFromFWContext( char *pData )
-{
-  dataStreamProfile_appCB->pfnDataStreamDataInCb( (DataStream_dataIn_t *)pData );
 }
 
 /*********************************************************************

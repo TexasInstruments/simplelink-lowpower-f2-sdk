@@ -1,0 +1,18 @@
+[{
+    "rootMacroName": "COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_TI_SIDEWALK_MODULE_INSTALL_DIR",
+    "compilerIncludePath": [],
+    "compilerSymbols": [],
+    "linkerSearchPath": [],
+    "properties": {
+        "rtsc.repoMacroName": "COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_TI_SIDEWALK_MODULE_INSTALL_DIR_REPOS",
+        "rtsc.repositories": [
+            ".;${XDCROOT}/packages",
+            "source",
+            "kernel/tirtos/packages",
+            "kernel/tirtos7/packages",
+            "."
+        ],
+        "rtsc.platformMappingsFile": "./kernel/tirtos/etc/platforms.json",
+        "rtsc.targetMappingsFile": "./kernel/tirtos/etc/targets.json"
+    }
+}]

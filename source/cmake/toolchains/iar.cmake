@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,7 @@ else ()
     set(CMAKE_C_LINK_EXECUTABLE "${IAR_ARMCOMPILER}/bin/ilinkarm <LINK_FLAGS> <OBJECTS> <LINK_LIBRARIES> -o <TARGET>")
 endif ()
 set(CMAKE_STATIC_LIBRARY_PREFIX "")
+set(CMAKE_C_RESPONSE_FILE_LINK_FLAG "-f")
 
 # Needed otherwise the CMake compiler checks will complain and abort
 set(CMAKE_C_COMPILER_ID_RUN TRUE)

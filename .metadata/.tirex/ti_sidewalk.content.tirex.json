@@ -1,0 +1,138 @@
+[
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_sidewalk/sid_demo/README.html",
+        "resourceType": "categoryInfo",
+        "name": "sid_demo",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Amazon Sidewalk"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC1352P7"
+        ],
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_sidewalk/sid_demo/freertos/gcc/sid_demo_LP_CC1352P7_1_freertos_gcc.projectspec",
+        "name": "sid_demo",
+        "description": "sid_demo",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "gcc"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Amazon Sidewalk",
+            "sid_demo",
+            "FreeRTOS",
+            "GCC Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC2652R7/ti_sidewalk/sid_demo/README.html",
+        "resourceType": "categoryInfo",
+        "name": "sid_demo",
+        "devtools": [
+            "LP-CC2652R7"
+        ],
+        "devices": [
+            "CC2652R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Amazon Sidewalk"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
+        "resourceType": "project.ccs",
+        "advanced": {
+            "overrideProjectSpecDeviceId": true
+        },
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ],
+        "devices": [
+            "CC2652R7"
+        ],
+        "coreTypes": [
+            "Cortex M.CC2652R7"
+        ],
+        "devtools": [
+            "LP-CC2652R7"
+        ],
+        "location": "../../examples/rtos/LP_CC2652R7/ti_sidewalk/sid_demo/freertos/gcc/sid_demo_LP_CC2652R7_freertos_gcc.projectspec",
+        "name": "sid_demo",
+        "description": "sid_demo",
+        "kernel": [
+            "freertos"
+        ],
+        "compiler": [
+            "gcc"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "TI Amazon Sidewalk",
+            "sid_demo",
+            "FreeRTOS",
+            "GCC Compiler"
+        ]
+    }
+]

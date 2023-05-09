@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 
 # This is a top-level toolchain file for the ticlang compiler, defining the most general options and variables as well
 # as any special commands or invocations needed by the compiler.

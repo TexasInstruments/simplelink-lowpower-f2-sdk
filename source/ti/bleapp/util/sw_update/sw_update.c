@@ -74,7 +74,7 @@ typedef struct
 {
     struct image_header primaryHdr;           //!< Store the existing Image Header inside flash
     struct image_header candidateImageHeader; //!< Store the candidate Image Header
-    uint16              pageSize;;            //!< Flash page size
+    uint16              pageSize;             //!< Flash page size
     uint16              pageMask;             //!< Flash page mask
 } swUpdateModuleGlobalData_t;
 
@@ -147,7 +147,6 @@ Status_t SwUpdate_Open(swUpdateSource_e source)
  */
 void SwUpdate_Close(void)
 {
-    Status_t status = SUCCESS;
     flash_close();
 
     // Free pointer for global data.
@@ -219,6 +218,22 @@ Status_t SwUpdate_RevokeImage(uint8 imageSlot)
     return (status);
 }
 
+/*********************************************************************
+ * @fn      SwUpdate_GetSWVersion
+ *
+ * @brief   This function extract sw version of MCU header from
+ *          given address
+ *
+ * @param   hdrAdrr - Header address
+ *
+ * @return  Image version struct
+ */
+uint32* SwUpdate_GetSWVersion(uint32 hdrAdrr)
+{
+    struct image_header * img_hdr = (struct image_header*)hdrAdrr;
+
+    return ((uint32 *)&(img_hdr->ih_ver));
+}
 /*********************************************************************
  * @fn      SwUpdate_EraseImageSlot
  *

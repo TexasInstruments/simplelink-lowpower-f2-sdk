@@ -1,0 +1,14 @@
+[
+    {
+        "files": [
+            "+../../../../../../source/ti/boards/LP_CC2651P3/Board.html -> Board.html",
+            "+../nortos/iar/cc13x1_cc26x1_nortos.icf -> cc13x1_cc26x1_nortos.icf",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../README.md -> README.md",
+            "+../RFQueue.c -> RFQueue.c",
+            "+../RFQueue.h -> RFQueue.h",
+            "+../rfUARTBridge.c -> rfUARTBridge.c",
+            "+../rfUARTBridge.syscfg -> rfUARTBridge.syscfg"
+        ]
+    }
+]

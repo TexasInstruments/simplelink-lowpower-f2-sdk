@@ -626,14 +626,14 @@ bool ExtFlash_test(void)
 */
 static int Spi_write(const uint8_t *buf, size_t len)
 {
-    SPI_Transaction masterTransaction;
+    SPI_Transaction Transaction;
 
-    masterTransaction.count  = len;
-    masterTransaction.txBuf  = (void*)buf;
-    masterTransaction.arg    = NULL;
-    masterTransaction.rxBuf  = NULL;
+    Transaction.count  = len;
+    Transaction.txBuf  = (void*)buf;
+    Transaction.arg    = NULL;
+    Transaction.rxBuf  = NULL;
 
-    return SPI_transfer(spiHandle, &masterTransaction) ? 0 : -1;
+    return SPI_transfer(spiHandle, &Transaction) ? 0 : -1;
 }
 
 
@@ -649,14 +649,14 @@ static int Spi_write(const uint8_t *buf, size_t len)
 */
 static int Spi_read(uint8_t *buf, size_t len)
 {
-    SPI_Transaction masterTransaction;
+    SPI_Transaction Transaction;
 
-    masterTransaction.count = len;
-    masterTransaction.txBuf = NULL;
-    masterTransaction.arg = NULL;
-    masterTransaction.rxBuf = buf;
+    Transaction.count = len;
+    Transaction.txBuf = NULL;
+    Transaction.arg = NULL;
+    Transaction.rxBuf = buf;
 
-    return SPI_transfer(spiHandle, &masterTransaction) ? 0 : -1;
+    return SPI_transfer(spiHandle, &Transaction) ? 0 : -1;
 }
 
 
@@ -671,10 +671,10 @@ static int Spi_read(uint8_t *buf, size_t len)
 */
 static bool Spi_open(uint32_t bitRate)
 {
-    /*  Configure SPI as master */
+    /*  Configure SPI as controller */
     SPI_Params_init(&spiParams);
     spiParams.bitRate = bitRate;
-    spiParams.mode = SPI_MASTER;
+    spiParams.mode = SPI_CONTROLLER;
     spiParams.transferMode = SPI_MODE_BLOCKING;
 
     /* Attempt to open SPI. */
@@ -704,7 +704,7 @@ static void Spi_close(void)
 /*******************************************************************************
 * @fn          Spi_flash
 *
-* @brief       Get rid of garbage from the slave
+* @brief       Get rid of garbage from the peripheral
 *
 * @param       none
 *

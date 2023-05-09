@@ -49,97 +49,6 @@
 
 #define FLASH_BASE_ADDRESS          0
 
-/*
-* The following definitions apply for the configuration in which
-* TI_BOOT_USE_EXTERNAL_FLASH is not defined; that is, both
-* Primary and Secondary slots are located in on-chip memory.
-*/
-#if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2)
-    #define BOOTLOADER_BASE_ADDRESS             0x00054000
-    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
-
-    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
-    #define BOOT_PRIMARY_1_SIZE                 0x0002A000
-    
-    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x0002A000
-    #define BOOT_SECONDARY_1_SIZE               0x0002A000
-#elif defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
-    #define BOOTLOADER_BASE_ADDRESS             0x000AC000
-    #define BOOT_BOOTLOADER_SIZE                0x00003FA8
-
-    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00000000
-    #define BOOT_PRIMARY_1_SIZE                 0x00056000
-
-    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
-    #define BOOT_SECONDARY_1_SIZE               0x00056000
-#elif defined DeviceFamily_CC23X0R5
-    #define BOOTLOADER_BASE_ADDRESS             0x00000000
-    #define BOOT_BOOTLOADER_SIZE                0x00006000
-
-    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00006000
-    #define BOOT_PRIMARY_1_SIZE                 0x0003d000
-
-    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00043000
-    #define BOOT_SECONDARY_1_SIZE               0x0003d000
-#else
-    #if (MCUBOOT_IMAGE_NUMBER == 2)
-        #define BOOTLOADER_BASE_ADDRESS         0x00000800
-        #define BOOT_BOOTLOADER_SIZE            0x00006000
-
-        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x0000d000 
-        #define BOOT_PRIMARY_1_SIZE             0x0002b000
-
-        #define BOOT_PRIMARY_2_BASE_ADDRESS     0x00038000
-        #define BOOT_PRIMARY_2_SIZE             0x0004e800
-
-        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00086800
-        #define BOOT_SECONDARY_1_SIZE           0x0002b000
-
-        #define BOOT_SECONDARY_2_BASE_ADDRESS   0x000b1800
-        #define BOOT_SECONDARY_2_SIZE           0x0004e800
-    #else
-        #define BOOTLOADER_BASE_ADDRESS         0x00000000
-        #define BOOT_BOOTLOADER_SIZE            0x00006000
-
-        #define BOOT_PRIMARY_1_BASE_ADDRESS     0x00006000
-        #define BOOT_PRIMARY_1_SIZE             0x0002b000
-        
-        #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00031000 
-        #define BOOT_SECONDARY_1_SIZE           0x0002b000
-    #endif
-#endif
-
-/* 
-* The following definitions apply for the configuration in which
-* TI_BOOT_USE_EXTERNAL_FLASH is defined; that is, 
-* Primary slots are located in on-chip memory, and Secondary 
-* slots are located in off-chip memory. Note that only the base 
-* address for Secondary slots differ from on-chip mode, but their
-* respective sizes are kept.
-*/
-#ifdef TI_BOOT_USE_EXTERNAL_FLASH
-    #ifdef BOOT_SECONDARY_1_BASE_ADDRESS
-        #undef BOOT_SECONDARY_1_BASE_ADDRESS
-    #endif
-
-    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00000000
-
-    #if (MCUBOOT_IMAGE_NUMBER == 2)
-        #ifdef BOOT_SECONDARY_2_BASE_ADDRESS
-            #undef BOOT_SECONDARY_2_BASE_ADDRESS
-        #endif
-
-         /* 
-         * The base and size of the secondary 1 slot are
-         * used to compute the start address of the Secondary 2
-         * slot, to keep both slots contiguous in external
-         * flash. 
-         */
-        #define BOOT_SECONDARY_2_BASE_ADDRESS   BOOT_SECONDARY_1_BASE_ADDRESS + \
-                                                BOOT_SECONDARY_1_SIZE
-    #endif
-#endif
-
 #ifdef DeviceFamily_CC23X0R5
 /* Remap driverlib API names that changed only for cc23x0
  */
@@ -703,6 +612,38 @@ int flash_area_get_sectors(int idx, uint32_t *cnt, struct flash_sector *ret)
 #endif
 
 #ifdef MCUBOOT_HW_ROLLBACK_PROT
+
+#ifdef DeviceFamily_CC23X0R5
+
+#define FLASH_WRITE_PROTECT 0
+
+/*
+ * There is no implementation of FlashProtectionSet() in cc23x0 driverlib.
+ * For now it was decided to implement this feature directly in this module.
+ *
+ */
+
+static void FlashProtectionSet(uint32_t address, uint32_t mode) {
+    uint32_t sector_number;
+    uint32_t sector_size = FlashSectorSizeGet();
+    uint32_t mask;
+
+    /*
+     * Check that address is within expected range, as in cc23x0r5
+     * only the first 32 sectors can be individually locked.
+     */
+    if ((address >= (FLASH_MAIN_BASE + (32 * sector_size))) ||
+        (0 != (address & (sector_size - 1)))) {
+        return;
+    }
+
+    sector_number = (address - FLASH_MAIN_BASE) / sector_size;
+    mask = 1 << sector_number;
+
+    HWREG(VIMS_BASE + VIMS_O_WEPRA) &= ~mask;
+}
+#endif
+
 void flash_area_lock(const struct flash_area *fa)
 {
     size_t addr;

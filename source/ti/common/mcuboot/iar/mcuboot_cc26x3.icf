@@ -33,11 +33,11 @@
 if (DUAL_SLOT == 1) {
     define symbol __intvec_start__ = 0x800;
     define symbol FLASH_start__    = 0x800;
-    define symbol FLASH_end__      = 0x67ff;
+    define symbol FLASH_end__      = 0x5fff;
 } else {
     define symbol __intvec_start__ = 0x0;
     define symbol FLASH_start__    = 0x0;
-    define symbol FLASH_end__      = 0x5fff;
+    define symbol FLASH_end__      = 0x57ff;
 }
 
 define symbol RAM_start__ = 0x20000000;

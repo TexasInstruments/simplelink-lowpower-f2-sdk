@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "sid_provision"
+version = "0.1.0"
+description = "Tool generate mfg pages"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+PyYAML = "^6.0"
+prodict = "^0.8.18"
+
+[tool.poetry.dev-dependencies]
+coverage = "^6.1.2"
+black = "^21.11b1"
+flake8 = "^4.0.1"
+mypy = "^0.982"
+types-PyYAML = "^6.0.12"
+hexdump = "^3.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+sid_provision = "sid_provision.run:main"
+
+[tool.black]
+line-length = 120

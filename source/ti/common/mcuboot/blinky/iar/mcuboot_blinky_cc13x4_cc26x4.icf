@@ -32,10 +32,10 @@
 
 
 if (DUAL_SLOT == 1) {
-    define symbol __intvec_start__ = 0x6880; 
-    define symbol FLASH_start__ = 0x6880;
+    define symbol __intvec_start__ = 0xd080; 
+    define symbol FLASH_start__ = 0xd080;
     define symbol FLASH_end__  = 0x3077f;
-    define exported symbol MCUBOOT_HDR_BASE = 0x6800;
+    define exported symbol MCUBOOT_HDR_BASE = 0xd000;
 } else {
     define symbol __intvec_start__ = 0x6080; 
     define symbol FLASH_start__ = 0x6080;

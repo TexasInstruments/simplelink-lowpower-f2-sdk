@@ -1,0 +1,16 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../RFQueue.h -> RFQueue.h",
+            "+../../RFQueue.c -> RFQueue.c",
+            "+../../rfEcho_PerfectEcho.png -> rfEcho_PerfectEcho.png",
+            "+../../rfEcho_ErrorTxRx.png -> rfEcho_ErrorTxRx.png",
+            "+../rfEchoRx.syscfg -> rfEchoRx.syscfg",
+            "+../../rfEchoRx.c -> rfEchoRx.c",
+            "+../main_freertos.c -> main_freertos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+cc13x2_cc26x2_freertos.lds -> cc13x2_cc26x2_freertos.lds"
+        ]
+    }
+]

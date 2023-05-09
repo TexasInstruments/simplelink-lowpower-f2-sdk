@@ -95,6 +95,8 @@
 
 uint16_t panid_allow_list[MAX_PANID_ALLOW_LIST_LEN] = {0};
 uint16_t panid_deny_list[MAX_PANID_DENY_LIST_LEN] = {0};
+uint16_t panid_list_clear_timeout_sec = 1800;
+uint16_t panid_list_clear_timeout_counter = 0;
 
 extern configurable_props_t cfg_props;
 
@@ -2557,7 +2559,7 @@ int ws_bootstrap_restart_delayed(int8_t interface_id)
         return -1;
     }
     ws_bootstrap_state_change(cur, ER_WAIT_RESTART);
-    cur->bootsrap_state_machine_cnt = 3;
+    cur->bootsrap_state_machine_cnt = 20;
     return 0;
 }
 
@@ -3190,6 +3192,8 @@ static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
     // Remove network keys from MAC
     ws_pae_controller_nw_keys_remove(cur);
 #endif
+    // Start PAN ID list clear timeout timer
+    panid_list_clear_timeout_counter = panid_list_clear_timeout_sec;
     ws_bootstrap_state_change(cur, ER_ACTIVE_SCAN);
     cur->nwk_nd_re_scan_count = 0;
     cur->ws_info->configuration_learned = false;
@@ -3919,6 +3923,8 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
             ws_pae_controller_bootstrap_done(cur);
 #endif
             ws_bootstrap_advertise_start(cur);
+            // Stop the PAN ID list timeout timer on bootstrap completion
+            panid_list_clear_timeout_counter = 0;
             ws_bootstrap_state_change(cur, ER_BOOTSRAP_DONE);
             break;
         case WS_FAST_DISCONNECT:
@@ -3927,7 +3933,6 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
         case WS_NORMAL_DISCONNECT:
             ws_bootstrap_disconnect(cur, WS_NORMAL_DISCONNECT);
             break;
-
         default:
             tr_err("Invalid event received");
             break;
@@ -4264,6 +4269,17 @@ void ws_bootstrap_seconds_timer(protocol_interface_info_entry_t *cur, uint32_t s
             cur->ws_info->ws_bsi_block.old_bsi = 0;
         }
     }
+
+    if (panid_list_clear_timeout_counter) {
+        if (panid_list_clear_timeout_counter > seconds) {
+            panid_list_clear_timeout_counter -= seconds;
+        } else {
+            // Timeout reached, clear PAN ID filter list
+            api_panid_filter_list_remove(PANID_ALLOW_LIST_E, 0, true);
+            api_panid_filter_list_remove(PANID_DENY_LIST_E, 0, true);
+            panid_list_clear_timeout_counter = 0;
+        }
+    }
     /*Update join state statistics*/
     if (ws_bootstrap_state_discovery(cur)) {
         ws_stats_update(cur, STATS_WS_STATE_1, 1);
@@ -4487,21 +4503,21 @@ static void ws_bootstrap_packet_congestion_init(protocol_interface_info_entry_t 
 
 }
 
-/*!
- * API to restart network stack
- * Input parameters: None
- * Output Parameters: success or failure
- */
-int nanostack_net_stack_restart(void)
+/* See ws_bootstrap.h */
+int nanostack_net_stack_restart(bool force_restart)
 {
     int retVal = 0;
     uint8_t i = 0;
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+    if (cur == NULL)
+    {
+        return PANID_STACK_RESTART_FAILED;
+    }
 
     //for router node - check if current pan id is in allow list or not.
     //based on that - take appropriate action
-    if(MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_ROUTER)
+    if(!force_restart && (MBED_CONF_MBED_MESH_API_WISUN_DEVICE_TYPE == MESH_DEVICE_TYPE_WISUN_ROUTER))
     {
         //checks for current pan id against pan id allow list or deny list :
         //if allow list is non-empty:
@@ -4520,7 +4536,7 @@ int nanostack_net_stack_restart(void)
                if(cur->ws_info->network_pan_id == panid_allow_list[i])
                {
                    //match found
-                   return(0);
+                   return(PANID_STACK_RESTART_NO_RESTART);
                }
             }
         }
@@ -4539,25 +4555,32 @@ int nanostack_net_stack_restart(void)
             if(i == MAX_PANID_DENY_LIST_LEN)
             {
                 //traversed deny list without finding match; No need to restart
-                return(0);
+                return(PANID_STACK_RESTART_NO_RESTART);
             }
         }
         else
         {
             //both panid allow and deny lists are empty: nothing to do: return
-            return(0);
+            return(PANID_STACK_RESTART_NO_RESTART);
         }
 
         //if we are here: either allow list or deny list is non empty AND
         //match was not found in allow list or match was found in deny list
         retVal = ws_bootstrap_restart_delayed(cur->id);
-        return(retVal);
+        if (retVal != 0)
+        {
+            return PANID_STACK_RESTART_FAILED;
+        }
     }
     else //border router which has no pan id filtering logic
     {
         retVal = ws_bootstrap_restart_delayed(cur->id);
-        return(retVal);
+        if (retVal != 0)
+        {
+            return PANID_STACK_RESTART_FAILED;
+        }
     }
+    return PANID_STACK_RESTART_SUCCESS;
 }
 
 /*
@@ -4586,7 +4609,6 @@ static void ws_bootstrap_panid_filter_lists_init()
  * Input Parameter: pan id filter list type - allow list or deny list
  * Output Parameter: true if allow list or deny list is empty and false other wise
 */
-
 static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list_type)
 {
     uint8_t i = 0, panid_list_len = 0;
@@ -4614,13 +4636,7 @@ static bool ws_bootstrap_panid_filter_list_is_empty(panid_list_type_e panid_list
     return(true);
 }
 
-/*!
- * API to add a single entry in panid_allow_list[] or panid_deny_list[]
- * Input Parameters:
- * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
- * pan_id : pan_id to be added
- * Output Parameters: success or failure
- */
+/* See ws_bootstrap.h */
 int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
 {
     uint8_t i= 0, panid_list_len = 0;
@@ -4666,14 +4682,7 @@ int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
 }
 
 
-/*!
- * API to remove a single entry in panid_allow_list[] or panid_deny_list[]
- * Input Parameters:
- * panId_list : pointer to panid_allow_list[] or panid_deny_list[]
- * pan_id : pan_id to be removed; irrelevant parameter if next parameter all is set to true
- * all : if set to true, all pan_ids are removed; set to false for individual entry removal.
- * Output Parameters: success or failure
- */
+/* See ws_bootstrap.h */
 int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t panid, bool all)
 {
 

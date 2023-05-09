@@ -105,6 +105,8 @@
 #define MIN(x,y)            (((x) < (y)) ?  (x) : (y))
 #define INRANGE(x,y,z)      ((x) > (y) && (x) < (z))
 
+#define IS_WORD_ALIGNED(ptr) (((uintptr_t)(ptr) << 30) == 0U)
+
 
 //*****************************************************************************
 //
@@ -687,7 +689,7 @@ static uint32_t PKAGetBigNumResult(uint8_t *resultBuf, uint32_t *resultLength, u
     if (resultBuf) {
         // Copy the result into the resultBuf.
         for (i = 0; i < lengthInWords; i++) {
-            resultWordAlias[i]= HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            resultWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
         }
     }
 
@@ -766,9 +768,11 @@ static uint32_t PKAGetBigNumResultRemainder(uint8_t *resultBuf, uint32_t *result
 static uint32_t PKAGetECCResult(uint8_t *curvePointX, uint8_t *curvePointY, uint32_t resultPKAMemAddr, uint32_t length)
 {
     uint32_t i = 0;
+    uint32_t lengthInWordsCeiling = 0;
+    uint32_t tempWord = 0;
+    uint_fast8_t j = 0;
     uint32_t *xWordAlias = (uint32_t *)curvePointX;
     uint32_t *yWordAlias = (uint32_t *)curvePointY;
-    uint32_t lengthInWordsCeiling = 0;
 
     // Check for the arguments.
     ASSERT(curvePointX);
@@ -791,24 +795,35 @@ static uint32_t PKAGetECCResult(uint8_t *curvePointX, uint8_t *curvePointY, uint
     }
 
     if (curvePointX != NULL) {
-        // Copy the x co-ordinate value of the result from vector D into
+        // Copy the x coordinate value of the result from vector D into
         // the curvePoint.
         for (i = 0; i < (length / sizeof(uint32_t)); i++) {
-            xWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            // Check for word aligned address in x coordinate buffer
+            if (IS_WORD_ALIGNED(curvePointX)) {
+                // Copy x coordinate as word
+                xWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            }
+            else {
+                // Copy x Coordinate as bytes
+                // Temporarily load the entire word line of the coordinate
+                tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
+
+                // Write the bytes to the X coordinate
+                for (j = 0; j < sizeof(tempWord); j++) {
+                    curvePointX[i * sizeof(tempWord) + j] = ((uint8_t *)&tempWord)[j];
+                }
+            }
         }
 
         // If the length is not a word-multiple, fill up a temporary word and copy that in
         // to avoid a bus error.
         if (length % sizeof(uint32_t)) {
-            uint32_t temp = 0;
-            uint8_t j;
-
             // Load the entire word line of the coordinate remainder
-            temp = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
 
             // Write all remaining bytes to the coordinate
             for (j = 0; j < length % sizeof(uint32_t); j++) {
-                curvePointX[i * sizeof(uint32_t) + j] = ((uint8_t *)&temp)[j];
+                curvePointX[i * sizeof(uint32_t) + j] = ((uint8_t *)&tempWord)[j];
             }
 
         }
@@ -819,24 +834,35 @@ static uint32_t PKAGetECCResult(uint8_t *curvePointX, uint8_t *curvePointY, uint
     resultPKAMemAddr += sizeof(uint32_t) * (2 + lengthInWordsCeiling + (lengthInWordsCeiling % 2));
 
     if (curvePointY != NULL) {
-        // Copy the y co-ordinate value of the result from vector D into
+        // Copy the y coordinate value of the result from vector D into
         // the curvePoint.
         for (i = 0; i < (length / sizeof(uint32_t)); i++) {
-            yWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            // Check for word aligned address in y coordinate buffer
+            if (IS_WORD_ALIGNED(curvePointY)) {
+                // Copy y coordinate as word
+                yWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            }
+            else {
+                // Copy y Coordinate as bytes
+                // Temporarily load the entire word line of the coordinate
+                tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
+
+                // Write the bytes to the Y coordinate
+                for (j = 0; j < sizeof(tempWord); j++) {
+                    curvePointY[i * sizeof(tempWord) + j] = ((uint8_t *)&tempWord)[j];
+                }
+            }
         }
 
         // If the length is not a word-multiple, fill up a temporary word and copy that in
         // to avoid a bus error.
         if (length % sizeof(uint32_t)) {
-            uint32_t temp = 0;
-            uint8_t j;
-
             // Load the entire word line of the coordinate remainder
-            temp = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
 
             // Write all remaining bytes to the coordinate
             for (j = 0; j < length % sizeof(uint32_t); j++) {
-                curvePointY[i * sizeof(uint32_t) + j] = ((uint8_t *)&temp)[j];
+                curvePointY[i * sizeof(uint32_t) + j] = ((uint8_t *)&tempWord)[j];
             }
         }
     }

@@ -37,7 +37,7 @@ FLASH_BASE = DEFINED(DUAL_SLOT) ? 0x800 : 0x0;
 
 MEMORY
 {
-    FLASH (RX)      : ORIGIN = FLASH_BASE, LENGTH = 0x6000
+    FLASH (RX)      : ORIGIN = FLASH_BASE, LENGTH = 0x5800
     /*
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash, up to 1024 bytes

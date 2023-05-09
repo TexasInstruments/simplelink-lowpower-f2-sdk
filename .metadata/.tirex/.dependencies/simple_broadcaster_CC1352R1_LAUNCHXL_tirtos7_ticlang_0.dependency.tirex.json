@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../../README.html -> README.html",
+            "+../../Application/simple_broadcaster.c -> Application/simple_broadcaster.c",
+            "+../../Application/simple_broadcaster.h -> Application/simple_broadcaster.h",
+            "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
+            "+../../Startup/main.c -> Startup/main.c",
+            "+../simple_broadcaster.syscfg -> simple_broadcaster.syscfg",
+            "+cc13x2_cc26x2_app_tirtos7.cmd -> cc13x2_cc26x2_app_tirtos7.cmd"
+        ]
+    }
+]

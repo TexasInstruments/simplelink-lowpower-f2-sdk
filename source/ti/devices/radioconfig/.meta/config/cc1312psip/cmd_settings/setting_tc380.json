@@ -1,7 +1,7 @@
 {
     "setting": {
-        "Name": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1 (Pre-Silicon)",
-        "Description": "1x Wideband Direct Sequence Spread Spectrum (WB-DSSS) 240 kbps, 2-GFSK, 195 kHz deviation, FEC K = 4 for the 902-928 MHz band  (Pre-Silicon)",
+        "Name": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1",
+        "Description": "1x Wideband Direct Sequence Spread Spectrum (WB-DSSS) 240 kbps, 2-GFSK, 195 kHz deviation, FEC K = 4 for the 902-928 MHz band",
         "Frequency": "915",
         "Patch": {
             "Define": "RF_MODE_AUTO",
@@ -111,7 +111,7 @@
                     },
                     {
                         "_name": "config.biasMode",
-                        "$": "1"
+                        "$": "0"
                     },
                     {
                         "_name": "config.analogCfgMode",
@@ -169,8 +169,8 @@
                                     },
                                     {
                                         "_type": "HW_REG_OVERRIDE",
-                                        "_comment": "Rx: Set AGC reference level to 0x1C (default: 0x2E)",
-                                        "$": "0x609C,0x001C"
+                                        "_comment": "Rx: Set AGC reference level to 0x1A (default: 0x2E)",
+                                        "$": "0x609C,0x001A"
                                     },
                                     {
                                         "_type": "ELEMENT",
@@ -179,8 +179,8 @@
                                     },
                                     {
                                         "_type": "ELEMENT",
-                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -3 dB (default: -2), trimmed for external bias and differential configuration",
-                                        "$": "0x000388A3"
+                                        "_comment": "Rx: Set RSSI offset to adjust reported RSSI by -6 dB at 779-930 MHz",
+                                        "$": "0x000688A3"
                                     },
                                     {
                                         "_type": "HW_REG_OVERRIDE",
@@ -225,6 +225,14 @@
                                     "_type": "ELEMENT",
                                     "_comment": "DC\/DC regulator: In Tx with 14 dBm PA setting, use DCDCCTL5[3:0]=0xF (DITHER_EN=1 and IPEAK=7). In Rx, use default settings.",
                                     "$": "0x00F788D3"
+                                }
+                            },
+                            {
+                                "_name": "override_hposc.json",
+                                "Element32b": {
+                                    "_type": "HPOSC_OVERRIDE",
+                                    "_comment": "HPOSC frequency offset override, freqOffset=2^22*(F_nom-F_hposc)\/F_hposc",
+                                    "$": "0"
                                 }
                             },
                             {
