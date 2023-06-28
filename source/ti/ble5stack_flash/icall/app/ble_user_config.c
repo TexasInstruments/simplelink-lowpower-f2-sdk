@@ -96,9 +96,9 @@
 #ifndef CC23X0
 #if !defined(DeviceFamily_CC26X1)
 #include <driverlib/pka.h>
-#if !defined(DeviceFamily_CC13X4)
+#if !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 #include <driverlib/rf_bt5_coex.h>
-#endif // !defined(DeviceFamily_CC13X4)
+#endif // !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26x4)
 #else
 #include <driverlib/rom_ecc.h>
 #endif // !defined(DeviceFamily_CC26X1)
@@ -448,7 +448,7 @@ const boardConfig_t boardConfig =
   .txPwrTbl      = &appTxPwrTbl,
   /* The define EM_CC1354P10_1_LP is needed since it is High PA device for
      other stacks (not for BLE) and thus needed to be defined */
-#if defined(CC13X2P) || defined(EM_CC1354P10_1_LP)
+#if defined(CC13X2P) || defined(EM_CC1354P10_1_LP) || defined(CC2674R10_RGZ_LP) || defined(CC2674P10_RGZ_LP)
 #if defined(CC13X2P_2_LAUNCHXL)
   .txPwrBackoffTbl = &appTxPwrBackoffTbl,
 #else
@@ -456,14 +456,14 @@ const boardConfig_t boardConfig =
 #endif // defined(CC13X2P_2_LAUNCHXL)
 /* The define EM_CC1354P10_1_LP is needed since it is High PA device for
    other stacks (not for BLE) and thus needed to be defined */
-#if defined(EM_CC1354P10_1_LP) || defined(CC33xx)
+#if defined(EM_CC1354P10_1_LP) || defined(CC33xx) || defined(CC2674R10_RGZ_LP)
   .rfRegOverrideTxStdTblptr  = NULL,
   .rfRegOverrideTx20TblPtr   = NULL,
 #else
   .rfRegOverrideTxStdTblptr  = (regOverride_t*)pOverrides_bleTxStd,   // Default PA
   .rfRegOverrideTx20TblPtr   = (regOverride_t*)pOverrides_bleTx20   ,// High power PA
 #endif // EM_CC1354P10_1_LP
-#endif // defined(CC13X2P) || defined(EM_CC1354P10_1_LP)
+#endif // defined(CC13X2P) || defined(EM_CC1354P10_1_LP) || defined(CC2674R10_RGZ_LP) || defined(CC2674P10_RGZ_LP)
 #if defined(RTLS_CTE)
   .rfRegOverrideCtePtr = (regOverride_t*)(pOverrides_bleCommon + BLE_STACK_OVERRIDES_OFFSET + CTE_OVERRIDES_OFFSET),
   .cteAntennaPropPtr   = &appCTEAntProp,

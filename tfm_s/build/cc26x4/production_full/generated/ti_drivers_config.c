@@ -544,10 +544,10 @@ volatile SecureCallback_Handle SecureCallback_postedHandle;
 #include <ti/drivers/GPIO.h>
 
 /* Board GPIO defines */
-#define BOARD_EXT_FLASH_SPI_CS      38
-#define BOARD_EXT_FLASH_SPI_CLK     39
-#define BOARD_EXT_FLASH_SPI_PICO    36
-#define BOARD_EXT_FLASH_SPI_POCI    37
+#define BOARD_EXT_FLASH_SPI_CS      20
+#define BOARD_EXT_FLASH_SPI_CLK     10
+#define BOARD_EXT_FLASH_SPI_PICO    9
+#define BOARD_EXT_FLASH_SPI_POCI    8
 
 
 /*

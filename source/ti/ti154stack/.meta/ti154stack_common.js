@@ -247,6 +247,12 @@ const supportedMigrations = {
     CC2651R3: {
         CC2651R3RGZ: {},
         LP_CC2651R3: {}
+    },
+    LP_EM_CC1354P10: {
+        CC2674R10RGZ: {},
+        CC2674P10RGZ: {},
+        LP_EM_CC2674R10: {},
+        LP_CC2674R10: {},
     }
 };
 
@@ -599,7 +605,7 @@ function isHighPADevice(boardName = null)
     return(board.includes("CC1352P") || board.includes("CC2652PSIP")
         || board.includes("CC2651P") || board.includes("CC1311P")
         || board.includes("CC1312P") || board.includes("CC1354P")
-        || board.includes("CC2653P"));
+        || board.includes("CC2653P") || board.includes("CC2674P"));
 }
 
 /*!

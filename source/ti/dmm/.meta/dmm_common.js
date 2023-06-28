@@ -118,6 +118,15 @@ const supportedMigrations = {
         LP_CC2652RSIP: {},
         CC2652RB: {}
     },
+    LP_EM_CC1354P10: {
+        CC2674R10RSK: {},
+        CC2674R10RGZ: {},
+        CC2674P10RSK: {},
+        CC2674P10RGZ: {},
+        LP_CC2674R10_RGZ: {},
+        LP_CC2674R10: {},
+        LP_EM_CC2674R10: {},
+    },    
 };
 
 /**
@@ -275,7 +284,7 @@ function isMigrationValid(currentTarget, migrationTarget)
     + " <SDK_INSTALL_DIR>/examples/ that is closer to the desired migration "
     + "target";
 
-    let migSupported = {};
+    let migSupported = {disable: defaultDisableText};
 
     for(migRegex in supportedMigrations)
     {

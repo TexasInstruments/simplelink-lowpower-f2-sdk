@@ -9,7 +9,7 @@ const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
 
 -DHOST_CONFIG=`ble.deviceRole`
 %
-% if(ble.extAdv && devFamily == "DeviceFamily_CC26X1" || ble.extAdv && devFamily == "DeviceFamily_CC13X4") {
+% if(ble.extAdv && devFamily == "DeviceFamily_CC26X1" || ble.extAdv && devFamily == "DeviceFamily_CC13X4" || ble.extAdv && devFamily == "DeviceFamily_CC26X4") {
 
 -DUSE_AE
 %}

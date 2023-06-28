@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_10_00_98.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_10_01_24.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1121,7 +1121,7 @@
     {
         "name": "CoreSDK Release Notes",
         "resourceType": "file",
-        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_7_10_02_00.html",
+        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_7_10_03_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1140,7 +1140,7 @@
     {
         "name": "TI 15.4-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti154stack/release_notes_ti154stack_6_10_00_00.html",
+        "location": "../../docs/ti154stack/release_notes_ti154stack_6_10_01_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1159,7 +1159,7 @@
     {
         "name": "TI Proprietary RF Release Notes",
         "resourceType": "file",
-        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_5_30_00.html",
+        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_6_10_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1178,7 +1178,7 @@
     {
         "name": "TI Z-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/zigbee/release_notes_zigbee_7_10_00.html",
+        "location": "../../docs/zigbee/release_notes_zigbee_7_10_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1216,7 +1216,7 @@
     {
         "name": "TI DMM Release Notes",
         "resourceType": "file",
-        "location": "../../docs/dmm/release_notes_dmm_5_10_00.html",
+        "location": "../../docs/dmm/release_notes_dmm_5_10_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1273,7 +1273,7 @@
     {
         "name": "TI BLE5-Stack Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ble5stack/release_notes_ble5stack_2_02_08_00.html",
+        "location": "../../docs/ble5stack/release_notes_ble5stack_2_02_08_01.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"

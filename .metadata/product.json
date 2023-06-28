@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
     "displayName": "simplelink_cc13xx_cc26xx_sdk",
-    "version": "7.10.00.98",
+    "version": "7.10.01.24",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",
@@ -42,5 +42,5 @@
         "nortos",
         "tirtos7"
     ],
-    "minToolVersion": "1.15.0"
+    "minToolVersion": "1.16.2"
 }

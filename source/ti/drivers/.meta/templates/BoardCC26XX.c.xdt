@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,8 +70,10 @@
 #include <ti/drivers/GPIO.h>
 
 /* Board GPIO defines */
-% /* This regex deliberately excludes CC2653, which has the original pinout */
-% if (deviceId.match(/CC13.4|CC26.4/)) {
+% /* This regex deliberately excludes CC2653 and CC13X4 / CC26X4 RGZ packages,
+%  * which have the original pinout.
+%  */
+% if (deviceId.match(/CC13.4...RSK|CC26.4...RSK/)) {
 #define BOARD_EXT_FLASH_SPI_CS      38
 #define BOARD_EXT_FLASH_SPI_CLK     39
 #define BOARD_EXT_FLASH_SPI_PICO    36

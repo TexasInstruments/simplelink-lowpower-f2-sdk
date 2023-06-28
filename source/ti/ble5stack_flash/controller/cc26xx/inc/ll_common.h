@@ -113,11 +113,11 @@ extern "C"
 
 #if !defined(CC23X0) && !defined(CC33xx)
 #ifdef RTLS_CTE
-#if !defined(DeviceFamily_CC26X1) && !defined(DeviceFamily_CC13X4)
+#if !defined(DeviceFamily_CC26X1) && !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 #include <driverlib/rf_bt5_iq_autocopy.h>
 #else
 #include <ti/devices/cc13x2_cc26x2/driverlib/rf_bt5_iq_autocopy.h>
-#endif // !CC26X1 && !CC13X4
+#endif // !CC26X1 && !CC13X4 && !CC26X4
 #endif // RTLS_CTE
 #endif // !CC23X0 && !CC33xx
 
@@ -624,16 +624,16 @@ extern char *llCtrl_BleLogStrings[];
 */
 
 // Flash Size
-#if !defined(CC26X2) && !defined(CC13X2) && !defined(CC13X2P) && !defined(CC13X4) && !defined(CC23X0)
+#if !defined(CC26X2) && !defined(CC13X2) && !defined(CC13X2P) && !defined(CC13X4) && !defined(CC23X0) && !defined(CC26X4)
 #define LL_FLASH_PAGE_SIZE                             4096      // in bytes
-#else //Agama CC26X2 || CC13X2 || CC13X2P || CC13X4
+#else //Agama CC26X2 || CC13X2 || CC13X2P || CC13X4 || CC26X4
 #define LL_FLASH_PAGE_SIZE                             8192      // in bytes
-#endif ////Agama CC26X2 || CC13X2 || CC13X2P || CC13X4
+#endif ////Agama CC26X2 || CC13X2 || CC13X2P || CC13X4 || CC26X4
 #define LL_FLASH_SIZE_OFFSET                           0x2B1     // in FCFG; num of pages
 
 // BADDR Flash Address Offset in CCA (i.e. flash programmer BLE address)
 #ifndef CC23X0
-#if !defined(CC26X2) && !defined(CC13X2) && !defined(CC13X2P) && !defined(CC13X4)
+#if !defined(CC26X2) && !defined(CC13X2) && !defined(CC13X2P) && !defined(CC13X4) && !defined(CC26X4)
 #define LL_BADDR_PAGE_OFFSET                           0xFD0     // in CCFG (CCA); LSB..MSB
 #elif defined(CC13X4)
 #define LL_BADDR_PAGE_OFFSET                           0x00000020 // in CCFG (CCA); LSB..MSB

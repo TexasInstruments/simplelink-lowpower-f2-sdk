@@ -392,7 +392,8 @@ function isFlashOnlyDevice() {
         // Return true if the device is from CC26X1 family
         Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC26X1" ||
         Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC13X4" ||
-        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0"
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0" ||
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC26X4"
     );
 }
 
@@ -800,11 +801,11 @@ function getLibs(inst)
         }
         else if(devFamily == "DeviceFamily_CC26X4" || devFamily == "DeviceFamily_CC13X4" )
         {
-            if(LPName == "LP_EM_CC1354P10_1")
+            if(LPName == "LP_EM_CC1354P10_1" || LPName == "LP_CC2674R10_RGZ" )
             {
                 devLibsFolder = "cc1354p10_1";
             }
-            else if(LPName == "LP_EM_CC1354P10_6")
+            else if(LPName == "LP_EM_CC1354P10_6" || LPName == "LP_CC2674P10_RGZ" )
             {
                 devLibsFolder = "cc1354p10_6";
             }

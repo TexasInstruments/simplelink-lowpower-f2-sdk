@@ -1557,7 +1557,7 @@ uint8 MAP_llTrigPeriodicAdv( void *pAdvSet, void *pPeriodicAdv )
 
 uint8 MAP_llSetupPeriodicAdv( void *pAdvSet )
 {
-#if defined ( USE_PERIODIC_ADV ) && !defined( DeviceFamily_CC13X4 )
+#if defined ( USE_PERIODIC_ADV ) && (!defined( DeviceFamily_CC13X4 ) || !defined( DeviceFamily_CC26X4 ))
   return llSetupPeriodicAdv( pAdvSet );
 #else
   return 0;

@@ -74,9 +74,9 @@
 #include <ti/drivers/TRNG.h>
 
 #include <driverlib/pka.h>
-#if !defined(DeviceFamily_CC13X4)
+#if !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 #include <driverlib/rf_bt5_coex.h>
-#endif // !defined(DeviceFamily_CC13X4)
+#endif // !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 
 #include "remote_display.h"
 

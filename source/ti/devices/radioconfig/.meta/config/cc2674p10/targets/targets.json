@@ -1,28 +1,19 @@
 {
     "targets": {
-        "Default": "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1.json:LP_EM_CC1354P10_1",
+        "Default": "target_lp_cc2674p10_rgz.json:LP_CC2674P10_RGZ",
         "VirtualTarget": [
             {
-                "_name": "LP_EM_CC1354P10_1",
+                "_name": "LP_CC2674P10_RGZ",
                 "Target": [
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1.json",
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1_highPA.json",
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_1_2_4_ghz.json"
+                    "target_lp_cc2674p10_rgz.json",
+                    "target_lp_cc2674p10_rgz_highPA.json"
                 ]
             },
             {
-                "_name": "LP_EM_CC1354P10_6",
+                "_name": "LP_EM_CC2674P10_RSK",
                 "Target": [
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6.json",
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6_highPA.json",
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6_2_4_ghz.json"
-                ]
-            },
-            {
-                "_name": "LP_EM_CC1354P10_6, 20DBM",
-                "Target": [
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6_20dbm.json",
-                    "..\/..\/cc1354p10\/targets\/target_lp_cc1354p10_6_20dbm_highPA.json"
+                    "target_lp_cc2674p10_rsk.json",
+                    "target_lp_cc2674p10_rsk_highPA.json"
                 ]
             }
         ]

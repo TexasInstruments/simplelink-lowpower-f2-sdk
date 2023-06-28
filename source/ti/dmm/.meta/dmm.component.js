@@ -43,7 +43,7 @@ let topModules = [];
 let templates = [];
 
 // Export module for only supported devices
-if(system.deviceData.deviceId.match(/CC26.2|CC13.2(R|P)(1|7)|CC2652(R|P)7|CC13.4(R|P)10/))
+if(system.deviceData.deviceId.match(/CC26.2|CC13.2(R|P)(1|7)|CC2652(R|P)7|CC13.4(R|P)10|CC26.4(R|P)10/))
 {
     topModules = [
         {

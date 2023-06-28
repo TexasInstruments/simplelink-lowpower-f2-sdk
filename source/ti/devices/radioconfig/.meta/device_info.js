@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 "use strict";
 
 // Module version
-const RADIO_CONFIG_VERSION = "1.17";
+const RADIO_CONFIG_VERSION = "1.17.2";
 
 // Common utility functions
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
@@ -58,7 +58,9 @@ const DevNameMap = {
     CC1312R1F3RGZ: "cc1312r",
     CC2652R1FRGZ: "cc2652r",
     CC2642R1FRGZ: "cc2642r",
-    CC2642R1FRTC: "cc2642rq1",
+    CC2642R1FRTCQ1: "cc2642rq1",
+    CC2642R1FRGZQ1: "cc2642rq1",
+    CC2662R1FRGZQ1: "cc2662rq1",
     CC2652P1FRGZ: "cc2652p",
     // BAW
     CC2652RB1FRGZ: "cc2652rb",
@@ -109,7 +111,7 @@ const HighPaDevice = DeviceName.includes("cc1352p")
     || DeviceName.includes("cc2651p");
 
 // True if wBMS support
-const wbmsSupport = DeviceName === "cc2642r" || DeviceName === "cc2652r";
+const wbmsSupport = DeviceName.match(/cc26[46]2r/) || DeviceName === "cc2652r";
 
 /*
  * Global device information

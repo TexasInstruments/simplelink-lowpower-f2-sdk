@@ -11,13 +11,12 @@
             },
             {
                 "_file": "device_description.json",
-                "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2652p7_ieee_15_4_pg10"
+                "$": ".\/..\/config\/cc2652p7_ble_pg10"
             },
             {
                 "_file": "device_description.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc2652p7_ble_pg10"
+                "_phy": "ieee_15_4",
+                "$": ".\/..\/config\/cc2652p7_ieee_15_4_pg10"
             },
             {
                 "_file": "targets.json",
@@ -41,11 +40,6 @@
             },
             {
                 "_file": "param_definition.json",
-                "$": ".\/..\/config\/cc2674r10_prop_pg20"
-            },
-            {
-                "_file": "param_definition.json",
-                "_phy": "ble",
                 "$": ".\/..\/config\/cc2674r10_ble_pg20"
             },
             {
@@ -55,17 +49,12 @@
             },
             {
                 "_file": "param_cmd_mapping.json",
-                "$": ".\/..\/config\/cc1352r_prop_pg21"
+                "$": ".\/..\/config\/cc2652r_ble_pg21"
             },
             {
                 "_file": "param_cmd_mapping.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc2652r_ieee_15_4_pg21"
-            },
-            {
-                "_file": "param_cmd_mapping.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc2652r_ble_pg21"
             },
             {
                 "_file": "radio_par_definitions.json",
@@ -73,7 +62,7 @@
             },
             {
                 "_file": "rf_command_definitions.json",
-                "$": ".\/..\/config\/cc1352r_prop_pg21"
+                "$": ".\/..\/config\/cc2651r3_ble_pg10"
             },
             {
                 "_file": "rf_command_definitions.json",
@@ -81,13 +70,8 @@
                 "$": ".\/..\/config\/cc2652r_ieee_15_4_pg21"
             },
             {
-                "_file": "rf_command_definitions.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc2651r3_ble_pg10"
-            },
-            {
                 "_file": "categories.json",
-                "$": ".\/..\/config\/cc2674r10_prop_pg20\/cmd_settings"
+                "$": ".\/..\/config\/cc2674r10_ble_pg20\/cmd_settings"
             },
             {
                 "_file": "categories.json",
@@ -95,13 +79,8 @@
                 "$": ".\/..\/config\/cc2674r10_ieee_15_4_pg20\/cmd_settings"
             },
             {
-                "_file": "categories.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc2674r10_ble_pg20\/cmd_settings"
-            },
-            {
                 "_file": "frontend_settings.json",
-                "$": ".\/..\/config\/cc1352r_prop_pg21\/cmd_settings"
+                "$": ".\/..\/config\/cc1352r_ble_pg21\/cmd_settings"
             },
             {
                 "_file": "frontend_settings.json",
@@ -109,23 +88,13 @@
                 "$": ".\/..\/config\/cc1352r_ieee_15_4_pg21\/cmd_settings"
             },
             {
-                "_file": "frontend_settings.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc1352r_ble_pg21\/cmd_settings"
-            },
-            {
                 "_file": "dummy_file_overrides.json",
-                "$": ".\/..\/config\/cc2674r10_prop_pg20\/overrides"
+                "$": ".\/..\/config\/cc2674r10_ble_pg20\/overrides"
             },
             {
                 "_file": "dummy_file_overrides.json",
                 "_phy": "ieee_15_4",
                 "$": ".\/..\/config\/cc2674r10_ieee_15_4_pg20\/overrides"
-            },
-            {
-                "_file": "dummy_file_overrides.json",
-                "_phy": "ble",
-                "$": ".\/..\/config\/cc2674r10_ble_pg20\/overrides"
             }
         ]
     }

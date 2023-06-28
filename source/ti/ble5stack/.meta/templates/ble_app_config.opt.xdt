@@ -79,6 +79,22 @@ else
 % {
 -DCC2651R3SIPA_LP
 % }
+% else if(LPName == "LP_CC2674R10_RGZ")
+% {
+-DCC2674R10_RGZ_LP
+% }
+% else if(LPName == "LP_CC2674P10_RGZ")
+% {
+-DCC2674P10_RGZ_LP
+% }
+% else if(LPName == "LP_EM_CC1354P10_1")
+% {
+-DCC1354P10_1_LP
+% }
+% else if(LPName == "LP_EM_CC1354P10_6")
+% {
+-DCC1354P10_6_LP
+% }
 % if((devFamily == "DeviceFamily_CC26X2" && LPName != "LP_CC2652PSIP") || LPName == "LP_CC2652R7" || LPName == "LP_CC2651R3" || LPName == "LP_CC2651R3SIPA")
 % {
 -DCC26X2
@@ -102,6 +118,10 @@ else
 % else if(devFamily == "DeviceFamily_CC23X0")
 % {
 -DCC23X0
+% }
+% else if((devFamily == "DeviceFamily_CC26X4" && (LPName == "LP_CC2674R10_RGZ" || LPName == "LP_CC2674P10_RGZ")))
+% {
+-DCC26X4
 % }
 %
 % if(ble.disableDisplayModule)

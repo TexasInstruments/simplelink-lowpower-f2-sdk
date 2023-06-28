@@ -434,7 +434,9 @@ void rfSelect(uint16_t phyId)
     defined(LP_CC2652R7) || defined (LP_CC2674R10_FPGA) || \
     defined(LP_CC2651R3) || defined(LP_CC2651P3) || \
     defined(LP_CC2651P3_10DBM) || \
-    defined(LP_CC2651R3SIPA) ||defined(LP_CC2653P10)
+    defined(LP_CC2651R3SIPA) ||defined(LP_CC2653P10) || \
+    defined (LP_CC2674R10_RGZ) || defined (LP_EM_CC2674R10_RSK) || \
+    defined (LP_CC2674P10_RGZ) || defined (LP_EM_CC2674P10_RSK)
 void rfSelect(uint16_t phyId)
 {
     (void)phyId;

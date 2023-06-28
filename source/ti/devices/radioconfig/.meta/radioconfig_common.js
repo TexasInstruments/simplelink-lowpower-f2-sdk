@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,8 @@ const BasePath = "/ti/devices/radioconfig/";
 const isDeviceClass10 = Device.match(/[157]4[RP]10|2653P10/) !== null;
 
 // Manage protocol support
-const hasProp = Device.match(/CC13|CC26[457][12][RP][137]/);
-const hasBle = Device.match(/CC..[457][1234]/);
+const hasProp = Device.match(/CC13|CC26[4567][12][RP][137]/);
+const hasBle = Device.match(/CC..[4567][1234]/);
 const hasIeee = Device.match(/CC..[57][1234]/);
 const has24gProp = hasProp && !(Device.includes("CC131") || isDeviceClass10);
 
@@ -62,9 +62,9 @@ exports = {
     HAS_24G: hasBle,
     HAS_IEEE_15_4: hasIeee,
     HAS_24G_PROP: has24gProp,
-    isSub1gDevice: () => Device.includes("CC13") || Device.match("CC267[24]"),
+    isSub1gDevice: () => Device.includes("CC13"),
     isSub1gOnlyDevice: () => Device.includes("CC131"),
-    is24gOnlyDevice: () => Device.match(/CC26[457]/) && !Device.match("CC267[24]"),
+    is24gOnlyDevice: () => Device.match(/CC26[457]/),
     isDeviceClass3: () => Device.match(/1[PR]3R|CC2651R3SIPA/) !== null,
     isDeviceClass7: () => Device.match(/2[PR]7R/) !== null,
     isDeviceClass10: () => isDeviceClass10,

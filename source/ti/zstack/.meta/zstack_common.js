@@ -185,7 +185,15 @@ const supportedMigrations = {
   CC2652RB1FRGZ: {
     LP_CC2652RB: {},
     CC2652RB1FRGZ: {}
-  }
+  },
+  LP_EM_CC1354P10: {
+    CC2674R10RSK: {},
+    CC2674R10RGZ: {},
+    CC2674P10RSK: {},
+    CC2674P10RGZ: {},
+    LP_EM_CC2674R10: {},
+    LP_CC2674R10: {},
+  },  
 };
 
 /*
@@ -203,15 +211,31 @@ const supportedMigrations = {
 */
 function isMigrationValid(currentTarget, migrationTarget)
 {
-  let migrationSupported = {disable: "Migration to this target is not supported via SysConfig. Consider starting from a more similar example to your desired migration target in <SDK_INSTALL_DIR>/examples/"};
+    let migRegex = null;
 
-  if(supportedMigrations[currentTarget]
-      && supportedMigrations[currentTarget][migrationTarget])
-  {
-    migrationSupported = supportedMigrations[currentTarget][migrationTarget];
-  }
+    const defaultDisableText = "Consider starting from an example in "
+    + " <SDK_INSTALL_DIR>/examples/ that is closer to the desired migration "
+    + "target";
 
-  return(migrationSupported);
+    let migSupported = {disable: defaultDisableText};
+
+    for(migRegex in supportedMigrations)
+    {
+        if(currentTarget.match(new RegExp(migRegex))
+            && supportedMigrations[migRegex][migrationTarget])
+        {
+            migSupported = supportedMigrations[migRegex][migrationTarget];
+
+            // If function exists then migration support is conditional
+            if(_.isFunction(migSupported))
+            {
+                migSupported = migSupported(migrationTarget);
+            }
+            break;
+        }
+    }
+
+    return(migSupported);
 }
 
 /*

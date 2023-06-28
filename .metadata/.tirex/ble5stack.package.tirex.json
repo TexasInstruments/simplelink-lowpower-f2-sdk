@@ -3,7 +3,7 @@
         "metadataVersion": "3.0.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK_BLE5STACK_MODULE",
         "name": "TI Bluetooth® Low Energy 5.x Stack Stack Core",
-        "version": "7.10.00.98",
+        "version": "7.10.01.24",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -19,7 +19,7 @@
         "allowPartialDownload": "false",
         "moduleOf": {
             "packageId": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
-            "semver": "7.10.0"
+            "semver": "7.10.1"
         }
     }
 ]

@@ -63,7 +63,8 @@ const LaunchPadMap = {
 };
 
 // Targets with 10 dBm High PA
-const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4", "LP_CC2651P3, 10DBM", "LP_EM_CC1354P10_6"];
+const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4",
+    "LP_CC2651P3, 10DBM", "LP_EM_CC1354P10_6", "LP_EM_CC2674P10_RSK"];
 
 // Load board info
 let TiBoard = Common.getBoardName();
@@ -200,7 +201,7 @@ const config = [
         name: "fbSub1g",
         displayName: "Sub-1 GHz Frequency Band",
         description: "Select which Sub-1 GHz frequency band to include in the design",
-        hidden: OptionsSub1G.length === 0,
+        hidden: !Common.isSub1gDevice(),
         options: OptionsSub1G,
         default: Common.isSub1gDevice() ? "fb868" : "none",
         onChange: (inst, ui) => {
@@ -224,7 +225,7 @@ const config = [
         name: "feSub1g",
         displayName: "Front-end for Sub-1 GHz",
         description: "Select front-end for Sub-1 GHz bands.",
-        hidden: OptionsSub1G.length === 0,
+        hidden: !Common.isSub1gDevice(),
         options: FrontEndOptions,
         onChange: (inst) => {
             if (!HasTiBoard) {
@@ -373,6 +374,7 @@ function getOptionsSub1G() {
             description: "No Sub-1G frequency band selected"
         });
     }
+
     return opts;
 }
 

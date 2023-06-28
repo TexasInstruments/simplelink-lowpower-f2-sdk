@@ -189,7 +189,11 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
       (defined CONFIG_LP_CC2651R3)       || (defined CONFIG_CC2651R3RGZ)  || \
       (defined CONFIG_LP_CC2652R7)       || (defined CONFIG_CC2652R7RGZ)  || \
       (defined CONFIG_LP_CC2651R3SIPA)   || (defined CONFIG_CC2651R3SIPA) || \
-      (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ))
+      (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ) || \
+      (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ) || \
+      (defined CONFIG_CC2674R10RSK)                                       || \
+      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ) || \
+      (defined CONFIG_CC2674P10RSK))
  //*********************************************************************************
  //  RF Setting:   50 kbps, 25kHz Deviation, 2-GFSK, 78 kHz RX Bandwidth
  //
@@ -234,21 +238,8 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
         .RF_pCmdIeeeTx              = NULL,
         .RF_pCmdIeeeRx              = NULL,
         .PhySettings_cmdType        = PhySettings_CMD_STANDARD,
-#if ((defined LAUNCHXL_CC1352P_4) || (defined LP_CC1352P7_4))
-        .RF_pTxPowerTable           = txPowerTable_433_pa13,
-        .RF_txPowerTableSize        = TXPOWERTABLE_433_PA13_SIZE
-#elif ((defined CONFIG_CC1312R1_LAUNCHXL)   || (defined CONFIG_CC1312R1F3RGZ)     || \
-       (defined CONFIG_CC1352R1_LAUNCHXL)   || (defined CONFIG_CC1352R1F3RGZ)     || \
-       (defined CONFIG_LP_CC1312R7)         || (defined CONFIG_CC1312R7RGZ)       || \
-       (defined LAUNCHXL_CC1352P_2)         || (defined CONFIG_LP_EM_CC1314R10)   || \
-       (defined CONFIG_CC1314R10RSK)        || (defined CONFIG_LP_EM_CC1354P10_6) || \
-       (defined CONFIG_LP_EM_CC1354P10_1)   || (defined CONFIG_CC1354P10RSK))
-        .RF_pTxPowerTable           = txPowerTable_868_pa13,
-        .RF_txPowerTableSize        = TXPOWERTABLE_868_PA13_SIZE
-#else
-        .RF_pTxPowerTable           = txPowerTable_868_pa13_20,
-        .RF_txPowerTableSize        = TXPOWERTABLE_868_PA13_20_SIZE
-#endif
+        .RF_pTxPowerTable           = RF_PROP_txPowerTable_fsk_50kbps,
+        .RF_txPowerTableSize        = RF_PROP_TX_POWER_TABLE_SIZE_fsk_50kbps
     },
 #endif
 #if !((defined CONFIG_CC1312R1_LAUNCHXL)  || (defined CONFIG_CC1312R1F3RGZ)      || \
@@ -258,7 +249,10 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
        (defined CONFIG_LP_EM_CC1312PSIP)  || (defined CONFIG_CC1312PSIP))
 #if !((defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ)       || \
       (defined CONFIG_LP_EM_CC1354P10_6) || (defined CONFIG_LP_EM_CC1354P10_1)  || \
-      (defined CONFIG_CC1354P10RSK))
+      (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ)       || \
+      (defined CONFIG_CC2674R10RSK)                                             || \
+      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)       || \
+      (defined CONFIG_CC2674P10RSK)      || (defined CONFIG_CC1354P10RSK))
     //*********************************************************************************
     //  RF Setting:   250 kbps, 125 kHz Deviation, 2-GFSK, 471 kHz RX Bandwidth
     //
@@ -314,14 +308,8 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
         .RF_pCmdIeeeTx              = NULL,
         .RF_pCmdIeeeRx              = NULL,
         .PhySettings_cmdType        = PhySettings_CMD_STANDARD,
-#if ((defined LAUNCHXL_CC1352P_2) ||(defined CONFIG_LP_CC2651P3) || \
-     (defined CONFIG_CC2651P3RGZ))
-        .RF_pTxPowerTable           = txPowerTable_2400_pa5_20,
-        .RF_txPowerTableSize        = TXPOWERTABLE_2400_PA5_20_SIZE
-#else
-        .RF_pTxPowerTable           = txPowerTable_2400_pa5,
-        .RF_txPowerTableSize        = TXPOWERTABLE_2400_PA5_SIZE
-#endif
+        .RF_pTxPowerTable           = RF_PROP_txPowerTable_2_4G_fsk_250kbps,
+        .RF_txPowerTableSize        = RF_PROP_TX_POWER_TABLE_SIZE_2_4G_fsk_250kbps
     },
 #endif
     //*********************************************************************************
@@ -331,7 +319,11 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
     //  Setting file: setting_ieee_802_15_4.json
     //*********************************************************************************
     {
-#if ((defined CONFIG_LP_CC2653P10) || (defined CONFIG_CC2653P10RGZ))
+#if ((defined CONFIG_LP_CC2653P10) || (defined CONFIG_CC2653P10RGZ)             || \
+      (defined CONFIG_LP_CC2674R10)      || (defined CONFIG_CC2674R10RGZ)       || \
+      (defined CONFIG_CC2674R10RSK)                                             || \
+      (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)       || \
+      (defined CONFIG_CC2674P10RSK))
         .PhySettings_phyIndex       = PhySettings_PHY_0,
         .PhySettings_phyName        = {"PHY 0: IEEE250kbps, PhySettings_TEST_STUDIO_COMPL"},
 #elif ((defined CONFIG_CC26X2R1_LAUNCHXL) || (defined CONFIG_CC2652R1FRGZ)      || \
@@ -359,7 +351,9 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
      (defined CONFIG_CC2651P3RGZ)       || (defined CONFIG_LP_CC2652PSIP)     || \
      (defined CONFIG_CC2652P1FSIP)      || (defined CONFIG_LP_EM_CC1354P10_6) || \
      (defined CONFIG_LP_EM_CC1354P10_1) || (defined CONFIG_CC1354P10RSK)      || \
-     (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ))
+     (defined CONFIG_LP_CC2653P10)      || (defined CONFIG_CC2653P10RGZ)      || \
+     (defined CONFIG_LP_CC2674P10)      || (defined CONFIG_CC2674P10RGZ)      || \
+     (defined CONFIG_CC2674P10RSK))
         .RF_pCmdPropRadioDivSetupPa = NULL,
         .RF_pCmdPropRadioDivSetup   = NULL,
         .RF_pCmdBle5RadioSetupPa    = NULL,
@@ -386,15 +380,8 @@ PhySettings_RfSetting PhySettings_supportedPhys[] =
         .RF_pCmdIeeeTx              = &RF_cmdIeeeTx_ieee154,
         .RF_pCmdIeeeRx              = &RF_cmdIeeeRx_ieee154,
         .PhySettings_cmdType        = PhySettings_CMD_STANDARD,
-#if ((defined LAUNCHXL_CC1352P_2) || (defined CONFIG_LP_CC2651P3)  || \
-     (defined CONFIG_CC2651P3RGZ) || (defined CONFIG_LP_CC2653P10) || \
-     (defined CONFIG_CC2653P10RGZ))
-        .RF_pTxPowerTable           = txPowerTable_2400_pa5_20,
-        .RF_txPowerTableSize        = TXPOWERTABLE_2400_PA5_20_SIZE
-#else
-        .RF_pTxPowerTable           = txPowerTable_2400_pa5,
-        .RF_txPowerTableSize        = TXPOWERTABLE_2400_PA5_SIZE
-#endif
+        .RF_pTxPowerTable           = txPowerTable_ieee154,
+        .RF_txPowerTableSize        = TX_POWER_TABLE_SIZE_ieee154
     }
 #endif
 };

@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*
  *  ======== ble_rf_config.syscfg.js ========
  */
@@ -215,10 +215,23 @@ function getPaTableValues(rfDesign, tableOptions)
     {
         currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 5);
 
-        // The power table of the CC2642R1FRTC device doesn't contain
+        // The power table of the CC2642R1FRTCQ1 device doesn't contain
         // all the negative values exist in the defaultTxPower list.
         // Filter out the un-needed values from the list
-        if(system.deviceData.deviceId === "CC2642R1FRTC")
+        if(system.deviceData.deviceId === "CC2642R1FRTCQ1")
+        {
+            currentOptions = currentOptions.filter(function(item) {
+                if ((item.displayName.includes('-')
+                     && item.displayName.replace('-','')%5 === 0)
+                     || !item.displayName.includes('-'))
+                    return item;
+              });
+        }
+
+        // The power table of the CC2642R1FRGZQ1 device doesn't contain
+        // all the negative values exist in the defaultTxPower list.
+        // Filter out the un-needed values from the list
+        if(system.deviceData.deviceId === "CC2642R1FRGZQ1")
         {
             currentOptions = currentOptions.filter(function(item) {
                 if ((item.displayName.includes('-')
@@ -236,7 +249,7 @@ function getPaTableValues(rfDesign, tableOptions)
     }
     // If using CC1352P-4 device
     else if(rfDesign == "LAUNCHXL-CC1352P-4" || rfDesign == "LP_CC2652PSIP" || rfDesign == "LP_CC1352P7-4" || rfDesign == "LP_CC2651P3"
-            || rfDesign == "LP_EM_CC1354P10_6")
+            || rfDesign == "LP_EM_CC1354P10_6" || rfDesign == "LP_CC2674P10_RGZ")
     {
         currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 10);
     }
@@ -278,7 +291,11 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LAUNCHXL-CC26X2R1"}];
     }
-    else if(deviceId === "CC2642R1FRTC")
+    else if(deviceId === "CC2642R1FRGZQ1")
+    {
+        newRfDesignOptions = [{name: "LAUNCHXL-CC26X2R1"}];
+    }
+    else if(deviceId === "CC2642R1FRTCQ1")
     {
         newRfDesignOptions = [{name: "LAUNCHXL-CC26X2R1"}];
     }
@@ -329,9 +346,16 @@ function getRfDesignOptions(deviceId)
     }
     else if(deviceId === "CC2340R5RHB")
     {
-        newRfDesignOptions = [{name: "LP_EM_CC2340R5_Q1"}]
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5_Q1"}];
     }
-
+    else if(deviceId === "CC2674P10RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
+    }
+    else if(deviceId === "CC2674R10RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC2674R10_RGZ"}];
+    }
     return(newRfDesignOptions);
 }
 
@@ -406,13 +430,18 @@ function moduleInstances(inst)
             permission: "ReadOnly"
         }
 
-        if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3" || inst.rfDesign == "LP_EM_CC1354P10_6")
+        if(inst.rfDesign == "LAUNCHXL-CC1352P-2" || inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2651P3" || inst.rfDesign == "LP_EM_CC1354P10_6" || inst.rfDesign == "LP_CC2674P10_RGZ")
         {
             args.highPA = true;
             if(inst.rfDesign == "LAUNCHXL-CC1352P-4" || inst.rfDesign == "LP_CC1352P7-4" || inst.rfDesign == "LP_CC2652PSIP" || inst.rfDesign == "LP_EM_CC1354P10_6")
             {
                 args.phyType = "bt5le2mp10";
                 args.txPowerHi = "10";
+            }
+            if(inst.rfDesign == "LP_CC2674P10_RGZ")
+            {
+                args.phyType = "bt5le2mp10";
+                args.txPowerHi = "20";
             }
         }
 

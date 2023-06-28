@@ -1,9 +1,9 @@
 {
     "targets": {
-        "Default": "target_lp_cc2674r10.json",
+        "Default": "target_lp_cc2674r10_rgz.json",
         "Target": [
-            "target_lp_cc2674r10.json",
-            "target_lp_em_cc2674r10.json"
+            "target_lp_cc2674r10_rgz.json",
+            "target_lp_em_cc2674r10_rsk.json"
         ]
     }
 }

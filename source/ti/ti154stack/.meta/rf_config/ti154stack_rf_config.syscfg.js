@@ -455,7 +455,7 @@ function getRfDesignOptions()
     }
     else if(deviceId === "CC2674R10RGZ")
     {
-        newRfDesignOptions = [{name: "LP_CC2674R10_FPGA"}];
+        newRfDesignOptions = [{name: "LP_CC2674R10_RGZ"}];
     }
     else if(deviceId === "CC2653P10RGZ")
     {
@@ -479,6 +479,18 @@ function getRfDesignOptions()
             {name: "LP_CC2651P3"},
             {name: "LP_CC2651P3, 10DBM"}
         ];
+    }
+    else if(deviceId === "CC2674R10RSK")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2674R10_RSK"}];
+    }
+    else if(deviceId === "CC2674P10RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
+    }
+    else if(deviceId === "CC2674P10RSK")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2674P10_RSK"}];
     }
     else
     {
