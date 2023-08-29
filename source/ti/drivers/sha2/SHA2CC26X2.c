@@ -439,8 +439,11 @@ static void SHA2CC26X2_xorBufferWithByte(uint8_t *buffer, size_t bufferLength, u
 void SHA2_init(void)
 {
     CryptoResourceCC26XX_constructRTOSObjects();
-
+    if (!isInitialized)
+	    Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
     isInitialized = true;
+
+
 }
 
 /*
@@ -492,7 +495,7 @@ SHA2_Handle SHA2_construct(SHA2_Config *config, const SHA2_Params *params)
     }
 
     /* Set power dependency - i.e. power up and enable clock for Crypto (CryptoResourceCC26XX) module. */
-    Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
+    //Power_setDependency(PowerCC26XX_PERIPH_CRYPTO);
 
     return handle;
 }
@@ -520,7 +523,7 @@ void SHA2_close(SHA2_Handle handle)
     HwiP_restore(key);
 
     /* Release power dependency on Crypto Module. */
-    Power_releaseDependency(PowerCC26XX_PERIPH_CRYPTO);
+    //Power_releaseDependency(PowerCC26XX_PERIPH_CRYPTO);
 }
 
 /*
