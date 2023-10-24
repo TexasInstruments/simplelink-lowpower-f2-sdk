@@ -1,7 +1,5 @@
 /******************************************************************************
 *  Filename:       rf_patch_cpe_multi_protocol.h
-*  Revised:        $Date$
-*  Revision:       $Revision$
 *
 *  Description:    RF Core patch for all protocols in CC26x4
 *
