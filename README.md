@@ -7,6 +7,15 @@ as [Matter][matter_repo].
 
 An overview of the full SDK is hosted on [TI Resource Explorer][ti_rex].
 
+
+## Features
+
+- Update POSIX Timer to resolve double timer callback calls
+- Update SHA2 implementation to disable Power management in driver
+- Update BLE Util layer to recover from message queue failure gracefully
+- Checked-in Pre-built drivers for 7.10.01.24
+- Resolve incorrect DMM library reference
+
 ## Supported Devices
 
 The following device(s) are currently supported:
