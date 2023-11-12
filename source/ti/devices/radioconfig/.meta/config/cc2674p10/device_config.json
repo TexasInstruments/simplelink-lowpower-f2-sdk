@@ -19,11 +19,6 @@
                 "$": ".\/..\/config\/cc2674p10\/targets"
             },
             {
-                "_file": "targets.json",
-                "_phy": "ieee_15_4",
-                "$": ".\/..\/config\/cc2674p10_ieee_15_4_pg20\/targets"
-            },
-            {
                 "_file": "pasettings.json",
                 "$": ".\/..\/config\/pa_tables\/cc13x4_cc27x4_r10"
             },

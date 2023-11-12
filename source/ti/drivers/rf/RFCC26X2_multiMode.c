@@ -2554,8 +2554,8 @@ static void RF_hposcRfCompensateFxn(int16_t currentTemperature,
             /* Radio is powered. Check if any actively running command */
             if (RF_cmdQ.pCurrCmdBg || RF_cmdQ.pCurrCmdFg)
             {
-                /* Command is running. Abort command and assure that both RF_EventCmdAborted and RF_EventCmdPreemptrf events are set */
-                RF_abortCmd(RF_cmdQ.pCurrCmdBg->pClient, RF_cmdQ.pCurrCmdBg->ch, false, false, true);
+                /* Command is running. Abort command and assure that both RF_EventCmdStopped and RF_EventCmdPreempt rf events are set */
+                RF_abortCmd(RF_cmdQ.pCurrCmdBg->pClient, RF_cmdQ.pCurrCmdBg->ch, true, false, true);
             }
 
             /* Update RFCore with the HPOSC frequency offset */

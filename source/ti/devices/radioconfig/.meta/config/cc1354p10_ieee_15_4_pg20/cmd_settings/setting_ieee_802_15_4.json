@@ -100,11 +100,33 @@
                         "Block": [
                             {
                                 "_name": "override_ieee_802_15_4.json",
-                                "Element32b": {
-                                    "_type": "ELEMENT",
-                                    "_comment": "Rx: Set DCDC settings drive strength and deadtime trim",
-                                    "$": "0x00C188C3"
-                                }
+                                "Element32b": [
+                                    {
+                                        "_type": "ELEMENT",
+                                        "_comment": "Rx: Set DCDC settings drive strength and deadtime trim",
+                                        "$": "0x00C188C3"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "IEEE 802.15.4: Set pilot tone length to 35 us",
+                                        "$": "0x5334,0x0690"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "IEEE 802.15.4: Set pilot tone length to 35 us",
+                                        "$": "0x6024,0x5B20"
+                                    },
+                                    {
+                                        "_type": "ELEMENT",
+                                        "_comment": "IEEE 802.15.4: Enable fast settling during pilot tone",
+                                        "$": "0x10108413"
+                                    },
+                                    {
+                                        "_type": "ELEMENT",
+                                        "_comment": "IEEE 802.15.4: Compensate for modified pilot tone length",
+                                        "$": "0x037B02A3"
+                                    }
+                                ]
                             },
                             {
                                 "_name": "override_ieee_coex.json",
