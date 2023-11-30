@@ -44,7 +44,6 @@
  
  
  *****************************************************************************/
-
 /*********************************************************************
  * INCLUDES
  */
@@ -421,13 +420,17 @@ void Util_rescheduleClock(ClockP_Struct *pClock, uint32_t clockPeriod)
  * @return  A queue handle.
  */
 #ifdef FREERTOS
-void Util_constructQueue(QueueHandle_t *pQueue)
+int8_t Util_constructQueue(QueueHandle_t *pQueue)
 {
    *pQueue = xQueueCreate(BLE_FREERTOS_MSG_Q_SIZE, sizeof(uint8_t*));
 
    if (*pQueue == NULL)
    {
-       while(1);
+        return -1;
+   }
+   else
+   {
+        return 0;
    }
 
 }
@@ -468,32 +471,30 @@ uint8_t Util_enqueueMsg(QueueHandle_t msgQueue,
     myMsg.pData = pMsg;
 
     uint32_t msg_ptr = UTIL_QUEUE_EVENT_ID;
-    uint8_t status1;
+    uint8_t status;
     if (HwiP_inISR()) {
-        status1 = xQueueSendFromISR(msgQueue, (char*)&myMsg, NULL);
+        status = xQueueSendFromISR(msgQueue, (char*)&myMsg, NULL);
     }
     else {
-        status1 = xQueueSend(msgQueue, (char*)&myMsg, 0);
+        status = xQueueSend(msgQueue, (char*)&myMsg, 0);
     }
 
-    if (status1 != pdTRUE) {
-
-       while(1);
+    if (status != pdTRUE) {
+        return status;
     }
 
     // Wake up the application thread event handler.
     if (event)
     {
         if (HwiP_inISR()) {
-            status1 = xQueueSendFromISR(event, (char*)&msg_ptr, NULL);
+            status = xQueueSendFromISR(event, (char*)&msg_ptr, NULL);
         }
         else {
-            status1 = xQueueSend(event, (char*)&msg_ptr, 0);
+            status = xQueueSend(event, (char*)&msg_ptr, 0);
         }
 
-        if (status1 != pdTRUE) {
-
-           while(1);
+        if (status != pdTRUE) {
+            return status;
         }
     }
 
@@ -670,3 +671,5 @@ uint8_t Util_isBufSet(uint8_t *pBuf, uint8_t pattern, uint16_t len)
 
 /*********************************************************************
 *********************************************************************/
+
+

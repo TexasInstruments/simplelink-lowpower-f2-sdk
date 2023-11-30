@@ -64,7 +64,8 @@ const LaunchPadMap = {
 
 // Targets with 10 dBm High PA
 const TargetPA10 = ["LAUNCHXL-CC1352P-4", "LP_CC2652PSIP", "LP_CC1352P7-4",
-    "LP_CC2651P3, 10DBM", "LP_EM_CC1354P10_6", "LP_EM_CC2674P10_RSK"];
+    "LP_CC2651P3, 10DBM", "LP_CC2653P10, 10DBM", "LP_EM_CC1354P10_6",
+    "LP_EM_CC2674P10_RSK", "LP_CC2674P10_RGZ, 10DBM"];
 
 // Load board info
 let TiBoard = Common.getBoardName();
@@ -1431,7 +1432,7 @@ function getPaTableInfo(target, highPa) {
     const paDefault = paTable[0];
     let pa = paDefault._text;
 
-    if (pa > 12 && pa < 15) {
+    if (pa >= 12 && pa < 15) {
         pa = "13";
     }
     else if (pa > 5 && pa < 7) {

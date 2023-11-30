@@ -1634,7 +1634,7 @@ function create(phyGroup, phyName, first, useSelectivity = false) {
                 });
 
                 if ("OverrideField" in feCmd) {
-                    patchedCmd.OverridePatch = feCmd.OverrideField;
+                    patchedCmd.OverridePatch = Common.forceArray(feCmd.OverrideField);
                     hasFrontEndOverride = true;
                 }
             }
