@@ -1,0 +1,32 @@
+[
+    {
+        "files": [
+            "+../../common/cc26xx/crc/crc32.c -> crc32.c",
+            "+../../common/cc26xx/crc/crc32.h -> crc32.h",
+            "+../../common/cc26xx/flash_interface/flash_interface.h -> flash_interface.h",
+            "+../../common/cc26xx/flash_interface/external/flash_interface_ext_rtos_NVS.c -> flash_interface_ext_rtos_NVS.c",
+            "+../../common/cc26xx/oad/ext_flash_layout.h -> ext_flash_layout.h",
+            "+../../common/cc26xx/oad/oad_image_header.h -> oad_image_header.h",
+            "+../../oad/native_oad/oad_config.h -> oad_config.h",
+            "+../../oad/native_oad/oad_image_header_app.h -> oad_image_header_app.h",
+            "+../../oad/native_oad/oad_protocol.c -> oad_protocol.c",
+            "+../../oad/native_oad/oad_protocol.h -> oad_protocol.h",
+            "+../../oad/native_oad/oad_server.c -> oad_server.c",
+            "+../../oad/native_oad/oad_server.h -> oad_server.h",
+            "+../../oad/native_oad/oad_storage.c -> oad_storage.c",
+            "+../../oad/native_oad/oad_storage.h -> oad_storage.h",
+            "+../../radio/radio.c -> radio.c",
+            "+../../radio/radio.h -> radio.h",
+            "+../../radio/RFQueue.c -> RFQueue.c",
+            "+../../radio/RFQueue.h -> RFQueue.h",
+            "+../../../../../../../source/ti/boards/CC1352P1_LAUNCHXL/Board.html -> Board.html",
+            "+cc13x2_cc26x2_tirtos7.icf -> cc13x2_cc26x2_tirtos7.icf",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../README.md -> README.md",
+            "+../rfOADServer.syscfg -> rfOADServer.syscfg",
+            "+../../rfServer.c -> rfServer.c",
+            "+../../rfServer.h -> rfServer.h"
+        ]
+    }
+]

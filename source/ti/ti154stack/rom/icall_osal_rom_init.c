@@ -178,14 +178,24 @@ const uint32 ICALL_OSAL_ROM_Flash_JT[] =
      (uint32)&OsalPort_enterCS,                                        // ROM_ICALL_OSAL_JT_OFFSET[0]
      (uint32)&OsalPort_leaveCS,                                        // ROM_ICALL_OSAL_JT_OFFSET[1]
 
-     (uint32)&OsalPort_malloc,                                           // ROM_ICALL_OSAL_JT_OFFSET[2]
-     (uint32)&OsalPort_free,                                            // ROM_ICALL_OSAL_JT_OFFSET[3]
+#ifdef MALLOC_DEBUG
+     (uint32)&OsalPort_malloc_dbg,                                           // ROM_ICALL_OSAL_JT_OFFSET[2]
+     (uint32)&OsalPort_free_dbg,                                            // ROM_ICALL_OSAL_JT_OFFSET[3]
+#else
+      (uint32)&OsalPort_malloc,                                           // ROM_ICALL_OSAL_JT_OFFSET[2]
+      (uint32)&OsalPort_free,                                            // ROM_ICALL_OSAL_JT_OFFSET[3]
+#endif
      (uint32)&OsalPort_memcmp,                                              // ROM_ICALL_OSAL_JT_OFFSET[4]
      (uint32)&memcpy,                                              // ROM_ICALL_OSAL_JT_OFFSET[5]
      (uint32)&memset,                                              // ROM_ICALL_OSAL_JT_OFFSET[6]
 
-     (uint32)&OsalPort_msgAllocate,                                        // ROM_ICALL_OSAL_JT_OFFSET[7]
-     (uint32)&OsalPort_msgDeallocate,                                      // ROM_ICALL_OSAL_JT_OFFSET[8]
+#ifdef MALLOC_DEBUG
+     (uint32)&OsalPort_msgAllocate_dbg,                                        // ROM_ICALL_OSAL_JT_OFFSET[7]
+     (uint32)&OsalPort_msgDeallocate_dbg,                                      // ROM_ICALL_OSAL_JT_OFFSET[8]
+#else
+      (uint32)&OsalPort_msgAllocate,                                        // ROM_ICALL_OSAL_JT_OFFSET[7]
+      (uint32)&OsalPort_msgDeallocate,                                      // ROM_ICALL_OSAL_JT_OFFSET[8]
+#endif
      (uint32)&OsalPort_msgDequeue,                                         // ROM_ICALL_OSAL_JT_OFFSET[9]
      (uint32)&OsalPort_msgEnqueue,                                          // ROM_ICALL_OSAL_JT_OFFSET[10]
      (uint32)&OsalPort_msgEnqueueMax,                                     // ROM_ICALL_OSAL_JT_OFFSET[11]

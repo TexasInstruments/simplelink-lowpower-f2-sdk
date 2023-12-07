@@ -1206,59 +1206,59 @@
                                 },
                                 {
                                     "_text": "4",
-                                    "Value": "0x7834"
+                                    "Value": "0x8029"
                                 },
                                 {
                                     "_text": "3",
-                                    "Value": "0x8024"
+                                    "Value": "0x5C1D"
                                 },
                                 {
                                     "_text": "2",
-                                    "Value": "0x601B"
+                                    "Value": "0x4616"
                                 },
                                 {
                                     "_text": "1",
-                                    "Value": "0x4E15"
+                                    "Value": "0x3263"
                                 },
                                 {
                                     "_text": "0",
-                                    "Value": "0x3861"
+                                    "Value": "0x2A5E"
                                 },
                                 {
                                     "_text": "-3",
-                                    "Value": "0x2656"
+                                    "Value": "0x1CE6"
                                 },
                                 {
                                     "_text": "-5",
-                                    "Value": "0x1896"
+                                    "Value": "0x1695"
                                 },
                                 {
                                     "_text": "-6",
-                                    "Value": "0x1894"
+                                    "Value": "0x1693"
                                 },
                                 {
                                     "_text": "-9",
-                                    "Value": "0x188F"
+                                    "Value": "0x0E8E"
                                 },
                                 {
                                     "_text": "-10",
-                                    "Value": "0x0ED3"
+                                    "Value": "0x00D2"
                                 },
                                 {
                                     "_text": "-12",
-                                    "Value": "0x0E8B"
+                                    "Value": "0x088A"
                                 },
                                 {
                                     "_text": "-15",
-                                    "Value": "0x08CD"
+                                    "Value": "0x08CC"
                                 },
                                 {
                                     "_text": "-18",
-                                    "Value": "0x08CA"
+                                    "Value": "0x00C9"
                                 },
                                 {
                                     "_text": "-20",
-                                    "Value": "0x08C8"
+                                    "Value": "0x00C7"
                                 }
                             ]
                         }
@@ -1269,94 +1269,169 @@
                         "PaSettingTable": {
                             "PaSetting": [
                                 {
-                                    "_text": "12.5",
-                                    "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00B224"
-                                },
-                                {
                                     "_text": "12",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00A410"
+                                    "TxSub1Pa": "0x00BE33"
                                 },
                                 {
                                     "_text": "11",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x00669A"
+                                    "TxSub1Pa": "0x00945F"
                                 },
                                 {
                                     "_text": "10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003E92"
+                                    "TxSub1Pa": "0x003404"
                                 },
                                 {
                                     "_text": "9",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x003EDC"
+                                    "TxSub1Pa": "0x0078A3"
                                 },
                                 {
                                     "_text": "8",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x002CD8"
+                                    "TxSub1Pa": "0x005499"
                                 },
                                 {
                                     "_text": "7",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0026D4"
+                                    "TxSub1Pa": "0x004693"
                                 },
                                 {
                                     "_text": "6",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0020D1"
+                                    "TxSub1Pa": "0x0078EC"
                                 },
                                 {
                                     "_text": "5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x001CCE"
+                                    "TxSub1Pa": "0x0062E3"
                                 },
                                 {
                                     "_text": "4",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0016CD"
+                                    "TxSub1Pa": "0x024E77"
                                 },
                                 {
                                     "_text": "3",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0014CB"
+                                    "TxSub1Pa": "0x024E6D"
                                 },
                                 {
                                     "_text": "2",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012CA"
+                                    "TxSub1Pa": "0x024665"
                                 },
                                 {
                                     "_text": "1",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0012C9"
+                                    "TxSub1Pa": "0x02385F"
                                 },
                                 {
                                     "_text": "0",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0010C8"
+                                    "TxSub1Pa": "0x02325A"
+                                },
+                                {
+                                    "_text": "-1",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022A56"
+                                },
+                                {
+                                    "_text": "-2",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022AB6"
+                                },
+                                {
+                                    "_text": "-3",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x022AAD"
+                                },
+                                {
+                                    "_text": "-4",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0224A6"
                                 },
                                 {
                                     "_text": "-5",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC4"
+                                    "TxSub1Pa": "0x021CA1"
+                                },
+                                {
+                                    "_text": "-6",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021C9C"
+                                },
+                                {
+                                    "_text": "-7",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x021CF6"
+                                },
+                                {
+                                    "_text": "-8",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x030EB8"
+                                },
+                                {
+                                    "_text": "-9",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0216E7"
                                 },
                                 {
                                     "_text": "-10",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x000AC2"
+                                    "TxSub1Pa": "0x0216E1"
+                                },
+                                {
+                                    "_text": "-11",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020EDD"
+                                },
+                                {
+                                    "_text": "-12",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED9"
+                                },
+                                {
+                                    "_text": "-13",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x020ED6"
+                                },
+                                {
+                                    "_text": "-14",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308EF"
                                 },
                                 {
                                     "_text": "-15",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0006C1"
+                                    "TxSub1Pa": "0x0208D1"
+                                },
+                                {
+                                    "_text": "-16",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0208FC"
+                                },
+                                {
+                                    "_text": "-17",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DF"
+                                },
+                                {
+                                    "_text": "-18",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0308DB"
+                                },
+                                {
+                                    "_text": "-19",
+                                    "Value": "0xFFFE",
+                                    "TxSub1Pa": "0x0300D8"
                                 },
                                 {
                                     "_text": "-20",
                                     "Value": "0xFFFE",
-                                    "TxSub1Pa": "0x0004C0"
+                                    "TxSub1Pa": "0x0300D5"
                                 }
                             ]
                         }

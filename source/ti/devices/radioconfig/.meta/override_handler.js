@@ -272,7 +272,8 @@ function generateCmdOverride(override, data, custom) {
             // eslint-disable-next-line no-continue
             continue;
         }
-        const obuf = override[key].Element32b;
+        const ovrData = override[key];
+        const obuf = ovrData.Element32b;
         if (obuf.length === 0) {
             // eslint-disable-next-line no-continue
             continue;
@@ -290,19 +291,15 @@ function generateCmdOverride(override, data, custom) {
             }
         }
         // Skip Co-Ex unless available and enabled
-        if (key.includes("coex")) {
-            const isCoExOvr = !key.includes("non_coex");
-            let bGenerateCode;
-            if (coExEnabled) {
-                bGenerateCode = isCoExOvr;
-            }
-            else {
-                bGenerateCode = !isCoExOvr;
-            }
-            if (!bGenerateCode) {
-                // eslint-disable-next-line no-continue
-                continue;
-            }
+        if (key.includes("_coex") && !coExEnabled) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        // Skip overrides that are for non-coex use (if coex enabled)
+        // eslint-disable-next-line no-underscore-dangle
+        else if ("_coex" in ovrData && ovrData._coex === "false" && coExEnabled) {
+            // eslint-disable-next-line no-continue
+            continue;
         }
 
         // If there is more than one element, use array

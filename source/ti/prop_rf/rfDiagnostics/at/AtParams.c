@@ -51,6 +51,10 @@ uint8_t AtParams_echoEnabled = 1;
 static uint32_t perNumPkts = NUMBER_OF_PACKETS;
 static uint32_t perPktLen = PACKET_LENGTH;
 static uint16_t packetTxCount = 0;
+RF_Frequency frequency = {
+    .freq = 0,
+    .mdrFreq = 0
+};
 
 /***************************************************************************************************
  * LOCAL FUNCTIONS
@@ -72,6 +76,7 @@ static AtProcess_Status atParamReadAvgRssi(char* paramStr, uint32_t paramLen);
 static AtProcess_Status atParamReadMinRssi(char* paramStr, uint32_t paramLen);
 static AtProcess_Status atParamReadMaxRssi(char* paramStr, uint32_t paramLen);
 static AtProcess_Status atParamReadPHyNames(char* paramStr, uint32_t paramLen);
+static AtProcess_Status atParamReadRadioVersion(char* paramStr, uint32_t paramLen);
 
 AtCommand_t atParamsters[] =
 {
@@ -108,7 +113,9 @@ AtCommand_t atParamsters[] =
     {"AE?", atParamReadAtEcho}, // AE: Echo
     {"ae?", atParamReadAtEcho},
     {"AE=", atParamWriteAtEcho},
-    {"ae=", atParamWriteAtEcho}
+    {"ae=", atParamWriteAtEcho},
+    {"RV?", atParamReadRadioVersion}, // RV: Radio Version
+    {"rv?", atParamReadRadioVersion}
 };
 
 static AtProcess_Status atParamReadPHyNames(char* paramStr, uint32_t paramLen)
@@ -116,7 +123,7 @@ static AtProcess_Status atParamReadPHyNames(char* paramStr, uint32_t paramLen)
     (void)paramLen;
 
     uint8_t radioId;
-    AtTerm_getIdAndParam(paramStr, &radioId, (uintptr_t)NULL, 0);
+    AtTerm_getIdAndParam(paramStr, &radioId, (uintptr_t)NULL, (uintptr_t)NULL, 0);
 
     uint8_t i;
 
@@ -234,12 +241,17 @@ static AtProcess_Status atParamReadFreq(char* paramStr, uint32_t paramLen)
     (void)paramStr;
     (void)paramLen;
 
-    uint32_t freq = Radio_getFreq();
+    Radio_getFreq(&frequency);
 
-    if(freq != (uint32_t)RADIO_ERROR_VALUE)
+    if(frequency.freq != (uint32_t)RADIO_ERROR_VALUE)
     {
-        AtTerm_sendStringUi32Value("    ", freq, 10);
+        AtTerm_sendStringUi32Value("    ", frequency.freq, 10);
         AtTerm_sendString(" Hz\r");
+        if(frequency.mdrFreq != 0)
+        {
+            AtTerm_sendStringUi32Value("    ", frequency.mdrFreq, 10);
+            AtTerm_sendString(" Hz\r");
+        }
         return AtProcess_Status_Success;
     }
     else
@@ -254,15 +266,29 @@ static AtProcess_Status atParamWriteFreq(char* paramStr, uint32_t paramLen)
 
     AtProcess_Status status = AtProcess_Status_ParamError;
     uint32_t newFreq;
+    uint32_t newMdrFreq;
     uint8_t testMode = TestMode_read();
 
     // Do not allow for changing frequency when a test is running
     if (testMode == TestMode_EXIT)
     {
-        if(sscanf(paramStr, "%u", (unsigned int *)&newFreq) == 1)
+        char *token;
+        char delimiter[] = " ";
+        token = strtok(paramStr, delimiter);
+        if(NULL != token)
         {
-            Radio_setFreq(newFreq);
             status = AtProcess_Status_Success;
+            newFreq = atoi(token);
+            token = strtok(NULL, delimiter);
+            if(NULL != token)
+            {
+                newMdrFreq = atoi(token);
+            }
+            else
+            {
+                newMdrFreq = NO_MDR_FREQ;
+            }
+            Radio_setFreq(newFreq,newMdrFreq);
         }
         else
         {
@@ -275,6 +301,7 @@ static AtProcess_Status atParamWriteFreq(char* paramStr, uint32_t paramLen)
     }
     return status;
 }
+
 
 static AtProcess_Status atParamReadPower(char* paramStr, uint32_t paramLen)
 {
@@ -429,6 +456,26 @@ static AtProcess_Status atParamReadAtEcho(char* paramStr, uint32_t paramLen)
     return status;
 }
 
+static AtProcess_Status atParamReadRadioVersion(char* paramStr, uint32_t paramLen)
+{
+    (void)paramStr;
+    (void)paramLen;
+    char radioVersion[RADIO_VERSION_LENGTH] = {0};
+
+    AtProcess_Status status = AtProcess_Status_ParamError;
+
+    strcpy(radioVersion, Radio_getRadioVersion());
+
+    if(strcmp(radioVersion, RADIO_UNSUPPORTED_CMD))
+    {
+        AtTerm_sendString(radioVersion);
+        AtTerm_sendString("\r");
+        status = AtProcess_Status_Success;
+    }
+
+    return status;
+}
+
 /***************************************************************************************************
  * INTERFACE FUNCTIONS
  ***************************************************************************************************/
@@ -450,14 +497,49 @@ AtProcess_Status AtParams_parseIncoming(char *param, uint8_t paramLen)
     return status;
 }
 
-void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi)
+void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, uint16_t packetCountNok, uint16_t rxSyncCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi, char *phyName)
 {
     if(mode == TestMode_PER_TX)
     {
-
         if(txDone)
         {
             AtTerm_sendStringUi16Value("Packets Transmitted: ", packetTxCount, 10);
+            AtTerm_sendString("\r");
+            packetTxCount = 0;
+        }
+        else
+        {
+            packetTxCount = packetCount;
+
+            if(packetTxCount == 1)
+            {
+                AtTerm_sendString("Sending packets....\r");
+            }
+        }
+    }
+    else if(mode == TestMode_MDR_TX)
+    {
+        if(txDone)
+        {
+            AtTerm_sendStringUi16Value("MDR Packets Transmitted: ", packetTxCount, 10);
+            AtTerm_sendString("\r");
+            packetTxCount = 0;
+        }
+        else
+        {
+            packetTxCount = packetCount;
+
+            if(packetTxCount == 1)
+            {
+                AtTerm_sendString("Sending packets....\r");
+            }
+        }
+    }
+    else if(mode == TestMode_MDR_CS_TX)
+    {
+        if(txDone)
+        {
+            AtTerm_sendStringUi16Value("MDR Packets Transmitted: ", packetTxCount, 10);
             AtTerm_sendString("\r");
             packetTxCount = 0;
         }
@@ -478,16 +560,41 @@ void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, bool txDone, int
         AtTerm_sendString("Note: Packet Length filtering is utilized, so the packet length\r\n");
         AtTerm_sendString("on the receiver must be larger or equal to the packet length on the transmitter\r\n");
     }
+    else if(mode == TestMode_MDR_RX)
+    {
+        AtTerm_sendString("MDR RX in Progress....\r\n");
+        AtTerm_sendString("Exit by setting Test Mode = 0 (ATPTM=0)\r\n");
+        AtTerm_sendString("Note: Packet Length filtering is utilized, so the packet length\r\n");
+        AtTerm_sendString("on the receiver must be larger or equal to the packet length on the transmitter\r\n");
+    }
     else
     {
-        AtTerm_sendStringUi16Value("Packets Received: ", packetCount, 10);
+        uint32_t totalPackets = (uint32_t)(packetCount + packetCountNok);
+
+        /* Avoid a 0.0/0.0 (NaN) or a x/0.0 (+Inf) condition */
+        uint32_t per = 0;
+        if(totalPackets > 0)
+        {
+            per = ((uint32_t)packetCountNok * 100)/(totalPackets);
+        }
+
+        AtTerm_sendStringUi16Value("Packets Received: ", (packetCount + packetCountNok), 10);
         AtTerm_sendString("\r\n");
+        AtTerm_sendStringUi16Value("CRC Ok:           ", packetCount, 10);
+        AtTerm_sendString("\r\n");
+        AtTerm_sendStringUi16Value("Sync Ok:          ", rxSyncCount, 10);
+        AtTerm_sendString("\r\n");
+        AtTerm_sendStringUi16Value("PER:              ", (int16_t)per, 10);
+        AtTerm_sendString("%\r\n");
         AtTerm_sendStringI32Value("Average RSSI: ", avgRssi, 10);
         AtTerm_sendString(" dBm\r\n");
         AtTerm_sendStringI32Value("Max RSSI:     ", maxRssi, 10);
         AtTerm_sendString(" dBm\r\n");
         AtTerm_sendStringI32Value("Min RSSI:     ", minRssi, 10);
         AtTerm_sendString(" dBm\r\n");
+        AtTerm_sendString("PHY RX'd: ");
+        AtTerm_sendString(phyName);
+        AtTerm_sendString("\r\n");
     }
 }
 

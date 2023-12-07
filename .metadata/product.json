@@ -1,7 +1,7 @@
 {
     "name": "simplelink_cc13xx_cc26xx_sdk",
-    "displayName": "simplelink_cc13xx_cc26xx_sdk",
-    "version": "7.10.01.24",
+    "displayName": "SimpleLink Low Power F2 SDK",
+    "version": "7.10.02.23",
     "documentationPath": "../docs",
     "includePaths": [
         "../source",

@@ -52,6 +52,10 @@
                     "displayName": "16.384 kbps, OOK, 100 kHz RX Bandwidth, Manchester encoding"
                 },
                 {
+                    "name": "2gfsk48kbpstcxo",
+                    "displayName": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth"
+                },
+                {
                     "name": "2gfsk50kbps12dev868wsun1a",
                     "displayName": "Wi-SUN mode #1a, 50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth"
                 },
@@ -106,6 +110,22 @@
                 {
                     "name": "qpsk6kbpsrm0",
                     "displayName": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)"
+                },
+                {
+                    "name": "wbdsss480ksps30kbps",
+                    "displayName": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8"
+                },
+                {
+                    "name": "wbdsss480ksps60kbps",
+                    "displayName": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4"
+                },
+                {
+                    "name": "wbdsss480ksps120kbps",
+                    "displayName": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
+                },
+                {
+                    "name": "wbdsss480ksps240kbps",
+                    "displayName": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1"
                 },
                 {
                     "name": "custom868",
@@ -341,6 +361,11 @@
                         {
                             "name": "3767.4",
                             "key": 103
+                        },
+                        {
+                            "name": "17.1",
+                            "key": 115,
+                            "info": "decimMode=7"
                         }
                     ]
                 },
@@ -814,6 +839,12 @@
                 "options": "disable_high_pa"
             },
             {
+                "file": "setting_tc594.json",
+                "name": "2gfsk48kbpstcxo",
+                "description": "Narrowband, 9.6 kbps, 2-GFSK, 17.1 kHz RX Bandwidth",
+                "options": "disable_high_pa"
+            },
+            {
                 "file": "setting_tc720.json",
                 "name": "2gfsk50kbps12dev868wsun1a",
                 "description": "Wi-SUN mode #1a, 50 kbps, 12.5 kHz Deviation, 2-GFSK, 68 kHz RX Bandwidth",
@@ -896,6 +927,26 @@
                 "name": "qpsk6kbpsrm0",
                 "description": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)",
                 "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc383.json",
+                "name": "wbdsss480ksps30kbps",
+                "description": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8"
+            },
+            {
+                "file": "setting_tc382.json",
+                "name": "wbdsss480ksps60kbps",
+                "description": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4"
+            },
+            {
+                "file": "setting_tc381.json",
+                "name": "wbdsss480ksps120kbps",
+                "description": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
+            },
+            {
+                "file": "setting_tc380.json",
+                "name": "wbdsss480ksps240kbps",
+                "description": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1"
             },
             {
                 "file": "setting_tc706_custom.json",

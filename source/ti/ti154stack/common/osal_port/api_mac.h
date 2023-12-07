@@ -736,6 +736,8 @@ typedef enum
     ApiMac_subAttribute_srcMatchSetDefaultPend = 0x06,
     ApiMac_subAttribute_setGpOffset = 0x07, // Only used for Coprocesscor
     ApiMac_subAttribute_srcMatchSetManualAddressTracking = 0x08,
+    ApiMac_subAttribute_getVersions = 0x09, // Only supports get operation
+    ApiMac_subAttribute_setReadId = 0xFF,
 } ApiMac_subAttribute_t;
 
 /*! Standard PIB Get and Set Attributes - size bool */

@@ -59,6 +59,17 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/drivers/utils/Random.h>
 
+// SW Tracer
+
+#ifdef DEBUG_SW_TRACE
+#include "dbg.h"
+#define DBG_ENABLE
+#ifndef _DBGFILE
+#define _DBGFILE osal_port_c
+#endif
+#include "dbgid_sys_mst.h"
+#endif // DEBUG_SW_TRACE
+
 /***** Defines *****/
 /* Only 1 application can talk to the MAC */
 #define MAX_TASKS 15
@@ -233,10 +244,19 @@ uint8_t OsalPort_registerTask(void* taskHndl, void* taskSem, uint32_t* pEvent)
  *
  * @return  pointer to allocated buffer or NULL if allocation failed.
  */
+#ifdef MALLOC_DEBUG
+#ifdef OsalPort_msgAllocate
+#undef OsalPort_msgAllocate
+#endif
+uint8_t* OsalPort_msgAllocate_dbg(uint16_t len, const char *caller);
+#endif
+
+
 uint8_t * OsalPort_msgAllocate(uint16_t len )
 {
     uint8_t *pMsg = NULL;
     OsalPort_MsgHdr* pHdr;
+
 
     if ( len == 0 )
         return ( NULL );
@@ -255,6 +275,17 @@ uint8_t * OsalPort_msgAllocate(uint16_t len )
     return pMsg;
 }
 
+#ifdef MALLOC_DEBUG
+uint8_t*  OsalPort_msgAllocate_dbg(uint16_t len, const char *caller)
+{
+    uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
+
+    DBG_PRINTL2(DBGSYS, "OsalPort_msgAllocate: Size) %u Called By) %u", len + sizeof( OsalPort_MsgHdr ), addr);
+
+    return  OsalPort_msgAllocate(len );
+}
+#endif
+
 /*********************************************************************
  * @fn      OsalPort_msgDeallocate
  *
@@ -269,6 +300,14 @@ uint8_t * OsalPort_msgAllocate(uint16_t len )
  *
  * @return  OsalPort_SUCCESS, OsalPort_INVALID_MSG_POINTER
  */
+
+#ifdef MALLOC_DEBUG
+#ifdef OsalPort_msgDeallocate
+#undef OsalPort_msgDeallocate
+#endif
+uint8_t OsalPort_msgDeallocate_dbg(uint8_t *pMsg, const char *caller);
+#endif
+
 uint8_t OsalPort_msgDeallocate( uint8_t *pMsg )
 {
     uint8_t *x;
@@ -278,14 +317,31 @@ uint8_t OsalPort_msgDeallocate( uint8_t *pMsg )
 
     // don't deallocate queued buffer
     if ( OsalPort_MSG_ID( pMsg ) != OsalPort_TASK_NO_TASK )
+    {
+#ifdef MALLOC_DEBUG
+        DBG_PRINTL1(DBGSYS, "OsalPort_msgDeallocate_dbg: Failed to deallocate buffer: %u", pMsg);
+#endif
         return ( OsalPort_MSG_BUFFER_NOT_AVAIL );
+    }
 
     x = (uint8_t *)((uint8_t *)pMsg - sizeof( OsalPort_MsgHdr ));
+
 
     OsalPort_free( (void *)x );
 
     return ( OsalPort_SUCCESS );
 }
+
+#ifdef MALLOC_DEBUG
+uint8_t OsalPort_msgDeallocate_dbg(uint8_t *pMsg, const char *caller)
+{
+    uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
+
+    DBG_PRINTL2(DBGSYS, "OsalPort_msgDeallocate_dbg: Buffer Address) %u Called By) %u", (uint8_t *)((uint8_t *)pMsg - sizeof( OsalPort_MsgHdr )), addr);
+
+    return  OsalPort_msgDeallocate(pMsg);
+}
+#endif
 
 /*********************************************************************
  * @fn      OsalPort_msgSend
@@ -1091,15 +1147,35 @@ void *OsalPort_revmemcpy( void *dst, const void *src, unsigned int len )
  *
  * @return  pointer o allocated memory
  */
+#ifdef MALLOC_DEBUG
+#ifdef OsalPort_malloc
+#undef OsalPort_malloc
+#endif
+void* OsalPort_malloc_dbg(uint32_t size, const char *caller);
+#endif
 void* OsalPort_malloc(uint32_t size)
 {
-#ifdef FREERTOS_SUPPORT
-    return malloc(size);
-#else
-    return (OsalPort_heapMalloc(size));
-#endif
+    void* buf;
 
+#ifdef FREERTOS_SUPPORT
+    buf = malloc(size);
+#else
+     buf = (OsalPort_heapMalloc(size));
+#endif
+    return buf;
 }
+
+#ifdef MALLOC_DEBUG
+void* OsalPort_malloc_dbg(uint32_t size, const char *caller)
+{
+    uint32_t* buf;
+   buf =  OsalPort_malloc(size);
+   uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
+
+   DBG_PRINTL2(DBGSYS, "OsalPort_malloc_dbg: Size) %u Called By) %u", size,(uint32_t) addr);
+   return buf;
+}
+#endif
 
 /*********************************************************************
  * @fn      OsalPort_free
@@ -1112,6 +1188,14 @@ void* OsalPort_malloc(uint32_t size)
  *
  * @return  pointer to allocated memory
  */
+
+#ifdef MALLOC_DEBUG
+#ifdef OsalPort_free
+#undef OsalPort_free
+#endif
+void OsalPort_free_dbg(void* buf, const char *caller);
+#endif
+
 void OsalPort_free(void* buf)
 {
 #ifdef FREERTOS_SUPPORT
@@ -1120,6 +1204,18 @@ void OsalPort_free(void* buf)
     OsalPort_heapFree(buf);
 #endif
 }
+
+#ifdef MALLOC_DEBUG
+void OsalPort_free_dbg(void* buf, const char *caller)
+{
+    uint32_t addr = (uint32_t)__builtin_extract_return_addr (__builtin_return_address (0));
+
+    DBG_PRINTL2(DBGSYS, "OsalPort_free_dbg: Buffer Address) %u Called By) %u", buf ,(uint32_t) addr);
+
+    OsalPort_free(buf);
+}
+#endif
+
 
 /*********************************************************************
  * @fn      OsalPort_enterCS

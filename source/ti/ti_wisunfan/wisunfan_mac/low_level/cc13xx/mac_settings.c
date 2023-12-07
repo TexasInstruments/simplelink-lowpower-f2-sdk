@@ -116,7 +116,7 @@ void rfSetConfigSubG(macRfCfg_prop_t *pRfCfg)
 #if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4)
     if (chipType == CHIP_TYPE_CC1354P10)
 #else
-    if (chipType == CHIP_TYPE_CC1352P || chipType == CHIP_TYPE_CC1352P7 || chipType == CHIP_TYPE_CC1311P3)
+    if (chipType == CHIP_TYPE_CC1352P || chipType == CHIP_TYPE_CC1312P || chipType == CHIP_TYPE_CC1352P7 || chipType == CHIP_TYPE_CC1311P3)
 #endif
     {
         setupLength = sizeof(rfc_CMD_PROP_RADIO_DIV_SETUP_PA_t);

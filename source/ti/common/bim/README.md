@@ -1,4 +1,4 @@
-# Boot Image manager for OAD On-chip
+# Boot Image manager for OAD On-chip ( Single Image Mode )
 
 ## Table of Contents
 
@@ -13,14 +13,11 @@
 The Boot Image manager (BIM) project demonstrates how to select, copy and run an
 image located in the internal flash. This project supports two variants on on-chip
 OAD methodologies. One case is where there is a user application & the other image
-present on internal flash is the persistent application. The other case is the 
-dual-image OAD case, where the internal flash is treated like two slots and there 
-can be two user applications, one in each slot. The dual-image BIM variant provides
-anti-roll back protection, by preventing booting into an image with lower security 
-version than the current valid image, if present. The dual-image variant also 
-supports optionally switching between two valid images, or erasing out invalid 
-images. BIM always performs sign verifcation check & security version check, if 
-applicable, to deem an image valid & boot into it.  
+present on internal flash is the persistent application. The other case is the
+dual-image OAD case, where the internal flash is treated like two slots and there
+can be two user applications, one in each slot. The dual-image BIM is explained in
+more details under dual/README.md. BIM always performs sign verifcation check &
+security version check, if applicable, to deem an image valid & boot into it.
 
 This project is independent of any protocol stack.
 
@@ -59,7 +56,6 @@ Five build configurations are provided for on-chip BIM:
 * `Debug_unsecure`
 * `Release`
 * `Debug`
-* `Dual_image`
 
 `Release_unsecure` is to be flashed when flashing the user application .bin and doing unsecure OAD
 i.e. NO image authentication is done before executing the newly transferred (OAD) image.
@@ -92,15 +88,3 @@ know the specific location of your U-App or P-App before launching the product
 into the field. By defining `PERSIST_HDR_LOC`, you will also see improved BIM
 boot up times as the BIM no longer needs to search through the internal flash
 for the P-App header.
-
-Similarly, following optional features are supported by Dual Image on-chip BIM
-variant:
-
-`FEATURE_SWITCH_VALID_IMAGES` - By enabling this macro, the feature to be able 
-to switch between the two valid on-chip application images is enabled. For both
-the images to be valid, they should have the same security version, apart from 
-passing other checks like CRC, sign verfication etc. By default this feature is
-disabled.
-
-`BIM_ERASE_INVALID_IMAGE` - By enabling this macro, invalid images will be erased by BIM.
-By default this feature is disabled.

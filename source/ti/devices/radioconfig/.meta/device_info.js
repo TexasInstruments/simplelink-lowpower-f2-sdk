@@ -38,9 +38,6 @@
 
 "use strict";
 
-// Module version
-const RADIO_CONFIG_VERSION = "1.17.2";
-
 // Common utility functions
 const Common = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
 
@@ -221,9 +218,13 @@ function createSettingMap(phy) {
  */
 function getVersionInfo() {
     const deviceList = system.getScript(ConfigPath + "device_list.json");
+    const version = deviceList.devicelist.version;
 
-    const smartRFDataVersion = deviceList.devicelist.version;
-    return {moduleVersion: RADIO_CONFIG_VERSION, dataVersion: smartRFDataVersion};
+    return {
+        // eslint-disable-next-line no-underscore-dangle
+        moduleVersion: version._radioconfig,
+        dataVersion: version.$
+    };
 }
 
 /*!

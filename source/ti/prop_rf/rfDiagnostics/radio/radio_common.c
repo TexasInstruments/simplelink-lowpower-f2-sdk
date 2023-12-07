@@ -40,8 +40,17 @@ void Radio_Init(void)
 
 }
 
-void Radio_setupPhy(uint8_t phyIndex){
-    radios[currentRadio-1].setupPhy(phyIndex);
+bool Radio_setupPhy(uint8_t phyIndex, uint8_t phyIndex2){
+    return radios[currentRadio-1].setupPhy(phyIndex, phyIndex2);
+}
+
+bool Radio_enableMdr(uint8_t region){
+    if (radios[currentRadio-1].enableMdr == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return(radios[currentRadio-1].enableMdr(region));
+    }
 }
 
 bool Radio_packetTx(uint16_t numPkts, uint32_t *pktLen){
@@ -52,6 +61,33 @@ bool Radio_packetRx(uint8_t pktLen){
     return(radios[currentRadio-1].packetRx(pktLen));
 }
 
+bool Radio_packetMdrTx(uint16_t numPkts, uint32_t *pktLen){
+    if (radios[currentRadio-1].packetMdrTx == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return(radios[currentRadio-1].packetMdrTx(numPkts, pktLen));
+    }
+}
+
+bool Radio_packetMdrRx(uint8_t pktLen){
+    if (radios[currentRadio-1].packetMdrRx == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return(radios[currentRadio-1].packetMdrRx(pktLen));
+    }
+}
+
+bool Radio_packetMdrCsTx(uint16_t numPkts, uint32_t *pktLen){
+    if (radios[currentRadio-1].packetMdrCsTx == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return(radios[currentRadio-1].packetMdrCsTx(numPkts, pktLen));
+    }
+}
+
 bool Radio_contTx(bool cw){
     return(radios[currentRadio-1].contTx(cw));
 }
@@ -60,12 +96,12 @@ bool Radio_contRx(void){
     return(radios[currentRadio-1].contRx());
 }
 
-void Radio_setFreq(uint32_t freq){
-    radios[currentRadio-1].setFreq(freq);
+void Radio_setFreq(uint32_t freq, uint32_t mdrFreq){
+    radios[currentRadio-1].setFreq(freq,mdrFreq);
 }
 
-uint32_t Radio_getFreq(void){
-    return(radios[currentRadio-1].getFreq());
+void Radio_getFreq(RF_Frequency *freqs){
+    radios[currentRadio-1].getFreq(freqs);
 }
 
 bool Radio_setPower(int8_t i8TxPowerDbm){
@@ -104,6 +140,18 @@ uint16_t Radio_getNumRxPackets(void){
     return(radios[currentRadio-1].getNumRxPackets());
 }
 
+uint16_t Radio_getNumRxPacketsNok(void){
+    return(radios[currentRadio-1].getNumRxPacketsNok());
+}
+
+uint16_t Radio_getNumRxSync(void){
+    return(radios[currentRadio-1].getNumRxSync());
+}
+
+uint8_t Radio_getRxPhyIndex(void){
+    return(radios[currentRadio-1].getRxPhyIndex());
+}
+
 bool Radio_checkPacketLength(uint32_t *perPktLen){
     return(radios[currentRadio-1].checkPacketLength(perPktLen));
 }
@@ -114,4 +162,13 @@ uint8_t Radio_getNumSupportedPhys(void){
 
 char *Radio_getPhyName(uint8_t phyIndex){
     return(radios[currentRadio-1].getPhyName(phyIndex));
+}
+
+char *Radio_getRadioVersion(void){
+    if (radios[currentRadio-1].getRadioVersion == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return (radios[currentRadio-1].getRadioVersion());
+    }
 }

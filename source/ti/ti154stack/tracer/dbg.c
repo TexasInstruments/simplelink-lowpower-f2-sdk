@@ -77,7 +77,7 @@
 //#include "interrupt.h"
 #include <stdint.h>
 #include "cpu.h"
-
+#include <ti/drivers/rf/RF.h>
 #ifndef DBG_GLOBAL_DISABLE
 
 typedef char cs_t;
@@ -90,7 +90,6 @@ typedef char cs_t;
 
 #define __enable_irq()    asm("cpsie i");
 #define __disable_irq()   asm("cpsid i");
-
 /** \brief Function used to implement DBG_PRINTn
  *
  * Waits for the LVDS channel to be ready before storing the printf() parameters and transmitting the
@@ -106,28 +105,45 @@ typedef char cs_t;
  * \param[in]  z
  *     Contains printf() argument 2 in LSW and argument 3 in MSW
  */
+// Disable Optimization to prevent GCC builds from failing to link in debug data
+
+bool getRFState()
+{
+  RF_InfoVal info;
+
+  RF_getInfo(NULL, RF_GET_RADIO_STATE, &info);
+  return (info.bRadioState);
+}
+
+#if defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+#endif //__GNUC__
+
 void dbgPrintf(uint32_t x, uint32_t y, uint32_t z)
 {
    int  ch = (x >> 16) - 1;
    cs_t cs;
-
-   // Wait for previous packet to be transmitted
-   while (1) {
-      //__disable_irq();
-      ENTER_CRITICAL_SECTION(cs);
-      if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
-         // Channel ready, transmit packet
-         SP_TRCCH1PAR01[ch] = y;
-         SP_TRCCH1PAR23[ch] = z;
-         SP_TRCCH1CMD[ch] = x;
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-         break;
-      }
-      else {
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-      }
+   if (getRFState())
+   {
+       // Wait for previous packet to be transmitted
+       while (1) {
+          //__disable_irq();
+          ENTER_CRITICAL_SECTION(cs);
+          if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
+             // Channel ready, transmit packet
+             SP_TRCCH1PAR01[ch] = y;
+             SP_TRCCH1PAR23[ch] = z;
+             SP_TRCCH1CMD[ch] = x;
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+             break;
+          }
+          else {
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+          }
+       }
    }
 } // dbgPrintf
 
@@ -150,23 +166,25 @@ void dbgPrintf2(uint32_t x, uint32_t y)
 {
    int  ch = (x >> 16) - 1;
    cs_t cs;
-
-   // Wait for previous packet to be transmitted
-   while (1) {
-      //__disable_irq();
-      ENTER_CRITICAL_SECTION(cs);
-      if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
-         // Channel ready, transmit packet
-         SP_TRCCH1PAR01[ch] = y;
-         SP_TRCCH1CMD[ch] = x;
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-         break;
-      }
-      else {
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-      }
+   if (getRFState())
+   {
+       // Wait for previous packet to be transmitted
+       while (1) {
+          //__disable_irq();
+          ENTER_CRITICAL_SECTION(cs);
+          if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
+             // Channel ready, transmit packet
+             SP_TRCCH1PAR01[ch] = y;
+             SP_TRCCH1CMD[ch] = x;
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+             break;
+          }
+          else {
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+          }
+       }
    }
 } // dbgPrintf2
 
@@ -187,25 +205,31 @@ void dbgPrintf0(uint32_t x)
 {
    int  ch = (x >> 16) - 1;
    cs_t cs;
-
-   // Wait for previous packet to be transmitted
-   while (1) {
-      //__disable_irq();
-      ENTER_CRITICAL_SECTION(cs);
-      if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
-         // Channel ready, transmit packet
-         SP_TRCCH1CMD[ch] = x;
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-         break;
-      }
-      else {
-         //__enable_irq();
-         EXIT_CRITICAL_SECTION(cs);
-      }
+   if (getRFState())
+   {
+       // Wait for previous packet to be transmitted
+       while (1) {
+          //__disable_irq();
+          ENTER_CRITICAL_SECTION(cs);
+          if ((SP_TRCCH1CMD[ch] & TRCCH1CMD_CH1PKTHDR_BM) == 0) {
+             // Channel ready, transmit packet
+             SP_TRCCH1CMD[ch] = x;
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+             break;
+          }
+          else {
+             //__enable_irq();
+             EXIT_CRITICAL_SECTION(cs);
+          }
+       }
    }
 } // dbgPrintf0
+#if defined(__GNUC__)
+#pragma GCC pop_options
+#endif //__GNUC__
 #endif // !DBG_GLOBAL_DISABLE
 
 
 //@}
+

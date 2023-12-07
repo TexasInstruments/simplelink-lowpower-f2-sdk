@@ -398,6 +398,7 @@ function getLibs(inst)
 {
     const libs = [];
     const board = Common.getLaunchPadFromDevice();
+    let basePath = "";
 
     if(inst.$static.genLibs)
     {
@@ -408,8 +409,14 @@ function getLibs(inst)
 
         // Generate correct maclib library to link based on device, security
         // level, and frequency band selected
-        let basePath = "ti/ti154stack/lib/" + toolchain;
-
+        if (toolchain == "gcc")
+        {
+            basePath = "ti/ti154stack/lib/" +"ticlang";
+        }
+        else
+        {
+            basePath = "ti/ti154stack/lib/" + toolchain;
+        }
         let security;
         switch(inst.$static.secureLevel)
         {

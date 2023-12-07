@@ -2,7 +2,7 @@
     {
         "name": "Release Notes",
         "resourceType": "file",
-        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_10_01_24.html",
+        "location": "../../release_notes_simplelink_cc13xx_cc26xx_sdk_7_10_02_23.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1100,9 +1100,9 @@
         ]
     },
     {
-        "name": "TI Wi-SUN FAN Release Notes",
+        "name": "SimpleLink Graphics Library Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_wisunfan/release_notes_wisun_2_10_00_00.html",
+        "location": "../../docs/grlib/release_notes_grlib_5_00_00_05.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1115,26 +1115,7 @@
             "Documents"
         ],
         "subCategories": [
-            "TI Wi-SUN FAN"
-        ]
-    },
-    {
-        "name": "CoreSDK Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_7_10_03_01.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "TI Drivers"
+            "Graphics Library"
         ]
     },
     {
@@ -1154,82 +1135,6 @@
         ],
         "subCategories": [
             "TI 15.4-Stack"
-        ]
-    },
-    {
-        "name": "TI Proprietary RF Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_6_10_01.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "Proprietary RF"
-        ]
-    },
-    {
-        "name": "TI Z-Stack Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/zigbee/release_notes_zigbee_7_10_01.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "TI Z-Stack"
-        ]
-    },
-    {
-        "name": "SimpleLink Common Components Module (SCCM) Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/sccm/release_notes_sccm_5_10_00.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "Common Components"
-        ]
-    },
-    {
-        "name": "TI DMM Release Notes",
-        "resourceType": "file",
-        "location": "../../docs/dmm/release_notes_dmm_5_10_01.html",
-        "devices": [
-            "CC1352R1F3",
-            "CC2642R1F"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC13X2R1",
-            "LAUNCHXL-CC26X2R1"
-        ],
-        "mainCategories": [
-            "Documents"
-        ],
-        "subCategories": [
-            "TI DMM"
         ]
     },
     {
@@ -1254,7 +1159,7 @@
     {
         "name": "TI Amazon Sidewalk Release Notes",
         "resourceType": "file",
-        "location": "../../docs/ti_sidewalk/release_notes_ti_sidewalk_7_10_00_xx.html",
+        "location": "../../docs/ti_sidewalk/release_notes_ti_sidewalk_7_10_02_xx.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1290,9 +1195,9 @@
         ]
     },
     {
-        "name": "SimpleLink Graphics Library Release Notes",
+        "name": "SimpleLink Common Components Module (SCCM) Release Notes",
         "resourceType": "file",
-        "location": "../../docs/grlib/release_notes_grlib_5_00_00_05.html",
+        "location": "../../docs/sccm/release_notes_sccm_5_30_00.html",
         "devices": [
             "CC1352R1F3",
             "CC2642R1F"
@@ -1305,7 +1210,26 @@
             "Documents"
         ],
         "subCategories": [
-            "Graphics Library"
+            "Common Components"
+        ]
+    },
+    {
+        "name": "TI DMM Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/dmm/release_notes_dmm_5_10_01.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI DMM"
         ]
     },
     {
@@ -1328,6 +1252,25 @@
         ]
     },
     {
+        "name": "TI Wi-SUN FAN Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/ti_wisunfan/release_notes_wisun_2_10_00_00.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Wi-SUN FAN"
+        ]
+    },
+    {
         "name": "Radio Software Bundle Release Notes",
         "resourceType": "file",
         "location": "../../docs/rflib/rflib_release_notes.html",
@@ -1344,6 +1287,63 @@
         ],
         "subCategories": [
             "TI Drivers"
+        ]
+    },
+    {
+        "name": "TI Z-Stack Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/zigbee/release_notes_zigbee_7_10_02.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Z-Stack"
+        ]
+    },
+    {
+        "name": "CoreSDK Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/simplelink_mcu_sdk/release_notes_coresdk_cc13xx_cc26xx_7_10_03_01.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "TI Drivers"
+        ]
+    },
+    {
+        "name": "TI Proprietary RF Release Notes",
+        "resourceType": "file",
+        "location": "../../docs/proprietary-rf/release_notes_proprietary-rf_6_20_00.html",
+        "devices": [
+            "CC1352R1F3",
+            "CC2642R1F"
+        ],
+        "devtools": [
+            "LAUNCHXL-CC13X2R1",
+            "LAUNCHXL-CC26X2R1"
+        ],
+        "mainCategories": [
+            "Documents"
+        ],
+        "subCategories": [
+            "Proprietary RF"
         ]
     }
 ]

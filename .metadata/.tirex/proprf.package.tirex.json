@@ -3,7 +3,7 @@
         "metadataVersion": "3.0.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK_PROPRF_MODULE",
         "name": "TI Proprietary RF Stack Core",
-        "version": "7.10.01.24",
+        "version": "7.10.02.23",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -16,10 +16,9 @@
         ],
         "image": "metadata/cc13xx_cc26xx-tirex.png",
         "description": "CC13XX/CC26XX TI Proprietary RF Stack",
-        "allowPartialDownload": "false",
         "moduleOf": {
             "packageId": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
-            "semver": "7.10.1"
+            "semver": "7.10.2"
         }
     }
 ]

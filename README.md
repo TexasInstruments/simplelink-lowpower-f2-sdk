@@ -43,7 +43,7 @@ It intentionally omits documentation (the **docs/** directory) and examples (**e
 ### Edit **imports.mak**
 The imports.mak file, located at the root of the SDK, is a generic sample and will not work out of the box.   Please update imports.mak with the tools (compilers, cmake, etc.) paths installed on your system.
  
-For a Linux build, settings must be updated to match your build system's setup.  The only outlier may be Python, as most python3.6+ interpreters will work.  Please note cmake must be 3.21+, or the builds will fail.  If using CCS ccs1220, the SysConfig installed is incompatible with the SDKs.  Either upgrade to a CCS version with SysConfig 1.16.2 (ccs1230+) or install SysConfig 1.16.2 from [https://www.ti.com/tool/SYSCONFIG](https://www.ti.com/tool/SYSCONFIG]). Please note XDC_INSTALL_DIR was required in older SDKs but is no longer needed.
+For a Linux build, settings must be updated to match your build system's setup.  The only outlier may be Python, as most python3.6+ interpreters will work.  Please note cmake must be 3.21+, or the builds will fail.  If using CCS ccs1220, the SysConfig installed is incompatible with the SDKs.  Either upgrade CCS to ccs1230 or install SysConfig 1.16.1 from [https://www.ti.com/tool/SYSCONFIG](https://www.ti.com/tool/SYSCONFIG]). Please note XDC_INSTALL_DIR was required in older SDKs but is no longer needed.
  
 By default TICLANG and GCC toolchains are enabled.  If a toolchain is not needed, unset the compiler, for example, `GCC_ARMCOMPILER ?=`.
  
@@ -51,7 +51,7 @@ By default TICLANG and GCC toolchains are enabled.  If a toolchain is not needed
  
 `XDC_INSTALL_DIR`        ?= /home/username/ti/xdctools_3_62_01_15_core (Not required for 7.10+ SDK's)
  
-`SYSCONFIG_TOOL`         ?= /home/username/ti/ccs1230/ccs/utils/sysconfig_1.16.2/sysconfig_cli.sh
+`SYSCONFIG_TOOL`         ?= /home/username/ti/ccs1230/ccs/utils/sysconfig_1.16.1/sysconfig_cli.sh
  
 `FREERTOS_INSTALL_DIR`   ?= /home/username/FreeRTOSv202104.00
  

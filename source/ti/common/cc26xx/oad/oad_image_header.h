@@ -164,6 +164,12 @@ extern "C"
   extern uint32_t _bim_var;
 #endif // OAD_ONCHIP
 
+#if defined(BIM_DUAL_ONCHIP_IMAGE) && !defined(SECURITY)
+    // DUAL Image BIM is considered a strictly production ready variant. DEBUG_BIM cannot be used as
+    // it would skip key security steps.
+    #error "Error: DUAL ON CHIP BIM needs the macro SECURITY to be enabled"
+#endif
+
 #define SIGN_FN_PTR 0x57fa0      //!< Pointer to BIM Function
 extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 
@@ -298,9 +304,15 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 #define OAD_WIRELESS_TECH_MIOTY           0xFF7F
 
 /*!
- * Image built for WBMS
+ * Image built for WBMS WDevice
  */
-#define OAD_WIRELESS_TECH_WBMS            0xFEFF
+#define OAD_WIRELESS_TECH_WBMS_WD         0xFEFF
+
+/*!
+ * Image built for WBMS WMain
+ */
+#define OAD_WIRELESS_TECH_WBMS_WM         0xFDFF
+
 
 /** @} End OAD_WIRELESS_TECH */
 
@@ -393,6 +405,11 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
  * Offset in bytes of imgVal into the structure @ref imgFixedHdr_t
  */
 #define IMG_VALIDATION_OFFSET        offsetof(imgHdr_t, fixedHdr.imgVld)
+
+/*!
+ * Offset in bytes of imgVal into the structure @ref imgFixedHdr_t
+ */
+#define IMG_COMMIT_FLAG_OFFSET        offsetof(imgHdr_t, fixedHdr.commitFlag)
 
 /*!
  * Offset in bytes of the boundary segment into the structure @ref imgHdr_t
@@ -567,13 +584,13 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 * Flagimg verification status indicating the successful sign verification
 * and is the current image executing/to be executed
 */
-#define VERIFY_PASS_CURRENT                  0xFE
+#define VERIFY_PASS_CURRENT          0xFE
 
 /*!
 * Flagimg verification status indicating the successful sign verification
 * and is not the current image executing/to be executed
 */
-#define VERIFY_PASS_NOT_CURRENT                  0xFC
+#define VERIFY_PASS_NOT_CURRENT      0xFC
 
 /*!
 * Flagimg verification status indicating the failed sign verification or
@@ -595,6 +612,27 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 */
 #define VERIFY_PASS                  0xFE
 
+#ifdef BIM_RESTRICTED_ROLLBACK_VERIFY_COMMIT_IMAGE
+/*!
+* Flagging image commit flag indicating image has not been committed yet
+* but might be running. Image is doing its own tests and verification to decide to commit or not
+*/
+#define COMMIT_PENDING               0XFF
+
+/*!
+* Flagging image commit flag indicating image has been committed
+* and image successfully passed its verification tests
+*/
+#define COMMIT_ACCEPTED              0XFE
+
+/*!
+* Flagging image commit flag indicating image has been rejected
+* and image failed ist verification tests
+*/
+#define COMMIT_REJECTED              0XEF
+
+#endif
+
 /*!
  * Length of image external flash image header
  */
@@ -615,7 +653,7 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
  */
 #define DEFAULT_CRC                  0xFFFFFFFF
 
-#if defined(SECURITY)
+#if (defined(SECURITY))
     /*!
      * Size of Signer Info
      */
@@ -641,7 +679,7 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 #endif
 /// @endcond // NODOC
 
-#if defined(SECURITY)
+#if (defined(SECURITY))
     /*!
     * Structure to hold the Signer Info and the Signature
     */
@@ -670,10 +708,19 @@ TYPEDEF_STRUCT_PACKED
   uint32_t  imgVld;         //!< Image validation bytes, used by BIM.
   uint32_t  len;            //!< Image length in bytes.
   uint32_t  prgEntry;       //!< Program entry address
+#ifdef BIM_VERIFY_VERSION_IMAGE
+  uint32_t  softVer;        //!< Software version of the image
+#else
   uint8_t   softVer[4];     //!< Software version of the image
+#endif
   uint32_t  imgEndAddr;     //!< Address of the last byte of a contiguous image
   uint16_t  hdrLen;         //!< Total length of the image header
+#ifdef BIM_RESTRICTED_ROLLBACK_VERIFY_COMMIT_IMAGE
+  uint8_t   commitFlag;     //!< whether or not this image has not been committed, committed or rejected.
+  uint8_t   rfu;            //!< Reserved bytes
+#else
   uint16_t  rfu;            //!< Reserved bytes
+#endif
 }imgFixedHdr_t;
 
 /*!

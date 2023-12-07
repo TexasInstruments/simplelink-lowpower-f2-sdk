@@ -1,0 +1,31 @@
+[
+    {
+        "files": [
+            "+../../README.md -> README.md",
+            "+../../rfServer.c -> rfServer.c",
+            "+../../rfServer.h -> rfServer.h",
+            "+../../oad/native_oad/oad_server.c -> oad/native_oad/oad_server.c",
+            "+../../oad/native_oad/oad_server.h -> oad/native_oad/oad_server.h",
+            "+../../oad/native_oad/oad_protocol.c -> oad/native_oad/oad_protocol.c",
+            "+../../oad/native_oad/oad_protocol.h -> oad/native_oad/oad_protocol.h",
+            "+../../oad/native_oad/oad_storage.c -> oad/native_oad/oad_storage.c",
+            "+../../oad/native_oad/oad_storage.h -> oad/native_oad/oad_storage.h",
+            "+../../oad/native_oad/oad_image_header_app.h -> oad/native_oad/oad_image_header_app.h",
+            "+../../common/cc26xx/flash_interface/external/flash_interface_ext_rtos_NVS.c -> common/cc26xx/flash_interface/external/flash_interface_ext_rtos_NVS.c",
+            "+../../common/cc26xx/flash_interface/flash_interface.h -> common/cc26xx/flash_interface/flash_interface.h",
+            "+../../common/cc26xx/oad/oad_image_header.h -> common/cc26xx/oad/oad_image_header.h",
+            "+../../common/cc26xx/oad/ext_flash_layout.h -> common/cc26xx/oad/ext_flash_layout.h",
+            "+../../common/cc26xx/crc/crc32.c -> common/cc26xx/crc/crc32.c",
+            "+../../common/cc26xx/crc/crc32.h -> common/cc26xx/crc/crc32.h",
+            "+../../overview.rov.json -> overview.rov.json",
+            "+../../radio/radio.c -> radio/radio.c",
+            "+../../radio/radio.h -> radio/radio.h",
+            "+../../radio/RFQueue.c -> radio/RFQueue.c",
+            "+../../radio/RFQueue.h -> radio/RFQueue.h",
+            "+../rfOADServer.syscfg -> rfOADServer.syscfg",
+            "+../main_tirtos.c -> main_tirtos.c",
+            "+cc13x2_cc26x2_tirtos7.lds -> cc13x2_cc26x2_tirtos7.lds",
+            "+../../oad/native_oad/oad_config.h -> oad/native_oad/oad_config.h"
+        ]
+    }
+]

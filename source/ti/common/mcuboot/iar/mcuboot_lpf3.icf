@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,24 @@ keep { section .resetVecs};
 define region CCFG_region    = mem:[from CCFG_START__ to CCFG_END__];
 place in CCFG_region {section .ccfg};
 keep { section .ccfg };
+
+/*
+ * Define symbols required for CRC32 checksum generation within CCFG.
+ * Post-build step example:
+ * ielftool --checksum __ccfg_boot_cfg_crc32_end+1:4,crc32:1mi,0xFFFFFFFF;__ccfg_boot_cfg_crc32_begin-__ccfg_boot_cfg_crc32_end
+ *          --checksum __ccfg_crc32_end+1:4,crc32:1mi,0xFFFFFFFF;__ccfg_crc32_begin-__ccfg_crc32_end
+ *          --checksum __ccfg_user_record_crc32_end+1:4,crc32:1mi,0xFFFFFFFF;__ccfg_user_record_crc32_begin-__ccfg_user_record_crc32_end
+ *          --checksum __ccfg_debug_cfg_crc32_end+1:4,crc32:1mi,0xFFFFFFFF;__ccfg_debug_cfg_crc32_begin-__ccfg_debug_cfg_crc32_end
+ *          "$TARGET_PATH$" "$TARGET_PATH$"
+ */
+define exported symbol __ccfg_boot_cfg_crc32_begin      = 0x4E020000;
+define exported symbol __ccfg_boot_cfg_crc32_end        = 0x4E02000B;
+define exported symbol __ccfg_crc32_begin               = 0x4E020010;
+define exported symbol __ccfg_crc32_end                 = 0x4E02074B;
+define exported symbol __ccfg_user_record_crc32_begin   = 0x4E020750;
+define exported symbol __ccfg_user_record_crc32_end     = 0x4E0207CB;
+define exported symbol __ccfg_debug_cfg_crc32_begin     = 0x4E0207D0;
+define exported symbol __ccfg_debug_cfg_crc32_end       = 0x4E0207FB;
 
 /* Place remaining 'read only' in Flash */
 place in FLASH_region { readonly };

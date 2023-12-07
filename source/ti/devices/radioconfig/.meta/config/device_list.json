@@ -1,6 +1,10 @@
 {
     "devicelist": {
-        "version": "2.29.0",
+        "version": {
+            "_rtlib": "1.31.0",
+            "_radioconfig": "1.18.0",
+            "$": "2.30.0"
+        },
         "DeviceGroup": [
             {
                 "Name": "Sub-1 GHz",
@@ -111,82 +115,130 @@
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC1201",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1201"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1200",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1200"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1175",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1175"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transmitter"
                     },
                     {
-                        "DeviceName": "CC1125",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1125"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1121",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1121"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1120",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1120"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC115L",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC115L"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transmitter"
                     },
                     {
-                        "DeviceName": "CC113L",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC113L"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Receiver"
                     },
                     {
-                        "DeviceName": "CC110L",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC110L"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1150",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1150"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transmitter"
                     },
                     {
-                        "DeviceName": "CC1101",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1101"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1100E",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1100E"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1100",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1100"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC1111",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1111"
+                        },
                         "Brief": "Sub-1GHz USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC1110",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC1110"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC430",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC430"
+                        },
                         "Brief": "Sub-1GHz",
                         "DeviceType": "Wireless MCU"
                     }
@@ -208,6 +260,14 @@
                         "DeviceName": {
                             "_family": "Thor",
                             "$": "CC2674P10"
+                        },
+                        "Brief": "2.4 GHz",
+                        "DeviceType": "Wireless MCU"
+                    },
+                    {
+                        "DeviceName": {
+                            "_family": "Thor",
+                            "$": "CC2653P10"
                         },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"
@@ -365,92 +425,146 @@
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2538",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2538"
+                        },
                         "Brief": "2.4 GHz USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2533",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2533"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2531",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2531"
+                        },
                         "Brief": "2.4 GHz USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2530",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2530"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2545",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2545"
+                        },
                         "Brief": "2.4 GHz (31 IO)",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2544",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2544"
+                        },
                         "Brief": "2.4 GHz USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2543",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2543"
+                        },
                         "Brief": "2.4 GHz (16 IO)",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2541",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2541"
+                        },
                         "Brief": "2.4 GHz + BLE",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2540",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2540"
+                        },
                         "Brief": "2.4 GHz BLE USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2431",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2431"
+                        },
                         "Brief": "2.4 GHz LOC",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2430",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2430"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2520",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2520"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC2500",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2500"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Transceiver"
                     },
                     {
-                        "DeviceName": "CC2511",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2511"
+                        },
                         "Brief": "2.4 GHz USB",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2510",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2510"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Wireless MCU"
                     },
                     {
-                        "DeviceName": "CC2550",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC2550"
+                        },
                         "Brief": "2.4 GHz",
                         "DeviceType": "Transmitter"
                     },
                     {
-                        "DeviceName": "CC3200",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC3200"
+                        },
                         "Brief": "Wi-Fi 802.11b\/g\/n",
                         "DeviceType": "ARM CM4 MCU"
                     },
                     {
-                        "DeviceName": "CC3100",
+                        "DeviceName": {
+                            "_family": "Legacy",
+                            "$": "CC3100"
+                        },
                         "Brief": "Wi-Fi 802.11b\/g\/n",
                         "DeviceType": "Netw. Processor"
                     }

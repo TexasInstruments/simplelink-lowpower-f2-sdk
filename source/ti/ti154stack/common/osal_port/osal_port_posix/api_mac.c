@@ -193,6 +193,11 @@
 #define GET_SUBIE_LEN_SHORT(ctl) (uint16_t)(IE_UNPACKING(ctl,\
        PAYLOAD_IE_SUB_IE_LEN_SHORT_SIZE, PAYLOAD_IE_SUB_IE_LEN_SHORT_POSITION))
 
+#ifdef MCUBOOT_ENABLE
+#define MCUBOOT_HEADER_VER_ADDR_OFFSET 20
+#define MCUBOOT_VERSION_PTR ((&__MCUBOOT_HDR_BASE) + MCUBOOT_HEADER_VER_ADDR_OFFSET)
+#endif
+
 /******************************************************************************
  Structures
  *****************************************************************************/
@@ -200,6 +205,12 @@
 /******************************************************************************
  Global variables
  *****************************************************************************/
+
+/* Linker file created symbol for addressing MCUBoot header */
+#ifdef MCUBOOT_ENABLE
+extern uint8_t __MCUBOOT_HDR_BASE;
+#endif
+
 /*!
  The ApiMac_extAddr is the MAC's IEEE address, setup with the Chip's
  IEEE addresses in main.c
@@ -226,6 +237,8 @@ extern uint8_t GP_Offset;
 /******************************************************************************
  Local variables
  *****************************************************************************/
+static ApiMac_subAttribute_t subAttributeReadId = 0;
+
 /*! Semaphore used to post events to the application thread */
 static sem_t appSemHandle;
 
@@ -535,6 +548,35 @@ ApiMac_status_t ApiMac_mlmeGetReqArrayLen(ApiMac_attribute_array_t pibAttribute,
                                           uint8_t *pValue,
                                           uint16_t *pLen)
 {
+    mcuboot_image_version_t mcuboot_ver;
+
+    if (pibAttribute == ApiMac_attribute_advancedSettings)
+    {
+        if (subAttributeReadId == ApiMac_subAttribute_getVersions)
+        {
+            *pLen = sizeof(mcuboot_image_version_t) + sizeof(ti154stack_version_t) +
+                    sizeof(ti154stack_core_version_t);
+#ifdef MCUBOOT_ENABLE
+            memcpy(&mcuboot_ver, MCUBOOT_VERSION_PTR, sizeof(mcuboot_image_version_t));
+#else
+            memset(&mcuboot_ver, 0, sizeof(mcuboot_image_version_t));
+#endif
+            /* Returned value will be in the following format:
+             * 8 byte MCUBoot version <1B major, 1B minor, 2B revision, 4B build num> +
+             * 4 byte stack version <1B major, 1B minor, 1B revision, 1B reserved> +
+             * 2 byte core stack version <1B major, 1B minor> */
+            memcpy(pValue, &mcuboot_ver, sizeof(mcuboot_ver));
+            pValue += sizeof(mcuboot_image_version_t);
+            memcpy(pValue, &ti154stack_version, sizeof(ti154stack_version_t));
+            pValue += sizeof(ti154stack_version_t);
+            memcpy(pValue, &ti154stack_core_version, sizeof(ti154stack_core_version_t));
+        }
+        else
+        {
+            return ApiMac_status_unsupportedAttribute;
+        }
+        return ApiMac_status_success;
+    }
     /* Duty Cycle PIB Variable */
 #ifdef MAC_DUTY_CYCLE_CHECKING
     if (pibAttribute == ApiMac_attribute_dutyCycleBucket)
@@ -908,7 +950,11 @@ ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
     {
         uint8_t subAttribute = pValue[0];
         uint8_t *value = pValue + 1;
-        if (subAttribute == ApiMac_subAttribute_stopScan)
+        if (subAttribute == ApiMac_subAttribute_setReadId)
+        {
+            subAttributeReadId = *value;
+        }
+        else if (subAttribute == ApiMac_subAttribute_stopScan)
         {
             MAC_AbortScan();
         }
@@ -951,7 +997,6 @@ ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
             {
                 return ApiMac_status_unsupportedAttribute;
             }
-
 
             if (subAttribute == ApiMac_subAttribute_srcMatchAddEntry)
             {

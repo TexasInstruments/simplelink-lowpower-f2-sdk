@@ -1,0 +1,27 @@
+[
+    {
+        "files": [
+            "+../README.md -> README.md",
+            "+../../../../../../source/ti/common/bim/bim_offchip_main.c -> Application/bim_offchip_main.c",
+            "+../../../../../../source/ti/common/bim/ccfg_app.c -> Application/ccfg_app.c",
+            "+../../../../../../source/ti/common/cc26xx/bim/bim_util.c -> Application/bim_util.c",
+            "+../../../../../../source/ti/common/cc26xx/bim/bim_util.h -> Application/bim_util.h",
+            "+../../../../../../source/ti/common/cc26xx/crc/crc32.c -> Application/crc32.c",
+            "+../../../../../../source/ti/common/cc26xx/crc/crc32.h -> Application/crc32.h",
+            "+../../../../../../source/ti/common/cc26xx/debug/led_debug.c -> Application/led_debug.c",
+            "+../../../../../../source/ti/common/cc26xx/debug/led_debug.h -> Application/led_debug.h",
+            "+../../../../../../source/ti/common/cc26xx/oad/oad_image_header.h -> Application/oad_image_header.h",
+            "+../../../../../../source/ti/common/cc26xx/oad/ext_flash_layout.h -> Application/ext_flash_layout.h",
+            "+../../../../../../source/ti/common/cc26xx/flash_interface/internal/flash_interface_internal.c -> Application/flash_interface_internal.c",
+            "+../../../../../../source/ti/common/flash/no_rtos/extFlash/bsp.h -> Board/bsp.h",
+            "+../../../../../../source/ti/common/flash/no_rtos/extFlash/ext_flash.c -> ExternalFlash/ext_flash.c",
+            "+../../../../../../source/ti/common/flash/no_rtos/extFlash/ext_flash.h -> ExternalFlash/ext_flash.h",
+            "+../../../../../../source/ti/common/flash/no_rtos/extFlash/bsp_spi_cc13x2_cc26x2.c -> SPI/bsp_spi_cc13x2_cc26x2.c",
+            "+../../../../../../source/ti/common/flash/no_rtos/extFlash/bsp_spi.h -> SPI/bsp_spi.h",
+            "+../bim_cc26x1_cc13x1.cmd -> bim_cc26x1_cc13x1.cmd",
+            "+../../../../../../source/ti/devices/cc13x1_cc26x1/startup_files/startup_ticlang.c -> Application/startup_ticlang.c",
+            "+../../../../../../source/ti/common/cc26xx/ecc/sign_util.c -> Application/sign_util.c",
+            "+../../../../../../source/ti/common/cc26xx/ecc/sign_util.h -> Application/sign_util.h"
+        ]
+    }
+]

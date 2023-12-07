@@ -52,7 +52,6 @@
 #include "at/AtProcess.h"
 
 #ifdef AT_SPI
-#define SPI_MSG_LENGTH   (1024)
 #define SPI_BITRATE      (1000000U)
 #define SPI_FRAME_FORMAT (SPI_POL0_PHA1)
 static char spiRxBuffer[SPI_MSG_LENGTH];
@@ -326,9 +325,10 @@ void AtTerm_clearTerm(void)
 #endif
 }
 
-void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, size_t fxnParamLen)
+void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, uintptr_t fxnParam2, size_t fxnParamLen)
 {
     uint32_t _fxnParam;
+    uint32_t _fxnParam2 = 0;
     uint8_t _radioId = 1;
 
     char *token;
@@ -347,15 +347,31 @@ void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, 
             // must have been the radioId and the next, fxnParam.
             _radioId = _fxnParam;
             _fxnParam = atoi(token);
+            token = strtok(NULL, delimiter);
+            if (NULL != token)
+            {
+                _fxnParam2 = atoi(token);
+            }
+            else
+            {
+                _fxnParam2 = RADIO_NO_PHY;
+            }
+
         }
 
         if(NULL != (void *)fxnParam){
             switch(fxnParamLen){
-            case (sizeof(uint8_t)): *(uint8_t *)fxnParam = (uint8_t)_fxnParam;
-            break;
-            case (sizeof(uint16_t)): *(uint16_t *)fxnParam = (uint16_t)_fxnParam;
-            break;
-            default: *(uint32_t *)fxnParam = _fxnParam;
+            case (sizeof(uint8_t)):
+                *(uint8_t *)fxnParam = (uint8_t)_fxnParam;
+                *(uint8_t *)fxnParam2 = (uint8_t)_fxnParam2;
+                break;
+            case (sizeof(uint16_t)):
+                *(uint16_t *)fxnParam = (uint16_t)_fxnParam;
+                *(uint16_t *)fxnParam2 = (uint16_t)_fxnParam2;
+                break;
+            default:
+                *(uint32_t *)fxnParam = _fxnParam;
+                *(uint32_t *)fxnParam2 = _fxnParam2;
             break;
             }
         }

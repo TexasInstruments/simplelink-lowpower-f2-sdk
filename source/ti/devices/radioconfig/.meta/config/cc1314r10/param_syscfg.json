@@ -112,6 +112,22 @@
                     "displayName": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)"
                 },
                 {
+                    "name": "wbdsss480ksps30kbps",
+                    "displayName": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8"
+                },
+                {
+                    "name": "wbdsss480ksps60kbps",
+                    "displayName": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4"
+                },
+                {
+                    "name": "wbdsss480ksps120kbps",
+                    "displayName": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
+                },
+                {
+                    "name": "wbdsss480ksps240kbps",
+                    "displayName": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1"
+                },
+                {
                     "name": "custom868",
                     "displayName": "Custom PHY Setting, 868 Mhz band"
                 }
@@ -887,6 +903,26 @@
                 "name": "qpsk6kbpsrm0",
                 "description": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)",
                 "options": "ieee_15_4g"
+            },
+            {
+                "file": "setting_tc373.json",
+                "name": "wbdsss480ksps30kbps",
+                "description": "WB-DSSS, 30 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:8"
+            },
+            {
+                "file": "setting_tc372.json",
+                "name": "wbdsss480ksps60kbps",
+                "description": "WB-DSSS, 60 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:4"
+            },
+            {
+                "file": "setting_tc371.json",
+                "name": "wbdsss480ksps120kbps",
+                "description": "WB-DSSS, 120 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:2"
+            },
+            {
+                "file": "setting_tc370.json",
+                "name": "wbdsss480ksps240kbps",
+                "description": "WB-DSSS, 240 kbps (480 ksps), 195 kHz Deviation, 2-GFSK, 784 kHz RX Bandwidth, FEC = 1:2, DSSS = 1:1"
             },
             {
                 "file": "setting_tc106_custom.json",

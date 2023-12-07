@@ -41,7 +41,10 @@
 #define TestMode_CONT_RX            3
 #define TestMode_PER_TX             4
 #define TestMode_PER_RX             5
-#define TestMode_NUMBER_OF_MODES    6
+#define TestMode_MDR_TX             6
+#define TestMode_MDR_RX             7
+#define TestMode_MDR_CS_TX          8
+#define TestMode_NUMBER_OF_MODES    9
 
 #define TestMode_SELECT_CW                 1
 #define TestMode_SELECT_MODULATED          0
@@ -54,13 +57,13 @@ typedef enum
 } TestMode_Status;
 
 // Function type to print messages
-typedef void (*printMsgFxn)(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
+typedef void (*printMsgFxn)(uint32_t mode, uint16_t packetCount, uint16_t packetCountNok, uint16_t rxSyncCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi, char *phyName);
 
 /***************************************************************************************************
  *
  * Runs/exits a test mode
  *
- * This function runs or exits a specified test mode 
+ * This function runs or exits a specified test mode
  *
  * param newMode     - The test mode to set and run
  * param perNumPkts  - Number of PER packets for PER TX or PER RX test modes
