@@ -164,8 +164,8 @@
 /*! Maximum parameter size for FHPIB (see macNetName[] in fh_pib.h) */
 #define MAX_PARAM_SIZE_FH  (FHPIB_NET_NAME_SIZE_MAX * sizeof(uint8_t))
 
-/*! Maximum parameter size for MAC PIB (see mac_pib.h) */
-#define MAX_PARAM_SIZE_MAC  (sizeof(ApiMac_sAddr_t))
+/*! Maximum parameter size for MAC PIB (as specified in 15.4 CoP interface guide) */
+#define MAX_PARAM_SIZE_MAC  16
 
 /*! Maximum parameter size for MAC PIB (see mac_security_pib.h) */
 #define MAX_PARAM_SIZE_SEC  (APIMAC_KEY_SOURCE_MAX_LEN*sizeof(uint8_t))

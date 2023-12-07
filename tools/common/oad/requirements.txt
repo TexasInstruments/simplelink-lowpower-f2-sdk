@@ -1,6 +1,3 @@
 crcmod
 intelhex
 ecdsa
-staticx
-patchelf-wrapper
-

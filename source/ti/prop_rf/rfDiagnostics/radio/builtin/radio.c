@@ -147,6 +147,8 @@ static int8_t rssiMin;
 static int8_t rssiMax;
 
 static uint16_t ieeeRxPackets = 0;
+static uint16_t ieeeRxPacketsNOk = 0;
+static uint16_t numRxSynOk = 0;
 
 /*
  * Default channel and whitening settings in SmartRF Studio (for BLE channel 17).
@@ -167,6 +169,16 @@ static int16_t bleWhitening[40][2] = {{2402, 0xE5}, {2404, 0xC0}, {2406, 0xC1}, 
                                       {2458, 0xDA}, {2460, 0xDB}, {2462, 0xDC}, {2464, 0xDD},
                                       {2466, 0xDE}, {2468, 0xDF}, {2470, 0xE0}, {2472, 0xE1},
                                       {2474, 0xE2}, {2476, 0xE3}, {2478, 0xE4}, {2480, 0xE7}};
+
+static void RF_runCmdSafe(RF_Handle h, RF_Op *pOp, RF_Priority ePri, RF_Callback pCb, RF_EventMask bmEvent)
+{
+    RF_EventMask terminationReason = RF_EventCmdAborted | RF_EventCmdPreempted;
+    // Re-run if command was aborted due to SW TCXO compensation
+    while(( terminationReason & RF_EventCmdAborted ) && ( terminationReason & RF_EventCmdPreempted ))
+    {
+        terminationReason = RF_runCmd(h, pOp, ePri, pCb, bmEvent);
+    }
+}
 
 void Radio_Builtin_init(void)
 {
@@ -203,7 +215,7 @@ void Radio_Builtin_cancelTx(void)
     RF_pendCmd(rfHandle, txCmdhandle, RF_EventLastCmdDone);
 }
 
-void Radio_Builtin_setupPhy(uint8_t phyIndex)
+bool Radio_Builtin_setupPhy(uint8_t phyIndex, uint8_t phyIndex2)
 {
     // Close the rfHandler (if open)
     if (isOpen)
@@ -295,6 +307,7 @@ void Radio_Builtin_setupPhy(uint8_t phyIndex)
     }
     currentPhyNumber = phyIndex;
     isOpen = true;
+    return true;
 }
 
 bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
@@ -507,7 +520,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
         }
 
         // Set the frequency
-        RF_runCmd(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
+        RF_runCmdSafe(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
 
         uint16_t packetCounter;
         uint32_t cmdStatus = 0;
@@ -530,7 +543,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
                         txPacket[0] = (uint8_t)(packetCounter >> 8);
                         txPacket[1] = (uint8_t)(packetCounter);
 
-                        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
+                        RF_runCmdSafe(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
                         cmdStatus = ((volatile RF_Op*)&RF_cmdPropTx)->status;
 
                         // Add a delay for SmartRF Studio to keep up
@@ -562,7 +575,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
                             txPacket[2] = lsbFirst((uint8_t)(packetCounter >> 8));
                             txPacket[3] = lsbFirst((uint8_t)(packetCounter));
                         }
-                        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTxAdv, RF_PriorityNormal, NULL, 0);
+                        RF_runCmdSafe(rfHandle, (RF_Op*)&RF_cmdPropTxAdv, RF_PriorityNormal, NULL, 0);
                         cmdStatus = ((volatile RF_Op*)&RF_cmdPropTxAdv)->status;
 
                         // Add a delay for SmartRF Studio to keep up
@@ -604,7 +617,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
                         txPacket[0] = (uint8_t)(packetCounter >> 8);
                         txPacket[1] = (uint8_t)(packetCounter);
 
-                        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
+                        RF_runCmdSafe(rfHandle, (RF_Op*)&RF_cmdPropTx, RF_PriorityNormal, NULL, 0);
                         cmdStatus = ((volatile RF_Op*)&RF_cmdPropTx)->status;
                     }
                     else // PhySettings_TEST_STUDIO_COMPL
@@ -615,7 +628,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
                         txPacket[0] = (uint8_t)(packetCounter >> 8);
                         txPacket[1] = (uint8_t)(packetCounter);
 
-                        RF_runCmd(rfHandle, (RF_Op*)&RF_cmdBle5AdvAux, RF_PriorityNormal, NULL, 0);
+                        RF_runCmdSafe(rfHandle, (RF_Op*)&RF_cmdBle5AdvAux, RF_PriorityNormal, NULL, 0);
                         cmdStatus = ((volatile RF_Op*)&RF_cmdBle5AdvAux)->status;
 
                         // Add a delay for SmartRF Studio to keep up
@@ -651,6 +664,8 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
 bool Radio_Builtin_packetRx(uint8_t pktLen)
 {
     ieeeRxPackets = 0;
+    ieeeRxPacketsNOk = 0;
+    numRxSynOk = 0;
 
     if (isOpen)
     {
@@ -660,9 +675,10 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
         memset(&RF_cmdBle5GenericRx, 0, sizeof(rfc_CMD_BLE5_GENERIC_RX_t));
         memset(&RF_cmdIeeeRx, 0, sizeof(rfc_CMD_IEEE_RX_t));
 
-        rxStatisticsProp.nRxOk = 0;
-        rxStatisticsBle.nRxOk = 0;
-        rxStatisticsIeee.nRxData = 0;
+        memset(&rxStatisticsProp, 0, sizeof(rfc_propRxOutput_t));
+        memset(&rxStatisticsBle, 0, sizeof(rfc_bleGenericRxOutput_t));
+        memset(&rxStatisticsIeee, 0, sizeof(rfc_ieeeRxOutput_t));
+
         rssiAvg = 0;
         rssiMin = 127;
         rssiMax = -127;
@@ -825,7 +841,7 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
                                              (RF_Op*)&RF_cmdPropRx,
                                              RF_PriorityNormal,
                                              &rxCallback,
-                                             RF_EventRxEntryDone);
+                                             (RF_EventRxEntryDone|RF_EventMdmSoft));
 
                     // Allow time for the radio to enter RX
                     CPUdelay(20000);
@@ -844,7 +860,7 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
                                              (RF_Op*)&RF_cmdPropRxAdv,
                                              RF_PriorityNormal,
                                              &rxCallbackAdvanced,
-                                             RF_EventRxEntryDone);
+                                             (RF_EventRxEntryDone | RF_EventMdmSoft));
 
                     // Allow time for the radio to enter RX
                     CPUdelay(20000);
@@ -863,7 +879,7 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
                                          (RF_Op*)&RF_cmdIeeeRx,
                                          RF_PriorityNormal,
                                          &rxCallback,
-                                         (RF_EventRxEntryDone | RF_EventRxOk));
+                                         (RF_EventRxEntryDone | RF_EventRxOk | RF_EventRxNOk | RF_EventMdmSoft));
 
                 // Allow time for the radio to enter RX
                 CPUdelay(20000);
@@ -883,7 +899,7 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
                                              (RF_Op*)&RF_cmdPropRx,
                                              RF_PriorityNormal,
                                              &rxCallback,
-                                             RF_EventRxEntryDone);
+                                             (RF_EventRxEntryDone | RF_EventMdmSoft));
 
                     // Allow time for the radio to enter RX
                     CPUdelay(20000);
@@ -898,7 +914,7 @@ bool Radio_Builtin_packetRx(uint8_t pktLen)
                                              (RF_Op*)&RF_cmdBle5GenericRx,
                                              RF_PriorityNormal,
                                              &rxCallbackBle,
-                                             RF_EventRxEntryDone);
+                                             (RF_EventRxEntryDone | RF_EventMdmSoft));
 
                     // Allow time for the radio to enter RX
                     CPUdelay(20000);
@@ -933,7 +949,7 @@ bool Radio_Builtin_contTx(bool cw)
         uint32_t cmdStatus;
 
         // Set the frequency
-        RF_runCmd(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
+        RF_runCmdSafe(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
 
         if (cw)
         {
@@ -963,7 +979,7 @@ bool Radio_Builtin_contRx(void)
         uint32_t cmdStatus;
 
         // Set the frequency
-        RF_runCmd(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
+        RF_runCmdSafe(rfHandle, (RF_Op*)PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs, RF_PriorityNormal, NULL, 0);
 
         rxCmdhandle = RF_postCmd(rfHandle, (RF_Op*)&RF_cmdRxTest, RF_PriorityNormal, NULL, 0);
 
@@ -978,10 +994,11 @@ bool Radio_Builtin_contRx(void)
     return false;
 }
 
-void Radio_Builtin_setFreq(uint32_t freq)
+void Radio_Builtin_setFreq(uint32_t freq, uint32_t mdrFreq)
 {
     uint16_t centerFreq;
     uint16_t fractFreq;
+    (void)mdrFreq;
 
     centerFreq = (uint16_t)(freq / 1000000);
     fractFreq  = (uint16_t)(((uint64_t)freq-((uint64_t)centerFreq*1000000))*65536/1000000);
@@ -1042,16 +1059,16 @@ void Radio_Builtin_setFreq(uint32_t freq)
     }
 }
 
-uint32_t Radio_Builtin_getFreq(void)
+void Radio_Builtin_getFreq(RF_Frequency *freqs)
 {
-    uint32_t freq = (uint32_t)RADIO_ERROR_VALUE;
+    freqs->freq = (uint32_t)RADIO_ERROR_VALUE;
+    freqs->mdrFreq = 0;
 
     if (isOpen)
     {
-        freq = (PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs->frequency)*1000000;
-        freq += ((((uint64_t)(PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs->fractFreq)*1000000))/65536);
+        freqs->freq = (PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs->frequency)*1000000;
+        freqs->freq += ((((uint64_t)(PhySettings_supportedPhys[currentPhyNumber].RF_pCmdFs->fractFreq)*1000000))/65536);
     }
-    return freq;
 }
 
 bool Radio_Builtin_setPower(int8_t i8TxPowerDbm)
@@ -1157,6 +1174,37 @@ uint16_t Radio_Builtin_getNumRxPackets(void)
     return numRxPackets;
 }
 
+uint16_t Radio_Builtin_getNumRxPacketsNok(void)
+{
+    uint16_t numRxPacketsNok;
+
+    if((PhySettings_supportedPhys[currentPhyNumber].PhySettings_apiType == PhySettings_API_BLE) &
+       (PhySettings_supportedPhys[currentPhyNumber].PhySettings_testType == PhySettings_TEST_STUDIO_COMPL))
+    {
+        numRxPacketsNok = rxStatisticsBle.nRxNok;
+    }
+    else if(PhySettings_supportedPhys[currentPhyNumber].PhySettings_apiType == PhySettings_API_IEEE)
+    {
+        numRxPacketsNok = ieeeRxPacketsNOk;
+    }
+    else
+    {
+        numRxPacketsNok = rxStatisticsProp.nRxNok;
+    }
+
+    return numRxPacketsNok;
+}
+
+uint16_t Radio_Builtin_getNumRxSync(void)
+{
+    return numRxSynOk;
+}
+
+uint8_t Radio_Builtin_getRxPhyIndex(void)
+{
+    return currentPhyNumber;
+}
+
 bool Radio_Builtin_checkPacketLength(uint32_t *perPktLen)
 {
     uint32_t pktLen = *perPktLen;
@@ -1237,6 +1285,16 @@ void rxCallback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
     if(e & RF_EventRxOk)
     {
         ieeeRxPackets++;
+    }
+
+    if(e & RF_EventRxNOk)
+    {
+        ieeeRxPacketsNOk++;
+    }
+
+    if(e & RF_EventMdmSoft)
+    {
+        numRxSynOk++;
     }
 }
 
@@ -1354,8 +1412,12 @@ char *Radio_Builtin_getPhyName(uint8_t phyIndex)
 void Radio_Builtin_registerFxns(Radio_Fxns *fxns){
     fxns->init = Radio_Builtin_init;
     fxns->setupPhy = Radio_Builtin_setupPhy;
+    fxns->enableMdr = NULL;
     fxns->packetTx = Radio_Builtin_packetTx;
     fxns->packetRx = Radio_Builtin_packetRx;
+    fxns->packetMdrTx = NULL;
+    fxns->packetMdrRx = NULL;
+    fxns->packetMdrCsTx = NULL;
     fxns->contTx = Radio_Builtin_contTx;
     fxns->contRx = Radio_Builtin_contRx;
     fxns->setFreq = Radio_Builtin_setFreq;
@@ -1369,7 +1431,12 @@ void Radio_Builtin_registerFxns(Radio_Fxns *fxns){
     fxns->cancelRx = Radio_Builtin_cancelRx;
     fxns->cancelTx = Radio_Builtin_cancelTx;
     fxns->getNumRxPackets = Radio_Builtin_getNumRxPackets;
+    fxns->getNumRxPacketsNok = Radio_Builtin_getNumRxPacketsNok;
+    fxns->getNumRxSync = Radio_Builtin_getNumRxSync;
+    fxns->getNumRxPackets = Radio_Builtin_getNumRxPackets;
+    fxns->getRxPhyIndex = Radio_Builtin_getRxPhyIndex;
     fxns->checkPacketLength = Radio_Builtin_checkPacketLength;
     fxns->getNumSupportedPhys = Radio_Builtin_getNumSupportedPhys;
     fxns->getPhyName = Radio_Builtin_getPhyName;
+    fxns->getRadioVersion = NULL;
 }

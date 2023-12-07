@@ -972,7 +972,7 @@ static void macRadioTxGoSubG(uint8 txType)
     /* Parse transmission status and update tracking data */
     if (activityObject.pSetActivityTrackingTxFn)
     {
-      activityObject.pSetActivityTrackingTxFn(NULL, NULL , RF_EventCmdPreempted);
+      activityObject.pSetActivityTrackingTxFn(NULL, 0, RF_EventCmdPreempted);
     }
 
     HAL_EXIT_CRITICAL_SECTION(s);
@@ -1056,7 +1056,7 @@ static void macRadioTxAckCb(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
   /* Parse transmission status and update tracking data */
   if (activityObject.pSetActivityTrackingTxFn)
   {
-      activityObject.pSetActivityTrackingTxFn(NULL, NULL, e);
+      activityObject.pSetActivityTrackingTxFn(NULL, 0, e);
   }
 
   event = RF_EventLastCmdDone;
@@ -1657,7 +1657,7 @@ static void macRadioTxEDFECb(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
   /* Parse transmission status and update tracking data */
   if (activityObject.pSetActivityTrackingTxFn)
   {
-      activityObject.pSetActivityTrackingTxFn(NULL, NULL, e);
+      activityObject.pSetActivityTrackingTxFn(NULL, 0, e);
   }
 
   if (e & RF_EventLastCmdDone)

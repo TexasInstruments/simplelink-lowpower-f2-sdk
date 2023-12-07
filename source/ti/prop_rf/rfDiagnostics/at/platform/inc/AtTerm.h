@@ -42,6 +42,9 @@ extern "C"
 #include <stdint.h>
 #include <stdbool.h>
 
+
+#define RADIO_NO_PHY (0xFF)
+
 /***************************************************************************************************
  *
  * Initializes the AT terminal
@@ -187,12 +190,13 @@ extern void AtTerm_clearTerm(void);
  * param radioId  radio ID extracted from terminal string is stored here. Can be NULL; the current
  *                radio may have been set somewhere else.
  * param fxnParam AT command parameter extracted from terminal string is stored here. Can be NULL.
+ * param fxnParam2 AT command parameter extracted from terminal string is stored here. Can be NULL.
  * param fxnParamLen length (in bytes) of the AT command parameter. 0 if fxnParam is NULL
  *
  * return none
  *
  ***************************************************************************************************/
-extern void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, size_t fxnParamLen);
+extern void AtTerm_getIdAndParam(char *paramStr, uint8_t *radioId, uintptr_t fxnParam, uintptr_t fxnParam2, size_t fxnParamLen);
 
 
 #ifdef __cplusplus

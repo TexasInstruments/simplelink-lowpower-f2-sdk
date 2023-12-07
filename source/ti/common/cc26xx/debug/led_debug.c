@@ -2,7 +2,7 @@
 
  @file  led_debug.c
 
- @brief This module contains the definitions for the  functionality of a
+ @brief This module contains the definitions for the functionality of a
         bim debug utility.
 
  Group: WCS, BTS
@@ -129,7 +129,7 @@ void lightGreenLed(void)
 /**
  * @fn      delay
  *
- * @brief   Causes Proecessor to execute NOP's for the specified time delayMs
+ * @brief   Causes processor to execute NOP's for the specified time delayMs
  *
  * @param   delayMs - desired delay in milliseconds
  *

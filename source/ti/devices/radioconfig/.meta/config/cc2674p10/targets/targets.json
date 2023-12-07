@@ -10,6 +10,13 @@
                 ]
             },
             {
+                "_name": "LP_CC2674P10_RGZ, 10DBM",
+                "Target": [
+                    "target_lp_cc2674p10_rgz_10dbm.json",
+                    "target_lp_cc2674p10_rgz_10dbm_highPA.json"
+                ]
+            },
+            {
                 "_name": "LP_EM_CC2674P10_RSK",
                 "Target": [
                     "target_lp_cc2674p10_rsk.json",

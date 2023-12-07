@@ -4,6 +4,7 @@
             "+../../../../../../source/ti/common/bim/bim_onchip_main.c -> bim_onchip_main.c",
             "+../../../../../../source/ti/common/cc26xx/bim/bim_util.c -> bim_util.c",
             "+../../../../../../source/ti/common/cc26xx/bim/bim_util.h -> bim_util.h",
+            "+../../../../../../source/ti/common/bim/ccfg_app.c -> ccfg_app.c",
             "+../../../../../../source/ti/common/cc26xx/crc/crc32.c -> crc32.c",
             "+../../../../../../source/ti/common/cc26xx/crc/crc32.h -> crc32.h",
             "+../../../../../../source/ti/common/cc26xx/flash_interface/internal/flash_interface_internal.c -> flash_interface_internal.c",

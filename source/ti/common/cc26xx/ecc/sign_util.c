@@ -352,6 +352,13 @@ uint8_t *computeSha2Hash(uint32_t imgStartAddr, uint8_t *SHABuff, uint16_t SHABu
     /* oad image tool calculated the sign over a fresh image where this value was 0xFFFFFFFF */
     pImgHdr->fixedHdr.imgVld = 0xFFFFFFFF;
 
+#ifdef BIM_RESTRICTED_ROLLBACK_VERIFY_COMMIT_IMAGE
+    /* if sign is being calculated, it means the commitFlag field is not set to rejected */
+    /* overwrite the commitFlag in read buffer to 0xFF (default) to allow re-verification of sign */
+    /* oad image tool calculated the sign over a fresh image where this value was 0xFF */
+    pImgHdr->fixedHdr.commitFlag = 0xFF;
+#endif
+
     /* if sign is being calculated, it means the verifStatus field is not set to invalid */
     /* overwrite the verifStatus in read buffer to 0xFF (default) to allow re-verification of sign */
     /* oad image tool calculated the sign over a fresh image where this value was 0xFF */

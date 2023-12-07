@@ -3,6 +3,7 @@
         "files": [
             "+../README.md -> README.md",
             "+../../../../../../source/ti/common/bim/bim_onchip_main.c -> Application/bim_onchip_main.c",
+            "+../../../../../../source/ti/common/bim/ccfg_app.c -> Application/ccfg_app.c",
             "+../../../../../../source/ti/common/cc26xx/bim/bim_util.c -> Application/bim_util.c",
             "+../../../../../../source/ti/common/cc26xx/bim/bim_util.h -> Application/bim_util.h",
             "+../../../../../../source/ti/common/cc26xx/crc/crc32.c -> Application/crc32.c",

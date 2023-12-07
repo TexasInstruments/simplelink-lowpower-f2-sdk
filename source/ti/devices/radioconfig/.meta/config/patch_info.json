@@ -32,6 +32,7 @@
         "rf_patch_cpe_multi_protocol_bt5_coex",
         "rf_patch_cpe_multi_protocol_rtls",
         "rf_patch_cpe_prop",
+        "rf_patch_cpe_prop_psip",
         "rf_patch_mce_genook",
         "rf_patch_mce_iqdump",
         "rf_patch_mce_wb_dsss",
@@ -44,6 +45,7 @@
         "rf_patch_cpe_ieee_coex",
         "rf_patch_cpe_multi_protocol",
         "rf_patch_mce_genook",
+        "rf_patch_mce_wb_dsss",
         "rf_patch_rfe_genook",
         "rf_patch_rfe_sun_oqpsk"
     ]

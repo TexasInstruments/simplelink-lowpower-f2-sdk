@@ -314,7 +314,8 @@
                                 }
                             },
                             {
-                                "_name": "override_ble5_setup_override_coded_non_coex.json",
+                                "_name": "override_ble5_setup_override_coded_noncoex.json",
+                                "_coex": "false",
                                 "Element32b": {
                                     "_type": "MCE_RFE_OVERRIDE",
                                     "_comment": "PHY: Use MCE ROM, RFE ROM",

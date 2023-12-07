@@ -210,7 +210,7 @@
 --define_symbol macCheckSched=0x100374e1
 --define_symbol macSetSched=0x1003753d
 //--define_symbol macDataTxComplete=0x10037079
---define_symbol macTxCompleteCallback=0x100364f9
+//--define_symbol macTxCompleteCallback=0x100364f9
 --define_symbol macDataTxSend=0x100368cd
 --define_symbol macDataTxEnqueue=0x1003712d
 --define_symbol macDataSend=0x100374c1
@@ -258,7 +258,7 @@
 --define_symbol macMainReset=0x10038791
 --define_symbol macSetEvent=0x10038861
 --define_symbol macSetEvent16=0x10038845
---define_symbol macCbackForEvent=0x100385f1
+// --define_symbol macCbackForEvent=0x100385f1
 --define_symbol macStateIdle=0x100388b1
 --define_symbol macStateIdleOrPolling=0x1003887d
 --define_symbol macStateScanning=0x100388c9

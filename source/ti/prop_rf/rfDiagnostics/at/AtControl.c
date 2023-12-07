@@ -55,13 +55,16 @@
 
 static AtProcess_Status atCtrlrFInit(char *paramStr, uint32_t paramLen);
 static AtProcess_Status atCtrlReset(char *paramStr, uint32_t paramLen);
+static AtProcess_Status atCtrlEnableMdr(char *paramStr, uint32_t paramLen);
 
 static AtCommand_t atControlCmds[] =
     {
         {"I", atCtrlrFInit}, // I: Initialize PHY
         {"i", atCtrlrFInit},
         {"RS", atCtrlReset}, // RS: reset device
-        {"rs", atCtrlReset}
+        {"rs", atCtrlReset},
+        {"EM", atCtrlEnableMdr}, // EM: enable MDR
+        {"em", atCtrlEnableMdr}
 };
 
 static AtProcess_Status atCtrlReset(char *paramStr, uint32_t paramLen)
@@ -73,10 +76,50 @@ static AtProcess_Status atCtrlReset(char *paramStr, uint32_t paramLen)
     return AtProcess_Status_Success;
 }
 
+static AtProcess_Status atCtrlEnableMdr(char *paramStr, uint32_t paramLen)
+{
+    (void)paramLen;
+    uint8_t testMode = TestMode_read();
+    uint8_t radioId = 0;
+
+    AtProcess_Status status = AtProcess_Status_Error;
+
+
+    // Do not allow for changing PHY when a test is running
+    if (testMode == TestMode_EXIT)
+    {
+        char *token;
+        char delimiter[] = " ";
+        token = strtok(paramStr, delimiter);
+        uint8_t region = 0;
+        if(NULL != token)
+        {
+            radioId = atoi(token);
+            token = strtok(NULL, delimiter);
+            if(NULL != token)
+            {
+                region = atoi(token);
+            }
+        }
+        if(Radio_verifyRadioId(radioId))
+        {
+            // verify and set the current radio
+            Radio_setCurrentRadio(radioId);
+            if(Radio_enableMdr(region))
+            {
+                status = AtProcess_Status_Success;
+            }
+        }
+    }
+
+    return status;
+}
+
 static AtProcess_Status atCtrlrFInit(char *paramStr, uint32_t paramLen)
 {
     (void)paramLen;
     uint8_t phyIndex = 0;
+    uint8_t phyIndex2 = RADIO_NO_PHY;
     uint8_t radioId;
     uint8_t testMode = TestMode_read();
 
@@ -85,21 +128,30 @@ static AtProcess_Status atCtrlrFInit(char *paramStr, uint32_t paramLen)
     // Do not allow for changing PHY when a test is running
     if (testMode == TestMode_EXIT)
     {
-        AtTerm_getIdAndParam(paramStr, &radioId, (uintptr_t)&phyIndex, sizeof(phyIndex));
+        AtTerm_getIdAndParam(paramStr, &radioId, (uintptr_t)&phyIndex, (uintptr_t)&phyIndex2, sizeof(phyIndex));
         if(Radio_verifyRadioId(radioId))
         {
             // verify and set the current radio
             Radio_setCurrentRadio(radioId);
 
             // Check that this PHY is available
-            if (phyIndex < Radio_getNumSupportedPhys())
+            if (phyIndex < Radio_getNumSupportedPhys() && (phyIndex2 < Radio_getNumSupportedPhys() || phyIndex2 == RADIO_NO_PHY))
             {
                 // Call a function that will setup the right PHY
-                Radio_setupPhy(phyIndex);
+                bool radioStatus = Radio_setupPhy(phyIndex, phyIndex2);
 
-                AtTerm_sendString("Init State \v");
+                if(!radioStatus)
+                {
+                    status = AtProcess_Status_Error;
+                    AtTerm_sendString("Init Failed \v");
+                }
+                else
+                {
+                    status = AtProcess_Status_Success;
+                    AtTerm_sendString("Init State \v");
+                }
 
-                status = AtProcess_Status_Success;
+
             }
         }
     }

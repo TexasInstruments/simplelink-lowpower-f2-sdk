@@ -34,6 +34,7 @@ my %newDbgSyms;
 my %oldDbgSyms;
 
 my @chanList;
+my %chanAliases;
 my %channels;
 my $supportAssert;
 
@@ -42,21 +43,16 @@ sub findAliasCh(@) {
     my ($chName, $fileName) = @_;
     my $newChName;
 
-    if ($chName eq "DBGCPE") {
-        $newChName = "DBGCH1";
-    }
-    elsif ($chName eq "DBGTOPSM") {
-        $newChName = "DBGCH2";
-    }
-    elsif ($chName eq "DBGSYS") {
-        $newChName = "DBGCH3";
+    if (exists($chanAliases{"$chName"})) {
+        # Replace with alias
+        $newChName = $chanAliases{"$chName"};
     }
     else {
         $newChName = $chName;
     }
 
     unless ($channels{$newChName}) {
-        die "Channel $chName found in $fileName is not supported";
+        die "Channel $chName found in $fileName is not supported. Please review the command line arguments used and consider to either use -c[1-3] switch to enable more channels, or use -alias switch to map channel name to the correct channel (one that is supported).";
     }
 
     return $newChName;
@@ -329,86 +325,79 @@ sub PrintWrapperDbgIdFile($) {
 }
 
 
-sub ParseProjectFile;
-sub ParseProjectFile {
-   my ($projectDir)  = $_[0];
-   my ($projectFile) = $_[1];
-   my @cFiles;
-   my $absolutePath;
 
-   my $mac_core_path;
-   my $lprf_com_path;
-
-   print "$projectDir x $projectFile\n";
-
-   $mac_core_path = "$projectDir../../../../lprf-timac-2";
-   $lprf_com_path = "$projectDir../../../../lprf-sd-common-components";
-
-
-   if (open DF, "<$projectDir/$projectFile") {
-   LINE : while (my $line = <DF>) {
-      chomp $line;
-      if ($line =~ /\s*locationURI\>MAC_CORE(.*)\.c\<\/locationURI\>/) {
-          $absolutePath = $1;
-          #print "$absolutePath\n";
-          #print "$mac_core_path\n";
-          $absolutePath = "$mac_core_path$absolutePath";
-          #print "$absolutePath\n";
-          push(@cFiles, "$absolutePath.c");
-      }elsif($line =~ /\s*locationURI\>COM_COMP(.*)\.c\<\/locationURI\>/) {
-          $absolutePath = $1;
-          #print "$absolutePath\n";
-          #print "$lprf_com_path\n";
-          $absolutePath = "$lprf_com_path$absolutePath";
-          #print "$absolutePath\n";
-          push(@cFiles, "$absolutePath.c");
-      }
-
-   }
-   close DF;
-   }
-   return @cFiles;
-}
 
 
 ######################################
 # Entry point
 ######################################
 
-my $ewpFile = shift @ARGV;
-$ewpFile =~ s/\\/\//g;
-my ($projectDir, $projectFile) = $ewpFile =~ m/(.*\/)(.*)$/;
+if ($ARGV[0] eq "" || $ARGV[0] eq "-h" || $ARGV[0] eq "--help") {
+    print "Script to extract debug print information from C files and generate DBGID file.\n";
+    print "\n";
+    print "Usage:\t" . basename($0) . " <outfile.h> [-c1] [-c2] [-c3] [-nt] [-na] [-alias <ch_alias> N] <infile0 .. infileN>\n";
+    print "\n";
+    print "where\n";
+    print "  <outfile.h>\t: Output file, a generated C header file with assigned DBGIDs. Needs to\n";
+    print "             \t  be included by C source files with debug print macros.\n";
+    print "  -c1\t\t: Support debug prints for channel 1 (DBGCH1).\n";
+    print "  -c2\t\t: Support debug prints for channel 2 (DBGCH2).\n";
+    print "  -c3\t\t: Support debug prints for channel 3 (DBGCH3).\n";
+    print "     \t\t  Note: if no -cN switch is specified, all channels will be supported.\n";
+    print "     \t\t  Note: if multiple -cN switches are used, the first one listed will be the\n";
+    print "     \t\t  channel used for debug prints from ASSERT() statements (see -na switch).\n";
+    print "  -nt\t\t: No touch files. (Otherwise, default behavior is to create one touch file with file\n";
+    print "     \t\t  suffix .dbgid_updated for each input C source file processed.)\n";
+    print "  -na\t\t: No ASSERT() support. (Otherwise, default behavior is to recognize ASSERT() statements\n";
+    print "     \t\t  and treat them as DBG_ASSERT() debug prints using the channel for the first\n";
+    print "     \t\t  specified -cN switch argument.\n";
+    print "  -alias <ch_alias> N : Define channel alias <ch_alias> to use channel N (N=1-3).\n";
+    print "                        The default aliases are: DBGCPE => DBGCH1. DBGTOPSM => DBGCH2. DBGSYS => DBGCH3.\n";
+    print "                        Example, to remap a default alias:       -alias DBGSYS 1\n";
+    print "                        Example, to define a new alias:          -alias DBGPBE 2\n";
+    print "  <infile0 .. infileN>: One or more C source files with debug print macros to process.\n";
+    exit 0;
+}
 
-print "$ewpFile $projectDir $projectFile\n";
-
+# Store arguments
 my $outFileName = shift @ARGV;
-$outFileName =~ s/\\/\//g;
-
-print "$outFileName \n";
-
 my $createTouchFiles = 1;
 $supportAssert = 1;
+# Set default channel alias map (as used on Chameleon/Agama) -- can be modified via arguments
+%chanAliases = ("DBGCPE"   => "DBGCH1",
+                "DBGTOPSM" => "DBGCH2",
+                "DBGSYS"   => "DBGCH3");
+
 while ($ARGV[0] =~ /^-/) {
     if ($ARGV[0] =~ /^-c([1-3])/) {
         push @chanList, "DBGCH$1";
         shift @ARGV;
-        print "DBGCH$1\n";
     }
     elsif ($ARGV[0] eq "-nt") {
         $createTouchFiles = 0;
         shift @ARGV;
-        print "createTouchFiles = 0 \n";
     }
     elsif ($ARGV[0] eq "-na") {
         $supportAssert = 0;
         shift @ARGV;
-        print "supportAssert = 0 \n";
+    }
+    elsif ($ARGV[0] eq "-alias") {
+        if ((defined $ARGV[1]) && ($ARGV[1] =~ /^[a-zA-Z0-9_]+$/) && ($ARGV[1] !~ /^DBGCH[1-3]$/) &&
+            (defined $ARGV[2]) && ($ARGV[2] =~ /^[1-3]$/)) {
+            $chanAliases{$ARGV[1]} = "DBGCH".$ARGV[2];
+            shift @ARGV;
+            shift @ARGV;
+            shift @ARGV;
+        }
+        else {
+            die "Syntax error or missing arguments after option $ARGV[0]: $ARGV[0] $ARGV[1] $ARGV[2]";
+        }
     }
     else {
         die "Unknown option $ARGV[0]";
     }
 }
-# my @inFileNames = @ARGV;
+my @inFileNames = @ARGV;
 
 if (@chanList == 0) {
     # Default to all channels with channel 1 as the main one
@@ -419,22 +408,32 @@ for (@chanList) {
     $channels{$_}++;
 }
 
-my @inFileNames = ParseProjectFile($projectDir, $projectFile);
+
 
 # Read the old debug ID header file
-my $filesExisted = ParseOldDbgIdFile("${outFileName}");
+my $filesExisted = ParseOldDbgIdFile($outFileName);
 
 # Read each input file
 foreach my $inFileName (@inFileNames) {
-    $inFileName =~ s/\\/\//g;
-
-    print "Opening C file $inFileName\n";
     FindCDbgPrint($inFileName) or die "Unable to find \"$inFileName\"\n";
+
+    if ($createTouchFiles) {
+        # Generate missing touch files
+        my $touchFileName = $inFileName;
+        $touchFileName =~ s/[^\/]*\///g;
+        $touchFileName =~ s/\.c$//g;
+        $touchFileName .= ".dbgid_updated";
+        my $TF = IO::File->new("<$touchFileName");
+        unless ($TF) {
+            $TF = IO::File->new(">$touchFileName");
+        }
+        close $TF;
+    }
 }
 
 # Prepare the tables of used debug ID numbers
 my %dbgIdTable;
-for (my $n = 0; $n < 512; $n++) {
+for (my $n = 0; $n < 1024; $n++) {
     $dbgIdTable{DBGCH1}[$n] = ($n < 3) ? 1 : 0;
     $dbgIdTable{DBGCH2}[$n] = ($n < 3) ? 1 : 0;
     $dbgIdTable{DBGCH3}[$n] = ($n < 3) ? 1 : 0;
@@ -471,18 +470,18 @@ foreach my $key (keys %oldDbgSyms) {
 my $keysChanged = 0;
 foreach my $key (keys %newDbgSyms) {
     unless ($newDbgSyms{$key}{ID}) {
-#        if ($createTouchFiles) {
-#            # Generate the touch file name, and touch the file!
-#            my $touchFileName = $newDbgSyms{$key}{FILENAME};
-#            $touchFileName =~ s/[^\/]*\///g;
-#            $touchFileName =~ s/\.c$//g;
-#            $touchFileName .= ".dbgid_updated";
-#            my $TF = IO::File->new(">$touchFileName");
-#            close $TF;
-#        }
+        if ($createTouchFiles) {
+            # Generate the touch file name, and touch the file!
+            my $touchFileName = $newDbgSyms{$key}{FILENAME};
+            $touchFileName =~ s/[^\/]*\///g;
+            $touchFileName =~ s/\.c$//g;
+            $touchFileName .= ".dbgid_updated";
+            my $TF = IO::File->new(">$touchFileName");
+            close $TF;
+        }
         $keysChanged = 1;
         my $idFound = 0;
-        FIND_ID : for (my $n = 0; $n < 512; $n++) {
+        FIND_ID : for (my $n = 0; $n < 1024; $n++) {
             unless ($dbgIdTable{$newDbgSyms{$key}{CH}}[$n]) {
                 $newDbgSyms{$key}{ID} = $n;
                 $dbgIdTable{$newDbgSyms{$key}{CH}}[$n] = 1;
@@ -498,9 +497,9 @@ foreach my $key (keys %newDbgSyms) {
 
 # Print the new debug ID header file
 PrintNewDbgIdFile($outFileName);
-#unless ($filesExisted) {
+unless ($filesExisted) {
     # Re-create wrapper file
     PrintWrapperDbgIdFile($outFileName);
-#}
+}
 
 exit(0);

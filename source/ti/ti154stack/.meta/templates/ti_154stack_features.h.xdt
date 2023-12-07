@@ -73,7 +73,7 @@ extern "C"
 % const isCoPProject = (inst.project === "coprocessor");
 % const isSecureEnabled = (inst.secureLevel !== "macSecureDisabled");
 % const isSecureCommEnabled = (inst.secureLevel === "macSecureAndCommissioning");
-% if(isSecureEnabled || isCoPProject) {
+% if(isSecureEnabled) {
 /* Builds the image with the MAC layer security turned on */
 #define FEATURE_MAC_SECURITY
 %}

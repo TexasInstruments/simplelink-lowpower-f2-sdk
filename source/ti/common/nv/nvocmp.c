@@ -87,10 +87,10 @@ compute multiple CRC's to confirm it has found a valid item. Note that any
 corruption event forces a compaction to recover.
 
 To reduce further RAM consumption, the user can define NVOCMP_RAM_OPTIMIZATION to
-enable this feature. Note that for cc23x0, NVOCMP_RAM_OPTIMIZATION is enabled
+enable this feature. Note that for cc23x0 and cc27xx, NVOCMP_RAM_OPTIMIZATION is enabled
 by default. Alternatively, if this optimization is not needed in a particular
-application for cc23x0, the user can define NVOCMP_NO_RAM_OPTIMIZATION to
-effectively disable this feature for cc23x0.
+application for cc23x0 and cc27xx, the user can define NVOCMP_NO_RAM_OPTIMIZATION to
+effectively disable this feature for cc23x0 and cc27xx.
 
 When RAM optimization is enabled, the user can configure the size of the
 working buffer by setting NVOCMP_RAM_BUFFER_SIZE, which defaults to 500.
@@ -167,7 +167,7 @@ a sanity check on the active partition to report if corruption has been
 detected.
 
 NVOCMP_RAM_OPTIMIZATION - Enables RAM optimization.
-NVOCMP_NO_RAM_OPTIMIZATION - Disables RAM optimization for cc23x0, as it
+NVOCMP_NO_RAM_OPTIMIZATION - Disables RAM optimization for cc23x0 and cc27xx, as it
 is enabled by default on this family of devices.
 NVOCMP_RAM_BUFFER_SIZE - Sets the size for the RAM buffer used when
 RAM optimization is enabled. Default value is 500.
@@ -194,9 +194,9 @@ Requires API's in a crc.h to implement CRC functionality.
 #include "crc.h"
 #ifndef NV_LINUX
 
-/* CC23X0 does not support GPRAM,
+/* CC23X0 and CC27XX does not support GPRAM,
  * so VIMS access is not needed */
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC27XX)
 #include <driverlib/vims.h>
 #endif
 
@@ -364,8 +364,8 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 //*****************************************************************************
 // Page and Header Definitions
 //*****************************************************************************
-#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5)
-// CC26x4/CC13x4/CC23x0 devices flash page size is (1 << 11) or 0x800
+#if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC27XX)
+// CC26x4/CC13x4/CC23x0//cc27xx devices flash page size is (1 << 11) or 0x800
 #define PAGE_SIZE_LSHIFT 11
 #else
 // CC26x2/CC13x2 devices flash page size is (1 << 13) or 0x2000
@@ -386,7 +386,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 #endif // NVOCMP_SIGNATURE
 
 #ifndef NVOCMP_NO_RAM_OPTIMIZATION
-#ifdef DeviceFamily_CC23X0R5
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC27XX)
     #define NVOCMP_RAM_OPTIMIZATION
 #endif
 #endif
@@ -397,14 +397,15 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
         !defined (DeviceFamily_CC13X4) && \
         !defined (DeviceFamily_CC26X4) && \
         !defined (DeviceFamily_CC26X3) && \
-        !defined (DeviceFamily_CC23X0R5)
+        !defined (DeviceFamily_CC23X0R5) && \
+        !defined (DeviceFamily_CC27XX)
         #define NVOCMP_GPRAM
     #endif
 
     #ifdef NVOCMP_GPRAM
         #define RAM_BUFFER_ADDRESS    (uint8_t *)GPRAM_BASE
     #else
-        /* When CC23X0 is used, as GPRAM is not supported,
+        /* When CC23X0/CC27XX is used, as GPRAM is not supported,
          * an SRAM buffer of FLASH_PAGE_SIZE length is declared,
          * as the NVOCMP algorithm relies on it.
          * Also, when CC13X4 / CC26X3 / CC26X4 is used,

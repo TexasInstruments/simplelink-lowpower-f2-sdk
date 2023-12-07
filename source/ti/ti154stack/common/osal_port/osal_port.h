@@ -172,8 +172,12 @@ uint8_t OsalPort_registerTask(void* taskHndl, void* taskSem, uint32_t * pEvent);
  *
  * @return  pointer to allocated buffer or NULL if allocation failed.
  */
+#ifdef MALLOC_DEBUG
+#define OsalPort_msgAllocate(len) OsalPort_msgAllocate_dbg(len, __FUNCTION__)
+extern uint8_t * OsalPort_msgAllocate_dbg(uint16_t len, const char* caller);
+#else
 extern uint8_t * OsalPort_msgAllocate(uint16_t len );
-
+#endif
 /*********************************************************************
  * @fn      OsalPort_msgDeallocate
  *
@@ -188,8 +192,12 @@ extern uint8_t * OsalPort_msgAllocate(uint16_t len );
  *
  * @return  SUCCESS, INVALID_MSG_POINTER
  */
+#ifdef MALLOC_DEBUG
+#define OsalPort_msgDeallocate(pMsg) OsalPort_msgDeallocate_dbg(pMsg, __FUNCTION__)
+extern uint8_t OsalPort_msgDeallocate_dbg( uint8_t *pMsg, const char* caller);
+#else
 extern uint8_t OsalPort_msgDeallocate( uint8_t *pMsg );
-
+#endif
 /*********************************************************************
  * @fn      OsalPort_msgSend
  *
@@ -527,8 +535,12 @@ void *OsalPort_revmemcpy( void *dst, const void *src, unsigned int len );
  *
  * @return  pointer o allocated memory
  */
+#ifdef MALLOC_DEBUG
+#define OsalPort_malloc(size) OsalPort_malloc_dbg(size, __FUNCTION__)
+void* OsalPort_malloc_dbg(uint32_t size, const char* caller);
+#else
 void* OsalPort_malloc(uint32_t size);
-
+#endif
 /*********************************************************************
  * @fn      OsalPort_malloc
  *
@@ -540,8 +552,12 @@ void* OsalPort_malloc(uint32_t size);
  *
  * @return  pointer o allocated memory
  */
+#ifdef MALLOC_DEBUG
+#define OsalPort_free(buf) OsalPort_free_dbg(buf, __FUNCTION__)
+void OsalPort_free_dbg(void* buf, const char* caller);
+#else
 void OsalPort_free(void* buf);
-
+#endif
 
 /*********************************************************************
  * @fn      OsalPort_malloc

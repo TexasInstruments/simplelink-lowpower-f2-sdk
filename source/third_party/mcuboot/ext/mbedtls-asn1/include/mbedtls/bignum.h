@@ -35,6 +35,19 @@
 
 #if defined(MBEDTLS_FS_IO)
 #include <stdio.h>
+
+#if defined(__IAR_SYSTEMS_ICC__)
+/* Temporary solution as IAR IDE drops the --dlib_config=full compiler
+switch when importing the project file. 
+
+TODO: 
+    - Implement "SCCM-326 Remove FILE workaround from MCUBoot when fix is available"
+    when "IAREWARM-199 IAR IDE 9.30 import feaure drops specified dlib_config setting"
+    is fixed.
+*/
+typedef void* FILE;
+#endif
+
 #endif
 
 #define MBEDTLS_ERR_MPI_FILE_IO_ERROR                     -0x0002  /**< An error occurred while reading from or writing to a file. */

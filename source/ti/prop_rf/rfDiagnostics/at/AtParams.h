@@ -51,6 +51,8 @@ extern "C"
 
 #define MAX_NUMBER_OF_PACKETS   65535
 
+#define NO_MDR_FREQ 0xFFFFFFFF
+
 #define NUMBER_OF_PACKETS       100
 #define PACKET_LENGTH           12
 
@@ -91,11 +93,12 @@ AtProcess_Status AtParams_parseIncoming( char *param, uint8_t len );
  * param avgRssi     - Average RSSI
  * param minRssi     - Minimum RSSI
  * param maxRSSI     - Maximum RSSI
+ * param phyName     - Phy Packets were received on, NULL if N/A
  *
  *return none
  *
  ***************************************************************************************************/
-void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi);
+void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, uint16_t packetCountNok, uint16_t rxSyncCount, bool txDone, int32_t avgRssi, int32_t minRssi, int32_t maxRssi, char *phyName);
 
 /***************************************************************************************************
  ***************************************************************************************************/

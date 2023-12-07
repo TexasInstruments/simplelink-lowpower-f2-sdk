@@ -132,6 +132,7 @@ extern "C"
  ******************************************************************************/
 #include <stddef.h>
 #include <stdint.h>
+#include <mac_api.h>
 
 /*******************************************************************************
  * CONSTANTS
@@ -850,13 +851,6 @@ TYPEDEF_STRUCT_PACKED
    uint8_t *SHADataBuf;           //!< this buff is used for reading data for calculating SHA2 hash, length depends on available RAM of calling application */
    uint8_t  SHADataBufLen;                //!< length of allocate SHA data buffer
 } ecdsaSigVerifyBuf_t;
-
-typedef struct {
-    uint8_t iv_major;
-    uint8_t iv_minor;
-    uint16_t iv_revision;
-    uint32_t iv_build_num;
-} mcuboot_image_version_t;
 
 /** Image header.  All fields are in little endian byte order. */
 typedef struct{

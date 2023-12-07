@@ -66,15 +66,32 @@ static void TestMode_Exit(uint8_t testMode)
             int8_t rssiMax = Radio_getMaxRssi();
             int32_t rssiAvg = Radio_getAvgRssi();
             uint16_t packetCount = Radio_getNumRxPackets();
+            uint16_t packetCountNok = Radio_getNumRxPacketsNok();
+            uint16_t rxSyncCount = Radio_getNumRxSync();
+            uint8_t rxPhyId = Radio_getRxPhyIndex();
+            char *phyName = Radio_getPhyName(rxPhyId);
 
-            pTestMsgFxn(TestMode_EXIT, packetCount, false, rssiAvg, (int32_t)(rssiMin), (int32_t)(rssiMax));
+            pTestMsgFxn(TestMode_EXIT, packetCount, packetCountNok, rxSyncCount, false, rssiAvg, (int32_t)(rssiMin), (int32_t)(rssiMax), phyName);
+        }
+        else if(testMode == TestMode_MDR_RX)
+        {
+            int8_t rssiMin = Radio_getMinRssi();
+            int8_t rssiMax = Radio_getMaxRssi();
+            int32_t rssiAvg = Radio_getAvgRssi();
+            uint16_t packetCount = Radio_getNumRxPackets();
+            uint16_t packetCountNok = Radio_getNumRxPacketsNok();
+            uint16_t rxSyncCount = Radio_getNumRxSync();
+            uint8_t rxPhyId = Radio_getRxPhyIndex();
+            char *phyName = Radio_getPhyName(rxPhyId);
+
+            pTestMsgFxn(TestMode_EXIT, packetCount, packetCountNok, rxSyncCount, false, rssiAvg, (int32_t)(rssiMin), (int32_t)(rssiMax), phyName);
         }
     }
 }
 
 void TestMode_perTxPrintMsg(uint16_t numPackets)
 {
-    pTestMsgFxn(TestMode_PER_TX, numPackets, false, 0, 0, 0);
+    pTestMsgFxn(TestMode_PER_TX, numPackets, 0, 0, false, 0, 0, 0, NULL);
 }
 
 uint8_t TestMode_read(void)
@@ -160,7 +177,7 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
                 status = TestMode_Status_Fail;
             }
 
-            pTestMsgFxn(TestMode_PER_TX, 0, true, 0, 0, 0);
+            pTestMsgFxn(TestMode_PER_TX, 0, 0, 0, true, 0, 0, 0, NULL);
         }
 
         //------------------------------------------------------------------------------------------
@@ -173,7 +190,7 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
             {
                 *currentRadioTestMode = TestMode_PER_RX;
                 status = TestMode_Status_Success;
-                pTestMsgFxn(TestMode_PER_RX, 0, false, 0, 0, 0);
+                pTestMsgFxn(TestMode_PER_RX, 0, 0, 0, false, 0, 0, 0, NULL);
             }
             else
             {
@@ -183,11 +200,71 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
         }
 
         //------------------------------------------------------------------------------------------
+        // TEST_MODE_MDR_TX
+        //------------------------------------------------------------------------------------------
+        else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_MDR_TX))
+        {
+            // Start Transmitting perNumPkts packets of length perPktLen
+            if (Radio_packetMdrTx((uint16_t)perNumPkts, &perPktLen))
+            {
+                // Set test mode back to 0 when returning
+                *currentRadioTestMode = TestMode_EXIT;
+                status = TestMode_Status_Success;
+            }
+            else
+            {
+                status = TestMode_Status_Fail;
+            }
+
+            pTestMsgFxn(TestMode_MDR_TX, 0, 0, 0, true, 0, 0, 0, NULL);
+        }
+
+        //------------------------------------------------------------------------------------------
+        // TEST_MODE_MDR_RX
+        //------------------------------------------------------------------------------------------
+        else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_MDR_RX))
+        {
+            // Start PacketRx
+            if (Radio_packetMdrRx((uint8_t)perPktLen))
+            {
+                *currentRadioTestMode = TestMode_MDR_RX;
+                status = TestMode_Status_Success;
+                pTestMsgFxn(TestMode_MDR_RX, 0, 0, 0, false, 0, 0, 0, NULL);
+            }
+            else
+            {
+                status = TestMode_Status_Fail;
+            }
+
+        }
+
+        //------------------------------------------------------------------------------------------
+        // TEST_MODE_MDR_CS_TX
+        //------------------------------------------------------------------------------------------
+        else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_MDR_CS_TX))
+        {
+            // Start Transmitting perNumPkts packets of length perPktLen
+            if (Radio_packetMdrCsTx((uint16_t)perNumPkts, &perPktLen))
+            {
+                // Set test mode back to 0 when returning
+                *currentRadioTestMode = TestMode_EXIT;
+                status = TestMode_Status_Success;
+            }
+            else
+            {
+                status = TestMode_Status_Fail;
+            }
+
+            pTestMsgFxn(TestMode_MDR_CS_TX, 0, 0, 0, true, 0, 0, 0, NULL);
+        }
+
+        //------------------------------------------------------------------------------------------
         // EXIT_TEST_MODE
         //------------------------------------------------------------------------------------------
         else if(((*currentRadioTestMode == TestMode_CARRIER_WAVE) ||
                  (*currentRadioTestMode == TestMode_MODULATED)    ||
                  (*currentRadioTestMode == TestMode_PER_RX)       ||
+                 (*currentRadioTestMode == TestMode_MDR_RX)       ||
                  (*currentRadioTestMode == TestMode_CONT_RX))     &&
                  (newMode == TestMode_EXIT))
         {

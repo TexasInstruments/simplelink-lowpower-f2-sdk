@@ -1,0 +1,32 @@
+{
+    "target": {
+        "Name": "LP_CC2674P10_RGZ, 10DBM-HIGH-PA",
+        "Revision": [],
+        "Description": "CC2674P10 RGZ on CC2651P3 LaunchPad. 10 dBm.",
+        "DeviceName": "CC2674P10",
+        "DevicePackage": "RGZ 7x7",
+        "FrontEnd": "XD",
+        "PaSettings": "pasettings.json",
+        "RfDesign": "LP-CC1354P-8x8-XD7793-XD24-PA24_10dBm",
+        "DefaultCategory": "Settings",
+        "IoSettings": {
+            "_name": "RF Switch",
+            "IoPin": [
+                {
+                    "_name": "DIO28",
+                    "ControlFunction": "Input\/Output",
+                    "Idle": "Input tristate (Default)",
+                    "Tx": "Output low",
+                    "Rx": "Output high"
+                },
+                {
+                    "_name": "DIO29",
+                    "ControlFunction": "Input\/Output",
+                    "Idle": "Input tristate (Default)",
+                    "Tx": "Output high",
+                    "Rx": "Output low"
+                }
+            ]
+        }
+    }
+}

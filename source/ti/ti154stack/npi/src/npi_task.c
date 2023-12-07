@@ -185,11 +185,6 @@ static uint32_t stackServiceID = 0x0000;
 //!
 static pthread_t npiThread;
 
-
-//! \brief Allocated memory block for NPI task's stack
-//!
-uint8_t npiTaskStack[NPITASK_STACK_SIZE];
-
 //! \brief Handle for the ASYNC TX Queue
 //!
 static List_List npiTxQueue;
@@ -776,8 +771,6 @@ void NPITask_createTask(uint32_t stackID)
     pthread_attr_t      attrs;
     struct sched_param  priParam;
     int                 retc;
-
-    memset(&npiTaskStack, 0xDD, sizeof(npiTaskStack));
 
     /* Initialize the attributes structure with default values */
     pthread_attr_init(&attrs);

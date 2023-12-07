@@ -704,6 +704,26 @@ extern "C" {
  * ------------------------------------------------------------------------------------------------
  */
 
+/* Stack version types */
+typedef struct {
+    uint8_t iv_major;
+    uint8_t iv_minor;
+    uint16_t iv_revision;
+    uint32_t iv_build_num;
+} mcuboot_image_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t major;
+    uint8_t minor;
+    uint8_t revision;
+    uint8_t reserved;
+} ti154stack_version_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t major;
+    uint8_t minor;
+} ti154stack_core_version_t;
+
 /* Generic PHY Descriptor.
  * We are using this structure for both Channel Page 9 and Channel Pg 10.
  */
@@ -1415,6 +1435,13 @@ typedef enum
 }macDutyCycleMode_t;
 #endif
 
+/* ------------------------------------------------------------------------------------------------
+ *                                        Global Variables
+ * ------------------------------------------------------------------------------------------------
+ */
+
+extern const ti154stack_version_t ti154stack_version;
+extern const ti154stack_core_version_t ti154stack_core_version;
 
 /* ------------------------------------------------------------------------------------------------
  *                                        Internal Functions

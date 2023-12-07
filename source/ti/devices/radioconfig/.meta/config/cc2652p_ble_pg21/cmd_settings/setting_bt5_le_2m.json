@@ -287,6 +287,7 @@
                         "Block": [
                             {
                                 "_name": "override_ble5_setup_override_2mbps_residual_per.json",
+                                "_coex": "false",
                                 "Element32b": [
                                     {
                                         "_type": "MCE_RFE_OVERRIDE",
@@ -302,11 +303,18 @@
                             },
                             {
                                 "_name": "override_ble5_setup_override_2mbps_coex_residual_per.json",
-                                "Element32b": {
-                                    "_type": "MCE_RFE_OVERRIDE",
-                                    "_comment": "PHY: Use MCE RAM patch (mode 2), RFE RAM patch (mode 2)",
-                                    "$": "1,0,2,1,0,2"
-                                }
+                                "Element32b": [
+                                    {
+                                        "_type": "MCE_RFE_OVERRIDE",
+                                        "_comment": "PHY: Use MCE RAM patch (mode 2), RFE RAM patch (mode 2)",
+                                        "$": "1,0,2,1,0,2"
+                                    },
+                                    {
+                                        "_type": "HW_REG_OVERRIDE",
+                                        "_comment": "Rx: increase AGC hysteresis (HIGH_GAIN=15, LOW_GAIN=11)",
+                                        "$": "0x6098,0x75FB"
+                                    }
+                                ]
                             },
                             {
                                 "_name": "override_ble5_setup_override_2mbps_hpa.json",

@@ -1,12 +1,21 @@
 {
     "targets": {
         "Default": "target_lp_cc2653p10.json:LP_CC2653P10",
-        "VirtualTarget": {
-            "_name": "LP_CC2653P10",
-            "Target": [
-                "target_lp_cc2653p10.json",
-                "target_lp_cc2653p10_highPA.json"
-            ]
-        }
+        "VirtualTarget": [
+            {
+                "_name": "LP_CC2653P10",
+                "Target": [
+                    "target_lp_cc2653p10.json",
+                    "target_lp_cc2653p10_highPA.json"
+                ]
+            },
+            {
+                "_name": "LP_CC2653P10, 10DBM",
+                "Target": [
+                    "target_lp_cc2653p10_10dbm.json",
+                    "target_lp_cc2653p10_10dbm_highPA.json"
+                ]
+            }
+        ]
     }
 }

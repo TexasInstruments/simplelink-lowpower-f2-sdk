@@ -1429,7 +1429,7 @@ MAC_INTERNAL_API void macNopBackoffTimerExpiry(void *arg)
 
     /* Execute Dummy NOP Cb and treat as preempted after backoff time */
      numRfCmd++;
-     macRadioWakeupCb(NULL, NULL, RF_EventCmdPreempted);
+     macRadioWakeupCb(NULL, 0, RF_EventCmdPreempted);
 }
 
 #ifdef FREERTOS_SUPPORT

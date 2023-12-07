@@ -5,7 +5,7 @@
         "Frequency": "868",
         "Patch": {
             "Define": "RF_MODE_AUTO",
-            "Cpe": "rf_patch_cpe_prop",
+            "Cpe": "rf_patch_cpe_prop_psip",
             "Mce": [],
             "Rfe": []
         },
