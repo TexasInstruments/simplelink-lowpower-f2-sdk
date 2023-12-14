@@ -25,9 +25,9 @@ sudo apt install unzip
 
 Download FreeRTOS from https://www.freertos.org/a00104.html  and unzip it in a known location.  This location will be needed when setting the FreeRTOS location imports.mak.  Recommended location is $HOME/ti.
 
-cd $HOME/ti
-wget https://github.com/FreeRTOS/FreeRTOS/releases/download/202212.01/FreeRTOSv202212.01.zip
-unzip FreeRTOSv202212.01.zip
+1. cd $HOME/ti
+2. wget https://github.com/FreeRTOS/FreeRTOS/releases/download/202212.01/FreeRTOSv202212.01.zip
+3. unzip FreeRTOSv202212.01.zip
 
 ### Install CCS
 
