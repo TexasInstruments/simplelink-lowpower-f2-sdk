@@ -14,6 +14,7 @@ Prerequisites:
 A CMake version greater than 3.21 is needed to build the SimpleLink SDK.  Any of the newer versions of CMake will work, and in this example, we are installing cmake-3.24.2.  This version may be found on this page(https://github.com/Kitware/CMake/releases?page=5) or at the official CMake download site (https://cmake.org/download/).
 
 After downloading CMake, install CMake by (assuming in Windows Downloads location):
+
 sudo tar xz -f /mnt/c/Users/<user_id>/Downloads/cmake-3.24.2-linux-x86_64.tar.gz -C /opt
 
 ### Install Unzip
@@ -47,9 +48,9 @@ There will be a version of SysConfig in the CCS install, but the SDK requires a 
 
 Download the 1.18 version of SysConfig from:
 
-wget https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-nsUM6f7Vvb/1.18.0.3266/sysconfig-1.18.0_3266-setup.run
-chmod +x sysconfig-1.18.0_3266-setup.run
-./sysconfig-1.18.0_3266-setup.run 
+1. wget https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-nsUM6f7Vvb/1.18.0.3266/sysconfig-1.18.0_3266-setup.run
+2. chmod +x sysconfig-1.18.0_3266-setup.run
+3. ./sysconfig-1.18.0_3266-setup.run 
 
 Press enter a few times to accept the license agreement.  The default installation for SysConfig will be $HOME/ti/sysconfig_1.18.0
 
