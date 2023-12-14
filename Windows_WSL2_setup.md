@@ -13,8 +13,8 @@ Prerequisites:
 
 A CMake version greater than 3.21 is needed to build the SimpleLink SDK.  Any of the newer versions of CMake will work, and in this example, we are installing cmake-3.24.2.  This version may be found on this page(https://github.com/Kitware/CMake/releases?page=5) or at the official CMake download site (https://cmake.org/download/).
 
-After downloading CMake, install CMake by:
-sudo tar xz -f /mnt/c/Users/a0194920/Downloads/cmake-3.24.2-linux-x86_64.tar.gz -C /opt
+After downloading CMake, install CMake by (assuming in Windows Downloads location):
+sudo tar xz -f /mnt/c/Users/<user_id>/Downloads/cmake-3.24.2-linux-x86_64.tar.gz -C /opt
 
 ### Install Unzip
 By default, Ubuntu does not have unzip installed.  Unzip is needed in the next FreeRTOS step.  Install by:
