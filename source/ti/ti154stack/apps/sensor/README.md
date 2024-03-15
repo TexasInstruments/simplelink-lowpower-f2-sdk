@@ -189,7 +189,7 @@ Once the sensor is started, the settings can only be changed if it is restarted.
 > If the **AUTO_START** symbol is defined in your application, then the application will automatically configure itself on startup.
 > This is not enabled by default with the project, but it can be configured as described below.
 
-AUTO_START can be defined by removing the x in the .opts file under the defines folder: `-DxAUTO_START -> -DAUTO_START`
+AUTO_START can be defined by removing the x in the .opt file under the defines folder: `-DxAUTO_START -> -DAUTO_START`
 
 > If the **AUTO_START** symbol is defined in your application, then the application will automatically configure itself on startup,
 and the sensor will display `Starting...` instead of `Waiting...`
@@ -282,7 +282,7 @@ More information about the configuration and feature options can be found in the
 
 ### <a name="DisablingCommonUserInterface"></a>Disabling Common User Interface
 
-The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opts file:
+The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opt file:
 
 ```
 -DCUI_DISABLE
@@ -294,7 +294,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
 
 By default, this project is configured to use two pages of NV. In order to modify this value, update the following:
 
-* `NVOCMP_NVPAGES=2` in the project-specific .opts file
+* `NVOCMP_NVPAGES=2` in the project-specific .opt file
 * SysConfig NVS module:
    * Set Region Size based on the formula `NVOCMP_NVPAGES * 0x2000`
    * Set Region Base based on the formula `0x56000 - (NVOCMP_NVPAGES * 0x2000)`

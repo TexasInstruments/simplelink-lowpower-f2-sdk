@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -91,7 +91,7 @@
 /*! tick number for one ms  */
 #define TICKPERIOD_MS_US      (1000/(CLOCK_TICK_PERIOD))
 
-#define FH_UC_DWELLTIME_BUF		(1)
+#define FH_UC_DWELLTIME_BUF		(2)
 /* ------------------------------------------------------------------------------------------------
  *                                           Macros
  * ------------------------------------------------------------------------------------------------

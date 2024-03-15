@@ -49,22 +49,6 @@ psa_status_t map_TRNGError_to_PSA_error(int_fast16_t status);
 psa_status_t map_AESError_to_PSA_error(int_fast16_t status);
 
 /*
- * Mapping functions between MBEDTLS keytype values
- * and the corresponding MBEDCRYPTO keytype values.
- * For ECC keys, keyBits is required to map from the curve
- * families used by MBEDTLS and the curve types used by MBEDCRYPTO.
- */
-psa_key_type_t map_PSAKeyType_to_KeyStoreKeyType(psa_key_type_t keyType, size_t keyBits);
-psa_key_type_t map_KeyStoreKeyType_to_PSAKeyType(psa_key_type_t keyType);
-
-/*
- * Mapping function from MBEDTLS alg values to their corresponding
- * MBEDCRYPTO alg values. Some of the mappings are awkward because
- * the SL drivers expect those alg values.
- */
-psa_algorithm_t map_PSAKeyAlg_to_KeyStoreKeyAlg(psa_algorithm_t alg);
-
-/*
  * Convert to and from the keyID format expected
  * by the SL KeyStore API.
  */

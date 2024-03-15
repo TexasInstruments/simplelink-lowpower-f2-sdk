@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,11 @@ extern "C" {
  *  BIOS 7.x: 88
  *  FreeRTOS: 104(llvm)/340(gcc)
  */
-#define TaskP_STRUCT_SIZE (340)
+#if defined(__GNUC__)
+    #define TaskP_STRUCT_SIZE (340)
+#else
+    #define TaskP_STRUCT_SIZE (104)
+#endif
 
 /*!
  *  @brief    Number of bytes for the default stack size of any RTOS Task object.

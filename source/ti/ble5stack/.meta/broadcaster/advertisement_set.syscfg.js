@@ -35,6 +35,8 @@
  *  ======== advertisement_set.syscfg.js ========
  */
 
+const Common = system.getScript("/ti/ble5stack/ble_common.js");
+
 "use strict";
 const config = [
     {
@@ -46,7 +48,24 @@ const config = [
         name: "meshAdnPeri",
         default: false,
         hidden: true
-    }
+    },
+    {
+        name: "deviceRole",
+        default: "",
+        hidden: true
+    },
+    {
+        name: "basicBLE",
+        default: false,
+        hidden: true
+    },
+    {
+        name: "profiles",
+        default: [],
+        hidden: true,
+        minSelections: 0,
+        options: Common.profiles_list,
+    },
 ];
 /*
  *  ======== moduleInstances ========
@@ -58,19 +77,63 @@ const config = [
 function moduleInstances(inst)
 {
     const dependencyModule = [];
+    let advParams_args;
+    let advData_args;
+    let scanResData_args;
+    if(inst.numOfAdvSet == 1 && inst.basicBLE)
+    {
+        advParams_args = {
+            name: "advParams"+inst.numOfAdvSet,
+            deviceRole: inst.deviceRole
+        }
+        advData_args = {
+            name: "advData"+inst.numOfAdvSet,
+            GAP_ADTYPE_FLAGS: true,
+            advertisingFlags: ["GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED","GAP_ADTYPE_FLAGS_GENERAL"],
+        }
+        scanResData_args = {
+            name: "scanResData"+inst.numOfAdvSet,
+            GAP_ADTYPE_FLAGS: false,
+            GAP_ADTYPE_LOCAL_NAME_COMPLETE: true,
+            minConnInterval: 100,
+            maxConnInterval: 130,
+            GAP_ADTYPE_POWER_LEVEL: true,
+            hideAdvFlags: true
+        }
+        if(inst.profiles.length > 0)
+        {
+          advData_args.GAP_ADTYPE_16BIT_MORE = true;
+          advData_args.numOfUUIDs16More = inst.profiles.length;
+        }
+        // if DeviceInfo included, the we are ignoring it when adding UUID
+        if(inst.profiles.length >= 1 )
+        {
+          advData_args.UUID016More = Number(inst.profiles[0]);
+        }
+          if(inst.profiles.length >= 2 )
+        {
+          advData_args.UUID116More = Number(inst.profiles[1]);
+        }
+          if(inst.profiles.length >= 3 )
+        {
+          advData_args.UUID216More = Number(inst.profiles[2]);
+        }
+    }
 
-    let advParams_args = {
-        name: "advParams"+inst.numOfAdvSet
+    else
+    {
+        advParams_args = {
+            name: "advParams"+inst.numOfAdvSet
+        }
+        advData_args = {
+            name: "advData"+inst.numOfAdvSet
+        }
+        scanResData_args = {
+            name: "scanResData"+inst.numOfAdvSet,
+            GAP_ADTYPE_FLAGS: false,
+            hideAdvFlags: true
+        }
     }
-    let advData_args = {
-        name: "advData"+inst.numOfAdvSet
-    }
-    let scanResData_args = {
-        name: "scanResData"+inst.numOfAdvSet,
-        GAP_ADTYPE_FLAGS: false,
-        hideAdvFlags: true
-    }
-
     if(inst.meshAdnPeri == true)
     {
         if(inst.numOfAdvSet == 1)
@@ -88,29 +151,29 @@ function moduleInstances(inst)
         }
     }
 
-        dependencyModule.push({
-            name: "advParam" + inst.numOfAdvSet,
-            displayName: "Advertisement Parameters " + inst.numOfAdvSet,
-            moduleName: "/ti/ble5stack/broadcaster/advertisement_params",
-            collapsed: true,
-            args: advParams_args
-        });
+    dependencyModule.push({
+        name: "advParam" + inst.numOfAdvSet,
+        displayName: "Advertisement Parameters " + inst.numOfAdvSet,
+        moduleName: "/ti/ble5stack/broadcaster/advertisement_params",
+        collapsed: true,
+        args: advParams_args
+    });
 
-        dependencyModule.push({
-            name: "advData" + inst.numOfAdvSet,
-            displayName: "Advertisement Data " + inst.numOfAdvSet,
-            moduleName: "/ti/ble5stack/broadcaster/advertisement_data",
-            collapsed: true,
-            args: advData_args
-        });
+    dependencyModule.push({
+        name: "advData" + inst.numOfAdvSet,
+        displayName: "Advertisement Data " + inst.numOfAdvSet,
+        moduleName: "/ti/ble5stack/broadcaster/advertisement_data",
+        collapsed: true,
+        args: advData_args
+    });
 
-        dependencyModule.push({
-            name: "scanRes" + inst.numOfAdvSet,
-            displayName: "Scan Response Data " + inst.numOfAdvSet,
-            moduleName: "/ti/ble5stack/broadcaster/advertisement_data",
-            collapsed: true,
-            args: scanResData_args
-        });
+    dependencyModule.push({
+        name: "scanRes" + inst.numOfAdvSet,
+        displayName: "Scan Response Data " + inst.numOfAdvSet,
+        moduleName: "/ti/ble5stack/broadcaster/advertisement_data",
+        collapsed: true,
+        args: scanResData_args
+    });
 
     return(dependencyModule);
 }

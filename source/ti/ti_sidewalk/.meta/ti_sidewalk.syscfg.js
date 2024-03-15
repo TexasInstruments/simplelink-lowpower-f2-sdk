@@ -114,22 +114,67 @@ function validate(inst, validation)
     provisioningScript.validate(inst, validation);
 }
 
+function getOpts(inst)
+{
+    /* get device ID to select appropriate defines */
+    let deviceId = system.deviceData.deviceId;
+    let defines = [];
+
+    if(inst.$static.enabledPhys.includes("ble"))
+    {
+        defines.push('-DSID_SDK_CONFIG_ENABLE_LINK_TYPE_1=1')
+    }
+    else
+    {
+        defines.push('-DSID_SDK_CONFIG_ENABLE_LINK_TYPE_1=0')
+    }
+
+    if(inst.$static.enabledPhys.includes("fsk"))
+    {
+        defines.push('-DSID_SDK_CONFIG_ENABLE_LINK_TYPE_2=1')
+    }
+    else
+    {
+        defines.push('-DSID_SDK_CONFIG_ENABLE_LINK_TYPE_2=0')
+    }
+
+    if (inst.$static.linkType === "fsk")
+    {
+        defines.push('-DBUILD_SID_SDK_LINK_TYPE=2')
+    }
+    else if(inst.$static.linkType === "ble")
+    {
+        defines.push('-DBUILD_SID_SDK_LINK_TYPE=1')
+    }
+    else if(inst.$static.linkType === "ble_fsk")
+    {
+        defines.push('-DBUILD_SID_SDK_LINK_TYPE=4')
+    }
+
+    return defines;
+}
+
 const sidewalkModule = {
     displayName: "TI-Sidewalk",
     description: docs.module.description,
     longDescription: docs.module.longDescription,
     moduleStatic: moduleStatic,
     templates: {
-        "/ti/ti_sidewalk/templates/ti_sidewalk.opt.xdt":
-                            "/ti/ti_sidewalk/templates/ti_sidewalk.opt.xdt",
         "/ti/ti_sidewalk/templates/ti_sidewalk_config.yaml.xdt":
                             "/ti/ti_sidewalk/templates/ti_sidewalk_config.yaml.xdt",
         "/ti/utils/build/GenLibs.cmd.xdt":
         {
             modName: "/ti/ti_sidewalk/ti_sidewalk",
-            getLibs: getLibs
+            getLibs: getLibs,
+        },
+        "/ti/utils/build/GenOpts.opt.xdt":
+        {
+            modName: "/ti/ti_sidewalk/ti_sidewalk",
+            getOpts: getOpts
         }
-    }
+    },
+    getLibs: getLibs,
+    getOpts: getOpts
 };
 
 exports = sidewalkModule;

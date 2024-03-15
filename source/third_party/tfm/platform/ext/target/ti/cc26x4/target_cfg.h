@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017-2019 Arm Limited
+ * Copyright (c) 2017-200 Arm Limited. All rights reserved.
+ * Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +18,11 @@
 #ifndef __TARGET_CFG_H__
 #define __TARGET_CFG_H__
 
-#include "platform/ext/common/uart_stdout.h"
+#include "uart_stdout.h"
 #include "tfm_peripherals_def.h"
 #include "tfm_plat_defs.h"
 #include "arm_uart_drv.h"
+#include "fih.h"
 
 #define TFM_DRIVER_STDIO    Driver_USART0
 #define NS_DRIVER_STDIO     Driver_USART0
@@ -39,7 +41,7 @@ struct memory_region_limits {
 /**
  * \brief Holds the data necessary to do isolation for a specific peripheral.
  */
-struct tfm_spm_partition_platform_data_t
+struct platform_data_t
 {
     uint32_t periph_start;
     uint32_t periph_limit;
@@ -48,7 +50,7 @@ struct tfm_spm_partition_platform_data_t
 /**
  * \brief Configures SAU and IDAU.
  */
-void sau_and_idau_cfg(void);
+FIH_RET_TYPE(int32_t) sau_and_idau_cfg(void);
 
 /**
  * \brief Enables the fault handlers and sets priorities.

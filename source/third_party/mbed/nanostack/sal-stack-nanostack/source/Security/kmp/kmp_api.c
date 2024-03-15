@@ -435,6 +435,8 @@ kmp_type_e kmp_api_type_from_id_get(uint8_t kmp_id)
             return IEEE_802_11_4WH;
         case IEEE_802_11_GKH:
             return IEEE_802_11_GKH;
+        case TI_CUSTOM_EUI_PROTOCOL:
+            return TI_CUSTOM_EUI_PROTOCOL;
         default:
             return KMP_TYPE_NONE;
     }

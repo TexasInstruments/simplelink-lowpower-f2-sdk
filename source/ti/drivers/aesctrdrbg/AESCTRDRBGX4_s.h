@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,17 +52,12 @@ extern "C" {
  * therefore this secure service can only support polling mode. If the non-secure
  * client specifies blocking mode, polling mode will be automatically substituted.
  */
-#define AESCTRDRBG_S_MSG_TYPE_CONSTRUCT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define AESCTRDRBG_S_MSG_TYPE_OPEN (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define AESCTRDRBG_S_MSG_TYPE_CLOSE \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define AESCTRDRBG_S_MSG_TYPE_RESEED \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define AESCTRDRBG_S_MSG_TYPE_GET_RANDOM_BYTES \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define AESCTRDRBG_S_MSG_TYPE_GENERATE_KEY \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
+#define AESCTRDRBG_S_MSG_TYPE_CONSTRUCT        AESCTRDRBG_S_MSG_TYPE(0U)
+#define AESCTRDRBG_S_MSG_TYPE_OPEN             AESCTRDRBG_S_MSG_TYPE(1U)
+#define AESCTRDRBG_S_MSG_TYPE_CLOSE            AESCTRDRBG_S_MSG_TYPE(2U)
+#define AESCTRDRBG_S_MSG_TYPE_RESEED           AESCTRDRBG_S_MSG_TYPE(3U)
+#define AESCTRDRBG_S_MSG_TYPE_GET_RANDOM_BYTES AESCTRDRBG_S_MSG_TYPE(4U)
+#define AESCTRDRBG_S_MSG_TYPE_GENERATE_KEY     AESCTRDRBG_S_MSG_TYPE(5U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created

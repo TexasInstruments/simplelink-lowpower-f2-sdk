@@ -8,7 +8,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -140,6 +140,7 @@ typedef const uint32 tirtosSwiCmdTblPtr_t;
 typedef struct
 {
 #ifdef CC23X0
+  uint8 k;
 #else
   rfDrvTblPtr_t        *rfDrvTbl;
   eccDrvTblPtr_t       *eccDrvTbl;

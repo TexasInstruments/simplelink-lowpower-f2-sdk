@@ -107,93 +107,94 @@ function chanArrToBitmask(chanArr)
 // Dictionary mapping a device name to default LaunchPad; used to discover the
 // appropriate RF settings when a device is being used without a LaunchPad
 const deviceToBoard = {
-    CC1352R: "CC1352R1_LAUNCHXL",
-    CC1352P: "CC1352P1_LAUNCHXL",
-    CC2651P3: "LP_CC2651P3",
-    CC2652R1: "CC26X2R1_LAUNCHXL",
-    CC2652RB: "LP_CC2652RB",
-    CC2652R1FSIP: "LP_CC2652RSIP",
-    CC2652P1FSIP: "LP_CC2652PSIP",
-    CC2674R10: "LP_CC2674R10_FPGA",
-    CC2654R10: "LP_CC2654R10",
-    CC1354R10: "LP_CC1354R10"
+  CC1352R: "CC1352R1_LAUNCHXL",
+  CC1352P: "CC1352P1_LAUNCHXL",
+  CC2652R7: "LP_CC2652R7",
+  CC2652R1FSIP: "LP_CC2652RSIP",
+  CC2652P1FSIP: "LP_CC2652PSIP",
+  CC2651R3SIPA: "LP_CC2651R3SIPA",
+  CC2652R1: "CC26X2R1_LAUNCHXL",
+  CC2652RB: "LP_CC2652RB",
+  CC1311R3: "LP_CC1311R3",
+  CC1311P3: "LP_CC1311P3",
+  CC2651R3: "LP_CC2651R3",
+  CC2651P3: "LP_CC2651P3",
+  CC1314R10: "LP_EM_CC1314R10",
+  CC1354R10: "LP_CC1354R10_RGZ",
+  CC2674R10: "LP_CC2674R10_FPGA",
+  CC2653P10: "LP_CC2653P10",
+  CC1354P10: "LP_EM_CC1354P10_1"
+};
+
+const commonMigrations = {
+  // Common Linkers
+  cc13x2_cc26x2: {
+    CC1352R1F3RGZ: {},
+    CC1352R1_LAUNCHXL: {},
+    CC1352P_2_LAUNCHXL: {},
+    CC1352P1F3RGZ: {},
+    CC1352P_4_LAUNCHXL: {},
+    CC1352P1F3RGZ: {},
+    CC2652R1FRGZ: {},
+    CC26X2R1_LAUNCHXL: {},
+    CC2652P1FSIP: {},
+    LP_CC2652PSIP: {},
+    LP_CC2652RB: {},
+    CC2652RB1FRGZ: {},
+    CC2652R1FSIP: {},
+    LP_CC2652RSIP: {}
+  },
+  cc13x1_cc26x1: {
+    CC2651P3RGZ: {},
+    LP_CC2651P3: {},
+    CC2651R3RGZ: {},
+    LP_CC2651R3: {}
+  },
+  cc13x4_cc26x4: {
+    CC1352P7RGZ: {},
+    LP_CC1352P7_4: {},
+    CC2652R7RGZ: {},
+    LP_CC2652R7: {}
+  },
+  cc13x2x7_cc26x2x7: {
+    LP_EM_CC1354P10_1: {},
+    CC2674R10RGZ: {},
+    LP_CC2674R10_RGZ: {},
+    LP_EM_CC1354P10_6: {},
+    CC2674P10RGZ: {},
+    LP_CC2674P10_RGZ: {}
+  }
 };
 
 const supportedMigrations = {
-    // Boards
 
-  CC1352R1_LAUNCHXL:  {
-      CC1352R1F3RGZ: {},
-      CC1352R1_LAUNCHXL: {}
-  },
-  CC1352P_2_LAUNCHXL: {
-    CC1352P_2_LAUNCHXL: {},
-    CC1352P1F3RGZ: {}
-  },
-  CC1352P_4_LAUNCHXL: {
-    CC1352P_4_LAUNCHXL: {},
-    CC1352P1F3RGZ: {}
-  },
-  CC26X2R1_LAUNCHXL: {
-    CC2652R1FRGZ: {},
-    CC2652R1FSIP: {},
-    CC26X2R1_LAUNCHXL: {},
-    LP_CC2652RSIP: {}
-  },
-  LP_CC2652PSIP: {
-    CC2652P1FSIP: {},
-    LP_CC2652PSIP: {}
-  },
-  LP_CC2652RSIP: {
-    CC2652R1FRGZ: {},
-    CC2652R1FSIP: {},
-    CC26X2R1_LAUNCHXL: {},
-    LP_CC2652RSIP: {}
-  },
-  LP_CC2652RB: {
-    LP_CC2652RB: {},
-    CC2652RB1FRGZ: {}
-  },
+  // Boards
 
-  // Devices
+  // cc13x2_cc26x2
+  CC1352R1: commonMigrations["cc13x2_cc26x2"],
+  CC1352P_2_LAUNCHXL: commonMigrations["cc13x2_cc26x2"],
+  CC1352P_4_LAUNCHXL: commonMigrations["cc13x2_cc26x2"],
+  CC1352P1F3RGZ: commonMigrations["cc13x2_cc26x2"],
+  /* Represents 26X2R1 board and device */
+  "CC26.2R1": commonMigrations["cc13x2_cc26x2"],
+  /* Represents PSIP board and device */
+  "CC2652P.*SIP": commonMigrations["cc13x2_cc26x2"],
+  CC2652R7: commonMigrations["cc13x2_cc26x2"],
+  LP_CC2652RSIP: commonMigrations["cc13x2_cc26x2"],
+  CC2652RB: commonMigrations["cc13x2_cc26x2"],
+  "CC2652R.*SIP": commonMigrations["cc13x2_cc26x2"],
 
-  CC1352R1F3RGZ: {
-    CC1352R1F3RGZ: {},
-    CC1352R1_LAUNCHXL: {}
-  },
-  CC1352P1F3RGZ: {
-      CC1352P1F3RGZ: {},
-      CC1352P_2_LAUNCHXL: {},
-      CC1352P_4_LAUNCHXL: {}
-  },
-  CC2652R1FRGZ: {
-    CC2652R1FRGZ: {},
-    CC2652R1FSIP: {},
-    CC26X2R1_LAUNCHXL: {},
-    LP_CC2652RSIP: {}
-  },
-  CC2652P1FSIP: {
-    CC2652P1FSIP: {},
-    LP_CC2652PSIP: {}
-  },
-  CC2652R1FSIP: {
-    CC2652R1FRGZ: {},
-    CC2652R1FSIP: {},
-    CC26X2R1_LAUNCHXL: {},
-    LP_CC2652RSIP: {}
-  },
-  CC2652RB1FRGZ: {
-    LP_CC2652RB: {},
-    CC2652RB1FRGZ: {}
-  },
-  LP_EM_CC1354P10: {
-    CC2674R10RSK: {},
-    CC2674R10RGZ: {},
-    CC2674P10RSK: {},
-    CC2674P10RGZ: {},
-    LP_EM_CC2674R10: {},
-    LP_CC2674R10: {},
-  },  
+  // cc13x1_cc26x1
+  CC2651P3: commonMigrations["cc13x1_cc26x1"],
+  CC2651R3: commonMigrations["cc13x1_cc26x1"],
+
+  // cc13x4_cc26x4
+  CC2652R7: commonMigrations["cc13x4_cc26x4"],
+  LP_CC1352P7_4: commonMigrations["cc13x4_cc26x4"],
+
+  // cc13x2x7_cc26x2x7
+  LP_EM_CC1354P10_1: commonMigrations["cc13x2x7_cc26x2x7"],
+  LP_EM_CC1354P10_6: commonMigrations["cc13x2x7_cc26x2x7"]
 };
 
 /*

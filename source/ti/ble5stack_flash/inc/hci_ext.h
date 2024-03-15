@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ extern "C"
 #define HCI_EXT_GAP_TERMINATE_LINK              0x0A
 #define HCI_EXT_GAP_AUTHENTICATE                0x0B
 #define HCI_EXT_GAP_PASSKEY_UPDATE              0x0C
-#define HCI_EXT_GAP_SLAVE_SECURITY_REQ_UPDATE   0x0D
+#define HCI_EXT_GAP_PERIPHERAL_SECURITY_REQ_UPDATE   0x0D
 #define HCI_EXT_GAP_SIGNABLE                    0x0E
 #define HCI_EXT_GAP_BOND                        0x0F
 #define HCI_EXT_GAP_TERMINATE_AUTH              0x10
@@ -190,7 +190,7 @@ extern "C"
 #define HCI_EXT_GAP_INIT_SET_PHY_PARAM          0x60
 #define HCI_EXT_GAP_INIT_GET_PHY_PARAM          0x61
 #define HCI_EXT_GAP_INIT_CONNECT                0x62
-#define HCI_EXT_GAP_INIT_CONNECT_WL             0x63
+#define HCI_EXT_GAP_INIT_CONNECT_AL             0x63
 #define HCI_EXT_GAP_INIT_CANCEL_CONNECT         0x64
 
 // GATT Sub-Procedure Commands
@@ -249,7 +249,7 @@ extern "C"
 #define HCI_EXT_GAP_SIGNATURE_UPDATED_EVENT         ( HCI_EXT_GAP_EVENT | 0x09 )
 #define HCI_EXT_GAP_AUTH_COMPLETE_EVENT             ( HCI_EXT_GAP_EVENT | 0x0A )
 #define HCI_EXT_GAP_PASSKEY_NEEDED_EVENT            ( HCI_EXT_GAP_EVENT | 0x0B )
-#define HCI_EXT_GAP_SLAVE_REQUESTED_SECURITY_EVENT  ( HCI_EXT_GAP_EVENT | 0x0C )
+#define HCI_EXT_GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT  ( HCI_EXT_GAP_EVENT | 0x0C )
 #define HCI_EXT_GAP_DEVICE_INFO_EVENT               ( HCI_EXT_GAP_EVENT | 0x0D )
 #define HCI_EXT_GAP_BOND_COMPLETE_EVENT             ( HCI_EXT_GAP_EVENT | 0x0E )
 #define HCI_EXT_GAP_PAIRING_REQ_EVENT               ( HCI_EXT_GAP_EVENT | 0x0F )

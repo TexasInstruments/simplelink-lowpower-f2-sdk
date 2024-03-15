@@ -157,7 +157,7 @@ __Range__: 0 to UINT16_MAX
 \n\
 ***Additional Setup Required***:
 \n\
-\`MAX_DEVICE_TABLE_ENTRIES\` in the project specific .opts file must be \
+\`MAX_DEVICE_TABLE_ENTRIES\` in the project specific .opt file must be \
 updated if this parameter is modified from the default setting. For secure \
 applications, \`MAX_DEVICE_TABLE_ENTRIES\` must be set equal to or greater \
 than the maximum devices selected. For non-secure applications, \

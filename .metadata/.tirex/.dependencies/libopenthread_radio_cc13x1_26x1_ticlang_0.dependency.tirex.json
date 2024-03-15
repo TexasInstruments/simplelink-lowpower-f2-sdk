@@ -1,8 +1,0 @@
-[
-    {
-        "files": [
-            "+../../../config/openthread-config-cc13x1_26x1-rcp.h -> config/openthread-config-cc13x1_26x1-rcp.h",
-            "+../../../config/openthread-core-cc13x1_26x1-config.h -> config/openthread-core-cc13x1_26x1-config.h"
-        ]
-    }
-]

@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,14 @@ set(SOURCES_COMMON
 
 set(SOURCES_CC13X1_CC26X1 ${SOURCES_COMMON})
 
-set(SOURCES_CC23XX
+set(SOURCES_CC23X0
+    ${SOURCES_COMMON}
+    ECCSW.c
+    lowlevelapi.c
+    scalarMul.c
+)
+
+set(SOURCES_CC27XX
     ${SOURCES_COMMON}
     ECCSW.c
     lowlevelapi.c

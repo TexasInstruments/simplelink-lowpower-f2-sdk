@@ -73,7 +73,7 @@ void ITMCC26XX_flush(void)
 {
     ITMCC26XX_HWAttrs *hwAttrs = (ITMCC26XX_HWAttrs *)itmHwAttrs;
     /* Release the SWO pin from the ITM */
-    GPIO_setConfigAndMux(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_GPIO);
+    GPIO_setConfigAndMux(hwAttrs->swoPin, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, GPIO_MUX_GPIO);
 }
 
 /*

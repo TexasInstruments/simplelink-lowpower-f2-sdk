@@ -64,6 +64,15 @@
 
     #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
     #define BOOT_SECONDARY_1_SIZE               0x00056000
+#elif defined DeviceFamily_CC23X0R2
+    #define BOOTLOADER_BASE_ADDRESS             0x00000000
+    #define BOOT_BOOTLOADER_SIZE                0x00006000
+
+    #define BOOT_PRIMARY_1_BASE_ADDRESS         0x00006000
+    #define BOOT_PRIMARY_1_SIZE                 0x0001d000
+
+    #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00023000
+    #define BOOT_SECONDARY_1_SIZE               0x0001d000
 #elif defined DeviceFamily_CC23X0R5
     #define BOOTLOADER_BASE_ADDRESS             0x00000000
     #define BOOT_BOOTLOADER_SIZE                0x00006000

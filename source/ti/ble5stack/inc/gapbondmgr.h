@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1016,6 +1016,8 @@ extern bStatus_t GAPBondMgr_GenerateEccKeys( void );
 /**
  * @brief   Read bond record from NV
  *
+ * @param   addrType - peer's address type
+ * @param   pDevAddr - peer's address
  * @param   pBondRec - basic bond record
  * @param   pLocalLTK - LTK used by this device during pairing
  * @param   pDevLTK - LTK used by the peer device during pairing
@@ -1029,13 +1031,13 @@ extern bStatus_t GAPBondMgr_GenerateEccKeys( void );
  */
 extern uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
                                      uint8_t *pDevAddr,
-                                     gapBondRec_t* pBondRec,
-                                     gapBondLTK_t* pLocalLtk,
-                                     gapBondLTK_t* pDevLtk,
-                                     uint8_t* pIRK,
-                                     uint8_t* pSRK,
-                                     uint32_t signCount,
-                                     gapBondCharCfg_t* charCfg);
+                                     gapBondRec_t *pBondRec,
+                                     gapBondLTK_t *pLocalLtk,
+                                     gapBondLTK_t *pDevLtk,
+                                     uint8_t *pIRK,
+                                     uint8_t *pSRK,
+                                     uint32_t *signCount,
+                                     gapBondCharCfg_t *charCfg);
 
 /**
  * @brief   Import bond record to NV
@@ -1051,13 +1053,13 @@ extern uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
  * @return  SUCCESS if bond was imported
  * @        bleNoResources if there are no empty slots
  */
-extern uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
-                              gapBondLTK_t* pLocalLtk,
-                              gapBondLTK_t* pDevLtk,
-                              uint8_t* pIRK,
-                              uint8_t* pSRK,
-                              uint32_t signCount,
-                              gapBondCharCfg_t* charCfg);
+extern uint8_t gapBondMgrImportBond(gapBondRec_t *pBondRec,
+                                    gapBondLTK_t *pLocalLtk,
+                                    gapBondLTK_t *pDevLtk,
+                                    uint8_t *pIRK,
+                                    uint8_t *pSRK,
+                                    uint32_t signCount,
+                                    gapBondCharCfg_t *charCfg);
 
 /**
  * @fn          GapBondMgr_GetPrevAuth

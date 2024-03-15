@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited. All rights reserved.
+ * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
-/* The following code is copied from tfm_its_req_mngr.c from TF-M v1.1 */
+/* The following code is copied from tfm_its_req_mngr.c from TF-M v1.1 and
+ * its_signal_handle() was modified to support TF-M v1.8.
+ */
 
 typedef psa_status_t (*its_func_t)(void);
 
@@ -133,14 +136,20 @@ static void its_signal_handle(psa_signal_t signal, its_func_t pfn)
         case PSA_IPC_CONNECT:
             psa_reply(msg.handle, PSA_SUCCESS);
             break;
-        case PSA_IPC_CALL:
-            status = pfn();
-            psa_reply(msg.handle, status);
-            break;
+
         case PSA_IPC_DISCONNECT:
             psa_reply(msg.handle, PSA_SUCCESS);
             break;
+
         default:
-            tfm_abort();
+            if (msg.type >= PSA_IPC_CALL)
+            {
+                psa_reply(msg.handle, pfn());
+            }
+            else
+            {
+                psa_reply(msg.handle, PSA_ERROR_PROGRAMMER_ERROR);
+            }
+            break;
     }
 }

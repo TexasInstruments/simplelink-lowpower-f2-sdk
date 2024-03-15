@@ -1,0 +1,182 @@
+/*
+ * Copyright (c) 2018, Texas Instruments Incorporated
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ *  sensor_toad.syscfg
+ */
+
+/* ======== RF ======== */
+var RF = scripting.addModule("/ti/drivers/RF");
+
+/* If an antenna component exists, assign it to the RF instance */
+if (system.deviceData.board && system.deviceData.board.components.RF) {
+    RF.$hardware = system.deviceData.board.components.RF;
+}
+
+/* ======== UART Display ======== */
+var Display = scripting.addModule("/ti/display/Display");
+var Display_UART = Display.addInstance();
+
+/* If a xds110Uart component exists, assign it to the Display_UART instance */
+if (system.deviceData.board && system.deviceData.board.components.XDS110UART) {
+    Display_UART.$hardware = system.deviceData.board.components.XDS110UART;
+}
+
+Display_UART.$name = "CONFIG_DISPLAY";                         // Descriptive name for Display
+Display_UART.uart.$name = "CONFIG_DISPLAY_UART";               // Descriptive name for Display_UART
+
+
+/* ======== LED Red ======== */
+var LED = scripting.addModule("/ti/drivers/apps/LED");   // Add a LED module
+var LED_R = LED.addInstance();                           // Add a LED module instance for LED_R
+
+/* If a red LED component exists, assign it to the LED_R instance */
+if (system.deviceData.board && system.deviceData.board.components.LED_RED) {
+    LED_R.$hardware = system.deviceData.board.components.LED_RED;
+}
+else
+{
+    LED_R.mode = "Output";  // Set the LED pin to output
+}
+
+LED_R.$name = "CONFIG_LED_RED";
+LED_R.gpioPin.$name = "CONFIG_GPIO_RLED";               // Descriptive name for the LED_R GPIO
+LED_R.gpioPin.mode = "Output";
+
+
+/* ======== LED Green ======== */
+var LED = scripting.addModule("/ti/drivers/apps/LED");   // Add a LED module
+var LED_G = LED.addInstance();                           // Add a LED module instance for LED_G
+
+/* If a red LED component exists, assign it to the LED_G instance */
+if (system.deviceData.board && system.deviceData.board.components.LED_GREEN) {
+    LED_G.$hardware = system.deviceData.board.components.LED_GREEN;
+}
+else
+{
+    LED_G.mode = "Output";  // Set the LED pin to output
+}
+
+LED_G.$name = "CONFIG_LED_GREEN";
+LED_G.gpioPin.$name = "CONFIG_GPIO_GLED";               // Descriptive name for the LED_G GPIO
+LED_G.gpioPin.mode = "Output";
+
+/* ======== Left Button ======== */
+var BUTTON = scripting.addModule("/ti/drivers/apps/Button");    // Add a BUTTON module
+var BUTTON_L = BUTTON.addInstance();                            // Add a BUTTON module instance for BUTTON_L
+
+/* If a BUTTON0 component exists, assign it to the BUTTON_L instance */
+if (system.deviceData.board && system.deviceData.board.components["BTN-1"]) {
+    BUTTON_L.$hardware = system.deviceData.board.components["BTN-1"];
+}
+
+BUTTON_L.$name = "CONFIG_BTN_LEFT";
+BUTTON_L.gpioPin.$name = "CONFIG_GPIO_BTN1";             // Descriptive name for the BUTTON_L GPIO
+BUTTON_L.gpioPin.pull = "Pull Up";                       // Use Pull up resistor
+
+/* ======== Right Button ======== */
+var BUTTON = scripting.addModule("/ti/drivers/apps/Button");    // Add a BUTTON module
+var BUTTON_R = BUTTON.addInstance();                            // Add a BUTTON module instance for BUTTON_R
+
+/* If a BUTTON0 component exists, assign it to the BUTTON_R instance */
+if (system.deviceData.board && system.deviceData.board.components["BTN-2"]) {
+    BUTTON_R.$hardware = system.deviceData.board.components["BTN-2"];
+}
+
+BUTTON_R.$name = "CONFIG_BTN_RIGHT";
+BUTTON_R.gpioPin.$name = "CONFIG_GPIO_BTN2";             // Descriptive name for the BUTTON_R GPIO
+BUTTON_R.gpioPin.pull = "Pull Up";                       // Use Pull up resistor
+
+/* ======== NVS ======== */
+const deviceName = system.getScript("/ti/ti154stack/ti154stack_common.js").getLaunchPadFromDevice();
+var NVS = scripting.addModule("/ti/drivers/NVS");        // Add a NVS module
+var NVS_INT = NVS.addInstance();                         // Add an internal NVS module instance
+var NVS_EXT = NVS.addInstance();                         // Add an external NVS module instance
+
+NVS_INT.$name = "CONFIG_NVSINTERNAL";                    // Internal NVS
+if (deviceName.includes("R7") || deviceName.includes("P7"))
+{
+    NVS_INT.internalFlash.regionBase = 0xAA000;
+}
+else
+{
+    NVS_INT.internalFlash.regionBase = 0x52000;
+}
+NVS_INT.internalFlash.regionSize = 0x4000;               // Sensor project has 2 NV pages default
+
+NVS_EXT.$name = "CONFIG_NVSEXTERNAL";                    // External NVS
+NVS_EXT.nvsType = "External";
+
+/* If a SPI_FLASH component exists, assign it to the NVS external instance */
+if (system.deviceData.board && system.deviceData.board.components.SPI_FLASH) {
+    NVS_EXT.$hardware = system.deviceData.board.components.SPI_FLASH;
+
+    var NVSSPI25XDevice1 = NVS_EXT.externalFlash.spiFlashDevice;
+    NVSSPI25XDevice1.$name = "CONFIG_NVS_SPI_0";
+    NVSSPI25XDevice1.chipSelectPinInstance.mode = "Output";
+    NVSSPI25XDevice1.chipSelectPinInstance.$name = "CONFIG_GPIO_SPI_FLASH_CS";
+    var SPI = NVSSPI25XDevice1.sharedSpiInstance;
+    SPI.$name = "Board_SPI_0";
+    NVS_EXT.externalFlash.regionSize = 0x100000;
+    NVS_EXT.externalFlash.verifyBufferSize = 64;
+}
+
+/* ======== Device ======== */
+var device = scripting.addModule("ti/devices/CCFG");
+const ccfgSettings = system.getScript("/ti/common/lprf_ccfg_settings.js").ccfgSettings;
+for(var setting in ccfgSettings)
+{
+    device[setting] = ccfgSettings[setting];
+}
+
+// Can't configure CCFG from OAD project. BIM controls this portion of flash
+device.enableCodeGeneration = false;
+
+/* ======== RF Design ======== */
+var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
+const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;
+for(var setting in rfDesignSettings)
+{
+    rfDesign[setting] = rfDesignSettings[setting];
+}
+
+/* ======== TI-15.4 Stack ======== */
+var TI154Stack = scripting.addModule("/ti/ti154stack/ti154stack");
+
+if(rfDesignSettings.rfDesign !== undefined)
+{
+    TI154Stack.rfDesign = rfDesignSettings.rfDesign;
+}
+
+TI154Stack.project = "sensorOAD";
+TI154Stack.lockProject = true;
+TI154Stack.toadSettings.enabled = true;

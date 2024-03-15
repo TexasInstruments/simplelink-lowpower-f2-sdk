@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instrubments Incorporated. All rights reserved.
+ * Copyright (c) 2022, Texas Instrubments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -13,7 +13,7 @@
 #include "tfm_plat_device_id.h"
 
 /*
- * [TI-TFM] Alternate implementation to read attestation claims from attest_region_t
+ * TI-TFM: Alternate implementation to read attestation claims from attest_region_t
  * This enables Attestation partition to read security_lifecycle, implementation_id,
  * hw_version, and verification_service_url from dedicated Flash region
  */
@@ -75,7 +75,7 @@ static const char attestation_profile_definition[] = "PSA_IOT_PROFILE_1";
 enum tfm_security_lifecycle_t tfm_attest_hal_get_security_lifecycle(void)
 {
 #ifdef USE_FLASH_DATA
-    /* [TI-TFM] Obtain security lifecycle from Flash */
+    /* TI-TFM: Obtain security lifecycle from Flash */
     switch(attest_region->security_lifecycle)
     {
         case 0xFFFFFF00:
@@ -96,7 +96,7 @@ const char *
 tfm_attest_hal_get_verification_service(uint32_t *size)
 {
 #ifdef USE_FLASH_DATA
-    /* [TI-TFM] Obtain verification service URL from Flash */
+    /* TI-TFM: Obtain verification service URL from Flash */
     *size = attest_region->verification_service_url_length;
 
     /* Check if the size of URL - 1 (for null terminator) matches the length of URL */
@@ -166,7 +166,7 @@ enum tfm_plat_err_t tfm_plat_get_implementation_id(uint32_t *size,
 
     uint32_t impl_id_size;
 #ifdef USE_FLASH_DATA
-    /* [TI-TFM] Obtain implementation id from Flash */
+    /* TI-TFM: Obtain implementation id from Flash */
     const uint8_t *p_impl_id = attest_region->implementation_id;
     impl_id_size = attest_region->implementation_id_length;
 #else
@@ -187,7 +187,7 @@ enum tfm_plat_err_t tfm_plat_get_hw_version(uint32_t *size, uint8_t *buf)
 {
     uint32_t hw_version_size;
 #ifdef USE_FLASH_DATA
-    /* [TI-TFM] Obtain hardware version from Flash */
+    /* TI-TFM: Obtain hardware version from Flash */
     const uint8_t *p_hw_version = attest_region->hw_version;
     hw_version_size = attest_region->hw_version_length - 1;
 #else

@@ -18,7 +18,7 @@ let rfdesign;
 let frontEnd;
 let bias;
 
-if(devFamily != "DeviceFamily_CC23X0")
+if(devFamily != "DeviceFamily_CC23X0R5" && devFamily != "DeviceFamily_CC23X0R2")
 {
     rfdesign = system.modules["/ti/devices/radioconfig/rfdesign"].$static;
 
@@ -49,7 +49,7 @@ if(devFamily != "DeviceFamily_CC23X0")
 % if(ble.bondManager == true) {
 #include <gapbondmgr.h>
 %}
-% if(devFamily != "DeviceFamily_CC23X0")
+% if(devFamily != "DeviceFamily_CC23X0R5" && devFamily != "DeviceFamily_CC23X0R2")
 % {
 #include <ti_radio_config.h>
 %}
@@ -59,26 +59,29 @@ if(devFamily != "DeviceFamily_CC23X0")
 extern uint8_t profileRole;
 // GAP GATT Service (GGS) parameters
 extern uint8_t attDeviceName[GAP_DEVICE_NAME_LEN];
-
-%if(devFamily != "DeviceFamily_CC23X0")
+% if(ble.basicBLE){
+extern void init_profiles(void);
+%}
+%if(devFamily != "DeviceFamily_CC23X0R5" && devFamily != "DeviceFamily_CC23X0R2")
 %{
 % if(rfdesign){
 #define RF_FE_MODE_AND_BIAS            `frontEnd` | `bias`
 %}
 %}
 
-// Default Tx Power Index
-#define DEFAULT_TX_POWER               `ble.defaultTxPower`
-
-//Random Address
-% if(ble.addressMode == "ADDRMODE_RANDOM" || ble.addressMode == "ADDRMODE_RP_WITH_RANDOM_ID")
+% if(devFamily == "DeviceFamily_CC23X0R5" || devFamily == "DeviceFamily_CC23X0R2")
 % {
-extern uint8_t pRandomAddress[6];
+// Default Tx Power value in dBm
+#define DEFAULT_TX_POWER               `ble.defaultTxPowerValue`
 % }
 % else
 % {
-extern uint8_t * pRandomAddress;
+// Default Tx Power Index
+#define DEFAULT_TX_POWER               `common.convertTxPowerValueToIndex(ble.defaultTxPowerValue)`
 % }
+
+//Random Address
+extern uint8_t pRandomAddress[B_ADDR_LEN];
 
 // Address mode of the local device
 // Note: When using the DEFAULT_ADDRESS_MODE as ADDRMODE_RANDOM or 
@@ -88,16 +91,6 @@ extern uint8_t * pRandomAddress;
 
 // How often to read current RPA (in ms)
 #define READ_RPA_PERIOD                       `ble.rpaRead`
-
-// Maximum number of BLE connections. It should be set based on the
-// device GAP role. Here're some recommended values:
-//      * Central:     32
-//      * Peripheral:  16
-//      * Observer:    0
-//      * Broadcaster: 0
-// Note: When the GAP role includes Peripheral and no v4.1 Controller features
-//       are configured, MAX_NUM_BLE_CONNS must not be greater than 1
-#define MAX_NUM_BLE_CONNS                      `ble.maxConnNum`
 
 // Maximum number of BLE HCI PDUs. If the maximum number connections (above)
 // is set to 0 then this number should also be set to 0.
@@ -123,7 +116,7 @@ extern uint8_t ioCap;
 extern uint8_t bonding;
 extern uint8_t secureConnection;
 extern uint8_t authenPairingOnly;
-extern uint8_t autoSyncWL;
+extern uint8_t `common.getAutoSyncName()`;
 % if(ble.secureConn != "GAPBOND_SECURE_CONNECTION_NONE" && !ble.eccDebugKeys)
 % {
 extern uint8_t eccReGenPolicy;
@@ -146,16 +139,28 @@ extern void setBondManagerParameters();
 % if (ble.hideCentralGroup == false){
 
 
-//Init PHY Parameters
+// Initiator PHY Parameters
 
 // Default PHY for initiating
 #define DEFAULT_INIT_PHY                      `ble.initiatingPHY`
+
+// Default scan interval (in 0.625ms)
+#define INIT_PHYPARAM_SCAN_INT    		      `(ble.centralScanInt)/0.625`
+
+// Default scan window (in 0.625ms)
+#define INIT_PHYPARAM_SCAN_WIN    		      `(ble.centralScanWin)/0.625`
 
 // Default minimum connection interval (in 1.25ms)
 #define INIT_PHYPARAM_MIN_CONN_INT    		  `(ble.connIntMin)/1.25`
 
 // Default maximum connection interval (in 1.25ms)
 #define INIT_PHYPARAM_MAX_CONN_INT    		  `ble.connIntMax/1.25`
+
+// Default connection latency
+#define INIT_PHYPARAM_CONN_LAT    		      `ble.centraConnLatency`
+
+// Default Supervision Timeout (in 10ms)
+#define INIT_PHYPARAM_SUP_TO   		          `ble.centraSupTimeout/10`
 
 // Default RSSI polling period in ms
 #define DEFAULT_RSSI_PERIOD                   `ble.rssiPollingPeriod`
@@ -168,8 +173,8 @@ extern void setBondManagerParameters();
 // request is enabled
 #define DEFAULT_UPDATE_MAX_CONN_INTERVAL      `(ble.connUpdateParamsCentral.reqMaxConnInt)/1.25`
 
-// Slave latency to use if automatic parameter update request is enabled
-#define DEFAULT_UPDATE_SLAVE_LATENCY          `ble.connUpdateParamsCentral.reqSlaveLat`
+// Peripheral latency to use if automatic parameter update request is enabled
+#define DEFAULT_UPDATE_PERIPHERAL_LATENCY     `ble.connUpdateParamsCentral.reqPeripheralLat`
 
 // Supervision timeout value (units of 10ms) if automatic parameter update
 // request is enabled
@@ -188,6 +193,9 @@ extern void setBondManagerParameters();
 //Default Scan type (Active/Passive)
 #define DEFAULT_SCAN_TYPE                       `ble.scanType`
 
+// Scan period
+#define DEFAULT_SCAN_PERIOD                     `ble.scanPeriod/1.28`
+
 // Default scan interval (in 625 us ticks)
 #define DEFAULT_SCAN_INTERVAL                   `(ble.scanInt)/0.625`
 
@@ -200,11 +208,26 @@ extern void setBondManagerParameters();
 // Advertising report fields to keep in the list
 #define ADV_RPT_FIELDS                          (`ble.advRptFields.join(" | ")`)
 
+// Scanner Filter Policy
+#define SCANNER_FILTER_POLICY                   `ble.fltPolicy`
+
+// Scanner Filter PDU Type
+#define SCANNER_FILTER_PDU_TYPE                  (`ble.fltPduType.join(" | ")`)
+
+// Scanner Filter Minimum RSSI
+#define SCANNER_FILTER_MIN_RSSI                  `ble.fltMinRssi`
+
+// Scanner Discoverable Mode Filter
+#define SCANNER_FILTER_DISC_MODE                 `ble.fltDiscMode`
+
 // Scanner Duplicate Filter
 #define SCANNER_DUPLICATE_FILTER                 `ble.dupFilter`
 
 // TRUE to filter discovery results on desired service UUID
 #define DEFAULT_DEV_DISC_BY_SVC_UUID            `ble.disDevBySerUuid`
+
+// Maximum number of advertising reports
+#define APP_MAX_NUM_OF_ADV_REPORTS              `ble.maxNumAdvReport`
 
 %}
 %
@@ -229,8 +252,8 @@ extern void setBondManagerParameters();
 // request is enabled
 #define DEFAULT_DESIRED_MAX_CONN_INTERVAL      `(ble.connUpdateParamsPeripheral.reqMaxConnInt)/1.25`
 
-// Slave latency to use if automatic parameter update request is enabled
-#define DEFAULT_DESIRED_SLAVE_LATENCY          `ble.connUpdateParamsPeripheral.reqSlaveLat`
+// Peripheral latency to use if automatic parameter update request is enabled
+#define DEFAULT_DESIRED_PERIPHERAL_LATENCY     `ble.connUpdateParamsPeripheral.reqPeripheralLat`
 
 // Supervision timeout value (units of 10ms) if automatic parameter update
 // request is enabled
@@ -266,5 +289,27 @@ extern uint8_t `ble["advSet"+i]["scanRes"+i].name`[`common.advDataTotalLength(sc
 % }
 %}
 %}
+
+% if (ble.hideL2CAPGroup == false){
+#define L2CAP_PSM_ID                      `ble.L2CAPCOCpsmId`
+#define L2CAP_PEER_PSM_ID                 `ble.L2CAPCOPeerPsmId`
+#define L2CAP_MAX_MTU                     `ble.L2CAPCOCmaxMTU`
+#define L2CAP_MAX_MPS                     `ble.L2CAPCOCmaxMPS`
+#define L2CAP_NOF_CREDITS                 `ble.L2CAPCOCnofCredits`
+#define L2CAP_CREDITS_THRESHOLD           `ble.L2CAPCOCcreditsThreshold`
+#define L2CAP_CONN_ESTABLISH_ROLE         `ble.L2CAPCOCInitiator`
+%}
+
+// SDAA parameters
+% if(ble.sdaa)
+% {
+#define SDAA_MAX_THRESHOLD                  `ble.txUsageThresh`
+#define SDAA_RX_WINDOW_DURATION             `ble.rxWindowDuration`
+#define SDAA_RSSI_THRESHOLD                 `ble.rssiThreshold`
+#define SDAA_MAX_ALLOWED_NOISY_SAMPLES      `ble.numberOfNoisySamples`
+#define SDAA_MAX_BLOCKED_CHANNEL_TIME       `ble.blockingChannelTime`
+#define SDAA_CONST_OBSERV_TIME              `ble.fixedObservTime`
+#define SDAA_OBSERVATION_TIME               `ble.observationTime`
+% }
 
 #endif /* TI_BLE_CONFIG_H */

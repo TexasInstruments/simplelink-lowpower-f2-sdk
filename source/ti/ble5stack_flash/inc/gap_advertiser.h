@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -114,11 +114,12 @@ extern "C"
   .primChanMap = GAP_ADV_CHAN_ALL,                                         \
   .peerAddrType = PEER_ADDRTYPE_PUBLIC_OR_PUBLIC_ID,                       \
   .peerAddr = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa },                      \
-  .filterPolicy = GAP_ADV_WL_POLICY_ANY_REQ,                               \
+  .filterPolicy = GAP_ADV_AL_POLICY_ANY_REQ,                               \
   .txPower = GAP_ADV_TX_POWER_NO_PREFERENCE,                               \
   .primPhy = GAP_ADV_PRIM_PHY_1_MBPS,                                      \
   .secPhy = GAP_ADV_SEC_PHY_1_MBPS,                                        \
   .sid = 0                                                                 \
+  .zeroDelay = 0                                                           \
 }
 
 #ifdef USE_AE
@@ -130,11 +131,12 @@ extern "C"
   .primChanMap = GAP_ADV_CHAN_ALL,                                         \
   .peerAddrType = PEER_ADDRTYPE_PUBLIC_OR_PUBLIC_ID,                       \
   .peerAddr = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa },                      \
-  .filterPolicy = GAP_ADV_WL_POLICY_ANY_REQ,                               \
+  .filterPolicy = GAP_ADV_AL_POLICY_ANY_REQ,                               \
   .txPower = GAP_ADV_TX_POWER_NO_PREFERENCE,                               \
   .primPhy = GAP_ADV_PRIM_PHY_CODED_S2,                                    \
   .secPhy = GAP_ADV_SEC_PHY_CODED_S2,                                      \
   .sid = 0                                                                 \
+  .zeroDelay = 0                                                           \
 }
 
 /// Non-Connectable & Non-Scannable advertising set
@@ -145,11 +147,12 @@ extern "C"
   .primChanMap = GAP_ADV_CHAN_ALL,                                         \
   .peerAddrType = PEER_ADDRTYPE_PUBLIC_OR_PUBLIC_ID,                       \
   .peerAddr = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa },                      \
-  .filterPolicy = GAP_ADV_WL_POLICY_ANY_REQ,                               \
+  .filterPolicy = GAP_ADV_AL_POLICY_ANY_REQ,                               \
   .txPower = GAP_ADV_TX_POWER_NO_PREFERENCE,                               \
   .primPhy = GAP_ADV_PRIM_PHY_1_MBPS,                                      \
   .secPhy = GAP_ADV_SEC_PHY_1_MBPS,                                        \
   .sid = 1                                                                 \
+  .zeroDelay = 0                                                           \
 }
 #endif
 /** @} End GapAdv_Constants */
@@ -346,6 +349,40 @@ typedef enum
    */
   GAP_ADV_PARAM_SID,
 
+  /**
+     * Own address type of the advSet
+     *
+     * This is the value of the address type that can determine of which address the device
+     * will advertise with.
+     * The value can be set only if the gapDeviceAddrMode is set to RPA.
+     * 0x00 - Public address (IDA).
+     * 0x01 - Random address (Static Random).
+     * 0x02 - RPA with public.
+     * 0x03 - RPA with random.
+     *
+     * size: uint8_t
+     *
+     * range: 0x00-0x03
+     */
+  GAP_ADV_PARAM_OWN_ADDRESS_TYPE,
+
+  /**
+   * Advertising start time delay
+   *
+   * This parameter determines whether to disable random delay of advertising start time or not.
+   * If 1, Random delay will be disabled (zero delay).
+   * If 0, Random delay will be enabled  (default).
+   * Default value - 0;
+   *
+   * NOTE: This parameter enables zero delay for the advertisements, which is not compliant with the
+   * BLE SPEC.
+   *
+   * size: uint8_t
+   *
+   * range: 0-1
+   */
+  GAP_ADV_PARAM_ZERODELAY,
+
 /// @cond NODOC
   GAP_ADV_PARAM_COUNT
 /// @endcond //NODOC
@@ -423,28 +460,28 @@ typedef enum
                            GAP_ADV_CHAN_39)  //!< All Channels
 } GapAdv_advChannels_t;
 
-/// GAP Advertiser White List Policy
+/// GAP Advertiser Accept List Policy
 typedef enum
 {
   /**
-   * Process scan and connection requests from all devices (i.e., the White List
+   * Process scan and connection requests from all devices (i.e., the Accept List
    * is not in use)
    */
-  GAP_ADV_WL_POLICY_ANY_REQ,
+  GAP_ADV_AL_POLICY_ANY_REQ,
   /**
    * Process connection requests from all devices and only scan requests
-   * from devices that are in the White List
+   * from devices that are in the Accept List
    */
-  GAP_ADV_WL_POLICY_WL_SCAN_REQ,
+  GAP_ADV_AL_POLICY_AL_SCAN_REQ,
   /**
    * Process scan requests from all devices and only connection requests
-   * from devices that are in the White List.
+   * from devices that are in the Accept List.
    */
-  GAP_ADV_WL_POLICY_WL_CONNECT_IND,
+  GAP_ADV_AL_POLICY_AL_CONNECT_IND,
   /**
-   * Process scan and connection requests only from devices in the White List.
+   * Process scan and connection requests only from devices in the Accept List.
    */
-  GAP_ADV_WL_POLICY_WL_ALL_REQ
+  GAP_ADV_AL_POLICY_AL_ALL_REQ
 } GapAdv_filterPolicy_t;
 
 /// Allow the controller to choose the Tx power
@@ -574,6 +611,7 @@ typedef struct
   GapAdv_primaryPHY_t primPhy;           //!< @ref GAP_ADV_PARAM_PRIMARY_PHY
   GapAdv_secondaryPHY_t secPhy;          //!< @ref GAP_ADV_PARAM_SECONDARY_PHY
   uint8_t sid;                           //!< @ref GAP_ADV_PARAM_SID
+  uint8_t zeroDelay;                     //!< @ref GAP_ADV_PARAM_ZERODELAY
 } GapAdv_params_t;
 
 

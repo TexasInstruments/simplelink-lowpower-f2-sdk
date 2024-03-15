@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifdef CC_IOT
-    #if defined(MBEDTLS_CONFIG_FILE)
-    #include MBEDTLS_CONFIG_FILE
-    #endif
+#include "mbedtls/build_info.h"
 #endif
 
 #if !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C))
@@ -32,13 +30,18 @@
 #if !defined(_INTERNAL_CC_NO_RSA_SCHEME_15_SUPPORT)
 
 /************************ Global Data ******************************/
-/* DER(BER) encoded data for allowed HASH algorithms */
-/*typedef struct HashDerCode_t {
-        uint32_t algIdSizeBytes;
-        CCHashOperationMode_t hashMode;
-        uint8_t algId[HASH_DER_CODE_MAX_SIZE_BYTES];
-}*/
-/*   Note: order of algorithms in array must be according to HASH mode ID */
+/* DER(BER) encoded data for allowed HASH algorithms
+ * typedef struct HashDerCode_t {
+ *             uint32_t algIdSizeBytes;
+ *             CCHashOperationMode_t hashMode;
+ *             uint8_t algId[HASH_DER_CODE_MAX_SIZE_BYTES];
+ * } HashDerCode_t;
+ *
+ * Note: algId is the DER encoding of the T value corresponding to the
+ *       ASN.1 structure DigestInfo as specified in RFC8017 sect 9.2,
+ *       without the hash H part that has to be concatenated at the end
+ */
+/* Note: order of algorithms in array must be according to HASH mode ID */
 static const HashDerCode_t gHashDerCodes[] = {
         {15, CC_HASH_SHA1_mode,  {0x30,0x21,0x30,0x09,0x06,0x05,0x2b,0x0e,0x03,0x02,0x1a,0x05,0x00,0x04,0x14}},                     /*SHA1*/
         {19, CC_HASH_SHA224_mode,{0x30,0x2D,0x30,0x0D,0x06,0x09,0x60,0x86,0x48,0x01,0x65,0x03,0x04,0x02,0x04,0x05,0x00,0x04,0x1C}}, /*SHA224*/
@@ -165,15 +168,25 @@ CCError_t  RsaGenRndNonZeroVect(CCRndContext_t *rndContext_ptr, uint8_t *pVect, 
  * @param MSize - Denotes the Message size: for Sig/Ver = hashSize,
  *                for Enc/Dec <= K-hashAlgIdSize-PSS_MIN_LEN-3.
  * @param pOut - The pointer to a buffer which is at least K octets long.
+ * @param bIsRawMode - boolean to indicate if the function is used in Raw mode,
+ *                     which means that the T structure is already
+ *                     provided as an input (no need to perform hashing)
+ * @param DataIn_ptr - Buffer containing the T structure to be signed (possibly
+ *                     the DER encoding of ASN.1 DigestInfo structure as
+ *                     specified in RFC8017 sect. 9.2 notes)
+ * @param DataInSize - Size in bytes of the raw input T provided in DataIn_ptr
  *
  * @return CCError_t
  */
 CCError_t RsaEmsaPkcs1v15Encode(
-                                        uint32_t K,
-                                        CCHashOperationMode_t hashMode,
-                                        uint8_t     *pM, /*mess.digest*/
-                                        uint32_t     MSize,
-                                        uint8_t     *pOut)
+        uint32_t              K,
+        CCHashOperationMode_t hashMode,
+        uint8_t               *pM, /*mess.digest*/
+        uint32_t              MSize,
+        uint8_t               *pOut,
+        bool                  bIsRawMode,
+        const uint8_t         *DataIn_ptr,
+        size_t                DataInSize)
 {
         /* The return error identifier */
         CCError_t Error = CC_OK;
@@ -185,48 +198,54 @@ CCError_t RsaEmsaPkcs1v15Encode(
         uint32_t hashAlgIdSize = 0;
 
         /* FUNCTION LOGIC */
-
 #ifdef DEBUG
         /* Init to garbage */
         CC_PalMemSet(pOut, 0xCC, K);
 #endif
-
         /*---------------------------------------------------*/
         /*  Encryption block formating for EMSA-PKCS1-v1_5:  */
         /*          00 || 01 || PS || 00 || T            */
         /*         MSB                      LSB          */
         /* Note:  BT=02, PS=FF...FF, T=DER||Hash(M)          */
         /*---------------------------------------------------*/
-
-        /* Get Hash alg. parametrs including DER code */
-        Error = GetHashAlgDerCode(hashMode, &pHashAlgId, &hashAlgIdSize);
-        if (Error)
+        if (!bIsRawMode) {
+            /* Get Hash alg. parametrs including DER code */
+            Error = GetHashAlgDerCode(hashMode, &pHashAlgId, &hashAlgIdSize);
+            if (Error) {
                 return Error;
-
-        /* check sizes */
-        if (3+MSize+PS_MIN_LEN+hashAlgIdSize > K)
+            }
+            /* check sizes */
+            if (3+MSize+PS_MIN_LEN+hashAlgIdSize > K) {
                 return CC_RSA_ENCODE_15_MSG_OUT_OF_RANGE;
-
-        PSSize = K-MSize-hashAlgIdSize-3; /*therefore, PSSize >= PS_MIN_LEN*/
+            }
+            PSSize = K-MSize-hashAlgIdSize-3; /*therefore, PSSize >= PS_MIN_LEN*/
+        } else {
+            /* check sizes */
+            if (K < DataInSize+11)  {
+                return CC_RSA_ENCODE_15_MSG_OUT_OF_RANGE;
+            }
+            PSSize = K-DataInSize-3;
+        }
 
         /* Fill the formatted output buffer */
         pOut[0]=0x00;    /* set the 00 */
         pOut[1]=0x01;    /* set Block Type 01 */
         CC_PalMemSet(&pOut[2], 0xFF, PSSize);
-        /* copy the Hash Algorithm ID (DER code) */
-        CC_PalMemCopy(&pOut[3+PSSize], pHashAlgId, hashAlgIdSize);
-
         /* set 00-byte after PS */
         pOut[2+PSSize] = 0x00;
-        /* copy the message/digest data */
-        CC_PalMemCopy(&pOut[K-MSize], pM, MSize);
+        if (!bIsRawMode) {
+            /* copy the Hash Algorithm ID (DER code) */
+            CC_PalMemCopy(&pOut[3+PSSize], pHashAlgId, hashAlgIdSize);
+            /* copy the message/digest data */
+            CC_PalMemCopy(&pOut[K-MSize], pM, MSize);
+        } else {
+            CC_PalMemCopy(&pOut[3+PSSize], DataIn_ptr, DataInSize);
+        }
 
         return CC_OK;
 }
 
 #endif /*defined(_INTERNAL_CC_NO_RSA_SCHEME_15_SUPPORT) && !defined(_INTERNAL_CC_NO_RSA_ENCRYPT_SUPPORT) && !defined(_INTERNAL_CC_NO_RSA_VERIFY_SUPPORT)*/
-
-
 
 /******************************************************************************************/
 

@@ -169,7 +169,7 @@ Coded S8 |
 Coded S2 |\n\n
 __Default__: 1M \n`
 
-// Long description for the Secondery PHY configuration parameter
+// Long description for the Secondary PHY configuration parameter
 const secPhyLongDescription = `The secondary PHY parameter will \
 decide the PHY of any auxiliary advertisement packets.\n
 __Note__: If advertising non-connectable and non-scannable, \

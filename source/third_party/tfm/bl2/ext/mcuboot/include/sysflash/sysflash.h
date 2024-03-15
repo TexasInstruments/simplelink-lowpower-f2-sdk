@@ -2,9 +2,9 @@
 
 /*
  * Original code taken from mcuboot project at:
- * https://github.com/JuulLabs-OSS/mcuboot
+ * https://github.com/mcu-tools/mcuboot
  * Git SHA of the original version: ac55554059147fff718015be9f4bd3108123f50a
- * Modifications are Copyright (c) 2020 Arm Limited.
+ * Modifications are Copyright (c) 2020-2021 Arm Limited.
  */
 
 #ifndef __SYSFLASH_H__
@@ -15,6 +15,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifdef DEFAULT_MCUBOOT_FLASH_MAP
 
 #if (MCUBOOT_IMAGE_NUMBER == 1)
 /*
@@ -42,6 +44,8 @@ extern "C" {
 #endif
 
 #define FLASH_AREA_IMAGE_SCRATCH        FLASH_AREA_SCRATCH_ID
+
+#endif /* DEFAULT_MCUBOOT_FLASH_MAP */
 
 #ifdef __cplusplus
 }

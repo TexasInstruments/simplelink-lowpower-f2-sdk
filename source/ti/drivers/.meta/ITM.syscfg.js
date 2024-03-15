@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,8 @@ let Common   = system.getScript("/ti/drivers/Common.js");
 let logError = Common.logError;
 let logInfo = Common.logInfo;
 let family   = Common.device2Family(system.deviceData, "ITM");
-let Power = system.getScript("/ti/drivers/power/Power" + family);
+let powerFamily = Common.device2Family(system.deviceData, "Power");
+let Power = system.getScript("/ti/drivers/power/Power" + powerFamily);
 let clockSpeed = Power.getClockFrequencies();
 const MAXBAUDRATE = 12e6; /* Maximum Baud rate */
 const DEFAULTBAUDRATE = MAXBAUDRATE;

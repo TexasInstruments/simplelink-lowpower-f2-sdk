@@ -5,8 +5,8 @@ websockets==7.0
 pyserial==3.4
 construct==2.9.45
 websocket_client==1.1.0
-numpy==1.23.0
-scipy==1.8.1
+numpy==1.21.6
+scipy==1.7.3
 pandas==1.0.5
 pymongo==3.11.2
 tabulate==0.8.7
@@ -14,3 +14,8 @@ tqdm==4.57.0
 wcwidth==0.2.4
 psutil==5.8.0
 cffi==1.14.5; sys_platform == 'win32'
+pyinstaller==5.11.0
+
+-e unpi
+-e rtls
+-e rtls_util

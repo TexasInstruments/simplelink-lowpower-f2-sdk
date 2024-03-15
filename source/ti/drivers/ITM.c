@@ -180,11 +180,8 @@ void ITM_close(void)
         return;
     }
 
-    /* Decrement is open counter */
-    object.numberOfClients--;
-
     /* If this is the last close call, clean up */
-    if (object.numberOfClients == 0U)
+    if (object.numberOfClients == 1)
     {
         ITM_disableExceptionTrace();
         ITM_disablePCAndEventSampling();
@@ -206,6 +203,9 @@ void ITM_close(void)
          */
         ITM_clearPinMux();
     }
+
+    /* Decrement is open counter */
+    object.numberOfClients--;
 
     HwiP_restore(hwiKey);
 }
@@ -253,23 +253,31 @@ void ITM_sendBufferAtomic(const uint8_t port, const char *msg, size_t length)
     /* Unroll the sending of the data to use the optimal port size
      * This has a slightly higher flash footprint, but has better performance
      * for large buffers. Users who are concerned about flash can consider
-     * replacing this with a single for loop
+     * replacing this with a single for loop. Ensure msg is word-aligned before
+     * proceeding.
      */
+    while ((length > 0) && ((uint32_t)msg & 0x03))
+    {
+        ITM_send8Polling(port, *msg++);
+        length--;
+    }
     while (length > 3)
     {
+        /* The cast from uint8_t* to uint32_t* below is safe, due to the loop above */
         ITM_send32Polling(port, *((uint32_t *)msg));
         length -= 4;
         msg += 4;
     }
     while (length > 1)
     {
+        /* The cast from uint8_t* to uint16_t* below is safe, due to the loop above */
         ITM_send16Polling(port, *((uint16_t *)msg));
         length -= 2;
         msg += 2;
     }
     if (length > 0)
     {
-        ITM_send8Polling(port, *msg++);
+        ITM_send8Polling(port, *msg);
     }
 
     HwiP_restore(key);

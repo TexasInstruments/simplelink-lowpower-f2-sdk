@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -15,5 +15,12 @@
 */
 
 int32_t tfm_ns_platform_init(void);
+
+/**
+ * \brief Coprocessor initialization.
+ *
+ * \return  ARM_DRIVER_OK if the initialization succeeds
+*/
+int32_t tfm_ns_cp_init(void);
 
 #endif /* __TFM_PLAT_NS_H__ */

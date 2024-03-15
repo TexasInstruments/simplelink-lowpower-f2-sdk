@@ -40,6 +40,9 @@
 
 #include "mbed-mesh-api/mesh_interface_types.h"
 #include "saddr.h"
+#include "api_mac.h"
+#include "6LoWPAN/ws/ws_bootstrap.h"
+
 /* Network name; max 32 octets + terminating 0 */
 #define MAX_NETWORK_NAME_SIZE 33
 #define CHANNEL_BITMAP_SIZE 17
@@ -50,6 +53,8 @@
 #define COAP_PORT 5683
 extern int8_t service_id;
 #endif
+
+#define EAPOL_EUI_LIST_SIZE 50
 
 typedef struct configurable_props_s {
     int8_t ccaDefaultdBm;
@@ -83,3 +88,24 @@ typedef struct nbr_node_metrics_s {
     uint8_t rssi_out;
     /* add whatever else is needed */
 }nbr_node_metrics_t;
+
+#ifdef WISUN_TEST_METRICS
+typedef struct Heap_debug
+{
+    uint32_t heap_sector_size;
+    uint32_t heap_sector_allocated_bytes;
+    uint32_t heap_sector_allocated_bytes_max;
+} Heap_debug_s;
+
+typedef struct test_metrics
+{
+    uint16_t revision;
+    uint16_t length;
+    JOIN_TIME_s join_time;
+    MAC_debug_s mac_debug;
+    Heap_debug_s heap_debug;
+    MAC_Perf_Data mac_perf_data;
+    uint32_t udpPktCnt;
+    uint16_t current_rank;
+} test_metrics_s;
+#endif

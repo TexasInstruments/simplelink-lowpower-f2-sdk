@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -250,7 +250,7 @@ typedef struct
  * OAD Block size can range from [OAD_DEFAULT_BLOCK_SIZE,OAD_MAX_BLOCK_SIZE]
  * \note OAD block size must be 4 Octet aligned
  */
-#define OAD_MAX_BLOCK_SIZE              244
+#define OAD_MAX_BLOCK_SIZE              240
 
 /*!
  * Size of the payload in an image identify response.
@@ -272,14 +272,14 @@ typedef struct
  * OAD Block size can range from [OAD_DEFAULT_BLOCK_SIZE,OAD_MAX_BLOCK_SIZE]
  * \note OAD block size must be 4 Octet aligned
  */
-#define OAD_DEFAULT_BLOCK_SIZE          244
+#define OAD_DEFAULT_BLOCK_SIZE          240
 
 /*!
  * The following 2 definitions are for this function: HCI_LE_WriteSuggestedDefaultDataLenCmd
  * the explanation of them is indicated near the use of the function
  */
 
-#define APP_SUGGESTED_PDU_SIZE 251 //default is 27 octets(TX)
+#define APP_SUGGESTED_PDU_SIZE 247 //default is 27 octets(TX)
 #define APP_SUGGESTED_TX_TIME 2120 //default is 328us(TX)
 
 #endif //OAD_APP_ONCHIP
@@ -332,7 +332,7 @@ static void oadChangeMachineState(oadState_e next_state);
 static OADProfile_Status_e oadSetGlobalActiveConnHandle(uint16 connhandle);
 
 #ifdef FREERTOS
-static void oadInactivityTimeout(void);
+static void oadInactivityTimeout(uint32_t param);
 #else
 static void oadInactivityTimeout(UArg param);
 #endif //FREERTOS
@@ -401,11 +401,7 @@ bStatus_t OADProfile_start(OADProfile_AppCallback_t pOADAppCB)
 
     // Create OAD activity timer
     Util_constructClock(&oadActivityClk,
-#ifdef FREERTOS
-                       (void*)oadInactivityTimeout,
-#else
                         oadInactivityTimeout,
-#endif
                         pOADModuleGlobalData->stateTimeout, 0, false,0);
 
 #endif //OAD_APP_ONCHIP
@@ -1196,7 +1192,7 @@ static OADProfile_Status_e oadSetGlobalActiveConnHandle(uint16 connhandle)
  *
  */
 #ifdef FREERTOS
-static void oadInactivityTimeout(void)
+static void oadInactivityTimeout(uint32_t param)
 #else
 static void oadInactivityTimeout(UArg param)
 #endif //FREERTOS

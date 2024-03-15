@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1141,7 +1141,13 @@ void SimplePeripheral_bleFastStateUpdateCb(uint32_t StackRole, uint32_t stackSta
   {
     static uint32_t prevStackState = 0;
 
+
+//! Naming discrepancy between ble5stack and ble5stack_flash
+#ifdef DeviceFamily_CC13X4
+    if( !(prevStackState & LL_TASK_ID_PERIPHERAL) && (stackState & LL_TASK_ID_PERIPHERAL))
+#else
     if( !(prevStackState & LL_TASK_ID_SLAVE) && (stackState & LL_TASK_ID_SLAVE))
+#endif
     {
         /* update DMM policy */
         DMMPolicy_updateApplicationState(DMMPolicy_StackRole_BlePeripheral, DMMPOLICY_BLE_CONNECTED);

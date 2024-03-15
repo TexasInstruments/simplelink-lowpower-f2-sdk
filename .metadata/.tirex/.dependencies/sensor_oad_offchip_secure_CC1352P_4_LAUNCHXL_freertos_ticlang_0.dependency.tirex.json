@@ -4,7 +4,7 @@
             "+../../README.md -> README.md",
             "+../../README.html -> README.html",
             "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
-            "+../../application/defines/sensor_oad_offchip.opts -> application/defines/sensor_oad_offchip.opts",
+            "+../../application/defines/sensor_oad_offchip.opt -> application/defines/sensor_oad_offchip.opt",
             "+../sensor.syscfg -> sensor.syscfg",
             "+cc13x2_cc26x2_oad_offchip.cmd -> cc13x2_cc26x2_oad_offchip.cmd"
         ]

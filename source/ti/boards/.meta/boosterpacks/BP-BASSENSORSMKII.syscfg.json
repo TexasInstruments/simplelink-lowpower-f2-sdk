@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -241,8 +241,7 @@
                         "INTERRUPT1": {
                             "type": "DIN",
                             "settings": {
-                                "interruptTrigger": "Rising Edge",
-                                "callbackFunction" : "NULL"
+                                "interruptTrigger": "Rising Edge"
                             },
                             "connection": 5
                         }
@@ -258,8 +257,7 @@
                         "INTERRUPT2": {
                             "type": "DIN",
                             "settings": {
-                                "interruptTrigger": "Rising Edge",
-                                "callbackFunction" : "NULL"
+                                "interruptTrigger": "Rising Edge"
                             },
                             "connection": 13
                         }
@@ -275,8 +273,7 @@
                         "INTERRUPT_MAG": {
                             "type": "DIN",
                             "settings": {
-                                "interruptTrigger": "Rising Edge",
-                                "callbackFunction" : "NULL"
+                                "interruptTrigger": "Rising Edge"
                             },
                             "connection": 8
                         }

@@ -41,6 +41,7 @@ const Docs = system.getScript("/ti/ble5stack/broadcaster/advertisement_data_docs
 
 // Get common utility functions
 const Common = system.getScript("/ti/ble5stack/ble_common.js");
+const connIntervalRange = Common.getPeripheralConnIntervalRange();
 
 const config = [
     {
@@ -452,12 +453,13 @@ const config = [
         hidden: true
     },
     {
-        displayName: "Slave Connection Interval Range",
-        name: "GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE",
+        name: connIntervalRange,
+        legacyNames: Common.isFlashOnlyDevice() ? ["GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE"]: [""],
+        displayName: "Peripheral Connection Interval Range",
         description: "2 octets Min, 2 octets Max (0xFFFF indicates no conn interval min or max)",
-        longDescription: Docs.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGELongDescription,
+        longDescription: Docs.connIntervalRangeLongDescription,
         default: false,
-        onChange: onSlaveConnIntRangeChange
+        onChange: onPeripheralConnIntRangeChange
     },
     {
         name: "minConnInterval",
@@ -1143,6 +1145,7 @@ function validate(inst, validation)
 
     // Validate data length
     let maxLength;
+    let totalAdvLength = Common.advDataTotalLength(inst, config);
     if (inst.$ownedBy["advParam"+inst.$ownedBy.numOfAdvSet].advType == "legacy")
     {
         maxLength = Common.maxLegacyDataLen;
@@ -1177,7 +1180,7 @@ function validate(inst, validation)
             maxLength = Common.maxExtDataLen;
         }
     }
-    if(Common.advDataTotalLength(inst, config) > maxLength)
+    if(totalAdvLength > maxLength)
     {
         // Adv Data or Scan RSP data is not allowed
         if (maxLength <= 0)
@@ -1188,7 +1191,14 @@ function validate(inst, validation)
         // else, data length exceeded max length
         else
         {
-            validation.logError("The current data length exceeds the allowed max length (" + maxLength + ")" ,inst);
+            let errorMsg = "";
+            inst.$ownedBy["advParam"+inst.$ownedBy.numOfAdvSet].advType == "legacy" ?
+            errorMsg = "Legacy":
+            errorMsg = "Extended";
+
+            validation.logError("The max allowed data length for " + errorMsg +
+                                " adv type is " + maxLength +
+                                " ,the current length is " + totalAdvLength ,inst);
         }
     }
     // validate additional data
@@ -1225,9 +1235,9 @@ function onTXPowerLevelChange(inst,ui){
     ui.TXPower.hidden = !inst.GAP_ADTYPE_POWER_LEVEL;
 }
 
-function onSlaveConnIntRangeChange(inst,ui){
-    ui.minConnInterval.hidden = !inst.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE;
-    ui.maxConnInterval.hidden = !inst.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE;
+function onPeripheralConnIntRangeChange(inst,ui){
+    ui.minConnInterval.hidden = !inst[connIntervalRange];
+    ui.maxConnInterval.hidden = !inst[connIntervalRange];
 }
 
 function onPublicTargetAddrChange(inst, instUIState){

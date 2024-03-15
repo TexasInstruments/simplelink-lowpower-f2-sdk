@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -22,14 +22,6 @@
 #include "aes_driver.h"
 #include "prod_util.h"
 
-
-// These are empty mutexs  - no mutexes are needed in production pahse
-CC_PalMutex CCSymCryptoMutex;
-CC_PalMutex CCSymCryptoMutex;
-CC_PalMutex CCAsymCryptoMutex;
-CC_PalMutex CCRndCryptoMutex;
-CC_PalMutex *pCCRndCryptoMutex;
-CC_PalMutex CCApbFilteringRegMutex;
 
 /**
  * @brief This function

@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2020 Arm Limited
- * Copyright (c) 2020 IAR Systems AB
+ * Copyright (c) 2020-2022 Arm Limited
+ * Copyright (c) 2020-2021 IAR Systems AB
+ * Copyright (c) 2021 Cypress Semiconductor Corp. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +21,28 @@
 
 #include "region_defs.h"
 
-define memory mem with size = 4G;
+define block ER_CODE            with fixed order, alignment = 8 {
+       section .intvec,
+       readonly};
+define block LR_CODE with fixed order, maximum size = NS_CODE_SIZE {block ER_CODE};
+place at address NS_CODE_START {block LR_CODE};
 
-define region NS_CODE_region =   mem:[from NS_CODE_START size NS_CODE_SIZE];
-
-define region NS_RAM_region  =   mem:[from NS_DATA_START size NS_DATA_SIZE];
-
-#if defined (NS_DATA_SHARED_START)
-    /* Shared memory data */
-define region TFM_SHARED_MEM =   mem:[from NS_DATA_SHARED_START size NS_DATA_SHARED_SIZE];
+define block ER_DATA with alignment = 8 {readwrite};
+#ifdef RAM_VECTORS_SUPPORT
+define block ER_RAM_VECTORS      with alignment = 256 { section .ramvec };
 #endif
-
-define block ARM_LIB_STACK_MSP  with alignment = 8, size = NS_MSP_STACK_SIZE { };
-define block ARM_LIB_STACK      with alignment = 8, size = NS_MSP_STACK_SIZE { };
-define block HEAP               with alignment = 8, size = NS_HEAP_SIZE { };
 define block TFM_RAM_CODE       with alignment = 32 { readonly section .ramfunc };
+define block CSTACK             with alignment = 32, size = NS_STACK_SIZE { };
+define block HEAP               with alignment = 8, size = NS_HEAP_SIZE { };
+define block ARM_LIB_HEAP       with alignment = 8, size = NS_HEAP_SIZE { };
+define overlay HEAP_OVL         {block HEAP};
+define overlay HEAP_OVL         {block ARM_LIB_HEAP};
+keep {block CSTACK, block HEAP, block ARM_LIB_HEAP, block TFM_RAM_CODE};
 
-define block ER_CODE            with alignment = 8 {readonly};
-place at address mem:NS_CODE_START { readonly section .intvec };
-define block ER_DATA with maximum size = 0x10000, alignment = 8 {readwrite};
-
-do not initialize  { section .noinit };
+do not initialize  {
+   section .noinit,
+   rw section .ramvec
+   };
 initialize by copy { readwrite };
 if (isdefinedsymbol(__USE_DLIB_PERTHREAD))
 {
@@ -48,7 +50,24 @@ if (isdefinedsymbol(__USE_DLIB_PERTHREAD))
   initialize by copy with packing = none { section __DLIB_PERTHREAD };
 }
 
-place in NS_CODE_region  { block ER_CODE };
-place in NS_RAM_region   { block ER_DATA, block ARM_LIB_STACK_MSP, block ARM_LIB_STACK, block HEAP,
-                           block TFM_RAM_CODE,
-                         };
+define block DATA with fixed order, maximum size = NS_DATA_SIZE {
+#ifdef RAM_VECTORS_SUPPORT
+       block ER_RAM_VECTORS,
+#endif
+       block TFM_RAM_CODE,
+       block ER_DATA,
+       block CSTACK,
+       overlay HEAP_OVL,
+};
+place at address NS_DATA_START {block DATA};
+
+#if defined(PSA_API_TEST_ENABLED)
+define region PSA_NVMEM_region = mem:[from PSA_API_TEST_NVMEM_START size PSA_API_TEST_NVMEM_SIZE];
+#endif
+
+#if defined (NS_DATA_SHARED_START)
+    /* Shared memory data */
+define block TFM_SHARED_MEM with size = NS_DATA_SHARED_SIZE { };
+keep {block TFM_SHARED_MEM};
+place at address NS_DATA_SHARED_START {block TFM_SHARED_MEM};
+#endif

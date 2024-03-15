@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,7 +12,9 @@
 
 #include <stdint.h>
 
-#if !defined(TFM_MULTI_CORE_TOPOLOGY)
+#define TFM_NS_CLIENT_INVALID_ID            ((int32_t)0)
+
+#ifdef CONFIG_TFM_USE_TRUSTZONE
 /*
  * The macro cmse_nsfptr_create defined in the gcc library uses the non-standard
  * gcc C lanuage extension 'typeof'. TF-M is built with '-std=c99' so typeof
@@ -35,15 +39,13 @@
 #else
 #define __tfm_nspm_secure_gateway_attributes__ \
         __attribute__((cmse_nonsecure_entry))
-#endif /* !__ARMCC_VERSION */
-#endif /* __GNUC__ && !TFM_MULTI_CORE_TOPOLOGY */
+#endif /* !defined(__ARMCC_VERSION) && !defined(__ICCARM__) */
+#endif /* CONFIG_TFM_USE_TRUSTZONE */
 
-#ifndef TFM_PSA_API
 /**
  * \brief initialise the NS context database
  */
-void tfm_nspm_configure_clients(void);
-#endif
+void tfm_nspm_ctx_init(void);
 
 /**
  * \brief Get the client ID of the current NS client
@@ -52,24 +54,5 @@ void tfm_nspm_configure_clients(void);
  *         returned in case of error.
  */
 int32_t tfm_nspm_get_current_client_id(void);
-
-#ifdef TFM_PSA_API
-/**
- * \brief NSPM thread main entry function
- *
- * Note: This function should not return back.
- */
-void tfm_nspm_thread_entry(void);
-#endif
-
-#ifdef TFM_MULTI_CORE_TOPOLOGY
-/* Unnecessary to configure Non-secure side code */
-#define configure_ns_code()               do {} while (0)
-#else
-/*
- * \brief Configure Non-secure code, such as vector table, MSP and entry point.
- */
-void configure_ns_code(void);
-#endif
 
 #endif /* __TFM_NSPM_H__ */

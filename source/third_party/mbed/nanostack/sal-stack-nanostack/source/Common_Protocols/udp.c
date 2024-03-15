@@ -36,11 +36,19 @@ extern bool ncp_enabled;
 extern void nanostack_process_stream_net_from_stack(buffer_t* buf);
 /* IP Packets to these ports will be internally consumed and not sent to NCP */
 /* To add a port to list increment MAC_FILTER_PORTS and add the port to list */
+#ifndef WISUN_TEST_MPL_UDP
 #define MAX_FILTER_PORTS 6
 uint16_t wisun_ncp_filter_ports[MAX_FILTER_PORTS] = {UDP_PORT_ECHO, DHCPv6_PORT_SERVER,\
                                                      DHCPv6_PORT_CLIENT, EAPOL_RELAY_SOCKET_PORT, \
                                                      BR_EAPOL_RELAY_SOCKET_PORT, PAE_AUTH_SOCKET_PORT};
-#endif
+#else
+// Need to add 1234 to filter list. So, we can receive the list
+#define MAX_FILTER_PORTS 7
+uint16_t wisun_ncp_filter_ports[MAX_FILTER_PORTS] = {UDP_PORT_TEST, UDP_PORT_ECHO, DHCPv6_PORT_SERVER,\
+                                                     DHCPv6_PORT_CLIENT, EAPOL_RELAY_SOCKET_PORT, \
+                                                     BR_EAPOL_RELAY_SOCKET_PORT, PAE_AUTH_SOCKET_PORT};
+#endif // WISUN_TEST_MPL_UDP
+#endif // WISUN_NCP_ENABLE
 
 static buffer_t *udp_checksum_check(buffer_t *buf)
 {

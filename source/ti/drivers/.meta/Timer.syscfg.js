@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,6 @@
 let Common   = system.getScript("/ti/drivers/Common.js");
 let family   = Common.device2Family(system.deviceData, "Timer");
 
-let intPriority = Common.newIntPri()[0];
-intPriority.name = "interruptPriority";
-intPriority.displayName = "Interrupt Priority";
-intPriority.description = "Timer Interrupt Priority";
-
 
 let timerConfig = [
     {
@@ -55,9 +50,7 @@ let timerConfig = [
             { name: "16 Bits" },
             { name: "32 Bits" }
         ]
-    },
-
-    intPriority
+    }
 ];
 
 /*

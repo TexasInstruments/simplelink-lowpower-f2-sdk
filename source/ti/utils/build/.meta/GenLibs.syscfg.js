@@ -1,6 +1,7 @@
 /*
  *  ======== GenLibs.syscfg.js ========
- *  User configuration of the contents produced by the GenLibs.cmd.xdt template
+ *  User configuration of the contents produced by the GenLibs.cmd.xdt and
+ *  GenOpts.opt.xdt templates
  *
  *  GenLibs.cmd.xdt
  *  ---------------
@@ -36,7 +37,7 @@
  *  toolchain, generates a linker command file containing the appropriate
  *  library linker options in the order dictated by the specified
  *  dependencies.  For example, the TI-DRIVERS libraries must precede the
- *  DriverLib library and the NDK libraries must preceed the TI-DRIVERS
+ *  DriverLib library and the NDK libraries must precede the TI-DRIVERS
  *  libraries.
  *
  *  The GenLibs.cmd.xdt template is ONLY expanded when both
@@ -135,6 +136,48 @@
  *              :
  *          }
  *      }
+ *
+ *  GenOpts.opt.xdt
+ *  ---------------
+ *
+ *  The GenOpts.opt.xdt template generates a compiler options file that contains
+ *  TI-derived compiler options required to compile the target code configured
+ *  by SysConfig. Typically, this means a variety of -D switches, though
+ *  arbitrary compiler options are also supported. This options file can be
+ *  added to the compiler's command line and frees the user from having to
+ *  explicitly maintain a changing list of definitions in their own build
+ *  tooling.
+ *
+ *  How it works
+ *  ------------
+ *  Any module in a SysConfig configuration can contribute one or more options
+ *  to a generated compiler options file ti_utils_build_options.genlibs.opt.
+ *  This works the same way as the GenLibs feature above.
+ *
+ *  Modules contribute options by:
+ *      1. Defining a "getOpts" function that returns a list of options
+ *      2. Declaring GenOpts.opt.xdt in its exports.templates object
+ *
+ *  Usage example
+ *  ------------
+ * A module named "/ti/devices/Driverlib" would add the following:
+ *
+ * templates: {
+ *     "/ti/utils/build/GenOpts.opt.xdt": {
+ *         modName: "/ti/devices/Driverlib",
+ *         getOpts: getOpts
+ *     }
+ * }
+ *
+ * // getOpts returns the list of compile options for this component
+ * function getOpts(mod) {
+ *     let result = [
+ *         "-DDeviceFamily_CC26X2"
+ *     ];
+ *
+ *     return result;
+ * }
+ *
  */
 
 /*
@@ -381,6 +424,7 @@ function getDeviceIsa(devId = null)
         case /CC(?:13|26).4/.test(devId):
         case /CC26.3/.test(devId):
         case /CC27/.test(devId):
+        case /CC35/.test(devId):
             isa = "m33f";
             break;
         case /CC23/.test(devId):
@@ -466,6 +510,7 @@ exports = {
     libPath: libPath,
 
     templates: {
-        "/ti/utils/build/GenLibs.cmd.xdt": {}
+        "/ti/utils/build/GenLibs.cmd.xdt": {},
+        "/ti/utils/build/GenOpts.opt.xdt": {}
     }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -156,7 +156,7 @@
  *  -# Exchange public keys, UserIDs, and ZKP signatures. Write the received keying
  *     material into the relevant buffers or load them into key stores as specified
  *     by the CryptoKeys initialised earlier.
- *  -# Verify the other party's ZKP after computing their ZKP hash b calling
+ *  -# Verify the other party's ZKP after computing their ZKP hash by calling
  *     ECJPAKE_verifyZKP(). Use theirNewGenerator as the generator point for this
  *     ZKP.
  *  -# You can now let all keys and keying material but myCombinedPrivateKey,
@@ -646,6 +646,47 @@
  *
  * @endcode
  *
+ * ## Using KeyStore for ECJPAKE Keys #
+ *
+ * @code
+ *
+ * // This example shows how to import presharedsecret as a KeyStore key and
+ * // how to use KeyStore to store the newly generated sharedsecrets from ECJPAKE
+ * KeyStore_PSA_KeyAttributes presharedsecretKeyAttributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+ * KeyStore_PSA_KeyFileId presharedsecretKeyID;
+ * KeyStore_PSA_KeyAttributes sharedsecretKeyAttributes1    = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+ * KeyStore_PSA_KeyAttributes sharedsecretKeyAttributes2    = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+ * KeyStore_PSA_KeyFileId privateKeyID;
+ * KeyStore_PSA_KeyFileId sharedsecretKeyID1;
+ * int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
+ *
+ * // Pre-shared secret
+ * KeyStore_PSA_setKeyUsageFlags(&presharedsecretKeyAttributes, KEYSTORE_PSA_KEY_USAGE_DERIVE);
+ * KeyStore_PSA_setKeyAlgorithm(&presharedsecretKeyAttributes, KEYSTORE_PSA_ALG_PAKE);
+ * KeyStore_PSA_setKeyLifetime(&priKeyAttributes, KEYSTORE_PSA_KEY_LIFETIME_VOLATILE);
+ * GET_KEY_ID(presharedsecretKeyID, 0);
+ * status = KeyStore_PSA_importKey(&presharedsecretKeyAttributes,
+ *                                 preSharedSecretKeyingMaterial,
+ *                                 sizeof(preSharedSecretKeyingMaterial),
+ *                                 &presharedsecretKeyID);
+ * if (status == KEYSTORE_PSA_STATUS_SUCCESS)
+ * {
+ *     while(1); // handle error
+ * }
+ * KeyStore_PSA_initKey(&preSharedSecretCryptoKey, presharedsecretKeyID, preSharedSecretLength, NULL);
+ *
+ * // Final computed shared secrets
+ * KeyStore_PSA_setKeyUsageFlags(&sharedsecretKeyAttributes1, KEYSTORE_PSA_KEY_USAGE_DERIVE);
+ * KeyStore_PSA_setKeyAlgorithm(&sharedsecretKeyAttributes1, KEYSTORE_PSA_ALG_PAKE);
+ * KeyStore_PSA_setKeyLifetime(&sharedsecretKeyAttributes1, KEYSTORE_PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE |
+ * KEYSTORE_PSA_ECC_CURVE_SECP256R1);
+ * GET_KEY_ID(sharedsecretKeyID1, 0);
+ * KeyStore_PSA_initBlankKey(&sharedSecretCryptoKey, sharedsecretKeyID1, preSharedSecretLength,
+ * sharedsecretKeyAttributes1);
+ *
+ * // The application can continue to use the sharedSecretCryptoKey and preSharedSecretCryptoKey as they would
+ * // use with plaintext keys with ECJPAKE driver
+ * @endcode
  *
  */
 
@@ -755,6 +796,21 @@ extern "C" {
  *  @brief  The ongoing operation was canceled.
  */
 #define ECJPAKE_STATUS_CANCELED (-9)
+
+/*!
+ *  @brief  A provided output key was not initialized as blank.
+ */
+#define ECJPAKE_STATUS_OUTPUT_KEY_NOT_BLANK (-10)
+
+/*!
+ * @brief KeyStore operation within ECJPAKE failed
+ */
+#define ECJPAKE_STATUS_KEYSTORE_ERROR (-11)
+
+/*!
+ * @brief ECJPAKE operation not supported
+ */
+#define ECJPAKE_STATUS_NOT_SUPPORTED (-12)
 
 /*!
  *  @brief ECJPAKE Global configuration
@@ -914,26 +970,26 @@ typedef struct
     const ECCParams_CurveParams *curve; /*!< A pointer to the elliptic curve parameters
                                          *   used in the operation.
                                          */
-    const CryptoKey *theirGenerator;    /*!< A CryptoKey describing the generator point
+    const CryptoKey *theirGenerator;    /*!< A pointer to a CryptoKey describing the generator point
                                          *   to be used. In the first round, this will
                                          *   be the default generator of the curve.
                                          *   In the second round, this parameter is
                                          *   computed by ECJPAKE_roundTwoGenerateKeys().
                                          *
-                                         *   Formatted as a public key. If  NULL, default
+                                         *   Formatted as a public key. If NULL, default
                                          *   generator point from @c curve is used.
                                          */
-    const CryptoKey *theirPublicKey;    /*!< A CryptoKey describing the public key
+    const CryptoKey *theirPublicKey;    /*!< A pointer to a CryptoKey describing the public key
                                          *   received from the other party that the
                                          *   ZKP to be verified supposedly signed.
                                          */
-    const CryptoKey *theirPublicV;      /*!< A CryptoKey describing the public V of the
+    const CryptoKey *theirPublicV;      /*!< A pointer to a CryptoKey describing the public V of the
                                          *   ZKP. Received from the other party.
                                          */
-    const uint8_t *hash;                /*!< The hash of the ZKP generated as the
+    const uint8_t *hash;                /*!< A pointer to the hash of the ZKP generated as the
                                          *   other party generated it to compute r.
                                          */
-    const uint8_t *r;                   /*!< R component of the ZKP signature. Received
+    const uint8_t *r;                   /*!< A pointer to a R component of the ZKP signature. Received
                                          *   from the other party.
                                          */
 } ECJPAKE_OperationVerifyZKP;
@@ -956,13 +1012,13 @@ typedef struct
     const CryptoKey *myPublicKey2;      /*!< A pointer to the second public key.
                                          *   Generated in round one.
                                          */
-    const CryptoKey *theirPublicKey1;   /*!< A CryptoKey describing the first public key
+    const CryptoKey *theirPublicKey1;   /*!< A pointer to a CryptoKey describing the first public key
                                          *   received from the other party.
                                          */
-    const CryptoKey *theirPublicKey2;   /*!< A CryptoKey describing the second public key
+    const CryptoKey *theirPublicKey2;   /*!< A pointer to a CryptoKey describing the second public key
                                          *   received from the other party.
                                          */
-    const CryptoKey *preSharedSecret;   /*!< A CryptoKey describing the secret shared between
+    const CryptoKey *preSharedSecret;   /*!< A pointer to a CryptoKey describing the secret shared between
                                          *   the two parties prior to starting the scheme.
                                          *   This exchange would have happened through some
                                          *   offline commissioning scheme most likely.
@@ -971,26 +1027,26 @@ typedef struct
                                          *   keying material even if the original pre-shared
                                          *   secret is shorter than this length.
                                          */
-    CryptoKey *theirNewGenerator;       /*!< A blank CryptoKey describing the generator point
+    CryptoKey *theirNewGenerator;       /*!< A pointer to a blank CryptoKey describing the generator point
                                          *   used by the other party in the second round.
                                          *   After it is computed, the keying material will
                                          *   be written to the location described in the
                                          *   CryptoKey.
                                          *   Formatted as a public key.
                                          */
-    CryptoKey *myNewGenerator;          /*!< A blank CryptoKey describing the generator point
+    CryptoKey *myNewGenerator;          /*!< A pointer to a blank CryptoKey describing the generator point
                                          *   used by the application in the second round.
                                          *   After it is computed, the keying material will
                                          *   be written to the location described in the
                                          *   CryptoKey.
                                          *   Formatted as a public key.
                                          */
-    CryptoKey *myCombinedPrivateKey;    /*!< A pointer to a public ECC key. Must
+    CryptoKey *myCombinedPrivateKey;    /*!< A pointer to a blank private ECC key. Must
                                          *   be of the same length as other params
                                          *   of the curve used. Result of multiplying
-                                         *   \c myCombinedPrivateKey by \c myNewGenerator.
+                                         *   \c myPrivateKey2 by \c preSharedSecret.
                                          */
-    CryptoKey *myCombinedPublicKey;     /*!< A pointer to a public ECC key. Result of multiplying
+    CryptoKey *myCombinedPublicKey;     /*!< A pointer to a blank public ECC key. Result of multiplying
                                          *   \c myCombinedPrivateKey by \c myNewGenerator.
                                          */
     CryptoKey *myPrivateV;              /*!< A pointer to a private ECC key used in the
@@ -1023,7 +1079,7 @@ typedef struct
                                               *   be of the same length as other params
                                               *   of the curve used. Generated in round one.
                                               */
-    const CryptoKey *theirCombinedPublicKey; /*!< A CryptoKey describing the second public key
+    const CryptoKey *theirCombinedPublicKey; /*!< A pointer to a the second public key
                                               *   received from the other party.
                                               */
     const CryptoKey *theirPublicKey2;        /*!< A pointer to a private ECC key. Must
@@ -1031,11 +1087,12 @@ typedef struct
                                               *   of the curve used. Result of multiplying
                                               *   \c myPrivateKey2 by \c preSharedSecret.
                                               */
-    const CryptoKey *myPrivateKey2;          /*!< Combined public key received in the second
+    const CryptoKey *myPrivateKey2;          /*!< A pointer to a combined public key received in the second
                                               *   round and verified by the application against
                                               *   the second round ZKP signature.
                                               */
-    CryptoKey *sharedSecret;                 /*!< The shared secret that is identical between both
+    CryptoKey *sharedSecret;                 /*!< A pointer to a blank CryptoKey used to store
+                                                  the shared secret that is identical between both
                                               *   parties. Formatted as a public key.
                                               */
 } ECJPAKE_OperationComputeSharedSecret;
@@ -1198,7 +1255,7 @@ void ECJPAKE_close(ECJPAKE_Handle handle);
  *  @sa     ECJPAKE_init()
  *  @sa     ECJPAKE_close()
  */
-ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, ECJPAKE_Params *params);
+ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, const ECJPAKE_Params *params);
 
 /*!
  *  @brief  Function to initialize the ECJPAKE_Params struct to its defaults
@@ -1237,6 +1294,8 @@ void ECJPAKE_Params_init(ECJPAKE_Params *params);
  *  @retval #ECJPAKE_STATUS_POINT_AT_INFINITY      The computed public key is the point at infinity.
  *  @retval #ECJPAKE_STATUS_INVALID_PRIVATE_KEY    The private key passed into the the call is invalid.
  *  @retval #ECJPAKE_STATUS_INVALID_PRIVATE_V      The private v passed into the the call is invalid.
+ *  @retval #ECJPAKE_STATUS_KEYSTORE_ERROR         The keystore operation to retrieve or store the keys failed.
+ *  @retval #ECJPAKE_STATUS_NOT_SUPPORTED          The driver does not support persistent keystore keys.
  *
  */
 int_fast16_t ECJPAKE_roundOneGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_OperationRoundOneGenerateKeys *operation);
@@ -1272,6 +1331,7 @@ int_fast16_t ECJPAKE_roundOneGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_Operati
  *  @retval #ECJPAKE_STATUS_ERROR                  The operation failed.
  *  @retval #ECJPAKE_STATUS_RESOURCE_UNAVAILABLE   The required hardware resource was not available. Try again later.
  *  @retval #ECJPAKE_STATUS_CANCELED               The operation was canceled.
+ *  @retval #ECJPAKE_STATUS_KEYSTORE_ERROR         The keystore operation to retrieve or store the keys failed.
  */
 int_fast16_t ECJPAKE_generateZKP(ECJPAKE_Handle handle, ECJPAKE_OperationGenerateZKP *operation);
 
@@ -1300,6 +1360,7 @@ int_fast16_t ECJPAKE_generateZKP(ECJPAKE_Handle handle, ECJPAKE_OperationGenerat
  * curve.
  *  @retval #ECJPAKE_STATUS_PUBLIC_KEY_LARGER_THAN_PRIME    A coordinate of the public key of the other party is too
  * large.
+ *  @retval #ECJPAKE_STATUS_KEYSTORE_ERROR                  The keystore operation to retrieve or store the keys failed.
  */
 int_fast16_t ECJPAKE_verifyZKP(ECJPAKE_Handle handle, ECJPAKE_OperationVerifyZKP *operation);
 
@@ -1325,6 +1386,8 @@ int_fast16_t ECJPAKE_verifyZKP(ECJPAKE_Handle handle, ECJPAKE_OperationVerifyZKP
  *  @retval #ECJPAKE_STATUS_CANCELED               The operation was canceled.
  *  @retval #ECJPAKE_STATUS_INVALID_PRIVATE_KEY    The private key passed into the the call is invalid.
  *  @retval #ECJPAKE_STATUS_INVALID_PRIVATE_V      The private v passed into the the call is invalid.
+ *  @retval #ECJPAKE_STATUS_KEYSTORE_ERROR         The keystore operation to retrieve or store the keys failed.
+ *  @retval #ECJPAKE_STATUS_NOT_SUPPORTED          The driver does not support persistent keystore keys.
  */
 int_fast16_t ECJPAKE_roundTwoGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_OperationRoundTwoGenerateKeys *operation);
 
@@ -1352,6 +1415,8 @@ int_fast16_t ECJPAKE_roundTwoGenerateKeys(ECJPAKE_Handle handle, ECJPAKE_Operati
  *  @retval #ECJPAKE_STATUS_ERROR                  The operation failed.
  *  @retval #ECJPAKE_STATUS_RESOURCE_UNAVAILABLE   The required hardware resource was not available. Try again later.
  *  @retval #ECJPAKE_STATUS_CANCELED               The operation was canceled.
+ *  @retval #ECJPAKE_STATUS_KEYSTORE_ERROR         The keystore operation to retrieve or store the keys failed.
+ *  @retval #ECJPAKE_STATUS_NOT_SUPPORTED          The driver does not support persistent keystore keys.
  */
 int_fast16_t ECJPAKE_computeSharedSecret(ECJPAKE_Handle handle, ECJPAKE_OperationComputeSharedSecret *operation);
 

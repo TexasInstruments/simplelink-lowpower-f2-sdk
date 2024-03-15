@@ -50,6 +50,7 @@ typedef struct trickle {
     trickle_time_t I;       /* current interval */
     trickle_time_t t;       /* potential transmission time */
     trickle_time_t now;     /* time counter */
+    uint8_t num_tx;         /* number of transmitted PA or PC packet */
 }
 trickle_t;
 

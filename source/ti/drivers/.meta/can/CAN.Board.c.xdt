@@ -1,0 +1,138 @@
+%%{
+/*
+ * Copyright (c) 2023, Texas Instruments Incorporated - http://www.ti.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * *  Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * *  Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * *  Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+ *  ======== CAN.Board.c.xdt ========
+ */
+
+    /* passed by /ti/drivers/templates/Board.c.xdt */
+    let CAN = args[0];
+    let Common    = system.getScript("/ti/drivers/Common.js");
+    let instances = CAN.$instances;
+
+    if (instances.length == 0) return;
+
+    let declarations = Common.genBoardDeclarations(instances);
+
+    /* CONFIG_XXXCOUNT string, derived from defaultInstanceName */
+    let countDef = CAN.defaultInstanceName + "COUNT";
+%%}
+/*
+ *  =============================== CAN ===============================
+ */
+
+#include <ti/drivers/CAN.h>
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/utils/StructRingBuf.h>
+
+#include <third_party/mcan/MCAN.h>
+
+#define `countDef` `instances.length`
+
+% for (let i = 0; i < instances.length; i++) {
+%     let inst = instances[i];
+#define CAN_RX_STRUCT_RING_BUF`i`_NUM `inst.rxRingBufferSize`U
+%     if (inst.txRingBufferSize > 0) {
+#define CAN_TX_STRUCT_RING_BUF`i`_NUM `inst.txRingBufferSize`U
+%     }
+
+static MCAN_RxBufElement CAN_rxStructRingBuffer`i`[CAN_RX_STRUCT_RING_BUF`i`_NUM];
+%     if (inst.txRingBufferSize > 0) {
+static MCAN_TxBufElement CAN_txStructRingBuffer`i`[CAN_TX_STRUCT_RING_BUF`i`_NUM];
+%     }
+% }
+
+static CAN_Object CAN_objects[`countDef`];
+
+/*
+ *  ======== CAN_hwAttrs ========
+ */
+static const CAN_HWAttrs CAN_hwAttrs[`countDef`] = {
+% for (let i = 0; i < instances.length; i++) {
+%     let inst        = instances[i];
+    {
+        .enableCANFD           = `inst.canFDEnable`,
+        .enableBRS             = `inst.brsEnable`,
+        .rejectNonMatchingMsgs = `inst.rejectNonMatching`,
+        .nominalBitRate        = `inst.nomBitRate`U,
+        .dataBitRate           = `inst.dataBitRate`U,
+        .rxRingBufPtr          = CAN_rxStructRingBuffer`i`,
+%     if (inst.txRingBufferSize > 0) {
+        .txRingBufPtr          = CAN_txStructRingBuffer`i`,
+%     } else {
+        .txRingBufPtr          = NULL,
+%     }
+        .rxRingBufSize         = CAN_RX_STRUCT_RING_BUF`i`_NUM,
+%     if (inst.txRingBufferSize > 0) {
+        .txRingBufSize         = CAN_TX_STRUCT_RING_BUF`i`_NUM,
+%     } else {
+        .txRingBufSize         = 0U,
+%     }
+%     if (typeof inst.interruptPriority !== 'undefined') {
+        .intPriority           = `Common.intPriority2Hex(inst.interruptPriority)`,
+%     }
+%     if ('rxPinInstance' in inst) {
+%         let rxPinName = inst.rxPinInstance.$name;
+%         let rxPinMuxMode = inst.can.rxPin.$solution.muxMode;
+%         let rxPinMuxName = 'GPIO_MUX_PORTCFG_PFUNC' + rxPinMuxMode.toString();
+        .rxPin                 = `rxPinName`,
+        .rxPinMux              = `rxPinMuxName`,
+%     }
+%
+%     if ('txPinInstance' in inst) {
+%         let txPinName = inst.txPinInstance.$name;
+%         let txPinMuxMode = inst.can.txPin.$solution.muxMode;
+%         let txPinMuxName = 'GPIO_MUX_PORTCFG_PFUNC' + txPinMuxMode.toString();
+        .txPin                 = `txPinName`,
+        .txPinMux              = `txPinMuxName`,
+%     }
+    },
+% }
+};
+
+/*
+ *  ======== CAN_config ========
+ */
+const CAN_Config CAN_config[`countDef`] = {
+% for (let i = 0; i < instances.length; i++) {
+%     let inst    = instances[i];
+    {   /* `inst.$name` */
+        .object  = &CAN_objects[`inst.$name`],
+        .hwAttrs = &CAN_hwAttrs[`inst.$name`]
+    },
+% }
+};
+
+`declarations`
+const uint_least8_t CAN_count = `countDef`;

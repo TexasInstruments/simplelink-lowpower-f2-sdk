@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -180,7 +180,7 @@ int __low_level_init(void)
           " mov sp, r0\n"
           " b localProgramStart");
 
-    // This code is unreachable but the compiler expects a return statement
+    /* Indicate that static and global variables shall be initialized */
     return 1;
 }
 

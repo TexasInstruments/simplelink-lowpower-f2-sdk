@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -275,10 +275,10 @@ extern uint8 hciSmpTaskID;
 #define HCI_LE_CREATE_CONNECTION                          0x200D    //!< opcode of @ref HCI_LE_CreateConnCmd
 #define HCI_LE_CREATE_CONNECTION_CANCEL                   0x200E    //!< opcode of @ref HCI_LE_CreateConnCancelCmd
 /// @endcond // NODOC
-#define HCI_LE_READ_WHITE_LIST_SIZE                       0x200F    //!< opcode of @ref HCI_LE_ReadWhiteListSizeCmd
-#define HCI_LE_CLEAR_WHITE_LIST                           0x2010    //!< opcode of @ref HCI_LE_ClearWhiteListCmd
-#define HCI_LE_ADD_WHITE_LIST                             0x2011    //!< opcode of @ref HCI_LE_AddWhiteListCmd
-#define HCI_LE_REMOVE_WHITE_LIST                          0x2012    //!< opcode of @ref HCI_LE_RemoveWhiteListCmd
+#define HCI_LE_READ_ACCEPT_LIST_SIZE                      0x200F    //!< opcode of @ref HCI_LE_ReadAcceptListSizeCmd
+#define HCI_LE_CLEAR_ACCEPT_LIST                          0x2010    //!< opcode of @ref HCI_LE_ClearAcceptListCmd
+#define HCI_LE_ADD_ACCEPT_LIST                            0x2011    //!< opcode of @ref HCI_LE_AddAcceptListCmd
+#define HCI_LE_REMOVE_ACCEPT_LIST                         0x2012    //!< opcode of @ref HCI_LE_RemoveAcceptListCmd
 /// @cond NODOC
 #define HCI_LE_CONNECTION_UPDATE                          0x2013    //!< opcode of @ref HCI_LE_ConnUpdateCmd
 /// @endcond // NODOC
@@ -369,11 +369,14 @@ extern uint8 hciSmpTaskID;
 #define HCI_LE_READ_ANTENNA_INFORMATION                   0x2058    //!< opcode of @ref HCI_LE_ReadAntennaInformation
 #define HCI_LE_SET_PERIODIC_ADV_RECEIVE_ENABLE            0x2059    //!< opcode of @ref HCI_LE_SetPeriodicAdvReceiveEnableCmd
 // @endcond // NODOC
+// V5.2
+#define HCI_LE_GENERATE_DHKEY_V2                          0x205E    //!< opcode of @ref HCI_LE_GenerateDHKeyCmd_V2
 
 /// @endcond //NODOC
 // LE Vendor Specific LL Extension Commands
 #define HCI_EXT_SET_RX_GAIN                                 0xFC00    //!< opcode of @ref HCI_EXT_SetRxGainCmd
 #define HCI_EXT_SET_TX_POWER                                0xFC01    //!< opcode of @ref HCI_EXT_SetTxPowerCmd
+
 #define HCI_EXT_ONE_PKT_PER_EVT                             0xFC02    //!< opcode of @ref HCI_EXT_OnePktPerEvtCmd
 /// @cond CC254X
 #define HCI_EXT_CLK_DIVIDE_ON_HALT                          0xFC03    //!< opcode of @ref HCI_EXT_ClkDivOnHaltCmd
@@ -406,7 +409,7 @@ extern uint8 hciSmpTaskID;
 /// @cond CC254X
 #define HCI_EXT_HALT_DURING_RF                              0xFC19    //!< opcode of @ref HCI_EXT_HaltDuringRfCmd
 /// @endcond // CC254X
-#define HCI_EXT_OVERRIDE_SL                                 0xFC1A    //!< opcode of @ref HCI_EXT_SetSlaveLatencyOverrideCmd
+#define HCI_EXT_OVERRIDE_PL                                 0xFC1A    //!< opcode of @ref HCI_EXT_SetPeripheralLatencyOverrideCmd
 #define HCI_EXT_BUILD_REVISION                              0xFC1B    //!< opcode of @ref HCI_EXT_BuildRevisionCmd
 /// @cond CC254X
 #define HCI_EXT_DELAY_SLEEP                                 0xFC1C    //!< opcode of @ref HCI_EXT_DelaySleepCmd
@@ -432,6 +435,11 @@ extern uint8 hciSmpTaskID;
 #define HCI_EXT_SET_LOCATIONING_ACCURACY                    0xFC2B    //!< opcode of @ref HCI_SetLocationingAccuracyCmd
 #define HCI_EXT_GET_ACTIVE_CONNECTION_INFO                  0xFC2C    //!< opcode of @ref HCI_EXT_GetActiveConnInfoCmd
 #define HCI_EXT_COEX_ENABLE                                 0xFC2E    //!< opcode of @ref HCI_EXT_CoexEnableCmd
+#define HCI_EXT_SET_TX_POWER_DBM                            0xFC2F    //!< opcode of @ref HCI_EXT_SetTxPowerDbmCmd
+#define HCI_EXT_SET_MAX_DTM_TX_POWER_DBM                    0xFC30    //!< opcode of @ref HCI_EXT_SetMaxDtmTxPowerDbmCmd
+#define HCI_EXT_GET_RX_STATS                                0xFC31    //!< opcode of @ref HCI_EXT_GetRxStatisticsCmd
+#define HCI_EXT_GET_TX_STATS                                0xFC32    //!< opcode of @ref HCI_EXT_GetTxStatisticsCmd
+#define HCI_EXT_GET_COEX_STATS                              0xFC33    //!< opcode of @ref HCI_EXT_GetCoexStatisticsCmd
 
 #define HCI_EXT_LL_TEST_MODE                                0xFC70    //!< opcode of @ref HCI_EXT_LLTestModeCmd
 
@@ -445,6 +453,7 @@ extern uint8 hciSmpTaskID;
 #define HCI_LE_END_DISCOVERABLE_DONE                        0xFC78    //!< opcode of @ref HCI_LE_SetAdvStatus
 #define HCI_EXT_SET_HOST_DEFAULT_CHANNEL_CLASSIFICATION     0xFC79    //!< opcode of @ref HCI_EXT_SetHostDefChanClassificationCmd
 #define HCI_EXT_SET_HOST_CONNECTION_CHANNEL_CLASSIFICATION  0xFC7A    //!< opcode of @ref HCI_EXT_SetHostConnChanClassificationCmd
+#define HCI_EXT_SET_ADV_SET_RAND_ADDR                       0xFC7B    //!< opcode of @ref HCI_EXT_SetAdvSetRandAddrCmd
 
 // @endcond //NODOC
 
@@ -545,7 +554,7 @@ extern char *BLEEventCode_BleLogStrings[];
 /// @endcond //CC254X
 /// @cond CC254X
 #define HCI_EXT_HALT_DURING_RF_EVENT                      0x0419    //!< event from @ref HCI_EXT_HaltDuringRfCmd
-#define HCI_EXT_OVERRIDE_SL_EVENT                         0x041A    //!< event from @ref HCI_EXT_SetSlaveLatencyOverrideCmd
+#define HCI_EXT_OVERRIDE_PL_EVENT                         0x041A    //!< event from @ref HCI_EXT_SetPeripheralLatencyOverrideCmd
 /// @endcond //CC254X
 #define HCI_EXT_BUILD_REVISION_EVENT                      0x041B    //!< event from @ref HCI_EXT_BuildRevisionCmd
 /// @cond CC254X
@@ -578,6 +587,10 @@ extern char *BLEEventCode_BleLogStrings[];
 #define HCI_EXT_COEX_ENABLE_EVENT                          0x042E    //!< event from @ref HCI_EXT_CoexEnableCmd
 #define HCI_EXT_SET_HOST_DEF_CHANNEL_CLASSIFICATION_EVENT  0x042F    //!< event from @ref HCI_EXT_CoexEnableCmd
 #define HCI_EXT_SET_HOST_CONN_CHANNEL_CLASSIFICATION_EVENT 0x0430    //!< event from @ref HCI_EXT_CoexEnableCmd
+#define HCI_EXT_GET_RX_STATS_EVENT                         0x0431    //!< opcode of @ref HCI_EXT_GetRxStatisticsCmd
+#define HCI_EXT_GET_TX_STATS_EVENT                         0x0432    //!< opcode of @ref HCI_EXT_GetTxStatisticsCmd
+#define HCI_EXT_GET_COEX_STATS_EVENT                       0x0433    //!< opcode of @ref HCI_EXT_GetCoexStatisticsCmd
+#define HCI_EXT_SET_ADV_SET_RAND_ADDR_EVENT                0x0434    //!< event from @ref HCI_EXT_SetAdvSetRandAddrCmd
 
 #define HCI_EXT_LL_TEST_MODE_EVENT                        0x0470    //!< LL Test Mode
 // @endcond // NODOC

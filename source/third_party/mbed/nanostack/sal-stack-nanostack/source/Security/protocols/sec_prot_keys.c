@@ -721,48 +721,52 @@ gtk_mismatch_e sec_prot_keys_gtks_hash_update(sec_prot_gtk_keys_t *gtks, uint8_t
     uint8_t *gtk_hash_ptr = gtkhash;
 
     gtk_mismatch_e mismatch = GTK_NO_MISMATCH;
-
-    for (uint8_t i = 0; i < GTK_NUM; i++, gtk_hash_ptr += 8) {
-        // If hash is not set, stop using the key
-        if (sec_prot_keys_gtk_hash_empty(gtk_hash_ptr)) {
-            if (sec_prot_keys_gtk_is_set(gtks, i)) {
-                uint32_t lifetime = sec_prot_keys_gtk_lifetime_get(gtks, i);
-                if (lifetime > GTK_EXPIRE_MISMATCH_TIME) {
-                    tr_info("GTK mismatch %i expired time, lifetime: %"PRIu32"", i, lifetime);
-                    if (mismatch < GTK_LIFETIME_MISMATCH) {
-                        mismatch = GTK_LIFETIME_MISMATCH;
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        // Do not remove/update keys based on hash as fixed keys are used when NO_AUTH is used
+        for (uint8_t i = 0; i < GTK_NUM; i++, gtk_hash_ptr += 8) {
+            // If hash is not set, stop using the key
+            if (sec_prot_keys_gtk_hash_empty(gtk_hash_ptr)) {
+                if (sec_prot_keys_gtk_is_set(gtks, i)) {
+                    uint32_t lifetime = sec_prot_keys_gtk_lifetime_get(gtks, i);
+                    if (lifetime > GTK_EXPIRE_MISMATCH_TIME) {
+                        tr_info("GTK mismatch %i expired time, lifetime: %"PRIu32"", i, lifetime);
+                        if (mismatch < GTK_LIFETIME_MISMATCH) {
+                            mismatch = GTK_LIFETIME_MISMATCH;
+                        }
                     }
+                    sec_prot_keys_gtk_clear(gtks, i);
                 }
-                sec_prot_keys_gtk_clear(gtks, i);
-            }
-        } else {
-            // Check is hash matches to existing key
-            uint8_t gtk_hash[8];
-            uint8_t *gtk = sec_prot_keys_gtk_get(gtks, i);
-            if (!gtk) {
-                // Hash set but GTK is not known, set mismatch
-                tr_info("GTK mismatch: %i", i);
-                if (mismatch < GTK_HASH_MISMATCH) {
-                    mismatch = GTK_HASH_MISMATCH;
-                }
-                continue;
-            }
-
-            sec_prot_lib_gtkhash_generate(gtk, gtk_hash);
-
-            if (memcmp(gtk_hash, gtk_hash_ptr, 8) == 0) {
-                // Key is fresh (or active, if old do not change state)
-                sec_prot_keys_gtk_status_fresh_set(gtks, i);
             } else {
-                // Hash does not match, set mismatch and delete key
-                tr_info("GTK mismatch: %i", i);
-                if (mismatch < GTK_HASH_MISMATCH) {
-                    mismatch = GTK_HASH_MISMATCH;
+                // Check is hash matches to existing key
+                uint8_t gtk_hash[8];
+                uint8_t *gtk = sec_prot_keys_gtk_get(gtks, i);
+                if (!gtk) {
+                    // Hash set but GTK is not known, set mismatch
+                    tr_info("GTK mismatch: %i", i);
+                    if (mismatch < GTK_HASH_MISMATCH) {
+                        mismatch = GTK_HASH_MISMATCH;
+                    }
+                    continue;
                 }
-                sec_prot_keys_gtk_clear(gtks, i);
+
+                sec_prot_lib_gtkhash_generate(gtk, gtk_hash);
+
+                if (memcmp(gtk_hash, gtk_hash_ptr, 8) == 0) {
+                    // Key is fresh (or active, if old do not change state)
+                    sec_prot_keys_gtk_status_fresh_set(gtks, i);
+                } else {
+                    // Hash does not match, set mismatch and delete key
+                    tr_info("GTK mismatch: %i", i);
+                    if (mismatch < GTK_HASH_MISMATCH) {
+                        mismatch = GTK_HASH_MISMATCH;
+                    }
+                    sec_prot_keys_gtk_clear(gtks, i);
+                }
             }
         }
     }
+#endif
 
     return mismatch;
 }

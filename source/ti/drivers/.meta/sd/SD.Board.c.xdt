@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,14 +89,14 @@
 
 % if (fatIndex > 0) {
 
-SDFatFS_Object sdfatfsObjects[`SDFatFSCount`];
+SDFatFS_Object SDFatFS_objects[`SDFatFSCount`];
 
 const SDFatFS_Config SDFatFS_config[`SDFatFSCount`] = {
 % for (let i = 0; i < fatIndex; i++) {
     % let inst = instances[i];
     /* `inst.$name` */
     {
-        .object = &sdfatfsObjects[`inst.$name`]
+        .object = &SDFatFS_objects[`inst.$name`]
     },
 % }
 };
@@ -104,9 +104,9 @@ const SDFatFS_Config SDFatFS_config[`SDFatFSCount`] = {
 const uint_least8_t SDFatFS_count = `SDFatFSCount`;
 % }
 
-SDSPI_Object sdspiObjects[`countDef`];
+SDSPI_Object SDSPI_objects[`countDef`];
 
-static const SDSPI_HWAttrs sdspiHWAttrs[`countDef`] = {
+static const SDSPI_HWAttrs SDSPI_hwAttrs[`countDef`] = {
 % for (let i = 0; i < instances.length; i++) {
 %     let inst = instances[i];
     /* `inst.$name` */
@@ -133,8 +133,8 @@ const SD_Config SD_config[`countDef`] = {
     % }
     {
         .fxnTablePtr = &SDSPI_fxnTable,
-        .object = &sdspiObjects[`inst.$name`],
-        .hwAttrs = &sdspiHWAttrs[`inst.$name`]
+        .object = &SDSPI_objects[`inst.$name`],
+        .hwAttrs = &SDSPI_hwAttrs[`inst.$name`]
     },
 % }
 };

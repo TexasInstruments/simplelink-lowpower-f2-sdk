@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@
  *
  *  void buttonCallbackFxn(Button_Handle handle, Button_EventMask events)
  *  {
- *      if (events & Button_EV_CLICK)
+ *      if (events & Button_EV_CLICKED)
  *      {
  *          // Received a click, handle app condition 0 etc
  *          handleAppCond(0);

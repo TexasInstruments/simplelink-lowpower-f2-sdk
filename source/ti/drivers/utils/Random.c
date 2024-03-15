@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,9 @@
     #include <ti/drivers/TRNG.h>
     #include <ti/drivers/trng/TRNGCC26XX.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyPlaintext.h>
-
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    #include <ti/drivers/RNG.h>
+    #include <ti/drivers/rng/RNGLPF3RF.h>
 #endif
 
 #define STATE_SIZE_IN_WORDS 5
@@ -106,6 +108,47 @@ int_fast16_t Random_seedAutomatic(void)
     TRNG_close(handle);
 
     if (status != TRNG_STATUS_SUCCESS)
+    {
+        return Random_STATUS_ERROR;
+    }
+
+    return Random_STATUS_SUCCESS;
+
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    RNG_Config rngConfig;
+    RNG_Handle rngHandle;
+    RNG_Params rngParams;
+    RNGLPF3RF_Object rngObject = {0};
+
+    int_fast16_t status;
+
+    /*
+     * Note: For CC23X0, RNG must be initialized by application in a task context with interrupts enabled
+     * using the following steps, before using Random_seedAutomatic() and prior to the use of the Radio.
+     * 1. Read radio noise using RCL_AdcNoise_get_samples_blocking(). This RCL function must
+     *    be called from a task context with interrupts enabled and therefore cannot be called
+     *    by startup code. This must be executed prior to the use of the radio.
+     * 2. Condition the noise to seed the RNG using RNGLPF3RF_conditionNoiseToGenerateSeed().
+     * 3. Initialize the RNG from the application with RNG_init()
+     * RNG_init() need not be called again here or by any other code.
+     */
+    rngConfig.object  = &rngObject;
+    rngConfig.hwAttrs = NULL;
+
+    RNG_Params_init(&rngParams);
+
+    rngHandle = RNG_construct(&rngConfig, &rngParams);
+
+    if (!rngHandle)
+    {
+        return Random_STATUS_ERROR;
+    }
+
+    status = RNG_getRandomBits(rngHandle, &state, sizeof(state) * 8);
+
+    RNG_close(rngHandle);
+
+    if (status != RNG_STATUS_SUCCESS)
     {
         return Random_STATUS_ERROR;
     }

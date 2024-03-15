@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2018-2019, Laurence Lundblade. All rights reserved.
- * Copyright (c) 2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  * See BSD-3-Clause license in README.md
  */
 
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_crypto.h"
 #include "t_cose_mac0_sign.h"
 #include "t_cose_util.h"

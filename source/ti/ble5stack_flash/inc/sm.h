@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -203,16 +203,16 @@ typedef struct
  */
 typedef struct
 {
-  unsigned int sEncKey:1;    //!< Set to distribute slave encryption key
-  unsigned int sIdKey:1;     //!< Set to distribute slave identity key
-  unsigned int sSign:1;      //!< Set to distribute slave signing key
-  unsigned int sLinkKey:1;   //!< Set to derive slave link key from slave LTK
-  unsigned int sReserved:4;  //!< Reserved for slave - don't use
-  unsigned int mEncKey:1;    //!< Set to distribute master encryption key
-  unsigned int mIdKey:1;     //!< Set to distribute master identity key
-  unsigned int mSign:1;      //!< Set to distribute master signing key
-  unsigned int mLinkKey:1;   //!< Set to derive master link key from master LTK
-  unsigned int mReserved:4;  //!< Reserved for master - don't use
+  unsigned int pEncKey:1;    //!< Set to distribute peripheral encryption key
+  unsigned int pIdKey:1;     //!< Set to distribute peripheral identity key
+  unsigned int pSign:1;      //!< Set to distribute peripheral signing key
+  unsigned int pLinkKey:1;   //!< Set to derive peripheral link key from peripheral LTK
+  unsigned int pReserved:4;  //!< Reserved for peripheral - don't use
+  unsigned int cEncKey:1;    //!< Set to distribute central encryption key
+  unsigned int cIdKey:1;     //!< Set to distribute central identity key
+  unsigned int cSign:1;      //!< Set to distribute central signing key
+  unsigned int cLinkKey:1;   //!< Set to derive central link key from central LTK
+  unsigned int cReserved:4;  //!< Reserved for central - don't use
 } keyDist_t;
 
 /**
@@ -314,8 +314,9 @@ uint8 *publicKeyY  //!< Local Public Key Y-Coordinate when ECC keys were request
 extern void SM_RegisterTask( uint8 taskID );
 
 /**
- * @brief  Get ECC private and public keys.  Keys are returned through the
- *         callback registered in SM_RegisterCb.
+ * @brief  Get ECC private and public keys. Keys are returned through
+ *         a SM_ECC_KEYS_EVENT event passed in the task the Security Manager
+ *         has been registered into using SM_RegisterTask().
  *
  * @return @ref SUCCESS if processing
  * @return @ref FAILURE if SM is pairing
@@ -324,9 +325,9 @@ extern void SM_RegisterTask( uint8 taskID );
 extern bStatus_t SM_GetEccKeys( void );
 
 /**
- * @brief   Request a Diffie-Hellman key from the ECC engine. Key is returned
- *          through the callback registered in SM_RegisterCb, in the first
- *          parameter.
+ * @brief   Request a Diffie-Hellman key from the ECC engine. Key is returned through
+ *          a SM_DH_KEY_EVENT event passed in the task the Security Manager
+ *          has been registered into using SM_RegisterTask().
  *
  * @param   secretKey - the local private key
  * @param   publicKeyX - the remote public key, X-Coordinate.
@@ -426,13 +427,13 @@ extern uint8 SM_GetAuthenPairingOnlyMode( void );
 */
 extern uint8 SM_GetAllowDebugKeysMode( void );
 /*-------------------------------------------------------------------
- * FUNCTIONS - MASTER API - Only use these in a master device
+ * FUNCTIONS - CENTRAL API - Only use these in a central device
  */
 
 /**
- * @brief Initialize SM Initiator on a master device.
+ * @brief Initialize SM Initiator on a central device.
  *
- * @warning Only use this API on a master device
+ * @warning Only use this API on a central device
  *
  * @return @ref SUCCESS
  */
@@ -445,7 +446,7 @@ extern bStatus_t SM_InitiatorInit( void );
  *
  * @note  Only one pairing process at a time per device.
  *
- * @warning Only use this API on a master device
+ * @warning Only use this API on a central device
  *
  * @param       initiator - TRUE to start pairing as Initiator.
  * @param       taskID - task ID to send results.
@@ -464,7 +465,7 @@ extern bStatus_t SM_StartPairing(  uint8 initiator,
 /**
  * @brief       Send Start Encrypt through HCI
  *
- * @warning Only use this API on a master device
+ * @warning Only use this API on a central device
  *
  * @param       connHandle - Connection Handle
  * @param       pLTK - pointer to 16 byte lkt
@@ -481,20 +482,20 @@ extern bStatus_t SM_StartEncryption( uint16 connHandle, uint8 *pLTK,
 
 
 /*-------------------------------------------------------------------
- * FUNCTIONS - SLAVE API - Only use these in a slave device
+ * FUNCTIONS - PERIPHERAL API - Only use these in a peripheral device
  */
 
 /**
- * @brief       Initialize SM Responder on a slave device.
+ * @brief       Initialize SM Responder on a peripheral device.
  *
- * @warning Only use this API on a slave device
+ * @warning Only use this API on a peripheral device
  *
  * @return @ref SUCCESS
  */
 extern bStatus_t SM_ResponderInit( void );
 
 /*-------------------------------------------------------------------
- * FUNCTIONS - GENERAL API - both master and slave
+ * FUNCTIONS - GENERAL API - both central and peripheral
  */
 
 /**

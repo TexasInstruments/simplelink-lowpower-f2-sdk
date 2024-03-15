@@ -186,7 +186,7 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
         else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_PER_RX))
         {
             // Start PacketRx
-            if (Radio_packetRx((uint8_t)perPktLen))
+            if (Radio_packetRx((uint16_t)perPktLen))
             {
                 *currentRadioTestMode = TestMode_PER_RX;
                 status = TestMode_Status_Success;
@@ -225,7 +225,7 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
         else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_MDR_RX))
         {
             // Start PacketRx
-            if (Radio_packetMdrRx((uint8_t)perPktLen))
+            if (Radio_packetMdrRx((uint16_t)perPktLen))
             {
                 *currentRadioTestMode = TestMode_MDR_RX;
                 status = TestMode_Status_Success;
@@ -256,6 +256,26 @@ TestMode_Status TestMode_write(uint32_t newMode, uint32_t perNumPkts, uint32_t p
             }
 
             pTestMsgFxn(TestMode_MDR_CS_TX, 0, 0, 0, true, 0, 0, 0, NULL);
+        }
+
+        //------------------------------------------------------------------------------------------
+        // TEST_MODE_CS_TX
+        //------------------------------------------------------------------------------------------
+        else if((*currentRadioTestMode == TestMode_EXIT) && (newMode == TestMode_CS_TX))
+        {
+            // Start Transmitting perNumPkts packets of length perPktLen
+            if (Radio_packetCsTx((uint16_t)perNumPkts, &perPktLen))
+            {
+                // Set test mode back to 0 when returning
+                *currentRadioTestMode = TestMode_EXIT;
+                status = TestMode_Status_Success;
+            }
+            else
+            {
+                status = TestMode_Status_Fail;
+            }
+
+            pTestMsgFxn(TestMode_CS_TX, 0, 0, 0, true, 0, 0, 0, NULL);
         }
 
         //------------------------------------------------------------------------------------------

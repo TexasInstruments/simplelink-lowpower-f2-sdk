@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,7 +12,7 @@ extern "C"
 {
 #endif
 
-#include "ccm.h"
+#include "mbedtls/ccm.h"
 
 int mbedtls_ccm_get_security_level(uint8_t sizeOfT, uint8_t *pSecurityLevel);
 

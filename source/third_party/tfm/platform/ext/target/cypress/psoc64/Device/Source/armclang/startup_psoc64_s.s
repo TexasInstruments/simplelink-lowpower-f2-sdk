@@ -1,6 +1,6 @@
 ;/*
-; * Copyright (c) 2017-2018 ARM Limited
-; * Copyright (c) 2019-2020, Cypress Semiconductor Corporation. All rights reserved.
+; * Copyright (c) 2017-2021 ARM Limited
+; * Copyright (c) 2019-2021, Cypress Semiconductor Corporation. All rights reserved.
 ; *
 ; * Licensed under the Apache License, Version 2.0 (the "License");
 ; * you may not use this file except in compliance with the License.
@@ -30,9 +30,12 @@
 ; Address of the NMI handler in ROM
 CY_NMI_HANLDER_ADDR    EQU    0x0000000D
 
+; Address of CPU VTOR register
+CY_CPU_VTOR_ADDR       EQU    0xE000ED08
+
                 PRESERVE8
 
-                IMPORT |Image$$ARM_LIB_STACK_MSP$$ZI$$Limit|
+                IMPORT |Image$$ARM_LIB_STACK$$ZI$$Limit|
 
 ; Vector Table Mapped to Address 0 at Reset
 
@@ -45,11 +48,11 @@ CY_NMI_HANLDER_ADDR    EQU    0x0000000D
                 IMPORT  HardFault_Handler
                 IMPORT  SVC_Handler
                 IMPORT  PendSV_Handler
-                IMPORT  NvicMux7_IRQHandler
+                IMPORT  tfm_mailbox_irq_handler
                 IMPORT  Cy_SysIpcPipeIsrCm0
 
 __Vectors       ;Core Interrupts
-                DCD     |Image$$ARM_LIB_STACK_MSP$$ZI$$Limit|  ; Top of Stack
+                DCD     |Image$$ARM_LIB_STACK$$ZI$$Limit|  ; Top of Stack
                 DCD     Reset_Handler             ; Reset Handler
                 DCD     CY_NMI_HANLDER_ADDR       ; NMI Handler
                 DCD     HardFault_Handler         ; Hard Fault Handler
@@ -74,7 +77,7 @@ __Vectors       ;Core Interrupts
                 DCD     NvicMux4_IRQHandler                   ; CPU User Interrupt #4
                 DCD     NvicMux5_IRQHandler                   ; CPU User Interrupt #5
                 DCD     NvicMux6_IRQHandler                   ; CPU User Interrupt #6
-                DCD     NvicMux7_IRQHandler                   ; CPU User Interrupt #7
+                DCD     tfm_mailbox_irq_handler               ; CPU User Interrupt #7
                 DCD     Internal0_IRQHandler                  ; Internal SW Interrupt #0
                 DCD     Internal1_IRQHandler                  ; Internal SW Interrupt #1
                 DCD     Internal2_IRQHandler                  ; Internal SW Interrupt #2
@@ -99,14 +102,40 @@ Reset_Handler   PROC
                 IMPORT  SystemInit
                 IMPORT  __main
                 CPSID   i              ; Disable IRQs
+
+                EXTERN RAM_VECTORS_SUPPORT
+                IF :DEF:RAM_VECTORS_SUPPORT
+                ; Copy vectors from ROM to RAM
+                LDR r1, =__Vectors
+                LDR r0, =__ramVectors
+                LDR r2, =__Vectors_Size
+Vectors_Copy
+                LDR r3, [r1]
+                STR r3, [r0]
+                ADDS r0, r0, #4
+                ADDS r1, r1, #4
+                SUBS r2, r2, #4
+                CMP r2, #0
+                BNE Vectors_Copy
+
+                ; Update Vector Table Offset Register.
+                LDR r0, =__ramVectors
+
+                ELSE
+
+                LDR     R0, =__Vectors
+
+                ENDIF
+
+                LDR r1, =CY_CPU_VTOR_ADDR
+                STR r0, [r1]
+                DSB 0xF
+
                 LDR     R0, =SystemInit
                 BLX     R0
                 MOV     R3, SP
-                MRS     R0, control    ; Get control value
                 MOVS    R1, #2
-                ORRS    R0, R0, R1     ; Select switch to PSP
 
-                MSR     control, R0
                 MOV     SP, R3
                 LDR     R0, =__main
                 BX      R0

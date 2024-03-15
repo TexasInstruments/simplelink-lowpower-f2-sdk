@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -9,37 +9,21 @@
  * \file its_flash_ram.h
  *
  * \brief Implementations of the flash interface functions for an emulated flash
- *        device using RAM. See its_flash.h for full documentation of functions.
+ *        device using RAM. See its_flash_fs_ops_t for full documentation of
+ *        functions.
  */
 
-#include "its_flash.h"
+#ifndef __ITS_FLASH_RAM_H__
+#define __ITS_FLASH_RAM_H__
 
-/**
- * \brief Initialize the Flash Interface.
- */
-psa_status_t its_flash_ram_init(const struct its_flash_info_t *info);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/**
- * \brief Reads block data from the position specified by block ID and offset.
- */
-psa_status_t its_flash_ram_read(const struct its_flash_info_t *info,
-                                uint32_t block_id, uint8_t *buff, size_t offset,
-                                size_t size);
+extern const struct its_flash_fs_ops_t its_flash_fs_ops_ram;
 
-/**
- * \brief Writes block data to the position specified by block ID and offset.
- */
-psa_status_t its_flash_ram_write(const struct its_flash_info_t *info,
-                                 uint32_t block_id, const uint8_t *buff,
-                                 size_t offset, size_t size);
+#ifdef __cplusplus
+}
+#endif
 
-/**
- * \brief Flushes modifications to a block to flash.
- */
-psa_status_t its_flash_ram_flush(const struct its_flash_info_t *info);
-
-/**
- * \brief Erases block ID data.
- */
-psa_status_t its_flash_ram_erase(const struct its_flash_info_t *info,
-                                 uint32_t block_id);
+#endif /* __ITS_FLASH_RAM_H__ */

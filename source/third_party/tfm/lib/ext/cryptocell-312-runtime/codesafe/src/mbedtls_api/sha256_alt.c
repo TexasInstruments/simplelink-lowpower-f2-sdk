@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -47,7 +47,7 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
 /*
  * SHA-256 context setup
  */
-int mbedtls_sha256_starts_ret( mbedtls_sha256_context *ctx, int is224 )
+int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
 {
     int ret;
 
@@ -84,7 +84,7 @@ int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx, const unsigned
 }
 
 
-int mbedtls_sha256_update_ret( mbedtls_sha256_context *ctx, const unsigned char *input, size_t ilen )
+int mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *input, size_t ilen )
 {
     int ret;
 
@@ -101,7 +101,7 @@ int mbedtls_sha256_update_ret( mbedtls_sha256_context *ctx, const unsigned char 
 /*
  * SHA-256 final digest
  */
-int mbedtls_sha256_finish_ret( mbedtls_sha256_context *ctx, unsigned char output[32] )
+int mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32] )
 {
     int ret;
     HashContext_t *pHashCtx = NULL;

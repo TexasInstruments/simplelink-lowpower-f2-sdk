@@ -403,6 +403,8 @@ const connParamsRanges = {
   scanWinMaxValue:              "40959.375",          // Max value of Scan Window (ms)
   scanDurationMinValue:         "10",                 // Min value of Scan Duration (ms)
   scanDurationMaxValue:         "655350",             // Max value of Scan Duration (ms)
+  scanPeriodMinValue:           "0",                  // Min value of Scan Period (sec)
+  scanPeriodMaxValue:           "83884.8",            // Max value of Scan Period (sec)
   connLatencyMinValue:          "0",                  // Min value of Connection Latency
   connLatencyMaxValue:          "499",                // Max value of Connection Latency
   connTimeoutMinValue:          "100",                // Min value of Connection Timeout (ms)
@@ -452,9 +454,64 @@ const deviceToBoard = {
   LP_EM_CC1354P10_6: "LP_EM_CC1354P10_6",
   CC2340R5: "LP_EM_CC2340R5",
   CC2340R5_Q1: "LP_EM_CC2340R5_Q1",
+  CC2340R2: "LP_EM_CC2340R2",
   CC2674R10RGZ: "LP_CC2674R10_RGZ",
   CC2674P10RGZ: "LP_CC2674P10_RGZ"
 };
+
+const deviceToDefines = {
+  "LAUNCHXL-CC1352R1": ["-DCC13X2R1_LAUNCHXL", "-DCC13X2", "-DCC13XX"],
+  "LAUNCHXL-CC1352R1-2_4GHZ": ["-DCC13X2R1_LAUNCHXL", "-DCC13X2", "-DCC13XX"],
+  "LAUNCHXL-CC1352P1": ["-DCC13X2P1_LAUNCHXL", "-DCC13X2", "-DCC13XX"],
+  "LAUNCHXL-CC1352P-2": ["-DCC13X2P_2_LAUNCHXL", "-DCC13X2P", "-DCC13XX"],
+  "LAUNCHXL-CC1352P-4": ["-DCC13X2P_4_LAUNCHXL", "-DCC13X2P", "-DCC13XX"],
+  "LP_CC2652RB": ["-DCC2652RB_LAUNCHXL", "-DCC26X2", "-DCC26XX"],
+  "LAUNCHXL-CC26X2R1": ["-DCC26X2R1_LAUNCHXL", "-DCC26X2", "-DCC26XX"],
+  "LP_CC2652PSIP": ["-DCC2652PSIP_LP", "-DCC13X2P", "-DCC13XX"],
+  "LP_CC2652RSIP": ["-DCC2652RSIP_LP", "-DCC26X2", "-DCC26XX"],
+  "LP_CC2652R7": ["-DCC2652R7_LP", "-DCC26X2", "-DCC26XX"],
+  "LP_CC1352P7-1": ["-DCC1352P7_1_LP", "-DCC13X2", "-DCC13XX"],
+  "LP_CC1352P7-4": ["-DCC1352P7_4_LP", "-DCC13X2P", "-DCC13XX"],
+  "LP_CC2651P3": ["-DCC2651P3_LP", "-DCC13X2P", "-DCC13XX"],
+  "LP_CC2651R3": ["-DCC2651R3_LP", "-DCC26X2", "-DCC26XX"],
+  "LP_CC2651R3SIPA": ["-DCC2651R3SIPA_LP", "-DCC26X2", "-DCC26XX"],
+  "LP_CC2674R10_RGZ": ["-DCC2674R10_RGZ_LP", "-DCC26X4"],
+  "LP_CC2674P10_RGZ": ["-DCC2674P10_RGZ_LP", "-DCC26X4"],
+  "LP_EM_CC1354P10_1": ["-DCC1354P10_1_LP", "-DCC13X4", "-DCC13XX"],
+  "LP_EM_CC1354P10_6": ["-DCC1354P10_6_LP", "-DCC13X4", "-DCC13XX"],
+  "LP_CC2340R2": ["-DCC23X0"],
+  "LP_CC2340R5": ["-DCC23X0"],
+  "LP_CC2340R5_Q1": ["-DCC23X0"]
+};
+
+const txPowerValueToIndex = [
+  { displayName: "-20", name: "HCI_EXT_TX_POWER_MINUS_20_DBM"},
+  { displayName: "-18", name: "HCI_EXT_TX_POWER_MINUS_18_DBM"},
+  { displayName: "-15", name: "HCI_EXT_TX_POWER_MINUS_15_DBM"},
+  { displayName: "-12", name: "HCI_EXT_TX_POWER_MINUS_12_DBM"},
+  { displayName: "-10", name: "HCI_EXT_TX_POWER_MINUS_10_DBM"},
+  { displayName: "-9",  name: "HCI_EXT_TX_POWER_MINUS_9_DBM"},
+  { displayName: "-6",  name: "HCI_EXT_TX_POWER_MINUS_6_DBM"},
+  { displayName: "-5",  name: "HCI_EXT_TX_POWER_MINUS_5_DBM"},
+  { displayName: "-3",  name: "HCI_EXT_TX_POWER_MINUS_3_DBM"},
+  { displayName: "0",   name: "HCI_EXT_TX_POWER_0_DBM"},
+  { displayName: "1",   name: "HCI_EXT_TX_POWER_1_DBM"},
+  { displayName: "2",   name: "HCI_EXT_TX_POWER_2_DBM"},
+  { displayName: "3",   name: "HCI_EXT_TX_POWER_3_DBM"},
+  { displayName: "4",   name: "HCI_EXT_TX_POWER_4_DBM"},
+  { displayName: "5",   name: "HCI_EXT_TX_POWER_5_DBM"},
+  { displayName: "6",   name: "HCI_EXT_TX_POWER_P2_14_DBM_P4_6_DBM"},
+  { displayName: "7",   name: "HCI_EXT_TX_POWER_P2_15_DBM_P4_7_DBM"},
+  { displayName: "8",   name: "HCI_EXT_TX_POWER_P2_16_DBM_P4_8_DBM"},
+  { displayName: "9",   name: "HCI_EXT_TX_POWER_P2_17_DBM_P4_9_DBM"},
+  { displayName: "10",  name: "HCI_EXT_TX_POWER_P2_18_DBM_P4_10_DBM"},
+  { displayName: "14",  name: "HCI_EXT_TX_POWER_P2_14_DBM_P4_6_DBM"},
+  { displayName: "15",  name: "HCI_EXT_TX_POWER_P2_15_DBM_P4_7_DBM"},
+  { displayName: "16",  name: "HCI_EXT_TX_POWER_P2_16_DBM_P4_8_DBM"},
+  { displayName: "17",  name: "HCI_EXT_TX_POWER_P2_17_DBM_P4_9_DBM"},
+  { displayName: "18",  name: "HCI_EXT_TX_POWER_P2_18_DBM_P4_10_DBM"},
+  { displayName: "19",  name: "HCI_EXT_TX_POWER_P2_19_DBM"},
+  { displayName: "20",  name: "HCI_EXT_TX_POWER_P2_20_DBM"}];
 
 // Settings for ti/devices/CCFG module
 const bleCentralCCFGSettings = {
@@ -480,6 +537,13 @@ const bleCentralCCFGSettings = {
   LP_CC2674R10_RGZ_CCFG_SETTINGS: {},
   LP_CC2674P10_RGZ_CCFG_SETTINGS: {}
 };
+
+const profiles_list = [
+    { displayName: "Simple Gatt",    name: "65520"  },
+    { displayName: "CGM",    name: "6175" },
+    { displayName: "Glucose",    name: "6152" },
+    { displayName: "HT",    name: "6153" }
+]
 
 const supportedMigrations = {
   // Boards
@@ -540,9 +604,13 @@ const supportedMigrations = {
     {target: "LP_EM_CC1354P10_1"},
     {target: "CC2674R10RGZ"},
     {target: "LP_CC2674R10_RGZ"},
+    {target: "CC2674R10RGZ"},
+    {target: "LP_CC2674R10_RGZ"},
   ],
   LP_EM_CC1354P10_6: [
     {target: "LP_EM_CC1354P10_6"},
+    {target: "CC2674P10RGZ"},
+    {target: "LP_CC2674P10_RGZ"},
     {target: "CC2674P10RGZ"},
     {target: "LP_CC2674P10_RGZ"},
   ],
@@ -551,6 +619,29 @@ const supportedMigrations = {
   ],
   LP_CC2674P10_RGZ:  [
     {target: "LP_CC2674P10_RGZ"},
+  ],
+  LP_EM_CC2340R5: [
+    {target: "LP_EM_CC2340R5"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
+    {target: "LP_EM_CC2340R5_Q1"},
+    {target: "CC2340R5RHB"},
+    {target: "CC2340R2RGE"},
+    {target: "LP_EM_CC2340R2"},
+  ],
+  LP_EM_CC2340R5_Q1: [
+    {target: "LP_EM_CC2340R5_Q1"},
+    {target: "LP_EM_CC2340R5"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
+    {target: "CC2340R5RHB"},
+  ],
+  LP_EM_CC2340R2: [
+    {target: "LP_EM_CC2340R2"},
+    {target: "CC2340R2RGE"},
+    {target: "LP_EM_CC2340R5"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
   ],
 
   //Devices
@@ -653,11 +744,97 @@ const supportedMigrations = {
   "CC2674P10RGZ": [
     {target: "CC2674P10RGZ"},
     {target: "LP_CC2674P10_RGZ"},
-  ]
+  ],
+  "CC2340R5RKP": [
+    {target: "CC2340R5RKP"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RHB"},
+    {target: "LP_EM_CC2340R5_Q1"},
+    {target: "LP_EM_CC2340R5"},
+    {target: "CC2340R2RGE"},
+    {target: "LP_EM_CC2340R2"},
+  ],
+  "CC2340R5RGE": [
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
+    {target: "CC2340R5RHB"},
+    {target: "LP_EM_CC2340R5_Q1"},
+    {target: "LP_EM_CC2340R5"},
+    {target: "CC2340R2RGE"},
+    {target: "LP_EM_CC2340R2"},
+  ],
+  "CC2340R5RHB": [
+    {target: "CC2340R5RHB"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
+    {target: "LP_EM_CC2340R5_Q1"},
+    {target: "LP_EM_CC2340R5"},
+  ],
+  "CC2340R2RGE": [
+    {target: "CC2340R2RGE"},
+    {target: "CC2340R5RGE"},
+    {target: "CC2340R5RKP"},
+    {target: "LP_EM_CC2340R5"},
+    {target: "LP_EM_CC2340R2"},
+  ],
 };
 
 const boardName = getBoardOrLaunchPadName(true);
 const centralRoleCcfgSettings = bleCentralCCFGSettings[boardName + "_CCFG_SETTINGS"];
+
+/*
+ * ======== convertTxPowerIndexToValue ========
+ * Get's a Tx Power table index and returns the Tx Power in dBm.
+ * It uses the txPowerValueToIndex list which maps the index to value.
+ *
+ * @param txPowerIndex - index to conver
+ * @returns the Tx Power value in dBm
+ */
+function convertTxPowerIndexToValue(txPowerIndex)
+{
+  let txPowerValue = txPowerValueToIndex.find((option) => {
+  if(option.name == txPowerIndex)
+      return option;
+  });
+
+  if(txPowerValue)
+  {
+    txPowerValue = txPowerValue.displayName;
+  }
+  else
+  {
+    txPowerValue = "0";
+  }
+
+  return txPowerValue;
+}
+
+/*
+ * ======== convertTxPowerIndexToValue ========
+ * Get's a Tx Power value and returns it's index in the Tx Power table.
+ * It uses the txPowerValueToIndex list which maps the index to value.
+ *
+ * @param txPowerValue - value to conver
+ * @returns index of the value in the Tx Power table
+ */
+function convertTxPowerValueToIndex(txPowerValue)
+{
+  let txPowerIndex = txPowerValueToIndex.find((option) => {
+  if(option.displayName == txPowerValue)
+      return option;
+  });
+
+  if(txPowerIndex)
+  {
+    txPowerIndex = txPowerIndex.name;
+  }
+  else
+  {
+    txPowerIndex = "HCI_EXT_TX_POWER_0_DBM";
+  }
+
+  return txPowerIndex;
+}
 
 /*
  * ======== alphanumeric ========
@@ -1161,9 +1338,13 @@ function device2DeviceFamily(deviceId)
     {
         driverString = "DeviceFamily_CC26X1";
     }
-    else if(deviceId.match(/CC23.0/))
+    else if(deviceId.match(/CC2340R5/))
     {
-        driverString = "DeviceFamily_CC23X0";
+        driverString = "DeviceFamily_CC23X0R5";
+    }
+    else if(deviceId.match(/CC2340R2/))
+    {
+        driverString = "DeviceFamily_CC23X0R2";
     }
     else
     {
@@ -1268,7 +1449,22 @@ function getRadioScript(rfDesign, deviceId)
         {
             radioSettings = system.getScript("/ti/ble5stack/rf_config/"
                 + "LP_EM_CC1354P10_6_rf_defaults.js");
-}
+        }
+        else if(rfDesign === "LP_EM_CC2340R2")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC2340R2_rf_defaults.js");
+        }
+        else if(rfDesign === "LP_EM_CC2340R5")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC2340R5_rf_defaults.js");
+        }
+        else if(rfDesign === "LP_EM_CC2340R5_Q1")
+        {
+            radioSettings = system.getScript("/ti/ble5stack/rf_config/"
+                + "LP_EM_CC2340R5_Q1_rf_defaults.js");
+        }
     }
     else if(deviceId === "CC1352P1F3RGZ")
     {
@@ -1351,6 +1547,7 @@ function getRadioScript(rfDesign, deviceId)
         radioSettings = system.getScript("/ti/ble5stack/rf_config/"
             + "LP_CC2674P10RGZ_rf_defaults.js");
     }
+
     return(radioSettings);
 }
 
@@ -1366,7 +1563,7 @@ function hideGroup(group, toHide, ui)
 {
   let namesArray = _.map(group,function(n) {return n.name});
   _.each(namesArray, (cfg) => {cfg.includes("hide") ||
-         cfg.includes("numOfDefAdvSets") ? true : ui[cfg].hidden = toHide;});
+         cfg.includes("numOfDefAdvSets") || cfg == "DeviceInfo" ? true : ui[cfg].hidden = toHide;});
 }
 
 /*
@@ -1485,25 +1682,12 @@ function getMigrationMarkdown(currTarget)
 */
 function defaultValue()
 {
-    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    if( device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R5" ||
+        device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R2" )
     {
         return false;
     }
     return true;
-}
-
-/* ======== readOnlyValue ========
-* Returns the parmeter read only value
-*
-* @returns true or false
-*/
-function readOnlyValue()
-{
-    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
-    {
-        return "Currently not supported for CC23X0";
-    }
-    return false;
 }
 
 /* ======== defaultBondValue ========
@@ -1514,11 +1698,107 @@ function readOnlyValue()
 */
 function defaultBondValue()
 {
-    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    if( device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R5" ||
+        device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R2" )
     {
         return 5;
     }
     return 10;
+}
+
+/* ======== getAutoSyncName ========
+*
+* return the name of the autoSync varibale
+* if it  is a flash device return autoSyncAL
+* else return autoSyncWL
+*/
+function getAutoSyncName()
+{
+  if(isFlashOnlyDevice())
+  {
+    return "autoSyncAL";
+  }
+  return "autoSyncWL";
+}
+
+/* ======== getFilterPolicyName ========
+*
+* return the filter policy of the device
+* if it  is a flash device return GAP_ADV_AL_POLICY_ANY_REQ
+* else return GAP_ADV_AL_POLICY_ANY_REQ
+*/
+function getFilterPolicyName()
+{
+  if(isFlashOnlyDevice())
+  {
+    return "GAP_ADV_AL_POLICY_ANY_REQ";
+  }
+  return "GAP_ADV_WL_POLICY_ANY_REQ";
+}
+
+/* ======== getOptionsOfFilterPolicy ========
+*
+*
+*/
+function getOptionsOfFilterPolicy()
+{
+  if(isFlashOnlyDevice())
+  {
+    return [
+      {
+          displayName: "Process requests from all devices",
+          name: "GAP_ADV_AL_POLICY_ANY_REQ",
+          legacyNames: ["GAP_ADV_WL_POLICY_ANY_REQ"],
+          description: "Process scan and connection requests from all devices "
+                        + "(i.e., the AcceptList is not in use)"
+      },
+      {
+          displayName: "Process conn req from all devices and only scan req from devices in AL",
+          name: "GAP_ADV_AL_POLICY_AL_SCAN_REQ",
+          legacyNames: ["GAP_ADV_WL_POLICY_WL_SCAN_REQ"],
+          description:  "Process connection requests from all devices and only scan requests "
+                      +"from devices that are in the Accept List"
+      },
+      {
+          displayName: "Process scan req from all devices and only conn req from devices in AL",
+          name: "GAP_ADV_AL_POLICY_AL_CONNECT_IND",
+          legacyNames: ["GAP_ADV_AL_POLICY_WL_CONNECT_IND"],
+          description: "Process scan requests from all devices and only connection requests"
+                        + "from devices that are in the Accept List"
+      },
+      {
+          displayName: "Process requests only from devices in AL",
+          name: "GAP_ADV_AL_POLICY_AL_ALL_REQ",
+          legacyNames: ["GAP_ADV_AL_POLICY_WL_ALL_REQ"],
+          description: "Process scan and connection requests only from devices in the Accept List"
+      }
+  ];
+  }
+  return [
+    {
+        displayName: "Process requests from all devices",
+        name: "GAP_ADV_WL_POLICY_ANY_REQ",
+        description: "Process scan and connection requests from all devices "
+                      + "(i.e., the WhiteList is not in use)"
+    },
+    {
+        displayName: "Process conn req from all devices and only scan req from devices in AL",
+        name: "GAP_ADV_WL_POLICY_WL_SCAN_REQ",
+        description:  "Process connection requests from all devices and only scan requests "
+                    +"from devices that are in the White List"
+    },
+    {
+        displayName: "Process scan req from all devices and only conn req from devices in AL",
+        name: "GAP_ADV_WL_POLICY_WL_CONNECT_IND",
+        description: "Process scan requests from all devices and only connection requests"
+                      + "from devices that are in the White List"
+    },
+    {
+        displayName: "Process requests only from devices in AL",
+        name: "GAP_ADV_WL_POLICY_WL_ALL_REQ",
+        description: "Process scan and connection requests only from devices in the White List"
+    }
+];
 }
 
 /* ======== hiddenValue ========
@@ -1528,15 +1808,174 @@ function defaultBondValue()
 */
 function hiddenValue()
 {
-    if(device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    if( device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R5" ||
+        device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R2" )
     {
         return true;
     }
     return false;
 }
 
+/*
+ *  ======== isFlashOnlyDevice ========
+ *  Check which device is used.
+ *  @return Bool - True if FlashOnly device
+ *                 False if FlashRom device
+ */
+function isFlashOnlyDevice() {
+const devFamily = device2DeviceFamily(system.deviceData.deviceId);
+
+    // Return true if the device is from flash family
+    return (
+        ((devFamily == "DeviceFamily_CC26X1") ||
+         (devFamily == "DeviceFamily_CC13X4") ||
+         (devFamily == "DeviceFamily_CC26X4") ||
+         (devFamily == "DeviceFamily_CC23X0R5") ||
+         (devFamily == "DeviceFamily_CC23X0R2"))
+    );
+}
+
+/* ======== peripheralConnIntervalRange ========
+* Returns the proper define for CONN_INTERVAL_RANGE
+*
+* @returns GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE or GAP_ADTYPE_PERIPHERAL_CONN_INTERVAL_RANGE
+*/
+function getPeripheralConnIntervalRange()
+{
+    if(isFlashOnlyDevice())
+    {
+        return "GAP_ADTYPE_PERIPHERAL_CONN_INTERVAL_RANGE";
+    }
+    return "GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE";
+}
+
+/* ======== getOptionsKeyDistList ========
+*
+* Returns the proper options definition for KeyDistList
+*/
+function getOptionsKeyDistList()
+{
+  if(isFlashOnlyDevice())
+  {
+    return [
+      {
+          displayName: "Peripheral Encryption Key",
+          name: "GAPBOND_KEYDIST_PENCKEY",
+          legacyNames: ["GAPBOND_KEYDIST_SENCKEY"]
+      },
+      {
+          displayName: "Peripheral IRK and ID information",
+          name: "GAPBOND_KEYDIST_PIDKEY",
+          legacyNames: ["GAPBOND_KEYDIST_SIDKEY"],
+          description: "Resolving Identity Key"
+      },
+      {
+          displayName: "Peripheral CSRK",
+          name: "GAPBOND_KEYDIST_PSIGN",
+          legacyNames: ["GAPBOND_KEYDIST_SSIGN"],
+          description: "Connection Signature Resolving Key"
+      },
+      {
+          displayName: "Peripheral Link Key",
+          name: "GAPBOND_KEYDIST_PLINK",
+          legacyNames: ["GAPBOND_KEYDIST_SLINK"]
+      },
+      {
+          displayName: "Central Encryption Key",
+          name: "GAPBOND_KEYDIST_CENCKEY",
+          legacyNames: ["GAPBOND_KEYDIST_MENCKEY"]
+      },
+      {
+          displayName: "Central IRK and ID information",
+          name: "GAPBOND_KEYDIST_CIDKEY",
+          description: "Resolving Identity Key",
+          legacyNames: ["GAPBOND_KEYDIST_MIDKEY"]
+      },
+      {
+          displayName: "Central CSRK",
+          name: "GAPBOND_KEYDIST_CSIGN",
+          legacyNames: ["GAPBOND_KEYDIST_MSIGN"],
+          description: "Connection Signature Resolving Key"
+      },
+      {
+          displayName: "Central Link Key",
+          name: "GAPBOND_KEYDIST_CLINK",
+          legacyNames: ["GAPBOND_KEYDIST_MLINK"]
+      }
+    ]
+  }
+  return [
+      {
+          displayName: "Peripheral Encryption Key",
+          name: "GAPBOND_KEYDIST_SENCKEY"
+      },
+      {
+          displayName: "Peripheral IRK and ID information",
+          name: "GAPBOND_KEYDIST_SIDKEY",
+          description: "Resolving Identity Key"
+      },
+      {
+          displayName: "Peripheral CSRK",
+          name: "GAPBOND_KEYDIST_SSIGN",
+          description: "Connection Signature Resolving Key"
+      },
+      {
+          displayName: "Peripheral Link Key",
+          name: "GAPBOND_KEYDIST_SLINK"
+      },
+      {
+          displayName: "Central Encryption Key",
+          name: "GAPBOND_KEYDIST_MENCKEY"
+      },
+      {
+          displayName: "Central IRK and ID information",
+          name: "GAPBOND_KEYDIST_MIDKEY",
+          description: "Resolving Identity Key"
+      },
+      {
+          displayName: "Central CSRK",
+          name: "GAPBOND_KEYDIST_MSIGN",
+          description: "Connection Signature Resolving Key"
+      },
+      {
+          displayName: "Central Link Key",
+          name: "GAPBOND_KEYDIST_MLINK"
+      }
+  ];
+}
+
+/* ======== getOptionsKeyDistList ========
+* Returns the proper default options for KeyDistList
+*
+*/
+function getDefaultKeyDistList()
+{
+  if(isFlashOnlyDevice())
+  {
+    return ["GAPBOND_KEYDIST_PENCKEY", "GAPBOND_KEYDIST_PIDKEY", "GAPBOND_KEYDIST_PSIGN",
+                      "GAPBOND_KEYDIST_CENCKEY", "GAPBOND_KEYDIST_CIDKEY", "GAPBOND_KEYDIST_CSIGN"]
+  }
+  return ["GAPBOND_KEYDIST_SENCKEY", "GAPBOND_KEYDIST_SIDKEY", "GAPBOND_KEYDIST_SSIGN",
+                      "GAPBOND_KEYDIST_MENCKEY", "GAPBOND_KEYDIST_MIDKEY", "GAPBOND_KEYDIST_MSIGN"]
+}
+
+/* ======== getExtendedStackSettingsGuardTimeName ========
+* Returns the proper name for extendedStackSettings GuardTime
+*
+*/
+function getExtendedStackSettingsGuardTimeName()
+{
+  if(isFlashOnlyDevice())
+  {
+    return "CENTRAL_GUARD_TIME_ENABLE"
+  }
+  return "MASTER_GUARD_TIME_ENABLE"
+}
+
 exports = {
     sigModelMapping:sigModelMapping,
+    convertTxPowerIndexToValue: convertTxPowerIndexToValue,
+    convertTxPowerValueToIndex: convertTxPowerValueToIndex,
     alphanumeric: alphanumeric,
     advParamsRanges: advParamsRanges,
     connParamsRanges: connParamsRanges,
@@ -1548,6 +1987,8 @@ exports = {
     advAHdrLen: advAHdrLen,
     targetAHdrLen: targetAHdrLen,
     txPowerHdrLen: txPowerHdrLen,
+    deviceToDefines: deviceToDefines,
+    txPowerValueToIndex: txPowerValueToIndex,
     addPeerAddress: addPeerAddress,
     reverseBytes: reverseBytes,
     checkTXPower: checkTXPower,
@@ -1573,7 +2014,15 @@ exports = {
     migrate: migrate,
     getMigrationMarkdown: getMigrationMarkdown,
     hiddenValue: hiddenValue,
-    readOnlyValue: readOnlyValue,
     defaultValue: defaultValue,
-    defaultBondValue: defaultBondValue
+    defaultBondValue: defaultBondValue,
+    isFlashOnlyDevice: isFlashOnlyDevice,
+    getPeripheralConnIntervalRange: getPeripheralConnIntervalRange,
+    getOptionsKeyDistList: getOptionsKeyDistList,
+    getDefaultKeyDistList: getDefaultKeyDistList,
+    getExtendedStackSettingsGuardTimeName: getExtendedStackSettingsGuardTimeName,
+    getFilterPolicyName: getFilterPolicyName,
+    getOptionsOfFilterPolicy: getOptionsOfFilterPolicy,
+    getAutoSyncName: getAutoSyncName,
+    profiles_list: profiles_list
 };

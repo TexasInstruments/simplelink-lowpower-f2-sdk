@@ -189,14 +189,14 @@ ChipInfo_GetHwRevision( void )
 
     if ( chipFam == FAMILY_CC13x2_CC26x2 ) {
         switch ( fcfg1Rev ) {
-        case 0 : // CC13x2, CC26x2 - PG1.0
-        case 1 : // CC13x2, CC26x2 - PG1.01 (will also show up as PG1.0)
+        case 0 : // CC13x2, CC26x2 - rev. 1.0
+        case 1 : // CC13x2, CC26x2 - rev. 1.01 (will also show up as rev. 1.0)
             hwRev = (HwRevision_t)((uint32_t)HWREV_1_0 );
             break;
-        case 2 : // CC13x2, CC26x2 - PG1.1 (or later)
+        case 2 : // CC13x2, CC26x2 - rev. 1.1 (or later)
             hwRev = (HwRevision_t)(((uint32_t)HWREV_1_1 ) + minorHwRev );
             break;
-        case 3 : // CC13x2, CC26x2 - PG2.1 (or later)
+        case 3 : // CC13x2, CC26x2 - rev. 2.1 (or later)
             hwRev = (HwRevision_t)(((uint32_t)HWREV_2_1 ) + minorHwRev );
             break;
         }
@@ -216,7 +216,7 @@ ThisLibraryIsFor_CC13x2_CC26x2_HwRev20AndLater_HaltIfViolated( void )
     {
         while(1)
         {
-            // This driverlib version is for the CC13x2/CC26x2 PG2.0 and later chips.
+            // This driverlib version is for the CC13x2/CC26x2 rev. 2.0 and later chips.
             // Do nothing - stay here forever
         }
     }

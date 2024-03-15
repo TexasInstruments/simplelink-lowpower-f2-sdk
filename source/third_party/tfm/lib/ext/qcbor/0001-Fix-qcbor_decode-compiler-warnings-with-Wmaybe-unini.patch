@@ -1,0 +1,44 @@
+From c640c37c4477a4eb37be85ae64170f7c5a1920ef Mon Sep 17 00:00:00 2001
+From: Antonio de Angelis <Antonio.deAngelis@arm.com>
+Date: Thu, 2 Feb 2023 10:32:36 +0000
+Subject: [PATCH] Fix qcbor_decode compiler warnings with -Wmaybe-uninitialized
+
+Signed-off-by: Antonio de Angelis <antonio.deangelis@arm.com>
+---
+ src/qcbor_decode.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/qcbor_decode.c b/src/qcbor_decode.c
+index 8a547ee..afcf7f6 100644
+--- a/src/qcbor_decode.c
++++ b/src/qcbor_decode.c
+@@ -3850,7 +3850,7 @@ void QCBORDecode_EnterBstrWrappedFromMapN(QCBORDecodeContext *pMe,
+                                           uint8_t             uTagRequirement,
+                                           UsefulBufC         *pBstr)
+ {
+-   QCBORItem Item;
++   QCBORItem Item = {0};
+    QCBORDecode_GetItemInMapN(pMe, nLabel, QCBOR_TYPE_ANY, &Item);
+ 
+    pMe->uLastError = (uint8_t)InternalEnterBstrWrapped(pMe,
+@@ -3868,7 +3868,7 @@ void QCBORDecode_EnterBstrWrappedFromMapSZ(QCBORDecodeContext *pMe,
+                                            uint8_t             uTagRequirement,
+                                            UsefulBufC         *pBstr)
+ {
+-   QCBORItem Item;
++   QCBORItem Item = {0};
+    QCBORDecode_GetItemInMapSZ(pMe, szLabel, QCBOR_TYPE_ANY, &Item);
+ 
+    pMe->uLastError = (uint8_t)InternalEnterBstrWrapped(pMe,
+@@ -5292,7 +5292,7 @@ UInt64ConvertAll(const QCBORItem *pItem, uint32_t uConvertTypes, uint64_t *puVal
+  */
+ void QCBORDecode_GetUInt64ConvertAll(QCBORDecodeContext *pMe, uint32_t uConvertTypes, uint64_t *puValue)
+ {
+-   QCBORItem Item;
++   QCBORItem Item = {0};
+ 
+    QCBORDecode_GetUInt64ConvertInternal(pMe, uConvertTypes, puValue, &Item);
+ 
+-- 
+2.25.1
+

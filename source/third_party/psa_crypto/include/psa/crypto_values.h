@@ -1,6 +1,8 @@
 /**
  * \file psa/crypto_values.h
  *
+ * \addtogroup ti_psa_crypto PSA cryptography module: type aliases.
+ *
  * \brief PSA cryptography module: macros to build and analyze integer values.
  *
  * \note This file may not be included directly. Applications must
@@ -2010,88 +2012,73 @@ static inline int mbedtls_svc_key_id_is_null(mbedtls_svc_key_id_t key)
  * is sufficient to permit the copy.
  */
 
-#if !defined(USE_MBEDCRYPTO_VALUES)
+#define PSA_KEY_USAGE_COPY ((psa_key_usage_t)0x00000002)
 
-    #define PSA_KEY_USAGE_COPY ((psa_key_usage_t)0x00000002)
+/** Whether the key may be used to encrypt a message.
+ *
+ * This flag allows the key to be used for a symmetric encryption operation,
+ * for an AEAD encryption-and-authentication operation,
+ * or for an asymmetric encryption operation,
+ * if otherwise permitted by the key's type and policy.
+ *
+ * For a key pair, this concerns the public key.
+ */
+#define PSA_KEY_USAGE_ENCRYPT ((psa_key_usage_t)0x00000100)
 
-    /** Whether the key may be used to encrypt a message.
-     *
-     * This flag allows the key to be used for a symmetric encryption operation,
-     * for an AEAD encryption-and-authentication operation,
-     * or for an asymmetric encryption operation,
-     * if otherwise permitted by the key's type and policy.
-     *
-     * For a key pair, this concerns the public key.
-     */
-    #define PSA_KEY_USAGE_ENCRYPT ((psa_key_usage_t)0x00000100)
+/** Whether the key may be used to decrypt a message.
+ *
+ * This flag allows the key to be used for a symmetric decryption operation,
+ * for an AEAD decryption-and-verification operation,
+ * or for an asymmetric decryption operation,
+ * if otherwise permitted by the key's type and policy.
+ *
+ * For a key pair, this concerns the private key.
+ */
+#define PSA_KEY_USAGE_DECRYPT ((psa_key_usage_t)0x00000200)
 
-    /** Whether the key may be used to decrypt a message.
-     *
-     * This flag allows the key to be used for a symmetric decryption operation,
-     * for an AEAD decryption-and-verification operation,
-     * or for an asymmetric decryption operation,
-     * if otherwise permitted by the key's type and policy.
-     *
-     * For a key pair, this concerns the private key.
-     */
-    #define PSA_KEY_USAGE_DECRYPT ((psa_key_usage_t)0x00000200)
+/** Whether the key may be used to sign a message.
+ *
+ * This flag allows the key to be used for a MAC calculation operation or for
+ * an asymmetric message signature operation, if otherwise permitted by the
+ * key’s type and policy.
+ *
+ * For a key pair, this concerns the private key.
+ */
+#define PSA_KEY_USAGE_SIGN_MESSAGE ((psa_key_usage_t)0x00000400)
 
-    /** Whether the key may be used to sign a message.
-     *
-     * This flag allows the key to be used for a MAC calculation operation or for
-     * an asymmetric message signature operation, if otherwise permitted by the
-     * key’s type and policy.
-     *
-     * For a key pair, this concerns the private key.
-     */
-    #define PSA_KEY_USAGE_SIGN_MESSAGE ((psa_key_usage_t)0x00000400)
+/** Whether the key may be used to verify a message.
+ *
+ * This flag allows the key to be used for a MAC verification operation or for
+ * an asymmetric message signature verification operation, if otherwise
+ * permitted by the key’s type and policy.
+ *
+ * For a key pair, this concerns the public key.
+ */
+#define PSA_KEY_USAGE_VERIFY_MESSAGE ((psa_key_usage_t)0x00000800)
 
-    /** Whether the key may be used to verify a message.
-     *
-     * This flag allows the key to be used for a MAC verification operation or for
-     * an asymmetric message signature verification operation, if otherwise
-     * permitted by the key’s type and policy.
-     *
-     * For a key pair, this concerns the public key.
-     */
-    #define PSA_KEY_USAGE_VERIFY_MESSAGE ((psa_key_usage_t)0x00000800)
+/** Whether the key may be used to sign a message.
+ *
+ * This flag allows the key to be used for a MAC calculation operation
+ * or for an asymmetric signature operation,
+ * if otherwise permitted by the key's type and policy.
+ *
+ * For a key pair, this concerns the private key.
+ */
+#define PSA_KEY_USAGE_SIGN_HASH ((psa_key_usage_t)0x00001000)
 
-    /** Whether the key may be used to sign a message.
-     *
-     * This flag allows the key to be used for a MAC calculation operation
-     * or for an asymmetric signature operation,
-     * if otherwise permitted by the key's type and policy.
-     *
-     * For a key pair, this concerns the private key.
-     */
-    #define PSA_KEY_USAGE_SIGN_HASH ((psa_key_usage_t)0x00001000)
+/** Whether the key may be used to verify a message signature.
+ *
+ * This flag allows the key to be used for a MAC verification operation
+ * or for an asymmetric signature verification operation,
+ * if otherwise permitted by by the key's type and policy.
+ *
+ * For a key pair, this concerns the public key.
+ */
+#define PSA_KEY_USAGE_VERIFY_HASH ((psa_key_usage_t)0x00002000)
 
-    /** Whether the key may be used to verify a message signature.
-     *
-     * This flag allows the key to be used for a MAC verification operation
-     * or for an asymmetric signature verification operation,
-     * if otherwise permitted by by the key's type and policy.
-     *
-     * For a key pair, this concerns the public key.
-     */
-    #define PSA_KEY_USAGE_VERIFY_HASH ((psa_key_usage_t)0x00002000)
-
-    /** Whether the key may be used to derive other keys.
-     */
-    #define PSA_KEY_USAGE_DERIVE ((psa_key_usage_t)0x00004000)
-
-#else
-
-    #define PSA_KEY_USAGE_EXPORT         ((psa_key_usage_t)0x00000001)
-    #define PSA_KEY_USAGE_COPY           ((psa_key_usage_t)0x00000002)
-    #define PSA_KEY_USAGE_ENCRYPT        ((psa_key_usage_t)0x00000100)
-    #define PSA_KEY_USAGE_DECRYPT        ((psa_key_usage_t)0x00000200)
-    #define PSA_KEY_USAGE_SIGN_HASH      ((psa_key_usage_t)0x00000400)
-    #define PSA_KEY_USAGE_SIGN_MESSAGE   PSA_KEY_USAGE_SIGN_HASH
-    #define PSA_KEY_USAGE_VERIFY_HASH    ((psa_key_usage_t)0x00000800)
-    #define PSA_KEY_USAGE_VERIFY_MESSAGE PSA_KEY_USAGE_VERIFY_HASH
-    #define PSA_KEY_USAGE_DERIVE         ((psa_key_usage_t)0x00001000)
-#endif
+/** Whether the key may be used to derive other keys.
+ */
+#define PSA_KEY_USAGE_DERIVE ((psa_key_usage_t)0x00004000)
 
 /**@}*/
 

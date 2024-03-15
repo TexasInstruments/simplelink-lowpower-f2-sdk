@@ -29,10 +29,8 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 
-if (NOT DEFINED FREERTOS_INSTALL_DIR)
-    message(STATUS "FREERTOS_INSTALL_DIR is not defined, skipping FreeRTOS build")
-    return()
-endif ()
+# Set FREERTOS_INSTALL_DIR to SDK root if it is not explicitly defined
+get_install_dir(FREERTOS_INSTALL_DIR)
 
 include(CMakeSources.cmake)
 ti_init_package(NAMESPACE FreeRTOS)
@@ -41,7 +39,7 @@ ti_init_package(NAMESPACE FreeRTOS)
 ti_add_library(freertos INTERFACE ARCH all)
 target_include_directories(
     freertos
-    INTERFACE "$<BUILD_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include>"
+    INTERFACE "$<BUILD_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/include>"
               # Note: we cannot set the INSTALL_INTERFACE include here, because it depends on
               # FREERTOS_INSTALL_DIR It is configured in ConfigFreeRTOS.cmake.in, after the CMake
               # package magic
@@ -50,7 +48,7 @@ target_include_directories(
 set(TI_LIBRARIES)
 
 # The IAR libraries have sources, and therefore need to link against the toolchain libraries
-if (${TI_TOOLCHAIN_NAME} STREQUAL iar)
+if(${TI_TOOLCHAIN_NAME} STREQUAL iar)
     ti_add_library(
         freertos_m0p ARCH m0p OUTPUT_NAME freertos SOURCES ${SOURCES_M0P_IAR} LINK_PRIVATE CMakeCommon::iar_m0p
         LINK_PUBLIC FreeRTOS::freertos
@@ -105,7 +103,7 @@ if (${TI_TOOLCHAIN_NAME} STREQUAL iar)
         # There is no INSTALL_INTERFACE include here, as it depends on FREERTOS_INSTALL_DIR It is
         # configured in ConfigFreeRTOSMxx.cmake.in, after the CMake package magic
     )
-else ()
+else()
     # The other libraries are interfaces primarily used for including the correct portable implementation
     ti_add_library(freertos_m0p ARCH m0p INTERFACE LINK_INTERFACE FreeRTOS::freertos)
     ti_add_library(freertos_m4 ARCH m4 INTERFACE LINK_INTERFACE FreeRTOS::freertos)
@@ -116,7 +114,7 @@ else ()
     # Since we usually clean the ticlang variant of the build, we need to explicitly clean the lib folder here
     # Interface libraries do not appear to contribute ADDITIONAL_CLEAN_FILES if set as a target property
     set_directory_properties(PROPERTIES ADDITIONAL_CLEAN_FILES lib/)
-endif ()
+endif()
 
 # These variables are used in ConfigFreeRTOSMxx.cmake.in to set the INSTALL_INTERFACE includes These
 # variables only get interpolated inside the IAR-specific exported Targets files

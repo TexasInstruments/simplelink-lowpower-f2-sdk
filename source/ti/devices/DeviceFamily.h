@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,26 +57,29 @@ extern "C" {
  * DeviceFamily_ID is set to one of these values based on the top level
  * DeviceFamily_XYZ define.
  */
-#define DeviceFamily_ID_CC13X0                 1
-#define DeviceFamily_ID_CC26X0                 2
-#define DeviceFamily_ID_CC26X0R2               3
-#define DeviceFamily_ID_CC13X2                 4
-#define DeviceFamily_ID_CC26X2                 5
-#define DeviceFamily_ID_CC3200                 6
-#define DeviceFamily_ID_CC3220                 7
-#define DeviceFamily_ID_CC13X1                 8
-#define DeviceFamily_ID_CC26X1                 9
-#define DeviceFamily_ID_CC13X2X7               10
-#define DeviceFamily_ID_CC26X2X7               11
-#define DeviceFamily_ID_CC13X1_CC26X1          12
-#define DeviceFamily_ID_CC13X2_CC26X2          13
-#define DeviceFamily_ID_CC13X2X7_CC26X2X7      14
-#define DeviceFamily_ID_CC13X4_CC26X4          15
-#define DeviceFamily_ID_CC13X4                 16
-#define DeviceFamily_ID_CC26X4                 17
-#define DeviceFamily_ID_CC26X3                 18
-#define DeviceFamily_ID_CC23X0                 19
-#define DeviceFamily_ID_CC23X0R2               20
+#define DeviceFamily_ID_CC13X0            1
+#define DeviceFamily_ID_CC26X0            2
+#define DeviceFamily_ID_CC26X0R2          3
+#define DeviceFamily_ID_CC13X2            4
+#define DeviceFamily_ID_CC26X2            5
+#define DeviceFamily_ID_CC3200            6
+#define DeviceFamily_ID_CC3220            7
+#define DeviceFamily_ID_CC13X1            8
+#define DeviceFamily_ID_CC26X1            9
+#define DeviceFamily_ID_CC13X2X7          10
+#define DeviceFamily_ID_CC26X2X7          11
+#define DeviceFamily_ID_CC13X1_CC26X1     12
+#define DeviceFamily_ID_CC13X2_CC26X2     13
+#define DeviceFamily_ID_CC13X2X7_CC26X2X7 14
+#define DeviceFamily_ID_CC13X4_CC26X4     15
+#define DeviceFamily_ID_CC13X4            16
+#define DeviceFamily_ID_CC26X4            17
+#define DeviceFamily_ID_CC26X3            18
+#define DeviceFamily_ID_CC23X0R5          19
+#define DeviceFamily_ID_CC23X0R2          20
+#define DeviceFamily_ID_CC27XX            21
+#define DeviceFamily_ID_CC35XX            22
+#define DeviceFamily_ID_CC33XX            23
 
 /*
  * DeviceFamily_PARENT_XYZ values.
@@ -85,12 +88,14 @@ extern "C" {
  * compilation. DeviceFamily_PARENT is set to one of these values based
  * on the top-level DeviceFamily_XYZ define.
  */
-#define DeviceFamily_PARENT_CC13X0_CC26X0           1
-#define DeviceFamily_PARENT_CC13X2_CC26X2           2
-#define DeviceFamily_PARENT_CC13X1_CC26X1           3
-#define DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4    4
-#define DeviceFamily_PARENT_CC32XX                  5
-#define DeviceFamily_PARENT_CC23X0                  6
+#define DeviceFamily_PARENT_CC13X0_CC26X0        1
+#define DeviceFamily_PARENT_CC13X2_CC26X2        2
+#define DeviceFamily_PARENT_CC13X1_CC26X1        3
+#define DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4 4
+#define DeviceFamily_PARENT_CC32XX               5
+#define DeviceFamily_PARENT_CC23X0               6
+#define DeviceFamily_PARENT_CC27XX               7
+#define DeviceFamily_PARENT_CC35XX               8
 
 /*
  * Lookup table that sets DeviceFamily_ID, DeviceFamily_DIRECTORY, and
@@ -99,122 +104,135 @@ extern "C" {
  * multiple DeviceFamily_XYZ are defined, the first one encountered is used.
  */
 #if defined(DeviceFamily_CC13X0)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X0
-    #define DeviceFamily_DIRECTORY      cc13x0
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X0_CC26X0
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X0
+    #define DeviceFamily_DIRECTORY cc13x0
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X0_CC26X0
 
 #elif defined(DeviceFamily_CC13X1)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X1
-    #define DeviceFamily_DIRECTORY      cc13x1_cc26x1
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X1_CC26X1
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X1
+    #define DeviceFamily_DIRECTORY cc13x1_cc26x1
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X1_CC26X1
 
 #elif defined(DeviceFamily_CC13X2)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X2
-    #define DeviceFamily_DIRECTORY      cc13x2_cc26x2
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X2
+    #define DeviceFamily_DIRECTORY cc13x2_cc26x2
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC13X2X7)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X2X7
-    #define DeviceFamily_DIRECTORY      cc13x2x7_cc26x2x7
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X2X7
+    #define DeviceFamily_DIRECTORY cc13x2x7_cc26x2x7
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC13X4)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X4
-    #define DeviceFamily_DIRECTORY      cc13x4_cc26x4
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X4
+    #define DeviceFamily_DIRECTORY cc13x4_cc26x4
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
 
 #elif defined(DeviceFamily_CC26X0)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X0
-    #define DeviceFamily_DIRECTORY      cc26x0
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X0_CC26X0
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X0
+    #define DeviceFamily_DIRECTORY cc26x0
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X0_CC26X0
 
 #elif defined(DeviceFamily_CC26X0R2)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X0R2
-    #define DeviceFamily_DIRECTORY      cc26x0r2
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X0_CC26X0
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X0R2
+    #define DeviceFamily_DIRECTORY cc26x0r2
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X0_CC26X0
 
 #elif defined(DeviceFamily_CC26X1)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X1
-    #define DeviceFamily_DIRECTORY      cc13x1_cc26x1
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X1_CC26X1
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X1
+    #define DeviceFamily_DIRECTORY cc13x1_cc26x1
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X1_CC26X1
 
 #elif defined(DeviceFamily_CC26X2)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X2
-    #define DeviceFamily_DIRECTORY      cc13x2_cc26x2
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X2
+    #define DeviceFamily_DIRECTORY cc13x2_cc26x2
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC26X2X7)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X2X7
-    #define DeviceFamily_DIRECTORY      cc13x2x7_cc26x2x7
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X2X7
+    #define DeviceFamily_DIRECTORY cc13x2x7_cc26x2x7
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC26X3)
     /* The CC2653 is very similar to CC26X4 from a software point of view,
      * so we use the same directory and parent defines.
      */
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X3
-    #define DeviceFamily_DIRECTORY      cc13x4_cc26x4
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X3
+    #define DeviceFamily_DIRECTORY cc13x4_cc26x4
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
 
 #elif defined(DeviceFamily_CC26X4)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC26X4
-    #define DeviceFamily_DIRECTORY      cc13x4_cc26x4
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
+    #define DeviceFamily_ID        DeviceFamily_ID_CC26X4
+    #define DeviceFamily_DIRECTORY cc13x4_cc26x4
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
 
-#elif defined(DeviceFamily_CC23X0)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC23X0
-    #define DeviceFamily_DIRECTORY      cc23x0
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23X0
+#elif defined(DeviceFamily_CC23X0R5)
+    #define DeviceFamily_ID        DeviceFamily_ID_CC23X0R5
+    #define DeviceFamily_DIRECTORY cc23x0r5
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC23X0
 
 #elif defined(DeviceFamily_CC23X0R2)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC23X0R2
-    #define DeviceFamily_DIRECTORY      cc23x0r2
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC23X0
+    #define DeviceFamily_ID        DeviceFamily_ID_CC23X0R2
+    #define DeviceFamily_DIRECTORY cc23x0r2
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC23X0
+
+#elif defined(DeviceFamily_CC27XX)
+    #define DeviceFamily_ID             DeviceFamily_ID_CC27XX
+    #define DeviceFamily_DIRECTORY      cc27xx
+    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC27XX
 
 #elif defined(DeviceFamily_CC13X1_CC26X1)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X1_CC26X1
-    #define DeviceFamily_DIRECTORY      cc13x1_cc26x1
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X1_CC26X1
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X1_CC26X1
+    #define DeviceFamily_DIRECTORY cc13x1_cc26x1
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X1_CC26X1
 
 #elif defined(DeviceFamily_CC13X2_CC26X2)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X2_CC26X2
-    #define DeviceFamily_DIRECTORY      cc13x2_cc26x2
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X2_CC26X2
+    #define DeviceFamily_DIRECTORY cc13x2_cc26x2
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC13X2X7_CC26X2X7)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X2X7_CC26X2X7
-    #define DeviceFamily_DIRECTORY      cc13x2x7_cc26x2x7
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X2_CC26X2
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X2X7_CC26X2X7
+    #define DeviceFamily_DIRECTORY cc13x2x7_cc26x2x7
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X2_CC26X2
 
 #elif defined(DeviceFamily_CC13X4_CC26X4)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC13X4_CC26X4
-    #define DeviceFamily_DIRECTORY      cc13x4_cc26x4
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
+    #define DeviceFamily_ID        DeviceFamily_ID_CC13X4_CC26X4
+    #define DeviceFamily_DIRECTORY cc13x4_cc26x4
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4
 
 #elif defined(DeviceFamily_CC3200)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC3200
-    #define DeviceFamily_DIRECTORY      cc32xx
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC32XX
+    #define DeviceFamily_ID        DeviceFamily_ID_CC3200
+    #define DeviceFamily_DIRECTORY cc32xx
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC32XX
 
 #elif defined(DeviceFamily_CC3220)
-    #define DeviceFamily_ID             DeviceFamily_ID_CC3220
-    #define DeviceFamily_DIRECTORY      cc32xx
-    #define DeviceFamily_PARENT         DeviceFamily_PARENT_CC32XX
+    #define DeviceFamily_ID        DeviceFamily_ID_CC3220
+    #define DeviceFamily_DIRECTORY cc32xx
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC32XX
+
+#elif defined(DeviceFamily_CC35XX)
+    #define DeviceFamily_ID        DeviceFamily_ID_CC35XX
+    #define DeviceFamily_DIRECTORY cc35xx
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC35XX
+
+#elif defined(DeviceFamily_CC33XX)
+    #define DeviceFamily_ID        DeviceFamily_ID_CC33XX
+    #define DeviceFamily_DIRECTORY cc33xx
+    #define DeviceFamily_PARENT    DeviceFamily_PARENT_CC35XX
 
 #else
     #error "DeviceFamily_XYZ undefined. You must define a DeviceFamily_XYZ!"
 #endif
 
 /* Ensure that only one DeviceFamily was specified */
-#if (defined(DeviceFamily_CC13X0) + defined(DeviceFamily_CC13X1)            \
-    + defined(DeviceFamily_CC13X2) + defined(DeviceFamily_CC13X2X7)         \
-    + defined(DeviceFamily_CC26X0) + defined(DeviceFamily_CC26X0R2)         \
-    + defined(DeviceFamily_CC26X1) + defined(DeviceFamily_CC26X2)           \
-    + defined(DeviceFamily_CC26X2X7) + defined(DeviceFamily_CC26X3)         \
-    + defined(DeviceFamily_CC26X4) + defined(DeviceFamily_CC13X4)           \
-    + defined(DeviceFamily_CC23X0) + defined(DeviceFamily_CC23X0R2)         \
-    + defined(DeviceFamily_CC3200) + defined(DeviceFamily_CC3220)           \
-    ) > 1
+#if (defined(DeviceFamily_CC13X0) + defined(DeviceFamily_CC13X1) + defined(DeviceFamily_CC13X2) +     \
+     defined(DeviceFamily_CC13X2X7) + defined(DeviceFamily_CC26X0) + defined(DeviceFamily_CC26X0R2) + \
+     defined(DeviceFamily_CC26X1) + defined(DeviceFamily_CC26X2) + defined(DeviceFamily_CC26X2X7) +   \
+     defined(DeviceFamily_CC26X3) + defined(DeviceFamily_CC26X4) + defined(DeviceFamily_CC13X4) +     \
+     defined(DeviceFamily_CC23X0R5) + defined(DeviceFamily_CC23X0R2) + defined(DeviceFamily_CC27XX) + \
+     defined(DeviceFamily_CC3200) + defined(DeviceFamily_CC3220) + defined(DeviceFamily_CC35XX) +     \
+     defined(DeviceFamily_CC33XX)) > 1
     #error More then one DeviceFamily has been defined!
 #endif
 
@@ -228,7 +246,7 @@ extern "C" {
  *              the root device folder. The preceding forward slash must be
  *              omitted. For example:
  *                  - #include DeviceFamily_constructPath(inc/hw_memmap.h)
- *                  - #include DeviceFamily_constructPath(driverlib/ssi.h)
+ *                  - #include DeviceFamily_constructPath(driverlib/uart.h)
  *
  *  @return Returns an include path.
  *

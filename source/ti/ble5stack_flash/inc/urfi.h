@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -73,12 +73,14 @@
 #ifndef URFI_H
 #define URFI_H
 
+#ifndef USE_RCL
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <driverlib/rf_ble_cmd.h>
+//#include <driverlib/rf_ble_cmd.h>
 
 /*********************************************************************
  * CONSTANTS
@@ -120,7 +122,7 @@ bStatus_t urfi_init(void);
  *
  * @param   txPower - TX Power in dBm.
  *
- * @return  The register value correspondign with txPower, if found.
+ * @return  The register value corresponding with txPower, if found.
  *          UBLE_TX_POWER_INVALID otherwise.
  */
 uint16 urfi_getTxPowerVal(int8 dBm);
@@ -147,7 +149,9 @@ extern rfc_bleScannerPar_t urfiScanParams;
 
 #if defined(FEATURE_MONITOR)
 /* Monitor command handle */
+
 extern RF_CmdHandle urfiGenericRxHandle;
+
 /* Monitor command parameter */
 extern rfc_bleGenericRxPar_t urfiGenericRxParams;
 #endif /* FEATURE_MONITOR */
@@ -156,4 +160,5 @@ extern rfc_bleGenericRxPar_t urfiGenericRxParams;
 }
 #endif
 
+#endif //!USE_RCL
 #endif /* URFI_H */

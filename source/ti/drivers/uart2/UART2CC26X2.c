@@ -1142,7 +1142,7 @@ static void UART2CC26X2_initIO(UART2_Handle handle)
 {
     UART2CC26X2_HWAttrs const *hwAttrs = handle->hwAttrs;
 
-    /* Make sure all pins have their input buffers enabled, then apply the correct mux */
+    /* Make sure RX and CTS pins have their input buffers enabled, then apply the correct mux */
     GPIO_setConfigAndMux(hwAttrs->txPin, GPIO_CFG_NO_DIR, hwAttrs->txPinMux);
     GPIO_setConfigAndMux(hwAttrs->rxPin, GPIO_CFG_INPUT, hwAttrs->rxPinMux);
 

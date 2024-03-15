@@ -61,7 +61,7 @@
         return (lines.join('\n'));
     }
 
-    /* get groups of libraries from other modules (ordered by dependenies) */
+    /* get groups of libraries from other modules (ordered by dependencies) */
     let argv = [{asserts: asserts}].concat(args);
     let groups = GenLibs.genList(argv);
 %%}
@@ -98,7 +98,7 @@ INPUT (
 /*
  *  WARNING: unsupported toolchain specified: '`toolchain`'
 %     if (libs != "") {
- *  The libaries listed below must be added to your linker's  options
+ *  The libraries listed below must be added to your linker's options
 %     }
 %     else {
  *  Fortunately, no libraries need to be added to the link line.

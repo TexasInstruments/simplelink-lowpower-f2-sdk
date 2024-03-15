@@ -54,37 +54,40 @@
  *
  *  The following terms are used throughout the log documentation.
  *
- *  | Term                            | Definition                                                                                                                                                                                                                                                                                                                     |
- *  |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- *  | `LogModule`                     | A parameter passed to Log APIs to indicate which software module the log statement originated from. Modules also control the routing of logs to sinks.                                                                                                                                                                         |
- *  | `LogLevel`                      | The severity or importance of a given log statement.                                                                                                                                                                                                    |
- *  | `Sink`                          | Also simply called a logger. This is a transport specific logger implementation. <br> The Logging framework is flexible such that multiple sinks may exist in a single firmware image.                                                                                                                                         |
- *  | `CallSite`                      | A specific invocation of a Log API in a given file or program.                                                                                                                                                                                                                                                                 |
- *  | `Record`                        | The binary representation of a log when it is stored or transported by a given sink. The log record format varys slightly with each sink depending on their implementation and needs. However, they all convey the same information.                                                                                           |
- *  | Link Time Optimization (LTO)    | A feature of some toolchains that can significantly reduce the code overhead of the log statements through a process called dead code elimination. In order to maximize the benefits of this, all static libraries and application files should have LTO enabled.                                                              |
+ *  | Term                            | Definition                                                                                                                                                                                                                                                          |
+ *  |---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ *  | `LogModule`                     | A parameter passed to Log APIs to indicate which software module the log statement originated from. Modules also control the routing of logs to sinks.                                                                                                              |
+ *  | `LogLevel`                      | The severity or importance of a given log statement.                                                                                                                                                                                                                |
+ *  | `Sink`                          | Also simply called a logger. This is a transport specific logger implementation. <br> The Logging framework is flexible such that multiple sinks may exist in a single firmware image.                                                                              |
+ *  | `CallSite`                      | A specific invocation of a Log API in a given file or program.                                                                                                                                                                                                      |
+ *  | `Record`                        | The binary representation of a log when it is stored or transported by a given sink. The log record format varies slightly with each sink depending on their implementation and needs. However, they all convey the same information.                               |
+ *  | Link Time Optimization (LTO)    | A feature of some toolchains that can significantly reduce the code overhead of the log statements through a process called dead code elimination. In order to maximize the benefits of this, all static libraries and application files should have LTO enabled.   |
  *
  *  ## Summary ##
  *
  *  The following sections describe the usage of the TI logging system
  *  implementation. This document will focus on the target (i.e. code that runs)
  *  on the embedded device. For associated PC tooling, please see the
- *  [README](../../../tools/log/tiutils/Readme.html) in the tools/log/tiutils/ folder.
+ *  [README](../../../tools/log/tiutils/Readme.html) in the tools/log/tiutils/
+ *  folder.
  *
- *  Desgin Philiosophy:
+ *  Design Philosophy:
  *
  *  * Logs target code should be as efficient as possible.
- *    * This means that Log APIs should minimize FLASH, RAM, and execution overhead.
+ *    * This means that Log APIs should minimize FLASH, RAM, and execution
+ *      overhead.
  *  * Complexity should be pushed to host side tooling where possible.
  *    *  Even if this means that PC setup/tooling requirements are more complex.
- *  * Multiple log sink implemenetations shall be able to exist in a system.
- *    *  Where applicable, multiple instances should be supported (e.g. multiple circular buffers to collect logs)
+ *  * Multiple log sink implementations shall be able to exist in a system.
+ *    *  Where applicable, multiple instances should be supported (e.g. multiple
+ *       circular buffers to collect logs)
  *  * It shall be possible to remove logging entirely using the preprocessor
  *  * Configuration of logging should be deferred to application compile and
  *    link time.
- *    * That means that the end application builder should make
- *       decisions about the logging settings. This means that TI provided libraries
- *       are not opinionated about what log levels should be enabled or how
- *       modules should be routed to sinks.
+ *    * That means that the end application builder should make decisions about
+ *       the logging settings. This means that TI provided libraries are not
+ *       opinionated about what log levels should be enabled or how modules
+ *       should be routed to sinks.
  *  * TI's logging system will leverage SysConfig out of the box, but it should
  *    be possible to configure and use logging easily without the needing
  *    SysConfig.
@@ -103,19 +106,43 @@
  *
  *  There are several ways in which the preprocessor is used.
  *
- *  ### Globally ###
+ *  ### Global ###
  *  1. To enable/disable logs globally. If `ti_log_Log_ENABLE` is not defined,
  *     all statements are removed by the preprocessor. This does not rely on LTO
- *     or any other optimization. It removes any traces of logs from the program.
+ *     or any other optimization. It removes any traces of logs from the
+ *     program.
  *
- * ### Per Log Statement ###
+ *     This define is pushed to `ti_utils_build_compiler.opt` whenever any Log
+ *     module is enabled in SysConfig.
+ *
+ *  ### Module ###
+ *  1. To enable/disable logs by module. If
+ *     `ti_log_Log_ENABLE_<MyLogModuleName>=1` is not defined, all statements
+ *     using that Log module are removed by the preprocessor. This does not rely
+ *     on LTO or any other optimization. Removing the define removes all traces
+ *     of the log from the compiled code. Just defining the symbol name
+ *     `ti_log_Log_ENABLE_<MyLogModuleName>` without setting it to 1 will not
+ *     include Log statements during compilation.
+ *
+ *     These defines are automatically pushed to `ti_utils_build_compiler.opt`
+ *     for all modules configured in SysConfig.
+ *
+ *     Some TI libraries that have logging enabled also contain multiple log
+ *     modules. Enabling only a subset of Log modules via the preprocessor will
+ *     not cause the Log statements associated with the remaining Log modules to
+ *     be removed since this is a compile-time event. The Log statements
+ *     associated with individual modules can be removed from logging-enabled TI
+ *     libraries by recompiling those libraries without the module-level flags
+ *     in question.
+ *
+ *  ### Per Log Statement ###
  *  1. (Level filtering): Insert the if statement that checks if the log level
  *     of the statement has been enabled in its module configuration. If the log
  *     level is not enabled, the process ends here.
  *
  *  2. (String declaration): Automate placement of constant strings, format
  *     strings, and pointers to these strings in the the nonloadable metadata
- *     section of the out file. This saves FLASH on the target. Each sring
+ *     section of the out file. This saves FLASH on the target. Each string
  *     contains a large amount of data, including the following:
  *
  *     * File and line number of the log statement
@@ -128,38 +155,39 @@
  *     be known.
  *
  *  4. (Name spacing): Routing from module to sink. The module parameter of the
- *     Log API controls which sink its log statements will be routed to.
- *     The preprocessor does name expansion to look up the enabled log levels
- *     and selected sink function pointers from the module's configuration
- *     structure. NOTE: The used sink may require initialization. Please
- *     verify with the specific sink documentation on how to initialize the sink.
+ *     Log API controls which sink its log statements will be routed to. The
+ *     preprocessor does name expansion to look up the enabled log levels and
+ *     selected sink function pointers from the module's configuration
+ *     structure. NOTE: The used sink may require initialization. Please verify
+ *     with the specific sink documentation on how to initialize the sink.
  *
- *  5. (Sink API Invocation): With the names resolved and levels checked,
- *     the logger is now ready to execute the sink function. This is done via
+ *  5. (Sink API Invocation): With the names resolved and levels checked, the
+ *     logger is now ready to execute the sink function. This is done via
  *     function pointer.
  *
- *  An simplified pseudo-C implementation of what
- *  `Log_printf(LogModule_App1, Log_DEBUG, "Hello World!");` would expand to
- *  is shown below. This will not compile and is not extensive, just for
- *  illustration.
+ *  An simplified pseudo-C implementation of what `Log_printf(LogModule_App1,
+ *  Log_DEBUG, "Hello World!");` would expand to is shown below. This will not
+ *  compile and is not extensive, just for illustration.
  *
  *  @code
  *  // Global log enable check, wrapped around each log site
  *  #if defined(ti_log_Log_ENABLE)
- *      // Check if the level of this specific log statement has been enabled by the module
- *      if (LogMod_LogModule_App1.levels & level) {
- *            // Note that ^^ is the record separator. Pack meta information into format string. This is stored off target.
- *            const string logMeta = "LOG_OPCODE_FORMATED_TEXT^^"../../log.c"^^80^^Log_DEBUG^^LogMod_LogModule_App1^^"Hello World!"^^0";
- *            // Route log to the selected sink implementation. This is done via function pointer.
- *            // The 0 indicates no arguments. If runtime arguments were provided, they would follow.
- *            LogMod_LogModule_App1.printf(pointerToModuleConfig, 0);
- *      }
+ *      #if ti_log_Log_ENABLE_LogModule_App1 == 1
+ *          // Check if the level of this specific log statement has been enabled by the module
+ *          if (LogMod_LogModule_App1.levels & level) {
+ *                // Note that ^^ is the record separator. Pack meta information into format string. This is stored off target.
+ *                const string logMeta = "LOG_OPCODE_FORMATED_TEXT^^"../../log.c"^^80^^Log_DEBUG^^LogMod_LogModule_App1^^"Hello World!"^^0";
+ *                // Route log to the selected sink implementation. This is done via function pointer.
+ *                // The 0 indicates no arguments. If runtime arguments were provided, they would follow.
+ *                LogMod_LogModule_App1.printf(pointerToModuleConfig, 0);
+ *          }
+ *      #endif
  *  #endif
  *  @endcode
  *
  *  From here, the logger has transferred control over to the sink
- *  implementation, which varys based on the tansport
- *  (e.g. circular buffer in memory or UART).
+ *  implementation, which varies based on the transport (e.g. circular buffer in
+ *  memory or UART).
  *
  *  ## Modules ##
  *
@@ -173,14 +201,14 @@
  *  `source/ti/drivers`, could be `ti_drivers_UART`.
  *
  *  Modules also control the routing of log records to a sink. Routing is
- *  controlled via the LogModule panel in SysConfig, but can be changed in plain C
- *  code using the macro @ref Log_MODULE_DEFINE and passing the sink specific
+ *  controlled via the LogModule panel in SysConfig, but can be changed in plain
+ *  C code using the macro @ref Log_MODULE_DEFINE and passing the sink specific
  *  `Log_MODULE_INIT_` to the `init` parameter within the @ref Log_MODULE_DEFINE
  *  macro. An example for the LogBuf sink is below, it will do the following
  *
  *  1. Create a module called `LogModule_App1`.
- *  1. Initialze the module for use with the buffer based LogSink.
- *     Use buffer instance called `CONFIG_ti_log_LogSinkBuf_0`.
+ *  1. Initialize the module for use with the buffer based LogSink. Use buffer
+ *     instance called `CONFIG_ti_log_LogSinkBuf_0`.
  *  1. Enable only the `Log_ERROR` level. Other logs will not be stored.
  *
  *  @code
@@ -189,13 +217,13 @@
  *  Log_MODULE_DEFINE(LogModule_App1, Log_MODULE_INIT_SINK_BUF(CONFIG_ti_log_LogSinkBuf_0, Log_ERROR));
  *  @endcode
  *
- *  TI created libraries will never use @ref Log_MODULE_DEFINE.
- *  This leaves the choice of routing logs to their sinks
- *  to the end application writer. This is recommended when creating any
- *  static libraries to defer the final logging decisions to link time.
+ *  TI created libraries will never use @ref Log_MODULE_DEFINE. This leaves the
+ *  choice of routing logs to their sinks to the end application writer. This is
+ *  recommended when creating any static libraries to defer the final logging
+ *  decisions to link time.
  *
- *  Each new module will instantiate a Log_Module structure with a
- *  `levels` bitmap and pointers to the selected sink implementation and sink
+ *  Each new module will instantiate a Log_Module structure with a `levels`
+ *  bitmap and pointers to the selected sink implementation and sink
  *  configuration. See the @ref Log_Module structure for more information.
  *
  *  ## Levels ##
@@ -227,28 +255,27 @@
  *  Each time a Log API is invoked, a metadata string is placed in the .out
  *  file. This string contains information about the API type, file, line
  *  module, level, and other information associated with the log call site. Each
- *  call site emits a string to a specific memory section called `.log_data`.
- *  In addition to this, a pointer to the string in .log_data is stored in
- *  another section called `.log_ptr`. Because the .log_ptr section is always
- *  in the same location, and each entry is the same size, an indexing-scheme
- *  can be used to refer to each log-string. Entry 0 in .log_ptr would point
- *  to the first string, entry 1 would point to the second string, etc. This
- *  Is necessary on some devices where transmitting an entire 32-bit address
- *  as a reference to the string is not possible, and instead an 8-bit index
- *  can be transmitted across the Log sink implementation instead.
- *  In order to use logging, this section should be added to the linker command
- *  file. By default, this section points to a nonloadable region of memory.
- *  Meaning that the metadata will not be loaded on the target device. Instead,
- *  the various logging visualization tools such as wireshark and TI ROV2 will
- *  read the metadata from this section and properly decode the log statements.
- *  The benefit of this approach is that very little memory is consumed on
- *  target. Additionally, the log transport only needs to store or send pointers
- *  to this meta section when a log API is called.
+ *  call site emits a string to a specific memory section called `.log_data`. In
+ *  addition to this, a pointer to the string in .log_data is stored in another
+ *  section called `.log_ptr`. Because the .log_ptr section is always in the
+ *  same location, and each entry is the same size, an indexing-scheme can be
+ *  used to refer to each log-string. Entry 0 in .log_ptr would point to the
+ *  first string, entry 1 would point to the second string, etc. This Is
+ *  necessary on some devices where transmitting an entire 32-bit address as a
+ *  reference to the string is not possible, and instead an 8-bit index can be
+ *  transmitted across the Log sink implementation instead. In order to use
+ *  logging, this section should be added to the linker command file. By
+ *  default, this section points to a nonloadable region of memory. Meaning that
+ *  the metadata will not be loaded on the target device. Instead, the various
+ *  logging visualization tools such as wireshark and TI ROV2 will read the
+ *  metadata from this section and properly decode the log statements. The
+ *  benefit of this approach is that very little memory is consumed on target.
+ *  Additionally, the log transport only needs to store or send pointers to this
+ *  meta section when a log API is called.
  *
- *  This approach minimizes the amount of memory consumed on device
- *  and bytes sent over the transport. This section can be loaded on target if
- *  desired or if you are creating a custom logger. The design does not preclude
- *  this.
+ *  This approach minimizes the amount of memory consumed on device and bytes
+ *  sent over the transport. This section can be loaded on target if desired or
+ *  if you are creating a custom logger. The design does not preclude this.
  *
  *  In order to use the logging framework, the log section must be added to the
  *  linker command file. Here is a sample for the TI linker. Other examples can
@@ -277,20 +304,20 @@
  *  2. Those that stream logs over a transport medium, and thus do not perform
  *     storage.
  *
- *  Sinks may vary in their implementation based on the nature of the storage
- *  or transport that they support, but they all have the following in common:
+ *  Sinks may vary in their implementation based on the nature of the storage or
+ *  transport that they support, but they all have the following in common:
  *
- *  * Are named ti_log_LogSink<SinkName>. Where `<SinkName>` is the name of the sink.
+ *  * Are named ti_log_LogSink<SinkName>. Where `<SinkName>` is the name of the
+ *    sink.
  *  * Must implement the Log_printf and Log_buf APIs from this file.
  *  * Must provide _USE, _INIT, and _DEFINE macros.
  *
  *  In addition, some sinks require initialization. This will be listed in the
- *  documentation for the sink implementation.
- *  Sinks are closely tied to their associated host side tooling. Since the
- *  log statements are not parsed at all by the target code, this must be
- *  delegated to a program running on a PC. While the binary format of log
- *  records may vary across sink implementations, it is suggested that each
- *  log record contain:
+ *  documentation for the sink implementation. Sinks are closely tied to their
+ *  associated host side tooling. Since the log statements are not parsed at all
+ *  by the target code, this must be delegated to a program running on a PC.
+ *  While the binary format of log records may vary across sink implementations,
+ *  it is suggested that each log record contain:
  *
  *  1. Timestamp
  *  1. Pointer to metadata string. This will be looked up by the PC side tooling
@@ -317,7 +344,7 @@
  *  // Use helper macro from <ti/log/LogSinkBuf.h> to make a sink instance (buffer + config) with 100 entries.
  *  Log_SINK_BUF_DEFINE(MyBufferSink, LogSinkBuf_Type_CIRCULAR, 100);
  *
- *  // Use helper macro from <ti/log/Log.h> to make a module pointing at the new sink instace.
+ *  // Use helper macro from <ti/log/Log.h> to make a module pointing at the new sink instance.
  *  // This example will enable all log levels
  *  Log_MODULE_DEFINE(MyModule, Log_MODULE_INIT_SINK_BUF(MyBufferSink, Log_ALL))
  *
@@ -325,7 +352,7 @@
  *  // the sink you wish to use. For example, LogSinkITM must be initialised like this before it can be used:
  *  // LogSinkITM_init();
  *
- *  // Invoke one of the log APIs you want to use for either premade events or formatted strings
+ *  // Invoke one of the log APIs you want to use for either pre-defined events or formatted strings
  *  Log_printf(MyModule, Log_DEBUG, "The answer is %d", 42);
  *  uint8_t buffer[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
  *  Log_buf(MyModule, Log_VERBOSE, buffer, sizeof(buffer));
@@ -369,11 +396,20 @@
  *
  *  The following example demonstrates use of the Log printf API. in code. Log
  *  will embed the format string in the call site and will take arguments using
- *  varadic arguments
+ *  varadic arguments.
  *
  *  @code
  *  Log_printf(MyModule, Log_DEBUG, "Hello World!");
  *  @endcode
+ *
+ *  The arguments are type-casted into a uintptr_t, which is an unsigned integer
+ *  type. This limits the supported format specifiers to the following:
+ *      - Unsigned decimal integer: \%u
+ *      - Unsigned hexadecimal integer: \%x
+ *      - Unsigned hexadecimal integer (capital letters): \%X
+ *      - Character: \%c
+ *      - Signed decimal integer for positive values: \%i, \%d
+ *      - Signed octal for positive values: \%o
  *
  *  @anchor ti_utils_LOG_Example_buf **Log Buf**:
  *
@@ -393,15 +429,17 @@
  *
  *  @anchor ti_utils_LOG_Example_guide **Log API usage**:
  *
- *  For a uniform experience with the logging tool, users are recommended to follow certain guidelines regarding
- *  the Log API. Typical use-cases for each API call is desribed below
+ *  For a uniform experience with the logging tool, users are recommended to
+ *  follow certain guidelines regarding the Log API. Typical use-cases for each
+ *  API call is described below
  *
  *  #### Log_printf ####
  *
- *  Log_printf should be the default mechanism for emitting a log statement within an application.
- *  Along with the Log-levels, Log_printf should be used to communicate debug information as a formatted string,
- *  which accepts variadic arguments. In this case, a pointer to the string and the arguments themselves are
- *  transported by the Log sink.
+ *  Log_printf should be the default mechanism for emitting a log statement
+ *  within an application. Along with the Log-levels, Log_printf should be used
+ *  to communicate debug information as a formatted string, which accepts
+ *  variadic arguments. In this case, a pointer to the string and the arguments
+ *  themselves are transported by the Log sink.
  *
  *  @code
  *  Log_printf(MyLibraryLogModule, Log_ERROR, "Library function received illegal argument: %d", arg);
@@ -409,10 +447,12 @@
  *
  *  #### Log_event ####
  *
- *  Log_event is meant to represent more generic debug-information, and typically something that can occur from
- *  anywhere in the application, as opposed to being localised in a single library. Events can also be defined once
- *  and referenced from anywhere in the application, so the same event can be used by multiple libraries.
- *  A generic example would be an event such as "Entering critical section"
+ *  Log_event is meant to represent more generic debug-information, and
+ *  typically something that can occur from anywhere in the application, as
+ *  opposed to being localized in a single library. Events can also be defined
+ *  once and referenced from anywhere in the application, so the same event can
+ *  be used by multiple libraries. A generic example would be an event such as
+ *  "Entering critical section"
  *
  *  @code
  *  Log_EVENT_DEFINE(LogEvent_enterCritical, "Entering critical section");
@@ -424,8 +464,9 @@
  *
  *  #### Log_buf ####
  *
- *  When the debug-information to be emitted is a large amount of dynamic data, and is not suitable as an argument
- *  to printf, then Log_buf should be used. Log_buf can transport the contents of large dynamic buffers, and as a
+ *  When the debug-information to be emitted is a large amount of dynamic data,
+ *  and is not suitable as an argument to printf, then Log_buf should be used.
+ *  Log_buf can transport the contents of large dynamic buffers, and as a
  *  consequence has a larger overhead and should be used sparsely.
  */
 
@@ -510,7 +551,7 @@ extern "C" {
 
 /** @cond NODOC */
 
-/* This macro protects against sideffects of the C preprocessor expansion
+/* This macro protects against side effects of the C preprocessor expansion
  * of log statements. Each log API should be guarded by it.
  * An article explaining this behavior can be found here:
  * https://gcc.gnu.org/onlinedocs/cpp/Swallowing-the-Semicolon.html
@@ -546,11 +587,6 @@ extern "C" {
 /*  Helper macro to concatenate two symbols */
 #define _Log__TOKEN2STRING_A(x) #x
 #define _Log_TOKEN2STRING(x) _Log__TOKEN2STRING_A(x)
-
-/* Helper macro to convert a log_ptr address to a pseudo-index, that needs to be divided by 4.
- * If needed, the division is handled by the sink
- */
-#define _Log_LOG_PTR_TO_INDEX(ptr) (((uint32_t)(&ptr) - 0x08) & 0x7FFFC)
 
 /* Macro to place meta string in a memory section separated by record separator */
 #define _Log_APPEND_META_TO_FORMAT(opcode,                                     \
@@ -618,22 +654,80 @@ a supported compiler.
 #define _Log_VARIANT(x, module, level, ...) \
     _Log_CONCAT2(x, _Log_NUMARGS_B(__VA_ARGS__, _arg8, _arg7, _arg6, _arg5, _arg4, _arg3, _arg2, _arg1, _noarg)) ( module, level, __VA_ARGS__ )
 
-#define _Log_buf_B(module , level, format, data, size)                         \
-    Log_MODULE_USE(module);                                                    \
-        if ((Log_ENABLED & LogMod_ ## module.levels) &&                        \
-        ((level) & LogMod_ ## module.levels)) {                                \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    LOG_OPCODE_BUFFER,                         \
-                                    level,                                     \
-                                    LogMod_ ## module,                         \
-                                    format,                                    \
-                                    0);                                        \
-        LogMod_ ## module.buf(&LogMod_ ## module,                              \
-                   (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),                          \
-                   _Log_LOG_PTR_TO_INDEX(_Log_CONCAT3(Ptr, LogSymbol, __LINE__)), \
-                   data,                                                       \
-                   size);                                                      \
-    }
+/*
+ *  ======== Module-level preprocessor include macros ========
+ */
+
+/* Helper macro to extract the second argument of a variable number of input
+ * args
+ */
+#define _Log_SECOND_ARG(x, y, ...) y
+
+/* Temporary token name.
+ * Name must end in "1" for preprocessor substitution below to work.
+ */
+#define _Log_TOKEN_1 0,
+
+/* Helper macro to check whether a symbol is defined with a non-zero value.
+ * If x is a preprocessor define, the conversion below shows the macro output:
+ * x = 0 -> 0
+ * x = 1 -> 1
+ * x (no value) -> 0
+ * (undefined) -> 0
+ */
+#define _Log_DEFINED(x)     _Log_DEFINED_A(x)
+
+/* If x is 1, _Log_TOKEN_##y turns into _Log_TOKEN_1 and is replaced with "0,"
+ * If x is anything else, _Log_TOKEN_##y turns into _Log_TOKEN_y.
+ */
+#define _Log_DEFINED_A(y)   _Log_DEFINED_B(_Log_TOKEN_##y)
+
+/* If z is "0,", _Log_SECOND_ARG is called with the triplet "0, 1, 0" and
+ * selects the second item in it, 1.
+ * If z is anything else, _Log_SECOND_ARG is called with the tuple "z 1, 0" and
+ * selects the second item in it, 0.
+ */
+#define _Log_DEFINED_B(z)   _Log_SECOND_ARG(z 1, 0)
+
+/* Empty Log buf macro to use when a log module is not enabled in the
+ * preprocessor during compilation
+ */
+#define _Log_buf_C_0(module, level, format, data, size)
+
+/* Log_buf macro to use when a log module is enabled in the preprocessor during
+ * compilation.
+ */
+#define _Log_buf_C_1(module, level, format, data, size)                                                 \
+    _Log_GUARD_MACRO(                                                                                   \
+        Log_MODULE_USE(module);                                                                         \
+            if ((Log_ENABLED & LogMod_ ## module.levels) &&  ((level) & LogMod_ ## module.levels)) {    \
+                _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),                          \
+                                            LOG_OPCODE_BUFFER,                                          \
+                                            level,                                                      \
+                                            LogMod_ ## module,                                          \
+                                            format,                                                     \
+                                            0);                                                         \
+                LogMod_ ## module.buf(&LogMod_ ## module,                                               \
+                        (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),                                   \
+                        (uint32_t)&_Log_CONCAT3(Ptr, LogSymbol, __LINE__),                              \
+                        data,                                                                           \
+                        size);                                                                          \
+            }                                                                                           \
+    )
+
+/* First level indirection macro for Log_buf that delegates between an empty
+ * implementation and the actual log emission based on whether a module is
+ * enabled in the preprocessor during compilation.
+ *
+ * The _Log_DEFINED() macro generates a token output of [0, 1] that is then
+ * concatenated with "_Log_buf_C" to form the correct delegate macro name.
+ *
+ * The expected module define name is ti_log_Log_ENABLE_ | <module> and must be
+ * set to 1. E.g. "-Dti_log_Log_ENABLE_MyLogModule=1". Just defining the symbol in
+ * the preprocessor will not emit any logs.
+ */
+#define _Log_buf_B(module, level, format, data, size) \
+    _Log_CONCAT2(_Log_buf_C, _Log_DEFINED(ti_log_Log_ENABLE_ ## module))(module, level, format, data, size)
 
 /*
  * Redirects to cast all printf arguments to uintptr_t to avoid surprises if
@@ -686,29 +780,53 @@ a supported compiler.
 
 #define _Log_printf__arg(module, level, ...)                                   \
     module.printf(&module,                                                     \
-                       (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),                          \
-                       _Log_LOG_PTR_TO_INDEX(_Log_CONCAT3(Ptr, LogSymbol, __LINE__)), \
+                       (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),           \
+                       (uint32_t)&_Log_CONCAT3(Ptr, LogSymbol, __LINE__),      \
                        _Log_NUMARGS(__VA_ARGS__),                              \
                        _Log_CDR_ARG(__VA_ARGS__))
 
 #define _Log_printf__noarg(module, level, ...)                                 \
     module.printf(&module,                                                     \
-                       (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),                          \
-                       _Log_LOG_PTR_TO_INDEX(_Log_CONCAT3(Ptr, LogSymbol, __LINE__)), \
+                       (uint32_t)&_Log_CONCAT2(LogSymbol, __LINE__),           \
+                       (uint32_t)&_Log_CONCAT3(Ptr, LogSymbol, __LINE__),      \
                        _Log_NUMARGS(__VA_ARGS__))
 
-#define _Log_printf_B(opcode, module, level, ...)                              \
-    Log_MODULE_USE(module);                                                    \
-    if ((Log_ENABLED & LogMod_ ## module.levels) &&                            \
-        ((level) & LogMod_ ## module.levels)) {                                \
-        _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),         \
-                                    opcode,                                    \
-                                    level,                                     \
-                                    LogMod_ ## module,                         \
-                                    _Log_CAR_ARG(__VA_ARGS__),                 \
-                                    _Log_NUMARGS(__VA_ARGS__))                 \
-        _Log_VARIANT(_Log_printf, LogMod_ ## module, level, __VA_ARGS__);      \
-    }
+/* Empty Log_printf macro to use when a log module is not enabled in the
+ * preprocessor during compilation
+ */
+#define _Log_printf_C_0(opcode, module, level, ...)
+
+/* Log_printf macro to use when a log module is enabled in the preprocessor during
+ * compilation.
+ */
+#define _Log_printf_C_1(opcode, module, level, ...)                            \
+    _Log_GUARD_MACRO(                                                          \
+        Log_MODULE_USE(module);                                                \
+        if ((Log_ENABLED & LogMod_ ## module.levels) &&                        \
+            ((level) & LogMod_ ## module.levels)) {                            \
+            _Log_PLACE_FORMAT_IN_SECTOR(_Log_CONCAT2(LogSymbol, __LINE__),     \
+                                        opcode,                                \
+                                        level,                                 \
+                                        LogMod_ ## module,                     \
+                                        _Log_CAR_ARG(__VA_ARGS__),             \
+                                        _Log_NUMARGS(__VA_ARGS__))             \
+            _Log_VARIANT(_Log_printf, LogMod_ ## module, level, __VA_ARGS__);  \
+        }                                                                      \
+    )
+
+/* First level indirection macro for Log_printf that delegates between an empty
+ * implementation and the actual log emission based on whether a module is
+ * enabled in the preprocessor during compilation.
+ *
+ * The _Log_DEFINED() macro generates a token output of [0, 1] that is then
+ * concatenated with "_Log_buf_C" to form the correct delegate macro name.
+ *
+ * The expected module define name is ti_log_Log_ENABLE_ | <module> and must be
+ * set to 1. E.g. "-Dti_log_Log_ENABLE_MyLogModule=1". Just defining the symbol in
+ * the preprocessor will not emit any logs.
+ */
+#define _Log_printf_B(opcode, module, level, ...) \
+    _Log_CONCAT2(_Log_printf_C, _Log_DEFINED(ti_log_Log_ENABLE_ ## module))(opcode, module, level, __VA_ARGS__)
 
 /** @endcond */
 
@@ -765,7 +883,7 @@ a supported compiler.
 /**
  *  @brief Log a continuous block of memory
  *
- *  Use this marco to send out runtime data from the device. This API should be
+ *  Use this macro to send out runtime data from the device. This API should be
  *  used when the data is non constant and can only be derived at runtime. It
  *  is the most intrusive in terms of record overhead and instructions used.
  *
@@ -776,8 +894,7 @@ a supported compiler.
  *  @param[in]  size       Size in bytes of array to send
  *
  */
-#define Log_buf(module, level, format, data, size)                             \
-                _Log_GUARD_MACRO(_Log_buf_B(module , level, format, data, size))
+#define Log_buf(module, level, format, data, size) _Log_buf_B(module, level, format, data, size)
 
 /**
  *  @brief Emit a log event
@@ -799,11 +916,9 @@ a supported compiler.
  *  @note All arguments are treated as 32-bit wide and are promoted or
  *        truncated accordingly.
  */
-#define Log_printf(module, level, ...) \
-            _Log_GUARD_MACRO(_Log_printf_B(LOG_OPCODE_FORMATED_TEXT, module, level, __VA_ARGS__))
+#define Log_printf(module, level, ...) _Log_printf_B(LOG_OPCODE_FORMATED_TEXT, module, level, __VA_ARGS__)
 
-#define Log_event(module, level, ...) \
-            _Log_GUARD_MACRO(_Log_printf_B(LOG_OPCODE_EVENT, module, level, __VA_ARGS__))
+#define Log_event(module, level, ...) _Log_printf_B(LOG_OPCODE_EVENT, module, level, __VA_ARGS__)
 
 /* Macro for defining the version of the Log API */
 
@@ -862,26 +977,26 @@ _Log_DEFINE_LOG_VERSION(Log, Log_TI_LOG_VERSION);
  *  ======== Log_Level ========
  */
 typedef enum Log_Level {
-    Log_DEBUG = 1,                          /*! This should be the default level, reserved to be used by users to insert into applications for debugging. Exported libraries should avoid using this level. */
-    Log_VERBOSE = 4,                        /*! This level is recommended to be used in libraries to emit verbose information */
-    Log_INFO = 16,                          /*! This level is recommended to be used in libraries to emit simple information */
-    Log_WARNING = 64,                       /*! This level is recommended to be used in libraries to emit warnings. It is up to the library developer to decide what constitutes a warning, but it should typially indicate something unexpected, but not something that leads to system failure */
-    Log_ERROR = 256,                        /*! This level is recommended to be used in libraries to emit errors. Typically, this should be used when something has failed and the system is unable to continue correct operation */
-    Log_ALL   = 1 + 4 + 16 + 64 + 256,      /*! This enables all levels */
-    Log_ENABLED = 512                       /*! This is used to enable or disable the log module, independently of the log levels */
+    Log_DEBUG = 1,                          /*!< This should be the default level, reserved to be used by users to insert into applications for debugging. Exported libraries should avoid using this level. */
+    Log_VERBOSE = 4,                        /*!< This level is recommended to be used in libraries to emit verbose information */
+    Log_INFO = 16,                          /*!< This level is recommended to be used in libraries to emit simple information */
+    Log_WARNING = 64,                       /*!< This level is recommended to be used in libraries to emit warnings. It is up to the library developer to decide what constitutes a warning, but it should typically indicate something unexpected, but not something that leads to system failure */
+    Log_ERROR = 256,                        /*!< This level is recommended to be used in libraries to emit errors. Typically, this should be used when something has failed and the system is unable to continue correct operation */
+    Log_ALL   = 1 + 4 + 16 + 64 + 256,      /*!< This enables all levels */
+    Log_ENABLED = 512                       /*!< This is used to enable or disable the log module, independently of the log levels */
 } Log_Level;
 
 typedef const struct Log_Module Log_Module;
 
 typedef void (*Log_printf_fxn)(const Log_Module *handle,
                               uint32_t header,
-                              uint32_t index,
+                              uint32_t headerPtr,
                               uint32_t numArgs,
                               ...);
 
 typedef void (*Log_buf_fxn)(const Log_Module *handle,
                            uint32_t header,
-                           uint32_t index,
+                           uint32_t headerPtr,
                            uint8_t *data,
                            size_t size);
 

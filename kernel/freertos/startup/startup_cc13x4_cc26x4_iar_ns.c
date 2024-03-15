@@ -188,7 +188,7 @@ int __low_level_init(void)
           " mov sp, r0\n"
           " b localProgramStart");
 
-    // This code is unreachable but the compiler expects a return statement
+    /* Indicate that static and global variables shall be initialized */
     return 1;
 }
 

@@ -26,6 +26,7 @@
 #include "ns_trace.h"
 #include "common_functions.h"
 #include "mac_api.h"
+#include "6LoWPAN/ws/ws_config.h"
 
 #define TRACE_GROUP "MACh"
 
@@ -417,11 +418,24 @@ int8_t mac_helper_security_key_descriptor_clear(protocol_interface_info_entry_t 
     mlme_device_frame_count_t device_frame_count;
     memset(&key_description, 0, sizeof(mlme_key_descriptor_entry_t));
 
-    set_req.attr = macKeyTable;
-    set_req.value_pointer = &key_description;
-    set_req.value_size = sizeof(mlme_key_descriptor_entry_t);
-    set_req.attr_index = descriptor;
-    interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+    if (interface->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER &&
+        ((ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH && ti_wisun_config.use_fixed_gtk_keys == true) ||
+        ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH)) {
+        // For this configuration (fixed keys or preshared keys on RTs), only clear frame counter, not keys
+        uint32_t frame_counter = 0;
+        set_req.attr = macFrameCounter;
+        set_req.attr_index = descriptor;
+        set_req.value_pointer = &frame_counter;
+        set_req.value_size = 4;
+        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+    } else {
+        // Otherwise, clear the entire key table
+        set_req.attr = macKeyTable;
+        set_req.value_pointer = &key_description;
+        set_req.value_size = sizeof(mlme_key_descriptor_entry_t);
+        set_req.attr_index = descriptor;
+        interface->mac_api->mlme_req(interface->mac_api, MLME_SET, &set_req);
+    }
 
     device_frame_count.frameCount = 0;
     device_frame_count.frameCountIndex = descriptor;
@@ -1103,15 +1117,10 @@ int8_t mac_helper_start_auto_cca_threshold(int8_t interface_id, uint8_t number_o
     if (!cur || !cur->mac_api) {
         return -1;
     }
-    uint8_t start_cca_thr[4] = {number_of_channels, default_dbm, high_limit, low_limit};
     mlme_set_t set_req;
     set_req.attr = macCCAThresholdStart;
-    set_req.value_pointer = &start_cca_thr;
-    set_req.value_size = sizeof(start_cca_thr);
+    set_req.value_pointer = &default_dbm;
+    set_req.value_size = sizeof(default_dbm);
     cur->mac_api->mlme_req(cur->mac_api, MLME_SET, &set_req);
-    /* Get CCA threshold table. Table is stored to interface structure */
-    mlme_get_t get_req;
-    get_req.attr = macCCAThreshold;
-    cur->mac_api->mlme_req(cur->mac_api, MLME_GET, &get_req);
     return 0;
 }

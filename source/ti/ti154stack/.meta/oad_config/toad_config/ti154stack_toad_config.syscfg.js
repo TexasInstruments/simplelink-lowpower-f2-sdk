@@ -177,8 +177,6 @@ exports = {
     templates: {
         "/ti/ti154stack/templates/ti_154stack_toad_config.h.xdt":
             "/ti/ti154stack/templates/ti_154stack_toad_config.h.xdt",
-        "/ti/ti154stack/templates/ti_154stack_toad_build_config.opts.xdt":
-            "/ti/ti154stack/templates/ti_154stack_toad_build_config.opts.xdt",
         "/ti/ti154stack/templates/ti_154stack_toad_config.json.xdt":
             "/ti/ti154stack/templates/ti_154stack_toad_config.json.xdt"
     },

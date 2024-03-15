@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -213,12 +213,12 @@ extern "C"
  */
 #define GAP_PASSKEY_NEEDED_EVENT              0x0B
 /**
- * Sent when a Slave Security Request is received as
- * @ref gapSlaveSecurityReqEvent_t.
+ * Sent when a Peripheral Security Request is received as
+ * @ref gapPeripheralSecurityReqEvent_t.
  *
  * This event will be consumed by the gapbondmgr if it is present
  */
-#define GAP_SLAVE_REQUESTED_SECURITY_EVENT    0x0C
+#define GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT    0x0C
 /**
  * Sent when the bonding process is complete as @ref gapBondCompleteEvent_t.
  *
@@ -850,7 +850,7 @@ typedef enum
  * Min and Max values of the connection interval (2 octets Min, 2 octets Max)
  * (0xFFFF indicates no conn interval min or max)
  */
-#define GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE    0x12
+#define GAP_ADTYPE_PERIPHERAL_CONN_INTERVAL_RANGE 0x12
 /// Signed Data field
 #define GAP_ADTYPE_SIGNED_DATA                  0x13
 /// Service Solicitation: list of 16-bit Service UUIDs
@@ -976,17 +976,17 @@ typedef enum
 typedef enum
 {
   /// Advertiser
-  GAP_CONN_EVT_TASK_TYPE_ADV    = LL_TASK_ID_ADVERTISER,
+  GAP_CONN_EVT_TASK_TYPE_ADV        = LL_TASK_ID_ADVERTISER,
   /// Initiating a connection
-  GAP_CONN_EVT_TASK_TYPE_INIT   = LL_TASK_ID_INITIATOR,
-  /// Connection event in slave role
-  GAP_CONN_EVT_TASK_TYPE_SLAVE  = LL_TASK_ID_SLAVE,
+  GAP_CONN_EVT_TASK_TYPE_INIT       = LL_TASK_ID_INITIATOR,
+  /// Connection event in peripheral role
+  GAP_CONN_EVT_TASK_TYPE_PERIPHERAL = LL_TASK_ID_PERIPHERAL,
   /// Scanner
-  GAP_CONN_EVT_TASK_TYPE_SCAN   = LL_TASK_ID_SCANNER,
-  /// Connection event in master role
-  GAP_CONN_EVT_TASK_TYPE_MASTER = LL_TASK_ID_MASTER,
+  GAP_CONN_EVT_TASK_TYPE_SCAN       = LL_TASK_ID_SCANNER,
+  /// Connection event in central role
+  GAP_CONN_EVT_TASK_TYPE_CENTRAL    = LL_TASK_ID_CENTRAL,
   // No task
-  GAP_CONN_EVT_TASK_TYPE_NONE   = LL_TASK_ID_NONE
+  GAP_CONN_EVT_TASK_TYPE_NONE       = LL_TASK_ID_NONE
 } GAP_ConnEvtTaskType_t;
 
 /**
@@ -1134,15 +1134,15 @@ typedef struct
  *
  * This message is sent to the app when a link is established (with status
  * SUCCESS). For a Central, this is after @ref GapInit_connect or
- * @ref GapInit_connectWl completes successfully. For a Peripheral, this message
+ * @ref GapInit_connectAl completes successfully. For a Peripheral, this message
  * is sent to indicate that a link has been created.
  *
  * A status of something other than SUCCESS is possible in the following cases
- * - LL_STATUS_ERROR_UNKNOWN_CONN_HANDLE (0x02): As a master, connection
+ * - LL_STATUS_ERROR_UNKNOWN_CONN_HANDLE (0x02): As a central, connection
  * creation has been canceled.
- * - LL_STATUS_ERROR_DIRECTED_ADV_TIMEOUT (0x3C): As a slave, directed
+ * - LL_STATUS_ERROR_DIRECTED_ADV_TIMEOUT (0x3C): As a peripheral, directed
  * advertising ended without a connection being formed.
- * - LL_STATUS_ERROR_UNACCEPTABLE_CONN_INTERVAL (0x3B): Slave received a
+ * - LL_STATUS_ERROR_UNACCEPTABLE_CONN_INTERVAL (0x3B): Peripheral received a
  * connection request with an invalid combination of connection parameters.
  */
 typedef struct
@@ -1238,16 +1238,16 @@ typedef struct
 } gapAuthParams_t;
 
 /**
- * @ref GAP_SLAVE_REQUESTED_SECURITY_EVENT message format.
+ * @ref GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT message format.
  *
- * This message is sent to the app when a Slave Security Request is received.
+ * This message is sent to the app when a Peripheral Security Request is received.
  *
  * This event will be consumed by the gapbondmgr if it exists.
  */
 typedef struct
 {
   osal_event_hdr_t  hdr;          //!< @ref GAP_MSG_EVENT and status
-  uint8_t opcode;                 //!< @ref GAP_SLAVE_REQUESTED_SECURITY_EVENT
+  uint8_t opcode;                 //!< @ref GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT
   uint16_t connectionHandle;      //!< Connection Handle
   uint8_t deviceAddr[B_ADDR_LEN]; //!< address of device requesting security
   /**
@@ -1256,7 +1256,7 @@ typedef struct
    *  Bit 2: MITM, Bits 0-1: bonding (0 - no bonding, 1 - bonding)
    */
   uint8_t authReq;
-} gapSlaveSecurityReqEvent_t;
+} gapPeripheralSecurityReqEvent_t;
 
 /**
  * @ref GAP_BOND_COMPLETE_EVENT message format.
@@ -1574,7 +1574,7 @@ extern bStatus_t GAP_SetPrivacyMode(GAP_Peer_Addr_Types_t addrType,
 extern bStatus_t GAP_TerminateLinkReq(uint16_t connectionHandle, uint8_t reason);
 
 /**
- * Update the link parameters to a Master or Slave device.
+ * Update the link parameters to a Central or Peripheral device.
  *
  * As long as LL connection updates are supported on the own device (which is
  * the case by default), an LL Connection Update procedure will be attempted.
@@ -1700,6 +1700,18 @@ extern bStatus_t GapConfig_SetParameter(Gap_configParamIds_t param,
 extern uint8_t *GAP_GetDevAddress(uint8 wantIA);
 
 /**
+ * Get the address of this device using the it's type
+ *
+ * @param wantIA TRUE for Identity Address. FALSE for Resolvable Private
+ *        Address (if the device has been initialized with the address mode
+ *        @ref ADDRMODE_RP_WITH_PUBLIC_ID or @ref ADDRMODE_RP_WITH_RANDOM_ID)
+ *
+ * @param       deviceAddrType - The own device address type
+ * @return pointer to device address.
+ */
+extern uint8 *GAP_GetDevAddressByType( uint8 wantIA, uint8 deviceAddrType);
+
+/**
  * Get the IRK
  *
  * @warning The memory indicated by the returned pointer should not be modified
@@ -1730,7 +1742,7 @@ extern uint8_t *GAP_GetSRK(void);
  *
  * Start the Authentication process with the requested device.
  * This function is used to Initiate/Allow pairing.
- * Called by both master and slave device (Central and Peripheral).
+ * Called by both central and peripheral device (Central and Peripheral).
  *
  * @warning This API should not be called by the application if the
  * gapbondmgr exists as it will be used automatically based on
@@ -1831,7 +1843,7 @@ extern bStatus_t GAP_PasskeyUpdate(uint8_t *pPasskey, uint16_t connectionHandle)
 extern bStatus_t GAP_PasscodeUpdate(uint32_t passcode, uint16_t connectionHandle);
 
 /**
- * Generate a Slave Requested Security message to the master.
+ * Generate a Peripheral Requested Security message to the central.
  *
  * @warning This API should not be called by the application if the
  * gapbondmgr exists as it will be used automatically based on
@@ -1846,7 +1858,7 @@ extern bStatus_t GAP_PasscodeUpdate(uint32_t passcode, uint16_t connectionHandle
  * @return @ref bleNotConnected : Link not found
  * @return @ref bleIncorrectMode : wrong GAP role, must be a Peripheral Role
  */
-extern bStatus_t GAP_SendSlaveSecurityRequest(uint16_t connectionHandle,
+extern bStatus_t GAP_SendPeripheralSecurityRequest(uint16_t connectionHandle,
                                               uint8_t authReq);
 
 /**

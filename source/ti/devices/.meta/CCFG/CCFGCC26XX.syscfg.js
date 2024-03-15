@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ const board = system.deviceData.board;
 const isBAW = device.match(/CC2652RB/) !== null;
 const isSIP = device.match(/SIP/) !== null;
 const isM33 = device.match(/CC(?:13|26).[34]/) !== null;
+const isCC1312PSIP = device.match(/CC1312PSIP/) !== null;
 
 const NUM_PINS = 48;
 var isBAWBoard = false;
@@ -218,11 +219,31 @@ let devSpecific = {
                 longDescription: "Compensate XOSC_HF frequency for temperature during radio transmissions. This improves the accuracy of the XOSC_HF over temperature. This should only be enabled if the selected XOSC_HF source is not accurate enough for the selected stack. It is primarily needed when using HPOSC or when running a stack that requires the XOSC_HF to be compensated for temperature",
                 readOnly: isBAW,
                 hidden: false,
-                default: isBAW ? true : false,
+                default: (isBAW || isCC1312PSIP) ? true : false,
                 onChange: (inst, ui) => {
                     ui.useFcfgXoscHfInsertion.hidden = (inst.enableXoscHfComp === false) || isBAW || !isSIP;
                     ui.xoscSinglePointCalibration.hidden = (inst.useFcfgXoscHfInsertion === true) || (inst.enableXoscHfComp === false) || isBAW;
                 }
+            },
+            {
+                name: "useFcfgXoscHfInsertion",
+                displayName: "Use FCFG XOSC_HF Calibration",
+                description: "Use XOSC_HF single point temperature calibration measurement stored in FCFG.",
+                longDescription: "Some devices, such as the SIP modules, have an XOSC_HF single point temperature calibration measurement programmed into FCFG. It is recommended to use this setting if it is available. It may be deselected to provide application-specified calibration measurements for debug purposes.",
+                readOnly: false,
+                hidden: isCC1312PSIP ? false : true,
+                default: isSIP,
+                onChange: (inst, ui) => {
+                    ui.xoscSinglePointCalibration.hidden = (inst.useFcfgXoscHfInsertion === true);
+                }
+            },
+            {
+                name: "xoscSinglePointCalibration",
+                displayName: "XOSC Single Point Calibration",
+                description: "XOSC_HF single point temperature calibration measurement used to characterize the XOSC_HF.",
+                readOnly: false,
+                hidden: true,
+                default: ""
             },
             // RTC temperature compensation
             {
@@ -264,26 +285,6 @@ let devSpecific = {
                 description : "XOSC LF Coefficient C",
                 default     : -21.875,
                 hidden      : true
-            },
-            {
-                name: "useFcfgXoscHfInsertion",
-                displayName: "Use FCFG XOSC_HF Calibration",
-                description: "Use XOSC_HF single point temperature calibration measurement stored in FCFG.",
-                longDescription: "Some devices, such as the SIP modules, have an XOSC_HF single point temperature calibration measurement programmed into FCFG. It is recommended to use this setting if it is available. It may be deselected to provide application-specified calibration measurements for debug purposes.",
-                readOnly: false,
-                hidden: true,
-                default: isSIP,
-                onChange: (inst, ui) => {
-                    ui.xoscSinglePointCalibration.hidden = (inst.useFcfgXoscHfInsertion === true);
-                }
-            },
-            {
-                name: "xoscSinglePointCalibration",
-                displayName: "XOSC Single Point Calibration",
-                description: "XOSC_HF single point temperature calibration measurement used to characterize the XOSC_HF.",
-                readOnly: false,
-                hidden: true,
-                default: ""
             },
             // Bootloader
             {

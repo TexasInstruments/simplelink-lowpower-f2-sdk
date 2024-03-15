@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -116,6 +116,8 @@
 #define FHIE_PIE_SUB_IE_SUB_ID_US_IE        0x01
 /*! Sub ID: BS IE */
 #define FHIE_PIE_SUB_IE_SUB_ID_BS_IE        0x02
+/*! Sub ID: VP IE */
+#define FHIE_PIE_SUB_IE_SUB_ID_VP_IE        0x03
 /* short type */
 /*! Sub ID: PAN IE */
 #define FHIE_PIE_SUB_IE_SUB_ID_PAN_IE       0x04
@@ -185,7 +187,7 @@
 #define HIE_LEN_FC_IE                   (2)
 #define HIE_LEN_RSL_IE                  (1)
 
-#define FH_WISUN_PIE_BITMAP             0x003f0000
+#define FH_WISUN_PIE_BITMAP             0x00FF0000
 #define FH_WISUN_HIE_BITMAP             0x0000000f
 #define FH_WISUN_PIE_BITMAP_START       0x00010000
 #define FH_WISUN_HIE_BITMAP_START       0x00000001
@@ -235,6 +237,12 @@
 #else
 #define FH_PAN_IE_LEN                   (5)
 #endif
+
+/* VPID(1) + MSGID (1) HopLimit (1) +Seq(1)+Originator(8) == 12 bytes
+ * +user payload (15)
+ */
+#define FH_VP_IE_LEN                   (27)
+
 #define FH_NETNAME_IE_LEN_MAX           FHIE_NETNAME_SIZE
 #define FH_PANVER_IE_LEN                (2)
 #define FH_GTK0HASH_LEN                 (8)
@@ -329,6 +337,18 @@ typedef struct {
     schedInfo_t schedInfo;              /*!< broadcast schedule info */
     chanInfo_t chanInfo;                /*!< broadcast channel info */
 } FHIE_bsIE_t;
+
+#define WISUN_VENDOR_ID_TI              (36)
+#define VPIE_MSG_ID_PANID               (0x01)
+#define VPIE_MSG_ID_MPL_PAYLOAD         (0x02)
+#define VPIE_MSG_ID_TERMINATOR          (0xFF)
+
+/*! VPIE definition */
+typedef struct FHIE_vpIE_{
+    //uint8_t  vendorID;                /*!< VENDOR ID, TI's ID = 36 (decimal) */
+    uint16_t panID;                     /*!< network PAN in VP IE */
+    uint8_t payload[FH_VP_IE_LEN];      /*!< VPIE payload */
+} FHIE_vpIE_t;
 
 /*! PANIE definiton */
 typedef struct {

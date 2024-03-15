@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -99,10 +99,11 @@
 #include "osal_list.h"
 #include "hal_trng_wrapper.h"
 #include "ecc_rom.h"
-#include <driverlib/vims.h>
-#include <driverlib/interrupt.h>
-#include <inc/hw_sysctl.h>
-#include <inc/hw_ioc.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/vims.h)
+#include DeviceFamily_constructPath(driverlib/interrupt.h)
+#include DeviceFamily_constructPath(inc/hw_sysctl.h)
+#include DeviceFamily_constructPath(inc/hw_ioc.h)
 #endif // !CC33xx
 #ifndef CONTROLLER_ONLY
 #include "linkdb.h"
@@ -120,6 +121,8 @@
 #include "gap_scanner_internal.h"
 #include "gap_scanner.h"
 #include "gap_initiator.h"
+#include "ll_sdaa.h"
+
 #endif // !CONTROLLER_ONLY
 
 /*******************************************************************************
@@ -154,10 +157,6 @@ extern uint8  validChecksum( const uint32 *beginAddr, const uint32 *endAddr );
 // callback for radio driver events
 extern void rfCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 extern void rfPUpCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
-
-#ifdef LEGACY_CMD
-extern uint8_t checkLegacyHCICmdStatus(uint16_t opcode);
-#endif
 
 // Jump Table Function Externs: Needed to access internal system functions.
 extern void ll_eccInit(void);
@@ -332,7 +331,7 @@ extern void smOobSCAuthentication(void);
 extern void smPairingSendEncInfo(void);
 extern void smPairingSendIdentityAddrInfo(void);
 extern void smPairingSendIdentityInfo(void);
-extern void smPairingSendMasterID(void);
+extern void smPairingSendCentralID(void);
 extern void smPairingSendSigningInfo(void);
 extern void smProcessDataMsg(void);
 extern void smProcessEncryptChange(void);
@@ -356,7 +355,7 @@ extern void smResponderAuthStageTwo(void);
 extern void smpResponderProcessEncryptionInformation(void);
 extern void smpResponderProcessIdentityAddrInfo(void);
 extern void smpResponderProcessIdentityInfo(void);
-extern void smpResponderProcessMasterID(void);
+extern void smpResponderProcessCentralID(void);
 extern void smpResponderProcessPairingConfirm(void);
 extern void smpResponderProcessPairingDHKeyCheck(void);
 extern void smpResponderProcessPairingPublicKey(void);
@@ -366,7 +365,7 @@ extern void smpResponderProcessSigningInfo(void);
 extern void smpBuildEncInfo(void);
 extern void smpBuildIdentityAddrInfo(void);
 extern void smpBuildIdentityInfo(void);
-extern void smpBuildMasterID(void);
+extern void smpBuildCentralID(void);
 extern void smpBuildPairingConfirm(void);
 extern void smpBuildPairingDHKeyCheck(void);
 extern void smpBuildPairingFailed(void);
@@ -381,7 +380,7 @@ extern void smpParseEncInfo(void);
 extern void smpParseIdentityAddrInfo(void);
 extern void smpParseIdentityInfo(void);
 extern void smpParseKeypressNoti(void);
-extern void smpParseMasterID(void);
+extern void smpParseCentralID(void);
 extern void smpParsePairingConfirm(void);
 extern void smpParsePairingDHKeyCheck(void);
 extern void smpParsePairingFailed(void);
@@ -398,7 +397,7 @@ extern void smpInitiatorProcessPairingDHKeyCheck(void);
 extern void smpInitiatorProcessPairingConfirm(void);
 extern void smpInitiatorProcessPairingRandom(void);
 extern void smpInitiatorProcessEncryptionInformation(void);
-extern void smpInitiatorProcessMasterID(void);
+extern void smpInitiatorProcessCentralID(void);
 extern void smpInitiatorProcessIdentityInfo(void);
 extern void smpInitiatorProcessIdentityAddrInfo(void);
 extern void smpInitiatorProcessSigningInfo(void);
@@ -462,12 +461,12 @@ typedef void (*RT_Init_fp)(void);
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-#endif
+#endif //CC23X0
 
 #include "ll.h"
 #include "ll_ae.h"
 #include "ll_enc.h"
-#include "ll_wl.h"
+#include "ll_al.h"
 #include "ll_timer_drift.h"
 #include "ll_rat.h"
 #include "ll_privacy.h"
@@ -567,22 +566,23 @@ extern uint8 llRxEntryDoneEventHandleStateAdv( void );
 extern uint8 llAbortEventHandleStateScan( uint8 preempted );
 extern uint8 llLastCmdDoneEventHandleStateScan( void );
 extern uint8 llRxIgnoreEventHandleStateScan( void );
+extern uint8 llRxIgnoreEventHandleConnectResponse( uint8 *OwnA, uint8 OwnAdd, uint8 *PeerA, uint8 PeerAdd );
 extern uint8 llAbortEventHandleStateInit( uint8 preempted );
 extern uint8 llLastCmdDoneEventHandleStateInit( void );
 extern uint8 llRxIgnoreEventHandleStateInit( void );
 extern uint8 llRxEntryDoneEventHandleStateInit( void );
-extern uint8 llAbortEventHandleStateSlave( uint8 preempted );
-extern uint8 llLastCmdDoneEventHandleStateSlave( void );
-extern uint8 llAbortEventHandleStateMaster( uint8 preempted );
-extern uint8 llLastCmdDoneEventHandleStateMaster( void );
+extern uint8 llAbortEventHandleStatePeripheral( uint8 preempted );
+extern uint8 llLastCmdDoneEventHandleStatePeripheral( void );
+extern uint8 llAbortEventHandleStateCentral( uint8 preempted );
+extern uint8 llLastCmdDoneEventHandleStateCentral( void );
 extern uint8 llRxEntryDoneEventHandleStateConnection( uint8 crcError );
 extern uint8 llLastCmdDoneEventHandleStateTest( void );
 extern uint8 llRxEntryDoneEventHandleStateTest( void );
 extern void llSetTaskInit( uint8 startType, taskInfo_t *nextSecTask, void *nextSecCommand, void *nextConnCmd );
 extern void llSetTaskScan( uint8 startType, taskInfo_t *nextSecTask, void *nextSecCommand, void *nextConnCmd );
 extern void llSetTaskAdv( uint8 startType, void *nextSecCmd );
-extern void llSetTaskMaster( uint8 connId, void *nextConnCmd );
-extern void llSetTaskSlave( uint8 connId, void *nextConnCmd );
+extern void llSetTaskCentral( uint8 connId, void *nextConnCmd );
+extern void llSetTaskPeripheral( uint8 connId, void *nextConnCmd );
 extern void llSetTaskPeriodicAdv( void );
 extern void llSetTaskPeriodicScan( void );
 extern taskInfo_t *llSelectTaskAdv( uint8 secTaskID, uint32 timeGap );
@@ -592,7 +592,7 @@ extern taskInfo_t *llSelectTaskPeriodicScan( uint8 secTaskID, uint32 timeGap );
 extern taskInfo_t *llSelectTaskPeriodicAdv( uint8 secTaskID, uint32 timeGap );
 extern void LL_TxEntryDoneCback( void );
 extern uint8 llCheckIsSecTaskCollideWithPrimTaskInLsto( taskInfo_t *secTask,uint32 timeGap,uint16 selectedConnId);
-extern void llPostProcessExtendedAdv( advSet_t *pAdvSet );
+extern llStatus_t llPostProcessExtendedAdv( advSet_t *pAdvSet );
 extern uint8 llTxDoneEventHandleStateExtAdv( advSet_t *pAdvSet );
 extern void llSetupExtendedAdvData( advSet_t *pAdvSet );
 extern uint8 llSetExtendedAdvReport(aeExtAdvRptEvt_t *extAdvRpt, uint8 *pPkt, uint16 evtType,uint8 extHdrFlgs, uint8 pHdr, uint8 dataLen, uint8 **pSyncInfo,uint8 *secPhy, uint8 *pChannelIndex);
@@ -600,17 +600,17 @@ extern uint8 llSetExtendedAdvReport(aeExtAdvRptEvt_t *extAdvRpt, uint8 *pPkt, ui
 /*******************************************************************************
  * INIT_CFG and SCAN_CFG hooks
  */
-void MAP_llProcessMasterConnectionCreated(void)
+void MAP_llProcessCentralConnectionCreated(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  llProcessMasterConnectionCreated();
+  llProcessCentralConnectionCreated();
 #endif
 }
 
-void MAP_llProcessSlaveConnectionCreated(void)
+void MAP_llProcessPeripheralConnectionCreated(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  llProcessSlaveConnectionCreated();
+  llProcessPeripheralConnectionCreated();
 #endif
 }
 
@@ -716,6 +716,15 @@ uint8 MAP_llRxIgnoreEventHandleStateScan( void )
 #endif
 }
 
+uint8 MAP_llRxIgnoreEventHandleConnectResponse( uint8 *OwnA, uint8 OwnAdd, uint8 *PeerA, uint8 PeerAdd )
+{
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
+  return llRxIgnoreEventHandleConnectResponse(OwnA,OwnAdd,PeerA,PeerAdd);
+#else
+  return 0;
+#endif
+}
+
 uint8 MAP_llAbortEventHandleStateInit( uint8 preempted )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
@@ -752,37 +761,37 @@ uint8 MAP_llRxEntryDoneEventHandleStateInit( void )
 #endif
 }
 
-uint8 MAP_llAbortEventHandleStateSlave( uint8 preempted )
+uint8 MAP_llAbortEventHandleStatePeripheral( uint8 preempted )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  return llAbortEventHandleStateSlave(preempted);
+  return llAbortEventHandleStatePeripheral(preempted);
 #else
   return 0;
 #endif
 }
 
-uint8 MAP_llLastCmdDoneEventHandleStateSlave( void )
+uint8 MAP_llLastCmdDoneEventHandleStatePeripheral( void )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  return llLastCmdDoneEventHandleStateSlave();
+  return llLastCmdDoneEventHandleStatePeripheral();
 #else
   return 0;
 #endif
 }
 
-uint8 MAP_llAbortEventHandleStateMaster( uint8 preempted )
+uint8 MAP_llAbortEventHandleStateCentral( uint8 preempted )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  return llAbortEventHandleStateMaster(preempted);
+  return llAbortEventHandleStateCentral(preempted);
 #else
   return 0;
 #endif
 }
 
-uint8 MAP_llLastCmdDoneEventHandleStateMaster( void )
+uint8 MAP_llLastCmdDoneEventHandleStateCentral( void )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  return llLastCmdDoneEventHandleStateMaster();
+  return llLastCmdDoneEventHandleStateCentral();
 #else
   return 0;
 #endif
@@ -815,17 +824,17 @@ uint8 MAP_llRxEntryDoneEventHandleStateTest( void )
 #endif
 }
 
-void MAP_llProcessMasterControlPacket(void *connPtr, uint8 *pPkt)
+void MAP_llProcessCentralControlPacket(void *connPtr, uint8 *pPkt)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  llProcessMasterControlPacket(connPtr, pPkt);
+  llProcessCentralControlPacket(connPtr, pPkt);
 #endif
 }
 
-void MAP_llProcessSlaveControlPacket(void *connPtr, uint8 *pPkt)
+void MAP_llProcessPeripheralControlPacket(void *connPtr, uint8 *pPkt)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  llProcessSlaveControlPacket(connPtr, pPkt);
+  llProcessPeripheralControlPacket(connPtr, pPkt);
 #endif
 }
 
@@ -864,17 +873,17 @@ void MAP_llSetTaskPeriodicAdv( void )
 #endif
 }
 
-void MAP_llSetTaskMaster( uint8 connId, void *nextConnCmd )
+void MAP_llSetTaskCentral( uint8 connId, void *nextConnCmd )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  llSetTaskMaster(connId, nextConnCmd);
+  llSetTaskCentral(connId, nextConnCmd);
 #endif
 }
 
-void MAP_llSetTaskSlave( uint8 connId, void *nextConnCmd )
+void MAP_llSetTaskPeripheral( uint8 connId, void *nextConnCmd )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  llSetTaskSlave(connId, nextConnCmd);
+  llSetTaskPeripheral(connId, nextConnCmd);
 #endif
 }
 
@@ -959,10 +968,10 @@ void *MAP_LL_SearchAdvSet( uint8 handle )
 #endif
 }
 
-uint8 MAP_llCheckSlaveTerminate( uint8 connId )
+uint8 MAP_llCheckPeripheralTerminate( uint8 connId )
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  return llCheckSlaveTerminate(connId);
+  return llCheckPeripheralTerminate(connId);
 #else
   return 0;
 #endif
@@ -1095,10 +1104,10 @@ uint8 MAP_llRxIgnoreEventHandleConnectRequest( void *pAdvSet, uint8 *PeerA, uint
 #endif
 }
 
-uint8 MAP_llConnExists( uint8  checkRole, uint8 *peerAddr, uint8  peerAddrType)
+uint8 MAP_llConnExists( uint8 *peerAddr, uint8  peerAddrType)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
-  return llConnExists(checkRole,peerAddr,peerAddrType);
+  return llConnExists(peerAddr,peerAddrType);
 #else
   return 0;
 #endif
@@ -1374,18 +1383,18 @@ uint8 MAP_llSetStarvationMode(uint16 connId, uint8 setOnOffValue)
 #endif
 }
 
-void MAP_llMaster_TaskEnd(void)
+void MAP_llCentral_TaskEnd(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-  llMaster_TaskEnd();
+  llCentral_TaskEnd();
 #endif
   return;
 }
 
-void MAP_llSlave_TaskEnd(void)
+void MAP_llPeripheral_TaskEnd(void)
 {
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  llSlave_TaskEnd();
+  llPeripheral_TaskEnd();
 #endif
   return;
 }
@@ -1850,10 +1859,12 @@ uint8 MAP_llSetupExtAdv( void *pAdvSet )
 #endif
 }
 
-void MAP_llPostProcessExtendedAdv( void *pAdvSet )
+llStatus_t MAP_llPostProcessExtendedAdv( void *pAdvSet )
 {
 #ifdef USE_AE
-  llPostProcessExtendedAdv(pAdvSet);
+  return llPostProcessExtendedAdv(pAdvSet);
+#else
+  return 0;
 #endif
 }
 
@@ -1963,6 +1974,10 @@ void MAP_llHealthSetThreshold(uint32 connTime, uint32 scanTime, uint32 initTime,
 /*******************************************************************************
  * Check legacy command status
  */
+#ifdef LEGACY_CMD
+extern uint8_t checkLegacyHCICmdStatus(uint16_t opcode);
+#endif
+
 uint8_t MAP_checkLegacyHCICmdStatus(uint16_t opcode)
 {
 #ifdef LEGACY_CMD
@@ -1993,6 +2008,116 @@ uint8_t MAP_checkVsEventsStatus(void)
   return FALSE;
 #else
   return TRUE;
+#endif
+}
+
+/*******************************************************************************
+ * Scan Optimization
+ */
+uint8 MAP_llAddExtAlAndSetIgnBit(void *extAdvRpt, uint8 ignoreBit)
+{
+#if defined(SCAN_OPTIMIZATION) && !defined(USE_RCL)
+  return llAddExtAlAndSetIgnBit((aeExtAdvRptEvt_t *)extAdvRpt, ignoreBit);
+#endif
+  return ignoreBit;
+}
+
+uint8 MAP_llFlushIgnoredRxEntry(uint8 ignoreBit)
+{
+#if defined(SCAN_OPTIMIZATION) && !defined(USE_RCL)
+  return llFlushIgnoredRxEntry(ignoreBit);
+#endif
+  return FALSE;
+}
+
+void MAP_llSetRxCfg(void)
+{
+#if defined(SCAN_OPTIMIZATION) && !defined(USE_RCL)
+  llSetRxCfg();
+#endif
+}
+
+/*******************************************************************************
+* SDAA module
+*/
+extern uint8 llHandleSDAAControlTX( void *nextConnPtr,
+                                   void *secTask,
+                                   uint8 startTaskType);
+
+void MAP_LL_SDAA_Init( void )
+{
+#ifdef SDAA_ENABLE
+ LL_SDAA_Init();
+#endif
+}
+void MAP_LL_SDAA_RecordTxUsage( uint16 numOfBytes,
+                                uint8 phyType,
+                                uint8 power,
+                                uint8 channel)
+{
+#ifdef SDAA_ENABLE
+ LL_SDAA_RecordTxUsage( numOfBytes,  phyType,  power,  channel );
+#endif
+}
+
+void MAP_LL_SDAA_HandleSDAALastCmdDone()
+{
+#ifdef SDAA_ENABLE
+  llHandleSDAALastCmdDone();
+#endif
+}
+
+void MAP_LL_SDAA_AddDwtRecord( uint32 dwT,
+                               uint8 task,
+                               uint8 index)
+{
+#ifdef SDAA_ENABLE
+ LL_SDAA_AddDwtRecord( dwT, task, index );
+#endif
+}
+
+void MAP_LL_SDAA_SampleRXWindow( void )
+{
+#ifdef SDAA_ENABLE
+ LL_SDAA_SampleRXWindow();
+#endif
+}
+
+uint16 MAP_LL_SDAA_GetRXWindowDuration( void )
+{
+#ifdef SDAA_ENABLE
+ return LL_SDAA_GetRXWindowDuration();
+#else
+ return 0;
+#endif
+}
+
+void MAP_LL_SDAA_SetChannelInSample( uint8 channel )
+{
+#ifdef SDAA_ENABLE
+ LL_SDAA_SetChannelInSample(channel);
+#endif
+}
+
+uint8 MAP_llSDAASetupRXWindowCmd(void)
+{
+#ifdef SDAA_ENABLE
+   return llSDAASetupRXWindowCmd();
+#else
+   return LL_STATUS_SUCCESS;
+#endif
+}
+
+uint8 MAP_llHandleSDAAControlTX(void            *nextConnPtr,
+                               void            *secTask,
+                               uint8           startTaskType)
+{
+#ifdef SDAA_ENABLE
+   return llHandleSDAAControlTX(nextConnPtr,
+                                secTask,
+                                startTaskType);
+#else
+   return startTaskType;
 #endif
 }
 

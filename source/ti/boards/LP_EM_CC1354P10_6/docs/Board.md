@@ -1,7 +1,7 @@
 # SimpleLink&trade; CC1354P10-6 LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink CC1354P10-6 LaunchPad__][launchpad] contains a
-[__CC1354P106T0RSKR__][device] device.
+The [__SimpleLink&trade; CC1354P10-6 LaunchPad&trade;__][launchpad] contains a
+[__XCC1354P106T0RSK__][device] device.
 
 ## Jumper Settings
 
@@ -22,23 +22,22 @@ Information on pins and resources used is also present in both generated files.
 
 ## TI BoosterPacks&trade;
 
-The following BoosterPack(s) are used with some driver examples.
+The following BoosterPacks are used with some driver examples.
 
-#### [__BOOSTXL-SHARP128 LCD & SD Card BoosterPack__][boostxl-sharp128]
-
-* No modifications are needed.
-
-#### [__BP-BASSENSORSMKII BoosterPack__][bp-bassensorsmkii]
+### [__BOOSTXL-SHARP128 LCD & SD Card BoosterPack__][boostxl-sharp128]
 
 * No modifications are needed.
 
-#### [__CC3200 Audio BoosterPack__][cc3200audboost]
+### [__BP-BASSENSORSMKII BoosterPack__][bp-bassensorsmkii]
 
 * No modifications are needed.
 
-[device]: http://www.ti.com/product/CC1354P10
-[launchpad]: http://www.ti.com/tool/LP-EM-CC1354P10_6
-[boostxl-sharp128]: http://www.ti.com/tool/boostxl-sharp128
-[bp-bassensorsmkii]: http://www.ti.com/tool/bp-bassensorsmkii
-[cc3200audboost]: http://www.ti.com/tool/CC3200AUDBOOST
-[cc3200audboost-user-guide]: http://www.ti.com/lit/pdf/swru383
+### [__CC3200 Audio BoosterPack__][cc3200audboost]
+
+* No modifications are needed.
+
+[device]: https://www.ti.com/product/CC1354P10
+[launchpad]: https://www.ti.com/tool/LP-EM-CC1354P10
+[boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
+[bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII
+[cc3200audboost]: https://www.ti.com/tool/CC3200AUDBOOST

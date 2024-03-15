@@ -34,6 +34,7 @@ endmacro()
 
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartyEccLibM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartyEccLibM0PTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartyEccLibM33FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/ThirdPartyEccLibALLTargets.cmake")
 
 check_required_components(ThirdPartyEccLib)

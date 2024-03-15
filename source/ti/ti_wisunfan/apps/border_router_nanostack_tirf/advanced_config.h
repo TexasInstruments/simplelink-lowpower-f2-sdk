@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -73,11 +73,10 @@
 
 /*!
  The number of non sleepy channel hopping end devices to be supported.
- It is to be noted that the total number of non sleepy devices supported
- must be less than 50. Stack will allocate memory proportional
- to the number of end devices requested.
+ The stack will allocate memory proportional to the number of end devices
+ requested.
  */
-#define FH_NUM_NON_SLEEPY_HOPPING_NEIGHBORS 50
+#define FH_NUM_NON_SLEEPY_HOPPING_NEIGHBORS MAX_DEVICE_TABLE_ENTRIES
 
 /*!
  The number of non sleepy fixed channel end devices to be supported.

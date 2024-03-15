@@ -3,13 +3,16 @@
 import threading
 import time
 import queue
-import signal
 import logging
 import serial
 
-logger = logging.getLogger("Serial Rx")
-# logging.basicConfig(level=logging.DEBUG)
-verbose_rx = 0  # Set to 1 and uncomment above to show received serial data
+logger = logging.getLogger("ITM Serial Rx")
+handler = logging.StreamHandler()
+formatter = logging.Formatter("%(levelname)s:%(name)s:%(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+verbose_rx = 0  # Set to 1 and change logging level to DEBUG above to show received serial data
 
 
 def receive_thread(ser: serial.Serial, chunk_size, rxq: queue.Queue, stop_event):

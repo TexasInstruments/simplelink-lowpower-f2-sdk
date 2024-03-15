@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -128,16 +128,16 @@ extern "C"
 #define SM_PAIRING_STATE_WAIT_CONFIRM_PASSKEY              4  // Received Initiator Confirm message and waiting for Passkey from app/profile (responder only)
 #define SM_PAIRING_STATE_WAIT_RANDOM                       5  // Waiting for Random message
 #define SM_PAIRING_STATE_WAIT_STK                          6  // Waiting for STK process to finish
-#define SM_PAIRING_STATE_WAIT_SLAVE_ENCRYPTION_INFO        7  // Waiting for Slave Encryption Info to be sent
-#define SM_PAIRING_STATE_WAIT_SLAVE_MASTER_INFO            8  // Waiting for Slave Master Info to be sent
-#define SM_PAIRING_STATE_WAIT_SLAVE_IDENTITY_INFO          9  // Waiting for Slave Identity Info to be sent
-#define SM_PAIRING_STATE_WAIT_SLAVE_IDENTITY_ADDR_INFO     10 // Waiting for Slave Identity Addr Info to be sent
-#define SM_PAIRING_STATE_WAIT_SLAVE_SIGNING_INFO           11 // Waiting for Slave Signing Info to be sent
-#define SM_PAIRING_STATE_WAIT_MASTER_ENCRYPTION_INFO       12 // Waiting for Master Encryption Info to be sent
-#define SM_PAIRING_STATE_WAIT_MASTER_MASTER_INFO           13 // Waiting for Master Master Info to be sent
-#define SM_PAIRING_STATE_WAIT_MASTER_IDENTITY_INFO         14 // Waiting for Master Identity Info to be sent
-#define SM_PAIRING_STATE_WAIT_MASTER_IDENTITY_ADDR_INFO    15 // Waiting for Master Identity Addr Info to be sent
-#define SM_PAIRING_STATE_WAIT_MASTER_SIGNING_INFO          16 // Waiting for Master Signing Info to be sent
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_ENCRYPTION_INFO   7  // Waiting for Peripheral Encryption Info to be sent
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_CENTRAL_INFO      8  // Waiting for Peripheral Central Info to be sent
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_IDENTITY_INFO     9  // Waiting for Peripheral Identity Info to be sent
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_IDENTITY_ADDR_INFO 10 // Waiting for Peripheral Identity Addr Info to be sent
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_SIGNING_INFO      11 // Waiting for Peripheral Signing Info to be sent
+#define SM_PAIRING_STATE_WAIT_CENTRAL_ENCRYPTION_INFO      12 // Waiting for Central Encryption Info to be sent
+#define SM_PAIRING_STATE_WAIT_CENTRAL_CENTRAL_INFO         13 // Waiting for Central Central Info to be sent
+#define SM_PAIRING_STATE_WAIT_CENTRAL_IDENTITY_INFO        14 // Waiting for Central Identity Info to be sent
+#define SM_PAIRING_STATE_WAIT_CENTRAL_IDENTITY_ADDR_INFO   15 // Waiting for Central Identity Addr Info to be sent
+#define SM_PAIRING_STATE_WAIT_CENTRAL_SIGNING_INFO         16 // Waiting for Central Signing Info to be sent
 #define SM_PAIRING_STATE_WAIT_ENCRYPT                      17 // Waiting for LTK process to finish
 #define SM_PAIRING_STATE_DONE                              18 // Closing out the pairing process
 #define SM_PAIRING_STATE_WAIT_PAIRING_FAIL                 31 // Waiting for two connection events to pairing failed if raised
@@ -149,8 +149,8 @@ extern "C"
 #define SM_PAIRING_STATE_WAIT_LOCAL_DHKEY                  22 // Waiting for the DH Key of the local device
 #define SM_PAIRING_STATE_WAIT_DHKEY_CHECK                  23 // Waiting for the DHKey Check value (Ea/Eb) to be sent from the remote device
 #define SM_PAIRING_STATE_WAIT_NUMERIC_COMPARISON           24 // Waiting for the numeric comparison verdict from the app
-#define SM_PAIRING_STATE_WAIT_MASTER_PASSKEY               25 // Waiting for the Initiator to send his passkey
-#define SM_PAIRING_STATE_WAIT_SLAVE_PASSKEY                26 // Waiting for the Responder to inject secret rb.
+#define SM_PAIRING_STATE_WAIT_CENTRAL_PASSKEY              25 // Waiting for the Initiator to send his passkey
+#define SM_PAIRING_STATE_WAIT_PERIPHERAL_PASSKEY           26 // Waiting for the Responder to inject secret rb.
 #define SM_PAIRING_STATE_WAIT_OOB                          27 // Waiting for the Responder to catch up in OOB protocol (Responder only)
 #define SM_PAIRING_STATE_FAIL_CONFIRM                      28 // For OOB on responder, waiting to receive a Random from the initiator only to send a pairing failed for the confirmation.
 #define SM_PAIRING_STATE_FAIL_OOB_NOT_FOUND                29 // For OOB on responder, waiting to receive a Random from the initiator only to send a pairing failed for lack of local OOB data.
@@ -292,6 +292,13 @@ typedef struct
   uint8 result[KEYLEN];           // Result of encrypt (key + Plain Text data)
 } sm_Encrypt_t;
 
+// hciEvt_BLELTKReq_t wrapper to save pkt details
+typedef struct
+{
+  uint8 bHandled;
+  hciEvt_BLELTKReq_t ltkReqPkt;
+} sm_hciEvtBLELTKReqWrapper_t;
+
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -336,6 +343,7 @@ extern void smGenerateRandBuf( uint8 *pRandNum, uint8 len );
 extern void smStartRspTimer( uint16 connHandle );
 extern void smStopRspTimer( void );
 extern void smUint8ToAuthReq( authReq_t *pAuthReq, uint8 authReqUint8 );
+extern uint8 smResetAuthReqReservedBits( uint8 authReq );
 extern bStatus_t sm_c1new( uint8 *pK, uint8 *pR, uint8 *pRes, uint8 *pReq, uint8 iat, uint8 *pIA, uint8 rat, uint8 *pRA, uint8 *pC1 );
 extern bStatus_t sm_CMAC( uint8 *pK, uint8 *pM, uint16 mLen, uint8 *pMac, uint8 macLen );
 extern bStatus_t sm_d1( uint8 *pK, uint16 d, uint8 *pD1 );
@@ -371,7 +379,7 @@ extern bStatus_t smOobSCAuthentication( void );
 extern void smPairingSendEncInfo( uint16 connHandle, uint8 *pLTK );
 extern void smPairingSendIdentityAddrInfo( uint16 connHandle, uint8 addrType, uint8 *pMACAddr );
 extern void smPairingSendIdentityInfo( uint16 connHandle, uint8 *pIRK );
-extern void smPairingSendMasterID( uint16 connHandle, uint16 ediv, uint8 *pRand );
+extern void smPairingSendCentralID( uint16 connHandle, uint16 ediv, uint8 *pRand );
 extern void smPairingSendSigningInfo( uint16 connHandle, uint8 *pSRK );
 extern void smProcessDataMsg( l2capDataEvent_t *pMsg );
 extern uint8 smProcessEncryptChange( uint16 connectionHandle, uint8 reason );
@@ -407,7 +415,7 @@ extern uint8 smpInitiatorProcessEncryptionInformation( smpEncInfo_t *pParsedMsg 
 extern uint8 smpInitiatorProcessIdentityAddrInfo( smpIdentityAddrInfo_t *pParsedMsg );
 extern uint8 smpInitiatorProcessIdentityInfo( smpIdentityInfo_t *pParsedMsg );
 extern uint8 smpInitiatorProcessIncoming( linkDBItem_t *pLinkItem, uint8 cmdID, smpMsgs_t *pParsedMsg );
-extern uint8 smpInitiatorProcessMasterID( smpMasterID_t *pParsedMsg );
+extern uint8 smpInitiatorProcessCentralID( smpCentralID_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingConfirm( smpPairingConfirm_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingDHKeyCheck( smpPairingDHKeyCheck_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingPubKey( smpPairingPublicKey_t *pParsedMsg );
@@ -427,11 +435,16 @@ extern void smResponderAuthStageTwo( void );
 extern uint8 smResponderProcessLTKReq( uint16 connectionHandle, uint8 *pRandom, uint16 encDiv );
 extern void smResponderSendNextKeyInfo( void );
 
+#ifndef GAP_BOND_MGR
+extern void smGetLtkReqDetails( sm_hciEvtBLELTKReqWrapper_t** pLtkReqDetails );
+extern void smTriggerProcessLTKReq( uint16 connHandle);
+#endif //GAP_BOND_MGR
+
 extern uint8 smpResponderProcessEncryptionInformation( smpEncInfo_t *pParsedMsg );
 extern uint8 smpResponderProcessIdentityAddrInfo( smpIdentityAddrInfo_t *pParsedMsg );
 extern uint8 smpResponderProcessIdentityInfo( smpIdentityInfo_t *pParsedMsg );
 extern uint8 smpResponderProcessIncoming( linkDBItem_t *pLinkItem, uint8 cmdID, smpMsgs_t *pParsedMsg );
-extern uint8 smpResponderProcessMasterID( smpMasterID_t *pParsedMsg );
+extern uint8 smpResponderProcessCentralID( smpCentralID_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingConfirm( smpPairingConfirm_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingDHKeyCheck( smpPairingDHKeyCheck_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingPublicKey( smpPairingPublicKey_t *pParsedMsg );

@@ -2,7 +2,7 @@
  * attest_token.h
  *
  * Copyright (c) 2018-2019, Laurence Lundblade.
- * Copyright (c) 2020, Arm Limited.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -13,7 +13,7 @@
 #define __ATTEST_TOKEN_H__
 
 #include <stdint.h>
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #ifdef SYMMETRIC_INITIAL_ATTESTATION
 #include "t_cose_mac0_sign.h"
 #else
@@ -24,7 +24,6 @@
 extern "C" {
 #endif
 
-
 /**
  * \file attest_token.h
  *
@@ -33,16 +32,15 @@ extern "C" {
  * The context and functions here are the way to create an attestation
  * token. The steps are roughly:
  *
- *   -# Create and initialize an attest_token_ctx indicating the
- *   options, key and such using attest_token_start().
+ *   -# Create and initialize an attest_token_encode_ctx indicating the
+ *   options, key and such using attest_token_encode_start().
  *
  *   -# Use various add methods to fill in the payload with claims. The
  *   encoding context can also be borrowed for more rich payloads.
  *
- *   -# Call attest_token_finish() to create the signature and finish
+ *   -# Call attest_token_encode_finish() to create the signature and finish
  *   formatting the COSE signed output.
  */
-
 
 /**
  Error codes returned from attestation token creation.
@@ -96,8 +94,6 @@ enum attest_token_err_t {
     ATTEST_TOKEN_ERR_SW_COMPONENTS_MISSING
 };
 
-
-
 /**
  * Request that the claims internally generated not be added to the
  * token.  This is a test mode that results in a static token that
@@ -105,7 +101,6 @@ enum attest_token_err_t {
  * the callers control unlike the other claims.
  */
 #define TOKEN_OPT_OMIT_CLAIMS        0x40000000
-
 
 /**
  * A special test mode where a proper signature is not produced. In
@@ -116,10 +111,9 @@ enum attest_token_err_t {
  * replicate it. */
 #define TOKEN_OPT_SHORT_CIRCUIT_SIGN 0x80000000
 
-
 /**
  * The context for creating an attestation token.  The caller of
- * attest_token must create one of these and pass it to the functions
+ * attest_token_encode must create one of these and pass it to the functions
  * here. It is small enough that it can go on the stack. It is most of
  * the memory needed to create a token except the output buffer and
  * any memory requirements for the cryptographic operations.
@@ -128,7 +122,7 @@ enum attest_token_err_t {
  *
  * This is roughly 148 + 8 + 32 = 188 bytes
  */
-struct attest_token_ctx {
+struct attest_token_encode_ctx {
     /* Private data structure */
     QCBOREncodeContext           cbor_enc_ctx;
     uint32_t                     opt_flags;
@@ -140,13 +134,12 @@ struct attest_token_ctx {
 #endif
 };
 
-
 /**
  * \brief Initialize a token creation context.
  *
  * \param[in] me          The token creation context to be initialized.
  * \param[in] opt_flags   Flags to select different custom options,
-                          for example \ref TOKEN_OPT_OMIT_CLAIMS.
+ *                        for example \ref TOKEN_OPT_OMIT_CLAIMS.
  * \param[in] key_select  Selects which attestation key to sign with.
  * \param[in] cose_alg_id The algorithm to sign with. The IDs are
  *                        defined in [COSE (RFC 8152)]
@@ -166,18 +159,16 @@ struct attest_token_ctx {
  * If \c out_buffer->ptr is \c NULL and \c out_buffer_ptr->len is
  * large like \c UINT32_MAX no token will be created but the length of
  * the token that would be created will be in \c completed_token as
- * returned by attest_token_finish(). None of the cryptographic
+ * returned by attest_token_encode_finish(). None of the cryptographic
  * functions run during this, but the sizes of what they would output
  * is taken into account.
  */
 enum attest_token_err_t
-attest_token_start(struct attest_token_ctx *me,
-                   uint32_t opt_flags,
-                   int32_t key_select,
-                   int32_t cose_alg_id,
-                   const struct q_useful_buf *out_buffer);
-
-
+attest_token_encode_start(struct attest_token_encode_ctx *me,
+                          uint32_t opt_flags,
+                          int32_t key_select,
+                          int32_t cose_alg_id,
+                          const struct q_useful_buf *out_buffer);
 
 /**
  * \brief Get a copy of the CBOR encoding context
@@ -190,10 +181,11 @@ attest_token_start(struct attest_token_ctx *me,
  * any of the \c QCBOREncode_AddXXXX() methods. Anything added here
  * will be part of the payload that gets hashed. This can be used to
  * make complex CBOR structures. All open arrays and maps must be
- * close before calling any other \c attest_token methods.  \c
+ * close before calling any other \c attest_token_encode methods.  \c
  * QCBOREncode_Finish() should not be closed on this context.
  */
-QCBOREncodeContext *attest_token_borrow_cbor_cntxt(struct attest_token_ctx *me);
+QCBOREncodeContext *
+attest_token_encode_borrow_cbor_cntxt(struct attest_token_encode_ctx *me);
 
 /**
  * \brief Add a 64-bit signed integer claim
@@ -202,9 +194,9 @@ QCBOREncodeContext *attest_token_borrow_cbor_cntxt(struct attest_token_ctx *me);
  * \param[in] label  Integer label for claim.
  * \param[in] value  The integer claim data.
  */
-void attest_token_add_integer(struct attest_token_ctx *me,
-                              int32_t label,
-                              int64_t value);
+void attest_token_encode_add_integer(struct attest_token_encode_ctx *me,
+                                     int32_t label,
+                                     int64_t value);
 
 /**
  * \brief Add a binary string claim
@@ -213,9 +205,9 @@ void attest_token_add_integer(struct attest_token_ctx *me,
  * \param[in] label  Integer label for claim.
  * \param[in] value  The binary claim data.
  */
-void attest_token_add_bstr(struct attest_token_ctx *me,
-                           int32_t label,
-                           const struct q_useful_buf_c *value);
+void attest_token_encode_add_bstr(struct attest_token_encode_ctx *me,
+                                  int32_t label,
+                                  const struct q_useful_buf_c *value);
 
 /**
  * \brief Add a text string claim
@@ -224,9 +216,9 @@ void attest_token_add_bstr(struct attest_token_ctx *me,
  * \param[in] label  Integer label for claim.
  * \param[in] value  The text claim data.
  */
-void attest_token_add_tstr(struct attest_token_ctx *me,
-                           int32_t label,
-                           const struct q_useful_buf_c *value);
+void attest_token_encode_add_tstr(struct attest_token_encode_ctx *me,
+                                  int32_t label,
+                                  const struct q_useful_buf_c *value);
 
 /**
  * \brief Add some already-encoded CBOR to payload
@@ -239,10 +231,9 @@ void attest_token_add_tstr(struct attest_token_ctx *me,
  * type. It cannot be a partial map or array. It can be nested maps
  * and arrays, but they must all be complete.
  */
-void attest_token_add_encoded(struct attest_token_ctx *me,
-                              int32_t label,
-                              const struct q_useful_buf_c *encoded);
-
+void attest_token_encode_add_cbor(struct attest_token_encode_ctx *me,
+                                  int32_t label,
+                                  const struct q_useful_buf_c *encoded);
 
 /**
  * \brief Finish the token, complete the signing and get the result
@@ -257,8 +248,8 @@ void attest_token_add_encoded(struct attest_token_ctx *me,
  * formatting of the token is completed.
  */
 enum attest_token_err_t
-attest_token_finish(struct attest_token_ctx *me,
-                    struct q_useful_buf_c *completed_token);
+attest_token_encode_finish(struct attest_token_encode_ctx *me,
+                           struct q_useful_buf_c *completed_token);
 
 #ifdef __cplusplus
 }

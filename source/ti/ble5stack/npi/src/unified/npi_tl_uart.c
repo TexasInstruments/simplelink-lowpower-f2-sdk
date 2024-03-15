@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -53,9 +53,6 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_ints.h"
 #include "hal_types.h"
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Swi.h>
-
 #include "inc/npi_data.h"
 #include "inc/npi_util.h"
 #include "inc/npi_tl_uart.h"

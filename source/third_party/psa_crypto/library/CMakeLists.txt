@@ -31,7 +31,7 @@
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources.cmake)
 
-get_install_dir(MBEDCRYPTO_INSTALL_DIR)
+get_install_dir(MBEDTLS_INSTALL_DIR)
 
 project(psa_crypto LANGUAGES C ASM)
 ti_init_package(NAMESPACE PSACrypto DEPENDS_ON Drivers DriversUtils)
@@ -48,8 +48,8 @@ foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
         ti_export_sdk_include(psa_crypto_${TI_PLATFORM}_ns PUBLIC source/third_party/psa_crypto/include/psa)
         ti_export_sdk_include(psa_crypto_${TI_PLATFORM}_ns PUBLIC source/third_party/psa_crypto/include)
 
-        target_include_directories(psa_crypto_${TI_PLATFORM}_ns PRIVATE ${MBEDCRYPTO_INSTALL_DIR}/source/third_party/mbedcrypto/ti)
-        target_include_directories(psa_crypto_${TI_PLATFORM}_ns PRIVATE ${MBEDCRYPTO_INSTALL_DIR}/source/third_party/mbedcrypto/include)
+        target_include_directories(psa_crypto_${TI_PLATFORM}_ns PRIVATE ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/ti)
+        target_include_directories(psa_crypto_${TI_PLATFORM}_ns PRIVATE ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/include)
 
     endif ()
 endforeach()

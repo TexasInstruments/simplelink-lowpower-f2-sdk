@@ -59,8 +59,12 @@ const config = {
                     displayName: "Disabled"
                 },
                 {
+                    name: "macSecurePresharedKey",
+                    displayName: "Only MAC Security with Preshared Key"
+                },
+                {
                     name: "macSecure",
-                    displayName: "Enabled"
+                    displayName: "Wi-SUN Compliant Security With Key Exchange"
                 }
             ],
             description: Docs.secureLevel.description,
@@ -68,11 +72,44 @@ const config = {
             onChange: onSecureLevelChange
         },
         {
-            name: "keyTableDefaultKey",
-            displayName: "Pre-Shared Network Key",
-            default: "123456789ABCDEF00000000000000000",
+            name: "euiJoin",
+            displayName: "Controlled Device Joining based on EUI",
+            default: false,
+            description: Docs.euiJoin.description,
+            longDescription: Docs.euiJoin.longDescription,
+            hidden: true
+        },
+        {
+            name: "keyTableDefaultKey1",
+            displayName: "Pre-Shared Network Key 1",
+            default: "BB0608572CE14D7BA2D155499CC8519B",
             description: Docs.keyTableDefaultKey.description,
-            longDescription: Docs.keyTableDefaultKey.longDescription
+            longDescription: Docs.keyTableDefaultKey.longDescription,
+            hidden: true
+        },
+        {
+            name: "keyTableDefaultKey2",
+            displayName: "Pre-Shared Network Key 2",
+            default: "1849835A01684FC8ACA583F37040F74C",
+            description: Docs.keyTableDefaultKey.description,
+            longDescription: Docs.keyTableDefaultKey.longDescription,
+            hidden: true
+        },
+        {
+            name: "keyTableDefaultKey3",
+            displayName: "Pre-Shared Network Key 3",
+            default: "59EA58A4B8834938ADCB6BE388C26263",
+            description: Docs.keyTableDefaultKey.description,
+            longDescription: Docs.keyTableDefaultKey.longDescription,
+            hidden: true
+        },
+        {
+            name: "keyTableDefaultKey4",
+            displayName: "Pre-Shared Network Key 4",
+            default: "E426B491BC054AF39B59F053EC128E5F",
+            description: Docs.keyTableDefaultKey.description,
+            longDescription: Docs.keyTableDefaultKey.longDescription,
+            hidden: true
         }
     ]
 };
@@ -94,7 +131,11 @@ const config = {
 function onSecureLevelChange(inst, ui)
 {
     // Set visibility of dependent configs
-    setSecurityConfigHiddenState(inst, ui, "keyTableDefaultKey");
+    setSecurityConfigHiddenState(inst, ui, "euiJoin");
+    setSecurityConfigHiddenState(inst, ui, "keyTableDefaultKey1");
+    setSecurityConfigHiddenState(inst, ui, "keyTableDefaultKey2");
+    setSecurityConfigHiddenState(inst, ui, "keyTableDefaultKey3");
+    setSecurityConfigHiddenState(inst, ui, "keyTableDefaultKey4");
 }
 
 /*
@@ -125,9 +166,13 @@ function getSecurityConfigHiddenState(inst, cfgName)
 
     switch(cfgName)
     {
-        case "keyTableDefaultKey":
+        case "euiJoin":
+        case "keyTableDefaultKey1":
+        case "keyTableDefaultKey2":
+        case "keyTableDefaultKey3":
+        case "keyTableDefaultKey4":
         {
-            isVisible = (inst.secureLevel !== "macSecureDisabled");
+            isVisible = (inst.secureLevel == "macSecurePresharedKey");
             break;
         }
         case "secureLevel":
@@ -172,28 +217,40 @@ function setSecurityConfigHiddenState(inst, ui, cfgName)
  */
 function validate(inst, validation)
 {
-    const isSecurityDisabled = inst.secureLevel === "macSecure";
-
     // Network Security Key - verify 32 hexadecimal digits entered
-    const actualNumDigits = inst.keyTableDefaultKey.length;
+    var keyModules = []
+    keyModules[0] = ["keyTableDefaultKey1", inst.keyTableDefaultKey1];
+    keyModules[1] = ["keyTableDefaultKey2", inst.keyTableDefaultKey2];
+    keyModules[2] = ["keyTableDefaultKey3", inst.keyTableDefaultKey3];
+    keyModules[3] = ["keyTableDefaultKey4", inst.keyTableDefaultKey4];
 
-    // Verify 32 digits entered if security is enabled
-    if(!isSecurityDisabled)
+    // Log info for Wi-SUN non-compliant settings
+    if(inst.secureLevel != "macSecure")
     {
-        if(actualNumDigits !== 32)
+        validation.logInfo("Network security must be enabled with key exchange \
+        to be Wi-SUN standard compliant", inst, "secureLevel");
+    }
+    // Verify 32 digits entered if security is enabled
+    if(inst.secureLevel === "macSecurePresharedKey")
+    {
+        keyModules.forEach((module) =>
         {
-            validation.logError("Must be 32 hex digits. Currently "
-                + actualNumDigits + " digits", inst, "keyTableDefaultKey");
-        }
+            const name = module[0];
+            const value = module[1];
 
-        // Verify all digits are hexadecimal
-        const hexOnly = _.every(inst.keyTableDefaultKey,
-            (digit) => /^[a-fA-F0-9]$/.test(digit));
-        if(!hexOnly)
-        {
-            validation.logError("Must be hex digits only", inst,
-                "keyTableDefaultKey");
-        }
+            if (value.length !== 32)
+            {
+                validation.logError("Must be 32 hex digits. Currently "
+                    + value.length + " digits", inst, name);
+            }
+
+            // Verify all digits are hexadecimal
+            const hexOnly = _.every(value, (digit) => /^[a-fA-F0-9]$/.test(digit));
+            if(!hexOnly)
+            {
+                validation.logError("Must be hex digits only", inst, name);
+            }
+        });
     }
 
 }
@@ -215,34 +272,29 @@ function moduleInstances(inst)
 {
     const dependencyModule = [];
 
-    if(inst.secureLevel !== "macSecureDisabled")
-    {
-        dependencyModule.push({
-            name: "aesccmModule",
-            displayName: "AESCCM",
-            description: "Settings for MAC security",
-            moduleName: "/ti/drivers/AESCCM",
-            hidden: true
-        });
+    dependencyModule.push({
+        name: "aesccmModule",
+        displayName: "AESCCM",
+        description: "Settings for MAC security",
+        moduleName: "/ti/drivers/AESCCM",
+        hidden: true
+    });
 
-        dependencyModule.push({
-            name: "aesecbModule",
-            displayName: "AESECB",
-            description: "Settings for MAC security",
-            moduleName: "/ti/drivers/AESECB",
-            hidden: true
-        });
+    dependencyModule.push({
+        name: "aesecbModule",
+        displayName: "AESECB",
+        description: "Settings for MAC security",
+        moduleName: "/ti/drivers/AESECB",
+        hidden: true
+    });
 
-        dependencyModule.push({
-            name: "aescbcModule",
-            displayName: "AESCBC",
-            description: "Settings for MAC security",
-            moduleName: "/ti/drivers/AESCBC",
-            hidden: true
-        });
-
-
-    }
+    dependencyModule.push({
+        name: "aescbcModule",
+        displayName: "AESCBC",
+        description: "Settings for MAC security",
+        moduleName: "/ti/drivers/AESCBC",
+        hidden: true
+    });
 
     return(dependencyModule);
 }

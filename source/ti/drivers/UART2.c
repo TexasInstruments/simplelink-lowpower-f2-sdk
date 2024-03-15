@@ -224,7 +224,8 @@ int_fast16_t UART2_readTimeout(UART2_Handle handle, void *buffer, size_t size, s
     UART2_rxEnable(handle);
 
     /* Start RX. Depending on the number of bytes in the ring buffer, this will either start a DMA transaction
-     * straight into the user buffer, or continue reading into the ring buffer (if it contains enough data for this read
+     * straight into the user buffer, or continue reading into the ring buffer (if it contains enough data for this
+     * read)
      */
     UART2Support_dmaStartRx(handle);
 

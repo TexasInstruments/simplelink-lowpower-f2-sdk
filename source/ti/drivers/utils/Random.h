@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -103,6 +103,9 @@ extern "C" {
  *  Since the seed is constant per device for devices without a TRNG, the
  *  number sequence will restart after each call to Random_seedAutomatic().
  *  This will usually occur after rebooting the device.
+ *
+ *  For CC23X0, RNG will be used to generate the seed, where the application needs to
+ *  perform additional steps for initializing the RNG driver.
  *
  *  If neither a TRNG nor a unique device identifier is available,
  *  a constant will be used.

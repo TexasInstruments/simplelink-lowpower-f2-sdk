@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,9 +66,38 @@ extern "C" {
 #define CRYPTO_S_MSG_TYPE_INDEX_KEYSTORE   ((int32_t)0xEE)
 #define CRYPTO_S_MSG_TYPE_INDEX_PSA        ((int32_t)0xFF)
 
-#define CRYPTO_S_MSG_TYPE_SHIFT           8U
+#define CRYPTO_S_MSG_TYPE_FUNCNUM_BITS    4U
+#define CRYPTO_S_MSG_TYPE_FUNCNUM_SHIFT   8U
 #define CRYPTO_S_MSG_TYPE_INDEX_MASK      0xFF
 #define GET_CRYPTO_S_MSG_TYPE_INDEX(type) ((type) & (int32_t)CRYPTO_S_MSG_TYPE_INDEX_MASK)
+
+/* TF-M PSA NS interface internally limits the type to int16_t */
+#define TFM_PSA_TYPE_MASK 0x00007FFF
+
+/*
+ * Macros used to generate PSA message type values for various crypto driver
+ * functions. It duplicates the funcNum in the highest nibble when possible
+ * for bit flip resistance. The funcNum value is limited to 15.
+ */
+#define CRYPTO_S_MSG_TYPE(index, funcNum)                                                           \
+    (((index) | ((int32_t)(funcNum) << CRYPTO_S_MSG_TYPE_FUNCNUM_SHIFT) |                           \
+      ((int32_t)(funcNum) << (CRYPTO_S_MSG_TYPE_FUNCNUM_SHIFT + CRYPTO_S_MSG_TYPE_FUNCNUM_BITS))) & \
+     TFM_PSA_TYPE_MASK)
+
+#define AESCBC_S_MSG_TYPE(funcNum)       CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESCBC, funcNum)
+#define AESCCM_S_MSG_TYPE(funcNum)       CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESCCM, funcNum)
+#define AESCMAC_S_MSG_TYPE(funcNum)      CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESCMAC, funcNum)
+#define AESCTR_S_MSG_TYPE(funcNum)       CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESCTR, funcNum)
+#define AESCTRDRBG_S_MSG_TYPE(funcNum)   CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESCTRDRBG, funcNum)
+#define AESECB_S_MSG_TYPE(funcNum)       CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESECB, funcNum)
+#define AESGCM_S_MSG_TYPE(funcNum)       CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_AESGCM, funcNum)
+#define ECDH_S_MSG_TYPE(funcNum)         CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_ECDH, funcNum)
+#define ECDSA_S_MSG_TYPE(funcNum)        CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_ECDSA, funcNum)
+#define ECJPAKE_S_MSG_TYPE(funcNum)      CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_ECJPAKE, funcNum)
+#define SHA2_S_MSG_TYPE(funcNum)         CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_SHA2, funcNum)
+#define TRNG_S_MSG_TYPE(funcNum)         CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_TRNG, funcNum)
+#define KEYSTORE_PSA_S_MSG_TYPE(funcNum) CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_KEYSTORE, funcNum)
+#define PSA_S_MSG_TYPE(funcNum)          CRYPTO_S_MSG_TYPE(CRYPTO_S_MSG_TYPE_INDEX_PSA, funcNum)
 
 /*
  * Secure handle ID values which correspond to unmapped memory ranges are used

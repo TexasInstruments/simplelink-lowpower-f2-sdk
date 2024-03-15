@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -113,7 +113,7 @@ enum GapInit_InitPhy_t
  * @{
  */
 #define INIT_PHYPARAM_DFLT_SCAN_INTERVAL   16     //!< Default scan interval (in 625us)
-#define INIT_PHYPARAM_DFLT_SCAN_WINDOW     16     //!< Default scan interval (in 625us)
+#define INIT_PHYPARAM_DFLT_SCAN_WINDOW     16     //!< Default scan window (in 625us)
 #define INIT_PHYPARAM_DFLT_CONN_INT_MIN    80     //!< Default minimum connection interval (in 1.25ms)
 #define INIT_PHYPARAM_DFLT_CONN_INT_MAX    80     //!< Default maximum connection interval (in 1.25ms)
 #define INIT_PHYPARAM_DFLT_CONN_LATENCY    0      //!< Default connection latency
@@ -153,7 +153,7 @@ typedef enum
   /**
    * Scan Window
    *
-   * default: @ref INIT_PHYPARAM_DFLT_SCAN_INTERVAL
+   * default: @ref INIT_PHYPARAM_DFLT_SCAN_WINDOW
    *
    * range: 4 - 16384
    */
@@ -182,7 +182,7 @@ typedef enum
   INIT_PHYPARAM_CONN_INT_MAX,
 
   /**
-   * Slave Latency
+   * Peripheral Latency
    *
    * default: @ref INIT_PHYPARAM_DFLT_CONN_LATENCY
    *
@@ -326,7 +326,7 @@ status_t GapInit_connect(GAP_Peer_Addr_Types_t peerAddrType,
  * @return @ref bleMemAllocError
  * @return @ref bleAlreadyInRequestedMode
  */
-status_t GapInit_connectWl(uint8_t phys, uint16_t timeout);
+status_t GapInit_connectAl(uint8_t phys, uint16_t timeout);
 
 /**
  * Cancel the ongoing connection process.

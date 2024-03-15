@@ -78,10 +78,6 @@ if(enableWisunModule)
             name: "/ti/ti_wisunfan/templates/ti_wisunfan_features.h.xdt",
             outputPath: "ti_wisunfan_features.h"
         },
-        {
-            name: "/ti/ti_wisunfan/templates/ti_wisunfan_config.opts.xdt",
-            outputPath: "ti_wisunfan_config.opts"
-        },
     ];
 }
 

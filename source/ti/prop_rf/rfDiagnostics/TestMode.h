@@ -44,7 +44,8 @@
 #define TestMode_MDR_TX             6
 #define TestMode_MDR_RX             7
 #define TestMode_MDR_CS_TX          8
-#define TestMode_NUMBER_OF_MODES    9
+#define TestMode_CS_TX              9
+#define TestMode_NUMBER_OF_MODES    10
 
 #define TestMode_SELECT_CW                 1
 #define TestMode_SELECT_MODULATED          0

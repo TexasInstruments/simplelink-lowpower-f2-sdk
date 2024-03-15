@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,17 +42,11 @@
 /* driverlib header files */
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_types.h)
+#include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
 #include DeviceFamily_constructPath(inc/hw_ints.h)
 #include DeviceFamily_constructPath(driverlib/cpu.h)
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
 #include DeviceFamily_constructPath(driverlib/rom.h)
-
-// TODO: Replace once defines available in driverlib
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
-    #define CPU_SCS_ICSR_VECTACTIVE_M 0x000001FF
-#else
-    #include DeviceFamily_constructPath(inc/hw_cpu_scs.h)
-#endif
 
 typedef struct _HwiP_Obj
 {

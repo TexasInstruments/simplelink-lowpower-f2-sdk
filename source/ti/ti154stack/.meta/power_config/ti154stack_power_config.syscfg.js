@@ -425,6 +425,28 @@ function validate(inst, validation)
             validation.logInfo("The selected TX Power enables high PA ",
                 inst, "transmitPower");
         }
+
+        let board;
+        if (inst === null)
+        {
+            board = Common.getLaunchPadFromDevice()
+        }
+        else
+        {
+            board = inst.rfDesign;
+        }
+
+        if(board.includes("CC1312PSIP"))
+        {
+            if (rfTransmitPower >= 16)
+            {
+                validation.logWarning(Docs.psipComplianceWarning, inst, "transmitPower");
+            }
+            else
+            {
+                validation.logInfo(Docs.psipComplianceWarning, inst, "transmitPower");
+            }
+        }
     }
 }
 

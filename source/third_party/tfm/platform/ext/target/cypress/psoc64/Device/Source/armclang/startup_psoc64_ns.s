@@ -1,6 +1,6 @@
 ;/*
 ; * Copyright (c) 2009-2020 ARM Limited. All rights reserved.
-; * Copyright (c) 2019-2020, Cypress Semiconductor Corporation. All rights reserved.
+; * Copyright (c) 2019-2021, Cypress Semiconductor Corporation. All rights reserved.
 ; *
 ; * SPDX-License-Identifier: Apache-2.0
 ; *
@@ -25,6 +25,9 @@
 ;*/
 
                 IMPORT |Image$$ARM_LIB_STACK$$ZI$$Limit|
+
+; The CPU VTOR register
+CY_CPU_VTOR_ADDR EQU    0xE000ED08
 
 ; Vector Table Mapped to Address 0 at Reset
 
@@ -239,6 +242,34 @@ Reset_Handler   PROC
                 IMPORT  Cy_SystemInitFpuEnable
                 IMPORT  SystemInit
                 IMPORT  __main
+; Update Vector Table Offset Register
+                EXTERN RAM_VECTORS_SUPPORT
+                IF :DEF:RAM_VECTORS_SUPPORT
+
+                ; Copy vectors from ROM to RAM
+                LDR R1, =__Vectors
+                LDR R0, =__ramVectors
+                LDR R2, =__Vectors_Size
+Vectors_Copy
+                LDR R3, [R1]
+                STR R3, [R0]
+                ADDS R0, R0, #4
+                ADDS R1, R1, #4
+                SUBS R2, R2, #4
+                CMP R2, #0
+                BNE Vectors_Copy
+                LDR     R0, =__ramVectors
+
+                ELSE
+
+                LDR     R0, =__Vectors
+
+                ENDIF
+
+                LDR     R1, =CY_CPU_VTOR_ADDR
+                STR     R0, [R1]
+                DSB     0xF
+
                 LDR     R0, =Cy_SystemInitFpuEnable
                 BLX     R0
                 LDR     R0, =SystemInit
@@ -270,384 +301,189 @@ L_API_call
                 bl      Cy_SysLib_FaultHandler
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
+                MACRO
+                Default_Handler $handler_name
+$handler_name   PROC
+                EXPORT  $handler_name             [WEAK]
+                B       .
+                ENDP
+                MEND
 
-NMI_Handler     PROC
-                EXPORT  NMI_Handler               [WEAK]
-                B       .
-                ENDP
-MemManage_Handler\
-                PROC
-                EXPORT  MemManage_Handler         [WEAK]
-                B       .
-                ENDP
-BusFault_Handler\
-                PROC
-                EXPORT  BusFault_Handler          [WEAK]
-                B       .
-                ENDP
-UsageFault_Handler\
-                PROC
-                EXPORT  UsageFault_Handler        [WEAK]
-                B       .
-                ENDP
-SVC_Handler     PROC
-                EXPORT  SVC_Handler               [WEAK]
-                B       .
-                ENDP
-DebugMon_Handler\
-                PROC
-                EXPORT  DebugMon_Handler          [WEAK]
-                B       .
-                ENDP
-PendSV_Handler  PROC
-                EXPORT  PendSV_Handler            [WEAK]
-                B       .
-                ENDP
-SysTick_Handler PROC
-                EXPORT  SysTick_Handler           [WEAK]
-                B       .
-                ENDP
+                Default_Handler NMI_Handler
+                Default_Handler MemManage_Handler
+                Default_Handler BusFault_Handler
+                Default_Handler UsageFault_Handler
+                Default_Handler SVC_Handler
+                Default_Handler DebugMon_Handler
+                Default_Handler PendSV_Handler
+                Default_Handler SysTick_Handler
 
-
-Default_Handler     PROC
-                    EXPORT  Default_Handler                       [WEAK]
-                    EXPORT  ioss_interrupts_gpio_0_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_1_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_2_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_3_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_4_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_5_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_6_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_7_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_8_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_9_IRQHandler     [WEAK]
-                    EXPORT  ioss_interrupts_gpio_10_IRQHandler    [WEAK]
-                    EXPORT  ioss_interrupts_gpio_11_IRQHandler    [WEAK]
-                    EXPORT  ioss_interrupts_gpio_12_IRQHandler    [WEAK]
-                    EXPORT  ioss_interrupts_gpio_13_IRQHandler    [WEAK]
-                    EXPORT  ioss_interrupts_gpio_14_IRQHandler    [WEAK]
-                    EXPORT  ioss_interrupt_gpio_IRQHandler        [WEAK]
-                    EXPORT  ioss_interrupt_vdd_IRQHandler         [WEAK]
-                    EXPORT  lpcomp_interrupt_IRQHandler           [WEAK]
-                    EXPORT  scb_8_interrupt_IRQHandler            [WEAK]
-                    EXPORT  srss_interrupt_mcwdt_0_IRQHandler     [WEAK]
-                    EXPORT  srss_interrupt_mcwdt_1_IRQHandler     [WEAK]
-                    EXPORT  srss_interrupt_backup_IRQHandler      [WEAK]
-                    EXPORT  srss_interrupt_IRQHandler             [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_0_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_1_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_2_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_3_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_5_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_6_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_7_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_8_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_9_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_10_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_11_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_12_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_13_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_14_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_ipc_15_IRQHandler    [WEAK]
-                    EXPORT  scb_0_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_1_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_2_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_3_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_4_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_5_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_6_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_7_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_9_interrupt_IRQHandler            [WEAK]
-                    EXPORT  scb_10_interrupt_IRQHandler           [WEAK]
-                    EXPORT  scb_11_interrupt_IRQHandler           [WEAK]
-                    EXPORT  scb_12_interrupt_IRQHandler           [WEAK]
-                    EXPORT  csd_interrupt_IRQHandler              [WEAK]
-                    EXPORT  cpuss_interrupts_dmac_0_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dmac_1_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dmac_2_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dmac_3_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_0_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_1_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_2_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_3_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_4_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_5_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_6_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_7_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_8_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_9_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_10_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_11_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_12_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_13_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_14_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_15_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_16_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_17_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_18_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_19_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_20_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_21_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_22_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_23_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_24_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_25_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_26_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_27_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw0_28_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_0_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_1_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_2_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_3_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_4_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_5_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_6_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_7_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_8_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_9_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_10_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_11_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_12_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_13_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_14_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_15_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_16_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_17_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_18_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_19_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_20_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_21_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_22_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_23_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_24_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_25_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_26_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_27_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_dw1_28_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_fault_0_IRQHandler   [WEAK]
-                    EXPORT  cpuss_interrupts_fault_1_IRQHandler   [WEAK]
-                    EXPORT  cpuss_interrupt_crypto_IRQHandler     [WEAK]
-                    EXPORT  cpuss_interrupts_cm4_fp_IRQHandler    [WEAK]
-                    EXPORT  cpuss_interrupts_cm0_cti_0_IRQHandler [WEAK]
-                    EXPORT  cpuss_interrupts_cm0_cti_1_IRQHandler [WEAK]
-                    EXPORT  cpuss_interrupts_cm4_cti_0_IRQHandler [WEAK]
-                    EXPORT  cpuss_interrupts_cm4_cti_1_IRQHandler [WEAK]
-                    EXPORT  tcpwm_0_interrupts_0_IRQHandler       [WEAK]
-                    EXPORT  TIMER1_Handler                        [WEAK]
-                    EXPORT  tcpwm_0_interrupts_2_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_0_interrupts_3_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_0_interrupts_4_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_0_interrupts_5_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_0_interrupts_6_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_0_interrupts_7_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_0_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_1_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_2_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_3_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_4_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_5_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_6_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_7_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_8_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_9_IRQHandler       [WEAK]
-                    EXPORT  tcpwm_1_interrupts_10_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_11_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_12_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_13_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_14_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_15_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_16_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_17_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_18_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_19_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_20_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_21_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_22_IRQHandler      [WEAK]
-                    EXPORT  tcpwm_1_interrupts_23_IRQHandler      [WEAK]
-                    EXPORT  pass_interrupt_sar_IRQHandler         [WEAK]
-                    EXPORT  audioss_0_interrupt_i2s_IRQHandler    [WEAK]
-                    EXPORT  audioss_0_interrupt_pdm_IRQHandler    [WEAK]
-                    EXPORT  audioss_1_interrupt_i2s_IRQHandler    [WEAK]
-                    EXPORT  profile_interrupt_IRQHandler          [WEAK]
-                    EXPORT  smif_interrupt_IRQHandler             [WEAK]
-                    EXPORT  usb_interrupt_hi_IRQHandler           [WEAK]
-                    EXPORT  usb_interrupt_med_IRQHandler          [WEAK]
-                    EXPORT  usb_interrupt_lo_IRQHandler           [WEAK]
-                    EXPORT  sdhc_0_interrupt_wakeup_IRQHandler    [WEAK]
-                    EXPORT  sdhc_0_interrupt_general_IRQHandler   [WEAK]
-                    EXPORT  sdhc_1_interrupt_wakeup_IRQHandler    [WEAK]
-                    EXPORT  sdhc_1_interrupt_general_IRQHandler   [WEAK]
-
-ioss_interrupts_gpio_0_IRQHandler
-ioss_interrupts_gpio_1_IRQHandler
-ioss_interrupts_gpio_2_IRQHandler
-ioss_interrupts_gpio_3_IRQHandler
-ioss_interrupts_gpio_4_IRQHandler
-ioss_interrupts_gpio_5_IRQHandler
-ioss_interrupts_gpio_6_IRQHandler
-ioss_interrupts_gpio_7_IRQHandler
-ioss_interrupts_gpio_8_IRQHandler
-ioss_interrupts_gpio_9_IRQHandler
-ioss_interrupts_gpio_10_IRQHandler
-ioss_interrupts_gpio_11_IRQHandler
-ioss_interrupts_gpio_12_IRQHandler
-ioss_interrupts_gpio_13_IRQHandler
-ioss_interrupts_gpio_14_IRQHandler
-ioss_interrupt_gpio_IRQHandler
-ioss_interrupt_vdd_IRQHandler
-lpcomp_interrupt_IRQHandler
-scb_8_interrupt_IRQHandler
-srss_interrupt_mcwdt_0_IRQHandler
-srss_interrupt_mcwdt_1_IRQHandler
-srss_interrupt_backup_IRQHandler
-srss_interrupt_IRQHandler
-cpuss_interrupts_ipc_0_IRQHandler
-cpuss_interrupts_ipc_1_IRQHandler
-cpuss_interrupts_ipc_2_IRQHandler
-cpuss_interrupts_ipc_3_IRQHandler
-cpuss_interrupts_ipc_5_IRQHandler
-cpuss_interrupts_ipc_6_IRQHandler
-cpuss_interrupts_ipc_7_IRQHandler
-cpuss_interrupts_ipc_8_IRQHandler
-cpuss_interrupts_ipc_9_IRQHandler
-cpuss_interrupts_ipc_10_IRQHandler
-cpuss_interrupts_ipc_11_IRQHandler
-cpuss_interrupts_ipc_12_IRQHandler
-cpuss_interrupts_ipc_13_IRQHandler
-cpuss_interrupts_ipc_14_IRQHandler
-cpuss_interrupts_ipc_15_IRQHandler
-scb_0_interrupt_IRQHandler
-scb_1_interrupt_IRQHandler
-scb_2_interrupt_IRQHandler
-scb_3_interrupt_IRQHandler
-scb_4_interrupt_IRQHandler
-scb_5_interrupt_IRQHandler
-scb_6_interrupt_IRQHandler
-scb_7_interrupt_IRQHandler
-scb_9_interrupt_IRQHandler
-scb_10_interrupt_IRQHandler
-scb_11_interrupt_IRQHandler
-scb_12_interrupt_IRQHandler
-csd_interrupt_IRQHandler
-cpuss_interrupts_dmac_0_IRQHandler
-cpuss_interrupts_dmac_1_IRQHandler
-cpuss_interrupts_dmac_2_IRQHandler
-cpuss_interrupts_dmac_3_IRQHandler
-cpuss_interrupts_dw0_0_IRQHandler
-cpuss_interrupts_dw0_1_IRQHandler
-cpuss_interrupts_dw0_2_IRQHandler
-cpuss_interrupts_dw0_3_IRQHandler
-cpuss_interrupts_dw0_4_IRQHandler
-cpuss_interrupts_dw0_5_IRQHandler
-cpuss_interrupts_dw0_6_IRQHandler
-cpuss_interrupts_dw0_7_IRQHandler
-cpuss_interrupts_dw0_8_IRQHandler
-cpuss_interrupts_dw0_9_IRQHandler
-cpuss_interrupts_dw0_10_IRQHandler
-cpuss_interrupts_dw0_11_IRQHandler
-cpuss_interrupts_dw0_12_IRQHandler
-cpuss_interrupts_dw0_13_IRQHandler
-cpuss_interrupts_dw0_14_IRQHandler
-cpuss_interrupts_dw0_15_IRQHandler
-cpuss_interrupts_dw0_16_IRQHandler
-cpuss_interrupts_dw0_17_IRQHandler
-cpuss_interrupts_dw0_18_IRQHandler
-cpuss_interrupts_dw0_19_IRQHandler
-cpuss_interrupts_dw0_20_IRQHandler
-cpuss_interrupts_dw0_21_IRQHandler
-cpuss_interrupts_dw0_22_IRQHandler
-cpuss_interrupts_dw0_23_IRQHandler
-cpuss_interrupts_dw0_24_IRQHandler
-cpuss_interrupts_dw0_25_IRQHandler
-cpuss_interrupts_dw0_26_IRQHandler
-cpuss_interrupts_dw0_27_IRQHandler
-cpuss_interrupts_dw0_28_IRQHandler
-cpuss_interrupts_dw1_0_IRQHandler
-cpuss_interrupts_dw1_1_IRQHandler
-cpuss_interrupts_dw1_2_IRQHandler
-cpuss_interrupts_dw1_3_IRQHandler
-cpuss_interrupts_dw1_4_IRQHandler
-cpuss_interrupts_dw1_5_IRQHandler
-cpuss_interrupts_dw1_6_IRQHandler
-cpuss_interrupts_dw1_7_IRQHandler
-cpuss_interrupts_dw1_8_IRQHandler
-cpuss_interrupts_dw1_9_IRQHandler
-cpuss_interrupts_dw1_10_IRQHandler
-cpuss_interrupts_dw1_11_IRQHandler
-cpuss_interrupts_dw1_12_IRQHandler
-cpuss_interrupts_dw1_13_IRQHandler
-cpuss_interrupts_dw1_14_IRQHandler
-cpuss_interrupts_dw1_15_IRQHandler
-cpuss_interrupts_dw1_16_IRQHandler
-cpuss_interrupts_dw1_17_IRQHandler
-cpuss_interrupts_dw1_18_IRQHandler
-cpuss_interrupts_dw1_19_IRQHandler
-cpuss_interrupts_dw1_20_IRQHandler
-cpuss_interrupts_dw1_21_IRQHandler
-cpuss_interrupts_dw1_22_IRQHandler
-cpuss_interrupts_dw1_23_IRQHandler
-cpuss_interrupts_dw1_24_IRQHandler
-cpuss_interrupts_dw1_25_IRQHandler
-cpuss_interrupts_dw1_26_IRQHandler
-cpuss_interrupts_dw1_27_IRQHandler
-cpuss_interrupts_dw1_28_IRQHandler
-cpuss_interrupts_fault_0_IRQHandler
-cpuss_interrupts_fault_1_IRQHandler
-cpuss_interrupt_crypto_IRQHandler
-cpuss_interrupts_cm4_fp_IRQHandler
-cpuss_interrupts_cm0_cti_0_IRQHandler
-cpuss_interrupts_cm0_cti_1_IRQHandler
-cpuss_interrupts_cm4_cti_0_IRQHandler
-cpuss_interrupts_cm4_cti_1_IRQHandler
-tcpwm_0_interrupts_0_IRQHandler
-TIMER1_Handler
-tcpwm_0_interrupts_2_IRQHandler
-tcpwm_0_interrupts_3_IRQHandler
-tcpwm_0_interrupts_4_IRQHandler
-tcpwm_0_interrupts_5_IRQHandler
-tcpwm_0_interrupts_6_IRQHandler
-tcpwm_0_interrupts_7_IRQHandler
-tcpwm_1_interrupts_0_IRQHandler
-tcpwm_1_interrupts_1_IRQHandler
-tcpwm_1_interrupts_2_IRQHandler
-tcpwm_1_interrupts_3_IRQHandler
-tcpwm_1_interrupts_4_IRQHandler
-tcpwm_1_interrupts_5_IRQHandler
-tcpwm_1_interrupts_6_IRQHandler
-tcpwm_1_interrupts_7_IRQHandler
-tcpwm_1_interrupts_8_IRQHandler
-tcpwm_1_interrupts_9_IRQHandler
-tcpwm_1_interrupts_10_IRQHandler
-tcpwm_1_interrupts_11_IRQHandler
-tcpwm_1_interrupts_12_IRQHandler
-tcpwm_1_interrupts_13_IRQHandler
-tcpwm_1_interrupts_14_IRQHandler
-tcpwm_1_interrupts_15_IRQHandler
-tcpwm_1_interrupts_16_IRQHandler
-tcpwm_1_interrupts_17_IRQHandler
-tcpwm_1_interrupts_18_IRQHandler
-tcpwm_1_interrupts_19_IRQHandler
-tcpwm_1_interrupts_20_IRQHandler
-tcpwm_1_interrupts_21_IRQHandler
-tcpwm_1_interrupts_22_IRQHandler
-tcpwm_1_interrupts_23_IRQHandler
-pass_interrupt_sar_IRQHandler
-audioss_0_interrupt_i2s_IRQHandler
-audioss_0_interrupt_pdm_IRQHandler
-audioss_1_interrupt_i2s_IRQHandler
-profile_interrupt_IRQHandler
-smif_interrupt_IRQHandler
-usb_interrupt_hi_IRQHandler
-usb_interrupt_med_IRQHandler
-usb_interrupt_lo_IRQHandler
-sdhc_0_interrupt_wakeup_IRQHandler
-sdhc_0_interrupt_general_IRQHandler
-sdhc_1_interrupt_wakeup_IRQHandler
-sdhc_1_interrupt_general_IRQHandler
-
-                B       .
-
-                ENDP
+                Default_Handler ioss_interrupts_gpio_0_IRQHandler
+                Default_Handler ioss_interrupts_gpio_1_IRQHandler
+                Default_Handler ioss_interrupts_gpio_2_IRQHandler
+                Default_Handler ioss_interrupts_gpio_3_IRQHandler
+                Default_Handler ioss_interrupts_gpio_4_IRQHandler
+                Default_Handler ioss_interrupts_gpio_5_IRQHandler
+                Default_Handler ioss_interrupts_gpio_6_IRQHandler
+                Default_Handler ioss_interrupts_gpio_7_IRQHandler
+                Default_Handler ioss_interrupts_gpio_8_IRQHandler
+                Default_Handler ioss_interrupts_gpio_9_IRQHandler
+                Default_Handler ioss_interrupts_gpio_10_IRQHandler
+                Default_Handler ioss_interrupts_gpio_11_IRQHandler
+                Default_Handler ioss_interrupts_gpio_12_IRQHandler
+                Default_Handler ioss_interrupts_gpio_13_IRQHandler
+                Default_Handler ioss_interrupts_gpio_14_IRQHandler
+                Default_Handler ioss_interrupt_gpio_IRQHandler
+                Default_Handler ioss_interrupt_vdd_IRQHandler
+                Default_Handler lpcomp_interrupt_IRQHandler
+                Default_Handler scb_8_interrupt_IRQHandler
+                Default_Handler srss_interrupt_mcwdt_0_IRQHandler
+                Default_Handler srss_interrupt_mcwdt_1_IRQHandler
+                Default_Handler srss_interrupt_backup_IRQHandler
+                Default_Handler srss_interrupt_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_0_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_1_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_2_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_3_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_5_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_6_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_7_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_8_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_9_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_10_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_11_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_12_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_13_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_14_IRQHandler
+                Default_Handler cpuss_interrupts_ipc_15_IRQHandler
+                Default_Handler scb_0_interrupt_IRQHandler
+                Default_Handler scb_1_interrupt_IRQHandler
+                Default_Handler scb_2_interrupt_IRQHandler
+                Default_Handler scb_3_interrupt_IRQHandler
+                Default_Handler scb_4_interrupt_IRQHandler
+                Default_Handler scb_5_interrupt_IRQHandler
+                Default_Handler scb_6_interrupt_IRQHandler
+                Default_Handler scb_7_interrupt_IRQHandler
+                Default_Handler scb_9_interrupt_IRQHandler
+                Default_Handler scb_10_interrupt_IRQHandler
+                Default_Handler scb_11_interrupt_IRQHandler
+                Default_Handler scb_12_interrupt_IRQHandler
+                Default_Handler csd_interrupt_IRQHandler
+                Default_Handler cpuss_interrupts_dmac_0_IRQHandler
+                Default_Handler cpuss_interrupts_dmac_1_IRQHandler
+                Default_Handler cpuss_interrupts_dmac_2_IRQHandler
+                Default_Handler cpuss_interrupts_dmac_3_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_0_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_1_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_2_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_3_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_4_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_5_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_6_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_7_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_8_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_9_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_10_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_11_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_12_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_13_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_14_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_15_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_16_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_17_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_18_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_19_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_20_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_21_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_22_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_23_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_24_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_25_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_26_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_27_IRQHandler
+                Default_Handler cpuss_interrupts_dw0_28_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_0_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_1_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_2_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_3_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_4_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_5_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_6_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_7_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_8_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_9_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_10_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_11_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_12_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_13_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_14_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_15_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_16_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_17_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_18_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_19_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_20_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_21_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_22_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_23_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_24_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_25_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_26_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_27_IRQHandler
+                Default_Handler cpuss_interrupts_dw1_28_IRQHandler
+                Default_Handler cpuss_interrupts_fault_0_IRQHandler
+                Default_Handler cpuss_interrupts_fault_1_IRQHandler
+                Default_Handler cpuss_interrupt_crypto_IRQHandler
+                Default_Handler cpuss_interrupts_cm4_fp_IRQHandler
+                Default_Handler cpuss_interrupts_cm0_cti_0_IRQHandler
+                Default_Handler cpuss_interrupts_cm0_cti_1_IRQHandler
+                Default_Handler cpuss_interrupts_cm4_cti_0_IRQHandler
+                Default_Handler cpuss_interrupts_cm4_cti_1_IRQHandler
+                Default_Handler tcpwm_0_interrupts_0_IRQHandler
+                Default_Handler TIMER1_Handler
+                Default_Handler tcpwm_0_interrupts_2_IRQHandler
+                Default_Handler tcpwm_0_interrupts_3_IRQHandler
+                Default_Handler tcpwm_0_interrupts_4_IRQHandler
+                Default_Handler tcpwm_0_interrupts_5_IRQHandler
+                Default_Handler tcpwm_0_interrupts_6_IRQHandler
+                Default_Handler tcpwm_0_interrupts_7_IRQHandler
+                Default_Handler tcpwm_1_interrupts_0_IRQHandler
+                Default_Handler tcpwm_1_interrupts_1_IRQHandler
+                Default_Handler tcpwm_1_interrupts_2_IRQHandler
+                Default_Handler tcpwm_1_interrupts_3_IRQHandler
+                Default_Handler tcpwm_1_interrupts_4_IRQHandler
+                Default_Handler tcpwm_1_interrupts_5_IRQHandler
+                Default_Handler tcpwm_1_interrupts_6_IRQHandler
+                Default_Handler tcpwm_1_interrupts_7_IRQHandler
+                Default_Handler tcpwm_1_interrupts_8_IRQHandler
+                Default_Handler tcpwm_1_interrupts_9_IRQHandler
+                Default_Handler tcpwm_1_interrupts_10_IRQHandler
+                Default_Handler tcpwm_1_interrupts_11_IRQHandler
+                Default_Handler tcpwm_1_interrupts_12_IRQHandler
+                Default_Handler tcpwm_1_interrupts_13_IRQHandler
+                Default_Handler tcpwm_1_interrupts_14_IRQHandler
+                Default_Handler tcpwm_1_interrupts_15_IRQHandler
+                Default_Handler tcpwm_1_interrupts_16_IRQHandler
+                Default_Handler tcpwm_1_interrupts_17_IRQHandler
+                Default_Handler tcpwm_1_interrupts_18_IRQHandler
+                Default_Handler tcpwm_1_interrupts_19_IRQHandler
+                Default_Handler tcpwm_1_interrupts_20_IRQHandler
+                Default_Handler tcpwm_1_interrupts_21_IRQHandler
+                Default_Handler tcpwm_1_interrupts_22_IRQHandler
+                Default_Handler tcpwm_1_interrupts_23_IRQHandler
+                Default_Handler pass_interrupt_sar_IRQHandler
+                Default_Handler audioss_0_interrupt_i2s_IRQHandler
+                Default_Handler audioss_0_interrupt_pdm_IRQHandler
+                Default_Handler audioss_1_interrupt_i2s_IRQHandler
+                Default_Handler profile_interrupt_IRQHandler
+                Default_Handler smif_interrupt_IRQHandler
+                Default_Handler usb_interrupt_hi_IRQHandler
+                Default_Handler usb_interrupt_med_IRQHandler
+                Default_Handler usb_interrupt_lo_IRQHandler
+                Default_Handler sdhc_0_interrupt_wakeup_IRQHandler
+                Default_Handler sdhc_0_interrupt_general_IRQHandler
+                Default_Handler sdhc_1_interrupt_wakeup_IRQHandler
+                Default_Handler sdhc_1_interrupt_general_IRQHandler
 
                 ALIGN
 

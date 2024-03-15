@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,15 +43,13 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#if defined(TFM_PSA_API)
+#if defined(TFM_BUILD)
     #include "ti_drivers_config.h" /* Sysconfig generated header */
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define ECDSA_S_MSG_TYPE(index) (CRYPTO_S_MSG_TYPE_INDEX_ECDSA | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + (index))))
 
 /*
  * ECDSA secure message types

@@ -524,7 +524,8 @@ const PKA_EccParam256 Curve25519_order       = {.byte = {0xb9, 0xdc, 0xf5, 0x5c,
 // Zeroize PKA RAM. Not threadsafe.
 //
 //*****************************************************************************
-void PKAClearPkaRam(void){
+void PKAClearPkaRam(void)
+{
     // Get initial state
     uint32_t secdmaclkgr = HWREG(PRCM_BASE + PRCM_O_SECDMACLKGR);
 
@@ -549,6 +550,8 @@ void PKAClearPkaRam(void){
 static uint32_t PKAWritePkaParam(const uint8_t *param, uint32_t paramLength, uint32_t paramOffset, uint32_t ptrRegOffset)
 {
     uint32_t i;
+    uint_fast8_t j;
+    uint32_t tempWord;
     uint32_t *paramWordAlias = (uint32_t *)param;
     // Take the floor of paramLength in 32-bit words
     uint32_t paramLengthInWords = paramLength / sizeof(uint32_t);
@@ -556,9 +559,27 @@ static uint32_t PKAWritePkaParam(const uint8_t *param, uint32_t paramLength, uin
     // Only copy data if it is specified. We may wish to simply allocate another buffer and get
     // the required offset.
     if (param) {
-        // Load the number in PKA RAM
+        // Load the data in PKA RAM
         for (i = 0; i < paramLengthInWords; i++) {
-            HWREG(PKA_RAM_BASE + paramOffset + sizeof(uint32_t) * i) = paramWordAlias[i];
+            // If param address is word aligned, param could be an address on PKA RAM,
+            // which must be word aligned. Since PKA RAM only word addressable, i.e, it only
+            // allows reading and writing a word, when param address is word aligned,
+            // write the data in param as a word in PKA RAM. When param adddress is not word aligned,
+            // copy the data as bytes in a temp word buffer and write the temp buffer in PKA RAM.
+            if (IS_WORD_ALIGNED(paramWordAlias)) {
+                // Since PKA RAM is only word addressable, load the data as word in PKA RAM
+                HWREG(PKA_RAM_BASE + paramOffset + sizeof(uint32_t) * i) = paramWordAlias[i];
+            }
+            else {
+                // Copy as bytes in temp buffer
+                tempWord = 0;
+                for (j = 0; j < sizeof(tempWord); j++) {
+                    tempWord |= (param[(i * sizeof(uint32_t)) + j] << (8 * j));
+                }
+
+                // Since PKA RAM is only word addressable, load temp buffer as word in PKA RAM
+                HWREG(PKA_RAM_BASE + paramOffset + sizeof(uint32_t) * i) = tempWord;
+            }
         }
 
         // If the length is not a word-multiple, fill up a temporary word and copy that in
@@ -569,18 +590,26 @@ static uint32_t PKAWritePkaParam(const uint8_t *param, uint32_t paramLength, uin
         // bytes of the most significant word. That would have resulted in doing maths operations
         // on whatever follows param in RAM.
         if (paramLength % sizeof(uint32_t)) {
-            uint32_t temp = 0;
+            tempWord = 0;
             uint8_t j;
 
-            // Load the entire word line of the param remainder
-            temp = paramWordAlias[i];
-
-            // Zero-out all bytes beyond the end of the param
-            for (j = paramLength % sizeof(uint32_t); j < sizeof(uint32_t); j++) {
-                ((uint8_t *)&temp)[j] = 0;
+            if (IS_WORD_ALIGNED(paramWordAlias)) {
+                // Load the entire word line of the param remainder
+                tempWord = paramWordAlias[i];
+                // Zero-out all bytes beyond the end of the param
+                for (j = paramLength % sizeof(uint32_t); j < sizeof(uint32_t); j++) {
+                    ((uint8_t *)&tempWord)[j] = 0;
+                }
+            }
+            else {
+                // Only copy the param remainder bytes.
+                // The rest of the bytes are already zero initialized.
+                for (j = 0; j < paramLength % sizeof(uint32_t); j++) {
+                    tempWord |= param[(i * sizeof(uint32_t))+ j] << (8 * j);
+                }
             }
 
-            HWREG(PKA_RAM_BASE + paramOffset + sizeof(uint32_t) * i) = temp;
+            HWREG(PKA_RAM_BASE + paramOffset + sizeof(uint32_t) * i) = tempWord;
 
             // Increment paramLengthInWords since we take the ceiling of length / sizeof(uint32_t)
             paramLengthInWords++;
@@ -622,6 +651,12 @@ static uint32_t PKAWritePkaParamExtraOffset(const uint8_t *param, uint32_t param
     return  (sizeof(uint32_t) * 2) + PKAWritePkaParam(param, paramLength, paramOffset, ptrRegOffset);
 }
 
+#if defined(__GNUC__) && !defined(__ti__)
+// Disable GCC's string operation overflow warning when writing a
+// value to memory given by a uint8_t pointer.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow=2"
+#endif
 //*****************************************************************************
 //
 // Writes the result of a large number arithmetic operation to a provided buffer.
@@ -633,6 +668,8 @@ static uint32_t PKAGetBigNumResult(uint8_t *resultBuf, uint32_t *resultLength, u
     uint32_t lswOffset;
     uint32_t lengthInWords;
     uint32_t i;
+    uint_fast8_t j;
+    uint32_t tempWord;
     uint32_t *resultWordAlias = (uint32_t *)resultBuf;
 
     // Check the arguments.
@@ -652,8 +689,8 @@ static uint32_t PKAGetBigNumResult(uint8_t *resultBuf, uint32_t *resultLength, u
     // to handle a special error for the perhaps valid result of zero.
     // They will only get the error status if they do not provide a buffer
     if (mswOffset & PKA_MSW_RESULT_IS_ZERO_M) {
-        if (*resultLength){
-            if(resultBuf){
+        if (*resultLength) {
+            if(resultBuf) {
                 resultBuf[0] = 0;
             }
 
@@ -687,9 +724,27 @@ static uint32_t PKAGetBigNumResult(uint8_t *resultBuf, uint32_t *resultLength, u
 
 
     if (resultBuf) {
-        // Copy the result into the resultBuf.
+        // If resultBuf address is word aligned, it could be an address on PKA RAM,
+        // which must be word aligned. Since PKA RAM is only word addressable, i.e, it only
+        // allows reading and writing a word, when resultBuf address is word aligned,
+        // read the result in PKA RAM as a word directly. When resultBuf adddress is not word aligned,
+        // use a temp word buffer to store the result from PKA RAM and write the result as bytes
+        // in resultBuf from the temp buffer.
         for (i = 0; i < lengthInWords; i++) {
-            resultWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            if (IS_WORD_ALIGNED(resultWordAlias)) {
+                resultWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            }
+            else {
+                // Since PKA RAM is only word addressable,
+                // copy the result as word in a temp buffer from PKA RAM
+                tempWord = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+
+
+                // Copy the result from temp buffer as bytes
+                for (j = 0; j < sizeof(tempWord); j++) {
+                    resultBuf[i * sizeof(tempWord) + j] = ((uint8_t *)&tempWord)[j];
+                }
+            }
         }
     }
 
@@ -706,6 +761,8 @@ static uint32_t PKAGetBigNumResultRemainder(uint8_t *resultBuf, uint32_t *result
     uint32_t regMSWVal;
     uint32_t lengthInWords;
     uint32_t i;
+    uint_fast8_t j;
+    uint32_t tempWord;
     uint32_t *resultWordAlias = (uint32_t *)resultBuf;
 
     // Check the arguments.
@@ -725,8 +782,8 @@ static uint32_t PKAGetBigNumResultRemainder(uint8_t *resultBuf, uint32_t *result
     // to handle a special error for the perhaps valid result of zero.
     // They will only get the error status if they do not provide a buffer
     if (regMSWVal & PKA_DIVMSW_RESULT_IS_ZERO_M) {
-        if (*resultLength){
-            if(resultBuf){
+        if (*resultLength) {
+            if(resultBuf) {
                 resultBuf[0] = 0;
             }
 
@@ -751,14 +808,36 @@ static uint32_t PKAGetBigNumResultRemainder(uint8_t *resultBuf, uint32_t *result
     *resultLength = lengthInWords * sizeof(uint32_t);
 
     if (resultBuf) {
-        // Copy the result into the resultBuf.
+        // If resultBuf address is word aligned, it could be an address on PKA RAM,
+        // which must be word aligned. Since PKA RAM is only word addressable, i.e, it only
+        // allows reading and writing a word, when resultBuf address is word aligned,
+        // read the result in PKA RAM as a word directly. When resultBuf adddress is not word aligned,
+        // use a temp word buffer to store the result from PKA RAM and write the result as bytes
+        // in resultBuf from the temp buffer.
         for (i = 0; i < lengthInWords; i++) {
-            resultWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            if (IS_WORD_ALIGNED(resultWordAlias)) {
+                // Since PKA RAM is only word addressable, copy the result as word from PKA RAM
+                resultWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+            }
+            else {
+                // Since PKA RAM is only word addressable,
+                // copy the result as word in a temp buffer from PKA RAM
+                tempWord = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
+
+                // Copy the result from temp buffer as bytes
+                for (j = 0; j < sizeof(tempWord); j++) {
+                    resultBuf[i * sizeof(tempWord) + j] = ((uint8_t *)&tempWord)[j];
+                }
+            }
         }
     }
 
     return PKA_STATUS_SUCCESS;
 }
+#if defined(__GNUC__) && !defined(__ti__)
+// GCC: Stop ignoring -Wstringop-overflow=2
+#pragma GCC diagnostic pop
+#endif
 
 //*****************************************************************************
 //
@@ -797,15 +876,22 @@ static uint32_t PKAGetECCResult(uint8_t *curvePointX, uint8_t *curvePointY, uint
     if (curvePointX != NULL) {
         // Copy the x coordinate value of the result from vector D into
         // the curvePoint.
+        // If curvePointX address is word aligned, it could be an address on PKA RAM,
+        // which must be word aligned. Since PKA RAM is only word addressable, i.e, it only
+        // allows reading and writing a word, when curvePointX address is word aligned,
+        // read the result in PKA RAM as a word directly. When curvePointX adddress is not word aligned,
+        // use a temp word buffer to store the result from PKA RAM and write the result as bytes
+        // in curvePointX from the temp buffer.
         for (i = 0; i < (length / sizeof(uint32_t)); i++) {
             // Check for word aligned address in x coordinate buffer
             if (IS_WORD_ALIGNED(curvePointX)) {
-                // Copy x coordinate as word
+                // Since PKA RAM is only word addressable, copy x coordinate as a word from PKA RAM
                 xWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
             }
             else {
                 // Copy x Coordinate as bytes
-                // Temporarily load the entire word line of the coordinate
+                // Since PKA RAM is only word addressable, temporarily load
+                // the entire word line of the coordinate
                 tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
 
                 // Write the bytes to the X coordinate
@@ -836,15 +922,22 @@ static uint32_t PKAGetECCResult(uint8_t *curvePointX, uint8_t *curvePointY, uint
     if (curvePointY != NULL) {
         // Copy the y coordinate value of the result from vector D into
         // the curvePoint.
+        // If curvePointY address is word aligned, it could be an address on PKA RAM,
+        // which must be word aligned. Since PKA RAM is only word addressable, i.e, it only
+        // allows reading and writing a word, when curvePointY address is word aligned,
+        // read the result in PKA RAM as a word directly. When curvePointY adddress is not word aligned,
+        // use a temp word buffer to store the result from PKA RAM and write the result as bytes
+        // in curvePointY from the temp buffer.
         for (i = 0; i < (length / sizeof(uint32_t)); i++) {
             // Check for word aligned address in y coordinate buffer
             if (IS_WORD_ALIGNED(curvePointY)) {
-                // Copy y coordinate as word
+                // Since PKA RAM is only word addressable, copy y coordinate as a word from PKA RAM
                 yWordAlias[i] = HWREG(resultPKAMemAddr + sizeof(uint32_t) * i);
             }
             else {
                 // Copy y Coordinate as bytes
-                // Temporarily load the entire word line of the coordinate
+                // Since PKA RAM is only word addressable, temporarily load
+                // the entire word line of the coordinate
                 tempWord = HWREG(resultPKAMemAddr + sizeof(tempWord) * i);
 
                 // Write the bytes to the Y coordinate

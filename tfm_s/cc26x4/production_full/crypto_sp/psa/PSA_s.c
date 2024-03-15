@@ -38,7 +38,7 @@
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/interface/include/tfm_api.h>
 
-#include <third_party/tfm/secure_fw/spm/include/tfm_utils.h> /* tfm_core_panic() */
+#include <third_party/tfm/secure_fw/spm/include/utilities.h> /* tfm_core_panic() */
 
 /* Back-end psa_hash_operation_t */
 extern psa_hash_operation_t ti_psa_crypto_hashOperation;

@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -98,12 +98,12 @@
  *   <td>LE Add Device to Resolving List Command</td>
  * </tr>
  * <tr>
- *   <td>@ref HCI_LE_AddWhiteListCmd</td>
- *   <td>LE Add Device To White List Command</td>
+ *   <td>@ref HCI_LE_AddAcceptListCmd</td>
+ *   <td>LE Add Device To accept List Command</td>
  * </tr>
  * <tr>
- *   <td>@ref HCI_LE_ClearWhiteListCmd</td>
- *   <td>LE Clear White List Command</td>
+ *   <td>@ref HCI_LE_ClearAcceptListCmd</td>
+ *   <td>LE Clear accept List Command</td>
  * </tr>
  * <tr>
  *   <td>@ref HCI_LE_EncryptCmd</td>
@@ -150,16 +150,16 @@
  *   <td>LE Read Supported States Command</td>
  * </tr>
  * <tr>
- *   <td>@ref HCI_LE_ReadWhiteListSizeCmd</td>
- *   <td>LE Read White List Size Command</td>
+ *   <td>@ref HCI_LE_ReadAcceptListSizeCmd</td>
+ *   <td>LE Read accept List Size Command</td>
  * </tr>
  * <tr>
  *   <td>@ref HCI_LE_RemoveDeviceFromResolvingListCmd</td>
  *   <td>LE Remove Device From Resolving List Command</td>
  * </tr>
  * <tr>
- *   <td>@ref HCI_LE_RemoveWhiteListCmd</td>
- *   <td>LE Remove Device From White List Command</td>
+ *   <td>@ref HCI_LE_RemoveAcceptListCmd</td>
+ *   <td>LE Remove Device From accept List Command</td>
  * </tr>
  * <tr>
  *   <td>@ref HCI_LE_SetDataLenCmd</td>
@@ -353,6 +353,10 @@
  *   <td>HCI Extension Set Transmitter Power</td>
  * </tr>
  * <tr>
+ *   <td>@ref HCI_EXT_SetTxPowerDbmCmd</td>
+ *   <td>HCI Extension Set Transmitter Power in dBm</td>
+ * </tr>
+ * <tr>
  *   <td>@ref HCI_EXT_SetDtmTxPktCntCmd</td>
  *   <td>HCI Extension Set DTM Transmitter Packet Count</td>
  * </tr>
@@ -390,6 +394,16 @@ extern "C"
 /*
  * MACROS
  */
+
+ // Update the connection handle (Mandatory for CC33xx with power management enabled. Optional for other devices)
+ // This is done in order to distinguished between CMD to ACL packets when received under autonomous UART mode
+ // Note this change is applied regardless of the current autonomous UART state as it changes dynamically
+ #ifndef CONN_HANDLE_HCI_MASK
+ #define CONN_HANDLE_HCI_MASK 0
+ #endif
+
+ #define CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle)    (uint16_t)((connHandle) & ~CONN_HANDLE_HCI_MASK)
+ #define CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle)    (uint16_t)((connHandle) | CONN_HANDLE_HCI_MASK)
 
 /*
  * CONSTANTS
@@ -559,14 +573,14 @@ extern "C"
 /** @} End Adv_channels */
 
 /**
- * @defgroup Adv_whitelist Advertiser White List Policy
+ * @defgroup Adv_acceptlist Advertiser accept List Policy
  * @{
  */
-#define HCI_ADV_WL_POLICY_ANY_REQ                      LL_ADV_WL_POLICY_ANY_REQ             //!< Any Request
-#define HCI_ADV_WL_POLICY_WL_SCAN_REQ                  LL_ADV_WL_POLICY_WL_SCAN_REQ         //!< Scan Requests
-#define HCI_ADV_WL_POLICY_WL_CONNECT_IND               LL_ADV_WL_POLICY_WL_CONNECT_IND      //!< Connection Inidication
-#define HCI_ADV_WL_POLICY_WL_ALL_REQ                   LL_ADV_WL_POLICY_WL_ALL_REQ          //!< All Requests
-/** @} End Adv_whitelist */
+#define HCI_ADV_AL_POLICY_ANY_REQ                      LL_ADV_AL_POLICY_ANY_REQ             //!< Any Request
+#define HCI_ADV_AL_POLICY_AL_SCAN_REQ                  LL_ADV_AL_POLICY_AL_SCAN_REQ         //!< Scan Requests
+#define HCI_ADV_AL_POLICY_AL_CONNECT_IND               LL_ADV_AL_POLICY_AL_CONNECT_IND      //!< Connection Inidication
+#define HCI_ADV_AL_POLICY_AL_ALL_REQ                   LL_ADV_AL_POLICY_AL_ALL_REQ          //!< All Requests
+/** @} End Adv_acceptlist */
 
 /**
  * @defgroup Adv_commands Advertiser Commands
@@ -585,13 +599,13 @@ extern "C"
 /** @} End Scan_types */
 
 /**
- * @defgroup Scan_whitelist Scan White List Policy
+ * @defgroup Scan_acceptlist Scan accept List Policy
  * @{
  */
-// Scan White List Policy
-#define HCI_SCAN_WL_POLICY_ANY_ADV_PKTS                LL_SCAN_WL_POLICY_ANY_ADV_PKTS       //!< Any Advertising Packets
-#define HCI_SCAN_WL_POLICY_USE_WHITE_LIST              LL_SCAN_WL_POLICY_USE_WHITE_LIST     //!< Use Whitelist
-/** @} End Scan_whitelist */
+// Scan accept List Policy
+#define HCI_SCAN_AL_POLICY_ANY_ADV_PKTS                LL_SCAN_AL_POLICY_ANY_ADV_PKTS       //!< Any Advertising Packets
+#define HCI_SCAN_AL_POLICY_USE_ACCEPT_LIST              LL_SCAN_AL_POLICY_USE_ACCEPT_LIST    //!< Use acceptlist
+/** @} End Scan_acceptlist */
 
 /**
  * @defgroup Scan_filtering Scan Filtering
@@ -608,16 +622,16 @@ extern "C"
  */
 // Scan Commands
 #define HCI_SCAN_STOP                                  LL_SCAN_STOP     //!< Scan Stop
-#define HCI_SCAN_START                                 LL_SCAN_START            //!< Scan Start
+#define HCI_SCAN_START                                 LL_SCAN_START    //!< Scan Start
 /** @} End Scan_commands */
 
 /**
- * @defgroup Init_whitelist Initiator White List Policy
+ * @defgroup Init_acceptlist Initiator accept List Policy
  * @{
  */
-#define HCI_INIT_WL_POLICY_USE_PEER_ADDR               LL_INIT_WL_POLICY_USE_PEER_ADDR      //!< Use Peer Address
-#define HCI_INIT_WL_POLICY_USE_WHITE_LIST              LL_INIT_WL_POLICY_USE_WHITE_LIST     //!< Use Whitelist
-/** @} End Init_whitelist */
+#define HCI_INIT_AL_POLICY_USE_PEER_ADDR               LL_INIT_AL_POLICY_USE_PEER_ADDR      //!< Use Peer Address
+#define HCI_INIT_AL_POLICY_USE_ACCEPT_LIST             LL_INIT_AL_POLICY_USE_ACCEPT_LIST    //!< Use acceptlist
+/** @} End Init_acceptlist */
 
 /**
  * @defgroup Encryption_Related Encryption Related
@@ -698,7 +712,8 @@ extern "C"
  * @defgroup TX_Power_Index TX Power Index
  * @{
  */
-#if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 ) || defined ( CC33xx )
+#ifndef CC23X0
+#if defined( CC26XX ) || defined( CC13XX ) || defined ( CC33xx )
 #define HCI_EXT_TX_POWER_MINUS_20_DBM                   LL_EXT_TX_POWER_MINUS_20_DBM            //!< -20 dBm
 #define HCI_EXT_TX_POWER_MINUS_18_DBM                   LL_EXT_TX_POWER_MINUS_18_DBM            //!< -18 dBm
 #define HCI_EXT_TX_POWER_MINUS_15_DBM                   LL_EXT_TX_POWER_MINUS_15_DBM            //!< -15 dBm
@@ -729,6 +744,7 @@ extern "C"
 #define HCI_EXT_TX_POWER_0_DBM                         LL_EXT_TX_POWER_0_DBM        //!< 0 dBm
 #define HCI_EXT_TX_POWER_4_DBM                         LL_EXT_TX_POWER_4_DBM        //!< 4 dBm
 #endif // CC26XX/CC13XX
+#endif //CC23X0
 /** @} End TX_Power_Index */
 
 /**
@@ -768,12 +784,12 @@ extern "C"
 /** @} End Fast_TX */
 
 /**
- * @defgroup SL_Override Slave Latency Override
+ * @defgroup PL_Override Peripheral Latency Override
  * @{
  */
-#define HCI_EXT_ENABLE_SL_OVERRIDE                     LL_EXT_ENABLE_SL_OVERRIDE    //!< Enable
-#define HCI_EXT_DISABLE_SL_OVERRIDE                    LL_EXT_DISABLE_SL_OVERRIDE   //!< Disable
-/** @} End SL_Override */
+#define HCI_EXT_ENABLE_PL_OVERRIDE                     LL_EXT_ENABLE_PL_OVERRIDE    //!< Enable
+#define HCI_EXT_DISABLE_PL_OVERRIDE                    LL_EXT_DISABLE_PL_OVERRIDE   //!< Disable
+/** @} End PL_Override */
 
 /**
  * @defgroup TX_Modulation TX Modulation
@@ -901,6 +917,15 @@ extern "C"
 #define HCI_EXT_RF_SETUP_CODED_S8_PHY                 LL_EXT_RF_SETUP_CODED_S8_PHY //!< Coded-S8
 #define HCI_EXT_RF_SETUP_CODED_S2_PHY                 LL_EXT_RF_SETUP_CODED_S2_PHY  //!< Coded-S2
 /** @} End RF_Setup_Phy_Params */
+
+ /**
+  * @defgroup STATS_Cmd Get statistics Command
+  * @{
+  */
+ #define HCI_EXT_STATS_RESET                          LL_EXT_STATS_RESET     //!< Reset
+ #define HCI_EXT_STATS_READ                           LL_EXT_STATS_READ      //!< Read
+ /** @} End STATS_Cmd */
+
 
 /** @} End HCI_Constants */
 
@@ -1126,7 +1151,7 @@ typedef struct
   uint16 connHandle;              //!< connection handle
   uint16 Interval_Min;            //!< minimum connection interval
   uint16 Interval_Max;            //!< maximum connection interval
-  uint16 Latency;                 //!< slave latency
+  uint16 Latency;                 //!< peripheral latency
   uint16 Timeout;                 //!< supervision timeout
 } hciEvt_BLERemoteConnParamReq_t;
 
@@ -1369,10 +1394,11 @@ typedef struct
   uint32_t  accessAddr;                          //! return error code if failed to get conn info
   uint16_t  connInterval;                        //! connection interval time, range (7.5ms, 4s), 625us increments
   uint8_t   hopValue;                            //! Hop value for conn alg 1, integer range (5,16), can also be used to tell if using alg 2 by sending special code not in normal hop range i.e. 0xff or 0x00.
-  uint16_t  mSCA;                                //! master sleep clock accuracy code mapped based on BLE spec
+  uint16_t  mSCA;                                //! central sleep clock accuracy code mapped based on BLE spec
   uint8_t   nextChan;                            //! next data channel
   uint8_t   chanMap[LL_NUM_BYTES_FOR_CHAN_MAP];  //! bitmap of used BLE channels
   uint8_t   crcInit[LL_PKT_CRC_LEN];             //! connection CRC initialization value (24 bits)
+  uint8_t   ownAddrType;                         //! the own address type when the connection established
 }hciActiveConnInfo_t;
 
 #if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 )
@@ -1412,13 +1438,25 @@ typedef struct
 extern void *HCI_bm_alloc( uint16 size );
 
 /**
+ * Free memory using buffer management.
+ *
+ * @note This function should never be called by the application. It is only
+ * used by HCI and L2CAP_bm_alloc.
+ *
+ * @param pBuf Number of bytes to free from the heap.
+ *
+ * @return None.
+ */
+extern void HCI_bm_free( uint8* pBuf );
+
+/**
  * Checks that the connection time parameter ranges are valid
  *
  * Also checks if the min/max CI range is valid.
  *
  * @param connIntervalMin Minimum connection interval.
  * @param connIntervalMax Maximum connection interval.
- * @param connLatency Connection slave latency.
+ * @param connLatency Connection peripheral latency.
  * @param connTimeout Connection supervision timeout.
  *
  * @return TRUE:  Connection time parameter check is valid.
@@ -1811,7 +1849,7 @@ extern hciStatus_t HCI_LE_SetRandomAddressCmd( uint8 *pRandAddr );
  * @param directAddrType @ref Addr_type
  * @param directAddr Pointer to address of device when using directed advertising.
  * @param advChannelMap @ref Adv_channels
- * @param advFilterPolicy @ref Adv_whitelist
+ * @param advFilterPolicy @ref Adv_acceptlist
  *
  * @return @ref HCI_SUCCESS
  */
@@ -1964,13 +2002,13 @@ extern hciStatus_t HCI_LE_SetScanEnableCmd( uint8 scanEnable,
  *
  * @param scanInterval Time between Init scan events.
  * @param scanWindow Time of scan before Init scan event ends.
- * @param initFilterPolicy @ref Init_whitelist
+ * @param initFilterPolicy @ref Init_Acceptlist
  * @param addrTypePeer @ref Addr_type
  * @param peerAddr Pointer to peer device's address.
  * @param ownAddrType @ref Addr_type
  * @param connIntervalMin Minimum allowed connection interval.
  * @param connIntervalMax Maximum allowed connection interval.
- * @param connLatency Number of skipped events (slave latency).
+ * @param connLatency Number of skipped events (peripheral latency).
  * @param connTimeout Connection supervision timeout.
  * @param minLen Info parameter about min length of conn.
  * @param maxLen Info parameter about max length of conn.
@@ -2001,54 +2039,54 @@ extern hciStatus_t HCI_LE_CreateConnCmd( uint16 scanInterval,
 extern hciStatus_t HCI_LE_CreateConnCancelCmd( void );
 
 /**
- * Read the white list.
+ * Read the accept list.
  *
  * @par Corresponding Events
- * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_READ_WHITE_LIST_SIZE
+ * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_READ__ACCEPT_LIST_SIZE
  *
  * @return @ref HCI_SUCCESS
  */
-extern hciStatus_t HCI_LE_ReadWhiteListSizeCmd( void );
+extern hciStatus_t HCI_LE_ReadAcceptListSizeCmd( void );
 
 
 /**
- * Clear the white list.
+ * Clear the accept list.
  *
  * @par Corresponding Events
- * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_CLEAR_WHITE_LIST
+ * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_CLEAR_ACCEPT_LIST
  *
  * @return @ref HCI_SUCCESS
  */
-extern hciStatus_t HCI_LE_ClearWhiteListCmd( void );
+extern hciStatus_t HCI_LE_ClearAcceptListCmd( void );
 
 
 /**
- * Add a white list entry.
+ * Add a accept list entry.
  *
  * @par Corresponding Events
- * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_ADD_WHITE_LIST
+ * @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_ADD__ACCEPT_LIST
  *
  * @param addrType @ref Addr_type
- * @param devAddr Pointer to address of device to put in white list.
+ * @param devAddr Pointer to address of device to put in accept list.
  *
  * @return @ref HCI_SUCCESS
  */
-extern hciStatus_t HCI_LE_AddWhiteListCmd( uint8 addrType,
+extern hciStatus_t HCI_LE_AddAcceptListCmd( uint8 addrType,
                                            uint8 *devAddr );
 
 
 /**
- * Remove a white list entry.
+ * Remove a accept list entry.
  *
  * @par Corresponding Events
-   @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_REMOVE_WHITE_LIST
+   @ref hciEvt_CmdComplete_t with cmdOpcode @ref HCI_LE_REMOVE__ACCEPT_LIST
  *
  * @param addrType @ref Addr_type
- * @param devAddr Pointer to address of device to remove from the white list.
+ * @param devAddr Pointer to address of device to remove from the accept list.
  *
  * @return @ref HCI_SUCCESS
  */
-extern hciStatus_t HCI_LE_RemoveWhiteListCmd( uint8 addrType,
+extern hciStatus_t HCI_LE_RemoveAcceptListCmd( uint8 addrType,
                                               uint8 *devAddr );
 
 /**
@@ -2061,7 +2099,7 @@ extern hciStatus_t HCI_LE_RemoveWhiteListCmd( uint8 addrType,
  * @param connHandle Connection handle.
  * @param connIntervalMin Minimum allowed connection interval.
  * @param connIntervalMax Maximum allowed connection interval.
- * @param connLatency Number of skipped events (slave latency).
+ * @param connLatency Number of skipped events (peripheral latency).
  * @param connTimeout Connection supervision timeout.
  * @param minLen Info parameter about min length of conn.
  * @param maxLen Info parameter about max length of conn.
@@ -2307,7 +2345,7 @@ extern hciStatus_t HCI_LE_TestEndCmd( void );
  * @param connHandle Connection handle.
  * @param connIntervalMin Minimum allowed connection interval.
  * @param connIntervalMax Maximum allowed connection interval.
- * @param connLatency Number of skipped events (slave latency).
+ * @param connLatency Number of skipped events (peripheral latency).
  * @param connTimeout Connection supervision timeout.
  * @param minLen Info parameter about min length of conn.
  * @param maxLen Info parameter about max length of conn.
@@ -2430,7 +2468,7 @@ extern hciStatus_t HCI_LE_AddDeviceToResolvingListCmd( uint8  peerIdAddrType,
                                                        uint8 *localIRK );
 
 /**
- * Remove a device from the whitelist
+ * Remove a device from the acceptlist
  *
  * Remove one device from the list of address translations used to resolve
  * Resolvable Private Addresses in the Controller.
@@ -2447,7 +2485,7 @@ extern hciStatus_t HCI_LE_RemoveDeviceFromResolvingListCmd( uint8  peerIdAddrTyp
                                                             uint8 *peerIdAddr );
 
 /**
- * Remove all devices from the whitelist
+ * Remove all devices from the acceptlist
  *
  * Remove all devices from the list of address translations used to resolve
  * Resolvable Private addresses in the Controller.
@@ -2604,6 +2642,27 @@ extern hciStatus_t HCI_LE_ReadLocalP256PublicKeyCmd( void );
  * @return @ref HCI_SUCCESS
  */
 extern hciStatus_t HCI_LE_GenerateDHKeyCmd( uint8 *publicKey );
+
+
+/**
+ * Generate Diffie-Hellman Key with debug keys or regular
+ * as HCI_LE_GenerateDHKeyCmd function.
+ * case keytpe = 0: Use the generated private key
+ * case keytype = 1: Use the debug private key
+ * O.W : error, invalid parameters
+ *
+ * * @par Corresponding Events
+ * @ref hciEvt_CommandStatus_t with cmdOpcode @ref HCI_LE_GENERATE_DHKEY <br>
+ * @ref hciEvt_BLEGenDHKeyComplete_t
+ *
+ * @param publicKey: The remote P-256 public key (X-Y format), keyType: 0/1.
+ *
+* @return @ref HCI_SUCCESS,
+*              HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS,
+*              HCI_ERROR_CODE_MEM_CAP_EXCEEDED,
+*              HCI_ERROR_CODE_CONTROLLER_BUSY
+ */
+extern hciStatus_t HCI_LE_GenerateDHKeyV2Cmd( uint8 *publicKey, uint8 keyType );
 
 // V5.0 2M and Coded PHY
 
@@ -3219,6 +3278,19 @@ extern hciStatus_t HCI_EXT_SetRxGainCmd( uint8 rxGain );
  */
 extern hciStatus_t HCI_EXT_SetTxPowerCmd( uint8 txPower );
 
+/**
+ * Set the transmit power in dBm.
+ *
+ * The 'txPower' input parameter in dBm.
+ *
+ * The default system value for this feature is 0 dBm
+ *
+ * @par Corresponding Events
+ * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_SET_TX_POWER_DBM
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_SetTxPowerDbmCmd( int8 txPower, uint8 fraction );
 
 /**
  * Set whether a connection will be limited to one packet per event.
@@ -3306,7 +3378,7 @@ extern hciStatus_t HCI_EXT_DecryptCmd( uint8 *key,
  * @note This command can be issued either before or after one or more
  * connections are formed. However, the local features set in this manner are
  * only effective if performed before a Feature Exchange Procedure has been
- * initiated by the Master. Once this control procedure has been completed for a
+ * initiated by the Central. Once this control procedure has been completed for a
  * particular connection, only the exchanged feature set for that connection
  * will be used. Since the Link Layer may initiate the feature exchange
  * procedure autonomously, it is best to use this command before the connection
@@ -3329,15 +3401,15 @@ extern hciStatus_t HCI_EXT_SetLocalSupportedFeaturesCmd( uint8 *localFeatures );
  * @ref HCI_EXT_ENABLE_FAST_TX_RESP_TIME. When the Host transmits data, the
  * controller (by default) ensures the packet is sent over the LL connection
  * with as little delay as possible, even when the connection is configured to
- * use slave latency. That is, the transmit response time will tend to be no
+ * use peripheral latency. That is, the transmit response time will tend to be no
  * longer than the connection interval. This results in lower power savings
  * since the LL may need to wake to transmit during connection events that would
  * normally have been skipped. If saving power is more critical than fast
  * transmit response time, then this feature can be disabled using this command.
- * When disabled, the transmit response time will be no longer than slave
+ * When disabled, the transmit response time will be no longer than peripheral
  * latency + 1 times the connection interval.
  *
- * @note This command is only valid for a Slave controller.
+ * @note This command is only valid for a Peripheral controller.
  *
  * @par Corresponding Events
  * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_SET_FAST_TX_RESP_TIME
@@ -3350,24 +3422,24 @@ extern hciStatus_t HCI_EXT_SetFastTxResponseTimeCmd( uint8 control );
 
 
 /**
- * Enable or disable suspending slave latency.
+ * Enable or disable suspending peripheral latency.
  *
- * This command is used to enable or disable the Slave Latency Override,
- * allowing the user to ensure that Slave Latency is not applied even though it
- * is active. The default value is @ref HCI_EXT_DISABLE_SL_OVERRIDE
+ * This command is used to enable or disable the Peripheral Latency Override,
+ * allowing the user to ensure that Peripheral Latency is not applied even though it
+ * is active. The default value is @ref HCI_EXT_DISABLE_PL_OVERRIDE
  *
  * @note This command will be disallowed if there are no active connection in
- * the slave role.
+ * the peripheral role.
  *
  * @par Corresponding Events
- * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_OVERRIDE_SL
+ * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_OVERRIDE_PL
  *
- * @param control @ref SL_Override
+ * @param control @ref PL_Override
  *
  *
  * @return @ref HCI_SUCCESS
  */
-extern hciStatus_t HCI_EXT_SetSlaveLatencyOverrideCmd( uint8 control );
+extern hciStatus_t HCI_EXT_SetPeripheralLatencyOverrideCmd( uint8 control );
 
 
 /**
@@ -3567,11 +3639,11 @@ extern hciStatus_t HCI_EXT_SetBDADDRCmd( uint8 *bdAddr );
 /**
  * Set this device's Sleep Clock Accuracy.
  *
- * For a slave device, this value is directly used, but only if power management
- * is enabled. For a master device, this value is converted into one of eight
+ * For a peripheral device, this value is directly used, but only if power management
+ * is enabled. For a central device, this value is converted into one of eight
  * ordinal values representing a SCA range, as specified in the BT Spec. For a
- * Slave device, the value is directly used. The system default value for a
- * Master and Slave device is 50ppm and 40ppm, respectively.
+ * Peripheral device, the value is directly used. The system default value for a
+ * Central and Peripheral device is 50ppm and 40ppm, respectively.
  *
  * @note This command is only allowed when the device is not in a connection.
  * The device's SCA value remains unaffected by a @ref HCI_ResetCmd
@@ -3667,6 +3739,27 @@ extern hciStatus_t HCI_EXT_SaveFreqTuneCmd( void );
  */
 extern hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd( uint8 txPower );
 
+/**
+ * Set the maximum transmit output power for DTM (in dBm).
+ *
+ * This command is used to override the RF transmitter output power used by the
+ * Direct Test Mode (DTM). Normally, the maximum transmitter output power
+ * setting used by DTM is the maximum transmitter output power setting for the
+ * device. This command will change the value used by DTM.
+ *
+ * @note When DTM is ended by a call to @ref HCI_LE_TestEndCmd, or a
+ * @ref HCI_ResetCmd is used, the transmitter output power setting is restored
+ * to the default value of @ref HCI_EXT_TX_POWER_0_DBM
+ *
+ * @par Corresponding Events
+ * @ref hciEvt_VSCmdComplete_t with cmdOpcode @ref HCI_EXT_SET_MAX_DTM_TX_POWER_DBM
+ *
+ * @param txPower @ref TX_Power_Index
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_SetMaxDtmTxPowerDbmCmd( int8   txPowerDbm,
+                                                   uint8  fraction );
 /// @cond CC254X
 
 /**
@@ -4072,8 +4165,8 @@ extern hciStatus_t HCI_EXT_NumComplPktsLimitCmd( uint8 limit,
  *
  * This API is used to get connection related information, which includes the
  * number of allocated connections, the number of active connections, and for
- * each active connection, the connection ID, the connection role (Master or
- * Slave), the peer address and peer address type. The number of allocated
+ * each active connection, the connection ID, the connection role (Central or
+ * Peripheral), the peer address and peer address type. The number of allocated
  * connections is based on a default build value that can be changed using
  * MAX_NUM_BLE_CONNS. The number of active connections refers to active BLE connections.
  *
@@ -4216,6 +4309,29 @@ extern hciStatus_t HCI_EXT_SetLocationingAccuracyCmd( uint16 handle,
  */
 extern hciStatus_t HCI_EXT_GetActiveConnInfoCmd( uint8 connId, hciActiveConnInfo_t *activeConnInfo );
 
+/**
+ *
+ * @brief       This API is used to set the random device address
+ *              for the advertiser's address contained in the advertising
+ *              PDUs for the advertising set specified by the advertising handle.
+ *
+ *              Note: In case of connectable advertise set,
+ *                    this command is only allowed when the advertise set is not active.
+ *
+ *
+ * input parameters
+ *
+ * @param       advHandle - advertising handle
+ * @param       randAddr - random address
+ *
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_SetAdvSetRandAddrCmd( uint8 advHandle, uint8 *randAddr);
 
 /**
  *
@@ -4367,6 +4483,35 @@ extern hciStatus_t HCI_EXT_SetQOSDefaultParameters(uint32 paramDefaultVal,
  * @return @ref HCI_SUCCESS
  */
 extern hciStatus_t HCI_EXT_CoexEnableCmd( uint8 enable );
+
+/**
+ * @brief       This API is used to get RX statistics.
+ *
+ * @par connHandle
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetRxStatisticsCmd( uint16 connHandle, uint8 command );
+
+/**
+ * @brief       This API is used to get TX statistics.
+ *
+ * @par connHandle
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetTxStatisticsCmd( uint16 connHandle, uint8 command );
+
+/**
+ * @brief       This API is used to get COEX statistics.
+ *
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetCoexStatisticsCmd( uint8 command );
 
 #ifdef __cplusplus
 }

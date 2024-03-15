@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,12 +75,16 @@ which can be received by the tilogger host-side tool.
     defaultInstanceName: "CONFIG_ti_log_LogSinkITM_",
     modules: modules,
     maxInstances        : 1,
+    /* Board_init() priority to guarantee that the LogSink is initialized after GPIO */
+    initPriority        : 5,
 
     templates: {
         "/ti/log/templates/ti_log_config.c.xdt":
             "/ti/log/templates/LogSinkITM.Config.c.xdt",
         "/ti/log/templates/ti_log_config.h.xdt":
-            "/ti/log/templates/LogSinkITM.Config.h.xdt"
+            "/ti/log/templates/LogSinkITM.Config.h.xdt",
+        boardc : "/ti/log/templates/LogSinkITM.Board.c.xdt",
+        board_initc: "/ti/log/templates/LogSinkITM.Board_init.c.xdt"
     }
 };
 

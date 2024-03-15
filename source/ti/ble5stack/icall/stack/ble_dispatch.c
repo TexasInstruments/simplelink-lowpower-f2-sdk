@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -799,6 +799,20 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
                                     (hciConnInfo_t *)msg_ptr->hciPtrParams.pParam3);
       break;
 #endif // ADV_CONN_CFG | INIT_CFG
+
+    case HCI_EXT_GET_RX_STATS:
+      stat = HCI_EXT_GetRxStatisticsCmd(msg_ptr->hciParams.param1,
+                                        msg_ptr->hciParams.param2);
+      break;
+
+    case HCI_EXT_GET_TX_STATS:
+      stat = HCI_EXT_GetTxStatisticsCmd(msg_ptr->hciParams.param1,
+                                        msg_ptr->hciParams.param2);
+      break;
+
+    case HCI_EXT_GET_COEX_STATS:
+      stat = HCI_EXT_GetCoexStatisticsCmd(msg_ptr->hciParams.param1);
+      break;
 
     default:
       stat = FAILURE;

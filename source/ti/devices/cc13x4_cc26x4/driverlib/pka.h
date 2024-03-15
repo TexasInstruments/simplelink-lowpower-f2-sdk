@@ -276,7 +276,7 @@ extern const PKA_EccParam224 NISTP224_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the NISTP224 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam224 NISTP224_a;
@@ -285,7 +285,7 @@ extern const PKA_EccParam224 NISTP224_a;
 //*****************************************************************************
 //
 //! \brief b constant of the NISTP224 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam224 NISTP224_b;
@@ -319,7 +319,7 @@ extern const PKA_EccParam256 NISTP256_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the NISTP256 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam256 NISTP256_a;
@@ -328,7 +328,7 @@ extern const PKA_EccParam256 NISTP256_a;
 //*****************************************************************************
 //
 //! \brief b constant of the NISTP256 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam256 NISTP256_b;
@@ -363,7 +363,7 @@ extern const PKA_EccParam384 NISTP384_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the NISTP384 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam384 NISTP384_a;
@@ -372,7 +372,7 @@ extern const PKA_EccParam384 NISTP384_a;
 //*****************************************************************************
 //
 //! \brief b constant of the NISTP384 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam384 NISTP384_b;
@@ -406,7 +406,7 @@ extern const PKA_EccParam521 NISTP521_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the NISTP521 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam521 NISTP521_a;
@@ -415,7 +415,7 @@ extern const PKA_EccParam521 NISTP521_a;
 //*****************************************************************************
 //
 //! \brief b constant of the NISTP521 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam521 NISTP521_b;
@@ -449,7 +449,7 @@ extern const PKA_EccParam256 BrainpoolP256R1_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the BrainpoolP256R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam256 BrainpoolP256R1_a;
@@ -458,7 +458,7 @@ extern const PKA_EccParam256 BrainpoolP256R1_a;
 //*****************************************************************************
 //
 //! \brief b constant of the BrainpoolP256R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam256 BrainpoolP256R1_b;
@@ -492,7 +492,7 @@ extern const PKA_EccParam384 BrainpoolP384R1_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the BrainpoolP384R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam384 BrainpoolP384R1_a;
@@ -501,7 +501,7 @@ extern const PKA_EccParam384 BrainpoolP384R1_a;
 //*****************************************************************************
 //
 //! \brief b constant of the BrainpoolP384R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam384 BrainpoolP384R1_b;
@@ -534,7 +534,7 @@ extern const PKA_EccParam512 BrainpoolP512R1_prime;
 //*****************************************************************************
 //
 //! \brief a constant of the BrainpoolP512R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam512 BrainpoolP512R1_a;
@@ -543,7 +543,7 @@ extern const PKA_EccParam512 BrainpoolP512R1_a;
 //*****************************************************************************
 //
 //! \brief b constant of the BrainpoolP512R1 curve when expressed in short
-//! Weierstrass form (y^3 = x^2 + a*x + b).
+//! Weierstrass form (y^2 = x^3 + a*x + b).
 //
 //*****************************************************************************
 extern const PKA_EccParam512 BrainpoolP512R1_b;

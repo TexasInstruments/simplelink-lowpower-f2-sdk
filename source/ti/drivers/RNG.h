@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -326,6 +326,22 @@ extern "C" {
 #define RNG_STATUS_INIT_NOT_ALLOWED ((int_fast16_t)-6)
 
 /*!
+ * @brief Some implementations require a noise input during initialization
+ *        which is conditioned to seed the RNG driver. RNG_init() will return this
+ *        error if the noise input pointer is not intialized with valid information.
+ *        See documentation for the implementation for more information.
+ */
+#define RNG_STATUS_NOISE_INPUT_INVALID ((int_fast16_t)-7)
+
+/*!
+ * @brief RNG driver not intialized.
+ *
+ * @note Some implementations restrict when RNG_init() may be called.
+ *       Refer to #RNG_init() for more information.
+ */
+#define RNG_STATUS_NOT_INITIALIZED ((int_fast16_t)-7)
+
+/*!
  * @brief  Maximum number of bits that may be requested in a single call
  */
 #define RNG_MAX_BIT_LENGTH ((size_t)1u << 20u) /* 1 MiB */
@@ -487,6 +503,13 @@ extern const size_t RNG_poolByteSize;
  *          function can be called. This function must also be called before
  *          any other RNG driver APIs. This function call does not modify any
  *          peripheral registers.
+ *          For CC23X0, RNG must be initialized by application in a task context with interrupts enabled
+ *          using the following steps prior to the use of the Radio.
+ *          1. Read radio noise using RCL_AdcNoise_get_samples_blocking(). This RCL function must
+ *             be called from a task context with interrupts enabled and therefore cannot be called
+ *             by startup code. This must be executed prior to the use of the radio.
+ *          2. Condition the noise to seed the RNG using RNGLPF3RF_conditionNoiseToGenerateSeed().
+ *          3. Initialize the RNG from the application with RNG_init()
  *
  *  @retval #RNG_STATUS_SUCCESS               The operation succeeded.
  *  @retval #RNG_STATUS_ERROR                 The operation failed.
@@ -513,6 +536,7 @@ int_fast16_t RNG_init(void);
  *                                            not available. Try again later.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Pool could not be refilled, device
  *                                            may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_fillPoolIfLessThan(size_t bytes);
 
@@ -596,6 +620,7 @@ void RNG_close(RNG_Handle handle);
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_getRandomBits(RNG_Handle handle, void *randomBits, size_t randomBitsLength);
 
@@ -650,6 +675,7 @@ int_fast16_t RNG_getRandomBits(RNG_Handle handle, void *randomBits, size_t rando
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_getLERandomNumberInRange(RNG_Handle handle,
                                           const void *lowerLimit,
@@ -708,6 +734,7 @@ int_fast16_t RNG_getLERandomNumberInRange(RNG_Handle handle,
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_getBERandomNumberInRange(RNG_Handle handle,
                                           const void *lowerLimit,
@@ -744,6 +771,7 @@ int_fast16_t RNG_getBERandomNumberInRange(RNG_Handle handle,
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_generateKey(RNG_Handle handle, CryptoKey *key);
 
@@ -795,6 +823,7 @@ int_fast16_t RNG_generateKey(RNG_Handle handle, CryptoKey *key);
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_generateLEKeyInRange(RNG_Handle handle,
                                       const void *lowerLimit,
@@ -850,6 +879,7 @@ int_fast16_t RNG_generateLEKeyInRange(RNG_Handle handle,
  *  @retval #RNG_STATUS_INVALID_INPUTS        Inputs provided are not valid.
  *  @retval #RNG_ENTROPY_EXHAUSTED            Requested number of bytes could
  *                                            not be obtained. Device may need reset.
+ *  @retval #RNG_STATUS_NOT_INITIALIZED       RNG not intialized.
  */
 int_fast16_t RNG_generateBEKeyInRange(RNG_Handle handle,
                                       const void *lowerLimit,

@@ -86,12 +86,7 @@ static int I2CCC26XX_postNotify(unsigned int eventType, uintptr_t eventArg, uint
 static void I2CCC26XX_swiFxn(uintptr_t arg0, uintptr_t arg1);
 
 /* Default I2C parameters structure */
-static const I2C_Params I2C_defaultParams = {
-    I2C_MODE_BLOCKING, /* transferMode */
-    NULL,              /* transferCallbackFxn */
-    I2C_100kHz,        /* bitRate */
-    NULL               /* custom */
-};
+extern const I2C_Params I2C_defaultParams;
 
 /*!
  *  ======== I2C_close ========

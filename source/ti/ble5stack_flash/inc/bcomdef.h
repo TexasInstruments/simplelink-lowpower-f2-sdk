@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -140,12 +140,6 @@ extern "C"
   #error "Build Configuration Error: Cannot define both BLE_V50_FEATURES and CTRL_V50_CONFIG!"
 #endif // BLE_V41_FEATURES
 
-// If L2CAP Connection Oriented Channels are not configured and GATT_QUAL is not defined
-// then do not configure GATT Service Changed characteristic
-#if (!defined ( BLE_V41_FEATURES ) || !( BLE_V41_FEATURES & L2CAP_COC_CFG )) && !defined(GATT_QUAL) && defined(OAD_CFG)
-  #define GATT_NO_SERVICE_CHANGED  //!<GATT No Service Changed
-#endif // ! BLE_41_FEATURES || ! L2CAP_COC_CFG
-
 #if defined(CC2540) || defined(CC2541) || defined(CC2541S)
   #if !defined ( MAX_NUM_BLE_CONNS )
     #if ( CTRL_CONFIG & INIT_CFG )
@@ -198,7 +192,7 @@ extern "C"
 #define EXTENDED_STACK_SETTINGS_DEFAULT           0x00
 
 //! Stack misc settings bitmask
-#define MASTER_GUARD_TIME_ENABLE                  0x01
+#define CENTRAL_GUARD_TIME_ENABLE                 0x01
 #define CC2652RB_OVERRIDE_USED                    0x02
 
 #define bleInvalidTaskID                INVALID_TASK  //!< Task ID isn't setup properly

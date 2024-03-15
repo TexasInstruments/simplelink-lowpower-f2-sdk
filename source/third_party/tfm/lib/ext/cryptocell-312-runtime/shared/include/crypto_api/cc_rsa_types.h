@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -17,7 +17,7 @@
 #include "ccsw_rsa_shared_types.h"
 #endif
 #ifdef USE_MBEDTLS_CRYPTOCELL
-#include "md.h"
+#include "mbedtls/md.h"
 #else
 #include "cc_hash.h"
 #endif

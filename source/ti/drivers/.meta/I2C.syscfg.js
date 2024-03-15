@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,51 +75,15 @@ let config = [
         name        : "maxBitRate",
         displayName : "Maximum Bit Rate",
         description : "Maximum bit rate (kbps) supported by this bus",
-        longDescription: "This parameter determines the value of a 'maximum"
-            + " bitrate' symbol declared in the generated"
-            + " `ti_drivers_config.h` file:"
-            + " <var>{bus_name}</var>`_MAXBITRATE`, where"
-            + " <var>{bus_name}</var> is the name of this bus instance."
-            + " This symbol is used to"
-            + " portably open the bus at a speed that's likely to work."
-            + "\n\nIf this configuration parameter is set to zero,"
-            + " the maximum speed for this instance is the maximum"
-            + " speed supported by the slowest attached target.  If no target"
-            + " devices are attached, the maximum bit rate is 100 kbps."
-            + "\n[More ...](/drivers/syscfg/html/ConfigDoc.html"
-            + "#ti_drivers_I2C_maxBitRate \"Full description of"
-            + " this parameter\")\n",
+        longDescription: `This parameter determines the value of a 'maximum"
+bitrate' symbol declared in the generated ti_drivers_config.h file. This symbol
+can be used in code to portably open the bus at a speed that's likely to work.
 
-        documentation: "For example, if an I2C instance named `SENSORS` is"
-            + " defined in SysConfig, the following snippet always opens it"
-            + " at an appropriate speed.\n"
-            + "        #include \"ti_drivers_config.h\" // defines I2C id"
-            + " SENSORS\n"
-            + "\n"
-            + "        // initialize optional I2C bus parameters\n"
-            + "        I2C_Params params;\n"
-            + "        I2C_Params_init(&params);\n"
-            + "        params.bitRate = SENSORS_MAXBITRATE;\n"
-            + "\n"
-            + "        // Open I2C bus for usage\n"
-            + "        I2C_Handle i2cHandle = I2C_open(SENSORS, &params);\n"
-            + "\n"
-            + "By default, SysConfig triggers an error in the event that"
-            + " the declared maximum speed of an attached target is less than"
-            + " this value.  You can disable this error by setting the "
-            + " [speedChecks](/drivers/syscfg/html/ConfigDoc.html"
-            + "#ti_drivers_I2C_speedChecks) configuration parameter to either"
-            + " `'Warn'` or `'Remark'`.\n"
-            + "\n**Note**: The maximum bit rate for an I2C bus is a function"
-            + " of the electrical capacitance and resistance on the I2C signal"
-            + " lines and the speed supported by the slowest target.  Even if"
-            + " all devices on the bus are capable of"
-            + " supporting the specified bit rate, you may need to lower it"
-            + " if the electrical characteristics of your hardware imply large"
-            + "  bus signal rise-times. This can be"
-            + " caused by long wires, which increase the capacitance of a"
-            + " circuit.",
+If this configuration parameter is set to zero, the maximum speed for this
+instance is the maximum speed supported by the slowest attached target. If no
+target devices are attached, the maximum bit rate is 100 kbps.
 
+The symbol is named (instance name)_MAXBITRATE.`,
         default     : 0
     },
     {

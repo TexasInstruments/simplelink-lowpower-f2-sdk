@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -202,7 +202,7 @@ extern void Util_rescheduleClock(ClockP_Struct *pClock, uint32_t clockPeriod);
  * @return  A queue handle.
  */
 #ifdef FREERTOS
-extern void Util_constructQueue(QueueHandle_t *pQueue);
+int8_t Util_constructQueue(QueueHandle_t *pQueue);
 #else
 extern Queue_Handle Util_constructQueue(Queue_Struct *pQueue);
 #endif

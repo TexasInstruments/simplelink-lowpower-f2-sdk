@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2018-2023, Texas Instruments Incorporated
+ Copyright (c) 2018-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,12 +52,18 @@
 #include <string.h>
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
+#if !defined(DeviceFamily_CC23X0R2)
 #include DeviceFamily_constructPath(driverlib/watchdog.h)
 #include DeviceFamily_constructPath(inc/hw_prcm.h)
+#endif
 
 #include "ti/common/cc26xx/crc/crc32.h"
 #include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#if !defined(DeviceFamily_CC23X0R2)
 #include "ti/common/cc26xx/bim/bim_util.h"
+#else
+#include "ti/common/cc23xx/bim/bim_util.h"
+#endif
 #include "ti/common/cc26xx/oad/oad_image_header.h"
 
 #ifdef __IAR_SYSTEMS_ICC__
@@ -74,6 +80,8 @@
 #include "sign_util.h"
 #if defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
 #include "sha2_driverlib.h"
+#elif defined(DeviceFamily_CC23X0R2)
+#include DeviceFamily_constructPath(driverlib/sha256sw.h)
 #else
 #include DeviceFamily_constructPath(driverlib/rom_sha256.h)
 #endif /* DeviceFamily_CC26X2 || DeviceFamily_CC13X2 || DeviceFamily_CC13X2X7 || DeviceFamily_CC26X2X7 */
@@ -89,6 +97,12 @@
 
 #define SUCCESS                         0
 #define FAIL                           -1
+
+#if defined(DeviceFamily_CC23X0R2)
+#define START_PAGE              7
+#else
+#define START_PAGE              0
+#endif
 
 /*******************************************************************************
  * LOCAL VARIABLES
@@ -156,10 +170,8 @@ int8_t Bim_payloadVerify(uint8_t ver, uint32_t cntr, uint32_t payloadlen,
                           ecdsaSigVerifyBuf_t *ecdsaSigVerifyBuf);
 
 // Creating a section for the function pointer, so that it can be easily accessed by OAD application(s)
-#ifdef __TI_COMPILER_VERSION__
-#pragma DATA_SECTION(_fnPtr, ".fnPtr")
-#pragma RETAIN(_fnPtr)
-const uint32_t _fnPtr = (uint32_t)&Bim_payloadVerify;
+#if defined(__TI_COMPILER_VERSION__) || defined(__clang__) || defined(__llvm__)
+const uint32_t _fnPtr __attribute__ ((retain, section(".fnPtr"))) = (uint32_t)&Bim_payloadVerify;
 #elif  defined(__IAR_SYSTEMS_ICC__)
 #pragma location=".fnPtr"
 const uint32_t _fnPtr @ ".fnPtr" = (uint32_t)&Bim_payloadVerify;
@@ -339,6 +351,10 @@ int8_t Bim_payloadVerify(uint8_t ver, uint32_t cntr, uint32_t payloadlen,
         SHA2_addData(dataPayload, payloadlen);
         SHA2_finalize(finalHash);
         SHA2_close();
+#elif defined(DeviceFamily_CC23X0R2)
+        SHA256SW_Object sha256SWObject;
+        SHA256SW_Handle sha256SWHandle = &sha256SWObject;
+        SHA256SWHashData(sha256SWHandle, SHA2SW_HASH_TYPE_256, dataPayload, payloadlen, (uint32_t*)finalHash);
 #else
         SHA256_Workzone sha256_workzone;
         SHA256_init(&sha256_workzone);
@@ -601,8 +617,12 @@ int main(void)
 #endif
 
 #ifndef DEBUG_BIM
-    /* Read and populate the static variable intFlashPageSize */
-    intFlashPageSize = FlashSectorSizeGet();
+    #if !defined(DeviceFamily_CC23X0R2)
+        /* Read and populate the static variable intFlashPageSize */
+        intFlashPageSize = FlashSectorSizeGet();
+    #else
+        intFlashPageSize = FlashGetSectorSize();
+    #endif
 #endif
     uint8_t imgType;
     uint8_t flashPgNum;
@@ -612,7 +632,7 @@ int main(void)
 #ifdef APP_HDR_LOC
     flashPgNum = APP_HDR_ADDR/ intFlashPageSize;
 #else
-    flashPgNum = 0x00;
+    flashPgNum = START_PAGE;
 #endif
 
     Bim_findImage(flashPgNum, imgType);

@@ -152,6 +152,23 @@ class DeviceFamily(enum.IntEnum):
     DeviceFamily_ID_CC26X0R2 = 3
     DeviceFamily_ID_CC13X2 = 4
     DeviceFamily_ID_CC26X2 = 5
+    DeviceFamily_ID_CC3200 = 6
+    DeviceFamily_ID_CC3220 = 7
+    DeviceFamily_ID_CC13X1 = 8
+    DeviceFamily_ID_CC26X1 = 9
+    DeviceFamily_ID_CC13X2X7 = 10
+    DeviceFamily_ID_CC26X2X7 = 11
+    DeviceFamily_ID_CC13X1_CC26X1 = 12
+    DeviceFamily_ID_CC13X2_CC26X2 = 13
+    DeviceFamily_ID_CC13X2X7_CC26X2X7 = 14
+    DeviceFamily_ID_CC13X4_CC26X4 = 15
+    DeviceFamily_ID_CC13X4 = 16
+    DeviceFamily_ID_CC26X4 = 17
+    DeviceFamily_ID_CC26X3 = 18
+    DeviceFamily_ID_CC23X0R5 = 19
+    DeviceFamily_ID_CC23X0R2 = 20
+    DeviceFamily_ID_CC27XX = 21
+    DeviceFamily_ID_CC35XX = 22
 
 
 # noinspection PyPep8Naming

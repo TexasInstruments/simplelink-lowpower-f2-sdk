@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@
 #include <third_party/tfm/interface/include/tfm_api.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 #include "ti_drivers_config.h"                                  /* Sysconfig generated header */
@@ -64,7 +64,7 @@ typedef struct
 static AESCBC_s_Operation AESCBC_s_operation;
 
 /*
- * ========= AES CBC Secure Dynamic Instance struct =========
+ * AES CBC Secure Dynamic Instance struct.
  */
 typedef struct
 {
@@ -184,7 +184,7 @@ static inline psa_status_t AESCBC_s_copyConfig(AESCBC_Config **secureConfig,
             }
 
             /* Copy config to secure memory */
-            (void)tfm_memcpy(config_s, config, sizeof(dynInstance_s->config));
+            (void)spm_memcpy(config_s, config, sizeof(dynInstance_s->config));
 
             /* Validate object address range */
             if (cmse_has_unpriv_nonsecure_read_access(config_s->object, sizeof(dynInstance_s->object)) == NULL)
@@ -193,7 +193,7 @@ static inline psa_status_t AESCBC_s_copyConfig(AESCBC_Config **secureConfig,
             }
 
             /* Copy object to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
+            (void)spm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
             config_s->object = &dynInstance_s->object;
 
             /* Validate HW attributes address range */
@@ -204,7 +204,7 @@ static inline psa_status_t AESCBC_s_copyConfig(AESCBC_Config **secureConfig,
             }
 
             /* Copy HW attributes to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
+            (void)spm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
             config_s->hwAttrs = &dynInstance_s->hwAttrs;
 
             *secureConfig = config_s;
@@ -262,7 +262,7 @@ static inline psa_status_t AESCBC_s_copyOneStepOperation(AESCBC_OneStepOperation
     }
 
     /* Make a secure copy of the operation struct */
-    (void)tfm_memcpy(secureOperation, operation, sizeof(AESCBC_OneStepOperation));
+    (void)spm_memcpy(secureOperation, operation, sizeof(AESCBC_OneStepOperation));
 
     /* Validate crypto key struct address range */
     if (cmse_has_unpriv_nonsecure_read_access(secureOperation->key, sizeof(CryptoKey)) == NULL)
@@ -274,7 +274,7 @@ static inline psa_status_t AESCBC_s_copyOneStepOperation(AESCBC_OneStepOperation
      * Make a secure copy of the key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)tfm_memcpy(secureKey, secureOperation->key, sizeof(CryptoKey));
+    (void)spm_memcpy(secureKey, secureOperation->key, sizeof(CryptoKey));
     secureOperation->key = secureKey;
 
     if (CryptoKey_verifySecureInputKey(secureOperation->key) != CryptoKey_STATUS_SUCCESS)
@@ -322,7 +322,7 @@ static psa_status_t AESCBC_s_copySegmentedOperation(AESCBC_SegmentedOperation *s
     }
 
     /* Make a secure copy of the operation struct */
-    (void)tfm_memcpy(secureOperation, operation, sizeof(AESCBC_SegmentedOperation));
+    (void)spm_memcpy(secureOperation, operation, sizeof(AESCBC_SegmentedOperation));
 
     /* Verify input address range */
     if (cmse_has_unpriv_nonsecure_read_access(secureOperation->input, secureOperation->inputLength) == NULL)
@@ -352,7 +352,7 @@ static psa_status_t AESCBC_s_copyParams(AESCBC_Params *secureParams, const AESCB
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    (void)tfm_memcpy(secureParams, params, sizeof(AESCBC_Params));
+    (void)spm_memcpy(secureParams, params, sizeof(AESCBC_Params));
 
     /* Validate the return behavior */
     if ((secureParams->returnBehavior == AESCBC_RETURN_BEHAVIOR_CALLBACK) ||
@@ -725,7 +725,7 @@ static inline psa_status_t AESCBC_s_setupOperation(psa_msg_t *msg, int32_t msgTy
         }
 
         /* Copy key to secure memory */
-        (void)tfm_memcpy(&key_s, setupMsg.key, sizeof(CryptoKey));
+        (void)spm_memcpy(&key_s, setupMsg.key, sizeof(CryptoKey));
 
         if (CryptoKey_verifySecureInputKey(&key_s) != CryptoKey_STATUS_SUCCESS)
         {

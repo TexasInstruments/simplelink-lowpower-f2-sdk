@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -49,6 +49,9 @@ typedef int32_t psa_status_t;
 #define PSA_ERROR_STORAGE_FAILURE       ((psa_status_t)-146)
 #define PSA_ERROR_HARDWARE_FAILURE      ((psa_status_t)-147)
 #define PSA_ERROR_INVALID_SIGNATURE     ((psa_status_t)-149)
+#define PSA_ERROR_DEPENDENCY_NEEDED     ((psa_status_t)-156)
+#define PSA_ERROR_FLASH_ABUSE           ((psa_status_t)-160)
+#define PSA_ERROR_INSUFFICIENT_POWER    ((psa_status_t)-161)
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -657,11 +657,11 @@ static void runIt_regApi(void)
     RUNIT_PERF_REG_API(mbedtls_sha1_update_ret                            , gCompConf.sha1);
     RUNIT_PERF_REG_API(mbedtls_sha256                                     , gCompConf.sha256);
     RUNIT_PERF_REG_API(mbedtls_sha256_clone                               , gCompConf.sha256);
-    RUNIT_PERF_REG_API(mbedtls_sha256_finish_ret                          , gCompConf.sha256);
+    RUNIT_PERF_REG_API(mbedtls_sha256_finish                              , gCompConf.sha256);
     RUNIT_PERF_REG_API(mbedtls_sha256_free                                , gCompConf.sha256);
     RUNIT_PERF_REG_API(mbedtls_sha256_init                                , gCompConf.sha256);
-    RUNIT_PERF_REG_API(mbedtls_sha256_starts_ret                          , gCompConf.sha256);
-    RUNIT_PERF_REG_API(mbedtls_sha256_update_ret                          , gCompConf.sha256);
+    RUNIT_PERF_REG_API(mbedtls_sha256_starts                              , gCompConf.sha256);
+    RUNIT_PERF_REG_API(mbedtls_sha256_update                              , gCompConf.sha256);
     RUNIT_PERF_REG_API(mbedtls_sha512                                     , gCompConf.sha512);
     RUNIT_PERF_REG_API(mbedtls_sha512_clone                               , gCompConf.sha512);
     RUNIT_PERF_REG_API(mbedtls_sha512_finish                              , gCompConf.sha512);

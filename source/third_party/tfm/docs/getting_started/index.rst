@@ -2,12 +2,6 @@ Getting Started Guides
 ======================
 .. toctree::
     :maxdepth: 1
-    :caption: Contents
-    :glob:
-    :numbered:
 
-    *
+.. include:: tfm_getting_started.rst
 
---------------
-
-*Copyright (c) 2020, Arm Limited. All rights reserved.*

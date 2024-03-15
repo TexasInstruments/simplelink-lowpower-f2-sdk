@@ -33,7 +33,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -118,6 +118,10 @@ extern "C"
  */
 #include "ble_user_config.h"
 
+#ifdef USE_RCL
+#include <ti/drivers/rcl/LRF.h>
+#endif
+
 /*******************************************************************************
  * MACROS
  */
@@ -141,8 +145,8 @@ typedef struct
   regOverride_t         *rfReg1MPtr;           // RF 1M Override Register Table
   regOverride_t         *rfReg2MPtr;            // RF 2M Override Register Table
   regOverride_t         *rfRegCodedPtr;         // RF Coded Override Register Table
-#endif
   txPwrTbl_t            *txPwrTblPtr;           // Tx Power Table
+#endif // !(USE_RCL)
 #ifndef CC23X0
   rfDrvTblPtr_t         *rfDrvTblPtr;           // Table of Rf Driver API
   eccDrvTblPtr_t        *eccDrvTblPtr;          // Table of ECC Driver API
@@ -156,7 +160,7 @@ typedef struct
   uint32                powerUpDuration;        // Powerup time in us
   RF_Callback           *pErrCb;                // RF Driver Error Callback
 #endif
-  uint8                 maxWlElems;             // Max elements in the white list
+  uint8                 maxAlElems;             // Max elements in the accept list
   uint8                 maxRlElems;             // Max elements in the resolving list
   ECCParams_CurveParams *eccCurveParams;        // ECC curve parameters
   pfnFastStateUpdate_t  fastStateUpdateCb;      // Fast state update callback
@@ -170,6 +174,7 @@ typedef struct
   regOverride_t         *rfRegOverrideTxStdPtr; // Default PA overrides
 #endif //CC13X2P
 #ifndef CC23X0
+  RF_Mode               *rfMode;                // Specify PRCM Mode and pointers to CPE/MCE/RFE patches
   regOverride_t         *rfRegOverrideCtePtr;   // CTE overrides
   cteAntProp_t          *cteAntProp;            // CTE antenna properties
   uint8                 privOverrideOffset;    // Privacy Override Offset
@@ -177,6 +182,20 @@ typedef struct
   uint8                 maxNumCteBufs;         // num of CTE samples buffers (each ~2.5KB) used for RF auto copy
 #endif
   uint8                 advReportIncChannel;   // include channel index in advertising report
+#ifdef USE_RCL
+  const LRF_TxPowerTable  *lrfTxPowerTablePtr;
+  const LRF_Config        *lrfConfigPtr;
+  int8                    defaultTxPowerDbm;      // The default Tx Power value in dBm
+  uint8                   defaultTxPowerFraction; // The fraction field allows 0.5 dB steps in the power table
+                                                  // 0 - use the integer Tx power dBm value
+                                                  // 1 - raise the Tx power value by 0.5 dBm
+  uint16                  rclPhyFeature1MBPS;     // RCL_PHY_FEATURE_SUB_PHY_1_MBPS
+  uint16                  rclPhyFeature2MBPS;     // RCL_PHY_FEATURE_SUB_PHY_2_MBPS
+  uint16                  rclPhyFeatureCoded;     // RCL_PHY_FEATURE_SUB_PHY_CODED
+  uint16                  rclPhyFeatureCodedS8;   // RCL_PHY_FEATURE_CODED_TX_RATE_S8
+  uint16                  rclPhyFeatureCodedS2;   // RCL_PHY_FEATURE_CODED_TX_RATE_S2
+#endif
+  sdaaUsrCfg_t            *sdaaCfgPtr;            // sdaa module user's parameters
 } llUserCfg_t;
 
 /*******************************************************************************

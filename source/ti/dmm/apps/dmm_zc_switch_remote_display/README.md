@@ -44,14 +44,8 @@ application.
 
 ## <a name="HardwarePrerequisites"></a>Hardware Prerequisites
 
-The default Simple Peripheral configuration uses the
-[LAUNCHXL-CC1352](http://www.ti.com/tool/launchxl-cc1352) or the [LAUNCHXL-CC2652](http://www.ti.com/tool/launchxl-cc1352).
-
- >Note: The SDK requires CC13x2/CC26x2 PG2.1 Silicon
-
-The hardware configuration is shown in the below image:
-
-<img src="resource/hardware_setup.jpg" width="300"/>
+The default Simple Peripheral configuration does not require any modifications
+to the standard LaunchPad.
 
 For custom hardware, see the Running the SDK on Custom Boards section of the
 [BLE5-Stack User's

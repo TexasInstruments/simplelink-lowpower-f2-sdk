@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,23 +43,23 @@ cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 #
 # Output: Prints list of matching variables
 #
-function (dump_cmake_variables)
+function(dump_cmake_variables)
     get_cmake_property(_variableNames VARIABLES)
     list(SORT _variableNames)
     message("dump_cmake_variables(${ARGV0})")
 
-    foreach (_variableName ${_variableNames})
-        if (ARGV0)
+    foreach(_variableName ${_variableNames})
+        if(ARGV0)
             unset(MATCHED)
             string(REGEX MATCH ${ARGV0} MATCHED ${_variableName})
 
-            if (NOT MATCHED)
+            if(NOT MATCHED)
                 continue()
-            endif ()
-        endif ()
+            endif()
+        endif()
 
         message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach ()
+    endforeach()
 
     message("END: dump_cmake_variables(${ARGV0})")
-endfunction ()
+endfunction()

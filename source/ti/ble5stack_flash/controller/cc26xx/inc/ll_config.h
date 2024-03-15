@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -109,11 +109,20 @@ extern "C"
  */
 
 // Receive Suffix Data Sizes
+#ifdef USE_RCL
+#define SUFFIX_SIZE_NONE                0
+#define SUFFIX_CRC_SIZE                 3
+#define SUFFIX_RSSI_SIZE                1
+#define SUFFIX_STATUS_SIZE              1 // RCL status byte is 1
+#define SUFFIX_TIMESTAMP_SIZE           4
+#else
 #define SUFFIX_SIZE_NONE                0
 #define SUFFIX_CRC_SIZE                 3
 #define SUFFIX_RSSI_SIZE                1
 #define SUFFIX_STATUS_SIZE              2
 #define SUFFIX_TIMESTAMP_SIZE           4
+#endif
+
 #define SUFFIX_MAX_SIZE                 (SUFFIX_CRC_SIZE    +                  \
                                          SUFFIX_RSSI_SIZE   +                  \
                                          SUFFIX_STATUS_SIZE +                  \
@@ -156,8 +165,8 @@ extern "C"
 // Number Data Entries
 #define NUM_RX_DATA_ENTRIES             4
 
-#ifndef MAX_NUM_WL_ENTRIES
-#define MAX_NUM_WL_ENTRIES              16  // at 8 bytes per WL entry
+#ifndef MAX_NUM_AL_ENTRIES
+#define MAX_NUM_AL_ENTRIES              16  // at 8 bytes per AL entry
 #endif
 
 #ifndef MAX_NUM_RL_ENTRIES
@@ -216,7 +225,7 @@ extern "C"
  * TYPEDEFS
  */
 
-// This structure is used to specify Slave RF timing margins. All values are
+// This structure is used to specify Peripheral RF timing margins. All values are
 // in Radio Timer ticks (i.e. 250ns ticks).
 //
 // preRfMargin: This is the amount of time to subtract from the RF operation's
@@ -242,8 +251,8 @@ PACKED_TYPEDEF_STRUCT
 //PACKED typedef uint8 pktSize_t;
 typedef uint8 pktSize_t;
 
-//PACKED typedef uint8 wlSize_t;
-typedef uint8 wlSize_t;
+//PACKED typedef uint8 alSize_t;
+typedef uint8 alSize_t;
 
 //PACKED typedef uint8 rlSize_t;
 typedef uint8 rlSize_t;
@@ -302,7 +311,7 @@ extern uint8 maxNumCteDataBufs;
 extern uint8 maxNumConns;
 extern uint16 maximumPduSize;
 extern uint8 rfFeModeBias;
-extern uint8 wlSize;
+extern uint8 alSize;
 extern uint8 rlSize;
 extern uint32 extStackSettings;
 

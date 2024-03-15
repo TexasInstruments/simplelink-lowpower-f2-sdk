@@ -33,7 +33,7 @@
 #ifndef ti_psa_crypto__include
 #define ti_psa_crypto__include
 
-#include <third_party/mbedcrypto/include/psa/crypto.h>
+#include <third_party/mbedtls/include/psa/crypto.h>
 
 /**
  * @note See Mbed Crypto's crypto.h file for API documentation

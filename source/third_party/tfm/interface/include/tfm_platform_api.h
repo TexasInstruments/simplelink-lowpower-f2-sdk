@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -25,6 +25,8 @@ extern "C" {
 
 #define TFM_PLATFORM_API_ID_NV_READ       (1010)
 #define TFM_PLATFORM_API_ID_NV_INCREMENT  (1011)
+#define TFM_PLATFORM_API_ID_SYSTEM_RESET  (1012)
+#define TFM_PLATFORM_API_ID_IOCTL         (1013)
 
 /*!
  * \enum tfm_platform_err_t

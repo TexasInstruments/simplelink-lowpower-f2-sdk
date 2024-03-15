@@ -50,6 +50,19 @@ const moduleStatic = {
 }
 
 /*
+ *  ======== getOpts ========
+ */
+function getOpts()
+{
+    const aoa = system.modules["/ti/ble5stack/aoa/aoa"].$static;
+    let result = [];
+
+    result.push("-DAOA_SYSCFG");
+    aoa.enableAoa ? result.push("-DRTLS_CTE") : result.push("-DxRTLS_CTE");
+
+    return result;
+}
+/*
  *  ======== moduleInstances ========
  *  Determines what modules are added as non-static submodules
  *
@@ -89,8 +102,10 @@ const aoaModule = {
         "/ti/ble5stack/templates/aoa_config.h.xdt":
         "/ti/ble5stack/templates/aoa_config.h.xdt",
 
-        "/ti/ble5stack/templates/aoa_app_config.opt.xdt":
-        "/ti/ble5stack/templates/aoa_app_config.opt.xdt"
+        "/ti/utils/build/GenOpts.opt.xdt": {
+            modName: "/ti/ble5stack/aoa/aoa",
+            getOpts: getOpts
+        }
     }
 };
 

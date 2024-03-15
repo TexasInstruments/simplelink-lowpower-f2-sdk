@@ -44,7 +44,7 @@
     let part = system.deviceData.part;
     let devFamily = Common.device2DeviceFamily(devId, part);
     let boardName = Common.boardName();
-    let family = Common.device2Family(system.deviceData);
+    let family = Common.device2Family(system.deviceData, "Board");
 
     /* get board-specific prologue and epilogue content */
     let template = system.getTemplate("/ti/drivers/templates/Board" + family +

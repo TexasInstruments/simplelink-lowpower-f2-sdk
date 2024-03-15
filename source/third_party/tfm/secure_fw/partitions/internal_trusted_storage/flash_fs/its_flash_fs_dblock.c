@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -7,7 +7,7 @@
 
 #include "its_flash_fs_dblock.h"
 
-#include "flash/its_flash.h"
+#include "its_flash_fs.h"
 
 /**
  * \brief Converts logical data block number to physical number.
@@ -42,6 +42,7 @@ psa_status_t its_flash_fs_dblock_compact_block(
     struct its_block_meta_t block_meta;
     psa_status_t err;
     uint32_t scratch_id = 0;
+    int8_t flush_data = 0;
 
     /* Read current block meta */
     err = its_flash_fs_mblock_read_block_metadata(fs_ctx, lblock, &block_meta);
@@ -60,26 +61,28 @@ psa_status_t its_flash_fs_dblock_compact_block(
         /* Move data from source offset in current data block to scratch block
          * destination offset.
          */
-        err = its_flash_block_to_block_move(fs_ctx->flash_info, scratch_id,
-                                            dst_offset, block_meta.phy_id,
-                                            src_offset, size);
+        err = its_flash_fs_block_to_block_move(fs_ctx, scratch_id, dst_offset,
+                                               block_meta.phy_id, src_offset,
+                                               size);
         if (err != PSA_SUCCESS) {
             return PSA_ERROR_GENERIC_ERROR;
         }
+        flush_data = 1;
     }
 
     if (dst_offset > block_meta.data_start) {
         /* Copy data from the beginning of data block until
          * the position where the data will be reallocated later
          */
-        err = its_flash_block_to_block_move(fs_ctx->flash_info, scratch_id,
-                                            block_meta.data_start,
-                                            block_meta.phy_id,
-                                            block_meta.data_start,
-                                            (dst_offset-block_meta.data_start));
+        err = its_flash_fs_block_to_block_move(fs_ctx, scratch_id,
+                                               block_meta.data_start,
+                                               block_meta.phy_id,
+                                               block_meta.data_start,
+                                              dst_offset-block_meta.data_start);
         if (err != PSA_SUCCESS) {
             return PSA_ERROR_GENERIC_ERROR;
         }
+        flush_data = 1;
     }
 
     /* Swap the scratch and current data blocks. Must swap even with nothing
@@ -104,8 +107,8 @@ psa_status_t its_flash_fs_dblock_compact_block(
      * data block 0, in which case it will be flushed at the end of the metadata
      * block update.
      */
-    if (lblock != ITS_LOGICAL_DBLOCK0) {
-        err = fs_ctx->flash_info->flush(fs_ctx->flash_info);
+    if ((lblock != ITS_LOGICAL_DBLOCK0) && (flush_data != 0)) {
+        err = fs_ctx->ops->flush(fs_ctx->cfg, scratch_id);
     }
 
     return err;
@@ -128,8 +131,7 @@ psa_status_t its_flash_fs_dblock_read_file(
 
     pos = (file_meta->data_idx + offset);
 
-    return fs_ctx->flash_info->read(fs_ctx->flash_info, phys_block, buf, pos,
-                                    size);
+    return fs_ctx->ops->read(fs_ctx->cfg, phys_block, buf, pos, size);
 }
 
 psa_status_t its_flash_fs_dblock_write_file(
@@ -152,19 +154,17 @@ psa_status_t its_flash_fs_dblock_write_file(
     pos = file_meta->data_idx + offset;
 
     /* Move data up to the new file data position */
-    err = its_flash_block_to_block_move(fs_ctx->flash_info,
-                                        scratch_id,
-                                        block_meta->data_start,
-                                        block_meta->phy_id,
-                                        block_meta->data_start,
-                                        pos - block_meta->data_start);
+    err = its_flash_fs_block_to_block_move(fs_ctx, scratch_id,
+                                           block_meta->data_start,
+                                           block_meta->phy_id,
+                                           block_meta->data_start,
+                                           pos - block_meta->data_start);
     if (err != PSA_SUCCESS) {
         return err;
     }
 
     /* Write the new file data */
-    err = fs_ctx->flash_info->write(fs_ctx->flash_info, scratch_id, data, pos,
-                                    size);
+    err = fs_ctx->ops->write(fs_ctx->cfg, scratch_id, data, pos, size);
     if (err != PSA_SUCCESS) {
         return err;
     }
@@ -173,11 +173,11 @@ psa_status_t its_flash_fs_dblock_write_file(
     pos = file_meta->data_idx + file_meta->max_size;
 
     /* Calculate the size of the data in the block after the end of the file */
-    num_bytes = (fs_ctx->flash_info->block_size - block_meta->free_size) - pos;
+    num_bytes = (fs_ctx->cfg->block_size - block_meta->free_size) - pos;
 
     /* Move data between the end of the file and the end of the block data */
-    err = its_flash_block_to_block_move(fs_ctx->flash_info, scratch_id, pos,
-                                        block_meta->phy_id, pos, num_bytes);
+    err = its_flash_fs_block_to_block_move(fs_ctx, scratch_id, pos,
+                                           block_meta->phy_id, pos, num_bytes);
     if (err != PSA_SUCCESS) {
         return err;
     }
@@ -187,7 +187,7 @@ psa_status_t its_flash_fs_dblock_write_file(
      * block update.
      */
     if (file_meta->lblock != ITS_LOGICAL_DBLOCK0) {
-        err = fs_ctx->flash_info->flush(fs_ctx->flash_info);
+        err = fs_ctx->ops->flush(fs_ctx->cfg, scratch_id);
     }
 
     return err;

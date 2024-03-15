@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ MEMORY
      * Customer Configuration Area and Bootloader Backdoor configuration in
      * flash
      */
-    FLASH_CCFG (RX) : ORIGIN = 0x50000000, LENGTH = 0x00000800
+    FLASH_CCFG (R)  : ORIGIN = 0x50000000, LENGTH = 0x00000800
     SEC_SRAM (RWX)  : ORIGIN = 0x20000000, LENGTH = 0x0000C000
     SRAM (RWX)      : ORIGIN = 0x2000C000, LENGTH = 0x00014000
     GPRAM (RWX)     : ORIGIN = 0x11000000, LENGTH = 0x00002000
@@ -76,7 +76,7 @@ SECTIONS {
         KEEP (*(.resetVecs))
     } > REGION_TEXT
 
-	/* Place interrupt vectors in REGION_DATA region */
+    /* Place interrupt vectors in REGION_DATA region */
     .ramVecs (NOLOAD) : ALIGN(256) {
         KEEP (*(.ramVecs))
     } > REGION_DATA
@@ -204,6 +204,7 @@ SECTIONS {
         *(.rodata)
         *(.rodata.*)
         *(.rodata_*)
+        KEEP (*(.timestampPFormat))
     } > REGION_TEXT AT> REGION_TEXT
 
     .data : ALIGN(4) {

@@ -35,6 +35,7 @@
 #include "NWK_INTERFACE/Include/protocol.h"
 #include "6LoWPAN/ws/ws_pae_controller.h"
 #include "6LoWPAN/lowpan_adaptation_interface.h"
+#include "6LoWPAN/ws/ws_config.h"
 #include "NWK_INTERFACE/Include/protocol.h"
 
 #define TRACE_GROUP "mntr"
@@ -74,11 +75,13 @@ typedef void (ns_maintenance_gc_cb)(bool full_gc);
  */
 static ns_maintenance_gc_cb *ns_maintenance_gc_functions[] = {
     ipv6_destination_cache_forced_gc,
-#ifndef FEATURE_MBED_NO_AUTH
     ws_pae_controller_forced_gc,
-#else
+    lowpan_adaptation_free_heap
+};
+
+static ns_maintenance_gc_cb *ns_maintenance_gc_functions_no_gc[] = {
+    ipv6_destination_cache_forced_gc,
     NULL,
-#endif
     lowpan_adaptation_free_heap
 };
 
@@ -86,11 +89,33 @@ static void ns_monitor_heap_gc(bool full_gc)
 {
     (void) full_gc;
 
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        for (unsigned int i = 0; i < sizeof(ns_maintenance_gc_functions) / sizeof(ns_maintenance_gc_functions[0]); i++) {
+            if (ns_maintenance_gc_functions[i]) {
+                (ns_maintenance_gc_functions[i])(full_gc);
+            }
+        }
+    } else {
+        for (unsigned int i = 0; i < sizeof(ns_maintenance_gc_functions_no_gc) / sizeof(ns_maintenance_gc_functions_no_gc[0]); i++) {
+            if (ns_maintenance_gc_functions_no_gc[i]) {
+                (ns_maintenance_gc_functions_no_gc[i])(full_gc);
+            }
+        }
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     for (unsigned int i = 0; i < sizeof(ns_maintenance_gc_functions) / sizeof(ns_maintenance_gc_functions[0]); i++) {
         if (ns_maintenance_gc_functions[i]) {
             (ns_maintenance_gc_functions[i])(full_gc);
         }
     }
+#else
+    for (unsigned int i = 0; i < sizeof(ns_maintenance_gc_functions_no_gc) / sizeof(ns_maintenance_gc_functions_no_gc[0]); i++) {
+        if (ns_maintenance_gc_functions_no_gc[i]) {
+            (ns_maintenance_gc_functions_no_gc[i])(full_gc);
+        }
+    }
+#endif
 }
 
 static void ns_monitor_periodic_heap_health_check(void)

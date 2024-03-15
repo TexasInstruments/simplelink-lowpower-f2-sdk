@@ -24,6 +24,7 @@
 #include "net_interface.h"
 #include "eventOS_event.h"
 #include "NWK_INTERFACE/Include/protocol.h"
+#include "6LoWPAN/ws/ws_config.h"
 #include "6LoWPAN/ws/ws_common.h"
 #include "6LoWPAN/ws/ws_cfg_settings.h"
 #include "6LoWPAN/ws/ws_bbr_api_internal.h"
@@ -488,17 +489,31 @@ static void ws_cfg_network_size_config_set_small(ws_cfg_nw_size_t *cfg)
     cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
     cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
 
-    cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
-    cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-    cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER_CUSTOM_AUTH;
+        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS_CUSTOM_AUTH;
+        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS_CUSTOM_AUTH;
+    }
+    else {
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
+        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+    }
     cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
 
     // Multicast timing configuration
-    cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN;
-    cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX;
-    cfg->mpl.mpl_trickle_k = MPL_SMALL_K;
+    if (ti_wisun_config.mpl_low_latency) {
+        cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN_LOW_LATENCY;
+        cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX_LOW_LATENCY;
+        cfg->mpl.mpl_trickle_k = MPL_SMALL_K_LOW_LATENCY;
+        cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME_LOW_LATENCY;
+    } else {
+        cfg->mpl.mpl_trickle_imin = MPL_SMALL_IMIN;
+        cfg->mpl.mpl_trickle_imax = MPL_SMALL_IMAX;
+        cfg->mpl.mpl_trickle_k = MPL_SMALL_K;
+        cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME;
+    }
     cfg->mpl.mpl_trickle_timer_exp = MPL_SMALL_EXPIRATIONS;
-    cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME;
 
 }
 
@@ -658,9 +673,16 @@ static void ws_cfg_network_size_config_set_certificate(ws_cfg_nw_size_t *cfg)
     cfg->sec_prot.sec_prot_trickle_timer_exp = SEC_PROT_TIMER_EXPIRATIONS;
     cfg->sec_prot.sec_prot_retry_timeout = SEC_PROT_RETRY_TIMEOUT_SMALL;
 
-    cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
-    cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
-    cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER_CUSTOM_AUTH;
+        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS_CUSTOM_AUTH;
+        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS_CUSTOM_AUTH;
+    }
+    else {
+        cfg->sec_prot.initial_key_retry_delay = DEFAULT_INITIAL_KEY_RETRY_TIMER;
+        cfg->sec_prot.initial_key_imin = SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS;
+        cfg->sec_prot.initial_key_imax = SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS;
+    }
     cfg->sec_prot.initial_key_retry_cnt = DEFAULT_INITIAL_KEY_RETRY_COUNT;
 
     // Multicast timing configuration for certification uses the LARGE values as it is the one mentioned ins specification
@@ -1052,10 +1074,18 @@ int8_t ws_cfg_mpl_set(protocol_interface_info_entry_t *cur, ws_mpl_cfg_t *cfg, w
     // In Wi-SUN Border router will have modified settings to improve reliability
     if (cur && cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
         // Border router sends multiple packets to ensure start of sequence
-        if (new_cfg->mpl_trickle_timer_exp < MPL_BORDER_ROUTER_MIN_EXPIRATIONS) {
-            new_cfg->mpl_trickle_timer_exp = MPL_BORDER_ROUTER_MIN_EXPIRATIONS;
-            // Lifetime is calculated using the original IMAX
-            new_cfg->seed_set_entry_lifetime = new_cfg->mpl_trickle_imax * new_cfg->mpl_trickle_timer_exp * MPL_SAFE_HOP_COUNT;
+        if (ti_wisun_config.mpl_low_latency) {
+            if (new_cfg->mpl_trickle_timer_exp < MPL_BORDER_ROUTER_MIN_EXPIRATIONS_LOW_LATENCY) {
+                new_cfg->mpl_trickle_timer_exp = MPL_BORDER_ROUTER_MIN_EXPIRATIONS_LOW_LATENCY;
+                // Lifetime is calculated using the original IMAX
+                new_cfg->seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME_LOW_LATENCY;
+            }
+        } else {
+            if (new_cfg->mpl_trickle_timer_exp < MPL_BORDER_ROUTER_MIN_EXPIRATIONS) {
+                new_cfg->mpl_trickle_timer_exp = MPL_BORDER_ROUTER_MIN_EXPIRATIONS;
+                // Lifetime is calculated using the original IMAX
+                new_cfg->seed_set_entry_lifetime = new_cfg->mpl_trickle_imax * new_cfg->mpl_trickle_timer_exp * MPL_SAFE_HOP_COUNT;
+            }
         }
         // Border router should have shorter IMAX to speed startup
         if (new_cfg->mpl_trickle_imax > MPL_BORDER_ROUTER_MAXIMUM_IMAX) {

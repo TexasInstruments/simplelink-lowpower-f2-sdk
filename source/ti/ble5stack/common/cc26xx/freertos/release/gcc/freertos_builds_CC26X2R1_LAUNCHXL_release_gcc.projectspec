@@ -18,8 +18,8 @@
         outputType="staticLibrary"
         requiredVariables="FREERTOS_INSTALL_DIR"
         compilerBuildOptions=" -I${PROJECT_ROOT}
-                               -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include
-                               -I${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/GCC/ARM_CM4F
+                               -I${FREERTOS_INSTALL_DIR}/source/third_party/freertos/include
+                               -I${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/GCC/ARM_CM4F
                                -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/posix/gcc
                                -I${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source
                                -I${CG_TOOL_ROOT}/arm-none-eabi/include/newlib-nano

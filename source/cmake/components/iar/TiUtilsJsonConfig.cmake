@@ -33,6 +33,7 @@ endmacro()
 
 
 include("${CMAKE_CURRENT_LIST_DIR}/TiUtilsJsonM0PTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/TiUtilsJsonM3Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/TiUtilsJsonM4Targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/TiUtilsJsonM4FTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/TiUtilsJsonM33FTargets.cmake")

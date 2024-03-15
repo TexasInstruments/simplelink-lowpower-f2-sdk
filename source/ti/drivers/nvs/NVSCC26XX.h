@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -270,7 +270,7 @@ extern const NVS_FxnTable NVSCC26XX_fxnTable;
  *  MEMORY
  *  {
  *      FLASH (RX)      : ORIGIN = 0x00000000, LENGTH = 0x0001ffa8
- *      FLASH_CCFG (RX) : ORIGIN = 0x0001ffa8, LENGTH = 0x00000058
+ *      FLASH_CCFG (R)  : ORIGIN = 0x0001ffa8, LENGTH = 0x00000058
  *      SRAM (RWX)      : ORIGIN = 0x20000000, LENGTH = 0x00005000
  *  }
  *

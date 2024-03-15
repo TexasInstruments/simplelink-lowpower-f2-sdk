@@ -53,7 +53,6 @@ const config = [
         displayName: "Advertisement Type",
         default: "legacy",
         longDescription: Docs.advTypeLongDescription,
-        getDisabledOptions: generateDisabledOptions("advType"),
         onChange: onAdvTypeChange,
         options: [
             { displayName: "Legacy",    name: "legacy"   },
@@ -64,6 +63,7 @@ const config = [
         name: "legacyEvnPropOptions",
         displayName: "Legacy Event Properties Options",
         default: "CONN_SCAN",
+        getDisabledOptions: generateDisabledOptions("legacyEvnPropOptions"),
         longDescription: Docs.legacyEvnPropOptionsLongDescription,
         onChange: onLegacyEvnPropOptionsChange,
         hidden: false,
@@ -169,32 +169,8 @@ const config = [
         name: "filterPolicy",
         displayName: "Filter Policy",
         longDescription: Docs.filterPolicyLongDescription,
-        default: "GAP_ADV_WL_POLICY_ANY_REQ",
-        options: [
-            {
-                displayName: "Process requests from all devices",
-                name: "GAP_ADV_WL_POLICY_ANY_REQ",
-                description: "Process scan and connection requests from all devices "
-                              + "(i.e., the WhiteList is not in use)"
-            },
-            {
-                displayName: "Process conn req from all devices and only scan req from devices in WL",
-                name: "GAP_ADV_WL_POLICY_WL_SCAN_REQ",
-                description:  "Process connection requests from all devices and only scan requests "
-                            +"from devices that are in the White List"
-            },
-            {
-                displayName: "Process scan req from all devices and only conn req from devices in WL",
-                name: "GAP_ADV_WL_POLICY_WL_CONNECT_IND",
-                description: "Process scan requests from all devices and only connection requests"
-                              + "from devices that are in the White List"
-            },
-            {
-                displayName: "Process requests only from devices in WL",
-                name: "GAP_ADV_WL_POLICY_WL_ALL_REQ",
-                description: "Process scan and connection requests only from devices in the White List"
-            }
-        ]
+        default: Common.getFilterPolicyName(),
+        options:Common.getOptionsOfFilterPolicy()
     },
     {
         name: "txPower",
@@ -236,7 +212,7 @@ const config = [
     },
     {
         name: "secPhy",
-        displayName: "Secondery PHY",
+        displayName: "Secondary PHY",
         longDescription: Docs.secPhyLongDescription,
         getDisabledOptions: generateDisabledOptions("secPhy"),
         default: "GAP_ADV_SEC_PHY_1_MBPS",
@@ -253,6 +229,12 @@ const config = [
         longDescription: Docs.sidLongDescription,
         displayFormat: "dec",
         default: 0
+    },
+    {
+        name: "deviceRole",
+        default: "",
+        onChange: onDeviceRoleChange,
+        hidden: true
     }
 ];
 
@@ -355,27 +337,6 @@ function generateDisabledOptions(name)
         // Find the configurable we're going to generate a disabled list from
         const configurable = _.find(inst.$module.config,(conf) => conf.name == name);
 
-        if(name == "advType")
-        {
-            const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
-
-            if(devFamily == "DeviceFamily_CC23X0")
-            {
-                // Find the configurable we're going to generate a disabled list from
-                const configurable = _.find(inst.$module.config,(conf) => conf.name == name);
-
-                // List of invalid options
-                const disabledOptions = configurable.options.slice(configurable.options.includes("legacy") == false);
-
-                // Add the "reason" why it's disabled, and return that information
-                return disabledOptions.map((option) => ({ name: option.name, reason: "Currently not supported for CC23X0" }));
-            }
-            else
-            {
-                return [];
-            }
-        }
-
         // Hide the option to use PHY != 1M for Legacy adv params
         if(name == "primPhy" || name == "secPhy")
         {
@@ -393,40 +354,69 @@ function generateDisabledOptions(name)
 
         if(name == "eventProps")
         {
+            let disabledOptions = configurable.options;
+            const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
+
             if (inst.advType == "extended")
             {
                 // List of invalid options
-                let disabledOptions = configurable.options.filter(function(index){ return index.name.includes("HDC") == true || index.name.includes("LEGACY") == true});
+                disabledOptions = disabledOptions.filter(function(index){ return index.name.includes("HDC") == true || index.name.includes("LEGACY") == true});
 
                 // Add the "reason" why it's disabled, and return that information
                 disabledOptions = disabledOptions.map((option) => ({ name: option.name, reason: "This is not a valid option for Extended Advertisement Type" }));
 
-                // Disable the option to choose both CONNECTABLE and SCANNABLE advertise properties
-                if(inst.eventProps.includes("GAP_ADV_PROP_CONNECTABLE"))
+                if ( (devFamily != "DeviceFamily_CC23X0R5") && (devFamily != "DeviceFamily_CC23X0R2") )
                 {
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Connectable and Scannable can not be used in the same time"});
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_ANONYMOUS", reason: "Anonymous advertising is not supported when Connectable advertising is selected"});
+                    // Disable the option to choose both CONNECTABLE and SCANNABLE advertise properties
+                    if(inst.eventProps.includes("GAP_ADV_PROP_CONNECTABLE"))
+                    {
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Connectable and Scannable can not be used in the same time"});
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_ANONYMOUS", reason: "Anonymous advertising is not supported when Connectable advertising is selected"});
+                    }
+                    if(inst.eventProps.includes("GAP_ADV_PROP_SCANNABLE"))
+                    {
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable and Scannable can not be used in the same time"});
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_ANONYMOUS", reason: "Anonymous advertising is not supported when Scannable advertising is selected"});
+                    }
+                    if(inst.eventProps.includes("GAP_ADV_PROP_ANONYMOUS"))
+                    {
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable advertising is not supported when Anonymous advertising is selected"});
+                        disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Scannable advertising is not supported when Anonymous advertising is selected"});
+                    }
                 }
-                if(inst.eventProps.includes("GAP_ADV_PROP_SCANNABLE"))
+                else
                 {
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable and Scannable can not be used in the same time"});
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_ANONYMOUS", reason: "Anonymous advertising is not supported when Scannable advertising is selected"});
+                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable advertising is not supported"});
+                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Connectable advertising is not supported"});
                 }
-                if(inst.eventProps.includes("GAP_ADV_PROP_ANONYMOUS"))
-                {
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable advertising is not supported when Anonymous advertising is selected"});
-                    disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_SCANNABLE", reason: "Scannable advertising is not supported when Anonymous advertising is selected"});
-                }
+            }
+            else
+            {
+                // Add the "reason" why it's disabled, and return that information
+                disabledOptions = disabledOptions.map((option) => ({ name: option.name,
+                    reason: "The Event Properties selection for Legacy advertisement is done by choosing an option from Legacy Event Properties Options" }));
+            }
+
+            if( inst.$ownedBy.$ownedBy.deviceRole.includes("BROADCASTER_CFG"))
+            {
+               disabledOptions = disabledOptions.concat({name: "GAP_ADV_PROP_CONNECTABLE", reason: "Connectable can not be used in the Broadcaster role"});
+            }
+            return disabledOptions;
+        }
+        if(name == "legacyEvnPropOptions")
+        {
+            if( inst.$ownedBy.$ownedBy.deviceRole.includes("BROADCASTER_CFG"))
+            {
+                let disabledOptions = configurable.options;
+                disabledOptions = disabledOptions.filter(function(index){ return index.name.includes("CONN") == true});
+                // Add the "reason" why it's disabled, and return that information
+                disabledOptions = disabledOptions.map((option) => ({ name: option.name,
+                    reason: "Connectable can not be used in the Broadcaster role" }));
                 return disabledOptions;
             }
             else
             {
-                // List of invalid options
-                let disabledOptions = configurable.options;
-                // Add the "reason" why it's disabled, and return that information
-                disabledOptions = disabledOptions.map((option) => ({ name: option.name,
-                    reason: "The Event Properties selection for Legacy advertisement is done by choosing an option from Legacy Event Properties Options" }));
-                return disabledOptions;
+                return [];
             }
         }
 	}
@@ -451,10 +441,22 @@ function generateDisabledOptions(name)
     }
     else if(inst.advType == "extended")
     {
-        inst.eventProps = ["GAP_ADV_PROP_CONNECTABLE"];
-        inst.primPhy = "GAP_ADV_PRIM_PHY_CODED_S2";
-        inst.secPhy = "GAP_ADV_SEC_PHY_CODED_S2";
-        ui.legacyEvnPropOptions.hidden = true;
+        const devFamily = Common.device2DeviceFamily(system.deviceData.deviceId);
+
+        if (devFamily != "DeviceFamily_CC23X0R5")
+        {
+            inst.eventProps = ["GAP_ADV_PROP_CONNECTABLE"];
+            inst.primPhy = "GAP_ADV_PRIM_PHY_CODED_S2";
+            inst.secPhy = "GAP_ADV_SEC_PHY_CODED_S2";
+            ui.legacyEvnPropOptions.hidden = true;
+        }
+        else
+        {
+            inst.eventProps = [];
+            inst.primPhy = "GAP_ADV_PRIM_PHY_CODED_S2";
+            inst.secPhy = "GAP_ADV_SEC_PHY_CODED_S2";
+            ui.legacyEvnPropOptions.hidden = true;
+        }
     }
  }
 
@@ -487,6 +489,22 @@ function onLegacyEvnPropOptionsChange(inst,ui)
       }
 }
 
+
+function onDeviceRoleChange(inst,ui)
+{
+    if(inst.deviceRole.includes("BROADCASTER_CFG"))
+    {
+        if(inst.advType == "legacy")
+        {
+            inst.legacyEvnPropOptions = "SCAN";
+            inst.eventProps = legacyEventPropValidOpt.SCAN_LEG;
+        }
+        else if(inst.advType == "extended")
+        {
+            inst.eventProps.remove("GAP_ADV_PROP_CONNECTABLE");
+        }
+    }
+}
  /*
  *  ======== onTxPowerChange ========
  * Change the tx power input option

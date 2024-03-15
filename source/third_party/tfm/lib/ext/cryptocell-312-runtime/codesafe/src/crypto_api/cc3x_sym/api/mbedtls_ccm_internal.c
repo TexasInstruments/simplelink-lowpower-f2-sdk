@@ -349,7 +349,7 @@ static int ccm_text_data(mbedtls_ccm_context *ctx, const uint8_t *pTextDataIn, s
         /* set operation mode to CBC_MAC */
         pAesCcmCtx->mode = CIPHER_CBC_MAC;
 
-        rc = ProcessAesCcmDrv(pAesCcmCtx, &inBuffInfo, &outBuffInfo, buffAttr, textDataSize);
+        rc = ProcessAesCcmDrv(pAesCcmCtx, &inBuffInfo, &outBuffInfo, textDataSize);
         if ( rc != AES_DRV_OK )
         {
             CC_PAL_LOG_ERR("CBC_MAC on text data failed with error code %d\n", rc);

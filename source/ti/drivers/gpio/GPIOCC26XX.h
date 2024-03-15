@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,6 +74,13 @@ extern "C" {
  */
 #undef GPIOCC26XX_CFG_OPTION_NOT_SUPPORTED
 
+/* Most configuration values are directly mapped to fields in the IOCFGn
+ * registers, but the lower 8 bits are reserved for configuration options that
+ * cannot be directly mapped to the IOCFGn registers. The define below is the
+ * mask used by the GPIO driver to mask off the non-IOC configuration values.
+ */
+#define GPIOCC26XX_CFG_IOC_M 0xFFFFFF00
+
 /* Low and high value interrupts are not available on CC26XX hardware */
 #define GPIO_CFG_INT_LOW_INTERNAL  GPIOCC26XX_CFG_OPTION_NOT_SUPPORTED
 #define GPIO_CFG_INT_HIGH_INTERNAL GPIOCC26XX_CFG_OPTION_NOT_SUPPORTED
@@ -126,7 +133,7 @@ extern "C" {
  * IOC config, since the mux is applied separately. On CC26XX this is the
  * lowest 8 bits.
  *
- * Do not use these values when calling GPIO_setConfig. They are for
+ * Do not use these values when calling GPIO_setConfig(). They are for
  * internal use only, to provide support for driver functionality that does
  * not map directly into the IO config registers.
  */

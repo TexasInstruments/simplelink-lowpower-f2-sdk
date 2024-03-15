@@ -49,7 +49,11 @@ void sec_prot_init(sec_prot_common_t *data)
 {
     data->state = SEC_STATE_INIT;
     data->result = SEC_RESULT_OK;
-    data->ticks = SEC_INIT_TIMEOUT;
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        data->ticks = SEC_INIT_TIMEOUT_CUSTOM_AUTH;
+    } else {
+        data->ticks = SEC_INIT_TIMEOUT;
+    }
     data->trickle_running = false;
 }
 

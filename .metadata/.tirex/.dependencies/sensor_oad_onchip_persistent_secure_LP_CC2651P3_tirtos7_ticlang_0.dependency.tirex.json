@@ -4,7 +4,7 @@
             "+../../README.md -> README.md",
             "+../../README.html -> README.html",
             "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
-            "+../../application/defines/sensor_oad_onchip_persistent.opts -> application/defines/sensor_oad_onchip_persistent.opts",
+            "+../../application/defines/sensor_oad_onchip_persistent.opt -> application/defines/sensor_oad_onchip_persistent.opt",
             "+../sensor_oad_onchip_persistent.syscfg -> sensor_oad_onchip_persistent.syscfg",
             "+cc13x1_cc26x1_oad_onchip_tirtos7.cmd -> cc13x1_cc26x1_oad_onchip_tirtos7.cmd"
         ]

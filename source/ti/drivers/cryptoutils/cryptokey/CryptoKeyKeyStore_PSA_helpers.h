@@ -53,9 +53,9 @@
 
 #include <ti/drivers/dpl/SemaphoreP.h>
 
-#include <third_party/mbedcrypto/library/psa_crypto_core.h>
-#include <third_party/mbedcrypto/library/psa_crypto_slot_management.h>
-#include <third_party/mbedcrypto/library/psa_crypto_storage.h>
+#include <third_party/mbedtls/library/psa_crypto_core.h>
+#include <third_party/mbedtls/library/psa_crypto_slot_management.h>
+#include <third_party/mbedtls/library/psa_crypto_storage.h>
 
 #ifdef __cplusplus
 extern "C" {

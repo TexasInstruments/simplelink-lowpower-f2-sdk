@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -150,15 +150,15 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     llUserConfig.maxNumCteBufs = stackConfig->maxNumCteBuffers;
     llUserConfig.advReportIncChannel = stackConfig->advReportIncChannel;
 
-    // Copy the RF_mode Object
-    memcpy(&rfMode, &RF_modeBle, sizeof(RF_Mode));
+    // Point to the RF_mode Object
+    llUserConfig.rfMode = &RF_modeBle;
 
     // Use the rtls cpe patch when RTLS is used
 #if (defined RTLS_CTE || defined USE_PERIODIC_ADV || defined USE_PERIODIC_SCAN)
-    rfMode.cpePatchFxn = &rf_patch_cpe_multi_protocol_rtls;
+    llUserConfig.rfMode->cpePatchFxn = &rf_patch_cpe_multi_protocol_rtls;
     // Use the multi_protocol cpe patch when DMM is used
 #elif USE_DMM
-    rfMode.cpePatchFxn = &rf_patch_cpe_multi_protocol;
+    llUserConfig.rfMode->cpePatchFxn = &rf_patch_cpe_multi_protocol;
 #endif
 
     // RF Front End Mode and Bias (based on package)
@@ -184,6 +184,11 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     llUserConfig.cteAntProp          = userCfg->boardConfig->cteAntennaPropPtr;     // CTE antenna properties
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
     llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
+#ifdef SDAA_ENABLE
+    llUserConfig.sdaaCfgPtr = &sdaaCfgTable; // SDAA module configuration
+#else
+    llUserConfig.sdaaCfgPtr = NULL;
+#endif
 
 // The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
 // and can be found in "ti_radio_config.c".
@@ -347,15 +352,15 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
     llUserConfig.numTxEntries  = userCfg->maxNumPDUs;
     llUserConfig.maxPduSize    = userCfg->maxPduSize;
 
-    // Copy the RF_mode Object
-    memcpy(&rfMode, &RF_modeBle, sizeof(RF_Mode));
+    // Point to the RF_mode Object
+    llUserConfig.rfMode = &RF_modeBle;
 
     // Use the rtls cpe patch when RTLS is used
 #if (defined RTLS_CTE || defined USE_PERIODIC_ADV || defined USE_PERIODIC_SCAN)
-    rfMode.cpePatchFxn = &rf_patch_cpe_multi_protocol_rtls;
+    llUserConfig.rfMode->cpePatchFxn = &rf_patch_cpe_multi_protocol_rtls;
     // Use the multi_protocol cpe patch when DMM is used
 #elif USE_DMM
-    rfMode.cpePatchFxn = &rf_patch_cpe_multi_protocol;
+    llUserConfig.rfMode->cpePatchFxn = &rf_patch_cpe_multi_protocol;
 #endif
 
     // RF Front End Mode and Bias (based on package)
@@ -380,6 +385,11 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
 
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
     llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
+#ifdef SDAA_ENABLE
+    llUserConfig.sdaaCfgPtr = &sdaaCfgTable; // SDAA module configuration
+#else
+    llUserConfig.sdaaCfgPtr = NULL;
+#endif
 
 // The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
 // and can be found in "ti_radio_config.c".

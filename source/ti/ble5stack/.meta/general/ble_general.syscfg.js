@@ -134,6 +134,10 @@ const config = {
 function generateDisabledOptions(name)
 {
     return (inst) => {
+
+        // Find the configurable we're going to generate a disabled list from
+        const configurable = inst.$module.$configByName[name].options;
+
         if(inst.hideAddressModeRPA)
         {
             // List of invalid options
@@ -175,7 +179,8 @@ function maxConnNumDefaultValue()
     {
         maxConnNum = 4;
     }
-    else if(Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    else if(Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R5" ||
+            Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R2" )
     {
         maxConnNum = 1;
     }

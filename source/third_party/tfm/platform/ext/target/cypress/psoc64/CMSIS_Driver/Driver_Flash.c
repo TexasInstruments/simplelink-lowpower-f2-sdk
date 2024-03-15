@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020 ARM Limited. All rights reserved.
+ * Copyright (c) 2013-2021 ARM Limited. All rights reserved.
  * Copyright (c) 2019, Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -60,13 +60,29 @@ static const ARM_DRIVER_VERSION DriverVersion = {
     ARM_FLASH_DRV_VERSION
 };
 
+/**
+ * Data width values for ARM_FLASH_CAPABILITIES::data_width
+ * \ref ARM_FLASH_CAPABILITIES
+ */
+ enum {
+    DATA_WIDTH_8BIT   = 0u,
+    DATA_WIDTH_16BIT,
+    DATA_WIDTH_32BIT,
+    DATA_WIDTH_ENUM_SIZE
+};
+
 /* Driver Capabilities */
 static const ARM_FLASH_CAPABILITIES DriverCapabilities = {
     0, /* event_ready */
-    0, /* data_width = 0:8-bit, 1:16-bit, 2:32-bit */
+    DATA_WIDTH_8BIT,
     1  /* erase_chip */
 };
 
+static const uint32_t data_width_byte[DATA_WIDTH_ENUM_SIZE] = {
+    sizeof(uint8_t),
+    sizeof(uint16_t),
+    sizeof(uint32_t),
+};
 
 #if (RTE_FLASH0)
 
@@ -75,7 +91,7 @@ static ARM_FLASH_INFO ARM_FLASH0_DEV_DATA = {
     .sector_count = FLASH0_SIZE / FLASH0_SECTOR_SIZE,
     .sector_size  = FLASH0_SECTOR_SIZE,
     .page_size    = FLASH0_PAGE_SIZE,
-    .program_unit = PS_FLASH_PROGRAM_UNIT,
+    .program_unit = TFM_HAL_PS_PROGRAM_UNIT,
     .erased_value = ARM_FLASH_DRV_ERASE_VALUE
 };
 
@@ -103,6 +119,10 @@ static ARM_FLASH_CAPABILITIES ARM_Flash_GetCapabilities(void)
 static int32_t ARM_Flash_Initialize(ARM_Flash_SignalEvent_t cb_event)
 {
     ARG_UNUSED(cb_event);
+
+    if (DriverCapabilities.data_width >= DATA_WIDTH_ENUM_SIZE) {
+        return ARM_DRIVER_ERROR;
+    }
 
     return ARM_DRIVER_OK;
 }
@@ -133,6 +153,8 @@ static int32_t ARM_Flash_ReadData(uint32_t addr, void *data, uint32_t cnt)
     if ( (data == NULL) || (cnt == 0) ) {
         return ARM_DRIVER_OK;
     }
+    /* Conversion between data items and bytes */
+    cnt *= data_width_byte[DriverCapabilities.data_width];
 
     // Wraparound check (before adding FLASH0_DEV->memory_base + addr)
     if (FLASH0_DEV->memory_base >= UINT32_MAX - addr) {
@@ -159,13 +181,14 @@ static int32_t ARM_Flash_ReadData(uint32_t addr, void *data, uint32_t cnt)
     // Using memcpy for reading
     memcpy(data, (void *)start_addr, cnt);
 
-    return ARM_DRIVER_OK;
+    cnt /= data_width_byte[DriverCapabilities.data_width];
+    return cnt;
 }
 
 static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data,
                                      uint32_t cnt)
 {
-    static uint8_t prog_buf[CY_FLASH_SIZEOF_ROW];
+    __attribute__ ((aligned(4))) static uint8_t prog_buf[CY_FLASH_SIZEOF_ROW];
     uint8_t *data_ptr = (uint8_t *) data;
     uint32_t address = FLASH0_DEV->memory_base + addr;
     cy_en_flashdrv_status_t cy_status = CY_FLASH_DRV_ERR_UNC;
@@ -175,6 +198,9 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data,
     if ( (data == NULL) || (cnt == 0) ) {
         return ARM_DRIVER_ERROR_PARAMETER;
     }
+
+    /* Conversion between data items and bytes */
+    cnt *= data_width_byte[DriverCapabilities.data_width];
 
     // Make sure cnt argument is aligned to program_unit size
     if (cnt % FLASH0_DEV->data->program_unit) {
@@ -211,7 +237,8 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data,
     switch (cy_status)
     {
         case CY_FLASH_DRV_SUCCESS:
-            return ARM_DRIVER_OK;
+            cnt /= data_width_byte[DriverCapabilities.data_width];
+            return cnt;
 
         case CY_FLASH_DRV_IPC_BUSY:
             return ARM_DRIVER_ERROR_BUSY;

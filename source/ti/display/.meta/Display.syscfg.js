@@ -98,7 +98,7 @@ value that cannot be changed. Please refer to the
     {
         name        : "lcdFontSize",
         displayName : "LCD Font Size",
-        description : "Font size to be used on LCD. Valid options are even numbers between 12 and 48, both included.",
+        description : "Font size to be used on LCD. Valid options are even integers between 12 and 48, both included.",
         default     : 12,
         hidden      : true
     },
@@ -375,6 +375,15 @@ function validate(inst, validation)
 
     if (inst.lcdSize <= 0) {
         logError(validation, inst, 'lcdSize', 'Must be a positive integer.');
+    }
+
+    if (inst.lcdFont == "CMTT")
+    {
+        if (inst.lcdFontSize < 12 || inst.lcdFontSize > 48 || inst.lcdFontSize % 2 != 0)
+        {
+            logError(validation, inst, 'lcdFontSize', 
+                     'Must be an even integer between 12 and 48, both included.');
+        }
     }
 }
 

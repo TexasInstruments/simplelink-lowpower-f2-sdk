@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2001-2019, Arm Limited. All rights reserved.
+# Copyright (c) 2001-2020, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -104,6 +104,16 @@ RELEASE_SCRDIR = $(HOST_PROJ_ROOT)/bin
 # DATDIR for data/binary files
 RELEASE_DATDIR = $(HOST_PROJ_ROOT)/dat
 
+################################################
+### Handle project configuration definitions ###
+################################################
+PROJ_CFG_FNAME = proj.cfg
+PROJ_EXT_CFG_FNAME = proj.ext.cfg
+PROJ_CFG_PATH = $(HOST_PROJ_ROOT)/$(PROJ_CFG_FNAME)
+PROJ_EXT_CFG_PATH = $(HOST_PROJ_ROOT)/../$(PROJ_EXT_CFG_FNAME)
+CONFIGS_PATH = src/configs
+PROJ_CONFIGS_DIR = $(HOST_PROJ_ROOT)/$(CONFIGS_PATH)
+
 #Test directories
 ifeq ($(TEE_OS),freertos)
 KERNEL_LIB_DIR  := $(KERNEL_DIR)/lib
@@ -127,11 +137,31 @@ endif
 #initiate variable to avoid concatinatation at every target level
 CFLAGS =
 
+ifeq ($(ARCH),arm64)
+	# aarch64-linux-gnu-
+	CROSS_COMPILE := $(if $(filter aarch64-%,$(CROSS_COMPILE)),$(CROSS_COMPILE),aarch64-linux-gnu-)
+	ARCH_ENDIAN = LITTLE
+endif
+
 # The following statements would be executed only if ARCH is one of the supported ones.
 ifeq ($(ARCH),powerpc)
 	CROSS_COMPILE := ppc_4xx-
 	ARCH_ENDIAN = BIG
 	CFLAGS += -isystem /opt/eldk/ppc_4xx/usr/include
+endif
+
+ifeq ($(ARCH),x86win)
+	# Compiling for x86-windows - using MinGW toolchain.
+	CROSS_COMPILE ?= i586-mingw32msvc-
+endif
+
+# subfolder for compilation/generation outcome/objects/binaries
+BUILDDIR = $(PWD)/build-$(CROSS_COMPILE:%-=%)
+
+### proj.cfg exists. Include it to get project configuration definitions ###
+ifeq ($(wildcard $(PROJ_CFG_PATH)),$(PROJ_CFG_PATH))
+include $(PROJ_EXT_CFG_PATH)
+include $(PROJ_CFG_PATH)
 endif
 
 ifeq ($(ARCH),arm)
@@ -149,10 +179,15 @@ ifeq ($(ARCH),arm)
             CFLAGS += -march=armv8-m.main
             CFLAGS += -mcmse
             CFLAGS += -DARCH_V8M
-        else
+        else ifeq ($(ARM_CPU), cortex-m3)
             # For arm-none-eabi assume cortex-m3
             ARM_CPU ?= cortex-m3
             CFLAGS += -mcpu=$(ARM_CPU)
+        else ifeq ($(ARM_CPU), cortex-m0plus)
+            ARM_CPU ?= cortex-m0plus
+            CFLAGS += -mcpu=$(ARM_CPU)
+        else
+            $(error unrecognized ARM_CPU "$(ARM_CPU)")
         endif
         CFLAGS += -mthumb
         TEE_OS = no_os
@@ -166,9 +201,14 @@ ifeq ($(ARCH),arm)
             CFLAGS += -mcmse
             CFLAGS += -mfpu=none
             CFLAGS += -DARCH_V8M
-        else
+        else ifeq ($(ARM_CPU), cortex-m3)
             ARM_CPU ?= cortex-m3
             CFLAGS += -mcpu=$(ARM_CPU)
+        else ifeq ($(ARM_CPU), cortex-m0plus)
+            ARM_CPU ?= cortex-m0plus
+            CFLAGS += -mcpu=$(ARM_CPU)
+        else
+            $(error unrecognized ARM_CPU "$(ARM_CPU)")
         endif
         CFLAGS += --target=arm-arm-none-eabi -mlittle-endian
         CFLAGS += -mthumb
@@ -189,19 +229,8 @@ ifeq ($(ARCH),arm)
     export ARM_CPU
 endif #arm
 
-ifeq ($(ARCH),arm64)
-	# aarch64-linux-gnu-
-	CROSS_COMPILE := $(if $(filter aarch64-%,$(CROSS_COMPILE)),$(CROSS_COMPILE),aarch64-linux-gnu-)
-	ARCH_ENDIAN = LITTLE
-endif
-
 ifneq ($(filter i686 x86 x86win x86_64,$(ARCH)),) # x86* Arch.
 	ARCH_ENDIAN = LITTLE
-endif
-
-ifeq ($(ARCH),x86win)
-	# Compiling for x86-windows - using MinGW toolchain.
-	CROSS_COMPILE ?= i586-mingw32msvc-
 endif
 
 ifeq ($(filter arm arm-dsm- armcc ,$(CROSS_COMPILE)),$(CROSS_COMPILE))
@@ -220,9 +249,6 @@ CC = armclang
 LD = armlink
 AR = armar
 endif
-
-# subfolder for compilation/generation outcome/objects/binaries
-BUILDDIR = $(PWD)/build-$(CROSS_COMPILE:%-=%)
 
 # Object file suffix
 OBJEXT = .o
@@ -269,17 +295,6 @@ exec_logged_and_echo = $(ECHO) $(1) ; $(exec_logged)
 DEPENDENCY_ON_EXISTENCE_OF = $(filter-out $(wildcard $(1)),$(1))
 
 
-################################################
-### Handle project configuration definitions ###
-################################################
-
-PROJ_CFG_FNAME = proj.cfg
-PROJ_EXT_CFG_FNAME = proj.ext.cfg
-PROJ_CFG_PATH = $(HOST_PROJ_ROOT)/$(PROJ_CFG_FNAME)
-PROJ_EXT_CFG_PATH = $(HOST_PROJ_ROOT)/../$(PROJ_EXT_CFG_FNAME)
-CONFIGS_PATH = src/configs
-PROJ_CONFIGS_DIR = $(HOST_PROJ_ROOT)/$(CONFIGS_PATH)
-
 ############ Special rules for project configuration selection ##############
 ifneq ($(wildcard $(PROJ_CFG_PATH)),$(PROJ_CFG_PATH)) # No proj.cfg linked
 
@@ -301,13 +316,6 @@ clrconfig:
 .PHONY: all setconfig_% clrconfig
 
 else
-### proj.cfg exists. Include it to get project configuration definitions ###
-
-# The includes order is important here:
-# External configurations in proj.ext.cfg may be overriden by those in host proj.cfg
-include $(PROJ_EXT_CFG_PATH)
-include $(PROJ_CFG_PATH)
-
 # default TEE_OS
 REE_OS ?= linux
 TEE_OS ?= cc_linux
@@ -324,6 +332,9 @@ TESTAL_PAL_ARCH = ca9
 endif
 ifeq ($(ARM_CPU),cortex-m3)
 TESTAL_PAL_ARCH = cm3
+endif
+ifeq ($(ARM_CPU),cortex-m0plus)
+TESTAL_PAL_ARCH = cm0plus
 endif
 ifeq ($(ARM_CPU),cortex-m33)
 TESTAL_PAL_ARCH = cm33

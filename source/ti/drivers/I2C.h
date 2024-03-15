@@ -31,7 +31,7 @@
  */
 /*!****************************************************************************
  *  @file       I2C.h
- *  @brief      Inter-Integrated Circuit (I2C) Driver
+ *  @brief      Inter-Integrated Circuit (I2C) Controller Driver
  *
  *  @anchor ti_drivers_I2C_Overview
  *  # Overview
@@ -293,11 +293,6 @@
 
 #include <ti/drivers/dpl/HwiP.h>
 #include <ti/drivers/dpl/SemaphoreP.h>
-
-/* Enable backwards-compatibility for legacy terminology if specified. */
-#ifdef ENABLE_LEGACY_TERMINOLOGY
-    #include <ti/drivers/LegacyTerminology.h>
-#endif
 /*! @endcond */
 
 #ifdef __cplusplus
@@ -500,7 +495,7 @@ typedef struct
      *  is automatically set based upon the #I2C_Transaction.writeCount and
      *  #I2C_Transaction.readCount.
      */
-    uint_least8_t targetAddress;
+    uint_least16_t targetAddress;
 
     /*!
      *  @private This is reserved for use by the driver and must never be
@@ -587,6 +582,21 @@ typedef enum
 } I2C_BitRate;
 
 /*!
+ *  @brief  Address mode for an I2C driver instance specified selected by
+ *  #I2C_setAddressMode()
+ *
+ *  This enumeration defines the address modes selected by #I2C_setAddressMode().
+ *
+ *  @note You must check that the device specific implementation supports the
+ *  desired #I2C_AddressMode.
+ */
+typedef enum
+{
+    I2C_ADDRESS_MODE_7_BIT  = 0, /*!< 7-bit address mode */
+    I2C_ADDRESS_MODE_10_BIT = 1, /*!< 10-bit address mode */
+} I2C_AddressMode;
+
+/*!
  *  @brief I2C parameters used with I2C_open().
  *
  *  I2C_Params_init() must be called prior to setting fields in
@@ -610,6 +620,17 @@ typedef struct
      * will transmit data during a I2C_transfer().
      */
     I2C_BitRate bitRate;
+
+    /*!
+     * A #I2C_AddressMode specifying the address mode to configure the I2C
+     * peripheral to use. This will be the address mode used after calling
+     * #I2C_open().
+     * The address mode can later be changed using #I2C_setAddressMode().
+     *
+     * @note Not all address modes are supported for by devices. Please refer to
+     * the device-specific documentation for a list of supported address modes.
+     */
+    I2C_AddressMode addressMode;
 
     /*! Pointer to a device specific extension of the #I2C_Params */
     void *custom;
@@ -808,9 +829,22 @@ extern I2C_Handle I2C_open(uint_least8_t index, I2C_Params *params);
  *  @arg #I2C_Params.transferMode = #I2C_MODE_BLOCKING
  *  @arg #I2C_Params.transferCallbackFxn = @p NULL
  *  @arg #I2C_Params.bitRate = #I2C_100kHz
+ *  @arg #I2C_Params.addressMode = #I2C_ADDRESS_MODE_7_BIT
  *  @arg #I2C_Params.custom = @p NULL
  */
 extern void I2C_Params_init(I2C_Params *params);
+
+/*!
+ *  @brief  Set the I2C address mode
+ *
+ *  @note Not all I2C driver implementations implement this function.
+ *
+ *  @param[in]  handle      An #I2C_Handle returned from #I2C_open()
+ *
+ *  @param[in]  addressMode The address mode the I2C instance should use.
+ *
+ */
+extern void I2C_setAddressMode(I2C_Handle handle, I2C_AddressMode addressMode);
 
 /*!
  *  @brief  Set the I2C SCL clock timeout.

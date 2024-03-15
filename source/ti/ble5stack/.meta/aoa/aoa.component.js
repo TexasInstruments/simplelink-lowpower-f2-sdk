@@ -55,10 +55,6 @@ const templates = [
     {
         name: "/ti/ble5stack/templates/aoa_config.h.xdt",
         outputPath: "ti_aoa_config.h"
-    },
-    {
-        name: "/ti/ble5stack/templates/aoa_app_config.opt.xdt",
-        outputPath: "ti_aoa_app_config.opt"
     }
 ];
 

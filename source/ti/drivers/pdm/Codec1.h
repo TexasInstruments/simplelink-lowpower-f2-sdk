@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Texas Instruments Incorporated
+ * Copyright (c) 2014-2019, Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *

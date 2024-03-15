@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -61,14 +61,15 @@
 #endif
 
 #if defined( CC23X0 )
-#include <ti/drivers/power/PowerCC23XX.h>
+#include <ti/drivers/power/PowerCC23X0.h>
 #else
 #include <ti/drivers/power/PowerCC26XX.h>
 #endif
 
 #include <ti/drivers/GPIO.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_ints.h"
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
 #include <ti_drivers_config.h>
 #include "icall.h"
 #include "hal_types.h"
@@ -227,8 +228,8 @@ static void NPITL_setPM(void)
     }
     // set constraints for Standby and idle mode
 #ifdef CC23X0
-    Power_setConstraint(PowerCC23XX_DISALLOW_STANDBY);
-    Power_setConstraint(PowerCC23XX_DISALLOW_IDLE);
+    Power_setConstraint(PowerLPF3_DISALLOW_STANDBY);
+    Power_setConstraint(PowerLPF3_DISALLOW_IDLE);
 #else
     Power_setConstraint(PowerCC26XX_SB_DISALLOW);
     Power_setConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
@@ -251,8 +252,8 @@ static void NPITL_relPM(void)
     }
     // release constraints for Standby and idle mode
 #ifdef CC23X0
-    Power_releaseConstraint(PowerCC23XX_DISALLOW_STANDBY);
-    Power_releaseConstraint(PowerCC23XX_DISALLOW_IDLE);
+    Power_releaseConstraint(PowerLPF3_DISALLOW_STANDBY);
+    Power_releaseConstraint(PowerLPF3_DISALLOW_IDLE);
 #else
     Power_releaseConstraint(PowerCC26XX_SB_DISALLOW);
     Power_releaseConstraint(PowerCC26XX_IDLE_PD_DISALLOW);

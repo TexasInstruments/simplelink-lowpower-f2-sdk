@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,9 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/pka.h)
 
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h> /* __tfm_secure_gateway_attributes__ */
+#include <third_party/tfm/interface/include/psa/error.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
+#include <third_party/tfm/secure_fw/include/security_defs.h> /* __tz_c_veneer */
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 
@@ -239,7 +240,7 @@ const ECCParams_CurveParams *ECCParams_s_getCurveParams(const ECCParams_CurvePar
     if (cmse_has_unpriv_nonsecure_read_access((void *)curveParams, sizeof(params_ns)) != NULL)
     {
         /* Make a secure copy of the param struct to avoid typecast */
-        (void)tfm_memcpy(&params_ns, (void *)curveParams, sizeof(params_ns));
+        (void)spm_memcpy(&params_ns, (void *)curveParams, sizeof(params_ns));
 
         if (params_ns.secureCurve < ECCParams_SecureCurve_COUNT)
         {
@@ -253,8 +254,9 @@ const ECCParams_CurveParams *ECCParams_s_getCurveParams(const ECCParams_CurvePar
 /*
  *  ======== ECCParams_getUncompressedGeneratorPoint ========
  */
-__tfm_secure_gateway_attributes__ int_fast16_t
-ECCParams_s_getUncompressedGeneratorPoint(const ECCParams_CurveParams *curveParams, uint8_t *buffer, size_t length)
+__tz_c_veneer int_fast16_t ECCParams_s_getUncompressedGeneratorPoint(const ECCParams_CurveParams *curveParams,
+                                                                     uint8_t *buffer,
+                                                                     size_t length)
 {
     const ECCParams_CurveParams *params_s;
     size_t paramLength;

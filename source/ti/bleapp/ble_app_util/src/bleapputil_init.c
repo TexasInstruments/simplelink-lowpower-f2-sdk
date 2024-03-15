@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -268,6 +268,23 @@ bStatus_t BLEAppUtil_unRegisterEventHandler(BLEAppUtil_EventHandler_t *eventHand
 
 
 /*********************************************************************
+ * @fn      BLEAppUtil_invokeFunctionNoData
+ *
+ * @brief   This function receives a callback and data and switches
+ *          the context in order to call the callback from the BLE
+ *          App Util module context
+ *
+ * @param   callback - The callback to invoke from the BLE App Util
+ *                     module context
+ *
+ * @return  SUCCESS, FAILURE
+ */
+bStatus_t BLEAppUtil_invokeFunctionNoData(InvokeFromBLEAppUtilContext_t callback)
+{
+    return BLEAppUtil_invokeFunction(callback, NULL);
+}
+
+/*********************************************************************
  * @fn      BLEAppUtil_invokeFunction
  *
  * @brief   This function receives a callback and data and switches
@@ -296,6 +313,10 @@ bStatus_t BLEAppUtil_invokeFunction(InvokeFromBLEAppUtilContext_t callback, char
     // If the allocation failed, return an error
     if(pDataMsg == NULL)
     {
+        if(pData != NULL)
+        {
+            BLEAppUtil_free(pData);
+        }
         return FAILURE;
     }
 
@@ -305,10 +326,11 @@ bStatus_t BLEAppUtil_invokeFunction(InvokeFromBLEAppUtilContext_t callback, char
     // Queue the event and data to switch context
     if (BLEAppUtil_enqueueMsg(BLEAPPUTIL_EVT_CALL_IN_BLEAPPUTIL_CONTEXT, pDataMsg) != SUCCESS)
     {
-        if(pDataMsg != NULL)
+        if(pData != NULL)
         {
-            BLEAppUtil_free(pDataMsg);
+            BLEAppUtil_free(pData);
         }
+        BLEAppUtil_free(pDataMsg);
         return FAILURE;
     }
     return SUCCESS;
@@ -416,7 +438,7 @@ static bStatus_t BLEAppUtil_createQueue(void)
 {
      struct mq_attr attr;
 
-     attr.mq_flags = 0; //Blocking
+     attr.mq_flags = 0; // Parameter mq_flags is ignored when the queue is created with O_CREAT
      attr.mq_curmsgs = 0;
      attr.mq_maxmsg = 8;
      attr.mq_msgsize = sizeof(BLEAppUtil_appEvt_t);
@@ -515,7 +537,7 @@ bStatus_t BLEAppUtil_scanStop(void)
     return GapScan_disable();
 }
 
-bStatus_t BLEAppUtil_SetConnParams(const BLEAppUtil_ConnParams_t *connParams)
+bStatus_t BLEAppUtil_setConnParams(const BLEAppUtil_ConnParams_t *connParams)
 {
     bStatus_t status;
 
@@ -553,13 +575,31 @@ bStatus_t BLEAppUtil_SetConnParams(const BLEAppUtil_ConnParams_t *connParams)
     return SUCCESS;
 }
 
-bStatus_t BLEAppUtil_Connect(BLEAppUtil_ConnectParams_t *connParams)
+bStatus_t BLEAppUtil_connect(BLEAppUtil_ConnectParams_t *connParams)
 {
     return GapInit_connect(connParams->peerAddrType, connParams->pPeerAddress,
                            connParams->phys, connParams->timeout);
 }
 
-bStatus_t BLEAppUtil_registerConnNotifHandler(BLEAppUtil_EventHandler_t *eventHandler, uint16_t connHandle)
+bStatus_t BLEAppUtil_cancelConnect()
+{
+    return GapInit_cancelConnect();
+}
+
+bStatus_t BLEAppUtil_disconnect(uint16 connHandle)
+{
+  return GAP_TerminateLinkReq(connHandle, HCI_DISCONNECT_REMOTE_USER_TERM);
+}
+
+bStatus_t BLEAppUtil_setConnPhy(BLEAppUtil_ConnPhyParams_t *phyParams)
+{
+    // Set Phy Preference on the current connection. Apply the same value
+    // for RX and TX. For more information, see the LE 2M PHY section in the User's Guide:
+    // http://software-dl.ti.com/lprf/ble5stack-latest/
+    return HCI_LE_SetPhyCmd(phyParams->connHandle, phyParams->allPhys, phyParams->txPhy, phyParams->rxPhy, phyParams->phyOpts);
+}
+
+bStatus_t BLEAppUtil_registerConnNotifHandler(uint16_t connHandle)
 {
     return Gap_RegisterConnEventCb(BLEAppUtil_connEventCB, GAP_CB_REGISTER, GAP_CB_CONN_EVENT_ALL, connHandle);
 }
@@ -567,6 +607,7 @@ bStatus_t BLEAppUtil_unRegisterConnNotifHandler()
 {
     return Gap_RegisterConnEventCb(BLEAppUtil_connEventCB, GAP_CB_UNREGISTER, GAP_CB_CONN_EVENT_ALL, LINKDB_CONNHANDLE_INVALID);
 }
+
 /*********************************************************************
  * @fn      BLEAppUtil_paramUpdateRsp
  *
@@ -575,6 +616,32 @@ bStatus_t BLEAppUtil_unRegisterConnNotifHandler()
  *          And then call for gap function with the response.
  *
  * @param   pReq - Pointer to master request
+ *          accept - Application decision.
+ *
+ * @return  status
+ */
+bStatus_t BLEAppUtil_paramUpdateReq(gapUpdateLinkParamReq_t *pReq)
+{
+    bStatus_t status = FAILURE;
+    linkDBInfo_t linkInfo;
+
+    // Verify that the connection is active and send the param update request
+    if (linkDB_GetInfo(pReq->connectionHandle, &linkInfo) == SUCCESS)
+    {
+        status = GAP_UpdateLinkParamReq(pReq);
+    }
+
+    return status;
+}
+
+/*********************************************************************
+ * @fn      BLEAppUtil_paramUpdateRsp
+ *
+ * @brief   This function prepares an answer for connection parameters
+ *          changing request, according to the decision made by the application,
+ *          And then call for gap function with the response.
+ *
+ * @param   pReq - Pointer to central request
  *          accept - Application decision.
  *
  * @return  SUCCESS, INVALIDPARAMETER

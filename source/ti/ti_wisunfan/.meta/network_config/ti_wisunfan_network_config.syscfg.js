@@ -119,7 +119,7 @@ const config = {
                 {
                     name: "ccaThreshold",
                     displayName: "MAC CCA Threshold (dBm)",
-                    default: -60,
+                    default: -83,
                     description: Docs.ccaThreshold.description,
                     longDescription: Docs.ccaThreshold.longDescription
                 },
@@ -353,18 +353,18 @@ function getNetworkConfigHiddenState(inst, cfgName)
         case "orphanBackoffInterval":
         case "scanBackoffInterval":
         {
-            isVisible = isSensorProject && !freqHoppingSelected;
+            isVisible = false;
             break;
         }
         case "trackingDelayTime":
         case "maxDevices":
         {
-            isVisible = isCollectorProject;
+            isVisible = false;
             break;
         }
         case "pollingInterval":
         {
-            isVisible = !beaconModeSelected;
+            isVisible = false;
             break;
         }
         case "reportingInterval":

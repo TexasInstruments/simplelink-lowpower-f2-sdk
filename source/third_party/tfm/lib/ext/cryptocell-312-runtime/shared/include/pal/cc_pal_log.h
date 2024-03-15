@@ -103,7 +103,7 @@ static inline void CC_PalLogMaskSet(uint32_t setMask) {CC_UNUSED_PARAM(setMask);
 logging mechanism. */
 #define _CC_PAL_LOG(level, format, ...)  \
     if (CC_PAL_logMask & CC_PAL_LOG_CUR_COMPONENT) \
-        CC_PalLog(CC_PAL_LOG_LEVEL_ ## level, "%s:%s: " format, CC_PAL_LOG_CUR_COMPONENT_NAME, __func__, ##__VA_ARGS__)
+        CC_PalLog(CC_PAL_LOG_LEVEL_ ## level, "%s:%s: " format "\n", CC_PAL_LOG_CUR_COMPONENT_NAME, __func__, ##__VA_ARGS__)
 
 #if (_CC_PAL_MAX_LOG_LEVEL >= CC_PAL_LOG_LEVEL_ERR)
 /*! Log messages according to log level.*/
@@ -187,4 +187,3 @@ logging mechanism. */
  */
 
 #endif /*_CC_PAL_LOG_H_*/
-

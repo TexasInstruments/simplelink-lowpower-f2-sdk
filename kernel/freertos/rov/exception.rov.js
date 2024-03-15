@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* global xdc */
+/* global xdc, helperGetHexString */
 let Program   = xdc.module('xdc.rov.Program');
 let CallStack = xdc.useModule('xdc.rov.CallStack');
 
@@ -85,6 +85,17 @@ function ExceptionInfo() {
 
 function CallStackFrame(){
     this.frame = null;
+}
+
+/*
+ * ======== toPaddedHexString ========
+ * converts a number to a hex string with "0x" prefix.
+ * inserts up to (len - 1) leading zeros.
+ * up to a max of 7 zeros.
+ */
+function toPaddedHexString(number, len)
+{
+    return ("0x" + ("0000000" + number.toString(16)).substr(-len));
 }
 
 /* ======== getExcContext ========
@@ -237,7 +248,7 @@ function viewDecodeHardFault(excContext){
  *  ======== viewDecodeMemFault ========
  */
 function viewDecodeMemFault(excContext){
-    var fault = ""
+    var fault = "";
 
     if (excContext.MMFSR != 0) {
 
@@ -267,7 +278,7 @@ function viewDecodeMemFault(excContext){
  *  ======== viewDecodeBusFault ========
  */
 function viewDecodeBusFault(excContext){
-    var fault = ""
+    var fault = "";
 
     if (excContext.BFSR != 0) {
 
@@ -300,7 +311,7 @@ function viewDecodeBusFault(excContext){
  *  ======== viewDecodeUsageFault ========
  */
 function viewDecodeUsageFault(excContext){
-    var fault = ""
+    var fault = "";
 
     if (excContext.UFSR != 0) {
         fault = "USAGE: ";
@@ -336,7 +347,7 @@ function viewDecodeUsageFault(excContext){
  *  ======== viewDecodeSecureFault ========
  */
 function viewDecodeSecureFault(excContext){
-    var fault = ""
+    var fault = "";
 
     var SFSR = excContext.SFSR;
 
@@ -421,16 +432,6 @@ function viewDecodeReserved(excContext, excNum){
 }
 
 /*
- *  ======== viewDecodeSecureIsr ========
- */
-function viewDecodeSecureIsr(excContext, excNum){
-    var vtor = Program.fetchFromAddr(0xE000ED08, "uint32_t", 1);
-    var vectorTable = Program.fetchFromAddr(vtor, "uint32_t", 120);
-    var vectorFunc = Program.lookupFuncName(Number(vectorTable[excNum]));
-    return ("IRQ Number: " + String(excNum) + " (" + vectorFunc + ")");
-}
-
-/*
  *  ======== viewDecodeNoIsr ========
  */
 function viewDecodeNoIsr(excContext, excNum){
@@ -446,39 +447,29 @@ function viewDecodeException(excContext){
     switch (excNum) {
         case "2":
             return (viewDecodeNMI(excContext));         /* NMI */
-            break;
         case "3":
             return (viewDecodeHardFault(excContext));   /* Hard Fault */
-            break;
         case "4":
             return (viewDecodeMemFault(excContext));    /* Mem Fault */
-            break;
         case "5":
             return (viewDecodeBusFault(excContext));    /* Bus Fault */
-            break;
         case "6":
             return (viewDecodeUsageFault(excContext));  /* Usage Fault */
-            break;
         case "7":
             return (viewDecodeSecureFault(excContext)); /* Secure Fault */
-            break;
         case "11":
             return (viewDecodeSvCall(excContext));      /* SVCall */
-            break;
         case "12":
             return (viewDecodeDebugMon(excContext));    /* Debug Mon */
-            break;
         case "8":
         case "9":
         case "10":
         case "13":
             return (viewDecodeReserved(excContext, excNum));/* reserved */
-            break;
         default:
             return (viewDecodeNoIsr(excContext, excNum));   /* no ISR */
-            break;
     }
-    return (null);
+
 }
 
 /*
@@ -487,9 +478,10 @@ function viewDecodeException(excContext){
 /* eslint-disable-next-line no-unused-vars */
 function viewExceptionInfo(){
     var excContext = getExcContext();
+    var instView;
 
     if (excContext == null) {
-        var instView = new ExceptionInfo();
+        instView = new ExceptionInfo();
         instView.exceptionInfo = "No Interpretable Exception Pending";
         return (instView);
     }
@@ -515,7 +507,7 @@ function viewExceptionInfo(){
     view.push(registersView);
 
     for (var z in excContext) {
-        var instView = new ExceptionInfo();
+        instView = new ExceptionInfo();
         instView.exceptionInfo = z + " = " + helperGetHexString(excContext[z], 8);
         view.push(instView);
     }
@@ -537,9 +529,10 @@ function viewCallStack(){
     }
 
     var excContext = getExcContext();
+    var instView;
 
     if (excContext == null) {
-        var instView = new CallStackFrame();
+        instView = new CallStackFrame();
         instView.frame = "No Interpretable Exception Pending";
         return (instView);
     }
@@ -590,12 +583,13 @@ function viewCallStack(){
     }
     else {
         /* No call stack */
-        var instView = new CallStackFrame();
+        instView = new CallStackFrame();
         instView.frame = "No call stack";
         return (instView);
     }
 
-    for (var i = 0; i < frames.length; i++) {
+    var i;
+    for (i = 0; i < frames.length; i++) {
         var line = frames[i];
         /* separate frame # from frame text a little */
         line = line.replace(" ", "    ");
@@ -622,7 +616,7 @@ function viewCallStack(){
      */
     var invframes = new Array();
 
-    for (var i = 0; i < frames.length; i++) {
+    for (i = 0; i < frames.length; i++) {
         invframes[frames[i].substring(0,frames[i].indexOf("PC")-1)] =
             frames[i].substr(frames[i].indexOf("PC"));
     }
@@ -630,7 +624,7 @@ function viewCallStack(){
     var view = new Array();
 
     for (var x in invframes) {
-        var instView = new CallStackFrame();
+        instView = new CallStackFrame();
         instView.frame = " " + x + invframes[x];
         view.push(instView);
     }

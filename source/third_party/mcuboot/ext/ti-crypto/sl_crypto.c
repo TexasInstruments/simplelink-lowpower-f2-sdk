@@ -34,7 +34,7 @@
 #include "mcuboot_config/mcuboot_logging.h"
 #include "string.h"
 
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
 #include "sha2_driverlib.h"
 #include "ECDSACC26X4_driverlib.h"
 #else
@@ -43,7 +43,7 @@
 #include "ecdsa_lpf3.h"
 #endif
 
-#ifdef DeviceFamily_CC23X0R5
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R2)
 static SHA256SW_Object sha256SWObject;
 static SHA256SW_Handle sha256SWHandle = &sha256SWObject;
 #endif
@@ -101,7 +101,7 @@ static void copyBytes(uint8_t *pDst, const uint8_t *pSrc, uint32_t len)
 
 void SlCrypto_sha256_init(void)
 {
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     SHA2_open();
 #else
     HapiSha256SwStart(sha256SWHandle);
@@ -111,7 +111,7 @@ void SlCrypto_sha256_init(void)
 
 void SlCrypto_sha256_drop(void)
 {
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     SHA2_close();
 #endif
 }
@@ -119,7 +119,7 @@ void SlCrypto_sha256_drop(void)
 int SlCrypto_sha256_update(const void *data,
                            uint32_t data_len)
 {
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     return SHA2_addData(data, data_len);
 #else
     return HapiSha256SwAddData(sha256SWHandle, data, data_len);
@@ -130,7 +130,7 @@ int SlCrypto_sha256_final(uint8_t *output)
 {
     int rtn;
 
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     rtn = SHA2_finalize(output);
     SHA2_close();
 #else
@@ -156,7 +156,7 @@ void SlCrypto_ecdsa_p256_init(void)
     eccRom_windowSize = SECURE_FW_ECC_WINDOW_SIZE;
 
 #else
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
         ECDSA_open();
 #endif
 #endif
@@ -167,7 +167,7 @@ void SlCrypto_ecdsa_p256_drop(void)
 #if defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC26X2)
     return;
 #else
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     ECDSA_close();
 #endif
 #endif
@@ -286,7 +286,7 @@ int SlCrypto_ecdsa_p256_verify(const uint8_t *pk, const uint8_t *hash, const uin
                                sizeof(publicKeyingMaterial));
 
     /* Initialize the operation */
-#ifndef DeviceFamily_CC23X0R5
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
     operationVerify.curve           = &ECCParams_NISTP256;
 #endif
     operationVerify.theirPublicKey  = &publicKey;

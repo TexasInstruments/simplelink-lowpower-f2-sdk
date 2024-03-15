@@ -2,14 +2,15 @@
 
  @file  nvocmp.h
 
- @brief NV definitions for CC26xx devices - On-Chip Multi-Page Flash Memory
+ @brief NV definitions for cc26xx, cc23x0 and cc27xx class devices - On-Chip
+        Multi-Page Flash Memory
 
  Group: CMCU, LPC
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
  
- Copyright (c) 2019-2023, Texas Instruments Incorporated
+ Copyright (c) 2023-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

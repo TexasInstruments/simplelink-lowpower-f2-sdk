@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,8 @@
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
+
+#include <ti/drivers/utils/Math.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_aux_evctl.h)
@@ -98,9 +100,6 @@
 #define STEP_CLEANUP_2  12
 
 /* macros */
-#define Min(a, b)       (((a) < (b)) ? (a) : (b))
-#define Max(a, b)       (((a) > (b)) ? (a) : (b))
-#define Abs(x)          ((x) < 0 ? -(x) : (x))
 #define Scale_rndInf(x) ((3 * (x) + (((x) < 0) ? -2 : 2)) / 4)
 
 #define INSTRUMENT 0
@@ -747,14 +746,14 @@ static void calibrateRcoscHf1(int32_t tdcResult)
         if (PowerCC26XX_module.nRtrimNew == 3)
         {
             /* We try the slow RTRIM in this CTRIM first */
-            PowerCC26XX_module.nCtrimFractNew = Max(1, PowerCC26XX_module.nCtrimFractNew + 21);
+            PowerCC26XX_module.nCtrimFractNew = Math_MAX(1, PowerCC26XX_module.nCtrimFractNew + 21);
             PowerCC26XX_module.nRtrimNew      = 0;
         }
         else
         {
             /* Step down one CTRIM and use fast RTRIM */
-            PowerCC26XX_module.nCtrimFractNew = Max(1, PowerCC26XX_module.nCtrimFractNew + 32 - 21);
-            PowerCC26XX_module.nCtrimNew      = Max(0, PowerCC26XX_module.nCtrimNew - 1);
+            PowerCC26XX_module.nCtrimFractNew = Math_MAX(1, PowerCC26XX_module.nCtrimFractNew + 32 - 21);
+            PowerCC26XX_module.nCtrimNew      = Math_MAX(0, PowerCC26XX_module.nCtrimNew - 1);
             PowerCC26XX_module.nRtrimNew      = 3;
         }
     }
@@ -763,14 +762,14 @@ static void calibrateRcoscHf1(int32_t tdcResult)
         if (PowerCC26XX_module.nRtrimNew == 0)
         {
             /* We try the slow RTRIM in this CTRIM first */
-            PowerCC26XX_module.nCtrimFractNew = Min(30, PowerCC26XX_module.nCtrimFractNew - 21);
+            PowerCC26XX_module.nCtrimFractNew = Math_MIN(30, PowerCC26XX_module.nCtrimFractNew - 21);
             PowerCC26XX_module.nRtrimNew      = 3;
         }
         else
         {
             /* Step down one CTRIM and use fast RTRIM */
-            PowerCC26XX_module.nCtrimFractNew = Min(30, PowerCC26XX_module.nCtrimFractNew - 32 + 21);
-            PowerCC26XX_module.nCtrimNew      = Min(0x3F, PowerCC26XX_module.nCtrimNew + 1);
+            PowerCC26XX_module.nCtrimFractNew = Math_MIN(30, PowerCC26XX_module.nCtrimFractNew - 32 + 21);
+            PowerCC26XX_module.nCtrimNew      = Math_MIN(0x3F, PowerCC26XX_module.nCtrimNew + 1);
             PowerCC26XX_module.nRtrimNew      = 0;
         }
     }
@@ -819,7 +818,7 @@ static void calibrateRcoscHf2(int32_t tdcResult)
     /* Calculate new delta freq */
 
     /* *** STEP 4: Determine whether the new settings are better or worse */
-    if (Abs(PowerCC26XX_module.nDeltaFreqNew) <= Abs(PowerCC26XX_module.nDeltaFreqCurr))
+    if (Math_ABS(PowerCC26XX_module.nDeltaFreqNew) <= Math_ABS(PowerCC26XX_module.nDeltaFreqCurr))
     {
         /* New settings are better or same -> make current by keeping in registers */
         PowerCC26XX_module.bRefine = false;

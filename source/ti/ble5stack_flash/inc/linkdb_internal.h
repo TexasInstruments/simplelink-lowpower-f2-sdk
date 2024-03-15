@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -146,13 +146,14 @@ typedef struct
   uint8 addrType;                //!< Address type of connected device
   uint8 addr[B_ADDR_LEN];        //!< Other Device's address
   uint8 addrPriv[B_ADDR_LEN];    //!< Other Device's Private address
-  uint8 connRole;                //!< Connection formed as Master or Slave
+  uint8 connRole;                //!< Connection formed as Central or Peripheral
   uint16 connInterval;           //!< The connection's interval (n * 1.23 ms)
   uint16 MTU;                    //!< The connection's MTU size
   linkSec_t sec;                 //!< Connection Security related items
   encParams_t *pEncParams;       //!< pointer to STK / LTK, ediv, rand
   uint16 connTimeout;            //!< Supervision timeout
-  uint16 connLatency;            //!< Slave latency
+  uint16 connLatency;            //!< Peripheral latency
+  uint8 ownAddrType;             //!< Own address type
 } linkDBItem_t;
 
 typedef struct
@@ -260,7 +261,7 @@ extern uint8 linkDB_Register( pfnLinkDBCB_t pFunc );
  * @param connectionHandle - new record connection handle
  * @param connInterval - connection's communications interval (n * 1.23 ms)
  * @param connTimeout - Connection supervision timeout.
- * @param connLatency - Number of skipped events (slave latency).
+ * @param connLatency - Number of skipped events (peripheral latency).
  *
  * @return SUCCESS if successful
  * @return bleNoResources - connectionHandle not found.
@@ -288,6 +289,16 @@ extern uint8 linkDB_UpdateMTU( uint16 connectionHandle, uint16 newMtu );
  * @return link MTU size
  */
 extern uint16 linkDB_MTU( uint16 connectionHandle );
+
+/**
+ * This function is used to update the ownAddrType of a link record.
+ *
+ * @param connectionHandle controller link connection handle.
+ * @param addrType  new ownAddrType.
+ *
+ * @return @ref SUCCESS or failure
+ */
+extern uint8 linkDB_UpdateOwnAddrType( uint16 connectionHandle, uint8 addrType );
 
   /**
  * Find a link in the link database.

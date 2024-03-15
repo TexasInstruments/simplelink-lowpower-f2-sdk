@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ const uint32_t gapConnEventsLookupTable[BLEAPPUTIL_GAP_CONN_TABLE_SIZE] =
     BLEAPPUTIL_SIGNATURE_UPDATED_EVENT,
     BLEAPPUTIL_AUTHENTICATION_COMPLETE_EVENT,
     BLEAPPUTIL_PASSKEY_NEEDED_EVENT,
-    BLEAPPUTIL_SLAVE_REQUESTED_SECURITY_EVENT,
+    BLEAPPUTIL_PERIPHERAL_REQUESTED_SECURITY_EVENT,
     0,
     BLEAPPUTIL_BOND_COMPLETE_EVENT,
     BLEAPPUTIL_PAIRING_REQ_EVENT,
@@ -229,7 +229,7 @@ void BLEAppUtil_processGAPEvents(BLEAppUtil_msgHdr_t *pMsg)
         case GAP_SIGNATURE_UPDATED_EVENT:
         case GAP_AUTHENTICATION_COMPLETE_EVENT:
         case GAP_PASSKEY_NEEDED_EVENT:
-        case GAP_SLAVE_REQUESTED_SECURITY_EVENT:
+        case GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT:
         case GAP_BOND_COMPLETE_EVENT:
         case GAP_PAIRING_REQ_EVENT:
         case GAP_AUTHENTICATION_FAILURE_EVT:
@@ -761,7 +761,7 @@ void BLEAppUtil_processConnEventMsg(BLEAppUtil_msgHdr_t *pMsg)
 
         case GAP_CB_CONN_EVENT_ALL:
         {
-            event = BLEAPPUTIL_CONN_NOTI_PHY_UPDATE;
+            event = BLEAPPUTIL_CONN_NOTI_CONN_EVENT_ALL;
             break;
         }
 

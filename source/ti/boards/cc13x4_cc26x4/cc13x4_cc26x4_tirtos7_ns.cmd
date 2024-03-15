@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,7 +87,7 @@ MEMORY
     (DEFAULT_CCFG_SIZE_AND_DIS_FLAGS.SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM = 0) */
     GPRAM (RWX): origin = GPRAM_BASE, length = GPRAM_SIZE
     /* Configuration region */
-    CCFG (RW) : origin = CCFG_BASE, length = CCFG_SIZE
+    CCFG (R)   : origin = CCFG_BASE, length = CCFG_SIZE
     /* Explicitly placed off target for the storage of logging data.
      * The ARM memory map allocates 1 GB of external memory from 0x60000000 - 0x9FFFFFFF.
      * Unlikely that all of this will be used, so we are using the upper parts of the region.

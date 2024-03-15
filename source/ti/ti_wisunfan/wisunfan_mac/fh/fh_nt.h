@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -91,9 +91,13 @@
 #define FHNT_SPLIT_TABLE
 #endif
 
+
+
 //#define FHNT_MAX_DEVICE_TABLE_ENTRIES           (100)
+#define FHNT_WISUN_JOIN_TABLE_SIZE                 30
 #define FHNT_TABLE_TYPE_FIXED                   (0)
 #define FHNT_TABLE_TYPE_HOPPING                 (1)
+#define FHNT_TABLE_TYPE_JOIN                    (2)
 
 /******************************************************************************
  Constants and definitions
@@ -166,7 +170,8 @@ typedef struct __attribute__((__packed__)) node_entry
    usieParams_t   UsieParams_s;
 
    uint8_t        valid;
-   uint16_t        EUI_index;
+   //uint16_t        EUI_index;
+   sAddrExt_t     extAddr;
 } NODE_ENTRY_s;
 
 /*! Node Entry purge timer */
@@ -179,9 +184,11 @@ typedef struct nt_hnd_s
   uint16_t                  maxNumSleepNodes;      /*<! Maximum number of Sleep Node */
   uint16_t                  numNonSleepNode;       /*<! number of active non-sleepy node */
   uint16_t                  numSleepNode;          /*<! number of active sleepy node */
-  NODE_ENTRY_s             *pNonSleepNtTable;     /*<! pointer to the non sleep node NT table */
-  NODE_FIXED_ENTRY_s       *pSleepNtTable;        /*<! pointer to sleep node NT table  */
-  uint8_t                  macSecurity;           /*<! FH module security setting  */
+  uint16_t                  numJoinNode;           /*<! number of joining nodes */
+  NODE_ENTRY_s             *pNonSleepNtTable;      /*<! pointer to network node NT */
+  NODE_ENTRY_s             *pJoinTable;            /*<! pointer to joining node NT */
+  NODE_FIXED_ENTRY_s       *pSleepNtTable;         /*<! pointer to sleep node NT table  */
+  uint8_t                  macSecurity;            /*<! FH module security setting  */
 } FHNT_HND_s;
 
 typedef struct FHNT_TEMP_table
@@ -237,6 +244,38 @@ MAC_INTERNAL_API void FHNT_init(void);
  * @return      pointer of node entry
  */
 MAC_INTERNAL_API FHAPI_status FHNT_createEntry(sAddrExt_t *pAddr,NODE_ENTRY_s *pEntry);
+
+/*!
+ * @brief Create a table entry with address pAddr for a specific table type.
+ *        Copies network info from existing tables if entry exists.
+ *
+ * @param tableType - Type of the table to create an entry for. Supported types are
+ *                    FHNT_TABLE_TYPE_JOIN only
+ * @param pAddr     - Extended address of entry to create in the table.
+ */
+MAC_INTERNAL_API FHAPI_status FHNT_createTableEntry(uint8_t tableType, uint8_t *pAddr);
+
+
+MAC_INTERNAL_API FHAPI_status FHNT_deleteEntry(sAddrExt_t *pAddr);
+
+/*!
+ * @brief Delete a table entry with address pAddr for a specific table type.
+ *
+ * @param tableType - Type of the table to delete an entry for. Supported types are
+ *                    FHNT_TABLE_TYPE_JOIN only
+ * @param pAddr     - Extended address of entry to delete in the table.
+ */
+MAC_INTERNAL_API FHAPI_status FHNT_deleteTableEntry(uint8_t tableType, uint8_t *pAddr);
+
+/*!
+ * @brief Restore a table entry with address pAddr for a specific table type.
+ *        This restores the specified entry to the primary (nonSleepy) table.
+ *
+ * @param tableType - Type of the table to restore an entry from. Supported types are
+ *                    FHNT_TABLE_TYPE_JOIN only
+ * @param pAddr     - Extended address of entry to restore in the table.
+ */
+MAC_INTERNAL_API FHAPI_status FHNT_restoreTableEntry(uint8_t tableType, uint8_t *pAddr);
 
 /*!
  * @brief       This function is used to retrieve the node entry information

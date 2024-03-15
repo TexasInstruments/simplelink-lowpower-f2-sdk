@@ -20,11 +20,14 @@ ble.deviceRole.includes("OBSERVER") ? profileRole.push("GAP_PROFILE_OBSERVER"): 
 #include <bcomdef.h>
 #include <gapgattserver.h>
 #include <gap_advertiser.h>
+% if(ble.basicBLE){
+#include <app_main.h>
+%}
 % if(ble.bondManager == true) {
 #include <gapbondmgr.h>
 %}
 #include "ti_ble_config.h"
-
+#include <ti/bleapp/ble_app_util/inc/bleapputil_api.h>
 % if (ble){
 
 // The GAP profile role
@@ -34,13 +37,37 @@ uint8_t attDeviceName[GAP_DEVICE_NAME_LEN]= "`ble.deviceName`";
 
 % if(ble.addressMode == "ADDRMODE_RANDOM" || ble.addressMode == "ADDRMODE_RP_WITH_RANDOM_ID")
 % {
-uint8_t pRandomAddress[6] = `common.addPeerAddress(common.reverseBytes(ble.randomAddress.toString(16).replace(/:/g,'')))`;
+uint8_t pRandomAddress[B_ADDR_LEN] = `common.addPeerAddress(common.reverseBytes(ble.randomAddress.toString(16).replace(/:/g,'')))`;
 % }
 % else
 % {
-uint8_t * pRandomAddress = NULL;
+uint8_t pRandomAddress[B_ADDR_LEN] = {0};
 % }
 
+% if(ble.basicBLE){
+// Initiate selected profiles
+void init_profiles(){
+ % if(ble.deviceInfo)
+ % {
+    DevInfo_start();
+ % }
+ % if(ble.profiles.includes("6175")){
+    CGM_start();
+ % }
+ % if(ble.profiles.includes("6152"))
+ % {
+    GL_start();
+ % }
+  % if(ble.profiles.includes("6153"))
+ % {
+    HT_start();
+ % }
+  % if(ble.profiles.includes("65520"))
+ % {
+    SimpleGatt_start();
+ % }
+ }
+ %}
 % if (ble.deviceRole != "BROADCASTER_CFG" && ble.deviceRole != "OBSERVER_CFG" && ble.deviceRole != "BROADCASTER_CFG+OBSERVER_CFG" && ble.bondManager == true){
 /*********************************************************************
  * Bond Manager Configuration
@@ -53,7 +80,7 @@ gapBondParams_t gapBondParams = {
     .bonding              = `ble.bonding`,
     .secureConnection     = `ble.secureConn`,
     .authenPairingOnly    = `ble.authenPairingOnly`,
-    .autoSyncWL           = `ble.syncWLWithBondDev`,
+    .`common.getAutoSyncName()`           = `ble.syncALWithBondDev`,
 % if(!ble.eccDebugKeys)
 % {
     .eccReGenPolicy       = `ble.ECCKeyRegenPolicy`,
@@ -76,7 +103,7 @@ uint8_t ioCap                   =    `ble.bondIOCaps`;
 uint8_t bonding                 =    `ble.bonding`;
 uint8_t secureConnection        =    `ble.secureConn`;
 uint8_t authenPairingOnly       =    `ble.authenPairingOnly`;
-uint8_t autoSyncWL              =    `ble.syncWLWithBondDev`;
+uint8_t `common.getAutoSyncName()`              =    `ble.syncALWithBondDev`;
 % if(ble.secureConn != "GAPBOND_SECURE_CONNECTION_NONE" && !ble.eccDebugKeys)
 % {
 uint8_t eccReGenPolicy          =    `ble.ECCKeyRegenPolicy`;
@@ -106,8 +133,9 @@ void setBondManagerParameters()
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &secureConnection);
     // Set Authenticated Pairing Only mode
     GAPBondMgr_SetParameter(GAPBOND_AUTHEN_PAIRING_ONLY, sizeof(uint8_t), &authenPairingOnly);
-    // Set Auto Whitelist Sync
-    GAPBondMgr_SetParameter(GAPBOND_AUTO_SYNC_WL, sizeof(uint8_t), &autoSyncWL);
+    %
+    // Set Auto Acceptlist Sync
+    GAPBondMgr_SetParameter(`common.getFilterPolicyName()`, sizeof(uint8_t), &`common.getAutoSyncName()`);
     %
     % if(ble.secureConn != "GAPBOND_SECURE_CONNECTION_NONE" && !ble.eccDebugKeys)
     % {
@@ -136,8 +164,9 @@ void setBondManagerParameters()
 
 %}
 %
-% if (ble.hideBroadcasterGroup == false){
-%
+% if (ble.hideBroadcasterGroup == false)
+% {
+% const connIntervalRange = common.getPeripheralConnIntervalRange();
 % for(let i = 1; i <= ble.numOfAdvSets; i++)
 % {
 
@@ -292,17 +321,18 @@ uint8_t `ble["advSet"+i]["scanRes"+i].name`[] =
   `module.TXPower`,
 
 %}
-% if(module.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE)
+
+% if(module[connIntervalRange])
 %{
 % length = 5;
   0x0`length`,
-  GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
+  `connIntervalRange`,
   LO_UINT16(`module.minConnInterval/1.25`),
   HI_UINT16(`module.minConnInterval/1.25`),
   LO_UINT16(`module.maxConnInterval/1.25`),
   HI_UINT16(`module.maxConnInterval/1.25`),
-
 %}
+
 % if(module.GAP_ADTYPE_SERVICES_LIST_16BIT)
 %{
 % length = 1 + 2*module.numOfUUIDs16SS;

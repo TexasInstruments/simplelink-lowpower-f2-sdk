@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,12 +42,12 @@ exports = {
 
 /*!
  *  ======== device2Family ========
- *  Map a pimux device object to a device family string
+ *  Map a pinmux device object to a device family string
  *
  *  @param device   - a pinmux device object (system.deviceData)
  *
  *  @returns String - the name of a device family that's used to
- *                    create family specifc-implementation module
+ *                    create family specific-implementation module
  *                    names.  Returns null, in the event of an
  *                    unsupported device.
  */
@@ -98,7 +98,7 @@ function isCName(id)
 
 /*
  *  ======== autoForceModules ========
- *  Returns an implementation of a module's modules method that 
+ *  Returns an implementation of a module's modules method that
  *  forces the addition of the specified modules
  *
  *  @param kwargs An array of module name strings.

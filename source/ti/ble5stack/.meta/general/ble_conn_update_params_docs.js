@@ -90,14 +90,14 @@ Max connection interval >= Min connection interval\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
 html/ble-stack-5.x/gap.html#id4).\n`
 
-// Long description for the reqSlaveLat configuration parameter
-const reqSlaveLatLongDescription =`This parameter gives the slave (peripheral) \
+// Long description for the reqPeripheralLat configuration parameter
+const reqPeripheralLatLongDescription =`This parameter gives the peripheral \
 device the option of skipping a number of connection events. This ability \
 gives the peripheral device some flexibility. If the peripheral does not have \
 any data to send, it can skip connection events, stay asleep, and save power. \
 The peripheral device selects whether to wake or not on a per connection \
 event basis. The peripheral can skip connection events but must not skip more \
-than allowed by the slave latency parameter or the connection fails.\n
+than allowed by the peripheral latency parameter or the connection fails.\n
 
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
 html/ble-stack-5.x/gap.html#id4).\n
@@ -118,7 +118,7 @@ ${Common.connParamsRanges.connTimeoutMaxValue} ms\n
 
 __Note__:\n
 Connection time-out will be displayed in 10 to 3200 (in units of 10 ms)\n
-LSTO (time-out) > (1 + Slave Latency) * (Connection Interval * 2) \n
+LSTO (time-out) > (1 + Peripheral Latency) * (Connection Interval * 2) \n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
 html/ble-stack-5.x/gap.html#id4).\n`
 
@@ -127,6 +127,6 @@ html/ble-stack-5.x/gap.html#id4).\n`
     paramUpdateDelayLongDescription: paramUpdateDelayLongDescription,
     reqMinConnIntLongDescription: reqMinConnIntLongDescription,
     reqMaxConnIntLongDescription: reqMaxConnIntLongDescription,
-    reqSlaveLatLongDescription: reqSlaveLatLongDescription,
+    reqPeripheralLatLongDescription: reqPeripheralLatLongDescription,
     reqConnToLongDescription: reqConnToLongDescription
 };

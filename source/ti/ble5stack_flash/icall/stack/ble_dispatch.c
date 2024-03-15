@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -599,21 +599,21 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
       break;
 #endif // ADV_NCONN_CFG | ADV_CONN_CFG
 
-    case HCI_LE_READ_WHITE_LIST_SIZE:
-      stat = HCI_LE_ReadWhiteListSizeCmd();
+    case HCI_LE_READ_ACCEPT_LIST_SIZE:
+      stat = HCI_LE_ReadAcceptListSizeCmd();
       break;
 
-    case HCI_LE_CLEAR_WHITE_LIST:
-      stat = HCI_LE_ClearWhiteListCmd();
+    case HCI_LE_CLEAR_ACCEPT_LIST:
+      stat = HCI_LE_ClearAcceptListCmd();
       break;
 
-    case HCI_LE_ADD_WHITE_LIST:
-      stat = HCI_LE_AddWhiteListCmd(msg_ptr->hciParamAndPtr.param,
+    case HCI_LE_ADD_ACCEPT_LIST:
+      stat = HCI_LE_AddAcceptListCmd(msg_ptr->hciParamAndPtr.param,
                                     msg_ptr->hciParamAndPtr.pParam);
       break;
 
-    case HCI_LE_REMOVE_WHITE_LIST:
-      stat = HCI_LE_RemoveWhiteListCmd(msg_ptr->hciParamAndPtr.param,
+    case HCI_LE_REMOVE_ACCEPT_LIST:
+      stat = HCI_LE_RemoveAcceptListCmd(msg_ptr->hciParamAndPtr.param,
                                        msg_ptr->hciParamAndPtr.pParam);
       break;
 
@@ -684,6 +684,11 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
       stat = HCI_EXT_SetTxPowerCmd(msg_ptr->hciParams.param1);
       break;
 
+    case HCI_EXT_SET_TX_POWER_DBM:
+      stat = HCI_EXT_SetTxPowerDbmCmd(msg_ptr->hciParams.param1,
+                                      msg_ptr->hciParams.param2);
+      break;
+
 #if defined(CTRL_CONFIG) && ((CTRL_CONFIG & ADV_CONN_CFG) || (CTRL_CONFIG & INIT_CFG))
     case HCI_EXT_ONE_PKT_PER_EVT:
       //stat = HCI_EXT_OnePktPerEvtCmd(msg_ptr->hciExtOnePktPerEvt.control);
@@ -705,8 +710,8 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
       stat = HCI_EXT_SetFastTxResponseTimeCmd(msg_ptr->hciParams.param1);
       break;
 
-    case HCI_EXT_OVERRIDE_SL:
-      stat = HCI_EXT_SetSlaveLatencyOverrideCmd(msg_ptr->hciParams.param1);
+    case HCI_EXT_OVERRIDE_PL:
+      stat = HCI_EXT_SetPeripheralLatencyOverrideCmd(msg_ptr->hciParams.param1);
       break;
 #endif // ADV_CONN_CFG
 
@@ -743,6 +748,11 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
 
     case HCI_EXT_SET_MAX_DTM_TX_POWER:
       stat = HCI_EXT_SetMaxDtmTxPowerCmd(msg_ptr->hciParams.param1);
+      break;
+
+    case HCI_EXT_SET_MAX_DTM_TX_POWER_DBM:
+      stat = HCI_EXT_SetMaxDtmTxPowerDbmCmd(msg_ptr->hciParams.param1,
+                                            msg_ptr->hciParams.param2);
       break;
 
 #if defined(CTRL_CONFIG) && ((CTRL_CONFIG & ADV_CONN_CFG) || (CTRL_CONFIG & INIT_CFG))
@@ -801,6 +811,20 @@ static uint8 processICallLL(uint16 opCode, ICall_CmdMsg *msg_ptr,
                                     (hciConnInfo_t *)msg_ptr->hciPtrParams.pParam3);
       break;
 #endif // ADV_CONN_CFG | INIT_CFG
+
+    case HCI_EXT_GET_RX_STATS:
+      stat = HCI_EXT_GetRxStatisticsCmd(msg_ptr->hciParams.param1,
+                                        msg_ptr->hciParams.param2);
+      break;
+
+    case HCI_EXT_GET_TX_STATS:
+      stat = HCI_EXT_GetTxStatisticsCmd(msg_ptr->hciParams.param1,
+                                        msg_ptr->hciParams.param2);
+      break;
+
+    case HCI_EXT_GET_COEX_STATS:
+      stat = HCI_EXT_GetCoexStatisticsCmd(msg_ptr->hciParams.param1);
+      break;
 
     default:
       stat = FAILURE;
@@ -1625,8 +1649,8 @@ static uint8 processICallGAP(uint8 cmdID, ICall_CmdMsg *msg_ptr,
       break;
 
 #if (HOST_CONFIG & PERIPHERAL_CFG)
-    case HCI_EXT_GAP_SLAVE_SECURITY_REQ_UPDATE:
-      stat = GAP_SendSlaveSecurityRequest(msg_ptr->gapParams.connHandle,
+    case HCI_EXT_GAP_PERIPHERAL_SECURITY_REQ_UPDATE:
+      stat = GAP_SendPeripheralSecurityRequest(msg_ptr->gapParams.connHandle,
                                           msg_ptr->gapParams.param);
       break;
 #endif // PERIPHERAL_CFG
@@ -2373,6 +2397,7 @@ static uint8 processExtMsgL2CAP( uint8 cmdID, hciExtCmd_t *pCmd, uint8 *pRspData
 
         psm.psm = connHandle; // connHandle is PSM here
         psm.mtu = BUILD_UINT16( pBuf[2], pBuf[3] );
+        psm.mps = psm.mtu;
         psm.initPeerCredits = BUILD_UINT16( pBuf[4], pBuf[5] );
         psm.peerCreditThreshold = BUILD_UINT16( pBuf[6], pBuf[7] );
         psm.maxNumChannels = pBuf[8];
@@ -3659,16 +3684,16 @@ static uint8 processExtMsgGAP( uint8 cmdID, hciExtCmd_t *pCmd, uint8 *pRspDataLe
         params.secReqs.maxEncKeySize = *pBuf++;
 
         tmp = *pBuf++; // key distribution
-        params.secReqs.keyDist.sEncKey = ( tmp & KEYDIST_SENC ) ? TRUE : FALSE;
-        params.secReqs.keyDist.sIdKey = ( tmp & KEYDIST_SID ) ? TRUE : FALSE;
-        params.secReqs.keyDist.sSign = ( tmp & KEYDIST_SSIGN ) ? TRUE : FALSE;
-        params.secReqs.keyDist.sLinkKey = ( tmp & KEYDIST_SLINK ) ? TRUE : FALSE;
-        params.secReqs.keyDist.sReserved = 0;
-        params.secReqs.keyDist.mEncKey = ( tmp & KEYDIST_MENC ) ? TRUE : FALSE;
-        params.secReqs.keyDist.mIdKey = ( tmp & KEYDIST_MID ) ? TRUE : FALSE;
-        params.secReqs.keyDist.mSign = ( tmp & KEYDIST_MSIGN ) ? TRUE : FALSE;
-        params.secReqs.keyDist.mLinkKey = ( tmp & KEYDIST_MLINK ) ? TRUE : FALSE;
-        params.secReqs.keyDist.mReserved = 0;
+        params.secReqs.keyDist.pEncKey = ( tmp & KEYDIST_SENC ) ? TRUE : FALSE;
+        params.secReqs.keyDist.pIdKey = ( tmp & KEYDIST_SID ) ? TRUE : FALSE;
+        params.secReqs.keyDist.pSign = ( tmp & KEYDIST_SSIGN ) ? TRUE : FALSE;
+        params.secReqs.keyDist.pLinkKey = ( tmp & KEYDIST_SLINK ) ? TRUE : FALSE;
+        params.secReqs.keyDist.pReserved = 0;
+        params.secReqs.keyDist.cEncKey = ( tmp & KEYDIST_MENC ) ? TRUE : FALSE;
+        params.secReqs.keyDist.cIdKey = ( tmp & KEYDIST_MID ) ? TRUE : FALSE;
+        params.secReqs.keyDist.cSign = ( tmp & KEYDIST_MSIGN ) ? TRUE : FALSE;
+        params.secReqs.keyDist.cLinkKey = ( tmp & KEYDIST_MLINK ) ? TRUE : FALSE;
+        params.secReqs.keyDist.cReserved = 0;
 
         tmp = *pBuf++; // pairing request enable
         if ( tmp )
@@ -3678,16 +3703,16 @@ static uint8 processExtMsgGAP( uint8 cmdID, hciExtCmd_t *pCmd, uint8 *pRspDataLe
           pairReq.authReq = *pBuf++;
           pairReq.maxEncKeySize = *pBuf++;
           tmp = *pBuf++;
-          pairReq.keyDist.sEncKey = ( tmp & KEYDIST_SENC ) ? TRUE : FALSE;
-          pairReq.keyDist.sIdKey = ( tmp & KEYDIST_SID ) ? TRUE : FALSE;
-          pairReq.keyDist.sSign = ( tmp & KEYDIST_SSIGN ) ? TRUE : FALSE;
-          pairReq.keyDist.sLinkKey = ( tmp & KEYDIST_SLINK ) ? TRUE : FALSE;
-          pairReq.keyDist.sReserved = 0;
-          pairReq.keyDist.mEncKey = ( tmp & KEYDIST_MENC ) ? TRUE : FALSE;
-          pairReq.keyDist.mIdKey = ( tmp & KEYDIST_MID ) ? TRUE : FALSE;
-          pairReq.keyDist.mSign = ( tmp & KEYDIST_MSIGN ) ? TRUE : FALSE;
-          pairReq.keyDist.mLinkKey = ( tmp & KEYDIST_MLINK ) ? TRUE : FALSE;
-          pairReq.keyDist.mReserved = 0;
+          pairReq.keyDist.pEncKey = ( tmp & KEYDIST_SENC ) ? TRUE : FALSE;
+          pairReq.keyDist.pIdKey = ( tmp & KEYDIST_SID ) ? TRUE : FALSE;
+          pairReq.keyDist.pSign = ( tmp & KEYDIST_SSIGN ) ? TRUE : FALSE;
+          pairReq.keyDist.pLinkKey = ( tmp & KEYDIST_SLINK ) ? TRUE : FALSE;
+          pairReq.keyDist.pReserved = 0;
+          pairReq.keyDist.cEncKey = ( tmp & KEYDIST_MENC ) ? TRUE : FALSE;
+          pairReq.keyDist.cIdKey = ( tmp & KEYDIST_MID ) ? TRUE : FALSE;
+          pairReq.keyDist.cSign = ( tmp & KEYDIST_MSIGN ) ? TRUE : FALSE;
+          pairReq.keyDist.cLinkKey = ( tmp & KEYDIST_MLINK ) ? TRUE : FALSE;
+          pairReq.keyDist.cReserved = 0;
           pPairReq = &pairReq;
         }
 
@@ -3841,8 +3866,8 @@ static uint8 processExtMsgGAP( uint8 cmdID, hciExtCmd_t *pCmd, uint8 *pRspDataLe
       break;
 
 #if ( HOST_CONFIG & PERIPHERAL_CFG )
-    case HCI_EXT_GAP_SLAVE_SECURITY_REQ_UPDATE:
-      stat = GAP_SendSlaveSecurityRequest( BUILD_UINT16( pBuf[0], pBuf[1] ), pBuf[2] );
+    case HCI_EXT_GAP_PERIPHERAL_SECURITY_REQ_UPDATE:
+      stat = GAP_SendPeripheralSecurityRequest( BUILD_UINT16( pBuf[0], pBuf[1] ), pBuf[2] );
       break;
 #endif // PERIPHERAL_CFG
 
@@ -4344,14 +4369,14 @@ static uint8 *processEventsGAP( gapEventHdr_t *pMsg, uint8 *pOutMsg, uint8 *pMsg
         pOutMsg[7] = pPkt->pairReq.authReq;
         pOutMsg[8] = pPkt->pairReq.maxEncKeySize;
 
-        tmp |= ( pPkt->pairReq.keyDist.sEncKey ) ? KEYDIST_SENC : 0;
-        tmp |= ( pPkt->pairReq.keyDist.sIdKey ) ? KEYDIST_SID : 0;
-        tmp |= ( pPkt->pairReq.keyDist.sSign ) ? KEYDIST_SSIGN : 0;
-        tmp |= ( pPkt->pairReq.keyDist.sLinkKey ) ? KEYDIST_SLINK : 0;
-        tmp |= ( pPkt->pairReq.keyDist.mEncKey ) ? KEYDIST_MENC : 0;
-        tmp |= ( pPkt->pairReq.keyDist.mIdKey ) ? KEYDIST_MID : 0;
-        tmp |= ( pPkt->pairReq.keyDist.mSign ) ? KEYDIST_MSIGN : 0;
-        tmp |= ( pPkt->pairReq.keyDist.mLinkKey ) ? KEYDIST_MLINK : 0;
+        tmp |= ( pPkt->pairReq.keyDist.pEncKey ) ? KEYDIST_SENC : 0;
+        tmp |= ( pPkt->pairReq.keyDist.pIdKey ) ? KEYDIST_SID : 0;
+        tmp |= ( pPkt->pairReq.keyDist.pSign ) ? KEYDIST_SSIGN : 0;
+        tmp |= ( pPkt->pairReq.keyDist.pLinkKey ) ? KEYDIST_SLINK : 0;
+        tmp |= ( pPkt->pairReq.keyDist.cEncKey ) ? KEYDIST_MENC : 0;
+        tmp |= ( pPkt->pairReq.keyDist.cIdKey ) ? KEYDIST_MID : 0;
+        tmp |= ( pPkt->pairReq.keyDist.cSign ) ? KEYDIST_MSIGN : 0;
+        tmp |= ( pPkt->pairReq.keyDist.cLinkKey ) ? KEYDIST_MLINK : 0;
         pOutMsg[9] = tmp;
 
         pBuf = pOutMsg;
@@ -4359,16 +4384,16 @@ static uint8 *processEventsGAP( gapEventHdr_t *pMsg, uint8 *pOutMsg, uint8 *pMsg
       }
       break;
 
-    case GAP_SLAVE_REQUESTED_SECURITY_EVENT:
+    case GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT:
       {
-        gapSlaveSecurityReqEvent_t *pPkt = (gapSlaveSecurityReqEvent_t *)pMsg;
+        gapPeripheralSecurityReqEvent_t *pPkt = (gapPeripheralSecurityReqEvent_t *)pMsg;
 
 #if defined(GAP_BOND_MGR)
         VOID GAPBondMgr_ProcessGAPMsg( (gapEventHdr_t *)pMsg );
 #endif
 
-        pOutMsg[0]  = LO_UINT16( HCI_EXT_GAP_SLAVE_REQUESTED_SECURITY_EVENT );
-        pOutMsg[1]  = HI_UINT16( HCI_EXT_GAP_SLAVE_REQUESTED_SECURITY_EVENT );
+        pOutMsg[0]  = LO_UINT16( HCI_EXT_GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT );
+        pOutMsg[1]  = HI_UINT16( HCI_EXT_GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT );
         pOutMsg[2]  = pPkt->hdr.status;
         pOutMsg[3]  = LO_UINT16( pPkt->connectionHandle );
         pOutMsg[4]  = HI_UINT16( pPkt->connectionHandle );

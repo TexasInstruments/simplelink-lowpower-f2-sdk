@@ -72,7 +72,6 @@ ecdh.$name = "CONFIG_ECDH0"
 var AESCTRDRBG = scripting.addModule("/ti/drivers/AESCTRDRBG");
 var aesctrdrbg = AESCTRDRBG.addInstance();
 aesctrdrbg.$name = "CONFIG_AESCTRDRBG_0";
-//aesctrdrbg.aesctrObject.$name = "CONFIG_AESCTR_0";
 
 /* ======== UART ======== */
 var UART    = scripting.addModule("/ti/drivers/UART2");
@@ -103,14 +102,12 @@ LED1.$name = "CONFIG_LED_RED";
 LED1.$hardware = system.deviceData.board.components.LED_RED;
 LED1.gpioPin.$name = "CONFIG_GPIO_RLED";
 LED1.gpioPin.mode = "Output";
-LED1.gpioPin.callbackFunction = "";
 
 var LED2 = LED.addInstance();
 LED2.$name = "CONFIG_LED_GREEN";
 LED2.$hardware = system.deviceData.board.components.LED_GREEN;
 LED2.gpioPin.$name = "CONFIG_GPIO_GLED";
 LED2.gpioPin.mode = "Output";
-LED2.gpioPin.callbackFunction = "";
 
 /* ======== NVS ======== */
 var NVS = scripting.addModule("/ti/drivers/NVS");
@@ -147,7 +144,6 @@ var NVSSPI25XDevice1 = nvs_ext.externalFlash.spiFlashDevice;
 NVSSPI25XDevice1.$name = "CONFIG_NVS_SPI_0";
 NVSSPI25XDevice1.slaveSelectPinInstance.$name = "CONFIG_GPIO_SPI_SS";
 NVSSPI25XDevice1.slaveSelectPinInstance.mode = "Output";
-NVSSPI25XDevice1.slaveSelectPinInstance.callbackFunction = "";
 
 /* ======== SPI ======== */
 var SPI1 = NVSSPI25XDevice1.sharedSpiInstance;

@@ -21,6 +21,7 @@ TI Sidewalk Demo Example
     * In Step 4, make sure to select the IAM User you created to add it to the group
 * AWS Access Keys for your IAM User
     * Follow instructions under section [**"To create, modify, or delete the access keys of another IAM user (console)"**](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)
+* ARM-GCC Compiler v12.3.1
 
 ## <a name="ExampleSummary"></a>Example Summary
 The Sidewalk Demo example application demonstrates how to provision, register, and test a sidewalk device. It can use either BLE or FSK 900 MHz radio to communicate with the gateway. It starts by initializing the clock and the timers. Then, various initializations will take place like key-value store, radio configs and memory. Finally, the main thread will start executing. The main thread starts checking the registration status and starts the Sidewalk gateway discovery. As a gateway is found, it will try to time sync with that gateway. After receiving time sync, the app starts to send capabilites discovery notification indicating support of 1 button and 2 LEDs. When discovery response is received, the app sends temperature sensor data every 15 seconds.

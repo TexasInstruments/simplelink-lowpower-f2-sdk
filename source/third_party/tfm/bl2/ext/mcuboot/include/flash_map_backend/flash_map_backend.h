@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2018 Nordic Semiconductor ASA
  * Copyright (c) 2015 Runtime Inc
- * Copyright (c) 2020 Arm Limited.
+ * Copyright (c) 2020-2021 Arm Limited.
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 /*
  * Original code taken from mcuboot project at:
- * https://github.com/JuulLabs-OSS/mcuboot
+ * https://github.com/mcu-tools/mcuboot
  * Git SHA of the original version: ac55554059147fff718015be9f4bd3108123f50a
  */
 
@@ -72,6 +72,37 @@ uint8_t flash_area_erased_val(const struct flash_area *fap);
  */
 int flash_area_read_is_empty(const struct flash_area *fa, uint32_t off,
         void *dst, uint32_t len);
+
+static inline uint8_t flash_area_get_id(const struct flash_area *fa)
+{
+    return fa->fa_id;
+}
+
+static inline uint8_t flash_area_get_device_id(const struct flash_area *fa)
+{
+    return fa->fa_device_id;
+}
+
+static inline uint32_t flash_area_get_off(const struct flash_area *fa)
+{
+    return fa->fa_off;
+}
+
+static inline uint32_t flash_area_get_size(const struct flash_area *fa)
+{
+    return fa->fa_size;
+}
+
+static inline uint32_t flash_sector_get_off(const struct flash_sector *fs)
+{
+    return fs->fs_off;
+}
+
+static inline uint32_t flash_sector_get_size(const struct flash_sector *fs)
+{
+    return fs->fs_size;
+}
+
 
 #ifdef __cplusplus
 }

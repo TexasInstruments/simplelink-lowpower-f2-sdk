@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -57,8 +57,6 @@
 #include "simple_gatt_profile.h"
 
 #ifdef SYSCFG
-#include "ti_ble_config.h"
-
 #ifdef USE_GATT_BUILDER
 #include "ti_ble_gatt_service.h"
 #endif

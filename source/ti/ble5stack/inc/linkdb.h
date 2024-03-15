@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -87,7 +87,7 @@ extern "C"
  */
 
 #include "ll_common.h"
-
+#include "hci.h"
 /*********************************************************************
  * MACROS
  */
@@ -251,6 +251,15 @@ extern uint8 linkDB_NumConns( void );
  */
   extern uint8 linkDB_State( uint16 connectionHandle, uint8 state );
 
+/**
+ * Get the activeConnInfo from LL using connectionHandle.
+ *
+ * @param connectionHandle - controller link connection handle.
+ * @param activeConnInfo   - pointer to the activeConnInfo
+ *
+ * @return Status - SUCCESS/FAILED
+ */
+  extern uint8 linkDB_GetActiveConnInfo( uint8 connectionHandle, hciActiveConnInfo_t *activeConnInfo );
 /*********************************************************************
 *********************************************************************/
 

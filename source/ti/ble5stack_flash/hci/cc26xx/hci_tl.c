@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -190,10 +190,10 @@ hciStatus_t hciLESetScanEnable                     ( uint8 *pBuf );
 hciStatus_t hciLECreateConn                        ( uint8 *pBuf );
 hciStatus_t hciLECreateConnCancel                  ( uint8 *pBuf );
 #endif // INIT_CFG
-hciStatus_t hciLEReadWhiteListSize                 ( uint8 *pBuf );
-hciStatus_t hciLEClearWhiteList                    ( uint8 *pBuf );
-hciStatus_t hciLEAddWhiteList                      ( uint8 *pBuf );
-hciStatus_t hciLERemoveWhiteList                   ( uint8 *pBuf );
+hciStatus_t hciLEReadAcceptListSize                ( uint8 *pBuf );
+hciStatus_t hciLEClearAcceptList                   ( uint8 *pBuf );
+hciStatus_t hciLEAddAcceptList                     ( uint8 *pBuf );
+hciStatus_t hciLERemoveAcceptList                  ( uint8 *pBuf );
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
 hciStatus_t hciLEConnUpdate                        ( uint8 *pBuf );
 #endif // ADV_CONN_CFG | INIT_CFG
@@ -283,6 +283,7 @@ hciStatus_t hciLESetConnectionlessIqSamplingEnable ( uint8 *pBuf );
 // Vendor Specific Commands
 hciStatus_t hciExtSetRxGain                        ( uint8 *pBuf );
 hciStatus_t hciExtSetTxPower                       ( uint8 *pBuf );
+hciStatus_t hciExtSetTxPowerDbm                    ( uint8 *pBuf );
 hciStatus_t hciExtExtendRfRange                    ( uint8 *pBuf );
 hciStatus_t hciExtHaltDuringRf                     ( uint8 *pBuf );
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
@@ -297,7 +298,7 @@ hciStatus_t hciExtDecrypt                          ( uint8 *pBuf );
 hciStatus_t hciExtSetLocalSupportedFeatures        ( uint8 *pBuf );
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
 hciStatus_t hciExtSetFastTxResponseTime            ( uint8 *pBuf );
-hciStatus_t hciExtSetSlaveLatencyOverride          ( uint8 *pBuf );
+hciStatus_t hciExtSetPeripheralLatencyOverride     ( uint8 *pBuf );
 #endif // ADV_CONN_CFG
 #if !defined(CTRL_V50_CONFIG)
 hciStatus_t hciExtModemTestTx                      ( uint8 *pBuf );
@@ -313,6 +314,7 @@ hciStatus_t hciExtEnablePTM                        ( uint8 *pBuf );
 hciStatus_t hciExtSetFreqTune                      ( uint8 *pBuf );
 hciStatus_t hciExtSaveFreqTune                     ( uint8 *pBuf );
 hciStatus_t hciExtSetMaxDtmTxPower                 ( uint8 *pBuf );
+hciStatus_t hciExtSetMaxDtmTxPowerDbm              ( uint8 *pBuf );
 hciStatus_t hciExtMapPmIoPort                      ( uint8 *pBuf );
 hciStatus_t hciExtBuildRevision                    ( uint8 *pBuf );
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_NCONN_CFG )
@@ -398,10 +400,10 @@ cmdPktTable_t hciCmdTable[] =
   {HCI_LE_CREATE_CONNECTION                 , hciLECreateConn                  },
   {HCI_LE_CREATE_CONNECTION_CANCEL          , hciLECreateConnCancel            },
 #endif // INIT_CFG
-  {HCI_LE_READ_WHITE_LIST_SIZE              , hciLEReadWhiteListSize           },
-  {HCI_LE_CLEAR_WHITE_LIST                  , hciLEClearWhiteList              },
-  {HCI_LE_ADD_WHITE_LIST                    , hciLEAddWhiteList                },
-  {HCI_LE_REMOVE_WHITE_LIST                 , hciLERemoveWhiteList             },
+  {HCI_LE_READ_ACCEPT_LIST_SIZE              , hciLEReadAcceptListSize          },
+  {HCI_LE_CLEAR_ACCEPT_LIST                  , hciLEClearAcceptList             },
+  {HCI_LE_ADD_ACCEPT_LIST                    , hciLEAddAcceptList               },
+  {HCI_LE_REMOVE_ACCEPT_LIST                 , hciLERemoveAcceptList            },
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
   {HCI_LE_CONNECTION_UPDATE                 , hciLEConnUpdate                  },
 #endif // ADV_CONN_CFG | INIT_CFG
@@ -500,6 +502,7 @@ cmdPktTable_t hciCmdTable[] =
   // Vendor Specific Commands
   {HCI_EXT_SET_RX_GAIN                      , hciExtSetRxGain                  },
   {HCI_EXT_SET_TX_POWER                     , hciExtSetTxPower                 },
+  {HCI_EXT_SET_TX_POWER_DBM                 , hciExtSetTxPowerDbm              },
   {HCI_EXT_EXTEND_RF_RANGE                  , hciExtExtendRfRange              },
   {HCI_EXT_HALT_DURING_RF                   , hciExtHaltDuringRf               },
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
@@ -511,7 +514,7 @@ cmdPktTable_t hciCmdTable[] =
   {HCI_EXT_SET_LOCAL_SUPPORTED_FEATURES     , hciExtSetLocalSupportedFeatures  },
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
   {HCI_EXT_SET_FAST_TX_RESP_TIME            , hciExtSetFastTxResponseTime      },
-  {HCI_EXT_OVERRIDE_SL                      , hciExtSetSlaveLatencyOverride    },
+  {HCI_EXT_OVERRIDE_PL                      , hciExtSetPeripheralLatencyOverride},
 #endif // ADV_CONN_CFG
 #if !defined(CTRL_V50_CONFIG)
   {HCI_EXT_MODEM_TEST_TX                    , hciExtModemTestTx                },
@@ -524,6 +527,7 @@ cmdPktTable_t hciCmdTable[] =
   {HCI_EXT_SET_SCA                          , hciExtSetSCA                     },
 #endif // ADV_CONN_CFG | INIT_CFG
   {HCI_EXT_SET_MAX_DTM_TX_POWER             , hciExtSetMaxDtmTxPower           },
+  {HCI_EXT_SET_MAX_DTM_TX_POWER_DBM         , hciExtSetMaxDtmTxPowerDbm        },
   {HCI_EXT_MAP_PM_IO_PORT                   , hciExtMapPmIoPort                },
   {HCI_EXT_SET_FREQ_TUNE                    , hciExtSetFreqTune                },
   {HCI_EXT_SAVE_FREQ_TUNE                   , hciExtSaveFreqTune               },
@@ -669,7 +673,12 @@ uint16 HCI_ProcessEvent( uint8 task_id, uint16 events )
         // All HCI_CTRL_TO_HOST_EVENT messages are of type hciPacket_t
         osal_bm_free( ((hciPacket_t *)pMsg)->pData );
       }
-
+      else
+      {
+          /* this else clause is required, even if the
+            programmer expects this will never be reached
+            Fix Misra-C Required: MISRA.IF.NO_ELSE */
+      }
       // deallocate the message
       (void)osal_msg_deallocate( (uint8 *)pMsg );
 #endif // !HCI_TL_NONE && !ICALL_LITE
@@ -1641,8 +1650,7 @@ hciStatus_t hciLECreateConnCancel( uint8 *pBuf )
 
 
 /*******************************************************************************
- * @fn          hciLEReadWhiteListSize
- *
+ * @fn          hciLEReadAcceptListSize *
  * @brief       Serial interface translation function for HCI API.
  *
  * input parameters
@@ -1655,19 +1663,19 @@ hciStatus_t hciLECreateConnCancel( uint8 *pBuf )
  *
  * @return      hciStatus_t
  */
-hciStatus_t hciLEReadWhiteListSize( uint8 *pBuf )
+hciStatus_t hciLEReadAcceptListSize uint8 *pBuf )
 {
   // unused input parameter; PC-Lint error 715.
   (void)pBuf;
 
-  return HCI_LE_ReadWhiteListSizeCmd();
+  return HCI_LE_ReadAcceptListSizemd();
 }
 
 
 /*******************************************************************************
- * @fn          hciLEClearWhiteList
+ * @fn          hciLEClearAcceptList
  *
- * @brief       Serial interface translation function for HCI API.
+* @brief       Serial interface translation function for HCI API.
  *
  * input parameters
  *
@@ -1679,19 +1687,19 @@ hciStatus_t hciLEReadWhiteListSize( uint8 *pBuf )
  *
  * @return      hciStatus_t
  */
-hciStatus_t hciLEClearWhiteList( uint8 *pBuf )
+hciStatus_t hciLEClearAcceptList( uit8 *pBuf )
 {
   // unused input parameter; PC-Lint error 715.
   (void)pBuf;
 
-  return HCI_LE_ClearWhiteListCmd();
+  return HCI_LE_ClearAcceptListCmd(;
 }
 
 
 /*******************************************************************************
- * @fn          hciLEAddWhiteList
+ * @fn          hciLEAddAcceptList
  *
- * @brief       Serial interface translation function for HCI API.
+* @brief       Serial interface translation function for HCI API.
  *
  * input parameters
  *
@@ -1703,17 +1711,17 @@ hciStatus_t hciLEClearWhiteList( uint8 *pBuf )
  *
  * @return      hciStatus_t
  */
-hciStatus_t hciLEAddWhiteList( uint8 *pBuf )
+hciStatus_t hciLEAddAcceptList( uit8 *pBuf )
 {
-  return HCI_LE_AddWhiteListCmd( pBuf[0],
+  return HCI_LE_AddAcceptListCmd(pBuf[0],
                                  &pBuf[1] );
 }
 
 
 /*******************************************************************************
- * @fn          hciLERemoveWhiteList
+ * @fn          hciLERemoveAcceptList
  *
- * @brief       Serial interface translation function for HCI API.
+* @brief       Serial interface translation function for HCI API.
  *
  * input parameters
  *
@@ -1725,9 +1733,9 @@ hciStatus_t hciLEAddWhiteList( uint8 *pBuf )
  *
  * @return      hciStatus_t
  */
-hciStatus_t hciLERemoveWhiteList( uint8 *pBuf )
+hciStatus_t hciLERemoveAcceptList( uit8 *pBuf )
 {
-  return HCI_LE_RemoveWhiteListCmd( pBuf[0],
+  return HCI_LE_RemoveAcceptListCmd(pBuf[0],
                                     &pBuf[1] );
 }
 
@@ -2574,30 +2582,6 @@ hciStatus_t hciLEEnhancedRxTest( uint8 *pBuf )
                                    pBuf[2] );
 }
 
-
-/*******************************************************************************
- * @fn          hciLEEnhancedTxTest
- *
- * @brief       Serial interface translation function for HCI API.
- *
- * input parameters
- *
- * @param       pBuf - Pointer to command parameters and payload.
- *
- * output parameters
- *
- * @param       None.
- *
- * @return      hciStatus_t
- */
-hciStatus_t hciLEEnhancedTxTest( uint8 *pBuf )
-{
-  return HCI_LE_EnhancedTxTestCmd( pBuf[0],
-                                   pBuf[1],
-                                   pBuf[2],
-                                   pBuf[3] );
-}
-
 /*******************************************************************************
  * @fn          hciLEEnhancedTxTest
  *
@@ -3148,6 +3132,28 @@ hciStatus_t hciExtSetTxPower( uint8 *pBuf )
 
 
 /*******************************************************************************
+ * @fn          hciExtSetTxPowerDbm
+ *
+ * @brief       Serial interface translation function for HCI API.
+ *
+ * input parameters
+ *
+ * @param       pBuf - Pointer to command parameters and payload.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      hciStatus_t
+ */
+hciStatus_t hciExtSetTxPowerDbm( uint8 *pBuf )
+{
+  return HCI_EXT_SetTxPowerDbmCmd( pBuf[0],
+                                   pBuf[1]);
+}
+
+
+/*******************************************************************************
  * @fn          hciExtExtendRfRange
  *
  * @brief       Serial interface translation function for HCI API.
@@ -3210,6 +3216,27 @@ hciStatus_t hciExtHaltDuringRf( uint8 *pBuf )
 hciStatus_t hciExtSetMaxDtmTxPower( uint8 *pBuf )
 {
   return HCI_EXT_SetMaxDtmTxPowerCmd( pBuf[0] );
+}
+
+
+/*******************************************************************************
+ * @fn          hciExtSetMaxDtmTxPowerDbm
+ *
+ * @brief       Serial interface translation function for HCI API.
+ *
+ * input parameters
+ *
+ * @param       pBuf - Pointer to command parameters and payload.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      hciStatus_t
+ */
+hciStatus_t hciExtSetMaxDtmTxPowerDbm( uint8 *pBuf )
+{
+  return HCI_EXT_SetMaxDtmTxPowerDbmCmd( pBuf[0], pBuf[1] );
 }
 
 
@@ -3495,7 +3522,7 @@ hciStatus_t hciExtSetFastTxResponseTime( uint8 *pBuf )
 
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
 /*******************************************************************************
- * @fn          hciExtSetSlaveLatencyOverride
+ * @fn          hciExtSetPeripheralLatencyOverride
  *
  * @brief       Serial interface translation function for HCI API.
  *
@@ -3509,9 +3536,9 @@ hciStatus_t hciExtSetFastTxResponseTime( uint8 *pBuf )
  *
  * @return      hciStatus_t
  */
-hciStatus_t hciExtSetSlaveLatencyOverride( uint8 *pBuf )
+hciStatus_t hciExtSetPeripheralLatencyOverride( uint8 *pBuf )
 {
-  return HCI_EXT_SetSlaveLatencyOverrideCmd( pBuf[0] );
+  return HCI_EXT_SetPeripheralLatencyOverrideCmd( pBuf[0] );
 }
 #endif // ADV_CONN_CFG
 

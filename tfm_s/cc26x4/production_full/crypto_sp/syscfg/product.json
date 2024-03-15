@@ -15,5 +15,5 @@
     "rtos": [
         "none"
     ],
-    "minToolVersion": "1.12.0"
+    "minToolVersion": "1.15.0"
 }

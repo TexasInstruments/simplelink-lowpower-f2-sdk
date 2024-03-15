@@ -48,9 +48,6 @@
 #define I2S_NB_CHANNELS_MAX   8U
 #define I2S_RAW_CLOCK_48MHZ   48000000U /* Clock if not divided (48 MHz) */
 
-#define I2S_MEMORY_LENGTH_16BITS_CC26XX 0U /* Internally used to set memory length to 16 bits */
-#define I2S_MEMORY_LENGTH_24BITS_CC26XX 1U /* Internally used to set memory length to 24 bits */
-
 /* Forward declarations */
 static bool initObject(I2S_Handle handle, I2S_Params *params);
 static void initIO(I2S_Handle handle);
@@ -608,11 +605,11 @@ static bool initObject(I2S_Handle handle, I2S_Params *params)
 
         if (params->memorySlotLength == I2S_MEMORY_LENGTH_16BITS)
         {
-            object->memorySlotLength = I2S_MEMORY_LENGTH_16BITS_CC26XX;
+            object->memorySlotLength = I2S_MEM_LENGTH_16;
         }
         else if (params->memorySlotLength == I2S_MEMORY_LENGTH_24BITS)
         {
-            object->memorySlotLength = I2S_MEMORY_LENGTH_24BITS_CC26XX;
+            object->memorySlotLength = I2S_MEM_LENGTH_24;
         }
         else
         {
@@ -965,7 +962,7 @@ static void configSerialFormat(I2S_Handle handle)
     I2SFormatConfigure(I2S0_BASE,
                        (object->beforeWordPadding + object->dataShift),
                        (uint8_t)object->memorySlotLength,
-                       (uint8_t)object->samplingEdge,
+                       ((object->samplingEdge == I2S_SAMPLING_EDGE_RISING) ? I2S_POS_EDGE : I2S_NEG_EDGE),
                        (bool)(object->phaseType == I2S_PHASE_TYPE_DUAL),
                        ((object->phaseType == I2S_PHASE_TYPE_DUAL) ? (object->bitsPerWord + object->afterWordPadding)
                                                                    : object->bitsPerWord),
@@ -1096,7 +1093,7 @@ static uint16_t computeMemoryStep(I2S_Handle handle,
         numbOfChannels += SD1->numberOfChannelsUsed;
     }
 
-    if (object->memorySlotLength == I2S_MEMORY_LENGTH_24BITS_CC26XX)
+    if (object->memorySlotLength == I2S_MEM_LENGTH_24)
     {
         sampleMemoryLength = 24;
     }

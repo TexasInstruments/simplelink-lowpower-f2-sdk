@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -787,7 +787,7 @@ extern uint16 GATTServApp_GetParamValue( void );
  * @return  void
  *
  */
-extern void GATTServApp_Init( uint8 taskId, uint8_t cfg_GATTServApp_att_delayed_req, uint8_t cfg_gapBond_gatt_no_service_changed );
+extern void GATTServApp_Init( uint8 taskId, uint8_t cfg_GATTServApp_att_delayed_req, uint8_t cfg_gapBond_gatt_no_service_changed, uint8_t cfg_gatt_max_num_prepare_writes );
 
 /**
  * @internal
@@ -897,6 +897,21 @@ extern uint8 gattServApp_IsWriteLong( attExecuteWriteReq_t *pReq, prepareWrites_
  * @param       pQueue - pointer to client's queue
  */
 extern void gattServApp_ClearPrepareWriteQ( prepareWrites_t *pQueue );
+
+/**
+ * @brief   Enqueue an ATT response retransmission
+ *
+ * This addition function calls gattServApp_EnqueueReTx function if
+ * the connection is active.
+ *
+ * @param       connHandle - connection event belongs to
+ * @param       method - type of message
+ * @param       pMsg - pointer to message to be sent
+ *
+ * @return      SUCCESS or bleNotConnected
+ */
+extern bStatus_t gattServApp_EnqueueReTx_sPatch( uint16 connHandle, uint8 method,
+                                                 gattMsg_t *pMsg );
 
 /**
  * @brief   Enqueue an ATT response retransmission

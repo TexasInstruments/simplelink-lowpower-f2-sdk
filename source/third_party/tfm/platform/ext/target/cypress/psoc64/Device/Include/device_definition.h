@@ -27,11 +27,15 @@
 #ifndef __DEVICE_DEFINITION_H__
 #define __DEVICE_DEFINITION_H__
 
+#include "cy_scb_uart.h"
 #include "device_cfg.h"
 
 
 /* ======= Defines peripheral configuration structures ======= */
 /* ======= and includes generic driver headers if necessary ======= */
+/* UART config */
+extern const cy_stc_scb_uart_config_t KITPROG_UART_config;
+
 /* CMSDK Timer driver structures */
 #ifdef CMSDK_TIMER0_S
 #include "timer_cmsdk_drv.h"

@@ -62,7 +62,7 @@ int ws_test_max_child_count_set(int8_t interface_id, uint16_t child_count)
     return 0;
 }
 
-int ws_test_gtk_set(int8_t interface_id, uint8_t *gtk[4])
+int ws_test_gtk_set(int8_t interface_id, uint8_t gtk[4][16])
 {
     (void) interface_id;
     (void) gtk;
@@ -143,7 +143,7 @@ int ws_test_gtk_time_settings_set(int8_t interface_id, uint8_t revocat_lifetime_
     return 0;
 }
 
-int ws_test_next_gtk_set(int8_t interface_id, uint8_t *gtk[4])
+int ws_test_next_gtk_set(int8_t interface_id, uint8_t gtk[4][16])
 {
     (void) interface_id;
     (void) gtk;

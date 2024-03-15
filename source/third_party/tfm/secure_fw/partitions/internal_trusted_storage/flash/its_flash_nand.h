@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -9,37 +9,37 @@
  * \file its_flash_nand.h
  *
  * \brief Implementations of the flash interface functions for a NAND flash
- *        device. See its_flash.h for full documentation of functions.
+ *        device. See its_flash_fs_ops_t for full documentation of functions.
  */
 
-#include "its_flash.h"
+#ifndef __ITS_FLASH_NAND_H__
+#define __ITS_FLASH_NAND_H__
 
-/**
- * \brief Initialize the Flash Interface.
- */
-psa_status_t its_flash_nand_init(const struct its_flash_info_t *info);
+#include <stddef.h>
+#include <stdint.h>
 
-/**
- * \brief Reads block data from the position specified by block ID and offset.
- */
-psa_status_t its_flash_nand_read(const struct its_flash_info_t *info,
-                                 uint32_t block_id, uint8_t *buff,
-                                 size_t offset, size_t size);
+#include "driver/Driver_Flash.h"
 
-/**
- * \brief Writes block data to the position specified by block ID and offset.
- */
-psa_status_t its_flash_nand_write(const struct its_flash_info_t *info,
-                                  uint32_t block_id, const uint8_t *buff,
-                                  size_t offset, size_t size);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/**
- * \brief Flushes modifications to a block to flash.
- */
-psa_status_t its_flash_nand_flush(const struct its_flash_info_t *info);
+struct its_flash_nand_dev_t {
+    ARM_DRIVER_FLASH *driver;
+    /* Two write buffers are reserved as the metadata block and the file block
+     * write can be mixed in the file system operation.
+     */
+    uint32_t buf_block_id_0;
+    uint32_t buf_block_id_1;
+    uint8_t *write_buf_0;
+    uint8_t *write_buf_1;
+    size_t buf_size;
+};
 
-/**
- * \brief Erases block ID data.
- */
-psa_status_t its_flash_nand_erase(const struct its_flash_info_t *info,
-                                  uint32_t block_id);
+extern const struct its_flash_fs_ops_t its_flash_fs_ops_nand;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __ITS_FLASH_NAND_H__ */

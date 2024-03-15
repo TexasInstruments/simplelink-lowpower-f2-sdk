@@ -72,7 +72,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -200,6 +200,56 @@ extern "C"
   #define MAX_NUM_BLE_CONNS             1
 #endif
 
+#ifdef SDAA_ENABLE
+/********* SDAA *********/
+
+// if default value is not yet defined, use default values
+#ifndef SDAA_MAX_THRESHOLD
+#define SDAA_MAX_THRESHOLD 10
+// raise error if values not in the correct boundaries (value in %)
+#elif(SDAA_MAX_THRESHOLD < 0 || SDAA_MAX_THRESHOLD > 100)
+#error "SDAA_MAX_THRESHOLD value should be between 1 and 100"
+#endif
+
+// if default value is not yet defined, use default values
+#ifndef SDAA_RX_WINDOW_DURATION
+#define SDAA_RX_WINDOW_DURATION 10
+// raise error if values not in the correct boundaries (value in 10us jump)
+#elif (SDAA_RX_WINDOW_DURATION < 10 || SDAA_RX_WINDOW_DURATION > 100)
+#error "SDAA_RX_WINDOW_DURATION should be between 10 and 100"
+#endif
+
+#ifndef SDAA_RSSI_THRESHOLD
+#define SDAA_RSSI_THRESHOLD        -70   // RSSI threshold.
+#elif (SDAA_RSSI_THRESHOLD < -90 || SDAA_RSSI_THRESHOLD > -40)
+#error "SDAA_RSSI_THRESHOLD should be between -90 and -40"
+#endif
+
+#ifndef SDAA_MAX_ALLOWED_NOISY_SAMPLES
+#define SDAA_MAX_ALLOWED_NOISY_SAMPLES    1  //number of noisy samples needed before channel defined as noisy
+#elif (SDAA_MAX_ALLOWED_NOISY_SAMPLES < 1 || SDAA_MAX_ALLOWED_NOISY_SAMPLES > 5)
+#error "SDAA_MAX_ALLOWED_NOISY_SAMPLES should be between 1 and 5"
+#endif
+
+#ifndef SDAA_MAX_BLOCKED_CHANNEL_TIME
+#define SDAA_MAX_BLOCKED_CHANNEL_TIME    1 //1sec
+#elif (SDAA_MAX_BLOCKED_CHANNEL_TIME < 0 || SDAA_MAX_BLOCKED_CHANNEL_TIME > 255)
+#error "SDAA_MAX_BLOCKED_CHANNEL_TIME should be between 0 and 255"
+#endif
+
+#ifndef SDAA_CONST_OBSERV_TIME
+#define SDAA_CONST_OBSERV_TIME    true  // true or false value that determine if the SDAA will use fixed observation time or a changing one.
+#elif (SDAA_CONST_OBSERV_TIME != 0 && SDAA_CONST_OBSERV_TIME != 1)
+#error "SDAA_CONST_OBSERV_TIME should be true or false"
+#endif
+
+#ifndef SDAA_OBSERVATION_TIME
+#define SDAA_OBSERVATION_TIME    1  // (100ms)
+#elif (SDAA_OBSERVATION_TIME < 1 || SDAA_OBSERVATION_TIME > 3000)
+#error "SDAA_CONST_OBSERV_TIME should be between 1 and 3000 (100ms to 5min )"
+#endif
+#endif //SDAA_ENABLE
+/************************************/
 // bitmask of extended stack settings
 #ifndef EXTENDED_STACK_SETTINGS
 #define EXTENDED_STACK_SETTINGS         0x00
@@ -595,6 +645,16 @@ typedef struct
 } bleUserCfg_t;
 #endif /* ICALL_JT */
 
+typedef struct
+{
+  const uint8             rxWindowDuration;      //10us jump
+  const uint8             txUsageTresh;          // (%)
+  const int8              rssithreshold;         // dBm
+  const uint8             numberofnoisysamples;
+  const uint8             blockingchanneltime;   //100ms jump
+  const uint8             constobservtime;
+  const uint16            observationtime;       //100ms jump
+} sdaaUsrCfg_t;
 /*******************************************************************************
  * LOCAL VARIABLES
  */
@@ -629,7 +689,9 @@ extern pfnBMFree_t  pfnBMFree;
 
 extern uint16_t bleUserCfg_maxPduSize;
 extern uint16_t llUserConfig_maxPduSize;
-
+#ifdef SDAA_ENABLE
+extern sdaaUsrCfg_t sdaaCfgTable;
+#endif
 #ifdef ICALL_JT
 
 extern RF_Callback pRfErrCb;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -38,10 +38,10 @@ int error_mapping_cc_to_mbedtls_ecc (CCError_t cc_error);
  */
 static inline ecp_curve_type ecp_get_type(const mbedtls_ecp_group *grp)
 {
-    if (grp->G.X.p == NULL)
+    if (grp->G.MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(p) == NULL)
         return (ECP_TYPE_NONE);
 
-    if (grp->G.Y.p == NULL)
+    if (grp->G.MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(p) == NULL)
         return (ECP_TYPE_25519);
     else
         return (ECP_TYPE_SHORT_WEIERSTRASS);

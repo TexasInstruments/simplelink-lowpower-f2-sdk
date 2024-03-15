@@ -259,8 +259,10 @@ void PERTest_init(Semaphore_Handle appSem, uint8_t stEnt, CUI_clientHandle_t gCu
   Zstackapi_SetNwkFrameFwdNotificationReq(stAppID,&zstack_setNwkFrameFwdNotificationReq);
 #endif
 
+#ifndef CUI_DISABLE
   gPERCuiHandle = gCuiHandle;
   CUI_statusLineResourceRequest(gCuiHandle, "PER Test", false, &gPerTestInfoLine);
+#endif // CUI_DISABLE
 }
 
 void PERTest_process(void)

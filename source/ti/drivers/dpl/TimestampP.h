@@ -95,8 +95,8 @@ typedef union TimestampP_Format
 
 extern uint32_t TimestampP_getNative32(void);
 extern uint64_t TimestampP_getNative64(void);
-extern const TimestampP_Format TimestampP_nativeFormat32;
 extern const TimestampP_Format TimestampP_nativeFormat64;
+extern const TimestampP_Format TimestampP_nativeFormat32;
 
 #ifdef __cplusplus
 }

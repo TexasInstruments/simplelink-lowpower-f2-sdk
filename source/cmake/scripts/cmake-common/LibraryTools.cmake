@@ -40,58 +40,58 @@ include(CMakePackageConfigHelpers)
 # has any content, the output variable is set to that content and the function exits.
 # Following variables are ignored, even if they have valid values. If no passed variable
 # had any content, a fatal error will be triggered.
-function (_ti_set output_variable)
+function(_ti_set output_variable)
     set(options OPTIONAL VALIDATE)
     set(multi_value_args FROM_ANY_OF)
     cmake_parse_arguments(TI_SET "${options}" "" "${multi_value_args}" ${ARGN})
 
     # Argument validation
-    if (NOT TI_SET_FROM_ANY_OF)
+    if(NOT TI_SET_FROM_ANY_OF)
         message(FATAL_ERROR "You must provide a set of variables to FROM_ANY_OF")
-    endif ()
+    endif()
 
-    foreach (variable_source ${TI_SET_FROM_ANY_OF})
+    foreach(variable_source ${TI_SET_FROM_ANY_OF})
         # Shorthand for "is this variable defined and has content that is not the empty string"
         # Note that because "variable_source" contains the variable name as a string, we need to
         # interpolate it to evaluate it correctly
-        if (${variable_source})
+        if(${variable_source})
             # Bubble the variable up and exit
             set(${output_variable} ${${variable_source}} PARENT_SCOPE)
             message(TRACE "Setting ${output_variable} to ${${variable_source}} from ${variable_source}")
             return()
-        endif ()
-    endforeach ()
+        endif()
+    endforeach()
     message(FATAL_ERROR "Couldn't set ${output_variable} from any of: ${TI_SET_FROM_ANY_OF}")
-endfunction ()
+endfunction()
 
 # Exit with a fatal error if a variable is not set
 # _ti_require(variable_name)
 #
 # variable_name: The name of the variable to check
-function (_ti_require variable_name)
-    if (NOT ${variable_name})
+function(_ti_require variable_name)
+    if(NOT ${variable_name})
         message(FATAL_ERROR "Expected ${variable_name} to be set")
-    endif ()
-endfunction ()
+    endif()
+endfunction()
 
-function (_ti_quiet_find package_name)
-    if (NOT ${package_name}_FOUND)
+function(_ti_quiet_find package_name)
+    if(NOT ${package_name}_FOUND)
         # Attempt to find the specified package. If not available (for example, the libraries are
         # defined locally) just silently accept it. This will cause configure errors e.g. "XYZ::zyx
         # could not be found".
         find_package(${package_name} QUIET)
 
-        if (NOT ${package_name}_FOUND)
+        if(NOT ${package_name}_FOUND)
             message(DEBUG "_ti_quiet_find: requested package ${package_name} but it was not found. "
                     "If this package is internal, this is not a problem."
             )
-        else ()
+        else()
             message(DEBUG "_ti_quiet_find: loaded ${package_name}")
-        endif ()
-    else ()
+        endif()
+    else()
         message(DEBUG "_ti_quiet_find: skipped loading ${package_name}")
-    endif ()
-endfunction ()
+    endif()
+endfunction()
 
 # Get the root component location represented by this variable
 # get_install_dir(component_install_dir)
@@ -100,15 +100,15 @@ endfunction ()
 #
 # If the variable is set, and this is an internal build, the existing value is
 # returned. Otherwise, CMAKE_SOURCE_DIR is returned.
-function (get_install_dir component_install_dir)
-    if (TI_INTERNAL_BUILD AND ${component_install_dir})
+function(get_install_dir component_install_dir)
+    if(TI_INTERNAL_BUILD AND ${component_install_dir})
         set(${component_install_dir} ${${component_install_dir}} PARENT_SCOPE)
         message(DEBUG "get_install_dir: setting ${component_install_dir} to ${${component_install_dir}}")
-    else ()
+    else()
         set(${component_install_dir} ${CMAKE_SOURCE_DIR} PARENT_SCOPE)
         message(DEBUG "get_install_dir: setting ${component_install_dir} to CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
-    endif ()
-endfunction ()
+    endif()
+endfunction()
 
 # Configures per-file configuration variables
 # ti_setup(NAMESPACE namespace [PACKAGE_NAME package_name] [PACKAGE_TYPE <COMPONENT|PLATFORM>]
@@ -131,43 +131,43 @@ endfunction ()
 #
 # If PACKAGE_NAME is not provided, then it will be set to NAMESPACE, so you can have a
 # single-package namespace like "TiUtils" if you are exporting generic components.
-function (ti_init_package)
+function(ti_init_package)
     set(single_value_args NAMESPACE PACKAGE_NAME PACKAGE_TYPE)
     set(multi_value_args DEPENDS_ON)
     cmake_parse_arguments(TI_SETUP "" "${single_value_args}" "${multi_value_args}" ${ARGN})
 
-    if (TI_SETUP_UNPARSED_ARGUMENTS)
+    if(TI_SETUP_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unparsed arguments: ${TI_SETUP_UNPARSED_ARGUMENTS}")
-    endif ()
-    if (TI_SETUP_KEYWORDS_MISSING_VALUES)
+    endif()
+    if(TI_SETUP_KEYWORDS_MISSING_VALUES)
         message(FATAL_ERROR "Arguments missing values: ${TI_SETUP_KEYWORDS_MISSING_VALUES}")
-    endif ()
+    endif()
 
     # NAMESPACE is mandatory, and must be provided by the user in the argument
     _ti_require(TI_SETUP_NAMESPACE)
 
     # Package type defaults to component, if the user has not provided one
-    if (NOT TI_SETUP_PACKAGE_TYPE)
+    if(NOT TI_SETUP_PACKAGE_TYPE)
         set(TI_SETUP_PACKAGE_TYPE "COMPONENT")
-    endif ()
+    endif()
 
-    if (TI_SETUP_PACKAGE_NAME)
+    if(TI_SETUP_PACKAGE_NAME)
         # The PACKAGE_NAME should not start with the namespace
-        if (${TI_SETUP_PACKAGE_NAME} MATCHES "^${TI_SETUP_NAMESPACE}")
+        if(${TI_SETUP_PACKAGE_NAME} MATCHES "^${TI_SETUP_NAMESPACE}")
             message(FATAL_ERROR "Package ${TI_SETUP_PACKAGE_NAME} must not start with namespace ${TI_SETUP_NAMESPACE}")
-        endif ()
+        endif()
         # Concatenate with namespace, e.g. "TiUtilsLoggers"
         set(TI_SETUP_PACKAGE_NAME "${TI_SETUP_NAMESPACE}${TI_SETUP_PACKAGE_NAME}")
-    else ()
+    else()
         # If we don't have a package name, reuse the namespace
         set(TI_SETUP_PACKAGE_NAME ${TI_SETUP_NAMESPACE})
-    endif ()
+    endif()
 
     # Note: This does not affect the find_package emitted into the resulting package config,
     # which is always `find_package(XYZ REQUIRED)`.
-    foreach (dependency ${TI_SETUP_DEPENDS_ON})
+    foreach(dependency ${TI_SETUP_DEPENDS_ON})
         _ti_quiet_find(${dependency})
-    endforeach ()
+    endforeach()
 
     # These variables track state for the current package
     set_property(DIRECTORY PROPERTY TI_NAMESPACE ${TI_SETUP_NAMESPACE})
@@ -177,12 +177,12 @@ function (ti_init_package)
 
     set_property(DIRECTORY PROPERTY TI_PACKAGE_LIBRARIES "")
     set_property(DIRECTORY PROPERTY TI_PACKAGE_TARGET_FILES "")
-endfunction ()
+endfunction()
 
-function (ti_add_package_dependency package_name)
+function(ti_add_package_dependency package_name)
     set_property(DIRECTORY APPEND PROPERTY TI_PACKAGE_DEPENDENCIES ${package_name})
     _ti_quiet_find(${package_name})
-endfunction ()
+endfunction()
 
 # Configures per-file configuration variables
 # ti_add_library(library_name [LIBRARY_EXISTS] [INTERFACE] [NO_PACKAGE]
@@ -211,26 +211,26 @@ endfunction ()
 #
 # See Also:
 #  - ti_create_targets()
-function (ti_add_library library_name)
+function(ti_add_library library_name)
     set(options LIBRARY_EXISTS INTERFACE NO_PACKAGE)
     set(single_value_args OUTPUT_NAME EXPORT_NAME ARCH ADD_SDK_INCLUDE_PATH OUTPUT_FOLDER)
     set(multi_value_args SOURCES LINK_PRIVATE LINK_PUBLIC LINK_INTERFACE)
     cmake_parse_arguments(CONFIG_LIB "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN})
 
-    if (CONFIG_LIB_UNPARSED_ARGUMENTS)
+    if(CONFIG_LIB_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unparsed arguments: ${CONFIG_LIB_UNPARSED_ARGUMENTS}")
-    endif ()
-    if (CONFIG_LIB_KEYWORDS_MISSING_VALUES)
+    endif()
+    if(CONFIG_LIB_KEYWORDS_MISSING_VALUES)
         message(FATAL_ERROR "Arguments missing values: ${CONFIG_LIB_KEYWORDS_MISSING_VALUES}")
-    endif ()
+    endif()
 
     # Argument validation
     _ti_set(TI_ARCH FROM_ANY_OF CONFIG_LIB_ARCH TI_ARCH ARCH_${TI_PLATFORM})
     get_property(TI_NAMESPACE DIRECTORY PROPERTY TI_NAMESPACE)
 
-    if (NOT CONFIG_LIB_SOURCES AND NOT CONFIG_LIB_INTERFACE AND NOT CONFIG_LIB_LIBRARY_EXISTS)
+    if(NOT CONFIG_LIB_SOURCES AND NOT CONFIG_LIB_INTERFACE AND NOT CONFIG_LIB_LIBRARY_EXISTS)
         message(FATAL_ERROR "You must either set SOURCES, INTERFACE or LIBRARY_EXISTS")
-    endif ()
+    endif()
 
     # Determine output name and export name, usually the same as the library name
     _ti_set(output_name FROM_ANY_OF CONFIG_LIB_OUTPUT_NAME library_name)
@@ -238,17 +238,17 @@ function (ti_add_library library_name)
 
     # LIBRARY_EXISTS allows skipping the add_library call entirely
     # We should still check the library does exist though
-    if (CONFIG_LIB_LIBRARY_EXISTS)
-        if (NOT TARGET ${library_name})
+    if(CONFIG_LIB_LIBRARY_EXISTS)
+        if(NOT TARGET ${library_name})
             message(FATAL_ERROR "LIBRARY_EXISTS was set, but could not find ${library_name}")
-        endif ()
-    else ()
-        if (CONFIG_LIB_INTERFACE)
+        endif()
+    else()
+        if(CONFIG_LIB_INTERFACE)
             add_library(${library_name} INTERFACE)
-        else ()
+        else()
             add_library(${library_name} ${CONFIG_LIB_SOURCES})
-        endif ()
-    endif ()
+        endif()
+    endif()
 
     add_library(${TI_NAMESPACE}::${export_name} ALIAS ${library_name})
     message(DEBUG "ti_add_library: Added ${library_name} with alias ${TI_NAMESPACE}::${export_name}")
@@ -272,11 +272,11 @@ function (ti_add_library library_name)
                    ARCHIVE_OUTPUT_DIRECTORY lib/${TI_TOOLCHAIN_NAME}/${TI_ARCH}/${output_name}
     )
 
-    if (CONFIG_LIB_OUTPUT_FOLDER)
+    if(CONFIG_LIB_OUTPUT_FOLDER)
         set(CLEAN_PATH ${CMAKE_CURRENT_LIST_DIR}/${CONFIG_LIB_OUTPUT_FOLDER}/)
-    else ()
+    else()
         set(CLEAN_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/)
-    endif ()
+    endif()
 
     # Make sure this lib/ dir is cleaned by cmake --clean
     set_property(TARGET ${library_name} APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${CLEAN_PATH})
@@ -286,22 +286,22 @@ function (ti_add_library library_name)
         INTERFACE ${CONFIG_LIB_LINK_INTERFACE}
     )
 
-    if (CONFIG_LIB_ADD_SDK_INCLUDE_PATH)
-        if (CONFIG_LIB_INTERFACE)
+    if(CONFIG_LIB_ADD_SDK_INCLUDE_PATH)
+        if(CONFIG_LIB_INTERFACE)
             ti_export_sdk_include(${library_name} INTERFACE ${CONFIG_LIB_ADD_SDK_INCLUDE_PATH})
-        else ()
+        else()
             ti_export_sdk_include(${library_name} PUBLIC ${CONFIG_LIB_ADD_SDK_INCLUDE_PATH})
-        endif ()
-    endif ()
+        endif()
+    endif()
 
-    if (NOT CONFIG_LIB_NO_PACKAGE)
-        if (CONFIG_LIB_OUTPUT_FOLDER)
+    if(NOT CONFIG_LIB_NO_PACKAGE)
+        if(CONFIG_LIB_OUTPUT_FOLDER)
             ti_create_targets(ARCH ${TI_ARCH} TARGETS ${library_name} OUTPUT_FOLDER ${CONFIG_LIB_OUTPUT_FOLDER})
-        else ()
+        else()
             ti_create_targets(ARCH ${TI_ARCH} TARGETS ${library_name})
-        endif ()
-    endif ()
-endfunction ()
+        endif()
+    endif()
+endfunction()
 
 # Exports a PUBLIC or INTERFACE include to [relative_path]
 # ti_export_sdk_include(library_name include_type relative_path)
@@ -313,12 +313,12 @@ endfunction ()
 # PUBLIC means it will be applied both when building the library internally, as well as inherited by targets depending
 # on your library to build. This enables distributed builds (i.e. from the conan cache) as well as SDK customer builds.
 # INTERFACE is for interface libraries, which cannot have PUBLIC properties, and is only inherited.
-function (ti_export_sdk_include library_name include_type relative_path)
+function(ti_export_sdk_include library_name include_type relative_path)
     target_include_directories(
         ${library_name} ${include_type} "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/${relative_path}>"
         "$<INSTALL_INTERFACE:${relative_path}>"
     )
-endfunction ()
+endfunction()
 
 # Generates an architecture-specific ConfigPackageMxxTargets.cmake package, and exports it
 # ti_create_targets([ARCH arch] [OUTPUT_FOLDER folder] [TARGETS target target ...])
@@ -330,17 +330,17 @@ endfunction ()
 # Notes:
 #  - This function will be called automatically by add_ti_library(). You do not normally need to call it manually.
 #  - You must have called ti_init_package to use this function.
-function (ti_create_targets)
+function(ti_create_targets)
     set(single_value_args ARCH OUTPUT_FOLDER)
     set(multi_value_args TARGETS)
     cmake_parse_arguments(CREATE_TARGETS "" "${single_value_args}" "${multi_value_args}" ${ARGN})
 
-    if (CREATE_TARGETS_UNPARSED_ARGUMENTS)
+    if(CREATE_TARGETS_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unparsed arguments: ${CREATE_TARGETS_UNPARSED_ARGUMENTS}")
-    endif ()
-    if (CREATE_TARGETS_KEYWORDS_MISSING_VALUES)
+    endif()
+    if(CREATE_TARGETS_KEYWORDS_MISSING_VALUES)
         message(FATAL_ERROR "Arguments missing values: ${CREATE_TARGETS_KEYWORDS_MISSING_VALUES}")
-    endif ()
+    endif()
 
     _ti_set(TI_ARCH FROM_ANY_OF CREATE_TARGETS_ARCH TI_ARCH)
     get_property(TI_NAMESPACE DIRECTORY PROPERTY TI_NAMESPACE)
@@ -350,15 +350,15 @@ function (ti_create_targets)
     _ti_require(TI_PACKAGE_NAME)
     _ti_require(TI_PACKAGE_TYPE)
 
-    if (NOT CREATE_TARGETS_TARGETS)
+    if(NOT CREATE_TARGETS_TARGETS)
         message(FATAL_ERROR "You must provide TARGETS")
-    endif ()
+    endif()
 
     # This controls the 'relative root' of generated packages, and should probably always be CMAKE_SOURCE_DIR
     # If the user has already configured it, we can skip this
-    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}" CACHE PATH "..." FORCE)
-    endif ()
+    endif()
 
     # Get the relative path from top-level cmake to current, so it can be used or transplanted to install prefix
     # Destination must be relative, and becomes "INSTALL_PREFIX/<whatever>" in final use, so we make "current" be only the relative
@@ -367,11 +367,11 @@ function (ti_create_targets)
         RELATIVE_PATH CMAKE_CURRENT_LIST_DIR BASE_DIRECTORY "${CMAKE_SOURCE_DIR}" OUTPUT_VARIABLE
         CMAKE_CURRENT_LIST_DIR_RELATIVE_SOURCE_DIR
     )
-    if (CREATE_TARGETS_OUTPUT_FOLDER)
+    if(CREATE_TARGETS_OUTPUT_FOLDER)
         set(FINAL_OUTPUT_FOLDER ${CMAKE_CURRENT_LIST_DIR_RELATIVE_SOURCE_DIR}/${CREATE_TARGETS_OUTPUT_FOLDER})
-    else ()
+    else()
         set(FINAL_OUTPUT_FOLDER ${CMAKE_CURRENT_LIST_DIR_RELATIVE_SOURCE_DIR}/lib/${TI_TOOLCHAIN_NAME}/${TI_ARCH})
-    endif ()
+    endif()
     cmake_path(NORMAL_PATH FINAL_OUTPUT_FOLDER)
 
     # It looks strange to have Driversm0Targets, so uppercase the architecture
@@ -384,16 +384,16 @@ function (ti_create_targets)
     message(DEBUG "ti_create_targets: exported ${CREATE_TARGETS_TARGETS} into ${target_set_name}")
     install(TARGETS ${CREATE_TARGETS_TARGETS} EXPORT ${target_set_name} DESTINATION ${FINAL_OUTPUT_FOLDER})
 
-    if (${TI_PACKAGE_TYPE} STREQUAL "COMPONENT")
+    if(${TI_PACKAGE_TYPE} STREQUAL "COMPONENT")
         set(cmake_folder components)
-    else ()
+    else()
         set(cmake_folder platforms)
-    endif ()
+    endif()
 
     # We don't want to export the same package twice, as it prints a warning message
     get_property(package_target_files DIRECTORY PROPERTY TI_PACKAGE_TARGET_FILES)
 
-    if (NOT ${target_set_name} IN_LIST package_target_files)
+    if(NOT ${target_set_name} IN_LIST package_target_files)
         # Install relocatable package file into source/cmake/components
         install(EXPORT ${target_set_name} FILE ${target_set_name}.cmake NAMESPACE ${TI_NAMESPACE}::
                 DESTINATION source/cmake/${cmake_folder}/${TI_TOOLCHAIN_NAME}
@@ -401,8 +401,8 @@ function (ti_create_targets)
 
         # Keep track of the resulting list of exported packages
         set_property(DIRECTORY APPEND PROPERTY TI_PACKAGE_TARGET_FILES ${target_set_name})
-    endif ()
-endfunction ()
+    endif()
+endfunction()
 
 # Generates a ConfigPackage.cmake package referencing previously defined target sets, and exports it
 # ti_create_package([ALLOW_EMPTY] [CUSTOM_TEMPLATE])
@@ -413,16 +413,16 @@ endfunction ()
 # This function looks for a Config[TI_PACKAGE_NAME].cmake.in template in the current directory. If this
 # does not exist, the function will generate one for you, which can be git-ignored. Templates are
 # also available in the cmake-common repository.
-function (ti_export_package)
+function(ti_export_package)
     set(options ALLOW_EMPTY CUSTOM_TEMPLATE)
     cmake_parse_arguments(CREATE_PACKAGE "${options}" "" "" ${ARGN})
 
-    if (CREATE_PACKAGE_UNPARSED_ARGUMENTS)
+    if(CREATE_PACKAGE_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unparsed arguments: ${CREATE_PACKAGE_UNPARSED_ARGUMENTS}")
-    endif ()
-    if (CREATE_PACKAGE_KEYWORDS_MISSING_VALUES)
+    endif()
+    if(CREATE_PACKAGE_KEYWORDS_MISSING_VALUES)
         message(FATAL_ERROR "Arguments missing values: ${CREATE_PACKAGE_KEYWORDS_MISSING_VALUES}")
-    endif ()
+    endif()
 
     get_property(TI_PACKAGE_NAME DIRECTORY PROPERTY TI_PACKAGE_NAME)
     get_property(TI_PACKAGE_TYPE DIRECTORY PROPERTY TI_PACKAGE_TYPE)
@@ -431,51 +431,51 @@ function (ti_export_package)
 
     # Check if we have any targets to generate from TI_PACKAGE_TARGET_FILES
     get_property(component_targets DIRECTORY PROPERTY TI_PACKAGE_TARGET_FILES)
-    if (NOT component_targets)
-        if (NOT ALLOW_EMPTY)
+    if(NOT component_targets)
+        if(NOT ALLOW_EMPTY)
             # This is considered a warning because there is no reason to parse this file
             # Maybe a component is being shipped in an SDK where it supports no devices?
             message(WARNING "No libraries generated for ${TI_PACKAGE_NAME} from ${CMAKE_CURRENT_LIST_FILE}")
             return()
-        else ()
+        else()
             # But we allow the warning to be overriden, for special cases
             message(DEBUG "${TI_PACKAGE_NAME}: No libraries generated")
-        endif ()
-    endif ()
+        endif()
+    endif()
 
     # This controls the 'relative root' of generated packages, and should probably always be CMAKE_SOURCE_DIR
     # If the user has already configured it, we can skip this
-    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}" CACHE PATH "..." FORCE)
-    endif ()
+    endif()
 
     # This function has two modes: creating platform packages (device support) and components
-    if (${TI_PACKAGE_TYPE} STREQUAL "PLATFORM")
+    if(${TI_PACKAGE_TYPE} STREQUAL "PLATFORM")
         set(cmake_folder platforms)
 
-        if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Config${TI_PACKAGE_NAME}.cmake.in")
+        if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Config${TI_PACKAGE_NAME}.cmake.in")
             message(
                 FATAL_ERROR
                     "You need a device configuration file to export a platform package. Expected to find:"
-                    "    ${CMAKE_CURRENT_SOURCE_DIR}/Config${PACKAGE_NAME}.cmake.in.\n"
+                    "    ${CMAKE_CURRENT_SOURCE_DIR}/Config${TI_PACKAGE_NAME}.cmake.in.\n"
                     "See ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ConfigPlatformName.cmake.in for a template."
             )
-        endif ()
+        endif()
 
         file(READ Config${TI_PACKAGE_NAME}.cmake.in package_content)
         string(FIND "${package_content}" "APPEND SUPPORTED_PLATFORMS" index1)
         string(FIND "${package_content}" "APPEND SUPPORTED_DEVICES" index2)
         string(FIND "${package_content}" "APPEND SUPPORTED_ARCHITECTURES" index3)
-        if (index1 EQUAL -1 OR index2 EQUAL -1 OR index3 EQUAL -1)
+        if(index1 EQUAL -1 OR index2 EQUAL -1 OR index3 EQUAL -1)
             message(FATAL_ERROR "A platform package must append SUPPORTED_PLATFORMS, DEVICES and ARCHITECTURES! "
                                 "See ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ConfigPlatformName.cmake.in for a template."
             )
-        endif ()
+        endif()
 
-    elseif (${TI_PACKAGE_TYPE} STREQUAL "COMPONENT")
+    elseif(${TI_PACKAGE_TYPE} STREQUAL "COMPONENT")
         set(cmake_folder components)
 
-        if (NOT CREATE_PACKAGE_CUSTOM_TEMPLATE)
+        if(NOT CREATE_PACKAGE_CUSTOM_TEMPLATE)
             # We need to perform the TI_PACKAGE_NAME replacement in the file, but we want these
             # patterns to be in the final generated copy deployed to the user. To accomplish this we
             # replace them with themselves, including the replacement symbols.
@@ -488,14 +488,14 @@ function (ti_export_package)
                 ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ConfigComponentTemplate.cmake.in
                 ${CMAKE_CURRENT_SOURCE_DIR}/Config${TI_PACKAGE_NAME}.cmake.in
             )
-        endif ()
+        endif()
 
         # This variable is used to generate content inside the Targets file
         set(GENERATED_TARGET_INCLUDES_LIST)
         # Iterate over all the component_targets defined since the last call to ti_setup
-        foreach (target ${component_targets})
+        foreach(target ${component_targets})
             list(APPEND GENERATED_TARGET_INCLUDES_LIST "include(\"\${CMAKE_CURRENT_LIST_DIR}/${target}.cmake\")")
-        endforeach ()
+        endforeach()
         # Join the list with newlines, otherwise it will be emitted with semicolons
         list(JOIN GENERATED_TARGET_INCLUDES_LIST "\n" GENERATED_TARGET_INCLUDES)
 
@@ -504,13 +504,13 @@ function (ti_export_package)
 
         # Iterate over all the component_targets defined since the last call to ti_setup
         get_property(package_dependencies DIRECTORY PROPERTY TI_PACKAGE_DEPENDENCIES)
-        foreach (dependency ${package_dependencies})
+        foreach(dependency ${package_dependencies})
             list(APPEND GENERATED_TARGET_DEPENDENCIES_LIST "find_package(\"${dependency}\" REQUIRED)")
-        endforeach ()
+        endforeach()
 
         # Join the list with newlines, otherwise it will be emitted with semicolons
         list(JOIN GENERATED_TARGET_DEPENDENCIES_LIST "\n" GENERATED_TARGET_DEPENDENCIES)
-    endif ()
+    endif()
 
     # Create and install config file from template
     configure_package_config_file(
@@ -523,7 +523,7 @@ function (ti_export_package)
             "${CMAKE_CURRENT_BINARY_DIR}/source/cmake/${cmake_folder}/${TI_TOOLCHAIN_NAME}/${TI_PACKAGE_NAME}Config.cmake"
         DESTINATION "${CMAKE_INSTALL_PREFIX}/source/cmake/${cmake_folder}/${TI_TOOLCHAIN_NAME}"
     )
-endfunction ()
+endfunction()
 
 ################################################################################
 # target_linker_file
@@ -533,9 +533,9 @@ endfunction ()
 #
 # Argument target: Which target to add linker file to
 # Argument linkerfile: Path to linker command file appropriate for the toolchain
-macro (target_linker_file target linkerfile)
+macro(target_linker_file target linkerfile)
     set_target_properties(${target} PROPERTIES TI_LINKER_COMMAND_FILE "${linkerfile}")
-endmacro ()
+endmacro()
 
 ################################################################################
 # target_map_file
@@ -543,7 +543,7 @@ endmacro ()
 # Configures map-file output on the target, is emitted in build directory alongside target
 #
 # Argument target: Which target to add linker file to
-macro (target_map_file target)
+macro(target_map_file target)
     get_filename_component(basename "${target}" NAME_WE)
     get_filename_component(dirname "${target}" DIRECTORY)
     set_target_properties(
@@ -552,4 +552,4 @@ macro (target_map_file target)
     set_target_properties(
         ${target} PROPERTIES TI_LINKER_REFERENCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/${dirname}/${basename}_reference"
     )
-endmacro ()
+endmacro()

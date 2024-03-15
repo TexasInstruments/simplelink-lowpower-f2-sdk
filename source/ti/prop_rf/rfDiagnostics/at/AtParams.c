@@ -553,6 +553,24 @@ void AtParams_printTestMsg(uint32_t mode, uint16_t packetCount, uint16_t packetC
             }
         }
     }
+    else if(mode == TestMode_CS_TX)
+    {
+        if(txDone)
+        {
+            AtTerm_sendStringUi16Value("CS+TX Packets Transmitted: ", packetTxCount, 10);
+            AtTerm_sendString("\r");
+            packetTxCount = 0;
+        }
+        else
+        {
+            packetTxCount = packetCount;
+
+            if(packetTxCount == 1)
+            {
+                AtTerm_sendString("Sending packets....\r");
+            }
+        }
+    }
     else if(mode == TestMode_PER_RX)
     {
         AtTerm_sendString("RX in Progress....\r\n");

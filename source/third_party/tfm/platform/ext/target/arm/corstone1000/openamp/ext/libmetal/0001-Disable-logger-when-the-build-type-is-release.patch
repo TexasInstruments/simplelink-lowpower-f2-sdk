@@ -1,0 +1,27 @@
+From d9d92c8848e4567f208f1900aff57e6a234c8130 Mon Sep 17 00:00:00 2001
+From: Mohamed Omar Asaker <mohamed.omarasaker@arm.com>
+Date: Wed, 7 Dec 2022 12:37:22 +0000
+Subject: [PATCH] Disable logger when the build type is release
+
+Signed-off-by: Mohamed Omar Asaker <mohamed.omarasaker@arm.com>
+---
+ cmake/options.cmake | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/cmake/options.cmake b/cmake/options.cmake
+index 25c7c96..7a2b116 100644
+--- a/cmake/options.cmake
++++ b/cmake/options.cmake
+@@ -55,7 +55,8 @@ if (WITH_ZEPHYR)
+   option (WITH_ZEPHYR_LIB "Build libmetal as a zephyr library" OFF)
+ endif (WITH_ZEPHYR)
+ 
+-option (WITH_DEFAULT_LOGGER "Build with default logger" ON)
++include(CMakeDependentOption)
++cmake_dependent_option(WITH_DEFAULT_LOGGER "Build with default logger" ON "${CMAKE_BUILD_TYPE} STREQUAL Debug" OFF)
+ 
+ option (WITH_DOC "Build with documentation" ON)
+ 
+-- 
+2.25.1
+

@@ -19,7 +19,7 @@
 
 /*
  * Original code taken from mcuboot project at:
- * https://github.com/JuulLabs-OSS/mcuboot
+ * https://github.com/mcu-tools/mcuboot
  * Git SHA of the original version: ac55554059147fff718015be9f4bd3108123f50a
  * Modifications are Copyright (c) 2018-2020 Arm Limited.
  */
@@ -50,6 +50,7 @@ extern "C" {
  */
 #include <inttypes.h>
 #include "region_defs.h"
+#include "Driver_Flash.h"
 
 /*
  * For now, we only support one flash device.
@@ -91,6 +92,11 @@ struct flash_area {
     uint16_t pad16;
 
     /**
+     * Pointer to driver
+     */
+    ARM_DRIVER_FLASH *fa_driver;
+
+    /**
      * This area's offset, relative to the beginning of its flash
      * device's storage.
      */
@@ -120,6 +126,15 @@ struct flash_sector {
      */
     uint32_t fs_size;
 };
+
+/**
+ * @brief Macro retrieving driver from struct flash area
+ *
+ */
+#define DRV_FLASH_AREA(area) ((area)->fa_driver)
+
+/* Initialiaze all flash driver */
+int flash_area_driver_init(void);
 
 /*
  * Start using flash area.

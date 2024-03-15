@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -634,6 +634,14 @@ extern "C" {
 #define AESGCM_STATUS_KEYSTORE_GENERIC_ERROR AES_STATUS_KEYSTORE_GENERIC_ERROR
 
 /*!
+ * @brief   The operation does not support non-word-aligned input and/or output.
+ *
+ * AESGCM driver implementations may have restrictions on the alignment of
+ * input/output data due to performance limitations of the hardware.
+ */
+#define AESGCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED AES_STATUS_UNALIGNED_IO_NOT_SUPPORTED
+
+/*!
  *  @brief AESGCM Global configuration
  *
  *  The AESGCM_Config structure contains a set of pointers used to characterize
@@ -744,7 +752,7 @@ typedef struct
                                  *   block-aligned.
                                  */
     uint8_t ivLength;           /*!< Length of \c IV in bytes.
-                                 *   The only currently supported IV length is 12 bytes.
+                                 *   See implementation-specific header for IV length support.
                                  */
     uint8_t macLength;          /*!< Length of \c mac in bytes.
                                  *   Valid MAC lengths are [4, 8, 12, 13, 14, 15, 16].
@@ -1301,9 +1309,10 @@ void AESGCM_SegmentedFinalizeOperation_init(AESGCM_SegmentedFinalizeOperation *o
  *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
  * operation.
  *
- *  @retval #AESGCM_STATUS_SUCCESS               The operation succeeded.
- *  @retval #AESGCM_STATUS_ERROR                 The operation failed.
- *  @retval #AESGCM_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
+ *  @retval #AESGCM_STATUS_SUCCESS                    The operation succeeded.
+ *  @retval #AESGCM_STATUS_ERROR                      The operation failed or the IV length is not supported.
+ *  @retval #AESGCM_STATUS_RESOURCE_UNAVAILABLE       The required hardware resource was not available. Try again later.
+ *  @retval #AESGCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED The input and/or output buffer were not word-aligned.
  *
  *  @sa     AESGCM_oneStepDecrypt()
  */
@@ -1322,10 +1331,11 @@ int_fast16_t AESGCM_oneStepEncrypt(AESGCM_Handle handle, AESGCM_OneStepOperation
  *  @param  [in] operationStruct        A pointer to a struct containing the parameters required to perform the
  * operation.
  *
- *  @retval #AESGCM_STATUS_SUCCESS               The operation succeeded.
- *  @retval #AESGCM_STATUS_ERROR                 The operation failed.
- *  @retval #AESGCM_STATUS_RESOURCE_UNAVAILABLE  The required hardware resource was not available. Try again later.
- *  @retval #AESGCM_STATUS_MAC_INVALID           The provided MAC did no match the recomputed one.
+ *  @retval #AESGCM_STATUS_SUCCESS                    The operation succeeded.
+ *  @retval #AESGCM_STATUS_ERROR                      The operation failed or the IV length is not supported.
+ *  @retval #AESGCM_STATUS_RESOURCE_UNAVAILABLE       The required hardware resource was not available. Try again later.
+ *  @retval #AESGCM_STATUS_MAC_INVALID                The provided MAC did no match the recomputed one.
+ *  @retval #AESGCM_STATUS_UNALIGNED_IO_NOT_SUPPORTED The input and/or output buffer were not word-aligned.
  *
  *  @sa     AESGCM_oneStepEncrypt()
  */

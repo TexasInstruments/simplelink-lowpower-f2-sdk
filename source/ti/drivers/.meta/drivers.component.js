@@ -59,6 +59,7 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESCTRDRBG",
                 "/ti/drivers/AESECB",
                 "/ti/drivers/AESGCM",
+                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
                 //"/ti/drivers/CryptoKey", // unused - no configuration currently required for CC26X4 family
                 "/ti/drivers/DAC",
@@ -80,15 +81,16 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
+                "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
                 {
-                    "displayName" : "TI Driver Apps",
-                    "description" : "TI Drivers Apps Configuration",
-                    "modules" : [
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
                         "/ti/drivers/apps/Button",
                         "/ti/drivers/apps/LED"
                     ]
@@ -113,7 +115,9 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESCTRDRBG",
                 "/ti/drivers/AESGCM",
                 "/ti/drivers/AESECB",
+                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
+                "/ti/drivers/CAN",
                 "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
                 "/ti/drivers/ECDH",
@@ -133,15 +137,16 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
+                "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
                 {
-                    "displayName" : "TI Driver Apps",
-                    "description" : "TI Drivers Apps Configuration",
-                    "modules" : [
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
                         "/ti/drivers/apps/Button",
                         "/ti/drivers/apps/LED"
                     ]
@@ -165,7 +170,9 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESCTR",
                 "/ti/drivers/AESCTRDRBG",
                 "/ti/drivers/AESECB",
+                "/ti/drivers/ANSIX936KDF",
                 "/ti/drivers/Board",
+                "/ti/drivers/CAN",
                 "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
                 "/ti/drivers/ECDH",
@@ -182,15 +189,16 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
                 "/ti/drivers/Timer",
+                "/ti/drivers/timer/GPTimerCC26XX",
                 "/ti/drivers/TRNG",
                 "/ti/drivers/UART2",
                 "/ti/drivers/Watchdog"
             ],
             "categories": [
                 {
-                    "displayName" : "TI Driver Apps",
-                    "description" : "TI Drivers Apps Configuration",
-                    "modules" : [
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
                         "/ti/drivers/apps/Button",
                         "/ti/drivers/apps/LED"
                     ]
@@ -214,24 +222,78 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
                 "/ti/drivers/AESCTR",
                 "/ti/drivers/AESCTRDRBG",
                 "/ti/drivers/AESECB",
+                "/ti/drivers/ANSIX936KDF",
+                "/ti/drivers/BatteryMonitor",
                 "/ti/drivers/Board",
+                "/ti/drivers/CAN",
                 "/ti/drivers/Comparator",
-                // "/ti/drivers/DAC",
                 "/ti/drivers/DMA",
                 "/ti/drivers/ECDH",
                 "/ti/drivers/ECDSA",
+                "/ti/drivers/ECIES",
                 "/ti/drivers/GPIO",
                 "/ti/drivers/I2C",
-                // "/ti/drivers/I2S",
+                "/ti/drivers/I2CTarget",
                 "/ti/drivers/NVS",
                 "/ti/drivers/Power",
-                // "/ti/drivers/PWM",
+                "/ti/drivers/PWM",
                 "/ti/drivers/RNG",
-                // "/ti/drivers/SD",
-                // "/ti/drivers/SHA2",
+                "/ti/drivers/SD",
+                "/ti/drivers/SHA2",
                 "/ti/drivers/SPI",
                 "/ti/drivers/Temperature",
-                // "/ti/drivers/Timer",
+                "/ti/drivers/LGPTimer",
+                "/ti/drivers/UART2",
+                "/ti/drivers/Watchdog"
+            ],
+            "categories": [
+                {
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
+                        "/ti/drivers/apps/Button"
+                        // "/ti/drivers/apps/LED"
+                    ]
+                }
+            ]
+        }
+    ];
+} else if (deviceId.match(/CC27/)) {
+    /* CC27XX */
+    topModules = [
+        {
+            displayName: displayName,
+            description: description,
+            modules: [
+                "/ti/display/Display",
+                "/ti/drivers/ADC",
+                // "/ti/drivers/ADCBuf",
+                // "/ti/drivers/AESCBC",
+                // "/ti/drivers/AESCCM",
+                // "/ti/drivers/AESCMAC",
+                // "/ti/drivers/AESCTR",
+                // "/ti/drivers/AESCTRDRBG",
+                // "/ti/drivers/AESECB",
+                "/ti/drivers/BatteryMonitor",
+                "/ti/drivers/Board",
+                "/ti/drivers/CAN",
+                "/ti/drivers/Comparator",
+                "/ti/drivers/DMA",
+                "/ti/drivers/ECDH",
+                // "/ti/drivers/ECDSA",
+                "/ti/drivers/GPIO",
+                "/ti/drivers/I2C",
+                "/ti/drivers/I2CTarget",
+                "/ti/drivers/I2S",
+                "/ti/drivers/NVS",
+                "/ti/drivers/Power",
+                "/ti/drivers/PWM",
+                "/ti/drivers/RNG",
+                "/ti/drivers/SD",
+                "/ti/drivers/SHA2",
+                "/ti/drivers/SPI",
+                "/ti/drivers/Temperature",
+                "/ti/drivers/LGPTimer",
                 "/ti/drivers/UART2"
                 // "/ti/drivers/Watchdog"
             ],
@@ -274,11 +336,49 @@ if (deviceId.match(/CC13.4|CC26.4|CC2653/)) {
             ],
             "categories": [
                 {
-                    "displayName" : "TI Driver Apps",
-                    "description" : "TI Drivers Apps Configuration",
-                    "modules" : [
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
                         "/ti/drivers/apps/Button",
                         "/ti/drivers/apps/LED"
+                    ]
+                }
+            ]
+        }
+    ];
+} else if (deviceId.match(/CC35.*/)) {
+    /* CC35XX */
+    topModules = [
+        {
+            displayName: displayName,
+            description: description,
+            modules: [
+                // "/ti/display/Display",
+                // "/ti/drivers/ADC",
+                "/ti/drivers/Board",
+                // "/ti/drivers/Capture",
+                // "/ti/drivers/Crypto",
+                // "/ti/drivers/DMA",
+                "/ti/drivers/GPIO",
+                // "/ti/drivers/I2C",
+                // "/ti/drivers/I2S",
+                // "/ti/drivers/ITM",
+                // "/ti/drivers/NVS",
+                "/ti/drivers/Power"
+                // "/ti/drivers/PWM",
+                // "/ti/drivers/SD",
+                // "/ti/drivers/SPI",
+                // "/ti/drivers/Timer",
+                // "/ti/drivers/UART2",
+                // "/ti/drivers/Watchdog"
+            ],
+            "categories": [
+                {
+                    "displayName": "TI Driver Apps",
+                    "description": "TI Drivers Apps Configuration",
+                    "modules": [
+                        "/ti/drivers/apps/Button"
+                        // "/ti/drivers/apps/LED" /* Disable because there is no PWM module yet */
                     ]
                 }
             ]

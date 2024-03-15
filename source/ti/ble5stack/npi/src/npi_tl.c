@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -63,6 +63,7 @@
 #include "hal_types.h"
 #include "inc/npi_tl.h"
 #include "inc/npi_config.h"
+#include <semaphore.h>
 
 // ****************************************************************************
 // defines
@@ -88,8 +89,12 @@
 //! \brief Flag for low power mode
 static volatile bool npiPMSetConstraint = FALSE;
 
-//! \brief Flag for ongoing NPI TX
+#if (NPI_FLOW_CTRL == 1)
 static volatile bool npiTxActive = FALSE;
+#else
+//! \brief Flag for ongoing NPI TX
+static sem_t npiTxActiveLock;
+#endif
 
 //! \brief The packet that was being sent when HWI of MRDY going low was received
 static volatile uint32 mrdyPktStamp = 0;
@@ -108,9 +113,6 @@ static uint16_t npiRxBufHead = 0;
 
 //! \brief NPI Transport Layer transmit buffer
 static Char npiTxBuf[NPI_TL_BUF_SIZE];
-
-//! \brief Number of bytes in NPI Transport Layer transmit buffer
-static uint16_t npiTxBufLen = 0;
 
 //! \brief Call back function in NPI Task for transmit complete
 static npiRtosCB_t taskTxCB = NULL;
@@ -181,6 +183,9 @@ void NPITL_initTL(npiRtosCB_t npiCBTx, npiRtosCB_t npiCBRx, npiRtosCB_t npiCBMrd
     // Enable interrupt
     GPIO_enableInt(MRDY_PIN);
     mrdy_state = GPIO_read(MRDY_PIN);
+#else
+    /* Create a binary semaphore */
+    sem_init(&npiTxActiveLock, 0, 1);
 #endif // NPI_FLOW_CTRL = 1
 
     ICall_leaveCriticalSection(key);
@@ -188,19 +193,92 @@ void NPITL_initTL(npiRtosCB_t npiCBTx, npiRtosCB_t npiCBRx, npiRtosCB_t npiCBMrd
     return;
 }
 
-// -----------------------------------------------------------------------------
-//! \brief      This routine returns the state of transmission on NPI
-//!
-//! \return     bool - state of NPI transmission - 1 - active, 0 - not active
-// -----------------------------------------------------------------------------
-bool NPITL_checkNpiBusy(void)
-{
 #if (NPI_FLOW_CTRL == 1)
-    return !GPIO_read(SRDY_PIN);
-#else
-    return npiTxActive;
-#endif // NPI_FLOW_CTRL = 1
+// -----------------------------------------------------------------------------
+//! \brief      This routine reads the SRDY_PIN which represents the peripheral
+//!             readiness for NPI transaction in Flow Control scenario
+//!
+//! \return     bool - state of FLOW_CTRL:
+//                   - TRUE: ready
+//                   - FALSE: not ready
+// -----------------------------------------------------------------------------
+bool NPITask_NpiTlTestIsFree(void)
+{
+    /* (SRDY_PIN == 1): Peripheral ready, (SRDY_PIN == 0):  Peripheral not ready */
+    return GPIO_read(SRDY_PIN);
 }
+// -----------------------------------------------------------------------------
+//! \brief      This routine obtains the semaphore which represents the NPI
+//!             Serial Bus (UART/SPI) Availability.
+//!
+//! \return     bool - state of NPI:
+//                   - TRUE: succeed to obtain the semaphore, NPI wasn't busy
+//                   - FALSE: failed to obtain the semaphore, NPI already busy
+// -----------------------------------------------------------------------------
+bool NPITL_ObtainTxLock(void)
+{
+  npiTxActive = TRUE;
+  return TRUE;
+}
+
+// -----------------------------------------------------------------------------
+//! \brief      This routine releases the semaphore which represents the NPI
+//!             Serial Bus (UART/SPI) Availability.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITL_ReleaseTxLock(void)
+{
+  npiTxActive = FALSE;
+}
+
+#else
+// -----------------------------------------------------------------------------
+//! \brief      This routine obtains the semaphore which represents the NPI
+//!             Serial Bus (UART/SPI) Availability.
+//!
+//! \return     bool - state of NPI:
+//                   - TRUE: succeed to obtain the semaphore, NPI wasn't busy
+//                   - FALSE: failed to obtain the semaphore, NPI already busy
+// -----------------------------------------------------------------------------
+bool NPITL_ObtainTxLock(void)
+{
+  if (sem_trywait(&npiTxActiveLock) == 0 /* semaphore is available */)
+  {
+      return (TRUE); /* NPI IS NOT BUSY */
+  }
+
+  return FALSE; /* NPI IS BUSY */
+}
+
+// -----------------------------------------------------------------------------
+//! \brief      This routine releases the semaphore which represents the NPI
+//!             Serial Bus (UART/SPI) Availability.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITL_ReleaseTxLock(void)
+{
+  sem_post(&npiTxActiveLock);
+}
+// -----------------------------------------------------------------------------
+//! \brief      This routine verifies that NPI Serial Bus (UART/SPI) is available.
+//!             It obtains the semaphore, and in case it succeeds - releases it.
+//!             This sequence means that the NPI Bus is available.
+//!             Failure in obtaining the semaphore means that the NPI Bus is in use.
+//!
+//! \return     bool - state of NPI availability - 1 - free, 0 - used
+// -----------------------------------------------------------------------------
+bool NPITask_NpiTlTestIsFree(void)
+{
+  if (NPITL_ObtainTxLock() == TRUE)
+  {
+    NPITL_ReleaseTxLock();
+    return TRUE;
+  }
+  return FALSE;
+}
+#endif //NPI_FLOW_CTRL == 1
 
 #if (NPI_FLOW_CTRL == 1)
 // -----------------------------------------------------------------------------
@@ -256,7 +334,7 @@ void NPITL_handleMrdyEvent(void)
     // Check to make sure this event is not occurring during the next packet
     // transmission
     if ( GPIO_read(MRDY_PIN) == 0 ||
-        (npiTxActive && mrdyPktStamp == txPktCount ) )
+        ( npiTxActive && (mrdyPktStamp == txPktCount) ) )
     {
 #if defined(NPI_USE_SPI)
         transportMrdyEvent();
@@ -347,16 +425,18 @@ static void NPITL_transmissionCallBack(uint16 Rxlen, uint16 Txlen)
     {
         if ( taskRxCB )
         {
+            /*NPITask_transportRXCallBack*/
             taskRxCB(Rxlen);
         }
     }
     if(Txlen)
     {
-        npiTxActive = FALSE;
+        NPITL_ReleaseTxLock();
         // Only perform call back if NPI Task has been registered
         // and if there is not another fragment to send of this message
         if ( taskTxCB && !msgFragLen )
         {
+            /*NPITask_transportTxDoneCallBack*/
             taskTxCB(Txlen);
         }
     }
@@ -406,16 +486,16 @@ uint16 NPITL_readTL(uint8 *buf, uint16 len)
 // -----------------------------------------------------------------------------
 uint16 NPITL_writeTL(uint8 *buf, uint16 len)
 {
-    ICall_CSState key;
-    key = ICall_enterCriticalSection();
-
-    // Writes are atomic at transport layer
-    if ( NPITL_checkNpiBusy() )
+#if (NPI_FLOW_CTRL == 1)
+    if (!NPITask_NpiTlTestIsFree())
     {
-        ICall_leaveCriticalSection(key);
-        return 0;
+      return 0;
     }
-
+#endif
+    if (NPITL_ObtainTxLock() == FALSE) /* NPI is already busy*/
+    {
+      return 0;
+    }
     // If len of message is greater than fragment size
     // then message must be sent over the span of multiple
     // fragments
@@ -432,17 +512,13 @@ uint16 NPITL_writeTL(uint8 *buf, uint16 len)
     }
 
     memcpy(npiTxBuf, buf, len);
-    npiTxBufLen = len;
-    npiTxActive = TRUE;
     txPktCount++;
 
-    len = transportWrite(npiTxBufLen);
+    len = transportWrite(len);
 
 #if (NPI_FLOW_CTRL == 1)
     SRDY_ENABLE();
 #endif // NPI_FLOW_CTRL = 1
-
-    ICall_leaveCriticalSection(key);
 
     return len;
 }

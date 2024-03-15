@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,36 +39,9 @@
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
 /*
- *  ======== CryptoKey_getCryptoKeyType ========
+ *  ======== CryptoKeyPlaintext_markAsBlank ========
  */
-int_fast16_t CryptoKey_getCryptoKeyType(CryptoKey *keyHandle, CryptoKey_Encoding *keyType)
-{
-    *keyType = keyHandle->encoding;
-
-    return CryptoKey_STATUS_SUCCESS;
-}
-
-/*
- *  ======== CryptoKey_isBlank ========
- */
-int_fast16_t CryptoKey_isBlank(CryptoKey *keyHandle, bool *isBlank)
-{
-    if (keyHandle->encoding == CryptoKey_BLANK_PLAINTEXT)
-    {
-        *isBlank = true;
-    }
-    else
-    {
-        *isBlank = false;
-    }
-
-    return CryptoKey_STATUS_SUCCESS;
-}
-
-/*
- *  ======== CryptoKey_markAsBlank ========
- */
-int_fast16_t CryptoKey_markAsBlank(CryptoKey *keyHandle)
+int_fast16_t CryptoKeyPlaintext_markAsBlank(CryptoKey *keyHandle)
 {
     keyHandle->encoding = CryptoKey_BLANK_PLAINTEXT;
 

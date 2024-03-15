@@ -71,6 +71,7 @@
 #include "6LoWPAN/Thread/thread_management_internal.h"
 #endif
 #include "6LoWPAN/ws/ws_bootstrap.h"
+#include "6LoWPAN/ws/ws_config.h"
 #ifdef HAVE_WS
 #include "6LoWPAN/ws/ws_pae_controller.h"
 #endif
@@ -1004,8 +1005,10 @@ int8_t arm_network_certificate_chain_set(const arm_certificate_chain_entry_s *ch
 #endif
 
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_pae_controller_certificate_chain_set(chain_info);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        ws_pae_controller_certificate_chain_set(chain_info);
+    }
 #endif
 #endif
 
@@ -1015,7 +1018,13 @@ int8_t arm_network_certificate_chain_set(const arm_certificate_chain_entry_s *ch
 int8_t arm_network_trusted_certificate_add(const arm_certificate_entry_s *cert)
 {
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        return ws_pae_controller_trusted_certificate_add(cert);
+    } else {
+        return 0;
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     return ws_pae_controller_trusted_certificate_add(cert);
 #else
     return 0;
@@ -1029,7 +1038,13 @@ int8_t arm_network_trusted_certificate_add(const arm_certificate_entry_s *cert)
 int8_t arm_network_trusted_certificate_remove(const arm_certificate_entry_s *cert)
 {
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        return ws_pae_controller_trusted_certificate_remove(cert);
+    } else {
+        return 0;
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     return ws_pae_controller_trusted_certificate_remove(cert);
 #else
     return 0;
@@ -1043,7 +1058,13 @@ int8_t arm_network_trusted_certificate_remove(const arm_certificate_entry_s *cer
 int8_t arm_network_trusted_certificates_remove(void)
 {
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        return ws_pae_controller_trusted_certificates_remove();
+    } else {
+        return 0;
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     return ws_pae_controller_trusted_certificates_remove();
 #else
     return 0;
@@ -1056,7 +1077,13 @@ int8_t arm_network_trusted_certificates_remove(void)
 int8_t arm_network_own_certificate_add(const arm_certificate_entry_s *cert)
 {
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        return ws_pae_controller_own_certificate_add(cert);
+    } else {
+        return 0;
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     return ws_pae_controller_own_certificate_add(cert);
 #else
     return 0;
@@ -1070,7 +1097,13 @@ int8_t arm_network_own_certificate_add(const arm_certificate_entry_s *cert)
 extern int8_t arm_network_own_certificates_remove(void)
 {
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        return ws_pae_controller_own_certificates_remove();
+    } else {
+        return 0;
+    }
+#elif defined(DEFAULT_MBEDTLS_AUTH_ENABLE)
     return ws_pae_controller_own_certificates_remove();
 #else
     return 0;

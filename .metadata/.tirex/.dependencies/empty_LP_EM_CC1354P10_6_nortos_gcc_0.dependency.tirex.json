@@ -1,0 +1,13 @@
+[
+    {
+        "files": [
+            "+../empty.c -> empty.c",
+            "+../README.md -> README.md",
+            "+../README.html -> README.html",
+            "+../main_nortos.c -> main_nortos.c",
+            "+../empty.syscfg -> empty.syscfg",
+            "+../../../../../../source/ti/boards/LP_EM_CC1354P10_6/Board.html -> Board.html",
+            "+cc13x4_cc26x4_nortos.lds -> cc13x4_cc26x4_nortos.lds"
+        ]
+    }
+]

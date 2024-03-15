@@ -350,7 +350,7 @@ tsort.Graph.prototype.canReach = function (node)
     }
 
     this.reverse();             /* reverse the node arrows */
-    this.DFS(append, node);     /* decend new graph */
+    this.DFS(append, node);     /* descend new graph */
     this.reverse();             /* restore node arrows */
 
     return (set);

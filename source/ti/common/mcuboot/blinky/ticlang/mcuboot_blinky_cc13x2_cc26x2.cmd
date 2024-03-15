@@ -96,6 +96,7 @@ SECTIONS
     .pinit          :   > FLASH
     .init_array     :   > FLASH
     .emb_text       :   > FLASH
+    .ccfg           :   > FLASH (HIGH)
 
     .ramVecs        :   > SRAM
     .vtable         :   > SRAM

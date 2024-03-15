@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -130,7 +130,9 @@ else {
 
     place in FLASH_region { section .text };
 
-    place in FLASH_region { readonly section .const object mac_user_config.o };
+    /* Asteriks (*) are due to differing naming convetions for compiled object files between 
+        IDE, makefile, and CMake library compilation */
+    place in FLASH_region { readonly section .const object *mac_user_config.o* };
 
     place in FLASH_region {
         section .const,

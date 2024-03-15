@@ -113,9 +113,11 @@ function moduleInstances(inst)
         {
             const args = {
                 numOfAdvSet: i,
-                meshAdnPeri: meshAndPeri
+                meshAdnPeri: meshAndPeri,
+                deviceRole: inst.deviceRole,
+                basicBLE: inst.basicBLE,
+                profiles: inst.profiles
             }
-        
             dependencyModule.push({
                 name: "advSet" + i,
                 displayName: "Advertisement Set " + i,

@@ -40,6 +40,7 @@
 #include "MLE/mle_tlv.h"
 #include "mac_common_defines.h"
 #include "6LoWPAN/MAC/mac_helper.h"
+#include "6LoWPAN/ws/ws_config.h"
 
 #define TRACE_GROUP "mleS"
 
@@ -461,7 +462,11 @@ static buffer_t *mle_service_message_security_decode(buffer_t *buf, mle_security
 
 static buffer_t *mle_message_security_header_set(buffer_t *buf, service_instance_t *srv_ptr, mle_security_components_t *sec_params, mle_security_header_t *security_header)
 {
-#ifndef FEATURE_MBED_NO_AUTH
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != DEFAULT_MBEDTLS_AUTH) {
+        return buffer_free(buf);
+    }
+
     uint8_t *ptr;
     //Verify first security level
     if (security_header->securityLevel) {
@@ -673,9 +678,11 @@ static mle_neighbor_security_counter_info_t *mle_service_get_neighbour_info(prot
 
 static void mle_service_socket_callback(void *cb)
 {
-#ifdef FEATURE_MBED_NO_AUTH
-    return;
-#else
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != DEFAULT_MBEDTLS_AUTH) {
+        return;
+    }
+
     socket_buffer_callback_t *cb_buf = cb;
     uint8_t mle_security_byte;
     uint16_t security_header_length;
@@ -848,6 +855,8 @@ error_handler:
     if (buf) {
         buffer_free(buf);
     }
+#else
+    return;
 #endif
 }
 

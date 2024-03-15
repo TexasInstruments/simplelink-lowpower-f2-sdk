@@ -968,8 +968,8 @@ I2SFormatConfigure(uint32_t ui32Base,
     // Setup register AIFFMTCFG Source.
     HWREGH(I2S0_BASE + I2S_O_AIFFMTCFG) =
                                 (ui8iDataDelay      << I2S_AIFFMTCFG_DATA_DELAY_S) |
-                                (ui8iMemory24Bits   << I2S_AIFFMTCFG_MEM_LEN_24_S) |
-                                (ui8iSamplingEdge   << I2S_AIFFMTCFG_SMPL_EDGE_S ) |
+                                (ui8iMemory24Bits                                ) |
+                                (ui8iSamplingEdge                                ) |
                                 (boolDualPhase      << I2S_AIFFMTCFG_DUAL_PHASE_S) |
                                 (ui8BitsPerSample   << I2S_AIFFMTCFG_WORD_LEN_S  );
 

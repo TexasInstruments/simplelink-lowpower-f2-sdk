@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -125,15 +125,15 @@ typedef struct
   // Encryption stuff
   struct
   {
-    uint8 IV[ ENC_IV_LEN ];                         // combined master and slave IV values concatenated
-    uint8 SKD [ ENC_SKD_LEN ];                      // combined master and slave SKD values concatenated
-    uint8 RAND[ ENC_RAND_LEN ];                     // random vector from Master
-    uint8 EDIV[ ENC_EDIV_LEN ];                     // encrypted diversifier from Master
+    uint8 IV[ ENC_IV_LEN ];                         // combined central and peripheral IV values concatenated
+    uint8 SKD [ ENC_SKD_LEN ];                      // combined central and peripheral SKD values concatenated
+    uint8 RAND[ ENC_RAND_LEN ];                     // random vector from Central
+    uint8 EDIV[ ENC_EDIV_LEN ];                     // encrypted diversifier from Central
     uint8 SK[ ENC_SK_LEN ];                         // session key derived from LTK and SKD
     uint8 LTK[ ENC_LTK_LEN ];
   } encInfo;
 
-  // Master stuff
+  // Central stuff
   uint8  winSize;                                    // specify a window size value
   uint16 winOffset;                                  // specify a window offset value
   uint8  updateChanMap[ NUM_BYTES_FOR_CHAN_MAP ];    // specify a data channel map update
@@ -143,7 +143,7 @@ typedef struct
   uint8  scanChanValue;                              // scan channel to be used during an override
   uint8  flipTxMIC;                                  // flag to indicate a MIC error should be forced
 
-  // Slave stuff
+  // Peripheral stuff
 
 } testInfo_t;
 

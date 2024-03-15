@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -278,10 +278,10 @@ extern "C" {
 /** @internal Primitive service "disable single interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_DISABLE_INT                  14
 
-/** @internal Primitive service "enable master interrupt" function id */
+/** @internal Primitive service "enable central interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_ENABLE_MINT                  15
 
-/** @internal Primitive service "disable master interrupt" function id */
+/** @internal Primitive service "disable central interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_DISABLE_MINT                 16
 
 /** @internal Primitive service "register ISR" function id */
@@ -1391,7 +1391,7 @@ ICall_disableInt(int intnum)
 }
 
 /**
- * Enables master interrupt and context switching.
+ * Enables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 static ICall_Errno
@@ -1404,7 +1404,7 @@ ICall_enableMInt(void)
 }
 
 /**
- * Disables master interrupt and context switching.
+ * Disables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 static ICall_Errno

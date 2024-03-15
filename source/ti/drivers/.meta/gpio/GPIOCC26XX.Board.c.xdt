@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@
 
     let pinBounds = GPIO.getPinBounds(GPIO);
     let localPinData = GPIO.getPinData(GPIO);
-    let callbackInfo = GPIO.getConfiguredCallbacks(instances);
 %%}
 /*
  *  =============================== GPIO ===============================
@@ -62,18 +61,6 @@
 const uint_least8_t GPIO_pinLowerBound = `pinBounds.lowest`;
 const uint_least8_t GPIO_pinUpperBound = `pinBounds.highest`;
 
-% if (callbackInfo.names.length > 0) {
-/* Extern definitions for user callback functions */
-%     for (let callback of callbackInfo.names) {
-extern void `callback`(uint_least8_t index);
-%     }
-
-/* Called to configure any callbacks defined by sysconfig */
-static void configureCallbacks(void) {
-    `callbackInfo.calls`
-}
-
-% }
 /*
  *  ======== gpioPinConfigs ========
  *  Array of Pin configurations

@@ -22,8 +22,9 @@
  *  - Modified to use stdint.
  *  - Added ECCSW_validatePublicKeyWeierstrass().
  *  - Added ECCSW_validatePrivateKeyWeierstrass().
+ *  - Added ECCSW_pointAddition() for point addition, no support for point doubling.
  *
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,8 +58,8 @@
 #ifndef __ECCSW_H_
 #define __ECCSW_H_
 
-#include "lowlevelapi.h"
-#include "scalarMul.h"
+#include "third_party/ecc/include/lowlevelapi.h"
+#include "third_party/ecc/include/scalarMul.h"
 
 #include <stdint.h>
 
@@ -73,15 +74,17 @@
 #define STATUS_ORDER_MSW_IS_ZERO                0x23
 #define STATUS_ECC_KEY_TOO_LONG                 0x25
 #define STATUS_ECC_KEY_LENGTH_ZERO              0x52
-#define STATUS_ECC_X_LARGER_THAN_PRIME          0x11
-#define STATUS_ECC_Y_LARGER_THAN_PRIME          0x12
-#define STATUS_ECC_X_ZERO                       0x13
-#define STATUS_ECC_Y_ZERO                       0x14
-#define STATUS_ECC_POINT_NOT_ON_CURVE           0x15
-#define STATUS_ECC_POINT_ON_CURVE               0x16
-#define STATUS_PRIVATE_KEY_ZERO                 0x17
-#define STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER   0x18
-#define STATUS_PRIVATE_VALID                    0x19
+#define STATUS_ECC_POINTS_EQUAL                 0xE0
+#define STATUS_ECC_X_LARGER_THAN_PRIME          0xE1
+#define STATUS_ECC_Y_LARGER_THAN_PRIME          0xE2
+#define STATUS_ECC_POINT_ZERO                   0xE3
+#define STATUS_ECC_POINT_LENGTH_INVALID         0xE4
+#define STATUS_ECC_POINT_NOT_ON_CURVE           0xE5
+#define STATUS_ECC_POINT_ON_CURVE               0xE6
+#define STATUS_PRIVATE_KEY_ZERO                 0xE7
+#define STATUS_PRIVATE_KEY_LARGER_EQUAL_ORDER   0xE8
+#define STATUS_PRIVATE_VALID                    0xE9
+#define STATUS_POINT_ADDITION_OK                0xEA
 #define STATUS_DIGEST_TOO_LONG                  0x27
 #define STATUS_DIGEST_LENGTH_ZERO               0x72
 #define STATUS_ECDSA_SIGN_OK                    0x32
@@ -150,5 +153,13 @@ uint8_t ECCSW_validatePublicKeyWeierstrass(ECC_State *state,
                                            const uint32_t *curvePointX,
                                            const uint32_t *curvePointY);
 
-#endif
+/* Perform point addition without point doubling */
+ uint8_t ECCSW_pointAddition(ECC_State *state,
+                             uint32_t *inPoint1X,
+                             uint32_t *inPoint1Y,
+                             uint32_t *inPoint2X,
+                             uint32_t *inPoint2Y,
+                             uint32_t *outPointX,
+                             uint32_t *outPointY);
 
+#endif

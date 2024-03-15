@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -126,8 +126,6 @@ Status_t SwUpdate_Open(swUpdateSource_e source)
     pSwUpdateModuleGlobalData->pageSize = hasExternalFlash()?EFL_PAGE_SIZE:INTFLASH_PAGE_SIZE;
     pSwUpdateModuleGlobalData->pageMask = hasExternalFlash()?(~EXTFLASH_PAGE_MASK):(~INTFLASH_PAGE_MASK);
 
-    // Initialize the flash interface
-    flash_init();
     status = flash_open();
     if(status != FLASH_OPEN)
     {
@@ -148,12 +146,6 @@ Status_t SwUpdate_Open(swUpdateSource_e source)
 void SwUpdate_Close(void)
 {
     flash_close();
-
-    // Free pointer for global data.
-    if(NULL != pSwUpdateModuleGlobalData)
-    {
-        ICall_free(pSwUpdateModuleGlobalData);
-    }
 }
 
 /*********************************************************************
@@ -205,7 +197,6 @@ Status_t SwUpdate_RevokeImage(uint8 imageSlot)
     Status_t status = FLASH_SUCCESS;
     struct image_header emptyHeader = {0};
 
-    flash_init();
     status = flash_open();
 
     if(INT_PRIMARY_SLOT == imageSlot)

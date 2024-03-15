@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -787,7 +787,7 @@ extern uint16 GATTServApp_GetParamValue( void );
  * @return  void
  *
  */
-extern void GATTServApp_Init( uint8 taskId, uint8_t cfg_GATTServApp_att_delayed_req, uint8_t cfg_gapBond_gatt_no_service_changed );
+extern void GATTServApp_Init( uint8 taskId, uint8_t cfg_GATTServApp_att_delayed_req, uint8_t cfg_gapBond_gatt_no_service_changed, uint8_t cfg_gatt_max_num_prepare_writes );
 
 /**
  * @internal

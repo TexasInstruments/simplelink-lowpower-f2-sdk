@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,8 +73,7 @@
  * KeyStore_PSA_setKeyAlgorithm(&attributes, KEYSTORE_PSA_ALG_CCM);
  * KeyStore_PSA_setKeyType(&attributes, KEYSTORE_PSA_KEY_TYPE_AES);
  * KeyStore_PSA_setKeyLifetime(&attributes, KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT);
- * keyID.key_id = KEYSTORE_PSA_KEY_ID_PERSISTENT_USER_MIN;
- * keyID.owner  = -1;
+ * GET_KEY_ID(keyID,KEYSTORE_PSA_KEY_ID_PERSISTENT_USER_MIN)
  * KeyStore_PSA_setKeyId(&attributes, keyID);
  *
  * // Import the keyingMaterial
@@ -110,11 +109,13 @@
 #ifndef ti_drivers_CryptoKeyKeyStore_PSA__include
 #define ti_drivers_CryptoKeyKeyStore_PSA__include
 
-#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
-    #include <third_party/mbedcrypto/include/psa/crypto.h>
+#if (TFM_ENABLED == 0) || defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
+    #include <third_party/mbedtls/include/psa/crypto.h>
+    #include <third_party/mbedtls/include/mbedtls/build_info.h>
+    #include <third_party/mbedtls/include/mbedtls/private_access.h>
 #else
     #include <third_party/tfm/interface/include/psa/crypto.h>
-#endif /* #if (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* #if (TFM_ENABLED == 0) || defined(TFM_BUILD) */
 
 #ifdef __cplusplus
 extern "C" {
@@ -429,6 +430,28 @@ typedef psa_key_type_t KeyStore_PSA_KeyType;
 #define KEYSTORE_PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE ((KeyStore_PSA_KeyType)PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE)
 #define KEYSTORE_PSA_KEY_TYPE_ECC_KEY_PAIR_BASE   ((KeyStore_PSA_KeyType)PSA_KEY_TYPE_ECC_KEY_PAIR_BASE)
 
+/** A low-entropy secret for password hashing or key derivation.
+ *
+ * This key type is suitable for passwords and passphrases which are typically
+ * intended to be memorizable by humans, and have a low entropy relative to
+ * their size. It can be used for randomly generated or derived keys with
+ * maximum or near-maximum entropy, but #KEYSTORE_PSA_KEY_TYPE_PASSWORD is more suitable
+ * for such keys. It is not suitable for passwords with extremely low entropy,
+ * such as numerical PINs.
+ *
+ * The key policy determines which key derivation algorithm the key can be
+ * used for.
+ */
+#define KEYSTORE_PSA_KEY_TYPE_PASSWORD ((KeyStore_PSA_KeyType)PSA_KEY_TYPE_PASSWORD)
+
+/** A secret value that can be used to verify a password hash.
+ *
+ * The key policy determines which key derivation algorithm the key
+ * can be used for, among the same permissible subset as for
+ * #KEYSTORE_PSA_KEY_TYPE_PASSWORD.
+ */
+#define KEYSTORE_PSA_KEY_TYPE_PASSWORD_HASH ((KeyStore_PSA_KeyType)PSA_KEY_TYPE_PASSWORD_HASH)
+
 /** @brief Encoding of a cryptographic algorithm.
  *
  * For algorithms that can be applied to multiple key types, this type
@@ -469,6 +492,22 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
  * a key of type #KEYSTORE_PSA_KEY_TYPE_AES and a length of 128 bits (16 bytes).
  */
 #define KEYSTORE_PSA_ALG_CTR ((KeyStore_PSA_Algorithm)PSA_ALG_CTR)
+
+/** The Electronic Code Book (ECB) mode of a block cipher, with no padding.
+ *
+ * \warning ECB mode does not protect the confidentiality of the encrypted data
+ * except in extremely narrow circumstances. It is recommended that applications
+ * only use ECB if they need to construct an operating mode that the
+ * implementation does not provide. Implementations are encouraged to provide
+ * the modes that applications need in preference to supporting direct access
+ * to ECB.
+ *
+ * The underlying block cipher is determined by the key type.
+ *
+ * This symmetric cipher mode can only be used with messages whose lengths are a
+ * multiple of the block size of the chosen block cipher.
+ */
+#define KEYSTORE_PSA_ALG_ECB_NO_PADDING ((KeyStore_PSA_Algorithm)PSA_ALG_ECB_NO_PADDING)
 
 /** The CBC block cipher chaining mode, with no padding.
  *
@@ -529,53 +568,56 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
  */
 #define KEYSTORE_PSA_ALG_ECDH ((KeyStore_PSA_Algorithm)PSA_ALG_ECDH)
 
+/** The Password-authenticated key exchange by juggling (J-PAKE) algorithm. */
+#define KEYSTORE_PSA_ALG_PAKE ((KeyStore_PSA_Algorithm)PSA_ALG_JPAKE)
+
 /* The encoding of curve identifiers is currently aligned with the
  * TLS Supported Groups Registry (formerly known as the
  * TLS EC Named Curve Registry)
  * https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8
  * The values are defined by RFC 8422 and RFC 7027. */
-#define KEYSTORE_PSA_ECC_CURVE_SECT163K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT163K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT163R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT163R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT163R2     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT163R2)
-#define KEYSTORE_PSA_ECC_CURVE_SECT193R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT193R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT193R2     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT193R2)
-#define KEYSTORE_PSA_ECC_CURVE_SECT233K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT233K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT233R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT233R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT239K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT239K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT283K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT283K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT283R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT283R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT409K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT409K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT409R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT409R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT571K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT571K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECT571R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECT571R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP160K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP160K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP160R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP160R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP160R2     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP160R2)
-#define KEYSTORE_PSA_ECC_CURVE_SECP192K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP192K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP192R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP192R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP224K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP224K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP224R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP224R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP256K1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP256K1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP256R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP256R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP384R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP384R1)
-#define KEYSTORE_PSA_ECC_CURVE_SECP521R1     ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_SECP521R1)
-#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P256R1 ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_BRAINPOOL_P256R1)
-#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P384R1 ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_BRAINPOOL_P384R1)
-#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P512R1 ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_BRAINPOOL_P512R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT163K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT163R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT163R2     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R2)
+#define KEYSTORE_PSA_ECC_CURVE_SECT193R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT193R2     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R2)
+#define KEYSTORE_PSA_ECC_CURVE_SECT233K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT233R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT239K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT283K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT283R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT409K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT409R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT571K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECT571R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP160K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP160R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP160R2     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R2)
+#define KEYSTORE_PSA_ECC_CURVE_SECP192K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP192R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP224K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP224R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP256K1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_K1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP256R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP384R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTORE_PSA_ECC_CURVE_SECP521R1     ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_SECP_R1)
+#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P256R1 ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_BRAINPOOL_P_R1)
+#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P384R1 ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_BRAINPOOL_P_R1)
+#define KEYSTRORE_ECC_CURVE_BRAINPOOL_P512R1 ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_BRAINPOOL_P_R1)
 /** Cur KEYSTRORE_ECC_CURVE_SECPv((KeyStore_PSA_KeyType)e25519.
  *
  * This is the curve defined in Bernstein et al.,
  * _Curve25519: new Diffie-Hellman speed records_, LNCS 3958, 2006.
  * The algorithm #KEYSTORE_PSA_ALG_ECDH performs X25519 when used with this curve.
  */
-#define KEYSTORE_PSA_ECC_CURVE_CURVE25519    ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_CURVE25519)
+#define KEYSTORE_PSA_ECC_CURVE_CURVE25519    ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_MONTGOMERY)
 /** Curve448
  *
  * This is the curve defined in Hamburg,
  * _Ed448-Goldilocks, a new elliptic curve_, NIST ECC Workshop, 2015.
  * The algorithm #KEYSTORE_PSA_ALG_ECDH performs X448 when used with this curve.
  */
-#define KEYSTORE_PSA_ECC_CURVE_CURVE448      ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_CURVE448)
+#define KEYSTORE_PSA_ECC_CURVE_CURVE448      ((KeyStore_PSA_KeyType)PSA_ECC_FAMILY_MONTGOMERY)
 
 /** Minimum value for a vendor-defined ECC curve identifier
  *
@@ -590,17 +632,22 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
  */
 #define KEYSTORE_PSA_ECC_CURVE_VENDOR_MAX ((KeyStore_PSA_KeyType)PSA_ECC_CURVE_VENDOR_MAX)
 
-/* Volatile Key Limit [1, PSA_KEY_SLOT_COUNT] for TF-Mv1.1
- * Upper limit for volatile keys, PSA_KEY_SLOT_COUNT (32) is the size of global slot array in mbedcrypto3.1
+/* Volatile Key Limit [PSA_KEY_ID_VOLATILE_MIN, PSA_KEY_ID_VOLATILE_MAX]
+ * Upper limit for volatile key ID, PSA_KEY_ID_VOLATILE_MAX, is PSA_KEY_ID_VENDOR_MAX.
+ * Lower limit for volatile key ID, KEYSTORE_PSA_MIN_VOLATILE_KEY_ID, is the last
+ * #MBEDTLS_PSA_KEY_SLOT_COUNT identifiers of provided by implementation reserved for vendors.
  */
-#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
-    #define KEYSTORE_PSA_MAX_VOLATILE_KEY_ID PSA_KEY_SLOT_COUNT
+
+#if (TFM_ENABLED == 0) || defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
+    #define KEYSTORE_PSA_MIN_VOLATILE_KEY_ID PSA_KEY_ID_VOLATILE_MIN
+    #define KEYSTORE_PSA_MAX_VOLATILE_KEY_ID PSA_KEY_ID_VOLATILE_MAX
 #else
     /*
      * PSA_KEY_SLOT_COUNT is not available in TF-M's crypto.h so we must
      * hardcode it to match the value in mbedCrypto's header.
      */
-    #define KEYSTORE_PSA_MAX_VOLATILE_KEY_ID 32
+    #define KEYSTORE_PSA_MIN_VOLATILE_KEY_ID (PSA_KEY_ID_VENDOR_MAX - MBEDTLS_PSA_KEY_SLOT_COUNT + 1)
+    #define KEYSTORE_PSA_MAX_VOLATILE_KEY_ID PSA_KEY_ID_VENDOR_MAX
 #endif
 
 /* Macro to obtain size of struct member */
@@ -666,7 +713,7 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
 
 /** Default Key Owner
  */
-#define KEYSTORE_PSA_DEFAULT_OWNER -1
+#define KEYSTORE_PSA_DEFAULT_OWNER MBEDTLS_PSA_CRYPTO_KEY_ID_DEFAULT_OWNER
 
 /**@}*/
 
@@ -727,18 +774,36 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
 
 /** Whether the key may be used to sign a message.
  *
- * This flag allows the key to be used for a MAC calculation operation
- * or for an asymmetric signature operation,
+ * This flag allows the key to be used for a MAC calculation operation or for
+ * an asymmetric message signature operation, if otherwise permitted by the
+ * keys type and policy.
+ *
+ * For a key pair, this concerns the private key.
+ */
+#define KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE ((KeyStore_PSA_KeyUsage)PSA_KEY_USAGE_SIGN_MESSAGE)
+
+/** Whether the key may be used to verify a message.
+ *
+ * This flag allows the key to be used for a MAC verification operation or for
+ * an asymmetric message signature verification operation, if otherwise
+ * permitted by the keys type and policy.
+ *
+ * For a key pair, this concerns the public key.
+ */
+#define KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE ((KeyStore_PSA_KeyUsage)PSA_KEY_USAGE_VERIFY_MESSAGE)
+
+/** Whether the key may be used to sign a message hash.
+ *
+ * This flag allows the key to be used for an asymmetric signature operation,
  * if otherwise permitted by the key's type and policy.
  *
  * For a key pair, this concerns the private key.
  */
 #define KEYSTORE_PSA_KEY_USAGE_SIGN_HASH ((KeyStore_PSA_KeyUsage)PSA_KEY_USAGE_SIGN_HASH)
 
-/** Whether the key may be used to verify a message signature.
+/** Whether the key may be used to verify a message hash.
  *
- * This flag allows the key to be used for a MAC verification operation
- * or for an asymmetric signature verification operation,
+ * This flag allows the key to be used for an asymmetric signature verification operation,
  * if otherwise permitted by by the key's type and policy.
  *
  * For a key pair, this concerns the public key.
@@ -749,17 +814,6 @@ typedef psa_algorithm_t KeyStore_PSA_Algorithm;
  */
 #define KEYSTORE_PSA_KEY_USAGE_DERIVE ((KeyStore_PSA_KeyUsage)PSA_KEY_USAGE_DERIVE)
 /**@}*/
-
-#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
-    /** A Key owner is a PSA partition identifier. This definition follow
-     * 'psa_key_owner_id_t' from crypto_platform.h */
-    #if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-/* Building for the PSA Crypto service on a PSA platform. */
-/* A key owner is a PSA partition identifier. */
-typedef psa_key_owner_id_t KeyStore_PSA_key_owner_id_t;
-    #endif /* defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER) */
-
-typedef psa_key_file_id_t KeyStore_PSA_KeyFileId;
 
 /** \defgroup attributes Key attributes
  * @{
@@ -864,25 +918,37 @@ typedef psa_key_file_id_t KeyStore_PSA_KeyFileId;
  * Once a key has been created, it is impossible to change its attributes.
  */
 typedef psa_key_attributes_t KeyStore_PSA_KeyAttributes;
+#if (TFM_ENABLED == 0) || defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
+    /** A Key owner is a PSA partition identifier. This definition follow
+     * 'psa_key_owner_id_t' from crypto_platform.h */
+    #if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+/* Building for the PSA Crypto service on a PSA platform. */
+/* A key owner is a PSA partition identifier. */
+typedef mbedtls_key_owner_id_t KeyStore_PSA_key_owner_id_t;
+
+typedef psa_key_id_t KeyStore_PSA_keyID;
+    #endif /* defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER) */
+
+typedef mbedtls_svc_key_id_t KeyStore_PSA_KeyFileId;
 
     #define KEYSTORE_PSA_KEY_ATTRIBUTES_INIT PSA_KEY_ATTRIBUTES_INIT
 
     /** Macro to assign and get keyID
      *
-     * It depends on MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER to assign keyID and
+     * It depends on MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER to assign keyID and
      * owner if multiple partition supported by mbedtls
      */
-    #if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-        #define GET_KEY_ID(keyID, ID) \
-            keyID.key_id = ID;        \
-            keyID.owner  = KEYSTORE_PSA_DEFAULT_OWNER;
+    #if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+        #define GET_KEY_ID(keyID, ID)           \
+            keyID.MBEDTLS_PRIVATE(key_id) = ID; \
+            keyID.MBEDTLS_PRIVATE(owner)  = KEYSTORE_PSA_DEFAULT_OWNER;
 
-        #define SET_KEY_ID(ID, keyID) ID = keyID.key_id
+        #define SET_KEY_ID(ID, keyID) ID = keyID.MBEDTLS_PRIVATE(key_id)
     #else
         #define GET_KEY_ID(keyID, ID) keyID = ID
 
         #define SET_KEY_ID(ID, keyID) ID = keyID
-    #endif /* defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER) */
+    #endif /* defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER) */
 
 #else
 /** Encoding of identifiers of persistent keys for client side.
@@ -895,20 +961,14 @@ typedef psa_key_attributes_t KeyStore_PSA_KeyAttributes;
  * - 0 is reserved as an invalid key identifier.
  * - Key identifiers outside these ranges are reserved for future use.
  */
-typedef psa_key_id_t KeyStore_PSA_KeyFileId;
+typedef mbedtls_svc_key_id_t KeyStore_PSA_KeyFileId;
 
     /** Macro to assign and get keyID */
     #define GET_KEY_ID(keyID, ID) keyID = ID
     #define SET_KEY_ID(ID, keyID) ID = keyID
 
-/* This is the client view of the `key_attributes` structure. Only
- * fields which need to be set by the PSA crypto client are present.
- * The PSA crypto service will maintain a different version of the
- * data structure internally. */
-typedef struct psa_client_key_attributes_s KeyStore_PSA_KeyAttributes;
-
     #define KEYSTORE_PSA_KEY_ATTRIBUTES_INIT PSA_CLIENT_KEY_ATTRIBUTES_INIT
-#endif /* #if (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* #if (TFM_ENABLED == 0) || defined(TFM_BUILD) */
 /**@}*/
 
 /**@}*/

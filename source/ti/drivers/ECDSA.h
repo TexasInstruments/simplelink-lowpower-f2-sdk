@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -725,6 +725,14 @@ void ECDSA_OperationVerify_init(ECDSA_OperationVerify *operation);
  *
  *  @pre    ECDSA_OperationSign_init() must be called on \c operation first.
  *          The driver must have been opened by calling ECDSA_open() first.
+ *          For CC23X0, RNG must be initialized by application in a task context with interrupts enabled
+ *          using the following steps, before using ECDSA_sign() and prior to the use of the Radio.
+ *          1. Read radio noise using RCL_AdcNoise_get_samples_blocking(). This RCL function must
+ *             be called from a task context with interrupts enabled and therefore cannot be called
+ *             by startup code. This must be executed prior to the use of the radio.
+ *          2. Condition the noise to seed the RNG using RNGLPF3RF_conditionNoiseToGenerateSeed().
+ *          3. Initialize the RNG from the application with RNG_init()
+ *
  *
  *  @param [in]     handle          An ECDSA handle returned from ECDSA_open()
  *

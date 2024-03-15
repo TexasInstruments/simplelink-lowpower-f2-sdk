@@ -65,8 +65,8 @@
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/aes.h)
 
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-    #include <ti/drivers/aesctr/AESCTRCC23XX.h>
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/aesctr/AESCTRLPF3.h>
 #else
     #include <ti/drivers/aesctr/AESCTRCC26XX.h>
 #endif
@@ -107,8 +107,8 @@ typedef struct
     /*
      * Priority in HWAttrs will be passed to AESCTR instance upon construct
      */
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-    AESCTRCC23XX_HWAttrs aesctrHWAttrs;
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    AESCTRLPF3_HWAttrs aesctrHWAttrs;
 #else
     AESCTRCC26XX_HWAttrs aesctrHWAttrs;
 #endif
@@ -123,8 +123,8 @@ typedef struct
 {
     uint8_t keyingMaterial[AESCTRDRBG_AES_KEY_LENGTH_256];
     uint8_t counter[AESCTRDRBG_AES_BLOCK_SIZE_BYTES];
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-    AESCTRCC23XX_Object aesctrObject;
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    AESCTRLPF3_Object aesctrObject;
 #else
     AESCTRCC26XX_Object aesctrObject;
 #endif

@@ -49,10 +49,11 @@ typedef struct Radio_Fxns_t{
     bool (*setupPhy)(uint8_t phyIndex, uint8_t phyIndex2);
     bool (*enableMdr)(uint8_t region);
     bool (*packetTx)(uint16_t numPkts, uint32_t *pktLen);
-    bool (*packetRx)(uint8_t pktLen);
+    bool (*packetRx)(uint16_t pktLen);
     bool (*packetMdrTx)(uint16_t numPkts, uint32_t *pktLen);
-    bool (*packetMdrRx)(uint8_t pktLen);
+    bool (*packetMdrRx)(uint16_t pktLen);
     bool (*packetMdrCsTx)(uint16_t numPkts, uint32_t *pktLen);
+    bool (*packetCsTx)(uint16_t numPkts, uint32_t *pktLen);
     bool (*contTx)(bool cw);
     bool (*contRx)(void);
     void (*setFreq)(uint32_t freq, uint32_t mdrFreq);

@@ -702,19 +702,19 @@ static void sprint_array(char *s, const uint8_t *ptr, uint_fast8_t len)
 
 void ipv6_neighbour_cache_print(const ipv6_neighbour_cache_t *cache, route_print_fn_t *print_fn)
 {
-    print_fn("Neighbour Cache %d", cache->interface_id);
-    print_fn("Reachable Time: %"PRIu32"   Retrans Timer: %"PRIu32"   MTU: %"PRIu16"", cache->reachable_time, cache->retrans_timer, cache->link_mtu);
+    tr_info("Neighbour Cache %d", cache->interface_id);
+    tr_info("Reachable Time: %"PRIu32"   Retrans Timer: %"PRIu32"   MTU: %"PRIu16"", cache->reachable_time, cache->retrans_timer, cache->link_mtu);
     ns_list_foreach(const ipv6_neighbour_t, cur, &cache->list) {
         ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
-        print_fn("%sIP Addr: %s", cur->is_router ? "Router " : "", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, cur->ip_address));
+        tr_info("%sIP Addr: %s", cur->is_router ? "Router " : "", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, cur->ip_address));
         // Reusing addr_str for the array prints as it's no longer needed and 41 bytes is more than enough.
         sprint_array(addr_str, cur->ll_address, addr_len_from_type(cur->ll_type));
-        print_fn("LL Addr: (%s %"PRIu32") %s", state_names[cur->state], cur->timer, addr_str);
+        tr_info("LL Addr: (%s %"PRIu32") %s", state_names[cur->state], cur->timer, addr_str);
         if (cache->recv_addr_reg && memcmp(ipv6_neighbour_eui64(cache, cur), ADDR_EUI64_ZERO, 8)) {
             sprint_array(addr_str, ipv6_neighbour_eui64(cache, cur), 8);
-            print_fn("EUI-64:  (%s %"PRIu32") %s", type_names[cur->type], cur->lifetime, addr_str);
+            tr_info("EUI-64:  (%s %"PRIu32") %s", type_names[cur->type], cur->lifetime, addr_str);
         } else if (cur->type != IP_NEIGHBOUR_GARBAGE_COLLECTIBLE) {
-            print_fn("         (%s %"PRIu32") [no EUI-64]", type_names[cur->type], cur->lifetime);
+            tr_info("         (%s %"PRIu32") [no EUI-64]", type_names[cur->type], cur->lifetime);
         }
     }
 }
@@ -874,17 +874,17 @@ void ipv6_neighbour_cache_fast_timer(ipv6_neighbour_cache_t *cache, uint16_t tic
 
 void ipv6_destination_cache_print(route_print_fn_t *print_fn)
 {
-    print_fn("Destination Cache:");
+    tr_info("Destination Cache:");
     ns_list_foreach(ipv6_destination_t, entry, &ipv6_destination_cache) {
         ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
-        print_fn(" %s (%d id) (life %u)", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, entry->destination), entry->interface_id, entry->lifetime);
+        tr_info(" %s (%d id) (life %u)", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, entry->destination), entry->interface_id, entry->lifetime);
 #ifdef HAVE_IPV6_ND
         if (entry->redirected) {
-            print_fn("     Redirect %s%%%u", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, entry->redirect_addr), entry->interface_id);
+            tr_info("     Redirect %s%%%u", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, entry->redirect_addr), entry->interface_id);
         }
 #endif
 #ifndef NO_IPV6_PMTUD
-        print_fn("     PMTU %u (life %u)", entry->pmtu, entry->pmtu_lifetime);
+        tr_info("     PMTU %u (life %u)", entry->pmtu, entry->pmtu_lifetime);
 #endif
     }
 }
@@ -1256,22 +1256,22 @@ static void ipv6_route_print(const ipv6_route_t *route, route_print_fn_t *print_
         bitcopy(addr, route->prefix, route->prefix_len);
         ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
         if (route->lifetime != 0xFFFFFFFF) {
-            print_fn(" %24s/%-3u if:%u src:'%s' id:%d lifetime:%"PRIu32,
+            tr_info(" %24s/%-3u if:%u src:'%s' id:%d lifetime:%"PRIu32,
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), route->prefix_len,
                      route->info.interface_id, route_src_names[route->info.source],
                      route->info.source_id, route->lifetime
                     );
         } else {
-            print_fn(" %24s/%-3u if:%u src:'%s' id:%d lifetime:infinite",
+            tr_info(" %24s/%-3u if:%u src:'%s' id:%d lifetime:infinite",
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), route->prefix_len,
                      route->info.interface_id, route_src_names[route->info.source],
                      route->info.source_id
                     );
         }
         if (route->on_link) {
-            print_fn("     On-link (met %d)", total_metric(route));
+            tr_info("     On-link (met %d)", total_metric(route));
         } else {
-            print_fn("     next-hop %s (met %d)",
+            tr_info("     next-hop %s (met %d)",
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, route->info.next_hop_addr),
                      total_metric(route));
         }
@@ -1280,7 +1280,7 @@ static void ipv6_route_print(const ipv6_route_t *route, route_print_fn_t *print_
 
 void ipv6_route_table_print(route_print_fn_t *print_fn)
 {
-    print_fn("Routing table:");
+    tr_info("Routing table:");
     ns_list_foreach(ipv6_route_t, r, &ipv6_routing_table) {
         ipv6_route_print(r, print_fn);
     }
@@ -1319,7 +1319,7 @@ void trace_debug_print(const char *fmt, ...)
 static void ipv6_route_entry_remove(ipv6_route_t *route)
 {
 #ifdef WISUN_NCP_ENABLE
-    if((route-> info.source == ROUTE_RPL_DAO_SR))  /* && is check for lifetime needed? */
+    if(route-> info.source == ROUTE_RPL_DAO_SR)  /* && is check for lifetime needed? */
     {
         nanostack_process_routing_table_update_from_stack(DELETED, route->prefix, route->prefix_len, route->info.next_hop_addr, route->lifetime);
     }
@@ -1727,7 +1727,7 @@ ipv6_route_t *ipv6_route_add_metric(const uint8_t *prefix, uint8_t prefix_len, i
 #endif
 #ifdef WISUN_NCP_ENABLE
         //push the route info out if relevant i.e. if src is ROUTE_RPL_DAO_SR i.e. non storing mode
-        if((route-> info.source == ROUTE_RPL_DAO_SR)) /* && /* is check for lifetime needed? */
+        if(route-> info.source == ROUTE_RPL_DAO_SR) /* && is check for lifetime needed? */
         {
             nanostack_process_routing_table_update_from_stack(changed_info, route->prefix, route->prefix_len, route->info.next_hop_addr, route->lifetime);
         }

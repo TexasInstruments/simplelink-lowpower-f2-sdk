@@ -75,6 +75,35 @@ Min connection interval will be displayed in the range of 6 to 3200 (in units \
 of 1.25 ms)\n
 Min connection interval <= Max connection interval`
 
+// Long description for the centralScanInt configuration parameter
+const centralScanIntLongDescription = `Scan interval time in ms\n
+__Default__: 10 ms\n
+__Range__: 2.5 ms to 10240 ms
+__Note__:\n
+Scan interval will be displayed in the range of 4 to 16384 (in units \
+of 0.625ms)`
+
+// Long description for the centralScanWin configuration parameter
+const centralScanWinLongDescription = `Scan window in ms\n
+__Default__: 10 ms\n
+__Range__: 2.5 ms to 10240 ms
+__Note__:\n
+Scan window will be displayed in the range of 4 to 16384 (in units \
+of 0.625ms)`
+
+// Long description for the centraConnLatency configuration parameter
+const centraConnLatencyLongDescription = `Connection latency\n
+__Default__: 0 \n
+__Range__: 0 to 499`
+
+// Long description for the centraSupTimeout configuration parameter
+const centraSupTimeoutLongDescription = `Supervision Timeout\n
+__Default__: 2000 \n
+__Range__: 100 ms to 32000
+__Note__:\n
+Supervision timeout will be displayed in the range of 10 to 3200 (in units \
+of 10ms)`
+
 // Long description for the connIntMax configuration parameter
 const connIntMaxLongDescription = `In BLE connections, a frequency-hopping \
 scheme is used. The two devices each send and receive data from one another \
@@ -100,5 +129,9 @@ Max connection interval >= Min connection interval`
     initiatingPHYLongDescription: initiatingPHYLongDescription,
     rssiPollingPeriodLongDescription: rssiPollingPeriodLongDescription,
     connIntMinLongDescription: connIntMinLongDescription,
-    connIntMaxLongDescription: connIntMaxLongDescription
+    connIntMaxLongDescription: connIntMaxLongDescription,
+    centralScanIntLongDescription: centralScanIntLongDescription,
+    centralScanWinLongDescription: centralScanWinLongDescription,
+    centraConnLatencyLongDescription: centraConnLatencyLongDescription,
+    centraSupTimeoutLongDescription: centraSupTimeoutLongDescription
 };

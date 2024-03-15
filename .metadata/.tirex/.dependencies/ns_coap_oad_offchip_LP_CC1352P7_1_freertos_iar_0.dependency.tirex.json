@@ -62,6 +62,7 @@
             "+../../../../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/api_mac.h -> api_mac.h",
             "+../../../../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/timac_fhss_config.c -> timac_fhss_config.c",
             "+../../../../../../../source/ti/ti_wisunfan/wisunfan_mac/common/osal_port/timac_ns_interface.h -> timac_ns_interface.h",
+            "+../../../../../../../source/ti/boards/LP_CC1352P7_1/Board.html -> Board.html",
             "+cc13x2x7_cc26x2x7_oad_offchip.icf -> cc13x2x7_cc26x2x7_oad_offchip.icf",
             "+../../README.md -> README.md",
             "+../ti_wisunfan_coap_oad_offchip.syscfg -> ti_wisunfan_coap_oad_offchip.syscfg"

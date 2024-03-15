@@ -680,6 +680,20 @@ ChipInfo_HwRevisionIs_GTEQ_2_4( void )
 
 //*****************************************************************************
 //
+//! \brief Returns true if HW revision for this chip is 3.0 or greater.
+//!
+//! \return
+//! Returns \c true if HW revision for this chip is 3.0 or greater, \c false otherwise.
+//
+//*****************************************************************************
+__STATIC_INLINE bool
+ChipInfo_HwRevisionIs_GTEQ_3_0( void )
+{
+   return ( ChipInfo_GetHwRevision() >= HWREV_3_0 );
+}
+
+//*****************************************************************************
+//
 //! \brief Verifies that current chip is CC13x4 or CC26x4 and never returns if violated.
 //!
 //! \return None

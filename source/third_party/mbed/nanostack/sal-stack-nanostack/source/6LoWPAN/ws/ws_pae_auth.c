@@ -51,6 +51,7 @@
 #include "6LoWPAN/ws/ws_pae_lib.h"
 #include "6LoWPAN/ws/ws_pae_time.h"
 #include "6LoWPAN/ws/ws_pae_key_storage.h"
+#include "6LoWPAN/ws/ws_config.h"
 
 #ifdef HAVE_WS
 #ifdef HAVE_PAE_AUTH
@@ -78,18 +79,6 @@
 
 // Short GTK lifetime value, for GTK install check
 #define SHORT_GTK_LIFETIME                     10 * 3600  // 10 hours
-
-#ifdef FIXED_GTK_KEYS
-extern bool fix_gtk_keys;
-// GTK_LEN 16
-// GTK NUM 4
-const uint8_t fixed_gtk_keys[4][16] = {
-      {0xBB, 0x06, 0x08, 0x57, 0x2C, 0xE1, 0x4D, 0x7B, 0xA2, 0xD1, 0x55, 0x49, 0x9C, 0xC8, 0x51, 0x9B},
-      {0x18, 0x49, 0x83, 0x5A, 0x01, 0x68, 0x4F, 0xC8, 0xAC, 0xA5, 0x83, 0xF3, 0x70, 0x40, 0xF7, 0x4C},
-      {0x59, 0xEA, 0x58, 0xA4, 0xB8, 0x83, 0x49, 0x38, 0xAD, 0xCB, 0x6B, 0xE3, 0x88, 0xC2, 0x62, 0x63},
-      {0xE4, 0x26, 0xB4, 0x91, 0xBC, 0x05, 0x4A, 0xF3, 0x9B, 0x59, 0xF0, 0x53, 0xEC, 0x12, 0x8E, 0x5F}
-};
-#endif
 
 typedef struct {
     ns_list_link_t link;                                     /**< Link */
@@ -162,9 +151,13 @@ static NS_LIST_DEFINE(pae_auth_list, pae_auth_t, link);
 
 int8_t ws_pae_auth_init(protocol_interface_info_entry_t *interface_ptr, sec_prot_gtk_keys_t *next_gtks, const sec_prot_certs_t *certs, sec_cfg_t *sec_cfg, sec_prot_keys_nw_info_t *sec_keys_nw_info)
 {
-    if (!interface_ptr || !next_gtks || !certs || !sec_cfg || !sec_keys_nw_info) {
-        return -1;
+#if !defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != CUSTOM_EUI_AUTH) {
+        if (!interface_ptr || !next_gtks || !certs || !sec_cfg || !sec_keys_nw_info) {
+            return -1;
+        }
     }
+#endif
 
     if (ws_pae_auth_get(interface_ptr) != NULL) {
         return 0;
@@ -208,55 +201,64 @@ int8_t ws_pae_auth_init(protocol_interface_info_entry_t *interface_ptr, sec_prot
     pae_auth->relay_socked_msg_if_instance_id = 0;
     pae_auth->radius_socked_msg_if_instance_id = 0;
 
-    pae_auth->kmp_service = kmp_service_create();
-    if (!pae_auth->kmp_service) {
-        goto error;
-    }
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        pae_auth->kmp_service = kmp_service_create();
+        if (!pae_auth->kmp_service) {
+            goto error;
+        }
 
-    if (kmp_service_cb_register(pae_auth->kmp_service, ws_pae_auth_kmp_incoming_ind, NULL, ws_pae_auth_kmp_service_addr_get, ws_pae_auth_kmp_service_ip_addr_get, ws_pae_auth_kmp_service_api_get)) {
-        goto error;
-    }
+        if (kmp_service_cb_register(pae_auth->kmp_service, ws_pae_auth_kmp_incoming_ind, NULL, ws_pae_auth_kmp_service_addr_get, ws_pae_auth_kmp_service_ip_addr_get, ws_pae_auth_kmp_service_api_get)) {
+            goto error;
+        }
 
-    if (kmp_service_event_if_register(pae_auth->kmp_service, ws_pae_auth_event_send)) {
-        goto error;
-    }
+        if (kmp_service_event_if_register(pae_auth->kmp_service, ws_pae_auth_event_send)) {
+            goto error;
+        }
 
-    if (kmp_service_timer_if_register(pae_auth->kmp_service, ws_pae_auth_timer_if_start, ws_pae_auth_timer_if_stop)) {
-        goto error;
-    }
+        if (kmp_service_timer_if_register(pae_auth->kmp_service, ws_pae_auth_timer_if_start, ws_pae_auth_timer_if_stop)) {
+            goto error;
+        }
 
-    if (kmp_service_shared_comp_if_register(pae_auth->kmp_service, ws_pae_auth_shared_comp_add, ws_pae_auth_shared_comp_remove)) {
-        goto error;
-    }
+        if (kmp_service_shared_comp_if_register(pae_auth->kmp_service, ws_pae_auth_shared_comp_add, ws_pae_auth_shared_comp_remove)) {
+            goto error;
+        }
 
-    if (auth_key_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
+        if (auth_key_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
+    } else
+#endif
+    {
+        pae_auth->kmp_service = NULL;
     }
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        // Register radius EAP-TLS and radius client security protocols
+        if (radius_eap_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
+        if (radius_client_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
 
-    // Register radius EAP-TLS and radius client security protocols
-    if (radius_eap_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
-    }
-    if (radius_client_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
-    }
+        // Register EAP-TLS and TLS security protocols
+        if (auth_eap_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
+        if (server_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
 
-    // Register EAP-TLS and TLS security protocols
-    if (auth_eap_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
-    }
-    if (server_tls_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
-    }
+        if (auth_fwh_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
 
-    if (auth_fwh_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
+        if (auth_gkh_sec_prot_register(pae_auth->kmp_service) < 0) {
+            goto error;
+        }
     }
-
-    if (auth_gkh_sec_prot_register(pae_auth->kmp_service) < 0) {
-        goto error;
-    }
-
+#endif
     if (tasklet_id < 0) {
         tasklet_id = eventOS_event_handler_create(ws_pae_auth_tasklet_handler, PAE_TASKLET_INIT);
         if (tasklet_id < 0) {
@@ -832,12 +834,7 @@ static void ws_pae_auth_gtk_key_insert(pae_auth_t *pae_auth)
         sec_prot_keys_gtk_clear(pae_auth->next_gtks, next_gtk_index);
         sec_prot_keys_gtk_set(pae_auth->next_gtks, next_gtk_index, gtk_value, 0);
     } else {
-#ifndef FIXED_GTK_KEYS
-        do {
-            randLIB_get_n_bytes_random(gtk_value, GTK_LEN);
-        } while (sec_prot_keys_gtk_valid_check(gtk_value) < 0);
-#else
-        if(!fix_gtk_keys)
+        if(ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH && !ti_wisun_config.use_fixed_gtk_keys)
         {
             do {
                     randLIB_get_n_bytes_random(gtk_value, GTK_LEN);
@@ -845,9 +842,8 @@ static void ws_pae_auth_gtk_key_insert(pae_auth_t *pae_auth)
         }
         else
         {
-            memcpy(&gtk_value, fixed_gtk_keys[install_index], GTK_LEN);
+            memcpy(&gtk_value, ti_wisun_config.fixed_gtk_keys[install_index], GTK_LEN);
         }
-#endif
     }
 
     // Gets latest installed key lifetime and adds GTK expire offset to it
@@ -1258,55 +1254,59 @@ static kmp_type_e ws_pae_auth_next_protocol_get(pae_auth_t *pae_auth, supp_entry
     kmp_type_e next_type = KMP_TYPE_NONE;
     sec_prot_keys_t *sec_keys = &supp_entry->sec_keys;
 
-    // Supplicant has indicated that PMK is not valid
-    if (sec_keys->pmk_mismatch) {
-        sec_keys->ptk_mismatch = true;
-        // start EAP-TLS towards supplicant
-        if (pae_auth->sec_cfg->radius_cfg != NULL && pae_auth->sec_cfg->radius_cfg->radius_addr_set) {
-            next_type = RADIUS_IEEE_802_1X_MKA;
-        } else {
-            next_type = IEEE_802_1X_MKA;
-        }
-        tr_info("PAE: start EAP-TLS, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
-    } else if (sec_keys->ptk_mismatch) {
-        // start 4WH towards supplicant
-        next_type = IEEE_802_11_4WH;
-        tr_info("PAE: start 4WH, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
-    }
-
-    int8_t gtk_index = -1;
-    if (next_type != IEEE_802_1X_MKA && next_type != RADIUS_IEEE_802_1X_MKA) {
-        // Checks if GTK needs to be inserted
-        gtk_index = sec_prot_keys_gtk_insert_index_from_gtkl_get(sec_keys);
-
-        // For 4WH insert always a key, in case no other then active
-        if (next_type == IEEE_802_11_4WH && gtk_index < 0) {
-            gtk_index = sec_prot_keys_gtk_status_active_get(sec_keys->gtks);
-        }
-    }
-
-    if (gtk_index >= 0) {
-        if (next_type == KMP_TYPE_NONE && gtk_index >= 0) {
-
-            /* Check if the PTK has been already used to install GTK to specific index and if it
-             * has been, trigger 4WH to update also the PTK. This prevents writing multiple
-             * GTK keys to same index using same PTK.
-             */
-            if (pae_auth->sec_cfg->timer_cfg.gtk_expire_offset > SHORT_GTK_LIFETIME &&
-                    sec_prot_keys_ptk_installed_gtk_hash_mismatch_check(sec_keys, gtk_index)) {
-                // start 4WH towards supplicant
-                next_type = IEEE_802_11_4WH;
-                sec_keys->ptk_mismatch = true;
-                tr_info("PAE: start 4WH due to GTK index re-use, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+#if !defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != CUSTOM_EUI_AUTH) {
+        // Supplicant has indicated that PMK is not valid
+        if (sec_keys->pmk_mismatch) {
+            sec_keys->ptk_mismatch = true;
+            // start EAP-TLS towards supplicant
+            if (pae_auth->sec_cfg->radius_cfg != NULL && pae_auth->sec_cfg->radius_cfg->radius_addr_set) {
+                next_type = RADIUS_IEEE_802_1X_MKA;
             } else {
-                // Update just GTK
-                next_type = IEEE_802_11_GKH;
-                tr_info("PAE: start GKH, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+                next_type = IEEE_802_1X_MKA;
+            }
+            tr_info("PAE: start EAP-TLS, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+        } else if (sec_keys->ptk_mismatch) {
+            // start 4WH towards supplicant
+            next_type = IEEE_802_11_4WH;
+            tr_info("PAE: start 4WH, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+        }
+
+        int8_t gtk_index = -1;
+        if (next_type != IEEE_802_1X_MKA && next_type != RADIUS_IEEE_802_1X_MKA) {
+            // Checks if GTK needs to be inserted
+            gtk_index = sec_prot_keys_gtk_insert_index_from_gtkl_get(sec_keys);
+
+            // For 4WH insert always a key, in case no other then active
+            if (next_type == IEEE_802_11_4WH && gtk_index < 0) {
+                gtk_index = sec_prot_keys_gtk_status_active_get(sec_keys->gtks);
             }
         }
 
-        tr_info("PAE: update GTK index: %i, eui-64: %s", gtk_index, trace_array(supp_entry->addr.eui_64, 8));
+        if (gtk_index >= 0) {
+            if (next_type == KMP_TYPE_NONE && gtk_index >= 0) {
+
+                /* Check if the PTK has been already used to install GTK to specific index and if it
+                * has been, trigger 4WH to update also the PTK. This prevents writing multiple
+                * GTK keys to same index using same PTK.
+                */
+                if (pae_auth->sec_cfg->timer_cfg.gtk_expire_offset > SHORT_GTK_LIFETIME &&
+                        sec_prot_keys_ptk_installed_gtk_hash_mismatch_check(sec_keys, gtk_index)) {
+                    // start 4WH towards supplicant
+                    next_type = IEEE_802_11_4WH;
+                    sec_keys->ptk_mismatch = true;
+                    tr_info("PAE: start 4WH due to GTK index re-use, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+                } else {
+                    // Update just GTK
+                    next_type = IEEE_802_11_GKH;
+                    tr_info("PAE: start GKH, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));
+                }
+            }
+
+            tr_info("PAE: update GTK index: %i, eui-64: %s", gtk_index, trace_array(supp_entry->addr.eui_64, 8));
+        }
     }
+#endif
 
     if (next_type == KMP_TYPE_NONE) {
         tr_info("PAE: authenticated, eui-64: %s", trace_array(supp_entry->addr.eui_64, 8));

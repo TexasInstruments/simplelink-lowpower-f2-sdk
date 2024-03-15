@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -227,9 +227,9 @@ typedef DAC_Config *DAC_Handle;
  */
 typedef struct
 {
-    /*!< Initial DAC code */
+    /*! Initial DAC code */
     uint32_t initCode;
-    /*!< Pointer to device specific custom params */
+    /*! Pointer to device specific custom params */
     void *custom;
 } DAC_Params;
 

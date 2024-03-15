@@ -12,7 +12,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2004-2023, Texas Instruments Incorporated
+ Copyright (c) 2004-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -50,14 +50,13 @@
 /*********************************************************************
  * INCLUDES
  */
-
+#include "osal_memory.h"
+#include "osal_timers.h"
 #include <string.h>
-
 #include "comdef.h"
 #include "hal_board.h"
 #include "osal.h"
 #include "osal_tasks.h"
-#include "osal_memory.h"
 #include "osal_pwrmgr.h"
 #include "osal_clock.h"
 
@@ -1159,7 +1158,7 @@ void osal_msg_extract( osal_msg_q_t *q_ptr, void *msg_ptr, void *prev_ptr )
     // remove from first
     *q_ptr = OSAL_MSG_NEXT( msg_ptr );
   }
-  else
+  else if (prev_ptr != NULL)
   {
     // remove from middle
     OSAL_MSG_NEXT( prev_ptr ) = OSAL_MSG_NEXT( msg_ptr );
@@ -1873,7 +1872,6 @@ void osal_run_system( void )
    * TODO: reconsider the above statement.
    */
   {
-    halIntState_t intState;
 
     uint32 next_timeout_post = osal_next_timeout();
     if (next_timeout_post != next_timeout_prior)
@@ -1890,6 +1888,7 @@ void osal_run_system( void )
       }
       /* Restart timer */
 #ifndef CC23X0
+      halIntState_t intState;
       // Do not enter and exit the critical section because it stuck in for loop
       // in vListInsert function under the freertos list.c file
       // according to the freertos note in vListInsert function -
@@ -1923,6 +1922,7 @@ void osal_run_system( void )
         if (tasksEvents[i] != 0)
         {
           ICall_signal(osal_syncHandle);
+          break;
         }
       }
     }

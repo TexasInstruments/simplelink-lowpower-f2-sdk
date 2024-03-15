@@ -64,6 +64,9 @@ const deviceToBoard = {
     CC2652PR: "CC1352P2_LAUNCHXL",
     CC1354R10: "LP_CC1354R10_RGZ",
     CC2674R10: "LP_CC2674R10_FPGA",
+    CC2340R5: "LP_EM_CC2340R5",
+    CC2340R2: "LP_EM_CC2340R2",
+    CC2745R10_Q1: "LP_EM_CC2745R10_Q1",
 };
 
 /*!
@@ -164,6 +167,18 @@ function device2DeviceFamily(deviceId)
     else if(deviceId.match(/MSP432P401/))
     {
         driverString = "DeviceFamily_MSP432P401x";
+    }
+    else if(deviceId.match(/CC23.0R5/))
+    {
+        driverString = "DeviceFamily_CC23X0R5";
+    }
+    else if(deviceId.match(/CC23.0R2/))
+    {
+        driverString = "DeviceFamily_CC23X0R2";
+    }
+    else if(deviceId.match(/CC27../))
+    {
+        driverString = "DeviceFamily_CC27XX";
     }
     else
     {

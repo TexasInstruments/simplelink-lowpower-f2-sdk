@@ -71,10 +71,11 @@ const config = [
         longDescription: Docs.reqMaxConnIntLongDescription
     },
     {
-        name: "reqSlaveLat",
-        displayName: "Requested Slave Latency",
+        name: "reqPeripheralLat",
+        legacyNames: ["reqSlaveLat"],
+        displayName: "Requested Peripheral Latency",
         default: 0,
-        longDescription: Docs.reqSlaveLatLongDescription
+        longDescription: Docs.reqPeripheralLatLongDescription
     },
     {
         name: "reqConnTo",
@@ -105,11 +106,11 @@ function onHideParamUpdateDelayChange(inst, ui)
  */
 function validate(inst, validation)
 {
-    if(inst.upSlaveLat < Common.connParamsRanges.connLatencyMinValue ||
-        inst.upSlaveLat > Common.connParamsRanges.connLatencyMaxValue)
+    if(inst.upPeripheralLat < Common.connParamsRanges.connLatencyMinValue ||
+        inst.upPeripheralLat > Common.connParamsRanges.connLatencyMaxValue)
     {
-        validation.logError("Slave Latency range is " + Common.connParamsRanges.connLatencyMinValue 
-                            + " to " + Common.connParamsRanges.connLatencyMaxValue, inst, "upSlaveLat");
+        validation.logError("Peripheral Latency range is " + Common.connParamsRanges.connLatencyMinValue
+                            + " to " + Common.connParamsRanges.connLatencyMaxValue, inst, "upPeripheralLat");
     }
     if(inst.upConnTo < Common.connParamsRanges.connTimeoutMinValue ||
         inst.upConnTo > Common.connParamsRanges.connTimeoutMaxValue)

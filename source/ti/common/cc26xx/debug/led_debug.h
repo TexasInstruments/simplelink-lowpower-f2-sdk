@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2023, Texas Instruments Incorporated
+ Copyright (c) 2012-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,10 @@ extern "C"
  * MACROS
  */
 
-#ifdef DeviceFamily_CC23X0R5
+#if defined(DeviceFamily_CC23X0R2)
+#define RED_LED    21
+#define GREEN_LED  8
+#elif defined(DeviceFamily_CC23X0R5)
 #define RED_LED    14
 #define GREEN_LED  15
 #else

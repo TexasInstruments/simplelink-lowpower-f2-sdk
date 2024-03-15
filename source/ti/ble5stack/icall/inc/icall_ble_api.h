@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -288,6 +288,9 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_EXT_SetQOSDefaultParameters(...)                       (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetQOSDefaultParameters , ##__VA_ARGS__))
 #define HCI_EXT_SetHostDefChanClassificationCmd(...)               (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetHostDefChanClassificationCmd , ##__VA_ARGS__))
 #define HCI_EXT_SetHostConnChanClassificationCmd(...)              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_SetHostConnChanClassificationCmd , ##__VA_ARGS__))
+#define HCI_EXT_GetRxStatisticsCmd(...)                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_GetRxStatisticsCmd , ##__VA_ARGS__))
+#define HCI_EXT_GetTxStatisticsCmd(...)                            (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_GetTxStatisticsCmd , ##__VA_ARGS__))
+#define HCI_EXT_GetCoexStatisticsCmd(...)                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_EXT_GetCoexStatisticsCmd , ##__VA_ARGS__))
 
 /* HCI API Cont'd */
 /******************/
@@ -300,6 +303,7 @@ extern void *GATT_bm_alloc(uint16 connHandle, uint8 opcode, uint16 size,
 #define HCI_CommandStatusEvent(...)                                (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_CommandStatusEvent, ##__VA_ARGS__))
 #define HCI_CommandCompleteEvent(...)                              (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_CommandCompleteEvent, ##__VA_ARGS__))
 #define HCI_bm_alloc(...)                                          (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_bm_alloc , ##__VA_ARGS__))
+#define HCI_bm_free(...)                                           (icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_bm_free , ##__VA_ARGS__))
 /* the following API are not available for now */
 
 #define HCI_TestAppTaskRegister(...)                               (AssertHandler(0,0)) // icall_directAPI(ICALL_SERVICE_CLASS_BLE, (uint32_t) IDX_HCI_TestAppTaskRegister , ##__VA_ARGS__) // =>need taskId

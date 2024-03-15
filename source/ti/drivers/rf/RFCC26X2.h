@@ -512,7 +512,7 @@ can be achieved with #RF_ratCapture().
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/gpio/GPIOCC26XX.h>
 // Map IO 26 to RFC_GPI0
-GPIO_setMux(IOID_26, IOC_PORT_RFC_GPI0);
+GPIO_setConfigAndMux(IOID_26, GPIO_CFG_NO_DIR, IOC_PORT_RFC_GPI0);
 
 RF_Handle rfDriver;
 RF_RatConfigCapture config;
@@ -564,7 +564,7 @@ static uint32_t pOverrides[] =
 #include DeviceFamily_constructPath(driverlib/ioc.h)
 #include <ti/drivers/GPIO.h>
 #include <ti/drivers/gpio/GPIOCC26XX.h>
-GPIO_setMux(IOID_17, IOC_PORT_RFC_GPO2);
+GPIO_setConfigAndMux(IOID_17, GPIO_CFG_NO_DIR, IOC_PORT_RFC_GPO2);
 @endcode
 
 <hr>
@@ -714,6 +714,7 @@ extern "C" {
 #include DeviceFamily_constructPath(driverlib/rf_common_cmd.h)
 #include DeviceFamily_constructPath(driverlib/rf_prop_cmd.h)
 #include DeviceFamily_constructPath(driverlib/rf_ble_cmd.h)
+#include DeviceFamily_constructPath(driverlib/rf_ieee_cmd.h)
 
 /**
  *  @name RF Core Events

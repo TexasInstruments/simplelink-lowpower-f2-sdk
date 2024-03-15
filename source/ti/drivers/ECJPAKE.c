@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ void ECJPAKE_Params_init(ECJPAKE_Params *params)
 /*
  *  ======== ECJPAKE_open ========
  */
-__attribute__((weak)) ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, ECJPAKE_Params *params)
+__attribute__((weak)) ECJPAKE_Handle ECJPAKE_open(uint_least8_t index, const ECJPAKE_Params *params)
 {
     DebugP_assert(index < ECJPAKE_count);
 

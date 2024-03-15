@@ -37,13 +37,15 @@ typedef enum {
     IEEE_802_11_GKH        = 7,
     TLS_PROT               = 8,
     RADIUS_CLIENT_PROT     = 9,
+    TI_CUSTOM_EUI_PROTOCOL = 10,
 
-    IEEE_802_1X_INITIAL_KEY = 10,
+    IEEE_802_1X_INITIAL_KEY = 20,
 
-    IEEE_802_1X_MKA_KEY        = 11,
-    RADIUS_IEEE_802_1X_MKA_KEY = 12,
-    IEEE_802_11_4WH_KEY        = 16,
-    IEEE_802_11_GKH_KEY        = 17
+    IEEE_802_1X_MKA_KEY        = 21,
+    RADIUS_IEEE_802_1X_MKA_KEY = 22,
+    IEEE_802_11_4WH_KEY        = 26,
+    IEEE_802_11_GKH_KEY        = 27,
+    TI_CUSTOM_EUI_PROTOCOL_KEY = 30
 } kmp_type_e;
 
 typedef enum {

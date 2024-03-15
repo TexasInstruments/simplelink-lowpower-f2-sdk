@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,8 +58,8 @@ extern "C"
 // ****************************************************************************
 // defines
 // ****************************************************************************
-// SPI Slave baud rate
-#define SPI_SLAVE_BAUD_RATE 8000000
+// SPI Peripheral baud rate
+#define SPI_PERIPHERAL_BAUD_RATE 8000000
 #define NPI_SPI_HEADER_LEN 3
 
 

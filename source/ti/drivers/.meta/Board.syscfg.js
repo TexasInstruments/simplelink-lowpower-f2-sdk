@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,10 +77,20 @@ function getLibs(mod)
             libs.push(libPath("ti/drivers","drivers_" + family + "_ns" + ".a"));
         }
         else{
-            libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
+            /* For CC27XX devices use Rev A library if no board is selected or
+             * if using a Rev A board.
+             */
+            if (family.match(/cc27/) && (!system.deviceData.board || system.deviceData.board.name.match(/REVA/)))
+            {
+                libs.push(libPath("ti/drivers","drivers_" + family + "_reva.a"));
+            }
+            else
+            {
+                libs.push(libPath("ti/drivers","drivers_" + family + ".a"));
+            }
         }
 
-        if (!family.match(/cc(13|26).[34]|cc23/)) {
+        if (!family.match(/cc(13|26).[34]|cc23|cc27|cc35/)) {
             libs.push(libPath("ti/grlib", "grlib.a"));
         }
 
@@ -103,7 +113,7 @@ function getLibs(mod)
     var linkOpts = {
         name: "/ti/drivers",
         vers: "1.0.0.0",
-        deps: [],
+        deps: ["/ti/devices"],
         libs: libs
     };
 
@@ -121,7 +131,7 @@ function getLibs(mod)
 
     if (system.modules["/ti/drivers/ECDH"] || system.modules["/ti/drivers/ECDSA"]) {
         /* Add dependency on ECC library for CC13x1/CC26x1 and CC23x0 */
-        if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/)) {
+        if (family.match(/cc13.1/) || family.match(/cc26.1/) || family.match(/cc23.0/) || family.match(/cc27/)) {
             linkOpts.deps.push("/third_party/ecc");
         }
     }

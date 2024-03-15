@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -902,6 +902,14 @@ extern "C"
 #define HCI_EXT_RF_SETUP_CODED_S2_PHY                 LL_EXT_RF_SETUP_CODED_S2_PHY  //!< Coded-S2
 /** @} End RF_Setup_Phy_Params */
 
+ /**
+  * @defgroup STATS_Cmd Get statistics Command
+  * @{
+  */
+ #define HCI_EXT_STATS_RESET                          LL_EXT_STATS_RESET     //!< Reset
+ #define HCI_EXT_STATS_READ                           LL_EXT_STATS_READ      //!< Read
+ /** @} End STATS_Cmd */
+
 /** @} End HCI_Constants */
 
 /*
@@ -1373,6 +1381,7 @@ typedef struct
   uint8_t   nextChan;                            //! next data channel
   uint8_t   chanMap[LL_NUM_BYTES_FOR_CHAN_MAP];  //! bitmap of used BLE channels
   uint8_t   crcInit[LL_PKT_CRC_LEN];             //! connection CRC initialization value (24 bits)
+  uint8_t   ownAddrType;                         //! the own address type when the connection established
 }hciActiveConnInfo_t;
 
 #if defined( CC26XX ) || defined( CC13XX )
@@ -1410,6 +1419,18 @@ typedef struct
  * @return Pointer to buffer, or NULL.
  */
 extern void *HCI_bm_alloc( uint16 size );
+
+/**
+ * Free memory using buffer management.
+ *
+ * @note This function should never be called by the application. It is only
+ * used by HCI and L2CAP_bm_alloc.
+ *
+ * @param pBuf Number of bytes to free from the heap.
+ *
+ * @return None.
+ */
+extern void HCI_bm_free( uint8* pBuf );
 
 /**
  * Checks that the connection time parameter ranges are valid
@@ -4363,6 +4384,35 @@ extern hciStatus_t HCI_EXT_SetQOSDefaultParameters(uint32 paramDefaultVal,
  * @return @ref HCI_SUCCESS
  */
 extern hciStatus_t HCI_EXT_CoexEnableCmd( uint8 enable );
+
+/**
+ * @brief       This API is used to get RX statistics.
+ *
+ * @par connHandle
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetRxStatisticsCmd( uint16 connHandle, uint8 command );
+
+/**
+ * @brief       This API is used to get TX statistics.
+ *
+ * @par connHandle
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetTxStatisticsCmd( uint16 connHandle, uint8 command );
+
+/**
+ * @brief       This API is used to get COEX statistics.
+ *
+ * @par command
+ *
+ * @return @ref HCI_SUCCESS
+ */
+extern hciStatus_t HCI_EXT_GetCoexStatisticsCmd( uint8 command );
 
 #ifdef __cplusplus
 }

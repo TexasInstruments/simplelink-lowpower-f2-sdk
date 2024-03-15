@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,8 +49,9 @@
 #define STATUS_SUCCESS ((int_fast16_t)0)
 #define STATUS_ERROR   ((int_fast16_t)-1)
 
-/* Semaphore used to synchronize access to PSA handle */
+/* Semaphore used to synchronize access to TF-M Crypto service */
 SemaphoreP_Struct CryptoPSACC26X4_accessSemaphore;
+/* Semaphore used to block the task when blocking return behavior is used */
 SemaphoreP_Struct CryptoPSACC26X4_operationSemaphore;
 
 static bool isInitialized = false;
@@ -58,16 +59,16 @@ static bool isInitialized = false;
 static psa_handle_t sp_handle = PSA_NULL_HANDLE;
 
 /*
- *  ======== SPE_Crypto_setup ========
+ *  ======== CryptoPSACC26X4_setupCall ========
  */
-static int_fast16_t SPE_Crypto_setup(void)
+static int_fast16_t CryptoPSACC26X4_setupCall(void)
 {
     int_fast16_t status = STATUS_SUCCESS;
 
     if (!PSA_HANDLE_IS_VALID(sp_handle))
     {
         /* Connect to the Crypto Service */
-        sp_handle = psa_connect(CRYPTO_SP_SERVICE_SID, CRYPTO_SP_SERVICE_VERSION);
+        sp_handle = psa_connect(TI_CRYPTO_SERVICE_SID, TI_CRYPTO_SERVICE_VERSION);
 
         if (!PSA_HANDLE_IS_VALID(sp_handle))
         {
@@ -79,14 +80,13 @@ static int_fast16_t SPE_Crypto_setup(void)
 }
 
 /*
- *  ======== SPE_Crypto_cleanup ========
+ *  ======== CryptoPSACC26X4_cleanupCall ========
  */
-static void SPE_Crypto_cleanup(psa_status_t psaStatus)
+static void CryptoPSACC26X4_cleanupCall(psa_status_t psaStatus)
 {
     if (psaStatus == PSA_ERROR_PROGRAMMER_ERROR)
     {
-        /*
-         * When a PSA_ERROR_PROGRAMMER_ERROR occurs, the PSA connection must be
+        /* When a PSA_ERROR_PROGRAMMER_ERROR occurs, the PSA connection must be
          * closed and re-established before normal operation can resume. The PSA
          * connection will be re-established during the next crypto function
          * call.
@@ -102,9 +102,10 @@ static void SPE_Crypto_cleanup(psa_status_t psaStatus)
  */
 psa_status_t CryptoPSACC26X4_call(int32_t type, psa_invec *invecs, psa_outvec *outvecs)
 {
+    psa_status_t psaStatus;
     uintptr_t key;
 
-    if (SPE_Crypto_setup() != 0)
+    if (CryptoPSACC26X4_setupCall() != 0)
     {
         return STATUS_ERROR;
     }
@@ -112,12 +113,12 @@ psa_status_t CryptoPSACC26X4_call(int32_t type, psa_invec *invecs, psa_outvec *o
     /* Disable context switching */
     key = HwiP_disable();
 
-    psa_status_t psaStatus = psa_call(sp_handle, type, invecs, 1, outvecs, 1);
+    psaStatus = psa_call(sp_handle, type, invecs, 1, outvecs, 1);
 
     /* Reenable context switching */
     HwiP_restore(key);
 
-    SPE_Crypto_cleanup(psaStatus);
+    CryptoPSACC26X4_cleanupCall(psaStatus);
 
     return (psaStatus);
 }

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2023, Texas Instruments Incorporated
+ Copyright (c) 2005-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -476,7 +476,11 @@ const FHPIB_DB_t FHPIB_defaults =
     /*! macNeighborValidTime : 120 mins*/
     120,
     /*! macBaseBackOff : 0 */
+#ifdef FEATURE_BASE_BACKOFF
+    FEATURE_BASE_BACKOFF,
+#else
     0x08,
+#endif
     /*! maximum non-sleep nodes */
     2,
     /*! maximum sleep node */
@@ -584,7 +588,7 @@ const FH_PibTbl_t FH_PibTbl[] =
     /*!< FHPIB_TRACK_PARENT_EUI */
     {offsetof(FHPIB_DB_t, macTrackParentEUI), sizeof(sAddrExt_t), 0, 0},
     /*!< FHPIB_BC_INTERVAL */
-    {offsetof(FHPIB_DB_t, macBcInterval), sizeof(uint32_t), 255, 16777215},
+    {offsetof(FHPIB_DB_t, macBcInterval), sizeof(uint32_t), 0, 16777215},
     /*!< FHPIB_UC_EXCLUDED_CHANNELS */
     {offsetof(FHPIB_DB_t, macUcExcludedChannels),
               FHPIB_MAX_BIT_MAP_SIZE*sizeof(uint8_t), 0, 0},
@@ -648,9 +652,9 @@ const FH_PibTbl_t FH_PibTbl[] =
     /*!< CSMA Base Backoff */
     {offsetof(FHPIB_DB_t, macBaseBackOff), sizeof(uint8_t), 0, 16},
     /*!< maximum non-sleep nodes */
-    {offsetof(FHPIB_DB_t, macMaxNonSleepNodes), sizeof(uint16_t), 0, 50},
+    {offsetof(FHPIB_DB_t, macMaxNonSleepNodes), sizeof(uint16_t), 0, MAX_DEVICE_TABLE_ENTRIES},
     /*!< maximum sleep node */
-    {offsetof(FHPIB_DB_t, macMaxSleepNodes), sizeof(uint16_t), 0, 50},
+    {offsetof(FHPIB_DB_t, macMaxSleepNodes), sizeof(uint16_t), 0, MAX_DEVICE_TABLE_ENTRIES},
     /*!< maximum temp table node */
     {offsetof(FHPIB_DB_t, macMaxTempNodes), sizeof(uint16_t), 0, 10},
 

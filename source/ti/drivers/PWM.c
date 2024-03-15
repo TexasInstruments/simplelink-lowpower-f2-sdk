@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ __attribute__((weak)) extern const uint_least8_t PWM_count;
 /* Default PWM parameters structure */
 const PWM_Params PWM_defaultParams = {
     .periodUnits = PWM_PERIOD_HZ,     /* Period is defined in Hz */
-    .periodValue = 1e6,               /* 1MHz */
+    .periodValue = 1000000U,          /* 1MHz */
     .dutyUnits   = PWM_DUTY_FRACTION, /* Duty is fraction of period */
     .dutyValue   = 0,                 /* 0% duty cycle */
     .idleLevel   = PWM_IDLE_LOW,      /* Low idle level */

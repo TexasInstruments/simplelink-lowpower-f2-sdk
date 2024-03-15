@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -170,6 +170,8 @@ void LL_RxDataCompleteCback( uint16 connHandle,
 {
   // unused input parameter; PC-Lint error 715.
   (void)rssi;
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if Controller to Host flow control is enabled
   if ( ctrlToHostEnable == TRUE )

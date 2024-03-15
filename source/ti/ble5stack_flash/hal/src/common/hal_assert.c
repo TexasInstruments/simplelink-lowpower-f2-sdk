@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2023, Texas Instruments Incorporated
+ Copyright (c) 2006-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -293,8 +293,9 @@ void halAssertHazardLights(void)
   uint8 debugData[DEBUG_DATA_SIZE];
 
   /* disable all interrupts before anything else */
+#ifndef USE_RCL
   HAL_DISABLE_INTERRUPTS();
-
+#endif
   /*----------------------------------------------------------------------------
    *  Initialize LEDs and turn them off.
    */
@@ -306,7 +307,7 @@ void halAssertHazardLights(void)
   HAL_TURN_OFF_LED4();
 
   /*----------------------------------------------------------------------------
-   *  Master infinite loop.
+   *  Central infinite loop.
    */
   for (;;)
   {

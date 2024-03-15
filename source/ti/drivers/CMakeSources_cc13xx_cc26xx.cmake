@@ -13,6 +13,13 @@ set(SOURCES_CC13XX_CC26XX_COMMON
     AESCTR.c
     AESCTRDRBG.c
     AESECB.c
+    ANSIX936KDF.c
+    ansix936kdf/ANSIX936KDFXX.c
+    CAN.c
+    can/TCAN455X.c
+    can/common/CANMCAN.c
+    ../../third_party/mcan/MCAN.c
+    cryptoutils/cryptokey/CryptoKey.c
     cryptoutils/cryptokey/CryptoKeyPlaintext.c
     cryptoutils/sharedresources/CryptoResourceCC26XX.c
     cryptoutils/utils/CryptoUtils.c
@@ -118,8 +125,10 @@ set(SOURCES_CC13X4_CC26X3_CC26X4
     watchdog/WatchdogCC26X4.c
 )
 
-set(SOURCES_TFM_NS_API ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
-                       ${TFM_INSTALL_DIR}/source/third_party/tfm/platform/ext/target/ti/common/tfm_ns_interface.c
+set(SOURCES_TFM_NS_API
+    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_psa_ns_api.c
+    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/os_wrapper/tfm_ns_interface_bare_metal.c
+    # ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_attest_api.c  // Disabled pending resolution of SPE-137
 )
 
 set(SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4
@@ -152,7 +161,7 @@ set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4
     aesctrdrbg/AESCTRDRBGX4_ns.c
     aesecb/AESECBCC26X4_ns.c
     aesgcm/AESGCMCC26X4_ns.c
-    attestation/Attestation_PSA_ns.c
+    # attestation/Attestation_PSA_ns.c  // Disabled pending resolution of SPE-137
     crypto/CryptoCC26X4_ns.c
     cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_ns.c
     cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.c
@@ -162,5 +171,4 @@ set(SOURCES_NONSEC_CC13X4_CC26X3_CC26X4
     sha2/SHA2CC26X4_ns.c
     tfm/SecureCallback.c
     trng/TRNGCC26X4_ns.c
-    ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/src/tfm_initial_attestation_ipc_api.c
 )

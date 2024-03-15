@@ -38,6 +38,7 @@
 #include "Security/kmp/kmp_api.h"
 #include "Security/protocols/sec_prot_certs.h"
 #include "Security/protocols/sec_prot_keys.h"
+#include "Security/protocols/sec_prot.h"
 #include "Security/protocols/key_sec_prot/key_sec_prot.h"
 #include "Security/protocols/eap_tls_sec_prot/supp_eap_tls_sec_prot.h"
 #include "Security/protocols/tls_sec_prot/tls_sec_prot.h"
@@ -57,6 +58,9 @@
 #ifndef NV_RESTORE
 #include "Service_Libs/utils/ns_file.h"
 #endif //NV_RESTORE
+#include "6LoWPAN/ws/ws_common.h"
+#include "NWK_INTERFACE/Include/protocol.h"
+#include "6LoWPAN/ws/ws_bootstrap.h"
 
 #ifdef HAVE_WS
 #ifdef HAVE_PAE_SUPP
@@ -133,6 +137,9 @@ typedef struct {
 #endif
 
 // Trickle timer on how long to wait response after last retry before failing authentication
+
+#define LAST_INTERVAL_TRICKLE_IMIN_SECS_CUSTOM_AUTH    5     /* 5 seconds */
+#define LAST_INTERVAL_TRICKLE_IMAX_SECS_CUSTOM_AUTH    5
 #define LAST_INTERVAL_TRICKLE_IMIN_SECS    240   /* 4 minutes */
 #define LAST_INTERVAL_TRICKLE_IMAX_SECS    240
 
@@ -169,7 +176,6 @@ static void ws_pae_supp_kmp_api_create_indication(kmp_api_t *kmp, kmp_type_e typ
 static bool ws_pae_supp_kmp_api_finished_indication(kmp_api_t *kmp, kmp_result_e result, kmp_sec_keys_t *sec_keys);
 static void ws_pae_supp_kmp_api_finished(kmp_api_t *kmp);
 
-
 static const eapol_pdu_recv_cb_data_t eapol_pdu_recv_cb_data = {
     .priority = EAPOL_PDU_RECV_HIGH_PRIORITY,
     .filter_requsted = false,
@@ -205,22 +211,26 @@ int8_t ws_pae_supp_authenticate(protocol_interface_info_entry_t *interface_ptr, 
         return -1;
     }
 
-    if (ws_pae_supp_nw_keys_valid_check(pae_supp, dest_pan_id, dest_network_name) >= 0) {
-        pae_supp->auth_completed(interface_ptr, AUTH_RESULT_OK, NULL);
-        return 0;
-    }
+#if !defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != CUSTOM_EUI_AUTH) {
+        if (ws_pae_supp_nw_keys_valid_check(pae_supp, dest_pan_id, dest_network_name) >= 0) {
+            pae_supp->auth_completed(interface_ptr, AUTH_RESULT_OK, NULL);
+            return 0;
+        }
 
-    // Delete GTKs
-    sec_prot_keys_gtks_init(pae_supp->sec_keys_nw_info->gtks);
+        // Delete GTKs
+        sec_prot_keys_gtks_init(pae_supp->sec_keys_nw_info->gtks);
 
-    /* Network name or PAN ID has changed, delete key data associated with border router
-       i.e PMK, PTK, EA-IE data (border router EUI-64) */
-    if (ws_pae_supp_network_name_compare(pae_supp->sec_keys_nw_info->network_name, dest_network_name) != 0 ||
-            (pae_supp->sec_keys_nw_info->key_pan_id != 0xFFFF && pae_supp->sec_keys_nw_info->key_pan_id != dest_pan_id)) {
-        sec_prot_keys_pmk_delete(&pae_supp->entry.sec_keys);
-        sec_prot_keys_ptk_delete(&pae_supp->entry.sec_keys);
-        sec_prot_keys_ptk_eui_64_delete(&pae_supp->entry.sec_keys);
+        /* Network name or PAN ID has changed, delete key data associated with border router
+        i.e PMK, PTK, EA-IE data (border router EUI-64) */
+        if (ws_pae_supp_network_name_compare(pae_supp->sec_keys_nw_info->network_name, dest_network_name) != 0 ||
+                (pae_supp->sec_keys_nw_info->key_pan_id != 0xFFFF && pae_supp->sec_keys_nw_info->key_pan_id != dest_pan_id)) {
+            sec_prot_keys_pmk_delete(&pae_supp->entry.sec_keys);
+            sec_prot_keys_ptk_delete(&pae_supp->entry.sec_keys);
+            sec_prot_keys_ptk_eui_64_delete(&pae_supp->entry.sec_keys);
+        }
     }
+#endif
 
     pae_supp->sec_keys_nw_info->key_pan_id = dest_pan_id;
 
@@ -369,10 +379,16 @@ int8_t ws_pae_supp_nw_key_index_update(protocol_interface_info_entry_t *interfac
         return -1;
     }
 
-    if (sec_prot_keys_gtk_status_active_set(pae_supp->sec_keys_nw_info->gtks, index) >= 0) {
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        if (sec_prot_keys_gtk_status_active_set(pae_supp->sec_keys_nw_info->gtks, index) >= 0) {
+            pae_supp->nw_key_index_set(interface_ptr, index);
+        } else {
+            tr_info("NW send key index: %i, no changes", index + 1);
+        }
+    } else if (ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH)
+    {
+        // Update key Index without checking for Key state as static keys are used with NO_AUTH configuration
         pae_supp->nw_key_index_set(interface_ptr, index);
-    } else {
-        tr_info("NW send key index: %i, no changes", index + 1);
     }
 
     return 0;
@@ -453,6 +469,11 @@ static void ws_pae_supp_authenticate_response(pae_supp_t *pae_supp, auth_result_
 static int8_t ws_pae_supp_initial_key_send(pae_supp_t *pae_supp)
 {
     if (!pae_supp->auth_requested) {
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+        if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+            return 0;
+        }
+#endif
         // If not making initial authentication updates target (RPL parent) for each EAPOL-key message
         uint8_t parent_eui_64[8];
         if (ws_pae_supp_parent_eui_64_get(pae_supp->interface_ptr, parent_eui_64) >= 0) {
@@ -474,15 +495,19 @@ static int8_t ws_pae_supp_initial_key_send(pae_supp_t *pae_supp)
         ws_pae_lib_supp_timer_ticks_set(&pae_supp->entry, WAIT_FOR_REAUTHENTICATION_TICKS);
         tr_info("PAE wait for auth seconds: %i", WAIT_FOR_REAUTHENTICATION_TICKS / 10);
     }
+    kmp_type_e type = IEEE_802_1X_MKA_KEY;
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        type = TI_CUSTOM_EUI_PROTOCOL_KEY;
+    }
 
-    kmp_api_t *kmp = ws_pae_supp_kmp_create_and_start(pae_supp->kmp_service, IEEE_802_1X_MKA_KEY, pae_supp);
+    kmp_api_t *kmp = ws_pae_supp_kmp_create_and_start(pae_supp->kmp_service, type, pae_supp);
     if (!kmp) {
         return -1;
     }
 
     tr_info("EAPOL target: %s", trace_array(kmp_address_eui_64_get(&pae_supp->entry.addr), 8));
 
-    kmp_api_create_request(kmp, IEEE_802_1X_MKA_KEY, &pae_supp->entry.addr, &pae_supp->entry.sec_keys);
+    kmp_api_create_request(kmp, type, &pae_supp->entry.addr, &pae_supp->entry.sec_keys);
 
     return 0;
 }
@@ -615,50 +640,61 @@ int8_t ws_pae_supp_init(protocol_interface_info_entry_t *interface_ptr, const se
     sec_prot_keys_init(&pae_supp->entry.sec_keys, pae_supp->sec_keys_nw_info->gtks, certs);
     memset(pae_supp->new_br_eui_64, 0, 8);
 
-    pae_supp->kmp_service = kmp_service_create();
-    if (!pae_supp->kmp_service) {
-        goto error;
-    }
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        pae_supp->kmp_service = kmp_service_create();
+        if (!pae_supp->kmp_service) {
+            goto error;
+        }
 
-    if (kmp_service_cb_register(pae_supp->kmp_service, ws_pae_supp_kmp_incoming_ind, ws_pae_supp_kmp_tx_status_ind, ws_pae_supp_kmp_service_addr_get, NULL, ws_pae_supp_kmp_service_api_get) < 0) {
-        goto error;
-    }
+        if (kmp_service_cb_register(pae_supp->kmp_service, ws_pae_supp_kmp_incoming_ind, ws_pae_supp_kmp_tx_status_ind, ws_pae_supp_kmp_service_addr_get, NULL, ws_pae_supp_kmp_service_api_get) < 0) {
+            goto error;
+        }
 
-    if (kmp_service_event_if_register(pae_supp->kmp_service, ws_pae_supp_event_send)) {
-        goto error;
-    }
+        if (kmp_service_event_if_register(pae_supp->kmp_service, ws_pae_supp_event_send)) {
+            goto error;
+        }
 
-    if (kmp_service_timer_if_register(pae_supp->kmp_service, ws_pae_supp_timer_if_start, ws_pae_supp_timer_if_stop)) {
-        goto error;
-    }
+        if (kmp_service_timer_if_register(pae_supp->kmp_service, ws_pae_supp_timer_if_start, ws_pae_supp_timer_if_stop)) {
+            goto error;
+        }
 
-    if (kmp_eapol_pdu_if_register(pae_supp->kmp_service, interface_ptr) < 0) {
-        goto error;
-    }
+        if (kmp_eapol_pdu_if_register(pae_supp->kmp_service, interface_ptr) < 0) {
+            goto error;
+        }
 
-    if (ws_eapol_pdu_cb_register(interface_ptr, &eapol_pdu_recv_cb_data) < 0) {
-        goto error;
-    }
+        if (ws_eapol_pdu_cb_register(interface_ptr, &eapol_pdu_recv_cb_data) < 0) {
+            goto error;
+        }
 
-    if (supp_key_sec_prot_register(pae_supp->kmp_service) < 0) {
-        goto error;
+        if (supp_key_sec_prot_register(pae_supp->kmp_service) < 0) {
+            goto error;
+        }
     }
+    else
+#endif
+    {
+        pae_supp->kmp_service = NULL;
+    }
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        if (supp_eap_tls_sec_prot_register(pae_supp->kmp_service) < 0) {
+            goto error;
+        }
 
-    if (supp_eap_tls_sec_prot_register(pae_supp->kmp_service) < 0) {
-        goto error;
-    }
+        if (client_tls_sec_prot_register(pae_supp->kmp_service) < 0) {
+            goto error;
+        }
 
-    if (client_tls_sec_prot_register(pae_supp->kmp_service) < 0) {
-        goto error;
-    }
+        if (supp_fwh_sec_prot_register(pae_supp->kmp_service) < 0) {
+            goto error;
+        }
 
-    if (supp_fwh_sec_prot_register(pae_supp->kmp_service) < 0) {
-        goto error;
+        if (supp_gkh_sec_prot_register(pae_supp->kmp_service) < 0) {
+            goto error;
+        }
     }
-
-    if (supp_gkh_sec_prot_register(pae_supp->kmp_service) < 0) {
-        goto error;
-    }
+#endif
 
     if (tasklet_id < 0) {
         tasklet_id = eventOS_event_handler_create(ws_pae_supp_tasklet_handler, PAE_TASKLET_INIT);
@@ -888,7 +924,11 @@ void ws_pae_supp_slow_timer(uint16_t seconds)
                 continue;
             }
             uint64_t current_time = ws_pae_current_time_get();
-            sec_prot_keys_gtk_lifetime_decrement(pae_supp->sec_keys_nw_info->gtks, i, current_time, seconds, false);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+                sec_prot_keys_gtk_lifetime_decrement(pae_supp->sec_keys_nw_info->gtks, i, current_time, seconds, false);
+            }
+#endif
         }
 
         if (pae_supp->initial_key_timer > 0) {
@@ -941,8 +981,15 @@ static void ws_pae_supp_initial_trickle_timer_start(pae_supp_t *pae_supp)
 static void ws_pae_supp_initial_last_interval_trickle_timer_start(pae_supp_t *pae_supp)
 {
     // Starts trickle last to wait response after last retry before failing authentication
-    pae_supp->auth_trickle_params.Imin = LAST_INTERVAL_TRICKLE_IMIN_SECS;
-    pae_supp->auth_trickle_params.Imax = LAST_INTERVAL_TRICKLE_IMAX_SECS;
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        pae_supp->auth_trickle_params.Imin = LAST_INTERVAL_TRICKLE_IMIN_SECS_CUSTOM_AUTH;
+        pae_supp->auth_trickle_params.Imax = LAST_INTERVAL_TRICKLE_IMAX_SECS_CUSTOM_AUTH;
+    } else {
+        pae_supp->auth_trickle_params.Imin = LAST_INTERVAL_TRICKLE_IMIN_SECS;
+        pae_supp->auth_trickle_params.Imax = LAST_INTERVAL_TRICKLE_IMAX_SECS;
+    }
+
+
     pae_supp->auth_trickle_params.k = 0;
     pae_supp->auth_trickle_params.TimerExpirations = 1;
     // Set I to [iMin,iMax] (4 to 4 minutes) -> t is [I/2 - I] (2 minutes to 4 minutes)
@@ -1274,6 +1321,17 @@ static bool ws_pae_supp_kmp_api_finished_indication(kmp_api_t *kmp, kmp_result_e
         }
 
         ws_pae_supp_authenticate_response(pae_supp, AUTH_RESULT_OK);
+    }
+
+    else if (type == TI_CUSTOM_EUI_PROTOCOL) {
+        if((sec_prot_result_e) result == SEC_RESULT_OK) {
+            ws_pae_supp_authenticate_response(pae_supp, AUTH_RESULT_OK);
+        }
+        else if ((sec_prot_result_e) result == SEC_RESULT_ERROR) {
+            pae_supp->tx_failure_on_initial_key = true;
+            ws_pae_supp_authenticate_response(pae_supp, AUTH_RESULT_ERR_UNSPEC);
+            api_panid_filter_list_add(PANID_DENY_LIST_E, pae_supp->interface_ptr->ws_info->network_pan_id);
+        }
     }
 
     /* If initial EAPOL-key message sending fails to tx no acknowledge, indicates failure so

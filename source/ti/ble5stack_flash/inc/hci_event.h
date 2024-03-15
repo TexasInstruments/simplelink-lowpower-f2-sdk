@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -112,7 +112,7 @@ extern uint8 pHciEvtMask2[];
 #define BT_EVT_MASK_ENCRYPTION_CHANGE                                  0x80
 // Byte 1
 #define BT_EVT_MASK_CHANGE_CONNECTION_LINK_KEY_COMPLETE                0x01
-#define BT_EVT_MASK_MASTER_LINK_KEY_COMPLETE                           0x02
+#define BT_EVT_MASK_CENTRAL_LINK_KEY_COMPLETE                          0x02
 #define BT_EVT_MASK_READ_REMOTE_SUPPORTED_FEATURES_COMPLETE            0x04
 #define BT_EVT_MASK_READ_REMOTE_VERSION_INFORMATION_COMPLETE           0x08
 #define BT_EVT_MASK_QOS_SETUP_COMPLETE                                 0x10
@@ -221,14 +221,14 @@ extern uint8 pHciEvtMask2[];
 #define BT_EVT_MASK2_TRIGGERED_CLOCK_CAPTURE                           0x40
 #define BT_EVT_MASK2_SYNCHRONIZATION_TRAIN_COMPLETE                    0x80
 // Byte 2
-#define BT_EVT_MASK2_SYNCHRONIZATION_TRAIN_RECEIVED                    0x01
-#define BT_EVT_MASK2_CONNECTIONLESS_SLAVE_BROADCAST_RECEIVE            0x02
-#define BT_EVT_MASK2_CONNECTIONLESS_SLAVE_BROADCAST_TIMEOUT            0x04
-#define BT_EVT_MASK2_TRUNCATED_PAGE_COMPLETE                           0x08
-#define BT_EVT_MASK2_SLAVE_PAGE_RESPONSE_TIMEOUT                       0x10
-#define BT_EVT_MASK2_CONNECTIONLESS_SLAVE_BROADCAST_CHANNEL_MAP_CHANGE 0x20
-#define BT_EVT_MASK2_INQUIRY_RESPONSE_NOTIFICATION                     0x40
-#define BT_EVT_MASK2_AUTHENTICATED_PAYLOAD_TIMEOUT_EXPIRED             0x80
+#define BT_EVT_MASK2_SYNCHRONIZATION_TRAIN_RECEIVED                         0x01
+#define BT_EVT_MASK2_CONNECTIONLESS_PERIPHERAL_BROADCAST_RECEIVE            0x02
+#define BT_EVT_MASK2_CONNECTIONLESS_PERIPHERAL_BROADCAST_TIMEOUT            0x04
+#define BT_EVT_MASK2_TRUNCATED_PAGE_COMPLETE                                0x08
+#define BT_EVT_MASK2_PERIPHERAL_PAGE_RESPONSE_TIMEOUT                       0x10
+#define BT_EVT_MASK2_CONNECTIONLESS_PERIPHERAL_BROADCAST_CHANNEL_MAP_CHANGE 0x20
+#define BT_EVT_MASK2_INQUIRY_RESPONSE_NOTIFICATION                          0x40
+#define BT_EVT_MASK2_AUTHENTICATED_PAYLOAD_TIMEOUT_EXPIRED                  0x80
 // Byte 3 - Byte 7
 #define BT_EVT_MASK2_SAM_STATUS_CHANGE_EVENT                           0x01
 #define BT_EVT_MASK2_RESERVED01                                        0x02

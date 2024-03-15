@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,18 @@
 #include <ti/drivers/dpl/SwiP.h>
 
 #include "QueueP.h"
+#include <ti/devices/DeviceFamily.h>
 
-/* Lowest priority interrupt */
-#define INT_PRI_LEVEL7 0xe0
+#include DeviceFamily_constructPath(inc/hw_types.h)
+#include DeviceFamily_constructPath(driverlib/interrupt.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
+
+/*
+ * Number of priority bits change between devices. Using INT_PRIORITY_MASK
+ * defined in the interrupt.h file allows for using the correct number of
+ * priority bits available for each device.
+ */
+#define LOWEST_INT_PRI_LEVEL INT_PRIORITY_MASK
 
 #define NUMPRI 4
 
@@ -148,7 +157,7 @@ SwiP_Handle SwiP_construct(SwiP_Struct *handle, SwiP_Fxn swiFxn, SwiP_Params *pa
             SwiP_schedulerRunning = false;
 
             HwiP_Params_init(&hwiParams);
-            hwiParams.priority = INT_PRI_LEVEL7; // use the lowest priority
+            hwiParams.priority = LOWEST_INT_PRI_LEVEL; // use the lowest priority
             HwiP_construct(&SwiP_hwiStruct, HwiP_swiPIntNum, SwiP_handleHwi, &hwiParams);
 
             SwiP_initialized = true;

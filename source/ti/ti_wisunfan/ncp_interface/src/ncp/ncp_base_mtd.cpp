@@ -73,7 +73,7 @@
 #include "otstack.h"
 #include <ti/drivers/GPIO.h>
 //#include <ti_wisunfan_config.h>
-//#include "ti_drivers_config.h"
+#include "ti_drivers_config.h"
 //Additional header files for integrating with nanostack
 #include "nsconfig.h"
 #include "Core/include/ns_buffer.h"
@@ -93,11 +93,18 @@
 #include "RPL/rpl_downward.h"
 #include "RPL/rpl_structures.h"
 
+#include "Service_Libs/mac_neighbor_table/mac_neighbor_table.h"
+#include "net_interface.h"
+#include "platform/arm_hal_phy.h"
+
 #include "mbed-mesh-api/mesh_interface_types.h"
 //#include "api_mac.h"
 #include "mac_spec.h"
 #include "saddr.h"
 #include "application.h"
+#include "socket_api.h"
+#include "ip6string.h"
+#include "net_interface.h"
 #include "Core/include/ns_address_internal.h"
 #include <ioc.h>
 #include "ti_radio_config.h"
@@ -146,6 +153,14 @@ extern "C" configurable_props_t cfg_props;
 #ifdef SWITCH_NCP_TO_TRACE
 extern "C" uint32_t g_switchNcp2Trace;
 #endif //SWITCH_NCP_TO_TRACE
+
+#ifdef WISUN_TEST_MPL_EMBEDDED
+extern "C" bool udpSocketSetup(void);
+extern "C" void ns_trace_printf(uint8_t dlevel, const char *grp, const char *fmt, ...);
+#ifdef HAVE_RPL_ROOT
+extern "C" void startUDPTraffic (uint32_t numPkts);
+#endif
+#endif
 
 /* Core properties */
 
@@ -334,6 +349,28 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_NBR_METRICS>(void
            return error;
 }
 
+#ifdef WISUN_TEST_METRICS
+extern "C" void get_test_metrics(test_metrics_s *test_metrics);
+#endif
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_METRICS>(void)
+{
+    otError  error = OT_ERROR_NONE;
+
+#ifdef WISUN_TEST_METRICS
+    test_metrics_s test_metrics;
+    //Retrieve Test metrics data
+    get_test_metrics(&test_metrics);
+
+    //Send the info to Spinel encoder
+    SuccessOrExit(error = mEncoder.WriteDataWithLen((uint8_t *)&test_metrics, sizeof(test_metrics_s)));
+#else
+    SuccessOrExit(error = mEncoder.WriteUint8(0));
+#endif
+
+    exit:
+        return error;
+}
 
 /* MAC properties */
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_15_4_PANID>(void)
@@ -416,6 +453,17 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_STACK_UP>(void)
         
     		//bringup the wisunstack
         	error = nanostack_net_stack_up();        
+
+#ifdef WISUN_TEST_MPL_EMBEDDED
+            // Set up UDP socket when network stack is up
+            if (error == OT_ERROR_NONE)
+            {
+                if(udpSocketSetup() == false)
+                {
+                    tr_debug("Socket setup failed");
+                }
+            }
+#endif
     	}
 #ifdef TEST_WISUN_STACK_RESTART
 		else
@@ -464,6 +512,23 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_NETWORK_NAME>(voi
 
     exit:
         return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_UDP_START>(void)
+{
+    uint32_t udp_pkts = 0;
+
+    otError error   = OT_ERROR_NONE;
+    SuccessOrExit(error = mDecoder.ReadUint32(udp_pkts));
+#ifdef WISUN_TEST_MPL_EMBEDDED
+#ifdef HAVE_RPL_ROOT
+    // Start UDP Traffic for given number of packets
+    startUDPTraffic(udp_pkts);
+#endif
+#endif
+
+exit:
+    return error;
 }
 
 /* Tech Specific: PHY properties */
@@ -725,6 +790,62 @@ exit:
     return error;
 }
 
+extern "C" uint8_t enableVPIE;
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_VPIE_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+    bool enable = false;
+
+    enable = enableVPIE;
+
+    SuccessOrExit(error = mEncoder.WriteBool(enable));
+exit:
+    return error;
+}
+
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_VPIE_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+    bool enable = false;
+
+    SuccessOrExit(error = mDecoder.ReadBool(enable));
+
+    enableVPIE = enable;
+
+exit:
+    return error;
+}
+
+extern "C" void timac_set_mpl_test (uint8_t st);
+extern "C" uint8_t timac_get_mpl_test(void);
+
+template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MACMPL_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+    bool enable = false;
+    uint8_t st;
+    st = timac_get_mpl_test();
+    enable = st;
+
+    SuccessOrExit(error = mEncoder.WriteBool(enable));
+exit:
+    return error;
+}
+
+template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_MACMPL_COMMAND>(void)
+{
+    otError error = OT_ERROR_NONE;
+    bool enable = false;
+
+    SuccessOrExit(error = mDecoder.ReadBool(enable));
+
+    timac_set_mpl_test(enable);
+
+exit:
+    return error;
+}
+
 #endif //TI_WISUN_FAN_DEBUG
 
 extern "C" uint8_t *bitcopy(uint8_t *restrict dst, const uint8_t *restrict src, uint_fast8_t bits);
@@ -904,6 +1025,9 @@ exit:
 
 #ifdef TI_WISUN_FAN_DEBUG
 extern "C" sAddrExt_t mac_eui_filter_list[SIZE_OF_EUI_LIST];
+#ifdef HAVE_RPL_ROOT
+extern "C" sAddrExt_t eapol_eui_allow_list[EAPOL_EUI_LIST_SIZE];
+#endif
 #define SIZE_EUI_LIST_PRINT 25
 
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_MAC_FILTER_LIST>(void)
@@ -913,14 +1037,32 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_MAC_FILTER_LIST>(
     uint16_t print_index = 0;
     sAddrExt_t empty_addr = {0};
 
-    while (index < SIZE_OF_EUI_LIST && print_index < SIZE_EUI_LIST_PRINT)
+#ifdef HAVE_RPL_ROOT
+    if (filterMode == 3)
     {
-        if (std::memcmp(mac_eui_filter_list[index], empty_addr, SADDR_EXT_LEN) != 0)
+        while (index < EAPOL_EUI_LIST_SIZE && print_index < SIZE_EUI_LIST_PRINT)
         {
-            SuccessOrExit(error = mEncoder.WriteEui64(mac_eui_filter_list[index]));
-            print_index++;
+            if (std::memcmp(eapol_eui_allow_list[index], empty_addr, SADDR_EXT_LEN) != 0)
+            {
+                SuccessOrExit(error = mEncoder.WriteEui64(eapol_eui_allow_list[index]));
+                print_index++;
+            }
+            index++;
         }
-        index++;
+
+    }
+    else
+#endif
+    {
+        while (index < SIZE_OF_EUI_LIST && print_index < SIZE_EUI_LIST_PRINT)
+        {
+            if (std::memcmp(mac_eui_filter_list[index], empty_addr, SADDR_EXT_LEN) != 0)
+            {
+                SuccessOrExit(error = mEncoder.WriteEui64(mac_eui_filter_list[index]));
+                print_index++;
+            }
+            index++;
+        }
     }
 
 exit:
@@ -930,6 +1072,10 @@ exit:
 
 extern "C" bool macRx_insertAddrIntoList(uint8_t* euiAddress);
 extern "C" bool macRx_removeAddrFromList(uint8_t* euiAddress);
+#ifdef HAVE_RPL_ROOT
+extern "C" bool insert_eapol_eui_allow_list(uint8_t* euiAddress);
+extern "C" bool remove_eapol_eui_allow_list(uint8_t* euiAddress);
+#endif
 template <> otError NcpBase::HandlePropertyInsert<SPINEL_PROP_MAC_MAC_FILTER_LIST>(void)
 {
     otError error = OT_ERROR_NONE;
@@ -940,7 +1086,16 @@ template <> otError NcpBase::HandlePropertyInsert<SPINEL_PROP_MAC_MAC_FILTER_LIS
     SuccessOrExit(error = mDecoder.ReadEui64(extAddress));
 
     // insert to address list
-    retVal = macRx_insertAddrIntoList(&extAddress.bytes[0]);
+#ifdef HAVE_RPL_ROOT
+    if (filterMode == 3)
+    {
+        retVal = insert_eapol_eui_allow_list(&extAddress.bytes[0]);
+    }
+    else
+#endif
+    {
+        retVal = macRx_insertAddrIntoList(&extAddress.bytes[0]);
+    }
     if(false == retVal)
     {
         error = OT_ERROR_FAILED;
@@ -960,7 +1115,16 @@ template <> otError NcpBase::HandlePropertyRemove<SPINEL_PROP_MAC_MAC_FILTER_LIS
     SuccessOrExit(error = mDecoder.ReadEui64(extAddress));
 
     // remove from address list
-    retVal = macRx_removeAddrFromList(&extAddress.bytes[0]);
+#ifdef HAVE_RPL_ROOT
+    if (filterMode == 3)
+    {
+        retVal = remove_eapol_eui_allow_list(&extAddress.bytes[0]);
+    }
+    else
+#endif
+    {
+        retVal = macRx_removeAddrFromList(&extAddress.bytes[0]);
+    }
     if(false == retVal)
     {
         error = OT_ERROR_NO_ADDRESS;

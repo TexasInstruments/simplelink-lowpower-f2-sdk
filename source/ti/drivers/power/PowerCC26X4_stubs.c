@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 
 #include <ti/drivers/Power.h>
 
-#ifndef TFM_PSA_API /* TFM_PSA_API indicates this is a TF-M build */
+#ifndef TFM_BUILD /* TFM_BUILD indicates this is a TF-M build */
     #error "Power function stubs are for TF-M builds only"
 #endif
 
@@ -57,7 +57,7 @@ int_fast16_t Power_releaseConstraint(uint_fast16_t constraintId)
  *  ======== Power_releaseDependency ========
  *  Release a previously declared dependency.
  */
-int_fast16_t Power_releaseDependency(uint_fast16_t resourceId)
+int_fast16_t Power_releaseDependency(Power_Resource resourceId)
 {
     (void)resourceId; /* Unused arg */
     return (Power_SOK);
@@ -77,7 +77,7 @@ int_fast16_t Power_setConstraint(uint_fast16_t constraintId)
  *  ======== Power_setDependency ========
  *  Declare a dependency upon a resource.
  */
-int_fast16_t Power_setDependency(uint_fast16_t resourceId)
+int_fast16_t Power_setDependency(Power_Resource resourceId)
 {
     (void)resourceId; /* Unused arg */
     return (Power_SOK);

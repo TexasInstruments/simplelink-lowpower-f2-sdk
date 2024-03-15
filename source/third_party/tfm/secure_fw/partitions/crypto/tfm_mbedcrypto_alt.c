@@ -5,10 +5,15 @@
  *
  */
 
-/*
- * This file collects the alternative functions to replace the
- * implementations in mbed-crypto if the corresponding mbed-crypto
- * MBEDTLS__FUNCTION_NAME__ALT is selected.
+/**
+ * \file This file collects the alternative functions to replace the
+ *       implementations in mbed-crypto if the corresponding mbed-crypto
+ *       MBEDTLS__FUNCTION_NAME__ALT is selected.
+ *
+ * \note This applies only when the legacy driver API based on the _ALT
+ *       implementations is selected, and has no effect when the PSA driver
+ *       interface is used. This is going to be deprecated in a future version
+ *       of mbed TLS.
  */
 
 /*
@@ -18,6 +23,7 @@
 #include "tfm_mbedcrypto_include.h"
 #if defined(MBEDTLS_AES_DECRYPT_ALT) || defined(MBEDTLS_AES_SETKEY_DEC_ALT)
 #include "mbedtls/aes.h"
+#include "mbedtls/error.h"
 #endif
 
 #if defined(MBEDTLS_AES_DECRYPT_ALT) && defined(MBEDTLS_CCM_C)
@@ -35,7 +41,7 @@ int mbedtls_internal_aes_decrypt(mbedtls_aes_context *ctx,
     (void)input;
     (void)output;
 
-    return MBEDTLS_ERR_AES_FEATURE_UNAVAILABLE;
+    return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 #endif
 
@@ -53,6 +59,6 @@ int mbedtls_aes_setkey_dec(mbedtls_aes_context *ctx, const unsigned char *key,
     (void)key;
     (void)keybits;
 
-    return MBEDTLS_ERR_AES_FEATURE_UNAVAILABLE;
+    return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 #endif

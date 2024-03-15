@@ -54,7 +54,6 @@ const rfCommon = system.getScript("/ti/ti_wisunfan/rf_config/"
  *          - phyType<band>: Name of the phy found in the radio config module.
  *                           Valid options: phyType868, phyType433,
  *                           phyType2440(reserved for future use)
- *          - carrierFrequency: Frequency setting within the freqBand
  *          - whitening: Types of whitening
  *          - codeExportConfig: Exported code names to be passed to
  *                              radioConfig.codeExportConfig
@@ -67,7 +66,6 @@ const devSpecificSlLr5KbpsSettings = {
     args: {
         freqBand: "868", // options: 868 or 433
         phyType868: "slr5kbps2gfsk", // phyType suffix must match freqBand
-        carrierFrequency: 868.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         codeExportConfig: {
@@ -83,7 +81,6 @@ const devSpecific2Gfsk50KbpsSettings_25dev = {
     args: {
         freqBand: "868", // options: 868 or 433
         phyType868: "2gfsk50kbps25dev915wsun1b", // phyType suffix must match freqBand
-        carrierFrequency: 868.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         codeExportConfig: {
@@ -165,7 +162,6 @@ const devSpecific2Gfsk200KbpsSettings_50dev = {
     args: {
         freqBand: "868",
         phyType868: "2gfsk200kbps50dev915wsun4a", // phyType sfx must match freqBand
-        carrierFrequency: 915.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         codeExportConfig: {

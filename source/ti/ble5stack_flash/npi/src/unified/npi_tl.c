@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -48,16 +48,10 @@
 // includes
 // ****************************************************************************
 #include <string.h>
-#include <xdc/std.h>
-#include <ti/drivers/Power.h>
-#include <ti/drivers/power/PowerCC26XX.h>
-#include <ti/sysbios/family/arm/m3/Hwi.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Swi.h>
-
 #include <ti/drivers/GPIO.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_ints.h"
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
 #include "hal_types.h"
 
 #include "inc/npi_tl.h"
@@ -183,6 +177,7 @@ uint8_t NPITL_openTL(NPITL_Params *params)
     }
     else
     {
+        NPIUtil_ExitCS(key);
         return NPI_TASK_FAILURE;
     }
     if ((npiTxBuf = NPIUtil_malloc(params->npiTLBufSize)) != NULL )
@@ -191,6 +186,7 @@ uint8_t NPITL_openTL(NPITL_Params *params)
     }
     else
     {
+        NPIUtil_ExitCS(key);
         return NPI_TASK_FAILURE;
     }
     // This will be updated to be able to select SPI/UART TL at runtime
@@ -207,13 +203,13 @@ uint8_t NPITL_openTL(NPITL_Params *params)
 
 #if (NPI_FLOW_CTRL == 1)
     // Assign GPIO index to remRdy and locRrdy
-#ifdef NPI_MASTER
+#ifdef NPI_CENTRAL
     REM_RDY_GPIO = params->srdyGpioIndex;
     LOC_RDY_GPIO = params->mrdyGpioIndex;
 #else
     REM_RDY_GPIO = params->mrdyGpioIndex;
     LOC_RDY_GPIO = params->srdyGpioIndex;
-#endif //NPI_MASTER
+#endif //NPI_CENTRAL
 
     // Add GPIO index to GPIO_PinConfig
     GPIO_setConfig(REM_RDY_GPIO, REM_RDY_GPIO_CONFIG);
@@ -289,11 +285,11 @@ void NPITL_closeTL(void)
 bool NPITL_checkNpiBusy(void)
 {
 #if (NPI_FLOW_CTRL == 1)
-#ifdef NPI_MASTER
+#ifdef NPI_CENTRAL
     return !GPIO_read(LOC_RDY_GPIO) || npiRxActive;
 #else
     return !GPIO_read(LOC_RDY_GPIO);
-#endif //NPI_MASTER
+#endif //NPI_CENTRAL
 #else
     return npiTxActive;
 #endif // NPI_FLOW_CTRL = 1

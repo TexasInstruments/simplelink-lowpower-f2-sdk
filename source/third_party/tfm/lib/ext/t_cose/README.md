@@ -33,7 +33,7 @@ have to run in small fixed memory.
 
 As of December 2019, the code is in reasonable working order and the public interface is 
 fairly stable. There is a crypto adaptaion layer for [OpenSSL](https://www.openssl.org) 
-and for [Arm MBed Crypto](https://github.com/ARMmbed/mbed-crypto).
+and for [Arm MBed Crypto](https://github.com/ARMmbed/mbedTLS).
 
 ### The to-do list:
 * Add some more tests, particular test vectors from C_COSE or such

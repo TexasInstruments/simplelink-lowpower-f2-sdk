@@ -1993,7 +1993,7 @@ uint16_t rpl_control_current_rank(const struct rpl_instance *instance)
 
 static void rpl_domain_print(const rpl_domain_t *domain, route_print_fn_t *print_fn)
 {
-    print_fn("RPL Domain %p", (void *) domain);
+    tr_info("RPL Domain %p", (void *) domain);
     ns_list_foreach(rpl_instance_t, instance, &domain->instances) {
         rpl_upward_print_instance(instance, print_fn);
         rpl_downward_print_instance(instance, print_fn);
@@ -2014,7 +2014,7 @@ void rpl_control_print(route_print_fn_t *print_fn)
     unsigned h = m / 60;
     m %= 60;
     // %zu doesn't work on some Mbed toolchains
-    print_fn("Time %02u:%02u:%02u.%u (%u.%u) RPL memory usage %" PRIu32, h, m, s, t, s_full, t, (uint32_t) rpl_alloc_total);
+    tr_info("Time %02u:%02u:%02u.%u (%u.%u) RPL memory usage %" PRIu32, h, m, s, t, s_full, t, (uint32_t) rpl_alloc_total);
     ns_list_foreach(rpl_domain_t, domain, &rpl_domains) {
         rpl_domain_print(domain, print_fn);
     }

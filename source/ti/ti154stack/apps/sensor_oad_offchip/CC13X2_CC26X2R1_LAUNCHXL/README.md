@@ -130,15 +130,14 @@ Aa described above, ApiMac_processIncoming processes all incoming messages from 
 
 The out of box example for the sensor_oad_offchip project uses the Linux Collector to update the FW on a sensor device. The following steps walk through the process of performing an OAD:
 
-Please note that prebuilt images are only provided for the 1352R1 device. If you are using a different device, please refer to section [Generating the Required Binary Images](#GeneratingtheRequiredBinaryImages) in this document on how to build the images from the projects.
-
 The Linux collector requires the coprocessor device to operate. To setup the coprocessor device:
 
-* Load `<SDK_INSTALL_DIR>/examples/rtos/CC1352R1_LAUNCHXL/ti154stack/hexfiles/coprocessor_cc1352lp_tirtos_ccs.hex` onto the device using Uniflash
+* Build a coprocessor example for your desired coprocessor device
+* Load the generated coprocessor hex file onto the device using Uniflash
 
 For the sensor device:
-1. Add the Off-Chip BIM image `<SDK_INSTALL_DIR>/examples/rtos/CC1352R1_LAUNCHXL/easylink/hexfiles/offChipOad/cc13x2r1lp_bim_offchip.hex` to the image list
-2. Add the user application `<SDK_INSTALL_DIR>/examples/rtos/CC1352R1_LAUNCHXL/ti154stack/hexfiles/sensor_oad_offchip_secure_cc1352lp_tirtos_ccs.bin` to the image list
+1. Add the Off-Chip BIM image `<SDK_INSTALL_DIR>/examples/nortos/[LAUNCHPAD]/bim/hexfiles/bim_offchip/[Desired Security Level]/bim_offchip.hex` to the image list
+2. Add your user-generated binary file to the image list and set the address to 0. Please refer to section [Generating the Required Binary Images](#GeneratingtheRequiredBinaryImages) in this document on how to build the images from the projects.
 3. Load both images onto the device using Uniflash
 
 Connect the coprocessor to a Linux machine and run the Linux Collector application. If the sensor has previously connected to the Linux Collector and then been reprogrammed (erasing its network parameters stored in flash), you will need to remove the nv-simulation.bin file before launching the application. More information can be found on using the Linux Collector in the Linux Gateway SDK documentation. To use the Linux Collector for OAD, make sure it is built without the `IS_HEADLESS` pre-defined symbol.
@@ -325,7 +324,7 @@ More information about the configuration and feature options can be found in the
 
 ### <a name="DisablingCommonUserInterface"></a>Disabling Common User Interface
 
-The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opts file:
+The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opt file:
 
 ```
 -DCUI_DISABLE
@@ -337,7 +336,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
 
 By default, this project is configured to use two pages of NV. A maximum of five NV pages are supported. In order to modify the NV pages, update the following:
 
-* `NVOCMP_NVPAGES=2` in the project-specific .opts file
+* `NVOCMP_NVPAGES=2` in the project-specific .opt file
 * SysConfig NVS module:
    * Set Region Size based on the formula `NVOCMP_NVPAGES * 0x2000`
    * Set Region Base based on the formula `0x56000 - (NVOCMP_NVPAGES * 0x2000)`
@@ -369,7 +368,7 @@ In Beacon Mode, data requests are configured to time out after 1 beacon interval
 #define OAD_BLOCK_AUTO_RESUME_DELAY   BEACON_INTERVAL
 ```
 
-Finally, the sensor_oad project has 3 defines related to the OAD feature, defined by default in the project's .opts file or in the project settings:
+Finally, the sensor_oad project has 3 defines related to the OAD feature, defined by default in the project's .opt file or in the project settings:
 
 * `FEATURE_NATIVE_OAD`: This includes the 15.4 OAD client. This results in an application that supports the OAD messages needed to receive an OAD update over the 15.4 network.
 * `SECURITY`: This includes the OAD secure signing. This results in an application binary that is signed using an AES encryption of SHA2 hash of the image.

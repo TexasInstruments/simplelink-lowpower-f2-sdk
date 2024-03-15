@@ -28,19 +28,22 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
-get_install_dir(MBEDCRYPTO_INSTALL_DIR)
+get_install_dir(MBEDTLS_INSTALL_DIR)
 get_install_dir(TFM_INSTALL_DIR)
 
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_common.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc13xx_cc26xx.cmake OPTIONAL)
-include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc23xx.cmake OPTIONAL)
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc23x0.cmake OPTIONAL)
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc27xx.cmake OPTIONAL)
 include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc32xx.cmake OPTIONAL)
+include(${CMAKE_CURRENT_LIST_DIR}/CMakeSources_cc35xx.cmake OPTIONAL)
 
 project(drivers LANGUAGES C ASM)
-ti_init_package(NAMESPACE Drivers DEPENDS_ON DriversUtils TrustZone ThirdPartyEccLib Tirtos7Generic)
-foreach (TI_PLATFORM ${SUPPORTED_PLATFORMS})
-    if (${TI_PLATFORM} MATCHES "cc(13|26).1")
-        ti_add_package_dependency(DriverlibCC13XXCC26XX)
+ti_init_package(NAMESPACE Drivers DEPENDS_ON DriversUtils TrustZone ThirdPartyEccLib)
+foreach(TI_PLATFORM ${SUPPORTED_PLATFORMS})
+    if(${TI_PLATFORM} MATCHES "cc(13|26).1")
+        ti_add_package_dependency(DriverlibCC13X1CC26X1)
+        ti_add_package_dependency(Tirtos7Generic)
         ti_add_library(
             drivers_${TI_PLATFORM}
             SOURCES ${SOURCES_CC13X1_CC26X1}
@@ -50,8 +53,21 @@ foreach (TI_PLATFORM ${SUPPORTED_PLATFORMS})
             LINK_PRIVATE Tirtos7Generic::tirtos7
         )
 
-    elseif (${TI_PLATFORM} MATCHES "cc(13|26).2")
-        ti_add_package_dependency(DriverlibCC13XXCC26XX)
+    elseif(${TI_PLATFORM} MATCHES "cc(13|26).2.7")
+        ti_add_package_dependency(DriverlibCC13X2X7CC26X2X7)
+        ti_add_package_dependency(Tirtos7Generic)
+        ti_add_library(
+            drivers_${TI_PLATFORM}
+            SOURCES ${SOURCES_CC13X2_CC26X2}
+            ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+            # This is only needed for PDMCC26XX to find xdc/std.h
+            LINK_PRIVATE Tirtos7Generic::tirtos7
+        )
+
+    elseif(${TI_PLATFORM} MATCHES "cc(13|26).2")
+        ti_add_package_dependency(DriverlibCC13X2CC26X2)
+        ti_add_package_dependency(Tirtos7Generic)
         ti_add_library(
             drivers_${TI_PLATFORM}
             SOURCES ${SOURCES_CC13X2_CC26X2}
@@ -62,8 +78,9 @@ foreach (TI_PLATFORM ${SUPPORTED_PLATFORMS})
         )
 
         # C26X3 is deliberately excluded from this regex, as the 26x4 libraries are good enough
-    elseif (${TI_PLATFORM} MATCHES "cc(13|26).4")
-        ti_add_package_dependency(DriverlibCC13XXCC26XX)
+    elseif(${TI_PLATFORM} MATCHES "cc(13|26).4")
+        ti_add_package_dependency(DriverlibCC13X4CC26X3CC26X4)
+        ti_add_package_dependency(Tirtos7Generic)
         ti_add_library(
             drivers_${TI_PLATFORM}
             SOURCES ${SOURCES_SEC_ONLY_CC13X4_CC26X3_CC26X4}
@@ -79,32 +96,63 @@ foreach (TI_PLATFORM ${SUPPORTED_PLATFORMS})
                         CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}} LINK_PRIVATE Tirtos7Generic::tirtos7
         )
 
-    elseif (${TI_PLATFORM} STREQUAL "cc23x0")
-        ti_add_package_dependency(DriverlibCC23X0)
+    elseif(${TI_PLATFORM} STREQUAL "cc23x0r5")
+        ti_add_package_dependency(DriverlibCC23X0R5)
         ti_add_library(
-            drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC23X0} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23xx Driverlib::${TI_PLATFORM}
+            drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC23X0R5} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
                         CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
         )
         add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
 
-    elseif (${TI_PLATFORM} STREQUAL "cc23x0r2")
+    elseif(${TI_PLATFORM} STREQUAL "cc23x0r2")
         ti_add_package_dependency(DriverlibCC23X0R2)
         ti_add_library(
             drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC23X0R2} ADD_SDK_INCLUDE_PATH source
-            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23xx Driverlib::${TI_PLATFORM}
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc23x0 Driverlib::${TI_PLATFORM}
                         CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
         )
         add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
 
-    elseif (${TI_PLATFORM} MATCHES "cc32")
+    elseif(${TI_PLATFORM} STREQUAL "cc27xx")
+        ti_add_package_dependency(DriverlibCC27XX)
+        ti_add_library(
+            drivers_${TI_PLATFORM} SOURCES ${SOURCES_SEC_ONLY_CC27XX} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc27xx Driverlib::${TI_PLATFORM}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+        )
+        add_dependencies(drivers_${TI_PLATFORM} ecc_deploy)
+
+        # Add library with workarounds for Rev A devices
+        ti_add_library(
+            drivers_${TI_PLATFORM}_reva SOURCES ${SOURCES_SEC_ONLY_CC27XX} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC ThirdPartyEccLib::ecc_cc27xx Driverlib::${TI_PLATFORM}
+                        CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+        )
+        target_compile_definitions(drivers_${TI_PLATFORM}_reva PRIVATE CC27XX_REVA_WORKAROUNDS)
+        add_dependencies(drivers_${TI_PLATFORM}_reva ecc_deploy)
+
+        # ti_add_library(
+        #     drivers_${TI_PLATFORM}_ns SOURCES ${SOURCES_NONSEC_CC27XX} ADD_SDK_INCLUDE_PATH source
+        #     LINK_PUBLIC Driverlib::${TI_PLATFORM} DriversUtils::tfm_enabled TrustZone::tfm_dependencies_cc27xx
+        #                 CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+        # )
+
+    elseif(${TI_PLATFORM} MATCHES "cc32")
         ti_add_package_dependency(DriverlibCC32XX)
         ti_add_library(
             drivers_${TI_PLATFORM} SOURCES ${SOURCES_CC32XX} ADD_SDK_INCLUDE_PATH source
             LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
         )
-    endif ()
-endforeach ()
+
+    elseif(${TI_PLATFORM} MATCHES "cc35")
+        ti_add_package_dependency(DriverlibCC35XX)
+        ti_add_library(
+            drivers_${TI_PLATFORM} SOURCES ${SOURCES_SEC_ONLY_CC35XX} ADD_SDK_INCLUDE_PATH source
+            LINK_PUBLIC Driverlib::${TI_PLATFORM} CMakeCommon::${TI_TOOLCHAIN_NAME}_${ARCH_${TI_PLATFORM}}
+        )
+    endif()
+endforeach()
 ti_export_package()
 
 #
@@ -127,25 +175,56 @@ ti_export_package()
 # Targets for TrustZone support
 #
 ti_init_package(NAMESPACE TrustZone)
+
 ti_add_library(tfm_dependencies_cc26x4 INTERFACE ARCH all)
 
 # This must appear ahead of the TFM includes to find the correct sid.h
 target_include_directories(tfm_dependencies_cc26x4 BEFORE INTERFACE ${CMAKE_SOURCE_DIR}/tfm_s/cc26x4/build_dependencies)
 
-if (TI_INTERNAL_BUILD)
+if(TI_INTERNAL_BUILD)
     target_include_directories(
         tfm_dependencies_cc26x4
+        INTERFACE ${TFM_INSTALL_DIR}/source/
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/include
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/secure_fw/include
+                  ${TFM_INSTALL_DIR}/source/third_party/tfm/config
+                  ${TFM_INSTALL_DIR}/tfm_s/build/cc26x4/production_full/Release/export/tfm/inc
+                  ${MBEDTLS_INSTALL_DIR}/source
+                  ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/include
+                  ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/ti
+    )
+else()
+    target_include_directories(
+        tfm_dependencies_cc26x4
+        INTERFACE ${CMAKE_SOURCE_DIR}/source/
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/interface/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/secure_fw/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/tfm/config
+                  ${CMAKE_SOURCE_DIR}/tfm_s/build/cc26x4/production_full/Release/export/tfm/inc
+                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/ti
+    )
+endif()
+
+ti_add_library(tfm_dependencies_cc27xx INTERFACE ARCH all)
+
+# This must appear ahead of the TFM includes to find the correct sid.h
+target_include_directories(tfm_dependencies_cc27xx BEFORE INTERFACE ${CMAKE_SOURCE_DIR}/tfm_s/cc27xx/build_dependencies)
+
+if(TI_INTERNAL_BUILD)
+    target_include_directories(
+        tfm_dependencies_cc27xx
         INTERFACE ${TFM_INSTALL_DIR}/source/ ${TFM_INSTALL_DIR}/source/third_party/tfm/interface/include
-                  ${MBEDCRYPTO_INSTALL_DIR}/source ${MBEDCRYPTO_INSTALL_DIR}/source/third_party/mbedcrypto/include
-                  ${MBEDCRYPTO_INSTALL_DIR}/source/third_party/mbedcrypto/ti
+                  ${MBEDTLS_INSTALL_DIR}/source ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/include
+                  ${MBEDTLS_INSTALL_DIR}/source/third_party/mbedtls/ti
     )
-else ()
+else()
     target_include_directories(
-        tfm_dependencies_cc26x4
+        tfm_dependencies_cc27xx
         INTERFACE ${CMAKE_SOURCE_DIR}/source/ ${CMAKE_SOURCE_DIR}/source/third_party/tfm/interface/include
-                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedcrypto/include
-                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedcrypto/ti
+                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/include
+                  ${CMAKE_SOURCE_DIR}/source/third_party/mbedtls/ti
     )
-endif ()
+endif()
 
 ti_export_package()

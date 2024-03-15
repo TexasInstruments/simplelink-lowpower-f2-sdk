@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -140,7 +140,7 @@ bool CryptoUtils_buffersMatchWordAligned(const volatile uint32_t *volatile buffe
  *  @param  bufferByteLength    Length of @c buffer in bytes
  *
  *  @retval true                The buffer contained only bytes with value 0x00
- *  @retval false               The buffer contained at least on non-zero byte
+ *  @retval false               The buffer contained at least one non-zero byte
  */
 bool CryptoUtils_isBufferAllZeros(const void *buffer, size_t bufferByteLength);
 

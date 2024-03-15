@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  *  ======== Exception.rov.js ========
  */
 
-var moduleName = "ti.spe::Exception";
+var moduleName = "ti.tfm::Exception";
 
 var viewMap = [
     {name: "Call Stack", fxn: "viewCallStack", structName: "CallStackFrame"},
@@ -111,7 +111,7 @@ function toPaddedHexString(number, len)
  * ======== getExcContext ========
  * returns an ExcContext filled with the register set that was valid
  * at the time an exception occurred. Registers R4-R11 and the various
- * status registers are only guranteed to be valid if the exception
+ * status registers are only guaranteed to be valid if the exception
  * was a secure fault.
  */
 function getExcContext()
@@ -222,10 +222,10 @@ function getExcContext()
         Program.print(String(e));
     }
 
-    SP += 8*4;   /* standard 8 word stack frame */
+    SP += 8 * 4;   /* standard 8 word stack frame */
 
     if ((LR & 0x10) == 0) {  /* FTYPE */
-        SP += 18*4;    /* Floating point regs */
+        SP += 18 * 4;    /* Floating point regs */
     }
 
     excContext.R4 = CallStack.getRegister("R4");
@@ -330,7 +330,7 @@ function viewCallStack()
     var invframes = new Array();
 
     for (var i = 0; i < frames.length; i++) {
-        invframes[frames[i].substring(0,frames[i].indexOf("PC")-1)] =
+        invframes[frames[i].substring(0,frames[i].indexOf("PC") - 1)] =
             frames[i].substr(frames[i].indexOf("PC"));
     }
 
@@ -442,11 +442,11 @@ function viewDecodeMemFault(excContext)
         }
         else if (excContext.MMFSR & 0x02) {
             fault += "DACCVIOL ";
-            fault += "Data Access Error. Address = 0x" + Number(excContext.MMAR).toString(16);
+            fault += "(Data Access Error. Address = 0x" + Number(excContext.MMAR).toString(16) + ")";
         }
         else if (excContext.MMFSR & 0x01) {
             fault += "IACCVIOL ";
-            fault += "Instruction Fetch Error. Address = 0x" + Number(excContext.MMAR).toString(16);
+            fault += "(Instruction Fetch Error. Address = 0x" + Number(excContext.MMAR).toString(16) + ")";
         }
         else {
             fault += "Unknown";
@@ -476,8 +476,8 @@ function viewDecodeBusFault(excContext)
             fault += "IMPRECISERR";
         }
         else if (excContext.BFSR & 0x02) {
-            fault += "PRECISERR.";
-            fault += "Data Access Error. Address = 0x" + Number(excContext.BFAR).toString(16);
+            fault += "PRECISERR ";
+            fault += "(Data Access Error. Address = 0x" + Number(excContext.BFAR).toString(16) + ")";
         }
         else if (excContext.BFSR & 0x01) {
             fault += "IBUSERR";
@@ -557,10 +557,11 @@ function viewDecodeSecureFault(excContext)
         }
         if (SFSR & 0x01) {
             fault += " INVEP (Jump to invalid SG address: " +
-                      toPaddedHexString(excContext.PC,8) + ")";
+                      toPaddedHexString(excContext.PC, 8) + ")";
         }
     }
 
+    /* Check if SFARVALID is set */
     if (SFSR & 0x40) {
         fault += " Access error at address = " +
                   toPaddedHexString(excContext.SFAR, 8);
@@ -574,7 +575,7 @@ function viewDecodeSecureFault(excContext)
  */
 function viewDecodeSvCall(excContext)
 {
-    return("SV Call Exception, pc = " + Number(excContext.pc).toString(16));
+    return("SV Call Exception, PC = " + toPaddedHexString(excContext.PC, 8));
 }
 
 /*

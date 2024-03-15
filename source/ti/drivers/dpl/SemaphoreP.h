@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -202,8 +202,9 @@ extern SemaphoreP_Handle SemaphoreP_createBinary(unsigned int count);
  *  This can be used instead of SemaphoreP_create() to create a binary
  *  semaphore.
  *
- *  @param  count  Initial count of the binary semaphore. Only values
- *                 of 0 or 1 are valid.
+ *  @param  count   Initial count of the binary semaphore. Only values
+ *                  of 0 or 1 are valid.
+ *  @param callback Callback while pending for semaphore post
  *
  *  @return A SemaphoreP_Handle on success or a NULL on an error
  */

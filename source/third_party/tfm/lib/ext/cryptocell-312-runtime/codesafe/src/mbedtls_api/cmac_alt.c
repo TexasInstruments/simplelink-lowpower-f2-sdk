@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -23,11 +23,7 @@
  *
  */
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
+#include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_CMAC_C) && defined (MBEDTLS_CMAC_ALT)
 
@@ -50,7 +46,7 @@
 #include "cc_aes_error.h"
 #include "mbedtls_common.h"
 #include "mbedtls/cmac.h"
-#include "memory_buffer_alloc.h"
+#include "mbedtls/memory_buffer_alloc.h"
 
 
 /**
@@ -152,7 +148,7 @@ int mbedtls_cipher_cmac_starts( mbedtls_cipher_context_t *ctx, const unsigned ch
         return( MBEDTLS_ERR_CIPHER_ALLOC_FAILED );
     }
 
-    ctx->cmac_ctx = cmac_ctx;
+    ctx->MBEDTLS_PRIVATE(cmac_ctx) = cmac_ctx;
     mbedtls_zeroize_internal( ((mbedtls_cmac_private_context_t*)cmac_ctx)->cmac_ctrl_ctx.state,
                             sizeof( ((mbedtls_cmac_private_context_t*)cmac_ctx)->cmac_ctrl_ctx.state ) );
 
@@ -189,14 +185,14 @@ int mbedtls_cipher_cmac_update( mbedtls_cipher_context_t *ctx, const unsigned ch
             return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
 
-    if( ctx == NULL || ctx->cipher_info == NULL || input == NULL ||
-        ctx->cmac_ctx == NULL )
+    if( ctx == NULL || ctx->MBEDTLS_PRIVATE(cipher_info) == NULL || input == NULL ||
+        ctx->MBEDTLS_PRIVATE(cmac_ctx) == NULL )
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
 
-    cmac_ctx = ctx->cmac_ctx;
-    block_size = ctx->cipher_info->block_size;
+    cmac_ctx = ctx->MBEDTLS_PRIVATE(cmac_ctx);
+    block_size = ctx->MBEDTLS_PRIVATE(cipher_info)->MBEDTLS_PRIVATE(block_size);
 
     /* Is there data still to process from the last call, that's greater in
      * size than a block? */
@@ -287,13 +283,13 @@ int mbedtls_cipher_cmac_finish( mbedtls_cipher_context_t *ctx, unsigned char *ou
     CCBuffInfo_t inBuffInfo;
     CCBuffInfo_t outBuffInfo;
 
-    if( ctx == NULL || ctx->cipher_info == NULL || ctx->cmac_ctx == NULL ||
+    if( ctx == NULL || ctx->MBEDTLS_PRIVATE(cipher_info) == NULL || ctx->MBEDTLS_PRIVATE(cmac_ctx) == NULL ||
             output == NULL )
     {
             return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
 
-    cmac_ctx = ctx->cmac_ctx;
+    cmac_ctx = ctx->MBEDTLS_PRIVATE(cmac_ctx);
 
     ret = SetDataBuffersInfo((const uint8_t*)&((mbedtls_cmac_private_context_t*)cmac_ctx)->cmac_ctrl_ctx.unprocessed_block,
                              ((mbedtls_cmac_private_context_t*)cmac_ctx)->cmac_ctrl_ctx.unprocessed_len,
@@ -320,7 +316,7 @@ int mbedtls_cipher_cmac_finish( mbedtls_cipher_context_t *ctx, unsigned char *ou
 
     CC_PalMemCopy(output, ((mbedtls_cmac_private_context_t*)cmac_ctx)->aes_ctx.ivBuf, AES_IV_SIZE);
 
-    mbedtls_zeroize_internal( ctx->cmac_ctx, sizeof( mbedtls_cmac_private_context_t ) );
+    mbedtls_zeroize_internal( ctx->MBEDTLS_PRIVATE(cmac_ctx), sizeof( mbedtls_cmac_private_context_t ) );
 
     return (0);
 }
@@ -329,12 +325,12 @@ int mbedtls_cipher_cmac_reset( mbedtls_cipher_context_t *ctx )
 {
     mbedtls_cmac_context_t* cmac_ctx = NULL;
 
-    if( ctx == NULL || ctx->cipher_info == NULL || ctx->cmac_ctx == NULL )
+    if( ctx == NULL || ctx->MBEDTLS_PRIVATE(cipher_info) == NULL || ctx->MBEDTLS_PRIVATE(cmac_ctx) == NULL )
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
 
-    cmac_ctx = ctx->cmac_ctx;
+    cmac_ctx = ctx->MBEDTLS_PRIVATE(cmac_ctx);
 
     /* Reset the internal state */
     ((mbedtls_cmac_private_context_t*)cmac_ctx)->cmac_ctrl_ctx.unprocessed_len = 0;
@@ -362,7 +358,7 @@ int mbedtls_cipher_cmac( const mbedtls_cipher_info_t *cipher_info,
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
-    if( cipher_info->base == NULL )
+    if( cipher_info->MBEDTLS_PRIVATE(base) == NULL )
     {
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }

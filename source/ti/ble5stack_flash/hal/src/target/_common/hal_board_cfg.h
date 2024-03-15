@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2023, Texas Instruments Incorporated
+ Copyright (c) 2011-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,11 @@
 #if !defined(CC26X2) && !defined(CC13X2) && !defined(CC13X2P) && !defined(CC13X4) && !defined(CC23X0)
 #define HAL_FLASH_PAGE_SIZE                             4096      // in bytes
 #else // !(Agama CC26X2 || CC13X2 || CC13X2P || CC13X4)
+#ifdef CC23X0
+#define HAL_FLASH_PAGE_SIZE                             2048      // in bytes
+#else
 #define HAL_FLASH_PAGE_SIZE                             8192      // in bytes
+#endif // CC23X0
 #endif ////Agama CC26X2 || CC13X2 || CC13X2P || CC13X4
 #define HAL_FLASH_WORD_SIZE       4
 

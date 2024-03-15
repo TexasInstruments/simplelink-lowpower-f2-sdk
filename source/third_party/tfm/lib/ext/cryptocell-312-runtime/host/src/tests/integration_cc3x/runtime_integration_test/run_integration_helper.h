@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,7 +7,7 @@
 #ifndef _RUN_INTEGRATION_HELPER_H_
 #define _RUN_INTEGRATION_HELPER_H_
 
-#include MBEDTLS_CONFIG_FILE
+#include "mbedtls/build_info.h"
 
 #include <inttypes.h>
 
@@ -22,7 +22,6 @@
 #include "test_pal_mem.h"
 #include "test_pal_mem_s.h"
 
-#include MBEDTLS_CONFIG_FILE
 #include "run_integration_profiler.h"
 
 #define RUNIT_ALIGN32_SLACK                     (sizeof(uint32_t) - 1)

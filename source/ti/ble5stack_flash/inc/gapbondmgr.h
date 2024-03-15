@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -175,8 +175,8 @@ extern "C"
  *
  * size: uint8_t
  *
- * default: @ref GAPBOND_KEYDIST_SENCKEY | @ref GAPBOND_KEYDIST_SIDKEY
- * | @ref GAPBOND_KEYDIST_MIDKEY | @ref GAPBOND_KEYDIST_MSIGN
+ * default: @ref GAPBOND_KEYDIST_PENCKEY | @ref GAPBOND_KEYDIST_PIDKEY
+ * | @ref GAPBOND_KEYDIST_CIDKEY | @ref GAPBOND_KEYDIST_CSIGN
  *
  * range: @ref GAPBondMgr_Key_Distr
  */
@@ -206,10 +206,10 @@ extern "C"
 #define GAPBOND_KEYSIZE               0x40C
 
 /**
- * Synchronize the whitelist with bonded devices (Read/Write)
+ * Synchronize the acceptlist with bonded devices (Read/Write)
  *
- * If TRUE, the whitelist will first be cleared. Then, each unique address
- * stored by bonds in SNV will be synched with the whitelist indefinitely or
+ * If TRUE, the acceptlist will first be cleared. Then, each unique address
+ * stored by bonds in SNV will be synched with the acceptlist indefinitely or
  * until this is set to FALSE
  *
  * size: uint8_t
@@ -218,7 +218,7 @@ extern "C"
  *
  * range: TRUE (sync) or FALSE (don't sync)
  */
-#define GAPBOND_AUTO_SYNC_WL          0x40D
+#define GAPBOND_AUTO_SYNC_AL          0x40D
 
 /**
  * Gets the total number of bonds stored in NV (Read-only)
@@ -422,9 +422,9 @@ extern "C"
  */
 /// Pairing is not allowed
 #define GAPBOND_PAIRING_MODE_NO_PAIRING          0x00
-/// Wait for a pairing request or slave security request
+/// Wait for a pairing request or peripheral security request
 #define GAPBOND_PAIRING_MODE_WAIT_FOR_REQ        0x01
-/// Don't wait, initiate a pairing request or slave security request
+/// Don't wait, initiate a pairing request or peripheral security request
 #define GAPBOND_PAIRING_MODE_INITIATE            0x02
 /** @} End GAPBondMgr_Pairing_Modes */
 
@@ -448,22 +448,22 @@ extern "C"
  * @defgroup GAPBondMgr_Key_Distr GAP Bond Manager Key Distribution
  * @{
  */
-/// Slave Encryption Key
-#define GAPBOND_KEYDIST_SENCKEY                  0x01
-/// Slave IRK and ID information
-#define GAPBOND_KEYDIST_SIDKEY                   0x02
-/// Slave CSRK
-#define GAPBOND_KEYDIST_SSIGN                    0x04
-/// Slave Link Key
-#define GAPBOND_KEYDIST_SLINK                    0x08
-/// Master Encryption Key
-#define GAPBOND_KEYDIST_MENCKEY                  0x10
-/// Master IRK and ID information
-#define GAPBOND_KEYDIST_MIDKEY                   0x20
-/// Master CSRK
-#define GAPBOND_KEYDIST_MSIGN                    0x40
-/// Master Link Key
-#define GAPBOND_KEYDIST_MLINK                    0x80
+/// Peripheral Encryption Key
+#define GAPBOND_KEYDIST_PENCKEY                  0x01
+/// Peripheral IRK and ID information
+#define GAPBOND_KEYDIST_PIDKEY                   0x02
+/// Peripheral CSRK
+#define GAPBOND_KEYDIST_PSIGN                    0x04
+/// Peripheral Link Key
+#define GAPBOND_KEYDIST_PLINK                    0x08
+/// Central Encryption Key
+#define GAPBOND_KEYDIST_CENCKEY                  0x10
+/// Central IRK and ID information
+#define GAPBOND_KEYDIST_CIDKEY                   0x20
+/// Central CSRK
+#define GAPBOND_KEYDIST_CSIGN                    0x40
+/// Central Link Key
+#define GAPBOND_KEYDIST_CLINK                    0x80
 /** @} End GAPBondMgr_Key_Distr */
 
 /**
@@ -837,7 +837,7 @@ typedef struct
     uint8_t bonding;
     uint8_t secureConnection;
     uint8_t authenPairingOnly;
-    uint8_t autoSyncWL;
+    uint8_t autoSyncAL;
     uint8_t eccReGenPolicy;
     uint8_t KeySize;
     uint8_t removeLRUBond;
@@ -1021,6 +1021,8 @@ extern bStatus_t GAPBondMgr_GenerateEccKeys( void );
 /**
  * @brief   Read bond record from NV
  *
+ * @param   addrType - peer's address type
+ * @param   pDevAddr - peer's address
  * @param   pBondRec - basic bond record
  * @param   pLocalLTK - LTK used by this device during pairing
  * @param   pDevLTK - LTK used by the peer device during pairing
@@ -1034,13 +1036,13 @@ extern bStatus_t GAPBondMgr_GenerateEccKeys( void );
  */
 extern uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
                                      uint8_t *pDevAddr,
-                                     gapBondRec_t* pBondRec,
-                                     gapBondLTK_t* pLocalLtk,
-                                     gapBondLTK_t* pDevLtk,
-                                     uint8_t* pIRK,
-                                     uint8_t* pSRK,
-                                     uint32_t signCount,
-                                     gapBondCharCfg_t* charCfg);
+                                     gapBondRec_t *pBondRec,
+                                     gapBondLTK_t *pLocalLtk,
+                                     gapBondLTK_t *pDevLtk,
+                                     uint8_t *pIRK,
+                                     uint8_t *pSRK,
+                                     uint32_t *signCount,
+                                     gapBondCharCfg_t *charCfg);
 
 /**
  * @brief   Import bond record to NV
@@ -1056,13 +1058,13 @@ extern uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
  * @return  SUCCESS if bond was imported
  * @        bleNoResources if there are no empty slots
  */
-extern uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
-                              gapBondLTK_t* pLocalLtk,
-                              gapBondLTK_t* pDevLtk,
-                              uint8_t* pIRK,
-                              uint8_t* pSRK,
-                              uint32_t signCount,
-                              gapBondCharCfg_t* charCfg);
+extern uint8_t gapBondMgrImportBond(gapBondRec_t *pBondRec,
+                                    gapBondLTK_t *pLocalLtk,
+                                    gapBondLTK_t *pDevLtk,
+                                    uint8_t *pIRK,
+                                    uint8_t *pSRK,
+                                    uint32_t signCount,
+                                    gapBondCharCfg_t *charCfg);
 
 /**
  * @fn          GapBondMgr_GetPrevAuth

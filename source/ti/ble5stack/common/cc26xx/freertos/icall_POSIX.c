@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -351,8 +351,8 @@ ICall_CSState ICall_enterCSImpl(void)
 {
 
   ICall_CSStateUnion cu;
-  cu.each.swikey = (uint_least16_t) Swi_disable();
   cu.each.hwikey = (uint_least16_t) Hwi_disable();
+  cu.each.swikey = (uint_least16_t) Swi_disable();
   return cu.state;
 }
 
@@ -374,8 +374,8 @@ ICall_EnterCS ICall_enterCriticalSection = ICall_enterCSImpl;
 void ICall_leaveCSImpl(ICall_CSState key)
 {
   ICall_CSStateUnion *cu = (ICall_CSStateUnion *) &key;
-  Hwi_restore((uint32_t) cu->each.hwikey);
   Swi_restore((uint32_t) cu->each.swikey);
+  Hwi_restore((uint32_t) cu->each.hwikey);
 }
 
 /* See header file for comment */

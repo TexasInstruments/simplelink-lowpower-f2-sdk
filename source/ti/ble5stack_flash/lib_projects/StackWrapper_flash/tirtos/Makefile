@@ -1,4 +1,4 @@
-IAR_PATH="C:\Program Files\IAR Systems\EWARM-9.32.1\common\bin\IarBuild.exe"
+IAR_PATH="C:\Program Files\IAR Systems\EWARM-9.40.2\common\bin\IarBuild.exe"
 EWP_PATH="$(CURDIR)\iar\stack_wrapper_flash.ewp"
 VARFILE="$(CURDIR)\iar\stack_wrapper_flash.custom_argvars"
 

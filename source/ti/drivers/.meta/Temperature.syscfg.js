@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ let base = {
     description         : "Temperature Driver",
     longDescription: `
 The [__Temperature driver__][1] facilitates reading the current temperature of
-a device. It also enables registering notifications callbacks that are invoked
+a device. It also enables registering notification callbacks that are invoked
 when the temperature crosses a specified threshold.
 
 Depending on the system configuration, the Temperature driver may be required

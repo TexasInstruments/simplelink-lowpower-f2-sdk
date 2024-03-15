@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019 Texas Instruments Incorporated
+# Copyright (c) 2019, Texas Instruments Incorporated. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -38,7 +38,7 @@ def main(argv):
     )
 
     with open(ctx_file) as f:
-        ctx = yaml.load(f)
+        ctx = yaml.load(f, Loader=yaml.FullLoader)
 
     template = env.get_template(tmplt_file)
 

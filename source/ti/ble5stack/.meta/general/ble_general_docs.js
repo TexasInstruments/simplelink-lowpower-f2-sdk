@@ -88,10 +88,12 @@ require increasing HEAPMGR_SIZE.\n
 For more information, refer to the [BLE User's Guide](ble5stack/ble_user_guide/\
 html/ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13xx_cc26xx.\
 html#ram-optimization).\n
-__Default__: 8\n
-__Range__: Central Role: 0 to 32, Other Roles: 0 to 16`
+__Default__: 1\n
+__Range__: A combination that includes Central or Peripheral Roles: 1 to 32, Other Role \
+combinations: 0`
 
 // Long description for the maxPDUNum configuration parameter
+
 const maxPDUNumLongDescription = `Maximum number of BLE HCI PDUs.\n
 __Default__: 5\n
 __Range__: 0 to sizeof(uint8)\n

@@ -66,7 +66,17 @@ __Default__: False (unchecked)
 `
 };
 
+const psipComplianceWarning = `To comply with the FCC RF module compliance, \
+the following has to be fulfilled (when using the +20 dBm PA):
+* The maximum power transmitted without duty cycling is 17 dBm \
+and antenna gain less than 2.69 dBi.
+* The maximum power transmitted with duty cycling of 60 ms max \
+(60ms out of 100ms in TX) is 19 dBm and antenna gain less than \
+2.69 dBi.
+`
+
 exports = {
     transmitPower: transmitPower,
-    rxOnIdle: rxOnIdle
+    rxOnIdle: rxOnIdle,
+    psipComplianceWarning: psipComplianceWarning
 };

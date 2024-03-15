@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -280,11 +280,10 @@ bool Mailbox_peek(Mailbox_Object *obj, void * msg, uint32_t timeout)
 {
     Mailbox_MbxElem *elem;
     Queue_Handle dataQue;
-    Semaphore_Handle dataSem, freeSem;
+    Semaphore_Handle dataSem;
 
     dataQue = &obj->dataQue;
     dataSem = &obj->dataSem;
-    freeSem = &obj->freeSem;
 
     if (Semaphore_pend(dataSem, timeout)) {
         /* get message from dataQue */
@@ -295,7 +294,7 @@ bool Mailbox_peek(Mailbox_Object *obj, void * msg, uint32_t timeout)
         (void)memcpy(msg, elem + 1, obj->msgSize);
 
         /* post the semaphore */
-        Semaphore_post(freeSem);
+        Semaphore_post(dataSem);
 
         return (true);
     }

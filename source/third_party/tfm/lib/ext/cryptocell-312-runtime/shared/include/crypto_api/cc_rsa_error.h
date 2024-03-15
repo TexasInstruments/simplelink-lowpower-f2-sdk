@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,12 +9,8 @@
 #define _CC_RSA_ERROR_H
 
 #ifdef CC_IOT
-    #if defined(MBEDTLS_CONFIG_FILE)
-    #include MBEDTLS_CONFIG_FILE
-    #endif
+#include "mbedtls/build_info.h"
 #endif
-
-#if !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C))
 
 #include "cc_error.h"
 
@@ -242,6 +238,6 @@ extern "C"
 /**
 @}
  */
-#endif /* !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C)) */
+
 #endif /* _CC_RSA_ERROR_H */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#if defined(TFM_PSA_API)
+#if defined(TFM_BUILD)
     #include "ti_drivers_config.h" /* Sysconfig generated header */
 #endif
 
@@ -54,37 +54,26 @@ extern "C" {
 /*
  * AES CCM secure message types
  *
- * Non-secure clients must register their callback after opening or
- * constructing a driver instance with blocking or callback return behavior.
- *
  * For optimal performance, non-secure clients must use the
- * AESCCM_s_oneStepDecryptFast and AESCCM_s_oneStepDecryptFast veneers
+ * AESCCM_s_oneStepEncryptFast and AESCCM_s_oneStepDecryptFast veneers
  * instead of PSA calls with AESCCM_S_MSG_TYPE_ONE_STEP_ENCRYPT
  * or AESCCM_S_MSG_TYPE_ONE_STEP_DECRYPT.
  */
-#define AESCCM_S_MSG_TYPE_CONSTRUCT (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define AESCCM_S_MSG_TYPE_OPEN      (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define AESCCM_S_MSG_TYPE_REGISTER_CALLBACK \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define AESCCM_S_MSG_TYPE_CLOSE (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define AESCCM_S_MSG_TYPE_ONE_STEP_ENCRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define AESCCM_S_MSG_TYPE_ONE_STEP_DECRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
-#define AESCCM_S_MSG_TYPE_SETUP_ENCRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 6U)))
-#define AESCCM_S_MSG_TYPE_SETUP_DECRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 7U)))
-#define AESCCM_S_MSG_TYPE_SET_LENGTHS (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 8U)))
-#define AESCCM_S_MSG_TYPE_SET_NONCE   (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 9U)))
-#define AESCCM_S_MSG_TYPE_ADD_AAD     (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 10U)))
-#define AESCCM_S_MSG_TYPE_ADD_DATA    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 11U)))
-#define AESCCM_S_MSG_TYPE_FINALIZE_ENCRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 12U)))
-#define AESCCM_S_MSG_TYPE_FINALIZE_DECRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 13U)))
-#define AESCCM_S_MSG_TYPE_CANCEL_OPERATION \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCCM | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 14U)))
+#define AESCCM_S_MSG_TYPE_CONSTRUCT         AESCCM_S_MSG_TYPE(0U)
+#define AESCCM_S_MSG_TYPE_OPEN              AESCCM_S_MSG_TYPE(1U)
+#define AESCCM_S_MSG_TYPE_REGISTER_CALLBACK AESCCM_S_MSG_TYPE(2U)
+#define AESCCM_S_MSG_TYPE_CLOSE             AESCCM_S_MSG_TYPE(3U)
+#define AESCCM_S_MSG_TYPE_ONE_STEP_ENCRYPT  AESCCM_S_MSG_TYPE(4U)
+#define AESCCM_S_MSG_TYPE_ONE_STEP_DECRYPT  AESCCM_S_MSG_TYPE(5U)
+#define AESCCM_S_MSG_TYPE_SETUP_ENCRYPT     AESCCM_S_MSG_TYPE(6U)
+#define AESCCM_S_MSG_TYPE_SETUP_DECRYPT     AESCCM_S_MSG_TYPE(7U)
+#define AESCCM_S_MSG_TYPE_SET_LENGTHS       AESCCM_S_MSG_TYPE(8U)
+#define AESCCM_S_MSG_TYPE_SET_NONCE         AESCCM_S_MSG_TYPE(9U)
+#define AESCCM_S_MSG_TYPE_ADD_AAD           AESCCM_S_MSG_TYPE(10U)
+#define AESCCM_S_MSG_TYPE_ADD_DATA          AESCCM_S_MSG_TYPE(11U)
+#define AESCCM_S_MSG_TYPE_FINALIZE_ENCRYPT  AESCCM_S_MSG_TYPE(12U)
+#define AESCCM_S_MSG_TYPE_FINALIZE_DECRYPT  AESCCM_S_MSG_TYPE(13U)
+#define AESCCM_S_MSG_TYPE_CANCEL_OPERATION  AESCCM_S_MSG_TYPE(14U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created
@@ -98,6 +87,8 @@ extern "C" {
 
 /*
  * ========= AES CCM Secure Callback struct =========
+ * Non-secure clients must register their callback after opening or
+ * constructing a driver instance with blocking or callback return behavior.
  */
 typedef struct
 {

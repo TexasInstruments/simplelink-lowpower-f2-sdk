@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019, Laurence Lundblade. All rights reserved.
- * Copyright (c) 2020 Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,7 +9,7 @@
 #define __T_COSE_MAC0_VERIFY_H_
 
 #include <stdint.h>
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_common.h"
 
 #ifdef __cplusplus

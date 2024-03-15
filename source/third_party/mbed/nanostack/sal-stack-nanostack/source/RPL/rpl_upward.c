@@ -46,6 +46,7 @@
 #include "Service_Libs/Trickle/trickle.h"
 #include "ipv6_stack/ipv6_routing_table.h"
 #include "6LoWPAN/Bootstraps/protocol_6lowpan.h"
+#include "6LoWPAN/ws/ws_config.h"
 #include "Common_Protocols/ipv6_resolution.h"
 
 #include "RPL/rpl_protocol.h"
@@ -1305,8 +1306,14 @@ bool rpl_instance_purge(rpl_instance_t *instance)
 void rpl_instance_neighbours_changed(rpl_instance_t *instance, rpl_dodag_t *dodag)
 {
     instance->neighbours_changed = true;
-    uint16_t delay = rpl_policy_dio_parent_selection_delay(instance->domain);
+    uint16_t delay;
 
+    if (ti_wisun_config.rapid_join) {
+        // Randomly delays parent selection after DIO reception, staggering NS and DHCP
+        delay = randLIB_get_random_in_range(1,5);
+    } else {
+        delay = rpl_policy_dio_parent_selection_delay(instance->domain);
+    }
     rpl_instance_trigger_parent_selection(instance, delay, dodag);
 }
 
@@ -1946,7 +1953,7 @@ void rpl_upward_print_neighbour(const rpl_neighbour_t *neighbour, route_print_fn
 
     ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str_ll);
     ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str_global);
-    print_fn("   %2.0d%c%04x %04x %02x %s%%%d (%s)",
+    tr_info("   %2.0d%c%04x %04x %02x %s%%%d (%s)",
              neighbour->dodag_parent ? neighbour->dodag_pref + 1 : 0,
              neighbour->dodag_version && rpl_instance_preferred_parent(neighbour->dodag_version->dodag->instance) == neighbour ? '*' : ' ',
              neighbour->rank,
@@ -1969,8 +1976,8 @@ void rpl_upward_print_dodag(rpl_instance_t *instance, rpl_dodag_t *dodag, route_
 {
     /* Summary */
     ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
-    print_fn("DODAG %s", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, dodag->id));
-    print_fn("  G=%d MOP=%d Prf=%d", dodag->g_mop_prf & RPL_GROUNDED ? 1 : 0,
+    tr_info("DODAG %s", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, dodag->id));
+    tr_info("  G=%d MOP=%d Prf=%d", dodag->g_mop_prf & RPL_GROUNDED ? 1 : 0,
              (dodag->g_mop_prf & RPL_MODE_MASK) >> RPL_MODE_SHIFT,
              (dodag->g_mop_prf & RPL_DODAG_PREF_MASK));
     /* Routes */
@@ -1993,11 +2000,11 @@ void rpl_upward_print_dodag(rpl_instance_t *instance, rpl_dodag_t *dodag, route_
         }
         bitcopy(addr, route->prefix, route->prefix_len);
         if (route->lifetime == 0xFFFFFFFF) {
-            print_fn("%24s/%-3u lifetime:infinite pref:%"PRIdFAST8,
+            tr_info("%24s/%-3u lifetime:infinite pref:%"PRIdFAST8,
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), route->prefix_len, pref);
 
         } else {
-            print_fn("%24s/%-3u lifetime:%"PRIu32" pref:%"PRIdFAST8,
+            tr_info("%24s/%-3u lifetime:%"PRIu32" pref:%"PRIdFAST8,
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), route->prefix_len, route->lifetime, pref);
         }
     }
@@ -2006,14 +2013,14 @@ void rpl_upward_print_dodag(rpl_instance_t *instance, rpl_dodag_t *dodag, route_
         uint8_t addr[16] = { 0 } ;
         bitcopy(addr, prefix->prefix, prefix->prefix_len);
         if (prefix->lifetime == 0xFFFFFFFF) {
-            print_fn("%24s/%-3u lifetime:infinite flags:%c%c%c",
+            tr_info("%24s/%-3u lifetime:infinite flags:%c%c%c",
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), prefix->prefix_len,
                      prefix->options & PIO_L ? 'L' : '-',
                      prefix->options & PIO_A ? 'A' : '-',
                      prefix->options & RPL_PIO_PUBLISHED ? '*' : ' '
                     );
         } else {
-            print_fn("%24s/%-3u lifetime:%"PRIu32" flags:%c%c%c",
+            tr_info("%24s/%-3u lifetime:%"PRIu32" flags:%c%c%c",
                      ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), prefix->prefix_len, prefix->lifetime,
                      prefix->options & PIO_L ? 'L' : '-',
                      prefix->options & PIO_A ? 'A' : '-',
@@ -2023,9 +2030,9 @@ void rpl_upward_print_dodag(rpl_instance_t *instance, rpl_dodag_t *dodag, route_
     }
     /* Versions */
     ns_list_foreach(rpl_dodag_version_t, version, &dodag->versions) {
-        print_fn("  Version %d", version->number);
+        tr_info("  Version %d", version->number);
         if (version == instance->current_dodag_version) {
-            print_fn("  *Current version* Rank=%04x", instance->current_rank);
+            tr_info("  *Current version* Rank=%04x", instance->current_rank);
         }
         rpl_upward_print_neighbours_in_version(&instance->candidate_neighbours, version, print_fn);
     }
@@ -2033,8 +2040,8 @@ void rpl_upward_print_dodag(rpl_instance_t *instance, rpl_dodag_t *dodag, route_
 
 void rpl_upward_print_instance(rpl_instance_t *instance, route_print_fn_t *print_fn)
 {
-    print_fn("RPL Instance %d", instance->id);
-    print_fn("---------------");
+    tr_info("RPL Instance %d", instance->id);
+    tr_info("---------------");
     ns_list_foreach(rpl_dodag_t, dodag, &instance->dodags) {
         rpl_upward_print_dodag(instance, dodag, print_fn);
     }
@@ -2042,8 +2049,8 @@ void rpl_upward_print_instance(rpl_instance_t *instance, route_print_fn_t *print
         const trickle_params_t *params = &instance->current_dodag_version->dodag->dio_timer_params;
         const trickle_t *timer = &instance->dio_timer;
 
-        print_fn("DIO trickle Imin=%d, Imax=%d, k=%d", params->Imin, params->Imax, params->k);
-        print_fn("            I=%d, now=%d, t=%d, c=%d", timer->I, timer->now, timer->t, timer->c);
+        tr_info("DIO trickle Imin=%d, Imax=%d, k=%d", params->Imin, params->Imax, params->k);
+        tr_info("            I=%d, now=%d, t=%d, c=%d", timer->I, timer->now, timer->t, timer->c);
     }
 }
 

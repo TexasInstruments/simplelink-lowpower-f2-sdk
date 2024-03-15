@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -228,6 +228,7 @@ extern "C"
 #define LL_STATE_MODEM_TEST_TX                         0x0B
 #define LL_STATE_MODEM_TEST_RX                         0x0C
 #define LL_STATE_MODEM_TEST_TX_FREQ_HOPPING            0x0D
+#define LL_STATE_SDAA_RX_WINDOW                        0x0E
 
 // Pre release flag for the health check
 #define LL_PRE_REALSE_INDICATION                       0x0F
@@ -602,6 +603,13 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_FIRST_RF_CHAN_ADJ                           (LL_FIRST_RF_CHAN_FREQ - LL_FIRST_RF_CHAN_FREQ_OFFSET)
 #define LL_LAST_RF_CHAN_ADJ                            (LL_LAST_RF_CHAN_FREQ - LL_FIRST_RF_CHAN_FREQ_OFFSET)
 
+//defines for converter channel from BLE to RF channel
+#define LL_RF_FREQ_HOP                                  2        // hop between 2 consecutive channels (in MHZ)
+#define LL_BLE_CHANNEL_11                               11       // BLE channel 11.
+// number of adv channels
+#define LL_ONE_ADV_CHANNEL                              1
+#define LL_TWO_ADV_CHANNEL                              2
+
 /*
 ** FCFG and CCFG Offsets, and some Miscellaneous
 */
@@ -972,6 +980,21 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_HEALTH_CHECK_INIT_DEFAULT_THRESHOLD  (40000 * RAT_TICKS_IN_1MS)   //40 sec max scan interval
 #define LL_HEALTH_CHECK_ADV_DEFAULT_THRESHOLD   (10000 * RAT_TICKS_IN_1MS)   //10 sec max adv interval
 
+/*
+ ** Connection indication's defines
+ */
+#define LL_CONN_IND_HEADER_OFFSET            0     // 0-1   (2 octets)
+#define LL_CONN_IND_INITIATOR_ADDRESS_OFFSET 2     // 2-7   (6 octets)
+#define LL_CONN_IND_ACCESS_ADDRESS_OFFSET    14    // 14-17 (4 octets)
+#define LL_CONN_IND_TRANSMIT_WINDOW_OFFSET   22    // 22-23 (2 octets)
+#define LL_CONN_IND_INTERVAL_OFFSET          24    // 24-25 (2 octets)
+#define LL_CONN_IND_LATENCY_OFFSET           26    // 26-27 (2 octets)
+#define LL_CONN_IND_TIMEOUT_OFFSET           28    // 28-29 (2 octets)
+#define LL_CONN_IND_CHANNEL_MAP_OFFSET       30    // 30-34 (5 octets)
+
+#define LL_MAX_SUPERVISION_TIMEOUT           0x0C80
+#define LL_MIN_SUPERVISION_TIMEOUT           0x000A
+
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -1168,6 +1191,30 @@ typedef struct
   uint16 numMissedEvts;                              // number of missed connection events
 } perInfo_t;
 
+// RX Statistics Information - General
+typedef struct
+{
+  uint16 numRxOk;                                    // number of okay Rx pkts
+  uint16 numRxCtrl;                                  // number of okay Rx ctrl pkts
+  uint16 numRxCtrlAck;                               // number of okay Rx ctrl pkts Acked
+  uint16 numRxCrcErr;                                // number of not okay Rx pkts
+  uint16 numRxIgnored;                               // number of okay Rx pkts ignored
+  uint16 numRxEmpty;                                 // number of okay Rx pkts with no payload
+  uint16 numRxBufFull;                               // number of pkts discarded
+} rxStats_t;
+
+// TX Statistics Information - General
+typedef struct
+{
+  uint16 numTx;                                      // number of Tx pkts
+  uint16 numTxAck;                                   // number of Tx pkts Acked
+  uint16 numTxCtrl;                                  // number of Tx ctrl pkts
+  uint16 numTxCtrlAck;                               // number of Tx ctrl pkts Acked
+  uint16 numTxCtrlAckAck;                            // number of Tx ctrl pkts Acked that were Acked
+  uint16 numTxRetrans;                               // number of retransmissions
+  uint16 numTxEntryDone;                             // number of pkts on Tx queue that are finished
+} txStats_t;
+
 // TX Data
 typedef struct txData_t
 {
@@ -1306,8 +1353,16 @@ struct llConnExtraParams_t
   uint8   StarvationMode:1;               // connection starvation mode on/off
   uint8   numLSTORetries:3;               // connection number of retries in LSTO state
   uint8   paramUpdateNotifyHost:1;        // indicates that there was a param update with param change in connInterval, connTimeout or slaveLatency
-  uint8   reserved:3;                     // reserved
+  uint8   procInitiator:1;                // indicates that this device has sent the req (initaite the procedure)
+  uint8   reserved:2;                     // reserved
   uint8   phyUpdatedNoChange;             // indicates that there was a phy update without phy change (Timesync Procedure 1)
+
+  // Rx and Tx Statistics
+  rxStats_t         rxStats;              // RX statistics
+  txStats_t         txStats;              // TX statistics
+
+  /* Dual Advertise Addr Params */
+  uint8   ownAddrType;                   // Own device address type - used for dual advertise sets with different types.
 }; 
 
 // Connection Data
@@ -1373,6 +1428,7 @@ struct llConn_t
   // Packet Error Rate
   perInfo_t         perInfo;                            // PER
   perByChan_t      *perInfoByChan;                      // PER by Channel
+
   // Peer Address
   // Note: Address must start on word boundary!
   peerInfo_t        peerInfo;                           // peer device address and address type
@@ -1769,12 +1825,15 @@ typedef struct
 #define LL_TEST_MODE_TP_CON_ADV_BI_02                72
 #define LL_TEST_MODE_TP_ENC_INI_BI_01                80
 #define LL_TEST_MODE_TP_CON_INI_BI_02                81
+#define LL_TEST_MODE_TP_HCI_CM_BV_04                 82
+#define LL_TEST_MODE_TP_CON_MAS_BI_07                83
 // Tickets
 #define LL_TEST_MODE_JIRA_220                        200
 #define LL_TEST_MODE_MISSED_SLV_EVT                  201
 #define LL_TEST_MODE_JIRA_2756                       202
 #define LL_TEST_MODE_JIRA_3478                       203
 #define LL_TEST_MODE_JIRA_3646                       204
+#define LL_TEST_MODE_JIRA_4785                       205
 #define LL_TEST_MODE_INVALID                         0xFF
 
 typedef struct
@@ -1795,9 +1854,6 @@ typedef struct
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-
-// RF open parameter to specify PRCM Mode and pointers to CPE/MCE/RFE patches
-extern RF_Mode      rfMode;
 
 // RF Setup
 #if !(defined(CTRL_V50_CONFIG) && (CTRL_V50_CONFIG & (PHY_2MBPS_CFG | PHY_LR_CFG)))
@@ -1952,6 +2008,7 @@ extern void                 llGetTimeToStableXOSC( void );
 extern void                 llRfSetupFwParamCmd( uint8, uint8, uint32, rfOpCmd_t *);
 extern void                 llRfOverrideCteValue(uint32, uint16 , uint8 );
 extern void                 llRfOverrideCommonValue(uint32,uint8);
+extern uint16               llBleToRfChannel(uint8);
 //
 extern RF_EventMask         rfEvent;
 extern RF_Handle            rfHandle;
@@ -1999,6 +2056,10 @@ extern void                 llUpdateCteState( llConnState_t *);
 extern uint8                llGetCteInfo( uint8, void * );
 extern uint8                llSetCteAntennaArray(llCteAntSwitch_t *, uint8 *, uint8 , uint8);
 extern void                 llApplyParamUpdate( llConnState_t * );
+extern void                 llRemoveFeaturesForSendToPeer ( uint8 * );
+
+// SDAA task
+extern uint8                llSDAASetupRXWindowCmd(void);
 
 // Data Channel Management
 extern void                 llProcessChanMap( llConnState_t *, uint8 * );
@@ -2131,6 +2192,9 @@ extern void LL_ReadRemoteUsedFeaturesCompleteCback_sPatch( uint8 status, uint16 
 
 // Tx queue api
 extern uint8 llQueryTxQueue(uint32 addr);
+
+// Connection Ind
+extern uint8 llValidateConnectIndPkt( uint8 * );
 
 #ifdef __cplusplus
 }

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -374,8 +374,14 @@ int main(void)
     }
 
 #ifdef IEEE_COEX_TEST
-    GPIO_setMux(PIN_RX_ACTIVE, IOC_PORT_RFC_GPO0);
-    GPIO_setMux(PIN_TX_ACTIVE, IOC_PORT_RFC_GPO3);
+    GPIO_PinConfig RX_Config;
+    GPIO_PinConfig TX_Config;
+
+    GPIO_getConfig(PIN_RX_ACTIVE, &RX_Config);
+    GPIO_getConfig(PIN_TX_ACTIVE, &TX_Config);
+
+    GPIO_setConfigAndMux(PIN_RX_ACTIVE, RX_Config, IOC_PORT_RFC_GPO0);
+    GPIO_setConfigAndMux(PIN_TX_ACTIVE, TX_Config, IOC_PORT_RFC_GPO3);
 #endif // IEEE_COEX_TEST
 #ifdef USE_ITM_DBG
     ITM_config itm_config =

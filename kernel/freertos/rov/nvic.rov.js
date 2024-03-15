@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* global xdc */
+/* global xdc, helperGetHexString, helperGetEnabledActivePending, helperGetPriorityGivenIndex */
 let Program = xdc.module('xdc.rov.Program');
-let Monitor = xdc.module("xdc.rov.runtime.Monitor");
 
 /* eslint-disable-next-line no-unused-vars */
 let moduleName = "NVIC";
@@ -71,7 +70,7 @@ function getDescription(interruptNum){
         case 4:
             return "MemManage";
         case 5:
-            return "BusFault"
+            return "BusFault";
         case 6:
             return "UsageFault";
         case 11:
@@ -161,7 +160,7 @@ function getHwipDispatchMap(dispatchTable){
     let map = {};
 
     for(let i = 0; i < dispatchTable.length; i++){
-        hwiObjAddr = dispatchTable[i];
+        let hwiObjAddr = dispatchTable[i];
         if(hwiObjAddr == 0) continue;
         let hwiObj = Program.fetchFromAddr(hwiObjAddr, "HwiP_Obj", 1);
         let dispatchFuncName = String(Program.lookupFuncName(Number(hwiObj.fxn)));

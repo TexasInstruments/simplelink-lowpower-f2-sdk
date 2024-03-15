@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -122,8 +122,10 @@ typedef struct
 
   /* Propriority Security PIBs */
   keyDescriptor_t            macKeyTable[MAX_KEY_TABLE_ENTRIES];
-  deviceDescriptor_t         macDeviceTable[MAX_DEVICE_TABLE_ENTRIES];
-  keyDeviceDescriptor_t      macKeyDeviceList[MAX_KEY_TABLE_ENTRIES][MAX_DEVICE_TABLE_ENTRIES];
+  deviceDescriptor_t         *macDeviceTable;
+  // deviceDescriptor_t         macDeviceTable[MAX_DEVICE_TABLE_ENTRIES];
+  keyDeviceDescriptor_t      *macKeyDeviceList;
+  // keyDeviceDescriptor_t      macKeyDeviceList[MAX_KEY_TABLE_ENTRIES][MAX_DEVICE_TABLE_ENTRIES];
   keyIdLookupDescriptor_t    macKeyIdLookupList[MAX_KEY_TABLE_ENTRIES];
   keyUsageDescriptor_t       macKeyUsageList[MAX_KEY_USAGE_TABLE_ENTRIES];
   securityLevelDescriptor_t  macSecurityLevelTable[MAX_SECURITY_LEVEL_TABLE_ENTRIES];

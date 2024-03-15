@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* global xdc */
+/* global xdc, helperGetPriorityGivenIndex, helperGetEnabledActivePending*/
 let Program   = xdc.module('xdc.rov.Program');
-let Monitor   = xdc.module("xdc.rov.runtime.Monitor");
 let NVICModule = xdc.loadCapsule("nvic.rov.js");
 
 /* eslint-disable-next-line no-unused-vars */
@@ -115,7 +114,7 @@ function getHwi(makeDetailed){
     for (let i = 0; i < dispatchTable.length; i++) {
         if (dispatchTable[i] == 0) continue;
         let hwi = makeDetailed ? new DetailedHwi() : new BasicHwi();
-        hwiAddr = dispatchTable[i];
+        let hwiAddr = dispatchTable[i];
         let obj = Program.fetchFromAddr(hwiAddr, "HwiP_Obj", 1);
 
         hwi.Address      = hwiAddr;
@@ -164,7 +163,7 @@ function getHwiModule(){
 
     /* See page 230 of version 1b of Cortex M4 Devices Generic User Guide */
     hwiMod.InterruptPending          = Boolean(NVIC.ICSR & (1 << 22));
-    hwiMod.PreemptedActiveExceptions = Boolean(NVIC.ICSR & (1 << 11)) ? false : true;
+    hwiMod.PreemptedActiveExceptions = NVIC.ICSR & (1 << 11) ? false : true;
     hwiMod.NumPossibleInt            = maxInterrupts;
     let currentActive                = NVIC.ICSR & 0xff;
     hwiMod.CurrentActive = (currentActive != 0) ? "0x" + Number(currentActive).toString(16) : "None";

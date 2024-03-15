@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -138,14 +138,16 @@ else {
     place at end of FLASH_last_region__ { readonly section .ccfg };
     keep { section .ccfg };
 
-    place in FLASH_last_region__ { section .text object macTask.o };
-    place in FLASH_last_region__ { section .text object api_mac.o };
-    place in FLASH_last_region__ { section .text object osal_port.o };
-    place in FLASH_last_region__ { section .text object saddr.o };
+    /* Asteriks (*) are due to differing naming convetions for compiled object files between 
+        IDE, makefile, and CMake library compilation */
+    place in FLASH_last_region__ { section .text object *macTask.o* };
+    place in FLASH_last_region__ { section .text object *api_mac.o* };
+    place in FLASH_last_region__ { section .text object *osal_port.o* };
+    place in FLASH_last_region__ { section .text object *saddr*.o* };
 
     place in FLASH_region { section .text };
 
-    place in FLASH_region { readonly section .const object mac_user_config.o };
+    place in FLASH_region { readonly section .const object *mac_user_config.o* };
 
     place in FLASH_region { 
         section .const,
@@ -168,15 +170,12 @@ else {
 /* Place .ramVecs in start of RAM */
 place at start of RAM_pre_dma_region { section .ramVecs };
 do not initialize { section .ramVecs };
-place in RAM_pre_dma_region { section .data object mac_radio.o };
-place in RAM_pre_dma_region { section .data object ipv6_routing_table.o };
-place in RAM_pre_dma_region { section .bss object hmac_global.o };
-place in RAM_pre_dma_region { section .bss object fh_global.o };
-place in RAM_pre_dma_region { section .bss object mac_rx.o };
-place in RAM_pre_dma_region { section .bss object osal_port.o };
-place in RAM_pre_dma_region { section .bss object ipv6.o };
-place in RAM_pre_dma_region { section .bss object ipv6_routing_table.o };
-place in RAM_pre_dma_region { section .bss object event.o };
+/* Asteriks (*) are due to differing naming convetions for compiled object files between 
+    IDE, makefile, and CMake library compilation */
+place in RAM_pre_dma_region { section .bss object *fh_global*.o* };
+place in RAM_pre_dma_region { section .bss object *mac*.o* };
+place in RAM_pre_dma_region { section .bss object *osal_port*.o* };
+place in RAM_pre_dma_region { section .bss object *ipv6*.o* };
 
 /*
  * Define CSTACK block to contain .stack section. This enables the IAR IDE

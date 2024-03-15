@@ -55,6 +55,8 @@
 /* Driver configuration */
 #include "ti_drivers_config.h"
 #include "ti_wisunfan_config.h"
+
+#include "nsconfig.h"
 #include "mesh_system.h"
 #include "socket_api.h"
 #include "ip6string.h"
@@ -64,13 +66,21 @@
 #include "fhss_config.h"
 #include "randLIB.h"
 #include "ws_management_api.h"
+
+#include "6LoWPAN/ws/ws_common_defines.h"
+#include "Common_Protocols/ipv6_constants.h"
+#include "6LoWPAN/ws/ws_common.h"
+#include "Common_Protocols/udp.h"
+
 #include "mbed-mesh-api/mesh_interface_types.h"
 #include "NanostackTiRfPhy.h"
 #include "borderrouter_tasklet.h"
 #include "nsdynmemLIB.h"
-#include "6LoWPAN/ws/ws_common_defines.h"
-#include "application.h"
+#include "6LoWPAN/ws/ws_config.h"
+#include "ti_wisunfan_features.h"
 
+#include "application.h"
+#include "eventOS_event_timer.h"
 #ifdef WISUN_NCP_ENABLE
 /* OpenThread Internal/Example Header files */
 #include "otsupport/otrtosapi.h"
@@ -102,7 +112,35 @@ uint32_t ticks_after_joining = 0;
 #ifdef WISUN_NCP_ENABLE
 int8_t ncp_tasklet_id = -1;
 otInstance *OtStack_instance = NULL;
+
+#ifdef WISUN_TEST_METRICS
+extern JOIN_TIME_s node_join_time;
 #endif
+#endif //WISUN_NCP_ENABLE
+
+#ifdef WISUN_TEST_MPL_EMBEDDED
+#define SEND_BUF_SIZE 24
+#define multicast_addr_str "ff15::810a:64d1"
+#define UDP_PKT_INTERVAL 1000
+#define MASTER_GROUP 0
+#define MY_GROUP 1
+#endif
+
+ti_wisun_config_t ti_wisun_config =
+{
+    .rapid_join = FEATURE_RAPID_JOIN_ENABLE,
+    .mpl_low_latency = FEATURE_MPL_LOW_LATENCY_ENABLE,
+    .rapid_disconnect_detect_br = FEATURE_RAPID_DISCONNECT_DETECT_BR_SEC,
+    .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
+    .auth_type  = NETWORK_AUTH_TYPE,
+    .use_fixed_gtk_keys = false,
+    .fixed_gtk_keys = {
+        FIXED_GTK_KEY_1,
+        FIXED_GTK_KEY_2,
+        FIXED_GTK_KEY_3,
+        FIXED_GTK_KEY_4,
+    },
+};
 
 configurable_props_t cfg_props = { .phyTxPower = CONFIG_TRANSMIT_POWER, \
                                    .ccaDefaultdBm = CONFIG_CCA_THRESHOLD, \
@@ -145,6 +183,26 @@ extern otError nanostack_net_stack_up(void);
 #endif //WISUN_AUTO_START
 #endif //WISUN_NCP_ENABLE
 
+#ifdef WISUN_TEST_MPL_EMBEDDED
+static uint8_t recv_buffer[SEND_BUF_SIZE] = {0};
+static uint32_t num_pkts = 0;
+
+int8_t socket_id;
+uint8_t multi_cast_addr[16] = {0};
+
+uint8_t send_buf[SEND_BUF_SIZE] = {0};
+
+uint32_t gPktCount = 0;
+timeout_t *gUDP_pkt_timeout;
+void handle_message(char* msg);
+extern void timac_GetBC_Slot_BFIO(uint16_t *slot, uint32_t *bfio);
+#endif
+
+bool is_in_eapol_eui_allow_list(uint8_t *euiAddress);
+bool insert_eapol_eui_allow_list(uint8_t* euiAddress);
+bool remove_eapol_eui_allow_list(uint8_t* euiAddress);
+
+
 /******************************************************************************
 Function definitions
  *****************************************************************************/
@@ -158,9 +216,15 @@ Function definitions
  * In the Out of Box example, this macro is set to a small
  * network i.e less than or around 100 nodes
  */
+extern const char *ti154stack_lib_version;
+extern const char *ti154stack_lib_date;
+extern const char *ti154stack_lib_time;
 mesh_error_t nanostack_wisunInterface_configure(void)
 {
     int ret;
+
+    tr_info("Library info | Date: %s, Time: %s, Version: %s", ti154stack_lib_date, ti154stack_lib_time,
+            ti154stack_lib_version);
 
     if (_configured) {
         // Already configured
@@ -340,6 +404,200 @@ static inline void autoStartSignal()
 }
 #endif //WISUN_AUTO_START
 
+#ifdef WISUN_TEST_MPL_EMBEDDED
+/*!
+ * Callback for handling any activity on the udp socket
+ */
+void socket_callback(void *cb)
+{
+    socket_callback_t *sock_cb = (socket_callback_t *) cb;
+
+#ifdef WISUN_TEST_METRICS
+    int16_t len;
+    ns_address_t source_addr;
+#endif
+    tr_debug("socket_callback() sock=%d, event=0x%x, interface=%d, data len=%d",
+             sock_cb->socket_id, sock_cb->event_type, sock_cb->interface_id, sock_cb->d_len);
+
+    switch (sock_cb->event_type & SOCKET_EVENT_MASK) {
+        case SOCKET_DATA:
+            tr_info("socket_callback: SOCKET_DATA, sock=%d, bytes=%d", sock_cb->socket_id, sock_cb->d_len);
+
+#ifdef WISUN_TEST_METRICS
+            tr_mpl("socket_callback: SOCKET_DATA, sock=%d, bytes=%d", sock_cb->socket_id, sock_cb->d_len);
+
+            /* Convert string addr to ipaddr array */
+            len = socket_recvfrom(socket_id, recv_buffer, sizeof(recv_buffer), 0, &source_addr);
+            if(len > 0)
+              {
+                  num_pkts++;
+                  tr_mpl("Recv[%d]: %s, Pkts:%d", len, recv_buffer, num_pkts);
+                  handle_message((char*)recv_buffer);
+              }
+              else if(NS_EWOULDBLOCK != len)
+              {
+                  tr_mpl("Recv error %x", len);
+              }
+#endif
+            break;
+        case SOCKET_CONNECT_DONE:
+            tr_info("socket_callback: SOCKET_CONNECT_DONE");
+            break;
+        case SOCKET_CONNECT_FAIL:
+            tr_info("socket_callback: SOCKET_CONNECT_FAIL");
+            break;
+        case SOCKET_CONNECT_AUTH_FAIL:
+            tr_info("socket_callback: SOCKET_CONNECT_AUTH_FAIL");
+            break;
+        case SOCKET_INCOMING_CONNECTION:
+            tr_info("socket_callback: SOCKET_INCOMING_CONNECTION");
+            break;
+        case SOCKET_TX_FAIL:
+            tr_info("socket_callback: SOCKET_TX_FAIL");
+            break;
+        case SOCKET_CONNECT_CLOSED:
+            tr_info("socket_callback: SOCKET_CONNECT_CLOSED");
+            break;
+        case SOCKET_CONNECTION_RESET:
+            tr_info("socket_callback: SOCKET_CONNECTION_RESET");
+            break;
+        case SOCKET_NO_ROUTE:
+            tr_info("socket_callback: SOCKET_NO_ROUTE");
+            break;
+        case SOCKET_TX_DONE:
+            tr_info("socket_callback: SOCKET_TX_DONE");
+            break;
+        case SOCKET_NO_RAM:
+            tr_info("socket_callback: SOCKET_NO_RAM");
+            break;
+        case SOCKET_CONNECTION_PROBLEM:
+            tr_info("socket_callback: SOCKET_CONNECTION_PROBLEM");
+            break;
+        default:
+            break;
+    }
+}
+
+/*!
+ * Setup udp socket and bind to a specific port number
+ */
+bool udpSocketSetup(void)
+{
+    int8_t ret;
+    ns_ipv6_mreq_t mreq;
+    ns_address_t bind_addr;
+
+    tr_info("opening udp socket");
+    socket_id = socket_open(SOCKET_UDP, 0, socket_callback);
+    if (socket_id < 0) {
+        tr_debug("socket open failed with error %d", socket_id);
+        return false;
+    }
+
+    // how many hops the multicast message can go
+    static const int16_t multicast_hops = 2;
+    socket_setsockopt(socket_id, SOCKET_IPPROTO_IPV6, SOCKET_IPV6_MULTICAST_HOPS, &multicast_hops, sizeof(multicast_hops));
+
+    static const int32_t buf_size = 20;
+    int32_t rtn = 20;
+//    rtn = socket_setsockopt(socket_id, SOCKET_SOL_SOCKET, SOCKET_SO_RCVBUF, &buf_size, sizeof buf_size);
+//    tr_info("set rx buffer len %x, status %x", buf_size, rtn);
+/*
+    rtn = socket_setsockopt(socket_id, SOCKET_SOL_SOCKET, SOCKET_SO_SNDBUF, &buf_size, sizeof buf_size);
+    tr_info("set Tx buffer len %x, status %x", buf_size, rtn);
+*/
+    /* Convert string addr to ipaddr array */
+    stoip6(multicast_addr_str, strlen(multicast_addr_str), multi_cast_addr);
+
+    memcpy(mreq.ipv6mr_multiaddr, multi_cast_addr, 16);
+    mreq.ipv6mr_interface = 0;
+    socket_setsockopt(socket_id, SOCKET_IPPROTO_IPV6, SOCKET_IPV6_JOIN_GROUP, &mreq, sizeof(mreq));
+
+    bind_addr.type = ADDRESS_IPV6;
+    memcpy(bind_addr.address, ns_in6addr_any, 16);
+    bind_addr.identifier = UDP_PORT_TEST;
+    ret = socket_bind(socket_id, &bind_addr);
+    if (ret < 0) {
+        tr_error("socket bind failed with error %d", ret);
+        return false;
+    }
+    return true;
+}
+
+/*!
+ * Process received message
+ */
+void handle_message(char* msg) {
+    uint8_t state=0;
+    uint16_t group=0xffff;
+
+    if (strstr(msg, "t:lights;") == NULL) {
+       return;
+    }
+
+    if (strstr(msg, "s:1;") != NULL) {
+        state = 1;
+    }
+    else if (strstr(msg, "s:0;") != NULL) {
+        state = 0;
+    }
+
+    // 0==master, 1==default group
+    char *msg_ptr = strstr(msg, "g:");
+    if (msg_ptr) {
+        char *ptr;
+        group = strtol(msg_ptr, &ptr, 10);
+    }
+
+    // in this example we only use one group
+    if (group==MASTER_GROUP || group==MY_GROUP) {
+        GPIO_write(CONFIG_GPIO_RLED, state);
+    }
+}
+
+/*!
+ * Send UDP Traffic to configured Socket ID
+ * This function gets called by the eventOS timer
+ * Timer is canceled at the completion of sending
+ * desired UDP packets.
+ */
+void sendUDPTraffic () {
+//    uint16_t count;
+    int16_t ret;
+    ns_address_t send_addr = {0};
+    uint16_t slotIdx;
+    uint32_t bfio;
+
+    /* Set multicast send address */
+    send_addr.type = ADDRESS_IPV6;
+    send_addr.identifier = UDP_PORT_TEST;
+    memcpy(send_addr.address, multi_cast_addr, 16);
+
+    timac_GetBC_Slot_BFIO(&slotIdx, &bfio);
+    snprintf(send_buf, sizeof(send_buf), "Id:%d:bfio:%u", slotIdx,bfio);
+    tr_mpl("UDP payload slot(%d), BFIO(%u)", slotIdx, bfio);
+
+    // Send UDP Packet until the desired numbers
+    if (gPktCount--) {
+        ret = socket_sendto(socket_id, &send_addr, send_buf, sizeof(send_buf));
+    } else {
+       eventOS_timeout_cancel(gUDP_pkt_timeout);
+    }
+}
+
+/*!
+ * Set up number of UDP packets to be send
+ * and set up timer to send the packets.
+ */
+void startUDPTraffic (uint32_t numPkts) {
+    if (numPkts){
+        gPktCount = numPkts;
+    } else {
+        gPktCount = 0xFFFFFFFF;
+    }
+    gUDP_pkt_timeout = eventOS_timeout_every_ms(sendUDPTraffic, UDP_PKT_INTERVAL, NULL);
+}
+#endif
 
 /*!
  * Core logic for NCP tasklet. Helps process incoming, outgoing
@@ -455,5 +713,93 @@ uint8_t get_first_fixed_channel(uint8_t * channel_list)
     }
     return fixedChannelNum;
 }
+
+sAddrExt_t zeroExtAddr = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+sAddrExt_t eapol_eui_allow_list[EAPOL_EUI_LIST_SIZE];
+bool is_in_eapol_eui_allow_list(uint8_t *euiAddress)
+{
+    uint16_t index = 0;
+
+    for(index = 0; index < EAPOL_EUI_LIST_SIZE; index++)
+    {
+      if(sAddrExtCmp(euiAddress, eapol_eui_allow_list[index]))
+      {
+          /* specified dest address found in list */
+          return true;
+      }
+    }
+    return false;
+}
+
+bool insert_eapol_eui_allow_list(uint8_t* euiAddress)
+{
+    uint8_t index = 0;
+    bool retVal = false;
+    if (is_in_eapol_eui_allow_list(euiAddress))
+    {
+        // Already in allow list
+        return true;
+    }
+
+    for(index = 0; index < EAPOL_EUI_LIST_SIZE; index++)
+    {
+        if(sAddrExtCmp(eapol_eui_allow_list[index], zeroExtAddr))
+        {
+            /* copy the string over if there is nothing stored there */
+            sAddrExtCpy(eapol_eui_allow_list[index], euiAddress);
+            retVal = true;
+            break;
+        }
+    }
+
+    return(retVal);
+}
+bool remove_eapol_eui_allow_list(uint8_t* euiAddress)
+{
+    uint8_t index = 0;
+    bool retVal = false;
+
+    for(index = 0; index < EAPOL_EUI_LIST_SIZE; index++)
+    {
+        if(sAddrExtCmp(eapol_eui_allow_list[index], euiAddress))
+        {
+            /* copy the string over if there is nothing stored there */
+            sAddrExtCpy(eapol_eui_allow_list[index], zeroExtAddr);
+            retVal = true;
+            break;
+        }
+    }
+
+    return(retVal);
+}
+
+#ifdef WISUN_TEST_METRICS
+/*
+ * Get latest test metrics
+ */
+void get_test_metrics(test_metrics_s *test_metrics)
+{
+    test_metrics->revision = 3;
+    // Populate join time
+    memcpy(&test_metrics->join_time, &node_join_time, sizeof(JOIN_TIME_s));
+
+    // Populate MAC debug
+    timac_getMACDebugCounts(&test_metrics->mac_debug);
+
+    // Populate heap debug
+    const mem_stat_t *heap_stats = ns_dyn_mem_get_mem_stat();
+
+    test_metrics->heap_debug.heap_sector_size = heap_stats->heap_sector_size;
+    test_metrics->heap_debug.heap_sector_allocated_bytes =
+            heap_stats->heap_sector_allocated_bytes;
+    test_metrics->heap_debug.heap_sector_allocated_bytes_max =
+            heap_stats->heap_sector_allocated_bytes_max;
+
+    timac_getMACPerfData(&test_metrics->mac_perf_data);
+
+    // Populate length
+    test_metrics->length = (uint16_t) sizeof(test_metrics_s);
+}
+#endif
 
 #endif //WISUN_NCP_ENABLE

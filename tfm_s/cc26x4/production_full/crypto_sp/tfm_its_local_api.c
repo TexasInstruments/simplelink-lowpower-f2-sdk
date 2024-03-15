@@ -13,18 +13,18 @@
 #include <interface/include/psa/internal_trusted_storage.h>
 #include <psa_manifest/pid.h>
 #include <secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <stdint.h>
 
 #if TFM_ENABLED
     /* Set the client ID to the PID of the Crypto SP */
-    #define CLIENT_ID CRYPTO_SP
+    #define CLIENT_ID (int32_t)CRYPTO_SP
 #else
     #ifndef DEFAULT_NS_CLIENT_ID
         #define DEFAULT_NS_CLIENT_ID (-1)
     #endif
-    #define CLIENT_ID DEFAULT_NS_CLIENT_ID
+    #define CLIENT_ID (int32_t)DEFAULT_NS_CLIENT_ID
 #endif
 
 static uint8_t *data;
@@ -62,13 +62,13 @@ psa_status_t psa_its_set(psa_storage_uid_t uid,
 
 size_t its_req_mngr_read(uint8_t *buf, size_t num_bytes)
 {
-    (void)tfm_memcpy(buf, data, num_bytes);
+    (void)spm_memcpy(buf, data, num_bytes);
     data += num_bytes;
     return num_bytes;
 }
 
 void its_req_mngr_write(const uint8_t *buf, size_t num_bytes)
 {
-    (void)tfm_memcpy(data, buf, num_bytes);
+    (void)spm_memcpy(data, buf, num_bytes);
     data += num_bytes;
 }

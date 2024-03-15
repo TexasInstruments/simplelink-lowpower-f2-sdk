@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
  *
  *  The driver implementation does not perform runtime checks for most input parameters.
  *  Only values that are likely to have a stochastic element to them are checked (such
- *  as whether a driver is already open). Higher input paramter validation coverage is
+ *  as whether a driver is already open). Higher input parameter validation coverage is
  *  achieved by turning on assertions when compiling the driver.
  *
  *  # Supported Curve Types #
@@ -91,14 +91,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <ti/drivers/Power.h>
 #include <ti/drivers/ECJPAKE.h>
-#include <ti/drivers/cryptoutils/ecc/ECCParams.h>
-#include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
-
-#include <ti/drivers/dpl/HwiP.h>
-#include <ti/drivers/dpl/SwiP.h>
-#include <ti/drivers/dpl/SemaphoreP.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -112,7 +105,7 @@ extern "C" {
 /*!
  *  @brief      ECJPAKECC26X2 states
  *
- *  The EC-JPAKE operations are implemented using multiple invidividual
+ *  The EC-JPAKE operations are implemented using multiple individual
  *  PKA operations. Since state transitions for these operations are almost
  *  always predictable, the state transitions are encoded linearly in this enum.
  *  The FSM controller will increment the state counter and iterate through

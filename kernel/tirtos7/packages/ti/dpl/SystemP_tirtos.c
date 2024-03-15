@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ti/sysbios/BIOS.h>
 
 #include <xdc/std.h>
 #include <xdc/runtime/System.h>
@@ -66,4 +67,9 @@ int SystemP_vsnprintf(char *buf, size_t n, const char *format, va_list va)
 
     ret = System_vsnprintf(buf, n, format, va);
     return (ret);
+}
+
+void SystemP_startScheduler(void)
+{
+    BIOS_start();
 }

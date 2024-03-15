@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,10 +47,10 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 #include <third_party/tfm/interface/include/tfm_api.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
+#include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 
 #include "ti_drivers_config.h" /* Sysconfig generated header */
-#include <cmse.h>              /* TI CMSE helper functions */
 
 #define ECDSA_SECURE_OPERATION_COUNT ECDSA_SECURE_CALLBACK_COUNT
 
@@ -77,7 +77,7 @@ typedef struct
 static ECDSA_s_Operation ECDSA_s_operation;
 
 /*
- * ========= ECDSA Secure Dynamic Instance struct =========
+ * ECDSA Secure Dynamic Instance struct.
  */
 typedef struct
 {
@@ -199,7 +199,7 @@ static inline psa_status_t ECDSA_s_copyConfig(ECDSA_Config **secureConfig,
             }
 
             /* Copy config to secure memory */
-            (void)tfm_memcpy(config_s, config, sizeof(dynInstance_s->config));
+            (void)spm_memcpy(config_s, config, sizeof(dynInstance_s->config));
 
             /* Validate object address range */
             if (cmse_has_unpriv_nonsecure_read_access(config_s->object, sizeof(dynInstance_s->object)) == NULL)
@@ -208,7 +208,7 @@ static inline psa_status_t ECDSA_s_copyConfig(ECDSA_Config **secureConfig,
             }
 
             /* Copy object to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
+            (void)spm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
             config_s->object = &dynInstance_s->object;
 
             /* Validate HW attributes address range */
@@ -219,7 +219,7 @@ static inline psa_status_t ECDSA_s_copyConfig(ECDSA_Config **secureConfig,
             }
 
             /* Copy HW attributes to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
+            (void)spm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
             config_s->hwAttrs = &dynInstance_s->hwAttrs;
 
             *secureConfig = config_s;
@@ -280,7 +280,7 @@ static inline psa_status_t ECDSA_s_copySignOperation(ECDSA_OperationSign *secure
     }
 
     /* Make a secure copy of the operation struct */
-    (void)tfm_memcpy(secureOperation, operation, sizeof(ECDSA_OperationSign));
+    (void)spm_memcpy(secureOperation, operation, sizeof(ECDSA_OperationSign));
 
     /* Get a pointer to secure curve params */
     curveParams_s = ECCParams_s_getCurveParams(secureOperation->curve);
@@ -314,7 +314,7 @@ static inline psa_status_t ECDSA_s_copySignOperation(ECDSA_OperationSign *secure
      * Make a secure copy of the private key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)tfm_memcpy(securePrivateKey, secureOperation->myPrivateKey, sizeof(CryptoKey));
+    (void)spm_memcpy(securePrivateKey, secureOperation->myPrivateKey, sizeof(CryptoKey));
 
     if (CryptoKey_verifySecureInputKey(securePrivateKey) != CryptoKey_STATUS_SUCCESS)
     {
@@ -342,7 +342,7 @@ static inline psa_status_t ECDSA_s_copyVerifyOperation(ECDSA_OperationVerify *se
     }
 
     /* Make a secure copy of the operation struct */
-    (void)tfm_memcpy(secureOperation, operation, sizeof(ECDSA_OperationVerify));
+    (void)spm_memcpy(secureOperation, operation, sizeof(ECDSA_OperationVerify));
 
     /* Get a pointer to secure curve params */
     curveParams_s = ECCParams_s_getCurveParams(secureOperation->curve);
@@ -376,7 +376,7 @@ static inline psa_status_t ECDSA_s_copyVerifyOperation(ECDSA_OperationVerify *se
      * Make a secure copy of the public key struct and update the operation
      * struct to point to the secure key copy.
      */
-    (void)tfm_memcpy(securePublicKey, secureOperation->theirPublicKey, sizeof(CryptoKey));
+    (void)spm_memcpy(securePublicKey, secureOperation->theirPublicKey, sizeof(CryptoKey));
 
     if (CryptoKey_verifySecureInputKey(securePublicKey) != CryptoKey_STATUS_SUCCESS)
     {
@@ -401,7 +401,7 @@ static psa_status_t ECDSA_s_copyParams(ECDSA_Params *secureParams, const ECDSA_P
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    (void)tfm_memcpy(secureParams, params, sizeof(ECDSA_Params));
+    (void)spm_memcpy(secureParams, params, sizeof(ECDSA_Params));
 
     /* Validate the return behavior */
     if ((secureParams->returnBehavior == ECDSA_RETURN_BEHAVIOR_CALLBACK) ||

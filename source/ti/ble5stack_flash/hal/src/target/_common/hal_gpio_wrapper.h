@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,8 @@ extern "C"
  */
 
 #ifndef CC33xx
-#include <driverlib/gpio.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/gpio.h)
 #ifndef CC23X0
 #include <driverlib/ioc.h>
 #endif // !CC23X0

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -171,7 +171,7 @@
 #define FHPIB_DEFAULT_EUI                   \
         {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
 
-#define FHPIB_MAX_NUM_DEVICE                    (50)
+#define FHPIB_MAX_NUM_DEVICE                    (MAX_DEVICE_TABLE_ENTRIES)
 
 #define FH_PIB_ID_START         FHPIB_TRACK_PARENT_EUI
 #define FH_PIB_ID_END           FHPIB_NUM_MAX_TEMP_NODES

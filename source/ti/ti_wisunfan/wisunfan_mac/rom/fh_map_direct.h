@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -198,12 +198,12 @@ extern FHPIB_DB_new_t FHPIB_db_new;
 
 /* fh_nt.c */
 #define MAP_FHNT_initTempTable                                      FHNT_initTempTable
-#define MAP_FHNT_getFixedNTIndexFromTempIndex                       FHNT_getFixedNTIndexFromTempIndex
-#define MAP_FHNT_getNTIndexFromTempIndex                            FHNT_getNTIndexFromTempIndex
-#define MAP_FHNT_getRemoveEntryFromTemp                             FHNT_getRemoveEntryFromTemp
-#define MAP_FHNT_addTempEUI                                         FHNT_addTempEUI
+//#define MAP_FHNT_getFixedNTIndexFromTempIndex                       FHNT_getFixedNTIndexFromTempIndex
+//#define MAP_FHNT_getNTIndexFromTempIndex                            FHNT_getNTIndexFromTempIndex
+//#define MAP_FHNT_getRemoveEntryFromTemp                             FHNT_getRemoveEntryFromTemp
+//#define MAP_FHNT_addTempEUI                                         FHNT_addTempEUI
 //#define MAP_FHNT_delTempEUI                                         FHNT_delTempEUI
-#define MAP_FHNT_delTempIndex                                       FHNT_delTempIndex
+//#define MAP_FHNT_delTempIndex                                       FHNT_delTempIndex
 #define MAP_FHNT_assessTime                                         FHNT_assessTime
 #define MAP_FHNT_purgeTimerIsrCb                                    FHNT_purgeTimerIsrCb
 #define MAP_FHNT_getRemoveEntry                                     FHNT_getRemoveEntry

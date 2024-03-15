@@ -16,7 +16,7 @@
             "+../../../../../../../source/ti/ti154stack/apps/coprocessor/mt/mt_sys.h -> mt_sys.h",
             "+../../../../../../../source/ti/ti154stack/apps/coprocessor/mt/mt_util.c -> mt_util.c",
             "+../../../../../../../source/ti/ti154stack/apps/coprocessor/mt/mt_util.h -> mt_util.h",
-            "+../../application/defines/coprocessor.opts -> coprocessor.opts",
+            "+../../application/defines/coprocessor.opt -> coprocessor.opt",
             "+../../../../../../../source/ti/ti154stack/common/boards/device_type.h -> device_type.h",
             "+../../../../../../../source/ti/ti154stack/common/util/launchpad/board_led.c -> board_led.c",
             "+../../../../../../../source/ti/ti154stack/common/util/board_led.h -> board_led.h",

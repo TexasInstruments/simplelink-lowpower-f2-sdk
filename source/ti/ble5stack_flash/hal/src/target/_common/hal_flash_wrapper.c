@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2023, Texas Instruments Incorporated
+ Copyright (c) 2005-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,8 @@
 #ifndef CC23X0
 #include <driverlib/flash.h>
 #endif
-#include <inc/hw_memmap.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
 
 uint8* HalFlashGetAddress( uint8 pg, uint16 offset );
 /**************************************************************************************************

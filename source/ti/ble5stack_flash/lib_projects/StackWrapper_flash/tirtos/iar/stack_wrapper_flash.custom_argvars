@@ -14,10 +14,6 @@
             <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\kernel\tirtos7\packages;$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source</value>
         </variable>
         <variable>
-            <name>SYSCONFIG_ROOT</name>
-            <value>c:/ti/sysconfig_1.16.2</value>
-        </variable>
-        <variable>
             <name>OUT_DIR_26P3</name>
             <value>$SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR$\source\ti\ble5stack_flash\libraries\cc2651p3</value>
         </variable>

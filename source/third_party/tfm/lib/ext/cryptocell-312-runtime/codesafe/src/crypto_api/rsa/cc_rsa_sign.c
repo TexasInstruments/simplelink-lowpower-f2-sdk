@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifdef CC_IOT
-    #if defined(MBEDTLS_CONFIG_FILE)
-    #include MBEDTLS_CONFIG_FILE
-    #endif
+#include "mbedtls/build_info.h"
 #endif
 
 #if !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C))
@@ -393,6 +391,14 @@ End:
                    the signature size used.
                    The buffer must be at least PrivKey_ptr->N.len bytes long
                    (that is, the size of the modulus, in bytes).
+   @param[in] bIsRawMode - boolean to indicate if the function is used in Raw
+                           mode, which means that the structure T to be signed
+                           is passed as input (no need to perform hashing)
+   @param[in] DataIn_ptr - Buffer containing the T structure to be signed
+                           (possibly the DER encoding of ASN.1 DigestInfo
+                           structure as specified in RFC8017 sect. 9.2 notes)
+   @param[in] DataInSize - Size in bytes of the T structure passed as input in
+                           DataIn_ptr
 
    @return CCError_t - CC_OK,
              CC_RSA_INVALID_USER_CONTEXT_POINTER_ERROR,
@@ -405,8 +411,11 @@ End:
 CEXPORT_C CCError_t CC_RsaSignFinish(
                      CCRndContext_t *rndContext_ptr,
                      CCRsaPrivUserContext_t *UserContext_ptr,
-             uint8_t                   *Output_ptr,
-             size_t                    *OutputSize_ptr)
+                     uint8_t *Output_ptr,
+                     size_t *OutputSize_ptr,
+                     bool bIsRawMode,
+                     const uint8_t *DataIn_ptr,
+                     size_t DataInSize)
 {
     /* FUNCTION DECLERATIONS */
 
@@ -503,7 +512,10 @@ CEXPORT_C CCError_t CC_RsaSignFinish(
                 ccmWorkingContext_ptr->HashOperationMode,
                 (uint8_t*)ccmWorkingContext_ptr->HASH_Result,
                 ccmWorkingContext_ptr->HASH_Result_Size*sizeof(uint32_t),
-                (uint8_t*)ccmWorkingContext_ptr->EBD);
+                (uint8_t*)ccmWorkingContext_ptr->EBD,
+                bIsRawMode,
+                DataIn_ptr,
+                DataInSize);
 
         if (Error!=CC_OK)
             goto End;
@@ -622,7 +634,7 @@ CEXPORT_C CCError_t CC_RsaSign(
 
     /* The return error identifier */
     CCError_t Error = CC_OK;
-
+    bool bIsRawMode = (rsaHashMode == CC_RSA_HASH_NO_HASH_mode) ? true : false;
 
     /* FUNCTION LOGIC */
 
@@ -639,16 +651,16 @@ CEXPORT_C CCError_t CC_RsaSign(
                   PKCS1_ver);
     if (Error!=CC_OK)
         return Error;
-
     /**********************************************************************
      *  RSA_SignUpdate
      **********************************************************************/
-    Error = CC_RsaSignUpdate(UserContext_ptr,
-                   DataIn_ptr,
-                   DataInSize);
-    if (Error!=CC_OK)
-        return Error;
-
+    if (!bIsRawMode) {
+        Error = CC_RsaSignUpdate(UserContext_ptr,
+                       DataIn_ptr,
+                       DataInSize);
+        if (Error!=CC_OK)
+            return Error;
+    }
     /**********************************************************************
      * RSA_SignFinish
      **********************************************************************/
@@ -656,7 +668,10 @@ CEXPORT_C CCError_t CC_RsaSign(
                    rndContext_ptr,
                    UserContext_ptr,
                    Output_ptr,
-                   OutputSize_ptr);
+                   OutputSize_ptr,
+                   bIsRawMode,
+                   DataIn_ptr,
+                   DataInSize);
     return Error;
 
 }/* END OF CC_RsaSign */

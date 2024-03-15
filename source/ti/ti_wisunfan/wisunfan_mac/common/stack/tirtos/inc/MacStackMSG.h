@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -300,7 +300,7 @@ typedef struct _timac_macdatareq_t
   uint_least8_t power;
   /** Pointer to the payload IE list, excluding termination IEs */
   uint_least8_t* pIEList;
-  /** length of the payload IE’s */
+  /** length of the payload IEÂ’s */
   uint_least16_t payloadIELen;
   /** Not used, RESERVED for future. The value shall be set to zero(0) */
   uint_least8_t fhProtoDispatch;
@@ -1302,4 +1302,4 @@ void MAC_StackInitParamsMsg( void );
 }
 #endif
 
-#endif /** MACSTACKMSG_H */
+#endif /** MACSTACKMSG_H *

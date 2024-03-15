@@ -10,7 +10,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -72,11 +72,6 @@ Target Device: cc13xx_cc26xx
 /*********************************************************************
 * GLOBAL VARIABLES
 */
-#ifdef CC23X0
-// IMPORTANT: Please change the the address below
-// Note: addresses are byte resevered in the arrays.
-uint8_t ownAddr[B_ADDR_LEN] = { 0x0D, 0x35, 0x1E, 0xB0, 0x6F, 0x80 };
-#endif
 
 /*********************************************************************
 * LOCAL VARIABLES
@@ -149,10 +144,6 @@ status_t BLEAppUtil_enqueueMsg(uint8_t event, void *pData)
     // Check if the queue is valid
     if (BLEAppUtil_theardEntity.queueHandle == (mqd_t)-1)
     {
-        Display_printf(dispHandle, dispIndex, 0,
-                       "#%5d BLEAppUtil_enqueueMsg: FATAL ERROR "
-                       "BLEAppUtilMsgQueueHandle is NULL",
-                       dispIndex); dispIndex++;
         return(bleNotReady);
     }
 
@@ -182,11 +173,6 @@ void *BLEAppUtil_Task(void *arg)
 {
     // Register to the stack and create queue and event
     BLEAppUtil_stackRegister();
-
-#ifdef CC23X0
-    // Set the BD Address
-    HCI_EXT_SetBDADDRCmd(ownAddr);
-#endif
 
     // Init the ble stack
     BLEAppUtil_stackInit();
@@ -330,6 +316,12 @@ void *BLEAppUtil_Task(void *arg)
             {
                 // Use free
                 BLEAppUtil_free(pMsgData);
+            }
+            else
+            {
+                /* this else clause is required, even if the
+                programmer expects this will never be reached
+                Fix Misra-C Required: MISRA.IF.NO_ELSE */
             }
         }
     }

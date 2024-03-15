@@ -14,7 +14,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -317,8 +317,8 @@ ICall_CSState ICall_enterCSImpl(void)
   return cs;
 #else
   ICall_CSStateUnion cu;
-  cu.each.swikey = (uint_least16_t) Swi_disable();
   cu.each.hwikey = (uint_least16_t) Hwi_disable();
+  cu.each.swikey = (uint_least16_t) Swi_disable();
   return cu.state;
 #endif // CC33xx
 }
@@ -333,8 +333,8 @@ void ICall_leaveCSImpl(ICall_CSState key)
   osi_RestorePreemption((const uint32)key);
 #else
   ICall_CSStateUnion *cu = (ICall_CSStateUnion *) &key;
-  Hwi_restore((UInt) cu->each.hwikey);
   Swi_restore((UInt) cu->each.swikey);
+  Hwi_restore((UInt) cu->each.hwikey);
 #endif // CC33xx
 }
 
@@ -1311,7 +1311,7 @@ static ICall_Errno ICall_primDisableInt(ICall_IntNumArgs *args)
 }
 
 /**
- * @internal Enables master interrupt and context switching.
+ * @internal Enables central interrupt and context switching.
  * @param args arguments corresponding to those of ICall_enableMInt()
  * @return return values corresponding to those of ICall_enableMInt()
  */
@@ -1323,7 +1323,7 @@ static ICall_Errno ICall_primEnableMInt(ICall_FuncArgsHdr *args)
 }
 
 /**
- * @internal Disables master interrupt and context switching.
+ * @internal Disables central interrupt and context switching.
  * @param args arguments corresponding to those of ICall_disableMInt()
  * @return return values corresponding to those of ICall_disableMInt()
  */
@@ -2459,16 +2459,25 @@ ICall_Errno ICall_registerApp(ICall_EntityID *entity,
 }
 
 /**
- * Allocates memory block for a message.
- * @param size   size of the message body in bytes.
+ * Allocates memory block for a message, with respect to memory limitation.
+ * @param limited   TRUE/FALSE control, whether the allocation should be done with limited restriction
+ * @param size      size of the message body in bytes.
  * @return pointer to the start of the message body of the newly
  *         allocated memory block, or NULL if the allocation
  *         failed.
  */
-void *ICall_allocMsg(size_t size)
+static void *ICall_allocMsgInternal(bool limited, size_t size)
 {
-  ICall_MsgHdr *hdr =
-      (ICall_MsgHdr *) ICall_heapMalloc(sizeof(ICall_MsgHdr) + size);
+  ICall_MsgHdr *hdr;
+
+  if (limited)
+  {
+    hdr = (ICall_MsgHdr *) ICall_mallocLimited(sizeof(ICall_MsgHdr) + size);
+  }
+  else
+  {
+    hdr = (ICall_MsgHdr *) ICall_heapMalloc(sizeof(ICall_MsgHdr) + size);
+  }
 
   if (!hdr)
   {
@@ -2478,7 +2487,30 @@ void *ICall_allocMsg(size_t size)
   hdr->next = NULL;
   hdr->dest_id = ICALL_UNDEF_DEST_ID;
   return ((void *) (hdr + 1));
+}
 
+/**
+ * Allocates memory block for a message.
+ * @param size   size of the message body in bytes.
+ * @return pointer to the start of the message body of the newly
+ *         allocated memory block, or NULL if the allocation
+ *         failed.
+ */
+void *ICall_allocMsg(size_t size)
+{
+  return ICall_allocMsgInternal(FALSE, size);
+}
+
+/**
+ * Allocates memory block for a message, but check if enough memory will be left after the allocation.
+ * @param size   size of the message body in bytes.
+ * @return pointer to the start of the message body of the newly
+ *         allocated memory block, or NULL if the allocation
+ *         failed.
+ */
+void *ICall_allocMsgLimited(size_t size)
+{
+  return ICall_allocMsgInternal(TRUE, size);
 }
 
 /**
@@ -2994,7 +3026,7 @@ ICall_disableInt(int intnum)
 }
 
 /**
- * Enables master interrupt and context switching.
+ * Enables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno
@@ -3006,7 +3038,7 @@ ICall_enableMInt(void)
 }
 
 /**
- * Disables master interrupt and context switching.
+ * Disables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno

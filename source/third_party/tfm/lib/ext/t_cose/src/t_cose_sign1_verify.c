@@ -10,7 +10,7 @@
 
 
 #include "t_cose_sign1_verify.h"
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_crypto.h"
 #include "q_useful_buf.h"
 #include "t_cose_util.h"

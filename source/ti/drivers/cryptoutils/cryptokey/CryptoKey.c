@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,14 @@
 
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 
-#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
+#if defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
 
     #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 
 /*
  *  ======== CryptoKey_verifySecureKey ========
  */
-static int_fast16_t CryptoKey_verifySecureKey(CryptoKey *secureKey, bool isWriteable)
+static int_fast16_t CryptoKey_verifySecureKey(const CryptoKey *secureKey, bool isWriteable)
 {
     int_fast16_t status = CryptoKey_STATUS_ERROR;
     void *ptr;
@@ -74,7 +74,7 @@ static int_fast16_t CryptoKey_verifySecureKey(CryptoKey *secureKey, bool isWrite
 /*
  *  ======== CryptoKey_verifySecureInputKey ========
  */
-int_fast16_t CryptoKey_verifySecureInputKey(CryptoKey *secureKey)
+int_fast16_t CryptoKey_verifySecureInputKey(const CryptoKey *secureKey)
 {
     return CryptoKey_verifySecureKey(secureKey, false);
 }
@@ -82,9 +82,36 @@ int_fast16_t CryptoKey_verifySecureInputKey(CryptoKey *secureKey)
 /*
  *  ======== CryptoKey_verifySecureOutputKey ========
  */
-int_fast16_t CryptoKey_verifySecureOutputKey(CryptoKey *secureKey)
+int_fast16_t CryptoKey_verifySecureOutputKey(const CryptoKey *secureKey)
 {
     return CryptoKey_verifySecureKey(secureKey, true);
 }
 
-#endif
+#endif /* TFM_BUILD */
+
+/*
+ *  ======== CryptoKey_getCryptoKeyType ========
+ */
+int_fast16_t CryptoKey_getCryptoKeyType(const CryptoKey *keyHandle, CryptoKey_Encoding *keyType)
+{
+    *keyType = keyHandle->encoding;
+
+    return CryptoKey_STATUS_SUCCESS;
+}
+
+/*
+ *  ======== CryptoKey_isBlank ========
+ */
+int_fast16_t CryptoKey_isBlank(const CryptoKey *keyHandle, bool *isBlank)
+{
+    if ((keyHandle->encoding == CryptoKey_BLANK_PLAINTEXT) || (keyHandle->encoding == CryptoKey_BLANK_KEYSTORE))
+    {
+        *isBlank = true;
+    }
+    else
+    {
+        *isBlank = false;
+    }
+
+    return CryptoKey_STATUS_SUCCESS;
+}

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018-2020 ARM Limited
- * Copyright 2016-2018 Cypress Semiconductor Corporation
+ * Copyright (c) 2018-2022 ARM Limited
+ * Copyright (c) 2016-2021 Cypress Semiconductor Corp. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ ENTRY(Reset_Handler)
 #include "region_defs.h"
 
 __heap_size__  = NS_HEAP_SIZE;
-__msp_stack_size__ = NS_MSP_STACK_SIZE;
+__stack_size__ = NS_STACK_SIZE;
 
 /* Force symbol to be entered in the output file as an undefined symbol. Doing
 * this may, for example, trigger linking of additional modules from standard
@@ -167,12 +167,12 @@ SECTIONS
         /* Copy interrupt vectors from flash to RAM */
         LONG (__Vectors)                                    /* From */
         LONG (__ram_vectors_start__)                        /* To   */
-        LONG (__Vectors_End - __Vectors)                    /* Size */
+        LONG ((__Vectors_End - __Vectors) / 4)              /* Size */
 #endif
         /* Copy data section to RAM */
         LONG (__etext)                                      /* From */
         LONG (__data_start__)                               /* To   */
-        LONG (__data_end__ - __data_start__)                /* Size */
+        LONG ((__data_end__ - __data_start__) / 4)          /* Size */
 
         __copy_table_end__ = .;
     } > flash
@@ -186,11 +186,11 @@ SECTIONS
         . = ALIGN(4);
         __zero_table_start__ = .;
         LONG (__bss_start__)
-        LONG (__bss_end__ - __bss_start__)
+        LONG ((__bss_end__ - __bss_start__) / 4)
         __zero_table_end__ = .;
     } > flash
 
-    __etext =  . ;
+    __etext =  ALIGN(4);
 
 
 #ifdef RAM_VECTORS_SUPPORT
@@ -285,13 +285,14 @@ SECTIONS
         __heap_limit = .; /* Add for _sbrk */
     } > ram
 
-    .msp_stack : ALIGN(32)
+    .stack : ALIGN(32)
     {
-        . += __msp_stack_size__;
+        . += __stack_size__;
     } > ram
-    Image$$ARM_LIB_STACK$$ZI$$Limit = ADDR(.msp_stack) + SIZEOF(.msp_stack);
+    __StackLimit = ADDR(.stack);
+    __StackTop = ADDR(.stack) + SIZEOF(.stack);
 
-    PROVIDE(__stack = Image$$ARM_LIB_STACK$$ZI$$Limit);
+    PROVIDE(__stack = __StackTop);
 
     Image$$ER_TFM_DATA$$RW$$Base = ADDR(.data);
     Image$$ER_TFM_DATA$$RW$$Limit = ADDR(.data) + SIZEOF(.data);
@@ -301,6 +302,13 @@ SECTIONS
 
     Image$$ER_TFM_DATA$$Base = ADDR(.data);
     Image$$ER_TFM_DATA$$Limit = ADDR(.data) + SIZEOF(.data) + SIZEOF(.bss);
+
+#if defined(PSA_API_TEST_ENABLED)
+    .PSA_API_TEST_NVMEM PSA_API_TEST_NVMEM_START (NOLOAD) :
+    {
+        . += PSA_API_TEST_NVMEM_SIZE;
+    } > ram
+#endif
 
 #if defined (NS_DATA_SHARED_START)
     .TFM_SHARED NS_DATA_SHARED_START (NOLOAD) :

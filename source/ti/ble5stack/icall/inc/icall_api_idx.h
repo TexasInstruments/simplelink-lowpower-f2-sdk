@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -143,7 +143,7 @@
 #define IDX_GAP_PasskeyUpdate                         GAP_PasskeyUpdate
 #define IDX_GAP_SendSlaveSecurityRequest              GAP_SendSlaveSecurityRequest
 #define IDX_GAP_Signable                              GAP_Signable
-#define IDX_GAP_Bond                                  GAP_Bond
+#define IDX_GAP_Bond                                  GAP_Bond_sPatch
 
 /* RTLS Services API */
 /*********************/
@@ -249,6 +249,9 @@
 #define IDX_HCI_EXT_SetDtmTxPktCntCmd                    HCI_EXT_SetDtmTxPktCntCmd
 #define IDX_HCI_EXT_SetHostDefChanClassificationCmd      HCI_EXT_SetHostDefChanClassificationCmd
 #define IDX_HCI_EXT_SetHostConnChanClassificationCmd     HCI_EXT_SetHostConnChanClassificationCmd
+#define IDX_HCI_EXT_GetRxStatisticsCmd                   HCI_EXT_GetRxStatisticsCmd
+#define IDX_HCI_EXT_GetTxStatisticsCmd                   HCI_EXT_GetTxStatisticsCmd
+#define IDX_HCI_EXT_GetCoexStatisticsCmd                 HCI_EXT_GetCoexStatisticsCmd
 #define IDX_HCI_TL_getCmdResponderID                     HCI_TL_getCmdResponderID
 #define IDX_HCI_LE_RandCmd                               HCI_LE_RandCmd
 #define IDX_HCI_LE_ReadBufSizeCmd                        HCI_LE_ReadBufSizeCmd
@@ -299,6 +302,7 @@
 #define IDX_HCI_CommandStatusEvent                       HCI_CommandStatusEvent
 #define IDX_HCI_CommandCompleteEvent                     HCI_CommandCompleteEvent
 #define IDX_HCI_bm_alloc                                 HCI_bm_alloc
+#define IDX_HCI_bm_free                                  HCI_bm_free
 #define IDX_HCI_LE_ReadPhyCmd                            HCI_LE_ReadPhyCmd
 #define IDX_HCI_LE_SetDefaultPhyCmd                      HCI_LE_SetDefaultPhyCmd
 #define IDX_HCI_LE_SetPhyCmd                             HCI_LE_SetPhyCmd

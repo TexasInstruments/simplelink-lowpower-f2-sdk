@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -100,6 +100,7 @@ extern "C"
 #include <ti/drivers/rcl/RCL.h>
 #include <ti/drivers/rcl/commands/ble5.h>
 #include <ti/drivers/RNG.h>
+#include "ti/drivers/utils/List.h"
 #else
 #include <ti/drivers/rf/RF.h>
 #include <ti/drivers/TRNG.h>
@@ -158,11 +159,16 @@ extern "C"
 #define LL_ADV_HDR_SET_CHSEL( hdr, v )   (((hdr) & ~0x20) | ((v) << 5))
 
 #ifdef USE_RCL
-#define LL_CHECK_STATUS_BYTE( data, len ) ( data[len - RCL_STATUS_BYTE] & RCL_IGNORE_BIT_MASK )
-#define LL_GET_RSSI( data, len )          ( data[len - RCL_RSSI_BYTE] )
 #define LL_GET_PDU_HEADER(data, pad)      ( data + (pad - RCL_HEADER_BYTE) )
 #endif
 
+// Address types
+// Check if the address type is RPA
+#define LL_IS_ADDR_TYPE_RPA( type )       ( (type == LL_DEV_ADDR_TYPE_PUBLIC_ID) || \
+                                            (type == LL_DEV_ADDR_TYPE_RANDOM_ID) )
+// Check if the address type public/random identity address
+#define LL_IS_ADDR_IDENTITY_TYPE( type )  ( (type == LL_DEV_ADDR_TYPE_PUBLIC)    || \
+                                            (type == LL_DEV_ADDR_TYPE_RANDOM) )
 // local ASSERT handler
 #if defined( DEBUG )
 #define LL_ASSERT(cond) {volatile uint8 i = (cond); while(!i);}
@@ -193,11 +199,14 @@ extern "C"
 
 // corrects RSSI if valid, otherwise returns not available
 // Note: Input is uint8, output int8.
+#ifdef USE_RCL
+#define LL_CHECK_LAST_RSSI( rssi ) (rssi)
+#else
 #define LL_CHECK_LAST_RSSI( rssi )                                             \
           ((rssi) == LL_RF_RSSI_UNDEFINED || (rssi) == LL_RF_RSSI_INVALID)  ?  \
           (int8)LL_RSSI_NOT_AVAILABLE                                       :  \
           ((int8)(rssi) - rssiCorrection)
-
+#endif
 #define CHECK_CRITICAL_SECTION() (__get_BASEPRI() & 0x20 )
 
 #define LL_CMP_BDADDR( dstPtr, srcPtr )                                        \
@@ -239,13 +248,14 @@ extern "C"
 #define LL_STATE_ADV_NONCONN                           0x04
 #define LL_STATE_SCAN                                  0x05
 #define LL_STATE_INIT                                  0x06
-#define LL_STATE_CONN_SLAVE                            0x07
-#define LL_STATE_CONN_MASTER                           0x08
+#define LL_STATE_CONN_PERIPHERAL                       0x07
+#define LL_STATE_CONN_CENTRAL                          0x08
 #define LL_STATE_DIRECT_TEST_MODE_TX                   0x09
 #define LL_STATE_DIRECT_TEST_MODE_RX                   0x0A
 #define LL_STATE_MODEM_TEST_TX                         0x0B
 #define LL_STATE_MODEM_TEST_RX                         0x0C
 #define LL_STATE_MODEM_TEST_TX_FREQ_HOPPING            0x0D
+#define LL_STATE_SDAA_RX_WINDOW                        0x0E
 // Extended Advertising
 
 // Pre release flag for the health check
@@ -260,12 +270,12 @@ extern "C"
 #define LL_EVT_NONE                                    0x0000
 #define LL_EVT_POST_PROCESS_RF                         0x0001
 #define LL_EVT_DIRECTED_ADV_FAILED                     0x0002
-#define LL_EVT_SLAVE_CONN_CREATED                      0x0004
-#define LL_EVT_MASTER_CONN_CREATED                     0x0008
-#define LL_EVT_MASTER_CONN_CANCELLED                   0x0010
+#define LL_STATE_PERIPHERAL_CONN_CREATED               0x0004
+#define LL_EVT_CENTRAL_CONN_CREATED                    0x0008
+#define LL_EVT_CENTRAL_CONN_CANCELLED                  0x0010
 #define LL_EVT_EXT_SCAN_TIMEOUT                        0x0020
 #define LL_EVT_EXT_ADV_TIMEOUT                         0x0040
-#define LL_EVT_SLAVE_CONN_CREATED_BAD_PARAM            0x0080
+#define LL_STATE_PERIPHERAL_CONN_CREATED_BAD_PARAM     0x0080
 #define LL_EVT_PERIODIC_SCAN_CANCELLED                 0x0100
 #define LL_EVT_RESET_SYSTEM_HARD                       0x0200
 #define LL_EVT_RESET_SYSTEM_SOFT                       0x0400
@@ -291,8 +301,9 @@ extern "C"
 #define HW_FAIL_INADEQUATE_PKT_LEN                     0x8C
 #define HW_FAIL_DISALLOWED_PHY_CHANGE                  0x8D
 #define HW_FAIL_NO_TIMER_AVAILABLE                     0x8E
-#define HW_FAIL_EXTENDED_WL_FAULT                      0x8F
+#define HW_FAIL_EXTENDED_AL_FAULT                      0x8F
 #define HW_FAIL_NO_RAT_COMPARE_AVAILABLE               0x90
+#define HW_FAIL_START_EXT_ADV_ERROR                    0x91
 #define HW_FAIL_RF_DRIVER_ERROR                        0xE0
 #define HW_FAIL_UNKNOWN_ERROR                          0xFF
 
@@ -346,7 +357,7 @@ extern "C"
 #define LL_PAUSE_ENC_RSP_PAYLOAD_LEN                   1
 #define LL_VERSION_IND_PAYLOAD_LEN                     6
 #define LL_REJECT_IND_PAYLOAD_LEN                      2
-#define LL_SLAVE_FEATURE_REQ_PAYLOAD_LEN               9
+#define LL_PERIPHERAL_FEATURE_REQ_PAYLOAD_LEN          9
 #define LL_CONN_PARAM_REQ_PAYLOAD_LEN                  24
 #define LL_CONN_PARAM_RSP_PAYLOAD_LEN                  24
 #define LL_REJECT_EXT_IND_PAYLOAD_LEN                  3
@@ -450,7 +461,7 @@ extern "C"
 #define LL_CTRL_PAUSE_ENC_RSP                          11 //  , S
 #define LL_CTRL_VERSION_IND                            12 // M, S
 #define LL_CTRL_REJECT_IND                             13 //  , S
-#define LL_CTRL_SLAVE_FEATURE_REQ                      14 //  , S
+#define LL_CTRL_PERIPHERAL_FEATURE_REQ                 14 //  , S
 #define LL_CTRL_CONNECTION_PARAM_REQ                   15 // M, S
 #define LL_CTRL_CONNECTION_PARAM_RSP                   16 //  , S
 #define LL_CTRL_REJECT_EXT_IND                         17 // M, S
@@ -504,7 +515,7 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_CTRL_PROC_STATUS_TERMINATE                  1
 #define LL_CTRL_PROC_STATUS_NOT_PROCESSED              2
 
-// Setup Next Slave Procedure Actions
+// Setup Next Peripheral Procedure Actions
 #define LL_SETUP_NEXT_LINK_STATUS_SUCCESS              0
 #define LL_SETUP_NEXT_LINK_STATUS_TERMINATE            1
 
@@ -567,8 +578,8 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_CA_100_PPM                                  100
 
 // Default SCA
-#define LL_SCA_MASTER_DEFAULT                          5 // 50ppm (ordinal)
-#define LL_SCA_SLAVE_DEFAULT                           LL_CA_40_PPM
+#define LL_SCA_CENTRAL_DEFAULT                         5 // 50ppm (ordinal)
+#define LL_SCA_PERIPHERAL_DEFAULT                           LL_CA_40_PPM
 
 // TX Output Power Related
 #define LL_TX_POWER_0_DBM                              0
@@ -587,8 +598,6 @@ extern char *llCtrl_BleLogStrings[];
 
 // Direct Test Mode Related
 #define LL_DIRECT_TEST_SYNCH_WORD                      0x71764129
-#define LL_DIRECT_TEST_CRC_INIT_VALUE                  0x55555500
-#define LL_DIRECT_TEST_CRC_LEN                         3
 #define LL_DTM_MAX_PAYLOAD_LEN                         37
 
 // Post-Radio Operations
@@ -619,6 +628,13 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_FIRST_RF_CHAN_ADJ                           (LL_FIRST_RF_CHAN_FREQ - LL_FIRST_RF_CHAN_FREQ_OFFSET)
 #define LL_LAST_RF_CHAN_ADJ                            (LL_LAST_RF_CHAN_FREQ - LL_FIRST_RF_CHAN_FREQ_OFFSET)
 
+//defines for converter channel from BLE to RF channel
+#define LL_RF_FREQ_HOP                                  2        // hop between 2 consecutive channels (in MHZ)
+#define LL_BLE_CHANNEL_11                               11       // BLE channel 11.
+// number of adv channels
+#define LL_ONE_ADV_CHANNEL                              1
+#define LL_TWO_ADV_CHANNEL                              2
+
 /*
 ** FCFG and CCFG Offsets, and some Miscellaneous
 */
@@ -637,9 +653,9 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_BADDR_PAGE_OFFSET                           0xFD0     // in CCFG (CCA); LSB..MSB
 #elif defined(CC13X4)
 #define LL_BADDR_PAGE_OFFSET                           0x00000020 // in CCFG (CCA); LSB..MSB
-#else //Agama CC26X2 || CC13X2 || CC13X2P || CC13X4
+#else //Agama CC26X2 || CC13X2 || CC13X2P || CC13X4 || CC26X4
 #define LL_BADDR_PAGE_OFFSET                           0x1FD0     // in CCFG (CCA); LSB..MSB
-#endif ////Agama CC26X2 || CC13X2 || CC13X2P ||CC13X4
+#endif ////Agama CC26X2 || CC13X2 || CC13X2P ||CC13X4 || CC26X4
 #endif
 #define LL_BADDR_PAGE_LEN                              6
 // BADDR Address Offset in FCFG1 (i.e. permanent BLE address)
@@ -681,8 +697,8 @@ extern char *llCtrl_BleLogStrings[];
 #define PHY_UPDATE_APPLIED                             2
 #define CHANNEL_MAP_UPDATE_APPLIED                     2
 
-// Update State Values for Slave Latency
-#define UPDATE_SL_OKAY                                 0
+// Update State Values for Peripheral Latency
+#define UPDATE_PL_OKAY                                 0
 #define UPDATE_RX_CTRL_ACK_PENDING                     1
 #define UPDATE_NEW_TRANS_PENDING                       2
 
@@ -782,7 +798,12 @@ extern char *llCtrl_BleLogStrings[];
 
 #ifndef CC23X0
 // CM0 FW Parameters
+#ifndef CC33xx
 #define CM0_RAM_BASE                                   0x21000028
+#else
+#define CM0_RAM_BASE                                   0x45C0f628
+#endif
+#define CM0_RAM_RPA_CFG_ADDR                           (CM0_RAM_BASE + 216) // pRpaCfg
 #define CM0_RAM_EXT_DATA_LEN_ADDR                      (CM0_RAM_BASE + 162) // dataLenMask/maxDatalen
 #define CM0_RAM_RX_IFS_TIMEOUT_ADDR                    (CM0_RAM_BASE + 166) // rxIfsTimeout
 #define CM0_RAM_START_TO_TX_RAT_OFFSET_ADDR            (CM0_RAM_BASE + 32)  // startToTxRatOffset
@@ -870,8 +891,8 @@ extern char *llCtrl_BleLogStrings[];
 #define BYTES_PER_WORD                                 4
 
 // HCI Connection Complete Roles
-#define HCI_EVT_MASTER_ROLE                            0
-#define HCI_EVT_SLAVE_ROLE                             1
+#define HCI_EVT_CENTRAL_ROLE                           0
+#define HCI_EVT_PERIPHERAL_ROLE                        1
 
 // Channel Selection Algorithm
 #define LL_CHANNEL_SELECT_ALGO_1                       0
@@ -995,6 +1016,23 @@ extern char *llCtrl_BleLogStrings[];
 #define LL_HEALTH_CHECK_INIT_DEFAULT_THRESHOLD  (40000 * RAT_TICKS_IN_1MS)   //40 sec max scan interval
 #define LL_HEALTH_CHECK_ADV_DEFAULT_THRESHOLD   (10000 * RAT_TICKS_IN_1MS)   //10 sec max adv interval
 
+/*
+ ** Connection indication's defines
+ */
+#define LL_CONN_IND_HEADER_OFFSET            0     // 0-1   (2 octets)
+#define LL_CONN_IND_INITIATOR_ADDRESS_OFFSET 2     // 2-7   (6 octets)
+#define LL_CONN_IND_ACCESS_ADDRESS_OFFSET    14    // 14-17 (4 octets)
+#define LL_CONN_IND_TRANSMIT_WINDOW_OFFSET   22    // 22-23 (2 octets)
+#define LL_CONN_IND_INTERVAL_OFFSET          24    // 24-25 (2 octets)
+#define LL_CONN_IND_LATENCY_OFFSET           26    // 26-27 (2 octets)
+#define LL_CONN_IND_TIMEOUT_OFFSET           28    // 28-29 (2 octets)
+#define LL_CONN_IND_CHANNEL_MAP_OFFSET       30    // 30-34 (5 octets)
+
+#define LL_MAX_SUPERVISION_TIMEOUT           0x0C80
+#define LL_MIN_SUPERVISION_TIMEOUT           0x000A
+
+#define LL_RCL_PKT_NUM_PAD_BTYES             3
+#define LL_RCL_PKT_HDR_LEN                   2
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -1013,7 +1051,7 @@ typedef struct
   uint8  winSize;                                    // window size
   uint16 winOffset;                                  // window offset
   uint16 connInterval;                               // connection interval
-  uint16 slaveLatency;                               // number of connection events the slave can ignore
+  uint16 peripheralLatency;                               // number of connection events the peripheral can ignore
   uint16 connTimeout;                                // supervision connection timeout
 } connParam_t;
 
@@ -1033,7 +1071,7 @@ typedef struct
 {
   uint16 intervalMin;                                // lower connection interval limit
   uint16 intervalMax;                                // upper connection interval limit
-  uint16 latency;                                    // slave latency
+  uint16 latency;                                    // peripheral latency
   uint16 timeout;                                    // connection timeout
   uint8  periodicity;                                // preferred periodicity
   uint16 refConnEvtCount;                            // reference connection event count
@@ -1054,17 +1092,17 @@ typedef struct
 // Encryption Request
 typedef struct
 {
-  uint8 RAND[LL_ENC_RAND_LEN];                       // random vector from Master
-  uint8 EDIV[LL_ENC_EDIV_LEN];                       // encrypted diversifier from Master
-  uint8 SKDm[LL_ENC_SKD_M_LEN];                      // master SKD values concatenated
-  uint8 IVm[LL_ENC_IV_M_LEN];                        // master IV values concatenated
+  uint8 RAND[LL_ENC_RAND_LEN];                       // random vector from Central
+  uint8 EDIV[LL_ENC_EDIV_LEN];                       // encrypted diversifier from Central
+  uint8 SKDm[LL_ENC_SKD_M_LEN];                      // central SKD values concatenated
+  uint8 IVm[LL_ENC_IV_M_LEN];                        // central IV values concatenated
 } encReq_t;
 
 // Encryption Response
 typedef struct
 {
-  uint8 SKDs[LL_ENC_SKD_S_LEN];                      // slave SKD values concatenated
-  uint8 IVs[LL_ENC_IV_S_LEN];                        // slave IV values concatenated
+  uint8 SKDs[LL_ENC_SKD_S_LEN];                      // peripheral SKD values concatenated
+  uint8 IVs[LL_ENC_IV_S_LEN];                        // peripheral IV values concatenated
 } encRsp_t;
 
 // Unknown Response
@@ -1104,12 +1142,12 @@ typedef struct
 typedef struct
 {
   // Note: IV and SKD provide enough room for the full IV and SKD. When the
-  //       Master and Slave values are provided, the result is one combined
+  //       Central and Peripheral values are provided, the result is one combined
   //       (concatenated) value.
-  uint8  IV[ LL_ENC_IV_LEN ];                        // combined master and slave IV values concatenated
-  uint8  SKD [ LL_ENC_SKD_LEN ];                     // combined master and slave SKD values concatenated
-  uint8  RAND[ LL_ENC_RAND_LEN ];                    // random vector from Master
-  uint8  EDIV[ LL_ENC_EDIV_LEN ];                    // encrypted diversifier from Master
+  uint8  IV[ LL_ENC_IV_LEN ];                        // combined central and peripheral IV values concatenated
+  uint8  SKD [ LL_ENC_SKD_LEN ];                     // combined central and peripheral SKD values concatenated
+  uint8  RAND[ LL_ENC_RAND_LEN ];                    // random vector from Central
+  uint8  EDIV[ LL_ENC_EDIV_LEN ];                    // encrypted diversifier from Central
   uint8  reserved[2];
   uint8  nonce[ LL_ENC_NONCE_LEN ];                  // current nonce with current IV value
   uint8  reserved2[3];
@@ -1192,6 +1230,30 @@ typedef struct
   uint16 numEvents;                                  // number of connection events
   uint16 numMissedEvts;                              // number of missed connection events
 } perInfo_t;
+
+// RX Statistics Information - General
+typedef struct
+{
+  uint16 numRxOk;                                    // number of okay Rx pkts
+  uint16 numRxCtrl;                                  // number of okay Rx ctrl pkts
+  uint16 numRxCtrlAck;                               // number of okay Rx ctrl pkts Acked
+  uint16 numRxCrcErr;                                // number of not okay Rx pkts
+  uint16 numRxIgnored;                               // number of okay Rx pkts ignored
+  uint16 numRxEmpty;                                 // number of okay Rx pkts with no payload
+  uint16 numRxBufFull;                               // number of pkts discarded
+} rxStats_t;
+
+// TX Statistics Information - General
+typedef struct
+{
+  uint16 numTx;                                      // number of Tx pkts
+  uint16 numTxAck;                                   // number of Tx pkts Acked
+  uint16 numTxCtrl;                                  // number of Tx ctrl pkts
+  uint16 numTxCtrlAck;                               // number of Tx ctrl pkts Acked
+  uint16 numTxCtrlAckAck;                            // number of Tx ctrl pkts Acked that were Acked
+  uint16 numTxRetrans;                               // number of retransmissions
+  uint16 numTxEntryDone;                             // number of pkts on Tx queue that are finished
+} txStats_t;
 
 // TX Data
 typedef struct txData_t
@@ -1337,11 +1399,11 @@ struct llConn_t
   uint32            timerDrift;                         // saved timer drift adjustment to avoid recalc
   // Connection Parameters
   uint32            lastTimeToNextEvt;                  // the time to next event from the previous connection event
-  uint8             slaveLatencyAllowed;                // flag to indicate slave latency is permitted
-  uint16            slaveLatency;                       // current slave latency; 0 means inactive
-  uint8             lastSlaveLatency;                   // last slave latency value used
-  uint16            slaveLatencyValue;                  // current slave latency value (when enabled)
-  uint32            accessAddr;                         // saved synchronization word to be used by Slave
+  uint8             peripheralLatencyAllowed;           // flag to indicate peripheral latency is permitted
+  uint16            peripheralLatency;                  // current peripheral latency; 0 means inactive
+  uint8             lastPeripheralLatency;              // last peripheral latency value used
+  uint16            peripheralLatencyValue;             // current peripheral latency value (when enabled)
+  uint32            accessAddr;                         // saved synchronization word to be used by Peripheral
   uint32            crcInit;                            // connection CRC initialization value (24 bits)
   uint8             sleepClkAccuracy;                   // peer's sleep clock accuracy; used by own device to determine timer drift
   connParam_t       curParam;                           // current connection parameters
@@ -1384,6 +1446,9 @@ struct llConn_t
   // Packet Error Rate
   perInfo_t         perInfo;                            // PER
   perByChan_t      *perInfoByChan;                      // PER by Channel
+  // Rx and Tx Statistics
+  rxStats_t         rxStats;                            // RX statistics
+  txStats_t         txStats;                            // TX statistics
   // Peer Address
   // Note: Address must start on word boundary!
   peerInfo_t        peerInfo;                           // peer device address and address type
@@ -1395,12 +1460,12 @@ struct llConn_t
   uint32            lastTimeoutTime;
 
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-  uint8             updateSLPending;                    // flag to monitor Master confirmation of Slave's ACK for update
+  uint8             updateSLPending;                    // flag to monitor Central confirmation of Peripheral's ACK for update
 #endif // ADV_CONN_CFG
 
 #ifndef DISABLE_RCOSC_SW_FIX
-  // save off master contribution
-  uint16            mstSCA;                             // Master's portion of connection SCA
+  // save off central contribution
+  uint16            mstSCA;                             // Central's portion of connection SCA
 #endif // !DISABLE_RCOSC_SW_FIX
 
   // Authenticated Payload Timeout
@@ -1440,8 +1505,10 @@ struct llConn_t
   /* Starvation Handling */
   uint8             StarvationMode:1;                   // connection starvation mode on/off
   uint8             numLSTORetries:3;                   // connection number of retries in LSTO state
-  uint8             paramUpdateNotifyHost:1;            // indicates that there was a param update with param change in connInterval, connTimeout or slaveLatency
-  uint8             reserved:3;                         // reserved
+  uint8             paramUpdateNotifyHost:1;            // indicates that there was a param update with param change in connInterval, connTimeout or peripheralLatency
+  uint8             procInitiator:1;                    // indicates that this device has sent the req (initaite the procedure)
+  uint8             reserved:2;                         // reserved
+  uint8             ownAddrType;                        // Own device address type - used for dual advertise sets with different types.
 };
 
 // Per BLE LL Connection
@@ -1639,7 +1706,7 @@ typedef struct
 // Coex struct
 typedef struct
 {
-  llCoexParams_t  connected;    // master or slave
+  llCoexParams_t  connected;    // central or peripheral
   llCoexParams_t  initiator;    // create connection or connectable advertiser
   llCoexParams_t  broadcaster;  // non connectable advertiser
   llCoexParams_t  observer;     // scanner
@@ -1723,12 +1790,15 @@ typedef struct
 #define LL_TEST_MODE_TP_CON_ADV_BI_02                72
 #define LL_TEST_MODE_TP_ENC_INI_BI_01                80
 #define LL_TEST_MODE_TP_CON_INI_BI_02                81
+#define LL_TEST_MODE_TP_HCI_CM_BV_04                 82
+#define LL_TEST_MODE_TP_CON_MAS_BI_07                83
 // Tickets
 #define LL_TEST_MODE_JIRA_220                        200
 #define LL_TEST_MODE_MISSED_SLV_EVT                  201
 #define LL_TEST_MODE_JIRA_2756                       202
 #define LL_TEST_MODE_JIRA_3478                       203
 #define LL_TEST_MODE_JIRA_3646                       204
+#define LL_TEST_MODE_JIRA_4785                       205
 #define LL_TEST_MODE_INVALID                         0xFF
 
 typedef struct
@@ -1751,8 +1821,6 @@ typedef struct
  */
 
 #ifndef USE_RCL
-// RF open parameter to specify PRCM Mode and pointers to CPE/MCE/RFE patches
-extern RF_Mode      rfMode;
 // FW Parameter structure (for Extended Data Length)
 extern rfOpImmedCmd_RW_FwParam_t fwParCmd;
 extern rfOpCmd_runImmedCmd_t     runFwParCmd;
@@ -1769,8 +1837,8 @@ extern dtmInfo_t     *dtmInfo;                        // direct test mode data
 extern sizeInfo_t    sizeInfo;                        // size info of various data structs
 extern buildInfo_t   buildInfo;                       // build revision data
 extern featureSet_t  deviceFeatureSet;                // device feature set
-extern uint8         curTxPowerVal;                   // current Tx Power value
-extern uint8         maxTxPwrForDTM;                  // max power override for DTM
+extern RFBLEDPL_TX_POWER_TYPE   curTxPowerVal;        // current Tx Power Table Index
+extern RFBLEDPL_TX_POWER_TYPE   maxTxPwrForDTM;       // max power override for DTM
 extern rfPathComp_t *pRfPathComp;                     // RF Tx Path Compensation data
 extern uint16        taskEndStatus;                   // radio task end status
 extern uint16        postRfOperations;                // flags for post-RF operations
@@ -1811,6 +1879,13 @@ extern uint16 supportedMaxTxOctets;
 extern uint16 supportedMaxTxTime;
 extern uint16 supportedMaxRxOctets;
 extern uint16 supportedMaxRxTime;
+
+#ifdef LL_TEST_MODE
+extern uint16 invalidRxOctets;
+extern uint16 invalidRxTime;
+extern uint16 invalidTxOctets;
+extern uint16 invalidTxTime;
+#endif
 
 // V5.0 - 2M and Coded PHY
 extern uint8 defaultPhy;
@@ -1884,7 +1959,7 @@ extern uint8                llHaltRadio( uint32 );
 extern void                 llRfStartFS( uint8, uint16 );
 extern void                 llSetFreqTune( uint8 );
 extern void                 llProcessPostRfOps( void );
-extern void                 llSetTxPower( uint8 );
+extern void                 llSetTxPower( RFBLEDPL_TX_POWER_TYPE );
 extern void                 llSetTxPwrLegacy( uint8 );
 extern int8                 llGetTxPower( void );
 extern uint8                llTxPwrPoutLU( int8 );
@@ -1901,7 +1976,7 @@ extern void                 llRfOverrideCteValue(uint32, uint16 , uint8 );
 #ifndef CC23X0
 extern void                 llRfOverrideCommonValue(uint32,uint8);
 #endif
-
+extern uint16               llBleToRfChannel(uint8);
 //
 #ifdef USE_RCL
 extern RCL_Handle            rfHandle;
@@ -1954,6 +2029,10 @@ extern uint8                llGetCteInfo( uint8, void * );
 extern uint8                llSetCteAntennaArray(llCteAntSwitch_t *, uint8 *, uint8 , uint8);
 #endif
 extern void                 llApplyParamUpdate( llConnState_t * );
+extern void                 llRemoveFeaturesForSendToPeer ( uint8 * );
+
+// SDAA task
+extern uint8                llSDAASetupRXWindowCmd(void);
 
 // Data Channel Management
 extern void                 llProcessChanMap( llConnState_t *, uint8 * );
@@ -1980,7 +2059,7 @@ extern void                 llSortActiveConns( uint8 *, uint8 );
 extern void                 llShellSortActiveConns(uint8 *activeConns, uint8 numActiveConns);
 extern void                 llConnCleanup( llConnState_t * );
 extern void                 llConnTerminate( llConnState_t *, uint8  );
-extern uint8                llConnExists( uint8, uint8 *, uint8 );
+extern uint8                llConnExists( uint8 *, uint8 );
 extern uint32               llGenerateCRC( void );
 extern uint8                llEventInRange( uint16 , uint16 , uint16  );
 extern uint16               llEventDelta( uint16 , uint16  );
@@ -2012,7 +2091,9 @@ extern void                 llCombinePDU( uint16, uint8 *, uint16, uint8 );
 extern uint8                llFragmentPDU( llConnState_t *, uint8 *, uint16 );
 extern uint8                *llMemCopySrc( uint8 *, uint8 *, uint8 );
 extern uint8                *llMemCopyDst( uint8 *, uint8 *, uint8 );
-#ifndef USE_RCL
+#ifdef USE_RCL
+extern void                 llUpdateRxBuffersForActiveConnections(List_List *rxBuffers);
+#else
 extern void                 llCreateRxBuffer( llConnState_t *, dataEntry_t *);
 #endif
 extern void                 llCheckRxBuffers( llConnState_t *connPtr );
@@ -2043,23 +2124,23 @@ extern void                 llProcessScanRxFIFO( uint8 scanStatus );
 extern void                 llInit_TaskConnect( void );
 extern void                 llInit_TaskEnd( void );
 
-// Master Task End Cause
-extern void                 llMaster_TaskEnd( void );
-extern uint8                llProcessMasterControlProcedures( llConnState_t *connPtr );
-extern uint8                llSetupNextMasterEvent( void );
+// Central Task End Cause
+extern void                 llCentral_TaskEnd( void );
+extern uint8                llProcessCentralControlProcedures( llConnState_t *connPtr );
+extern uint8                llSetupNextCentralEvent( void );
 
-// Slave Task End Cause
-extern void                 llSlave_TaskEnd( void );
-extern uint8                llSetupNextSlaveEvent( void );
-extern uint8                llProcessSlaveControlProcedures( llConnState_t * );
+// Peripheral Task End Cause
+extern void                 llPeripheral_TaskEnd( void );
+extern uint8                llSetupNextPeripheralEvent( void );
+extern uint8                llProcessPeripheralControlProcedures( llConnState_t * );
 extern uint8                llCheckForLstoDuringSL( llConnState_t * );
-extern uint8                llCheckSlaveTerminate( uint8 );
+extern uint8                llCheckPeripheralTerminate( uint8 );
 
 // Error Related End Cause
 extern void                 llTaskError( void );
 
-// White List Related
-extern llStatus_t           llCheckWhiteListUsage( void );
+// Accept List Related
+extern llStatus_t           llCheckAcceptListUsage( void );
 
 // Timer Related Management
 extern void                 llCBTimer_AptoExpiredCback( uint8 * );
@@ -2077,8 +2158,8 @@ extern llStatus_t           llDmmDynamicAlloc(void);
 
 // LL Process Event functions
 extern void                 llProcessScanTimeout( void );
-extern void                 llProcessMasterConnectionCreated( void );
-extern void                 llProcessSlaveConnectionCreated( void );
+extern void                 llProcessCentralConnectionCreated( void );
+extern void                 llProcessPeripheralConnectionCreated( void );
 extern void                 llProcessAdvAddrResolutionTimeout( void );
 extern void                 llProcessConnectionEstablishFailed( uint8 role, uint8 reason );
 
@@ -2089,8 +2170,22 @@ extern uint8                llConvertLlPhyOptToBlePhyOpt(uint8 llPhyOpt, uint8 *
 extern uint8                llSetPhy(llConnState_t *connPtr, uint8 rxPhy);
 extern void                 llSetRangeDelay(llConnState_t *connPtr);
 
-extern uint8                RfBleDpl_setPhy(uint8 connId, uint8 phy, uint8 phyOpts);
+extern uint8                RfBleDpl_setConnPhy(uint8 connId, uint8 phy, uint8 phyOpts);
+extern uint8                RfBleDpl_setAdvPhy(void *pRfCmd, uint8 phy);
 extern void                 RfBleDpl_setRangeDelay(uint8 connId, uint8 rangeDelay);
+
+/* Tx Power apis */
+extern uint8                     RfBleDpl_getNumTxPwrVals();
+extern RFBLEDPL_TX_POWER_HW_TYPE RfBleDpl_getTxPowerDefaultIdx();
+extern void                      RfBleDpl_setTxPower(uint32 *pRfCmd, RFBLEDPL_TX_POWER_HW_TYPE txPower);
+extern RFBLEDPL_TX_POWER_HW_TYPE RfBleDpl_getTxPower(RFBLEDPL_TX_POWER_TYPE txPower);
+extern int8                      RfBleDpl_getTxPowerDbm(RFBLEDPL_TX_POWER_TYPE txPower);
+extern RFBLEDPL_TX_POWER_TYPE    RfBleDpl_getTxPowerByTxPowerDbm(int8 txPowerDbm, uint8 fraction);
+extern RFBLEDPL_TX_POWER_TYPE    RfBleDpl_getTxPowerMin();
+extern RFBLEDPL_TX_POWER_TYPE    RfBleDpl_getTxPowerMax();
+extern bool                      RfBleDpl_txPowerIsValid(RFBLEDPL_TX_POWER_TYPE txPower);
+
+extern void                      llSetPower(uint32 *rfCmd, RFBLEDPL_TX_POWER_TYPE curTxPowerVal, RFBLEDPL_TX_POWER_HW_TYPE txPower);
 
 // Health check api
 extern void llHealthUpdateWrapperForOsal(void);
@@ -2103,6 +2198,9 @@ extern void llCreateCommonFeatureSet( llConnState_t *connPtr, uint8 *pBuf );
 
 // Tx queue api
 uint8 llQueryTxQueue(uint32 addr);
+
+// Connection Ind
+extern uint8 llValidateConnectIndPkt( uint8 * );
 
 #ifdef __cplusplus
 }

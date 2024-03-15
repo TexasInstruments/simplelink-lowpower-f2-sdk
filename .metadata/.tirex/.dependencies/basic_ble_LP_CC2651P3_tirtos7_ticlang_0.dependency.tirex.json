@@ -3,10 +3,13 @@
         "files": [
             "+../../README.html -> README.html",
             "+../../app/app_main.c -> app/app_main.c",
+            "+../../app/app_main.h -> app/app_main.h",
+            "+../../app/app_menu.c -> app/app_menu.c",
             "+../../app/app_broadcaster.c -> app/app_broadcaster.c",
             "+../../app/app_peripheral.c -> app/app_peripheral.c",
             "+../../app/app_observer.c -> app/app_observer.c",
             "+../../app/app_central.c -> app/app_central.c",
+            "+../../app/app_connection.c -> app/app_connection.c",
             "+../../app/app_pairing.c -> app/app_pairing.c",
             "+../../app/app_data.c -> app/app_data.c",
             "+../../app/Profiles/app_simple_gatt.c -> app/Profiles/app_simple_gatt.c",

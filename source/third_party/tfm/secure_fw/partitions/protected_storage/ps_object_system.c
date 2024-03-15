@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2017-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -8,10 +8,10 @@
 #include "ps_object_system.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include "cmsis_compiler.h"
 #include "psa/internal_trusted_storage.h"
-#include "tfm_memory_utils.h"
 #ifdef PS_ENCRYPTION
 #include "ps_encrypted_object.h"
 #endif
@@ -45,7 +45,7 @@ __STATIC_INLINE void ps_init_empty_object(
                                         struct ps_object_t *obj)
 {
     /* Set all object data to 0 */
-    (void)tfm_memset(obj, PS_DEFAULT_EMPTY_BUFF_VAL, PS_MAX_OBJECT_SIZE);
+    (void)memset(obj, PS_DEFAULT_EMPTY_BUFF_VAL, PS_MAX_OBJECT_SIZE);
 
 #ifndef PS_ENCRYPTION
     /* Initialize object version */
@@ -112,7 +112,7 @@ static psa_status_t ps_read_object(enum read_type_t type)
      */
     if (g_ps_object.header.fid != g_obj_tbl_info.fid ||
         g_ps_object.header.version != g_obj_tbl_info.version) {
-        return PSA_PS_ERROR_DATA_CORRUPT;
+        return PSA_ERROR_DATA_CORRUPT;
     }
 
     /* Read object data if any */
@@ -188,6 +188,9 @@ psa_status_t ps_object_read(psa_storage_uid_t uid, int32_t client_id,
 
     /* Read object */
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_read(g_obj_tbl_info.fid, &g_ps_object);
 #else
     /* Read object header */
@@ -213,8 +216,8 @@ psa_status_t ps_object_read(psa_storage_uid_t uid, int32_t client_id,
 
 clear_data_and_return:
     /* Remove data stored in the object before leaving the function */
-    (void)tfm_memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
-                     PS_MAX_OBJECT_SIZE);
+    (void)memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
+                 PS_MAX_OBJECT_SIZE);
 
     return err;
 }
@@ -243,6 +246,9 @@ psa_status_t ps_object_create(psa_storage_uid_t uid, int32_t client_id,
     if (err == PSA_SUCCESS) {
 #ifdef PS_ENCRYPTION
         /* Read the object */
+        g_ps_object.header.crypto.ref.uid = uid;
+        g_ps_object.header.crypto.ref.client_id = client_id;
+
         err = ps_encrypted_object_read(g_obj_tbl_info.fid, &g_ps_object);
 #else
         /* Read the object header */
@@ -294,6 +300,9 @@ psa_status_t ps_object_create(psa_storage_uid_t uid, int32_t client_id,
     }
 
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_write(g_obj_tbl_info.fid, &g_ps_object);
 #else
     wrt_size = PS_OBJECT_SIZE(g_ps_object.header.info.current_size);
@@ -328,8 +337,7 @@ psa_status_t ps_object_create(psa_storage_uid_t uid, int32_t client_id,
 
 clear_data_and_return:
     /* Remove data stored in the object before leaving the function */
-    (void)tfm_memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
-                     PS_MAX_OBJECT_SIZE);
+    (void)memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL, PS_MAX_OBJECT_SIZE);
 
     return err;
 }
@@ -354,6 +362,9 @@ psa_status_t ps_object_write(psa_storage_uid_t uid, int32_t client_id,
 
     /* Read the object */
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_read(g_obj_tbl_info.fid, &g_ps_object);
 #else
     err = ps_read_object(READ_ALL_OBJECT);
@@ -404,6 +415,9 @@ psa_status_t ps_object_write(psa_storage_uid_t uid, int32_t client_id,
     }
 
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_write(g_obj_tbl_info.fid, &g_ps_object);
 #else
     wrt_size = PS_OBJECT_SIZE(g_ps_object.header.info.current_size);
@@ -433,8 +447,8 @@ psa_status_t ps_object_write(psa_storage_uid_t uid, int32_t client_id,
 
 clear_data_and_return:
     /* Remove data stored in the object before leaving the function */
-    (void)tfm_memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
-                     PS_MAX_OBJECT_SIZE);
+    (void)memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
+                 PS_MAX_OBJECT_SIZE);
 
     return err;
 }
@@ -453,6 +467,9 @@ psa_status_t ps_object_get_info(psa_storage_uid_t uid, int32_t client_id,
     }
 
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_read(g_obj_tbl_info.fid, &g_ps_object);
 #else
     err = ps_read_object(READ_HEADER_ONLY);
@@ -467,8 +484,8 @@ psa_status_t ps_object_get_info(psa_storage_uid_t uid, int32_t client_id,
 
 clear_data_and_return:
     /* Remove data stored in the object before leaving the function */
-    (void)tfm_memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
-                     PS_MAX_OBJECT_SIZE);
+    (void)memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
+                 PS_MAX_OBJECT_SIZE);
 
     return err;
 }
@@ -486,6 +503,9 @@ psa_status_t ps_object_delete(psa_storage_uid_t uid, int32_t client_id)
     }
 
 #ifdef PS_ENCRYPTION
+    g_ps_object.header.crypto.ref.uid = uid;
+    g_ps_object.header.crypto.ref.client_id = client_id;
+
     err = ps_encrypted_object_read(g_obj_tbl_info.fid, &g_ps_object);
 #else
     err = ps_read_object(READ_HEADER_ONLY);
@@ -513,8 +533,8 @@ psa_status_t ps_object_delete(psa_storage_uid_t uid, int32_t client_id)
 
 clear_data_and_return:
     /* Remove data stored in the object before leaving the function */
-    (void)tfm_memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
-                     PS_MAX_OBJECT_SIZE);
+    (void)memset(&g_ps_object, PS_DEFAULT_EMPTY_BUFF_VAL,
+                 PS_MAX_OBJECT_SIZE);
 
     return err;
 }

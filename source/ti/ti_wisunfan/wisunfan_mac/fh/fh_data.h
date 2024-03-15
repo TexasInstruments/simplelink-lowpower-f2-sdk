@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -85,6 +85,10 @@
 #else
 #include "icall_osal_map_direct.h"
 #endif
+
+#include "fh_ie.h"
+
+#include "mac_main.h"
 
 /******************************************************************************
  Defines
@@ -194,6 +198,13 @@ typedef struct fh_hnd_s
 #ifdef FEATURE_WISUN_SUPPORT
   uint8_t                   fhBSRcvd;             /*<! Valid FH BS Received */
 #endif
+  FHIE_vpIE_t               txVPIE;               /*<! transmitted (inserted) VP IE */
+  FHIE_vpIE_t               rxVPIE;               /*<! last received VPIE */
+  uint8_t                   joinState;        /*<! indication of joined network */
+
+  /* save the current TXEvent for VPIE */
+  macEvent_t                *pTxEvent;           /* pointer to current TX event */
+
 } FH_HND_s;
 
 /* FH module debug count */
@@ -285,6 +296,28 @@ typedef struct fh_tx_timing_table
 
 } FH_TX_TIMING_TABLE_s;
 
+#ifdef DEBUG_MPL_BROADCAST_BACK_OFF
+typedef struct __fh_mpl_debug_
+{
+    uint32_t current_delay;
+    uint32_t min_broadcast_delay;
+    uint32_t max_broadcast_delay;
+
+    // after check with BD
+    uint32_t error_no_time;
+    uint32_t error_cca_busy;
+    uint32_t error_access_fail;
+    uint32_t error_tx_timeout;
+
+    uint32_t min_BD_delay;
+    uint32_t max_BD_delay;
+
+    uint16_t num_highPriorityPkt;
+    uint8_t  maxNb;
+
+} FH_MPL_DEBUG_t;
+
+#endif
 /* ------------------------------------------------------------------------------------------------
  *                                           Global Externs
  * ------------------------------------------------------------------------------------------------
@@ -295,6 +328,8 @@ typedef struct fh_tx_timing_table
  * ------------------------------------------------------------------------------------------------
  */
 
+MAP_osal_msg_q_t FHDATA_checkPktFromQueueWithPriority(MAP_osal_msg_q_t *txQueue, uint8_t frameType,uint8_t priority);
+uint16 FHDATA_getNumPktFromQueue(MAP_osal_msg_q_t *txQueue, uint8_t frameType);
 
 MAP_osal_msg_q_t FHDATA_checkPktFromQueue(MAP_osal_msg_q_t *txQueue, uint8_t frameType);
 

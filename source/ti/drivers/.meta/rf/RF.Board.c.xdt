@@ -82,6 +82,7 @@ function symbolToDisplayName(symbol) {
 /* Determine active coex pins */
 const useRequestPin = (coexEnable && (coexMode !== "coexMode1WireGrant"));
 const usePriorityPin = (coexEnable && (coexMode === "coexMode3Wire"));
+/* This variable is duplicated in RF.Board_init.c.dxt and the logic must be kept in sync */
 const useGrantPin = (coexEnable && (coexMode !== "coexMode1WireRequest"));
 
 /* Define active coex pins as array of DIOs */
@@ -94,7 +95,9 @@ const rfCoexPinSymbols = [
 /* Determine if to generate any RF Driver callback function (top-level) */
 const generateRfCallback = ( (callbackFxn.length !== 0) && (callbackFxn.toLowerCase() !== "null") );
 
-/* Determine if to generate specific callback for antenna switching */
+/* Determine if to generate specific callback for antenna switching
+ * This variable is duplicated in RF.Board_init.c.dxt and the logic must be kept in sync
+ */
 const generateRfAntennaCallback = ( generateRfCallback && nAntennaPins > 0 );
 const hardware = RF.getRfHardware(rfStatic);
 const antennaSwitchName = (hardware !== null) ?  hardware.name : undefined;
@@ -105,7 +108,9 @@ const hwSupported = [
 ];
 const useAntennaSwitchHW = !!hwSupported.includes(antennaSwitchName);
 
-/* Determine if to generate specific callback for coex */
+/* Determine if to generate specific callback for coex
+ * This variable is duplicated in RF.Board_init.c.dxt and the logic must be kept in sync
+ */
 const generateRfCoexCallback = ( generateRfCallback && coexEnable );
 
 /* Object to store antenna path pin info for cc13x1_cc26x1 antenna switch */
@@ -239,13 +244,16 @@ void __attribute__((weak)) `callbackFxn`(RF_Handle client, RF_GlobalEvent events
 %   const {coexPinRequestIdleLevel: reqIdleLvl, coexPinPriorityIdleLevel: priIdleLvl, coexPinGrantIdleLevel: grantIdleLvl} = RF.$static;
 %   const coexPinConfig = {
 %       CONFIG_RF_COEX_REQUEST: {
-%           rfCoreMux: "IOC_PORT_RFC_GPO1"
+%           rfCoreMux: "IOC_PORT_RFC_GPO1",
+%           gpioConfig: RF.$static.coexPinRequestIdleLevel ? "GPIO_CFG_OUTPUT | GPIO_CFG_INVERT_ON" : "GPIO_CFG_OUTPUT",
 %       },
 %       CONFIG_RF_COEX_PRIORITY: {
-%           rfCoreMux: "IOC_PORT_RFC_GPO2"
+%           rfCoreMux: "IOC_PORT_RFC_GPO2",
+%           gpioConfig: RF.$static.coexPinPriorityIdleLevel ? "GPIO_CFG_OUTPUT | GPIO_CFG_INVERT_ON" : "GPIO_CFG_OUTPUT",
 %       },
 %       CONFIG_RF_COEX_GRANT: {
-%           rfCoreMux: "IOC_PORT_RFC_GPI1"
+%           rfCoreMux: "IOC_PORT_RFC_GPI1",
+%           gpioConfig: RF.$static.coexPinGrantIdleLevel ? "GPIO_CFG_INPUT | GPIO_CFG_IN_INT_RISING" : "GPIO_CFG_INPUT | GPIO_CFG_IN_INT_FALLING | GPIO_CFG_INVERT_ON",
 %       }
 %   }
 /*
@@ -328,7 +336,7 @@ void __attribute__((weak)) `callbackFxn`Coex(RF_Handle client, RF_GlobalEvent ev
 
         // Configure default coex pin muxing
 %   rfCoexPinSymbols.forEach(pin => {
-        GPIO_setMux(`pin`, `coexPinConfig[pin].rfCoreMux`);
+        GPIO_setConfigAndMux(`pin`, `coexPinConfig[pin].gpioConfig`, `coexPinConfig[pin].rfCoreMux`);
 %   });
     }
     else if (events & RF_GlobalEventCmdStart) {
@@ -475,17 +483,16 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
                 /* PA enable --> HIGH PA
                  * LNA enable --> Sub-1 GHz
                  */
-                GPIO_setMux(CONFIG_RF_24GHZ, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_24GHZ, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
                 /* Note: RFC_GPO3 is a work-around because the RFC_GPO1 (PA enable signal) is sometimes not
                          de-asserted on CC1352 Rev A. */
-                GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_RFC_GPO3);
-                GPIO_setMux(CONFIG_RF_SUB1GHZ, IOC_PORT_RFC_GPO0);
+                GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO3);
+                GPIO_setConfigAndMux(CONFIG_RF_SUB1GHZ, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO0);
             } else {
                 /* RF core active --> Sub-1 GHz */
-                GPIO_setMux(CONFIG_RF_24GHZ, IOC_PORT_GPIO);
-                GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_GPIO);
-                GPIO_setMux(CONFIG_RF_SUB1GHZ, IOC_PORT_GPIO);
-                GPIO_write(CONFIG_RF_SUB1GHZ, 1);
+                GPIO_setConfigAndMux(CONFIG_RF_24GHZ, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_SUB1GHZ, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_GPIO);
             }
         } else {
             /* 2.4 GHz */
@@ -494,17 +501,16 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
                 /* PA enable --> HIGH PA
                  * LNA enable --> 2.4 GHz
                  */
-                GPIO_setMux(CONFIG_RF_24GHZ, IOC_PORT_RFC_GPO0);
+                GPIO_setConfigAndMux(CONFIG_RF_24GHZ, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO0);
                 /* Note: RFC_GPO3 is a work-around because the RFC_GPO1 (PA enable signal) is sometimes not
                          de-asserted on CC1352 Rev A. */
-                GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_RFC_GPO3);
-                GPIO_setMux(CONFIG_RF_SUB1GHZ, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO3);
+                GPIO_setConfigAndMux(CONFIG_RF_SUB1GHZ, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
             } else {
                 /* RF core active --> 2.4 GHz */
-                GPIO_setMux(CONFIG_RF_24GHZ, IOC_PORT_GPIO);
-                GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_GPIO);
-                GPIO_setMux(CONFIG_RF_SUB1GHZ, IOC_PORT_GPIO);
-                GPIO_write(CONFIG_RF_24GHZ, 1);
+                GPIO_setConfigAndMux(CONFIG_RF_24GHZ, GPIO_CFG_OUTPUT | GPIO_CFG_OUT_HIGH, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
+                GPIO_setConfigAndMux(CONFIG_RF_SUB1GHZ, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
             }
         }
 % } else if (antennaSwitchName === "XMSSJJ3G0PA-054") {
@@ -521,8 +527,8 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
             * - High PA    --> HIGH_PA
             * - LNA enable --> STANDARD_PA
             */
-            GPIO_setMux(CONFIG_RF_STANDARD_PA, IOC_PORT_RFC_GPO0);
-            GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_RFC_GPO3);
+            GPIO_setConfigAndMux(CONFIG_RF_STANDARD_PA, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO0);
+            GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO3);
         } else {
             /* RF Core active --> 5_DBM */
             GPIO_write(CONFIG_RF_STANDARD_PA, 1);
@@ -541,8 +547,8 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
             * - High PA    --> HIGH PA
             * - LNA enable --> `antennaPathSupport.displayName`
             */
-            GPIO_setMux(CONFIG_RF_HIGH_PA, IOC_PORT_RFC_GPO3);
-            GPIO_setMux(`antennaPathSupport.pinSymbol`, IOC_PORT_RFC_GPO0);
+            GPIO_setConfigAndMux(CONFIG_RF_HIGH_PA, GPIO_CFG_OUTPUT,IOC_PORT_RFC_GPO3);
+            GPIO_setConfigAndMux(`antennaPathSupport.pinSymbol`, GPIO_CFG_OUTPUT, IOC_PORT_RFC_GPO0);
         } else {
             /* RF Core active --> `antennaPathSupport.displayName` */
             GPIO_write(`antennaPathSupport.pinSymbol`, 1);
@@ -559,7 +565,7 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
 
         /* Reset the IO multiplexer to GPIO functionality */
 %   for (let i = 0; i < rfAntennaPins.length; i++) {
-        GPIO_setMux(`rfAntennaPins[i].symbol`, IOC_PORT_GPIO);
+        GPIO_setConfigAndMux(`rfAntennaPins[i].symbol`, GPIO_CFG_OUTPUT, IOC_PORT_GPIO);
 %   }
     }
 % } else { // else not supported HW
@@ -594,10 +600,10 @@ void __attribute__((weak)) `callbackFxn`AntennaSwitching(RF_Handle client, RF_Gl
     *
     * // > Mux pin to be driven/controlled by the RF Core
     * // > (RFC GPIO0 is here only used as an example)
-    * GPIO_setMux(`rfAntennaPins[0].symbol`, IOC_PORT_RFC_GPO0);
+    * GPIO_setConfigAndMux(`rfAntennaPins[0].symbol`,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_RFC_GPO0);
     *
     * // > Mux pin to be controlled manually (i.e. release RF Core control)
-    * GPIO_setMux(`rfAntennaPins[0].symbol`, IOC_PORT_GPIO);
+    * GPIO_setConfigAndMux(`rfAntennaPins[0].symbol`,GPIO_CFG_OUTPUT | GPIO_CFG_INPUT, IOC_PORT_GPIO);
     *
     *   --- Code snippet end ---
     */

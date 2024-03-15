@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -71,8 +71,8 @@
 #include <ti/drivers/aesecb/AESECBCC26XX.h>
 #include <ti/drivers/TRNG.h>
 #else
-#include <ti/drivers/aesccm/AESCCMCC23XX.h>
-#include <ti/drivers/aesecb/AESECBCC23XX.h>
+#include <ti/drivers/aesccm/AESCCMLPF3.h>
+#include <ti/drivers/aesecb/AESECBLPF3.h>
 #include <ti/drivers/RNG.h>
 #endif // CC23X0
 
@@ -98,7 +98,7 @@
 #include <driverlib/pka.h>
 #if !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 #include <driverlib/rf_bt5_coex.h>
-#endif // !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26x4)
+#endif // !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 #else
 #include <driverlib/rom_ecc.h>
 #endif // !defined(DeviceFamily_CC26X1)
@@ -112,17 +112,18 @@
  * CONSTANTS
  */
 
+#ifndef SYSCFG
+#ifdef CC23X0
+// Default Tx Power dBm value
+#define DEFAULT_TX_POWER               0
+#else
+// Default Tx Power Index
+#define DEFAULT_TX_POWER               HCI_EXT_TX_POWER_0_DBM
+#endif // CC23X0
+#endif // SYSCFG
+
 // Tx Power
 #define NUM_TX_POWER_VALUES (RF_BLE_TX_POWER_TABLE_SIZE - 1)
-
-#ifndef SYSCFG
-// Default Tx Power Index
-#if defined(CC13X2P)
-#define DEFAULT_TX_POWER               HCI_EXT_TX_POWER_0_DBM
-#else // !CC13X2 && !CC33xx
-#define DEFAULT_TX_POWER               HCI_EXT_TX_POWER_0_DBM
-#endif // CC13X2
-#endif // SYSCFG
 
 // Override NOP
 #define OVERRIDE_NOP                   0xC0000001
@@ -152,6 +153,9 @@ txPwrTbl_t appTxPwrTbl = {
                            (txPwrVal_t*)RF_BLE_txPowerTable,
                            NUM_TX_POWER_VALUES,  // max
                            DEFAULT_TX_POWER};    // default
+#else
+// The Tx Power value
+int8 defaultTxPowerDbm = DEFAULT_TX_POWER;
 #endif
 
 #if defined(CC13X2P) && defined(CC13X2P_2_LAUNCHXL)
@@ -364,7 +368,7 @@ const stackSpecific_t bleStackConfig =
   .maxPduSize                           = 0,
   .maxNumPSM                            = L2CAP_NUM_PSM,
   .maxNumCoChannels                     = L2CAP_NUM_CO_CHANNELS,
-  .maxWhiteListElems                    = MAX_NUM_WL_ENTRIES,
+  .maxAcceptListElems                   = MAX_NUM_AL_ENTRIES,
   .maxResolvListElems                   = CFG_MAX_NUM_RL_ENTRIES,
   .pfnBMAlloc                           = &pfnBMAlloc,
   .pfnBMFree                            = &pfnBMFree,
@@ -400,6 +404,19 @@ const extflashDrvTblPtr_t extflashDriverTable[] =
   (uint32) ExtFlash_erase
 };
 #endif // OSAL_SNV_EXTFLASH
+
+#ifdef SDAA_ENABLE
+sdaaUsrCfg_t sdaaCfgTable =
+{
+  .rxWindowDuration        = SDAA_RX_WINDOW_DURATION,
+  .txUsageTresh            = SDAA_MAX_THRESHOLD,
+  .rssithreshold           = SDAA_RSSI_THRESHOLD,
+  .numberofnoisysamples    = SDAA_MAX_ALLOWED_NOISY_SAMPLES,
+  .blockingchanneltime     = SDAA_MAX_BLOCKED_CHANNEL_TIME,
+  .constobservtime         = SDAA_CONST_OBSERV_TIME,
+  .observationtime         = SDAA_OBSERVATION_TIME
+};
+#endif //SDAA_ENABLE
 
 #ifndef CC23X0
 // Table for Driver can be found in icall_user_config.c
@@ -462,7 +479,7 @@ const boardConfig_t boardConfig =
 #else
   .rfRegOverrideTxStdTblptr  = (regOverride_t*)pOverrides_bleTxStd,   // Default PA
   .rfRegOverrideTx20TblPtr   = (regOverride_t*)pOverrides_bleTx20   ,// High power PA
-#endif // EM_CC1354P10_1_LP
+#endif // EM_CC1354P10_1_LP || CC2674R10_RGZ_LP
 #endif // defined(CC13X2P) || defined(EM_CC1354P10_1_LP) || defined(CC2674R10_RGZ_LP) || defined(CC2674P10_RGZ_LP)
 #if defined(RTLS_CTE)
   .rfRegOverrideCtePtr = (regOverride_t*)(pOverrides_bleCommon + BLE_STACK_OVERRIDES_OFFSET + CTE_OVERRIDES_OFFSET),
@@ -481,7 +498,9 @@ const boardConfig_t boardConfig =
 #else
   .coexUseCaseConfigPtr = NULL,
 #endif // USE_COEX
-#endif // !CC23X0
+#else // !CC23X0
+    .rfFeModeBias  = 0,
+#endif
 };
 
 #else /* !(ICALL_JT) */

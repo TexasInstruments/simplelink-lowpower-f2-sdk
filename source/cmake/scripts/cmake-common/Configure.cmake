@@ -33,7 +33,7 @@ cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 set(CMAKE_COLOR_MAKEFILE 0 CACHE BOOL INTERNAL)
 set(CMAKE_STATIC_LIBRARY_PREFIX "" CACHE STRING INTERNAL)
 
-set(TI_ALL_SUPPORTED_ARCHITECTURES "m0p;m4;m4f;m33f" CACHE STRING INTERNAL)
+set(TI_ALL_SUPPORTED_ARCHITECTURES "m0p;m3;m4;m4f;m33f" CACHE STRING INTERNAL)
 
 # This can be overridden to Debug from the command line with -DCONFIG=Debug
 set(CMAKE_BUILD_TYPE Release)
@@ -43,7 +43,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Internally we have the dependencies in conan, so we can use a generated file
 # to check if we are in that environment
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/imports.conan.mak)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/imports.conan.mak)
     include(${CMAKE_COMMON_INSTALL_DIR}/source/cmake/scripts/cmake-common/ReadVariables.cmake)
     # imports.conan.mak specifies the location of many SDK packages
     # Dump those variables into the CMake environment
@@ -51,48 +51,48 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/imports.conan.mak)
     # And set the internal build flag so components can make decisions
     set(TI_INTERNAL_BUILD 1 CACHE BOOL INTERNAL)
     message(VERBOSE "This is an internal build")
-else ()
+else()
     # Clear the internal build flag
     unset(TI_INTERNAL_BUILD CACHE)
     # For external builds, we always want to check local platforms
     # They are the only platforms available without imports.conan.mak
     set(CMAKE_ONLY_LOCAL_PLATFORMS 1)
     set(CMAKE_ONLY_WRAPPER_COMPONENTS 1)
-endif ()
+endif()
 
 include(${CMAKE_COMMON_INSTALL_DIR}/source/cmake/scripts/cmake-common/LibraryTools.cmake)
 
 # Doing this automatically simplifies the user command line
-if (NOT DEFINED CMAKE_C_COMPILER) # If compiling for ARM, help the user
-    if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-        if (${CMAKE_BINARY_DIR} MATCHES "/ticlang")
+if(NOT DEFINED CMAKE_C_COMPILER) # If compiling for ARM, help the user
+    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+        if(${CMAKE_BINARY_DIR} MATCHES "/ticlang")
             set(CMAKE_TOOLCHAIN_FILE "${CMAKE_COMMON_INSTALL_DIR}/source/cmake/toolchains/ticlang.cmake" CACHE PATH
                                                                                                                INTERNAL
             )
-        elseif (${CMAKE_BINARY_DIR} MATCHES "/gcc")
+        elseif(${CMAKE_BINARY_DIR} MATCHES "/gcc")
             set(CMAKE_TOOLCHAIN_FILE "${CMAKE_COMMON_INSTALL_DIR}/source/cmake/toolchains/gcc.cmake" CACHE PATH
                                                                                                            INTERNAL
             )
-        elseif (${CMAKE_BINARY_DIR} MATCHES "/iar")
+        elseif(${CMAKE_BINARY_DIR} MATCHES "/iar")
             set(CMAKE_TOOLCHAIN_FILE "${CMAKE_COMMON_INSTALL_DIR}/source/cmake/toolchains/iar.cmake" CACHE PATH
                                                                                                            INTERNAL
             )
-        else ()
+        else()
             message(
                 FATAL_ERROR
                     "The build directory (${CMAKE_BINARY_DIR}) should end with ticlang/gcc/iar, for example build/ticlang. "
                     "You can also -DCMAKE_TOOLCHAIN_FILE=[file] on the command line to override."
             )
-        endif ()
-    endif ()
+        endif()
+    endif()
 
     # Include the toolchain to define the interface library
     include(${CMAKE_TOOLCHAIN_FILE})
-else ()
+else()
     # Compiler is specified, so fall back to blank "empty"
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_COMMON_INSTALL_DIR}/source/cmake/toolchains/native.cmake" CACHE PATH INTERNAL)
     include(${CMAKE_TOOLCHAIN_FILE})
-endif ()
+endif()
 
 # This project call is mandatory - it configures the toolchain files and checks the ASM compiler
 project(common_cmake LANGUAGES C ASM)
@@ -132,9 +132,9 @@ define_property(
 string(REPLACE ":" ";" CMAKE_PLATFORM_DIRS "$ENV{CMAKE_PLATFORM_DIRS}")
 
 # Always search the local targets folder, which is the only relevant folder for customer builds
-if (DEFINED CMAKE_ONLY_LOCAL_PLATFORMS)
+if(DEFINED CMAKE_ONLY_LOCAL_PLATFORMS)
     set(CMAKE_PLATFORM_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/source/cmake/platforms")
-endif ()
+endif()
 
 # Reset the list of supported features
 set(SUPPORTED_DEVICES "")
@@ -142,25 +142,25 @@ set(SUPPORTED_PLATFORMS "")
 set(SUPPORTED_ARCHITECTURES "")
 
 # Add all first so pacakges can find each other
-foreach (platform_dir ${CMAKE_PLATFORM_DIRS})
+foreach(platform_dir ${CMAKE_PLATFORM_DIRS})
     list(APPEND CMAKE_PREFIX_PATH "${platform_dir}/${TI_TOOLCHAIN_NAME}")
-endforeach ()
+endforeach()
 
 # Glob each target directory for cmake files, which we assume are target definitions
 message(DEBUG "CMAKE_PLATFORM_DIRS=${CMAKE_PLATFORM_DIRS}")
-foreach (platform_dir ${CMAKE_PLATFORM_DIRS})
+foreach(platform_dir ${CMAKE_PLATFORM_DIRS})
     message(DEBUG "Scanning folder ${platform_dir}")
     file(GLOB pkgconfigs ${platform_dir}/${TI_TOOLCHAIN_NAME}/*Config.cmake)
-    foreach (pkgconfig ${pkgconfigs})
+    foreach(pkgconfig ${pkgconfigs})
         get_filename_component(confbase ${pkgconfig} NAME_WE)
         string(REGEX REPLACE "(.*)Config" "\\1" pkgname ${confbase})
         message(DEBUG "-- Found ${pkgname}")
         unset(${pkgname}_DIR CACHE) # Force a new search in case new conan install
         find_package(${pkgname})
-    endforeach ()
-endforeach ()
+    endforeach()
+endforeach()
 
-if (SET_PLATFORMS)
+if(SET_PLATFORMS)
     # SET_PLATFORMS is primarily for debugging and static analysis, not for production builds
     message(WARNING "Platforms are restricted by the SET_PLATFORMS variable: ${SET_PLATFORMS}")
 
@@ -171,18 +171,18 @@ if (SET_PLATFORMS)
     set(SUPPORTED_ARCHITECTURES "")
 
     # Validate that all the request platforms are actually supported by device/driverlib files
-    foreach (platform ${SET_PLATFORMS})
-        if (NOT ${platform} IN_LIST SUPPORTED_PLATFORMS)
+    foreach(platform ${SET_PLATFORMS})
+        if(NOT ${platform} IN_LIST SUPPORTED_PLATFORMS)
             message(FATAL_ERROR "Platform ${platform} is not supported! Supported platforms: ${SUPPORTED_PLATFORMS}")
-        endif ()
+        endif()
 
         # Construct the SUPPORTED_ARCHITECTURES for this configuration
         list(APPEND SUPPORTED_ARCHITECTURES ${ARCH_${platform}})
-    endforeach ()
+    endforeach()
 
     # We know all the platforms in this list exist, so just dump it out as the final list
     set(SUPPORTED_PLATFORMS ${SET_PLATFORMS})
-endif ()
+endif()
 
 # Trim any duplicates (ARCHITECTURES especially ends up very duplicated)
 list(REMOVE_DUPLICATES SUPPORTED_DEVICES)
@@ -209,14 +209,14 @@ string(REPLACE ":" ";" CMAKE_COMPONENT_FOLDERS "${CMAKE_COMPONENT_DIRS}")
 # Duplicate targets will error out the build process
 list(REMOVE_DUPLICATES CMAKE_COMPONENT_FOLDERS)
 
-if (CMAKE_ONLY_WRAPPER_COMPONENTS)
+if(CMAKE_ONLY_WRAPPER_COMPONENTS)
     set(CMAKE_COMPONENT_FOLDERS "${CMAKE_CURRENT_SOURCE_DIR}/source/cmake/wrappers")
-endif ()
+endif()
 
 # Add all first so pacakges can find each other
-foreach (component_dir ${CMAKE_COMPONENT_FOLDERS})
+foreach(component_dir ${CMAKE_COMPONENT_FOLDERS})
     list(APPEND CMAKE_PREFIX_PATH "${component_dir}/${TI_TOOLCHAIN_NAME}")
-endforeach ()
+endforeach()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} CACHE STRING INTERNAL)
 

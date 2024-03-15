@@ -154,6 +154,10 @@ function getTxPowerConfigOptions(inst)
 {
     // Retrieve phy and phy group from rf_defaults files
     const rfPhySettings = rfCommon.getPhyTypeGroupFromRFConfig(inst);
+    if (!rfPhySettings)
+    {
+        return [];
+    }
     const phyType = rfPhySettings.phyType;
     const phyGroup = rfPhySettings.phyGroup;
 
@@ -352,6 +356,10 @@ function validate(inst, validation)
 
     // Retrieve phy and phy group from rf_defaults files
     const rfPhySettings = rfCommon.getPhyTypeGroupFromRFConfig(inst);
+    if (!rfPhySettings)
+    {
+        return;
+    }
     const phyType = rfPhySettings.phyType;
     const phyGroup = rfPhySettings.phyGroup;
 
@@ -380,6 +388,28 @@ function validate(inst, validation)
         validation.logInfo("The selected RF TX Power enables high PA ", inst,
             "transmitPower");
     }
+
+    let board;
+    if(inst === null)
+    {
+        board = Common.getLaunchPadFromDevice();
+    }
+    else
+    {
+        board = inst.rfDesign;
+    }
+    if(board.includes("CC1312PSIP"))
+    {
+        if (rfTransmitPower >= 18)
+        {
+            validation.logWarning(Docs.psipComplianceWarning, inst, "transmitPower");
+        }
+        else
+        {
+            validation.logInfo(Docs.psipComplianceWarning, inst, "transmitPower");
+        }
+    }
+
 }
 
 /*

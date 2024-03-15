@@ -2,7 +2,7 @@
  * t_cose_parameters.h
  *
  * Copyright 2019, Laurence Lundblade
- * Copyright (c) 2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -16,7 +16,7 @@
 #include "q_useful_buf.h"
 #include "t_cose_common.h"
 #include <stdint.h>
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 
 
 /**

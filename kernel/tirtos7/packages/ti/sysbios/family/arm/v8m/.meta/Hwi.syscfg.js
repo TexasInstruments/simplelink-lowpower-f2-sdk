@@ -156,19 +156,6 @@ function modules(mod)
     return modArray;
 }
 
-/*
- * ======== enableExceptionChange ========
- */
-function enableExceptionChange(inst, ui)
-{
-    if (inst.enableException) {
-        inst.excHandlerFunc = "Hwi_excHandlerMax";
-    }
-    else {
-        inst.excHandlerFunc = "Hwi_excHandlerMin";
-    }
-}
-
 exports = {
     staticOnly: true,
     displayName: "Hwi",
@@ -339,46 +326,39 @@ and dump the registers to the system console.
 
 When disabled, the exception context is only available using ROV.
                 `,
-                onChange: enableExceptionChange,
+                deprecated: true,
+                hidden: true,
                 default: true
             },
             {
                 name: "excHandlerFunc",
                 displayName: "Exception Handler",
-                description: `Exception handler function pointer`,
+                description: `Exception handler function pointer.`,
                 longDescription: `
-The default is determined by the value of Hwi.enableException.
+This handler function is called by the Hwi_excHandlerAsm plugged into the
+vector table when an exception occurs.
 
-If the user does NOT set this parameter, then the following default behavior
-is followed:
+There are four valid input options:
+- The 'Hwi_excHandlerMin' is used by default. This exception handler
+saves the exception context then raises an Error. The exception context can be
+viewed within CCS in the ROV Hwi module's Exception view.
 
-If Hwi.enableException is true, then the internal 'Hwi_excHandlerMax'
-function is used. This exception handler saves the exception context then
-does a complete exception decode and dump to the console, then raises an
-Error. The exception context can be viewed within CCS in the ROV Hwi module's
-Exception view.
+- The 'Hwi_excHandlerMax' function. This exception handler saves the exception
+context then does a complete exception decode and dump to the console, then
+raises an Error. The exception context can be viewed within CCS in the ROV Hwi
+module's Exception view.
 
-If Hwi.enableException is false, then the internal 'Hwi_excHandlerMin'
-function is used. This exception handler saves the exception context then
-raises an Error. The exception context can be viewed within CCS in the ROV
-Hwi module's Exception view.
-
-If the user sets this parameter to their own function, then the user's
-function will be invoked with the following arguments:
-
-Void myExceptionHandler(UInt *excStack, UInt lr);
-
+- A user-provided function. It should have the following signature:
+'void myExceptionHandler(uint32_t *excStack, uint32_t lr);'
 Where 'excStack' is the address of the stack containing the register context
 at the time of the exception, and 'lr' is the link register value when the
 low-level-assembly-coded exception handler was vectored to.
 
-If this parameter is set to 'null', then an infinite while loop is entered
-when an exception occurs. This setting minimizes code and data footprint but
-provides no automatic exception decoding.
-
+- 'NULL'. An infinite while loop is entered when an exception occurs.
+This setting minimizes code and data footprint but provides no automatic
+exception decoding.
                 `,
-                hidden: true,
-                default: "Hwi_excHandlerMax"
+                default: "Hwi_excHandlerMin",
             },
             {
                 /* provided for script compatibiility */
@@ -480,4 +460,3 @@ provides no automatic exception decoding.
     },
     getCFiles: () => { return ["ti/sysbios/family/arm/v8m/Hwi.c"] }
 };
-

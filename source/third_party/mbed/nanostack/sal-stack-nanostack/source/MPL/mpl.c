@@ -80,6 +80,7 @@ typedef struct mpl_data_message {
     trickle_t trickle;
     ns_list_link_t link;
     uint16_t mpl_opt_data_offset;   /* offset to option data of MPL option */
+    bool transmit_done;
     uint8_t message[];
 } mpl_buffered_message_t;
 
@@ -114,10 +115,17 @@ static NS_LIST_DEFINE(mpl_domains, mpl_domain_t, link);
 
 static void mpl_buffer_delete(mpl_seed_t *seed, mpl_buffered_message_t *message);
 static void mpl_control_reset_or_start(mpl_domain_t *domain);
-static void mpl_schedule_timer(void);
-static void mpl_fast_timer(uint16_t ticks);
+//static void mpl_schedule_timer(void);
+//static void mpl_fast_timer(uint16_t ticks);
 static buffer_t *mpl_exthdr_provider(buffer_t *buf, ipv6_exthdr_stage_t stage, int16_t *result);
 static void mpl_seed_delete(mpl_domain_t *domain, mpl_seed_t *seed);
+
+#include "eventOS_event_timer.h"
+
+timeout_t * mpl_timer2;
+static bool mpl_timer2_running = 0;
+static void mpl_schedule_timer2(void);
+static void mpl_fast_timer2(void *arg);
 
 static bool mpl_initted;
 
@@ -312,7 +320,8 @@ void mpl_domain_change_timing(mpl_domain_t *domain, const struct trickle_params 
 static void mpl_domain_inconsistent(mpl_domain_t *domain)
 {
     trickle_inconsistent_heard(&domain->trickle, &domain->control_trickle_params);
-    mpl_schedule_timer();
+
+    mpl_schedule_timer2();
 }
 
 static mpl_seed_t *mpl_seed_lookup(const mpl_domain_t *domain, uint8_t id_len, const uint8_t *seed_id)
@@ -346,6 +355,7 @@ static mpl_seed_t *mpl_seed_create(mpl_domain_t *domain, uint8_t id_len, const u
 static void mpl_seed_delete(mpl_domain_t *domain, mpl_seed_t *seed)
 {
     ns_list_foreach_safe(mpl_buffered_message_t, message, &seed->messages) {
+        tr_debug("mpl_seed_delete delete message");
         mpl_buffer_delete(seed, message);
     }
     ns_list_remove(&domain->seeds, seed);
@@ -357,6 +367,7 @@ static void mpl_seed_advance_min_sequence(mpl_seed_t *seed, uint8_t min_sequence
     seed->min_sequence = min_sequence;
     ns_list_foreach_safe(mpl_buffered_message_t, message, &seed->messages) {
         if (common_serial_number_greater_8(min_sequence, mpl_buffer_sequence(message))) {
+            tr_debug("mpl_seed_advance_min_sequence delete message, min_seq %d",min_sequence);
             mpl_buffer_delete(seed, message);
         }
     }
@@ -386,7 +397,7 @@ static void mpl_free_space(void)
                 continue;
             }
             if (!oldest_message ||
-                    protocol_core_monotonic_time - message->timestamp > protocol_core_monotonic_time - oldest_message->timestamp) {
+                    eventOS_event_timer_ticks() - message->timestamp > eventOS_event_timer_ticks() - oldest_message->timestamp) {
                 oldest_message = message;
                 oldest_seed = seed;
             }
@@ -398,6 +409,7 @@ static void mpl_free_space(void)
     }
 
     oldest_seed->min_sequence = mpl_buffer_sequence(oldest_message) + 1;
+    tr_debug("MPL_free_space delete message, new min_seq %d", oldest_seed->min_sequence);
     mpl_buffer_delete(oldest_seed, oldest_message);
 }
 
@@ -424,7 +436,7 @@ static mpl_buffered_message_t *mpl_buffer_create(buffer_t *buf, mpl_domain_t *do
      *    message 3 again).
      */
     if (common_serial_number_greater_8(seed->min_sequence, sequence)) {
-        tr_debug("Can no longer accept %"PRIu8" < %"PRIu8, sequence, seed->min_sequence);
+        tr_debug("Can no longer accept %d < %d", sequence, seed->min_sequence);
         return NULL;
     }
 
@@ -437,11 +449,11 @@ static mpl_buffered_message_t *mpl_buffer_create(buffer_t *buf, mpl_domain_t *do
     message->message[IPV6_HDROFF_HOP_LIMIT] = hop_limit;
     message->mpl_opt_data_offset = buf->mpl_option_data_offset;
     message->colour = seed->colour;
-    message->timestamp = protocol_core_monotonic_time;
+    message->timestamp = eventOS_event_timer_ticks();
     /* Make sure trickle structure is initialised */
     trickle_start(&message->trickle, &domain->data_trickle_params);
     if (domain->proactive_forwarding) {
-        mpl_schedule_timer();
+        mpl_schedule_timer2();
     } else {
         /* Then stop it if not proactive */
         trickle_stop(&message->trickle);
@@ -507,13 +519,13 @@ static void mpl_buffer_transmit(mpl_domain_t *domain, mpl_buffered_message_t *me
     memcpy(buf->src_sa.address, message->message + IPV6_HDROFF_SRC_ADDR, 16);
 
     ipv6_transmit_multicast_on_interface(buf, domain->interface);
-    tr_debug("MPL transmit %u", mpl_buffer_sequence(message));
+    tr_debug("MPL transmit %u at timestamp %u", mpl_buffer_sequence(message),eventOS_event_timer_ticks());
 }
 
 static void mpl_buffer_inconsistent(const mpl_domain_t *domain, mpl_buffered_message_t *message)
 {
     trickle_inconsistent_heard(&message->trickle, &domain->data_trickle_params);
-    mpl_schedule_timer();
+    mpl_schedule_timer2();
 }
 
 static uint8_t mpl_seed_bm_len(const mpl_seed_t *seed)
@@ -582,7 +594,7 @@ static void mpl_control_reset_or_start(mpl_domain_t *domain)
     } else {
         trickle_start(&domain->trickle, &domain->control_trickle_params);
     }
-    mpl_schedule_timer();
+    mpl_schedule_timer2();
 }
 
 static uint8_t mpl_seed_id_len(uint8_t seed_id_type)
@@ -865,7 +877,7 @@ bool mpl_forwarder_process_message(buffer_t *buf, mpl_domain_t *domain, bool see
     const uint8_t *seed_id = opt_data + 2;
     uint8_t seed_id_len = mpl_seed_id_len(seed_id_type);
 
-    tr_debug("MPL %s %"PRIu8, seeding ? "transmit" : "received", sequence);
+    tr_debug("MPL %s %d at timestamp %u", seeding ? "transmit" : "received", sequence,eventOS_event_timer_ticks());
     /* Special handling - just ignore the MPL option if receiving loopback copy.
      * (MPL gets to process the outgoing message, and with seeding true - when
      * looping back, we want to accept it without MPL getting in the way).
@@ -895,7 +907,7 @@ bool mpl_forwarder_process_message(buffer_t *buf, mpl_domain_t *domain, bool see
 #endif
     }
 
-    tr_debug("seed %s seq %"PRIu8, tr_array(seed_id, seed_id_len), sequence);
+    tr_debug("seed %s seq %d", tr_array(seed_id, seed_id_len), sequence);
     mpl_seed_t *seed = mpl_seed_lookup(domain, seed_id_len, seed_id);
     if (!seed) {
         seed = mpl_seed_create(domain, seed_id_len, seed_id, sequence);
@@ -917,8 +929,11 @@ bool mpl_forwarder_process_message(buffer_t *buf, mpl_domain_t *domain, bool see
 #else
     if (opt_data[0] & MPL_OPT_M) {
         ns_list_foreach(mpl_buffered_message_t, message, &seed->messages) {
+            tr_debug("buffered MSG seq %d, new Seq %d", mpl_buffer_sequence(message),sequence);
             if (common_serial_number_greater_8(mpl_buffer_sequence(message), sequence)) {
-                mpl_buffer_inconsistent(domain, message);
+                if (!ti_wisun_config.mpl_low_latency) {
+                    mpl_buffer_inconsistent(domain, message);
+                }
             }
         }
     }
@@ -927,13 +942,13 @@ bool mpl_forwarder_process_message(buffer_t *buf, mpl_domain_t *domain, bool see
 
     /* Drop old messages (sequence < MinSequence) */
     if (common_serial_number_greater_8(seed->min_sequence, sequence)) {
-        tr_debug("Old MPL message %"PRIu8" < %"PRIu8, sequence, seed->min_sequence);
+        tr_debug("Old MPL message %d < min-Seq %d", sequence, seed->min_sequence);
         return false;
     }
 
     mpl_buffered_message_t *message = mpl_buffer_lookup(seed, sequence);
     if (message) {
-        tr_debug("Repeated MPL message %"PRIu8, sequence);
+        tr_debug("Repeated MPL message %d", sequence);
         trickle_consistent_heard(&message->trickle);
         return false;
     }
@@ -962,19 +977,29 @@ bool mpl_forwarder_process_message(buffer_t *buf, mpl_domain_t *domain, bool see
          * And finally, also treat Thread non-routers like this, to avoid
          * need to dynamically changing TimerExpirations.
          */
+        tr_debug("Seed increase the min-seq &d", sequence + 1);
         mpl_seed_advance_min_sequence(seed, sequence + 1);
         return true;
     }
 
+    tr_debug("MPL buffer create for seq %d, hop limit %d", sequence, hop_limit);
     message = mpl_buffer_create(buf, domain, seed, sequence, hop_limit);
     if (!message) {
-        tr_debug("MPL Buffer Craete fail");
+        tr_debug("MPL Buffer Create fail");
+        return true;
+    }
+
+    if (!((buf->info & B_DIR_UP) == B_DIR_UP)) {
+        tr_debug("mpl_forwarder_process_message buf_dir:%d B_DIR_DOWN txmit_done:%d", buf->info, message->transmit_done);
+        message->transmit_done = true;
+    } else {
+        message->transmit_done = false;
     }
 
     return true;
 }
 
-
+#if 0
 static void mpl_schedule_timer(void)
 {
     if (!mpl_timer_running) {
@@ -988,6 +1013,7 @@ static void mpl_fast_timer(uint16_t ticks)
     bool need_timer = false;
     mpl_timer_running = false;
 
+    tr_debug("MPL faster timer timestamp %u, tick %u",protocol_core_monotonic_time,ticks);
     ns_list_foreach(mpl_domain_t, domain, &mpl_domains) {
         if (trickle_timer(&domain->trickle, &domain->control_trickle_params, ticks)) {
             mpl_send_control(domain);
@@ -997,6 +1023,12 @@ static void mpl_fast_timer(uint16_t ticks)
                 if (trickle_timer(&message->trickle, &domain->data_trickle_params, ticks)) {
                     mpl_buffer_transmit(domain, message, ns_list_get_next(&seed->messages, message) == NULL);
                 }
+                else
+                {   // display the message trickle time
+                    tr_debug("MSG trickle: c (%d) e (%d) I (%u) t (%u) now (%u)", message->trickle.c,message->trickle.e,
+                             message->trickle.I, message->trickle.t,message->trickle.now);
+                }
+
                 need_timer = need_timer || trickle_running(&message->trickle, &domain->data_trickle_params);
             }
         }
@@ -1007,11 +1039,12 @@ static void mpl_fast_timer(uint16_t ticks)
         mpl_schedule_timer();
     }
 }
+#endif
 
 void mpl_slow_timer(uint16_t seconds)
 {
     ns_list_foreach(mpl_domain_t, domain, &mpl_domains) {
-        uint32_t message_age_limit = (domain->seed_set_entry_lifetime * UINT32_C(10)) / 4;
+        uint32_t message_age_limit = (domain->seed_set_entry_lifetime * UINT32_C(10));
         if (message_age_limit > MAX_BUFFERED_MESSAGE_LIFETIME) {
             message_age_limit = MAX_BUFFERED_MESSAGE_LIFETIME;
         }
@@ -1030,8 +1063,10 @@ void mpl_slow_timer(uint16_t seconds)
              */
             ns_list_foreach_safe(mpl_buffered_message_t, message, &seed->messages) {
                 if (!trickle_running(&message->trickle, &domain->data_trickle_params) &&
-                        protocol_core_monotonic_time - message->timestamp >= message_age_limit) {
+                        ((eventOS_event_timer_ticks() - message->timestamp)/10) >= message_age_limit) {
+
                     seed->min_sequence = mpl_buffer_sequence(message) + 1;
+                    tr_debug("MPL_slow_time delete aged message, new min_seq %d", seed->min_sequence);
                     mpl_buffer_delete(seed, message);
                 } else {
                     break;
@@ -1080,6 +1115,7 @@ static buffer_t *mpl_exthdr_provider(buffer_t *buf, ipv6_exthdr_stage_t stage, i
             ext[5] = domain->sequence++;
             buf->options.ip_extflags &= ~ IPEXT_HBH_MPL_UNFILLED;
             buf->mpl_option_data_offset = IPV6_HDRLEN + 4;
+            tr_debug("mpl_exthdr_provider");
             mpl_forwarder_process_message(buf, domain, true);
         }
         *result = 0;
@@ -1189,6 +1225,67 @@ static buffer_t *mpl_exthdr_provider(buffer_t *buf, ipv6_exthdr_stage_t stage, i
         }
         default:
             return buffer_free(buf);
+    }
+}
+
+/* tick resolution is 10 ms (nano stack system tick */
+extern uint32_t eventOS_event_timer_ticks(void);
+
+static void mpl_schedule_timer2(void)
+{
+    if (!mpl_timer2_running) {
+        mpl_timer2_running = true;
+        mpl_timer2 = eventOS_timeout_ms(mpl_fast_timer2, MPL_TICK_MS, NULL);
+        /*
+         * mpl_timer2 is created dynamically,
+         * after call back, the timer is freed by timeout_tasklet
+         */
+    }
+}
+
+static void mpl_fast_timer2(void *arg)
+{
+    uint16_t ticks = 1;
+    uint32_t system_tick = eventOS_event_timer_ticks();
+    bool need_timer = false;
+    mpl_timer2_running = false;
+
+    tr_debug("MPL faster timer OS timer tick %u, tick %u",system_tick,ticks);
+    ns_list_foreach(mpl_domain_t, domain, &mpl_domains) {
+        if (trickle_timer(&domain->trickle, &domain->control_trickle_params, ticks)) {
+            mpl_send_control(domain);
+        }
+        ns_list_foreach(mpl_seed_t, seed, &domain->seeds) {
+            ns_list_foreach(mpl_buffered_message_t, message, &seed->messages) {
+                if (trickle_timer(&message->trickle, &domain->data_trickle_params, ticks)) {
+#ifdef FEATURE_MPL_SKIP_DUPLICATE_TX
+                    // Only transmit, if the message was NOT send earlier
+                    if (!message->transmit_done)
+                    {
+                        mpl_buffer_transmit(domain, message, ns_list_get_next(&seed->messages, message) == NULL);
+                    }
+                    else
+                    {
+                        tr_debug("MPL faster timer2: DONOT TX");
+                    }
+#else
+                    mpl_buffer_transmit(domain, message, ns_list_get_next(&seed->messages, message) == NULL);
+#endif
+                }
+                else
+                {   // display the message trickle time
+                    tr_debug("MSG trickle: c (%d) e (%d) I (%u) t (%u) now (%u)", message->trickle.c,message->trickle.e,
+                             message->trickle.I, message->trickle.t,message->trickle.now);
+                }
+
+                need_timer = need_timer || trickle_running(&message->trickle, &domain->data_trickle_params);
+            }
+        }
+        need_timer = need_timer || trickle_running(&domain->trickle, &domain->control_trickle_params);
+    }
+
+    if (need_timer) {
+        mpl_schedule_timer2();
     }
 }
 

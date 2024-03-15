@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -170,11 +170,24 @@ uint16 NPITL_getMaxTxBufSize(void);
 uint16 NPITL_getRxBufLen(void);
 
 // -----------------------------------------------------------------------------
-//! \brief      This routine returns the state of transmission on NPI
+//! \brief      This routine obtains the semaphore which represents the NPI
+//!             Serial Bus (UART/SPI) Availability.
 //!
-//! \return     bool - state of NPI transmission - 1 - active, 0 - not active
+//! \return     bool - state of NPI:
+//                   - TRUE: succeed to obtain the semaphore, NPI wasn't busy
+//                   - FALSE: failed to obtain the semaphore, NPI already busy
 // -----------------------------------------------------------------------------
-bool NPITL_checkNpiBusy(void);
+bool NPITL_ObtainTxLock(void);
+
+// -----------------------------------------------------------------------------
+//! \brief      This routine verifies that NPI Serial Bus (UART/SPI) is available.
+//!             It obtains the semaphore, and in case it succeeds - releases it.
+//!             This flow means that the NPI Bus is available.
+//!             Failure in obtaining the semaphore means that the NPI Bus is in use.
+//!
+//! \return     bool - state of NPI availability - 1 - free, 0 - used
+// -----------------------------------------------------------------------------
+bool NPITask_NpiTlTestIsFree(void);
 
 /*******************************************************************************
  */

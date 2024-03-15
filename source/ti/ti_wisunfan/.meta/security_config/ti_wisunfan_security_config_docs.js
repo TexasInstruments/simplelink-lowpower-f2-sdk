@@ -42,12 +42,46 @@ const secureLevel = {
     longDescription: `
 Controls the level of network security in the MAC layer.
 \n\
-__Default__: Enabled
+__Default__: Enabled with Key Exchange
 \n\
 Value | Description
 --- | ---
-Disabled | No encryption enabled
-MAC Security | The TI Wi-SUN FAN Stack supports AES encryption for the MAC layer
+Disabled | No encryption enabled. Note that this option is not Wi-SUN \
+standard compliant.
+Only MAC security with Preshared Key | AES encryption of packets using a preshared key. \
+No key exchange is performed. Note that this option is not Wi-SUN \
+standard compliant.
+Wi-SUN compliant security with Key Exchange | AES encryption of packets with key exchange. \
+Wi-SUN standard compliant.
+\n\
+Note that using src projects allows for code savings for security code, especially when \
+using Disabled or Only MAC security options. This is due to optimization of security and \
+encryption functionality when building all Wi-SUN network-level code in src projects.
+\n\
+`
+};
+
+const euiJoin = {
+    description: "Enables Controlled Device Joining based on EUI",
+    longDescription: `
+Enables controlled device joining capability for network devices. Must either be enabled \
+or disabled for all network devices (BR, RN). Can only be used with Preshared Key security. \
+\n\
+__Default__: Disabled
+\n\
+This capability allows BRs to allow/disallow joining of devices based on their EUI \
+(Extended Unique Identifier or MAC address). This is accomplished by co-opting the \
+EAPOL protocol currently used for network authentication. When using Preshared Key security \
+and enabling this controlled joining feature, the authentication stage usually used for \
+mbedTLS key exchange is used to exchange custom join request and response messages.
+
+The callback function \`bool customAuthCheckAllowedJoin(uint8_t* eui)\` is called on the BR \
+when the custom join request message has been received via EAPOL protocol. The function \
+is used to determine whether a joining device is allowed to join. The eui parameter \
+is the EUI of the joining device. The function should return true if the BR allows this \
+device to join the current network. The function is weakly defined in ws_bootstrap.c to \
+allow all devices, but can be overriden by users to accept/reject devices with specific \
+EUIs.
 \n\
 `
 };
@@ -55,11 +89,16 @@ MAC Security | The TI Wi-SUN FAN Stack supports AES encryption for the MAC layer
 const keyTableDefaultKey = {
     description: "Configures pre-shared network key",
     longDescription: `
-Configures the pre-shared key used for network communication and secure \
-commissioning (if enabled). Must be 32 hexadecimal digits from least \
-significant to most significant byte.
+Configures the pre-shared keys used for encryption if \
+preshared key security is used. \
+4 network keys are cycled through the network over time. \
+Must be 32 hexadecimal digits from least significant to most significant byte.
 \n\
-__Default__: 0x1234 0x5678 0x9abc 0xdef0 0x0000 0x0000 0x0000 0x0000
+__Default__:
+Key 1: BB0608572CE14D7BA2D155499CC8519B\n
+Key 2: 1849835A01684FC8ACA583F37040F74C\n
+Key 3: 59EA58A4B8834938ADCB6BE388C26263\n
+Key 4: E426B491BC054AF39B59F053EC128E5F\n
 \n\
 __Acceptable Values__: 32 hexadecimal digits
 `
@@ -67,5 +106,6 @@ __Acceptable Values__: 32 hexadecimal digits
 
 exports = {
     secureLevel: secureLevel,
+    euiJoin: euiJoin,
     keyTableDefaultKey: keyTableDefaultKey
 };

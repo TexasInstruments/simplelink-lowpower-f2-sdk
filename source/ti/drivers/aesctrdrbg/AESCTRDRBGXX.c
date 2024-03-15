@@ -53,14 +53,13 @@
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
+    #if (TFM_ENABLED == 1)
+        #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+    #endif
 #endif
 
-#if (TFM_ENABLED == 1)
-    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
-#endif
-
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-    #include <ti/drivers/aesctr/AESCTRCC23XX.h>
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/aesctr/AESCTRLPF3.h>
 #else
     #include <ti/drivers/aesctr/AESCTRCC26XX.h>
 #endif
@@ -233,11 +232,6 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
     object  = handle->object;
     hwAttrs = handle->hwAttrs;
 
-    /* Zero out the AESCTR object to ensure AESCTR_construct() will not fail */
-    memset(&object->aesctrObject, 0, sizeof(object->aesctrObject));
-    object->ctrConfig.object  = &object->aesctrObject;
-    object->ctrConfig.hwAttrs = &hwAttrs->aesctrHWAttrs;
-
     key = HwiP_disable();
 
     if (!isInitialized || object->isOpen)
@@ -271,6 +265,11 @@ AESCTRDRBG_Handle AESCTRDRBG_construct(AESCTRDRBG_Config *config, const AESCTRDR
      */
     ctrParams.returnBehavior = AESCTR_RETURN_BEHAVIOR_POLLING;
 #endif
+
+    /* Zero out the AESCTR object to ensure AESCTR_construct() will not fail */
+    memset(&object->aesctrObject, 0, sizeof(object->aesctrObject));
+    object->ctrConfig.object  = &object->aesctrObject;
+    object->ctrConfig.hwAttrs = &hwAttrs->aesctrHWAttrs;
 
     object->ctrHandle = AESCTR_construct(&object->ctrConfig, &ctrParams);
 
@@ -393,14 +392,15 @@ int_fast16_t AESCTRDRBG_generateKey(AESCTRDRBG_Handle handle, CryptoKey *randomK
                     keyStoreStatus = KeyStore_PSA_importKey(attributesPtr,
                                                             KeyStore_keyingMaterial,
                                                             randomKey->u.keyStore.keyLength,
-                                                            &attributesPtr->core.id);
+                                                            &attributesPtr->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id));
                     if (keyStoreStatus == KEYSTORE_PSA_STATUS_SUCCESS)
                     {
-                        if (attributesPtr->core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
+                        if (attributesPtr->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) ==
+                            KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
                         {
                             /* Set the keyID of volatile keys provided by KeyStore driver in the cryptokey structure */
                             KeyStore_PSA_initKey(randomKey,
-                                                 attributesPtr->core.id,
+                                                 attributesPtr->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id),
                                                  randomKey->u.keyStore.keyLength,
                                                  NULL);
                         }

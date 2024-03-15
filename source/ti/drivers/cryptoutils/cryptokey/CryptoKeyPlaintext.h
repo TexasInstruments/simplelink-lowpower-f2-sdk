@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,33 +32,33 @@
 /** ============================================================================
  *  @file       CryptoKeyPlaintext.h
  *
- * @warning     This is a beta API. It may change in future releases.
+ *  @warning    This is a beta API. It may change in future releases.
  *
- * # Overview #
- * This file contains the APIs to initialize and access plaintext CryptoKeys.
- * Plaintext CryptoKeys point to keying material stored in flash or RAM and
- * are not subject to enforced usage restrictions. That only means that calling
- * a function that requires an assymmetric public key with a symmetric key will
- * not return an error. It will likely not yield the desired results.
+ *  # Overview #
+ *  This file contains the APIs to initialize and access plaintext CryptoKeys.
+ *  Plaintext CryptoKeys point to keying material stored in flash or RAM and
+ *  are not subject to enforced usage restrictions. That only means that calling
+ *  a function that requires an assymmetric public key with a symmetric key will
+ *  not return an error. It will likely not yield the desired results.
  *
- * # Usage #
+ *  # Usage #
  *
- * Plaintext keys are the simplest of the CryptoKeys. All they do is store the
- * length of and a pointer to the keying material. Their use is hence simple as
- * well. After calling the initialization function, the CryptoKey may be used in
- * any of the crypto operation APIs that take a CryptoKey as an input.
+ *  Plaintext keys are the simplest of the CryptoKeys. All they do is store the
+ *  length of and a pointer to the keying material. Their use is hence simple as
+ *  well. After calling the initialization function, the CryptoKey may be used in
+ *  any of the crypto operation APIs that take a CryptoKey as an input.
  *
- * @code
+ *  @code
  *
- * uint8_t keyingMaterial[16];
- * CryptoKey cryptoKey;
+ *  uint8_t keyingMaterial[16];
+ *  CryptoKey cryptoKey;
  *
- * // Initialise the CryptoKey
- * CryptoKeyPlaintext_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
+ *  // Initialise the CryptoKey
+ *  CryptoKeyPlaintext_initKey(&cryptoKey, keyingMaterial, sizeof(keyingMaterial));
  *
- * // Use the CryptoKey in another crypto operation
+ *  // Use the CryptoKey in another crypto operation
  *
- * @endcode
+ *  @endcode
  *
  */
 
@@ -74,6 +74,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*!
+ *  @brief Marks a CryptoKey as 'blank'.
+ *
+ *  The CryptoKey will be unlinked from any previously connected keying material
+ *
+ *  @param [in]     keyHandle   Pointer to a CryptoKey
+ *
+ *  @return Returns a status code
+ */
+int_fast16_t CryptoKeyPlaintext_markAsBlank(CryptoKey *keyHandle);
 
 /*!
  *  @brief Initializes a CryptoKey type
@@ -106,7 +117,7 @@ int_fast16_t CryptoKeyPlaintext_initKey(CryptoKey *keyHandle, uint8_t *key, size
 int_fast16_t CryptoKeyPlaintext_initBlankKey(CryptoKey *keyHandle, uint8_t *keyLocation, size_t keyLength);
 
 /*!
- * @brief Sets the CryptoKey keyMaterial pointer
+ *  @brief Sets the CryptoKey keyMaterial pointer
  *
  *  Updates the key location for a plaintext CryptoKey.
  *  Does not modify data at the pointer location.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -44,13 +44,14 @@ extern "C" {
 #define IMPLEMENTATION_ID_MAX_SIZE (32u)
 
 /**
- * \def HW_VERSION_MAX_SIZE
+ * \def CERTIFICATION_REF_MAX_SIZE
  *
  * \brief Maximum size of hardware version in bytes
  *
- * Recommended to use the European Article Number format: EAN-13+5
+ * Recommended to use the European Article Number format: EAN-13 + '-' + 5
+ * https://www.ietf.org/archive/id/draft-tschofenig-rats-psa-token-09.html#name-certification-reference
  */
-#define HW_VERSION_MAX_SIZE (18u)
+#define CERTIFICATION_REF_MAX_SIZE (19u)
 
 /**
  * \brief Get the Implementation ID of the device.
@@ -74,7 +75,7 @@ enum tfm_plat_err_t tfm_plat_get_implementation_id(uint32_t *size,
                                                    uint8_t  *buf);
 
 /**
- * \brief Get the hardware version of the device.
+ * \brief Get the PSA certification reference of the device.
  *
  * This optional claim provides metadata linking the token to the GDSII that
  * went to fabrication for this instance. It is represented as CBOR text string.
@@ -82,14 +83,15 @@ enum tfm_plat_err_t tfm_plat_get_implementation_id(uint32_t *size,
  * Article Number: EAN-13+5.
  *
  * \param[in/out] size  As an input value it indicates the size of the caller
- *                      allocated buffer (in bytes) to store the HW version. At
- *                      return its value is updated with the exact size of the
- *                      HW version.
- * \param[out]    buf   Pointer to the buffer to store the HW version
+ *                      allocated buffer (in bytes) to store the certification
+ *                      reference. At return its value is updated with the exact
+ *                      size of the certification reference.
+ * \param[out]    buf   Pointer to the buffer to store the certification
+ *                      reference.
  *
  * \return  Returns error code specified in \ref tfm_plat_err_t
  */
-enum tfm_plat_err_t tfm_plat_get_hw_version(uint32_t *size, uint8_t *buf);
+enum tfm_plat_err_t tfm_plat_get_cert_ref(uint32_t *size, uint8_t *buf);
 
 #ifdef __cplusplus
 }

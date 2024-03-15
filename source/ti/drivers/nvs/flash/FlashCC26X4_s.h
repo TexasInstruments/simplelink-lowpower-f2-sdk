@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,7 @@
 #ifndef ti_drivers_nvs_flash_FlashCC26X4_s__include
 #define ti_drivers_nvs_flash_FlashCC26X4_s__include
 
-#include <stddef.h>
 #include <stdint.h>
-#include <psa_manifest/sid.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,12 +57,12 @@ extern "C" {
  */
 #define TI_SP_MSG_TYPE_USER 16
 
-#define FLASH_SP_MSG_TYPE_PROTECTION_GET  TI_SP_MSG_TYPE_USER + 0
-#define FLASH_SP_MSG_TYPE_SECTOR_ERASE    TI_SP_MSG_TYPE_USER + 1
-#define FLASH_SP_MSG_TYPE_PROGRAM         TI_SP_MSG_TYPE_USER + 2
-#define FLASH_SP_MSG_TYPE_PROGRAM_4X      TI_SP_MSG_TYPE_USER + 3
-#define FLASH_SP_MSG_TYPE_SECTOR_SIZE_GET TI_SP_MSG_TYPE_USER + 4
-#define FLASH_SP_MSG_TYPE_FLASH_SIZE_GET  TI_SP_MSG_TYPE_USER + 5
+#define FLASH_SP_MSG_TYPE_PROTECTION_GET  (TI_SP_MSG_TYPE_USER + 0)
+#define FLASH_SP_MSG_TYPE_SECTOR_ERASE    (TI_SP_MSG_TYPE_USER + 1)
+#define FLASH_SP_MSG_TYPE_PROGRAM         (TI_SP_MSG_TYPE_USER + 2)
+#define FLASH_SP_MSG_TYPE_PROGRAM_4X      (TI_SP_MSG_TYPE_USER + 3)
+#define FLASH_SP_MSG_TYPE_SECTOR_SIZE_GET (TI_SP_MSG_TYPE_USER + 4)
+#define FLASH_SP_MSG_TYPE_FLASH_SIZE_GET  (TI_SP_MSG_TYPE_USER + 5)
 
 struct FlashCC26X4_s_program
 {

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2023, Texas Instruments Incorporated
+ Copyright (c) 2005-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -174,6 +174,7 @@ enum
 
 #define MAC_TX_BACKOFF_TIM_TASK_EVT     0x800
 #define MAC_RX_BACKOFF_TIM_TASK_EVT     0x1000
+#define MAC_MSG_LOG_EVT                 0x2000
 
 /* State table format */
 #define MAC_ACTION_POS                  0       /* action position */

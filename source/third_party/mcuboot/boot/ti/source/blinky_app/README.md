@@ -1,6 +1,6 @@
 ## Example Summary
 
-Application that toggles an LED(s) using a GPIO pin interrupt.
+Application that toggles RED and GREEN LEDs.
 
 ## Peripherals & Pin Assignments
 

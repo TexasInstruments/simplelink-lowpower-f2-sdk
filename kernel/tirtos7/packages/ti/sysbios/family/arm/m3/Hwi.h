@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
  * the Hwi_create() or Hwi_construct() functions.
  *
  * Interrupt routines can be written completely in C, completely in assembly, or
- * in a mix of C and assembly. 
+ * in a mix of C and assembly.
  *
  * In order to support interrupt routines written
  * completely in C, an interrupt dispatcher is provided that performs the
@@ -150,7 +150,7 @@
  * debugger.
  *
  * ID 14 is the "pendSV" handler which is used exclusively by the shared
- * interrupt dispatcher to orchestrate the execution of 
+ * interrupt dispatcher to orchestrate the execution of
  * "Swis" posted from within interrupts, as well as to
  * manage asynchronous task pre-emption upon returning from interrupts which
  * have readied a task of higher priority than the task that was interrupted.
@@ -759,7 +759,7 @@ struct Hwi_Module_State {
     void * isrStack;           /* 0x10 */
     void * isrStackBase;       /* 0x14 */
     unsigned int swiTaskKeys;       /* 0x18 */
-    void * isrStackSize;      
+    void * isrStackSize;
     void * vectorTableBase;
     void * dispatchTable;
     volatile bool vnvicFlushRequired;
@@ -896,34 +896,25 @@ extern const Hwi_VectorFuncPtr Hwi_nullIsrFunc;
 /*!
  * @brief Exception handler function pointer.
  *
- * The default is determined by the value of Hwi.enableException.
+ * There are four valid values:
+ * - The 'Hwi_excHandlerMin' is used by default. This exception handler
+ * saves the exception context then raises an Error. The exception context can be
+ * viewed within CCS in the ROV Hwi module's Exception view.
  *
- * If the user does NOT set this parameter, then the following default behavior
- * is followed:
+ * - The 'Hwi_excHandlerMax' function. This exception handler saves the exception
+ * context then does a complete exception decode and dump to the console, then
+ * raises an Error. The exception context can be viewed within CCS in the ROV Hwi
+ * module's Exception view.
  *
- * If Hwi.enableException is true, then the internal 'Hwi_excHandlerMax'
- * function is used. This exception handler saves the exception context then
- * does a complete exception decode and dump to the console, then raises an
- * Error. The exception context can be viewed within CCS in the ROV Hwi module's
- * Exception view.
- *
- * If Hwi.enableException is false, then the internal 'Hwi_excHandlerMin'
- * function is used. This exception handler saves the exception context then
- * raises an Error. The exception context can be viewed within CCS in the ROV
- * Hwi module's Exception view.
- *
- * If the user sets this parameter to their own function, then the user's
- * function will be invoked with the following arguments:
- *
- * void myExceptionHandler(unsigned int *excStack, unsigned int lr);
- *
+ * - A user-provided function. It should have the following signature:
+ * 'void myExceptionHandler(UInt *excStack, UInt lr);'
  * Where 'excStack' is the address of the stack containing the register context
  * at the time of the exception, and 'lr' is the link register value when the
  * low-level-assembly-coded exception handler was vectored to.
  *
- * If this parameter is set to 'null', then an infinite while loop is entered
- * when an exception occurs. This setting minimizes code and data footprint but
- * provides no automatic exception decoding.
+ * - 'NULL'. An infinite while loop is entered when an exception occurs.
+ * This setting minimizes code and data footprint but provides no automatic
+ * exception decoding.
  */
 extern const Hwi_ExcHandlerFuncPtr Hwi_excHandlerFunc;
 /*! @endcond */
@@ -1035,7 +1026,7 @@ extern const unsigned int Hwi_numSparseInterrupts;
 /*!
  * @brief The initial Hwi_nvic.CCR value.
  *
- * This configuration parameter is 
+ * This configuration parameter is
  */
 extern const uint32_t Hwi_ccr;
 /*! @endcond */
@@ -1127,7 +1118,7 @@ struct Hwi_Params {
  * Hwi_enable() occurs on the way to the new thread context which
  * unconditionally re-enables interrupts. Interrupts will remain enabled until a
  * subsequent Hwi_disable() invocation.
- * 
+ *
  * @retval opaque uint32_t key for use by Hwi_restore()
  */
 extern unsigned int Hwi_Disable();
@@ -1187,9 +1178,9 @@ extern unsigned int Hwi_Enable();
  * @arg key = enable/disable state to restore
  *
  */
- 
+
 extern void Hwi_Restore(uint32_t key);
- 
+
  /*! @cond NODOC */
 extern void Hwi_init(void);
 
@@ -1270,7 +1261,7 @@ extern void Hwi_destruct(Hwi_Struct *obj);
  *
  * @param stkInfo pointer to stack info structure
  * @param computeStackDepth decides whether to compute stack depth
- * 
+ *
  * @retval boolean to indicate a stack overflow
  */
 extern bool Hwi_getStackInfo(Hwi_StackInfo *stkInfo, bool computeStackDepth);
@@ -1342,7 +1333,7 @@ extern bool Hwi_getStackInfo(Hwi_StackInfo *stkInfo, bool computeStackDepth);
  * @param computeStackDepth decides whether to compute stack depth
  *
  * @param coreId core whose stack info needs to be retrieved
- * 
+ *
  *@retval boolean to indicate a stack overflow
  */
 extern bool Hwi_getCoreStackInfo(Hwi_StackInfo *stkInfo, bool computeStackDepth, unsigned int coreId);
@@ -1375,7 +1366,7 @@ extern void Hwi_post(unsigned int intNum);
  * @brief retrieve interrupted task's SP
  *
  * Used for benchmarking the SYS/BIOS Hwi dispatcher's task stack utilization.
- * 
+ *
  * @retval interrupted task's SP
  */
 extern char *Hwi_getTaskSP(void);
@@ -1387,7 +1378,7 @@ extern char *Hwi_getTaskSP(void);
  * Disable a specific interrupt identified by an interrupt number.
  *
  * @param intNum interrupt number to disable
- * 
+ *
  * @retval key to restore previous enable/disable state
  */
 extern unsigned int Hwi_disableInterrupt(unsigned int intNum);
@@ -1398,7 +1389,7 @@ extern unsigned int Hwi_disableInterrupt(unsigned int intNum);
  * Enables a specific interrupt identified by an interrupt number.
  *
  * @param intNum interrupt number to enable
- * 
+ *
  * @retval key to restore previous enable/disable state
  */
 extern unsigned int Hwi_enableInterrupt(unsigned int intNum);
@@ -1465,7 +1456,7 @@ extern void Hwi_setFunc(Hwi_Handle hwi, Hwi_FuncPtr fxn, uintptr_t arg);
 
 /*!
  * @brief Get hook instance's context for a Hwi.
- * 
+ *
  * @param hwi Hwi handle
  * @param id hook id
  *
@@ -1484,7 +1475,7 @@ extern void Hwi_setHookContext(Hwi_Handle hwi, int id, void * hookContext);
 
 /*!
  * @brief Get address of interrupted instruction.
- * 
+ *
  * @param hwi Hwi handle
  *
  * @retval most current IRP of a Hwi
@@ -1636,7 +1627,7 @@ extern Hwi_Module_State Hwi_Module_state;
 #define Hwi_Object_heap() NULL
 
 static inline Hwi_Handle Hwi_handle(Hwi_Struct *str)
-{  
+{
     return ((Hwi_Handle)str);
 }
 

@@ -31,6 +31,7 @@
 #include "NWK_INTERFACE/Include/protocol.h"
 #include "Common_Protocols/ipv6_constants.h"
 #include "6LoWPAN/ws/ws_common.h"
+#include "wisun_tasklet.h"
 
 #include "net_rpl.h"
 #include "RPL/rpl_protocol.h"
@@ -111,13 +112,12 @@ static int8_t br_tasklet_id = -1;
 /* Network statistics */
 static nwk_stats_t nwk_stats;
 
-/* variable to control fixed GTK Keys for debug */
-bool fix_gtk_keys = false;
-
 /* variables to help fetch rssi of neighbor nodes */
 uint8_t cur_num_nbrs;
 uint8_t nbr_idx = 0;
 nbr_node_metrics_t nbr_nodes_metrics[SIZE_OF_NEIGH_LIST];
+
+extern ti_wisun_config_t ti_wisun_config;
 
 /* Function forward declarations */
 
@@ -162,7 +162,7 @@ static void mesh_network_up()
     int8_t wisun_if_id = ws_br_handler.ws_interface_id;
 
 #ifdef FIXED_GTK_KEYS
-    fix_gtk_keys = true;
+    ti_wisun_config.use_fixed_gtk_keys = true;
 #endif
 
     status = arm_nwk_interface_configure_6lowpan_bootstrap_set(
@@ -811,6 +811,8 @@ uint8_t get_current_net_state(void)
             break;
         case ER_BOOTSRAP_DONE:
             curNetState = 5;
+            break;
+        default:
             break;
     }
 

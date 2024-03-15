@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017-2018 ARM Limited
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, ARM Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 
 #include "target_cfg.h"
 #include "cmsis.h"
+#include "Driver_Common.h"
+#include "fih.h"
 #include "platform_retarget_dev.h"
 #include "region_defs.h"
-#include "tfm_secure_api.h"
+#include "region.h"
+#include "tfm_plat_defs.h"
 #include "ti_safe.h"
 
 /* TI CC13x4/CC26x4 SDK include(s) */
@@ -31,30 +34,26 @@
 #include "ti/devices/cc13x4_cc26x4/inc/hw_prcm.h"
 #include "ti/devices/cc13x4_cc26x4/inc/hw_types.h" /* HWREG() */
 
-/* Macros to pick linker symbols */
-#define REGION(a, b, c)         a##b##c
-#define REGION_NAME(a, b, c)    REGION(a, b, c)
-#define REGION_DECLARE(a, b, c) extern uint32_t REGION_NAME(a, b, c)
-
 /* The section names come from the scatter file */
 REGION_DECLARE(Load$$LR$$, LR_NS_PARTITION, $$Base);
-REGION_DECLARE(Load$$LR$$, LR_VENEER, $$Base);
-REGION_DECLARE(Load$$LR$$, LR_VENEER, $$Limit);
-#ifdef BL2
-REGION_DECLARE(Load$$LR$$, LR_SECONDARY_PARTITION, $$Base);
-#endif /* BL2 */
+REGION_DECLARE(Image$$, ER_VENEER, $$Base);
+REGION_DECLARE(Image$$, VENEER_ALIGN, $$Limit);
 
 const struct memory_region_limits memory_regions = {
-    .non_secure_code_start = (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) + BL2_HEADER_SIZE,
+    .non_secure_code_start =
+        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) +
+        BL2_HEADER_SIZE,
 
-    .non_secure_partition_base = (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base),
+    .non_secure_partition_base =
+        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base),
 
-    .non_secure_partition_limit = (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) + NS_PARTITION_SIZE - 1,
+    .non_secure_partition_limit =
+        (uint32_t)&REGION_NAME(Load$$LR$$, LR_NS_PARTITION, $$Base) +
+        NS_PARTITION_SIZE - 1,
 
-    .veneer_base = (uint32_t)&REGION_NAME(Load$$LR$$, LR_VENEER, $$Base),
+    .veneer_base = (uint32_t)&REGION_NAME(Image$$, ER_VENEER, $$Base),
 
-    .veneer_limit = (uint32_t)&REGION_NAME(Load$$LR$$, LR_VENEER, $$Limit),
-
+    .veneer_limit = (uint32_t)&REGION_NAME(Image$$, VENEER_ALIGN, $$Limit),
 };
 
 /* Non-secure peripheral end address for the platform */
@@ -65,22 +64,19 @@ const struct memory_region_limits memory_regions = {
  */
 #define SCB_AIRCR_WRITE_MASK ((0x5FAUL << SCB_AIRCR_VECTKEY_Pos))
 
-/* Coprocessor access control register masks. Not defined in cmsis/core_cm33.h
- */
-#define SCB_CPACR_CP10_MASK (0x3UL << 20U)
-#define SCB_CPACR_CP11_MASK (0x3UL << 22U)
-
 /* Flash write/erase protect sector 0 */
 #define FLASH_WEPROT_SECTOR_0 0x1UL
 
-#if defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-extern uint32_t __Vectors;
-#endif
+/* Dummy platform data as this is not yet supported */
+struct platform_data_t tfm_peripheral_std_uart = {0, 0};
+
+/* Exception / Interrupt Vector table */
+extern const VECTOR_TABLE_Type __VECTOR_TABLE[];
 
 /* Always inline to mitigate against single instruction glitch skipping a branch instruction */
 __attribute__((always_inline)) static inline void we_protect_preprovisioned_data(void)
 {
-    /* Verify stick enable for main flash is enabled */
+    /* Verify sticky enable for main flash is enabled */
     SAFE_IF((HWREG(FLASH_BASE + FLASH_O_CFG) & FLASH_CFG_MAIN_STICKY_EN) != FLASH_CFG_MAIN_STICKY_EN)
     {
         /* Cold reset of entire chip causing boot code to run again */
@@ -101,7 +97,7 @@ enum tfm_plat_err_t enable_fault_handlers(void)
     /* Explicitly set secure fault priority to the highest */
     NVIC_SetPriority(SecureFault_IRQn, 0);
 
-    /* Enables BUS, MEM, USG and Secure faults */
+    /* Enables Bus, Memory, Usage and Secure faults */
     SCB->SHCSR |= (SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk |
                    SCB_SHCSR_SECUREFAULTENA_Msk);
 
@@ -118,12 +114,6 @@ enum tfm_plat_err_t system_reset_cfg(void)
     /* Enable system reset request only to the secure world */
     reg_value |= (uint32_t)(SCB_AIRCR_WRITE_MASK | SCB_AIRCR_SYSRESETREQS_Msk);
     SCB->AIRCR = reg_value;
-
-    /* Allow privileged and unprivileged access to VFP instructions */
-    SCB->CPACR |= (SCB_CPACR_CP10_MASK | SCB_CPACR_CP11_MASK);
-
-    /* Allow NS code to push/pop VFP regs */
-    SCB->NSACR |= (SCB_NSACR_CP10_Msk | SCB_NSACR_CP11_Msk);
 
     /* Setup final trim of the device */
     SetupTrimDevice();
@@ -148,6 +138,8 @@ enum tfm_plat_err_t system_reset_cfg(void)
 
 enum tfm_plat_err_t init_debug(void)
 {
+    /* Nothing to do since CC26x4 Boot ROM handles locking of debug as specified
+     * in the CCFG */
     return TFM_PLAT_ERR_SUCCESS;
 }
 
@@ -159,6 +151,7 @@ enum tfm_plat_err_t nvic_interrupt_target_state_cfg(void)
     {
         NVIC->ITNS[i] = 0xFFFFFFFF;
     }
+
     return TFM_PLAT_ERR_SUCCESS;
 }
 
@@ -173,7 +166,7 @@ enum tfm_plat_err_t nvic_interrupt_enable(void)
      PRCM_CPULOCK_LOCKSMPU)
 
 /*------------------- SAU/IDAU configuration functions -----------------------*/
-void sau_and_idau_cfg(void)
+FIH_RET_TYPE(int32_t) sau_and_idau_cfg(void)
 {
     /* Clear security config valid */
     verified_reg_write(PRCM_SEC_NONBUF_BASE + PRCM_O_BUSSECCFG,
@@ -185,7 +178,7 @@ void sau_and_idau_cfg(void)
 
     /* Configure IDAU NSC Flash base address */
     verified_reg_write(PRCM_BASE + PRCM_O_NVMNSCADDR,
-                       CMSE_VENEER_REGION_START & PRCM_NVMNSCADDR_BOUNDARY_M,
+                       memory_regions.veneer_base & PRCM_NVMNSCADDR_BOUNDARY_M,
                        PRCM_NVMNSCADDR_BOUNDARY_M);
 
     /* Configure IDAU NS Flash base address */
@@ -214,7 +207,7 @@ void sau_and_idau_cfg(void)
     /*** Define SAU regions so that the S-image trailer is marked secure ***/
     /* Define SAU region 0 as NSC for veneers using their actual size */
     SAU->RNR  = 0U;
-    SAU->RBAR = (CMSE_VENEER_REGION_START & SAU_RBAR_BADDR_Msk);
+    SAU->RBAR = (memory_regions.veneer_base & SAU_RBAR_BADDR_Msk);
     SAU->RLAR = (memory_regions.veneer_limit & SAU_RLAR_LADDR_Msk) | SAU_RLAR_ENABLE_Msk | SAU_RLAR_NSC_Msk;
 
     /* Define SAU region 1 as NS from the start of NS flash to the end of the NS peripherals */
@@ -236,9 +229,9 @@ void sau_and_idau_cfg(void)
      * since the PRCM CPULOCK.LOCKSVTAIRCR is still set when SystemInit() is
      * called, the register write has no effect so we must configure VTOR again
      * here after the lock bit has been cleared. */
-#if defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-    SCB->VTOR = (uint32_t)&__Vectors;
+#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
+    SCB->VTOR = (uint32_t) &(__VECTOR_TABLE[0]);
 #endif
-}
 
-struct tfm_spm_partition_platform_data_t tfm_peripheral_std_uart = {0, 0};
+    FIH_RET(fih_int_encode(ARM_DRIVER_OK));
+}

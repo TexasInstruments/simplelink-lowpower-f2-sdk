@@ -661,7 +661,7 @@ bool Radio_Builtin_packetTx(uint16_t numPkts, uint32_t *pktLen)
     }
 }
 
-bool Radio_Builtin_packetRx(uint8_t pktLen)
+bool Radio_Builtin_packetRx(uint16_t pktLen)
 {
     ieeeRxPackets = 0;
     ieeeRxPacketsNOk = 0;
@@ -1418,6 +1418,7 @@ void Radio_Builtin_registerFxns(Radio_Fxns *fxns){
     fxns->packetMdrTx = NULL;
     fxns->packetMdrRx = NULL;
     fxns->packetMdrCsTx = NULL;
+    fxns->packetCsTx = NULL;
     fxns->contTx = Radio_Builtin_contTx;
     fxns->contRx = Radio_Builtin_contRx;
     fxns->setFreq = Radio_Builtin_setFreq;

@@ -11,7 +11,7 @@ include $(SDK_INSTALL_DIR)/imports.mak
 
 all:
 	@ $(MAKE) -C production_full all
-	@ $(MAKE) -C production_full cleanup
+	@ $(MAKE) -C production_full trim
 
 clean:
 	@ $(MAKE) -C production_full clean

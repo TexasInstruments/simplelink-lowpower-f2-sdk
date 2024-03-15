@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,11 @@
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
-#include DeviceFamily_constructPath(driverlib/vims.h)
+#ifdef DeviceFamily_CC23X0R2
+  #include DeviceFamily_constructPath(inc/hw_vims.h)
+#else
+  #include DeviceFamily_constructPath(driverlib/vims.h)
+#endif
 #include "ti/common/cc26xx/flash_interface/flash_interface.h"
 
 

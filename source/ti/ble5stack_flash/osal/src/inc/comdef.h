@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2004-2023, Texas Instruments Incorporated
+ Copyright (c) 2004-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -109,8 +109,10 @@ extern "C"
 
 /*** Generic Status Return Values ***/
 #define SUCCESS                   0x00 //!< SUCCESS
+#define USUCCESS                  0U   //!< SUCCESS
 #ifndef CC33xx
 #define FAILURE                   0x01 //!< Failure
+#define UFAILURE                  1U   //!< Failure
 #else
 #define FAILURE_CC33XX            0x01 //!< Failure CC33xx to avoid redefinition with Osprey
 #endif // CC33xx
