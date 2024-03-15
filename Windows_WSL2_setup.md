@@ -1,10 +1,10 @@
-# Windows WS2 How To
+# Windows WSL2 How To
 
 These instructions are for building Texas Instruments F2 and F3 SimpleLink SDKs on Windows with WSL2.  These instructions are for Windows 10 or 11 running WSL2, and it is assumed the basic Ubuntu WSL2 installation has already been installed.  Please review the Ubuntu WSL2 tutorial here: https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-10#1-overview
 
 Prerequisites:
 1.  Windows 10 or 11 version that supports WSL2
-2. WSL2 with Ubuntu 20.04+
+2.  WSL2 with Ubuntu 20.04+
 3.  Knowledge of Linux command line utilities
 4.  sudo access on Linux
 
@@ -13,9 +13,8 @@ Prerequisites:
 
 A CMake version greater than 3.21 is needed to build the SimpleLink SDK.  Any of the newer versions of CMake will work, and in this example, we are installing cmake-3.24.2.  This version may be found on this page(https://github.com/Kitware/CMake/releases?page=5) or at the official CMake download site (https://cmake.org/download/).
 
-After downloading CMake, install CMake by (assuming in Windows Downloads location):
-
-sudo tar xz -f /mnt/c/Users/<user_id>/Downloads/cmake-3.24.2-linux-x86_64.tar.gz -C /opt
+After downloading CMake, install CMake by:
+sudo tar xz -f /mnt/c/Users/a0194920/Downloads/cmake-3.24.2-linux-x86_64.tar.gz -C /opt
 
 ### Install Unzip
 By default, Ubuntu does not have unzip installed.  Unzip is needed in the next FreeRTOS step.  Install by:
@@ -26,9 +25,9 @@ sudo apt install unzip
 
 Download FreeRTOS from https://www.freertos.org/a00104.html  and unzip it in a known location.  This location will be needed when setting the FreeRTOS location imports.mak.  Recommended location is $HOME/ti.
 
-1. cd $HOME/ti
-2. wget https://github.com/FreeRTOS/FreeRTOS/releases/download/202212.01/FreeRTOSv202212.01.zip
-3. unzip FreeRTOSv202212.01.zip
+cd $HOME/ti
+wget https://github.com/FreeRTOS/FreeRTOS/releases/download/202212.01/FreeRTOSv202212.01.zip
+unzip FreeRTOSv202212.01.zip
 
 ### Install CCS
 
@@ -48,9 +47,9 @@ There will be a version of SysConfig in the CCS install, but the SDK requires a 
 
 Download the 1.18 version of SysConfig from:
 
-1. wget https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-nsUM6f7Vvb/1.18.0.3266/sysconfig-1.18.0_3266-setup.run
-2. chmod +x sysconfig-1.18.0_3266-setup.run
-3. ./sysconfig-1.18.0_3266-setup.run 
+wget https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-nsUM6f7Vvb/1.18.0.3266/sysconfig-1.18.0_3266-setup.run
+chmod +x sysconfig-1.18.0_3266-setup.run
+./sysconfig-1.18.0_3266-setup.run 
 
 Press enter a few times to accept the license agreement.  The default installation for SysConfig will be $HOME/ti/sysconfig_1.18.0
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,14 +42,14 @@
 
 #include <ti/drivers/tfm/SecureCallback.h>
 
-#include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h> /* __tfm_secure_gateway_attributes__ */
-#include <psa_manifest/crypto_sp.h>                               /* Auto-generated header */
+#include <third_party/tfm/secure_fw/include/security_defs.h> /* __tz_c_veneer */
+#include <psa_manifest/crypto_sp.h>                          /* Auto-generated header */
 
 #include <third_party/tfm/interface/include/tfm_api.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 #include "ti_drivers_config.h"                                  /* Sysconfig generated header */
@@ -75,7 +75,7 @@ typedef struct
 static TRNG_s_EntropyKey TRNG_s_entropyKey[TRNG_INSTANCE_COUNT];
 
 /*
- * ========= TRNG Secure Dynamic Instance struct =========
+ * TRNG Secure Dynamic Instance struct.
  */
 typedef struct
 {
@@ -241,7 +241,7 @@ static inline psa_status_t TRNG_s_copyConfig(TRNG_Config **secureConfig,
             }
 
             /* Copy config to secure memory */
-            (void)tfm_memcpy(config_s, config, sizeof(dynInstance_s->config));
+            (void)spm_memcpy(config_s, config, sizeof(dynInstance_s->config));
 
             /* Validate object address range */
             if (cmse_has_unpriv_nonsecure_read_access(config_s->object, sizeof(dynInstance_s->object)) == NULL)
@@ -250,7 +250,7 @@ static inline psa_status_t TRNG_s_copyConfig(TRNG_Config **secureConfig,
             }
 
             /* Copy object to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
+            (void)spm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
             config_s->object = &dynInstance_s->object;
 
             /* Validate HW attributes address range */
@@ -261,7 +261,7 @@ static inline psa_status_t TRNG_s_copyConfig(TRNG_Config **secureConfig,
             }
 
             /* Copy HW attributes to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
+            (void)spm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
             config_s->hwAttrs = &dynInstance_s->hwAttrs;
 
             *secureConfig = config_s;
@@ -318,7 +318,7 @@ static psa_status_t TRNG_s_copyParams(TRNG_Params *secureParams, const TRNG_Para
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    (void)tfm_memcpy(secureParams, params, sizeof(TRNG_Params));
+    (void)spm_memcpy(secureParams, params, sizeof(TRNG_Params));
 
     /* Validate the return behavior */
     if ((secureParams->returnBehavior == TRNG_RETURN_BEHAVIOR_CALLBACK) ||
@@ -654,7 +654,7 @@ static inline psa_status_t TRNG_s_generateKey(psa_msg_t *msg)
         }
 
         /* Make a secure copy of the key struct */
-        (void)tfm_memcpy(entropy_s, genKeyMsg.entropy, sizeof(CryptoKey));
+        (void)spm_memcpy(entropy_s, genKeyMsg.entropy, sizeof(CryptoKey));
 
         /* Save the non-secure key struct pointer */
         TRNG_s_entropyKey[idx].entropyKey_ns = genKeyMsg.entropy;
@@ -823,7 +823,7 @@ psa_status_t TRNG_s_handlePsaMsg(psa_msg_t *msg)
 /*
  *  ======== TRNG_s_init ========
  */
-__tfm_secure_gateway_attributes__ void TRNG_s_init(void)
+__tz_c_veneer void TRNG_s_init(void)
 {
     TRNG_init();
 }
@@ -831,8 +831,7 @@ __tfm_secure_gateway_attributes__ void TRNG_s_init(void)
 /*
  *  ======== TRNGCC26XX_s_setSamplesPerCycle ========
  */
-__tfm_secure_gateway_attributes__ int_fast16_t TRNGCC26XX_s_setSamplesPerCycle(TRNG_Handle handle,
-                                                                               uint32_t samplesPerCycle)
+__tz_c_veneer int_fast16_t TRNGCC26XX_s_setSamplesPerCycle(TRNG_Handle handle, uint32_t samplesPerCycle)
 {
     TRNG_Handle handle_s;
 

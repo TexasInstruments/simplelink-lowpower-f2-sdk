@@ -33,7 +33,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -163,12 +163,14 @@ typedef struct
   regOverride_t         *rfRegOverrideTx20Ptr;  // High gain overrides
   regOverride_t         *rfRegOverrideTxStdPtr; // Default PA overrides
 #endif //CC13X2P
+  RF_Mode               *rfMode;                // Specify PRCM Mode and pointers to CPE/MCE/RFE patches
   regOverride_t         *rfRegOverrideCtePtr;   // CTE overrides
   cteAntProp_t          *cteAntProp;            // CTE antenna properties
-  uint8                 privOverrideOffset;    // Privacy Override Offset
+  uint8                 privOverrideOffset;     // Privacy Override Offset
   coexUseCaseConfig_t   *coexUseCaseConfig;     // CoEx priority and RX request configuration
-  uint8                 maxNumCteBufs;         // num of CTE samples buffers (each ~2.5KB) used for RF auto copy
-  uint8                 advReportIncChannel;   // include channel index in advertising report
+  uint8                 maxNumCteBufs;          // num of CTE samples buffers (each ~2.5KB) used for RF auto copy
+  uint8                 advReportIncChannel;    // include channel index in advertising report
+  sdaaUsrCfg_t          *sdaaCfgPtr;            // sdaa module user's parameters
 } llUserCfg_t;
 
 /*******************************************************************************

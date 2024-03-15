@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2017-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -7,171 +7,90 @@
 
 #ifndef __TFM_PLAT_CRYPTO_KEYS_H__
 #define __TFM_PLAT_CRYPTO_KEYS_H__
-/**
- * \note The interfaces defined in this file must be implemented for each
- *       SoC.
- */
 
-#include <stddef.h>
 #include <stdint.h>
-#include "tfm_plat_defs.h"
 #include "psa/crypto.h"
+#include "tfm_plat_defs.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Structure definition to carry pointer and size information about an Elliptic
- * curve key which is stored in a buffer(key_buf) in raw format (without
- * encoding):
- *   - priv_key       Base address of the private key in key_buf. It must be
- *                    present on the device.
- *   - priv_key_size  Size of the private key in bytes.
- *   - pubx_key       Base address of x-coordinate of the public key in key_buf.
- *                    It can be empty, because it can be recomputed based on
- *                    private key.
- *   - pubx_key_size  Length of x-coordinate of the public key in key_buf.
- *                    It can be empty, because it can be recomputed based on
- *                    private key.
- *   - puby_key       Base address of y-coordinate of the public key in key_buf.
- *                    It can be empty, because either it can be recomputed based
- *                    on private key or some curve type works without it.
- *   - puby_key_size  Length of y-coordinate of the public key in key_buf.
+ * \brief Callback function type platform key loader functions
+ *
+ * This function pointer type defines the prototype for a builtin key loader function so that the
+ * key can be probed by the tfm_builtin_key_loader driver during the init phase. Note that the key
+ * must be readable from the secure processing element to be able to use the tfm_builtin_key_loader
+ *
+ * \param[out] buf       Buffer to hold the retrieved key material from the platform
+ * \param[in]  buf_len   Size of the buf buffer
+ * \param[out] key_len   Actual length of the key material in bytes retrieved from the platform
+ * \param[out] key_bits  Size in bits of the key (important for those keys that are not byte-multiple)
+ * \param[out] algorithm \ref psa_algorithm_t value associated to the retrieved key material
+ * \param[out] type      \ref psa_key_type_t value associated to the retrieved key material
+ *
+ * \return Returns an error value as specified by the \ref tfm_plat_err_t type.
+ * 
  */
-struct ecc_key_t {
-    uint8_t  *priv_key;
-    uint32_t  priv_key_size;
-    uint8_t  *pubx_key;
-    uint32_t  pubx_key_size;
-    uint8_t  *puby_key;
-    uint32_t  puby_key_size;
-};
-
-#define ROTPK_HASH_LEN (32u) /* SHA256 */
+typedef enum tfm_plat_err_t (*key_loader_func_ptr)
+    (uint8_t *buf, size_t buf_len, size_t *key_len, size_t *key_bits, psa_algorithm_t *algorithm, psa_key_type_t *type);
 
 /**
- * Structure to store the hard-coded (embedded in secure firmware) hash of ROTPK
- * for firmware authentication.
- *
- * \note Just temporary solution, hard-coded key-hash values in firmware is not
- *       suited for use in production!
+ * \brief This type describes the information that each TF-M builtin key
+ *        must key in the associated descriptor table in \ref crypto_keys.c
  */
-struct tfm_plat_rotpk_t {
-    const uint8_t *key_hash;
-    const uint8_t  hash_len;
-};
+typedef struct {
+    psa_key_id_t key_id;                 /*!< Key id associated to the builtin key */
+    psa_drv_slot_number_t slot_number;   /*!< Slot number for the builtin key in the platform */
+    psa_key_lifetime_t lifetime;         /*!< Lifetime (persistence + location) for the builtin key */
+    key_loader_func_ptr loader_key_func; /*!< Loader function that reads the key from the platform */
+} tfm_plat_builtin_key_descriptor_t;
 
 /**
- * \brief Gets key material derived from the hardware unique key.
+ * \brief This function retrieves a pointer to the description table for builtin keys. Each platform
+ *        must implement this table with the details of the builtin keys available in the platform
  *
- * \param[in]  label         Label for KDF
- * \param[in]  label_size    Size of the label
- * \param[in]  context       Context for KDF
- * \param[in]  context_size  Size of the context
- * \param[out] key           Buffer to output the derived key material
- * \param[in]  key_size      Requested size of the derived key material and
- *                           minimum size of the key buffer
+ * \param[out] desc_ptr A pointer to the description table
  *
- * \return Returns error code specified in \ref tfm_plat_err_t
+ * \return size_t The number of builtin keys available in the platform
  */
-enum tfm_plat_err_t tfm_plat_get_huk_derived_key(const uint8_t *label,
-                                                 size_t label_size,
-                                                 const uint8_t *context,
-                                                 size_t context_size,
-                                                 uint8_t *key,
-                                                 size_t key_size);
-
-#ifdef SYMMETRIC_INITIAL_ATTESTATION
-/**
- * \brief Get the symmetric Initial Attestation Key (IAK)
- *
- * The device MUST contain a symmetric IAK, which is used to sign the token.
- * So far only HMAC is supported in symmetric key algorithm based Initial
- * Attestation.
- * Keys must be provided in raw format, just binary data without any encoding
- * (DER, COSE). Caller provides a buffer to copy all the raw data.
- *
- * \param[out]  key_buf     Buffer to store the initial attestation key.
- * \param[in]   buf_len     The length of buffer.
- * \param[out]  key_len     Buffer to carry the length of the initial
- *                          attestation key.
- * \param[out]  key_alg     The key algorithm. Only HMAC is supported so far.
- *
- * \return Returns error code specified in \ref tfm_plat_err_t
- */
-enum tfm_plat_err_t tfm_plat_get_symmetric_iak(uint8_t *key_buf,
-                                               size_t buf_len,
-                                               size_t *key_len,
-                                               psa_algorithm_t *key_alg);
-
-#ifdef INCLUDE_COSE_KEY_ID
-/**
- * \brief Get the key identifier of the symmetric Initial Attestation Key as the
- *        'kid' parameter in COSE Header.
- *
- * \note This `kid` parameter is included in COSE Header. Please don't confuse
- *       it with that `kid` in COSE_Key structure.
- *
- * \param[out] kid_buf  The buffer to be written with key id
- * \param[in]  buf_len  The length of kid_buf
- * \param[out] kid_len  The length of key id
- *
- * \return Returns error code specified in \ref tfm_plat_err_t.
- */
-enum tfm_plat_err_t tfm_plat_get_symmetric_iak_id(void *kid_buf,
-                                                  size_t buf_len,
-                                                  size_t *kid_len);
-#endif
-#else /* SYMMETRIC_INITIAL_ATTESTATION */
-/**
- * \brief Get the initial attestation key
- *
- * The device MUST contain an initial attestation key, which is used to sign the
- * token. Initial attestation service supports elliptic curve signing
- * algorithms. Device maker can decide whether store only the private key on the
- * device or store both (public and private) key. Public key can be recomputed
- * based on private key. Keys must be provided in raw format, just binary data
- * without any encoding (DER, COSE). Caller provides a buffer to copy all the
- * available key components to there. Key components must be copied after
- * each other to the buffer. The base address and the length of each key
- * component must be indicating in the corresponding field of ecc_key
- * (\ref struct ecc_key_t).
- * Curve_type indicates to which curve belongs the key.
- *
- *
- * Keys must be provided in
- *
- * \param[in/out]  key_buf     Buffer to store the initial attestation key.
- * \param[in]      size        Size of the buffer.
- * \param[out]     ecc_key     A structure to carry pointer and size information
- *                             about the initial attestation key, which is
- *                             stored in key_buf.
- * \param[out]     curve_type  The type of the EC curve, which the key belongs
- *                             to according to \ref psa_ecc_curve_t
- *
- * \return Returns error code specified in \ref tfm_plat_err_t
- */
-enum tfm_plat_err_t
-tfm_plat_get_initial_attest_key(uint8_t          *key_buf,
-                                uint32_t          size,
-                                struct ecc_key_t *ecc_key,
-                                psa_ecc_curve_t  *curve_type);
-#endif /* SYMMETRIC_INITIAL_ATTESTATION */
+size_t tfm_plat_builtin_key_get_desc_table_ptr(const tfm_plat_builtin_key_descriptor_t *desc_ptr[]);
 
 /**
- * \brief Get the hash of the corresponding Root of Trust Public Key for
- *        firmware authentication.
- *
- * \param[in]      image_id         The identifier of firmware image
- * \param[out]     rotpk_hash       Buffer to store the key-hash in
- * \param[in,out]  rotpk_hash_size  As input the size of the buffer. As output
- *                                  the actual key-hash length.
+ * \brief This type maps a particular user of a builtin key (i.e. an owner) to
+ *        the allowed usage (i.e. a policy) as specified by the platform
  */
-enum tfm_plat_err_t
-tfm_plat_get_rotpk_hash(uint8_t image_id,
-                        uint8_t *rotpk_hash,
-                        uint32_t *rotpk_hash_size);
+typedef struct {
+    int32_t user;
+    psa_key_usage_t usage;
+} tfm_plat_builtin_key_per_user_policy_t;
+
+/**
+ * \brief This type maps a particular key_id associated to a builtin key to the
+ *        allowed usage (i.e. a policy). The policy can be user specific in case
+ *        the per_user_policy field is greater than 0. In that case policy_ptr needs
+ *        to be used to access the policies for each user of the key_id which are of
+ *        type \ref tfm_platf_builtin_key_per_user_policy_t
+ */
+typedef struct {
+    psa_key_id_t key_id;
+    size_t per_user_policy;
+    union {
+        psa_key_usage_t usage;
+        const tfm_plat_builtin_key_per_user_policy_t *policy_ptr;
+    };
+} tfm_plat_builtin_key_policy_t;
+
+/**
+ * \brief This function retrieves a pointer to the policy table of the builtin keys. Each platform
+ *        must implement this table with the details of the builtin keys available in the platform
+ *
+ * \param[out] desc_ptr A pointer to the policy table
+ *
+ * \return size_t The number of builtin keys available in the platform with associated policies
+ */
+size_t tfm_plat_builtin_key_get_policy_table_ptr(const tfm_plat_builtin_key_policy_t *desc_ptr[]);
 
 #ifdef __cplusplus
 }

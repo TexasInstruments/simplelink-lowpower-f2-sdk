@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -512,7 +512,7 @@
             "type": "ADXL362",
             "displayName": "ADXL362 Accelerometer",
             "description": "ADXL362 Digital Output MEMS Accelerometer",
-            "longDescription": "The [__ADXL362__](https://www.analog.com/en/products/adxl362.html) is an ultralow power, 3-axis MEMS accelerometer that consumes less than 2 μA at a 100 Hz output data rate and 270 nA when in motion triggered wake-up mode.",
+            "longDescription": "The [__ADXL362__](https://www.analog.com/en/products/adxl362.html) is an ultralow power, 3-axis MEMS accelerometer that consumes less than 2 uA at a 100 Hz output data rate and 270 nA when in motion triggered wake-up mode.",
             "subComponents": {
                 "SPI": {
                     "link": "LP_SPI_BUS"

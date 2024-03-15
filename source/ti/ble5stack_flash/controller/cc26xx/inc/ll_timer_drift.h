@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -127,7 +127,7 @@ extern "C"
  * API
  */
 
-extern uint16 llCalcScaFactor( uint8 masterSCA );
+extern uint16 llCalcScaFactor( uint8 centralSCA );
 
 #ifdef __cplusplus
 }

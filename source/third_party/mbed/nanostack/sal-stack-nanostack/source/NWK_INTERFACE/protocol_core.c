@@ -321,8 +321,10 @@ void core_timer_event_handle(uint16_t ticksUpdate)
         net_dns_timer_seconds(seconds);
 
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
-        ws_pae_controller_slow_timer(seconds);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+        if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+            ws_pae_controller_slow_timer(seconds);
+        }
 #endif
 #endif
         protocol_6lowpan_mle_timer(seconds);
@@ -370,8 +372,10 @@ void core_timer_event_handle(uint16_t ticksUpdate)
     icmpv6_radv_timer(ticksUpdate);
     protocol_core_security_tick_update(ticksUpdate);
 #ifdef HAVE_WS
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_pae_controller_fast_timer(ticksUpdate);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        ws_pae_controller_fast_timer(ticksUpdate);
+    }
 #endif
 #endif
     platform_enter_critical();

@@ -1,7 +1,6 @@
-#! armclang --target=arm-arm-none-eabi -march=armv8-m.main -E -xc
-
 /*
- * Copyright (c) 2018-2020 ARM Limited
+ * Copyright (c) 2018-2022 ARM Limited
+ * Copyright (c) 2021 Cypress Semiconductor Corp. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +23,33 @@ LR_CODE NS_CODE_START {
         .ANY (+RO)
     }
 
-    ER_DATA NS_DATA_START {
-        .ANY (+ZI +RW)
+#ifdef RAM_VECTORS_SUPPORT
+    ER_RAM_VECTORS NS_DATA_START ALIGN 256 UNINIT {
+        * (RESET_RAM, +FIRST)
     }
-
-    /* MSP */
-    ARM_LIB_STACK +0 ALIGN 32 EMPTY NS_MSP_STACK_SIZE {
-    }
-
-    ARM_LIB_HEAP +0 ALIGN 8 EMPTY NS_HEAP_SIZE {
-    }
+#endif
 
     /* Executable code allocated in RAM */
     TFM_RAM_CODE +0 ALIGN 32 {
         * (.ramfunc)
     }
+
+    /* Use up the rest space of the NS_DATA area */
+    ER_DATA +0 {
+        .ANY (+ZI +RW)
+    }
+
+    /* STACK */
+    ARM_LIB_STACK +0 ALIGN 32 EMPTY NS_STACK_SIZE {
+    }
+
+    ARM_LIB_HEAP +0 ALIGN 8 EMPTY NS_HEAP_SIZE {
+    }
+
+#if defined(PSA_API_TEST_ENABLED)
+    PSA_API_TEST_NVMEM PSA_API_TEST_NVMEM_START EMPTY PSA_API_TEST_NVMEM_SIZE {
+    }
+#endif
 
 #if defined (NS_DATA_SHARED_START)
     /* Shared memory data */
@@ -57,4 +68,3 @@ LR_CODE NS_CODE_START {
      */
     ScatterAssert(ImageLimit(SRAM_WATERMARK) <= NS_DATA_START + NS_DATA_SIZE)
 }
-

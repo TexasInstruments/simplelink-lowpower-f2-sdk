@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2023, Texas Instruments Incorporated
+ Copyright (c) 2011-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -204,12 +204,12 @@ static uint8_t gapBond_AutoFailReason = SMP_PAIRING_FAILED_NOT_SUPPORTED;
 
 static uint8_t gapBond_KeyDistList =
   (
-    GAPBOND_KEYDIST_SENCKEY     // sEncKey enabled, to send the encryption key
-    | GAPBOND_KEYDIST_SIDKEY   // sIdKey enabled, to send the IRK, and BD_ADDR
-    | GAPBOND_KEYDIST_SSIGN    // sSign enabled, to send the CSRK
-    | GAPBOND_KEYDIST_MENCKEY  // mEncKey enabled, to get the master's encryption key
-    | GAPBOND_KEYDIST_MIDKEY   // mIdKey enabled, to get the master's IRK and BD_ADDR
-    | GAPBOND_KEYDIST_MSIGN    // mSign enabled, to get the master's CSRK
+    GAPBOND_KEYDIST_PENCKEY     // pEncKey enabled, to send the encryption key
+    | GAPBOND_KEYDIST_PIDKEY   // pIdKey enabled, to send the IRK, and BD_ADDR
+    | GAPBOND_KEYDIST_PSIGN    // pSign enabled, to send the CSRK
+    | GAPBOND_KEYDIST_CENCKEY  // cEncKey enabled, to get the central's encryption key
+    | GAPBOND_KEYDIST_CIDKEY   // cIdKey enabled, to get the central's IRK and BD_ADDR
+    | GAPBOND_KEYDIST_CSIGN    // cSign enabled, to get the central's CSRK
   );
 static uint8_t  gapBond_KeySize = MAX_ENC_KEYSIZE;
 
@@ -264,7 +264,7 @@ static const gapBondCBs_t *pGapBondCB = NULL;
 // Local RAM shadowed bond records
 static gapBondRec_t *bonds = NULL;      //will hold gapBond_maxBonds elements
 
-static uint8_t autoSyncWhiteList = FALSE;
+static uint8_t autoSyncAcceptList = FALSE;
 
 static uint8_t eraseAllBonds = FALSE;
 static uint8_t eraseLocalInfo = FALSE;
@@ -323,7 +323,7 @@ static void gapBondMgrBondReq(uint16_t connHandle, uint8_t idx,
                               uint8_t startEncryption);
 static bStatus_t gapBondMgrAuthenticate(uint16_t connHandle, uint8_t addrType,
                                         gapPairingReq_t *pPairReq);
-static void gapBondMgr_SyncWhiteList(void);
+static void gapBondMgr_SyncAcceptList(void);
 static uint8_t gapBondMgr_SyncCharCfg(uint16_t connHandle);
 
 static void gapBondMgrReadLruBondList(void);
@@ -335,10 +335,10 @@ static uint8_t gapBondMgrChangeState(uint8_t idx, uint16_t state, uint8_t set);
 //#endif // (!GATT_NO_SERVICE_CHANGED || !GATT_NO_CLIENT)
 
 #if ( HOST_CONFIG & PERIPHERAL_CFG )
-static bStatus_t gapBondMgrSlaveSecurityReq(uint16_t connHandle);
+static bStatus_t gapBondMgrPeripheralSecurityReq(uint16_t connHandle);
 #endif // PERIPHERAL_CFG
 #if ( HOST_CONFIG & CENTRAL_CFG )
-static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq);
+static void gapBondMgr_PeripheralReqSecurity(uint16_t connHandle, uint8_t authReq);
 #endif // CENTRAL_CFG
 
 //#ifndef GATT_NO_SERVICE_CHANGED
@@ -685,15 +685,15 @@ bStatus_t GAPBondMgr_SetParameter(uint16_t param, uint8_t len, void *pValue)
 
       break;
 
-    case GAPBOND_AUTO_SYNC_WL:
+    case GAPBOND_AUTO_SYNC_AL:
       if(len == sizeof(uint8_t))
       {
-        uint8_t oldVal = autoSyncWhiteList;
+        uint8_t oldVal = autoSyncAcceptList;
 
-        autoSyncWhiteList = *((uint8_t *)pValue);
+        autoSyncAcceptList = *((uint8_t *)pValue);
 
         // only call if parameter changes from FALSE to TRUE
-        if((oldVal == FALSE) && (autoSyncWhiteList == TRUE))
+        if((oldVal == FALSE) && (autoSyncAcceptList == TRUE))
         {
           // make sure bond is updated from NV
           gapBondMgrReadBonds();
@@ -933,8 +933,8 @@ bStatus_t GAPBondMgr_GetParameter(uint16_t param, void *pValue)
       *((uint8_t *)pValue) = gapBond_KeySize;
       break;
 
-    case GAPBOND_AUTO_SYNC_WL:
-      *((uint8_t *)pValue) = autoSyncWhiteList;
+    case GAPBOND_AUTO_SYNC_AL:
+      *((uint8_t *)pValue) = autoSyncAcceptList;
       break;
 
     case GAPBOND_BOND_COUNT:
@@ -1204,7 +1204,7 @@ extern bStatus_t GAPBondMgr_Pair(uint16_t connHandle)
 #endif // HOST_CONFIG & CENTRAL_CFG
 
 #if ( HOST_CONFIG & PERIPHERAL_CFG )
-  // If Peripheral and initiating, send a slave security request to
+  // If Peripheral and initiating, send a peripheral security request to
   // initiate either pairing or encryption
   if(role == GAP_PROFILE_PERIPHERAL)
   {
@@ -1213,7 +1213,7 @@ extern bStatus_t GAPBondMgr_Pair(uint16_t connHandle)
     {
       return bleAlreadyInRequestedMode;
     }
-    status = gapBondMgrSlaveSecurityReq(connHandle);
+    status = gapBondMgrPeripheralSecurityReq(connHandle);
   }
 #endif //HOST_CONFIG & PERIPHERAL_CFG
 
@@ -1606,7 +1606,7 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
           }
           else if((pLinkItem->addrType != ADDRTYPE_PUBLIC) &&
                  (pLinkItem->addrType != ADDRTYPE_RANDOM) &&
-                 (pPkt->pairReq.keyDist.mIdKey == FALSE))
+                 (pPkt->pairReq.keyDist.cIdKey == FALSE))
           {
               // Can't bond to a non-public address if the peer won't send
 			  // the identity address and we don't already have it
@@ -1649,13 +1649,13 @@ uint8_t GAPBondMgr_ProcessGAPMsg(gapEventHdr_t *pMsg)
 #endif
 
 #if ( HOST_CONFIG & CENTRAL_CFG )
-    case GAP_SLAVE_REQUESTED_SECURITY_EVENT:
+    case GAP_PERIPHERAL_REQUESTED_SECURITY_EVENT:
     {
       uint16_t connHandle =
-                         ((gapSlaveSecurityReqEvent_t *)pMsg)->connectionHandle;
-      uint8_t authReq = ((gapSlaveSecurityReqEvent_t *)pMsg)->authReq;
+                         ((gapPeripheralSecurityReqEvent_t *)pMsg)->connectionHandle;
+      uint8_t authReq = ((gapPeripheralSecurityReqEvent_t *)pMsg)->authReq;
 
-      gapBondMgr_SlaveReqSecurity(connHandle, authReq);
+      gapBondMgr_PeripheralReqSecurity(connHandle, authReq);
 
       safeToDealloc = TRUE;
     }
@@ -1985,11 +1985,11 @@ static void gapBondMgr_LinkTerm(uint16_t connHandle)
 
 #if ( HOST_CONFIG & CENTRAL_CFG )
 /*********************************************************************
- * @brief   Process a slave security request as a master
+ * @brief   Process a peripheral security request as a central
  *
  * Public function defined in gapbondmgr.h.
  */
-static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq)
+static void gapBondMgr_PeripheralReqSecurity(uint16_t connHandle, uint8_t authReq)
 {
   uint8_t idx;
   linkDBItem_t *pLink = MAP_linkDB_Find(connHandle);
@@ -2015,7 +2015,7 @@ static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq)
       switch (authReq & (SM_AUTH_STATE_AUTHENTICATED |
                          SM_AUTH_STATE_SECURECONNECTION))
       {
-        // Slave is asking for authenticated legacy pairing
+        // Peripheral is asking for authenticated legacy pairing
         case SM_AUTH_STATE_AUTHENTICATED:
         {
           // Repair if not currently authenticated
@@ -2026,7 +2026,7 @@ static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq)
         }
         break;
 
-        // Slave is asking for unauthenticated secure connections
+        // Peripheral is asking for unauthenticated secure connections
         case SM_AUTH_STATE_SECURECONNECTION:
         {
           // Repair if not currently authenticated or secure connections
@@ -2038,7 +2038,7 @@ static void gapBondMgr_SlaveReqSecurity(uint16_t connHandle, uint8_t authReq)
         }
         break;
 
-        // Slave is asking for authenticated secure connections
+        // Peripheral is asking for authenticated secure connections
         case (SM_AUTH_STATE_AUTHENTICATED | SM_AUTH_STATE_SECURECONNECTION):
         {
           // Repair unless currently authenticated with secure connections
@@ -2360,9 +2360,9 @@ static uint8_t gapBondMgrSaveBond(uint8_t bondIdx,
     snvErrorCode |= osal_snv_write(DEV_SIGN_COUNTER_NV_ID(bondIdx), sizeof(uint32_t), &signCount);
   }
 
-  if(autoSyncWhiteList)
+  if(autoSyncAcceptList)
   {
-    gapBondMgr_SyncWhiteList();
+    gapBondMgr_SyncAcceptList();
   }
 
   MAP_osal_mem_free(charCfg);
@@ -2575,20 +2575,20 @@ static uint8_t gapBondMgrAddBond(gapBondRec_t *pBondRec,
  * @return SUCCESS if bond was imported
  * @return bleNoResources if there are no empty slots
  */
-uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
-                             gapBondLTK_t* pLocalLtk,
-                             gapBondLTK_t* pDevLtk,
-                             uint8_t* pIRK,
-                             uint8_t* pSRK,
+uint8_t gapBondMgrImportBond(gapBondRec_t *pBondRec,
+                             gapBondLTK_t *pLocalLtk,
+                             gapBondLTK_t *pDevLtk,
+                             uint8_t *pIRK,
+                             uint8_t *pSRK,
                              uint32_t signCount,
-                             gapBondCharCfg_t* charCfg)
+                             gapBondCharCfg_t *charCfg)
 {
   uint8_t bondIdx;
   uint8_t snvErrorCode = SUCCESS;
 
   // First see if we already have an existing bond for this device
-  if(GAPBondMgr_FindAddr(pBondRec->addr, pBondRec->addrType,
-                         &bondIdx, NULL, NULL) != SUCCESS)
+  if (GAPBondMgr_FindAddr(pBondRec->addr, pBondRec->addrType,
+                          &bondIdx, NULL, NULL) != SUCCESS)
   {
     bondIdx = gapBondMgrFindEmpty();
   }
@@ -2598,8 +2598,8 @@ uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
 
     // Verify that that a previous bond had an IRK before attempting to
     // remove it from the Controller's resolving list.
-    if((osal_snv_read(DEV_IRK_NV_ID(bondIdx), KEYLEN, oldIrk) == SUCCESS) &&
-       (MAP_osal_isbufset(oldIrk, 0xFF, KEYLEN) == FALSE))
+    if ((osal_snv_read(DEV_IRK_NV_ID(bondIdx), KEYLEN, oldIrk) == SUCCESS) &&
+        (MAP_osal_isbufset(oldIrk, 0xFF, KEYLEN) == FALSE))
     {
       // If a current record is simply being updated then erase previous
       // entry in resolving list for this peer. Will subsequently update
@@ -2613,7 +2613,7 @@ uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
   }
 
   // If an empty slot was found
-  if(bondIdx < gapBond_maxBonds)
+  if (bondIdx < gapBond_maxBonds)
   {
     snvErrorCode = gapBondMgrSaveBond(bondIdx, pBondRec, pLocalLtk, pDevLtk, pIRK, pSRK,
                                       signCount, TRUE);
@@ -2628,7 +2628,7 @@ uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
   }
   else
   {
-   return(bleNoResources);
+   return (bleNoResources);
   }
 
   // Check for there was an error when writing to the NV area
@@ -2645,6 +2645,8 @@ uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
  *
  * @brief   Read bond record from NV
  *
+ * @param   addrType - peer's address type
+ * @param   pDevAddr - peer's address
  * @param   pBondRec - basic bond record
  * @param   pLocalLTK - LTK used by this device during pairing
  * @param   pDevLTK - LTK used by the peer device during pairing
@@ -2658,49 +2660,65 @@ uint8_t gapBondMgrImportBond(gapBondRec_t* pBondRec,
  */
 uint8_t gapBondMgrReadBondRec(GAP_Peer_Addr_Types_t addrType,
                               uint8_t *pDevAddr,
-                              gapBondRec_t* pBondRec,
-                              gapBondLTK_t* pLocalLtk,
-                              gapBondLTK_t* pDevLtk,
-                              uint8_t* pIRK,
-                              uint8_t* pSRK,
-                              uint32_t signCount,
-                              gapBondCharCfg_t* charCfg)
+                              gapBondRec_t *pBondRec,
+                              gapBondLTK_t *pLocalLtk,
+                              gapBondLTK_t *pDevLtk,
+                              uint8_t *pIRK,
+                              uint8_t *pSRK,
+                              uint32_t *signCount,
+                              gapBondCharCfg_t *charCfg)
 {
   // NV Index
   uint8_t idx;
 
   // If a pre-existing bond was found
-  if(GAPBondMgr_FindAddr(pDevAddr, addrType, &idx, NULL, NULL) == SUCCESS)
+  if (GAPBondMgr_FindAddr(pDevAddr, addrType, &idx, NULL, NULL) == SUCCESS)
   {
     // See if the entry exists in NV
-    if(osal_snv_read(MAIN_RECORD_NV_ID(idx), sizeof(gapBondRec_t), pBondRec) != SUCCESS)
+    if (osal_snv_read(MAIN_RECORD_NV_ID(idx), sizeof(gapBondRec_t), pBondRec) != SUCCESS)
     {
       // Can't read the entry, assume that it doesn't exist
       return (bleGAPNotFound);
     }
 
-    // Load the local LTK information
-    VOID osal_snv_read(LOCAL_LTK_NV_ID(idx), sizeof(gapBondLTK_t), pLocalLtk);
-
-    // Load the connected device's LTK information
-    VOID osal_snv_read(DEV_LTK_NV_ID(idx), sizeof(gapBondLTK_t), pDevLtk);
-
-    // Load in NV IRK Record
-    VOID osal_snv_read(DEV_IRK_NV_ID(idx), KEYLEN, pIRK);
-
-    // Load the Signing Key
-    if(osal_snv_read(DEV_CSRK_NV_ID(idx), KEYLEN, pSRK) == SUCCESS)
+    if (pLocalLtk != NULL)
     {
-      if(osal_isbufset(pSRK, 0xFF, KEYLEN) == FALSE)
+      // Load the local LTK information
+      VOID osal_snv_read(LOCAL_LTK_NV_ID(idx), sizeof(gapBondLTK_t), pLocalLtk);
+    }
+
+
+    if (pDevLtk != NULL)
+    {
+      // Load the connected device's LTK information
+      VOID osal_snv_read(DEV_LTK_NV_ID(idx), sizeof(gapBondLTK_t), pDevLtk);
+    }
+
+
+    if (pIRK != NULL)
+    {
+      // Load in NV IRK Record
+      VOID osal_snv_read(DEV_IRK_NV_ID(idx), KEYLEN, pIRK);
+    }
+
+    if (pSRK != NULL)
+    {
+      // Load the Signing Key
+      if (osal_snv_read(DEV_CSRK_NV_ID(idx), KEYLEN, pSRK) == SUCCESS)
       {
-        // Load the signing information for this connection
-        VOID osal_snv_read(DEV_SIGN_COUNTER_NV_ID(idx), sizeof(uint32_t),
-	                           &(signCount));
+        if (signCount != NULL && osal_isbufset(pSRK, 0xFF, KEYLEN) == FALSE)
+        {
+          // Load the signing information for this connection
+          VOID osal_snv_read(DEV_SIGN_COUNTER_NV_ID(idx), sizeof(uint32_t), signCount);
+        }
       }
     }
 
-    // Load the characteristic configuration
-    VOID osal_snv_read(GATT_CFG_NV_ID(idx), sizeof(gapBondCharCfg_t) * gapBond_maxCharCfg, charCfg);
+    if (charCfg != NULL)
+    {
+      // Load the characteristic configuration
+      VOID osal_snv_read(GATT_CFG_NV_ID(idx), sizeof(gapBondCharCfg_t) * gapBond_maxCharCfg, charCfg);
+    }
   }
   else
   {
@@ -2770,9 +2788,9 @@ static void gapBondMgrReadBonds(void)
     }
   }
 
-  if(autoSyncWhiteList)
+  if(autoSyncAcceptList)
   {
-    gapBondMgr_SyncWhiteList();
+    gapBondMgr_SyncAcceptList();
   }
 }
 
@@ -3791,18 +3809,18 @@ static bStatus_t gapBondMgrAuthenticate(uint16_t connHandle, uint8_t addrType,
   params.secReqs.maxEncKeySize = gapBond_KeySize;
 
   // Setup key distribution bits.
-  params.secReqs.keyDist.sEncKey = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_SENCKEY) ? TRUE : FALSE;
-  params.secReqs.keyDist.sIdKey  = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_SIDKEY) ? TRUE : FALSE;
-  params.secReqs.keyDist.mEncKey = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_MENCKEY) ? TRUE : FALSE;
-  params.secReqs.keyDist.mIdKey  = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_MIDKEY) ? TRUE : FALSE;
-  params.secReqs.keyDist.mSign   = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_MSIGN) ? TRUE : FALSE;
-  params.secReqs.keyDist.sSign   = (gapBond_KeyDistList &
-                                    GAPBOND_KEYDIST_SSIGN) ? TRUE : FALSE;
+  params.secReqs.keyDist.pEncKey = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_PENCKEY) ? TRUE : FALSE;
+  params.secReqs.keyDist.pIdKey  = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_PIDKEY) ? TRUE : FALSE;
+  params.secReqs.keyDist.cEncKey = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_CENCKEY) ? TRUE : FALSE;
+  params.secReqs.keyDist.cIdKey  = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_CIDKEY) ? TRUE : FALSE;
+  params.secReqs.keyDist.cSign   = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_CSIGN) ? TRUE : FALSE;
+  params.secReqs.keyDist.pSign   = (gapBond_KeyDistList &
+                                    GAPBOND_KEYDIST_PSIGN) ? TRUE : FALSE;
 
   // If Secure Connections Only Mode
   params.secReqs.isSCOnlyMode = (gapBond_secureConnection ==
@@ -3853,8 +3871,8 @@ static bStatus_t gapBondMgrAuthenticate(uint16_t connHandle, uint8_t addrType,
   if(gapBond_Bonding &&
      (addrType == ADDRTYPE_PUBLIC_ID || addrType == ADDRTYPE_RANDOM_ID))
   {
-    // Force a slave ID key
-    params.secReqs.keyDist.sIdKey = TRUE;
+    // Force a peripheral ID key
+    params.secReqs.keyDist.pIdKey = TRUE;
   }
   params.secReqs.authReq |= (gapBond_Bonding) ? SM_AUTH_STATE_BONDING : 0;
   params.secReqs.authReq |= (gapBond_MITM) ? SM_AUTH_STATE_AUTHENTICATED : 0;
@@ -4025,15 +4043,15 @@ static bStatus_t gapBondMgrSetStateFlagFromConnhandle(uint16_t connHandle,
 
 #if ( HOST_CONFIG & PERIPHERAL_CFG )
 /*********************************************************************
- * @fn      gapBondMgrSlaveSecurityReq
+ * @fn      gapBondMgrPeripheralSecurityReq
  *
- * @brief   Send a slave security request
+ * @brief   Send a peripheral security request
  *
  * @param   connHandle - connection handle
  *
  * @return  SUCCESS, bleNotConnected, blePairingTimedOut
  */
-static bStatus_t gapBondMgrSlaveSecurityReq(uint16_t connHandle)
+static bStatus_t gapBondMgrPeripheralSecurityReq(uint16_t connHandle)
 {
   uint8_t authReq = 0;
 
@@ -4043,7 +4061,7 @@ static bStatus_t gapBondMgrSlaveSecurityReq(uint16_t connHandle)
   //Secure Connection
   authReq |= (gapBond_secureConnection) ? SM_AUTH_STATE_SECURECONNECTION : 0;
 
-  return MAP_GAP_SendSlaveSecurityRequest(connHandle, authReq);
+  return MAP_GAP_SendPeripheralSecurityRequest(connHandle, authReq);
 }
 
 #endif // PERIPHERAL_CFG
@@ -4056,7 +4074,7 @@ static bStatus_t gapBondMgrSlaveSecurityReq(uint16_t connHandle)
  * @param   connHandle - connection handle
  * @param   idx - NV index of bond entry
  * @param   stateFlags - bond state flags
- * @param   role - master or slave role
+ * @param   role - central or peripheral role
  * @param   startEncryption - whether or not to start encryption
  *
  * @return  none
@@ -4100,28 +4118,28 @@ static void gapBondMgrBondReq(uint16_t connHandle, uint8_t idx,
 }
 
 /*********************************************************************
- * @fn      gapBondMgr_SyncWhiteList
+ * @fn      gapBondMgr_SyncAcceptList
  *
- * @brief   synchronize the White List with the bonds
+ * @brief   synchronize the Accept List with the bonds
  *
  * @param   none
  *
  * @return  none
  */
-static void gapBondMgr_SyncWhiteList(void)
+static void gapBondMgr_SyncAcceptList(void)
 {
   uint8_t i;
 
-  //erase the White List
-  VOID MAP_HCI_LE_ClearWhiteListCmd();
+  //erase the Accept List
+  VOID MAP_HCI_LE_ClearAcceptListCmd();
 
-  // Write bond addresses into the White List
+  // Write bond addresses into the Accept List
   for(i = 0; i < gapBond_maxBonds; i++)
   {
-    // Make sure empty addresses are not added to the White List
+    // Make sure empty addresses are not added to the Accept List
     if(osal_isbufset(bonds[i].addr, 0xFF, B_ADDR_LEN) == FALSE)
     {
-      VOID MAP_HCI_LE_AddWhiteListCmd(HCI_PUBLIC_DEVICE_ADDRESS, bonds[i].addr);
+      VOID MAP_HCI_LE_AddAcceptListCmd( bonds[i].addrType, bonds[i].addr );
     }
   }
 }
@@ -4797,7 +4815,7 @@ uint8_t GapBondMgr_StartEnc( uint16_t connHandle )
  *          will delete the rejected bond and terminate link so that
  *          the bond process will work properly on the next connection
  *
- * @param   connHandle - the connection handle to be erased and terminated
+ * @param   connHandle - the connection handle to be erase bond and terminated
  *
  * @return  SUCCESS if successful.
  *          Otherwise, NV_OPER_FAILED for failure.

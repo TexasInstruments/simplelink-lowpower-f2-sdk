@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,7 @@ extern "C"
 #define DISPATCH_GAP_BOND_PASSCODE_RSP        0x13 // Bond Mgr Passcode Response
 #define DISPATCH_GAP_BOND_LINK_EST            0x14 // Bond Mgr Link Established
 #define DISPATCH_GAP_BOND_LINK_TERM           0x15 // Bond Mgr Link Terminated
-#define DISPATCH_GAP_BOND_SLAVE_REQ_SEC       0x16 // Bond Mgr Slave Requested Security
+#define DISPATCH_GAP_BOND_PERIPHERAL_REQ_SEC  0x16 // Bond Mgr Peripheral Requested Security
 #define DISPATCH_GAP_BOND_FIND_ADDR           0x17 // Bond Mgr Resolve Address
 #define DISPATCH_GAP_LINKDB_NUM_ACTIVE        0x18 // Link DB Num Active
 #define DISPATCH_GAP_LINKDB_GET_INFO          0x19 // Link DB Get Info
@@ -115,7 +115,7 @@ extern "C"
 
 // Controller Info field bitmaps
 #define BLDREV_CTRL_PING_CFG                  0x10 // Ping included
-#define BLDREV_CTRL_SLV_FEAT_EXCHG_CFG        0x20 // Slave Feature Exchange included
+#define BLDREV_CTRL_SLV_FEAT_EXCHG_CFG        0x20 // Peripheral Feature Exchange included
 #define BLDREV_CTRL_CONN_PARAM_REQ_CFG        0x40 // Connection Parameter Request included
 
 // Host Info field bitmaps

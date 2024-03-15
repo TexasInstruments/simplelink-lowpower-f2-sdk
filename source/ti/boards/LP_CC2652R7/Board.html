@@ -35,7 +35,7 @@
 <div id="content">
   <h1></h1>
 <h1 id="simplelink-cc2652r7-launchpad-settings-resources">SimpleLink™ CC2652R7 LaunchPad™ Settings &amp; Resources</h1>
-<p>The <a href="http://www.ti.com/tool/LP-CC2652R7"><strong>SimpleLink CC2652R7 LaunchPad</strong></a> contains a <a href="http://www.ti.com/product/CC2652R7"><strong>CC2652R7</strong></a> device.</p>
+<p>The <a href="https://www.ti.com/tool/LP-CC2652R7"><strong>SimpleLink™ CC2652R7 LaunchPad™</strong></a> contains a <a href="https://www.ti.com/product/CC2652R7"><strong>CC2652R74T0RGZR</strong></a> device.</p>
 <h2 id="jumper-settings">Jumper Settings</h2>
 <ul>
 <li>Close the <strong><code>LEDs</code></strong> jumper to enable the on-board LEDs.</li>
@@ -46,16 +46,25 @@
 <h2 id="driver-examples-resources">Driver Examples Resources</h2>
 <p>Examples utilize SysConfig to generate software configurations into the <strong>ti_drivers_config.c</strong> and <strong>ti_drivers_config.h</strong> files. The SysConfig user interface can be utilized to determine pins and resources used. Information on pins and resources used is also present in both generated files.</p>
 <h2 id="ti-boosterpacks">TI BoosterPacks™</h2>
-<p>The following BoosterPack(s) are used with some driver examples.</p>
-<h4 id="boostxl-sharp128-lcd-sd-card-boosterpackboostxl-sharp128"><a href="http://www.ti.com/tool/boostxl-sharp128"><strong>BOOSTXL-SHARP128 LCD &amp; SD Card BoosterPack</strong></a></h4>
+<p>The following BoosterPacks are used with some driver examples.</p>
+<h3 id="boostxl-canfd-lin-spi-to-can-fd-lin-boosterpackboostxl-canfd-lin"><a href="https://www.ti.com/tool/BOOSTXL-CANFD-LIN"><strong>BOOSTXL-CANFD-LIN SPI to CAN FD + LIN BoosterPack</strong></a></h3>
+<p>The BoosterPack requires an external voltage supply connected to the barrel jack <strong><code>J2</code></strong> in the range of 6 V to 24 V.</p>
+<p>The following modifications are required:</p>
+<ul>
+<li>On the BoosterPack, remove jumpers <strong><code>J11</code></strong> and <strong><code>J12</code></strong> to disconnect the BoosterPack’s 3.3 V and 5 V rails if the LaunchPad is powered from the debugger.</li>
+<li>On the LaunchPad, bend down header pin BP.33 (<strong><code>TCK</code></strong>) to prevent the signal from interfering with the BoosterPack <strong><code>nWKRQ</code></strong> signal.</li>
+<li>On the LaunchPad, remove the <strong><code>TDI</code></strong> jumper to disconnect the debugger from LP.31 and prevent interference with the BoosterPack <strong><code>nINT</code></strong> signal.</li>
+</ul>
+<p>Place the BoosterPack directly atop the LaunchPad.</p>
+<h3 id="boostxl-sharp128-lcd-sd-card-boosterpackboostxl-sharp128"><a href="https://www.ti.com/tool/BOOSTXL-SHARP128"><strong>BOOSTXL-SHARP128 LCD &amp; SD Card BoosterPack</strong></a></h3>
 <ul>
 <li>No modifications are needed.</li>
 </ul>
-<h4 id="bp-bassensorsmkii-boosterpackbp-bassensorsmkii"><a href="http://www.ti.com/tool/bp-bassensorsmkii"><strong>BP-BASSENSORSMKII BoosterPack</strong></a></h4>
+<h3 id="bp-bassensorsmkii-boosterpackbp-bassensorsmkii"><a href="https://www.ti.com/tool/BP-BASSENSORSMKII"><strong>BP-BASSENSORSMKII BoosterPack</strong></a></h3>
 <ul>
 <li>No modifications are needed.</li>
 </ul>
-<h4 id="cc3200-audio-boosterpackcc3200audboost"><a href="http://www.ti.com/tool/CC3200AUDBOOST"><strong>CC3200 Audio BoosterPack</strong></a></h4>
+<h3 id="cc3200-audio-boosterpackcc3200audboost"><a href="https://www.ti.com/tool/CC3200AUDBOOST"><strong>CC3200 Audio BoosterPack</strong></a></h3>
 <ul>
 <li>No modifications are needed.</li>
 </ul>

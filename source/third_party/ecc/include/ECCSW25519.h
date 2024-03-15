@@ -30,10 +30,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* Customized: Adjusted include paths to match SDK folder layout. */
+
 #ifndef __ECCSW25519_H_
 #define __ECCSW25519_H_
 
-#include "lowlevelapi.h"
+#include "third_party/ecc/include/lowlevelapi.h"
 #include <stdint.h>
 
 /******************************************************************************/

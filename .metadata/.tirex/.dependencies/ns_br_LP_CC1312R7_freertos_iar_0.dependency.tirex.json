@@ -59,6 +59,7 @@
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform/debug_uart.c -> debug_uart.c",
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/examples/ncp_ftd/platform/uart.c -> uart.c",
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/src/ncp/ncp_base_mtd.cpp -> ncp_base_mtd.cpp",
+            "+../../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
             "+cc13x2x7_cc26x2x7.icf -> cc13x2x7_cc26x2x7.icf",
             "+../../README.md -> README.md",
             "+../ti_wisunfan_border_router.syscfg -> ti_wisunfan_border_router.syscfg"

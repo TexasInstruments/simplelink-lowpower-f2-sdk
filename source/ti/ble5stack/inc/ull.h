@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -334,6 +334,21 @@ void ull_monitorRegisterCB(pfnMonitorIndCB_t pfnMonitorIndicationCB,
  */
 bStatus_t ull_monitorStart(uint8_t channel);
 
+/*********************************************************************
+ * @fn      ull_getCurrentTime
+ *
+ * @brief   Current SYSTIM time (0.25 us steps) usable for radio command timing
+ *          This function is a DPL implementation for
+ *          RF_getCurrentTime() and RCL_Scheduler_getCurrentTime()
+ *          (RF and RCL accordingly)
+ *
+ * @param   none
+ *
+ * @return  uint32
+ */
+uint32_t ull_getCurrentTime();
+
+uint32_t ull_convertRatTicksToUs(uint32_t time);
 #endif /* FEATURE_MONITOR */
 
 #ifdef __cplusplus

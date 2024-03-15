@@ -394,6 +394,7 @@ static int32_t PWMTimerCC26XX_getdutyCounts(uint32_t periodCounts, PWM_Duty_Unit
  */
 void PWMTimerCC26XX_stop(PWM_Handle handle)
 {
+    uint32_t pinConfig;
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
     PWMTimerCC26XX_Object *object         = handle->object;
 
@@ -402,7 +403,6 @@ void PWMTimerCC26XX_stop(PWM_Handle handle)
     GPTimerCC26XX_stop(object->hTimer);
 
     /* Route PWM pin to GPIO module */
-    uint32_t pinConfig;
     GPIO_getConfig(hwAttrs->pwmPin, &pinConfig);
     GPIO_setConfigAndMux(hwAttrs->pwmPin, pinConfig, GPIO_MUX_GPIO);
 }
@@ -412,13 +412,13 @@ void PWMTimerCC26XX_stop(PWM_Handle handle)
  */
 void PWMTimerCC26XX_start(PWM_Handle handle)
 {
+    uint32_t pinConfig;
     PWMTimerCC26XX_HwAttrs const *hwAttrs = handle->hwAttrs;
     PWMTimerCC26XX_Object *object         = handle->object;
 
     object->isRunning = 1;
 
     /* Route PWM pin to timer output */
-    uint32_t pinConfig;
     GPIO_getConfig(hwAttrs->pwmPin, &pinConfig);
     GPIO_setConfigAndMux(hwAttrs->pwmPin, pinConfig, GPTimerCC26XX_getPinMux(object->hTimer));
 

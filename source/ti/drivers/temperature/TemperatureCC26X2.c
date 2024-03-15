@@ -40,6 +40,8 @@
 #include <ti/drivers/Temperature.h>
 #include <ti/drivers/temperature/TemperatureCC26X2.h>
 
+#include <ti/drivers/utils/Math.h>
+
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
 #include DeviceFamily_constructPath(inc/hw_ints.h)
@@ -49,10 +51,6 @@
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/aon_batmon.h)
 #include DeviceFamily_constructPath(driverlib/aon_event.h)
-
-/* Macros */
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 /* Defines */
 #define BATMON_TEMPERATURE_MAX           (250)
@@ -288,8 +286,8 @@ static void setNextThresholds(void)
     {
         Temperature_NotifyObj *notifyObject = (Temperature_NotifyObj *)notifyLink;
 
-        nextThresholdHigh = MIN(nextThresholdHigh, notifyObject->thresholdHigh);
-        nextThresholdLow  = MAX(nextThresholdLow, notifyObject->thresholdLow);
+        nextThresholdHigh = Math_MIN(nextThresholdHigh, notifyObject->thresholdHigh);
+        nextThresholdLow  = Math_MAX(nextThresholdLow, notifyObject->thresholdLow);
 
         notifyLink = List_next(notifyLink);
     }

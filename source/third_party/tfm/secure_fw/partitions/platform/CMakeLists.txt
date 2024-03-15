@@ -1,43 +1,57 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.7)
-
-#Tell cmake where our modules can be found
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../cmake)
-
-###Some project global settings
-set (PLATFORM_SP_DIR "${CMAKE_CURRENT_LIST_DIR}")
-get_filename_component(TFM_ROOT_DIR "${PLATFORM_SP_DIR}/../../.." ABSOLUTE)
-
-#Include common stuff to control cmake.
-include("Common/BuildSys")
-
-#Start an embedded project.
-embedded_project_start(CONFIG "${TFM_ROOT_DIR}/configs/ConfigDefault.cmake")
-project(tfm_platform LANGUAGES ASM C)
-embedded_project_fixup()
-
-###Get the definition of what files we need to build
-include(CMakeLists.inc)
-
-if (NOT DEFINED TFM_LVL)
-	message(FATAL_ERROR "Incomplete build configuration: TFM_LVL is undefined. ")
+if (NOT TFM_PARTITION_PLATFORM)
+    return()
 endif()
 
-#Specify what we build (for the platform service, build as a static library)
-add_library(tfm_platform STATIC ${ALL_SRC_ASM} ${ALL_SRC_C})
-embedded_set_target_compile_defines(TARGET tfm_platform LANGUAGE C DEFINES __thumb2__ TFM_LVL=${TFM_LVL})
-if (DEFINED CMSE_FLAGS)
-	embedded_set_target_compile_flags(TARGET tfm_platform LANGUAGE C APPEND FLAGS ${CMSE_FLAGS})
-endif()
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0079 NEW)
 
-#Set common compiler and linker flags
-config_setting_shared_compiler_flags(tfm_platform)
-config_setting_shared_linker_flags(tfm_platform)
+add_library(tfm_psa_rot_partition_platform STATIC
+    platform_sp.c
+)
 
-embedded_project_end(tfm_platform)
+# The generated sources
+target_sources(tfm_psa_rot_partition_platform
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/platform/auto_generated/intermedia_tfm_platform.c
+)
+target_sources(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/platform/auto_generated/load_info_tfm_platform.c
+)
+
+# Set include directory
+target_include_directories(tfm_psa_rot_partition_platform
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/platform
+)
+target_include_directories(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/platform
+)
+
+target_link_libraries(tfm_psa_rot_partition_platform
+    PRIVATE
+        platform_s
+        tfm_config
+        tfm_sprt
+)
+
+############################ Partition Defs ####################################
+
+target_link_libraries(tfm_partitions
+    INTERFACE
+        tfm_psa_rot_partition_platform
+)
+
+target_compile_definitions(tfm_partition_defs
+    INTERFACE
+        TFM_PARTITION_PLATFORM
+)

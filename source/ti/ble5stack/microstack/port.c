@@ -12,7 +12,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -61,11 +61,11 @@
 #if defined(FEATURE_POSIX)
 /* Note the POSIX module must be added in the corresponding "app_ble.cfg".
  */
-#warning "var Settings = xdc.useModule('ti.sysbios.posix.Settings'); \
-must be added to the corresponding "xxx_csdk.cfg"
-#include <ti/sysbios/posix/pthread.h>
-#include <ti/sysbios/posix/time.h>
-#include <ti/sysbios/posix/mqueue.h>
+//#warning "var Settings = xdc.useModule('ti.sysbios.posix.Settings'); \
+//must be added to the corresponding "xxx_csdk.cfg"
+#include <pthread.h>
+#include <time.h>
+#include <mqueue.h>
 #elif defined(FEATURE_NORTOS)
 #error "FEATURE_NORTOS implementation must be added by customer."
 #else /* Default to TIRTOS */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -236,6 +236,8 @@ extern uint32_t ClockP_getTicksUntilInterrupt(void);
 /*!
  *  @brief  Get timeout of clock instance.
  *
+ *  @param  handle  A ClockP_Handle returned from ::ClockP_create or ::ClockP_construct
+ *
  *  Returns the remaining time in clock ticks if the instance has
  *  been started.  If the clock is not active, the initial timeout value
  *  is returned.
@@ -246,6 +248,8 @@ extern uint32_t ClockP_getTimeout(ClockP_Handle handle);
 
 /*!
  *  @brief  Determine if a clock object is currently active (i.e., running)
+ *
+ *  @param  handle  A ClockP_Handle returned from ::ClockP_create or ::ClockP_construct
  *
  *  Returns true if the clock object is currently active, otherwise
  *  returns false.
@@ -269,18 +273,20 @@ extern void ClockP_Params_init(ClockP_Params *params);
 /*!
  *  @brief  Set the initial timeout
  *
- *  Cannot be used to set the initial timeout if the clock has been started.
+ *  @param  handle  A ClockP_Handle returned from ::ClockP_create or ::ClockP_construct
+ *  @param timeout  Initial timeout in ClockP ticks
  *
- *  @param timeout    Initial timeout in ClockP ticks
+ *  Cannot be used to set the initial timeout if the clock has been started.
  */
 extern void ClockP_setTimeout(ClockP_Handle handle, uint32_t timeout);
 
 /*!
  *  @brief  Set the clock period
  *
- *  Cannot be used to set the clock period to zero.
+ *  @param  handle  A ClockP_Handle returned from ::ClockP_create or ::ClockP_construct
+ *  @param period   Periodic interval in ClockP ticks
  *
- *  @param period    Periodic interval in ClockP ticks
+ *  Cannot be used to set the clock period to zero.
  */
 extern void ClockP_setPeriod(ClockP_Handle handle, uint32_t period);
 
@@ -317,9 +323,9 @@ extern void ClockP_start(ClockP_Handle handle);
 /*!
  *  @brief  Function to stop a clock.
  *
- *  It is ok to call ClockP_stop() for a clock that has not been started.
- *
  *  @param  handle  A ClockP_Handle returned from ::ClockP_create or ::ClockP_construct
+ *
+ *  It is ok to call ClockP_stop() for a clock that has not been started.
  */
 extern void ClockP_stop(ClockP_Handle handle);
 

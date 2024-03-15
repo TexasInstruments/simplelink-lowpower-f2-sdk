@@ -86,6 +86,7 @@
  */
 
 #include <sid_pal_crypto_ifc.h>
+#include <sid_pal_assert_ifc.h>
 
 #include <ti/drivers/TRNG.h>
 #include <ti/drivers/SHA2.h>
@@ -190,6 +191,7 @@ static sid_error_t cc13x2_crypto_init(void)
         TRNG_Params_init(&params);
         params.returnBehavior = TRNG_RETURN_BEHAVIOR_BLOCKING;
         crypto_handle[CC13X2_TRNG] = TRNG_open(CONFIG_CC13X2_PAL_CRYPTO_TRNG_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_TRNG]);
     }
 
     /* CC13X2_CRYPTO_SHA2 */
@@ -198,7 +200,8 @@ static sid_error_t cc13x2_crypto_init(void)
         SHA2_Params params;
         SHA2_Params_init(&params);
         params.returnBehavior = SHA2_RETURN_BEHAVIOR_POLLING;
-        crypto_handle[CC13X2_CRYPTO_SHA2] = SHA2_open(0, &params);
+        crypto_handle[CC13X2_CRYPTO_SHA2] = SHA2_open(CONFIG_CC13X2_PAL_CRYPTO_SHA2_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_SHA2]);
     }
 
     /* CC13X2_CRYPTO_AES_CMAC */
@@ -207,7 +210,8 @@ static sid_error_t cc13x2_crypto_init(void)
         AESCMAC_Params params;
         AESCMAC_Params_init(&params);
         params.returnBehavior = AESCMAC_RETURN_BEHAVIOR_POLLING;
-        crypto_handle[CC13X2_CRYPTO_AES_CMAC] = AESCMAC_open(0, &params);
+        crypto_handle[CC13X2_CRYPTO_AES_CMAC] = AESCMAC_open(CONFIG_CC13X2_PAL_CRYPTO_AESCMAC_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_AES_CMAC]);
     }
 
     /* CC13X2_CRYPTO_AES_CTR */
@@ -217,6 +221,7 @@ static sid_error_t cc13x2_crypto_init(void)
         AESCTR_Params_init(&params);
         params.returnBehavior = AESCTR_RETURN_BEHAVIOR_POLLING;
         crypto_handle[CC13X2_CRYPTO_AES_CTR] = AESCTR_open(CONFIG_CC13X2_PAL_CRYPTO_AESCTR_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_AES_CTR]);
     }
 
     /* CC13X2_CRYPTO_AES_GCM */
@@ -225,7 +230,8 @@ static sid_error_t cc13x2_crypto_init(void)
         AESGCM_Params params;
         AESGCM_Params_init(&params);
         params.returnBehavior = AESGCM_RETURN_BEHAVIOR_POLLING;
-        crypto_handle[CC13X2_CRYPTO_AES_GCM] = AESGCM_open(0, &params);
+        crypto_handle[CC13X2_CRYPTO_AES_GCM] = AESGCM_open(CONFIG_CC13X2_PAL_CRYPTO_AESGCM_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_AES_GCM]);
     }
 
     /* CC13X2_CRYPTO_EDDSA */
@@ -234,7 +240,8 @@ static sid_error_t cc13x2_crypto_init(void)
         EDDSA_Params params;
         EDDSA_Params_init(&params);
         params.returnBehavior = EDDSA_RETURN_BEHAVIOR_POLLING;
-        crypto_handle[CC13X2_CRYPTO_EDDSA] = EDDSA_open(0, &params);
+        crypto_handle[CC13X2_CRYPTO_EDDSA] = EDDSA_open(CONFIG_CC13X2_PAL_CRYPTO_EDDSA_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_EDDSA]);
     }
 
     /* CC13X2_CRYPTO_ECDSA */
@@ -243,7 +250,8 @@ static sid_error_t cc13x2_crypto_init(void)
         ECDSA_Params params;
         ECDSA_Params_init(&params);
         params.returnBehavior = ECDSA_RETURN_BEHAVIOR_POLLING;
-        crypto_handle[CC13X2_CRYPTO_ECDSA] = ECDSA_open(0, &params);
+        crypto_handle[CC13X2_CRYPTO_ECDSA] = ECDSA_open(CONFIG_CC13X2_PAL_CRYPTO_ECDSA_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_ECDSA]);
     }
 
     /* CC13X2_CRYPTO_ECDH */
@@ -253,6 +261,7 @@ static sid_error_t cc13x2_crypto_init(void)
         ECDH_Params_init(&params);
         params.returnBehavior = ECDH_RETURN_BEHAVIOR_POLLING;
         crypto_handle[CC13X2_CRYPTO_ECDH] = ECDH_open(CONFIG_CC13X2_PAL_CRYPTO_ECDH_INSTANCE_ID, &params);
+        SID_PAL_ASSERT(crypto_handle[CC13X2_CRYPTO_ECDH]);
     }
 
     return SID_ERROR_NONE;

@@ -91,4 +91,4 @@ select the cJTAG interface.
 
 Note that to build the coprocessor for the CC2652P, you will need to use the CC1352P-4 coprocessor project. Additionally,
 you will need to manually enable the `COPROCESSOR_CC2652P` symbol for the build. You can do this by removing the `x` in
-front of the definition of this symbol in the `application/defines/coprocessor.opts` file.
+front of the definition of this symbol in the `application/defines/coprocessor.opt` file.

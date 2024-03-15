@@ -30,7 +30,7 @@ from cryptography.hazmat.primitives.asymmetric.x25519 import (
     X25519PrivateKey, X25519PublicKey)
 
 from .rsa import RSA, RSAPublic, RSAUsageError, RSA_KEY_SIZES
-from .ecdsa import ECDSA256P1, ECDSA256P1Public, ECDSAUsageError
+from .ecdsa import ECDSA256P1, ECDSA521P1, ECDSA256P1Public, ECDSA521P1Public, ECDSAUsageError
 from .ed25519 import Ed25519, Ed25519Public, Ed25519UsageError
 from .x25519 import X25519, X25519Public, X25519UsageError
 
@@ -73,17 +73,25 @@ def load(path, passwd=None):
             raise Exception("Unsupported RSA key size: " + pk.key_size)
         return RSAPublic(pk)
     elif isinstance(pk, EllipticCurvePrivateKey):
-        if pk.curve.name != 'secp256r1':
+        if pk.curve.name != 'secp256r1' and pk.curve.name != 'secp521r1':
             raise Exception("Unsupported EC curve: " + pk.curve.name)
-        if pk.key_size != 256:
+        if pk.key_size != 256 and pk.key_size != 521:
             raise Exception("Unsupported EC size: " + pk.key_size)
-        return ECDSA256P1(pk)
+
+        if pk.curve.name == 'secp256r1':
+            return ECDSA256P1(pk)
+        elif pk.curve.name == 'secp521r1':
+            return ECDSA521P1(pk)
     elif isinstance(pk, EllipticCurvePublicKey):
-        if pk.curve.name != 'secp256r1':
+        if pk.curve.name != 'secp256r1' and pk.curve.name != 'secp521r1':
             raise Exception("Unsupported EC curve: " + pk.curve.name)
-        if pk.key_size != 256:
+        if pk.key_size != 256 and pk.key_size != 521:
             raise Exception("Unsupported EC size: " + pk.key_size)
-        return ECDSA256P1Public(pk)
+
+        if pk.curve.name == 'secp256r1':
+            return ECDSA256P1Public(pk)
+        elif pk.curve.name == 'secp521r1':
+            return ECDSA521P1Public(pk)
     elif isinstance(pk, Ed25519PrivateKey):
         return Ed25519(pk)
     elif isinstance(pk, Ed25519PublicKey):

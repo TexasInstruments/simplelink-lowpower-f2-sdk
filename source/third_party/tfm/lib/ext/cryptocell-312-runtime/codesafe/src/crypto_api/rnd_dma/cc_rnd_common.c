@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -23,8 +23,8 @@
 #include "cc_fips_defs.h"
 #include "cc_util_pm.h"
 #ifdef CC_IOT
-#include "ctr_drbg.h"
-#include "entropy.h"
+#include "mbedtls/ctr_drbg.h"
+#include "mbedtls/entropy.h"
 #endif
 
 /* CC RND module version compliant to NIST 800-90 standard. Based on CTR DRBG Block Cipher (AES) */

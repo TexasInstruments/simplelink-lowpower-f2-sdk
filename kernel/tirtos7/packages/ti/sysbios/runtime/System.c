@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -816,7 +816,10 @@ int System_printfExtend(char **pbuf, const char * *pfmt,
             Assert_isTrue((sizeof(float) <= sizeof(intptr_t)),
                 System_A_cannotFitIntoArg);
 
-            d = Types_argToFloat(va_arg(va, intptr_t));
+            /* Cast float to double to force additional precision in interim
+             * calculations, see note on --fp_mode=strict below
+             */
+            d = (double)Types_argToFloat(va_arg(va, intptr_t));
         }
         else {
             d = va_arg(va, double);

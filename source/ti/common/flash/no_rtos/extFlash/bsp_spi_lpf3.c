@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,9 @@
  *****************************************************************************/
 
 #include <ti/devices/DeviceFamily.h>
-#include <ti/devices/cc23x0r5/inc/hw_clkctl.h>
-#include <ti/devices/cc23x0r5/inc/hw_pmctl.h>
-#include <ti/devices/cc23x0r5/inc/hw_pmud.h>
+#include DeviceFamily_constructPath(inc/hw_clkctl.h)
+#include DeviceFamily_constructPath(inc/hw_pmctl.h)
+#include DeviceFamily_constructPath(inc/hw_pmud.h)
 #include DeviceFamily_constructPath(driverlib/gpio.h)
 #include DeviceFamily_constructPath(driverlib/spi.h)
 
@@ -61,6 +61,10 @@
 #define BLS_SPI_BASE      SPI0_BASE
 #define BLS_CPU_FREQ      48000000ul
 
+#if defined(DeviceFamily_CC23X0R2)
+#define IOC_O_IOC0        (IOC_O_IOC3 - (sizeof(uint32_t) * 3))
+#endif
+
 #define IOC_ADDR(index) (IOC_BASE + IOC_O_IOC0 + (sizeof(uint32_t) * index))
 #define GPIOCC23XX_CFG_PIN_IS_INPUT_INTERNAL    0x2
 #define GPIO_CFG_OUTPUT_DEFAULT_HIGH_INTERNAL   0x1
@@ -72,6 +76,16 @@
 #define GPIO_MUX_PORTCFG_PFUNC_2                0x00000002
 #define GPIO_MUX_PORTCFG_PFUNC_4                0x00000004
 #define GPIO_CFG_INPUT_INTERNAL_NO_PULL         0x20040002
+
+#if defined(DeviceFamily_CC23X0R5)
+    #define MISO_PINMUX     GPIO_MUX_PORTCFG_PFUNC_1
+    #define MOSI_PINMUX     GPIO_MUX_PORTCFG_PFUNC_2
+    #define CLK_PINMUX      GPIO_MUX_PORTCFG_PFUNC_4
+#elif defined(DeviceFamily_CC23X0R2)
+    #define MISO_PINMUX     GPIO_MUX_PORTCFG_PFUNC_4
+    #define MOSI_PINMUX     GPIO_MUX_PORTCFG_PFUNC_2
+    #define CLK_PINMUX      GPIO_MUX_PORTCFG_PFUNC_1
+#endif
 
 /* See bsp_spi.h file for description */
 int bspSpiWrite(const uint8_t *buf, size_t len)
@@ -191,13 +205,13 @@ void bspSpiOpen(uint32_t bitRate, uint32_t clkPin)
                      8); /* data size */
 
   GPIOSetOutputEnableDio(BSP_SPI_MOSI, GPIO_OUTPUT_ENABLE);
-  bspGpioSetMux(BSP_SPI_MOSI, GPIO_MUX_PORTCFG_PFUNC_2);
+  bspGpioSetMux(BSP_SPI_MOSI, MOSI_PINMUX);
 
   bspGpioSetConfig(BSP_SPI_MISO, GPIO_CFG_INPUT_INTERNAL_NO_PULL);
-  bspGpioSetMux(BSP_SPI_MISO, GPIO_MUX_PORTCFG_PFUNC_1);
+  bspGpioSetMux(BSP_SPI_MISO, MISO_PINMUX);
 
   GPIOSetOutputEnableDio(BSP_SPI_CLK_FLASH, GPIO_OUTPUT_ENABLE);
-  bspGpioSetMux(BSP_SPI_CLK_FLASH, GPIO_MUX_PORTCFG_PFUNC_4);
+  bspGpioSetMux(BSP_SPI_CLK_FLASH, CLK_PINMUX);
 
   SPIEnable(BLS_SPI_BASE);
 

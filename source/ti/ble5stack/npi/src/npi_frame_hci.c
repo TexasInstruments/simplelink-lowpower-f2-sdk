@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -159,34 +159,34 @@ void NPIFrame_initialize(npiIncomingFrameCBack_t incomingFrameCB)
 //!
 //! \return     void
 // ----------------------------------------------------------------------------
-NPIMSG_msg_t *NPIFrame_frameMsg(uint8_t *pMsg)
+void NPIFrame_frameMsg(NPIMSG_msg_t *npiMsg, uint8_t *pMsg)
 {
     // Cast generic array into appropriate container
     // All messages we receive from stack will be of type npiPacket_t
     pFromStackMsg = (npiPkt_t *)pMsg;
-
-    // Alloc NPI Message
-    NPIMSG_msg_t *npiMsg = (NPIMSG_msg_t *)ICall_malloc(sizeof(NPIMSG_msg_t));
 
     if (npiMsg)
     {
       // All HCI messages are Asynchronous
       npiMsg->msgType = NPIMSG_Type_ASYNC;
 
-      // Allocate memory for container, and pkt payload
-      npiMsg->pBuf = (uint8_t *)ICall_allocMsg(pFromStackMsg->pktLen);
       npiMsg->pBufSize = pFromStackMsg->pktLen;
 
-      if (npiMsg->pBuf)
+      npiMsg->pBuf = NULL;
+      if (pFromStackMsg->pktLen)
       {
+        // Allocate memory for container, and pkt payload
+        npiMsg->pBuf = (uint8_t *)ICall_allocMsg(pFromStackMsg->pktLen);
+        if (npiMsg->pBuf)
+        {
           // Payload
           memcpy(npiMsg->pBuf,pFromStackMsg->pData,pFromStackMsg->pktLen);
+        }
       }
     }
 
     // Free original message and send new NPIMSG to a TX Queue
     ICall_freeMsg(pMsg);
-    return npiMsg;
 }
 
 // ----------------------------------------------------------------------------
@@ -198,15 +198,17 @@ NPIMSG_msg_t *NPIFrame_frameMsg(uint8_t *pMsg)
 //!         Packet Type +   Conn Handle  + length + data payload
 //!         | 1 octet   |      2         |   2   |      n      |
 //!
-//! \return     void
+//! \return     NPITASK_STATUS
 // ----------------------------------------------------------------------------
-void NPIFrame_collectFrameData(void)
+NPITASK_STATUS NPIFrame_collectFrameData(void)
 {
     uint16_t rxBufLen = 0;
     uint8_t ch;
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
 
     while (NPIRxBuf_GetRxBufCount())
     {
+        npiStatus = MSG_PROCESSED;
         NPIRxBuf_ReadFromRxBuf(&ch, 1);
         switch (state)
         {
@@ -330,6 +332,7 @@ void NPIFrame_collectFrameData(void)
                         // No Payload to read so go ahead and send to Stack
                         if (incomingFrameCBFunc)
                         {
+                            /* NPITask_incomingFrameCB */
                             incomingFrameCBFunc(sizeof(hciPacket_t) + headerLength,
                                                   (uint8_t *)pCmdMsg, NPIMSG_Type_ASYNC);
                         }
@@ -367,6 +370,7 @@ void NPIFrame_collectFrameData(void)
                 {
                     if (incomingFrameCBFunc)
                     {
+                        /*NPITask_incomingFrameCB*/
                         incomingFrameCBFunc(sizeof(hciPacket_t) + headerLength + LEN_Token,
                                               (uint8_t *)pCmdMsg, NPIMSG_Type_ASYNC);
                     }
@@ -428,13 +432,14 @@ void NPIFrame_collectFrameData(void)
                     else
                     {
                         state = NPIFRAMEHCI_STATE_PKT_TYPE;
-                        return;
+                        return npiStatus;
                     }
 
                     if (LEN_Token == 0)
                     {
                         if (incomingFrameCBFunc)
                         {
+                            /*NPITask_incomingFrameCB*/
                             incomingFrameCBFunc(sizeof(hciDataPacket_t),
                                                   (uint8_t *)pDataMsg, NPIMSG_Type_ASYNC);
                         }
@@ -472,6 +477,7 @@ void NPIFrame_collectFrameData(void)
                 {
                     if (incomingFrameCBFunc)
                     {
+                        /*NPITask_incomingFrameCB*/
                         incomingFrameCBFunc(sizeof(hciDataPacket_t) + LEN_Token,
                                               (uint8_t *)pDataMsg, NPIMSG_Type_ASYNC);
                     }
@@ -493,6 +499,6 @@ void NPIFrame_collectFrameData(void)
                 break;
         }
     }
-    return;
+    return npiStatus;
 }
 

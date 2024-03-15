@@ -615,7 +615,7 @@ static void zclSampleSw_Init( void )
 #ifndef CUI_DISABLE
   PERTest_init( appSemHandle, appServiceTaskId, gCuiHandle );
 #else
-  PERTest_init( appSemHandle, appServiceTaskId, NULL );
+  PERTest_init( appSemHandle, appServiceTaskId, 0 );
 #endif
 #endif // PER_TEST
 

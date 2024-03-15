@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -151,6 +151,7 @@ extern void NPIFrame_initialize(npiIncomingFrameCBack_t incomingFrameCB);
 // ----------------------------------------------------------------------------
 extern NPIMSG_msg_t * NPIFrame_frameMsg(uint8_t *pIncomingMsg);
 
+#ifndef CC33xx
 // ----------------------------------------------------------------------------
 //! \brief      Collects serial message buffer.  Called based on events
 //!             received from the transport layer.  When an entire message has
@@ -160,8 +161,17 @@ extern NPIMSG_msg_t * NPIFrame_frameMsg(uint8_t *pIncomingMsg);
 //! \return     void
 // -----------------------------------------------------------------------------
 extern void NPIFrame_collectFrameData(void);
+#else
+// ----------------------------------------------------------------------------
+//! \brief      Collects serial message buffer.  Called based on events
+//!             received from the transport layer.  When an entire message has
+//!             been successfully received, it is passed back to NPI task via
+//!             the callback function above: npiIncomingFrameCBack_t.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void NPIFrame_uartCollectFrameData(void);
 
-#ifdef CC33xx
 // ----------------------------------------------------------------------------
 //! \brief      Collects SDIO message buffer.  Called based on events
 //!             received from the transport layer.  When an entire message has
@@ -170,7 +180,7 @@ extern void NPIFrame_collectFrameData(void);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-extern void NPIFrame_collectSDIOFrameData(void);
+extern void NPIFrame_sdioCollectFrameData(void);
 #endif // CC33xx
 
 #ifdef __cplusplus

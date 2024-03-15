@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,31 +39,23 @@
 
 const displayName = "Build Assist";
 
-/* linter will complain we never use this, if we leave this uncommented */
-// let topModules = [
-//     {
-//         displayName: displayName,
-//         description: "Build Assist is a set of build-related utilities.",
-//         modules: [
-//             "/ti/utils/build/GenLibs"
-//         ]
-//     }
-// ];
-
 let templates = [
     {
         "name": "/ti/utils/build/GenLibs.cmd.xdt",
         "outputPath": "ti_utils_build_linker.cmd.genlibs",
         "alwaysRun": true /* so make can _always_ add this to link line */
+    },
+    {
+        "name": "/ti/utils/build/GenOpts.opt.xdt",
+        "outputPath": "ti_utils_build_compiler.opt",
+        "alwaysRun": true /* so make can _always_ add this to compile line */
     }
 ];
 
 /*
- * Note that topModules is commented out so GenLibs is hidden from users
- * in the SysConfig UI.
+ * No topModules means no components are visible in the SysConfig UI.
  */
 exports = {
     displayName,
-    //topModules,
     templates: templates
 };

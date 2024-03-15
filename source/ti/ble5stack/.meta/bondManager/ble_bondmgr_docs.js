@@ -37,9 +37,12 @@
 
 "use strict";
 
+// Get common utility functions
+const Common = system.getScript("/ti/ble5stack/ble_common.js");
+
 // Long description for the maxBonds configuration parameter
 const maxBondsLongDescription = `Maximum number of bonds that can be saved in NV.\n
-__Default__: 10\n`
+__Default__: ${Common.defaultBondValue()}\n`
 
 // Long description for the maxCharCfg configuration parameter
 const maxCharCfgLongDescription = `Maximum number of characteristic configurations \
@@ -59,7 +62,7 @@ from the Central when the pairing mode is set to \`GAPBOND_PAIRING_MODE_WAIT_FOR
 When this pairing mode is selected, the GAPBondMgr will automatically respond with a \
 Pairing Response based on other GAPBondMgr configured parameters.
 Initiate a pairing request | To initiate the pairing process on Peripheral role devices, \
-\`GAPBOND_PAIRING_MODE_INITIATE\` will send a Slave Security Request shortly after the \
+\`GAPBOND_PAIRING_MODE_INITIATE\` will send a Peripheral Security Request shortly after the \
 GAPBondMgr is informed that the connection is formed. For Central role devices, \
 \`GAPBOND_PAIRING_MODE_INITIATE\` will send a Pairing Request or request the Link Layer \
 to encrypt the link if the device has previously paired/bonded.
@@ -113,10 +116,10 @@ const authenPairingOnlyLongDescription = `If enabled and the key generation meth
 then the device will send the Pairing Failed command with the error code Authentication Requirements\n
 __Default__: False (unchecked)\n`
 
-// Long description for the syncWLWithBondDev configuration parameter
-const syncWLWithBondDevLongDescription = `Synchronize the whitelist with bonded devices.\n
-If \`TRUE\`, the whitelist will first be cleared. Then, each unique address stored \
-by bonds in SNV will be synched with the whitelist indefinitely or until this is set \
+// Long description for the syncALWithBondDev configuration parameter
+const syncALWithBondDevLongDescription = `Synchronize the acceptlist with bonded devices.\n
+If \`TRUE\`, the acceptlist will first be cleared. Then, each unique address stored \
+by bonds in SNV will be synched with the acceptlist indefinitely or until this is set \
 to \`FALSE\` or the maximum number of supported bonds is reached.\n
 __Default__: False (unchecked)\n
 For more information, refer to the [BLE Stack API Reference](/ble5stack/ble_user_guide/\
@@ -167,18 +170,18 @@ doxygen/ble/html/group___g_a_p_bond_mgr___params.html).\n`
 
 // Long description for the keyDistList configuration parameter
 const keyDistListLongDescription = `Key distribution list for pairing.\n
-__Default__: Slave Encryption Key & Slave IRK and ID information & Slave CSRK \
-& Master Encryption Key & Master IRK and ID information & Master CSRK\n
+__Default__: Peripheral Encryption Key & Peripheral IRK and ID information & Peripheral CSRK \
+& Central Encryption Key & Central IRK and ID information & Central CSRK\n
 Options |
 --- |
-Slave Encryption Key |
-Slave IRK and ID information |
-Slave CSRK |
-Slave Link Key |
-Master Encryption Key |
-Master IRK and ID information |
-Master CSRK |
-Master Link Key |\n
+Peripheral Encryption Key |
+Peripheral IRK and ID information |
+Peripheral CSRK |
+Peripheral Link Key |
+Central Encryption Key |
+Central IRK and ID information |
+Central CSRK |
+Central Link Key |\n
 For more information, refer to the [BLE Stack API Reference](/ble5stack/ble_user_guide/\
 doxygen/ble/html/group___g_a_p_bond_mgr___params.html).\n`
 
@@ -237,7 +240,7 @@ Terminate link |\n`
     bondingLongDescription:bondingLongDescription,
     secureConnLongDescription: secureConnLongDescription,
     authenPairingOnlyLongDescription: authenPairingOnlyLongDescription,
-    syncWLWithBondDevLongDescription: syncWLWithBondDevLongDescription,
+    syncALWithBondDevLongDescription: syncALWithBondDevLongDescription,
     ECCKeyRegenPolicyLongDescription: ECCKeyRegenPolicyLongDescription,
     LTKSizeLongDescription: LTKSizeLongDescription,
     lruBondRepLongDescription: lruBondRepLongDescription,

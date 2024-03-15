@@ -13,7 +13,6 @@
 #include "cy_device_headers.h"
 #include "cy_ipc_drv.h"
 #include "cy_sysint.h"
-#include "cy_ipc_sema.h"
 
 #include "spe_ipc_config.h"
 #include "tfm_spe_mailbox.h"
@@ -45,31 +44,9 @@ static void mailbox_ipc_config(void)
     NVIC_EnableIRQ(PSA_CLIENT_CALL_NVIC_IRQn);
 }
 
-static int32_t tfm_mailbox_sema_init(void)
-{
-#if defined(CY_IPC_DEFAULT_CFG_DISABLE)
-    if (Cy_IPC_Sema_Init(PLATFORM_MAILBOX_IPC_CHAN_SEMA, 0,
-                         NULL) != CY_IPC_SEMA_SUCCESS) {
-        return PLATFORM_MAILBOX_INIT_ERROR;
-    }
-#endif
-
-    if (MAILBOX_SEMAPHORE_NUM >= Cy_IPC_Sema_GetMaxSems()) {
-        return PLATFORM_MAILBOX_INIT_ERROR;
-    }
-
-    /* TODO Check that the semaphore data is in NS memory */
-
-    return PLATFORM_MAILBOX_SUCCESS;
-}
-
 int32_t tfm_mailbox_hal_init(struct secure_mailbox_queue_t *s_queue)
 {
     struct ns_mailbox_queue_t *ns_queue = NULL;
-
-    /* Init semaphores used for critical sections */
-    if (tfm_mailbox_sema_init() != PLATFORM_MAILBOX_SUCCESS)
-        return MAILBOX_INIT_ERROR;
 
     /* Inform NSPE that NSPE mailbox initialization can start */
     platform_mailbox_send_msg_data(NS_MAILBOX_INIT_ENABLE);
@@ -97,16 +74,16 @@ int32_t tfm_mailbox_hal_init(struct secure_mailbox_queue_t *s_queue)
 
 void tfm_mailbox_hal_enter_critical(void)
 {
-    while (CY_IPC_SEMA_SUCCESS !=
-        Cy_IPC_Sema_Set(MAILBOX_SEMAPHORE_NUM, false))
+    IPC_STRUCT_Type* ipc_struct =
+        Cy_IPC_Drv_GetIpcBaseAddress(IPC_PSA_MAILBOX_LOCK_CHAN);
+    while(CY_IPC_DRV_SUCCESS != Cy_IPC_Drv_LockAcquire (ipc_struct))
     {
     }
 }
 
 void tfm_mailbox_hal_exit_critical(void)
 {
-    while (CY_IPC_SEMA_SUCCESS !=
-        Cy_IPC_Sema_Clear(MAILBOX_SEMAPHORE_NUM, false))
-    {
-    }
+    IPC_STRUCT_Type* ipc_struct =
+        Cy_IPC_Drv_GetIpcBaseAddress(IPC_PSA_MAILBOX_LOCK_CHAN);
+    Cy_IPC_Drv_LockRelease(ipc_struct, CY_IPC_NO_NOTIFICATION);
 }

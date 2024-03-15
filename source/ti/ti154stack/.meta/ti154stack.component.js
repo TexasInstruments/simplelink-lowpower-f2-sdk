@@ -51,6 +51,7 @@ const supportedDevices = [
     "CC2652R7RGZ",
     "CC2674R10RGZ",
     "CC1314R10RSK",
+    "CC1314R10RGZ",
     "CC1354R10RGZ",
     "CC1354P10RSK",
     "CC2653P10RGZ",
@@ -94,10 +95,6 @@ if(enable154Module)
             outputPath: "ti_154stack_config.c"
         },
         {
-            name: "/ti/ti154stack/templates/ti_154stack_config.opts.xdt",
-            outputPath: "ti_154stack_config.opts"
-        },
-        {
             name: "/ti/ti154stack/templates/ti_154stack_oad_config.h.xdt",
             outputPath: "ti_154stack_oad_config.h"
         },
@@ -108,11 +105,6 @@ if(enable154Module)
         {
             name: "/ti/ti154stack/templates/ti_154stack_toad_config.h.xdt",
             outputPath: "ti_154stack_toad_config.h"
-        },
-        {
-            name: "/ti/ti154stack/templates/"
-            + "ti_154stack_toad_build_config.opts.xdt",
-            outputPath: "ti_154stack_toad_build_config.opts"
         },
         {
             name: "/ti/ti154stack/templates/ti_154stack_toad_config.json.xdt",

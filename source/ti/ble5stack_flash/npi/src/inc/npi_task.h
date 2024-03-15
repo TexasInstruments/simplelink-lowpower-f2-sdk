@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -145,6 +145,15 @@ extern void NPITask_registerIncomingTXEventAppCB(npiIncomingEventCBack_t appTxCB
 // -----------------------------------------------------------------------------
 extern void NPITask_sendToHost(uint8_t *pMsg);
 
+// -----------------------------------------------------------------------------
+//! \brief      API for application task to properly release the NPI message
+//!             container and internal buffer.
+//!
+//! \param[in]  pMsg    Pointer to message buffer.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void NPITask_freeNpiMsg(uint8_t *pMsg);
 
 #ifdef __cplusplus
 }

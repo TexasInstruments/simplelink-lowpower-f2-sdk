@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -118,9 +118,7 @@
 #include "gap_initiator.h"
 #include "sm_internal.h"
 #include <ti/drivers/rf/RF.h>
-#ifdef SYSCFG
-#include "ti_ble_config.h"
-#endif
+#include "ll_sdaa.h"
 
 /*******************************************************************************
  * EXTERNS
@@ -158,10 +156,6 @@ extern void rfCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 #if defined(CTRL_V42_CONFIG) && (CTRL_V42_CONFIG & EXT_DATA_LEN_CFG)
 extern void rfPUpCallback( RF_Handle, RF_CmdHandle, RF_EventMask );
 #endif // EXT_DATA_LEN_CFG
-
-#ifdef LEGACY_CMD
-extern uint8_t checkLegacyHCICmdStatus(uint16_t opcode);
-#endif
 
 // Jump Table Function Externs: Needed to access internal system functions.
 extern void ll_eccInit(void);
@@ -309,6 +303,7 @@ extern void gapScan_processSessionEndEvt(void);
 extern void gapInit_connect_internal(void);
 extern void gapInit_sendConnCancelledEvt(void);
 extern void gapInit_initiatingEnd(void);
+extern void* ICall_newTaskWithSem(void*);
 
 /*******************************************************************************
  * PROTOTYPES
@@ -488,7 +483,7 @@ const uint32 ROM_Flash_JT[] =
 #if ( CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG) )
   (uint32)LE_SetExtAdvData_hook,                             // ROM_JT_OFFSET[99]
   (uint32)LE_SetExtAdvEnable_hook,                           // ROM_JT_OFFSET[100]
-  (uint32)LE_SetExtAdvParams,                                // ROM_JT_OFFSET[101]
+  (uint32)LE_SetExtAdvParams_sPatch,                         // ROM_JT_OFFSET[101]
 #else // !( CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG) )
   (uint32)ROM_Spinlock,
   (uint32)ROM_Spinlock,
@@ -702,7 +697,7 @@ const uint32 ROM_Flash_JT[] =
   (uint32)ll_eccInit,                                        // ROM_JT_OFFSET[256]
   (uint32)ll_GenerateDHKey,                                  // ROM_JT_OFFSET[257]
   (uint32)ll_ReadLocalP256PublicKey,                         // ROM_JT_OFFSET[258]
-  (uint32)LL_AddDeviceToResolvingList,                       // ROM_JT_OFFSET[259]
+  (uint32)LL_AddDeviceToResolvingList_sPatch,                // ROM_JT_OFFSET[259]
   (uint32)LL_RemoveDeviceFromResolvingList,                  // ROM_JT_OFFSET[260]
   (uint32)LL_ClearResolvingList,                             // ROM_JT_OFFSET[261]
   (uint32)LL_ReadResolvingListSize,                          // ROM_JT_OFFSET[262]
@@ -1219,7 +1214,11 @@ const uint32 ROM_Flash_JT[] =
   (uint32)gapProcessConnEvt,                                 // ROM_JT_OFFSET[672]
   (uint32)gapProcessHCICmdCompleteEvt,                       // ROM_JT_OFFSET[673]
   (uint32)gapProcessOSALMsg,                                 // ROM_JT_OFFSET[674]
+#if ( ( HOST_CONFIG & CENTRAL_CFG ) || ( HOST_CONFIG & PERIPHERAL_CFG) )
   (uint32)gapGetDevAddressMode,                              // ROM_JT_OFFSET[675]
+#else // !( CENTRAL_CFG | PERIPHERAL_CFG )
+  (uint32)ROM_Spinlock,
+#endif // ( CENTRAL_CFG | PERIPHERAL_CFG )
   (uint32)gapGetSignCounter,                                 // ROM_JT_OFFSET[676]
   (uint32)gapGetState,                                       // ROM_JT_OFFSET[677]
   (uint32)gapGetSRK,                                         // ROM_JT_OFFSET[678]
@@ -1277,7 +1276,7 @@ const uint32 ROM_Flash_JT[] =
   (uint32)SM_ResponderInit,                                  // ROM_JT_OFFSET[722]
   (uint32)SM_InitiatorInit,                                  // ROM_JT_OFFSET[723]
   (uint32)SM_StartEncryption,                                // ROM_JT_OFFSET[724]
-  (uint32)smProcessHCIBLEEventCode,                          // ROM_JT_OFFSET[725]
+  (uint32)smProcessHCIBLEEventCode_sPatch,                   // ROM_JT_OFFSET[725]
   (uint32)smProcessHCIBLEMetaEventCode,                      // ROM_JT_OFFSET[726]
   (uint32)smProcessOSALMsg,                                  // ROM_JT_OFFSET[727]
   (uint32)generate_subkey,                                   // ROM_JT_OFFSET[728]
@@ -2415,6 +2414,7 @@ void MAP_llInitFeatureSet( void )
 extern llCoexParams_t llCoexSetParams(uint16 cmdNum, RF_ScheduleCmdParams *pCmdParams);
 extern void llCoexInit(uint8 enable);
 extern void llCoexUpdateCounters(uint8 grant);
+extern uint8 llCoexRfLinkRatCompareConnMaxTimeLength(void);
 
 void MAP_llCoexSetParams(uint16 cmdNum, void *pCmdParams)
 {
@@ -2434,6 +2434,15 @@ void MAP_llCoexUpdateCounters(uint8 grant)
 {
 #ifdef USE_COEX
   llCoexUpdateCounters(grant);
+#endif
+}
+
+uint8 MAP_llCoexRfLinkRatCompareConnMaxTimeLength(void)
+{
+#ifdef USE_COEX
+  return llCoexRfLinkRatCompareConnMaxTimeLength();
+#else
+  return TRUE;
 #endif
 }
 
@@ -2701,7 +2710,7 @@ uint8 MAP_LE_SetConnectionlessIqSamplingEnable( uint16 syncHandle, uint8 samplin
 
 uint8 MAP_llProcessExtScanRxFIFO_hook(void)
 {
-#if (defined USE_PERIODIC_SCAN) || (ADV_RPT_INC_CHANNEL == TRUE)
+#if (defined USE_PERIODIC_SCAN) || (ADV_RPT_INC_CHANNEL == TRUE) || (defined SCAN_OPTIMIZATION)
   return llProcessExtScanRxFIFO_hook();
 #else
   return 0;
@@ -2710,7 +2719,7 @@ uint8 MAP_llProcessExtScanRxFIFO_hook(void)
 
 uint8 MAP_llProcessScanRxFIFO_hook(void)
 {
-#if (ADV_RPT_INC_CHANNEL == TRUE)
+#if (ADV_RPT_INC_CHANNEL == TRUE) || (defined SCAN_OPTIMIZATION)
   return llProcessScanRxFIFO_hook();
 #else
   return FALSE;
@@ -3060,6 +3069,10 @@ void MAP_llHealthSetThreshold(uint32 connTime, uint32 scanTime, uint32 initTime,
 /*******************************************************************************
  * Check legacy command status
  */
+#ifdef LEGACY_CMD
+extern uint8_t checkLegacyHCICmdStatus(uint16_t opcode);
+#endif
+
 uint8_t MAP_checkLegacyHCICmdStatus(uint16_t opcode)
 {
 #ifdef LEGACY_CMD
@@ -3078,6 +3091,121 @@ uint8_t MAP_checkVsEventsStatus(void)
   return FALSE;
 #else
   return TRUE;
+#endif
+}
+
+/*******************************************************************************
+ * Scan Optimization
+ */
+uint8 MAP_llAddExtWlAndSetIgnBit(void *extAdvRpt, uint8 ignoreBit)
+{
+#ifdef SCAN_OPTIMIZATION
+  return llAddExtWlAndSetIgnBit((aeExtAdvRptEvt_t*)extAdvRpt, ignoreBit);
+#endif
+  return ignoreBit;
+}
+
+uint8 MAP_llFlushIgnoredRxEntry(uint8 ignoreBit)
+{
+#ifdef SCAN_OPTIMIZATION
+  return llFlushIgnoredRxEntry(ignoreBit);
+#endif
+  return FALSE;
+}
+
+void MAP_llSetRxCfg(void)
+{
+#ifdef SCAN_OPTIMIZATION
+  llSetRxCfg();
+#endif
+}
+
+
+/*******************************************************************************
+ * SDAA module
+ */
+extern uint8 llHandleSDAAControlTX( void *nextConnPtr,
+                                    void *secTask,
+                                    uint8 startTaskType);
+
+void MAP_LL_SDAA_Init( void )
+{
+#ifdef SDAA_ENABLE
+  LL_SDAA_Init();
+#endif
+}
+
+void MAP_LL_SDAA_RecordTxUsage( uint16 numOfBytes,
+                                uint8 phyType,
+								uint8 power,
+								uint8 channel)
+{
+#ifdef SDAA_ENABLE
+  LL_SDAA_RecordTxUsage(numOfBytes,
+                        phyType,
+						power,
+						channel);
+#endif
+}
+
+void MAP_LL_SDAA_HandleSDAALastCmdDone()
+{
+#ifdef SDAA_ENABLE
+  llHandleSDAALastCmdDone();
+#endif
+}
+
+void MAP_LL_SDAA_AddDwtRecord( uint32 dwT,
+                               uint8 task,
+							   uint8 index)
+{
+#ifdef SDAA_ENABLE
+  LL_SDAA_AddDwtRecord( dwT, task, index );
+#endif
+}
+
+void MAP_LL_SDAA_SampleRXWindow( void )
+{
+#ifdef SDAA_ENABLE
+  LL_SDAA_SampleRXWindow();
+#endif
+}
+
+uint16 MAP_LL_SDAA_GetRXWindowDuration( void )
+{
+#ifdef SDAA_ENABLE
+  return LL_SDAA_GetRXWindowDuration();
+#else
+  return 0;
+#endif
+}
+
+void MAP_LL_SDAA_SetChannelInSample( uint8 channel )
+{
+#ifdef SDAA_ENABLE
+  LL_SDAA_SetChannelInSample(channel);
+#endif
+}
+
+uint8 MAP_llSDAASetupRXWindowCmd(void)
+{
+#ifdef SDAA_ENABLE
+  return llSDAASetupRXWindowCmd();
+#else
+  return LL_STATUS_SUCCESS;
+#endif
+}
+
+uint8 MAP_llHandleSDAAControlTX( void *nextConnPtr,
+                                 void *secTask,
+                                 uint8 startTaskType)
+{
+#ifdef SDAA_ENABLE
+  return llHandleSDAAControlTX(nextConnPtr,
+                               secTask,
+                               startTaskType);
+#else
+  return startTaskType;
 #endif
 }
 

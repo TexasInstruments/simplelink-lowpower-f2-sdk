@@ -93,16 +93,15 @@ static inline uint32_t getDmaChannelNumber(uint32_t x);
 static bool initHw(SPI_Handle handle);
 static void initIO(SPI_Handle handle);
 static void finalizeIO(SPI_Handle handle);
-static inline void primeTransfer(SPICC26X4DMA_Object *object, SPICC26X4DMA_HWAttrs const *hwAttrs);
+static inline void primeTransfer(SPI_Handle handle);
 static inline void releaseConstraint(uint32_t txBufAddr);
 static inline void setConstraint(uint32_t txBufAddr);
-static inline void spiPollingTransfer(SPICC26X4DMA_Object *object,
-                                      SPICC26X4DMA_HWAttrs const *hwAttrs,
-                                      SPI_Transaction *transaction);
+static inline void spiPollingTransfer(SPI_Handle handle, SPI_Transaction *transaction);
 static int spiPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg);
 static inline bool spiBusy(SPICC26X4DMA_Object *object, SPICC26X4DMA_HWAttrs const *hwAttrs);
 static inline void disableSPI(uint32_t baseAddr);
-static inline void enableSPI(uint32_t baseAddr);
+static inline void enableSPIAndMux(SPI_Handle handle);
+static inline bool isSPIEnabled(SPI_Handle handle);
 static inline void enableInterrupt(uint32_t baseAddr, uint32_t irqs);
 static inline void disableInterrupt(uint32_t baseAddr, uint32_t irqs);
 static inline void clearInterrupt(uint32_t baseAddr, uint32_t irqs);
@@ -337,9 +336,9 @@ int_fast16_t SPICC26X4DMA_control(SPI_Handle handle, uint_fast16_t cmd, void *ar
         case SPICC26X4DMA_CMD_MANUAL_START:
             if (object->headPtr != NULL && object->manualStart)
             {
+                enableSPIAndMux(handle);
                 enableDMA(hwAttrs->baseAddr, SPI_DMACR_TXDMAE | SPI_DMACR_RXDMAE);
                 UDMACC26XX_channelEnable(object->udmaHandle, hwAttrs->rxChannelBitMask | hwAttrs->txChannelBitMask);
-                enableSPI(hwAttrs->baseAddr);
                 ret = SPI_STATUS_SUCCESS;
             }
             break;
@@ -380,6 +379,7 @@ static void SPICC26X4DMA_hwiFxn(uintptr_t arg)
     SPICC26X4DMA_Object *object         = ((SPI_Handle)arg)->object;
     SPICC26X4DMA_HWAttrs const *hwAttrs = ((SPI_Handle)arg)->hwAttrs;
     uint8_t i;
+    uintptr_t key;
 
     intStatus = getInterruptStatus(hwAttrs->baseAddr, true);
     clearInterrupt(hwAttrs->baseAddr, intStatus);
@@ -489,6 +489,7 @@ static void SPICC26X4DMA_hwiFxn(uintptr_t arg)
                 }
                 else
                 {
+                    key                     = HwiP_disable();
                     /*
                      * All data has been transferred for the current
                      * transaction. Set status & move the transaction to
@@ -535,6 +536,8 @@ static void SPICC26X4DMA_hwiFxn(uintptr_t arg)
                     object->framesQueued      = (object->activeChannel == UDMA_PRI_SELECT) ? object->priTransferSize
                                                                                            : object->altTransferSize;
                     object->framesTransferred = 0;
+
+                    HwiP_restore(key);
 
                     if (object->headPtr != NULL)
                     {
@@ -655,7 +658,15 @@ SPI_Handle SPICC26X4DMA_open(SPI_Handle handle, SPI_Params *params)
     /* CSN is initialized using hwAttrs, but can be re-configured later */
     object->csnPin = hwAttrs->csnPin;
 
-    initIO(handle);
+    /*
+     * IO configuration must occur before SPI IP is enabled
+     * for peripheral mode.
+     * For controller mode see enableSPIAndMux().
+     */
+    if (object->mode == SPI_PERIPHERAL)
+    {
+        initIO(handle);
+    }
 
     HwiP_Params_init(&paramsUnion.hwiParams);
     paramsUnion.hwiParams.arg      = (uintptr_t)handle;
@@ -699,6 +710,13 @@ static void SPICC26X4DMA_swiFxn(uintptr_t arg0, uintptr_t arg1)
 {
     SPI_Transaction *transaction;
     SPICC26X4DMA_Object *object = ((SPI_Handle)arg0)->object;
+    uintptr_t key;
+
+    /* To protect against any Linked-List manipulation, we took ownership of the processor and disabled interrupts
+     * This also includes the while loop check here, since another process might temporarily tamper with
+     * object->copmoletedTransfers
+     */
+    key = HwiP_disable();
 
     while (object->completedTransfers != NULL)
     {
@@ -712,9 +730,18 @@ static void SPICC26X4DMA_swiFxn(uintptr_t arg0, uintptr_t arg1)
         /* Transaction complete; release power constraints */
         releaseConstraint((uint32_t)transaction->txBuf);
 
+        /* Inverted logic here to restore interrupts right before we jump to the callback function and disable them
+         * after we return */
+        HwiP_restore(key);
+
         /* Execute callback function for completed transfer */
         object->transferCallbackFxn((SPI_Handle)arg0, transaction);
+
+        key = HwiP_disable();
     }
+
+    /* Restore interrupts */
+    HwiP_restore(key);
 }
 
 /*
@@ -810,7 +837,7 @@ bool SPICC26X4DMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
     {
         HwiP_restore(key);
 
-        spiPollingTransfer(object, hwAttrs, transaction);
+        spiPollingTransfer(handle, transaction);
 
         /* Release constraint since transaction is done */
         releaseConstraint((uint32_t)transaction->txBuf);
@@ -832,7 +859,7 @@ bool SPICC26X4DMA_transfer(SPI_Handle handle, SPI_Transaction *transaction)
         clearInterrupt(hwAttrs->baseAddr, SPI_INT_ALL);
         enableInterrupt(hwAttrs->baseAddr, SPI_MIS_DMA_DONE_TX_SET | SPI_MIS_DMA_DONE_RX_SET);
 
-        primeTransfer(object, hwAttrs);
+        primeTransfer(handle);
 
         /* Enable the RX overrun interrupt in the SPI module */
         enableInterrupt(hwAttrs->baseAddr, SPI_MIS_RXFIFO_OVF_SET);
@@ -1125,7 +1152,7 @@ static void processCSNDeassert(SPI_Handle handle)
         /* Enable DMA to generate interrupt on SPI peripheral */
         if (!object->manualStart)
         {
-            enableSPI(hwAttrs->baseAddr);
+            enableSPIAndMux(handle);
         }
     }
     else
@@ -1311,7 +1338,7 @@ static void configNextTransfer(SPICC26X4DMA_Object *object, SPICC26X4DMA_HWAttrs
         object->framesQueued += transferAmt;
     }
 
-    if (!object->manualStart)
+    if (!object->manualStart && object->mode == SPI_PERIPHERAL)
     {
         /* Enable DMA to generate interrupt on SPI peripheral */
         enableDMA(hwAttrs->baseAddr, SPI_DMACR_TXDMAE | SPI_DMACR_RXDMAE);
@@ -1465,6 +1492,7 @@ static void initIO(SPI_Handle handle)
     }
     else
     {
+        GPIO_setConfigAndMux(hwAttrs->clkPin, GPIO_CFG_INPUT, hwAttrs->clkPinMux);
         GPIO_setConfigAndMux(hwAttrs->picoPin, GPIO_CFG_NO_DIR, hwAttrs->txPinMux);
         GPIO_setConfigAndMux(hwAttrs->pociPin, GPIO_CFG_INPUT, hwAttrs->rxPinMux);
     }
@@ -1489,8 +1517,11 @@ static void finalizeIO(SPI_Handle handle)
  *  ======== primeTransfer ========
  *  Function must be executed with interrupts disabled.
  */
-static inline void primeTransfer(SPICC26X4DMA_Object *object, SPICC26X4DMA_HWAttrs const *hwAttrs)
+static inline void primeTransfer(SPI_Handle handle)
 {
+    SPICC26X4DMA_Object *object         = handle->object;
+    SPICC26X4DMA_HWAttrs const *hwAttrs = handle->hwAttrs;
+
     if (object->priTransferSize != 0 && object->altTransferSize != 0)
     {
         /*
@@ -1535,10 +1566,15 @@ static inline void primeTransfer(SPICC26X4DMA_Object *object, SPICC26X4DMA_HWAtt
             configNextTransfer(object, hwAttrs);
         }
 
-        /* Enable DMA to generate interrupt on SPI peripheral */
         if (!object->manualStart)
         {
-            enableSPI(hwAttrs->baseAddr);
+            enableSPIAndMux(handle);
+            if (object->mode == SPI_CONTROLLER)
+            {
+                /* Enable DMA to generate interrupt on SPI peripheral */
+                enableDMA(hwAttrs->baseAddr, SPI_DMACR_TXDMAE | SPI_DMACR_RXDMAE);
+                UDMACC26XX_channelEnable(object->udmaHandle, hwAttrs->rxChannelBitMask | hwAttrs->txChannelBitMask);
+            }
         }
     }
     else
@@ -1586,9 +1622,7 @@ static inline void setConstraint(uint32_t txBufAddr)
 /*
  *  ======== spiPollingTransfer ========
  */
-static inline void spiPollingTransfer(SPICC26X4DMA_Object *object,
-                                      SPICC26X4DMA_HWAttrs const *hwAttrs,
-                                      SPI_Transaction *transaction)
+static inline void spiPollingTransfer(SPI_Handle handle, SPI_Transaction *transaction)
 {
     uint8_t txIncrement, rxIncrement;
     uint32_t dummyBuffer;
@@ -1596,6 +1630,8 @@ static inline void spiPollingTransfer(SPICC26X4DMA_Object *object,
     void *rxBuf;
     void *txBuf;
     bool put;
+    SPICC26X4DMA_Object *object         = handle->object;
+    SPICC26X4DMA_HWAttrs const *hwAttrs = handle->hwAttrs;
 
     /* Only increment src/destination pointers if buffers were provided */
     if (transaction->rxBuf)
@@ -1645,7 +1681,7 @@ static inline void spiPollingTransfer(SPICC26X4DMA_Object *object,
     rxCount = transaction->count;
     txCount = rxCount;
 
-    enableSPI(hwAttrs->baseAddr);
+    enableSPIAndMux(handle);
 
     /* Fill the TX FIFO as much as we can before reading */
     while (rxCount--)
@@ -1708,8 +1744,9 @@ static inline void spiPollingTransfer(SPICC26X4DMA_Object *object,
  */
 static int spiPostNotify(unsigned int eventType, uintptr_t eventArg, uintptr_t clientArg)
 {
-    initHw((SPI_Handle)clientArg);
-
+    SPI_Handle handle = (SPI_Handle)clientArg;
+    initHw(handle);
+    enableSPIAndMux(handle);
     return (Power_NOTIFYDONE);
 }
 
@@ -1741,12 +1778,37 @@ static inline void disableSPI(uint32_t baseAddr)
 }
 
 /*
- *  ======== enableSPI ========
- *  Enables the SPI peripheral
+ *  ======== enableSPIAndMux ========
+ *  Enables the SPI IP and perfroms Muxing only when in SPI_CONTROLLER Mode
  */
-static inline void enableSPI(uint32_t baseAddr)
+static inline void enableSPIAndMux(SPI_Handle handle)
 {
-    HWREG(baseAddr + SPI_O_CTL1) |= SPI_CTL1_ENABLE_ENABLE;
+    SPICC26X4DMA_Object *object         = handle->object;
+    SPICC26X4DMA_HWAttrs const *hwAttrs = handle->hwAttrs;
+    uint32_t baseAddr                   = hwAttrs->baseAddr;
+
+    if (!isSPIEnabled(handle))
+    {
+        HWREG(baseAddr + SPI_O_CTL1) |= SPI_CTL1_ENABLE_ENABLE;
+        if (object->mode == SPI_CONTROLLER)
+        {
+            /*
+             * IO mux needs to occur after SPI IP is enabled
+             * to produce correct signal state.
+             */
+            initIO(handle);
+        }
+    }
+}
+
+/*
+ *  ======== isSPIEnabled ========
+ *  returns the SPI peripheral state
+ */
+static inline bool isSPIEnabled(SPI_Handle handle)
+{
+    SPICC26X4DMA_HWAttrs const *hwAttrs = handle->hwAttrs;
+    return (HWREG(hwAttrs->baseAddr + SPI_O_CTL1) & SPI_CTL1_ENABLE_ENABLE) != 0;
 }
 
 /*

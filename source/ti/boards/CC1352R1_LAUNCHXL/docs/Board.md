@@ -1,13 +1,12 @@
 # SimpleLink&trade; CC1352R1 LaunchPad&trade; Settings & Resources
 
-The [__SimpleLink CC1352R1 LaunchPad__][launchpad] contains a
+The [__SimpleLink&trade; CC1352R1 LaunchPad&trade;__][launchpad] contains a
 [__CC1352R1F3RGZR__][device] device.
 
 ## Jumper Settings
 
 * Close the __`LEDs`__ jumper to enable the on-board LEDs.
-* Close the __`RXD<<`__ and __`TXD>>`__ jumpers to enable UART via
-the XDS110 on-board USB debugger.
+* Close the __`RXD<<`__ and __`TXD>>`__ jumpers to enable UART via the XDS110 on-board USB debugger.
 
 ## SysConfig Board File
 
@@ -24,7 +23,7 @@ Information on pins and resources used is also present in both generated files.
 
 ## TI BoosterPacks&trade;
 
-The following BoosterPack(s) are used with some driver examples.
+The following BoosterPacks are used with some driver examples.
 
 ### [__BOOSTXL-SHARP128 LCD & SD Card BoosterPack__][boostxl-sharp128]
 
@@ -37,13 +36,8 @@ The following BoosterPack(s) are used with some driver examples.
 ### [__CC3200 Audio BoosterPack__][cc3200audboost]
 
 The BoostPack's `DIN` and `DOUT` signal pins are not compatible with this
-LaunchPad. Do the following modification(s) to enable the CC3200 Audio
+LaunchPad. Do the following modifications to enable the CC3200 Audio
 BoosterPack's usage with the __i2secho__ example.
-
-* Bend down the two pins below `DIO30` (LaunchPad header pins `LP29` and `LP30`).
-  Be sure that the bent pins do not make contact with the IC or any other
-  component, only bend them enough to make sure they don't connect to the CC3200
-  Audio BoosterPack.
 
 Attach the CC3200 Audio BoosterPack to the CC1352R1_LAUNCHXL and run jumper wires
 between the following pins on the CC3200 Audio BoosterPack:
@@ -51,14 +45,14 @@ between the following pins on the CC3200 Audio BoosterPack:
 * DIN: `P3.3` and `P3.9`
 * DOUT: `P3.4` and `P3.10`
 
-See [Audio BP User Guide][cc3200audboost-user-guide] (Figure 2-1), or the diagram below,
-for information on where these pins are located.
+See [Audio BP User Guide][cc3200audboost-user-guide] (Figure 2-1), or the diagram
+below, for information on where these pins are located.
 
-![CC3200 Audio BoosterPack Jumper Wire Diagram](images/cc3200audboost_cc13x2_jumpers_annotated.png)
+![CC3200 Audio BoosterPack Jumper Wire Diagram](images/cc3200audboost_jumpers_annotated.png)
 
-[device]: http://www.ti.com/product/CC1352R
-[launchpad]: http://www.ti.com/tool/LAUNCHXL-CC1352R1
-[boostxl-sharp128]: http://www.ti.com/tool/boostxl-sharp128
-[bp-bassensorsmkii]: http://www.ti.com/tool/bp-bassensorsmkii
-[cc3200audboost]: http://www.ti.com/tool/CC3200AUDBOOST
-[cc3200audboost-user-guide]: http://www.ti.com/lit/pdf/swru383
+[device]: https://www.ti.com/product/CC1352R
+[launchpad]: https://www.ti.com/tool/LAUNCHXL-CC1352R1
+[boostxl-sharp128]: https://www.ti.com/tool/BOOSTXL-SHARP128
+[bp-bassensorsmkii]: https://www.ti.com/tool/BP-BASSENSORSMKII
+[cc3200audboost]: https://www.ti.com/tool/CC3200AUDBOOST
+[cc3200audboost-user-guide]: https://www.ti.com/lit/pdf/swru383

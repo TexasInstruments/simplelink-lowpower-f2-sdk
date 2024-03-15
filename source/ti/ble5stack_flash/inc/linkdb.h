@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -87,6 +87,7 @@ extern "C"
  */
 
 #include "ll_common.h"
+#include "hci.h"
 
 /*********************************************************************
  * MACROS
@@ -199,7 +200,7 @@ typedef struct
   uint8 addrType;               //!< Address type of connected device
   uint8 addr[B_ADDR_LEN];       //!< Other Device's address
   uint8 addrPriv[B_ADDR_LEN];   //!< Other Device's Private address
-  uint8 connRole;               //!< Connection formed as Master or Slave
+  uint8 connRole;               //!< Connection formed as Central or Peripheral
   uint16 connInterval;          //!< The connection's interval (n * 1.23 ms)
   uint16 MTU;                   //!< The connection's MTU size
   uint16 connTimeout;           //!< current connection timeout
@@ -250,6 +251,16 @@ extern uint8 linkDB_NumConns( void );
  * @return FALSE otherwise.
  */
   extern uint8 linkDB_State( uint16 connectionHandle, uint8 state );
+
+/**
+ * Get the activeConnInfo from LL using connectionHandle.
+ *
+ * @param connectionHandle - controller link connection handle.
+ * @param activeConnInfo   - pointer to the activeConnInfo
+ *
+ * @return Status - SUCCESS/FAILED
+ */
+  extern uint8 linkDB_GetActiveConnInfo( uint8 connectionHandle, hciActiveConnInfo_t *activeConnInfo );
 
 /*********************************************************************
 *********************************************************************/

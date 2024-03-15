@@ -3,7 +3,7 @@
         "metadataVersion": "3.0.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
         "name": "SimpleLink CC13xx CC26xx SDK",
-        "version": "7.10.02.23",
+        "version": "7.40.00.77",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -24,12 +24,12 @@
             },
             {
                 "packageId": "sysconfig",
-                "version": "1.16.2",
+                "version": "1.18.1",
                 "require": "optional"
             },
             {
                 "packageId": "ti_cgt_tiarmclang",
-                "version": "2.1.2",
+                "version": "3.2.0",
                 "require": "optional"
             },
             {

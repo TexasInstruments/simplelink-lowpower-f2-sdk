@@ -54,7 +54,6 @@ const rfCommon = system.getScript("/ti/ti_wisunfan/rf_config/"
  *          - phyType<band>: Name of the phy found in the radio config module.
  *                           Valid options: phyType868, phyType433,
  *                           phyType2440(reserved for future use)
- *          - carrierFrequency: Frequency setting within the freqBand
  *          - whitening: Type of whitening
  *          - preambleCount: Number of bytes in preamble
  *          - packetLengthConfig: Whether packets are variable or fixed length
@@ -72,7 +71,6 @@ const devSpecific2Gfsk50KbpsSettings = {
     args: {
         freqBand: "868", // options: 868 or 433
         phyType868: "2gfsk50kbps", // phyType suffix must match freqBand
-        carrierFrequency: 915.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         preambleCount: "7 Bytes",
@@ -197,7 +195,6 @@ const devSpecific2Gfsk200KbpsWiSUNSettings_50dev = {
     args: {
         freqBand: "868",
         phyType868: "2gfsk200kbps50dev915wsun4a",
-        carrierFrequency: 915.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         preambleCount: "7 Bytes",
@@ -216,7 +213,6 @@ const devSpecific2Gfsk200KbpsWiSUNSettings_100dev = {
     args: {
         freqBand: "868",
         phyType868: "2gfsk200kbps100dev915wsun4b",
-        carrierFrequency: 915.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         preambleCount: "7 Bytes",
@@ -236,7 +232,6 @@ const devSpecific2Gfsk300KbpsWiSUNSettings_75dev = {
     args: {
         freqBand: "868",
         phyType868: "2gfsk300kbps75dev915wsun5",
-        carrierFrequency: 915.00,
         whitening: `Dynamically IEEE 802.15.4g compatible whitener and \
 16/32-bit CRC`,
         preambleCount: "7 Bytes",

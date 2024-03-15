@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,7 +15,7 @@
 #include "mbedtls_cc_util_defs.h"
 #include "cc_util_error.h"
 #include "cc_aes_defs.h"
-#include "ccm.h"
+#include "mbedtls/ccm.h"
 #include "aes_driver.h"
 #include "driver_defs.h"
 #include "cc_util_cmac.h"

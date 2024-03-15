@@ -5,7 +5,7 @@
 #
 #===============================================================================
 
-#!/bin/bash
+#!/usr/bin/env bash
 PROJ_ROOT=$(pwd)
 MBEDTLS_ROOT_DIR=$PROJ_ROOT/mbedtls
 HOST_PROJ_ROOT=$PROJ_ROOT/host

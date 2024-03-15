@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,11 @@ extern "C"
     #error "Error: DUAL ON CHIP BIM needs the macro SECURITY to be enabled"
 #endif
 
-#define SIGN_FN_PTR 0x57fa0      //!< Pointer to BIM Function
+#if defined (DeviceFamily_CC23X0R2)
+    #define SIGN_FN_PTR 0x37fc       //!< Pointer to BIM Function
+#else
+    #define SIGN_FN_PTR 0x57fa0      //!< Pointer to BIM Function
+#endif
 extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
 
 /**
@@ -333,6 +337,8 @@ extern uint32_t _sign_fnPtr;     //!< Variable for Pointer to BIM Function
   #define OAD_IMG_ID_VAL                    {'C', 'C', '2', '6', 'x', '4', ' ', ' '}
 #elif defined (DeviceFamily_CC26X0R2)
   #define OAD_IMG_ID_VAL                    {'O', 'A', 'D', ' ', 'I', 'M', 'G', ' '}
+#elif defined (DeviceFamily_CC23X0R2)
+  #define OAD_IMG_ID_VAL                    {'C', 'C', '2', '3', 'x', '0', 'R', '2'}
 #elif defined (DOXYGEN)
   /*!
    * Magic number to identify OAD image header. It is recommended that the

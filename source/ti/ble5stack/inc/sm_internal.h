@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -292,6 +292,13 @@ typedef struct
   uint8 result[KEYLEN];           // Result of encrypt (key + Plain Text data)
 } sm_Encrypt_t;
 
+// hciEvt_BLELTKReq_t wrapper to save pkt details
+typedef struct
+{
+  uint8 bHandled;
+  hciEvt_BLELTKReq_t ltkReqPkt;
+} sm_hciEvtBLELTKReqWrapper_t;
+
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -315,6 +322,7 @@ extern smpPairingPublicKey_t sm_eccKeys_sc_host_debug;
  */
 
 extern uint8 smProcessHCIBLEEventCode( hciEvt_CmdComplete_t *pMsg );
+extern uint8 smProcessHCIBLEEventCode_sPatch( hciEvt_CmdComplete_t *pMsg );
 extern uint8 smProcessHCIBLEMetaEventCode( hciEvt_CmdComplete_t *pMsg );
 extern uint8 smProcessOSALMsg( osal_event_hdr_t *pMsg );
 extern uint8 smpResponderProcessIncoming_hook( linkDBItem_t *pLinkItem, uint8 cmdID, smpMsgs_t *pParsedMsg );
@@ -350,6 +358,7 @@ extern void xor_128( uint8 *pA, CONST uint8 *pB, uint8 *pOutcome );
  */
 
 extern bStatus_t smDetermineIOCaps( uint8 initiatorIO, uint8 responderIO );
+extern bStatus_t smDetermineIOCaps_sPatch( uint8 initiatorIO, uint8 responderIO );
 extern uint8 smDetermineKeySize( void );
 extern void smEndPairing( uint8 status );
 extern void smFreePairingParams( void );
@@ -406,6 +415,7 @@ extern uint8 smpInitiatorProcessIdentityInfo( smpIdentityInfo_t *pParsedMsg );
 extern uint8 smpInitiatorProcessIncoming( linkDBItem_t *pLinkItem, uint8 cmdID, smpMsgs_t *pParsedMsg );
 extern uint8 smpInitiatorProcessMasterID( smpMasterID_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingConfirm( smpPairingConfirm_t *pParsedMsg );
+extern uint8 smpInitiatorProcessPairingConfirm_sPatch( smpPairingConfirm_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingDHKeyCheck( smpPairingDHKeyCheck_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingPubKey( smpPairingPublicKey_t *pParsedMsg );
 extern uint8 smpInitiatorProcessPairingPubKey_sPatch( smpPairingPublicKey_t *pParsedMsg );
@@ -424,6 +434,11 @@ extern void smResponderAuthStageTwo( void );
 extern uint8 smResponderProcessLTKReq( uint16 connectionHandle, uint8 *pRandom, uint16 encDiv );
 extern void smResponderSendNextKeyInfo( void );
 
+#ifndef GAP_BOND_MGR
+extern void smGetLtkReqDetails( sm_hciEvtBLELTKReqWrapper_t** pLtkReqDetails );
+extern void smTriggerProcessLTKReq( uint16 connHandle);
+#endif //GAP_BOND_MGR
+
 extern uint8 smpResponderProcessEncryptionInformation( smpEncInfo_t *pParsedMsg );
 extern uint8 smpResponderProcessIdentityAddrInfo( smpIdentityAddrInfo_t *pParsedMsg );
 extern uint8 smpResponderProcessIdentityInfo( smpIdentityInfo_t *pParsedMsg );
@@ -431,9 +446,12 @@ extern uint8 smpResponderProcessIncoming( linkDBItem_t *pLinkItem, uint8 cmdID, 
 extern uint8 smpResponderProcessIncoming_sPatch( linkDBItem_t *pLinkItem, uint8 cmdID, smpMsgs_t *pParsedMsg );
 extern uint8 smpResponderProcessMasterID( smpMasterID_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingConfirm( smpPairingConfirm_t *pParsedMsg );
+extern uint8 smpResponderProcessPairingConfirm_sPatch( smpPairingConfirm_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingDHKeyCheck( smpPairingDHKeyCheck_t *pParsedMsg );
+extern uint8 smpResponderProcessPairingDHKeyCheck_sPatch( smpPairingDHKeyCheck_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingPublicKey( smpPairingPublicKey_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingRandom( smpPairingRandom_t *pParsedMsg );
+extern uint8 smpResponderProcessPairingRandom_sPatch( smpPairingRandom_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingReq( smpPairingReq_t *pParsedMsg );
 extern uint8 smpResponderProcessPairingReq_sPatch( smpPairingReq_t *pParsedMsg );
 extern uint8 smpResponderProcessSigningInfo( smpSigningInfo_t *pParsedMsg );

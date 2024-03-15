@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,7 @@ let deviceSettingsTable = {
         defaultIdleSleepTicks: 2,
         defaultPortTaskSelection: 0,
         defaultMaxInterruptPriority: 1,
-        defaultNvicPriBits: 3,
+        defaultNvicPriBits: 2,
         defaultFpuEnabled: false,
         gccPortableFiles: ["../portable/GCC/ARM_CM0/port.c"],
         iarPortableFiles: ["../portable/IAR/ARM_CM0/port.c"]

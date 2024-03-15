@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -79,11 +79,12 @@
 #endif // CC33xx
 
 #include "bcomdef.h"
+#include "icall.h"
 #include "hci_tl.h"
 #include "hci_data.h"
 #include "hci_event.h"
 #include "hci.h"
-
+#include "ll_ecc.h"
 #include "ll_ae.h"
 
 #if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 )
@@ -95,7 +96,7 @@
 #include "ecc_rom.h"
 #include <ti/drivers/rf/RF.h>
 #include "rf_api.h"
-//
+
 extern RF_Handle rfHandle;
 #endif
 
@@ -116,7 +117,7 @@ extern RF_Handle rfHandle;
 
 // Major Version (8 bits) . Minor Version (4 bits) . SubMinor Version (4 bits)
 #if defined( CC23X0 )
-  #define HCI_REVISION                               0x0321  // HCI Version BLE5 3.2.1
+  #define HCI_REVISION                               0x0322  // HCI Version BLE5 3.2.2
 #else
   #define HCI_REVISION                               0x0228  // HCI Version BLE5 2.2.8
 #endif
@@ -135,8 +136,8 @@ extern RF_Handle rfHandle;
 #define HCI_CONN_INTERVAL_MAX                        LL_CONN_INTERVAL_MAX
 #define HCI_CONN_TIMEOUT_MIN                         LL_CONN_TIMEOUT_MIN
 #define HCI_CONN_TIMEOUT_MAX                         LL_CONN_TIMEOUT_MAX
-#define HCI_SLAVE_LATENCY_MIN                        LL_SLAVE_LATENCY_MIN
-#define HCI_SLAVE_LATENCY_MAX                        LL_SLAVE_LATENCY_MAX
+#define HCI_PERIPHERAL_LATENCY_MIN                   LL_PERIPHERAL_LATENCY_MIN
+#define HCI_PERIPHERAL_LATENCY_MAX                   LL_PERIPHERAL_LATENCY_MAX
 
 /*
 ** Bluetooth Supported Commands
@@ -184,7 +185,7 @@ extern RF_Handle rfHandle;
 // Byte 2
 #define SUPPORTED_CMD_SET_CONNECTION_ENCRYPTION                                     0x01
 #define SUPPORTED_CMD_CHANGE_CONNECTION_LINK_KEY                                    0x02
-#define SUPPORTED_CMD_MASTER_LINK_KEY                                               0x04
+#define SUPPORTED_CMD_CENTRAL_LINK_KEY                                              0x04
 #define SUPPORTED_CMD_REMOTE_NAME_REQUEST                                           0x08
 #define SUPPORTED_CMD_REMOTE_NAME_REQUEST_CANCEL                                    0x10
 #define SUPPORTED_CMD_READ_REMOTE_SUPPORTED_FEATURES                                0x20
@@ -193,14 +194,14 @@ extern RF_Handle rfHandle;
 // Byte 3
 #define SUPPORTED_CMD_READ_CLOCK_OFFSET                                             0x01
 #define SUPPORTED_CMD_READ_LMP_HANDLE                                               0x02
-#define SUPPORTED_CMD_RESERVED01                                                    0x04
-#define SUPPORTED_CMD_RESERVED02                                                    0x08
-#define SUPPORTED_CMD_RESERVED03                                                    0x10
-#define SUPPORTED_CMD_RESERVED04                                                    0x20
-#define SUPPORTED_CMD_RESERVED05                                                    0x40
-#define SUPPORTED_CMD_RESERVED06                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT03                                         0x04
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT04                                         0x08
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT05                                         0x10
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT06                                         0x20
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE03_BIT08                                         0x80
 // Byte 4
-#define SUPPORTED_CMD_RESERVED07                                                    0x01
+#define SUPPORTED_CMD_RESERVED_BYTE04_BIT01                                         0x01
 #define SUPPORTED_CMD_HOLD_MODE                                                     0x02
 #define SUPPORTED_CMD_SNIFF_MODE                                                    0x04
 #define SUPPORTED_CMD_EXIT_SNIFF_MODE                                               0x08
@@ -274,8 +275,8 @@ extern RF_Handle rfHandle;
 // Byte 12
 #define SUPPORTED_CMD_WRITE_PAGE_SCAN_MODE                                          0x01  // deprecated
 #define SUPPORTED_CMD_SET_AFH_HOST_CHANNEL_CLASSIFICATION                           0x02
-#define SUPPORTED_CMD_RESERVED08                                                    0x04
-#define SUPPORTED_CMD_RESERVED09                                                    0x08
+#define SUPPORTED_CMD_RESERVED_BYTE12_BIT03                                         0x04
+#define SUPPORTED_CMD_RESERVED_BYTE12_BIT04                                         0x08
 #define SUPPORTED_CMD_READ_INQUIRY_SCAN_TYPE                                        0x10
 #define SUPPORTED_CMD_WRITE_INQUIRY_SCAN_TYPE                                       0x20
 #define SUPPORTED_CMD_READ_INQUIRY_MODE                                             0x40
@@ -285,16 +286,16 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_WRITE_PAGE_SCAN_TYPE                                          0x02
 #define SUPPORTED_CMD_READ_AFH_CHANNEL_ASSESSMENT_MODE                              0x04
 #define SUPPORTED_CMD_WRITE_AFH_CHANNEL_ASSESSMENT_MODE                             0x08
-#define SUPPORTED_CMD_RESERVED10                                                    0x10
-#define SUPPORTED_CMD_RESERVED11                                                    0x20
-#define SUPPORTED_CMD_RESERVED12                                                    0x40
-#define SUPPORTED_CMD_RESERVED13                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE13_BIT05                                         0x10
+#define SUPPORTED_CMD_RESERVED_BYTE13_BIT06                                         0x20
+#define SUPPORTED_CMD_RESERVED_BYTE13_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE13_BIT08                                         0x80
 // Byte 14
-#define SUPPORTED_CMD_RESERVED14                                                    0x01
-#define SUPPORTED_CMD_RESERVED15                                                    0x02
-#define SUPPORTED_CMD_RESERVED16                                                    0x04
+#define SUPPORTED_CMD_RESERVED_BYTE14_BIT01                                         0x01
+#define SUPPORTED_CMD_RESERVED_BYTE14_BIT02                                         0x02
+#define SUPPORTED_CMD_RESERVED_BYTE14_BIT03                                         0x04
 #define SUPPORTED_CMD_READ_LOCAL_VERSION_INFORMATION                                0x08
-#define SUPPORTED_CMD_RESERVED17                                                    0x10
+#define SUPPORTED_CMD_RESERVED_BYTE14_BIT05                                         0x10
 #define SUPPORTED_CMD_READ_LOCAL_SUPPORTED_FEATURES                                 0x20
 #define SUPPORTED_CMD_READ_LOCAL_EXTENDED_FEATURES                                  0x40
 #define SUPPORTED_CMD_READ_BUFFER_SIZE                                              0x80
@@ -314,13 +315,13 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_SETUP_SYNCHRONOUS_CONNECTION_REQUEST                          0x08
 #define SUPPORTED_CMD_ACCEPT_SYNCHRONOUS_CONNECTION_REQUEST                         0x10
 #define SUPPORTED_CMD_REJECT_SYNCHRONOUS_CONNECTION_REQUEST                         0x20
-#define SUPPORTED_CMD_RESERVED18                                                    0x40
-#define SUPPORTED_CMD_RESERVED19                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE16_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE16_BIT08                                         0x80
 // Byte 17
 #define SUPPORTED_CMD_READ_EXTENDED_INQUIRY_RESPONSE                                0x01
 #define SUPPORTED_CMD_WRITE_EXTENDED_INQUIRY_RESPONSE                               0x02
 #define SUPPORTED_CMD_REFRESH_ENCRYPTION_KEY                                        0x04
-#define SUPPORTED_CMD_RESERVED20                                                    0x08
+#define SUPPORTED_CMD_RESERVED_BYTE17_BIT04                                         0x08
 #define SUPPORTED_CMD_SNIFF_SUBRATING                                               0x10
 #define SUPPORTED_CMD_READ_SIMPLE_PAIRING_MODE                                      0x20
 #define SUPPORTED_CMD_WRITE_SIMPLE_PAIRING_MODE                                     0x40
@@ -330,9 +331,9 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_WRITE_INQUIRY_TRANSMIT_POWER_LEVEL                            0x02
 #define SUPPORTED_CMD_READ_DEFAULT_ERRONEOUS_DATA_REPORTING                         0x04
 #define SUPPORTED_CMD_WRITE_DEFAULT_ERRONEOUS_DATA_REPORTING                        0x08
-#define SUPPORTED_CMD_RESERVED21                                                    0x10
-#define SUPPORTED_CMD_RESERVED22                                                    0x20
-#define SUPPORTED_CMD_RESERVED23                                                    0x40
+#define SUPPORTED_CMD_RESERVED_BYTE18_BIT05                                         0x10
+#define SUPPORTED_CMD_RESERVED_BYTE18_BIT06                                         0x20
+#define SUPPORTED_CMD_RESERVED_BYTE18_BIT07                                         0x40
 #define SUPPORTED_CMD_IO_CAPABILITY_REQUEST_REPLY                                   0x80
 // Byte 19
 #define SUPPORTED_CMD_USER_CONFIRMATION_REQUEST_REPLY                               0x01
@@ -344,14 +345,14 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_ENHANCED_FLUSH                                                0x40
 #define SUPPORTED_CMD_REMOTE_OOB_DATA_REQUEST_NEGATIVE_REPLY                        0x80
 // Byte 20
-#define SUPPORTED_CMD_RESERVED24                                                    0x01
-#define SUPPORTED_CMD_RESERVED25                                                    0x02
+#define SUPPORTED_CMD_RESERVED_BYTE20_BIT01                                         0x01
+#define SUPPORTED_CMD_RESERVED_BYTE20_BIT02                                         0x02
 #define SUPPORTED_CMD_SEND_KEYPRESS_NOTIFICATION                                    0x04
 #define SUPPORTED_CMD_IO_CAPABILITY_REQUEST_NEGATIVE_REPLY                          0x08
 #define SUPPORTED_CMD_READ_ENCRYPTION_KEY_SIZE                                      0x10
-#define SUPPORTED_CMD_RESERVED26                                                    0x20
-#define SUPPORTED_CMD_RESERVED27                                                    0x40
-#define SUPPORTED_CMD_RESERVED28                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE20_BIT06                                         0x20
+#define SUPPORTED_CMD_RESERVED_BYTE20_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE20_BIT08                                         0x80
 // Byte 21
 #define SUPPORTED_CMD_CREATE_PHYSICAL_LINK                                          0x01
 #define SUPPORTED_CMD_ACCEPT_PHYSICAL_LINK                                          0x02
@@ -374,25 +375,25 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_READ_FLOW_CONTROL_MODE                                        0x01
 #define SUPPORTED_CMD_WRITE_FLOW_CONTROL_MODE                                       0x02
 #define SUPPORTED_CMD_READ_DATA_BLOCK_SIZE                                          0x04
-#define SUPPORTED_CMD_RESERVED29                                                    0x08
-#define SUPPORTED_CMD_RESERVED30                                                    0x10
+#define SUPPORTED_CMD_RESERVED_BYTE23_BIT03                                         0x08
+#define SUPPORTED_CMD_RESERVED_BYTE23_BIT04                                         0x10
 #define SUPPORTED_CMD_ENABLE_AMP_RECEIVER_REPORTS                                   0x20
 #define SUPPORTED_CMD_AMP_TEST_END                                                  0x40
 #define SUPPORTED_CMD_AMP_TEST                                                      0x80
 // Byte 24
 #define SUPPORTED_CMD_READ_ENHANCED_TRANSMIT_POWER_LEVEL                            0x01
-#define SUPPORTED_CMD_RESERVED31                                                    0x02
+#define SUPPORTED_CMD_RESERVED_BYTE24_BIT02                                         0x02
 #define SUPPORTED_CMD_READ_BEST_EFFORT_FLUSH_TIMEOUT                                0x04
 #define SUPPORTED_CMD_WRITE_BEST_EFFORT_FLUSH_TIMEOUT                               0x08
 #define SUPPORTED_CMD_SHORT_RANGE_MODE                                              0x10
 #define SUPPORTED_CMD_READ_LE_HOST_SUPPORT                                          0x20
 #define SUPPORTED_CMD_WRITE_LE_HOST_SUPPORT                                         0x40
-#define SUPPORTED_CMD_RESERVED32                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE24_BIT08                                         0x80
 // Byte 25
 #define SUPPORTED_CMD_LE_SET_EVENT_MASK                                             0x01
-#define SUPPORTED_CMD_LE_READ_BUFFER_SIZE                                           0x02
+#define SUPPORTED_CMD_LE_READ_BUFFER_SIZE_V1                                        0x02
 #define SUPPORTED_CMD_LE_READ_LOCAL_SUPPORTED_FEATURES                              0x04
-#define SUPPORTED_CMD_RESERVED33                                                    0x08
+#define SUPPORTED_CMD_RESERVED_BYTE25_BIT03                                         0x08
 #define SUPPORTED_CMD_LE_SET_RANDOM_ADDRESS                                         0x10
 #define SUPPORTED_CMD_LE_SET_ADVERTISING_PARAMETERS                                 0x20
 #define SUPPORTED_CMD_LE_READ_ADVERTISING_CHANNEL_TX_POWER                          0x40
@@ -404,11 +405,11 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_LE_SET_SCAN_ENABLE                                            0x08
 #define SUPPORTED_CMD_LE_CREATE_CONNECTION                                          0x10
 #define SUPPORTED_CMD_LE_CREATE_CONNECTION_CANCEL                                   0x20
-#define SUPPORTED_CMD_LE_READ_WHITE_LIST_SIZE                                       0x40
-#define SUPPORTED_CMD_LE_CLEAR_WHITE_LIST                                           0x80
+#define SUPPORTED_CMD_LE_READ_ACCEPT_LIST_SIZE                                      0x40
+#define SUPPORTED_CMD_LE_CLEAR_ACCEPT_LIST                                          0x80
 // Byte 27
-#define SUPPORTED_CMD_LE_ADD_DEVICE_TO_WHITE_LIST                                   0x01
-#define SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_WHITE_LIST                              0x02
+#define SUPPORTED_CMD_LE_ADD_DEVICE_TO_ACCEPT_LIST                                  0x01
+#define SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_ACCEPT_LIST                             0x02
 #define SUPPORTED_CMD_LE_CONNECTION_UPDATE                                          0x04
 #define SUPPORTED_CMD_LE_SET_HOST_CHANNEL_CLASSIFICATION                            0x08
 #define SUPPORTED_CMD_LE_READ_CHANNEL_MAP                                           0x10
@@ -420,14 +421,14 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_REPLY                                0x02
 #define SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_NEGATIVE_REPLY                       0x04
 #define SUPPORTED_CMD_LE_READ_SUPPORTED_STATES                                      0x08
-#define SUPPORTED_CMD_LE_RECEIVER_TEST                                              0x10
-#define SUPPORTED_CMD_LE_TRANSMITTER_TEST                                           0x20
+#define SUPPORTED_CMD_LE_RECEIVER_TEST_V1                                           0x10
+#define SUPPORTED_CMD_LE_TRANSMITTER_TEST_V1                                        0x20
 #define SUPPORTED_CMD_LE_TEST_END                                                   0x40
-#define SUPPORTED_CMD_RESERVED34                                                    0x80
+#define SUPPORTED_CMD_RESERVED_BYTE28_BIT08                                         0x80
 // Byte 29
-#define SUPPORTED_CMD_RESERVED35                                                    0x01
-#define SUPPORTED_CMD_RESERVED36                                                    0x02
-#define SUPPORTED_CMD_RESERVED37                                                    0x04
+#define SUPPORTED_CMD_RESERVED_BYTE29_BIT01                                         0x01
+#define SUPPORTED_CMD_RESERVED_BYTE29_BIT02                                         0x02
+#define SUPPORTED_CMD_RESERVED_BYTE29_BIT03                                         0x04
 #define SUPPORTED_CMD_ENHANCED_SETUP_SYNCHRONOUS_CONNECTION                         0x08
 #define SUPPORTED_CMD_ENHANCED_ACCEPT_SYNCHRONOUS_CONNECTION                        0x10
 #define SUPPORTED_CMD_READ_LOCAL_SUPPORTED_CODECS                                   0x20
@@ -472,7 +473,7 @@ extern RF_Handle rfHandle;
 // Byte 34
 #define SUPPORTED_CMD_LE_WRITE_SUGGESTED_DEFAULT_DATA_LENGTH                        0x01
 #define SUPPORTED_CMD_LE_READ_LOCAL_P256_PUBLIC_KEY                                 0x02
-#define SUPPORTED_CMD_LE_GENERATE_DH_KEY                                            0x04
+#define SUPPORTED_CMD_LE_GENERATE_DH_KEY_V1                                         0x04
 #define SUPPORTED_CMD_LE_ADD_DEVICE_TO_RESOLVING_LIST                               0x08
 #define SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_RESOLVING_LIST                          0x10
 #define SUPPORTED_CMD_LE_CLEAR_RESOLVING_LIST                                       0x20
@@ -486,11 +487,11 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_LE_READ_PHY                                                   0x10
 #define SUPPORTED_CMD_LE_SET_DEFAULT_PHY                                            0x20
 #define SUPPORTED_CMD_LE_SET_PHY                                                    0x40
-#define SUPPORTED_CMD_LE_ENHANCED_RECEIVER_TEST                                     0x80
+#define SUPPORTED_CMD_LE_RECEIVER_TEST_V2                                           0x80
 // Byte 36
-#define SUPPORTED_CMD_LE_ENHANCED_TRANSMITTER_TEST                                  0x01
-#define SUPPORTED_CMD_LE_SET_ADVVERTISING_SET_RANDOM_ADDRESS                        0x02
-#define SUPPORTED_CMD_LE_SET_EXTENDED_ADVVERTISING_PARAMETERS                       0x04
+#define SUPPORTED_CMD_LE_TRANSMITTER_TEST_V2                                        0x01
+#define SUPPORTED_CMD_LE_SET_ADVERTISING_SET_RANDOM_ADDRESS                        0x02
+#define SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_PARAMETERS                       0x04
 #define SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_DATA                              0x08
 #define SUPPORTED_CMD_LE_SET_EXTENDED_SCAN_RESPONSE_DATA                            0x10
 #define SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_ENABLE                            0x20
@@ -518,20 +519,31 @@ extern RF_Handle rfHandle;
 #define SUPPORTED_CMD_LE_READ_RF_PATH_COMPENSATION                                  0x01
 #define SUPPORTED_CMD_LE_WRITE_RF_PATH_COMPENSATION                                 0x02
 #define SUPPORTED_CMD_LE_SET_PRIVACY_MODE                                           0x04
-#define SUPPORTED_CMD_RESERVED38                                                    0x08
-#define SUPPORTED_CMD_RESERVED39                                                    0x10
-#define SUPPORTED_CMD_RESERVED40                                                    0x20
-#define SUPPORTED_CMD_RESERVED41                                                    0x40
-#define SUPPORTED_CMD_RESERVED42                                                    0x80
-// Byte 40 - Byte 63
-#define SUPPORTED_CMD_RESERVED43                                                    0x01
-#define SUPPORTED_CMD_RESERVED44                                                    0x02
-#define SUPPORTED_CMD_RESERVED45                                                    0x04
-#define SUPPORTED_CMD_RESERVED46                                                    0x08
-#define SUPPORTED_CMD_RESERVED47                                                    0x10
-#define SUPPORTED_CMD_RESERVED48                                                    0x20
-#define SUPPORTED_CMD_RESERVED49                                                    0x40
-#define SUPPORTED_CMD_RESERVED50                                                    0x80
+#define SUPPORTED_CMD_LE_RECEIVER_TEST_V3                                           0x08
+#define SUPPORTED_CMD_LE_TRANSMITTER_TEST_V3                                        0x10
+#define SUPPORTED_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_PARAMS                     0x20
+#define SUPPORTED_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_ENABLE                     0x40
+#define SUPPORTED_CMD_LE_SET_CONNECTIONLESS_IQ_SAMPLING_ENABLE                      0x80
+// Byte 40
+#define SUPPORTED_CMD_LE_SET_CONNECTION_CTE_RECEIVE_PARAMS                          0x01
+#define SUPPORTED_CMD_LE_SET_CONNECTION_CTE_TRANSMIT_PARAMS                         0x02
+#define SUPPORTED_CMD_LE_SET_CONNECTION_CTE_REQUEST_ENABLE                          0x04
+#define SUPPORTED_CMD_LE_SET_CONNECTION_CTE_RESPONSE_ENABLE                         0x08
+#define SUPPORTED_CMD_LE_READ_ANTENNA_INFORMATION                                   0x10
+#define SUPPORTED_CMD_LE_SET_PERIODIC_ADV_RECEIVE_ENABLE                            0x20
+#define SUPPORTED_CMD_RESERVED_BYTE40_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE40_BIT08                                         0x80
+// Byte 41
+#define SUPPORTED_CMD_LE_SET_PERIODIC_ADVERTISING_SYNC_TRANSFER_PARAMETERS          0x01
+#define SUPPORTED_CMD_LE_SET_DEFAULT_PERIODIC_ADVERTISING_SYNC_TRANSFER_PARAMETERS  0x02
+#define SUPPORTED_CMD_LE_SET_GENERATE_DHKEY_V2                                      0x04
+#define SUPPORTED_CMD_RESERVED_BYTE41_BIT04                                         0x08
+#define SUPPORTED_CMD_RESERVED_BYTE41_BIT05                                         0x10
+#define SUPPORTED_CMD_RESERVED_BYTE41_BIT06                                         0x20
+#define SUPPORTED_CMD_RESERVED_BYTE41_BIT07                                         0x40
+#define SUPPORTED_CMD_RESERVED_BYTE41_BIT08                                         0x80
+
+// Byte 41-63 will define if we support commands in these bytes.
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_0  //
@@ -544,22 +556,64 @@ extern RF_Handle rfHandle;
 #endif  // INIT_CFG
 
 ///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_1  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_1                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_2  //
 ///////////////////////////////
 
 #define SUPPORTED_COMMAND_BYTE_2                     (SUPPORTED_CMD_READ_REMOTE_VERSION_INFO)
 
 ///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_3  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_3                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_4  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_4                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_5  //
 ///////////////////////////////
 
-#define SUPPORTED_COMMAND_BYTE_5                     (SUPPORTED_CMD_RESET |                                   \
+#define SUPPORTED_COMMAND_BYTE_5                     (SUPPORTED_CMD_RESET          | \
                                                       SUPPORTED_CMD_SET_EVENT_MASK)
 
 ///////////////////////////////
-// SUPPORTED_COMMAND_BYTE_10 //
-// SUPPORTED_COMMAND_BYTE_15 //
+// SUPPORTED_COMMAND_BYTE_6  //
 ///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_6                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_7  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_7                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_8  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_8                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_9  //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_9                     (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_10 //
+///////////////////////////////
+
 
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
   #define SUPPORTED_COMMAND_BYTE_10                  (SUPPORTED_CMD_HOST_NUMBER_OF_COMPLETED_PACKETS    |     \
@@ -567,23 +621,83 @@ extern RF_Handle rfHandle;
                                                       SUPPORTED_CMD_SET_CONTROLLER_TO_HOST_FLOW_CONTROL |     \
                                                       SUPPORTED_CMD_READ_TRANSMIT_POWER_LEVEL )
 
-  #define SUPPORTED_COMMAND_BYTE_15                  (SUPPORTED_CMD_READ_RSSI |                               \
-                                                      SUPPORTED_CMD_READ_BDADDR)
-
 #else  // !ADV_CONN_CFG && !INIT_CFG
   #define SUPPORTED_COMMAND_BYTE_10                  (SUPPORTED_CMD_HOST_NUMBER_OF_COMPLETED_PACKETS |        \
                                                       SUPPORTED_CMD_HOST_BUFFER_SIZE                 |        \
                                                       SUPPORTED_CMD_SET_CONTROLLER_TO_HOST_FLOW_CONTROL)
-
-  #define SUPPORTED_COMMAND_BYTE_15                  (SUPPORTED_CMD_READ_BDADDR)
 #endif  // ADV_CONN_CFG | INIT_CFG
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_11 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_11                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_12 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_12                    (SUPPORTED_CMD_NONE)
+
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_13 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_13                    (SUPPORTED_CMD_NONE)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_14 //
 ///////////////////////////////
 
-#define SUPPORTED_COMMAND_BYTE_14                    (SUPPORTED_CMD_READ_LOCAL_SUPPORTED_FEATURES |           \
+#define SUPPORTED_COMMAND_BYTE_14                    (SUPPORTED_CMD_READ_LOCAL_SUPPORTED_FEATURES | \
                                                       SUPPORTED_CMD_READ_LOCAL_VERSION_INFORMATION)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_15 //
+///////////////////////////////
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
+  #define SUPPORTED_COMMAND_BYTE_15                  (SUPPORTED_CMD_READ_RSSI | \
+                                                      SUPPORTED_CMD_READ_BDADDR)
+#else  // !ADV_CONN_CFG && !INIT_CFG
+  #define SUPPORTED_COMMAND_BYTE_15                  (SUPPORTED_CMD_READ_BDADDR)
+#endif  // ADV_CONN_CFG | INIT_CFG
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_16 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_16                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_17 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_17                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_18 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_18                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_19 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_19                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_20 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_20                    (SUPPORTED_CMD_NONE)
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_21 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_21                    (SUPPORTED_CMD_NONE)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_22 //
@@ -591,77 +705,34 @@ extern RF_Handle rfHandle;
 
 #define SUPPORTED_COMMAND_BYTE_22                    (SUPPORTED_CMD_SET_EVENT_MASK_PAGE_2)
 
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
-#define BYTE_25_ADV                                  (SUPPORTED_CMD_LE_SET_ADVERTISING_DATA              |    \
-                                                      SUPPORTED_CMD_LE_READ_ADVERTISING_CHANNEL_TX_POWER |    \
-                                                      SUPPORTED_CMD_LE_SET_ADVERTISING_PARAMETERS)
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_23 //
+///////////////////////////////
 
-#define BYTE_26_ADV                                  (SUPPORTED_CMD_LE_SET_ADVERTISE_ENABLE |                 \
-                                                      SUPPORTED_CMD_LE_SET_SCAN_RESPONSE_DATA)
-#else  // !ADV_NCONN_CFG && !ADV_CONN_CFG
-#define BYTE_25_ADV                                  (SUPPORTED_CMD_NONE)
-#define BYTE_26_ADV                                  (SUPPORTED_CMD_NONE)
-#endif  // ADV_NCONN_CFG | ADV_CONN_CFG
+#define SUPPORTED_COMMAND_BYTE_23                    (SUPPORTED_CMD_NONE)
 
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & SCAN_CFG)
-#define BYTE_26_SCAN                                 (SUPPORTED_CMD_LE_SET_SCAN_ENABLE |                      \
-                                                      SUPPORTED_CMD_LE_SET_SCAN_PARAMETERS)
-#else  // !SCAN_CFG
-#define BYTE_26_SCAN                                 (SUPPORTED_CMD_NONE)
-#endif  // SCAN_CFG
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_24 //
+///////////////////////////////
 
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
-#define BYTE_27_ADV                                  (SUPPORTED_CMD_LE_READ_CHANNEL_MAP  |                    \
-                                                      SUPPORTED_CMD_LE_CONNECTION_UPDATE |                    \
-                                                      SUPPORTED_CMD_LE_READ_REMOTE_USED_FEATURES)
-
-#define BYTE_28_ADV                                  (SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_NEGATIVE_REPLY | \
-                                                      SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_REPLY)
-#else  // ADV_CONN_CFG
-#define BYTE_27_ADV                                  (SUPPORTED_CMD_NONE)
-#define BYTE_28_ADV                                  (SUPPORTED_CMD_NONE)
-#endif  // ADV_NCONN_CFG | ADV_CONN_CFG
-
-#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
-#define BYTE_26_INIT                                 (SUPPORTED_CMD_LE_CREATE_CONNECTION_CANCEL |             \
-                                                      SUPPORTED_CMD_LE_CREATE_CONNECTION)
-
-#define BYTE_27_INIT                                 (SUPPORTED_CMD_LE_ENCRYPT                         |      \
-                                                      SUPPORTED_CMD_LE_READ_CHANNEL_MAP                |      \
-                                                      SUPPORTED_CMD_LE_SET_HOST_CHANNEL_CLASSIFICATION |      \
-                                                      SUPPORTED_CMD_LE_CONNECTION_UPDATE)
-
-#define BYTE_28_INIT                                 (SUPPORTED_CMD_LE_START_ENCRYPTION)
-
-#else  //!INIT_CFG
-
-#define BYTE_26_INIT                                 (SUPPORTED_CMD_NONE)
-#define BYTE_27_INIT                                 (SUPPORTED_CMD_NONE)
-#define BYTE_28_INIT                                 (SUPPORTED_CMD_NONE)
-
-#endif  // INIT_CFG
-
-#define BYTE_25_COMMON                               (SUPPORTED_CMD_LE_SET_RANDOM_ADDRESS            |        \
-                                                      SUPPORTED_CMD_LE_READ_LOCAL_SUPPORTED_FEATURES |        \
-                                                      SUPPORTED_CMD_LE_READ_BUFFER_SIZE              |        \
-                                                      SUPPORTED_CMD_LE_SET_EVENT_MASK)
-
-#define BYTE_26_COMMON                               (SUPPORTED_CMD_LE_CLEAR_WHITE_LIST     |                 \
-                                                      SUPPORTED_CMD_LE_READ_WHITE_LIST_SIZE)
-
-#define BYTE_27_COMMON                               (SUPPORTED_CMD_LE_RAND                          |        \
-                                                      SUPPORTED_CMD_LE_READ_REMOTE_USED_FEATURES     |        \
-                                                      SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_WHITE_LIST |        \
-                                                      SUPPORTED_CMD_LE_ADD_DEVICE_TO_WHITE_LIST)
-
-#define BYTE_28_COMMON                               (SUPPORTED_CMD_LE_TEST_END         |                     \
-                                                      SUPPORTED_CMD_LE_TRANSMITTER_TEST |                     \
-                                                      SUPPORTED_CMD_LE_RECEIVER_TEST    |                     \
-                                                      SUPPORTED_CMD_LE_READ_SUPPORTED_STATES)
+#define SUPPORTED_COMMAND_BYTE_24                    (SUPPORTED_CMD_NONE)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_25 //
 ///////////////////////////////
+
+#define BYTE_25_COMMON                               (SUPPORTED_CMD_LE_SET_RANDOM_ADDRESS               |        \
+                                                      SUPPORTED_CMD_LE_READ_LOCAL_SUPPORTED_FEATURES    |        \
+                                                      SUPPORTED_CMD_LE_READ_BUFFER_SIZE_V1              |        \
+                                                      SUPPORTED_CMD_LE_SET_EVENT_MASK)
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+  #define BYTE_25_ADV                                (SUPPORTED_CMD_LE_SET_ADVERTISING_DATA              |    \
+                                                      SUPPORTED_CMD_LE_READ_ADVERTISING_CHANNEL_TX_POWER |    \
+                                                      SUPPORTED_CMD_LE_SET_ADVERTISING_PARAMETERS)
+#else  // !defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+  #define BYTE_25_ADV                                (SUPPORTED_CMD_NONE)
+#endif  // defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
 
 #define SUPPORTED_COMMAND_BYTE_25                    (BYTE_25_COMMON |                                        \
                                                       BYTE_25_ADV)
@@ -670,14 +741,62 @@ extern RF_Handle rfHandle;
 // SUPPORTED_COMMAND_BYTE_26 //
 ///////////////////////////////
 
+#define BYTE_26_COMMON                               (SUPPORTED_CMD_LE_CLEAR_ACCEPT_LIST     |                 \
+                                                      SUPPORTED_CMD_LE_READ_ACCEPT_LIST_SIZE)
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+  #define BYTE_26_ADV                                (SUPPORTED_CMD_LE_SET_ADVERTISE_ENABLE |                 \
+                                                      SUPPORTED_CMD_LE_SET_SCAN_RESPONSE_DATA)
+#else  // !defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+  #define BYTE_26_ADV                                (SUPPORTED_CMD_NONE)
+#endif  // defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & SCAN_CFG)
+  #define BYTE_26_SCAN                               (SUPPORTED_CMD_LE_SET_SCAN_ENABLE |                      \
+                                                      SUPPORTED_CMD_LE_SET_SCAN_PARAMETERS)
+#else  // !SCAN_CFG
+  #define BYTE_26_SCAN                               (SUPPORTED_CMD_NONE)
+#endif  // SCAN_CFG
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
+  #define BYTE_26_INIT                               (SUPPORTED_CMD_LE_CREATE_CONNECTION_CANCEL |             \
+                                                      SUPPORTED_CMD_LE_CREATE_CONNECTION)
+#else  //!INIT_CFG
+
+  #define BYTE_26_INIT                               (SUPPORTED_CMD_NONE)
+
+#endif  // INIT_CFG
+
 #define SUPPORTED_COMMAND_BYTE_26                    (BYTE_26_COMMON |                                        \
                                                       BYTE_26_ADV    |                                        \
                                                       BYTE_26_SCAN   |                                        \
                                                       BYTE_26_INIT)
-
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_27 //
 ///////////////////////////////
+
+#define BYTE_27_COMMON                               (SUPPORTED_CMD_LE_RAND                           |        \
+                                                      SUPPORTED_CMD_LE_READ_REMOTE_USED_FEATURES      |        \
+                                                      SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_ACCEPT_LIST |        \
+                                                      SUPPORTED_CMD_LE_ADD_DEVICE_TO_ACCEPT_LIST)
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
+  #define BYTE_27_ADV                                (SUPPORTED_CMD_LE_READ_CHANNEL_MAP  |                    \
+                                                      SUPPORTED_CMD_LE_CONNECTION_UPDATE |                    \
+                                                      SUPPORTED_CMD_LE_READ_REMOTE_USED_FEATURES)
+#else  // ADV_CONN_CFG
+  #define BYTE_27_ADV                                (SUPPORTED_CMD_NONE)
+#endif  // ADV_NCONN_CFG | ADV_CONN_CFG
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
+ #define BYTE_27_INIT                                (SUPPORTED_CMD_LE_ENCRYPT                         |      \
+                                                      SUPPORTED_CMD_LE_READ_CHANNEL_MAP                |      \
+                                                      SUPPORTED_CMD_LE_SET_HOST_CHANNEL_CLASSIFICATION |      \
+                                                      SUPPORTED_CMD_LE_CONNECTION_UPDATE)
+#else  //!INIT_CFG
+
+  #define BYTE_27_INIT                               (SUPPORTED_CMD_NONE)
+#endif  // INIT_CFG
 
 #define SUPPORTED_COMMAND_BYTE_27                    (BYTE_27_COMMON |                                        \
                                                       BYTE_27_ADV    |                                        \
@@ -687,16 +806,52 @@ extern RF_Handle rfHandle;
 // SUPPORTED_COMMAND_BYTE_28 //
 ///////////////////////////////
 
+#define BYTE_28_COMMON                               (SUPPORTED_CMD_LE_TEST_END            |                     \
+                                                      SUPPORTED_CMD_LE_TRANSMITTER_TEST_V1 |                     \
+                                                      SUPPORTED_CMD_LE_RECEIVER_TEST_V1    |                     \
+                                                      SUPPORTED_CMD_LE_READ_SUPPORTED_STATES)
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
+  #define BYTE_28_ADV                                (SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_NEGATIVE_REPLY | \
+                                                      SUPPORTED_CMD_LE_LONG_TERM_KEY_REQUEST_REPLY)
+#else  // ADV_CONN_CFG
+  #define BYTE_28_ADV                                (SUPPORTED_CMD_NONE)
+#endif  // ADV_NCONN_CFG | ADV_CONN_CFG
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & INIT_CFG)
+  #define BYTE_28_INIT                               (SUPPORTED_CMD_LE_START_ENCRYPTION)
+#else  //!INIT_CFG
+  #define BYTE_28_INIT                               (SUPPORTED_CMD_NONE)
+#endif  // INIT_CFG
+
 #define SUPPORTED_COMMAND_BYTE_28                    (BYTE_28_COMMON |                                        \
                                                       BYTE_28_ADV    |                                        \
                                                       BYTE_28_INIT)
 
 ///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_29 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_29                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_30 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_30                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_31 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_31                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_32 //
 ///////////////////////////////
 
-#define SUPPORTED_COMMAND_BYTE_32                  (SUPPORTED_CMD_WRITE_AUTHENTICATED_PAYLOAD_TIMEOUT |     \
-                                                    SUPPORTED_CMD_READ_AUTHENTICATED_PAYLOAD_TIMEOUT)
+#define SUPPORTED_COMMAND_BYTE_32                    (SUPPORTED_CMD_WRITE_AUTHENTICATED_PAYLOAD_TIMEOUT |     \
+                                                      SUPPORTED_CMD_READ_AUTHENTICATED_PAYLOAD_TIMEOUT)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_33 //
@@ -711,38 +866,273 @@ extern RF_Handle rfHandle;
 // SUPPORTED_COMMAND_BYTE_34 //
 ///////////////////////////////
 
-#define SUPPORTED_COMMAND_BYTE_34                  (SUPPORTED_CMD_LE_WRITE_SUGGESTED_DEFAULT_DATA_LENGTH | \
-                                                    SUPPORTED_CMD_LE_READ_LOCAL_P256_PUBLIC_KEY          | \
-                                                    SUPPORTED_CMD_LE_GENERATE_DH_KEY                     | \
-                                                    SUPPORTED_CMD_LE_ADD_DEVICE_TO_RESOLVING_LIST        | \
-                                                    SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_RESOLVING_LIST   | \
-                                                    SUPPORTED_CMD_LE_CLEAR_RESOLVING_LIST                | \
-                                                    SUPPORTED_CMD_LE_READ_RESOLVING_LIST                 | \
-                                                    SUPPORTED_CMD_LE_READ_PEER_RESOLVABLE_ADDRESS)
+#define SUPPORTED_COMMAND_BYTE_34                    (SUPPORTED_CMD_LE_WRITE_SUGGESTED_DEFAULT_DATA_LENGTH | \
+                                                      SUPPORTED_CMD_LE_READ_LOCAL_P256_PUBLIC_KEY          | \
+                                                      SUPPORTED_CMD_LE_GENERATE_DH_KEY_V1                  | \
+                                                      SUPPORTED_CMD_LE_ADD_DEVICE_TO_RESOLVING_LIST        | \
+                                                      SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_RESOLVING_LIST   | \
+                                                      SUPPORTED_CMD_LE_CLEAR_RESOLVING_LIST                | \
+                                                      SUPPORTED_CMD_LE_READ_RESOLVING_LIST                 | \
+                                                      SUPPORTED_CMD_LE_READ_PEER_RESOLVABLE_ADDRESS)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_35 //
 ///////////////////////////////
 
-  #define SUPPORTED_COMMAND_BYTE_35                (SUPPORTED_CMD_LE_READ_LOCAL_RESOLVABLE_ADDRESS          | \
-                                                    SUPPORTED_CMD_LE_SET_ADDRESS_RESOLUTION_ENABLE          | \
-                                                    SUPPORTED_CMD_LE_SET_RESOLVABLE_PRIVATE_ADDRESS_TIMEOUT | \
-                                                    SUPPORTED_CMD_LE_READ_MAXIMUM_DATA_LENGTH               | \
-                                                    SUPPORTED_CMD_LE_READ_PHY                               | \
-                                                    SUPPORTED_CMD_LE_SET_DEFAULT_PHY                        | \
-                                                    SUPPORTED_CMD_LE_SET_PHY                                | \
-                                                    SUPPORTED_CMD_LE_ENHANCED_RECEIVER_TEST)
+#define SUPPORTED_COMMAND_BYTE_35                    (SUPPORTED_CMD_LE_READ_LOCAL_RESOLVABLE_ADDRESS          | \
+                                                      SUPPORTED_CMD_LE_SET_ADDRESS_RESOLUTION_ENABLE          | \
+                                                      SUPPORTED_CMD_LE_SET_RESOLVABLE_PRIVATE_ADDRESS_TIMEOUT | \
+                                                      SUPPORTED_CMD_LE_READ_MAXIMUM_DATA_LENGTH               | \
+                                                      SUPPORTED_CMD_LE_READ_PHY                               | \
+                                                      SUPPORTED_CMD_LE_SET_DEFAULT_PHY                        | \
+                                                      SUPPORTED_CMD_LE_SET_PHY                                | \
+                                                      SUPPORTED_CMD_LE_RECEIVER_TEST_V2)
 
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_36 //
 ///////////////////////////////
+#define BYTE_36_COMMON                               (SUPPORTED_CMD_LE_TRANSMITTER_TEST_V2                     | \
+                                                      SUPPORTED_CMD_LE_READ_MAXIMUM_ADVERTISING_DATA_LENGTH    | \
+                                                      SUPPORTED_CMD_LE_READ_NUMBER_OF_SUPPORTED_ADVERTISING_SETS)
+#if defined(USE_AE)
+  #define BYTE_36_EXT_ADV                            (SUPPORTED_CMD_LE_SET_ADVERTISING_SET_RANDOM_ADDRESS    | \
+                                                      SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_PARAMETERS   | \
+                                                      SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_DATA         | \
+                                                      SUPPORTED_CMD_LE_SET_EXTENDED_SCAN_RESPONSE_DATA       | \
+                                                      SUPPORTED_CMD_LE_SET_EXTENDED_ADVERTISING_ENABLE)
+#else  //!defined(USE_AE)
+    #define BYTE_36_EXT_ADV                          (SUPPORTED_CMD_NONE)
+#endif  //defined(USE_AE)
 
-  #define SUPPORTED_COMMAND_BYTE_36                  (SUPPORTED_CMD_LE_ENHANCED_TRANSMITTER_TEST)
+#define SUPPORTED_COMMAND_BYTE_36                    (BYTE_36_COMMON | \
+                                                      BYTE_36_EXT_ADV)
 
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_37 //
+///////////////////////////////
+
+#define BYTE_37_COMMON                               (SUPPORTED_CMD_LE_REMOVE_ADVERTISING_SET  | \
+                                                      SUPPORTED_CMD_LE_CLEAR_ADVERTISING_SETS)
+#if defined(USE_AE)
+  #define BYTE_37_EXT_ADV                            (SUPPORTED_CMD_LE_SET_EXTENDED_SCAN_PARAMETERS  | \
+                                                      SUPPORTED_CMD_LE_SET_EXTENDED_SCAN_EANBLE      | \
+                                                      SUPPORTED_CMD_LE_EXTENDED_CREATE_CONNECTION_COMMAND)
+#else  //!defined(USE_AE)
+  #define BYTE_37_EXT_ADV                            (SUPPORTED_CMD_NONE)
+#endif  //defined(USE_AE)
+
+#if defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_37_PERIODIC_ADV                       (SUPPORTED_CMD_LE_SET_PERIODIC_ADVERTISING_PARAMETERS  | \
+                                                      SUPPORTED_CMD_LE_SET_PERIODIC_ADVERTISING_DATA        | \
+                                                      SUPPORTED_CMD_LE_SET_PERIODIC_ADVERTISING_ENABLE)
+#else  //!defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_37_PERIODIC_ADV                       (SUPPORTED_CMD_NONE)
+#endif  //defined(USE_PERIODIC_ADV) && defined(USE_AE)
+
+#define SUPPORTED_COMMAND_BYTE_37                    (BYTE_37_COMMON     |                                        \
+                                                      BYTE_37_EXT_ADV    |                                        \
+                                                      BYTE_37_PERIODIC_ADV)
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_38 //
+///////////////////////////////
+
+#define BYTE_38_COMMON                               (SUPPORTED_CMD_LE_READ_TRANSMIT_POWER)
+
+#if defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_38_PERIODIC_ADV                       (SUPPORTED_CMD_LE_PERIODIC_ADVERTISING_CREATE_SYNC            | \
+                                                      SUPPORTED_CMD_LE_PERIODIC_ADVERTISING_CREATE_SYNC_CANCEL     | \
+                                                      SUPPORTED_CMD_LE_PERIODIC_ADVERTISING_TERMINATE_SYNC         | \
+                                                      SUPPORTED_CMD_LE_ADD_DEVICE_TO_PERIODIC_ADVERTISER_LIST      | \
+                                                      SUPPORTED_CMD_LE_REMOVE_DEVICE_FROM_PERIODIC_ADVERTISER_LIST | \
+                                                      SUPPORTED_CMD_LE_CLEAR_PERIODIC_ADVERTISER_LIST              | \
+                                                      SUPPORTED_CMD_LE_READ_PERIODIC_ADVERTISER_LIST_SIZE)
+#else  //!defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_38_PERIODIC_ADV                       (SUPPORTED_CMD_NONE)
+#endif  //defined(USE_PERIODIC_ADV) && defined(USE_AE)
+
+#define SUPPORTED_COMMAND_BYTE_38                    (BYTE_38_COMMON     |                                        \
+                                                      BYTE_38_PERIODIC_ADV)
 ///////////////////////////////
 // SUPPORTED_COMMAND_BYTE_39 //
 ///////////////////////////////
-#define SUPPORTED_COMMAND_BYTE_39                  (SUPPORTED_CMD_LE_SET_PRIVACY_MODE)
+
+#define BYTE_39_COMMON                               (SUPPORTED_CMD_LE_READ_RF_PATH_COMPENSATION                   | \
+                                                      SUPPORTED_CMD_LE_WRITE_RF_PATH_COMPENSATION                  | \
+                                                      SUPPORTED_CMD_LE_SET_PRIVACY_MODE                            | \
+                                                      SUPPORTED_CMD_LE_RECEIVER_TEST_V3                               | \
+                                                      SUPPORTED_CMD_LE_TRANSMITTER_TEST_V3)
+
+#if defined(RTLS_CTE) && defined(USE_AE) && defined(USE_PERIODIC_ADV)
+  #define BYTE_39_RTLS_CTE                           (SUPPORTED_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_PARAMS  | \
+                                                      SUPPORTED_CMD_LE_SET_CONNECTIONLESS_CTE_TRANSMIT_ENABLE  | \
+                                                      SUPPORTED_CMD_LE_SET_CONNECTIONLESS_IQ_SAMPLING_ENABLE)
+#else  //!define(RTLS_CTE) && define(USE_AE) && define(USE_PERIODIC_ADV)
+  #define BYTE_39_RTLS_CTE                           (SUPPORTED_CMD_NONE)
+#endif  //!define(RTLS_CTE) && define(USE_AE) && define(USE_PERIODIC_ADV)
+
+#define SUPPORTED_COMMAND_BYTE_39                    (BYTE_39_COMMON      |                                        \
+                                                      BYTE_39_RTLS_CTE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_40 //
+///////////////////////////////
+
+#if defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_40_PERIODIC_ADV                       (SUPPORTED_CMD_LE_SET_PERIODIC_ADV_RECEIVE_ENABLE)
+#else  //!defined(USE_PERIODIC_ADV) && defined(USE_AE)
+  #define BYTE_40_PERIODIC_ADV                       (SUPPORTED_CMD_NONE)
+#endif  //defined(USE_PERIODIC_ADV) && defined(USE_AE)
+
+#if defined(RTLS_CTE)
+  #define BYTE_40_RTLS_CTE                           (SUPPORTED_CMD_LE_SET_CONNECTION_CTE_RECEIVE_PARAMS    | \
+                                                      SUPPORTED_CMD_LE_SET_CONNECTION_CTE_TRANSMIT_PARAMS   | \
+                                                      SUPPORTED_CMD_LE_SET_CONNECTION_CTE_REQUEST_ENABLE    | \
+                                                      SUPPORTED_CMD_LE_SET_CONNECTION_CTE_RESPONSE_ENABLE   | \
+                                                      SUPPORTED_CMD_LE_READ_ANTENNA_INFORMATION)
+#else  //!defined(RTLS_CTE)
+ #define BYTE_40_RTLS_CTE                            (SUPPORTED_CMD_NONE)
+#endif  //defined(RTLS_CTE)
+
+#define SUPPORTED_COMMAND_BYTE_40                    (BYTE_40_PERIODIC_ADV     |                                   \
+                                                      BYTE_40_RTLS_CTE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_41 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_41                    (SUPPORTED_CMD_LE_SET_GENERATE_DHKEY_V2)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_42 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_42                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_43 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_43                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_44 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_44                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_45 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_45                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_46 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_46                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_47 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_47                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_48 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_48                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_49 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_49                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_50 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_50                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_51 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_51                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_52 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_52                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_53 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_53                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_54 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_54                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_55 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_55                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_56 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_56                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_57 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_57                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_58 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_58                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_59 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_59                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_60 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_60                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_61 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_61                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_62 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_62                    (SUPPORTED_CMD_NONE)
+
+///////////////////////////////
+// SUPPORTED_COMMAND_BYTE_63 //
+///////////////////////////////
+
+#define SUPPORTED_COMMAND_BYTE_63                    (SUPPORTED_CMD_NONE)
 
 /*******************************************************************************
  * TYPEDEFS
@@ -763,43 +1153,74 @@ supportedCmdsTable_t supportedCmdsTable[SUPPORTED_COMMAND_LEN+1] =
   HCI_SUCCESS,
   // supported commands
   SUPPORTED_COMMAND_BYTE_0,
-  0x00,
+  SUPPORTED_COMMAND_BYTE_1,
   SUPPORTED_COMMAND_BYTE_2,
-  0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_3,
+  SUPPORTED_COMMAND_BYTE_4,
   SUPPORTED_COMMAND_BYTE_5,
-  0x00, 0x00, 0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_6,
+  SUPPORTED_COMMAND_BYTE_7,
+  SUPPORTED_COMMAND_BYTE_8,
+  SUPPORTED_COMMAND_BYTE_9,
   SUPPORTED_COMMAND_BYTE_10,
-  0x00, 0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_11,
+  SUPPORTED_COMMAND_BYTE_12,
+  SUPPORTED_COMMAND_BYTE_13,
   SUPPORTED_COMMAND_BYTE_14,
   SUPPORTED_COMMAND_BYTE_15,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_16,
+  SUPPORTED_COMMAND_BYTE_17,
+  SUPPORTED_COMMAND_BYTE_18,
+  SUPPORTED_COMMAND_BYTE_19,
+  SUPPORTED_COMMAND_BYTE_20,
+  SUPPORTED_COMMAND_BYTE_21,
   SUPPORTED_COMMAND_BYTE_22,
-  0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_23,
+  SUPPORTED_COMMAND_BYTE_24,
   SUPPORTED_COMMAND_BYTE_25,
   SUPPORTED_COMMAND_BYTE_26,
   SUPPORTED_COMMAND_BYTE_27,
   SUPPORTED_COMMAND_BYTE_28,
-  0x00, 0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_29,
+  SUPPORTED_COMMAND_BYTE_30,
+  SUPPORTED_COMMAND_BYTE_31,
   SUPPORTED_COMMAND_BYTE_32,
   SUPPORTED_COMMAND_BYTE_33,
   SUPPORTED_COMMAND_BYTE_34,
   SUPPORTED_COMMAND_BYTE_35,
   SUPPORTED_COMMAND_BYTE_36,
-  0x00, 0x00,
+  SUPPORTED_COMMAND_BYTE_37,
+  SUPPORTED_COMMAND_BYTE_38,
   SUPPORTED_COMMAND_BYTE_39,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00
+  SUPPORTED_COMMAND_BYTE_40,
+  SUPPORTED_COMMAND_BYTE_41,
+  SUPPORTED_COMMAND_BYTE_42,
+  SUPPORTED_COMMAND_BYTE_43,
+  SUPPORTED_COMMAND_BYTE_44,
+  SUPPORTED_COMMAND_BYTE_45,
+  SUPPORTED_COMMAND_BYTE_46,
+  SUPPORTED_COMMAND_BYTE_47,
+  SUPPORTED_COMMAND_BYTE_48,
+  SUPPORTED_COMMAND_BYTE_49,
+  SUPPORTED_COMMAND_BYTE_50,
+  SUPPORTED_COMMAND_BYTE_51,
+  SUPPORTED_COMMAND_BYTE_52,
+  SUPPORTED_COMMAND_BYTE_53,
+  SUPPORTED_COMMAND_BYTE_54,
+  SUPPORTED_COMMAND_BYTE_55,
+  SUPPORTED_COMMAND_BYTE_56,
+  SUPPORTED_COMMAND_BYTE_57,
+  SUPPORTED_COMMAND_BYTE_58,
+  SUPPORTED_COMMAND_BYTE_59,
+  SUPPORTED_COMMAND_BYTE_60,
+  SUPPORTED_COMMAND_BYTE_61,
+  SUPPORTED_COMMAND_BYTE_62,
+  SUPPORTED_COMMAND_BYTE_63
 };
 
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-
 uint8  hciPTMenabled;
 uint8  ctrlToHostEnable;
 uint16 numHostBufs;
@@ -810,7 +1231,6 @@ uint16 numHostBufs;
 
 extern uint8  ctrlToHostEnable;
 extern uint16 numHostBufs;
-
 /*
 ** Buffer Management
 */
@@ -826,6 +1246,15 @@ void *HCI_bm_alloc( uint16 size )
   return( MAP_LL_TX_bm_alloc( size ) );
 }
 
+/*******************************************************************************
+ * This API is used to free memory using buffer management.
+ *
+ * Public function defined in hci.h.
+ */
+void HCI_bm_free( uint8* pBuf )
+{
+  MAP_LL_TX_bm_free( pBuf ) ;
+}
 
 /*******************************************************************************
  * This API is used to check that the connection time parameters are valid.
@@ -875,6 +1304,8 @@ hciStatus_t HCI_SendDataPkt( uint16  connHandle,
 {
   hciStatus_t hciStatus;
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // various checks
   if ( hciPTMenabled == TRUE )
   {
@@ -916,6 +1347,8 @@ hciStatus_t HCI_DisconnectCmd( uint16 connHandle,
                                uint8  reason )
 
 {
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   MAP_HCI_CommandStatusEvent( MAP_LL_Disconnect(connHandle, reason),
                               HCI_DISCONNECT );
 
@@ -934,6 +1367,8 @@ hciStatus_t HCI_DisconnectCmd( uint16 connHandle,
 hciStatus_t HCI_ReadRemoteVersionInfoCmd( uint16 connHandle )
 {
   hciStatus_t status;
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   MAP_HCI_CommandStatusEvent( HCI_SUCCESS, HCI_READ_REMOTE_VERSION_INFO );
 
@@ -1062,10 +1497,15 @@ hciStatus_t HCI_ReadTransmitPowerLevelCmd( uint16 connHandle,
   // 3: Transmit Power Level
   uint8 rtnParam[4];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_ReadTxPowerLevel( connHandle,
                                          txPwrType,
                                          (int8 *)&(rtnParam[3]) );
 
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
+  // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
   rtnParam[2] = HI_UINT16( connHandle );
 
@@ -1355,9 +1795,13 @@ hciStatus_t HCI_ReadRssiCmd( uint16 connHandle )
   // 3: RSSI
   uint8 rtnParam[4];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // status
   rtnParam[0] = MAP_LL_ReadRssi( connHandle,
                                  (int8 *)&(rtnParam[3]) );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle);
@@ -1633,11 +2077,7 @@ hciStatus_t HCI_LE_ReadAdvChanTxPowerCmd( void )
   }
   else
   {
-#ifdef CC23X0
-    rtnParam[0] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
     rtnParam[0] = MAP_LL_ReadAdvChanTxPower( (int8*)&(rtnParam[1]) );
-#endif
   }
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_ADV_CHANNEL_TX_POWER,
@@ -1725,20 +2165,20 @@ hciStatus_t HCI_LE_CreateConnCancelCmd( void )
 
 
 /*******************************************************************************
- * This LE API is used to read the total number of white list entries that can
+ * This LE API is used to read the total number of accept list entries that can
  * be stored in the Controller.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_ReadWhiteListSizeCmd( void )
+hciStatus_t HCI_LE_ReadAcceptListSizeCmd( void )
 {
   // 0: Status
-  // 1: White List Size
+  // 1: accept List Size
   uint8 rtnParam[2];
 
-  rtnParam[0] = MAP_LL_ReadWlSize( &(rtnParam[1]) );
+  rtnParam[0] = MAP_LL_ReadAlSize( &(rtnParam[1]) );
 
-  MAP_HCI_CommandCompleteEvent( HCI_LE_READ_WHITE_LIST_SIZE,
+  MAP_HCI_CommandCompleteEvent( HCI_LE_READ_ACCEPT_LIST_SIZE,
                                 sizeof(rtnParam),
                                 rtnParam );
 
@@ -1747,17 +2187,17 @@ hciStatus_t HCI_LE_ReadWhiteListSizeCmd( void )
 
 
 /*******************************************************************************
- * This LE API is used to clear the white list.
+ * This LE API is used to clear the accept list.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_ClearWhiteListCmd( void )
+hciStatus_t HCI_LE_ClearAcceptListCmd( void )
 {
   hciStatus_t status;
 
-  status = MAP_LL_ClearWhiteList();
+  status = MAP_LL_ClearAcceptList();
 
-  MAP_HCI_CommandCompleteEvent( HCI_LE_CLEAR_WHITE_LIST,
+  MAP_HCI_CommandCompleteEvent( HCI_LE_CLEAR_ACCEPT_LIST,
                                 sizeof(status),
                                 &status );
 
@@ -1766,19 +2206,19 @@ hciStatus_t HCI_LE_ClearWhiteListCmd( void )
 
 
 /*******************************************************************************
- * This LE API is used to add a white list entry.
+ * This LE API is used to add a accept list entry.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_AddWhiteListCmd( uint8  addrType,
+hciStatus_t HCI_LE_AddAcceptListCmd( uint8  addrType,
                                     uint8 *devAddr )
 {
   hciStatus_t status;
 
-  status = MAP_LL_AddWhiteListDevice( devAddr,
+  status = MAP_LL_AddAcceptListDevice( devAddr,
                                       addrType );
 
-  MAP_HCI_CommandCompleteEvent( HCI_LE_ADD_WHITE_LIST,
+  MAP_HCI_CommandCompleteEvent( HCI_LE_ADD_ACCEPT_LIST,
                                 sizeof(status),
                                 &status );
 
@@ -1787,19 +2227,19 @@ hciStatus_t HCI_LE_AddWhiteListCmd( uint8  addrType,
 
 
 /*******************************************************************************
- * This LE API is used to remove a white list entry.
+ * This LE API is used to remove a accept list entry.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_RemoveWhiteListCmd( uint8 addrType,
+hciStatus_t HCI_LE_RemoveAcceptListCmd( uint8 addrType,
                                        uint8 *devAddr )
 {
   hciStatus_t status;
 
-  status = MAP_LL_RemoveWhiteListDevice( devAddr,
+  status = MAP_LL_RemoveAcceptListDevice( devAddr,
                                          addrType );
 
-  MAP_HCI_CommandCompleteEvent( HCI_LE_REMOVE_WHITE_LIST,
+  MAP_HCI_CommandCompleteEvent( HCI_LE_REMOVE_ACCEPT_LIST,
                                 sizeof(status),
                                 &status );
 
@@ -1822,6 +2262,8 @@ hciStatus_t HCI_LE_ConnUpdateCmd( uint16 connHandle,
                                   uint16 maxLen )
 {
   hciStatus_t status;
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
 #if defined(CC26XX) || (!defined(CC26XX) && (CTRL_CONFIG & INIT_CFG)) ||       \
     defined(CC13XX) || (!defined(CC13XX) && (CTRL_CONFIG & INIT_CFG)) ||       \
@@ -1938,8 +2380,12 @@ hciStatus_t HCI_LE_ReadChannelMapCmd( uint16 connHandle )
   // 3..7: Channel Map (LSB to MSB)
   uint8 rtnParam[8];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_ReadChanMap(  connHandle,
                                     &(rtnParam[3]) );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -1963,6 +2409,8 @@ hciStatus_t HCI_LE_ReadChannelMapCmd( uint16 connHandle )
 hciStatus_t HCI_LE_ReadRemoteUsedFeaturesCmd( uint16 connHandle )
 {
   hciStatus_t status;
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   MAP_HCI_CommandStatusEvent( HCI_SUCCESS, HCI_LE_READ_REMOTE_USED_FEATURES );
 
@@ -2078,6 +2526,8 @@ hciStatus_t HCI_LE_StartEncyptCmd( uint16  connHandle,
 {
   hciStatus_t status;
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   status = MAP_LL_StartEncrypt( connHandle,
                                 random,
                                 encDiv,
@@ -2102,7 +2552,13 @@ hciStatus_t HCI_LE_LtkReqReplyCmd( uint16  connHandle,
   // 2: Connection Handle (MSB)
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_EncLtkReply( connHandle, ltk );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
+  // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
   rtnParam[2] = HI_UINT16( connHandle );
 
@@ -2127,7 +2583,13 @@ hciStatus_t HCI_LE_LtkReqNegReplyCmd( uint16 connHandle )
   // 2: Connection Handle (MSB)
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_EncLtkNegReply( connHandle );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
+  // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
   rtnParam[2] = HI_UINT16( connHandle );
 
@@ -2176,13 +2638,22 @@ hciStatus_t HCI_ReadAuthPayloadTimeoutCmd( uint16  connHandle,
   // 3: APTO LSB
   // 4: APTO MSB
   uint8 rtnParam[5];
+  uint16 aptoVal;
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   rtnParam[0] = MAP_LL_ReadAuthPayloadTimeout( connHandle,
-                                               (uint16 *)&rtnParam[3] );
+                                               &aptoVal );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
   rtnParam[2] = HI_UINT16( connHandle );
+
+  // Build APTO LSB and MSB
+  rtnParam[3] = LO_UINT16( aptoVal );
+  rtnParam[4] = HI_UINT16( aptoVal );
 
   MAP_HCI_CommandCompleteEvent( HCI_READ_AUTH_PAYLOAD_TIMEOUT,
                                 sizeof(rtnParam),
@@ -2208,8 +2679,12 @@ hciStatus_t HCI_WriteAuthPayloadTimeoutCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_WriteAuthPayloadTimeout( connHandle,
                                                 aptoValue );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -2244,6 +2719,8 @@ hciStatus_t HCI_LE_RemoteConnParamReqReplyCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_RemoteConnParamReqReply( connHandle,
                                                 connIntervalMin,
                                                 connIntervalMax,
@@ -2251,6 +2728,8 @@ hciStatus_t HCI_LE_RemoteConnParamReqReplyCmd( uint16 connHandle,
                                                 connTimeout,
                                                 minLen,
                                                 maxLen );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -2283,8 +2762,12 @@ hciStatus_t HCI_LE_RemoteConnParamReqNegReplyCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_RemoteConnParamReqNegReply( connHandle,
                                                    reason );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -2317,9 +2800,13 @@ hciStatus_t HCI_LE_SetDataLenCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_SetDataLen( connHandle,
                                    txOctets,
                                    txTime );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -2349,9 +2836,18 @@ hciStatus_t HCI_LE_ReadSuggestedDefaultDataLenCmd( void )
   // 3: Initial Max Tx Time LSB
   // 4: Initial Max Tx Time MSB
   uint8 rtnParam[5];
+  uint16 tempValueOctets = 0;
+  uint16 tempValueTime = 0;
 
-  rtnParam[0] = MAP_LL_ReadDefaultDataLen( (uint16 *)&rtnParam[1],
-                                           (uint16 *)&rtnParam[3] );
+  // Use tempValue to make sure the passed pointer is aligned
+  rtnParam[0] = MAP_LL_ReadDefaultDataLen( &tempValueOctets,
+                                           &tempValueTime );
+  // Save the value
+  rtnParam[1] = LO_UINT16(tempValueOctets);
+  rtnParam[2] = HI_UINT16(tempValueOctets);
+  // Save the value
+  rtnParam[3] = LO_UINT16(tempValueTime);
+  rtnParam[4] = HI_UINT16(tempValueTime);
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_SUGGESTED_DEFAULT_DATA_LENGTH,
                                 sizeof(rtnParam),
@@ -2406,11 +2902,28 @@ hciStatus_t HCI_LE_ReadMaxDataLenCmd( void )
   // 7: Supported Max Rx Time LSB
   // 8: Supported Max Rx Time MSB
   uint8 rtnParam[9];
+  uint16 tempValueTxOctets = 0;
+  uint16 tempValueTxTime = 0;
+  uint16 tempValueRxOctets = 0;
+  uint16 tempValueRxTime = 0;
 
-  rtnParam[0] = MAP_LL_ReadMaxDataLen( (uint16 *)&rtnParam[1],
-                                       (uint16 *)&rtnParam[3],
-                                       (uint16 *)&rtnParam[5],
-                                       (uint16 *)&rtnParam[7] );
+  rtnParam[0] = MAP_LL_ReadMaxDataLen( &tempValueTxOctets,
+                                       &tempValueTxTime,
+                                       &tempValueRxOctets,
+                                       &tempValueRxTime );
+
+  // Save the value
+  rtnParam[1] = LO_UINT16(tempValueTxOctets);
+  rtnParam[2] = HI_UINT16(tempValueTxOctets);
+  // Save the value
+  rtnParam[3] = LO_UINT16(tempValueTxTime);
+  rtnParam[4] = HI_UINT16(tempValueTxTime);
+  // Save the value
+  rtnParam[5] = LO_UINT16(tempValueRxOctets);
+  rtnParam[6] = HI_UINT16(tempValueRxOctets);
+  // Save the value
+  rtnParam[7] = LO_UINT16(tempValueRxTime);
+  rtnParam[8] = HI_UINT16(tempValueRxTime);
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_MAX_DATA_LENGTH,
                                 sizeof(rtnParam),
@@ -2694,11 +3207,12 @@ hciStatus_t HCI_LE_ReadLocalP256PublicKeyCmd( void )
     // message failed to be sent
     return (HCI_ERROR_CODE_MEM_CAP_EXCEEDED);
   }
-#endif
+#else
 
   MAP_LL_ReadLocalP256PublicKeyCmd();
 
   return( HCI_SUCCESS );
+#endif
 }
 
 
@@ -2746,11 +3260,94 @@ hciStatus_t HCI_LE_GenerateDHKeyCmd( uint8 *publicKey )
     // message failed to be sent
     return (HCI_ERROR_CODE_MEM_CAP_EXCEEDED);
   }
-#endif
-
+#else
   MAP_LL_GenerateDHKeyCmd( publicKey );
 
   return( HCI_SUCCESS );
+#endif
+}
+
+/*********************************************************************************************
+ * Generate Diffie-Hellman Key with debug keys or regular
+ * as HCI_LE_GenerateDHKeyCmd function.
+ * case keytype = 0: Use the generated private key
+ * case keytype = 1: Use the debug private key
+ * O.W : error, invalid parameters
+ *
+ *Public function defined in hci.h.
+ *
+ * @par Corresponding Events
+ * @ref hciEvt_CommandStatus_t with cmdOpcode @ref HCI_LE_GENERATE_DHKEY
+ * @ref hciEvt_BLEGenDHKeyComplete_t
+ *
+ * @param publicKey: The remote P-256 public key (X-Y format), keyType: 0/1.
+ *
+ * @return @ref HCI_SUCCESS,
+ *              HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS,
+ *              HCI_ERROR_CODE_MEM_CAP_EXCEEDED,
+ *              HCI_ERROR_CODE_CONTROLLER_BUSY
+ */
+hciStatus_t HCI_LE_GenerateDHKeyV2Cmd( uint8 *publicKey, uint8 keyType )
+{
+    // Note:
+    // In case of using SW ECC, the following operation will take ~600 msec.
+    // We will process it in a dedicated task (worker thread)
+    // send Command Status first
+    // Note: Just indicate success here, and if there's an ECC error, it will be
+    //       reflected in the Complete event status.
+
+    // hciTranslationTable cant parse pointer of 64 bytes array so it parse all the input to 65 bytes array
+    // we need to copy publicKey[LL_SC_P256_KEY_LEN] to keyType
+    keyType = publicKey[LL_SC_P256_KEY_LEN];
+
+    if (( keyType != 1 ) && ( keyType != 0 ) )
+    {
+        MAP_HCI_CommandStatusEvent( HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS, HCI_LE_GENERATE_DHKEY_V2 );
+        return (HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS);
+    }
+    else if ( keyType == 1 )
+    {
+        // Use the debug private key
+        MAP_osal_memcpy((uint8_t *)localPrivKeyMaterial, (uint8_t *)localDebugPrivateKeyMaterial, LL_SC_RAND_NUM_LEN);
+    }
+
+    // else (keyType == 0): Use the generated private key
+    else
+    {
+        /* this else clause is required, even if the
+           programmer expects this will never be reached
+           Fix Misra-C Required: MISRA.IF.NO_ELSE */
+    }
+
+    MAP_HCI_CommandStatusEvent( HCI_SUCCESS,
+                                HCI_LE_GENERATE_DHKEY_V2 );
+
+#ifdef CC33xx
+  // create the worker thread
+  if (ICall_createWorkerThread() == -1)
+  {
+      // fail to create the worker thread
+      return (HCI_ERROR_CODE_MEM_CAP_EXCEEDED);
+  }
+#endif
+
+  // generate the Public P256 key
+#if defined(CC23X0) || defined (CC33xx)
+  if (ICall_workerThreadSendMsg((void *)MAP_LL_GenerateDHKeyCmd, publicKey, LL_SC_P256_KEY_LEN) != -1)
+  {
+    // message sent successfully - indicate controller is busy executing the command
+    return (HCI_ERROR_CODE_CONTROLLER_BUSY);
+  }
+  else
+  {
+    // message failed to be sent
+    return (HCI_ERROR_CODE_MEM_CAP_EXCEEDED);
+  }
+#else
+  MAP_LL_GenerateDHKeyCmd( publicKey );
+
+  return( HCI_SUCCESS );
+#endif
 }
 
 
@@ -2782,9 +3379,13 @@ hciStatus_t HCI_LE_ReadPhyCmd( uint16 connHandle )
   // 4: Rx PHY
   uint8 rtnParam[5];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = MAP_LL_ReadPhy( connHandle,
                                 &rtnParam[3],
                                 &rtnParam[4] );
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -2839,6 +3440,8 @@ hciStatus_t HCI_LE_SetPhyCmd( uint16 connHandle,
                               uint16 phyOpts )
 {
   hciStatus_t status;
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   status = MAP_LL_SetPhy( connHandle,
                           allPhys,
@@ -3061,12 +3664,8 @@ hciStatus_t HCI_LE_ReadTxPowerCmd( void )
   // 1: Minimum Tx Power
   // 2: Maximum Tx Power
   uint8 rtnParam[3];
-#ifdef CC23X0
-  rtnParam[0] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[0] = MAP_LE_ReadTxPowerCmd( (int8 *)&rtnParam[1],
                                        (int8 *)&rtnParam[2] );
-#endif //
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_TX_POWER,
                                 sizeof(rtnParam),
                                 rtnParam );
@@ -3088,12 +3687,19 @@ hciStatus_t HCI_LE_ReadRfPathCompCmd( void )
   // 3: RF Rx Path Compensation LSB
   // 4: RF Rx Path Compensation MSB
   uint8 rtnParam[5];
-#ifdef CC23X0
-  rtnParam[0] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
-  rtnParam[0] = MAP_LE_ReadRfPathCompCmd( (int16 *)&rtnParam[1],
-                                          (int16 *)&rtnParam[3] );
-#endif
+  int16 temp_rtnParam1;
+  int16 temp_rtnParam3;
+
+  // Use tempValue to make sure the passed pointer is aligned
+  rtnParam[0] = MAP_LE_ReadRfPathCompCmd(  &temp_rtnParam1,
+                                           &temp_rtnParam3 );
+
+  // Save the value
+  rtnParam[1] = LO_UINT16(temp_rtnParam1);
+  rtnParam[2] = HI_UINT16(temp_rtnParam1);
+  // Save the value
+  rtnParam[3] = LO_UINT16(temp_rtnParam3);
+  rtnParam[4] = HI_UINT16(temp_rtnParam3);
 
   MAP_HCI_CommandCompleteEvent( HCI_LE_READ_RF_PATH_COMPENSATION,
                                 sizeof(rtnParam),
@@ -3115,12 +3721,9 @@ hciStatus_t HCI_LE_WriteRfPathCompCmd( int16 txPathParam,
 {
   // 0: Status
   uint8 rtnParam[1];
-#ifdef CC23X0
-  rtnParam[0] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
+
   rtnParam[0] = MAP_LE_WriteRfPathCompCmd( txPathParam,
                                            rxPathParam );
-#endif
   MAP_HCI_CommandCompleteEvent( HCI_LE_WRITE_RF_PATH_COMPENSATION,
                                 sizeof(rtnParam),
                                 rtnParam );
@@ -3147,12 +3750,16 @@ hciStatus_t HCI_LE_SetConnectionCteReceiveParamsCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // status
   rtnParam[0] = MAP_LL_SetConnectionCteReceiveParams(connHandle,
                                                      samplingEnable,
                                                      slotDurations,
                                                      length,
                                                      pAntenna);
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -3182,11 +3789,15 @@ hciStatus_t HCI_LE_SetConnectionCteTransmitParamsCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // status
   rtnParam[0] = MAP_LL_SetConnectionCteTransmitParams(connHandle,
                                                       types,
                                                       length,
                                                       pAntenna);
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -3215,12 +3826,16 @@ hciStatus_t HCI_LE_SetConnectionCteRequestEnableCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // status
   rtnParam[0] = MAP_LL_SetConnectionCteRequestEnable(connHandle,
                                                      enable,
                                                      interval,
                                                      length,
                                                      type);
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
@@ -3247,11 +3862,15 @@ hciStatus_t HCI_LE_SetConnectionCteResponseEnableCmd( uint16 connHandle,
   // 2: Connection Handle MSB
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   // status
   rtnParam[0] = MAP_LL_SetConnectionCteResponseEnable(connHandle,
                                                       enable);
 
-    // connection handle
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
+  // connection handle
   rtnParam[1] = LO_UINT16( connHandle );
   rtnParam[2] = HI_UINT16( connHandle );
 
@@ -3853,6 +4472,38 @@ hciStatus_t HCI_EXT_SetTxPowerCmd( uint8 txPower )
 }
 
 
+/*******************************************************************************
+ * This HCI Extension API is used to set the transmit power in dBm.
+ *
+ * Note: If the LL can not perform the command immediately, the HCI will be
+ *       notified by a corresonding LL callback.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_SetTxPowerDbmCmd( int8 txPower, uint8 fraction )
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  uint8 rtnParam[3];
+  uint8 cmdComplete = TRUE;
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_SET_TX_POWER_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_SET_TX_POWER_EVENT );
+  rtnParam[2] = MAP_LL_EXT_SetTxPowerDbm( txPower, fraction, &cmdComplete );
+
+  // check if the command was performed, or if it was delayed
+  // Note: If delayed, a callback will be generated by the LL.
+  if ( cmdComplete == TRUE )
+  {
+    MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_SET_TX_POWER_DBM,
+                                               sizeof(rtnParam),
+                                               rtnParam );
+  }
+
+  return( HCI_SUCCESS );
+}
+
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))
 /*******************************************************************************
  * This HCI Extension API is used to set whether a connection will be limited
@@ -4034,7 +4685,7 @@ hciStatus_t HCI_EXT_SetLocalSupportedFeaturesCmd( uint8 *localFeatures )
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
 /*******************************************************************************
  * This HCI Extension API is used to set whether transmit data is sent as soon
- * as possible even when slave latency is used.
+ * as possible even when peripheral latency is used.
  *
  * Public function defined in hci.h.
  */
@@ -4060,23 +4711,23 @@ hciStatus_t HCI_EXT_SetFastTxResponseTimeCmd( uint8 control )
 
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_CONN_CFG)
 /*******************************************************************************
- * This HCI Extension API is used to enable or disable suspending slave
+ * This HCI Extension API is used to enable or disable suspending peripheral
  * latency.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_EXT_SetSlaveLatencyOverrideCmd( uint8 control )
+hciStatus_t HCI_EXT_SetPeripheralLatencyOverrideCmd( uint8 control )
 {
   // 0: Event Opcode (LSB)
   // 1: Event Opcode (MSB)
   // 2: Status
   uint8 rtnParam[3];
 
-  rtnParam[0] = LO_UINT16( HCI_EXT_OVERRIDE_SL_EVENT );
-  rtnParam[1] = HI_UINT16( HCI_EXT_OVERRIDE_SL_EVENT );
-  rtnParam[2] = MAP_LL_EXT_SetSlaveLatencyOverride( control );
+  rtnParam[0] = LO_UINT16( HCI_EXT_OVERRIDE_PL_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_OVERRIDE_PL_EVENT );
+  rtnParam[2] = MAP_LL_EXT_SetPeripheralLatencyOverride( control );
 
-  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_OVERRIDE_SL,
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_OVERRIDE_PL,
                                              sizeof(rtnParam),
                                              rtnParam );
 
@@ -4108,11 +4759,7 @@ hciStatus_t HCI_EXT_ModemTestTxCmd( uint8 cwMode,
 
   rtnParam[0] = LO_UINT16( HCI_EXT_MODEM_TEST_TX_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_MODEM_TEST_TX_EVENT );
-#ifdef CC23X0
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_ModemTestTx( cwMode, txChan );
-#endif
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_MODEM_TEST_TX,
                                              sizeof(rtnParam),
                                              rtnParam );
@@ -4179,11 +4826,7 @@ hciStatus_t HCI_EXT_ModemTestRxCmd( uint8 rxChan )
 
   rtnParam[0] = LO_UINT16( HCI_EXT_MODEM_TEST_RX_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_MODEM_TEST_RX_EVENT );
-#ifdef CC23X0
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_ModemTestRx( rxChan );
-#endif
 
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_MODEM_TEST_RX,
                                              sizeof(rtnParam),
@@ -4219,13 +4862,9 @@ hciStatus_t HCI_EXT_EnhancedModemTestTxCmd( uint8 cwMode,
   rtnParam[1] = HI_UINT16( HCI_EXT_ENHANCED_MODEM_TEST_TX_EVENT );
 
   // continuous transmitter modem test is currently not supported for CC23X0 and CC33xx
-#if defined(CC23X0) || defined(CC33xx)
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_EnhancedModemTestTx( cwMode,
                                                 rfPhy,
                                                 rfChan );
-#endif
 
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_ENHANCED_MODEM_TEST_TX,
                                              sizeof(rtnParam),
@@ -4298,12 +4937,9 @@ hciStatus_t HCI_EXT_EnhancedModemTestRxCmd( uint8 rfPhy,
 
   rtnParam[0] = LO_UINT16( HCI_EXT_ENHANCED_MODEM_TEST_RX_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_ENHANCED_MODEM_TEST_RX_EVENT );
-#ifdef CC23X0
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_EnhancedModemTestRx( rfPhy,
                                                 rfChan );
-#endif
+
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_ENHANCED_MODEM_TEST_RX,
                                              sizeof(rtnParam),
                                              rtnParam );
@@ -4327,11 +4963,7 @@ hciStatus_t HCI_EXT_EndModemTestCmd( void )
 
   rtnParam[0] = LO_UINT16( HCI_EXT_END_MODEM_TEST_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_END_MODEM_TEST_EVENT );
-#ifdef CC23X0
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_EndModemTest();
-#endif
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_END_MODEM_TEST,
                                              sizeof(rtnParam),
                                              rtnParam );
@@ -4371,6 +5003,49 @@ hciStatus_t HCI_EXT_SetBDADDRCmd( uint8 *bdAddr )
   return( HCI_SUCCESS );
 }
 
+
+#if defined(CTRL_CONFIG) && (CTRL_CONFIG & (ADV_NCONN_CFG | ADV_CONN_CFG))
+/*******************************************************************************
+ * This API is used to set the random device address
+ * for the advertiser's address contained in the advertising
+ * PDUs for the advertising set specified by the advertising handle.
+ *
+ * Note: In case of connectable advertise set,
+ *       this command is only allowed when the advertise set is not active.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_SetAdvSetRandAddrCmd( uint8 advHandle, uint8 *randAddr)
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  uint8 rtnParam[3];
+  aeRandAddrCmd_t pCmdParams;
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_SET_ADV_SET_RAND_ADDR_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_SET_ADV_SET_RAND_ADDR_EVENT );
+
+  // check parameters
+  if ( randAddr != NULL )
+  {
+      pCmdParams.handle = advHandle;
+      (void)MAP_osal_memcpy( pCmdParams.randAddr, randAddr, B_ADDR_LEN );
+
+      rtnParam[2] = MAP_LE_SetAdvSetRandAddr( &pCmdParams );
+  }
+  else
+  {
+      rtnParam[2] = HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS;
+  }
+
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_SET_ADV_SET_RAND_ADDR,
+                                             sizeof(rtnParam),
+                                             rtnParam );
+  return( HCI_SUCCESS );
+}
+#endif // ADV_NCONN_CFG | ADV_CONN_CFG
+
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_NCONN_CFG)
 /*******************************************************************************
  * This API is used to set the advertiser's virtual public address.
@@ -4409,8 +5084,8 @@ hciStatus_t HCI_EXT_SetVirtualAdvAddrCmd( uint8 advHandle,
 /*******************************************************************************
  * This API is used to set this device's Sleep Clock Accuracy value.
  *
- * Note: For a slave device, this value is directly used, but only
- *       if power management is enabled. For a master device, this
+ * Note: For a peripheral device, this value is directly used, but only
+ *       if power management is enabled. For a central device, this
  *       value is converted into one of eight ordinal values
  *       representing a SCA range, as specified in Table 2.2,
  *       Vol. 6, Part B, Section 2.3.3.1 of the Core specification.
@@ -4520,11 +5195,7 @@ hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd( uint8 txPower )
 
   rtnParam[0] = LO_UINT16( HCI_EXT_SET_MAX_DTM_TX_POWER_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_SET_MAX_DTM_TX_POWER_EVENT );
-#ifdef CC23X0
-  rtnParam[2] = HCI_ERROR_CODE_UNKNOWN_HCI_CMD;
-#else
   rtnParam[2] = MAP_LL_EXT_SetMaxDtmTxPower( txPower );
-#endif
 
   MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_SET_MAX_DTM_TX_POWER,
                                              sizeof(rtnParam),
@@ -4533,6 +5204,29 @@ hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd( uint8 txPower )
   return( HCI_SUCCESS );
 }
 
+/*******************************************************************************
+ * This HCI Extension API is used to set the max TX power (in dBm) for Direct Test Mode.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_SetMaxDtmTxPowerDbmCmd( int8   txPowerDbm,
+                                            uint8  fraction )
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  uint8 rtnParam[3];
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_SET_MAX_DTM_TX_POWER_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_SET_MAX_DTM_TX_POWER_EVENT );
+  rtnParam[2] = MAP_LL_EXT_SetMaxDtmTxPowerDbm( txPowerDbm, fraction );
+
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_SET_MAX_DTM_TX_POWER_DBM,
+                                             sizeof(rtnParam),
+                                             rtnParam );
+
+  return( HCI_SUCCESS );
+}
 
 /*******************************************************************************
  * This HCI Extension API is used to configure and map a CC254x I/O Port as a
@@ -4582,6 +5276,8 @@ hciStatus_t HCI_EXT_DisconnectImmedCmd( uint16 connHandle )
   // 2: Status
   uint8 rtnParam[3];
 
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
   rtnParam[0] = LO_UINT16( HCI_EXT_DISCONNECT_IMMED_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_DISCONNECT_IMMED_EVENT );
   rtnParam[2] = MAP_LL_EXT_DisconnectImmed( connHandle );
@@ -4609,6 +5305,8 @@ hciStatus_t HCI_EXT_PacketErrorRateCmd( uint16 connHandle, uint8 command )
   // 2: Status
   // 3: Command
   uint8 rtnParam[4];
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   rtnParam[0] = LO_UINT16( HCI_EXT_PER_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_PER_EVENT );
@@ -4641,6 +5339,8 @@ hciStatus_t HCI_EXT_PERbyChanCmd( uint16 connHandle, perByChan_t *perByChan )
   // 1: Event Opcode (MSB)
   // 2: Status
   uint8 rtnParam[3];
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
 
   rtnParam[0] = LO_UINT16( HCI_EXT_PER_BY_CHAN_EVENT );
   rtnParam[1] = HI_UINT16( HCI_EXT_PER_BY_CHAN_EVENT );
@@ -4879,8 +5579,8 @@ hciStatus_t HCI_EXT_NumComplPktsLimitCmd( uint8 limit,
 /*******************************************************************************
  * This API is used to get connection related information, which includes the
  * number of allocated connections, the number of active connections, and for
- * each active connection, the connection ID, the connection role (Master or
- * Slave), the peer address and peer address type. The number of allocated
+ * each active connection, the connection ID, the connection role (Central or
+ * Peripheral), the peer address and peer address type. The number of allocated
  * connections is based on a default build value that can be changed using
  * MAX_NUM_BLE_CONNS. The number of active connections refers to active BLE
  * connections.
@@ -5295,6 +5995,100 @@ hciStatus_t HCI_EXT_CoexEnableCmd( uint8 enable )
   return( HCI_SUCCESS );
 }
 
+/*******************************************************************************
+ * This HCI Extension API is used to Reset or Read the Rx statistics data
+ * for a connection.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_GetRxStatisticsCmd( uint16 connHandle, uint8 command )
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  // 3: Command
+  uint8 rtnParam[4];
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_GET_RX_STATS_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_GET_RX_STATS_EVENT );
+  rtnParam[2] = MAP_LL_EXT_GetRxStats( connHandle, command );
+  rtnParam[3] = command;
+
+  // check if it is okay to complete this event now or later
+  if ( (command == HCI_EXT_STATS_RESET) || (rtnParam[2] != LL_STATUS_SUCCESS) )
+  {
+    MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_RX_STATS,
+                                               sizeof(rtnParam),
+                                               rtnParam );
+  }
+
+  return( HCI_SUCCESS );
+}
+
+/*******************************************************************************
+ * This HCI Extension API is used to Reset or Read the Tx statistics data
+ * for a connection.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_GetTxStatisticsCmd( uint16 connHandle, uint8 command )
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  // 3: Command
+  uint8 rtnParam[4];
+
+  connHandle = CONN_HANDLE_HOST_TO_CTRL_CONVERT(connHandle);
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_GET_TX_STATS_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_GET_TX_STATS_EVENT );
+  rtnParam[2] = MAP_LL_EXT_GetTxStats( connHandle, command );
+  rtnParam[3] = command;
+
+  // check if it is okay to complete this event now or later
+  if ( (command == HCI_EXT_STATS_RESET) || (rtnParam[2] != LL_STATUS_SUCCESS) )
+  {
+    MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_TX_STATS,
+                                               sizeof(rtnParam),
+                                               rtnParam );
+  }
+
+  return( HCI_SUCCESS );
+}
+
+/*******************************************************************************
+ * This HCI Extension API is used to Reset or Read the Coex statistics data
+ * for a connection.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_GetCoexStatisticsCmd( uint8 command )
+{
+  // 0: Event Opcode (LSB)
+  // 1: Event Opcode (MSB)
+  // 2: Status
+  // 3: Command
+  uint8 rtnParam[4];
+
+  rtnParam[0] = LO_UINT16( HCI_EXT_GET_COEX_STATS_EVENT );
+  rtnParam[1] = HI_UINT16( HCI_EXT_GET_COEX_STATS_EVENT );
+  rtnParam[2] = MAP_LL_EXT_GetCoexStats( command );
+  rtnParam[3] = command;
+
+  // check if it is okay to complete this event now or later
+  if ( (command == HCI_EXT_STATS_RESET) || (rtnParam[2] != LL_STATUS_SUCCESS) )
+  {
+    MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_COEX_STATS,
+                                               sizeof(rtnParam),
+                                               rtnParam );
+  }
+
+  return( HCI_SUCCESS );
+}
+
 #ifdef LL_TEST_MODE
 /*******************************************************************************
  * This HCI Extension API is used send a LL Test Mode test case.
@@ -5474,5 +6268,186 @@ void LL_EXT_ExtendRfRangeCback( void )
   return;
 }
 
+/*******************************************************************************
+ * This LL Extension command Callback is used by the LL to notify the HCI that
+ * the RX statistics Read has been completed.
+ *
+ * Note: The counters are only 16 bits. At the shortest connection
+ *       interval, this provides a bit over 8 minutes of data.
+ *
+ * Public function defined in hci.h.
+ */
+void LL_EXT_GetRxStatsCback( uint16 numRxOk,
+                             uint16 numRxCtrl,
+                             uint16 numRxCtrlAck,
+                             uint16 numRxCrcErr,
+                             uint16 numRxIgnored,
+                             uint16 numRxEmpty,
+                             uint16 numRxBufFull )
+{
+  // 0:  Event Opcode (LSB)
+  // 1:  Event Opcode (MSB)
+  // 2:  Status
+  // 3:  Command
+  // 4:  Number of okay Rx pkts (LSB)
+  // 5:  Number of okay Rx pkts (MSB)
+  // 6:  Number of okay Rx ctrl pkts (LSB)
+  // 7:  Number of okay Rx ctrl pkts (MSB)
+  // 8:  Number of okay Rx ctrl pkts Acked (LSB)
+  // 9:  Number of okay Rx ctrl pkts Acked (MSB)
+  // 10: Number of CRC error Rx pkts(LSB)
+  // 11: Number of CRC error Rx pkts (MSB)
+  // 12: Number of okay Rx pkts ignored (LSB)
+  // 13: Number of okay Rx pkts ignored (MSB)
+  // 14: Number of empty Rx pkts (LSB)
+  // 15: Number of empty Rx pkts (MSB)
+  // 16: Number of pkts discarded (LSB)
+  // 17: Number of pkts discarded (MSB)
+  uint8 rtnParam[18];
+
+  rtnParam[0]  = LO_UINT16( HCI_EXT_GET_RX_STATS_EVENT );
+  rtnParam[1]  = HI_UINT16( HCI_EXT_GET_RX_STATS_EVENT );
+  rtnParam[2]  = HCI_SUCCESS;
+  rtnParam[3]  = HCI_EXT_STATS_READ;
+  rtnParam[4]  = LO_UINT16( numRxOk );
+  rtnParam[5]  = HI_UINT16( numRxOk );
+  rtnParam[6]  = LO_UINT16( numRxCtrl );
+  rtnParam[7]  = HI_UINT16( numRxCtrl );
+  rtnParam[8]  = LO_UINT16( numRxCtrlAck );
+  rtnParam[9]  = HI_UINT16( numRxCtrlAck );
+  rtnParam[10] = LO_UINT16( numRxCrcErr );
+  rtnParam[11] = HI_UINT16( numRxCrcErr );
+  rtnParam[12] = LO_UINT16( numRxIgnored );
+  rtnParam[13] = HI_UINT16( numRxIgnored );
+  rtnParam[14] = LO_UINT16( numRxEmpty );
+  rtnParam[15] = HI_UINT16( numRxEmpty );
+  rtnParam[16] = LO_UINT16( numRxBufFull );
+  rtnParam[17] = HI_UINT16( numRxBufFull );
+
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_RX_STATS,
+                                             sizeof(rtnParam),
+                                             rtnParam );
+
+  return;
+}
+
+
+/*******************************************************************************
+ * This LL Extension command Callback is used by the LL to notify the HCI that
+ * the TX statistics Read has been completed.
+ *
+ * Note: The counters are only 16 bits. At the shortest connection
+ *       interval, this provides a bit over 8 minutes of data.
+ *
+ * Public function defined in hci.h.
+ */
+void LL_EXT_GetTxStatsCback( uint16 numTx,
+                             uint16 numTxAck,
+                             uint16 numTxCtrl,
+                             uint16 numTxCtrlAck,
+                             uint16 numTxCtrlAckAck,
+                             uint16 numTxRetrans,
+                             uint16 numTxEntryDone )
+{
+  // 0:  Event Opcode (LSB)
+  // 1:  Event Opcode (MSB)
+  // 2:  Status
+  // 3:  Command
+  // 4:  Number of Tx pkts (LSB)
+  // 5:  Number of Tx pkts (MSB)
+  // 6:  Number of Tx pkts Acked (LSB)
+  // 7:  Number of Tx pkts Acked (MSB)
+  // 8:  Number of Tx ctrl pkts (LSB)
+  // 9:  Number of Tx ctrl pkts (MSB)
+  // 10: Number of Tx ctrl pkts Acked (LSB)
+  // 11: Number of Tx ctrl pkts Acked (MSB)
+  // 12: Number of Tx ctrl pkts Acked that were Acked (LSB)
+  // 13: Number of Tx ctrl pkts Acked that were Acked (MSB)
+  // 14: Number of retransmissions (LSB)
+  // 15: Number of retransmissions (MSB)
+  // 16: Number of pkts on Tx queue that are finished (LSB)
+  // 17: Number of pkts on Tx queue that are finished (MSB)
+  uint8 rtnParam[18];
+
+  rtnParam[0]  = LO_UINT16( HCI_EXT_GET_TX_STATS_EVENT );
+  rtnParam[1]  = HI_UINT16( HCI_EXT_GET_TX_STATS_EVENT );
+  rtnParam[2]  = HCI_SUCCESS;
+  rtnParam[3]  = HCI_EXT_STATS_READ;
+  rtnParam[4]  = LO_UINT16( numTx );
+  rtnParam[5]  = HI_UINT16( numTx );
+  rtnParam[6]  = LO_UINT16( numTxAck );
+  rtnParam[7]  = HI_UINT16( numTxAck );
+  rtnParam[8]  = LO_UINT16( numTxCtrl );
+  rtnParam[9]  = HI_UINT16( numTxCtrl );
+  rtnParam[10] = LO_UINT16( numTxCtrlAck );
+  rtnParam[11] = HI_UINT16( numTxCtrlAck );
+  rtnParam[12] = LO_UINT16( numTxCtrlAckAck );
+  rtnParam[13] = HI_UINT16( numTxCtrlAckAck );
+  rtnParam[14] = LO_UINT16( numTxEntryDone );
+  rtnParam[15] = HI_UINT16( numTxEntryDone );
+  rtnParam[16] = LO_UINT16( numTxRetrans );
+  rtnParam[17] = HI_UINT16( numTxRetrans );
+
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_TX_STATS,
+                                             sizeof(rtnParam),
+                                             rtnParam );
+
+  return;
+}
+
+/*******************************************************************************
+ * This LL Extension command Callback is used by the LL to notify the HCI that
+ * the Coex statistics Read has been completed.
+ *
+ * Note: The counters are 32 or 16 bits.
+ *
+ * Public function defined in hci.h.
+ */
+void LL_EXT_GetCoexStatsCback( uint32 grants,
+                               uint32 rejects,
+                               uint16 contRejects,
+                               uint16 maxContRejects )
+{
+  // 0:  Event Opcode (LSB)
+  // 1:  Event Opcode (MSB)
+  // 2:  Status
+  // 3:  Command
+  // 4:  Number of grants (BYTE0)
+  // 5:  Number of grants (BYTE1)
+  // 6:  Number of grants (BYTE2)
+  // 7:  Number of grants (BYTE3)
+  // 8:  Number of rejects (BYTE0)
+  // 9:  Number of rejects (BYTE1)
+  // 10: Number of rejects (BYTE2)
+  // 11: Number of rejects (BYTE3)
+  // 12: Number of continuously Rejects (LSB)
+  // 13: Number of continuously Rejects (MSB)
+  // 14: Number of max ontinuously Rejects (LSB)
+  // 15: Number of max ontinuously Rejects (MSB)
+  uint8 rtnParam[16];
+
+  rtnParam[0]  = LO_UINT16( HCI_EXT_GET_COEX_STATS_EVENT );
+  rtnParam[1]  = HI_UINT16( HCI_EXT_GET_COEX_STATS_EVENT );
+  rtnParam[2]  = HCI_SUCCESS;
+  rtnParam[3]  = HCI_EXT_STATS_READ;
+  rtnParam[4]  = BREAK_UINT32( grants, 0 );
+  rtnParam[5]  = BREAK_UINT32( grants, 1 );
+  rtnParam[6]  = BREAK_UINT32( grants, 2 );
+  rtnParam[7]  = BREAK_UINT32( grants, 3 );
+  rtnParam[8]  = BREAK_UINT32( rejects, 0 );
+  rtnParam[9]  = BREAK_UINT32( rejects, 1 );
+  rtnParam[10] = BREAK_UINT32( rejects, 2 );
+  rtnParam[11] = BREAK_UINT32( rejects, 3 );
+  rtnParam[12] = LO_UINT16( contRejects );
+  rtnParam[13] = HI_UINT16( contRejects );
+  rtnParam[14] = LO_UINT16( maxContRejects );
+  rtnParam[15] = HI_UINT16( maxContRejects );
+
+  MAP_HCI_VendorSpecifcCommandCompleteEvent( HCI_EXT_GET_COEX_STATS,
+                                             sizeof(rtnParam),
+                                             rtnParam );
+
+  return;
+}
 /***************************************************************************************************
  */

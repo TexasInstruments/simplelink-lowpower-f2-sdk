@@ -43,12 +43,14 @@
 var dplFiles = [
     "ti/dpl/ClockP_tirtos.c",
     "ti/dpl/DebugP_tirtos.c",
+    "ti/dpl/EventP_tirtos.c",
     "ti/dpl/HwiP_tirtos.c",
     "ti/dpl/MutexP_tirtos.c",
     "ti/dpl/SemaphoreP_tirtos.c",
     "ti/dpl/SwiP_tirtos.c",
     "ti/dpl/SystemP_tirtos.c",
     "ti/dpl/TaskP_tirtos.c",
+    "ti/dpl/MessageQueueP_tirtos.c"
 ];
 
 function getCFiles()

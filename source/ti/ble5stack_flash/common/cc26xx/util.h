@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -100,8 +100,8 @@ extern "C" {
 #define UTIL_EVENT_ID_04         (0x10)// Event_Id_04
 #define UTIL_EVENT_ID_05         (0x20)// Event_Id_05
 #define UTIL_EVENT_ID_06         (0x40)// Event_Id_06
-#define UTIL_QUEUE_EVENT_ID (0x40000000)//Event_Id_30
-#define UTIL_TL_CB_EVENT    UTIL_EVENT_ID_00 // Event_Id_00
+#define UTIL_QUEUE_EVENT_ID      (0x00100000)//Event_Id_30
+#define UTIL_TL_CB_EVENT         UTIL_EVENT_ID_00 // Event_Id_00
 #else
 #define UTIL_QUEUE_EVENT_ID Event_Id_30
 #endif
@@ -110,10 +110,12 @@ extern "C" {
  */
 
 #ifdef FREERTOS
+typedef void (*UtilTimerCback)(uint32_t arg);
+
 typedef struct Clock_Struct
 {
     timer_t clock;
-    void *cback;
+    UtilTimerCback cback;
     uint32_t arg;
     sigevent evnt;
     pthread_attr_t timerThrdAttr;
@@ -150,7 +152,7 @@ typedef struct
  * @return  Clock_Handle  - a handle to the clock instance.
  */
 #ifdef FREERTOS
-void* Util_constructClock(Clock_Struct *entry, void *clockCB,
+void* Util_constructClock(Clock_Struct *entry, UtilTimerCback clockCB,
                           uint32_t clockDuration, uint32_t clockPeriod,
                           uint8_t startFlag, uint32_t arg);
 

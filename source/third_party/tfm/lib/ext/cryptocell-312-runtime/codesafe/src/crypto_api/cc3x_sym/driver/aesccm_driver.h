@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -42,8 +42,12 @@ typedef struct  AesCcmContext_t {
     keySizeId_t keySizeId;
     /* Decrypt / Encrypt */
     cryptoDirection_t dir;
+    /* Data size (Plain/Cipher text) */
+    uint32_t dataSize;
     /* nonce size */
     uint8_t sizeOfN;
+    /* AAD size */
+    uint32_t aadSize;
     /* T mac size */
     uint8_t sizeOfT;
 }AesCcmContext_t;

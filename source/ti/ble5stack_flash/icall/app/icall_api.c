@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -185,7 +185,7 @@ static bool matchGapGetParamCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                const void *msg);
 static bool matchGapResolvePrivateAddrCS(ICall_ServiceEnum src,
                                          ICall_EntityID dest, const void *msg);
-static bool matchGapSlaveSecurityReqCS(ICall_ServiceEnum src,
+static bool matchGapPeripheralSecurityReqCS(ICall_ServiceEnum src,
                                        ICall_EntityID dest, const void *msg);
 
 static bool matchLinkDBStateCS(ICall_ServiceEnum src,
@@ -337,15 +337,15 @@ static bool matchHciLeReadLocalSupportedFeaturesCS(ICall_ServiceEnum src,
 static bool matchHciLeReadAdvChanTxPowerCS(ICall_ServiceEnum src,
                                            ICall_EntityID dest,
                                            const void *msg);
-static bool matchHciLeReadWhiteListSizeCS(ICall_ServiceEnum src,
+static bool matchHciLeReadAcceptListSizeCS(ICall_ServiceEnum src,
                                           ICall_EntityID dest,
                                           const void *msg);
-static bool matchHciLeClearWhiteListCS(ICall_ServiceEnum src,
+static bool matchHciLeClearAcceptListCS(ICall_ServiceEnum src,
                                        ICall_EntityID dest,
                                        const void *msg);
-static bool matchHciLeAddWhiteListCS(ICall_ServiceEnum src, ICall_EntityID dest,
+static bool matchHciLeAddAcceptListCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                      const void *msg);
-static bool matchHciLeRemoveWhiteListCS(ICall_ServiceEnum src,
+static bool matchHciLeRemoveAcceptListCS(ICall_ServiceEnum src,
                                         ICall_EntityID dest,
                                         const void *msg);
 static bool matchHciLeSetHostChanClassificationCS(ICall_ServiceEnum src,
@@ -380,6 +380,8 @@ static bool matchHciLeTestEndCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                 const void *msg);
 static bool matchHciExtSetTxPowerCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                    const void *msg);
+static bool matchHciExtSetTxPowerDbmCS(ICall_ServiceEnum src, ICall_EntityID dest,
+                                   const void *msg);
 static bool matchHciExtOnePktPerEvtCS(ICall_ServiceEnum src,
                                       ICall_EntityID dest, const void *msg);
 static bool matchHciExtDecryptCS(ICall_ServiceEnum src, ICall_EntityID dest,
@@ -409,6 +411,8 @@ static bool matchHciExtSetScaCS(ICall_ServiceEnum src, ICall_EntityID dest,
 static bool matchHciExtEnablePTMCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                    const void *msg);
 static bool matchHciExtSetMaxDtmTxPwrCS(ICall_ServiceEnum src,
+                                        ICall_EntityID dest, const void *msg);
+static bool matchHciExtSetMaxDtmTxPwrDbmCS(ICall_ServiceEnum src,
                                         ICall_EntityID dest, const void *msg);
 static bool matchHciExtDisconnectImmedCS(ICall_ServiceEnum src,
                                          ICall_EntityID dest, const void *msg);
@@ -784,7 +788,7 @@ bStatus_t GAPBondMgr_PasscodeRsp(uint16 connectionHandle, uint8 status,
 }
 
 /*********************************************************************
- * @brief   Notify the Bond Manager that a Slave Security Request is received.
+ * @brief   Notify the Bond Manager that a Peripheral Security Request is received.
  *
  * Public function defined in gapbondmgr.h.
  */
@@ -2037,7 +2041,7 @@ bStatus_t GAP_DeviceInit(uint8 profileRole, uint8 taskID,
 }
 
 /*********************************************************************
- * Update the link parameters to a slave device.
+ * Update the link parameters to a peripheral device.
  *
  * Public function defined in gap.h.
  */
@@ -2258,15 +2262,15 @@ uint16 GAP_GetParamValue(gapParamIDs_t paramID)
 }
 
 /*********************************************************************
- * Send Slave Security Request
+ * Send Peripheral Security Request
  *
  * Public function defined in gap.h.
  */
-bStatus_t GAP_SendSlaveSecurityRequest(uint16 connHandle, uint8 authReq)
+bStatus_t GAP_SendPeripheralSecurityRequest(uint16 connHandle, uint8 authReq)
 {
   return gapSendParamsCmd(connHandle, authReq,
-                          HCI_EXT_GAP_SLAVE_SECURITY_REQ_UPDATE,
-                          matchGapSlaveSecurityReqCS);
+                          HCI_EXT_GAP_PERIPHERAL_SECURITY_REQ_UPDATE,
+                          matchGapPeripheralSecurityReqCS);
 }
 
 /*********************************************************************
@@ -3392,7 +3396,7 @@ static bool matchGapGetParamCS(ICall_ServiceEnum src, ICall_EntityID dest,
 }
 
 /*********************************************************************
- * Compare a received GAP Slave Security Request Command Status message
+ * Compare a received GAP Peripheral Security Request Command Status message
  * for a match.
  *
  * @param src   originator of the message as a service enumeration
@@ -3401,15 +3405,15 @@ static bool matchGapGetParamCS(ICall_ServiceEnum src, ICall_EntityID dest,
  *
  * @return TRUE when the message matches. FALSE, otherwise.
  */
-static bool matchGapSlaveSecurityReqCS(ICall_ServiceEnum src,
+static bool matchGapPeripheralSecurityReqCS(ICall_ServiceEnum src,
                                        ICall_EntityID dest, const void *msg)
 {
   return matchGapSetGetParamCS(src, dest, msg,
-                               HCI_EXT_GAP_SLAVE_SECURITY_REQ_UPDATE);
+                               HCI_EXT_GAP_PERIPHERAL_SECURITY_REQ_UPDATE);
 }
 
 /*********************************************************************
- * Compare a received GAP Slave Security Request Command Status message
+ * Compare a received GAP Peripheral Security Request Command Status message
  * for a match.
  *
  * @param src   originator of the message as a service enumeration
@@ -4443,46 +4447,46 @@ hciStatus_t HCI_LE_ReadAdvChanTxPowerCmd(void)
 }
 
 /*******************************************************************************
- * This LE API is used to read the total number of white list entries that can
+ * This LE API is used to read the total number of accept list entries that can
  * be stored in the Controller.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_ReadWhiteListSizeCmd(void)
+hciStatus_t HCI_LE_ReadAcceptListSizeCmd(void)
 {
-  return hciSendCmd(HCI_LE_READ_WHITE_LIST_SIZE, matchHciLeReadWhiteListSizeCS);
+  return hciSendCmd(HCI_LE_READ_ACCEPT_LIST_SIZE, matchHciLeReadAcceptListSizeCS);
 }
 
 /*******************************************************************************
- * This LE API is used to clear the white list.
+ * This LE API is used to clear the accept list.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_ClearWhiteListCmd(void)
+hciStatus_t HCI_LE_ClearAcceptListCmd(void)
 {
-  return hciSendCmd(HCI_LE_CLEAR_WHITE_LIST, matchHciLeClearWhiteListCS);
+  return hciSendCmd(HCI_LE_CLEAR_ACCEPT_LIST, matchHciLeClearAcceptListCS);
 }
 
 /*******************************************************************************
- * This LE API is used to add a white list entry.
+ * This LE API is used to add a accept list entry.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_AddWhiteListCmd(uint8 addrType, uint8 *devAddr)
+hciStatus_t HCI_LE_AddAcceptListCmd(uint8 addrType, uint8 *devAddr)
 {
-  return hciSendParamAndPtrCmd(HCI_LE_ADD_WHITE_LIST, addrType,
-                               devAddr, matchHciLeAddWhiteListCS);
+  return hciSendParamAndPtrCmd(HCI_LE_ADD_ACCEPT_LIST, addrType,
+                               devAddr, matchHciLeAddAcceptListCS);
 }
 
 /*******************************************************************************
- * This LE API is used to remove a white list entry.
+ * This LE API is used to remove a accept list entry.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_LE_RemoveWhiteListCmd(uint8 addrType, uint8 *devAddr)
+hciStatus_t HCI_LE_RemoveAcceptListCmd(uint8 addrType, uint8 *devAddr)
 {
-  return hciSendParamAndPtrCmd(HCI_LE_REMOVE_WHITE_LIST, addrType,
-                               devAddr, matchHciLeRemoveWhiteListCS);
+  return hciSendParamAndPtrCmd(HCI_LE_REMOVE_ACCEPT_LIST, addrType,
+                               devAddr, matchHciLeRemoveAcceptListCS);
 }
 
 /*******************************************************************************
@@ -5104,7 +5108,7 @@ static bool matchHciLeReadAdvChanTxPowerCS(ICall_ServiceEnum src,
 }
 
 /*********************************************************************
- * Compare a received HCI LE Read White List Size Command Status message
+ * Compare a received HCI LE Read accept List Size Command Status message
  * for a match.
  *
  * @param src   originator of the message as a service enumeration
@@ -5113,15 +5117,15 @@ static bool matchHciLeReadAdvChanTxPowerCS(ICall_ServiceEnum src,
  *
  * @return TRUE when the message matches. FALSE, otherwise.
  */
-static bool matchHciLeReadWhiteListSizeCS(ICall_ServiceEnum src,
+static bool matchHciLeReadAcceptListSizeCS(ICall_ServiceEnum src,
                                           ICall_EntityID dest,
                                           const void *msg)
 {
-  return matchHciCS(src, dest, msg, HCI_LE_READ_WHITE_LIST_SIZE);
+  return matchHciCS(src, dest, msg, HCI_LE_READ_ACCEPT_LIST_SIZE);
 }
 
 /*********************************************************************
- * Compare a received HCI LE Clear White List Command Status message for a match.
+ * Compare a received HCI LE Clear accept List Command Status message for a match.
  *
  * @param src   originator of the message as a service enumeration
  * @param dest  destination entity id of the message
@@ -5129,15 +5133,15 @@ static bool matchHciLeReadWhiteListSizeCS(ICall_ServiceEnum src,
  *
  * @return TRUE when the message matches. FALSE, otherwise.
  */
-static bool matchHciLeClearWhiteListCS(ICall_ServiceEnum src,
+static bool matchHciLeClearAcceptListCS(ICall_ServiceEnum src,
                                        ICall_EntityID dest,
                                        const void *msg)
 {
-  return matchHciCS(src, dest, msg, HCI_LE_CLEAR_WHITE_LIST);
+  return matchHciCS(src, dest, msg, HCI_LE_CLEAR_ACCEPT_LIST);
 }
 
 /*********************************************************************
- * Compare a received HCI LE Add White List Command Status message for a match.
+ * Compare a received HCI LE Add accept List Command Status message for a match.
  *
  * @param src   originator of the message as a service enumeration
  * @param dest  destination entity id of the message
@@ -5145,10 +5149,10 @@ static bool matchHciLeClearWhiteListCS(ICall_ServiceEnum src,
  *
  * @return TRUE when the message matches. FALSE, otherwise.
  */
-static bool matchHciLeAddWhiteListCS(ICall_ServiceEnum src, ICall_EntityID dest,
+static bool matchHciLeAddAcceptListCS(ICall_ServiceEnum src, ICall_EntityID dest,
                                      const void *msg)
 {
-  return matchHciCS(src, dest, msg, HCI_LE_ADD_WHITE_LIST);
+  return matchHciCS(src, dest, msg, HCI_LE_ADD_ACCEPT_LIST);
 }
 
 /*********************************************************************
@@ -5160,11 +5164,11 @@ static bool matchHciLeAddWhiteListCS(ICall_ServiceEnum src, ICall_EntityID dest,
  *
  * @return TRUE when the message matches. FALSE, otherwise.
  */
-static bool matchHciLeRemoveWhiteListCS(ICall_ServiceEnum src,
+static bool matchHciLeRemoveAcceptListCS(ICall_ServiceEnum src,
                                         ICall_EntityID dest,
                                         const void *msg)
 {
-  return matchHciCS(src, dest, msg, HCI_LE_REMOVE_WHITE_LIST);
+  return matchHciCS(src, dest, msg, HCI_LE_REMOVE_ACCEPT_LIST);
 }
 
 /*********************************************************************
@@ -5317,6 +5321,20 @@ hciStatus_t HCI_EXT_SetTxPowerCmd(uint8 txPower)
 }
 
 /*******************************************************************************
+ * This API is used to set this device's TX Power
+ *
+ * Note: This command is only allowed when the device's state is Standby.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_SetTxPowerDbmCmd(int8 txPower, uint8 fraction)
+{
+  return hciSendParamsCmd(HCI_EXT_SET_TX_POWER_DBM, txPower,
+                          fraction, HCI_NO_PARAM,
+                          matchHciExtSetTxPowerDbmCS);
+}
+
+/*******************************************************************************
  * This HCI Extension API is used to set whether a connection will be limited
  * to one packet per event.
  *
@@ -5353,7 +5371,7 @@ hciStatus_t HCI_EXT_SetLocalSupportedFeaturesCmd(uint8 *localFeatures)
 
 /*******************************************************************************
  * This HCI Extension API is used to set whether transmit data is sent as soon
- * as possible even when slave latency is used.
+ * as possible even when peripheral latency is used.
  *
  * Public function defined in hci.h.
  */
@@ -5365,14 +5383,14 @@ hciStatus_t HCI_EXT_SetFastTxResponseTimeCmd(uint8 control)
 }
 
 /*******************************************************************************
- * This HCI Extension API is used to enable or disable suspending slave
+ * This HCI Extension API is used to enable or disable suspending peripheral
  * latency.
  *
  * Public function defined in hci.h.
  */
-hciStatus_t HCI_EXT_SetSlaveLatencyOverrideCmd(uint8 control)
+hciStatus_t HCI_EXT_SetPeripheralLatencyOverrideCmd(uint8 control)
 {
-  return hciSendParamsCmd(HCI_EXT_OVERRIDE_SL, control,
+  return hciSendParamsCmd(HCI_EXT_OVERRIDE_PL, control,
                           HCI_NO_PARAM, HCI_NO_PARAM, matchHciExtSetSLOverrideCS);
 }
 
@@ -5488,6 +5506,18 @@ hciStatus_t HCI_EXT_SetMaxDtmTxPowerCmd(uint8 txPower)
   return hciSendParamsCmd(HCI_EXT_SET_MAX_DTM_TX_POWER, txPower,
                           HCI_NO_PARAM, HCI_NO_PARAM,
                           matchHciExtSetMaxDtmTxPwrCS);
+}
+
+/*******************************************************************************
+ * This HCI Extension API is used to set the max TX power for Direct Test Mode.
+ *
+ * Public function defined in hci.h.
+ */
+hciStatus_t HCI_EXT_SetMaxDtmTxPowerDbmCmd(int8 txPower, uint8 fraction)
+{
+  return hciSendParamsCmd(HCI_EXT_SET_MAX_DTM_TX_POWER_DBM, txPower,
+                          fraction, HCI_NO_PARAM,
+                          matchHciExtSetMaxDtmTxPwrDbmCS);
 }
 
 /*******************************************************************************
@@ -5610,6 +5640,22 @@ static bool matchHciExtSetTxPowerCS(ICall_ServiceEnum src, ICall_EntityID dest,
 }
 
 /*********************************************************************
+ * Compare a received HCI Ext Set Tx Power Dbm Command Status message for
+ * a match.
+ *
+ * @param src   originator of the message as a service enumeration
+ * @param dest  destination entity id of the message
+ * @param msg   pointer to the message body
+ *
+ * @return TRUE when the message matches. FALSE, otherwise.
+ */
+static bool matchHciExtSetTxPowerDbmCS(ICall_ServiceEnum src, ICall_EntityID dest,
+                                   const void *msg)
+{
+  return matchHciCS(src, dest, msg, HCI_EXT_SET_TX_POWER_DBM);
+}
+
+/*********************************************************************
  * Compare a received HCI Ext One Packet Per Event Command Status message
  * for a match.
  *
@@ -5675,7 +5721,7 @@ static bool matchHciExtSetFastTxRspTimeCS(ICall_ServiceEnum src,
 }
 
 /*********************************************************************
- * Compare a received HCI Ext Set Slave Latency Override Command Status
+ * Compare a received HCI Ext Set Peripheral Latency Override Command Status
  * message for a match.
  *
  * @param src   originator of the message as a service enumeration
@@ -5688,7 +5734,7 @@ static bool matchHciExtSetSLOverrideCS(ICall_ServiceEnum src,
                                        ICall_EntityID dest,
                                        const void *msg)
 {
-  return matchHciCS(src, dest, msg, HCI_EXT_OVERRIDE_SL);
+  return matchHciCS(src, dest, msg, HCI_EXT_OVERRIDE_PL);
 }
 
 /*********************************************************************
@@ -5817,6 +5863,22 @@ static bool matchHciExtSetMaxDtmTxPwrCS(ICall_ServiceEnum src,
                                         ICall_EntityID dest, const void *msg)
 {
   return matchHciCS(src, dest, msg, HCI_EXT_SET_MAX_DTM_TX_POWER);
+}
+
+/*********************************************************************
+ * Compare a received HCI Ext Set the Max TX Power for Direct Test Mode test
+ * Command Status message for a match.
+ *
+ * @param src   originator of the message as a service enumeration
+ * @param dest  destination entity id of the message
+ * @param msg   pointer to the message body
+ *
+ * @return TRUE when the message matches. FALSE, otherwise.
+ */
+static bool matchHciExtSetMaxDtmTxPwrDbmCS(ICall_ServiceEnum src,
+                                        ICall_EntityID dest, const void *msg)
+{
+  return matchHciCS(src, dest, msg, HCI_EXT_SET_MAX_DTM_TX_POWER_DBM);
 }
 
 /*********************************************************************

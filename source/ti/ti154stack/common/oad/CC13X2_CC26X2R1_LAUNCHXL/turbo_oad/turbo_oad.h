@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2019-2023, Texas Instruments Incorporated
+ Copyright (c) 2019-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
  
  
  *****************************************************************************/
-
+#if defined(FEATURE_TOAD)
 #ifndef TURBO_OAD_H
 #define TURBO_OAD_H
 
@@ -275,3 +275,4 @@ TOAD_status_t TOAD_decode();
 #endif
 
 #endif /* TURBO_OAD_H */
+#endif /* FEATURE_TOAD */

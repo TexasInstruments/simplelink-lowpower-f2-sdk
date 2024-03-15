@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,11 @@
 #include <stdint.h>
 
 #include "CryptoCC26X4_s.h"
-#include <crypto_sp/psa_manifest/crypto_sp.h> /* Auto-generated header */
 #include <third_party/tfm/interface/include/psa/service.h>
+#include <psa_manifest/crypto_sp.h> /* Auto-generated header */
+#ifdef ENABLE_ITS_LOCAL_INTEGRATION
+    #include <third_party/tfm/secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
+#endif
 
 #include <ti/drivers/aescbc/AESCBCCC26X4_s.h>
 #include <ti/drivers/aesccm/AESCCMCC26X4_s.h>
@@ -45,15 +48,16 @@
 #include <ti/drivers/aesgcm/AESGCMCC26X4_s.h>
 #include <ti/drivers/ecdh/ECDHCC26X4_s.h>
 #include <ti/drivers/ecdsa/ECDSACC26X4_s.h>
+#include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
 // #include <ti/drivers/eddsa/EDDSACC26X4_s.h>
-// #include <ti/drivers/ecjpake/ECJPAKECC26X4_s.h>
 #include <ti/drivers/sha2/SHA2CC26X4_s.h>
 #include <ti/drivers/trng/TRNGCC26X4_s.h>
 
-#include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
-#include <secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h>
+#if (ENABLE_KEY_STORAGE == 1)
+    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+#endif
 
-#include <psa/PSA_s.h>
+// #include <psa/PSA_s.h>
 
 #include <ti/drivers/dpl/HwiP.h>
 
@@ -62,15 +66,39 @@
 
 static psa_msg_t msg;
 
-/* Abort handling from TF-M v1.1 */
-static void tfm_abort(void)
-{
-    while (1) {}
-}
-
 #ifdef ENABLE_ITS_IPC_INTEGRATION
     #include "CryptoCC26X4_ITS_s.c"
 #endif
+
+/*
+ *  ======== pka_irqn_flih ========
+ */
+psa_flih_result_t pka_irqn_flih(void)
+{
+    HwiP_dispatchInterrupt(INT_PKA_IRQ);
+
+    return PSA_FLIH_NO_SIGNAL;
+}
+
+/*
+ *  ======== cryptoresultavail_irqn_flih ========
+ */
+psa_flih_result_t cryptoresultavail_irqn_flih(void)
+{
+    HwiP_dispatchInterrupt(INT_CRYPTO_RESULT_AVAIL_IRQ);
+
+    return PSA_FLIH_NO_SIGNAL;
+}
+
+/*
+ *  ======== trng_irqn_flih ========
+ */
+psa_flih_result_t trng_irqn_flih(void)
+{
+    HwiP_dispatchInterrupt(INT_TRNG_IRQ);
+
+    return PSA_FLIH_NO_SIGNAL;
+}
 
 /*
  *  ======== Crypto_s_handlePsaMsg ========
@@ -120,9 +148,9 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
             status = ECDSA_s_handlePsaMsg(msg);
             break;
 
-            //        case CRYPTO_S_MSG_TYPE_INDEX_ECJPAKE:
-            //            status = ECJPAKE_s_handlePsaMsg(msg);
-            //            break;
+        case CRYPTO_S_MSG_TYPE_INDEX_ECJPAKE:
+            status = ECJPAKE_s_handlePsaMsg(msg);
+            break;
 
             //        case CRYPTO_S_MSG_TYPE_INDEX_EDDSA:
             //            status = EDDSA_s_handlePsaMsg(msg);
@@ -136,13 +164,17 @@ static psa_status_t Crypto_s_handlePsaMsg(psa_msg_t *msg)
             status = TRNG_s_handlePsaMsg(msg);
             break;
 
+#if (ENABLE_KEY_STORAGE == 1)
         case CRYPTO_S_MSG_TYPE_INDEX_KEYSTORE:
             status = KeyStore_s_handlePsaMsg(msg);
             break;
 
-        case CRYPTO_S_MSG_TYPE_INDEX_PSA:
-            status = PSA_s_handlePsaMsg(msg);
-            break;
+            // BQ - commented out as we should be using native PSA call support.
+            // Delete once implementation finalized.
+            // case CRYPTO_S_MSG_TYPE_INDEX_PSA:
+            //     status = PSA_s_handlePsaMsg(msg);
+            //     break;
+#endif
 
         default:
             /* Unknown msg type - do nothing */
@@ -164,12 +196,11 @@ void Crypto_sp_main(void *param)
     /* Initialize ITS */
     if (tfm_its_init() != PSA_SUCCESS)
     {
-        tfm_abort();
+        psa_panic();
     }
 #endif
 
-    /*
-     * Initialize all secure crypto drivers except TRNG. TRNG init requires TRNG
+    /* Initialize all secure crypto drivers except TRNG. TRNG init requires TRNG
      * HW to be powered ON first so must be done by non-secure world where power
      * is controlled.
      */
@@ -184,41 +215,32 @@ void Crypto_sp_main(void *param)
 
     ECDH_s_init();
     ECDSA_s_init();
+    ECJPAKE_s_init();
     //    EDDSA_s_init();
-    //    ECJPAKE_s_init();
 
     SHA2_s_init();
 
+#if (ENABLE_KEY_STORAGE == 1)
     KeyStore_s_init();
 
-    PSA_s_init();
+    // BQ - commented out as we should be using native PSA call support.
+    // Delete once implementation finalized.
+    // PSA_s_init();
+#endif
+
+    /* Enable external interrupts for AES and TRNG. PKA interrupt is not enabled
+     * here since it must be enabled by the PKA driver for proper operation.
+     */
+    psa_irq_enable(CryptoResultAvail_IRQn_SIGNAL);
+    psa_irq_enable(TRNG_IRQn_SIGNAL);
 
     while (1)
     {
         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
-        /*
-         * Signals corresponding to interrupts are defined in the
-         * secure partition's YAML file.
-         */
-        if (signals & CryptoResultAvail_IRQn_SIGNAL)
+        if (signals & TI_CRYPTO_SERVICE_SIGNAL)
         {
-            HwiP_dispatchInterrupt(INT_CRYPTO_RESULT_AVAIL_IRQ);
-            psa_eoi(CryptoResultAvail_IRQn_SIGNAL);
-        }
-        else if (signals & PKA_IRQn_SIGNAL)
-        {
-            HwiP_dispatchInterrupt(INT_PKA_IRQ);
-            psa_eoi_no_irq_en(PKA_IRQn_SIGNAL);
-        }
-        else if (signals & TRNG_IRQn_SIGNAL)
-        {
-            HwiP_dispatchInterrupt(INT_TRNG_IRQ);
-            psa_eoi(TRNG_IRQn_SIGNAL);
-        }
-        else if (signals & CRYPTO_SP_SERVICE_SIGNAL)
-        {
-            psa_get(CRYPTO_SP_SERVICE_SIGNAL, &msg);
+            psa_get(TI_CRYPTO_SERVICE_SIGNAL, &msg);
 
             switch (msg.type)
             {
@@ -232,7 +254,7 @@ void Crypto_sp_main(void *param)
                     break;
 
                 default:
-                    if (msg.type >= 0)
+                    if (msg.type >= PSA_IPC_CALL)
                     {
                         psa_reply(msg.handle, Crypto_s_handlePsaMsg(&msg));
                     }
@@ -263,7 +285,7 @@ void Crypto_sp_main(void *param)
 #endif /* ENABLE_ITS_IPC_INTEGRATION */
         else
         {
-            tfm_abort();
+            psa_panic();
         }
     }
 

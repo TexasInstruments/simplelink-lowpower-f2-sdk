@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013-2018 ARM Limited. All rights reserved.
- * Copyright (c) 2020-2022 Texas Instruments Incorporated. All rights reserved.
+ * Copyright (c) 2013-2012 ARM Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -61,19 +61,32 @@ static const ARM_DRIVER_VERSION DriverVersion = {
 /* Flash Ready event generation capability values */
 #define EVENT_READY_NOT_AVAILABLE   (0u)
 #define EVENT_READY_AVAILABLE       (1u)
-/* Data access size values */
-#define DATA_WIDTH_8BIT             (0u)
-#define DATA_WIDTH_16BIT            (1u)
-#define DATA_WIDTH_32BIT            (2u)
 /* Chip erase capability values */
 #define CHIP_ERASE_NOT_SUPPORTED    (0u)
 #define CHIP_ERASE_SUPPORTED        (1u)
+
+/**
+ * Data width values for ARM_FLASH_CAPABILITIES::data_width
+ * \ref ARM_FLASH_CAPABILITIES
+ */
+ enum {
+    DATA_WIDTH_8BIT   = 0u,
+    DATA_WIDTH_16BIT,
+    DATA_WIDTH_32BIT,
+    DATA_WIDTH_ENUM_SIZE
+};
+
+static const uint32_t data_width_byte[DATA_WIDTH_ENUM_SIZE] = {
+    sizeof(uint8_t),
+    sizeof(uint16_t),
+    sizeof(uint32_t),
+};
 
 /* Driver Capabilities */
 static const ARM_FLASH_CAPABILITIES DriverCapabilities =
 {
     EVENT_READY_NOT_AVAILABLE,
-    DATA_WIDTH_32BIT,
+    DATA_WIDTH_8BIT,
     CHIP_ERASE_SUPPORTED
 };
 
@@ -163,6 +176,11 @@ static ARM_FLASH_CAPABILITIES ARM_Flash_GetCapabilities(void)
 static int32_t ARM_Flash_Initialize(ARM_Flash_SignalEvent_t cb_event)
 {
     ARG_UNUSED(cb_event);
+
+    if (DriverCapabilities.data_width >= DATA_WIDTH_ENUM_SIZE) {
+        return ARM_DRIVER_ERROR;
+    }
+
     /* Nothing to be done */
     return ARM_DRIVER_OK;
 }
@@ -195,21 +213,30 @@ static int32_t ARM_Flash_PowerControl(ARM_POWER_STATE state)
 
 static int32_t ARM_Flash_ReadData(uint32_t addr, void *data, uint32_t cnt)
 {
-    int32_t status = ARM_DRIVER_ERROR_PARAMETER;
+    /* Conversion between data items and bytes */
+    cnt *= data_width_byte[DriverCapabilities.data_width];
 
     /* Check flash memory boundaries */
-    if (isFlashRangeValid(FLASH0_DEV, addr + cnt - 1)) {
-        (void)memcpy(data, (void *)addr, cnt);
-        status = ARM_DRIVER_OK;
+    if (!isFlashRangeValid(FLASH0_DEV, addr + cnt - 1)) {
+        return ARM_DRIVER_ERROR_PARAMETER;
     }
 
-    return status;
+    (void)memcpy(data, (void *)addr, cnt);
+
+    /* Conversion between bytes and data items */
+    cnt /= data_width_byte[DriverCapabilities.data_width];
+
+    return cnt;
 }
 
 static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data, uint32_t cnt)
 {
+    uint32_t fapi_status;
     uint32_t status;
     uintptr_t key;
+
+    /* Conversion between data items and bytes */
+    cnt *= data_width_byte[DriverCapabilities.data_width];
 
     /*
      * CMSIS -> HAPI (Secure ROM) -> FAPI (Secure ROM)
@@ -219,10 +246,19 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data, uint32_t c
      * programming.
      */
     key = HwiP_disable();
-    status = HapiProgramFlash((uint8_t *)data, addr, cnt);
+    fapi_status = HapiProgramFlash((uint8_t *)data, addr, cnt);
     HwiP_restore(key);
 
-    return translateFAPIStatus(status);
+    status = translateFAPIStatus(fapi_status);
+
+    if (status != ARM_DRIVER_OK) {
+        return status;
+    }
+
+    /* Conversion between bytes and data items */
+    cnt /= data_width_byte[DriverCapabilities.data_width];
+
+    return cnt;
 }
 
 static int32_t ARM_Flash_EraseSector(uint32_t addr)

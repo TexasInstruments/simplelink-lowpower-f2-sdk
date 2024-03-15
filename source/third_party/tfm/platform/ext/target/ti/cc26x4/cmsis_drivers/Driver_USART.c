@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013-2018 ARM Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,6 +15,11 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+
+/*
+ * This is a virtual USART driver which writes to a circular RAM buffer which is
+ * read out using CCS Runtime Object Viewer (ROV).
  */
 
 #include <stdio.h>
@@ -153,7 +159,7 @@ static UARTx_Resources USART0_DEV = {
 #define uartOutputBuf uartOutputBuf_ns
 #define uartOutputBufIndex uartOutputBufIndex_ns
 #define uartOutputBufCount uartOutputBufCount_ns
- #if defined(SERVICES_TEST_S) || defined(SERVICES_TEST_NS)
+ #if defined(USART_BUFFER_FOR_TEST)
 char uartOutputBuf_ns [16384];
  #else
 char uartOutputBuf_ns [256];
@@ -164,7 +170,7 @@ uint16_t uartOutputBufCount_ns;
 #define uartOutputBuf uartOutputBuf_s
 #define uartOutputBufIndex uartOutputBufIndex_s
 #define uartOutputBufCount uartOutputBufCount_s
- #if defined(SERVICES_TEST_S) || defined(SERVICES_TEST_NS)
+ #if defined(USART_BUFFER_FOR_TEST)
 char uartOutputBuf_s [16384];
  #else
 char uartOutputBuf_s [256];
@@ -177,13 +183,6 @@ static int32_t ARM_USART0_Initialize(ARM_USART_SignalEvent_t cb_event)
 {
     return ARM_DRIVER_OK;
 }
-
-//static int32_t ARM_USART0_InitializeX(ARM_USART_SignalEvent_t cb_event)
-//{
-//    USART0_DEV.cb_event = cb_event;
-//
-//    return ARM_USARTx_Initialize(&USART0_DEV);
-//}
 
 static int32_t ARM_USART0_Uninitialize(void)
 {
@@ -207,11 +206,6 @@ static int32_t ARM_USART0_Send(const void *data, uint32_t num)
     }
     return ARM_DRIVER_OK;
 }
-
-//static int32_t ARM_USART0_Sendx(const void *data, uint32_t num)
-//{
-//    return ARM_USARTx_Send(&USART0_DEV, data, num);
-//}
 
 static int32_t ARM_USART0_Receive(void *data, uint32_t num)
 {
@@ -241,11 +235,6 @@ static int32_t ARM_USART0_Control(uint32_t control, uint32_t arg)
 {
     return ARM_DRIVER_OK;
 }
-
-//static int32_t ARM_USART0_Control(uint32_t control, uint32_t arg)
-//{
-//    return ARM_USARTx_Control(&USART0_DEV, control, arg);
-//}
 
 static ARM_USART_STATUS ARM_USART0_GetStatus(void)
 {

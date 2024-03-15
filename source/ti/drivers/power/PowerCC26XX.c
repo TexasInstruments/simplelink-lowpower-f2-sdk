@@ -183,11 +183,30 @@ uint_fast32_t Power_getConstraintMask(void)
  *  ======== Power_getDependencyCount ========
  *  Get the count of dependencies that are currently declared upon a resource.
  */
-int_fast16_t Power_getDependencyCount(uint_fast16_t resourceId)
+int_fast16_t Power_getDependencyCount(Power_Resource resourceId)
 {
     DebugP_assert(resourceId < PowerCC26XX_NUMRESOURCES);
 
     return ((int_fast16_t)PowerCC26XX_module.resourceCounts[resourceId]);
+}
+
+/*
+ *  ======== Power_getConstraintCount ========
+ *  Get the count of constraints that are currently set on a certain
+ *  operational transition
+ */
+int_fast16_t Power_getConstraintCount(uint_fast16_t constraintId)
+{
+    DebugP_assert(constraintId < PowerCC26XX_NUMCONSTRAINTS);
+
+    if (constraintId < PowerCC26XX_NUMCONSTRAINTS)
+    {
+        return (int_fast16_t)PowerCC26XX_module.constraintCounts[constraintId];
+    }
+    else
+    {
+        return (int_fast16_t)Power_EINVALIDINPUT;
+    }
 }
 
 /*
@@ -442,9 +461,9 @@ int_fast16_t Power_releaseConstraint(uint_fast16_t constraintId)
  *  ======== Power_releaseDependency ========
  *  Release a previously declared dependency.
  */
-int_fast16_t Power_releaseDependency(uint_fast16_t resourceId)
+int_fast16_t Power_releaseDependency(Power_Resource resourceId)
 {
-    uint8_t parent;
+    PowerCC26XX_Resource parent;
     uint8_t count;
     uint32_t id;
     unsigned int key;
@@ -541,9 +560,9 @@ int_fast16_t Power_setConstraint(uint_fast16_t constraintId)
  *  ======== Power_setDependency ========
  *  Declare a dependency upon a resource.
  */
-int_fast16_t Power_setDependency(uint_fast16_t resourceId)
+int_fast16_t Power_setDependency(Power_Resource resourceId)
 {
-    uint8_t parent;
+    PowerCC26XX_Resource parent;
     uint8_t count;
     uint32_t id;
     unsigned int key;

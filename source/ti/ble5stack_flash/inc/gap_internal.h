@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -219,12 +219,12 @@ extern gapCentralConnCBs_t *pfnCentralConnCBs;
 // Peripheral variables
 extern gapPeripheralConnCBs_t *pfnPeripheralConnCBs;
 
-extern uint16 slaveConnHandle;
+extern uint16 peripheralConnHandle;
 
 // Common variables
 extern gapAuthStateParams_t *pAuthLink;
 
-extern l2capParamUpdateReq_t slaveUpdateReq;
+extern l2capParamUpdateReq_t peripheralUpdateReq;
 
 /*********************************************************************
  * GAP Task Functions
@@ -259,7 +259,7 @@ extern void gapSendLinkRejectEvent( uint8 status, uint16 connectionHandle, uint1
 extern void gapSendPairingReqEvent( uint8 status, uint16 connectionHandle, uint8 ioCap, uint8 oobDataFlag,
                                     uint8 authReq, uint8 maxEncKeySize, keyDist_t keyDist );
 extern void gapSendSignUpdateEvent( uint8 taskID, uint8 addrType, uint8 *pDevAddr, uint32 signCounter );
-extern void gapSendSlaveSecurityReqEvent( uint8 taskID, uint16 connHandle, uint8 *pDevAddr, uint8 authReq );
+extern void gapSendPeripheralSecurityReqEvent( uint8 taskID, uint16 connHandle, uint8 *pDevAddr, uint8 authReq );
 extern void gapUpdateConnSignCounter( uint16 connHandle, uint32 newSignCounter );
 extern void sendAuthEvent( uint8 status, uint16 connectionHandle, uint8 authState, smSecurityInfo_t *pDevEncParams );
 extern void sendEstLinkEvent( uint8 status, uint8 taskID, uint8 devAddrType, uint8 *pDevAddr,

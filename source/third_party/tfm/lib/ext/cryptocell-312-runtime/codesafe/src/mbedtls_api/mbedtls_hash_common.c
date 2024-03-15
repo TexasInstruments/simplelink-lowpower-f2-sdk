@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,6 +9,9 @@
 #include "cc_pal_log.h"
 #include "sha1_alt.h"
 #include "sha256_alt.h"
+
+/* CC312 DMA limits the amount of data can be hashed at once. */
+#define MAX_HASH_CHUNK_SIZE 0xffff
 
 /*
 In CC312, DMA (i.e. for hash module input ) needs access to physical and continues memory.
@@ -197,9 +200,21 @@ int mbedtls_sha_update_internal( void *ctx, const unsigned char *input, size_t i
         //printf("TEST12, hash err = 1\n");
         return( 1 );
     }
+
+    while (ilen > MAX_HASH_CHUNK_SIZE) {
+        ret = mbedtls_hashUpdate(ctx, (uint8_t *)input, MAX_HASH_CHUNK_SIZE);
+
+        ilen -= MAX_HASH_CHUNK_SIZE;
+        input += MAX_HASH_CHUNK_SIZE;
+
+        if (CC_OK != ret) {
+            CC_PAL_LOG_ERR("mbedtls_hashUpdate failed, ret = %d\n", ret);
+            return( 1 );
+        }
+    }
+
     ret = mbedtls_hashUpdate(ctx, (uint8_t *)input, ilen);
-    if( CC_OK != ret)
-    {
+    if (CC_OK != ret) {
         CC_PAL_LOG_ERR("mbedtls_hashUpdate failed, ret = %d\n", ret);
         return( 1 );
     }

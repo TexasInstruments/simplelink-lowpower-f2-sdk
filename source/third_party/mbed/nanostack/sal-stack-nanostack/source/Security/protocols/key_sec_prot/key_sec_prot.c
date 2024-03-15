@@ -48,13 +48,17 @@ typedef enum {
     KEY_STATE_CREATE_RESP = SEC_STATE_CREATE_RESP,
     KEY_STATE_TX_DONE = SEC_STATE_FIRST,
     KEY_STATE_INITIAL_KEY_RECEIVED,
+    KEY_STATE_JOIN_RESP_RECEIVED,
     KEY_STATE_FINISH = SEC_STATE_FINISH,
     KEY_STATE_FINISHED = SEC_STATE_FINISHED
 } key_sec_prot_state_e;
 
 typedef struct {
     sec_prot_common_t              common;       /**< Common data */
+    bool                           accepted;
 } key_sec_prot_int_t;
+
+extern bool customAuthCheckAllowedJoin(uint8_t *eui);
 
 static uint16_t key_sec_prot_size(void);
 static int8_t supp_key_sec_prot_init(sec_prot_t *prot);
@@ -65,6 +69,12 @@ static void key_sec_prot_create_response(sec_prot_t *prot, sec_prot_result_e res
 static void key_sec_prot_delete(sec_prot_t *prot);
 static int8_t key_sec_prot_initial_key_send(sec_prot_t *prot, sec_prot_keys_t *sec_keys);
 static int8_t key_sec_prot_receive(sec_prot_t *prot, void *pdu, uint16_t size);
+static int8_t key_sec_prot_join_req(sec_prot_t *prot);
+static int8_t key_sec_prot_join_resp(sec_prot_t *prot);
+
+static int8_t key_sec_prot_auth_receive(sec_prot_t *prot, void *pdu, uint16_t size);
+static int8_t key_sec_prot_supp_receive(sec_prot_t *prot, void *pdu, uint16_t size);
+
 static int8_t key_sec_prot_tx_status_ind(sec_prot_t *prot, sec_prot_tx_status_e tx_status);
 static void key_sec_prot_timer_timeout(sec_prot_t *prot, uint16_t ticks);
 
@@ -79,12 +89,23 @@ int8_t supp_key_sec_prot_register(kmp_service_t *service)
         return -1;
     }
 
-    if (kmp_service_sec_protocol_register(service, IEEE_802_1X_MKA_KEY, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
-        return -1;
-    }
-
-    if (kmp_service_sec_protocol_register(service, IEEE_802_11_GKH_KEY, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
-        return -1;
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        if (kmp_service_sec_protocol_register(service, TI_CUSTOM_EUI_PROTOCOL, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
+            return -1;
+        }
+        if (kmp_service_sec_protocol_register(service, TI_CUSTOM_EUI_PROTOCOL_KEY, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
+            return -1;
+        }
+    } else
+#endif
+    {
+        if (kmp_service_sec_protocol_register(service, IEEE_802_1X_MKA_KEY, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
+            return -1;
+        }
+        if (kmp_service_sec_protocol_register(service, IEEE_802_11_GKH_KEY, key_sec_prot_size, supp_key_sec_prot_init) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -95,13 +116,23 @@ int8_t auth_key_sec_prot_register(kmp_service_t *service)
     if (!service) {
         return -1;
     }
-
-    if (kmp_service_sec_protocol_register(service, IEEE_802_1X_MKA_KEY, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
-        return -1;
-    }
-
-    if (kmp_service_sec_protocol_register(service, IEEE_802_11_GKH_KEY, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
-        return -1;
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        if (kmp_service_sec_protocol_register(service, TI_CUSTOM_EUI_PROTOCOL, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
+            return -1;
+        }
+        if (kmp_service_sec_protocol_register(service, TI_CUSTOM_EUI_PROTOCOL_KEY, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
+            return -1;
+        }
+    } else
+#endif
+    {
+        if (kmp_service_sec_protocol_register(service, IEEE_802_1X_MKA_KEY, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
+            return -1;
+        }
+        if (kmp_service_sec_protocol_register(service, IEEE_802_11_GKH_KEY, key_sec_prot_size, auth_key_sec_prot_init) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -116,6 +147,11 @@ static int8_t supp_key_sec_prot_init(sec_prot_t *prot)
 {
     prot->create_req = key_sec_prot_create_request;
     prot->tx_status_ind = key_sec_prot_tx_status_ind;
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        prot->receive = key_sec_prot_supp_receive;
+    }
+#endif
     prot->delete = key_sec_prot_delete;
     prot->state_machine = supp_key_sec_prot_state_machine;
     prot->timer_timeout = key_sec_prot_timer_timeout;
@@ -130,7 +166,18 @@ static int8_t supp_key_sec_prot_init(sec_prot_t *prot)
 static int8_t auth_key_sec_prot_init(sec_prot_t *prot)
 {
     prot->create_resp = key_sec_prot_create_response;
+#if defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        prot->receive = key_sec_prot_auth_receive;
+    } else {
+        prot->receive = key_sec_prot_receive;
+    }
+#elif defined(CUSTOM_EUI_AUTH_ENABLE)
+    prot->receive = key_sec_prot_auth_receive;
+#else
     prot->receive = key_sec_prot_receive;
+#endif
+
     prot->delete = key_sec_prot_delete;
     prot->state_machine = auth_key_sec_prot_state_machine;
     prot->timer_timeout = key_sec_prot_timer_timeout;
@@ -315,6 +362,79 @@ static int8_t key_sec_prot_receive(sec_prot_t *prot, void *pdu, uint16_t size)
     return 0;
 }
 
+#define JOIN_REQ_SIZE 8
+static int8_t key_sec_prot_join_req(sec_prot_t *prot)
+{
+    uint8_t *data = ns_dyn_mem_temporary_alloc(prot->header_size + JOIN_REQ_SIZE);
+    if (!data) {
+        return -1;
+    }
+    prot->addr_get(prot, data + prot->header_size, NULL);
+    tr_info("EAPOL EUI auth join request sent, EUI: %s", trace_array(data + prot->header_size, JOIN_REQ_SIZE));
+
+    if (prot->send(prot, data, prot->header_size + JOIN_REQ_SIZE) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+#define JOIN_RESP_SIZE 1
+static int8_t key_sec_prot_join_resp(sec_prot_t *prot)
+{
+    key_sec_prot_int_t *data = key_sec_prot_get(prot);
+
+    uint8_t *pdu = ns_dyn_mem_temporary_alloc(prot->header_size + JOIN_RESP_SIZE);
+    if (!pdu) {
+        return -1;
+    }
+    memset(pdu, 0, prot->header_size + JOIN_RESP_SIZE);
+    pdu[prot->header_size] = ((data->accepted) ? 1 : 0);
+    if (data->accepted) {
+        tr_info("EAPOL EUI auth join response sent, result: Accepted");
+    } else {
+        tr_info("EAPOL EUI auth join response sent, result: Rejected");
+    }
+
+
+    if (prot->send(prot, pdu, prot->header_size + JOIN_RESP_SIZE) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+static int8_t key_sec_prot_auth_receive(sec_prot_t *prot, void *pdu, uint16_t size)
+{
+    eapol_pdu_t eapol_pdu;
+    key_sec_prot_int_t *data = key_sec_prot_get(prot);
+    sec_prot_result_e result = SEC_RESULT_OK;
+
+    uint8_t *eui = (uint8_t *) pdu;
+    tr_info("EAPOL EUI auth join request received, eui-64: %s", trace_array(eui, 8));
+    data->accepted = (customAuthCheckAllowedJoin(eui)) ? true : false;
+
+    sec_prot_result_set(&data->common, result);
+    prot->state_machine(prot);
+    return 0;
+}
+
+static int8_t key_sec_prot_supp_receive(sec_prot_t *prot, void *pdu, uint16_t size)
+{
+    key_sec_prot_int_t *data = key_sec_prot_get(prot);
+    sec_prot_result_e result;
+
+    result = (*((uint8_t *) pdu) == 0) ? SEC_RESULT_ERROR : SEC_RESULT_OK;
+    if (result == SEC_RESULT_OK) {
+        tr_info("EAPOL EUI auth join response received, result: Accepted");
+    } else {
+        tr_info("EAPOL EUI auth join response received, result: Rejected");
+    }
+
+    sec_prot_result_set(&data->common, result);
+    sec_prot_state_set(prot, &data->common, KEY_STATE_JOIN_RESP_RECEIVED);
+    prot->state_machine(prot);
+    return 0;
+}
+
 static int8_t key_sec_prot_tx_status_ind(sec_prot_t *prot, sec_prot_tx_status_e tx_status)
 {
     key_sec_prot_int_t *data = key_sec_prot_get(prot);
@@ -352,17 +472,50 @@ static void supp_key_sec_prot_state_machine(sec_prot_t *prot)
             prot->create_conf(prot, sec_prot_result_get(&data->common));
 
             // Send initial-key message
+#if defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                if (key_sec_prot_join_req(prot) < 0) {
+                    // Error on sending, ready to be deleted
+                    sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
+                    return;
+                }
+            } else {
+                if (key_sec_prot_initial_key_send(prot, prot->sec_keys) < 0) {
+                    // Error on sending, ready to be deleted
+                    sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
+                    return;
+                }
+            }
+#elif defined(CUSTOM_EUI_AUTH_ENABLE)
+            if (key_sec_prot_join_req(prot) < 0) {
+                // Error on sending, ready to be deleted
+                sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
+                return;
+            }
+#else
             if (key_sec_prot_initial_key_send(prot, prot->sec_keys) < 0) {
                 // Error on sending, ready to be deleted
                 sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
                 return;
             }
-
+#endif
             // Waits for TX acknowledge
             sec_prot_state_set(prot, &data->common, KEY_STATE_TX_DONE);
             break;
 
         case KEY_STATE_TX_DONE:
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                sec_prot_state_set(prot, &data->common, KEY_STATE_JOIN_RESP_RECEIVED);
+                break;
+            } else
+#endif
+            {
+                sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
+                break;
+            }
+
+        case KEY_STATE_JOIN_RESP_RECEIVED:
             sec_prot_state_set(prot, &data->common, KEY_STATE_FINISH);
             break;
 
@@ -401,6 +554,11 @@ static void auth_key_sec_prot_state_machine(sec_prot_t *prot)
                 sec_prot_state_set(prot, &data->common, KEY_STATE_FINISHED);
                 return;
             }
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                key_sec_prot_join_resp(prot);
+            }
+#endif
 
             // Send KMP-CREATE.indication
             prot->create_ind(prot);

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2018-2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited. All rights reserved.
+ * Copyright 2019-2020 NXP. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -23,14 +24,13 @@ extern "C" {
 #define CTIMER_NS_IRQ_HANDLER   CTIMER3_IRQHandler
 #define TFM_TIMER1_IRQ          CTIMER3_IRQn                /* use by tfm_core_test_irq() */
 
-struct tfm_spm_partition_platform_data_t;
+struct platform_data_t;
 
-extern struct tfm_spm_partition_platform_data_t tfm_peripheral_std_uart;
-extern struct tfm_spm_partition_platform_data_t tfm_peripheral_timer0;
+extern struct platform_data_t tfm_peripheral_std_uart;
+extern struct platform_data_t tfm_peripheral_timer0;
 
 #define TFM_PERIPHERAL_STD_UART     (&tfm_peripheral_std_uart)
 #define TFM_PERIPHERAL_TIMER0       (&tfm_peripheral_timer0)
-#define TFM_PERIPHERAL_FPGA_IO      (0)
 
 #ifdef __cplusplus
 }

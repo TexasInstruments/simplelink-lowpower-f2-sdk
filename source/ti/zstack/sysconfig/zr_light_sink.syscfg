@@ -109,7 +109,6 @@ LED2.$name                      = "CONFIG_LED_GREEN";
 LED2.$hardware                  = system.deviceData.board.components.LED_GREEN;
 LED2.gpioPin.$name              = "CONFIG_GPIO_GLED";
 LED2.gpioPin.mode               = "Output";
-LED2.gpioPin.callbackFunction   = "";
 
 /* Left Button */
 Button1.$name                       = "CONFIG_BTN_LEFT";

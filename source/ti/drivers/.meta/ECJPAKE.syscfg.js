@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@
 let Common = system.getScript("/ti/drivers/Common.js");
 
 /* get /ti/drivers family name from device object */
-let family = Common.device2Family(system.deviceData, "ECDH");
+let family = Common.device2Family(system.deviceData, "ECJPAKE");
 
 let config = [];
 

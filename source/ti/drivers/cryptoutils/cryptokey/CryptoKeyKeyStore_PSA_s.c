@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 #include <third_party/tfm/interface/include/tfm_api.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 #include "ti_drivers_config.h"                                  /* Sysconfig generated header */
@@ -60,15 +60,15 @@ psa_status_t KeyStore_s_copyKeyAttributesFromClient(struct psa_client_key_attrib
     *keyAttributes = psa_key_attributes_init();
 
     /* Copy core key attributes from the client core key attributes */
-    keyAttributes->core.type         = clientKeyAttr->type;
-    keyAttributes->core.lifetime     = clientKeyAttr->lifetime;
-    keyAttributes->core.policy.usage = clientKeyAttr->usage;
-    keyAttributes->core.policy.alg   = clientKeyAttr->alg;
-    keyAttributes->core.bits         = clientKeyAttr->bits;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(type)                          = clientKeyAttr->type;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime)                      = clientKeyAttr->lifetime;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(usage) = clientKeyAttr->usage;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg)   = clientKeyAttr->alg;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(bits)                          = clientKeyAttr->bits;
 
     /* Use the client key id as the key_id and its partition id as the owner */
-    keyAttributes->core.id.key_id = clientKeyAttr->id;
-    keyAttributes->core.id.owner  = clientId;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(key_id) = clientKeyAttr->id;
+    keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(owner)  = clientId;
 
     return PSA_SUCCESS;
 }
@@ -98,14 +98,14 @@ static psa_status_t KeyStore_s_copyKeyAttributesToClient(const psa_key_attribute
     *clientKeyAttr                       = v;
 
     /* Copy core key attributes from the client core key attributes */
-    clientKeyAttr->type     = keyAttributes->core.type;
-    clientKeyAttr->lifetime = keyAttributes->core.lifetime;
-    clientKeyAttr->usage    = keyAttributes->core.policy.usage;
-    clientKeyAttr->alg      = keyAttributes->core.policy.alg;
-    clientKeyAttr->bits     = keyAttributes->core.bits;
+    clientKeyAttr->type     = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(type);
+    clientKeyAttr->lifetime = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime);
+    clientKeyAttr->usage    = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(usage);
+    clientKeyAttr->alg      = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg);
+    clientKeyAttr->bits     = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(bits);
 
     /* Return the key_id as the client key id, do not return the owner */
-    clientKeyAttr->id = keyAttributes->core.id.key_id;
+    clientKeyAttr->id = keyAttributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(key_id);
 
     return PSA_SUCCESS;
 }
@@ -124,7 +124,7 @@ static psa_status_t KeyStore_s_copyKeyAttributesToClient(const psa_key_attribute
 static void KeyStore_s_copyKeyIDtoClient(KeyStore_PSA_KeyFileId *keyID, uint32_t *clientKeyID)
 {
     /* Copy the keyID output from the KeyStore driver to client keyID */
-    *clientKeyID = keyID->key_id;
+    *clientKeyID = keyID->MBEDTLS_PRIVATE(key_id);
 }
 
 /*
@@ -133,8 +133,8 @@ static void KeyStore_s_copyKeyIDtoClient(KeyStore_PSA_KeyFileId *keyID, uint32_t
 void KeyStore_s_copyKeyIDFromClient(KeyStore_PSA_KeyFileId *keyID, int32_t clientId, uint32_t *clientKeyID)
 {
     /* Copy keyID from client to KeyStore driver and set the owner to the caller's ID */
-    keyID->key_id = *clientKeyID;
-    keyID->owner  = clientId;
+    keyID->MBEDTLS_PRIVATE(key_id) = *clientKeyID;
+    keyID->MBEDTLS_PRIVATE(owner)  = clientId;
 }
 
 /*

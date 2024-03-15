@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017-2019 Arm Limited. All rights reserved.
+ * Copyright (c) 2017-2023 Arm Limited. All rights reserved.
+ * Copyright 2019-2020 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +23,15 @@
 #define BL2_HEAP_SIZE           (0x0001000)
 #define BL2_MSP_STACK_SIZE      (0x0001800)
 
-#define S_HEAP_SIZE             (0x0001000)
-#define S_MSP_STACK_SIZE_INIT   (0x0000400)
+#ifdef ENABLE_HEAP
+    #define S_HEAP_SIZE             (0x0000200)
+#endif
+
 #define S_MSP_STACK_SIZE        (0x0000800)
 #define S_PSP_STACK_SIZE        (0x0000800)
 
 #define NS_HEAP_SIZE            (0x0001000)
-#define NS_MSP_STACK_SIZE       (0x0000400)
-#define NS_PSP_STACK_SIZE       (0x0000C00)
+#define NS_STACK_SIZE           (0x00001E0)
 
 /* This size of buffer is big enough to store an attestation
  * token produced by initial attestation service
@@ -69,17 +71,20 @@
  * because we reserve space for the image header and trailer introduced
  * by the bootloader.
  */
-#ifdef BL2
-#define BL2_HEADER_SIZE      (0x400)       /* 1 KB */
-#define BL2_TRAILER_SIZE     (0x400)       /* 1 KB */
-#else
-/* No header if no bootloader, but keep IMAGE_CODE_SIZE the same */
-#define BL2_HEADER_SIZE      (0x0)
-#define BL2_TRAILER_SIZE     (0x0)
-#endif /* BL2 */
 
+#if (!defined(MCUBOOT_IMAGE_NUMBER) || (MCUBOOT_IMAGE_NUMBER == 1)) && \
+    (NS_IMAGE_PRIMARY_PARTITION_OFFSET > S_IMAGE_PRIMARY_PARTITION_OFFSET)
+/* If secure image and nonsecure image are concatenated, and nonsecure image
+ * locates at the higher memory range, then the secure image does not need
+ * the trailer area.
+ */
+#define IMAGE_S_CODE_SIZE \
+            (FLASH_S_PARTITION_SIZE - BL2_HEADER_SIZE)
+#else
 #define IMAGE_S_CODE_SIZE \
             (FLASH_S_PARTITION_SIZE - BL2_HEADER_SIZE - BL2_TRAILER_SIZE)
+#endif
+
 #define IMAGE_NS_CODE_SIZE \
             (FLASH_NS_PARTITION_SIZE - BL2_HEADER_SIZE - BL2_TRAILER_SIZE)
 
@@ -96,15 +101,15 @@
 #define S_IMAGE_PRIMARY_AREA_OFFSET \
              (S_IMAGE_PRIMARY_PARTITION_OFFSET + BL2_HEADER_SIZE)
 #define S_CODE_START    (S_ROM_ALIAS(S_IMAGE_PRIMARY_AREA_OFFSET))
-#define S_CODE_SIZE     (IMAGE_S_CODE_SIZE - CMSE_VENEER_REGION_SIZE)
+#define S_CODE_SIZE     (IMAGE_S_CODE_SIZE)
 #define S_CODE_LIMIT    (S_CODE_START + S_CODE_SIZE - 1)
 
 #define S_DATA_START    (S_RAM_ALIAS(0x0))
 #define S_DATA_SIZE     (TOTAL_RAM_SIZE / 2)
 #define S_DATA_LIMIT    (S_DATA_START + S_DATA_SIZE - 1)
 
-/* CMSE Veneers region */
-#define CMSE_VENEER_REGION_START  (S_CODE_LIMIT + 1)
+/* Size of vector table: 75 interrupt handlers + 4 bytes MPS initial value */
+#define S_CODE_VECTOR_TABLE_SIZE    (0x130)
 
 /* Non-secure regions */
 #define NS_IMAGE_PRIMARY_AREA_OFFSET \
@@ -117,18 +122,13 @@
 #define NS_DATA_SIZE    (TOTAL_RAM_SIZE - S_DATA_SIZE)
 #define NS_DATA_LIMIT   (NS_DATA_START + NS_DATA_SIZE - 1)
 
-
 /* Flash is divided into 32 kB sub-regions. Each sub-region can be assigned individual
 security tier by programing corresponding registers in secure AHB controller.*/
 #define FLASH_SUBREGION_SIZE    (0x8000)     /* 32 kB */
 
-
-
 /* RAM is divided into 4 kB sub-regions. Each sub-region can be assigned individual
 security tier by programing corresponding registers in secure AHB controller. */
 #define DATA_SUBREGION_SIZE 0x1000      /* 4 KB*/
-
-
 
 /* NS partition information is used for MPC and SAU configuration */
 #define NS_PARTITION_START \
@@ -142,9 +142,9 @@ security tier by programing corresponding registers in secure AHB controller. */
                                   FLASH_NS_PARTITION_SIZE)
 
 /* Code SRAM area */
-#define TOTAL_CODE_SRAM_SIZE     (0x8000) /* SRAM X region */
-#define S_CODE_SRAM_ALIAS_BASE   (0x14000000)
-#define NS_CODE_SRAM_ALIAS_BASE  (0x04000000)
+#define S_RAM_CODE_SIZE          (0x8000) /* SRAM X region */
+#define S_RAM_CODE_START         (0x14000000)
+#define NS_RAM_CODE_START        (0x04000000)
 
 #ifdef BL2
 /* Bootloader regions */

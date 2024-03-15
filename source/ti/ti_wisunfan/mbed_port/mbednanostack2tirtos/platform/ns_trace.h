@@ -48,6 +48,10 @@
 #ifndef EXCLUDE_TRACE
 #ifndef MBED_TRACE_MAX_LEVEL
 #define MBED_TRACE_MAX_LEVEL TRACE_LEVEL_DEBUG
+#ifdef WISUN_TEST_METRICS
+// Set this for MPL measurements and build
+//#define MBED_TRACE_MAX_LEVEL TRACE_LEVEL_CMD
+#endif
 #endif
 #else
 #define MBED_TRACE_MAX_LEVEL 0
@@ -91,12 +95,14 @@
 #endif
 
 #define tr_cmdline(...)         ns_trace_printf(TRACE_LEVEL_CMD,     TRACE_GROUP, __VA_ARGS__)   //!< Special print for cmdline. See more from TRACE_LEVEL_CMD -level
+#define tr_mpl(...)             ns_trace_printf(TRACE_LEVEL_CMD,     TRACE_GROUP, __VA_ARGS__)
 
 #ifdef EXCLUDE_TRACE
 
 #define tracef(dlevel, grp, ...)
 #define vtracef(dlevel, grp, fmt, ap)
 #define tr_array(buf, len)
+#define tr_array16(buf, len)
 #define tr_ipv6(addr_ptr)
 #define tr_ipv6_prefix(prefix, prefix_len)
 #define trace_array(buf, len)   NULL
@@ -112,6 +118,7 @@ void ns_trace_init(void);
 #define tr_ipv6(addr_ptr)                       ns_trace_ipv6(addr_ptr)
 #define tr_ipv6_prefix(prefix, prefix_len)      ns_trace_ipv6_prefix(prefix, prefix_len)
 #define trace_array(buf, len)                   ns_trace_array(buf, len)
+#define trace_array16(buf, len)                 ns_trace_array16(buf, len)
 #define trace_ipv6(addr_ptr)                    ns_trace_ipv6(addr_ptr)
 #define trace_ipv6_prefix(prefix, prefix_len)   ns_trace_ipv6_prefix(prefix, prefix_len)
 #endif /* EXCLUDE_TRACE */
@@ -126,6 +133,7 @@ void ns_flush_module(void);
 char *ns_trace_ipv6(const void *addr_ptr);
 char *ns_trace_ipv6_prefix(const uint8_t *prefix, uint8_t prefix_len);
 char *ns_trace_array(const uint8_t *buf, uint16_t len);
+char *ns_trace_array16(const uint16_t *buf, uint16_t len);
 
 void ns_enable_module();
 void ns_disable_module(void);

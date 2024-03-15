@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -148,7 +148,7 @@ void GPIO_init(void)
 
     // Setup HWI handler
     HwiP_Params_init(&hwiParams);
-    hwiParams.priority = ~0;
+    hwiParams.priority = GPIO_config.intPriority;
     HwiP_construct(&gpioHwi, INT_AON_GPIO_EDGE, GPIO_hwiIntFxn, &hwiParams);
 
     // Note: pinUpperBound is inclusive, so we use <= instead of just <
@@ -156,8 +156,8 @@ void GPIO_init(void)
     {
         uint32_t pinConfig = GPIO_config.configs[i];
 
-        /* Need to mask off mux byte, since it contains special configs */
-        tempPinConfigs[i] = pinConfig & 0xFFFFFF00;
+        /* Mask off the bits containing non-IOC configuration values */
+        tempPinConfigs[i] = pinConfig & GPIOCC26XX_CFG_IOC_M;
 
         if (!(pinConfig & GPIOCC26XX_CFG_PIN_IS_INPUT_INTERNAL))
         {

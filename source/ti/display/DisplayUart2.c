@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,6 @@
  *  Constants and macros
  * -----------------------------------------------------------------------------
  */
-#ifndef MIN
-    #define MIN(n, m) (((n) > (m)) ? (m) : (n))
-#endif
-
 #define DISPLAY_UART_ESC_MOVEPOS_FMT         \
     "\x1b\x37"    /* Save cursor position */ \
     "\x1b[10r"    /* Retransmit scroll    */ \

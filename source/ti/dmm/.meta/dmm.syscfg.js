@@ -516,7 +516,7 @@ function getLibs(mod) {
 
         let compiler = system.compiler;
 
-        if (boardName.includes("CC1354P"))
+	if (boardName.match(/1354|2674/))
         {
             lib += compiler + "/m33f/";
         }

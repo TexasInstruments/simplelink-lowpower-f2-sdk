@@ -142,7 +142,11 @@ void GPIO_setInterruptConfig(uint_least8_t index, GPIO_PinConfig config)
 void GPIO_getConfig(uint_least8_t index, GPIO_PinConfig *pinConfig)
 {
     uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
-    uint32_t configValue  = HWREG(iocfgRegAddr);
+
+    /* Mask off the bits reserved for non-IOC configuration values.
+     * The non-IOC configuration values will be written further below.
+     */
+    uint32_t configValue = HWREG(iocfgRegAddr) & GPIOCC26XX_CFG_IOC_M;
 
     if (GPIO_getOutputEnableDio(index))
     {
@@ -162,20 +166,12 @@ void GPIO_getConfig(uint_least8_t index, GPIO_PinConfig *pinConfig)
 }
 
 /*
- *  ======== GPIO_setMux ========
+ *  ======== GPIO_getMux ========
  */
-void GPIO_setMux(uint_least8_t index, uint32_t mux)
+uint32_t GPIO_getMux(uint_least8_t index)
 {
-    if (index != GPIO_INVALID_INDEX)
-    {
-        uint32_t iocfgRegAddr   = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
-        uint32_t previousConfig = HWREG(iocfgRegAddr);
-
-        if ((previousConfig & 0xFF) != mux)
-        {
-            HWREGB(iocfgRegAddr) = (uint8_t)(mux);
-        }
-    }
+    uint32_t iocfgRegAddr = IOC_BASE + IOC_O_IOCFG0 + (4 * index);
+    return HWREG(iocfgRegAddr) & 0xFF;
 }
 
 /*
@@ -198,7 +194,7 @@ int_fast16_t GPIO_setConfigAndMux(uint_least8_t index, GPIO_PinConfig pinConfig,
 
     /* Special configurations are stored in the lowest 8 bits and need to be removed
      * We can make choices based on these values, but must not write them to hardware */
-    GPIO_PinConfig tmpConfig = pinConfig & 0xFFFFFF00;
+    GPIO_PinConfig tmpConfig = pinConfig & GPIOCC26XX_CFG_IOC_M;
 
     if ((previousConfig & 0xFF) != mux)
     {

@@ -189,8 +189,8 @@ __Default__: 0 \n
 __Range__: To see the valid values refer to the "Default Tx Power" parameter \
 in the Radio section \n`
 
-// Long description for the GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE configuration parameter
-const GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGELongDescription = `Contains the Peripheral’s
+// Long description for the connIntervalRange configuration parameter
+const connIntervalRangeLongDescription = `Contains the Peripheral’s
 preferred connection interval range. \n
 Configure Min and Max values of the connection interval. \n
 For more information, refer to the [Bluetooth Core Specification Supplement\
@@ -348,7 +348,7 @@ const additionalDataLongDescription = `Additional Data in HEX format.\n\n__Defau
     GAP_ADTYPE_128BIT_COMPLETELongDescription: GAP_ADTYPE_128BIT_COMPLETELongDescription,
     GAP_ADTYPE_POWER_LEVELLongDescription: GAP_ADTYPE_POWER_LEVELLongDescription,
     TXPowerLongDescription: TXPowerLongDescription,
-    GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGELongDescription: GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGELongDescription,
+    connIntervalRangeLongDescription: connIntervalRangeLongDescription,
     minConnIntervalLongDescription: minConnIntervalLongDescription,
     maxConnIntervalLongDescription: maxConnIntervalLongDescription,
     GAP_ADTYPE_SERVICES_LIST_16BITLongDescription: GAP_ADTYPE_SERVICES_LIST_16BITLongDescription,

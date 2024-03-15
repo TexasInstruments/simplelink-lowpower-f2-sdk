@@ -1,16 +1,14 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
+
+#include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_POLY1305_C)
 #include "mbedtls/poly1305.h"
+#include "mbedtls/error.h"
 #include "poly.h"
 #include "mbedtls/platform_util.h"
 #include "chacha_driver.h"
@@ -47,7 +45,7 @@ int mbedtls_poly1305_starts( mbedtls_poly1305_context *ctx,
 {
     CC_UNUSED_PARAM(ctx);
     CC_UNUSED_PARAM(key);
-    return MBEDTLS_ERR_POLY1305_FEATURE_UNAVAILABLE;
+    return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 
 /* Cryptocell only supports integrated poly1305 operations  */
@@ -58,7 +56,7 @@ int mbedtls_poly1305_update( mbedtls_poly1305_context *ctx,
     CC_UNUSED_PARAM(ctx);
     CC_UNUSED_PARAM(input);
     CC_UNUSED_PARAM(ilen);
-    return MBEDTLS_ERR_POLY1305_FEATURE_UNAVAILABLE;
+    return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 
 /* Cryptocell only supports integrated poly1305 operations  */
@@ -67,7 +65,7 @@ int mbedtls_poly1305_finish( mbedtls_poly1305_context *ctx,
 {
     CC_UNUSED_PARAM(ctx);
     CC_UNUSED_PARAM(mac);
-    return MBEDTLS_ERR_POLY1305_FEATURE_UNAVAILABLE;
+    return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 
 int mbedtls_poly1305_mac( const unsigned char key[32],
@@ -87,14 +85,14 @@ int mbedtls_poly1305_mac( const unsigned char key[32],
         return MBEDTLS_ERR_POLY1305_BAD_INPUT_DATA;
     }
 
-    CC_PalMemCopy((unsigned char *)pKey, key, MBEDTLS_POLY_KEY_SIZE_BYTES);
+    CC_PalMemCopy((unsigned char *)pKey, key, sizeof(mbedtls_poly_key));
 
     rc = PolyMacCalc(pKey, NULL, 0, input, ilen, macRes, false);
     if (rc != 0) {
-        return MBEDTLS_ERR_POLY1305_HW_ACCEL_FAILED;
+        return MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED;
     }
 
-    CC_PalMemCopy(mac, (unsigned char *)macRes, MBEDTLS_POLY_MAC_SIZE_BYTES);
+    CC_PalMemCopy(mac, (unsigned char *)macRes, sizeof(mbedtls_poly_mac));
 
     return ( 0 );
 }

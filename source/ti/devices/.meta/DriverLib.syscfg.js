@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -121,15 +121,25 @@ function getAttrs(deviceId, part)
         result.deviceDefine = "DeviceFamily_CC23X0R2";
         result.libName = "cc23x0r2";
     }
-    else if (deviceId.match(/CC23.0/)) {
-        result.deviceDir = "cc23x0";
-        result.deviceDefine = "DeviceFamily_CC23X0";
-        result.libName = "cc23x0";
+    else if (deviceId.match(/CC23.0R5/)) {
+        result.deviceDir = "cc23x0r5";
+        result.deviceDefine = "DeviceFamily_CC23X0R5";
+        result.libName = "cc23x0r5";
+    }
+    else if (deviceId.match(/CC27/)) {
+        result.deviceDir = "cc27xx";
+        result.deviceDefine = "DeviceFamily_CC27XX";
+        result.libName = "cc27xx";
     }
     else if (deviceId.match(/CC32/)) {
         result.deviceDir = "cc32xx";
         result.deviceDefine = "DeviceFamily_CC3220";
         result.libName = "cc32xx";
+    }
+    else if (deviceId.match(/CC35/)) {
+        result.deviceDir = "cc35xx";
+        result.deviceDefine = "DeviceFamily_CC35XX";
+        result.libName = "cc35xx";
     }
     else {
         result.deviceDir = "";
@@ -138,6 +148,50 @@ function getAttrs(deviceId, part)
     }
 
     return (result);
+}
+
+function getLibs()
+{
+    /* Get toolchain specific information from GenLibs */
+    let GenLibs = system.getScript("/ti/utils/build/GenLibs");
+    let getToolchainDir = GenLibs.getToolchainDir;
+
+    /* get device ID to select appropriate libs */
+    let deviceId = system.deviceData.deviceId;
+
+    let libs = [];
+
+    if (deviceId.match(/CC13|CC26/)) {
+        libs.push(
+            "ti/devices/" + getAttrs(deviceId).deviceDir + "/driverlib/bin/" + getToolchainDir() + "/driverlib.lib"
+        );
+    } else if (deviceId.match(/CC32/)) {
+        libs.push(
+            "ti/devices/cc32xx/driverlib/" + getToolchainDir() + "/Release/driverlib.a"
+        );
+    } else {
+        libs.push(
+            "ti/devices/" + getAttrs(deviceId).deviceDir + "/driverlib/lib/" + getToolchainDir() + "/driverlib.a"
+        );
+    }
+
+    /* create a GenLibs input argument */
+    var linkOpts = {
+        name: "/ti/devices",
+        vers: "1.0.0.0",
+        deps: [],
+        libs: libs
+    };
+
+    return linkOpts;
+}
+
+function getOpts()
+{
+    /* get device ID to select appropriate defines */
+    let deviceId = system.deviceData.deviceId;
+
+    return ["-D" + getAttrs(deviceId).deviceDefine];
 }
 
 /*
@@ -152,6 +206,14 @@ exports = {
         config: config
     },
 
+    templates: {
+        /* contribute TI-DRIVERS libraries to linker command file */
+        "/ti/utils/build/GenLibs.cmd.xdt": { modName: "/ti/devices/DriverLib", getLibs: getLibs },
+        "/ti/utils/build/GenOpts.opt.xdt": { modName: "/ti/devices/DriverLib", getOpts: getOpts }
+    },
+
     /* DriverLib-specific exports */
-    getAttrs: getAttrs
+    getAttrs: getAttrs,
+    getOpts: getOpts,
+    getLibs: getLibs
 };

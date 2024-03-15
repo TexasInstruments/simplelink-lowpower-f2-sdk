@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -551,7 +551,7 @@ bStatus_t urfi_init(void)
  *
  * @param   txPower - TX Power in dBm.
  *
- * @return  The register value correspondign with txPower, if found.
+ * @return  The register value corresponding with txPower, if found.
  *          UBLE_TX_POWER_INVALID otherwise.
  */
 uint16 urfi_getTxPowerVal(int8 txPower)

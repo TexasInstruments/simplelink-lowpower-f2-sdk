@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -226,7 +226,7 @@
 #if defined( CC26XX ) || defined( CC13XX )
 #define TRIGTYPE_EXTERNAL              0x0A  // on external trigger input to RAT
 #endif // CC26XX/CC13XX
-#define TRIGTYPE_REL_SYNC              0x0F  // Slave only! R2 only!
+#define TRIGTYPE_REL_SYNC              0x0F  // Peripheral only! R2 only!
 //
 #define ALT_CMD_TRIG_ENABLE            0x10
 #define PAST_TRIG_START_ASAP           0x80

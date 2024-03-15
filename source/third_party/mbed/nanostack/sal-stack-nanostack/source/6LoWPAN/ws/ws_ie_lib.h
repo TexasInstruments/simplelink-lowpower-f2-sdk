@@ -64,5 +64,7 @@ bool ws_wp_nested_pan_version_read(uint8_t *data, uint16_t length, uint16_t *pan
 bool ws_wp_nested_network_name_read(uint8_t *data, uint16_t length, ws_wp_network_name_t *network_name);
 uint8_t *ws_wp_nested_gtkhash_read(uint8_t *data, uint16_t length);
 
+bool ws_wp_nested_vp_read(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);
+bool ws_wp_nested_vp_get(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie);
 
 #endif /* WS_IE_LIB_H_ */

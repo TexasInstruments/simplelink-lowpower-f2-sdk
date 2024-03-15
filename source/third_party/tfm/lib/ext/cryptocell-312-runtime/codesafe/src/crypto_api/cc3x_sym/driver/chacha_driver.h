@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022 Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,9 +9,19 @@
 
 #include "driver_defs.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /******************************************************************************
 *               TYPE DEFINITIONS
 ******************************************************************************/
+/* State information required to support arbitrarily long multipart calls */
+typedef struct ChachaState {
+    uint8_t keystream[CHACHA_BLOCK_SIZE_BYTES]; /*!< Equals 64 byte of data */
+    uint8_t keystream_start; /*!< Index pointing to keystream data start */
+} ChachaState_t;
 
 /* The context data-base used by the CHACHA functions on the low level */
 typedef struct ChachaContext {
@@ -30,8 +40,9 @@ typedef struct ChachaContext {
     dataAddrType_t outputDataAddrType;
     /* CHACHA iv size */
     chachaNonceSize_t nonceSize;
+    /* State to support multipart APIs */
+    ChachaState_t state;
 } ChachaContext_t;
-
 
 /******************************************************************************
 *               FUNCTION PROTOTYPES
@@ -48,6 +59,8 @@ typedef struct ChachaContext {
  */
 drvError_t ProcessChacha(ChachaContext_t *chachaCtx, CCBuffInfo_t *pInputBuffInfo, CCBuffInfo_t *pOutputBuffInfo, uint32_t inDataSize);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _CHACHA_DRIVER_H */
-

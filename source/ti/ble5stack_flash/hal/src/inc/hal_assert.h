@@ -23,7 +23,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2023, Texas Instruments Incorporated
+ Copyright (c) 2006-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -110,6 +110,7 @@
 #define HAL_ASSERT_CAUSE_HARDWARE_ERROR         0x08
 #define HAL_ASSERT_CAUSE_RF_DRIVER_ERROR        0x09
 #define HAL_ASSERT_CAUSE_UNEXPECTED_ERROR       0x0A
+#define HAL_ASSERT_CAUSE_STACK_OVERFLOW_ERROR   0x0B
 
 // BLE Assert Causes (0x20 .. 0x3F)
 

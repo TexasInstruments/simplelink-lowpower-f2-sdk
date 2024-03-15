@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,6 @@ let config = [
         ]
     },
 
-
     {
         name        : "timerType",
         displayName : "Timer Type",
@@ -103,7 +102,7 @@ function getDisabledOptions(inst, components)
         for (let i = 0; i < components.length; i++) {
             invalidComponents.push({
                 component: components[i],
-                reason: "Hardware is disabled by " + inst.$ownedBy.$name
+                reason: "Hardware is disabled"
             });
         }
     }

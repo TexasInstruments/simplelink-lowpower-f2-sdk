@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,54 +37,70 @@
 var moduleName = "ti.tfm::TFM";
 
 var viewMap = [
-    {name: "SPM", fxn: "viewSPM", structName: "SPM"},
     {name: "Secure Partitions", fxn: "viewSPs", structName: "SP"},
     {name: "Services", fxn: "viewServices", structName: "Service"},
-    {name: "Messages", fxn: "viewMessages", structName: "Message"},
+    {name: "Connections", fxn: "viewConnections", structName: "Connection"},
+    {name: "Assets", fxn: "viewAssets", structName: "Asset"},
     {name: "Secure Logs", fxn: "viewSLog", structName: "Log"},
-    {name: "Non Secure Logs", fxn: "viewNSLog", structName: "Log"}
+    {name: "Non-Secure Logs", fxn: "viewNSLog", structName: "Log"}
 ];
 
-/* SPM constructor */
-function SPM() {
-    this.is_init = 0;
-    this.partition_count = 0;
-}
+const PARTITION_EXT_INFO_LENGTH = 8;  /* Partition stack and heap addr members occupy 8-bytes */
+const PARTITION_DEP_SIZE = 4;         /* Partition dependancies are defined as uint32_t */
+const PSA_MAX_IOVEC = 4;              /* Max number of input/output vectors */
+const PARTITION_FLAGS_PRIORITY_MASK = 0xFF;
 
 /* SP constructor */
 function SP() {
-    this.part_id = 0;
-    this.func = null;
+    this.pid = null;
+    this.function = null;
     this.type = null;
-    this.status = null;
-    this.signal = null;
+    this.priority = null;
+    this.state = null;
+    this.sigAllowed = null;
+    this.sigAsserted = null;
     this.stackBase = null;
+    this.stackPtr = null;
     this.stackSize = null;
     this.stackPeak = null;
-    this.address = null;
+    this.boundary = null;
+    this.nIRQs = null;
+    this.nServices = null;
+    this.nDeps = null;
+    this.nAssets = null;
 }
 
 /* Service constructor */
 function Service() {
-    this.part_id = 0;
+    this.pid = null;
     this.sid = null;
     this.name = null;
-    this.msgs = 0;
-    this.msgHandle = null;
-    this.msgType = null;
-    this.numInVecs = 0;
-    this.numOutVecs = 0;
-    this.address = null;
+    this.type = null;
+    this.version = null;
+    this.sfn = null;
+    this.signal = null;
 }
 
-/* Message constructor */
-function Message() {
-    this.part_id = 0;
-    this.sid = null;
-    this.msgHandle = null;
+/* Connection constructor */
+function Connection() {
+    this.status = null;
+    this.callerPID = null;
+    this.service = null;
     this.msgType = null;
-    this.numInVecs = 0;
-    this.numOutVecs = 0;
+    this.msgHandle = null;
+    this.msgClientID = null;
+    this.numInVecs = null;
+    this.numOutVecs = null;
+}
+
+/* Asset constructor */
+function Asset() {
+    this.pid = null;
+    this.memStart = null;
+    this.memLimit = null;
+    this.ppcBank = null;
+    this.ppcMask = null;
+    this.attr = null;
 }
 
 /* Log constructor */
@@ -92,21 +108,11 @@ function Log() {
     this.msg = null;
 }
 
-/* Context constructor */
-function Context() {
-    this.contextId = null;
-    this.core = null;       /* SOC Core name */
-    this.s_ns = null;       /* Secure/NonSecure */
-    this.p_up = null;       /* Priveleged/UnPrivileged */
-    this.baseAddr = null;   /* Region Base address */
-    this.endAddr = null;    /* Region end address */
-}
-
 /*
- * ======== inSecureState ========
+ * ======== isSecureState ========
  * Returns true if processor is in secure mode
  */
-function inSecureState() {
+function isSecureState() {
     var DSCSR = Program.fetchFromAddr(0xe000ee08, "uint32_t", 1);
 
     if (DSCSR & 0x10000) {
@@ -137,64 +143,207 @@ function toPaddedHexString(number, len)
 }
 
 /*
- * ======== viewSPM ========
- */
-function viewSPM() {
-    var instView = new SPM();
-
-    if (!inSecureState()) {
-        return (instView);
-    }
-
-    var g_spm_partion_db = Program.fetchVariable("g_spm_partition_db");
-    instView.is_init = g_spm_partion_db.is_init;
-    instView.partition_count = g_spm_partion_db.partition_count;
-    return (instView);
-}
-
-/*
  * ======== computeStackPeak ========
  * returns the max depth the stack has reached
  */
-function computeStackPeak(stackBase, stackSize) {
-    var stack = Program.fetchFromAddr(stackBase, "uint32_t", stackSize/4);
+function computeStackPeak(stackLimit, stackSize) {
+    var stack = Program.fetchFromAddr(stackLimit, "uint32_t", (stackSize / 4));
 
-    for (var i = 0; i < stackSize/4; i++) {
-        if (stack[i] != 0) return (toHexString(stackSize - i*4));
+    for (var i = 0; i < (stackSize / 4); i++) {
+        if (stack[i] != 0) return (toHexString(stackSize - (i * 4)));
     }
 
     return ("Unknown");
 }
 
 /*
- * ======== decodeFlags ========
- * returns the set of partition type flags.
+ * ======== decodePartitionFlags ========
+ * returns string of TFM-specific partition type flags.
  */
-function decodeFlags(flags) {
+function decodePartitionFlags(flags) {
     var type = null;
-    if (flags & 1) type = "APP_ROT";
-    if (flags & 2) type = "PSA_ROT";
-    if (flags & 4) type += " + IPC";
+
+    /* The following match "PARTITION_" flag defines in TF-M code */
+    type = (flags & 0x100) ? "PRoT" : "ARoT";
+    type += (flags & 0x200) ? " + IPC" : " + SFN";
+    /* The following flags are commented out as the info is redundant with the
+     * partition name.
+     */
+    // type += (flags & 0x400) ? " + NS Agent" : "";
+    // type += (flags & 0x800) ? " TZ" : "";
+
     return (type);
 }
 
 /*
- * ======== decodeStatus ========
- * returns TFM specific state of a Secure Partion
+ * ======== decodeBoundaryFlags ========
+ * returns string of TFM-specific boundary flags.
  */
-function decodeStatus(status) {
-    switch (status) {
+function decodeBoundaryFlags(flags) {
+    var type = "";
+
+    /* The following match "HANDLE_ATTR_xxxx_MASK" defines in TF-M code */
+    type += (flags & 0x1) ? "NS + " : "";
+    type += (flags & 0x2) ? "PRIVILEDGED + " : "";
+
+    /* Strip any trailing " + " */
+    type = type.replace(/\W{3}$/,'')
+
+    return (type);
+}
+
+/*
+ * ======== isIPCPartition ========
+ * returns true if partition type is IPC model.
+ */
+function isIPCPartition(partition_flags) {
+    return ((partition_flags & 0x200) ? true : false);
+}
+
+/*
+ * ======== decodeServiceFlags ========
+ * returns string of TFM-specific service type flags.
+ */
+function decodeServiceFlags(flags) {
+    var type = "";
+
+    /* The following match "SERVICE_FLAG_" defines in TF-M code */
+    type += (flags & 0x100) ? "NS_ACCESS + " : "";
+    type += (flags & 0x200) ? "STATELESS + " : "";
+    type += (flags & 0x400) ? "STRICT_VER + " : "";
+    type += (flags & 0x800) ? "MM_IOVEC" : "";
+
+    /* Strip any trailing " + " */
+    type = type.replace(/\W{3}$/,'')
+
+    return (type);
+}
+
+/*
+ * ======== decodeIPCState ========
+ * returns string of TFM-specific thread state of a IPC model Secure Partition
+ */
+function decodeIPCState(threadState) {
+    switch (threadState) {
+        /* The following match "THRD_STATE_" defines in TF-M code */
         case 0:
-            return "THRD_STAT_CREATING";
+            return "CREATING";
         case 1:
-            return "THRD_STAT_RUNNING";
+            return "RUNNABLE";
         case 2:
-            return "THRD_STAT_BLOCK";
+            return "BLOCK";
         case 3:
-            return "THRD_STAT_DETACH";
+            return "DETACH";
         case 4:
-            return "THRD_STAT_INVALID";
+            return "INVALID";
+        case 5:
+            return "RET_VAL_AVAIL";
+        default:
+            return threadState + ": UNKNOWN";
     }
+}
+
+/*
+ * ======== decodeSFNState ========
+ * returns string of TFM-specific state of a SFN model Secure Partition
+ */
+function decodeSFNState(state) {
+    switch (state) {
+        case 0:
+            return "NOT_INITED";
+        case 1:
+            return "INITED";
+        default:
+            return state + ": INVALID";
+    }
+}
+
+/*
+ * ======== decodePriority ========
+ * returns string of TFM-specific priority of a Secure Partition
+ */
+function decodePriority(flags) {
+    switch (flags & PARTITION_FLAGS_PRIORITY_MASK) {
+        /* The following match "PARTITION_PRI_" defines in TF-M code */
+        case 0:
+            return "HIGHEST";
+        case 0xF:
+            return "HIGH";
+        case 0x1F:
+            return "NORMAL";
+        case 0x7F:
+            return "LOW";
+        case 0xFF:
+            return "LOWEST";
+        case 0xFE:
+            /* This special priority is used by NS Agent */
+            return "LOWEST - 1";
+        default:
+            return toHexString(flags & PARTITION_FLAGS_PRIORITY_MASK);
+    }
+}
+
+/*
+ * ======== decodeConnectionStatus ========
+ * returns string of TFM-specific connection status.
+ */
+function decodeConnectionStatus(status) {
+    switch (status) {
+        /* The following match "TFM_HANDLE_STATUS_" defines in TF-M code */
+        case 0:
+            return "IDLE";
+        case 1:
+            return "ACTIVE";
+        case 2:
+            return "TO_FREE";
+        default:
+            return status + ": INVALID";
+    }
+}
+
+/*
+ * ======== decodeMsgType ========
+ * returns string of TFM-specific message type.
+ */
+function decodeMsgType(type) {
+    switch (type) {
+        /* The following match "PSA_IPC_" defines in TF-M code */
+        case -2:
+            return "DISCONNECT";
+        case -1:
+            return "CONNECT";
+        default:
+            /* SP-specific msg type */
+            return "CALL: " + toHexString(type);
+    }
+}
+
+/*
+ * ======== decodeAssetAttr ========
+ * returns string of TFM-specific asset attribute flags.
+ */
+function decodeAssetAttr(flags) {
+    var type = "";
+
+    /* The following match "ASSET_ATTR_" defines in TF-M code */
+    type += (flags & 0x1) ? "RO + " : "";
+    type += (flags & 0x2) ? "R/W + " : "";
+    type += (flags & 0x4) ? "PRIV_PERIPH_BUS + " : "";
+    type += (flags & 0x8) ? "NAMED MMIO + " : "";
+    type += (flags & 0x10) ? "NUMBERED MMIO + " : "";
+
+    /* Strip any trailing " + " */
+    type = type.replace(/\W{3}$/,'')
+
+    return (type);
+}
+
+/*
+ * ======== isNamedMMIO ========
+ * returns true if asset type is Named MMIO.
+ */
+function isNamedMMIO(asset_flags) {
+    return ((asset_flags & 0x8) ? true : false);
 }
 
 /*
@@ -212,29 +361,21 @@ function charArrayToString(charArray){
 }
 
 /*
- * ======== decodeMsgType ========
- * SP-specific msg.type decoder
+ * ======== getPartitions ========
  */
-function decodeMsgType(type) {
-    switch (type) {
-        case -2: return ("CLOSE            ");
-        case -1: return ("CONNECT          ");
-        default: return ("CALL: " + toHexString(type));
-    }
-}
+function getPartitions() {
 
-/*
- * ======== decodeSignal ========
- * generic SP signal decoder
- */
-function decodeSignal(signal, srv_signal) {
-    if (signal == srv_signal) {
-        return ("IPC");
+    var partitions = [];
+    var head = Program.fetchVariable("partition_listhead");
+    var sp = head;
+
+     /* Traverse link list of partitions and fetch partition structs */
+    while (sp.next != 0) {
+        sp = Program.fetchFromAddr(sp.next, "partition_t");
+        partitions.push(sp);
     }
-    if (signal & srv_signal) {
-        return ("IPC + " + toHexString(signal & ~srv_signal));
-    }
-    return (toHexString(signal));
+
+    return partitions;
 }
 
 /*
@@ -242,60 +383,50 @@ function decodeSignal(signal, srv_signal) {
  */
 function viewSPs() {
     var view = new Array();
+    var partitions = getPartitions();
 
-    if (!inSecureState()) {
-        var instView = new SP();
-        view.push(instView);
-        return (view);
-    }
+    var currThrdAddr = Program.fetchVariable("p_curr_thrd");
+    var currThrd = Program.fetchFromAddr(currThrdAddr, "thread_t");
 
-    var g_spm_partion_db = Program.fetchVariable("g_spm_partition_db");
-    var partitionsAddr = g_spm_partion_db.partitions;
-    var partionType = Program.lookupType("spm_partition_desc_t");
-    var partition_count = g_spm_partion_db.partition_count;
-    var memory_data_listAddr = Program.lookupSymbolValue("memory_data_list");
-    var service_dbAddr = Program.lookupSymbolValue("service_db");
-    var service_db = Program.fetchFromAddr(
-                            service_dbAddr,
-                            "tfm_spm_service_db_t",
-                            partition_count-1);
-    var partitions = Program.fetchFromAddr(
-                            partitionsAddr,
-                            "spm_partition_desc_t",
-                            partition_count);
-    var memory_data_list = Program.fetchFromAddr(
-                            memory_data_listAddr,
-                            "tfm_spm_partition_memory_data_t",
-                            partition_count);
-    for (var i = 0; i < partition_count; i++) {
+    for (var i = 0; i < partitions.length; i++) {
         var instView = new SP();
-        var static_data = Program.fetchFromAddr(
-                            partitions[i].static_data,
-                            "spm_partition_static_data_t", 1);
-        var runtime_data = partitions[i].runtime_data;
-        instView.part_id = static_data.partition_id;
-        instView.func = String(Program.lookupFuncName(
-                            Number(static_data.partition_init)));
-        instView.type = decodeFlags(static_data.partition_flags);
-        instView.status = decodeStatus(runtime_data.sp_thrd.status);
-        if (i > 0) {
-            if (partition_count == 2) {
-                instView.signal = decodeSignal(runtime_data.signals,
-                                    service_db.signal);
+        var loadInfo = Program.fetchFromAddr(partitions[i].p_ldinf, "partition_load_info_t");
+
+        instView.pid = loadInfo.pid;
+        instView.function = String(Program.lookupFuncName(loadInfo.entry));
+        instView.type = decodePartitionFlags(loadInfo.flags);
+        instView.priority = decodePriority(loadInfo.flags);
+        instView.sigAllowed = toHexString(partitions[i].signals_allowed);
+        instView.sigAsserted = toHexString(partitions[i].signals_asserted);
+        instView.stackSize = toHexString(loadInfo.stack_size);
+
+        if (isIPCPartition(loadInfo.flags)) {
+            /* IPC model */
+            instView.stackBase = toHexString(partitions[i].ctx_ctrl.sp_base);
+            instView.stackPeak = computeStackPeak(partitions[i].ctx_ctrl.sp_limit, loadInfo.stack_size);
+            instView.stackPtr = toHexString(partitions[i].ctx_ctrl.sp);
+            instView.state = decodeIPCState(partitions[i].thrd.state);
+
+            if (instView.stackPeak > loadInfo.stack_size) {
+                Program.displayError(instView, "stackPeak", "Stack overflow!");
             }
-            else {
-                instView.signal = decodeSignal(runtime_data.signals,
-                                    service_db[i-1].signal);
+
+            if (Number(partitions[i].thrd.p_context_ctrl) == currThrd.p_context_ctrl) {
+                /* Set current thread indicator */
+                instView.function = instView.function + "*";
             }
         }
-        instView.stackBase = toHexString(memory_data_list[i].stack_bottom);
-        instView.stackSize = toHexString(
-                                memory_data_list[i].stack_top -
-                                memory_data_list[i].stack_bottom);
-        instView.stackPeak = computeStackPeak(
-                                memory_data_list[i].stack_bottom,
-                                Number(instView.stackSize));
-        instView.address = toHexString(partitionsAddr + i*partionType.size);
+        else {
+            /* SFN model */
+            instView.state = decodeSFNState(partitions[i].state);
+        }
+
+        instView.boundary = decodeBoundaryFlags(partitions[i].boundary);
+        instView.nDeps = loadInfo.ndeps;
+        instView.nServices = loadInfo.nservices;
+        instView.nAssets = loadInfo.nassets;
+        instView.nIRQs = loadInfo.nirqs;
+
         view.push(instView);
     }
 
@@ -307,63 +438,96 @@ function viewSPs() {
  */
 function viewServices() {
     var view = new Array();
+    var partitions = getPartitions();
+    var partLoadInfoType = Program.lookupType("partition_load_info_t");
+    var servLoadInfoType = Program.lookupType("service_load_info_t");
 
-    if (!inSecureState()) {
-        var instView = new Service();
-        view.push(instView);
-        return (view);
+    for (var i = 0; i < partitions.length; i++) {
+        var partLoadInfo = Program.fetchFromAddr(partitions[i].p_ldinf, "partition_load_info_t");
+
+        for (var j = 0; j < partLoadInfo.nservices; j++) {
+            var instView = new Service();
+
+            /* Get the service info for the partition */
+            var servLoadInfoAddr = partitions[i].p_ldinf + partLoadInfoType.size +
+                PARTITION_EXT_INFO_LENGTH + (partLoadInfo.ndeps * PARTITION_DEP_SIZE) +
+                (j * servLoadInfoType.size);
+            var servLoadInfo = Program.fetchFromAddr(servLoadInfoAddr, "service_load_info_t");
+
+            instView.pid = partLoadInfo.pid;
+            instView.sid = toHexString(servLoadInfo.sid);
+
+            var nameAddr = servLoadInfo.name_strid;
+            var name = Program.fetchFromAddr(nameAddr, "char", 25);
+            instView.name = charArrayToString(name);
+
+            instView.type = decodeServiceFlags(servLoadInfo.flags);
+            instView.version = servLoadInfo.version;
+            instView.sfn = String(Program.lookupFuncName(servLoadInfo.sfn));
+
+            if (isIPCPartition(partLoadInfo.flags)) {
+                instView.signal = servLoadInfo.signal;
+            }
+
+            view.push(instView);
+        }
     }
 
-    var service_db = Program.fetchVariable("service_db");
-    var serviceAddr = Program.lookupSymbolValue("service");
-    var serviceType = Program.lookupType("tfm_spm_service_t");
-    var service = Program.fetchVariable("service");
+    return (view);
+}
 
-    for (var x in service) {
-        var instView = new Service();
-        instView.part_id = service_db[x].partition_id;
-        instView.sid = toHexString(service_db[x].sid);
-        var nameAddr = service_db[x].name;
-        var name = Program.fetchFromAddr(nameAddr, "char", 20);
-        instView.name = charArrayToString(name);
-        instView.msgs = service[x].msg_queue.size;
-        if (instView.msgs) {
-            var msgBody = Program.fetchFromAddr(
-                            service[x].msg_queue.head, "tfm_msg_body_t", 1);
-            instView.msgHandle = toHexString(msgBody.msg.handle);
-            instView.msgType = decodeMsgType(msgBody.msg.type);
+/*
+ * ======== viewConnections ========
+ */
+function viewConnections() {
+    var view = new Array();
+    var partitions = getPartitions();
 
-            /*
-             * work around ROV not knowing the size of
-             * in_size/out_size array elements
-             */
-            var msgBodyType = Program.lookupType("tfm_msg_body_t");
-            var in_size_offset =
-                            msgBodyType.member.msg.offset +
-                            msgBodyType.member.msg.member.in_size.offset;
-            var out_size_offset =
-                            msgBodyType.member.msg.offset +
-                            msgBodyType.member.msg.member.out_size.offset;
-            var in_size_addr = service[x].msg_queue.head + in_size_offset;
-            var in_size = Program.fetchFromAddr(in_size_addr, "uint32_t", 4);
-            var out_size_addr = service[x].msg_queue.head + out_size_offset;
-            var out_size = Program.fetchFromAddr(out_size_addr, "uint32_t", 4);
-            /* end work around */
+    for (var i = 0; i < partitions.length; i++) {
+        var partLoadInfo = Program.fetchFromAddr(partitions[i].p_ldinf, "partition_load_info_t");
+        var connAddr = partitions[i].p_handles;
 
-            for (var j = 0; j < 4; j++) {
-                if (in_size[j] == 0) {
+        /* Tranverse the connection link list */
+        while (connAddr != 0) {
+            var instView = new Connection();
+            var conn = Program.fetchFromAddr(connAddr, "connection_t");
+            var clientPart = Program.fetchFromAddr(conn.p_client, "partition_t");
+            var clientPartLoadInfo = Program.fetchFromAddr(clientPart.p_ldinf, "partition_load_info_t");
+            var service = Program.fetchFromAddr(conn.service, "service_t");
+            var servLoadInfo = Program.fetchFromAddr(service.p_ldinf, "service_load_info_t");
+
+            instView.status = decodeConnectionStatus(conn.status);
+            instView.callerPID = clientPartLoadInfo.pid;
+            instView.service = toHexString(servLoadInfo.sid);
+
+            instView.msgType = decodeMsgType(conn.msg.type);
+            instView.msgHandle = toHexString(conn.msg.handle);
+            instView.msgClientID = conn.msg.client_id;
+
+            for (var j = 0; j < PSA_MAX_IOVEC; j++) {
+                if (conn.msg.in_size[j] == 0) {
                     instView.numInVecs = j;
                     break;
                 }
             }
-            for (var j = 0; j < 4; j++) {
-                if (out_size[j] == 0) {
-                    instView.numOutVecs = j;
+
+            for (var k = 0; k < PSA_MAX_IOVEC; k++) {
+                if (conn.msg.out_size[k] == 0) {
+                    instView.numOutVecs = k;
                     break;
                 }
             }
+
+            view.push(instView);
+
+            connAddr = conn.p_handles;
         }
-        instView.address = toHexString(serviceAddr + x*serviceType.size);
+    }
+
+    if (view.length == 0) {
+        /* No connections */
+        var instView = new Connection();
+        instView.status = "No connections. Set a breakpoint inside backend_messaging() to view connections.";
         view.push(instView);
     }
 
@@ -371,73 +535,44 @@ function viewServices() {
 }
 
 /*
- * ======== viewMessages ========
+ * ======== viewAssets ========
  */
-function viewMessages() {
+function viewAssets() {
     var view = new Array();
+    var partitions = getPartitions();
+    var partLoadInfoType = Program.lookupType("partition_load_info_t");
+    var servLoadInfoType = Program.lookupType("service_load_info_t");
+    var assetDescType = Program.lookupType("asset_desc_t");
 
-    if (!inSecureState()) {
-        var instView = new Message();
-        view.push(instView);
-        return (view);
-    }
+    for (var i = 0; i < partitions.length; i++) {
+        var partLoadInfo = Program.fetchFromAddr(partitions[i].p_ldinf, "partition_load_info_t");
 
-    var serviceAddr = Program.lookupSymbolValue("service");
-    var serviceType = Program.lookupType("tfm_spm_service_t");
-    var service = Program.fetchVariable("service");
+        for (var j = 0; j < partLoadInfo.nassets; j++) {
+            var instView = new Asset();
 
-    for (var x in service) {
-        var service_db = Program.fetchFromAddr(
-                            service[x].service_db,
-                            "tfm_spm_service_db_t", 1);
-        var msgBodyAddr = service[x].msg_queue.head;
-        while (msgBodyAddr != 0) {
-            var msgBody = Program.fetchFromAddr(msgBodyAddr,
-                            "tfm_msg_body_t", 1);
-            var instView = new Message();
-            instView.part_id = service_db.partition_id;
-            instView.sid = toHexString(service_db.sid);
-            instView.msgHandle = toHexString(msgBody.msg.handle);
-            instView.msgType = decodeMsgType(msgBody.msg.type);
+            /* Get the next asset descriptor for the partition */
+            var assetDescAddr = partitions[i].p_ldinf + partLoadInfoType.size +
+                PARTITION_EXT_INFO_LENGTH + (partLoadInfo.ndeps * PARTITION_DEP_SIZE) +
+                (partLoadInfoType.nservices * servLoadInfoType.size) +
+                (j * assetDescType.size);
+            var assetDesc = Program.fetchFromAddr(assetDescAddr, "asset_desc_t");
 
-            /*
-             * work around ROV not knowing the size of
-             * in_size/out_size array elements
-             */
-            var msgBodyType = Program.lookupType("tfm_msg_body_t");
-            var in_size_offset =
-                            msgBodyType.member.msg.offset +
-                            msgBodyType.member.msg.member.in_size.offset;
-            var out_size_offset =
-                            msgBodyType.member.msg.offset +
-                            msgBodyType.member.msg.member.out_size.offset;
-            var in_size_addr = msgBodyAddr + in_size_offset;
-            var in_size = Program.fetchFromAddr(in_size_addr, "uint32_t", 4);
-            var out_size_addr = msgBodyAddr + out_size_offset;
-            var out_size = Program.fetchFromAddr(out_size_addr, "uint32_t", 4);
-            /* end work around */
+            instView.pid = partLoadInfo.pid;
 
-            for (var j = 0; j < 4; j++) {
-                if (in_size[j] == 0) {
-                    instView.numInVecs = j;
-                    break;
-                }
+            if (isNamedMMIO(assetDesc.attr)) {
+                var platData = Program.fetchFromAddr(assetDesc.dev.dev_ref, "platform_data_t");
+                instView.memStart = toPaddedHexString(platData.periph_start, 8);
+                instView.memLimit = toPaddedHexString(platData.periph_limit, 8);
+                instView.ppcBank = platData.periph_ppc_bank;
+                instView.ppcMask = toHexString(platData.periph_ppc_mask);
             }
-            for (var j = 0; j < 4; j++) {
-                if (out_size[j] == 0) {
-                    instView.numOutVecs = j;
-                    break;
-                }
+            else {
+                instView.memStart = toPaddedHexString(assetDesc.mem.start, 8);
+                instView.memLimit = toPaddedHexString(assetDesc.mem.limit, 8);
             }
+
             view.push(instView);
-            msgBodyAddr = msgBody.next;
         }
-    }
-
-    /* return null message instance if no messages to decode */
-    if (view.length == 0) {
-        var instView = new Message();
-        view.push(instView);
     }
 
     return (view);
@@ -449,13 +584,6 @@ function viewMessages() {
 function viewSLog() {
     var view = new Array();
 
-    /* BQ - commenting this out to avoid clearing Secure log when entering NS state */
-    /*if (!inSecureState()) {
-        var log = new Log();
-        view.push(log);
-        return (view);
-    }*/
-
     try {
         var uartOutputBufAddr = Program.lookupSymbolValue("uartOutputBuf_s");
         var uartOutputBufIndex = Program.fetchVariable("uartOutputBufIndex_s");
@@ -463,6 +591,7 @@ function viewSLog() {
     catch (e) {
         var log = new Log();
         log.msg = String(e);
+        log.msg += " Try accessing Secure logs from Secure image ROV";
         view.push(log);
         return (view);
     }
@@ -490,6 +619,7 @@ function viewNSLog() {
     catch (e) {
         var log = new Log();
         log.msg = String(e);
+        log.msg += " Try accessing Non-Secure logs from Non-Secure image ROV";
         view.push(log);
         return (view);
     }
@@ -505,7 +635,7 @@ function viewNSLog() {
 }
 
 /*
- * ======== viewSLog ========
+ * ======== addMsgFromBuf ========
  */
 function addMsgFromBuf(view, outbuf, index, max) {
     var str = "";

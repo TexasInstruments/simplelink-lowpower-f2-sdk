@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -533,6 +533,7 @@ static void macInit(macUserCfg_t *pUserCfg)
   macLowLevelInit();
 }
 
+extern void timac_LogEvent(uint32_t eventID,uint32_t timestamp,uint32_t st1,uint32_t st2,uint32_t st3,uint32_t st4);
 
 /**************************************************************************************************
  * @fn          macTaskFxn
@@ -695,11 +696,28 @@ static void *macTaskFxn(void *a0)
         macExecute((macEvent_t *) &hdr);
       }
 
-      if (macEvents & OSALPORT_CLEAN_UP_TIMERS_EVT)
-      {
-        OsalPortTimers_cleanUpTimers();
+      if (macEvents & MAC_MSG_LOG_EVT)
+      { /* use the nanostack trace to log message */
+          uint16_t st;
+          MacMsgEvtLog_s MacLog;
+
+          // dump all messages
+          do
+          {
+              st = macReadLogMsg(&MacLog);
+              if (st ==1 )
+              { // log event
+                timac_LogEvent(MacLog.msgLogID, MacLog.timestamp,MacLog.st1,MacLog.st2,
+                               MacLog.st3,MacLog.st4);
+              }
+          } while (st == 1);
+
       }
 
+      if (macEvents & OSALPORT_CLEAN_UP_TIMERS_EVT)
+      {
+          OsalPortTimers_cleanUpTimers();
+      }
       /* handle pending message, if any */
       if (macMain.pPending != NULL)
       {

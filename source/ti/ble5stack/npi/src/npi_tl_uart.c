@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -275,10 +275,12 @@ static void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size,
 #else
     if ( npiTransmitCB )
     {
+        /* NPITL_transmissionCallBack */
         npiTransmitCB(0,TransportTxLen);
     }
 #endif // NPI_FLOW_CTRL = 1
 
+    TransportTxLen = 0;
     ICall_leaveCriticalSection(key);
 }
 
@@ -334,6 +336,7 @@ static void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, 
 #else
     if ( npiTransmitCB )
     {
+        /* NPITL_transmissionCallBack */
         npiTransmitCB(size,0);
     }
     TransportRxLen = 0;

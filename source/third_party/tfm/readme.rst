@@ -21,9 +21,9 @@ Quick Links
 * `PSA certified`_
 * `Documentation home`_
 * `Release notes`_
-* `Software requirements`_
+* `TF-M getting started`_
 * `Build instructions`_
-* `User Guide`_
+* `Run TF-M examples on Arm platforms`_
 * `Contribution guidelines`_
 * `trustedfirmware.org`_
 
@@ -33,18 +33,18 @@ Feedback and support
 Feedback can be submitted via email to
 `TF-M mailing list <tf-m@lists.trustedfirmware.org>`__.
 
-.. _License: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/lic.html
-.. _Contribution guidelines: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/contributing.html
-.. _Build instructions: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/user_guides/tfm_build_instruction.html
-.. _Software requirements: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/user_guides/tfm_sw_requirement.html
-.. _User Guide: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/user_guides/tfm_user_guide.html
+.. _License: https://tf-m-user-guide.trustedfirmware.org/contributing/lic.html
+.. _Contribution guidelines: https://tf-m-user-guide.trustedfirmware.org/contributing/contributing_process.html
+.. _Build instructions: https://tf-m-user-guide.trustedfirmware.org/building/tfm_build_instruction.html
+.. _TF-M getting started: https://tf-m-user-guide.trustedfirmware.org/getting_started/tfm_getting_started.html
+.. _Run TF-M examples on Arm platforms: https://tf-m-user-guide.trustedfirmware.org/building/run_tfm_examples_on_arm_platforms.html
 .. _ARMv7-M and Armv8-M: https://developer.arm.com/architectures/cpu-architecture/m-profile
 .. _ARMv8-M Architecture: https://developer.arm.com/docs/100688/latest/an-introduction-to-the-armv8-m-architecture
 .. _Platform Security Architecture: https://www.arm.com/why-arm/architecture/platform-security-architecture
 .. _PSA certified: https://www.psacertified.org/
 .. _Trusted Firmware-M documentation: `Documentation home`_
-.. _Documentation home: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/readme.html
+.. _Documentation home: https://tf-m-user-guide.trustedfirmware.org/index.html
 .. _trustedfirmware.org: http://www.trustedfirmware.org
-.. _Release notes: https://ci.trustedfirmware.org/job/tf-m-build-test-nightly/lastSuccessfulBuild/artifact/build-docs/tf-m_documents/install/doc/user_guide/html/docs/changelog.html
+.. _Release notes: https://tf-m-user-guide.trustedfirmware.org/releases/index.html
 
-*Copyright (c) 2017-2020, Arm Limited. All rights reserved.*
+*Copyright (c) 2017-2021, Arm Limited. All rights reserved.*

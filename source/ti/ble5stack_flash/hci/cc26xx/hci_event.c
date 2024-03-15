@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -279,6 +279,8 @@ void HCI_NumOfCompletedPacketsEvent( uint8   numHandles,
                                      uint16 *handles,
                                      uint16 *numCompletedPkts )
 {
+  uint16 connHandle;
+
   // check if this is for the Host
   if ( hciL2capTaskID != 0 )
   {
@@ -297,7 +299,8 @@ void HCI_NumOfCompletedPacketsEvent( uint8   numHandles,
       // completed packets for that handle
       for ( uint8 i = 0; i < numHandles; i++ )
       {
-        pkt->pConnectionHandle[i] = handles[i];
+        connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(handles[i]);
+        pkt->pConnectionHandle[i] = connHandle;
         pkt->pNumCompletedPackets[i] = numCompletedPkts[i];
       }
 
@@ -340,8 +343,9 @@ void HCI_NumOfCompletedPacketsEvent( uint8   numHandles,
       // completed packets for that handle
       for (i=0; i<numHandles; i++)
       {
-        msg->pData[4+(4*i)] = LO_UINT16(handles[i]);
-        msg->pData[5+(4*i)] = HI_UINT16(handles[i]);
+        connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(handles[i]);
+        msg->pData[4+(4*i)] = LO_UINT16(connHandle);
+        msg->pData[5+(4*i)] = HI_UINT16(connHandle);
         msg->pData[6+(4*i)] = LO_UINT16(numCompletedPkts[i]);
         msg->pData[7+(4*i)] = HI_UINT16(numCompletedPkts[i]);
       }
@@ -510,6 +514,9 @@ void LL_EXT_ScanReqReportCback( uint8  peerAddrType,
  */
 void LL_EXT_ChanMapUpdateCback(uint16 connHandle, uint8 *newChanMap, uint8 nextDataChan)
 {
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if (hciGapTaskID != 0)
   {
@@ -872,8 +879,10 @@ void HCI_SendControllerToHostEvent( uint8 eventCode,
  *
  * @return      None.
  */
-void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid )
+void LL_DataLenExceedEventCback( uint8 status, uint16 connHandle, uint16 cid )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciL2capTaskID != 0 )
   {
@@ -883,7 +892,7 @@ void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid )
     {
       pkt->hdr.event  = HCI_DATA_EVENT;              // packet type
       pkt->hdr.status = status;                      // event code
-      pkt->connHandle = handle;
+      pkt->connHandle = connHandle;
       pkt->cid = cid;
 
       (void)MAP_osal_msg_send( hciL2capTaskID, (uint8 *)pkt );
@@ -914,6 +923,8 @@ void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid )
  */
 void LL_AuthPayloadTimeoutExpiredCback( uint16 connHandle )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if LE Meta-Events are enabled and this event is enabled
   if ( ((pHciEvtMask[BT_EVT_INDEX_LE_META_EVENT] & BT_EVT_MASK_LE_META_EVENT) == 0) ||
        ((pHciEvtMask2[BT_EVT_INDEX2_APTO_EXPIRED] & BT_EVT_MASK2_AUTHENTICATED_PAYLOAD_TIMEOUT_EXPIRED) == 0) )
@@ -976,7 +987,7 @@ void LL_AuthPayloadTimeoutExpiredCback( uint16 connHandle )
  * @brief       This LL callback is used to generate a Remote Connection
  *              Parameter Request meta event to provide to the Host the peer's
  *              connection parameter request parameters (min connection
- *              interval, max connection interval, slave latency, and connection
+ *              interval, max connection interval, peripheral latency, and connection
  *              timeout), and to request the Host's acceptance or rejection of
  *              this parameters.
  *
@@ -985,7 +996,7 @@ void LL_AuthPayloadTimeoutExpiredCback( uint16 connHandle )
  * @param       connHandle   - Connection handle.
  * @param       Interval_Min - Lower limit for connection interval.
  * @param       Interval_Max - Upper limit for connection interval.
- * @param       Latency      - Slave latency.
+ * @param       Latency      - Peripheral latency.
  * @param       Timeout      - Connection timeout.
  *
  * output parameters
@@ -1015,6 +1026,8 @@ void LL_RemoteConnParamReqCback( uint16 connHandle,
 
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -1083,8 +1096,8 @@ void LL_RemoteConnParamReqCback( uint16 connHandle,
       *pBuf++ = HI_UINT16(Interval_Min);         // connection interval (MSB)
       *pBuf++ = LO_UINT16(Interval_Max);         // connection interval (LSB)
       *pBuf++ = HI_UINT16(Interval_Max);         // connection interval (MSB)
-      *pBuf++ = LO_UINT16(Latency);              // slave latency (LSB)
-      *pBuf++ = HI_UINT16(Latency);              // slave latency (MSB)
+      *pBuf++ = LO_UINT16(Latency);              // peripheral latency (LSB)
+      *pBuf++ = HI_UINT16(Latency);              // peripheral latency (MSB)
       *pBuf++ = LO_UINT16(Timeout);              // connection timeout (LSB)
       *pBuf++ = HI_UINT16(Timeout);              // connection timeout (MSB)
 
@@ -1135,6 +1148,8 @@ void LL_PhyUpdateCompleteEventCback( llStatus_t status,
     txPhy = LL_PHY_1_MBPS;
     rxPhy = LL_PHY_1_MBPS;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -1242,6 +1257,8 @@ void LL_DataLengthChangeEventCback( uint16 connHandle,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -1559,15 +1576,15 @@ void LL_GenerateDHKeyCompleteEventCback( uint8  status,
  *
  * @param       reasonCode    - Status of connection complete.
  * @param       connHandle    - Connection handle.
- * @param       role          - Connection formed as Master or Slave.
+ * @param       role          - Connection formed as Central or Central.
  * @param       peerAddrType  - Peer address as Public or Random.
  * @param       peerAddr      - Pointer to peer device address.
  * @param       localRPA      - Pointer to local RPA.
  * @param       peerRPA       - Pointer to peer RPA.
  * @param       connInterval  - Connection interval.
- * @param       slaveLatency  - Slave latency.
+ * @param       peripheralLatency  - Peripheral latency.
  * @param       connTimeout   - Connection timeout.
- * @param       clockAccuracy - Sleep clock accuracy (from Master only).
+ * @param       clockAccuracy - Sleep clock accuracy (from Central only).
  *
  * output parameters
  *
@@ -1583,7 +1600,7 @@ void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
                                          uint8  *localRPA,
                                          uint8  *peerRPA,
                                          uint16  connInterval,
-                                         uint16  slaveLatency,
+                                         uint16  peripheralLatency,
                                          uint16  connTimeout,
                                          uint8   clockAccuracy )
 {
@@ -1595,6 +1612,8 @@ void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -1643,7 +1662,7 @@ void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
       pkt->connectionHandle = connHandle;
       pkt->role             = role;
       pkt->connInterval     = connInterval;
-      pkt->connLatency      = slaveLatency;
+      pkt->connLatency      = peripheralLatency;
       pkt->connTimeout      = connTimeout;
       pkt->clockAccuracy    = clockAccuracy;
 
@@ -1698,7 +1717,7 @@ void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
       msg->pData[i++] = reasonCode;                                 // reason code
       msg->pData[i++] = LO_UINT16 (connHandle);                     // connection handle (LSB)
       msg->pData[i++] = HI_UINT16 (connHandle);                     // connection handle (MSB)
-      msg->pData[i++] = role;                                       // role (master/slave)
+      msg->pData[i++] = role;                                       // role (central/peripheral)
 
       if ( pBleEvtMask[LE_EVT_INDEX_ENH_CONN_COMPLETE] & LE_EVT_MASK_ENH_CONN_COMPLETE )
       {
@@ -1732,8 +1751,8 @@ void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
 
       msg->pData[i++] = LO_UINT16 (connInterval);                  // connection interval (LSB)
       msg->pData[i++] = HI_UINT16 (connInterval);                  // connection interval (MSB)
-      msg->pData[i++] = LO_UINT16 (slaveLatency);                  // slave latency (LSB)
-      msg->pData[i++] = HI_UINT16 (slaveLatency);                  // slave latency (LSB)
+      msg->pData[i++] = LO_UINT16 (peripheralLatency);                  // peripheral latency (LSB)
+      msg->pData[i++] = HI_UINT16 (peripheralLatency);                  // peripheral latency (LSB)
       msg->pData[i++] = LO_UINT16 (connTimeout);                   // connectin timeout (LSB)
       msg->pData[i++] = HI_UINT16 (connTimeout);                   // connection timeout (MSB)
       msg->pData[i++] = clockAccuracy;                             // clock accuracy
@@ -1773,7 +1792,9 @@ void LL_ChannelSelectionAlgorithmCback( uint16 connHandle,
     return;
   }
 
-    // check if this is for the Host
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
+  // check if this is for the Host
   if ( hciGapTaskID != 0 )
   {
     hciEvt_BLEChanSelAlgo_t *msg =
@@ -1964,13 +1985,13 @@ void LL_AdvReportCback( uint8 advEvt,
  *
  * @param       reasonCode    - Status of connection complete.
  * @param       connHandle    - Connection handle.
- * @param       role          - Connection formed as Master or Slave.
+ * @param       role          - Connection formed as Central or Central.
  * @param       peerAddrType  - Peer address as Public or Random.
  * @param       peerAddr      - Pointer to peer device address.
  * @param       connInterval  - Connection interval.
- * @param       slaveLatency  - Slave latency.
+ * @param       peripheralLatency  - Peripheral latency.
  * @param       connTimeout   - Connection timeout.
- * @param       clockAccuracy - Sleep clock accuracy (from Master only).
+ * @param       clockAccuracy - Sleep clock accuracy (from Central only).
  *
  * output parameters
  *
@@ -1984,10 +2005,12 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
                                  uint8  peerAddrType,
                                  uint8  *peerAddr,
                                  uint16 connInterval,
-                                 uint16 slaveLatency,
+                                 uint16 peripheralLatency,
                                  uint16 connTimeout,
                                  uint8  clockAccuracy )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
   {
@@ -2014,7 +2037,7 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
       pkt->role             = role;
       pkt->peerAddrType     = peerAddrType;
       pkt->connInterval     = connInterval;
-      pkt->connLatency      = slaveLatency;
+      pkt->connLatency      = peripheralLatency;
       pkt->connTimeout      = connTimeout;
       pkt->clockAccuracy    = clockAccuracy;
 
@@ -2060,7 +2083,7 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
       msg->pData[4] = reasonCode;                                 // reason code
       msg->pData[5] = LO_UINT16 (connHandle);                     // connection handle (LSB)
       msg->pData[6] = HI_UINT16 (connHandle);                     // connection handle (MSB)
-      msg->pData[7] = role;                                       // role (master/slave)
+      msg->pData[7] = role;                                       // role (central/peripheral)
       msg->pData[8] = peerAddrType;                               // address type
 
       // copy address
@@ -2068,8 +2091,8 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
 
       msg->pData[15] = LO_UINT16 (connInterval);                  // connection interval (LSB)
       msg->pData[16] = HI_UINT16 (connInterval);                  // connection interval (MSB)
-      msg->pData[17] = LO_UINT16 (slaveLatency);                  // slave latency (LSB)
-      msg->pData[18] = HI_UINT16 (slaveLatency);                  // slave latency (LSB)
+      msg->pData[17] = LO_UINT16 (peripheralLatency);                  // peripheral latency (LSB)
+      msg->pData[18] = HI_UINT16 (peripheralLatency);                  // peripheral latency (LSB)
       msg->pData[19] = LO_UINT16 (connTimeout);                   // connectin timeout (LSB)
       msg->pData[20] = HI_UINT16 (connTimeout);                   // connection timeout (MSB)
       msg->pData[21] = clockAccuracy;                             // clock accuracy
@@ -2085,8 +2108,8 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
  * @fn          LL_DisconnectCback Callback
  *
  * @brief       This LL callback is used to generate a Disconnect Complete meta
- *              event when a connection is disconnected by either a Master or
- *              a Slave.
+ *              event when a connection is disconnected by either a Central or
+ *              a Central.
  *
  * input parameters
  *
@@ -2102,6 +2125,8 @@ void LL_ConnectionCompleteCback( uint8  reasonCode,
 void LL_DisconnectCback( uint16 connHandle,
                          uint8  reasonCode )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
   {
@@ -2170,7 +2195,7 @@ void LL_DisconnectCback( uint16 connHandle,
  *
  * @brief       This LL callback is used to generate a Connection Update
  *              Complete meta event when a connection's parameters are updated
- *              by the Master, or if an error occurs (e.g. during the
+ *              by the Central, or if an error occurs (e.g. during the
  *              Connection Parameter Request control procedure).
  *
  * input parameters
@@ -2178,7 +2203,7 @@ void LL_DisconnectCback( uint16 connHandle,
  * @param       status       - Status of update complete event.
  * @param       connHandle   - Connection handle.
  * @param       connInterval - Connection interval.
- * @param       slaveLatency - Slave latency.
+ * @param       peripheralLatency - Peripheral latency.
  * @param       connTimeout  - Connection timeout.
  *
  * output parameters
@@ -2200,6 +2225,8 @@ void LL_ConnParamUpdateCback( llStatus_t status,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -2266,8 +2293,8 @@ void LL_ConnParamUpdateCback( llStatus_t status,
       *pBuf++ = HI_UINT16(connHandle);               // connection handle (MSB)
       *pBuf++ = LO_UINT16(connInterval);             // connection interval (LSB)
       *pBuf++ = HI_UINT16(connInterval);             // connection interval (MSB)
-      *pBuf++ = LO_UINT16(connLatency);              // slave latency (LSB)
-      *pBuf++ = HI_UINT16(connLatency);              // slave latency (MSB)
+      *pBuf++ = LO_UINT16(connLatency);              // peripheral latency (LSB)
+      *pBuf++ = HI_UINT16(connLatency);              // peripheral latency (MSB)
       *pBuf++ = LO_UINT16(connTimeout);              // connection timeout (LSB)
       *pBuf++ = HI_UINT16(connTimeout);              // connection timeout (MSB)
 
@@ -2290,7 +2317,7 @@ void LL_ConnParamUpdateCback( llStatus_t status,
  * @param       status        - Link Layer error code.
  *
  * @param       connInterval  - Connection interval.
- * @param       connLatency   - Slave latency.
+ * @param       connLatency   - Peripheral latency.
  * @param       connTimeout   - Connection timeout.
  *
  *
@@ -2313,6 +2340,8 @@ void LL_ConnParamUpdateRejectCback( llStatus_t   status,
     // the feature was not enabled
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
@@ -2379,8 +2408,8 @@ void LL_ConnParamUpdateRejectCback( llStatus_t   status,
       *pBuf++ = HI_UINT16(connHandle);               // connection handle (MSB)
       *pBuf++ = LO_UINT16(connInterval);             // connection interval (LSB)
       *pBuf++ = HI_UINT16(connInterval);             // connection interval (MSB)
-      *pBuf++ = LO_UINT16(connLatency);              // slave latency (LSB)
-      *pBuf++ = HI_UINT16(connLatency);              // slave latency (MSB)
+      *pBuf++ = LO_UINT16(connLatency);              // peripheral latency (LSB)
+      *pBuf++ = HI_UINT16(connLatency);              // peripheral latency (MSB)
       *pBuf++ = LO_UINT16(connTimeout);              // connection timeout (LSB)
       *pBuf++ = HI_UINT16(connTimeout);              // connection timeout (MSB)
 
@@ -2395,7 +2424,7 @@ void LL_ConnParamUpdateRejectCback( llStatus_t   status,
  * @fn          LL_ReadRemoteUsedFeaturesCompleteCback Callback
  *
  * @brief       This LL callback is used to generate a Read Remote Used Features
- *              Complete meta event when a Master makes this request of a Slave.
+ *              Complete meta event when a Central makes this request of a Central.
  *
  * input parameters
  *
@@ -2424,6 +2453,8 @@ void LL_ReadRemoteUsedFeaturesCompleteCback( hciStatus_t  status,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // data length
   dataLength = HCI_READ_REMOTE_FEATURE_COMPLETE_EVENT_LEN;
@@ -2465,8 +2496,8 @@ void LL_ReadRemoteUsedFeaturesCompleteCback( hciStatus_t  status,
  * @fn          LL_ReadRemoteVersionInfoCback Callback
  *
  * @brief       This LL callback is used to generate a Read Remote Version
- *              Information Complete meta event when a Master makes this request
- *              of a Slave.
+ *              Information Complete meta event when a Central makes this request
+ *              of a Central.
  *
  * input parameters
  *
@@ -2500,6 +2531,8 @@ void LL_ReadRemoteVersionInfoCback( hciStatus_t status,
     // event mask is not set for this event, do not send to host
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
   // data length
   dataLength = HCI_REMOTE_VERSION_INFO_EVENT_LEN;
@@ -2539,7 +2572,7 @@ void LL_ReadRemoteVersionInfoCback( hciStatus_t status,
  * @fn          LL_EncLtkReqCback Callback
  *
  * @brief       This LL callback is used to generate a Encryption LTK Request
- *              meta event to provide to the Host the Master's random number
+ *              meta event to provide to the Host the Central's random number
  *              and encryption diversifier, and to request the Host's Long Term
  *              Key (LTK).
  *
@@ -2563,6 +2596,8 @@ void LL_EncLtkReqCback( uint16  connHandle,
   if ( hciSmpTaskID != 0 )
   {
     hciEvt_BLELTKReq_t *pkt;
+
+    connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
     pkt = (hciEvt_BLELTKReq_t *)MAP_osal_msg_allocate( sizeof( hciEvt_BLELTKReq_t ) );
     if ( pkt )
@@ -2595,6 +2630,8 @@ void LL_EncLtkReqCback( uint16  connHandle,
 
       return;
     }
+
+    connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
 
     // data length
     dataLength = HCI_LTK_REQUESTED_EVENT_LEN;
@@ -2662,6 +2699,8 @@ void LL_EncChangeCback( uint16 connHandle,
                         uint8  reason,
                         uint8  encEnab )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciSmpTaskID != 0 )
   {
@@ -2754,6 +2793,8 @@ void LL_EncChangeCback( uint16 connHandle,
 void LL_EncKeyRefreshCback( uint16 connHandle,
                             uint8  reason )
 {
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciSmpTaskID != 0 )
   {
@@ -3131,6 +3172,9 @@ void HCI_ConnectionIqReportEvent(uint16 connHandle,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // case the source buffers are NULLs - set the samples count to proper value
   if (cteData == NULL)
   {
@@ -3266,6 +3310,8 @@ void HCI_CteRequestFailedEvent( uint8  status,
     return;
   }
 
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // check if this is for the Host
   if ( hciGapTaskID != 0 )
   {
@@ -3392,6 +3438,9 @@ void HCI_ExtConnectionIqReportEvent(uint16 connHandle,
     // the event mask is not enabled for this event
     return;
   }
+
+  connHandle = CONN_HANDLE_CTRL_TO_HOST_CONVERT(connHandle);
+
   // case the source buffers are NULLs - set the samples count to proper value
   if (cteData == NULL)
   {

@@ -444,11 +444,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Enable backwards-compatibility for legacy terminology if specified. */
-#ifdef ENABLE_LEGACY_TERMINOLOGY
-    #include <ti/drivers/LegacyTerminology.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

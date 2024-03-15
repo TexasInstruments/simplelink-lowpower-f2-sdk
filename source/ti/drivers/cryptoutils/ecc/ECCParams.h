@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ extern "C" {
  *
  *  | Name              | Equation                      |
  *  |-------------------|-------------------------------|
- *  | Short Weierstrass | y^3 = x^2 + a*x + b mod p     |
+ *  | Short Weierstrass | y^2 = x^3 + a*x + b mod p     |
  *  | Montgomery        | By^2 = x^3 + Ax^2 + x mod p   |
  *  | Edwards           | x^2 + y^2 = 1 + dx^2y^2 mod p |
  *
@@ -128,7 +128,7 @@ typedef enum
  * ECCParams_CurveParams have different struct members depending on the context
  * of the build (Secure-only, Non-secure, or Secure)
  */
-#if (TFM_ENABLED == 0) || defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
+#if (TFM_ENABLED == 0) || defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
 
 /*!
  *  @brief A structure containing the parameters of an elliptic curve.
@@ -160,9 +160,9 @@ typedef struct ECCParams_CurveParams
     ECCParams_SecureCurve secureCurve;
 } ECCParams_CurveParams;
 
-#endif /* (TFM_ENABLED == 0) || defined(TFM_PSA_API) */
+#endif /* (TFM_ENABLED == 0) || defined(TFM_BUILD) */
 
-#if defined(TFM_PSA_API) /* TFM_PSA_API indicates this is a TF-M build */
+#if defined(TFM_BUILD) /* TFM_BUILD indicates this is a TF-M build */
 
 /*!
  *  @brief A structure containing the curve name to reference elliptic curve
@@ -174,7 +174,7 @@ typedef struct ECCParams_ns_CurveParams
     ECCParams_SecureCurve secureCurve;
 } ECCParams_ns_CurveParams;
 
-#endif /* defined(TFM_PSA_API) */
+#endif /* defined(TFM_BUILD) */
 
 /* Short Weierstrass curves */
 
@@ -252,7 +252,7 @@ extern const ECCParams_CurveParams ECCParams_Ed25519;
  */
 #define ECC_LENGTH_PREFIX_BYTES 4
 
-#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0) || (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
 
     /*!
      *  @defgroup nistp256_params NIST P256 curve params to be used with ECC SW library
@@ -297,13 +297,13 @@ extern const ECC_NISTP256_Param ECC_NISTP256_prime;
 
 /*!
  *  @brief 'a' constant of the ECC_NISTP256 curve when expressed in short
- *  Weierstrass form (y^3 = x^2 + a*x + b).
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
  */
 extern const ECC_NISTP256_Param ECC_NISTP256_a;
 
 /*!
  *  @brief 'b' constant of the ECC_NISTP256 curve when expressed in short
- *  Weierstrass form (y^3 = x^2 + a*x + b).
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
  */
 extern const ECC_NISTP256_Param ECC_NISTP256_b;
 
@@ -328,6 +328,98 @@ extern const ECC_NISTP256_Param ECC_NISTP256_a_mont;
 extern const ECC_NISTP256_Param ECC_NISTP256_b_mont;
 
     /*! @} */ /* end of nistp256_params */
+
+    /*!
+     *  @defgroup nistp224_params NIST P224 curve params to be used with ECC SW library
+     *  @{
+     */
+
+    /*!
+     *  @brief Length of NIST P224 curve parameters in bytes
+     */
+    #define ECCParams_NISTP224_LENGTH 28
+
+    /*!
+     *  @brief Length in bytes of NISTP256 curve parameters including the prepended
+     *  length word.
+     */
+    #define ECC_NISTP224_PARAM_LENGTH_WITH_PREFIX_BYTES (ECCParams_NISTP224_LENGTH + ECC_LENGTH_PREFIX_BYTES)
+
+/*!
+ *  @brief Union to access ECC_NISTP256 curve params in bytes or words.
+ */
+typedef union
+{
+    uint8_t byte[ECC_NISTP224_PARAM_LENGTH_WITH_PREFIX_BYTES];
+    uint32_t word[ECC_NISTP224_PARAM_LENGTH_WITH_PREFIX_BYTES / sizeof(uint32_t)];
+} ECC_NISTP224_Param;
+
+/*!
+ *  @brief X coordinate of the generator point of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_generatorX;
+
+/*!
+ *  @brief Y coordinate of the generator point of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_generatorY;
+
+/*!
+ *  @brief Prime of the generator point of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_prime;
+
+/*!
+ *  @brief 'a' constant of the ECC_NISTP224 curve when expressed in short
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_a;
+
+/*!
+ *  @brief 'b' constant of the ECC_NISTP224 curve when expressed in short
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_b;
+
+/*!
+ *  @brief Order of the generator point of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_order;
+
+/*!
+ *  @brief 'k' in Montgomery domain of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_k_mont;
+
+/*!
+ *  @brief 'a' in Montgomery domain of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_a_mont;
+
+/*!
+ *  @brief 'b' in Montgomery domain of the ECC_NISTP224 curve.
+ */
+extern const ECC_NISTP224_Param ECC_NISTP224_b_mont;
+
+    /*! @} */ /* end of nistp224_params */
+
+    /* Octet string format requires an extra byte at the start of the public key */
+    #define OCTET_STRING_OFFSET 1
+
+    /* Length of offset in bytes */
+    #define ECC_LENGTH_OFFSET_BYTES 4
+
+    /* Param length needs to be equal to the length of the largest curve supported plus length offset bytes */
+    #define ECC_PARAM_LENGTH_WITH_OFFSET_BYTES (ECCParams_NISTP256_LENGTH + ECC_LENGTH_OFFSET_BYTES)
+
+/*!
+ *  @brief Union to format inputs to ECC library.
+ */
+typedef union
+{
+    uint32_t word[ECC_PARAM_LENGTH_WITH_OFFSET_BYTES / sizeof(uint32_t)];
+    uint8_t byte[ECC_PARAM_LENGTH_WITH_OFFSET_BYTES];
+} ECC_Param;
 
 #endif /* DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 */
 
@@ -373,13 +465,13 @@ extern const ECC_Curve25519_Param ECC_Curve25519_prime;
 
 /*!
  *  @brief 'a' constant of the ECC_Curve25519 curve when expressed in short
- *  Weierstrass form (y^3 = x^2 + a*x + b).
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
  */
 extern const ECC_Curve25519_Param ECC_Curve25519_a;
 
 /*!
  *  @brief 'b' constant of the ECC_Curve25519 curve when expressed in short
- *  Weierstrass form (y^3 = x^2 + a*x + b).
+ *  Weierstrass form (y^2 = x^3 + a*x + b).
  */
 extern const ECC_Curve25519_Param ECC_Curve25519_b;
 

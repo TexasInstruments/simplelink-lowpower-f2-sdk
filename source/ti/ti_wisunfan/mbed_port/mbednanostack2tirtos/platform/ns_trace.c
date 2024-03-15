@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2023, Texas Instruments Incorporated
+ Copyright (c) 2011-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -238,7 +238,9 @@ void ns_trace_printf(uint8_t dlevel, const char *grp, const char *fmt, ...)
 void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list ap)
 {
     sem_wait(&ns_trace_mutex_handle);
-    int len_written = 0;
+    int len_written = 0, total_len =0, remaining_len;
+    uint8_t *pBuf;
+
     /*
      * This function assumes tirtos cfg file redirects System_printf to ns_put_char_blocking:
      *
@@ -247,6 +249,8 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
      * System.SupportProxy = SysCallback;
      * SysCallback.putchFxn = "&ns_put_char_blocking";
      */
+    pBuf = ns_buf;
+
     switch (dlevel) {
         case (TRACE_LEVEL_ERROR):
             len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "%s[ERR ][%-4s]: ", VT100_COLOR_ERROR, grp);
@@ -264,21 +268,27 @@ void ns_trace_vprintf(uint8_t dlevel, const char *grp, const char *fmt, va_list 
             len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "                ", grp);
             break;
     }
-    for(int x = 0; x < len_written; x++)
-    {
+    total_len += len_written;
+    remaining_len = sizeof(ns_buf) - total_len;
 
-        ns_put_char_blocking(ns_buf[x]);
-    }
+    // update the buf position
+    pBuf += len_written;
+    len_written = SystemP_vsnprintf(pBuf, remaining_len, fmt, ap);
 
-    len_written = SystemP_vsnprintf(ns_buf, sizeof(ns_buf), fmt, ap);
-    for(int x = 0; x < len_written; x++)
-    {
-        ns_put_char_blocking(ns_buf[x]);
-    }
+    total_len += len_written;
+    remaining_len = sizeof(ns_buf) - total_len;
 
-    //add zero color VT100 and new line
-    len_written = SystemP_snprintf(ns_buf, sizeof(ns_buf), "\x1b[0m\n\r", grp);
-    for(int x = 0; x < len_written; x++)
+    // update the buf position
+    pBuf += len_written;
+    len_written = SystemP_snprintf(pBuf, remaining_len, "\x1b[0m\n\r", grp);
+
+    total_len += len_written;
+    remaining_len = sizeof(ns_buf) - total_len;
+
+    // update the buf position
+    pBuf += len_written;
+
+    for(int x = 0; x < total_len; x++)
     {
         ns_put_char_blocking(ns_buf[x]);
     }
@@ -380,9 +390,6 @@ void ns_flush_module(void)
 
 char *ns_trace_ipv6(const void *addr_ptr)
 {
-    if (tmpStr == NULL) {
-        return "";
-    }
     if (addr_ptr == NULL) {
         return "<null>";
     }
@@ -393,10 +400,6 @@ char *ns_trace_ipv6(const void *addr_ptr)
 
 char *ns_trace_ipv6_prefix(const uint8_t *prefix, uint8_t prefix_len)
 {
-    if (tmpStr == NULL) {
-        return "";
-    }
-
     if ((prefix_len != 0 && prefix == NULL) || prefix_len > 128) {
         return "<err>";
     }
@@ -409,21 +412,27 @@ char *ns_trace_ipv6_prefix(const uint8_t *prefix, uint8_t prefix_len)
 char *ns_trace_array(const uint8_t *buf, uint16_t len)
 {
     int i;
-    if (len == 0 || tmpStr == NULL) {
+    if (len == 0) {
         return "";
     }
     if (buf == NULL) {
         return "<null>";
     }
-    tmpStr[0] = 0;
+
     const uint8_t *ptr = buf;
+    uint8_t *pOutput = tmpStr;
+    // zero tmpbuf to Null
+    memset (pOutput, 0x0,DEFAULT_TRACE_TMP_LINE_LEN);
+
     char overflow = 0;
     for (i = 0; i < len; i++) {
-        int retval = SystemP_snprintf(tmpStr, DEFAULT_TRACE_TMP_LINE_LEN, "%02x:", *ptr++);
+        int retval = SystemP_snprintf(pOutput, DEFAULT_TRACE_TMP_LINE_LEN, "%02x:", *ptr++);
         if (retval <= 0 || retval > DEFAULT_TRACE_TMP_LINE_LEN) {
             overflow = 1;
             break;
         }
+        // move pOutput to next position
+        pOutput += retval;
 
     }
 
@@ -437,4 +446,44 @@ char *ns_trace_array(const uint8_t *buf, uint16_t len)
     }
 
     return tmpStr;
+}
+
+char *ns_trace_array16(const uint16_t *buf, uint16_t len)
+{
+    int i;
+    if (len == 0 || tmpStr == NULL) {
+        return "";
+    }
+    if (buf == NULL) {
+        return "<null>";
+    }
+
+    const uint16_t *ptr = buf;
+    uint8_t *pOutput = tmpStr;
+    // zero tmpbuf to Null
+    memset (pOutput, 0x0,DEFAULT_TRACE_TMP_LINE_LEN);
+
+    char overflow = 0;
+    for (i = 0; i < len; i++) {
+        int retval = SystemP_snprintf(pOutput, DEFAULT_TRACE_TMP_LINE_LEN, "%04x: ", *ptr++);
+        if (retval <= 0 || retval > DEFAULT_TRACE_TMP_LINE_LEN) {
+            overflow = 1;
+            break;
+        }
+        // move pOutput to next position
+        pOutput += retval;
+
+    }
+
+    if (overflow) {
+        // replace last character as 'star',
+        // which indicate buffer len is not enough
+        tmpStr[DEFAULT_TRACE_TMP_LINE_LEN - 1] = '*';
+    } else {
+        //null to replace last ':' character
+        tmpStr[DEFAULT_TRACE_TMP_LINE_LEN - 1] = 0;
+    }
+
+    return tmpStr;
+
 }

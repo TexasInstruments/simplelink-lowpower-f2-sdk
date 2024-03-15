@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -395,13 +395,13 @@ static int_fast16_t AESCMAC_loadKey(AESCMACCC26XX_Object *object)
             case AESCMAC_OP_TYPE_SIGN:
             case AESCMAC_OP_TYPE_FINALIZE_SIGN:
             case AESCMAC_OP_TYPE_SEGMENTED_SIGN:
-                keyUsage = KEYSTORE_PSA_KEY_USAGE_SIGN_HASH;
+                keyUsage = KEYSTORE_PSA_KEY_USAGE_SIGN_MESSAGE;
                 break;
 
             case AESCMAC_OP_TYPE_VERIFY:
             case AESCMAC_OP_TYPE_FINALIZE_VERIFY:
             case AESCMAC_OP_TYPE_SEGMENTED_VERIFY:
-                keyUsage = KEYSTORE_PSA_KEY_USAGE_VERIFY_HASH;
+                keyUsage = KEYSTORE_PSA_KEY_USAGE_VERIFY_MESSAGE;
                 break;
 
             default:

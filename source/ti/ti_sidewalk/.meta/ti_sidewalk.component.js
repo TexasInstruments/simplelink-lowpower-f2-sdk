@@ -66,10 +66,6 @@ if(enableSidewalkModule)
     ];
     templates = [
         {
-            name: "/ti/ti_sidewalk/templates/ti_sidewalk.opt.xdt",
-            outputPath: "ti_sidewalk.opt"
-        },
-        {
             name: "/ti/ti_sidewalk/templates/ti_sidewalk_config.yaml.xdt",
             outputPath: "ti_sidewalk_config.yaml"
         }

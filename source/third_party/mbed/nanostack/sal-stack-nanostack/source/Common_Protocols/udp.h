@@ -29,5 +29,6 @@ extern buffer_t *udp_up(buffer_t *buf);
 #define UDP_PORT_MLE               19788    /* Mesh Link Establishment - draft */
 #define DHCPv6_PORT_CLIENT         546
 #define DHCPv6_PORT_SERVER         547
+#define UDP_PORT_TEST              0xC001
 
 #endif /* UDP_H_ */

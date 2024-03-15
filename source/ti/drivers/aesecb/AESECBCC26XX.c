@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -518,7 +518,7 @@ static int_fast16_t AESECB_addDataInternal(AESECB_Handle handle,
                                              &KeyStore_keyingMaterial[0],
                                              sizeof(KeyStore_keyingMaterial),
                                              &keyLength,
-                                             KEYSTORE_PSA_ALG_CCM,
+                                             KEYSTORE_PSA_ALG_ECB_NO_PADDING,
                                              keyUsage);
 
         if (keyStoreStatus != KEYSTORE_PSA_STATUS_SUCCESS)

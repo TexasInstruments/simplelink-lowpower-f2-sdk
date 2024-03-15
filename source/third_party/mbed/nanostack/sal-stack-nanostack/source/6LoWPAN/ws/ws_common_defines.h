@@ -237,6 +237,18 @@ typedef struct ws_bs_ie {
     } function;
 } ws_bs_ie_t;
 
+/**
+ * @brief ws_vp_ie_t WS VP-IE read
+ */
+#define WS_VP_IE_RESERVED_LEN (17)
+#define WS_VENDOR_ID_TI         (36)
+typedef struct ws_vp_ie {
+    uint8_t *ptrContent;
+    uint8_t length;
+    uint8_t vendor_id;
+    uint16_t network_pan_id;
+    uint8_t user_reserved[WS_VP_IE_RESERVED_LEN];
+} ws_vp_ie_t;
 
 #define MPX_KEY_MANAGEMENT_ENC_USER_ID 0x0001   /**< MPX Key management user ID */
 #define MPX_LOWPAN_ENC_USER_ID 0xA0ED           /**< MPX Lowpan User Id */
@@ -264,6 +276,7 @@ typedef struct ws_bs_ie {
 #define WS_EAPOL_TEMPORARY_ENTRY_LARGE_TIMEOUT 750
 
 #define WS_NEIGHBOR_ETX_SAMPLE_MAX 3
+#define WS_NEIGHBOR_FIRST_ETX_SAMPLE_MIN_COUNT_RAPID 1 //This can't be bigger than WS_NEIGHBOR_ETX_SAMPLE_MAX
 #define WS_NEIGHBOR_FIRST_ETX_SAMPLE_MIN_COUNT 3 //This can't be bigger than WS_NEIGHBOR_ETX_SAMPLE_MAX
 
 #define WS_SMALL_PROBE_INIT_BASE_SECONDS 4

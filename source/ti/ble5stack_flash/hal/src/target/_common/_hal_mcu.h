@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2023, Texas Instruments Incorporated
+ Copyright (c) 2006-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -62,12 +62,15 @@
 #include <inc/hw_memmap.h>
 #include <inc/hw_ints.h>
 #include <inc/hw_gpio.h>
-#include <driverlib/systick.h>
-#include <driverlib/interrupt.h>
+
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/systick.h)
+#include DeviceFamily_constructPath(driverlib/interrupt.h)
+
 #ifndef CC33xx
-#include <driverlib/uart.h>
+#include DeviceFamily_constructPath(driverlib/uart.h)
 #endif //CC33xx
-#include <driverlib/flash.h>
+#include DeviceFamily_constructPath(driverlib/flash.h)
 
 /* ------------------------------------------------------------------------------------------------
  *                                        Target Defines

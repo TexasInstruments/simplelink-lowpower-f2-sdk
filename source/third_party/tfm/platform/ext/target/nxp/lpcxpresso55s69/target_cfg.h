@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018-2020 Arm Limited
+ * Copyright 2019-2020 NXP. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +26,10 @@
 extern "C" {
 #endif
 
+#ifndef TARGET_DEBUG_LOG
+#define TARGET_DEBUG_LOG 0
+#endif
+
 #define TFM_DRIVER_STDIO    Driver_USART0
 #define NS_DRIVER_STDIO     Driver_USART0
 
@@ -46,10 +51,10 @@ struct memory_region_limits {
 /**
  * \brief Holds the data necessary to do isolation for a specific peripheral.
  */
-struct tfm_spm_partition_platform_data_t
+struct platform_data_t
 {
-    uint32_t periph_start;
-    uint32_t periph_limit;
+    uint32_t periph_start; /* Not used so far */
+    uint32_t periph_limit; /* Not used so far */
     volatile uint32_t *periph_ppc_bank; /* Secure control register address */
     uint32_t periph_ppc_loc;            /* Position in the secure control register */
 };
@@ -59,14 +64,14 @@ struct tfm_spm_partition_platform_data_t
  *
  * \return  Returns error code.
  */
-int32_t ahb_secure_control_memory_init(void);
+int32_t mpc_init_cfg(void);
 
 /**
  * \brief Configures the Peripheral Protection Controller.
  *
  * \return  Returns error code.
  */
-int32_t ahb_secure_control_peripheral_init(void);
+int32_t ppc_init_cfg(void);
 
 /**
  * \brief Restict access to peripheral to secure

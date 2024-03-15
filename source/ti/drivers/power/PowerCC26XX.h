@@ -34,10 +34,10 @@
  *
  *  @brief      Power manager interface for CC26XX/CC13XX
  *
- *  The Power header file should be included in an application as follows:
+ *  The Power header file should be included in an application by including the
+ *  top level header file as follows:
  *  @code
  *  #include <ti/drivers/Power.h>
- *  #include <ti/drivers/power/PowerCC26XX.h>
  *  @endcode
  *
  *  Refer to @ref Power.h for a complete description of APIs.
@@ -57,6 +57,8 @@
 #include <ti/drivers/Power.h>
 
 #include <ti/devices/DeviceFamily.h>
+
+/* Note: Device specific Power include files are included in the bottom of this file. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -722,11 +724,14 @@ void PowerCC26XX_standbyPolicy(void);
 void PowerCC26XX_schedulerDisable(void);
 void PowerCC26XX_schedulerRestore(void);
 
-#define Power_getPerformanceLevel(void)  0
-#define Power_setPerformanceLevel(level) Power_EFAIL
-
 #ifdef __cplusplus
 }
+#endif
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #include <ti/drivers/power/PowerCC26X2.h>
 #endif
 
 #endif /* POWER_CC26XX_ */

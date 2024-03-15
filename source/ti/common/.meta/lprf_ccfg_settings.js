@@ -223,6 +223,9 @@ const boardSpecificCCFGSettings = {
         dioBootloaderBackdoor: 13,
         levelBootloaderBackdoor: "Active low"
     },
+    LP_EM_CC2340R5_CCFG_SETTINGS: {},
+    LP_EM_CC2340R2_CCFG_SETTINGS: {},
+    LP_EM_CC2745R10_Q1_CCFG_SETTINGS: {},
 };
 
 // Get the LaunchPad specific CCFG Settings
@@ -240,16 +243,25 @@ for(stack of Common.stacks)
     let stackPath = stack.path;
     if(system.modules[stackPath])
     {
-        // Workaround for rf driver examples 
+        // Workaround for rf driver examples
         if(stackPath === "/ti/devices/radioconfig/custom")
         {
             stackPath = "/ti/prop_rf/prop_rf";
         }
 
-        const stackCommon = system.getScript(stackPath + "_common.js");
+        let stackCommon = undefined;
+        try
+        {
+            stackCommon = system.getScript(stackPath + "_common.js");
+        }
+        catch (error)
+        {
+            // No need to do anything, it's ok if a stack doesn't exist
+            continue
+        }
 
         // Verify that the stack has ccfgSettings to provide before setting them
-        if(stackCommon.ccfgSettings)
+        if((stackCommon !== undefined) && (stackCommon.ccfgSettings))
         {
             ccfgSettings = Object.assign(ccfgSettings,
                 stackCommon.ccfgSettings);

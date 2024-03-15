@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Arm Limited
+ * Copyright (c) 2017-2021 Arm Limited
  * Copyright (c) 2020, Cypress Semiconductor Corporation. All rights reserved.
  *
  * Licensed under the Apache License Version 2.0 (the "License");
@@ -33,9 +33,5 @@
 #define CY_TCPWM0_TIMER1_NS
 
 #define DEFAULT_UART_BAUDRATE  115200
-
-#ifdef TFM_MULTI_CORE_MULTI_CLIENT_CALL
-#define NUM_MAILBOX_QUEUE_SLOT      4
-#endif
 
 #endif  /* __ARM_LTD_DEVICE_CFG_H__ */

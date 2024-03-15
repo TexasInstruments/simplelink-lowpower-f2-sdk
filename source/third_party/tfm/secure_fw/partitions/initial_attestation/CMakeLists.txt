@@ -1,51 +1,92 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.7)
-
-#Tell cmake where our modules can be found
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../cmake)
-
-#Some project global settings
-set (INITIAL_ATTESTATION_DIR "${CMAKE_CURRENT_LIST_DIR}")
-get_filename_component(TFM_ROOT_DIR "${INITIAL_ATTESTATION_DIR}/../../.." ABSOLUTE)
-
-#Include common stuff to control cmake.
-include("Common/BuildSys")
-
-#Start an embedded project.
-embedded_project_start(CONFIG "${TFM_ROOT_DIR}/configs/ConfigDefault.cmake")
-project(tfm_attest LANGUAGES ASM C)
-embedded_project_fixup()
-
-#Get the definition of what files we need to build
-include(CMakeLists.inc)
-
-if (NOT DEFINED TFM_LVL)
-	message(FATAL_ERROR "Incomplete build configuration: TFM_LVL is undefined.")
+if (NOT TFM_PARTITION_INITIAL_ATTESTATION)
+    return()
 endif()
 
-if (NOT TARGET tfm_qcbor_encode)
-	add_subdirectory(${TFM_ROOT_DIR}/lib/ext/qcbor ${CMAKE_CURRENT_BINARY_DIR}/qcbor)
-endif()
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0079 NEW)
 
-if (NOT TARGET tfm_t_cose_sign)
-	add_subdirectory(${TFM_ROOT_DIR}/lib/ext/t_cose ${CMAKE_CURRENT_BINARY_DIR}/t_cose)
-endif()
+add_library(tfm_psa_rot_partition_attestation STATIC)
 
-#Specify what we build (for the initial attestation service, build as a static library)
-add_library(tfm_attest STATIC ${ALL_SRC_ASM} ${ALL_SRC_C} $<TARGET_OBJECTS:tfm_qcbor_encode> $<TARGET_OBJECTS:tfm_t_cose_sign>)
-embedded_set_target_compile_defines(TARGET tfm_attest LANGUAGE C DEFINES __thumb2__ TFM_LVL=${TFM_LVL})
+target_sources(tfm_psa_rot_partition_attestation PRIVATE
+    tfm_attest.c
+    tfm_attest_req_mngr.c
+    attest_core.c
+    attest_boot_data.c
+    $<$<NOT:$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>>:attest_asymmetric_key.c>
+    $<$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>:attest_symmetric_key.c>
+    attest_token_encode.c
+)
 
-if (DEFINED CMSE_FLAGS)
-	embedded_set_target_compile_flags(TARGET tfm_attest LANGUAGE C APPEND FLAGS ${CMSE_FLAGS})
-endif()
+# The generated sources
+target_sources(tfm_psa_rot_partition_attestation
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/initial_attestation/auto_generated/intermedia_tfm_initial_attestation.c
+)
+target_sources(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/initial_attestation/auto_generated/load_info_tfm_initial_attestation.c
+)
 
-#Set common compiler flags
-config_setting_shared_compiler_flags(tfm_attest)
+# Set include directory
+target_include_directories(tfm_psa_rot_partition_attestation
+    PUBLIC
+        .
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/initial_attestation
+)
+target_include_directories(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/initial_attestation
+)
 
-embedded_project_end(tfm_attest)
+target_link_libraries(tfm_psa_rot_partition_attestation
+    PRIVATE
+        platform_s
+        tfm_config
+        tfm_t_cose_s
+        tfm_sprt
+        tfm_boot_status
+        qcbor
+)
+
+target_compile_definitions(tfm_psa_rot_partition_attestation
+    PRIVATE
+        $<$<BOOL:${ATTEST_INCLUDE_TEST_CODE}>:INCLUDE_TEST_CODE>
+        $<$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>:SYMMETRIC_INITIAL_ATTESTATION>
+        $<$<NOT:$<BOOL:${PLATFORM_DEFAULT_ATTEST_HAL}>>:CLAIM_VALUE_CHECK>
+        $<$<NOT:$<BOOL:${SYMMETRIC_INITIAL_ATTESTATION}>>:ATTEST_KEY_BITS=${ATTEST_KEY_BITS}>
+)
+
+########################### Attest defs ########################################
+
+add_library(tfm_attestation_defs INTERFACE)
+
+target_include_directories(tfm_attestation_defs
+    INTERFACE
+        .
+)
+
+target_link_libraries(tfm_attestation_defs
+    INTERFACE
+        tfm_config
+)
+
+############################ Partition Defs ####################################
+
+target_link_libraries(tfm_partitions
+    INTERFACE
+        tfm_psa_rot_partition_attestation
+)
+
+
+target_compile_definitions(tfm_partition_defs
+    INTERFACE
+    TFM_PARTITION_INITIAL_ATTESTATION
+)

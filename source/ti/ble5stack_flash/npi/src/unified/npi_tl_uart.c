@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -48,26 +48,31 @@
 // includes
 // ****************************************************************************
 #include <string.h>
-#include <xdc/std.h>
-#include <ti/sysbios/family/arm/m3/Hwi.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_ints.h"
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
 #include "hal_types.h"
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Swi.h>
 
 #include "inc/npi_data.h"
 #include "inc/npi_util.h"
 #include "inc/npi_tl_uart.h"
+#include "inc/npi_config.h"
 #include <ti/drivers/UART2.h>
+
+#ifdef CC23X0
+#include <ti/drivers/Power.h>
+#include <ti/drivers/UART2.h>
+#include <ti/drivers/uart2/UART2LPF3.h>
+#else
 #include <ti/drivers/uart2/UART2CC26X2.h>
+#endif
+
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/uart.h)
 
 // ****************************************************************************
 // defines
 // ****************************************************************************
-
 //! \brief NPI UART Message Indexes and Constants
 //
 #define NPI_UART_MSG_NON_PAYLOAD_LEN                 0x05
@@ -108,9 +113,6 @@ static uint16_t TransportRxLen = 0;
 //! \brief Length of bytes to send from NPI TL Tx Buffer
 static uint16_t TransportTxLen = 0;
 
-//! \brief UART Object. Initialized in board specific files
-extern UART2CC26X2_Object uart2CC26X2Objects[];
-
 //! \brief NPI Transport Layer Buffer variables defined in npi_tl.c
 extern uint8_t *npiRxBuf;
 extern uint8_t *npiTxBuf;
@@ -134,7 +136,6 @@ static uint8_t NPITLUART_validPacketFound(void);
 
 //! \brief      Calculate FCS over the given length of buf
 static uint8_t NPITLUART_calcFCS(uint8_t *buf, uint16_t len);
-
 // -----------------------------------------------------------------------------
 //! \brief      This routine initializes the transport layer and opens the port
 //!             of the device.
@@ -152,13 +153,23 @@ void NPITLUART_openTransport(uint8_t portID, UART2_Params *portParams,
 
     // Initialize the UART driver
     UART2_Params_init(portParams);
-
+    portParams->readMode = UART2_Mode_CALLBACK;
+    portParams->writeMode = UART2_Mode_CALLBACK;
     // Add call backs UART parameters.
     portParams->readCallback = NPITLUART_readCallBack;
     portParams->writeCallback = NPITLUART_writeCallBack;
+    portParams->baudRate = 460800;
 
     // Open / power on the UART.
     uartHandle = UART2_open(portID, portParams);
+
+    // Clear ISR Buffer
+    memset(isrRxBuf, 0, UART_ISR_BUF_SIZE);
+#if (NPI_FLOW_CTRL == 0)
+    // This call will start repeated Uart Reads when Power Savings is disabled
+    NPITLUART_readTransport();
+#endif // NPI_FLOW_CTRL = 0
+
 }
 
 // -----------------------------------------------------------------------------
@@ -188,7 +199,11 @@ void NPITLUART_stopTransfer(void)
     // or that the FIFO has already been read for this UART_read()
     // In either case UART2_readCancel will call the read CB function and it will
     // invoke npiTransmitCB with the appropriate number of bytes read
+#ifdef CC23X0
+    if (!UARTCharAvailable(((UART2LPF3_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr))
+#else
     if (!UARTCharsAvail(((UART2CC26X2_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr))
+#endif
     {
         RxActive = FALSE;
         UART2_readCancel(uartHandle);
@@ -212,7 +227,7 @@ void NPITLUART_handleRemRdyEvent(void)
 
     remRdy_flag = 0;
 
-    // If we haven't already begun reading, now is the time before Master
+    // If we haven't already begun reading, now is the time before Central
     //    potentially starts to send data
     // The !TxActive condition is because we will call UART_npiRead() prior to setting
     // TxActive true. There is the possibility that REM RDY gets set high which
@@ -224,7 +239,7 @@ void NPITLUART_handleRemRdyEvent(void)
         NPITLUART_readTransport();
     }
 
-    // If we have something to write, then the Master has signalled it is ready
+    // If we have something to write, then the Central has signalled it is ready
     //    to receive. Time to write.
     if (TxActive)
     {
@@ -250,7 +265,7 @@ void NPITLUART_handleRemRdyEvent(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size)
+void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
 {
     _npiCSKey_t key;
     key = NPIUtil_EnterCS();
@@ -299,7 +314,7 @@ void NPITLUART_writeCallBack(UART2_Handle handle, void *ptr, size_t size)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size)
+void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size, void *userArg, int_fast16_t status)
 {
 #if (NPI_FLOW_CTRL == 0)
     uint16_t packetSize;
@@ -322,7 +337,12 @@ void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size)
 #if (NPI_FLOW_CTRL == 1)
     // Read has been cancelled by transport layer, or bus timeout and no bytes in FIFO
     //    - do not invoke another read
+#ifdef CC23X0
+    if (!UARTCharAvailable(((UART2LPF3_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr) &&
+#else
     if (!UARTCharsAvail(((UART2CC26X2_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr) &&
+#endif
+       (UART2_getRxCount(uartHandle) == 0) &&
             remRdy_flag)
     {
         RxActive = FALSE;
@@ -359,10 +379,9 @@ void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size)
 
         // SOF has already been removed from npiRxBuf here. It is removed
         // when bytes are copied from the ISR Rx buffer to npiRxBuf
-        packetSize = (uint16) npiRxBuf[0];
-        packetSize += ((uint16) npiRxBuf[1]) << 8;
-        packetSize += NPI_UART_MSG_HDR_LEN;
 
+        packetSize = BUILD_UINT16(npiRxBuf[0], npiRxBuf[1]);
+        packetSize += NPI_UART_MSG_HDR_LEN;
         npiTransmitCB(packetSize,0);
 
         // Must look for SOF of next packet, first eligible byte is after the
@@ -388,7 +407,6 @@ void NPITLUART_readCallBack(UART2_Handle handle, void *ptr, size_t size)
         // and check again for another valid packet
         memcpy(npiRxBuf,&npiRxBuf[sofIndex + 1],TransportRxLen);
     }
-
     UART2_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE, NULL);
 #endif // NPI_FLOW_CTRL = 1
 
@@ -474,7 +492,7 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
     TxActive = TRUE;
 
     // Start reading prior to impending write transaction
-    // We can only call UART_write() once REM RDY has been signaled from Master
+    // We can only call UART_write() once REM RDY has been signaled from Central
     // device
     NPITLUART_readTransport();
 #else
@@ -507,8 +525,7 @@ uint8_t NPITLUART_validPacketFound(void)
 
     // SOF has already been removed from npiRxBuf here. It is removed
     // when bytes are copied from the ISR Rx buffer to npiRxBuf
-    payloadLen = (uint16) npiRxBuf[0];
-    payloadLen += ((uint16) npiRxBuf[1]) << 8;
+    payloadLen = BUILD_UINT16(npiRxBuf[0], npiRxBuf[1]);
 
     if ((payloadLen + NPI_UART_MSG_NON_PAYLOAD_LEN) > npiBufSize)
     {

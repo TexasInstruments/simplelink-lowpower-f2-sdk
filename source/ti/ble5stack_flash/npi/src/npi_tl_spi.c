@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -61,8 +61,9 @@
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Swi.h>
 #endif // FREERTOS
-#include "inc/hw_memmap.h"
-#include "inc/hw_ints.h"
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
 #include <ti_drivers_config.h>
 #include "hal_types.h"
 #include "icall.h"
@@ -73,7 +74,7 @@
 #ifndef CC23X0
 #include <ti/drivers/spi/SPICC26X2DMA.h>
 #else
-#include <ti/drivers/spi/SPICC23XXDMA.h>
+#include <ti/drivers/spi/SPILPF3DMA.h>
 #endif
 
 // ****************************************************************************
@@ -157,9 +158,9 @@ void NPITLSPI_initializeTransport(Char *tRxBuf, Char *tTxBuf, npiCB_t npiCBack)
     // Configure SPI parameters
     SPI_Params_init(&spiParams);
 
-    // Slave mode
+    // Peripheral mode
     spiParams.mode = SPI_PERIPHERAL ;
-    spiParams.bitRate = SPI_SLAVE_BAUD_RATE;
+    spiParams.bitRate = SPI_PERIPHERAL_BAUD_RATE;
     spiParams.frameFormat = SPI_POL1_PHA1;
     spiParams.transferMode = SPI_MODE_CALLBACK;
     spiParams.transferCallbackFxn = NPITLSPI_CallBack;

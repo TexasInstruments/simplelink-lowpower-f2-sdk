@@ -220,7 +220,6 @@ function getRfDesignOptions()
     {
         newRfDesignOptions = [
             {name: "LP_CC1352P7-1"},
-            {name: "LP_CC1352P7-4"}
         ];
     }
     else if(deviceId === "CC1312R7RGZ")
@@ -628,6 +627,11 @@ function addRFSettingDependency(inst)
 
     /* Since phy is selected based on region and op code, there should only be 1 phy choice in the list at all times. */
     let selectedPhy = _.first(propPhySettings);
+    if (!selectedPhy)
+    {
+        return [];
+    }
+
     // Get settings from selected phy
     const radioConfigArgs = _.cloneDeep(selectedPhy.args);
 

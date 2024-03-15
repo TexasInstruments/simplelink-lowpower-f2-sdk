@@ -9,7 +9,7 @@
  */
 
 #include "t_cose_sign1_sign.h"
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_standard_constants.h"
 #include "t_cose_crypto.h"
 #include "t_cose_util.h"
@@ -464,4 +464,3 @@ t_cose_sign1_sign(struct t_cose_sign1_sign_ctx *me,
 Done:
     return return_value;
 }
-

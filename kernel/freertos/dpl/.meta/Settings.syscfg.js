@@ -41,6 +41,8 @@
 var dplFiles = [
     "dpl/AppHooks_freertos.c",
     "dpl/DebugP_freertos.c",
+    "dpl/EventP_freertos.c",
+    "dpl/MessageQueueP_freertos.c",
     "dpl/MutexP_freertos.c",
     "dpl/QueueP_freertos.c",
     "dpl/SemaphoreP_freertos.c",
@@ -65,17 +67,31 @@ var cc32xxDeviceFiles = [
     "dpl/TimestampPCC32XX_freertos.c"
 ];
 
-var cc23x0DeviceFiles = [
-    "dpl/ClockPCC23XX_freertos.c",
-    "dpl/HwiPCC23XX_freertos.c",
+var cc23x0r5DeviceFiles = [
+    "dpl/ClockPLPF3_freertos.c",
+    "dpl/HwiPCC23X0_freertos.c",
     "dpl/PowerCC23X0_freertos.c",
-    "dpl/TimestampPCC23XX_freertos.c"
+    "dpl/TimestampPLPF3_freertos.c"
 ];
 
 var cc23x0r2DeviceFiles = [
-    "dpl/ClockPCC23XX_freertos.c",
-    "dpl/HwiPCC23XX_freertos.c",
-    "dpl/PowerCC23X0R2_freertos.c"
+    "dpl/ClockPLPF3_freertos.c",
+    "dpl/HwiPCC23X0_freertos.c",
+    "dpl/PowerCC23X0_freertos.c",
+    "dpl/TimestampPLPF3_freertos.c"
+];
+
+var cc27xxDeviceFiles = [
+    "dpl/ClockPLPF3_freertos.c",
+    "dpl/HwiPCC27XX_freertos.c",
+    "dpl/PowerCC27XX_freertos.c",
+    "dpl/TimestampPLPF3_freertos.c"
+];
+
+var cc35xxDeviceFiles = [
+    "dpl/ClockPWFF3_freertos.c",
+    "dpl/HwiPWFF3_freertos.c",
+    "dpl/PowerWFF3_freertos.c"
 ];
 
 function getStartupFiles(family)
@@ -83,14 +99,14 @@ function getStartupFiles(family)
     var startupFile;
     if (system.modules["/ti/utils/TrustZone"]) {
         // TFM-enabled startup files have the suffix "_ns"
-        startupFile = `startup/startup_${family}_${system.compiler}_ns.c`
+        startupFile = `startup/startup_${family}_${system.compiler}_ns.c`;
     }
     else {
-        startupFile = `startup/startup_${family}_${system.compiler}.c`
+        startupFile = `startup/startup_${family}_${system.compiler}.c`;
     }
     return [
         startupFile
-    ]
+    ];
 }
 
 function getCFiles(kernel)
@@ -103,8 +119,12 @@ function getCFiles(kernel)
         return dplFiles.concat(cc32xxDeviceFiles, getStartupFiles("cc32xx"));
     } else if (system.deviceData.deviceId.match(/CC23.0R2/)) {
         return dplFiles.concat(cc23x0r2DeviceFiles, getStartupFiles("cc23x0r2"));
-    } else if (system.deviceData.deviceId.match(/CC23.0/)) {
-        return dplFiles.concat(cc23x0DeviceFiles, getStartupFiles("cc23x0"));
+    } else if (system.deviceData.deviceId.match(/CC23.0R5/)) {
+        return dplFiles.concat(cc23x0r5DeviceFiles, getStartupFiles("cc23x0r5"));
+    } else if (system.deviceData.deviceId.match(/CC27../)) {
+        return dplFiles.concat(cc27xxDeviceFiles, getStartupFiles("cc27xx"));
+    } else if (system.deviceData.deviceId.match(/CC35../)) {
+        return dplFiles.concat(cc35xxDeviceFiles, getStartupFiles("cc35xx"));
     } else {
         return dplFiles;
     }

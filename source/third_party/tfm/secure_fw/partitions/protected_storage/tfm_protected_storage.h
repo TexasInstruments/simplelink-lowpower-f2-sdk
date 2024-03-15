@@ -70,12 +70,14 @@ psa_status_t tfm_ps_set(int32_t client_id,
 /**
  * \brief Gets the asset data for the provided uid.
  *
- * \param[in]  client_id    Identifier of the asset's owner (client)
- * \param[in]  uid          Unique identifier for the data
- * \param[in]  data_offset  The offset within the data associated with the `uid`
- *                          to start retrieving data
- * \param[in]  data_length  The amount of data to read (and the minimum
- *                          allocated size of the `p_data` buffer)
+ * \param[in]  client_id      Identifier of the asset's owner (client)
+ * \param[in]  uid            Unique identifier for the data
+ * \param[in]  data_offset    The offset within the data associated with the
+ *                            `uid` to start retrieving data
+ * \param[in]  data_size      The amount of data to read (and the minimum
+ *                            allocated size of the `p_data` buffer)
+ * \param[out] p_data_length  The pointer to the size of the data retrieved
+ *                            upon success.
  *
  * \return A status indicating the success/failure of the operation as specified
  *         in \ref psa_status_t

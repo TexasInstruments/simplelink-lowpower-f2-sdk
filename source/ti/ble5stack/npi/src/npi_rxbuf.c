@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -97,6 +97,7 @@ uint16 NPIRxBuf_Read(uint16 len)
     {
         partialLen = NPI_TL_BUF_SIZE - RxBufTail;
         NPITL_readTL(&RxBuf[RxBufTail],partialLen);
+        NPIRXBUF_RXTAIL_INC(partialLen);
         len -= partialLen;
         RxBufTail = 0;
     }

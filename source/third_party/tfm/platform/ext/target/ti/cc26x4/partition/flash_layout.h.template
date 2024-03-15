@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
  * limitations under the License.
  */
 
+/*********** WARNING: This is an auto-generated file. Do not edit! ***********/
+
 #ifndef __FLASH_LAYOUT_H__
 #define __FLASH_LAYOUT_H__
 
@@ -25,14 +28,14 @@
  */
 #define FLASH0_BASE_S        (0x0)
 #define FLASH0_BASE_NS       NS_ROM_ALIAS_BASE
-#define FLASH0_SIZE          (0x00100000)  /* 1 MB */
-#define FLASH0_SECTOR_SIZE   (0x00000800)  /* 2 KB */
-#define FLASH0_PAGE_SIZE     (0x00000800)  /* 2 KB */
-#define FLASH0_PROGRAM_UNIT  (0x1)         /* Minimum write size */
+#define FLASH0_SIZE          (0x100000) /* 1 MB */
+#define FLASH0_SECTOR_SIZE   (0x800)    /* 2 KB */
+#define FLASH0_PAGE_SIZE     (0x800)    /* 2 KB */
+#define FLASH0_PROGRAM_UNIT  (1)        /* Minimum write size */
 
 /* Size of a Secure and of a Non-secure image */
 #define FLASH_S_PARTITION_SIZE          (S_ROM_ALIAS_LIMIT - FLASH_AREA_BL2_SIZE - \
-                                         FLASH_ITS_AREA_SIZE - FLASH_PS_AREA_SIZE - FLASH_NV_COUNTERS_AREA_SIZE)
+                                         FLASH_ITS_AREA_SIZE - FLASH_PS_AREA_SIZE - FLASH_OTP_NV_COUNTERS_AREA_SIZE)
 #define FLASH_NS_PARTITION_SIZE         (NS_ROM_ALIAS_LIMIT - NS_ROM_ALIAS_BASE)
 
 /* Sector size of the flash hardware */
@@ -50,15 +53,15 @@
 #define FLASH_AREA_BL2_SIZE             (0x6800) /* 26 KB - Pre-provisioned keys + BL2 + BIM info area */
 
 #define FLASH_AREA_0_OFFSET             (FLASH_AREA_BL2_OFFSET + FLASH_AREA_BL2_SIZE + \
-                                               FLASH_ITS_AREA_SIZE + FLASH_PS_AREA_SIZE + FLASH_NV_COUNTERS_AREA_SIZE)
+                                               FLASH_ITS_AREA_SIZE + FLASH_PS_AREA_SIZE + FLASH_OTP_NV_COUNTERS_AREA_SIZE)
 #define FLASH_AREA_0_SIZE               (FLASH_S_PARTITION_SIZE + \
                                                FLASH_NS_PARTITION_SIZE)
 
-#define FLASH_AREA_1_OFFSET             (FLASH_AREA_0_OFFSET + FLASH_AREA_0_SIZE))
+#define FLASH_AREA_1_OFFSET             (FLASH_AREA_0_OFFSET + FLASH_AREA_0_SIZE)
 #define FLASH_AREA_1_SIZE               (FLASH_S_PARTITION_SIZE + \
                                                FLASH_NS_PARTITION_SIZE)
 
-#define FLASH_AREA_IMAGE_SCRATCH_OFFSET (FLASH_AREA_1_OFFSET + FLASH_AREA_1_SIZE))
+#define FLASH_AREA_IMAGE_SCRATCH_OFFSET (FLASH_AREA_1_OFFSET + FLASH_AREA_1_SIZE)
 #define FLASH_AREA_IMAGE_SCRATCH_SIZE   (FLASH_S_PARTITION_SIZE + \
                                          FLASH_NS_PARTITION_SIZE)
 
@@ -74,17 +77,19 @@
 
 /* Internal Trusted Storage (ITS) Service definitions */
 #define FLASH_ITS_AREA_OFFSET           (FLASH_AREA_BL2_OFFSET + FLASH_AREA_BL2_SIZE)
-#define FLASH_ITS_AREA_SIZE             (0x5000)  /* 20 KB */
+#define FLASH_ITS_AREA_SIZE             (0x4800)  /* 18 KB */
 
 /* Protected Storage (PS) Service definitions */
 #define FLASH_PS_AREA_OFFSET            (FLASH_ITS_AREA_OFFSET + \
                                          FLASH_ITS_AREA_SIZE)
 #define FLASH_PS_AREA_SIZE              (0x1000)  /* 4 KB */
 
-/* NV Counters definitions */
-#define FLASH_NV_COUNTERS_AREA_OFFSET   (FLASH_PS_AREA_OFFSET + \
-                                         FLASH_PS_AREA_SIZE)
-#define FLASH_NV_COUNTERS_AREA_SIZE     (FLASH_AREA_IMAGE_SECTOR_SIZE)
+/* OTP / NV Counters definitions */
+#define FLASH_OTP_NV_COUNTERS_AREA_OFFSET (FLASH_PS_AREA_OFFSET + \
+                                           FLASH_PS_AREA_SIZE)
+#define FLASH_OTP_NV_COUNTERS_SECTOR_SIZE FLASH_AREA_IMAGE_SECTOR_SIZE
+#define FLASH_OTP_NV_COUNTERS_AREA_SIZE   (FLASH_OTP_NV_COUNTERS_SECTOR_SIZE + \
+                                           FLASH_OTP_NV_COUNTERS_SECTOR_SIZE)
 
 /* Offset and size definition in flash area, used by assemble.py */
 #define SECURE_IMAGE_OFFSET             (0x0)
@@ -98,28 +103,24 @@
  * Name is defined in flash driver file: Driver_Flash.c
  */
 #define FLASH_DEV_NAME Driver_FLASH0
+/* Smallest flash programmable unit in bytes */
+#define TFM_HAL_FLASH_PROGRAM_UNIT      FLASH0_PROGRAM_UNIT
 
 /* Secure Storage (PS) Service definitions
  * Note: Further documentation of these definitions can be found in the
  * TF-M PS Integration Guide.
  */
-#define PS_FLASH_DEV_NAME Driver_FLASH0
+#define TFM_HAL_PS_FLASH_DRIVER Driver_FLASH0
 
-/* In this target the CMSIS driver requires only the offset from the base
- * address instead of the full memory address.
- */
-#define PS_FLASH_AREA_ADDR     FLASH_PS_AREA_OFFSET
-/* Dedicated flash area for PS */
-#define PS_FLASH_AREA_SIZE     FLASH_PS_AREA_SIZE
-#define PS_SECTOR_SIZE         FLASH_AREA_IMAGE_SECTOR_SIZE
+/* Base address of dedicated flash area for PS */
+#define TFM_HAL_PS_FLASH_AREA_ADDR    FLASH_PS_AREA_OFFSET
+/* Base address of dedicated flash area for PS */
+#define TFM_HAL_PS_FLASH_AREA_SIZE    FLASH_PS_AREA_SIZE
+#define PS_RAM_FS_SIZE                TFM_HAL_PS_FLASH_AREA_SIZE
 /* Number of PS_SECTOR_SIZE per block */
-#define PS_SECTORS_PER_BLOCK   (0x1)
+#define TFM_HAL_PS_SECTORS_PER_BLOCK  (1)
 /* Specifies the smallest flash programmable unit in bytes */
-#define PS_FLASH_PROGRAM_UNIT  0x1
-/* The maximum asset size to be stored in the PS area */
-#define PS_MAX_ASSET_SIZE      512
-/* The maximum number of assets to be stored in the PS area */
-#define PS_NUM_ASSETS          4
+#define TFM_HAL_PS_PROGRAM_UNIT       TFM_HAL_FLASH_PROGRAM_UNIT
 
 /* Internal Trusted Storage (ITS) Service definitions
  * Note: Further documentation of these definitions can be found in the
@@ -127,30 +128,26 @@
  * allocated in the external flash just for development platforms that don't
  * have internal flash available.
  */
-#define ITS_FLASH_DEV_NAME Driver_FLASH0
+#define TFM_HAL_ITS_FLASH_DRIVER Driver_FLASH0
 
-/* In this target the CMSIS driver requires only the offset from the base
- * address instead of the full memory address.
- */
-#define ITS_FLASH_AREA_ADDR     FLASH_ITS_AREA_OFFSET
+/* Base address of dedicated flash area for ITS */
+#define TFM_HAL_ITS_FLASH_AREA_ADDR    FLASH_ITS_AREA_OFFSET
 /* Dedicated flash area for ITS */
-#define ITS_FLASH_AREA_SIZE     FLASH_ITS_AREA_SIZE
-#define ITS_SECTOR_SIZE         FLASH_AREA_IMAGE_SECTOR_SIZE
-/* Number of ITS_SECTOR_SIZE per block */
-#define ITS_SECTORS_PER_BLOCK   (0x1)
+#define TFM_HAL_ITS_FLASH_AREA_SIZE    FLASH_ITS_AREA_SIZE
+#define ITS_RAM_FS_SIZE                TFM_HAL_ITS_FLASH_AREA_SIZE
+/* Number of physical erase sectors per logical ITS block */
+#define TFM_HAL_ITS_SECTORS_PER_BLOCK   (1)
 /* Specifies the smallest flash programmable unit in bytes */
-#define ITS_FLASH_PROGRAM_UNIT  (0x1)
-/* The maximum asset size to be stored in the ITS area */
-#define ITS_MAX_ASSET_SIZE      (1100)  /* Worst case for SECP521 key */
-/* The maximum number of assets to be stored in the ITS area */
-#define ITS_NUM_ASSETS          (32)
+#define TFM_HAL_ITS_PROGRAM_UNIT       TFM_HAL_FLASH_PROGRAM_UNIT
 
-/* NV Counters definitions */
-#define TFM_NV_COUNTERS_AREA_ADDR    FLASH_NV_COUNTERS_AREA_OFFSET
-#define TFM_NV_COUNTERS_AREA_SIZE    (0x18) /* 24 Bytes */
-#define TFM_NV_COUNTERS_SECTOR_ADDR  FLASH_NV_COUNTERS_AREA_OFFSET
-#define TFM_NV_COUNTERS_SECTOR_SIZE  FLASH_AREA_IMAGE_SECTOR_SIZE
+/* OTP / NV Counters definitions */
+#define TFM_OTP_NV_COUNTERS_AREA_SIZE   (FLASH_OTP_NV_COUNTERS_AREA_SIZE / 2)
+#define TFM_OTP_NV_COUNTERS_AREA_ADDR   FLASH_OTP_NV_COUNTERS_AREA_OFFSET
+#define TFM_OTP_NV_COUNTERS_SECTOR_SIZE FLASH_OTP_NV_COUNTERS_SECTOR_SIZE
+#define TFM_OTP_NV_COUNTERS_BACKUP_AREA_ADDR (TFM_OTP_NV_COUNTERS_AREA_ADDR + \
+                                              TFM_OTP_NV_COUNTERS_AREA_SIZE)
 
+/* Create aliases for addresses defined in memory_layout.yaml */
 #define S_ROM_ALIAS_BASE   ({{S_ROM_BASE}})
 #define S_ROM_ALIAS_LIMIT  ({{S_ROM_LIMIT}})
 #define S_RAM_ALIAS_BASE   ({{S_RAM_BASE}})

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -53,12 +53,10 @@
 /* This Header file contains all BLE API and icall structure definition */
 #include "icall_ble_api.h"
 
-#ifdef SYSCFG
-#include "ti_ble_config.h"
-#endif
-
 #include <ti/bleapp/services/data_stream/data_stream_server.h>
 #include <ti/bleapp/ble_app_util/inc/bleapputil_api.h>
+#include <ti/bleapp/menu_module/menu_module.h>
+#include <app_main.h>
 #include "ble_stack_api.h"
 
 /*********************************************************************
@@ -420,7 +418,7 @@ static bStatus_t DSS_sendNotification(uint8 *pValue, uint16 len)
         status = linkDB_GetInfo(pItem->connHandle, &connInfo);
         offset = 0;
 
-        while ( status == SUCCESS &&  len != offset )
+        while ( status != bleTimeout && status != bleNotConnected &&  len > offset )
         {
           // Determine allocation size
           uint16_t allocLen = (len - offset);
@@ -445,11 +443,20 @@ static bStatus_t DSS_sendNotification(uint8 *pValue, uint16 len)
             if ( status != SUCCESS )
             {
               GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
+
+              // Failed to send notification, print error message
+              MenuModule_printf(APP_MENU_PROFILE_STATUS_LINE4, 0,
+                                "Failed to send notification - Error: " MENU_MODULE_COLOR_RED "%d " MENU_MODULE_COLOR_RESET,
+                                 status);
             }
             else
             {
               // Increment data offset
               offset += allocLen;
+
+              // Notification sent
+              MenuModule_printf(APP_MENU_PROFILE_STATUS_LINE4, 0,
+                                "Notification sent");
             }
           }
           else

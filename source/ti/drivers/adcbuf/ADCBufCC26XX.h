@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -607,60 +607,60 @@ typedef struct
 typedef struct
 {
     /* ADC control variables */
-    /*!< Has the obj been opened */
+    /*! Has the obj been opened */
     bool isOpen;
-    /*!< Is the ADC currently doing conversions */
+    /*! Is the ADC currently doing conversions */
     bool conversionInProgress;
-    /*!< Is the analogue input scaled */
+    /*! Is the analogue input scaled */
     bool inputScalingEnabled;
-    /*!< Should the driver keep the ADC semaphore after a conversion */
+    /*! Should the driver keep the ADC semaphore after a conversion */
     bool keepADCSemaphore;
-    /*!< Does the driver currently possess the ADC semaphore */
+    /*! Does the driver currently possess the ADC semaphore */
     bool adcSemaphoreInPossession;
-    /*!< The current virtual channel the ADCBuf driver is sampling on */
+    /*! The current virtual channel the ADCBuf driver is sampling on */
     uint8_t currentChannel;
-    /*!< Reference source for the ADC to use */
+    /*! Reference source for the ADC to use */
     ADCBufCC26XX_Reference_Source refSource;
-    /*!< Synchronous or asynchronous sampling mode */
+    /*! Synchronous or asynchronous sampling mode */
     ADCBufCC26XX_Sampling_Mode samplingMode;
-    /*!< Time the ADC spends sampling in ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS */
+    /*! Time the ADC spends sampling in ADCBufCC26XX_SAMPING_MODE_SYNCHRONOUS */
     ADCBufCC26XX_Sampling_Duration samplingDuration;
-    /*!< Pointer to callback function */
+    /*! Pointer to callback function */
     ADCBuf_Callback callbackFxn;
-    /*!< Should we convert continuously or one-shot */
+    /*! Should we convert continuously or one-shot */
     ADCBuf_Recurrence_Mode recurrenceMode;
-    /*!< Mode for all conversions */
+    /*! Mode for all conversions */
     ADCBuf_Return_Mode returnMode;
-    /*!< The last complete sample buffer used by the DMA */
+    /*! The last complete sample buffer used by the DMA */
     uint16_t *activeSampleBuffer;
 
     /* ADC SYS/BIOS objects */
-    /*!< Hwi object */
+    /*! Hwi object */
     HwiP_Struct hwi;
-    /*!< Swi object */
+    /*! Swi object */
     SwiP_Struct swi;
-    /*!< ADC semaphore */
+    /*! ADC semaphore */
     SemaphoreP_Struct conversionComplete;
-    /*!< Pointer to the current conversion struct */
+    /*! Pointer to the current conversion struct */
     ADCBuf_Conversion *currentConversion;
 
     /* PIN driver state object and handle */
-    /*!< Pin state object */
+    /*! Pin state object */
     PIN_State pinState;
-    /*!< Pin handle */
+    /*! Pin handle */
     PIN_Handle pinHandle;
 
     /* UDMA driver handle */
-    /*!< UDMA handle */
+    /*! UDMA handle */
     UDMACC26XX_Handle udmaHandle;
 
     /* GPTimer driver handle */
-    /*!< Handle to underlying GPTimer peripheral */
+    /*! Handle to underlying GPTimer peripheral */
     GPTimerCC26XX_Handle timerHandle;
 
-    /*!< Timeout for read semaphore in ::ADCBuf_RETURN_MODE_BLOCKING */
+    /*! Timeout for read semaphore in ::ADCBuf_RETURN_MODE_BLOCKING */
     uint32_t semaphoreTimeout;
-    /*!< Frequency in Hz at which the ADC is triggered */
+    /*! Frequency in Hz at which the ADC is triggered */
     uint32_t samplingFrequency;
 } ADCBufCC26XX_Object, *ADCBufCC26XX_Handle;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,17 +37,20 @@
 #include <third_party/tfm/secure_fw/partitions/internal_trusted_storage/tfm_internal_trusted_storage.h> /* tfm_its_init() */
 
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
+#include <third_party/mbedtls/include/mbedtls/memory_buffer_alloc.h>
+#include <third_party/mbedtls/include/mbedtls/platform.h>
 
-extern psa_status_t psa_get_key_from_slot(psa_key_handle_t handle,
-                                          psa_key_slot_t **p_slot,
-                                          psa_key_usage_t usage,
-                                          psa_algorithm_t alg);
+/* Static buffer for alloc/free. The buffer size is allocated based on
+ * assumption of 16 largest symmetric keys (32B) and 16 largest asymmetric
+ * public keys (133B) that can be supported by KeyStore, with surplus bytes for
+ * additional calloc calls within mbedTLS.
+ */
+uint8_t allocBuffer[3072];
 
-extern psa_status_t psa_internal_export_key(const psa_key_slot_t *slot,
-                                            uint8_t *data,
-                                            size_t dataSize,
-                                            size_t *dataLength,
-                                            int export_public_key);
+extern psa_status_t psa_get_and_lock_key_slot_with_policy(mbedtls_svc_key_id_t key,
+                                                          psa_key_slot_t **p_slot,
+                                                          psa_key_usage_t usage,
+                                                          psa_algorithm_t alg);
 
 KeyStore_accessSemaphoreObject KeyStore_semaphoreObject = {.isAcquired = false, .isInitialized = false};
 
@@ -318,7 +321,8 @@ static int_fast16_t KeyStore_PSA_fetchPreProvisionedData(KeyStore_PSA_KeyFileId 
         uint32_t i;
         for (i = 0; i <= preProvisionedKeyCount; i++)
         {
-            if ((key.owner == preProvisionedKeyIds[i].id.owner) && (key.key_id == preProvisionedKeyIds[i].id.key_id))
+            if ((key.MBEDTLS_PRIVATE(owner) == preProvisionedKeyIds[i].id.MBEDTLS_PRIVATE(owner)) &&
+                (key.MBEDTLS_PRIVATE(key_id) == preProvisionedKeyIds[i].id.MBEDTLS_PRIVATE(key_id)))
             {
                 status = KeyStore_PSA_verifyFletcherChecksum(&preProvisionedKeyIds[i]);
                 if (status == KEYSTORE_PSA_STATUS_SUCCESS)
@@ -396,87 +400,11 @@ static inline void KeyStore_releaseLock(void)
  * @{
  */
 
-/** Open a handle to an existing persistent key.
- *
- * Open a handle to a persistent key. A key is persistent if it was created
- * with a lifetime other than #PSA_KEY_LIFETIME_VOLATILE. A persistent key
- * always has a nonzero key identifier, set with KeyStore_PSA_setKeyId() when
- * creating the key. Implementations may provide additional pre-provisioned
- * keys that can be opened with KeyStore_openKey(). Such keys have a keyFF
- * identifier in the vendor range, as documented in the description of
- * #psa_key_id_t.
- *
- * The application must eventually close the handle with KeyStore_PSA_purgeKey()
- * or KeyStore_PSA_destroyKey() to release associated resources. If the
- * application dies without calling one of these functions, the
- * implementation should perform the equivalent of a call to
- * KeyStore_PSA_purgeKey().
- *
- * Some implementations permit an application to open the same key multiple
- * times. If this is successful, each call to KeyStore_openKey() will return
- * a different key handle.
- *
- * @note Applications that rely on opening a key multiple times will not be
- * portable to implementations that only permit a single key handle to be
- * opened. See also :ref:\`key-handles\`.
- *
- * @param id            The persistent identifier of the key.
- * @param[out] handle   On success, a handle to the key.
- *
- * @retval #KEYSTORE_PSA_SUCCESS
- *         Success. The application can now use the value of `*handle`
- *         to access the key.
- * @retval #KEYSTORE_PSA_ERROR_INSUFFICIENT_MEMORY
- *         The implementation does not have sufficient resources to open the
- *         key. This can be due to reaching an implementation limit on the
- *         number of open keys, the number of open key handles, or available
- *         memory.
- * @retval #KEYSTORE_PSA_ERROR_DOES_NOT_EXIST
- *         There is no persistent key with key identifier \p id.
- * @retval #KEYSTORE_PSA_ERROR_INVALID_ARGUMENT
- *         \p id is not a valid persistent key identifier.
- * @retval #KEYSTORE_PSA_ERROR_NOT_PERMITTED
- *         The specified key exists, but the application does not have the
- *         permission to access it. Note that this specification does not
- *         define any way to create such a key, but it may be possible
- *         through implementation-specific means.
- * @retval #KEYSTORE_PSA_ERROR_COMMUNICATION_FAILURE
- * @retval #KEYSTORE_PSA_ERROR_CORRUPTION_DETECTED
- * @retval #KEYSTORE_PSA_ERROR_STORAGE_FAILURE
- * @retval #KEYSTORE_PSA_ERROR_BAD_STATE
- *         The library has not been previously initialized by
- * psa_crypto_init(). It is implementation-dependent whether a failure to
- * initialize results in this error code.
- */
-static int_fast16_t KeyStore_openKey(KeyStore_PSA_KeyFileId id, KeyStore_PSA_KeyHandle *handle)
-{
-    int_fast16_t status;
-    if (!KeyStore_semaphoreObject.isAcquired)
-    {
-        if (!KeyStore_acquireLock())
-        {
-            return KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE;
-        }
-        KeyStore_semaphoreObject.isAcquired = true;
-    }
-
-    status = psa_open_key(id, handle);
-
-    if (!KeyStore_semaphoreObject.isAcquired)
-    {
-        KeyStore_semaphoreObject.isAcquired = false;
-        KeyStore_releaseLock();
-    }
-
-    return status;
-}
-
 /*
  *  ======== KeyStore_PSA_purgeKey ========
  */
 int_fast16_t KeyStore_PSA_purgeKey(KeyStore_PSA_KeyFileId key)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
     if (!KeyStore_semaphoreObject.isAcquired)
@@ -487,48 +415,19 @@ int_fast16_t KeyStore_PSA_purgeKey(KeyStore_PSA_KeyFileId key)
             return status;
         }
     }
-    /* Remove references to handle when porting to TF-Mv1.5 */
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    if (key.key_id > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-#else
-    if (key > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-#endif
-    {
-        status = KeyStore_openKey(key, &handle);
-
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            KeyStore_releaseLock();
-            return status;
-        }
-    }
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    else if (key.key_id > 0 && key.key_id <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = key.key_id;
-    }
-#else
-    else if (key > 0 && key <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = key;
-    }
-#endif
 
     /*
-     * psa_close_key is similar to psa_purge_key(); introduced in PSA API 1.0.0
-     * psa_purge_key() does not delete volatile keys whereas
-     * psa_close_key() is equivalent to psa_destroy_key() for volatile keys
-     * Only close persistent keys, volatile keys do not have to be closed.
+     * Only purge persistent keys, volatile keys do not have to be purged.
      * Both type of keys will be destroyed after use by the application using
      * KeyStore_PSA_destroyKey()
      */
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    if (key.key_id > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+    if (key.MBEDTLS_PRIVATE(key_id) > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
 #else
     if (key > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
 #endif
     {
-        status = psa_close_key(handle);
+        status = psa_purge_key(key);
     }
 
     if (!KeyStore_semaphoreObject.isAcquired && (status != KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE))
@@ -541,35 +440,7 @@ int_fast16_t KeyStore_PSA_purgeKey(KeyStore_PSA_KeyFileId key)
 /*
  *  ======== KeyStore_cleanUp ========
  */
-static int_fast16_t KeyStore_cleanUp(KeyStore_PSA_KeyFileId key, int_fast16_t status, KeyStore_PSA_KeyHandle handle)
-{
-    /*
-     * psa_close_key() is equivalent to psa_destroy_key() for volatile keys.
-     * Only close persistent keys, volatile keys do not have to be closed.
-     * This removes volatile copy of persistent keys from global key slots.
-     */
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    if (key.key_id > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-#else
-    if (key > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-#endif
-    {
-        (void)psa_close_key(handle);
-    }
-
-    KeyStore_semaphoreObject.isAcquired = false;
-    if (status != KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE)
-    {
-        KeyStore_releaseLock();
-    }
-
-    return status;
-}
-
-/*
- *  ======== KeyStore_preProvisionedKeyCleanUp ========
- */
-static int_fast16_t KeyStore_preProvisionedKeyCleanUp(int_fast16_t status)
+static int_fast16_t KeyStore_cleanUp(int_fast16_t status)
 {
     KeyStore_semaphoreObject.isAcquired = false;
     if (status != KEYSTORE_PSA_STATUS_RESOURCE_UNAVAILABLE)
@@ -589,6 +460,7 @@ int_fast16_t KeyStore_PSA_init(void)
 
     if (!isKeyStoreInitialized)
     {
+        mbedtls_memory_buffer_alloc_init(allocBuffer, sizeof(allocBuffer));
         /*
          * Applications may call psa_crypto_init() function more than once,
          * for example in Key Store and TF-M. Once a call succeeds,
@@ -643,7 +515,6 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
                                  KeyStore_PSA_Algorithm alg,
                                  KeyStore_PSA_KeyUsage usage)
 {
-    KeyStore_PSA_KeyHandle handle;
     psa_status_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     psa_key_slot_t *slot;
     uint32_t keyID;
@@ -662,21 +533,7 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
     if ((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
     {
         status = KeyStore_PSA_fetchPreProvisionedData(key, data, dataSize, dataLength, false, alg, usage);
-        return KeyStore_preProvisionedKeyCleanUp(status);
-    }
-
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
-
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            return KeyStore_cleanUp(key, status, handle);
-        }
-    }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
+        return KeyStore_cleanUp(status);
     }
 
     /*
@@ -686,7 +543,7 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
     if (dataSize == 0)
     {
         status = PSA_ERROR_BUFFER_TOO_SMALL;
-        return KeyStore_cleanUp(key, status, handle);
+        return KeyStore_cleanUp(status);
     }
 
     /*
@@ -697,17 +554,25 @@ int_fast16_t KeyStore_PSA_getKey(KeyStore_PSA_KeyFileId key,
     *dataLength = 0;
 
     /* Fetch key material from key storage. */
-
-    status = psa_get_key_from_slot(handle, &slot, usage, alg);
+    status = psa_get_and_lock_key_slot_with_policy(key, &slot, usage, alg);
 
     if (status != KEYSTORE_PSA_STATUS_SUCCESS)
     {
-        return KeyStore_cleanUp(key, status, handle);
+        /* Ignore return value for decrement of lock counter, the return value from attempting to fetch key is apt for
+         * application
+         */
+        (void)psa_unlock_key_slot(slot);
+        return KeyStore_cleanUp(status);
     }
 
-    status = psa_internal_export_key(slot, data, dataSize, dataLength, 0);
+    psa_key_attributes_t attributes = {.MBEDTLS_PRIVATE(core) = slot->attr};
 
-    return KeyStore_cleanUp(key, status, handle);
+    status = psa_export_key_internal(&attributes, slot->key.data, slot->key.bytes, data, dataSize, dataLength);
+
+    /* Decrement lock counter on key slot after accessing the key material */
+    status = psa_unlock_key_slot(slot);
+
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -718,20 +583,16 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
                                     size_t dataLength,
                                     KeyStore_PSA_KeyFileId *key)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
-    /* Check if the persistent keyID is already used by the pre-provisioned keys or is in range reserved for volatile
-     * keys */
-    if (attributes->core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT)
+    /* Check if the persistent keyID is already used by the pre-provisioned keys or less than the min persistent key IDs
+     */
+    if (attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) == KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT)
     {
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-        if (((key->key_id >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) &&
-             (key->key_id <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
-            (key->key_id <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+        if (key->MBEDTLS_PRIVATE(key_id) < KEYSTORE_PSA_KEY_ID_PERSISTENT_USER_MIN)
 #else
-        if (((*key >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (*key <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
-            (*key <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
+        if (*key < KEYSTORE_PSA_KEY_ID_PERSISTENT_USER_MIN)
 #endif
         {
             return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
@@ -745,27 +606,9 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
     }
     KeyStore_semaphoreObject.isAcquired = true;
 
-    status = psa_import_key(attributes, data, dataLength, &handle);
-    /*
-     * For persistent keys, the key identifier is the same identifier as the
-     * one specified in the key attributes used to create the key.
-     * For volatile keys, the key identifier is the handle returned by
-     * psa_import_key() in mbedCrypto3.0
-     */
-    if (status == KEYSTORE_PSA_STATUS_SUCCESS)
-    {
-        if (attributes->core.lifetime == KEYSTORE_PSA_KEY_LIFETIME_VOLATILE)
-        {
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-            key->key_id = handle;
-            key->owner  = KEYSTORE_PSA_DEFAULT_OWNER;
-#else
-            *key = handle;
-#endif
-        }
-    }
+    status = psa_import_key(attributes, data, dataLength, key);
 
-    return KeyStore_cleanUp(*key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -773,7 +616,6 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
  */
 int_fast16_t KeyStore_PSA_exportKey(KeyStore_PSA_KeyFileId key, uint8_t *data, size_t dataSize, size_t *dataLength)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     uint32_t keyID;
 
@@ -791,26 +633,12 @@ int_fast16_t KeyStore_PSA_exportKey(KeyStore_PSA_KeyFileId key, uint8_t *data, s
     if ((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
     {
         status = KeyStore_PSA_fetchPreProvisionedData(key, data, dataSize, dataLength, true, 0, 0);
-        return KeyStore_preProvisionedKeyCleanUp(status);
+        return KeyStore_cleanUp(status);
     }
 
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
+    status = psa_export_key(key, data, dataSize, dataLength);
 
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            return KeyStore_cleanUp(key, status, handle);
-        }
-    }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
-    }
-
-    status = psa_export_key(handle, data, dataSize, dataLength);
-
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -821,7 +649,6 @@ int_fast16_t KeyStore_PSA_exportPublicKey(KeyStore_PSA_KeyFileId key,
                                           size_t dataSize,
                                           size_t *dataLength)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     uint32_t keyID;
 
@@ -839,26 +666,12 @@ int_fast16_t KeyStore_PSA_exportPublicKey(KeyStore_PSA_KeyFileId key,
     if ((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
     {
         status = KeyStore_PSA_fetchPreProvisionedData(key, data, dataSize, dataLength, true, 0, 0);
-        return KeyStore_preProvisionedKeyCleanUp(status);
+        return KeyStore_cleanUp(status);
     }
 
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
+    status = psa_export_public_key(key, data, dataSize, dataLength);
 
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            return KeyStore_cleanUp(key, status, handle);
-        }
-    }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
-    }
-
-    status = psa_export_public_key(handle, data, dataSize, dataLength);
-
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -869,44 +682,47 @@ int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attribut
                                             uint8_t *data,
                                             size_t dataLength)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
     uint32_t keyID;
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    keyID = key->key_id;
+    KeyStore_PSA_KeyFileId certificateID;
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+    keyID = key->MBEDTLS_PRIVATE(key_id);
 #else
-    keyID               = *key;
+    keyID                                                 = *key;
 #endif
+
+    /* Compute certificate ID from associated public key ID */
+    GET_KEY_ID(certificateID, keyID | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT);
 
     /*
      * Only support persistent certificates with TF-M 1.1
      */
-    if (attributes->core.lifetime != KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT)
+    if (attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) != KEYSTORE_PSA_KEY_LIFETIME_PERSISTENT)
     {
         status = KEYSTORE_PSA_STATUS_INVALID_ARGUMENT;
         return status;
     }
 
-    if (keyID > KEYSTORE_PSA_KEY_ID_WITH_CERTIFICATE_USER_MAX)
+    /* Check if key ID is within the allowed persistent key ID range for keys with associated certificates */
+    if ((keyID > KEYSTORE_PSA_KEY_ID_WITH_CERTIFICATE_USER_MAX) || (keyID < KEYSTORE_PSA_KEY_ID_PERSISTENT_USER_MIN))
     {
         return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
     }
 
-    /* Check if a certificate already exists with the same ID in pre-provisioned keys storage or is in range reserved
-     * for volatile keys */
-    if (((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)) ||
-        (keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID))
+    /* Check if a certificate already exists with the same ID in pre-provisioned keys storage */
+    if (((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX)))
     {
         return KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
     }
 
     /* Compute certificate ID from associated public key ID */
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    attributes->core.id.key_id = key->key_id | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
-    attributes->core.id.owner  = key->owner;
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+    attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(key_id) = key->MBEDTLS_PRIVATE(key_id) |
+                                                                                    KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
+    attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(owner) = key->MBEDTLS_PRIVATE(owner);
 #else
-    attributes->core.id = *key | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
+    attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id) = *key | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
 #endif
 
     if (!KeyStore_acquireLock())
@@ -921,9 +737,9 @@ int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attribut
      * KEYSTORE_PSA_STATUS_ALREADY_EXISTS if a certificate is associated with
      * the provided keyID.
      */
-    status = psa_import_key(attributes, data, dataLength, &handle);
+    status = psa_import_key(attributes, data, dataLength, &certificateID);
 
-    return KeyStore_cleanUp(*key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -934,7 +750,6 @@ int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
                                             size_t dataSize,
                                             size_t *dataLength)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     KeyStore_PSA_KeyFileId certificateID;
     uint32_t keyID;
@@ -954,7 +769,7 @@ int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
     if ((keyID >= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MIN) && (keyID <= KEYSTORE_PSA_PRE_PROVISIONED_KEY_ID_MAX))
     {
         status = KeyStore_PSA_fetchPreProvisionedData(certificateID, data, dataSize, dataLength, true, 0, 0);
-        return KeyStore_preProvisionedKeyCleanUp(status);
+        return KeyStore_cleanUp(status);
     }
 
     if (!KeyStore_acquireLock())
@@ -964,17 +779,9 @@ int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
     }
     KeyStore_semaphoreObject.isAcquired = true;
 
-    status = KeyStore_openKey(certificateID, &handle);
-    if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-    {
-        /* Remove references to KEYSTORE_PSA_STATUS_INVALID_KEY_ID when porting to TF-Mv1.5 */
-        status = KEYSTORE_PSA_STATUS_INVALID_KEY_ID;
-        return KeyStore_cleanUp(key, status, handle);
-    }
+    status = psa_export_key(certificateID, data, dataSize, dataLength);
 
-    status = psa_export_key(handle, data, dataSize, dataLength);
-
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -982,7 +789,6 @@ int_fast16_t KeyStore_PSA_exportCertificate(KeyStore_PSA_KeyFileId key,
  */
 int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     uint32_t keyID;
 
@@ -1002,23 +808,9 @@ int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
     }
     KeyStore_semaphoreObject.isAcquired = true;
 
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
+    status = psa_destroy_key(key);
 
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            return KeyStore_cleanUp(key, status, handle);
-        }
-    }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
-    }
-
-    status = psa_destroy_key(handle);
-
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -1026,10 +818,10 @@ int_fast16_t KeyStore_PSA_destroyCertificate(KeyStore_PSA_KeyFileId key)
  */
 int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
 {
-    KeyStore_PSA_KeyHandle handle, certHandle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
     KeyStore_PSA_KeyFileId certificateID;
-    uint32_t keyID;
+    volatile uint32_t keyID;
+    KeyStore_PSA_KeyHandle handle;
 
     /* Create a copy of the key ID */
     SET_KEY_ID(keyID, key);
@@ -1046,40 +838,31 @@ int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
     }
     KeyStore_semaphoreObject.isAcquired = true;
 
-    /* Check that there is no associated certificate with the given keyID */
-#if defined(MBEDTLS_PSA_CRYPTO_KEY_FILE_ID_ENCODES_OWNER)
-    certificateID.key_id = key.key_id | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
-    certificateID.owner  = key.owner;
-#else
-    certificateID       = key | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT;
-#endif
-
-    status = KeyStore_openKey(certificateID, &certHandle);
-
-    if (status == KEYSTORE_PSA_STATUS_SUCCESS)
+    /* Only check for associated certificates for persistent key IDs */
+    if (!(psa_key_id_is_volatile(keyID)))
     {
-        /* Cannot delete keys with associated certificates, the application must first delete the certificate */
-        status = KEYSTORE_PSA_STATUS_NOT_PERMITTED;
-        return KeyStore_cleanUp(certificateID, status, certHandle);
-    }
+        /* Check that there is no associated certificate with the given keyID */
+        /* Compute certificate ID from associated public key ID */
+        GET_KEY_ID(certificateID, keyID | KEYSTORE_PSA_KEY_ID_CERTIFICATE_BIT);
 
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
+        /* Attempt to open certificateID, if it exists */
+        status = psa_open_key(certificateID, &handle);
 
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
+        if (status == KEYSTORE_PSA_STATUS_SUCCESS)
         {
-            return KeyStore_cleanUp(key, status, handle);
+            /* Cannot delete keys with associated certificates, the application must first delete the certificate */
+            status = KEYSTORE_PSA_STATUS_NOT_PERMITTED;
+
+            /* Decrement lock counter on certificate slot */
+            (void)psa_close_key(handle);
+
+            return KeyStore_cleanUp(status);
         }
     }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
-    }
 
-    status = psa_destroy_key(handle);
+    status = psa_destroy_key(key);
 
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -1088,12 +871,7 @@ int_fast16_t KeyStore_PSA_destroyKey(KeyStore_PSA_KeyFileId key)
 int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_PSA_KeyAttributes *attributes)
 
 {
-    KeyStore_PSA_KeyHandle handle;
     int_fast16_t status = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
-    uint32_t keyID;
-
-    /* Create a copy of the key ID */
-    SET_KEY_ID(keyID, key);
 
     if (!KeyStore_acquireLock())
     {
@@ -1102,23 +880,9 @@ int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_
     }
     KeyStore_semaphoreObject.isAcquired = true;
 
-    if (keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        status = KeyStore_openKey(key, &handle);
+    status = psa_get_key_attributes(key, attributes);
 
-        if (status != KEYSTORE_PSA_STATUS_SUCCESS)
-        {
-            return KeyStore_cleanUp(key, status, handle);
-        }
-    }
-    else if (keyID > 0 && keyID <= KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        handle = keyID;
-    }
-
-    status = psa_get_key_attributes(handle, attributes);
-
-    return KeyStore_cleanUp(key, status, handle);
+    return KeyStore_cleanUp(status);
 }
 
 /*
@@ -1126,5 +890,6 @@ int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_
  */
 void KeyStore_PSA_resetKeyAttributes(KeyStore_PSA_KeyAttributes *attributes)
 {
-    psa_reset_key_attributes(attributes);
+    mbedtls_free(attributes->MBEDTLS_PRIVATE(domain_parameters));
+    memset(attributes, 0, sizeof(*attributes));
 }

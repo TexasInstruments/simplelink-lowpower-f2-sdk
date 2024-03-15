@@ -177,7 +177,7 @@ void osalInitTasks( void )
   GATT_Init( taskID++ );
 
   /* GATT Server App Task */
-  GATTServApp_Init( taskID++, cfg_GATTServApp_att_delayed_req, cfg_gapBond_gatt_no_service_changed );
+  GATTServApp_Init( taskID++, cfg_GATTServApp_att_delayed_req, cfg_gapBond_gatt_no_service_changed, GATT_MAX_PREPARE_WRITES );
 
 #if defined ( GAP_BOND_MGR )
   /* Bond Manager Task */

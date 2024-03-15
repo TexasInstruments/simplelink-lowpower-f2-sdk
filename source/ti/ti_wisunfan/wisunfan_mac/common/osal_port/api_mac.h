@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1263,7 +1263,10 @@ typedef enum {
     TIMAC_EVENT_INIT = 0,
     /*! timac tasklet message callback event */
     TIMAC_EVENT_CALLBACK= 1,
-
+    /*! timac taskletone second timer */
+    TIMAC_EVENT_TIMERR= 2,
+    /*! MPL retry TX timer */
+    TIMAC_EVENT_TX_MPL_RETRY_TIMER = 3,
     TIMAC_EVENT_MAX
 } timac_event_id_e;
 
@@ -1652,6 +1655,11 @@ typedef struct _apimac_mcpsdatareq
     uint8_t  gpOffset;
     /*! Transmit Window for Green Power */
     uint8_t  gpDuration;
+    uint8_t priority;       /* priority for the TX packet */
+    /* VPIE is set for each TX data request */
+    uint8_t Vpie_type;
+    uint8_t Vpie_length;
+    uint8_t *pVpie_data;    /* pointer to VPIE data, dynamically allocated */
 } ApiMac_mcpsDataReq_t;
 
 /*! Structure a Payload information Item */
@@ -2361,6 +2369,14 @@ typedef struct _apimac_mlmewsasynccnf
     ApiMac_status_t status;
 } ApiMac_mlmeWsAsyncCnf_t;
 
+#ifdef WISUN_TEST_METRICS
+typedef struct MAC_debug
+{
+    uint16_t max_device_table_size;
+    uint16_t fhnt_curr_num_node;
+} MAC_debug_s;
+#endif
+
 /*!
  Associate Indication Callback function pointer prototype
  for the [callback table](@ref ApiMac_callbacks_t)
@@ -2521,6 +2537,144 @@ typedef struct _apimac_callbacks
     /*! Unprocessed message callback */
     ApiMac_unprocessedFp_t pUnprocessedCb;
 } ApiMac_callbacks_t;
+
+/**
+ * @brief TIMAC received MPL data callback
+ * @param pData: pointer to USER MPL payload
+ * @param len: data length of MPL data
+ *
+ */
+#ifdef WISUN_TEST_METRICS
+typedef struct __MAC_performance
+{
+    // TX packet
+    uint32_t  num_asynchReq[4];
+    uint32_t  num_tx_broadcast;
+    uint32_t  num_tx_unicast;
+
+    // TX data confirm
+    uint32_t    num_tx_conf_ok;
+    uint32_t    num_tx_conf_no_ack;
+    uint32_t    num_tx_conf_no_entry;
+    uint32_t    num_tx_conf_chan_busy;
+    uint32_t    num_tx_conf_other;
+
+    // RX indication
+    uint32_t  num_asynchInd[4];
+    uint32_t  num_rxInd;
+} MAC_Perf_Data;
+#endif
+
+typedef struct __MAC_MPL_DATA_Header
+{
+    uint8_t     hopLimit;       /* hop limit */
+    uint8_t     seq;            /* sequence number */
+    uint8_t     orignator[8];   /* MPL originator MAC address */
+    uint8_t     *pData;         /* pointer to MPL payload */
+    uint8_t     len;            /* MPL payload length */
+} MAC_MPL_Header_t;
+
+typedef struct __MAC_vpie_status_
+{
+    // TX packet
+    uint32_t  num_tx_vpie;          /* total transmit VPIE */
+    uint32_t  num_tx_conf;          /* number of TX conf */
+    uint32_t  num_tx_vpie_panid;    /* total VPIE PAN ID */
+    uint32_t  num_tx_vpie_mpl;      /* total VPIE MPL */
+
+    // RX VPIE
+    uint32_t    num_rx_vpie;        /* total RX VPIE */
+    uint32_t    num_rx_vpie_panid;  /* total RX VPIE Panid */
+    uint32_t    num_rx_vpie_mpl;    /* total RX VPIE MPL */
+
+    // Async state
+    uint32_t    num_async_state_when_tx;
+
+    /* previous MPL */
+    uint8_t     prev_seq;
+    uint32_t    prev_rx_timestamp;
+
+    /* MPL header status */
+    uint32_t    num_forward;
+    uint32_t    num_terminate;
+    uint32_t    num_match_originator;
+    uint32_t    num_seq_duplicatd;
+    uint32_t    num_seq_not_in_window;
+    uint32_t    num_seq_in_window;
+    uint32_t    num_seq_out_order;
+    uint32_t    num_tx_no_need_retry;
+    uint32_t    num_tx_retry;
+    /* error */
+    uint32_t    err_num_rx_from_different_pan;
+    uint16_t    err_num_tx;
+    uint16_t    err_num_forward;
+    uint16_t    err_num_br_forward;
+
+    uint16_t    err_num_tx_retry_fail;
+    uint16_t    err_num_retry_limit;
+} MAC_VPIE_STATUS_t;
+
+#define RX_MPL_SEQ_QUEUE_SIZE       (8)
+#define TIMAC_MPL_HOP_LIMIT         (2)
+/*
+ * VPIE buffer ==> 20 bytes
+ * Vender ID    : 1 byte
+ * MSG ID       : 1 byte (MPL Data )
+ * HopLimit     : 1 byte
+ * Seq          : 1 byte
+ * Originator   : 8 byte
+ * === Total overhead = 12 byte
+ * Note: In order to increase MPL payload, need to change VPIE buffer size
+ */
+#define TIMAC_MAX_MPL_USER_PAYLOAD  (15)
+#define TIMAC_MAX_MPL_RETRY_CNT     (2)
+#define TIMAC_MPL_TX_QUEUE_SIZE     (2)
+
+// 10 seconds
+#define TIMAC_FIRST_FLAG_TIMEOUT_CNT   (10)
+
+typedef struct _mac_mpl_TX_pkt
+{
+    MAC_MPL_Header_t txMPL_header;
+    uint8_t          txPayload[TIMAC_MAX_MPL_USER_PAYLOAD];
+    uint8_t          RetryCnt;      /* zero , end of retry */
+}MAC_MPL_RETRY_PKT_s;
+typedef struct _mac_mpl_rx_header
+{
+    uint8_t seq;
+    uint16_t hopLimitBitMap;
+}MAC_MPL_RX_Header_s;
+
+
+typedef struct _mac_MPL_handler__
+{
+    MAC_MPL_Header_t txMPL_Header;
+    MAC_MPL_Header_t txForwardHeader;
+    MAC_MPL_Header_t rxMPL_header;
+
+    uint16_t    firstFlagTimeoutCnt;
+
+    uint8_t     BRNode;             /* 1 ==> BR, 0 RN */
+    uint8_t     start_mpl_test;     /* start |stop MPL test */
+    uint8_t     first_rx_mpl;       /* received the first MPL */
+    uint8_t     mpl_msduHandle;     /* TX originator MSDU handler */
+    uint8_t     mpl_seq;            /* TX originator Seq */
+    uint8_t     mpl_hop_limit;      /* TX originator Hop Limit */
+
+    uint32_t    num_rx_mpl;
+    uint32_t    total_rx_callback;
+    uint8_t     rxSeqQueue[RX_MPL_SEQ_QUEUE_SIZE];
+    uint8_t     rxSeqQIndex;
+
+    /* MAC MPL TX retry queue */
+    MAC_MPL_RETRY_PKT_s txQueue[TIMAC_MPL_TX_QUEUE_SIZE];
+    uint8_t     txQueIdx;
+
+    MAC_MPL_RX_Header_s rxHeader[RX_MPL_SEQ_QUEUE_SIZE];
+    uint8_t     rxHeaderIdx;
+} MAC_MPL_Handler_t;
+
+typedef void timac_rx_MPL_Data_Callback(uint8_t *pData,uint8_t len, MAC_MPL_Header_t *pRxHeader);
 
 /******************************************************************************
  Function Prototypes
@@ -3493,6 +3647,47 @@ extern void timacStorePanVersionInformation(uint16_t panVersion);
 extern void timac_tasklet_init(void);
 extern void timacSignalEventLoop(void);
 
+/*!
+ * @brief       This direct function sets TX VP IE connect
+ *              first byte : TI-Vendor ID = 36 (multibyte encoding)
+ *              message encode: in order to simplify the encode/decode, we don't use TLV
+ *              msgID (predefined message ID) will tell you the length of message
+ *
+ *                 msgID = 0x01 (length=2 bytes) PanID
+ *                 msgID = other value (reserved)
+ *                 msgID = 0xFF (terminator)
+
+ * @param       uint16_t panid
+  */
+
+extern uint16_t timacSet_TX_VPIE_PanID (uint16_t network_panid);
+extern uint16_t timac_Set_TX_VPIE_MPL_Payload (MAC_MPL_Header_t *pMPL);
+extern uint8_t timac_MPL_DataReq(MAC_MPL_Header_t *pMplHeader);
+extern void timac_update_rxInfo(MAC_MPL_Header_t *prxMPL_header);
+extern uint8_t timac_handle_RX_MPL(uint8_t len);
+
+extern void timac_register_MPLCallBack(timac_rx_MPL_Data_Callback *pCallback);
+extern void timac_InitMPL(MAC_MPL_Handler_t *pMacMplHnd);
+extern void timac_resetMpl_Seq(void);
+extern uint8_t timac_Send_MPL(uint8_t *pBuf,uint8_t len);
+extern uint8_t timac_handle_TX_MPL_Retry(uint8_t pktIdx);
+
+extern void timac_set_mpl_test (uint8_t st);
+extern uint8_t timac_get_mpl_test(void);
+
+extern void timac_BootstrapCallback(uint8_t joined);
+extern void timac_BootstrapCallbackMode(uint8_t BR_node);
+
+#ifdef WISUN_TEST_METRICS
+void timac_getMACDebugCounts(MAC_debug_s *macDebugCnts);
+void timac_getMACPerfData(MAC_Perf_Data *macPerfData);
+#endif
+
+void timac_setup_Test_GPIO(void);
+void timac_Set_FH_Broadcast_GPIO(uint8_t st);
+void timac_Set_FH_UNICAST_GPIO(uint8_t st);
+void timac_Set_HOST_RX_GPIO(uint8_t st);
+void timac_Set_MAC_BROADCAST_GPIO(uint8_t st);
 
 #ifdef __cplusplus
 }

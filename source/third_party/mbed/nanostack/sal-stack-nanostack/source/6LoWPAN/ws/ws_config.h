@@ -18,6 +18,24 @@
 #ifndef WS_CONFIG_H_
 #define WS_CONFIG_H_
 
+// auth_type predefines
+#define NO_AUTH 0x00
+#define PRESHARED_KEY_AUTH 0x01
+#define CUSTOM_EUI_AUTH 0x02
+#define DEFAULT_MBEDTLS_AUTH 0x03
+
+typedef struct ti_wisun_config {
+    uint8_t rapid_join;
+    uint8_t mpl_low_latency;
+    uint16_t rapid_disconnect_detect_br;
+    uint16_t rapid_disconnect_detect_rn;
+    uint8_t auth_type;
+    uint8_t use_fixed_gtk_keys; // Only impacts DEFAULT_MBEDTLS_AUTH auth_type
+    uint8_t fixed_gtk_keys[4][16]; // Used with PRESHARED_KEY_AUTH/CUSTOM_EUI_AUTH or when use_fixed_gtk_keys is true with DEFAULT_MBEDTLS_AUTH
+} ti_wisun_config_t;
+
+extern ti_wisun_config_t ti_wisun_config;
+
 #ifdef FEATURE_WISUN_SUPPORT
 
 #if !defined(GTK_CERT_TEST) && !defined(GTK_CERT_TEST_FULL_CYCLE)
@@ -44,7 +62,7 @@
 #ifdef WISUN_CERT_CONFIG
 #define WS_RPL_DIO_IMIN_SMALL 15
 #else
-#define WS_RPL_DIO_IMIN_SMALL 12
+#define WS_RPL_DIO_IMIN_SMALL 14
 #endif
 #define WS_RPL_DIO_DOUBLING_SMALL 2
 #define WS_RPL_DIO_REDUNDANCY_SMALL 0
@@ -66,7 +84,11 @@
 #define WS_RPL_DIO_REDUNDANCY_AUTOMATIC 0
 
 #ifdef FEATURE_WISUN_SUPPORT
+#ifdef FEATURE_STAR_NETWORK_RANK
+#define WS_RPL_MIN_HOP_RANK_INCREASE 0xFFFE
+#else
 #define WS_RPL_MIN_HOP_RANK_INCREASE 128
+#endif
 #define WS_RPL_MAX_HOP_RANK_INCREASE 0
 #else
 #define WS_RPL_MIN_HOP_RANK_INCREASE 196
@@ -76,7 +98,7 @@
 #ifdef UNIT_TEST_MAX_NW_CAPACITY
 #define WS_RPL_DEFAULT_LIFETIME        (3600*12) // 12 hours
 #else
-#define WS_RPL_DEFAULT_LIFETIME        (3600*2) // 2 hours
+#define WS_RPL_DEFAULT_LIFETIME        (ti_wisun_config.rapid_disconnect_detect_rn) // Default 2 hours
 #endif
 #define WS_RPL_DEFAULT_LIFETIME_MEDIUM (3600*4) // 4 hours
 #define WS_RPL_DEFAULT_LIFETIME_LARGE  (3600*8) // 8 hours
@@ -88,11 +110,6 @@
 
 #define WS_CERTIFICATE_RPL_MIN_HOP_RANK_INCREASE 128
 #define WS_CERTIFICATE_RPL_MAX_HOP_RANK_INCREASE 0
-
-/*
- *  RPL DAO timeout maximum value. This will force DAO timeout to happen before this time
- */
-#define WS_RPL_DAO_MAX_TIMOUT (30*60) // Reduce from 12 hrs to 30 min
 
 /* Border router version change interval
  *
@@ -121,14 +138,24 @@
  * the maximum Trickle interval specified for DISC_IMAX (32 minutes).
  *
  */
-
 #define PAN_VERSION_SMALL_NETWORK_TIMEOUT 30*60
 
-#define PAN_VERSION_MEDIUM_NETWORK_TIMEOUT 30*60
+#define PAN_VERSION_MEDIUM_NETWORK_TIMEOUT (ti_wisun_config.rapid_disconnect_detect_br)
 
 #define PAN_VERSION_LARGE_NETWORK_TIMEOUT 90*60
 
 #define PAN_VERSION_XLARGE_NETWORK_TIMEOUT 120*60
+
+/*
+ *  RPL DAO timeout maximum value. This will force DAO timeout to happen before this time
+ */
+#define CONST_MIN(X,Y) (( (X) < (Y) ) ? (X) : (Y))
+#define WS_RPL_DAO_MAX_TIMOUT CONST_MIN((WS_RPL_DEFAULT_LIFETIME/2), (PAN_VERSION_MEDIUM_NETWORK_TIMEOUT/2))
+
+/*
+ *  RPL parent selection period
+ */
+#define WS_RPL_PARENT_SELECTION_PERIOD CONST_MIN(WS_RPL_DAO_MAX_TIMOUT, (10 * 60)) // Max 10 min
 
 /* Routing Cost Weighting factor
  */
@@ -158,7 +185,7 @@ extern uint8_t DEVICE_MIN_SENS;
 
 /* Maximum amount of Pan Configuration Solicits before restarting Discovery.
  */
-#define PCS_MAX 5
+#define PCS_MAX 30
 
 
 /* Multicast MPL data message parameters
@@ -166,10 +193,16 @@ extern uint8_t DEVICE_MIN_SENS;
 #define MPL_SAFE_HOP_COUNT 6
 
 /*Border router override to optimize the multicast startup*/
+#define MPL_BORDER_ROUTER_MIN_EXPIRATIONS_LOW_LATENCY 1
 #define MPL_BORDER_ROUTER_MIN_EXPIRATIONS 2
 #define MPL_BORDER_ROUTER_MAXIMUM_IMAX 40
 
 /*Small network size*/
+#define MPL_SMALL_IMIN_LOW_LATENCY (0)
+#define MPL_SMALL_IMAX_LOW_LATENCY (0)
+#define MPL_SMALL_K_LOW_LATENCY 1
+#define MPL_SMALL_SEED_LIFETIME_LOW_LATENCY 10 // time that packet should get to safe distance
+
 #define MPL_SMALL_IMIN 1
 #define MPL_SMALL_IMAX 10
 #define MPL_SMALL_EXPIRATIONS 1
@@ -199,6 +232,10 @@ extern uint8_t DEVICE_MIN_SENS;
  */
 #define WS_DHCP_SOLICIT_TIMEOUT         60
 #define WS_DHCP_SOLICIT_MAX_RT          60 // Wi-SUN Specification requires DHCP MAX RT to be one min
+
+// Rapid settings are applied when Rapid Join is selected in sysconfig
+#define WS_DHCP_SOLICIT_TIMEOUT_RAPID   10
+#define WS_DHCP_SOLICIT_MAX_RT_RAPID    30
 #define WS_DHCP_SOLICIT_MAX_RC          0
 
 
@@ -229,8 +266,8 @@ extern uint8_t DEVICE_MIN_SENS;
 #define FRAME_COUNTER_STORE_INTERVAL        60          // Time interval (on seconds) between checking if frame counter storing is needed
 #define FRAME_COUNTER_STORE_FORCE_INTERVAL  (3600 * 20) // Time interval (on seconds) before frame counter storing is forced (if no other storing operations triggered)
 #define FRAME_COUNTER_STORE_TRIGGER         5           // Delay (on seconds) before storing, when storing of frame counters is triggered
-#define FRAME_COUNTER_INCREMENT             1000000     // How much frame counter is incremented on start up
-#define FRAME_COUNTER_STORE_THRESHOLD       994999      // How much frame counter must increment before it is stored
+#define FRAME_COUNTER_INCREMENT             100000     // How much frame counter is incremented on start up
+#define FRAME_COUNTER_STORE_THRESHOLD       94999      // How much frame counter must increment before it is stored
 
 
 /*
@@ -245,6 +282,9 @@ extern uint8_t DEVICE_MIN_SENS;
 
 #define WS_MAX_DAO_RETRIES 5 // With 40s, 80s, 160s, 320s, 640s
 #define WS_MAX_DAO_INITIAL_TIMEOUT 200 // With 20s, 20s,
+
+#define WS_MAX_DAO_RETRIES_RAPID 3 // With 40s, 80s, 160s, 320s, 640s
+#define WS_MAX_DAO_INITIAL_TIMEOUT_RAPID 30 // With 20s, 20s,
 
 #endif
 
@@ -353,14 +393,20 @@ extern uint8_t DEVICE_MIN_SENS;
 /*
  *  Security protocol initial EAPOL-key parameters
  */
+// How long the wait is before the first initial EAPOL-key retry
+
+// Small network Default trickle values for sending of initial EAPOL-key
 
 // How long the wait is before the first initial EAPOL-key retry
 #define DEFAULT_INITIAL_KEY_RETRY_TIMER                120
+#define DEFAULT_INITIAL_KEY_RETRY_TIMER_CUSTOM_AUTH    5
 #define NONE_INITIAL_KEY_RETRY_TIMER                   0
 
 // Small network Default trickle values for sending of initial EAPOL-key
-#define SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS         30   /* 30s to 2 minutes */
-#define SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS         120
+#define SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS             30   /* 30s to 2 minutes */
+#define SMALL_NW_INITIAL_KEY_TRICKLE_IMIN_SECS_CUSTOM_AUTH 5   /* 30s to 2 minutes */
+#define SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS             120
+#define SMALL_NW_INITIAL_KEY_TRICKLE_IMAX_SECS_CUSTOM_AUTH 10
 
 // Small network Default trickle values for sending of initial EAPOL-key
 #define MEDIUM_NW_INITIAL_KEY_TRICKLE_IMIN_SECS        360   /* 6 to 12 minutes */

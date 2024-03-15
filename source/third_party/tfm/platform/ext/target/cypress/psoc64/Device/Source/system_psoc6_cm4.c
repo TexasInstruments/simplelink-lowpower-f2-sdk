@@ -1,6 +1,6 @@
 /***************************************************************************//**
 * \file system_psoc6_cm4.c
-* \version 2.60
+* \version 2.90.1
 *
 * The device system-source file.
 *
@@ -27,8 +27,9 @@
 #include "cy_device.h"
 #include "cy_device_headers.h"
 #include "cy_syslib.h"
+#include "cy_sysclk.h"
 #include "cy_wdt.h"
-#include "cycfg.h"
+
 #if !defined(CY_IPC_DEFAULT_CFG_DISABLE)
     #include "cy_ipc_sema.h"
     #include "cy_ipc_pipe.h"
@@ -39,8 +40,10 @@
     #endif /* defined(CY_DEVICE_PSOC6ABLE2) */
 #endif /* !defined(CY_IPC_DEFAULT_CFG_DISABLE) */
 
-#include "target_cfg.h"
-#include "Driver_USART.h"
+#if defined(CY_DEVICE_SECURE)
+    #include "cy_pra.h"
+#endif /* defined(CY_DEVICE_SECURE) */
+
 
 /*******************************************************************************
 * SystemCoreClockUpdate()
@@ -52,23 +55,8 @@
 /** Default PeriClk frequency in Hz */
 #define CY_CLK_PERICLK_FREQ_HZ_DEFAULT      (4000000UL)
 
-/** Default SlowClk system core frequency in Hz */
+/** Default FastClk system core frequency in Hz */
 #define CY_CLK_SYSTEM_FREQ_HZ_DEFAULT       (8000000UL)
-
-/** IMO frequency in Hz */
-#define CY_CLK_IMO_FREQ_HZ                  (8000000UL)
-
-/** HVILO frequency in Hz */
-#define CY_CLK_HVILO_FREQ_HZ                (32000UL)
-
-/** PILO frequency in Hz */
-#define CY_CLK_PILO_FREQ_HZ                 (32768UL)
-
-/** WCO frequency in Hz */
-#define CY_CLK_WCO_FREQ_HZ                  (32768UL)
-
-/** ALTLF frequency in Hz */
-#define CY_CLK_ALTLF_FREQ_HZ                (32768UL)
 
 
 /**
@@ -93,10 +81,8 @@ uint32_t cy_Hfclk0FreqHz  = CY_CLK_HFCLK0_FREQ_HZ_DEFAULT;
 /** Holds the PeriClk clock frequency. Updated by \ref SystemCoreClockUpdate(). */
 uint32_t cy_PeriClkFreqHz = CY_CLK_PERICLK_FREQ_HZ_DEFAULT;
 
-/** Holds the Alternate high frequency clock in Hz. Updated by \ref SystemCoreClockUpdate(). */
-#if (defined (CY_IP_MXBLESS) && (CY_IP_MXBLESS == 1UL)) || defined (CY_DOXYGEN)
-    uint32_t cy_BleEcoClockFreqHz = CY_CLK_ALTHF_FREQ_HZ;
-#endif /* (defined (CY_IP_MXBLESS) && (CY_IP_MXBLESS == 1UL)) || defined (CY_DOXYGEN) */
+/** Holds the Alternate high frequency clock in Hz. Updated by \ref Cy_BLE_EcoConfigure(). */
+uint32_t cy_BleEcoClockFreqHz = 0UL;
 
 /* SCB->CPACR */
 #define SCB_CPACR_CP10_CP11_ENABLE      (0xFUL << 20u)
@@ -112,6 +98,10 @@ uint32_t cy_PeriClkFreqHz = CY_CLK_PERICLK_FREQ_HZ_DEFAULT;
 #define CY_FB_CLK_FLL_CONFIG3_VALUE     (0x00002800u)
 #define CY_FB_CLK_FLL_CONFIG4_VALUE     (0x000000FFu)
 
+/* IPC_STRUCT7->DATA configuration */
+#define CY_STARTUP_CM0_DP_STATE         (0x2uL)
+#define CY_STARTUP_IPC7_DP_OFFSET       (0x28u)
+
 
 /*******************************************************************************
 * SystemCoreClockUpdate (void)
@@ -120,37 +110,14 @@ uint32_t cy_PeriClkFreqHz = CY_CLK_PERICLK_FREQ_HZ_DEFAULT;
 /* Do not use these definitions directly in your application */
 #define CY_DELAY_MS_OVERFLOW_THRESHOLD  (0x8000u)
 #define CY_DELAY_1K_THRESHOLD           (1000u)
-#define CY_DELAY_1K_MINUS_1_THRESHOLD   (CY_DELAY_1K_THRESHOLD - 1u)
 #define CY_DELAY_1M_THRESHOLD           (1000000u)
-#define CY_DELAY_1M_MINUS_1_THRESHOLD   (CY_DELAY_1M_THRESHOLD - 1u)
-uint32_t cy_delayFreqHz   = CY_CLK_SYSTEM_FREQ_HZ_DEFAULT;
 
-uint32_t cy_delayFreqKhz  = (CY_CLK_SYSTEM_FREQ_HZ_DEFAULT + CY_DELAY_1K_MINUS_1_THRESHOLD) /
-                            CY_DELAY_1K_THRESHOLD;
+uint32_t cy_delayFreqKhz  = CY_SYSLIB_DIV_ROUNDUP(CY_CLK_SYSTEM_FREQ_HZ_DEFAULT, CY_DELAY_1K_THRESHOLD);
 
-uint8_t cy_delayFreqMhz  = (uint8_t)((CY_CLK_SYSTEM_FREQ_HZ_DEFAULT + CY_DELAY_1M_MINUS_1_THRESHOLD) /
-                            CY_DELAY_1M_THRESHOLD);
+uint8_t cy_delayFreqMhz  = (uint8_t)CY_SYSLIB_DIV_ROUNDUP(CY_CLK_SYSTEM_FREQ_HZ_DEFAULT, CY_DELAY_1M_THRESHOLD);
 
 uint32_t cy_delay32kMs    = CY_DELAY_MS_OVERFLOW_THRESHOLD *
-                            ((CY_CLK_SYSTEM_FREQ_HZ_DEFAULT + CY_DELAY_1K_MINUS_1_THRESHOLD) / CY_DELAY_1K_THRESHOLD);
-
-#define CY_ROOT_PATH_SRC_IMO                (0UL)
-#define CY_ROOT_PATH_SRC_EXT                (1UL)
-#if (SRSS_ECO_PRESENT == 1U)
-    #define CY_ROOT_PATH_SRC_ECO            (2UL)
-#endif /* (SRSS_ECO_PRESENT == 1U) */
-#if (SRSS_ALTHF_PRESENT == 1U)
-    #define CY_ROOT_PATH_SRC_ALTHF          (3UL)
-#endif /* (SRSS_ALTHF_PRESENT == 1U) */
-#define CY_ROOT_PATH_SRC_DSI_MUX            (4UL)
-#define CY_ROOT_PATH_SRC_DSI_MUX_HVILO      (16UL)
-#define CY_ROOT_PATH_SRC_DSI_MUX_WCO        (17UL)
-#if (SRSS_ALTLF_PRESENT == 1U)
-    #define CY_ROOT_PATH_SRC_DSI_MUX_ALTLF  (18UL)
-#endif /* (SRSS_ALTLF_PRESENT == 1U) */
-#if (SRSS_PILO_PRESENT == 1U)
-    #define CY_ROOT_PATH_SRC_DSI_MUX_PILO   (19UL)
-#endif /* (SRSS_PILO_PRESENT == 1U) */
+                            CY_SYSLIB_DIV_ROUNDUP(CY_CLK_SYSTEM_FREQ_HZ_DEFAULT, CY_DELAY_1K_THRESHOLD);
 
 
 /*******************************************************************************
@@ -160,24 +127,15 @@ uint32_t cy_delay32kMs    = CY_DELAY_MS_OVERFLOW_THRESHOLD *
 * Initializes the system:
 * - Restores FLL registers to the default state for single core devices.
 * - Unlocks and disables WDT.
+* - Calls Cy_PDL_Init() function to define the driver library.
 * - Calls the Cy_SystemInit() function, if compiled from PSoC Creator.
+* - Calls \ref Cy_PRA_Init() for PSoC 64 devices.
 * - Calls \ref SystemCoreClockUpdate().
 * \endcond
 *******************************************************************************/
 void SystemInit(void)
 {
-#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-    extern const cy_israddress __Vectors[]; /* Vector Table in flash */
-    SCB->VTOR = (uint32_t) &__Vectors;
-#endif
-
-    /*
-     * FIXME:
-     * Even if __FPU_USED is undefined or cleared, FP registers are still
-     * accessed inside armclang library. Not sure about why armclang doesn't
-     * care about the __FPU_USED.
-     */
-    SCB->CPACR |= SCB_CPACR_CP10_CP11_ENABLE;
+    Cy_PDL_Init(CY_DEVICE_CFG);
 
 #ifdef __CM0P_PRESENT
     #if (__CM0P_PRESENT == 0)
@@ -203,6 +161,88 @@ void SystemInit(void)
 
     Cy_SystemInit();
     SystemCoreClockUpdate();
+
+#ifdef __CM0P_PRESENT
+    #if (__CM0P_PRESENT == 0)
+        /* Configure data register (as CM0p in deep sleep state) of IPC structure #7, reserved for the Deep-Sleep operations. */
+        REG_IPC_STRUCT_DATA(CY_IPC_STRUCT_PTR(CY_IPC_CHAN_DDFT)) = (CY_STARTUP_CM0_DP_STATE <<
+                                                                    CY_STARTUP_IPC7_DP_OFFSET);
+
+        /* Release IPC structure #7 to avoid deadlocks in case of SW or WDT reset during Deep-Sleep entering. */
+        REG_IPC_STRUCT_RELEASE(CY_IPC_STRUCT_PTR(CY_IPC_CHAN_DDFT)) = 0UL;
+    #endif /* (__CM0P_PRESENT == 0) */
+#endif /* __CM0P_PRESENT */
+
+#if !defined(CY_IPC_DEFAULT_CFG_DISABLE)
+
+#ifdef __CM0P_PRESENT
+    #if (__CM0P_PRESENT == 0)
+        /* Allocate and initialize semaphores for the system operations. */
+        static uint32_t ipcSemaArray[CY_IPC_SEMA_COUNT / CY_IPC_SEMA_PER_WORD];
+        (void) Cy_IPC_Sema_Init(CY_IPC_CHAN_SEMA, CY_IPC_SEMA_COUNT, ipcSemaArray);
+    #else
+        (void) Cy_IPC_Sema_Init(CY_IPC_CHAN_SEMA, 0ul, NULL);
+    #endif /* (__CM0P_PRESENT) */
+#else
+    (void) Cy_IPC_Sema_Init(CY_IPC_CHAN_SEMA, 0ul, NULL);
+#endif /* __CM0P_PRESENT */
+
+
+    /********************************************************************************
+    *
+    * Initializes the system pipes. The system pipes are used by BLE and Flash.
+    *
+    * If the default startup file is not used, or SystemInit() is not called in your
+    * project, call the following three functions prior to executing any flash or
+    * EmEEPROM write or erase operation:
+    *  -# Cy_IPC_Sema_Init()
+    *  -# Cy_IPC_Pipe_Config()
+    *  -# Cy_IPC_Pipe_Init()
+    *  -# Cy_Flash_Init()
+    *
+    *******************************************************************************/
+    /* Create an array of endpoint structures */
+    static cy_stc_ipc_pipe_ep_t systemIpcPipeEpArray[CY_IPC_MAX_ENDPOINTS];
+
+    Cy_IPC_Pipe_Config(systemIpcPipeEpArray);
+
+    static cy_ipc_pipe_callback_ptr_t systemIpcPipeSysCbArray[CY_SYS_CYPIPE_CLIENT_CNT];
+
+    static const cy_stc_ipc_pipe_config_t systemIpcPipeConfigCm4 =
+    {
+    /* .ep0ConfigData */
+        {
+            /* .ipcNotifierNumber    */  CY_IPC_INTR_CYPIPE_EP0,
+            /* .ipcNotifierPriority  */  CY_SYS_INTR_CYPIPE_PRIOR_EP0,
+            /* .ipcNotifierMuxNumber */  CY_SYS_INTR_CYPIPE_MUX_EP0,
+            /* .epAddress            */  CY_IPC_EP_CYPIPE_CM0_ADDR,
+            /* .epConfig             */  CY_SYS_CYPIPE_CONFIG_EP0
+        },
+    /* .ep1ConfigData */
+        {
+            /* .ipcNotifierNumber    */  CY_IPC_INTR_CYPIPE_EP1,
+            /* .ipcNotifierPriority  */  CY_SYS_INTR_CYPIPE_PRIOR_EP1,
+            /* .ipcNotifierMuxNumber */  0u,
+            /* .epAddress            */  CY_IPC_EP_CYPIPE_CM4_ADDR,
+            /* .epConfig             */  CY_SYS_CYPIPE_CONFIG_EP1
+        },
+    /* .endpointClientsCount     */  CY_SYS_CYPIPE_CLIENT_CNT,
+    /* .endpointsCallbacksArray  */  systemIpcPipeSysCbArray,
+    /* .userPipeIsrHandler       */  &Cy_SysIpcPipeIsrCm4
+    };
+
+    Cy_IPC_Pipe_Init(&systemIpcPipeConfigCm4);
+
+#if defined(CY_DEVICE_PSOC6ABLE2)
+    Cy_Flash_Init();
+#endif /* defined(CY_DEVICE_PSOC6ABLE2) */
+
+#endif /* !defined(CY_IPC_DEFAULT_CFG_DISABLE) */
+
+#if defined(CY_DEVICE_SECURE)
+    /* Initialize Protected Register Access driver */
+    Cy_PRA_Init();
+#endif /* defined(CY_DEVICE_SECURE) */
 }
 
 
@@ -241,154 +281,19 @@ __WEAK void Cy_SystemInit(void)
 *******************************************************************************/
 void SystemCoreClockUpdate (void)
 {
-    uint32_t srcFreqHz;
-    uint32_t pathFreqHz;
-    uint32_t fastClkDiv;
-    uint32_t periClkDiv;
-    uint32_t rootPath;
-    uint32_t srcClk;
+    uint32 locHf0Clock = Cy_SysClk_ClkHfGetFrequency(0UL);
 
-    /* Get root path clock for the high-frequency clock # 0 */
-    rootPath = _FLD2VAL(SRSS_CLK_ROOT_SELECT_ROOT_MUX, SRSS->CLK_ROOT_SELECT[0u]);
-
-    /* Get source of the root path clock */
-    srcClk = _FLD2VAL(SRSS_CLK_PATH_SELECT_PATH_MUX, SRSS->CLK_PATH_SELECT[rootPath]);
-
-    /* Get frequency of the source */
-    switch (srcClk)
+    if (0UL != locHf0Clock)
     {
-    case CY_ROOT_PATH_SRC_IMO:
-        srcFreqHz = CY_CLK_IMO_FREQ_HZ;
-    break;
+        cy_Hfclk0FreqHz = locHf0Clock;
+        cy_PeriClkFreqHz = locHf0Clock / (1UL + (uint32_t)Cy_SysClk_ClkPeriGetDivider());
+        SystemCoreClock = locHf0Clock / (1UL + (uint32_t)Cy_SysClk_ClkFastGetDivider());
 
-    case CY_ROOT_PATH_SRC_EXT:
-        srcFreqHz = CY_CLK_EXT_FREQ_HZ;
-    break;
-
-    #if (SRSS_ECO_PRESENT == 1U)
-        case CY_ROOT_PATH_SRC_ECO:
-            srcFreqHz = CY_CLK_ECO_FREQ_HZ;
-        break;
-    #endif /* (SRSS_ECO_PRESENT == 1U) */
-
-#if defined (CY_IP_MXBLESS) && (CY_IP_MXBLESS == 1UL) && (SRSS_ALTHF_PRESENT == 1U)
-    case CY_ROOT_PATH_SRC_ALTHF:
-        srcFreqHz = cy_BleEcoClockFreqHz;
-    break;
-#endif /* defined (CY_IP_MXBLESS) && (CY_IP_MXBLESS == 1UL) && (SRSS_ALTHF_PRESENT == 1U) */
-
-    case CY_ROOT_PATH_SRC_DSI_MUX:
-    {
-        uint32_t dsi_src;
-        dsi_src = _FLD2VAL(SRSS_CLK_DSI_SELECT_DSI_MUX,  SRSS->CLK_DSI_SELECT[rootPath]);
-        switch (dsi_src)
-        {
-        case CY_ROOT_PATH_SRC_DSI_MUX_HVILO:
-            srcFreqHz = CY_CLK_HVILO_FREQ_HZ;
-        break;
-
-        case CY_ROOT_PATH_SRC_DSI_MUX_WCO:
-            srcFreqHz = CY_CLK_WCO_FREQ_HZ;
-        break;
-
-        #if (SRSS_ALTLF_PRESENT == 1U)
-            case CY_ROOT_PATH_SRC_DSI_MUX_ALTLF:
-                srcFreqHz = CY_CLK_ALTLF_FREQ_HZ;
-            break;
-        #endif /* (SRSS_ALTLF_PRESENT == 1U) */
-
-        #if (SRSS_PILO_PRESENT == 1U)
-            case CY_ROOT_PATH_SRC_DSI_MUX_PILO:
-                srcFreqHz = CY_CLK_PILO_FREQ_HZ;
-            break;
-        #endif /* (SRSS_PILO_PRESENT == 1U) */
-
-        default:
-            srcFreqHz = CY_CLK_HVILO_FREQ_HZ;
-        break;
-        }
+        /* Sets clock frequency for Delay API */
+        cy_delayFreqMhz = (uint8_t)CY_SYSLIB_DIV_ROUNDUP(SystemCoreClock, CY_DELAY_1M_THRESHOLD);
+        cy_delayFreqKhz = CY_SYSLIB_DIV_ROUNDUP(SystemCoreClock, CY_DELAY_1K_THRESHOLD);
+        cy_delay32kMs   = CY_DELAY_MS_OVERFLOW_THRESHOLD * cy_delayFreqKhz;
     }
-    break;
-
-    default:
-        srcFreqHz = CY_CLK_EXT_FREQ_HZ;
-    break;
-    }
-
-    if (rootPath == 0UL)
-    {
-        /* FLL */
-        bool fllLocked       = ( 0UL != _FLD2VAL(SRSS_CLK_FLL_STATUS_LOCKED, SRSS->CLK_FLL_STATUS));
-        bool fllOutputOutput = ( 3UL == _FLD2VAL(SRSS_CLK_FLL_CONFIG3_BYPASS_SEL, SRSS->CLK_FLL_CONFIG3));
-        bool fllOutputAuto   = ((0UL == _FLD2VAL(SRSS_CLK_FLL_CONFIG3_BYPASS_SEL, SRSS->CLK_FLL_CONFIG3)) ||
-                                (1UL == _FLD2VAL(SRSS_CLK_FLL_CONFIG3_BYPASS_SEL, SRSS->CLK_FLL_CONFIG3)));
-        if ((fllOutputAuto && fllLocked) || fllOutputOutput)
-        {
-            uint32_t fllMult;
-            uint32_t refDiv;
-            uint32_t outputDiv;
-
-            fllMult = _FLD2VAL(SRSS_CLK_FLL_CONFIG_FLL_MULT, SRSS->CLK_FLL_CONFIG);
-            refDiv  = _FLD2VAL(SRSS_CLK_FLL_CONFIG2_FLL_REF_DIV, SRSS->CLK_FLL_CONFIG2);
-            outputDiv = _FLD2VAL(SRSS_CLK_FLL_CONFIG_FLL_OUTPUT_DIV, SRSS->CLK_FLL_CONFIG) + 1UL;
-
-            pathFreqHz = ((srcFreqHz / refDiv) * fllMult) / outputDiv;
-        }
-        else
-        {
-            pathFreqHz = srcFreqHz;
-        }
-    }
-    else if ((rootPath == 1UL) || (rootPath == 2UL))
-    {
-        /* PLL */
-        bool pllLocked       = ( 0UL != _FLD2VAL(SRSS_CLK_PLL_STATUS_LOCKED,     SRSS->CLK_PLL_STATUS[rootPath - 1UL]));
-        bool pllOutputOutput = ( 3UL == _FLD2VAL(SRSS_CLK_PLL_CONFIG_BYPASS_SEL, SRSS->CLK_PLL_CONFIG[rootPath - 1UL]));
-        bool pllOutputAuto   = ((0UL == _FLD2VAL(SRSS_CLK_PLL_CONFIG_BYPASS_SEL, SRSS->CLK_PLL_CONFIG[rootPath - 1UL])) ||
-                                (1UL == _FLD2VAL(SRSS_CLK_PLL_CONFIG_BYPASS_SEL, SRSS->CLK_PLL_CONFIG[rootPath - 1UL])));
-        if ((pllOutputAuto && pllLocked) || pllOutputOutput)
-        {
-            uint32_t feedbackDiv;
-            uint32_t referenceDiv;
-            uint32_t outputDiv;
-
-            feedbackDiv  = _FLD2VAL(SRSS_CLK_PLL_CONFIG_FEEDBACK_DIV,  SRSS->CLK_PLL_CONFIG[rootPath - 1UL]);
-            referenceDiv = _FLD2VAL(SRSS_CLK_PLL_CONFIG_REFERENCE_DIV, SRSS->CLK_PLL_CONFIG[rootPath - 1UL]);
-            outputDiv    = _FLD2VAL(SRSS_CLK_PLL_CONFIG_OUTPUT_DIV,    SRSS->CLK_PLL_CONFIG[rootPath - 1UL]);
-
-            pathFreqHz = ((srcFreqHz * feedbackDiv) / referenceDiv) / outputDiv;
-
-        }
-        else
-        {
-            pathFreqHz = srcFreqHz;
-        }
-    }
-    else
-    {
-        /* Direct */
-        pathFreqHz = srcFreqHz;
-    }
-
-    /* Get frequency after hf_clk pre-divider */
-    pathFreqHz = pathFreqHz >> _FLD2VAL(SRSS_CLK_ROOT_SELECT_ROOT_DIV, SRSS->CLK_ROOT_SELECT[0u]);
-    cy_Hfclk0FreqHz = pathFreqHz;
-
-    /* Fast Clock Divider */
-    fastClkDiv = 1u + _FLD2VAL(CPUSS_CM4_CLOCK_CTL_FAST_INT_DIV, CPUSS->CM4_CLOCK_CTL);
-
-    /* Peripheral Clock Divider */
-    periClkDiv = 1u + _FLD2VAL(CPUSS_CM0_CLOCK_CTL_PERI_INT_DIV, CPUSS->CM0_CLOCK_CTL);
-    cy_PeriClkFreqHz = pathFreqHz / periClkDiv;
-
-    pathFreqHz = pathFreqHz / fastClkDiv;
-    SystemCoreClock = pathFreqHz;
-
-    /* Sets clock frequency for Delay API */
-    cy_delayFreqHz = SystemCoreClock;
-    cy_delayFreqMhz = (uint8_t)((cy_delayFreqHz + CY_DELAY_1M_MINUS_1_THRESHOLD) / CY_DELAY_1M_THRESHOLD);
-    cy_delayFreqKhz = (cy_delayFreqHz + CY_DELAY_1K_MINUS_1_THRESHOLD) / CY_DELAY_1K_THRESHOLD;
-    cy_delay32kMs   = CY_DELAY_MS_OVERFLOW_THRESHOLD * cy_delayFreqKhz;
 }
 
 
@@ -410,6 +315,21 @@ void Cy_SystemInitFpuEnable(void)
         Cy_SysLib_ExitCriticalSection(interruptState);
     #endif /* (__FPU_USED) && (__FPU_USED == 1U) */
 }
+
+
+#if !defined(CY_IPC_DEFAULT_CFG_DISABLE)
+/*******************************************************************************
+* Function Name: Cy_SysIpcPipeIsrCm4
+****************************************************************************//**
+*
+* This is the interrupt service routine for the system pipe.
+*
+*******************************************************************************/
+void Cy_SysIpcPipeIsrCm4(void)
+{
+    Cy_IPC_Pipe_ExecuteCallback(CY_IPC_EP_CYPIPE_CM4_ADDR);
+}
+#endif
 
 
 /*******************************************************************************
@@ -476,109 +396,5 @@ __cy_memory_4_row_size  EQU __cpp(1)
 }
 #endif /* defined (__ARMCC_VERSION) && (__ARMCC_VERSION < 6010050) */
 
-
-#if !defined(CY_IPC_DEFAULT_CFG_DISABLE) && !defined(CY_FLASH_RWW_DRV_SUPPORT_DISABLED)
-/*******************************************************************************
-* Function Name: Cy_SysIpcPipeIsrCm4
-****************************************************************************//**
-*
-* This is the interrupt service routine for the system pipe.
-*
-*******************************************************************************/
-void Cy_SysIpcPipeIsrCm4(void)
-{
-    Cy_IPC_Pipe_ExecuteCallback(CY_IPC_EP_CYPIPE_CM4_ADDR);
-}
-#endif
-
-
-/* For UART the CMSIS driver is used */
-extern ARM_DRIVER_USART NS_DRIVER_STDIO;
-
-/*******************************************************************************
-* Function Name: Cy_Platform_Init
-****************************************************************************//**
-*
-* CM4 custom HW initialization
-*
-*******************************************************************************/
-void Cy_Platform_Init(void)
-{
-    Cy_PDL_Init(CY_DEVICE_CFG);
-
-#if !defined(CY_IPC_DEFAULT_CFG_DISABLE)
-#ifdef __CM0P_PRESENT
-    /* Allocate and initialize semaphores for the system operations. */
-    static uint32_t ipcSemaArray[CY_IPC_SEMA_COUNT / CY_IPC_SEMA_PER_WORD];
-    (void) Cy_IPC_Sema_Init(CY_IPC_CHAN_SEMA, CY_IPC_SEMA_COUNT, ipcSemaArray);
-#else
-    (void) Cy_IPC_Sema_Init(CY_IPC_CHAN_SEMA, 0ul, NULL);
-#endif /* __CM0P_PRESENT */
-
-#if !defined(CY_FLASH_RWW_DRV_SUPPORT_DISABLED)
-    /********************************************************************************
-    *
-    * Initializes the system pipes. The system pipes are used by BLE and Flash.
-    *
-    * If the default startup file is not used, or SystemInit() is not called in your
-    * project, call the following three functions prior to executing any flash or
-    * EmEEPROM write or erase operation:
-    *  -# Cy_IPC_Sema_Init()
-    *  -# Cy_IPC_Pipe_Config()
-    *  -# Cy_IPC_Pipe_Init()
-    *  -# Cy_Flash_Init()
-    *
-    *******************************************************************************/
-    /* Create an array of endpoint structures */
-    static cy_stc_ipc_pipe_ep_t systemIpcPipeEpArray[CY_IPC_MAX_ENDPOINTS];
-
-    Cy_IPC_Pipe_Config(systemIpcPipeEpArray);
-
-    static cy_ipc_pipe_callback_ptr_t systemIpcPipeSysCbArray[CY_SYS_CYPIPE_CLIENT_CNT];
-
-    static const cy_stc_ipc_pipe_config_t systemIpcPipeConfigCm4 =
-    {
-    /* .ep0ConfigData */
-        {
-            /* .ipcNotifierNumber    */  CY_IPC_INTR_CYPIPE_EP0,
-            /* .ipcNotifierPriority  */  CY_SYS_INTR_CYPIPE_PRIOR_EP0,
-            /* .ipcNotifierMuxNumber */  CY_SYS_INTR_CYPIPE_MUX_EP0,
-            /* .epAddress            */  CY_IPC_EP_CYPIPE_CM0_ADDR,
-            /* .epConfig             */  CY_SYS_CYPIPE_CONFIG_EP0
-
-        },
-    /* .ep1ConfigData */
-        {
-            /* .ipcNotifierNumber    */  CY_IPC_INTR_CYPIPE_EP1,
-            /* .ipcNotifierPriority  */  CY_SYS_INTR_CYPIPE_PRIOR_EP1,
-            /* .ipcNotifierMuxNumber */  0u,
-            /* .epAddress            */  CY_IPC_EP_CYPIPE_CM4_ADDR,
-            /* .epConfig             */  CY_SYS_CYPIPE_CONFIG_EP1
-        },
-    /* .endpointClientsCount     */  CY_SYS_CYPIPE_CLIENT_CNT,
-    /* .endpointsCallbacksArray  */  systemIpcPipeSysCbArray,
-    /* .userPipeIsrHandler       */  &Cy_SysIpcPipeIsrCm4
-    };
-
-    if (cy_device->flashPipeRequired != 0u)
-    {
-        Cy_IPC_Pipe_Init(&systemIpcPipeConfigCm4);
-    }
-
-#if defined(CY_DEVICE_PSOC6ABLE2)
-    Cy_Flash_Init();
-#endif /* defined(CY_DEVICE_PSOC6ABLE2) */
-#endif /* !defined(CY_FLASH_RWW_DRV_SUPPORT_DISABLED) */
-#endif /* !defined(CY_IPC_DEFAULT_CFG_DISABLE) */
-
-    return;
-}
-
-
-int32_t tfm_ns_platform_init (void)
-{
-    Cy_Platform_Init();
-    return ARM_DRIVER_OK;
-}
 
 /* [] END OF FILE */

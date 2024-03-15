@@ -44,11 +44,7 @@
  *  Refer to @ref I2C.h for a complete description of APIs.
  *
  * # Overview #
- * The general I2C API is normally used in application code, e.g. I2C_open()
- * is used instead of I2CCC26XX_open(). The board file will define the device
- * specific config, and casting in the general API will ensure that the correct
- * device specific functions are called.
- * This is also reflected in the example code in [Use Cases](@ref I2C_USE_CASES).
+ * Refer to @ref I2C.h for a complete description of APIs.
  *
  * ## General Behavior #
  * Before using the I2C in CC26XX:
@@ -105,190 +101,27 @@
  *      when the transaction completes.
  *
  * ## Supported Functions ##
- *  | Generic API Function | API Function             | Description                                       |
- *  |--------------------- |------------------------- |---------------------------------------------------|
- *  | I2C_init()           | I2CCC26XX_init()         | Initialize I2C driver                             |
- *  | I2C_open()           | I2CCC26XX_open()         | Initialize I2C HW and set system dependencies     |
- *  | I2C_close()          | I2CCC26XX_close()        | Disable I2C HW and release system dependencies    |
- *  | I2C_transfer()       | I2CCC26XX_transfer()     | Start I2C transfer                                |
- *
- *  @note All calls should go through the generic API.
+ *  | Generic API Function   | Description                                       |
+ *  |------------------------|---------------------------------------------------|
+ *  | #I2C_init()            | Initialize I2C driver                             |
+ *  | #I2C_Params_init()     | Initialize an #I2C_Params structure               |
+ *  | #I2C_open()            | Initialize I2C HW and set system dependencies     |
+ *  | #I2C_close()           | Disable I2C HW and release system dependencies    |
+ *  | #I2C_transfer()        | Start I2C transfer                                |
+ *  | #I2C_transferTimeout() | Start I2C transfer with a timeout                 |
+ *  | #I2C_cancel()          | Cancels all I2C transfers                         |
  *
  *  ## Supported Bit Rates ##
  *    - #I2C_100kHz
  *    - #I2C_400kHz
  *
+ * ## Supported Address Modes ##
+ *  - #I2C_ADDRESS_MODE_7_BIT
+ *
  *  ## Unsupported Functionality #
  *  The CC26XX I2C driver currently does not support:
  *    - Multi-controller mode
  *    - I2C target mode
- *
- * ## Use Cases @anchor I2C_USE_CASES ##
- * ### Basic Receive #
- *  Receive 10 bytes over I2C in ::I2C_MODE_BLOCKING.
- *  @code
- *  // Locals
- *  I2C_Handle handle;
- *  I2C_Params params;
- *  I2C_Transaction i2cTrans;
- *  uint8_t rxBuf[32];      // Receive buffer
- *  uint8_t txBuf[32];      // Transmit buffer
- *
- *  // Configure I2C parameters.
- *  I2C_Params_init(&params);
- *
- *  // Initialize I2C transaction structure
- *  i2cTrans.writeCount    = 0;
- *  i2cTrans.writeBuf      = txBuf;
- *  i2cTrans.readCount     = 10;
- *  i2cTrans.readBuf       = rxBuf;
- *  i2cTrans.targetAddress = 0x3C;
- *
- *  // Open I2C
- *  handle = I2C_open(CONFIG_I2C, &params);
- *
- *  // Do I2C transfer receive
- *  I2C_transfer(handle, &i2cTrans);
- *  @endcode
- *
- * ### Basic Transmit #
- *  Transmit 16 bytes over I2C in ::I2C_MODE_CALLBACK.
- *  @code
- *  uint8_t rxBuffer[32];            // Receive buffer
- *  uint8_t txBuffer[32];            // Transmit buffer
- *  bool transferDone = false;
- *
- *  static void transferCallback(I2C_Handle handle, I2C_Transaction *transac, bool result)
- *  {
- *      // Set length bytes
- *      if (result) {
- *          transferDone = true;
- *      } else {
- *          // Transaction failed, act accordingly...
- *          .
- *          .
- *      }
- *  }
- *
- *  static void taskFxn(uintptr_t a0, uintptr_t a1)
- *  {
- *      // Locals
- *      I2C_Handle handle;
- *      I2C_Params params;
- *      I2C_Transaction i2cTrans;
- *
- *      // Configure I2C parameters.
- *      I2C_Params_init(&params);
- *      params.transferMode = I2C_MODE_CALLBACK;
- *      params.transferCallbackFxn = transferCallback;
- *
- *      // Prepare data to send, send 0x00, 0x01, 0x02, ...0xFF, 0x00, 0x01...
- *      for(uint32_t i = 0; i < numTxBytes; i++)
- *          txBuffer[i] = (uint8_t) i;
- *
- *      // Initialize I2C transaction structure
- *      i2cTrans.writeCount    = 16;
- *      i2cTrans.writeBuf      = txBuffer;
- *      i2cTrans.readCount     = 0;
- *      i2cTrans.readBuf       = rxBuffer;
- *      i2cTrans.targetAddress = 0x3C;
- *
- *      // Open I2C
- *      handle = I2C_open(CONFIG_I2C, &params);
- *
- *      // Do I2C transfer (in callback mode)
- *      I2C_transfer(handle, &i2cTrans);
- *
- *      // Do other stuff while I2C is handling the transfer
- *      .
- *      .
- *
- *      // Do something if I2C transfer is finished
- *      if(transferDone) {
- *          .
- *          .
- *      }
- *
- *      // Continue...
- *      .
- *      .
- *  }
- *  @endcode
- *
- * ### Chained Transactions #
- *  Transmit 10 bytes and then 32 bytes over I2C in ::I2C_MODE_CALLBACK.
- *  @code
- *  uint8_t rxBuffer[32];            // Receive buffer
- *  uint8_t txBuffer[32];            // Transmit buffer
- *  uint8_t rxBuffer2[64];           // Receive buffer 2
- *  uint8_t txBuffer2[64];           // Transmit buffer 2
- *  bool transferDone = false;
- *
- *  static void writeCallbackDefault(I2C_Handle handle, I2C_Transaction *transac, bool result)
- *  {
- *      // Set length bytes
- *      if (result) {
- *          transferDone = true;
- *      } else {
- *          // Transaction failed, act accordingly...
- *          .
- *          .
- *      }
- *  }
- *
- *  static void taskFxn(uintptr_t a0, uintptr_t a1)
- *  {
- *      // Locals
- *      I2C_Handle handle;
- *      I2C_Params params;
- *      I2C_Transaction i2cTrans;
- *      I2C_Transaction i2cTrans2;
- *
- *      // Configure I2C parameters.
- *      I2C_Params_init(&params);
- *      params.transferMode = I2C_MODE_CALLBACK;
- *      params.transferCallbackFxn = writeCallbackDefault;
- *
- *      // Prepare data to send, send 0x00, 0x01, 0x02, ...0xFF, 0x00, 0x01...
- *      for(uint32_t i = 0; i < numTxBytes; i++)
- *          txBuffer[i] = (uint8_t) i;
- *
- *      // Initialize first I2C transaction structure
- *      i2cTrans.writeCount    = 10;
- *      i2cTrans.writeBuf      = txBuffer;
- *      i2cTrans.readCount     = 0;
- *      i2cTrans.readBuf       = rxBuffer;
- *      i2cTrans.targetAddress = 0x3C;
- *
- *      // Second transaction
- *      i2cTrans2.writeCount    = 32;
- *      i2cTrans2.writeBuf      = txBuffer2;
- *      i2cTrans2.readCount     = 0;
- *      i2cTrans2.readBuf       = rxBuffer2;
- *      i2cTrans2.targetAddress = 0x2E;
- *
- *      // Open I2C
- *      handle = I2C_open(CONFIG_I2C, &params);
- *
- *      // Do chained I2C transfers (in callback mode).
- *      I2C_transfer(handle, &i2cTrans);
- *      I2C_transfer(handle, &i2cTrans2);
- *
- *      // Do other stuff while I2C is handling the transfers
- *      .
- *      .
- *
- *      // Do something if I2C transfers are finished
- *      if(transferDone) {
- *          .
- *          .
- *      }
- *
- *      // Continue...
- *      .
- *      .
- *  }
- *  @endcode
  *
  *  # Instrumentation #
  *  The I2C driver interface produces log statements if instrumentation is
@@ -310,6 +143,7 @@
 
 #include <ti/drivers/I2C.h>
 #include <ti/drivers/Power.h>
+#include <ti/drivers/power/PowerCC26XX.h>
 
 #include <ti/drivers/dpl/SwiP.h>
 
@@ -392,9 +226,6 @@ typedef struct
 {
     I2C_BASE_HWATTRS
 
-    /* I2C peripheral's Power driver ID */
-    unsigned long powerMngrId;
-
     /*
      *  I2C Swi priority.
      *  The higher the number, the higher the priority.
@@ -403,6 +234,10 @@ typedef struct
      *  Swi.numPriorities in the kernel configuration file.
      */
     uint32_t swiPriority;
+
+    /* I2C peripheral's Power driver ID */
+    PowerCC26XX_Resource powerMngrId;
+
     /* SDA pin index and mux */
     uint8_t sdaPin;
     uint8_t sdaPinMux;

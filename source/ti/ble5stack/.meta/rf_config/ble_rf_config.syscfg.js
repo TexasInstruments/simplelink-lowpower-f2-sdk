@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+ 
 /*
  *  ======== ble_rf_config.syscfg.js ========
  */
@@ -42,6 +42,10 @@ const Docs = system.getScript("/ti/ble5stack/rf_config/ble_rf_config_docs.js");
 
 // Get common Script
 const Common = system.getScript("/ti/ble5stack/ble_common.js");
+
+// RadioConfig module scripts
+const CommonRadioConfig = system.getScript("/ti/devices/radioconfig/radioconfig_common.js");
+const RfDesign = CommonRadioConfig.getScript("rfdesign");
 
 // Get the rfDesign options according to the device
 const rfDesignOptions = getRfDesignOptions(system.deviceData.deviceId);
@@ -56,9 +60,7 @@ const config = {
             displayName: "Based On RF Design",
             description: "Select which RF Design to use as a template",
             options: rfDesignOptions,
-            default: rfDesignOptions[0].name,
-            onChange: onRfDesignChange,
-            hidden: hideRadioConfig()
+            default: rfDesignOptions ? rfDesignOptions[0].name : ""
         },
         {
             // RF Front End Settings
@@ -69,7 +71,6 @@ const config = {
             default: "RF_FE_DIFFERENTIAL",
             deprecated: true,
             longDescription: Docs.frontEndModeLongDescription,
-            hidden: hideRadioConfig(),
             options: [
                 {
                     displayName: "Differential",
@@ -107,7 +108,6 @@ const config = {
             default: "RF_FE_INT_BIAS",
             deprecated: true,
             longDescription: Docs.biasConfigurationLongDescription,
-            hidden: hideRadioConfig(),
             options: [
                 {
                     displayName: "Internal BIAS",
@@ -121,41 +121,16 @@ const config = {
         },
         {
             name: "defaultTxPower",
-            displayName: "Default Tx Power",
-            default: "HCI_EXT_TX_POWER_0_DBM",
+            displayName: "Default Tx Power Value",
+            deprecated: true,
+            default: "0",
+        },
+        {
+            name: "defaultTxPowerValue",
+            displayName: "Default Tx Power Value",
+            default: "0",
             description: "This is the Tx Power value the BLE stack will use",
-            hidden: hideRadioConfig(),
-            options: (inst) => {
-                const configurable = [
-                    { displayName: "-20", name: "HCI_EXT_TX_POWER_MINUS_20_DBM"},
-                    { displayName: "-18", name: "HCI_EXT_TX_POWER_MINUS_18_DBM"},
-                    { displayName: "-15", name: "HCI_EXT_TX_POWER_MINUS_15_DBM"},
-                    { displayName: "-12", name: "HCI_EXT_TX_POWER_MINUS_12_DBM"},
-                    { displayName: "-10", name: "HCI_EXT_TX_POWER_MINUS_10_DBM"},
-                    { displayName: "-9",  name: "HCI_EXT_TX_POWER_MINUS_9_DBM"},
-                    { displayName: "-6",  name: "HCI_EXT_TX_POWER_MINUS_6_DBM"},
-                    { displayName: "-5",  name: "HCI_EXT_TX_POWER_MINUS_5_DBM"},
-                    { displayName: "-3",  name: "HCI_EXT_TX_POWER_MINUS_3_DBM"},
-                    { displayName: "0",   name: "HCI_EXT_TX_POWER_0_DBM"},
-                    { displayName: "1",   name: "HCI_EXT_TX_POWER_1_DBM"},
-                    { displayName: "2",   name: "HCI_EXT_TX_POWER_2_DBM"},
-                    { displayName: "3",   name: "HCI_EXT_TX_POWER_3_DBM"},
-                    { displayName: "4",   name: "HCI_EXT_TX_POWER_4_DBM"},
-                    { displayName: "5",   name: "HCI_EXT_TX_POWER_5_DBM"},
-                    { displayName: "6",   name: "HCI_EXT_TX_POWER_P2_14_DBM_P4_6_DBM"},
-                    { displayName: "7",   name: "HCI_EXT_TX_POWER_P2_15_DBM_P4_7_DBM"},
-                    { displayName: "8",   name: "HCI_EXT_TX_POWER_P2_16_DBM_P4_8_DBM"},
-                    { displayName: "9",   name: "HCI_EXT_TX_POWER_P2_17_DBM_P4_9_DBM"},
-                    { displayName: "10",  name: "HCI_EXT_TX_POWER_P2_18_DBM_P4_10_DBM"},
-                    { displayName: "14",  name: "HCI_EXT_TX_POWER_P2_14_DBM_P4_6_DBM"},
-                    { displayName: "15",  name: "HCI_EXT_TX_POWER_P2_15_DBM_P4_7_DBM"},
-                    { displayName: "16",  name: "HCI_EXT_TX_POWER_P2_16_DBM_P4_8_DBM"},
-                    { displayName: "17",  name: "HCI_EXT_TX_POWER_P2_17_DBM_P4_9_DBM"},
-                    { displayName: "18",  name: "HCI_EXT_TX_POWER_P2_18_DBM_P4_10_DBM"},
-                    { displayName: "19",  name: "HCI_EXT_TX_POWER_P2_19_DBM"},
-                    { displayName: "20",  name: "HCI_EXT_TX_POWER_P2_20_DBM"}]
-                return getPaTableValues(inst.rfDesign, configurable);
-            }
+            options: (inst) => { return getPaTableValues(inst.rfDesign); }
         },
         {
             name: "thorPg",
@@ -178,81 +153,30 @@ const config = {
 }
 
 /*
- * ======== onRfDesignChange ========
- * Different devices have different valid pa levels.
- * Therefore, when selecting different rfDesing value (different device),
- * and the pa value is invalid set it to 0.
- *
- * @param inst - BLE instance
- * @param ui   - The User Interface object
- */
-function onRfDesignChange(inst, ui)
-{
-    if(!validateDefaultTxPower(inst))
-    {
-        inst.defaultTxPower = "HCI_EXT_TX_POWER_0_DBM";
-    }
-}
-
-/*
  * ======== getPaTableValues ========
- * Generates an array of SRFStudio compatible rfDesign options based on device
+ * Returns the tx power values options for the current device
  *
- * @param rfDesign     - the selected device
- * @param tableOptions - the table with all pa levels options
+ * @param rfDesign - the selected device
  *
  * @returns - a list with the valid pa levels from the tableOptions
  */
-function getPaTableValues(rfDesign, tableOptions)
+function getPaTableValues(rfDesign)
 {
+    const frequency = 2400;
+    let currentOptions = [];
     // Get the device PA table levels
     const txPowerTableType = Common.getRadioScript(rfDesign,
                              system.deviceData.deviceId).radioConfigParams.paExport;
-    let currentOptions;
+    let isHighPA = txPowerTableType == "combined"? true : false;
 
-    // If using a device that not support high PA
-    if(txPowerTableType != "combined")
+    if(isHighPA)
     {
-        currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 5);
+        // Get the options list from the rfDesign module
+        currentOptions = RfDesign.getTxPowerOptions(frequency, isHighPA);
+    }
 
-        // The power table of the CC2642R1FRTCQ1 device doesn't contain
-        // all the negative values exist in the defaultTxPower list.
-        // Filter out the un-needed values from the list
-        if(system.deviceData.deviceId === "CC2642R1FRTCQ1")
-        {
-            currentOptions = currentOptions.filter(function(item) {
-                if ((item.displayName.includes('-')
-                     && item.displayName.replace('-','')%5 === 0)
-                     || !item.displayName.includes('-'))
-                    return item;
-              });
-        }
+    currentOptions = currentOptions.concat(RfDesign.getTxPowerOptions(frequency, false));
 
-        // The power table of the CC2642R1FRGZQ1 device doesn't contain
-        // all the negative values exist in the defaultTxPower list.
-        // Filter out the un-needed values from the list
-        if(system.deviceData.deviceId === "CC2642R1FRGZQ1")
-        {
-            currentOptions = currentOptions.filter(function(item) {
-                if ((item.displayName.includes('-')
-                     && item.displayName.replace('-','')%5 === 0)
-                     || !item.displayName.includes('-'))
-                    return item;
-              });
-        }
-    }
-    // If using CC1352P-2 device
-    else if(rfDesign == "LAUNCHXL-CC1352P-2")
-    {
-        currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 5 ||
-                                                    config.displayName.valueOf() >= 14);
-    }
-    // If using CC1352P-4 device
-    else if(rfDesign == "LAUNCHXL-CC1352P-4" || rfDesign == "LP_CC2652PSIP" || rfDesign == "LP_CC1352P7-4" || rfDesign == "LP_CC2651P3"
-            || rfDesign == "LP_EM_CC1354P10_6" || rfDesign == "LP_CC2674P10_RGZ")
-    {
-        currentOptions = tableOptions.filter(config => config.displayName.valueOf() <= 10);
-    }
 
     return currentOptions;
 }
@@ -340,14 +264,6 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LP_CC1354R10_RGZ"}];
     }
-    else if(deviceId === "CC2340R5RKP")
-    {
-        newRfDesignOptions = [{name: "LP_EM_CC2340R5"}];
-    }
-    else if(deviceId === "CC2340R5RHB")
-    {
-        newRfDesignOptions = [{name: "LP_EM_CC2340R5_Q1"}];
-    }
     else if(deviceId === "CC2674P10RGZ")
     {
         newRfDesignOptions = [{name: "LP_CC2674P10_RGZ"}];
@@ -356,30 +272,25 @@ function getRfDesignOptions(deviceId)
     {
         newRfDesignOptions = [{name: "LP_CC2674R10_RGZ"}];
     }
+    else if(deviceId === "CC2340R2RGE")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R2"}]
+    }
+    if(deviceId === "CC2340R5RKP")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5"}];
+    }
+    else if(deviceId === "CC2340R5RGE")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5"}]
+    }
+    else if(deviceId === "CC2340R5RHB")
+    {
+        newRfDesignOptions = [{name: "LP_EM_CC2340R5_Q1"}]
+    }
     return(newRfDesignOptions);
 }
 
-/*
- * ======== validateDefaultTxPower ========
- * Check if a selected defaultTxPower value is valid
- * This check is added since the user can enter an invalid
- * value in the example .syscfg file.
- *
- * @param inst - BLE instance
- *
- * @returns - true if the selected value is in the pa levels list
- *            false if the selected value is not in the list
- */
-function validateDefaultTxPower(inst)
-{
-    let validOptions = inst.$module.$configByName.defaultTxPower.options(inst);
-    const selectedOption = inst.defaultTxPower;
-    if(!_.find(validOptions, (option)=> option.name == selectedOption))
-    {
-        return false
-    }
-    return true;
-}
 /*
  * ======== validate ========
  * Validate this inst's configuration
@@ -389,9 +300,16 @@ function validateDefaultTxPower(inst)
  */
 function validate(inst, validation)
 {
-    if(!validateDefaultTxPower(inst))
+    // Validate the value is part of the options
+    let validOptions = inst.$module.$configByName.defaultTxPowerValue.options(inst);
+    let isValid = validOptions.find((option) => {
+        if(option.name == inst.defaultTxPowerValue)
+            return true;
+        });
+
+    if(!isValid)
     {
-        validation.logError("Selected option is invalid, please select a valid option", inst, "defaultTxPower");
+        validation.logError("Selected option is invalid, please select a valid option", inst, "defaultTxPowerValue");
     }
 
     // Get the RF Design module
@@ -416,13 +334,16 @@ function validate(inst, validation)
 function moduleInstances(inst)
 {
     const dependencyModule = [];
+    let args;
+    let modulePath;
+
+    // Get the board default rf settings
+    const radioSettings = Common.getRadioScript(inst.rfDesign,system.deviceData.deviceId).radioConfigParams;
 
     if(!hideRadioConfig())
     {
-        // Get the board default rf settings
-        const radioSettings = Common.getRadioScript(inst.rfDesign,system.deviceData.deviceId).radioConfigParams;
-
-        let args = {
+        modulePath = "/ti/devices/radioconfig/settings/ble";
+        args = {
             $name: "RF_BLE_Setting",
             phyType: "bt5le2m",
             codeExportConfig: radioSettings,
@@ -454,15 +375,27 @@ function moduleInstances(inst)
             args.phyType = "bt5le2m_pg10";
         }
 
-        dependencyModule.push({
-            name: "radioConfig",
-            group: "bleRadioConfig",
-            displayName: "BLE Radio Configuration",
-            moduleName: "/ti/devices/radioconfig/settings/ble",
-            collapsed: true,
-            args: args
-        });
     }
+    else
+    {
+        modulePath = "/ti/devices/radioconfig/phy_groups/ble";
+        args = {
+            $name: "RF_BLE_Setting",
+            phyType: "ble",
+            codeExportConfig: radioSettings,
+            paramVisibility: false,
+            permission: "ReadOnly"
+        }
+    }
+
+    dependencyModule.push({
+        name: "radioConfig",
+        group: "bleRadioConfig",
+        displayName: "BLE Radio Configuration",
+        moduleName: modulePath,
+        collapsed: true,
+        args: args
+    });
 
     return(dependencyModule);
 }
@@ -475,9 +408,10 @@ function moduleInstances(inst)
  */
 function hideRadioConfig()
 {
-    if(Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0")
+    if( Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R5" ||
+        Common.device2DeviceFamily(system.deviceData.deviceId) == "DeviceFamily_CC23X0R2" )
     {
-        return true;
+       return true;
     }
 
     return false;

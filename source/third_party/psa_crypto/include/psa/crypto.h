@@ -1,5 +1,6 @@
 /**
  * \file psa/crypto.h
+ * \addtogroup ti_psa_crypto PSA Cryptography Module 
  * \brief Platform Security Architecture cryptography module
  */
 /*
@@ -40,9 +41,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* TI devices only */
-#define USE_MBEDCRYPTO_VALUES
 
 /* The file "crypto_types.h" declares types that encode errors,
  * algorithms, key types, policies, etc. */

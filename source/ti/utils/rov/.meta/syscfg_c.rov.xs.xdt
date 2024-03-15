@@ -1,6 +1,6 @@
 %%{
 /*
- * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 %%}
 %%{
     let cmods = [];
+    let objViews = [];
 
     /* compute a canonical order for the used modules */
     let keys = Object.keys(system.modules).sort();
@@ -53,17 +54,52 @@
 
             if (Array.isArray(cmodPath)) {
                 for (let index in cmodPath) {
-                    cmods.push({
-                        modName : mod.$name,
-                        cmodPath: cmodPath[index]
-                    });
+                    /* if there's no colon-separated prefix, or it has a
+                     * "crov:" prefix, add it to cmods
+                     */
+                    if (!cmodPath[index].includes(":") ||
+                        cmodPath[index].startsWith("crov:")) {
+                        let crovModPath = cmodPath[index].replace(/^crov:/, '');
+                        cmods.push({
+                            modName: mod.$name,
+                            cmodPath: crovModPath
+                        });
+                    }
+                    /* else if there's a "objView:" prefixed element
+                     * (Theia), add it to objViews
+                     */
+                    else if (cmodPath[index].startsWith("objView:")) {
+                        let objViewModPath = cmodPath[index].replace(/^objView:/, '');
+                        objViews.push({
+                            modName: mod.$name,
+                            cmodPath: objViewModPath
+                        });
+
+                    }
                 }
             }
             else {
-                cmods.push({
-                    modName : mod.$name,
-                    cmodPath: cmodPath
-                });
+                /* if there's no colon-separated prefix, or it has a "crov:"
+                 * prefix, add it to cmods
+                 */
+                if (!cmodPath.includes(":") ||
+                    cmodPath.startsWith("crov:")) {
+                    let crovModPath = cmodPath.replace(/^crov:/, '');
+                    cmods.push({
+                        modName: mod.$name,
+                        cmodPath: crovModPath
+                    });
+                }
+                /* else if there's a "objView:" prefixed element  (Theia), add
+                 * it to objViews
+                 */
+                else if (cmodPath.startsWith("objView:")) {
+                    let objViewModPath = cmodPath.replace(/^objView:/, '');
+                    objViews.push({
+                        modName: mod.$name,
+                        cmodPath: objViewModPath
+                    });
+                }
             }
         }
     }
@@ -87,5 +123,14 @@ var crovFiles = [
     % /* convert SysConfig module path to a RTSC capsule path */
     % var rtscPath = cmod.cmodPath.replace(/^\//, "");
     "`rtscPath`", /* `cmod.modName` ROV support */
+% }
+];
+
+var objectViewerFiles = [
+% for (let i = 0; i < objViews.length; i++) {
+    % var cmod = objViews[i];
+    % /* remove leading SysConfig module path '/' */
+    % var objViewPath = cmod.cmodPath.replace(/^\//, "");
+    "`objViewPath`", /* `cmod.modName` ROV support */
 % }
 ];

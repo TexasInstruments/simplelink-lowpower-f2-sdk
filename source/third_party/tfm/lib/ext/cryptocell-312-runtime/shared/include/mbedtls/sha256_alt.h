@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,10 +11,8 @@
 #include <stdint.h>
 
 #include "cc_hash_defs_proj.h"
-#if defined (MBEDTLS_CONFIG_FILE)
-#include MBEDTLS_CONFIG_FILE
-#endif
 
+#include "mbedtls/build_info.h"
 
 #define MBEDTLS_ERR_SHA256_HW_ACCEL_FAILED                -0x0037  /**< SHA-256 hardware accelerator failed */
 

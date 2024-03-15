@@ -13,7 +13,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -119,15 +119,8 @@ extern "C"
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-#ifndef DEBUG_SC
 extern uint8_t localPrivKeyMaterial[LL_SC_RAND_NUM_LEN]; // random private key
-#else // DEBUG_SC
-
-// Fixed Test Vector for PRAND (i.e. Private Key)
-// Note: Taken from the test vector NIST256_testECDH_Bsk.
-// Note: First word is length in words.
-extern uint32 localPrivKeyMaterial[LL_SC_RAND_NUM_LEN/4];
-#endif //DEBUG_SC
+extern const uint8_t localDebugPrivateKeyMaterial[LL_SC_RAND_NUM_LEN];
 
 /*******************************************************************************
  * Functions

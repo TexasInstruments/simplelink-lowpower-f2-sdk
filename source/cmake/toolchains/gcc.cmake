@@ -37,19 +37,24 @@ set(TI_TOOLCHAIN_NAME gcc)
 set(TI_TOOLCHAIN_LINKER_FILE_EXTENSION lds)
 
 #Set compilers and archiver
-if (WIN32)
+if(WIN32)
     set(CMAKE_C_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc.exe")
+    set(CMAKE_CXX_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc.exe")
     set(CMAKE_ASM_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc.exe")
     set(CMAKE_AR "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ar.exe")
-else ()
+else()
     set(CMAKE_C_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
+    set(CMAKE_CXX_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
     set(CMAKE_ASM_COMPILER "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc")
     set(CMAKE_AR "${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc-ar")
-endif ()
+endif()
 
 #Specify how the compilers should be invoked
 set(CMAKE_C_COMPILE_OBJECT
     "<CMAKE_C_COMPILER> -c -MD -MF $$@.dep <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -MD -MF <OBJECT>.d -c <SOURCE>"
+)
+set(CMAKE_CXX_COMPILE_OBJECT
+    "<CMAKE_CXX_COMPILER> -c -MD -MF $$@.dep <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -MD -MF <OBJECT>.d -c <SOURCE>"
 )
 set(CMAKE_ASM_COMPILE_OBJECT
     "<CMAKE_ASM_COMPILER> -c -x assembler-with-cpp <DEFINES> <INCLUDES> <FLAGS> -o <OBJECT> -c <SOURCE>"
@@ -61,24 +66,32 @@ set(CMAKE_C_COMPILER_ID_RUN TRUE)
 set(CMAKE_C_COMPILER_FORCED TRUE)
 set(CMAKE_C_COMPILER_WORKS TRUE)
 
-if (NOT TARGET TOOLCHAIN_gcc)
+set(CMAKE_CXX_COMPILER_ID_RUN TRUE)
+set(CMAKE_CXX_COMPILER_FORCED TRUE)
+set(CMAKE_CXX_COMPILER_WORKS TRUE)
+
+if(NOT TARGET TOOLCHAIN_gcc)
     add_library(TOOLCHAIN_gcc INTERFACE IMPORTED)
     target_compile_options(
         TOOLCHAIN_gcc
-        INTERFACE $<$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>:
-                  # This part included if TI_CFLAGS_OVERRIDE not defined
-                  -std=c11
-                  -mthumb
-                  $<$<COMPILE_LANGUAGE:C>:-g
-                  -mabi=aapcs
-                  -Dgcc
-                  -ffunction-sections
-                  -fdata-sections>
-                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Release>>:-O3>
-                  $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:Debug>>:-O0>
-                  >
-                  # If TI_CFLAGS_OVERRIDE, use it exclusively
-                  $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>>
+        INTERFACE
+            $<$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>:
+            # This part included if TI_CFLAGS_OVERRIDE not defined
+            $<$<COMPILE_LANGUAGE:C>:-std=c11>
+            $<$<COMPILE_LANGUAGE:CXX>:-std=c++11>
+            -mthumb
+            $<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-g
+            -mabi=aapcs
+            -Dgcc
+            -ffunction-sections
+            -fdata-sections>
+            $<$<AND:$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>,$<CONFIG:Release>>:-O3>
+            $<$<AND:$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>,$<CONFIG:Debug>>:-O0>
+            $<$<AND:$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>,$<BOOL:${TI_CMAKE_COMMON_ENABLE_ALL_WARNINGS}>>:-Wall>
+            $<$<AND:$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>,$<BOOL:${TI_CMAKE_COMMON_WARNINGS_AS_ERRORS}>>:-Werror>
+            >
+            # If TI_CFLAGS_OVERRIDE, use it exclusively
+            $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>>
     )
     target_link_options(
         TOOLCHAIN_gcc
@@ -93,7 +106,10 @@ if (NOT TARGET TOOLCHAIN_gcc)
         -specs=nosys.specs
         # Disables 0x10000 sector allocation boundaries, which interfere
         # with the SPE layouts and prevent proper secure operation
-        --nmagic
+        -Wl,--nmagic
+        $<$<BOOL:${TI_CMAKE_COMMON_WARNINGS_AS_ERRORS}>:-Wl,--fatal-warnings>
+        # End of section for TI_LFLAGS_OVERRIDE not defined
+        >
         # If TI_CFLAGS_OVERRIDE, use it exclusively
         $<$<NOT:$<STREQUAL:$<TARGET_PROPERTY:TI_CFLAGS_OVERRIDE>,>>:$<TARGET_PROPERTY:TI_LFLAGS_OVERRIDE>>
     )
@@ -102,6 +118,11 @@ if (NOT TARGET TOOLCHAIN_gcc)
     target_link_libraries(TOOLCHAIN_gcc_m0p INTERFACE TOOLCHAIN_gcc)
     target_compile_options(TOOLCHAIN_gcc_m0p INTERFACE -mcpu=cortex-m0plus -mfloat-abi=soft)
     add_library(CMakeCommon::gcc_m0p ALIAS TOOLCHAIN_gcc_m0p)
+
+    add_library(TOOLCHAIN_gcc_m3 INTERFACE IMPORTED)
+    target_link_libraries(TOOLCHAIN_gcc_m3 INTERFACE TOOLCHAIN_gcc)
+    target_compile_options(TOOLCHAIN_gcc_m3 INTERFACE -mcpu=cortex-m3 -mfloat-abi=soft)
+    add_library(CMakeCommon::gcc_m3 ALIAS TOOLCHAIN_gcc_m3)
 
     add_library(TOOLCHAIN_gcc_m4 INTERFACE IMPORTED)
     target_link_libraries(TOOLCHAIN_gcc_m4 INTERFACE TOOLCHAIN_gcc)
@@ -117,4 +138,4 @@ if (NOT TARGET TOOLCHAIN_gcc)
     target_link_libraries(TOOLCHAIN_gcc_m33f INTERFACE TOOLCHAIN_gcc)
     target_compile_options(TOOLCHAIN_gcc_m33f INTERFACE -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16)
     add_library(CMakeCommon::gcc_m33f ALIAS TOOLCHAIN_gcc_m33f)
-endif ()
+endif()

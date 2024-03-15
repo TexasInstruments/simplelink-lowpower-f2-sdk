@@ -1,44 +1,70 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2017-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.7)
-
-# Tell cmake where our modules can be found
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../cmake)
-
-###Some project global settings
-set (PROTECTED_STORAGE_DIR "${CMAKE_CURRENT_LIST_DIR}")
-get_filename_component(TFM_ROOT_DIR "${PROTECTED_STORAGE_DIR}/../../.." ABSOLUTE)
-
-#Include common stuff to control cmake.
-include("Common/BuildSys")
-
-#Start an embedded project.
-embedded_project_start(CONFIG "${TFM_ROOT_DIR}/configs/ConfigDefault.cmake")
-project(tfm_storage LANGUAGES ASM C)
-embedded_project_fixup()
-
-###Get the definition of what files we need to build
-include(CMakeLists.inc)
-
-if (NOT DEFINED TFM_LVL)
-	message(FATAL_ERROR "Incomplete build configuration: TFM_LVL is undefined. ")
+if (NOT TFM_PARTITION_PROTECTED_STORAGE)
+    return()
 endif()
 
-# Specify what we build (for the protected storage service, build as a static library)
-add_library(tfm_storage STATIC ${ALL_SRC_ASM} ${ALL_SRC_C})
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0079 NEW)
 
-#Set common compiler and linker flags
-if (DEFINED CMSE_FLAGS)
-	embedded_set_target_compile_flags(TARGET tfm_storage LANGUAGE C APPEND FLAGS ${CMSE_FLAGS})
-endif()
-config_setting_shared_compiler_flags(tfm_storage)
-config_setting_shared_linker_flags(tfm_storage)
+add_library(tfm_app_rot_partition_ps STATIC)
 
-embedded_set_target_compile_defines(TARGET tfm_storage LANGUAGE C DEFINES __thumb2__ TFM_LVL=${TFM_LVL})
+target_include_directories(tfm_app_rot_partition_ps
+    INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/protected_storage
+)
+target_include_directories(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/protected_storage
+)
 
-embedded_project_end(tfm_storage)
+target_sources(tfm_app_rot_partition_ps
+    PRIVATE
+        tfm_ps_req_mngr.c
+        tfm_protected_storage.c
+        ps_object_system.c
+        ps_object_table.c
+        ps_utils.c
+        $<$<BOOL:${PS_ENCRYPTION}>:crypto/ps_crypto_interface.c>
+        $<$<BOOL:${PS_ENCRYPTION}>:ps_encrypted_object.c>
+        # The test_ps_nv_counters.c will be used instead, when PS secure test is
+        # ON and PS_TEST_NV_COUNTERS is ON
+        $<$<NOT:$<AND:$<BOOL:${TEST_S_PS}>,$<BOOL:${PS_TEST_NV_COUNTERS}>>>:nv_counters/ps_nv_counters.c>
+)
+
+# The generated sources
+target_sources(tfm_app_rot_partition_ps
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/protected_storage/auto_generated/intermedia_tfm_protected_storage.c
+)
+target_sources(tfm_partitions
+    INTERFACE
+        ${CMAKE_BINARY_DIR}/generated/secure_fw/partitions/protected_storage/auto_generated/load_info_tfm_protected_storage.c
+)
+
+target_link_libraries(tfm_app_rot_partition_ps
+    PRIVATE
+        secure_fw
+        platform_s
+        tfm_config
+        tfm_sprt
+)
+
+############################ Partition Defs ####################################
+
+target_link_libraries(tfm_partitions
+    INTERFACE
+        tfm_app_rot_partition_ps
+)
+
+target_compile_definitions(tfm_partition_defs
+    INTERFACE
+        TFM_PARTITION_PROTECTED_STORAGE
+)

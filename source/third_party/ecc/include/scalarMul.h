@@ -56,7 +56,7 @@
 #ifndef __SCALARMUL_H_
 #define __SCALARMUL_H_
 
-#include "lowlevelapi.h"
+#include "third_party/ecc/include/lowlevelapi.h"
 
 #include <stdint.h>
 

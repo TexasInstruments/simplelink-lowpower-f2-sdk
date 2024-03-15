@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -114,12 +114,12 @@ extern "C"
    ((ciMax) < LL_CONN_INTERVAL_MIN) ||                                         \
    ((ciMax) > LL_CONN_INTERVAL_MAX) ||                                         \
    ((ciMax) < (ciMin))              ||                                         \
-   ((sl)    > LL_SLAVE_LATENCY_MAX) ||                                         \
+   ((sl)    > LL_PERIPHERAL_LATENCY_MAX) ||                                    \
    ((lsto)  < LL_CONN_TIMEOUT_MIN)  ||                                         \
    ((lsto)  > LL_CONN_TIMEOUT_MAX))
 
 // check if the CI/SL/LSTO combination is valid
-// based on: LSTO > (1 + Slave Latency) * (Connection Interval * 2)
+// based on: LSTO > (1 + Peripheral Latency) * (Connection Interval * 2)
 // Note: The CI * 2 requirement based on ESR05 V1.0, Erratum 3904.
 // Note: LSTO time is normalized to units of 1.25ms (i.e. 10ms = 8 * 1.25ms).
 // TRUE = Invalid
@@ -127,11 +127,20 @@ extern "C"
   ((uint32)((lsto)*8) <= ((uint32)(1+(sl)) * (uint32)((ci)*2)))
 
 // check if the APTO combination is valid
-// based on: APTO >= (1 + Slave Latency) * Connection Interval
+// based on: APTO >= (1 + Peripheral Latency) * Connection Interval
 // Note: All input values are assumed to be normalized to 1.25ms!
 // TRUE = Invalid
 #define LL_INVALID_APTO_COMBO( ci, sl, apto )                                  \
   (((uint32)(apto)) < ((uint32)(1+(sl))) * ((uint32)(ci)))
+
+/* Tx Power apis */
+#ifdef USE_RCL
+#define RFBLEDPL_TX_POWER_TYPE     RCL_Command_TxPower
+#define RFBLEDPL_TX_POWER_HW_TYPE  RCL_Command_TxPower
+#else
+#define RFBLEDPL_TX_POWER_TYPE     uint8
+#define RFBLEDPL_TX_POWER_HW_TYPE  uint16
+#endif //USE_RCL
 
 /*******************************************************************************
  * CONSTANTS
@@ -146,7 +155,7 @@ extern "C"
 #define LL_STATUS_SUCCESS                              0x00 // Success
 #define LL_STATUS_ERROR_UNKNOWN_CONN_HANDLE            0x02 // Unknown Connection Identifier
 #define LL_STATUS_ERROR_INACTIVE_CONNECTION            0x02 // Unknown Connection Identifier for now; may be needed for multiple connections
-#define LL_STATUS_ERROR_HW_FAILURE                     0x03 // Hardware Failture
+#define LL_STATUS_ERROR_HW_FAILURE                     0x03 // Hardware Failure
 #define LL_STATUS_ERROR_AUTH_FAILURE                   0x05 // Authentication Failure
 #define LL_STATUS_ERROR_PIN_OR_KEY_MISSING             0x06 // Pin or Key Missing
 #define LL_STATUS_ERROR_MEM_CAPACITY_EXCEEDED          0x07 // Memory Capacity Exceeded
@@ -155,7 +164,7 @@ extern "C"
 #define LL_STATUS_ERROR_OUT_OF_RX_MEM                  0x07 // Memory Capacity Exceeded
 #define LL_STATUS_ERROR_OUT_OF_HEAP                    0x07 // Memory Capacity Exceeded
 #define LL_STATUS_ERROR_OUT_OF_RESOLVING_LIST          0x07 // Memory Capacity Exceeded
-#define LL_STATUS_ERROR_WL_TABLE_FULL                  0x07 // Memory Capacity Exceeded
+#define LL_STATUS_ERROR_AL_TABLE_FULL                  0x07 // Memory Capacity Exceeded
 #define LL_STATUS_ERROR_TX_DATA_QUEUE_FULL             0x07 // Memory Capacity Exceeded
 #define LL_STATUS_ERROR_TX_DATA_QUEUE_EMPTY            0x07 // Memory Capacity Exceeded
 #define LL_STATUS_ERROR_CONNECTION_TIMEOUT             0x08 // Connection Timeout
@@ -176,9 +185,9 @@ extern "C"
 #define LL_STATUS_ERROR_REPEATED_ATTEMPTS              0x17 // Repeated Attempts
 #define LL_STATUS_ERROR_UNSUPPORTED_REMOTE_FEATURE     0x1A // Unsupported Remote Feature
 #define LL_STATUS_ERROR_INVALID_PARAMS                 0x1E // Invalid Parameters
-#define LL_STATUS_ERROR_WL_ENTRY_NOT_FOUND             0x1F // Unspecified Error
-#define LL_STATUS_ERROR_WL_TABLE_EMPTY                 0x1F // Unspecified Error
-#define LL_STATUS_ERROR_WL_TABLE_FAULT                 0x1F // Unspecified Error
+#define LL_STATUS_ERROR_AL_ENTRY_NOT_FOUND             0x1F // Unspecified Error
+#define LL_STATUS_ERROR_AL_TABLE_EMPTY                 0x1F // Unspecified Error
+#define LL_STATUS_ERROR_AL_TABLE_FAULT                 0x1F // Unspecified Error
 #define LL_STATUS_ERROR_RNG_FAILURE                    0x1F // Unspecified Error
 #define LL_STATUS_ERROR_DISCONNECT_IMMEDIATE           0x1F // Unspecified Error
 #define LL_STATUS_ERROR_DATA_PACKET_QUEUED             0x1F // Unspecified Error
@@ -278,8 +287,8 @@ extern "C"
 #define LL_CONN_INTERVAL_MAX                           3200      // 4s in 1.25ms
 #define LL_CONN_TIMEOUT_MIN                            10        // 100ms in 10ms
 #define LL_CONN_TIMEOUT_MAX                            3200      // 32s in 10ms
-#define LL_SLAVE_LATENCY_MIN                           0
-#define LL_SLAVE_LATENCY_MAX                           499
+#define LL_PERIPHERAL_LATENCY_MIN                      0
+#define LL_PERIPHERAL_LATENCY_MAX                      499
 #define LL_HOP_LENGTH_MIN                              5
 #define LL_HOP_LENGTH_MAX                              16
 #define LL_INSTANT_NUMBER_MIN                          6
@@ -326,25 +335,25 @@ extern "C"
 #define LL_DEV_ADDR_TYPE_RANDOM_ID                     3
 #define LL_INVALID_DEV_ADDR_TYPE                       0xFF
 
-// Advertiser White List Policy
-#define LL_ADV_WL_POLICY_ANY_REQ                       0  // any scan request, any connect request
-#define LL_ADV_WL_POLICY_WL_SCAN_REQ                   1  // any connect request, white list scan request
-#define LL_ADV_WL_POLICY_WL_CONNECT_IND                2  // any scan request, white list connect request
-#define LL_ADV_WL_POLICY_WL_ALL_REQ                    3  // white list scan request and any connect request
+// Advertiser Accept List Policy
+#define LL_ADV_AL_POLICY_ANY_REQ                       0  // any scan request, any connect request
+#define LL_ADV_AL_POLICY_AL_SCAN_REQ                   1  // any connect request, accept list scan request
+#define LL_ADV_AL_POLICY_AL_CONNECT_IND                2  // any scan request, accept list connect request
+#define LL_ADV_AL_POLICY_AL_ALL_REQ                    3  // accept list scan request and accept list connect request
 
-// Scanner White List Policy
-#define LL_SCAN_WL_POLICY_ANY_ADV_PKTS                 0
-#define LL_SCAN_WL_POLICY_USE_WHITE_LIST               1
-#define LL_SCAN_WL_POLICY_ANY_ADV_PKTS_EXT             2
-#define LL_SCAN_WL_POLICY_USE_WHITE_LIST_EXT           3
+// Scanner Accept List Policy
+#define LL_SCAN_AL_POLICY_ANY_ADV_PKTS                 0
+#define LL_SCAN_AL_POLICY_USE_ACCEPT_LIST              1
+#define LL_SCAN_AL_POLICY_ANY_ADV_PKTS_EXT             2
+#define LL_SCAN_AL_POLICY_USE_ACCEPT_LIST_EXT          3
 
-// Initiator White List Policy
-#define LL_INIT_WL_POLICY_USE_PEER_ADDR                0
-#define LL_INIT_WL_POLICY_USE_WHITE_LIST               1
+// Initiator Accept List Policy
+#define LL_INIT_AL_POLICY_USE_PEER_ADDR                0
+#define LL_INIT_AL_POLICY_USE_ACCEPT_LIST              1
 
-// Black List Control
-#define LL_SET_BLACKLIST_DISABLE                       0
-#define LL_SET_BLACKLIST_ENABLE                        1
+// Deny List Control
+#define LL_SET_DENYLIST_DISABLE                        0
+#define LL_SET_DENYLIST_ENABLE                         1
 
 // Advertiser Commands
 #define LL_ADV_MODE_OFF                                0
@@ -374,8 +383,8 @@ extern "C"
 #define LL_DATA_FIRST_PKT_CTRL_TO_HOST                 2
 
 // Connection Complete Role
-#define LL_LINK_CONNECT_COMPLETE_MASTER                0
-#define LL_LINK_CONNECT_COMPLETE_SLAVE                 1
+#define LL_LINK_CONNECT_COMPLETE_CENTRAL               0
+#define LL_LINK_CONNECT_COMPLETE_PERIPHERAL            1
 
 // Encryption Related
 #define LL_ENCRYPTION_OFF                              0
@@ -460,8 +469,9 @@ extern "C"
 #define LL_EXT_RX_GAIN_HIGH                            1
 
 // TX Power Level Index
+#ifndef CC23X0
 #ifndef CC33xx
-#if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 )
+#if defined( CC26XX ) || defined( CC13XX )
 #define LL_EXT_TX_POWER_MINUS_20_DBM                   0
 #define LL_EXT_TX_POWER_MINUS_18_DBM                   1
 #define LL_EXT_TX_POWER_MINUS_15_DBM                   2
@@ -499,6 +509,7 @@ extern "C"
 #define LL_EXT_TX_POWER_10_DBM                         2
 #define LL_EXT_TX_POWER_20_DBM                         3
 #endif
+#endif // CC23X0
 
 //
 #define LL_EXT_DISABLE_ONE_PKT_PER_EVT                 0
@@ -513,8 +524,8 @@ extern "C"
 #define LL_EXT_DISABLE_FAST_TX_RESP_TIME               0
 #define LL_EXT_ENABLE_FAST_TX_RESP_TIME                1
 //
-#define LL_EXT_DISABLE_SL_OVERRIDE                     0
-#define LL_EXT_ENABLE_SL_OVERRIDE                      1
+#define LL_EXT_DISABLE_PL_OVERRIDE                     0
+#define LL_EXT_ENABLE_PL_OVERRIDE                      1
 //
 #define LL_EXT_TX_MODULATED_CARRIER                    0
 #define LL_EXT_TX_UNMODULATED_CARRIER                  1
@@ -560,6 +571,9 @@ extern "C"
 #define LL_EXT_DISABLE_SCAN_REQUEST_REPORT             0
 #define LL_EXT_ENABLE_SCAN_REQUEST_REPORT              1
 
+#define LL_EXT_STATS_RESET                             0
+#define LL_EXT_STATS_READ                              1
+
 // Enhanced Modem Test
 
 // BLE5 PHYs
@@ -575,6 +589,8 @@ extern "C"
 #define LL_MAX_SCAN_DATA_LEN                           31
 #define LL_MAX_SCAN_PAYLOAD_LEN                        (LL_DEVICE_ADDR_LEN + LL_MAX_SCAN_DATA_LEN)
 #define LL_MAX_DISCOVERY_DATA_LEN                      31
+#define LL_MAX_EXT_DATA_LEN                            254
+
 //
 #define LL_MIN_LINK_DATA_LEN                           27    // in bytes
 #define LL_MIN_LINK_DATA_TIME                          328   // in us
@@ -583,7 +599,7 @@ extern "C"
 #define LL_MAX_LINK_DATA_LEN                           251   // in bytes
 #define LL_MAX_LINK_DATA_TIME_UNCODED                  2120  // in us
 
-#define LL_MAX_LINK_DATA_TIME_CODED                  17040 // in us
+#define LL_MAX_LINK_DATA_TIME_CODED                    17040 // in us
 
 #define LL_MAX_LINK_DATA_TIME                          MAX( LL_MAX_LINK_DATA_TIME_CODED, LL_MAX_LINK_DATA_TIME_UNCODED )
 
@@ -689,8 +705,8 @@ extern "C"
 #define LL_TOTAL_MARGIN_TIME_FOR_MIN_CONN_RAT_TICKS             (LL_MARGIN_TIME_FOR_MIN_TIME_RF_PROCESSING_RAT_TICKS + LL_MARGIN_TIME_FOR_MIN_CONN_ESTIMATE_RAT_TICKS)
 #define LL_MAX_COLLISION_COMPRISON                              5
 #define LL_MIN_MAX_CONN_TIME_LENGTH_MASK                        0x7FFFFFFF
-#define LL_MAX_SLAVE_NUM_LSTO_RETRIES                           2
-#define LL_MAX_MASTER_NUM_LSTO_RETRIES                          1
+#define LL_MAX_PERIPHERAL_NUM_LSTO_RETRIES                      2
+#define LL_MAX_CENTRAL_NUM_LSTO_RETRIES                         1
 #define LL_MIN_NUM_EVENTS_LEFT_LSTO_MARGIN                      3
 #define LL_SET_STARVATION_MODE_OFF                              0
 #define LL_SET_STARVATION_MODE_ON                               1
@@ -767,6 +783,44 @@ extern uint16 LL_ProcessEvent( uint8  task_id,
 
 
 /*******************************************************************************
+ * @fn          LL_IsRLActiveTasksRunning
+ *
+ * @brief       This function checks if Adv/Scan/Init/periodec_sync is/are active
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      True if Adv/Scan/Init/periodec_sync is/are active
+ *              O.W return False.
+ */
+extern uint8 LL_IsRLActiveTasksRunning( void );
+
+
+/*******************************************************************************
+ * @fn          LL_IsResolvingListInUsed
+ *
+ * @brief       This function checks if resolving list is in use
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      True if Resolving List is in used
+ *              O.W return False.
+ */
+extern uint8 LL_IsResolvingListInUsed( void );
+
+
+/*******************************************************************************
  * LL API for HCI
  */
 
@@ -789,6 +843,25 @@ extern uint16 LL_ProcessEvent( uint8  task_id,
  * @return      Pointer to buffer, or NULL.
  */
 extern void *LL_TX_bm_alloc( uint16 size );
+
+
+/*******************************************************************************
+ * @fn          LL_TX_bm_free API
+ *
+ * @brief       This API is used to free memory using buffer management.
+ *
+ *              Note: This function should never be called by the application.
+ *                    It is only used by HCI and L2CAP_bm_alloc.
+ *
+ * input parameters
+ *
+ * @param       pBuf - Pointer to buffer.
+ *
+ * output parameters
+ *
+ * @return      None.
+ */
+extern void LL_TX_bm_free( uint8* pBuf );
 
 
 /*******************************************************************************
@@ -830,6 +903,27 @@ extern void *LL_RX_bm_alloc( uint16 size );
  */
 extern llStatus_t LL_Reset( void );
 
+#ifdef CC23X0
+/*******************************************************************************
+ * @fn          LL_initRNGNoise API
+ *
+ * @brief       This API is used to prepare the RNG driver for CC23X0 devices
+ *              This API uses a Semaphore to condition the noise from RCL to seed the RNG - it must not
+ *              be called from a critical section. It must be called from a task context.
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      status - whether conditioning the RNG succeeded or not. Failure means the
+ * 						 system cannot boot.
+ */
+extern llStatus_t LL_initRNGNoise( void );
+#endif
 
 /*******************************************************************************
  * @fn          LL_ReadBDADDR API
@@ -871,13 +965,25 @@ extern llStatus_t LL_ReadBDADDR( uint8 *bdAddr );
  */
 extern llStatus_t LL_SetRandomAddress( uint8 *devAddr );
 
+/*******************************************************************************
+ * @fn          LL_IsRandomAddressConfigured
+ *
+ * @brief       Getter for randomAddressFlag value.
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * @return      TRUE/FALSE.
+ */
+extern llStatus_t LL_IsRandomAddressConfigured ( void );
 
 /*******************************************************************************
- * @fn          LL_ClearWhiteList API
+ * @fn          LL_ClearAcceptList API
  *
- * @brief       This API is called by the HCI to clear the White List.
+ * @brief       This API is called by the HCI to clear the Accept List.
  *
- *              Note: If Scanning is enabled using filtering, and the white
+ *              Note: If Scanning is enabled using filtering, and the accept
  *                    list policy is "Any", then this command will be
  *                    disallowed.
  *
@@ -891,14 +997,14 @@ extern llStatus_t LL_SetRandomAddress( uint8 *devAddr );
  *
  * @return      LL_STATUS_SUCCESS
  */
-extern llStatus_t LL_ClearWhiteList( void );
+extern llStatus_t LL_ClearAcceptList( void );
 
 
 /*******************************************************************************
- * @fn          LL_AddWhiteListDevice API
+ * @fn          LL_AddAcceptListDevice API
  *
  * @brief       This API is called by the HCI to add a device address and its
- *              type to the White List.
+ *              type to the Accept List.
  *
  * input parameters
  *
@@ -910,16 +1016,16 @@ extern llStatus_t LL_ClearWhiteList( void );
  * @param       None.
  *
  * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER,
- *              LL_STATUS_ERROR_WL_TABLE_FULL
+ *              LL_STATUS_ERROR_AL_TABLE_FULL
  */
-extern llStatus_t LL_AddWhiteListDevice( uint8 *devAddr,
+extern llStatus_t LL_AddAcceptListDevice( uint8 *devAddr,
                                          uint8  addrType );
 
 /*******************************************************************************
- * @fn          LL_RemoveWhiteListDevice API
+ * @fn           LL_RemoveAcceptListDevice API
  *
  * @brief       This API is called by the HCI to remove a device address and
- *              it's type from the White List.
+ *              it's type from the Accept List.
  *
  * input parameters
  *
@@ -931,17 +1037,17 @@ extern llStatus_t LL_AddWhiteListDevice( uint8 *devAddr,
  * @param       None.
  *
  * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER,
- *              LL_STATUS_ERROR_WL_TABLE_EMPTY,
- *              LL_STATUS_ERROR_WL_ENTRY_NOT_FOUND
+ *              LL_STATUS_ERROR_AL_TABLE_EMPTY,
+ *              LL_STATUS_ERROR_AL_ENTRY_NOT_FOUND
  */
-extern llStatus_t LL_RemoveWhiteListDevice( uint8 *devAddr,
+extern llStatus_t  LL_RemoveAcceptListDevice( uint8 *devAddr,
                                             uint8  addrType );
 
 
 /*******************************************************************************
- * @fn          LL_ReadWlSize API
+ * @fn          LL_ReadAlSize API
  *
- * @brief       This API is called by the HCI to get the total number of white
+ * @brief       This API is called by the HCI to get the total number of Accept
  *              list entries that can be stored in the Controller.
  *
  * input parameters
@@ -950,17 +1056,17 @@ extern llStatus_t LL_RemoveWhiteListDevice( uint8 *devAddr,
  *
  * output parameters
  *
- * @param       *numEntries - Total number of available White List entries.
+ * @param       *numEntries - Total number of available Accept List entries.
  *
  * @return      LL_STATUS_SUCCESS
  */
-extern llStatus_t LL_ReadWlSize( uint8 *numEntries );
+extern llStatus_t LL_ReadAlSize( uint8 *numEntries );
 
 
 /*******************************************************************************
- * @fn          LL_NumEmptyWlEntries API
+ * @fn          LL_NumEmptyAlEntries API
  *
- * @brief       This API is called by the HCI to get the number of White List
+ * @brief       This API is called by the HCI to get the number of Accept List
  *              entries that are empty.
  *
  * input parameters
@@ -969,11 +1075,11 @@ extern llStatus_t LL_ReadWlSize( uint8 *numEntries );
  *
  * output parameters
  *
- * @param       *numEmptyEntries - number of empty entries in the White List.
+ * @param       *numEmptyEntries - number of empty entries in the Accept List.
  *
  * @return      LL_STATUS_SUCCESS
  */
-extern llStatus_t LL_NumEmptyWlEntries( uint8 *numEmptyEntries );
+extern llStatus_t LL_NumEmptyAlEntries( uint8 *numEmptyEntries );
 
 
 /*******************************************************************************
@@ -1265,11 +1371,11 @@ extern llStatus_t LL_Disconnect( uint16 connId,
  *              also indicate whether this is the first Host packet, or a
  *              continuation Host packet. When fragmentation is not supported,
  *              then a start packet should always specified. If the device is in
- *              a connection as a Master and the current connection ID is the
- *              connection for this data, or is in a connection as a Slave, then
+ *              a connection as a Central and the current connection ID is the
+ *              connection for this data, or is in a connection as a Peripheral, then
  *              the data is written to the TX FIFO (even if the radio is
- *              currently active). If this is a Slave connection, and Fast TX is
- *              enabled and Slave Latency is being used, then the amount of time
+ *              currently active). If this is a Peripheral connection, and Fast TX is
+ *              enabled and Peripheral Latency is being used, then the amount of time
  *              to the next event is checked. If there's at least a connection
  *              interval plus some overhead, then the next event is re-aligned
  *              to the next event boundary. Otherwise, in all cases, the buffer
@@ -1417,7 +1523,7 @@ extern llStatus_t LL_DirectTestEnd( void );
  *                               used. The bit positions define the advertising
  *                               channels as follows:
  *                               Bit 0: 37, Bit 1: 38, Bit 2: 39.
- * @param       advWlPolicy    - The Adv white list filter policy.
+ * @param       advAlPolicy    - The Adv accept list filter policy.
  *
  * output parameters
  *
@@ -1433,7 +1539,7 @@ extern llStatus_t LL_SetAdvParam( uint16  advIntervalMin,
                                   uint8   directAddrType,
                                   uint8  *directAddr,
                                   uint8   advChanMap,
-                                  uint8   advWlPolicy );
+                                  uint8   advAlPolicy );
 
 
 /*******************************************************************************
@@ -1544,8 +1650,8 @@ extern llStatus_t LL_ReadAdvChanTxPower( int8 *txPower );
  *                             interval, then scan continuously.
  * @param       ownAddrType  - Address type (Public or Random) to use in the
  *                             SCAN_REQ packet.
- * @param       advWlPolicy  - Either allow all Adv packets, or only those that
- *                             are in the white list.
+ * @param       advAlPolicy  - Either allow all Adv packets, or only those that
+ *                             are in the accept list.
  *
  * output parameters
  *
@@ -1557,7 +1663,7 @@ extern llStatus_t LL_SetScanParam( uint8  scanType,
                                    uint16 scanInterval,
                                    uint16 scanWindow,
                                    uint8  ownAddrType,
-                                   uint8  advWlPolicy );
+                                   uint8  advAlPolicy );
 
 
 /*******************************************************************************
@@ -1594,7 +1700,7 @@ extern llStatus_t LL_SetScanControl( uint8 scanMode,
  *              the Long Term Key (LTK) for encryption. This command is
  *              actually a reply to the link layer's LL_EncLtkReqCback, which
  *              provided the random number and encryption diversifier received
- *              from the Master during an encryption setup.
+ *              from the Central during an encryption setup.
  *
  *              Note: The key parameter is byte ordered LSO to MSO.
  *
@@ -1620,7 +1726,7 @@ extern llStatus_t LL_EncLtkReply( uint16  connId,
  *              that the Long Term Key (LTK) for encryption can not be provided.
  *              This command is actually a reply to the link layer's
  *              LL_EncLtkReqCback, which provided the random number and
- *              encryption diversifier received from the Master during an
+ *              encryption diversifier received from the Central during an
  *              encryption setup. How the LL responds to the negative reply
  *              depends on whether this is part of a start encryption or a
  *              re-start encryption after a pause. For the former, an
@@ -1649,13 +1755,13 @@ extern llStatus_t LL_EncLtkNegReply( uint16 connId );
  *
  * @param       scanInterval    - The scan interval.
  * @param       scanWindow      - The scan window.
- * @param       initWlPolicy    - Filter Adv address directly or using WL.
+ * @param       initAlPolicy    - Filter Adv address directly or using AL.
  * @param       peerAddrType    - Peer address is Public or Random.
- * @param       *peerAddr       - The Adv address, or NULL for WL policy.
+ * @param       *peerAddr       - The Adv address, or NULL for AL policy.
  * @param       ownAddrType     - This device's address is Public or Random.
  * @param       connIntervalMin - Defines minimum connection interval value.
  * @param       connIntervalMax - Defines maximum connection interval value.
- * @param       connLatency     - The connection's Slave Latency.
+ * @param       connLatency     - The connection's Peripheral Latency.
  * @param       connTimeout     - The connection's Supervision Timeout.
  * @param       minLength       - Info parameter about min length of connection.
  * @param       maxLength       - Info parameter about max length of connection.
@@ -1670,7 +1776,7 @@ extern llStatus_t LL_EncLtkNegReply( uint16 connId );
  */
 extern llStatus_t LL_CreateConn( uint16  scanInterval,
                                  uint16  scanWindow,
-                                 uint8   initWlPolicy,
+                                 uint8   initAlPolicy,
                                  uint8   peerAddrType,
                                  uint8  *peerAddr,
                                  uint8   ownAddrType,
@@ -1734,7 +1840,7 @@ extern llStatus_t LL_ConnActive( uint16 connId );
  * @param       connId          - The connection ID on which to send this data.
  * @param       connIntervalMin - Defines minimum connection interval value.
  * @param       connIntervalMax - Defines maximum connection interval value.
- * @param       connLatency     - The connection's Slave Latency.
+ * @param       connLatency     - The connection's Peripheral Latency.
  * @param       connTimeout     - The connection's Supervision Timeout.
  * @param       minLength       - Info parameter about min length of connection.
  * @param       maxLength       - Info parameter about max length of connection.
@@ -1786,7 +1892,7 @@ extern llStatus_t LL_ChanMapUpdate( uint8 *chanMap , uint16 connID );
 /*******************************************************************************
  * @fn          LL_StartEncrypt API
  *
- * @brief       This API is called by the Master HCI to setup encryption and to
+ * @brief       This API is called by the Central HCI to setup encryption and to
  *              update encryption keys in the LL connection. If the connection
  *              is already in encryption mode, then this command will first
  *              pause the encryption before subsequently running the encryption
@@ -1816,7 +1922,7 @@ extern llStatus_t LL_StartEncrypt( uint16  connId,
 /*******************************************************************************
  * @fn          LL_ReadRemoteUsedFeatures API
  *
- * @brief       This API is called by the Master or Slave HCI to initiate a
+ * @brief       This API is called by the Central or Peripheral HCI to initiate a
  *              Feature Exchange control process.
  *
  * input parameters
@@ -1885,7 +1991,7 @@ extern llStatus_t LL_WriteAuthPayloadTimeout( uint16 connId,
  * @param       connHandle       - Connection handle.
  * @param       connIntervalMin  - Minimum allowed connection interval.
  * @param       connIntervalMax  - Maximum allowed connection interval.
- * @param       connLatency      - Number of skipped events (slave latency).
+ * @param       connLatency      - Number of skipped events (peripheral latency).
  * @param       connTimeout      - Connection supervision timeout.
  * @param       minLen           - Info parameter about min length of conn.
  * @param       maxLen           - Info parameter about max length of conn.
@@ -3035,11 +3141,12 @@ extern llStatus_t LL_EXT_SetRxGain( uint8  rxGain,
 /*******************************************************************************
  * @fn          LL_EXT_SetTxPower Vendor Specific API
  *
- * @brief       This API is used to to set the RF TX power.
+ * @brief       This API is used to to set the RF TX power index.
  *
  * input parameters
  *
- * @param       txPower - For CC254x: LL_EXT_TX_POWER_MINUS_23_DBM,
+ * @param       txPowerIdx -
+ *                        For CC254x: LL_EXT_TX_POWER_MINUS_23_DBM,
  *                                    LL_EXT_TX_POWER_MINUS_6_DBM,
  *                                    LL_EXT_TX_POWER_0_DBM,
  *                                    LL_EXT_TX_POWER_4_DBM
@@ -3068,9 +3175,28 @@ extern llStatus_t LL_EXT_SetRxGain( uint8  rxGain,
  *
  * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER
  */
-extern llStatus_t LL_EXT_SetTxPower( uint8  txPower,
+extern llStatus_t LL_EXT_SetTxPower( uint8  txPowerIdx,
                                      uint8 *cmdComplete );
 
+/*******************************************************************************
+ * @fn          LL_EXT_SetTxPowerDbm Vendor Specific API
+ *
+ * @brief       This API is used to to set the RF TX power.
+ *
+ * input parameters
+ *
+ * @param       txPowerDbm - dBm value
+ * @param       fraction   - Not used, added for future support
+ *
+ * output parameters
+ *
+ * @param       cmdComplete - Boolean to indicate the command is still pending.
+ *
+ * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER
+ */
+extern llStatus_t LL_EXT_SetTxPowerDbm( int8   txPowerDbm,
+                                        uint8  fraction,
+                                        uint8 *cmdComplete );
 
 /*******************************************************************************
  * @fn          LL_EXT_OnePacketPerEvent Vendor Specific API
@@ -3190,9 +3316,9 @@ extern llStatus_t LL_EXT_SetLocalSupportedFeatures( uint8 *featureSet );
  *
  * @brief       This API is used to enable or disable the fast TX response
  *              time feature. This can be helpful when a short connection
- *              interval is used in combination with slave latency. In such
+ *              interval is used in combination with peripheral latency. In such
  *              a scenario, the response time for sending the TX data packet
- *              can effectively shorten or eliminate slave latency, thereby
+ *              can effectively shorten or eliminate peripheral latency, thereby
  *              increasing power consumption. By disabling, this feature
  *              trades fast response time for less power consumption.
  *
@@ -3212,17 +3338,17 @@ extern llStatus_t LL_EXT_SetFastTxResponseTime( uint8 control );
 
 
 /*******************************************************************************
- * @fn          LL_EXT_SetSlaveLatencyOverride API
+ * @fn          LL_EXT_SetPeripheralLatencyOverride API
  *
- * @brief       This API is used to enable or disable the suspension of slave
- *              latency. This can be helpful when the Slave application knows
+ * @brief       This API is used to enable or disable the suspension of peripheral
+ *              latency. This can be helpful when the Peripheral application knows
  *              it will soon receive something that needs to be handled without
  *              delay.
  *
  * input parameters
  *
- * @param       control - LL_EXT_DISABLE_SL_OVERRIDE,
- *                        LL_EXT_ENABLE_SL_OVERRIDE
+ * @param       control - LL_EXT_DISABLE_PL_OVERRIDE,
+ *                        LL_EXT_ENABLE_PL_OVERRIDE
  *
  * output parameters
  *
@@ -3231,7 +3357,7 @@ extern llStatus_t LL_EXT_SetFastTxResponseTime( uint8 control );
  * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_COMMAND_DISALLOWED,
  *              LL_STATUS_ERROR_BAD_PARAMETER
  */
-extern llStatus_t LL_EXT_SetSlaveLatencyOverride( uint8 control );
+extern llStatus_t LL_EXT_SetPeripheralLatencyOverride( uint8 control );
 
 
 /*******************************************************************************
@@ -3470,8 +3596,8 @@ extern llStatus_t LL_EXT_SetBDADDR( uint8 *bdAddr );
  *
  * @brief       This API is used to set this device's Sleep Clock Accuracy.
  *
- *              Note: For a slave device, this value is directly used, but only
- *                    if power management is enabled. For a master device, this
+ *              Note: For a peripheral device, this value is directly used, but only
+ *                    if power management is enabled. For a central device, this
  *                    value is converted into one of eight ordinal values
  *                    representing a SCA range, as specified in Table 2.2,
  *                    Vol. 6, Part B, Section 2.3.3.1 of the Core specification.
@@ -3546,33 +3672,48 @@ extern llStatus_t LL_EXT_SaveFreqTune( void );
  *
  * input parameters
  *
- * @param       txPower - For CC254x: LL_EXT_TX_POWER_MINUS_23_DBM,
+ * @param       txPowerIdx -
+ *                        For CC254x: LL_EXT_TX_POWER_MINUS_23_DBM,
  *                                    LL_EXT_TX_POWER_MINUS_6_DBM,
  *                                    LL_EXT_TX_POWER_0_DBM,
  *                                    LL_EXT_TX_POWER_4_DBM
  *
- *                        For CC26xx: HCI_EXT_TX_POWER_MINUS_21_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_18_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_15_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_12_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_9_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_6_DBM,
- *                                    HCI_EXT_TX_POWER_MINUS_3_DBM,
- *                                    HCI_EXT_TX_POWER_0_DBM,
- *                                    HCI_EXT_TX_POWER_1_DBM,
- *                                    HCI_EXT_TX_POWER_2_DBM,
- *                                    HCI_EXT_TX_POWER_3_DBM,
- *                                    HCI_EXT_TX_POWER_4_DBM,
- *                                    HCI_EXT_TX_POWER_5_DBM
+ *                        For CC26xx: LL_EXT_TX_POWER_MINUS_21_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_18_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_15_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_12_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_9_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_6_DBM,
+ *                                    LL_EXT_TX_POWER_MINUS_3_DBM,
+ *                                    LL_EXT_TX_POWER_0_DBM,
+ *                                    LL_EXT_TX_POWER_1_DBM,
+ *                                    LL_EXT_TX_POWER_2_DBM,
+ *                                    LL_EXT_TX_POWER_3_DBM,
+ *                                    LL_EXT_TX_POWER_4_DBM,
+ *                                    LL_EXT_TX_POWER_5_DBM
  *
  * output parameters
- *
- * @param       cmdComplete - Boolean to indicate the command is still pending.
+ * None
  *
  * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER
  */
-extern llStatus_t LL_EXT_SetMaxDtmTxPower( uint8 txPower );
+extern llStatus_t LL_EXT_SetMaxDtmTxPower( uint8 txPowerIdx );
 
+/*******************************************************************************
+ * @fn          LL_EXT_SetMaxDtmTxPower Vendor Specific API
+ *
+ * @brief       This API is used to set the max RF TX power to be used
+ *              when using Direct Test Mode.
+ *
+ * input parameters
+ *
+ * @param       txPowerDbm - dBm value
+ * @param       fraction   - Not used, added for future support
+ *
+ * @return      LL_STATUS_SUCCESS, LL_STATUS_ERROR_BAD_PARAMETER
+ */
+extern llStatus_t LL_EXT_SetMaxDtmTxPowerDbm( int8   txPowerDbm,
+                                              uint8  fraction);
 
 /*******************************************************************************
  * @fn          LL_EXT_MapPmIoPort Vendor Specific API
@@ -3861,7 +4002,7 @@ extern llStatus_t LL_EXT_NumComplPktsLimit( uint8 limit,
  * @brief       This API is used to get connection related information, which
  *              includes the number of allocated connections, the number of
  *              active connections, and for each active connection, the
- *              connection ID, the connection role (Master or Slave), the peer
+ *              connection ID, the connection role (Central or Peripheral), the peer
  *              address and peer address type. The number of allocated
  *              connections is based on a default build value that can be
  *              changed using MAX_NUM_BLE_CONNS. The number of active
@@ -4193,6 +4334,45 @@ extern llStatus_t LL_EXT_SetLocationingAccuracy( uint16 handle,
  */
 extern llStatus_t LL_EXT_CoexEnable( uint8 enable );
 
+/*******************************************************************************
+ * @fn          LL_EXT_GetRxStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the RX
+ *              Statistics counters for a connection.
+ *
+ * @param       connId - connection handle.
+ *              command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetRxStats( uint16 connId, uint8 command );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetTxStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the TX
+ *              Statistics counters for a connection.
+ *
+ * @param       connId - connection handle.
+ *              command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetTxStats( uint16 connId, uint8 command );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetCoexStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the COEX
+ *              Statistics counters
+ *
+ * @param       command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetCoexStats( uint8 command );
+
+
 /*
 **  LL Callbacks to HCI
 */
@@ -4201,24 +4381,24 @@ extern llStatus_t LL_EXT_CoexEnable( uint8 enable );
  * @fn          LL_ConnectionCompleteCback Callback
  *
  * @brief       This Callback is used by the LL to indicate to the Host that
- *              a new connection has been created. For the Slave, this means
+ *              a new connection has been created. For the Peripheral, this means
  *              a CONNECT_IND message was received from an Initiator. For the
- *              Master, this means a CONNECT_IND message was sent in response
+ *              Central, this means a CONNECT_IND message was sent in response
  *              to a directed or undirected message addressed to the Initiator.
  *
  * input parameters
  *
  * @param       reasonCode    - LL_STATUS_SUCCESS or ?
  * @param       connId        - The LL connection ID for new connection.
- * @param       role          - LL_LINK_CONNECT_COMPLETE_MASTER or
- *                              LL_LINK_CONNECT_COMPLETE_SLAVE.
+ * @param       role          - LL_LINK_CONNECT_COMPLETE_CENTRAL or
+ *                              LL_LINK_CONNECT_COMPLETE_PERIPHERAL.
  * @param       peerAddrType  - Peer address type (public or random).
  * @param       peerAddr      - Peer address.
  * @param       connInterval  - Connection interval.
- * @param       slaveLatency  - The connection's Slave Latency.
+ * @param       peripheralLatency  - The connection's Peripheral Latency.
  * @param       connTimeout   - The connection's Supervision Timeout.
- * @param       clockAccuracy - The sleep clock accurracy of the Master. Only
- *                              valid on the Slave. Set to 0x00 for the Master.
+ * @param       clockAccuracy - The sleep clock accurracy of the Central. Only
+ *                              valid on the Central. Set to 0x00 for the Central.
  *
  * output parameters
  *
@@ -4232,7 +4412,7 @@ extern void LL_ConnectionCompleteCback( uint8   reasonCode,
                                         uint8   peerAddrType,
                                         uint8  *peerAddr,
                                         uint16  connInterval,
-                                        uint16  slaveLatency,
+                                        uint16  peripheralLatency,
                                         uint16  connTimeout,
                                         uint8   clockAccuracy );
 
@@ -4241,9 +4421,9 @@ extern void LL_ConnectionCompleteCback( uint8   reasonCode,
  * @fn          LL_EnhancedConnectionCompleteCback Callback
  *
  * @brief       This Callback is used by the LL to indicate to the Host that
- *              a new connection has been created. For the Slave, this means
+ *              a new connection has been created. For the Peripheral, this means
  *              a CONNECT_IND message was received from an Initiator. For the
- *              Master, this means a CONNECT_IND message was sent in response
+ *              Central, this means a CONNECT_IND message was sent in response
  *              to a directed or undirected message addressed to the Initiator.
  *              The Enhanced Connection Complete event now also supports
  *              prvoiding the the Host with the Local and Peer RPA, if
@@ -4253,17 +4433,17 @@ extern void LL_ConnectionCompleteCback( uint8   reasonCode,
  *
  * @param       reasonCode    - LL_STATUS_SUCCESS or ?
  * @param       connId        - The LL connection ID for new connection.
- * @param       role          - LL_LINK_CONNECT_COMPLETE_MASTER or
- *                              LL_LINK_CONNECT_COMPLETE_SLAVE.
+ * @param       role          - LL_LINK_CONNECT_COMPLETE_CENTRAL or
+ *                              LL_LINK_CONNECT_COMPLETE_PERIPHERAL.
  * @param       peerAddrType  - Peer address type (public or random).
  * @param       peerAddr      - Peer address.
  * @param       localRPA      - Local RPA.
  * @param       peerRPA       - Peer RPA.
  * @param       connInterval  - Connection interval.
- * @param       slaveLatency  - The connection's Slave Latency.
+ * @param       peripheralLatency  - The connection's Peripheral Latency.
  * @param       connTimeout   - The connection's Supervision Timeout.
- * @param       clockAccuracy - The sleep clock accurracy of the Master. Only
- *                              valid on the Slave. Set to 0x00 for the Master.
+ * @param       clockAccuracy - The sleep clock accurracy of the Central. Only
+ *                              valid on the Central. Set to 0x00 for the Central.
  *
  * output parameters
  *
@@ -4279,7 +4459,7 @@ extern void LL_EnhancedConnectionCompleteCback( uint8   reasonCode,
                                                 uint8  *localRPA,
                                                 uint8  *peerRPA,
                                                 uint16  connInterval,
-                                                uint16  slaveLatency,
+                                                uint16  peripheralLatency,
                                                 uint16  connTimeout,
                                                 uint8   clockAccuracy );
 
@@ -4311,8 +4491,8 @@ extern void LL_DisconnectCback( uint16 connId,
  *
  * @brief       This Callback is used by the LL to indicate to the Host that
  *              the update parameters control procedure has completed. It is
- *              always made to the Master's Host when the update request has
- *              been sent. It is only made to the Slave's Host when the update
+ *              always made to the Central's Host when the update request has
+ *              been sent. It is only made to the Peripheral's Host when the update
  *              results in a change to the connection interval, and/or the
  *              connection latency, and/or the connection timeout. It is also
  *              possible to get this event during a Connection Parameters
@@ -4323,7 +4503,7 @@ extern void LL_DisconnectCback( uint16 connId,
  * @param       status       - Status of update complete event.
  * @param       connId       - The LL connection ID.
  * @param       connInterval - Connection interval.
- * @param       connLatency  - The connection's Slave Latency.
+ * @param       connLatency  - The connection's Peripheral Latency.
  * @param       connTimeout  - The connection's Supervision Timeout.
  *
  * output parameters
@@ -4349,7 +4529,7 @@ extern void LL_ConnParamUpdateCback( llStatus_t status,
  * @param       connHandle    - Connection handle.
  *
  * @param       connInterval  - Connection interval.
- * @param       connLatency   - Slave latency.
+ * @param       connLatency   - Peripheral latency.
  * @param       connTimeout   - Connection timeout.
  *
  *
@@ -4502,7 +4682,7 @@ extern void LL_ReadRemoteUsedFeaturesCompleteCback( uint8   status,
  * @fn          LL_EncLtkReqCback Callback
  *
  * @brief       This Callback is used by the LL to provide to the Host the
- *              Master's random number and encryption diversifier, and to
+ *              Central's random number and encryption diversifier, and to
  *              request the Host's Long Term Key (LTK).
  *
  * input parameters
@@ -4715,7 +4895,7 @@ extern void LL_EXT_ExtendRfRangeCback( void );
  * @param       status - error code:
  *                       HW_FAIL_PDU_SIZE_EXCEEDS_MTU or
  *                       HW_FAIL_PKT_LEN_EXCEEDS_PDU_SIZE
- * @param       handle - Connection handle.
+ * @param       connHandle - Connection handle.
  * @param       cid - L2CAP Channel ID.
  *
  * output parameters
@@ -4724,7 +4904,7 @@ extern void LL_EXT_ExtendRfRangeCback( void );
  *
  * @return      None.
  */
-extern void LL_DataLenExceedEventCback( uint8 status, uint16 handle, uint16 cid );
+extern void LL_DataLenExceedEventCback( uint8 status, uint16 connHandle, uint16 cid );
 
 /*******************************************************************************
  * @fn          LL_AuthPayloadTimeoutExpiredCback Callback
@@ -4751,7 +4931,7 @@ extern void LL_AuthPayloadTimeoutExpiredCback( uint16 connId );
  * @brief       This Callback is used to generate a Remote Connection
  *              Parameter Request meta event to provide to the Host the peer's
  *              connection parameter request parameters (min connection
- *              interval, max connection interval, slave latency, and connection
+ *              interval, max connection interval, peripheral latency, and connection
  *              timeout), and to request the Host's acceptance or rejection of
  *              this parameters.
  *
@@ -4760,7 +4940,7 @@ extern void LL_AuthPayloadTimeoutExpiredCback( uint16 connId );
  * @param       connHandle   - Connection handle.
  * @param       Interval_Min - Lower limit for connection interval.
  * @param       Interval_Max - Upper limit for connection interval.
- * @param       Latency      - Slave latency.
+ * @param       Latency      - Peripheral latency.
  * @param       Timeout      - Connection timeout.
  *
  * output parameters
@@ -4918,6 +5098,90 @@ extern void LL_EXT_ScanReqReportCback( uint8  peerAddrType,
                                        uint8 *peerAddr,
                                        uint8  chan,
                                        int8   rssi );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetRxStatsCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       numRxOk      - Number of RX pakets
+ * @param       numRxCtrl    - Number of RX control packets
+ * @param       numRxCtrlAck - Number of RX control packets acked
+ * @param       numRxCrcErr  - Number of RX CRC error packets
+ * @param       numRxIgnored - Number of RX ignored packets
+ * @param       numRxEmpty   - Number of RX empty packets
+ * @param       numRxBufFull - Number of RX discarded packets
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetRxStatsCback( uint16 numRxOk,
+                                    uint16 numRxCtrl,
+                                    uint16 numRxCtrlAck,
+                                    uint16 numRxCrcErr,
+                                    uint16 numRxIgnored,
+                                    uint16 numRxEmpty,
+                                    uint16 numRxBufFull );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetTxStatsCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       numTx           - Number of TX pakets
+ * @param       numTxAck        - Number of TX packets Acked
+ * @param       numTxCtrl       - Number of TX control packets
+ * @param       numTxCtrlAck    - Number of TX control packets acked
+ * @param       numTxCtrlAckAck - Number of TX control packets acked that were acked
+ * @param       numTxRetrans    - Number of retransmissions
+ * @param       numTxEntryDone  - Number of packets on Tx queue that are finished
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetTxStatsCback( uint16 numTx,
+                                    uint16 numTxAck,
+                                    uint16 numTxCtrl,
+                                    uint16 numTxCtrlAck,
+                                    uint16 numTxCtrlAckAck,
+                                    uint16 numTxRetrans,
+                                    uint16 numTxEntryDone );
+
+/*******************************************************************************
+ * @fn          LL_EXT_ChanMapUpdateCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       grants         - Number of grants
+ * @param       rejects        - Number of rejects (no grant)
+ * @param       contRejects    - Number of continuously rejected requests
+ * @param       maxContRejects - Max continuously rejected requests
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetCoexStatsCback( uint32 grants,
+                                      uint32 rejects,
+                                      uint16 contRejects,
+                                      uint16 maxContRejects );
 
 /*******************************************************************************
  * @fn          LL_SetDefChanMap API

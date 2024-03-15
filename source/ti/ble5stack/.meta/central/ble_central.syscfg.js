@@ -66,6 +66,20 @@ const config = {
             ]
         },
         {
+            name: "centralScanInt",
+            displayName: "Scan Interval (ms)",
+            default: 10,
+            hidden: true,
+            longDescription: Docs.centralScanIntLongDescription
+        },
+        {
+            name: "centralScanWin",
+            displayName: "Scan Window (ms)",
+            default: 10,
+            hidden: true,
+            longDescription: Docs.centralScanWinLongDescription
+        },
+        {
             name: "rssiPollingPeriod",
             displayName: "RSSI Polling Period (ms)",
             description: "How often to read the RSSI value (For example: read RSSI value every 3000 ms)",
@@ -86,6 +100,20 @@ const config = {
             default: 100,
             hidden: true,
             longDescription: Docs.connIntMaxLongDescription
+        },
+        {
+            name: "centraConnLatency",
+            displayName: "Connection Latency",
+            default: 0,
+            hidden: true,
+            longDescription: Docs.centraConnLatencyLongDescription
+        },
+        {
+            name: "centraSupTimeout",
+            displayName: "Supervision Timeout (10ms)",
+            default: 20000,
+            hidden: true,
+            longDescription: Docs.centraSupTimeoutLongDescription
         }
     ]
 };
@@ -106,6 +134,26 @@ function validate(inst, validation)
     if(inst.rssiPollingPeriod < 0 || inst.rssiPollingPeriod > (Math.pow(2,32) - 1))
     {
         validation.logError("RSSI Polling Period range is 0 to sizeof(uint32)", inst, "rssiPollingPeriod");
+    }
+
+    if(inst.centralScanInt < 2.5 || inst.centralScanInt > 10240)
+    {
+        validation.logError("Scan Inerval range is 2.5 to 10,240 ms", inst, "centralScanInt");
+    }
+
+    if(inst.centralScanWin < 2.5 || inst.centralScanWin > 10240)
+    {
+        validation.logError("Scan Window range is 2.5 to 10,240 ms", inst, "centralScanWin");
+    }
+
+    if(inst.centraConnLatency < 0 || inst.centraConnLatency > 499)
+    {
+        validation.logError("Connection Latency range is 0 to 499", inst, "centraConnLatency");
+    }
+
+    if(inst.centraSupTimeout < 100 || inst.centraSupTimeout > 32000)
+    {
+        validation.logError("Supervision Timeout range is 100 to 32,000 ms", inst, "centraSupTimeout");
     }
 }
 

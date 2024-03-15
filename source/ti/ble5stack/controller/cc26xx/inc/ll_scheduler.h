@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -106,6 +106,7 @@ extern "C"
 #define LL_SCHED_START_IMMED        0
 #define LL_SCHED_START_EVENT        1
 #define LL_SCHED_START_PRIMARY      2
+#define LL_SDAA_SCHED_HANDLED       3
 //
 #define LL_SCHED_START_IMMED_PAD    (3 *  RAT_TICKS_IN_625US)
 #define LL_SCHED_PRE_CUTOFF         (10 * RAT_TICKS_IN_625US)
@@ -118,6 +119,7 @@ extern "C"
 #define LL_TASK_ID_INITIATOR                     0x04
 #define LL_TASK_ID_PERIODIC_ADVERTISER           0x08
 #define LL_TASK_ID_PERIODIC_SCANNER              0x10
+#define LL_TASK_ID_RX_WINDOW                     0x20
 #define LL_TASK_ID_SLAVE                         0x40
 #define LL_TASK_ID_MASTER                        0x80
 #define LL_TASK_ID_NONE                          0xFF
@@ -217,6 +219,7 @@ typedef struct
  */
 
 extern taskList_t  llTaskList;
+extern taskInfo_t *pRXWindowTask;
 //
 extern void        llSchedulerInit( void );
 extern void        llScheduler( void );
@@ -224,6 +227,7 @@ extern void        llScheduler_hook( void );
 extern void        llScheduler_no_INIT_CFG_no_SCAN_CFG( void );
 extern void        llScheduler_no_INIT_CFG( void );
 extern void        llScheduleTask( taskInfo_t *llTask );
+extern void        llScheduleTask_sPatch( taskInfo_t *llTask );
 extern uint8       llFindStartType( taskInfo_t *secTask, taskInfo_t *primTask );
 extern uint8       llFindStartTypeNoQos( taskInfo_t *secTask, taskInfo_t *primTask );
 extern taskInfo_t *llFindNextSecTask( uint8 secTaskID );
@@ -237,7 +241,6 @@ extern uint8       llGetActiveTasks( void );
 extern uint8       llGetNumTasks( void );
 extern void        llSetupRatCompare( taskInfo_t *llTask );
 extern void        llClearRatCompare( void );
-
 //
 extern void        llSetupAdv( void );
 extern void        llSetupDirectedAdvEvt( void );

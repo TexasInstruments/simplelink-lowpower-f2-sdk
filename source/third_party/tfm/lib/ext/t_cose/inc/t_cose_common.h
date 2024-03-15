@@ -2,7 +2,7 @@
  * t_cose_common.h
  *
  * Copyright 2019, Laurence Lundblade
- * Copyright (c) 2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -282,7 +282,7 @@ enum t_cose_err_t {
     /** General unspecific failure. */
     T_COSE_ERR_FAIL = 17,
 
-    /** Equivalent to \c PSA_ERROR_TAMPERING_DETECTED. */
+    /** Equivalent to \c PSA_ERROR_CORRUPTION_DETECTED. */
     T_COSE_ERR_TAMPERING_DETECTED = 18,
 
     /** The key identified by a \ref t_cose_key or a key ID was not

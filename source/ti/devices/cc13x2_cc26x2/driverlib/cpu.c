@@ -90,7 +90,7 @@ CPUcpsid(void)
     cpsid   i;
     bx      lr
 }
-#elif (defined(__TI_COMPILER_VERSION__) || defined(__clang__))
+#elif defined(__TI_COMPILER_VERSION__)
 uint32_t
 CPUcpsid(void)
 {
@@ -105,6 +105,23 @@ CPUcpsid(void)
     // return(0) is never executed and the function returns with the value
     // you expect in R0.
     return(0);
+}
+#elif defined(__clang__)
+uint32_t __attribute__((naked))
+CPUcpsid(void)
+{
+    // Naked function, that is, the compiler does not help us with anything.
+    // ARM's calling convention states that the return variable shall be stored
+    // in R0.
+
+    // Read PRIMASK and disable interrupts
+    __asm volatile ("    mrs     r0, PRIMASK\n" // Store PRIMASK in R0
+                    "    cpsid   i\n"           // Disable interrupts
+                    "    bx      lr\n"          // Branch back to caller
+                    :                           // No output operands
+                    :                           // No input operands
+                    : "r0"                      // Clobbers
+                   );
 }
 #else
 uint32_t __attribute__((naked))
@@ -159,7 +176,7 @@ CPUprimask(void)
     mrs     r0, PRIMASK;
     bx      lr
 }
-#elif (defined(__TI_COMPILER_VERSION__) || defined(__clang__))
+#elif defined(__TI_COMPILER_VERSION__)
 uint32_t
 CPUprimask(void)
 {
@@ -173,6 +190,22 @@ CPUprimask(void)
     // return(0) is never executed and the function returns with the value
     // you expect in R0.
     return(0);
+}
+#elif defined(__clang__)
+uint32_t __attribute__((naked))
+CPUprimask(void)
+{
+    // Naked function, that is, the compiler does not help us with anything.
+    // ARM's calling convention states that the return variable shall be stored
+    // in R0.
+
+    // Read PRIMASK
+    __asm volatile ("    mrs     r0, PRIMASK\n" // Store PRIMASK in R0
+                    "    bx      lr\n"          // Branch back to caller
+                    :                           // No output
+                    :                           // No input
+                    : "r0"                      // Clobbers
+                   );
 }
 #else
 uint32_t __attribute__((naked))
@@ -228,7 +261,7 @@ CPUcpsie(void)
     cpsie   i;
     bx      lr
 }
-#elif (defined(__TI_COMPILER_VERSION__) || defined(__clang__))
+#elif defined(__TI_COMPILER_VERSION__)
 uint32_t
 CPUcpsie(void)
 {
@@ -243,6 +276,23 @@ CPUcpsie(void)
     // return(0) is never executed and the function returns with the value
     // you expect in R0.
     return(0);
+}
+#elif defined(__clang__)
+uint32_t __attribute__((naked))
+CPUcpsie(void)
+{
+    // Naked function, that is, the compiler does not help us with anything.
+    // ARM's calling convention states that the return variable shall be stored
+    // in R0.
+
+    // Read PRIMASK and disable interrupts
+    __asm volatile ("    mrs     r0, PRIMASK\n" // Store PRIMASK in R0
+                    "    cpsie   i\n"           // Enable interrupts
+                    "    bx      lr\n"          // Branch back to caller
+                    :                           // No output operands
+                    :                           // No input operands
+                    : "r0"                      // Clobbers
+                   );
 }
 #else
 uint32_t __attribute__((naked))
@@ -297,7 +347,7 @@ CPUbasepriGet(void)
     mrs     r0, BASEPRI;
     bx      lr
 }
-#elif (defined(__TI_COMPILER_VERSION__) || defined(__clang__))
+#elif defined(__TI_COMPILER_VERSION__)
 uint32_t
 CPUbasepriGet(void)
 {
@@ -311,6 +361,22 @@ CPUbasepriGet(void)
     // return(0) is never executed and the function returns with the value
     // you expect in R0.
     return(0);
+}
+#elif defined(__clang__)
+uint32_t __attribute__((naked))
+CPUbasepriGet(void)
+{
+    // Naked function, that is, the compiler does not help us with anything.
+    // ARM's calling convention states that the return variable shall be stored
+    // in R0.
+
+    // Read BASEPRI.
+    __asm volatile ("    mrs     r0, BASEPRI\n" // Store BASEPRI in R0
+                    "    bx      lr\n"          // Branch back to caller
+                    :                           // No output
+                    :                           // No input
+                    : "r0"                      // Clobbers
+                   );
 }
 #else
 uint32_t __attribute__((naked))
@@ -380,24 +446,36 @@ __asm("    .sect \".text:NOROM_CPUdelay\"\n"
       "    bne.n NOROM_CPUdelay\n"
       "    bx lr\n");
 #elif defined(__clang__)
-void
+void __attribute__((naked))
 CPUdelay(uint32_t ui32Count)
 {
-    // Loop the specified number of times
-    __asm("CPUdel:\n"
-          "    subs    r0, #1\n"
-          "    bne.n   CPUdel\n"
-          "    bx      lr");
+    // Loop the specified number of times.
+    // The naked attribute tells the compiler that the function is effectively
+    // hand-coded assembly implemented using inlined assembly without operands.
+    // As such, it assumes that the C calling conventions are obeyed, and we can
+    // assume ui32Count is in R0.
+    __asm volatile ("CPUdel%=:\n"
+                    "    subs r0, #1\n"
+                    "    bne   CPUdel%=\n"
+                    "    bx    lr\n"
+                    : /* No output */
+                    : /* No input */
+                    : "r0", "cc" /* Clobbers. "cc" is the flags */
+                   );
 }
 #else
 // GCC
 void __attribute__((naked))
 CPUdelay(uint32_t ui32Count)
 {
-    // Loop the specified number of times
-    __asm volatile ("%=:  subs  %0, #1\n"
-                    "     bne   %=b\n"
-                    "     bx    lr\n"
+    // Loop the specified number of times.
+    // GCC supports input parameters in naked functions, so we use the parameter
+    // in the inline assembly and let the compiler decide on which register to
+    // use for it.
+    __asm volatile ("CPUdel%=:\n"
+                    "    subs  %0, #1\n"
+                    "    bne   CPUdel%=\n"
+                    "    bx    lr\n"
                     : /* No output */
                     : "r" (ui32Count)
                    );

@@ -1,0 +1,10 @@
+[requires]
+coresdk_cc13xx_cc26xx/7.40.00.06@library-sb/eng
+tiarmllvm/3.2.0.LTS-0@library-msp/ga
+ImportsMakGen/0.6.3@library-msp/ga
+arm-none-eabi-gcc/11.2-2022.02-0@library-msp/ga
+iarcodegen/9.40.2-0@library-msp/ga
+tfm/7.40.00.00@library-sb/eng
+
+[generators]
+ImportsMak

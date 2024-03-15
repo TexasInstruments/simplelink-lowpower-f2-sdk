@@ -33,25 +33,25 @@ include("${CMAKE_CURRENT_LIST_DIR}/FreeRTOSM33FTargets.cmake")
 check_required_components(FreeRTOS)
 
 set_target_properties(FreeRTOS::freertos PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${FREERTOS_INSTALL_DIR}/source/third_party/freertos/include"
 )
 target_include_directories(FreeRTOS::freertos_m0p
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM0"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM0"
 )
 target_include_directories(FreeRTOS::freertos_m4
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM3"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM3"
 )
 target_include_directories(FreeRTOS::freertos_m4f
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM4F"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM4F"
 )
 target_include_directories(FreeRTOS::freertos_m33f
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM33F_NTZ/non_secure"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM33F_NTZ/non_secure"
 )
 target_include_directories(FreeRTOS::freertos_m33f_tfm
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM33F_NTZ/non_secure"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM33F_NTZ/non_secure"
 )

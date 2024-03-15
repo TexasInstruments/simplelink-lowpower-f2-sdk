@@ -1,8 +1,3 @@
-"""
-Parse serial data using the Log Protocol as defined here:
-https://confluence.itg.ti.com/display/OsloFW/ITM+Log+Protocol
-"""
-
 from ctypes import c_int32
 import logging
 import enum

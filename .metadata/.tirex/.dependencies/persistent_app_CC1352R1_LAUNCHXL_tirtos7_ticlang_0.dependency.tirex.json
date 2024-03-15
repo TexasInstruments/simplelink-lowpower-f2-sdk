@@ -7,7 +7,8 @@
             "+../../Tools/Defines/persistent_app.opt -> Tools/Defines/persistent_app.opt",
             "+../../Startup/osal_icall_ble.c -> Startup/osal_icall_ble.c",
             "+../../Startup/main.c -> Startup/main.c",
-            "+../persistent_app.syscfg -> persistent_app.syscfg"
+            "+../persistent_app.syscfg -> persistent_app.syscfg",
+            "+cc13x2_cc26x2_app_tirtos7.cmd -> cc13x2_cc26x2_app_tirtos7.cmd"
         ]
     }
 ]

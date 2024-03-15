@@ -1,16 +1,16 @@
 /******************************************************************************
 
-@file  ble_app_services.h
+@file  bleapputil_internal.h
 
-@brief This file contains the ble_app_services for use
-with the CC13XX_CC26XX Bluetooth Low Energy Protocol Stack.
+@brief This file contains the bleapputil_internal for use
+with the Bluetooth Low Energy Protocol Stack.
 
 Group: WCS, BTS
 Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2022-2023, Texas Instruments Incorporated
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -105,6 +105,12 @@ typedef struct
     // The data that will be passed as an input to the callback
     char                            *data;
 }BLEAppUtil_CallbackToInvoke_t;
+
+typedef struct
+{
+    uint8_t event;                // event type
+    void    *pData;               // pointer to message
+} BLEAppUtil_appEvt_t;
 
 /*********************************************************************
  * GLOBAL VARIABLES

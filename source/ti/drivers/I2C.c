@@ -45,10 +45,11 @@
 
 /* Default I2C parameters structure */
 const I2C_Params I2C_defaultParams = {
-    I2C_MODE_BLOCKING, /* transferMode */
-    NULL,              /* transferCallbackFxn */
-    I2C_100kHz,        /* bitRate */
-    NULL               /* custom */
+    I2C_MODE_BLOCKING,      /* transferMode */
+    NULL,                   /* transferCallbackFxn */
+    I2C_100kHz,             /* bitRate */
+    I2C_ADDRESS_MODE_7_BIT, /* addressMode */
+    NULL                    /* custom */
 };
 
 /*

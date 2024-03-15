@@ -123,8 +123,8 @@ const flowControlLongDescription = `Defines whether the NPI will enable packet f
 __Note__: The only way to prevent RxBuf overflow is to enable NPI_FLOW_CTRL. If the buffer \
 has overflowed there is no way to safely recover. All received bytes can be packet fragments \
 so if a packet fragment is lost the frame parser behavior becomes undefined.\n
-If NPI_FLOW_CTRL is not enabled then  the slave cannot control the master's transfer rate. \
-With NPI_FLOW_CTRL the slave has SRDY to use as a software flow control mechanism.\n
+If NPI_FLOW_CTRL is not enabled then  the peripheral cannot control the central's transfer rate. \
+With NPI_FLOW_CTRL the peripheral has SRDY to use as a software flow control mechanism.\n
 When using NPI_FLOW_CTRL make sure to increase NPI_TL_BUF_SIZE to suit the NPI frame length \
 that is expected to be received.\n
 __Default__: 0\n`
@@ -146,6 +146,43 @@ ble-stack-5.x/creating-a-custom-bluetooth-low-energy-application-cc13x2_26x2.htm
 #sec-using-production-test-mode).\n
 __Default__: False (unchecked)\n`
 
+const rxWindowDurationLongDescription =  `Duration of the time the RX window opens to validate the channel\
+ status (noisy or clear). this value must be minimum 16µs.\n
+__Default__: 100\n`
+
+const txUsageThreshLongDescription =  `When the consumption per channel reaches this threshold value,\
+ the requested channel must be clear in order to be able to transmit on it.\
+ The value of this parameter is in percentages.\n
+__Default__: 10\n`
+
+const fixedObservTimeLongDescription =  `When unmarked, the Observation Period is calculated by dwell time multiplied by 100,\
+ Dwell time - The time between frequency changes for FHSS equipment.\
+ EN 300 328 notes that this time may comprise transmit, receive, and idle phases of the equipment\n
+__Default__: False\n`
+
+const observationTimeLongDescription =  `Fixed observation period. This value will not change according to app behavior\n
+__Note__: in units of 100 ms\n
+__Default__: False\n`
+
+const rssiThresholdLongDescription =  `RSSI Threshold is the value at point the RSSI value is considered\
+ high enough for the channel to be labeled as noisy.\n
+__Default__: -70\n`
+
+const numberOfNoisySamplesLongDescription =  `The number of noisy samples refers to the quantity of samples the device will collect in order\
+ to assess whether the channel is noisy or not.\n
+__Default__: False\n`
+
+const blockingChannelTimeLongDescription =  `When the channel is determined to be noisy, only empty packets will sent \
+ on the channel for the selected time period.\n
+__Default__: False\n`
+
+const sdaaLongDescription =  `SDAA (Selective Detect And Avoid) module,\
+ This module is responsible for monitoring and limiting TX consumption\
+ per channel.\n
+__Default__: Disabled\n`
+
+
+
 // Long description for the peerConnParamUpdateRejectInd configuration parameter
 const peerConnParamUpdateRejectIndLongDescription = `When enabling this parameter\
  the application will be notified on any incoming connection parameter\
@@ -166,5 +203,13 @@ __Default__: False (unchecked)\n`
     maxNumIcallEnabledTasksLongDescription: maxNumIcallEnabledTasksLongDescription,
     ptmLongDescription: ptmLongDescription,
     flowControlLongDescription: flowControlLongDescription,
-    peerConnParamUpdateRejectIndLongDescription: peerConnParamUpdateRejectIndLongDescription
+    peerConnParamUpdateRejectIndLongDescription: peerConnParamUpdateRejectIndLongDescription,
+    rxWindowDurationLongDescription: rxWindowDurationLongDescription,
+    txUsageThreshLongDescription: txUsageThreshLongDescription,
+    sdaaLongDescription: sdaaLongDescription,
+    fixedObservTimeLongDescription: fixedObservTimeLongDescription,
+    observationTimeLongDescription: observationTimeLongDescription,
+    rssiThresholdLongDescription: rssiThresholdLongDescription,
+    numberOfNoisySamplesLongDescription: numberOfNoisySamplesLongDescription,
+    blockingChannelTimeLongDescription: blockingChannelTimeLongDescription,
 };

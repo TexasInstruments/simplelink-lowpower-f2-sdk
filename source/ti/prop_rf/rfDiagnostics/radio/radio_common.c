@@ -57,7 +57,7 @@ bool Radio_packetTx(uint16_t numPkts, uint32_t *pktLen){
     return(radios[currentRadio-1].packetTx(numPkts, pktLen));
 }
 
-bool Radio_packetRx(uint8_t pktLen){
+bool Radio_packetRx(uint16_t pktLen){
     return(radios[currentRadio-1].packetRx(pktLen));
 }
 
@@ -70,7 +70,7 @@ bool Radio_packetMdrTx(uint16_t numPkts, uint32_t *pktLen){
     }
 }
 
-bool Radio_packetMdrRx(uint8_t pktLen){
+bool Radio_packetMdrRx(uint16_t pktLen){
     if (radios[currentRadio-1].packetMdrRx == NULL){
         return RADIO_UNSUPPORTED_CMD;
     }
@@ -85,6 +85,15 @@ bool Radio_packetMdrCsTx(uint16_t numPkts, uint32_t *pktLen){
     }
     else{
         return(radios[currentRadio-1].packetMdrCsTx(numPkts, pktLen));
+    }
+}
+
+bool Radio_packetCsTx(uint16_t numPkts, uint32_t *pktLen){
+    if (radios[currentRadio-1].packetCsTx == NULL){
+        return RADIO_UNSUPPORTED_CMD;
+    }
+    else{
+        return(radios[currentRadio-1].packetCsTx(numPkts, pktLen));
     }
 }
 

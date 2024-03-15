@@ -48,8 +48,10 @@ const TimestampP_Format __attribute__((used))
 
 #if defined(__IAR_SYSTEMS_ICC__)
 __root const TimestampP_Format
-#elif defined(__TI_COMPILER_VERSION__) || (defined(__clang__) && defined(__ti_version__)) || defined(__GNUC__)
+#elif (defined(__clang__) && defined(__ti_version__))
 const TimestampP_Format __attribute__((used))
+#elif defined(__GNUC__)
+const TimestampP_Format __attribute__((section(".timestampPFormat"), used))
 #endif
     TimestampP_nativeFormat32 = {
         .format = {.exponent = TimestampP_Exponent_Seconds, .fracBytes = 2, .intBytes = 2, .multiplier = 1}};

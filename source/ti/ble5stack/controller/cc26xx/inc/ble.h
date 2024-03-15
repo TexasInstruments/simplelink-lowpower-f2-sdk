@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -236,7 +236,8 @@
 #define INIT_CFG_DISCARD_ILLEGAL_LEN   1
 
 // RX Queue Configuration Bits
-#define RXQ_CFG_CLEAR                  0
+#define RXQ_CFG_CLEAR                     0
+#define RXQ_CFG_NO_AUTOFLUSH_IGNORED_PKT  0
 #define RXQ_CFG_AUTOFLUSH_IGNORED_PKT  BV(0)
 #define RXQ_CFG_AUTOFLUSH_CRC_ERR_PKT  BV(1)
 #define RXQ_CFG_AUTOFLUSH_EMPTY_PKT    BV(2)
@@ -277,6 +278,7 @@
 #define RAT_TICKS_IN_100US             400       // 1M / 2500 RAT ticks (SCA PPM)
 #define RAT_TICKS_IN_140US             560       // Rx Back-end Time
 #define RAT_TICKS_IN_150US             600       // T_IFS
+#define RAT_TICKS_IN_166US             664       // Frequency synthesizer delay for RX window
 #define RAT_TICKS_IN_180US             720       // AUX_CONNECT_REQ in 2M
 #define RAT_TICKS_IN_200US             800       // LL Topology margin
 #define RAT_TICKS_IN_700US             2800      // LL_TEST_MODE JIRA-2756
@@ -300,6 +302,8 @@
 #define RAT_TICKS_IN_12_5MS            50000     // DTM T(l) Compare
 #define RAT_TICKS_IN_16MS              64000     // Max time in Coded phy for fragments periodic adv
 #define RAT_TICKS_IN_20MS              80000
+#define RAT_TICKS_IN_100MS             400000    // Refers to the minimum observation period used by the SDAA module
+#define RAT_TICKS_IN_1S                4000000
 #define RAT_TICKS_IN_1_28S             5120000   // Directed Advertising Timeout
 #define RAT_TICKS_IN_32S               128000000 // Max LSTO
 //
@@ -1197,6 +1201,9 @@ extern rxOut_t          rxTestOut;
 extern rfOpCmd_TxTest_t txModemTestCmd;
 extern rfOpCmd_RxTest_t rxModemTestCmd;
 
+// RX command for sdaa module
+extern rfOpCmd_RxTest_t sdaaRxWindowCmd;
+extern rfOpCmd_freqSynthCtrl_t sdaaFsRfCmd;
 /*******************************************************************************
  * APIs
  */

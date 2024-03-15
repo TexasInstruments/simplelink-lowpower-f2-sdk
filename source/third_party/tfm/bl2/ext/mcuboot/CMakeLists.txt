@@ -1,277 +1,274 @@
 #------------------------------------------------------------------------------
-# Copyright (c) 2017-2020, Arm Limited. All rights reserved.
+# Copyright (c) 2020-2022, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0079 NEW)
 
-set(TFM_BUILD_IN_SPE ON)
+add_library(mcuboot_config INTERFACE)
 
-#Tell cmake where our modules can be found
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../cmake)
+set(MCUBOOT_KEY_ENC "${MCUBOOT_PATH}/enc-rsa2048-pub.pem" CACHE FILEPATH "Path to key with which to encrypt binary")
 
-#Include common stuff to control cmake.
-include("Common/BuildSys")
-
-#Start an embedded project.
-get_filename_component(TFM_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
-embedded_project_start(CONFIG "${TFM_ROOT_DIR}/configs/ConfigDefault.cmake")
-project(mcuboot LANGUAGES ASM C)
-embedded_project_fixup()
-
-#Check input variables
-if (NOT DEFINED BL2)
-   message(FATAL ERROR "Incomplete build configuration: BL2 is undefined.")
-elseif(NOT BL2)
-    #If mcuboot is not need to be built then stop further processing.
-    return()
+# Add/process CBOR encoded measured boot data (MCUBOOT_MEASURED_BOOT) only if
+# the store encoded measurements config is enabled. Otherwise, unencoded
+# measurements are stored in the shared data area and must be processed at
+# runtime.
+if (CONFIG_TFM_BOOT_STORE_MEASUREMENTS AND CONFIG_TFM_BOOT_STORE_ENCODED_MEASUREMENTS)
+    set(MCUBOOT_MEASURED_BOOT ON)
 endif()
 
-#Set the appropriate MCUBoot path
-if (MCUBOOT_REPO STREQUAL "TF-M")
-	get_filename_component(MCUBOOT_DIR ${CMAKE_CURRENT_LIST_DIR} ABSOLUTE)
+add_subdirectory("${MCUBOOT_PATH}/boot/bootutil" bootutil)
+
+target_include_directories(bootutil
+    PUBLIC
+        include
+        config
+)
+
+target_link_libraries(bootutil
+    PUBLIC
+        mcuboot_config
+        platform_bl2
+        bl2_mbedcrypto
+)
+
+target_compile_options(bootutil
+    PRIVATE
+        ${BL2_COMPILER_CP_FLAG}
+)
+
+target_compile_definitions(bootutil
+    PRIVATE
+        $<$<BOOL:${DEFAULT_MCUBOOT_FLASH_MAP}>:DEFAULT_MCUBOOT_FLASH_MAP>
+)
+
+target_include_directories(mcuboot_config
+    INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for mcuboot_config.h only
+)
+
+target_include_directories(bl2
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+target_sources(bl2
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/bl2_main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/keys.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/flash_map_extended.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/flash_map_legacy.c
+)
+
+target_link_libraries(bl2
+    PUBLIC
+        bootutil
+)
+
+set(MCUBOOT_ALLOWED_LOG_LEVELS OFF ERROR WARNING INFO DEBUG)
+list(FIND MCUBOOT_ALLOWED_LOG_LEVELS ${MCUBOOT_LOG_LEVEL} LOG_LEVEL_ID)
+
+if (MCUBOOT_ALIGN_VAL GREATER 8)
+set (MCUBOOT_BOOT_MAX_ALIGN ${MCUBOOT_ALIGN_VAL})
 else()
-	get_filename_component(MCUBOOT_DIR "${TFM_ROOT_DIR}/../mcuboot/boot" ABSOLUTE)
-	if (NOT EXISTS ${MCUBOOT_DIR})
-		message(FATAL_ERROR "Missing MCUBoot. Please clone the MCUBoot repo to directory \"${MCUBOOT_DIR}\".")
-	endif()
+set (MCUBOOT_BOOT_MAX_ALIGN 8)
 endif()
 
-if (NOT DEFINED MBEDCRYPTO_C_FLAGS_BL2)
-	message(FATAL_ERROR "Incomplete build configuration: MBEDCRYPTO_C_FLAGS_BL2 is undefined.")
+configure_file(include/mcuboot_config/mcuboot_config.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/mcuboot_config/mcuboot_config.h
+               @ONLY)
+
+############################### IMAGE SIGNING ##################################
+
+if (PLATFORM_DEFAULT_IMAGE_SIGNING)
+    find_package(Python3)
+
+    set(IMAGE_TYPE "S_IMAGE")
+    set(FLASH_AREA_NUM ${MCUBOOT_S_IMAGE_FLASH_AREA_NUM})
+    if (MCUBOOT_IMAGE_NUMBER GREATER 1)
+        configure_file(signing_layout.c.in signing_layout_s.c @ONLY)
+        add_library(signing_layout_s OBJECT ${CMAKE_CURRENT_BINARY_DIR}/signing_layout_s.c)
+    else()
+        # Imgtool script requires the s_ns sufix. Since only one sigining layout is
+        # used in this mode the signing_layout_s target's source file is renamed.
+        configure_file(signing_layout.c.in signing_layout_s_ns.c @ONLY)
+        add_library(signing_layout_s OBJECT ${CMAKE_CURRENT_BINARY_DIR}/signing_layout_s_ns.c)
+    endif()
+
+    target_compile_options(signing_layout_s
+        PRIVATE
+            $<$<C_COMPILER_ID:GNU>:-E\;-xc>
+            $<$<C_COMPILER_ID:ARMClang>:-E\;-xc>
+            $<$<C_COMPILER_ID:IAR>:--preprocess=ns\;$<TARGET_OBJECTS:signing_layout_s>>
+    )
+    target_compile_definitions(signing_layout_s
+        PRIVATE
+            $<$<BOOL:${BL2}>:BL2>
+            $<$<BOOL:${MCUBOOT_IMAGE_NUMBER}>:MCUBOOT_IMAGE_NUMBER=${MCUBOOT_IMAGE_NUMBER}>
+            $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},DIRECT_XIP>:IMAGE_ROM_FIXED>
+    )
+    target_link_libraries(signing_layout_s
+        PRIVATE
+            platform_bl2
+    )
+
+    if(NS)
+        add_custom_target(tfm_s_ns_bin
+            SOURCES tfm_s_ns.bin
+        )
+        add_custom_command(OUTPUT tfm_s_ns.bin
+            DEPENDS $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
+            DEPENDS $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
+            DEPENDS tfm_s_bin tfm_ns_bin
+            DEPENDS signing_layout_s
+
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/assemble.py
+                --layout $<TARGET_OBJECTS:signing_layout_s>
+                -s $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
+                -n $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
+                -o tfm_s_ns.bin
+            COMMAND ${CMAKE_COMMAND} -E copy tfm_s_ns.bin $<TARGET_FILE_DIR:bl2>
+        )
+    endif()
+
+    add_custom_target(tfm_s_signed_bin
+        SOURCES tfm_s_signed.bin
+    )
+    add_custom_command(OUTPUT tfm_s_signed.bin
+        DEPENDS $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
+        DEPENDS tfm_s_bin signing_layout_s
+        WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
+
+        #Sign secure binary image with provided secret key
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
+            -v ${MCUBOOT_IMAGE_VERSION_S}
+            --layout $<TARGET_OBJECTS:signing_layout_s>
+            -k ${MCUBOOT_KEY_S}
+            --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
+            --align ${MCUBOOT_ALIGN_VAL}
+            --pad
+            --pad-header
+            -H ${BL2_HEADER_SIZE}
+            -s ${MCUBOOT_SECURITY_COUNTER_S}
+            -L ${MCUBOOT_ENC_KEY_LEN}
+            -d \"\(1,${MCUBOOT_NS_IMAGE_MIN_VER}\)\"
+            $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},OVERWRITE_ONLY>:--overwrite-only>
+            $<$<BOOL:${MCUBOOT_CONFIRM_IMAGE}>:--confirm>
+            $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-E${MCUBOOT_KEY_ENC}>
+            $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
+            $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_signed.bin
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_signed.bin $<TARGET_FILE_DIR:bl2>
+    )
+
+    set(IMAGE_TYPE "NS_IMAGE")
+    set(FLASH_AREA_NUM ${MCUBOOT_NS_IMAGE_FLASH_AREA_NUM})
+    configure_file(signing_layout.c.in signing_layout_ns.c @ONLY)
+
+    add_library(signing_layout_ns OBJECT ${CMAKE_CURRENT_BINARY_DIR}/signing_layout_ns.c)
+    target_compile_options(signing_layout_ns
+        PRIVATE
+            $<$<C_COMPILER_ID:GNU>:-E\;-xc>
+            $<$<C_COMPILER_ID:ARMClang>:-E\;-xc>
+            $<$<C_COMPILER_ID:IAR>:--preprocess=ns\;$<TARGET_OBJECTS:signing_layout_ns>>
+    )
+    target_compile_definitions(signing_layout_ns
+        PRIVATE
+            $<$<BOOL:${BL2}>:BL2>
+            $<$<BOOL:${MCUBOOT_IMAGE_NUMBER}>:MCUBOOT_IMAGE_NUMBER=${MCUBOOT_IMAGE_NUMBER}>
+            $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},DIRECT_XIP>:IMAGE_ROM_FIXED>
+    )
+    target_link_libraries(signing_layout_ns
+        PRIVATE
+            platform_bl2
+    )
+
+    if(NS)
+        add_custom_target(tfm_ns_signed_bin
+            SOURCES tfm_ns_signed.bin
+        )
+        add_custom_command(OUTPUT tfm_ns_signed.bin
+            DEPENDS $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
+            DEPENDS tfm_ns_bin signing_layout_ns
+            WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
+
+            #Sign non-secure binary image with provided secret key
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
+                -v ${MCUBOOT_IMAGE_VERSION_NS}
+                --layout $<TARGET_OBJECTS:signing_layout_ns>
+                -k ${MCUBOOT_KEY_NS}
+                --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
+                --align ${MCUBOOT_ALIGN_VAL}
+                --pad
+                --pad-header
+                -H ${BL2_HEADER_SIZE}
+                -s ${MCUBOOT_SECURITY_COUNTER_NS}
+                -L ${MCUBOOT_ENC_KEY_LEN}
+                -d \"\(0, ${MCUBOOT_S_IMAGE_MIN_VER}\)\"
+                $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
+                $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},OVERWRITE_ONLY>:--overwrite-only>
+                $<$<BOOL:${MCUBOOT_CONFIRM_IMAGE}>:--confirm>
+                $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-E${MCUBOOT_KEY_ENC}>
+                $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
+                ${CMAKE_CURRENT_BINARY_DIR}/tfm_ns_signed.bin
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/tfm_ns_signed.bin $<TARGET_FILE_DIR:bl2>
+        )
+    endif()
+
+    if(NS)
+        add_custom_target(tfm_s_ns_signed_bin
+            SOURCES tfm_s_ns_signed.bin
+        )
+        if (MCUBOOT_IMAGE_NUMBER GREATER 1)
+            add_custom_command(OUTPUT tfm_s_ns_signed.bin
+                DEPENDS tfm_s_signed_bin $<TARGET_FILE_DIR:tfm_s>/tfm_s.bin
+                DEPENDS tfm_ns_signed_bin $<TARGET_FILE_DIR:tfm_ns>/tfm_ns.bin
+                DEPENDS signing_layout_s
+
+                # Create concatenated binary image from the two independently signed
+                # binary file. This only uses the local assemble.py script (not from
+                # upstream mcuboot) because that script is geared towards zephyr
+                # support
+                COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/assemble.py
+                    --layout $<TARGET_OBJECTS:signing_layout_s>
+                    -s $<TARGET_FILE_DIR:bl2>/tfm_s_signed.bin
+                    -n $<TARGET_FILE_DIR:bl2>/tfm_ns_signed.bin
+                    -o tfm_s_ns_signed.bin
+                COMMAND ${CMAKE_COMMAND} -E copy tfm_s_ns_signed.bin $<TARGET_FILE_DIR:bl2>
+            )
+        else()
+            add_custom_command(OUTPUT tfm_s_ns_signed.bin
+                WORKING_DIRECTORY ${MCUBOOT_PATH}/scripts
+                DEPENDS tfm_s_ns_bin tfm_s_ns.bin
+                DEPENDS signing_layout_s
+
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wrapper/wrapper.py
+                -v ${MCUBOOT_IMAGE_VERSION_S}
+                --layout $<TARGET_OBJECTS:signing_layout_s>
+                -k ${MCUBOOT_KEY_S}
+                --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
+                --align ${MCUBOOT_ALIGN_VAL}
+                --pad
+                --pad-header
+                -H ${BL2_HEADER_SIZE}
+                -s ${MCUBOOT_SECURITY_COUNTER_S}
+                -L ${MCUBOOT_ENC_KEY_LEN}
+                $<$<STREQUAL:${MCUBOOT_UPGRADE_STRATEGY},OVERWRITE_ONLY>:--overwrite-only>
+                $<$<BOOL:${MCUBOOT_CONFIRM_IMAGE}>:--confirm>
+                $<$<BOOL:${MCUBOOT_ENC_IMAGES}>:-E${MCUBOOT_KEY_ENC}>
+                $<$<BOOL:${MCUBOOT_MEASURED_BOOT}>:--measured-boot-record>
+                ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns.bin
+                ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns_signed.bin
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/tfm_s_ns_signed.bin $<TARGET_FILE_DIR:bl2>
+            )
+        endif()
+    endif()
+
+    add_custom_target(signed_images
+        ALL
+        DEPENDS $<IF:$<BOOL:${NS}>,tfm_s_ns_signed_bin,tfm_s_signed_bin>
+    )
 endif()
-
-set(BUILD_CMSIS_CORE On)
-set(BUILD_RETARGET On)
-set(BUILD_NATIVE_DRIVERS On)
-set(BUILD_STARTUP On)
-set(BUILD_TARGET_CFG Off)
-set(BUILD_TARGET_NV_COUNTERS On)
-set(BUILD_CMSIS_DRIVERS On)
-set(BUILD_TIME Off)
-set(BUILD_UART_STDOUT On)
-set(BUILD_FLASH On)
-set(BUILD_PLAT_TEST Off)
-set(BUILD_BOOT_HAL On)
-
-if (MCUBOOT_HW_KEY)
-	set(BUILD_TARGET_HARDWARE_KEYS On)
-else()
-	set(BUILD_TARGET_HARDWARE_KEYS Off)
-endif()
-
-if(NOT DEFINED PLATFORM_CMAKE_FILE)
-	message (FATAL_ERROR "Platform specific CMake is not defined. Please set PLATFORM_CMAKE_FILE.")
-elseif(NOT EXISTS ${PLATFORM_CMAKE_FILE})
-	message (FATAL_ERROR "Platform specific CMake \"${PLATFORM_CMAKE_FILE}\" file does not exist. Please fix value of PLATFORM_CMAKE_FILE.")
-else()
-	include(${PLATFORM_CMAKE_FILE})
-endif()
-
-#Add platform specific definitions in SPE
-if (DEFINED TFM_PLATFORM_SECURE_DEFS)
-	embedded_set_target_compile_defines(TARGET ${PROJECT_NAME} LANGUAGE C DEFINES ${TFM_PLATFORM_SECURE_DEFS} APPEND)
-	embedded_set_target_compile_defines(TARGET ${PROJECT_NAME} LANGUAGE ASM DEFINES ${TFM_PLATFORM_SECURE_DEFS} APPEND)
-endif()
-
-if (DEFINED CMSE_FLAGS)
-	embedded_set_target_compile_flags(TARGET ${PROJECT_NAME} LANGUAGE C APPEND FLAGS ${CMSE_FLAGS})
-endif()
-
-#Append all our source files to global lists.
-list(APPEND ALL_SRC_C
-		"${TFM_ROOT_DIR}/bl2/ext/mcuboot/bl2_main.c"
-		"${TFM_ROOT_DIR}/bl2/ext/mcuboot/flash_map_extended.c"
-		"${TFM_ROOT_DIR}/bl2/ext/mcuboot/flash_map_legacy.c"
-		"${TFM_ROOT_DIR}/bl2/ext/mcuboot/keys.c"
-		"${TFM_ROOT_DIR}/bl2/src/flash_map.c"
-		"${TFM_ROOT_DIR}/bl2/src/security_cnt.c"
-		"${MCUBOOT_DIR}/bootutil/src/loader.c"
-		"${MCUBOOT_DIR}/bootutil/src/bootutil_misc.c"
-		"${MCUBOOT_DIR}/bootutil/src/image_validate.c"
-		"${MCUBOOT_DIR}/bootutil/src/image_rsa.c"
-		"${MCUBOOT_DIR}/bootutil/src/tlv.c"
-	)
-
-if (MCUBOOT_REPO STREQUAL "TF-M")
-	list(APPEND ALL_SRC_C
-			"${TFM_ROOT_DIR}/bl2/src/boot_record.c"
-		)
-else()
-	list(APPEND ALL_SRC_C
-			"${MCUBOOT_DIR}/bootutil/src/boot_record.c"
-			"${MCUBOOT_DIR}/bootutil/src/swap_scratch.c"
-			"${MCUBOOT_DIR}/bootutil/src/swap_move.c"
-			"${MCUBOOT_DIR}/bootutil/src/swap_misc.c"
-	)
-endif()
-
-#Define location of Mbed Crypto source, build, and installation directory.
-set(MBEDTLS_CONFIG_FILE "config-rsa.h")
-set(MBEDTLS_CONFIG_PATH "${TFM_ROOT_DIR}/bl2/ext/mcuboot/include")
-get_filename_component(MBEDCRYPTO_SOURCE_DIR "${TFM_ROOT_DIR}/../mbed-crypto" ABSOLUTE)
-if(NOT EXISTS ${MBEDCRYPTO_SOURCE_DIR})
-    message(FATAL_ERROR "Missing mbed-crypto. Please clone the mbed-crypto repo to directory \"${MBEDCRYPTO_SOURCE_DIR}\".")
-endif()
-set (MBEDCRYPTO_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/mbed-crypto/build")
-set (MBEDCRYPTO_INSTALL_DIR ${MBEDCRYPTO_BINARY_DIR}/../install)
-
-if (CRYPTO_HW_ACCELERATOR OR CRYPTO_HW_ACCELERATOR_OTP_STATE STREQUAL "PROVISIONING")
-	if(NOT DEFINED CRYPTO_HW_ACCELERATOR_CMAKE_BUILD)
-		message(FATAL_ERROR "CRYPTO_HW_ACCELERATOR_CMAKE_BUILD not defined.")
-	endif()
-	include(${CRYPTO_HW_ACCELERATOR_CMAKE_BUILD})
-endif()
-
-#Build Mbed Crypto as external project.
-#This ensures Mbed Crypto is built with exactly defined settings.
-#Mbed Crypto will be used from its install location
-string(APPEND MBEDCRYPTO_C_FLAGS " ${MBEDCRYPTO_C_FLAGS_BL2}")
-set(MBEDCRYPTO_TARGET_NAME "mbedcrypto_mcuboot_lib")
-include(${TFM_ROOT_DIR}/BuildMbedCrypto.cmake)
-
-#Setting include directories
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${TFM_ROOT_DIR} ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${TFM_ROOT_DIR}/interface/include ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${TFM_ROOT_DIR}/bl2/include ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${TFM_ROOT_DIR}/bl2/ext/mcuboot/include ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${MCUBOOT_DIR}/bootutil/include ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${MBEDCRYPTO_INSTALL_DIR}/include ABSOLUTE APPEND)
-embedded_target_include_directories(TARGET ${PROJECT_NAME} PATH ${CMAKE_CURRENT_BINARY_DIR} ABSOLUTE APPEND)
-
-#Define linker file
-if(NOT DEFINED BL2_LINKER_CONFIG)
-	message(FATAL_ERROR "ERROR: Incomplete Configuration: BL2_LINKER_CONFIG is not defined.")
-endif()
-embedded_set_target_linker_file(TARGET ${PROJECT_NAME} PATH "${BL2_LINKER_CONFIG}")
-
-if(NOT DEFINED PLATFORM_LINK_INCLUDES)
-	message(FATAL_ERROR "ERROR: Incomplete Configuration: PLATFORM_LINK_INCLUDES is not defined.")
-endif()
-embedded_set_target_link_includes(TARGET ${PROJECT_NAME} INCLUDES "${PLATFORM_LINK_INCLUDES}")
-
-add_executable(${PROJECT_NAME} ${ALL_SRC_ASM} ${ALL_SRC_C_BL2} ${ALL_SRC_ASM_BL2} ${ALL_SRC_C} ${ALL_SRC_CXX})
-
-#Set common compiler and linker flags
-config_setting_shared_compiler_flags(${PROJECT_NAME})
-config_setting_shared_linker_flags(${PROJECT_NAME})
-
-#Add BL2 and MCUBOOT_IMAGE_NUMBER defines to linker to resolve symbols in region_defs.h and flash_layout.h
-embedded_set_target_link_defines(TARGET ${PROJECT_NAME} DEFINES "BL2" "MCUBOOT_IMAGE_NUMBER=${MCUBOOT_IMAGE_NUMBER}")
-
-if(NOT DEFINED TEST_FRAMEWORK_S)
-	message(FATAL_ERROR "Incomplete build configuration: TEST_FRAMEWORK_S is undefined.")
-elseif(TEST_FRAMEWORK_S)
-	embedded_set_target_link_defines(TARGET ${PROJECT_NAME} DEFINES "TEST_FRAMEWORK_S")
-endif()
-
-if(NOT DEFINED TEST_FRAMEWORK_NS)
-	message(FATAL_ERROR "Incomplete build configuration: TEST_FRAMEWORK_NS is undefined.")
-elseif(TEST_FRAMEWORK_NS)
-	embedded_set_target_link_defines(TARGET ${PROJECT_NAME} DEFINES "TEST_FRAMEWORK_NS")
-endif()
-
-#Link mbedcrypto library to project
-target_link_libraries(${PROJECT_NAME} "${MBEDCRYPTO_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX_C}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX_C}")
-add_dependencies(${PROJECT_NAME} ${MBEDCRYPTO_TARGET_NAME}_install)
-
-#Link crypto accelerator libraries if applicable
-if (CRYPTO_HW_ACCELERATOR OR CRYPTO_HW_ACCELERATOR_OTP_STATE STREQUAL "PROVISIONING")
-	if(NOT DEFINED CRYPTO_HW_ACCELERATOR_CMAKE_LINK)
-		message(FATAL_ERROR "CRYPTO_HW_ACCELERATOR_CMAKE_LINK not defined.")
-	endif()
-	include(${CRYPTO_HW_ACCELERATOR_CMAKE_LINK})
-endif()
-
-#Generate binary file from axf
-compiler_generate_binary_output(${PROJECT_NAME})
-
-#Generate intel hex file from axf
-compiler_generate_hex_output(${PROJECT_NAME})
-
-#Generate elf file from axf
-compiler_generate_elf_output(${PROJECT_NAME})
-
-message("- MCUBOOT_REPO: '${MCUBOOT_REPO}'.")
-message("- MCUBOOT_IMAGE_NUMBER: '${MCUBOOT_IMAGE_NUMBER}'.")
-message("- MCUBOOT_UPGRADE_STRATEGY: '${MCUBOOT_UPGRADE_STRATEGY}'.")
-message("- MCUBOOT_SIGNATURE_TYPE: '${MCUBOOT_SIGNATURE_TYPE}'.")
-message("- MCUBOOT_HW_KEY: '${MCUBOOT_HW_KEY}'.")
-message("- MCUBOOT_LOG_LEVEL: '${MCUBOOT_LOG_LEVEL}'.")
-
-get_property(_log_levels CACHE MCUBOOT_LOG_LEVEL PROPERTY STRINGS)
-list(FIND _log_levels ${MCUBOOT_LOG_LEVEL} LOG_LEVEL_ID)
-
-if (MCUBOOT_REPO STREQUAL "UPSTREAM")
-	set(MCUBOOT_HW_ROLLBACK_PROT On)
-	set(MCUBOOT_MEASURED_BOOT On)
-
-	#FixMe: This becomes unnecessary and can be deleted once the sign_key.c file
-	#in upstream MCUboot includes the mcuboot_config.h file and starts "reading"
-	#the configuration macros from there.
-	if (MCUBOOT_HW_KEY)
-		target_compile_definitions(${PROJECT_NAME} PRIVATE MCUBOOT_HW_KEY)
-	endif()
-endif()
-
-if(MCUBOOT_SIGNATURE_TYPE STREQUAL "RSA-3072")
-	set(MCUBOOT_SIGN_RSA On)
-	set(MCUBOOT_SIGN_RSA_LEN 3072)
-elseif(MCUBOOT_SIGNATURE_TYPE STREQUAL "RSA-2048")
-	set(MCUBOOT_SIGN_RSA On)
-	set(MCUBOOT_SIGN_RSA_LEN 2048)
-endif()
-
-if (${MCUBOOT_UPGRADE_STRATEGY} STREQUAL "OVERWRITE_ONLY")
-	set(MCUBOOT_OVERWRITE_ONLY On)
-elseif(${MCUBOOT_UPGRADE_STRATEGY} STREQUAL "NO_SWAP")
-	set(MCUBOOT_NO_SWAP On)
-elseif (${MCUBOOT_UPGRADE_STRATEGY} STREQUAL "RAM_LOADING")
-	set(MCUBOOT_RAM_LOADING On)
-endif()
-
-#FixMe: This becomes unnecessary and can be deleted once the sign_key.c file
-#in upstream MCUboot includes the mcuboot_config.h file and starts "reading"
-#the configuration macros from there.
-if (MCUBOOT_REPO STREQUAL "UPSTREAM" AND MCUBOOT_HW_KEY)
-	set(MCUBOOT_HW_KEY Off)
-	configure_file("${CMAKE_CURRENT_LIST_DIR}/include/mcuboot_config/mcuboot_config.h.in"
-				   "${CMAKE_CURRENT_BINARY_DIR}/mcuboot_config/mcuboot_config.h"
-				   @ONLY)
-	set(MCUBOOT_HW_KEY On)
-else()
-	configure_file("${CMAKE_CURRENT_LIST_DIR}/include/mcuboot_config/mcuboot_config.h.in"
-				   "${CMAKE_CURRENT_BINARY_DIR}/mcuboot_config/mcuboot_config.h"
-				   @ONLY)
-endif()
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE MBEDTLS_CONFIG_FILE="${MBEDTLS_CONFIG_FILE}")
-
-if (NOT MCUBOOT_SIGNATURE_TYPE STREQUAL "RSA-3072" AND NOT MCUBOOT_SIGNATURE_TYPE STREQUAL "RSA-2048")
-	message(FATAL_ERROR "${MCUBOOT_SIGNATURE_TYPE} is not supported as firmware signing algorithm")
-endif()
-
-validate_cache_value(MCUBOOT_UPGRADE_STRATEGY)
-
-#Set install location. Keep original value to avoid overriding command line settings.
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Default install location for MCUBoot." FORCE)
-endif()
-
-#Collect executables to common location: build/install/outputs/
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.axf
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf
-		DESTINATION outputs/${TARGET_PLATFORM}/)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.axf
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex
-			  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf
-		DESTINATION outputs/fvp/)
-
-#Finally let cmake system apply changes after the whole project is defined.
-embedded_project_end(${PROJECT_NAME})

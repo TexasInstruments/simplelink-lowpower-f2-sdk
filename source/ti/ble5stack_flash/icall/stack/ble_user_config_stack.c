@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,10 @@
 #include "osal.h"
 #include "ll_user_config.h"
 #include "ble_user_config.h"
-#ifndef CC23X0
 #include "ti_radio_config.h"
+
+#ifdef SYSCFG
+#include "ti_ble_config.h"
 #endif
 
 #if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
@@ -72,6 +74,7 @@
 uint32_t * icallServiceTblPtr = NULL;
 #endif /* ICALL_JT */
 
+#ifndef CC23X0
 // The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
 // and can be found in "ti_radio_config.c".
 // The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type,
@@ -92,6 +95,7 @@ PACKED_TYPEDEF_STRUCT
   int8        defaultTxPwrVal;
 } txPwrTbl_non_const_t;
 #endif //!defined(CC13X2P)
+#endif //!(CC23X0)
 /*******************************************************************************
  * FUNCTIONS
  */
@@ -140,19 +144,14 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     llUserConfig.maxNumConns   = stackConfig->maxNumConns;
     llUserConfig.numTxEntries  = stackConfig->maxNumPDUs;
     llUserConfig_maxPduSize    = bleUserCfg_maxPduSize;
-    llUserConfig.maxWlElems    = stackConfig->maxWhiteListElems;
+    llUserConfig.maxAlElems    = stackConfig->maxAcceptListElems;
     llUserConfig.maxRlElems    = stackConfig->maxResolvListElems;
     llUserConfig.advReportIncChannel = stackConfig->advReportIncChannel;
 #ifndef CC23X0
     llUserConfig.maxNumCteBufs = stackConfig->maxNumCteBuffers;
 
-#ifndef CC33xx
-    // Copy the RF_mode Object
-    memcpy(&rfMode, &RF_modeBle, sizeof(RF_Mode));
-#else
-    // Copy the RF_mode Object without RF patches
-    osal_memset(&rfMode, 0, sizeof(RF_Mode));
-#endif // !CC33xx
+    // Point to the RF_mode Object
+    llUserConfig.rfMode = &RF_modeBle;
 #endif // !CC23X0
 
     // RF Front End Mode and Bias (based on package)
@@ -179,7 +178,11 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     llUserConfig.cteAntProp          = userCfg->boardConfig->cteAntennaPropPtr;     // CTE antenna properties
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
     llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
-
+#ifdef SDAA_ENABLE
+    llUserConfig.sdaaCfgPtr = &sdaaCfgTable; // SDAA module configuration
+#else
+    llUserConfig.sdaaCfgPtr = NULL;
+#endif
 // The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
 // and can be found in "ti_radio_config.c".
 // The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type, which is the type that the
@@ -298,6 +301,19 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     // Extended stack settings
     llUserConfig.extStackSettings = stackConfig->extStackSettings;
 
+
+#ifdef USE_RCL
+    llUserConfig.lrfTxPowerTablePtr = &LRF_txPowerTable;
+    llUserConfig.lrfConfigPtr = &LRF_config;
+    llUserConfig.defaultTxPowerDbm = defaultTxPowerDbm;
+    llUserConfig.defaultTxPowerFraction = 0;
+    llUserConfig.rclPhyFeature1MBPS = RCL_PHY_FEATURE_SUB_PHY_1_MBPS;
+    llUserConfig.rclPhyFeature2MBPS = RCL_PHY_FEATURE_SUB_PHY_2_MBPS;
+    llUserConfig.rclPhyFeatureCoded = RCL_PHY_FEATURE_SUB_PHY_CODED;
+    llUserConfig.rclPhyFeatureCodedS8 = RCL_PHY_FEATURE_CODED_TX_RATE_S8;
+    llUserConfig.rclPhyFeatureCodedS2 = RCL_PHY_FEATURE_CODED_TX_RATE_S2;
+#endif
+
 #ifndef CC33xx
     // save off the application's assert handler
     halAssertInit( **userCfg->appServiceInfo->assertCback, HAL_ASSERT_LEGACY_MODE_ENABLED );
@@ -352,8 +368,8 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
     llUserConfig.numTxEntries  = userCfg->maxNumPDUs;
     llUserConfig.maxPduSize    = userCfg->maxPduSize;
 
-    // Copy the RF_mode Object
-    memcpy(&rfMode, &RF_modeBle, sizeof(RF_Mode));
+    // Point to the RF_mode Object
+    llUserConfig.rfMode = &RF_modeBle;
 
     // RF Front End Mode and Bias (based on package)
     llUserConfig.rfFeModeBias = userCfg->rfFeModeBias;
@@ -375,7 +391,11 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
 
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
     llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
-
+#ifdef SDAA_ENABLE
+    llUserConfig.sdaaCfgPtr = &sdaaCfgTable; // SDAA module configuration
+#else
+    llUserConfig.sdaaCfgPtr = NULL;
+#endif
 // The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
 // and can be found in "ti_radio_config.c".
 // The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type, which is the type that the
@@ -430,6 +450,18 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
 
     // BLE Stack Type
     llUserConfig.bleStackType = userCfg->bleStackType;
+
+#ifdef USE_RCL
+    llUserConfig.lrfTxPowerTablePtr = &LRF_txPowerTable;
+    llUserConfig.lrfConfigPtr = &LRF_config;
+    llUserConfig.defaultTxPowerDbm = defaultTxPowerDbm;
+    llUserConfig.defaultTxPowerFraction = 0;
+    llUserConfig.rclPhyFeature1MBPS = RCL_PHY_FEATURE_SUB_PHY_1_MBPS;
+    llUserConfig.rclPhyFeature2MBPS = RCL_PHY_FEATURE_SUB_PHY_2_MBPS;
+    llUserConfig.rclPhyFeatureCoded = RCL_PHY_FEATURE_SUB_PHY_CODED;
+    llUserConfig.rclPhyFeatureCodedS8 = RCL_PHY_FEATURE_CODED_TX_RATE_S8;
+    llUserConfig.rclPhyFeatureCodedS2 = RCL_PHY_FEATURE_CODED_TX_RATE_S2;
+#endif
 
 #ifndef CC33xx
     // save off the application's assert handler

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,10 +7,7 @@
 #ifndef MBEDTLS_CHACHA20_ALT_H
 #define MBEDTLS_CHACHA20_ALT_H
 
-#if defined(MBEDTLS_CONFIG_FILE)
-#include MBEDTLS_CONFIG_FILE
-#endif
-
+#include "mbedtls/build_info.h"
 
 #include <stddef.h>
 #include <stdint.h>

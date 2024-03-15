@@ -37,6 +37,7 @@
 #include "6LoWPAN/ws/ws_mpx_header.h"
 #include "6LoWPAN/ws/ws_pae_controller.h"
 #include "6LoWPAN/ws/ws_cfg_settings.h"
+#include "6LoWPAN/ws/ws_config.h"
 #include "Security/PANA/pana_eap_header.h"
 #include "Security/eapol/eapol_helper.h"
 #include "Service_Libs/etx/etx.h"
@@ -45,6 +46,11 @@
 #ifdef FEATURE_TIMAC_SUPPORT
 #include "api_mac.h"
 #include "timac_ns_interface.h"
+#include "fh_nt.h"
+#endif
+
+#ifdef FEATURE_WISUN_SUPPORT
+extern void ws_bootstrap_configure_network_panid(protocol_interface_info_entry_t *cur,uint16_t panid );
 #endif
 
 #ifdef HAVE_WS
@@ -623,9 +629,11 @@ static llc_data_base_t *ws_llc_mpx_frame_common_validates(const mac_api_t *api, 
     if (!base) {
         return NULL;
     }
-#ifndef FEATURE_MBED_NO_AUTH
-    if (!base->ie_params.gtkhash && ws_utt.message_type == WS_FT_DATA) {
-        return NULL;
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        if (!base->ie_params.gtkhash && ws_utt.message_type == WS_FT_DATA) {
+            return NULL;
+        }
     }
 #endif
     if (data->SrcAddrMode != ADDR_802_15_4_LONG) {
@@ -689,11 +697,20 @@ static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_
     ws_us_ie_t us_ie;
     bool us_ie_inline = false;
     bool bs_ie_inline = false;
+#ifdef FEATURE_WISUN_SUPPORT
+    bool vp_ie_inline = false;
+#endif
     ws_wp_nested.id = WS_WP_NESTED_IE;
     ws_bs_ie_t ws_bs_ie;
+#ifdef FEATURE_WISUN_SUPPORT
+    ws_vp_ie_t ws_vp_ie;
+#endif
     if (mac_ie_payload_discover(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &ws_wp_nested) > 2) {
         us_ie_inline = ws_wp_nested_us_read(ws_wp_nested.content_ptr, ws_wp_nested.length, &us_ie);
         bs_ie_inline = ws_wp_nested_bs_read(ws_wp_nested.content_ptr, ws_wp_nested.length, &ws_bs_ie);
+#ifdef FEATURE_WISUN_SUPPORT
+        vp_ie_inline = ws_wp_nested_vp_read(ws_wp_nested.content_ptr, ws_wp_nested.length, &ws_vp_ie);
+#endif
     }
 
     protocol_interface_info_entry_t *interface = base->interface_ptr;
@@ -709,6 +726,21 @@ static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_
     if (bs_ie_inline && !ws_bootstrap_validate_channel_function(NULL, &ws_bs_ie)) {
         return;
     }
+
+#ifdef FEATURE_WISUN_SUPPORT
+    if (vp_ie_inline)
+    {
+        if (interface->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER)
+        {   // only for Router node,
+            // checking if the vendor ID matches the predefined
+            if (ws_vp_ie.vendor_id == WS_VENDOR_ID_TI )
+            {   // the Vendor payload for network panID
+                ws_bootstrap_configure_network_panid(interface,ws_vp_ie.network_pan_id );
+            }
+
+        }
+    }
+#endif
 
     //Free Old temporary entry
     if (data->Key.SecurityLevel) {
@@ -772,9 +804,7 @@ static void ws_llc_data_indication_cb(const mac_api_t *api, const mcps_data_ind_
     ws_neighbor_class_rsl_in_calculate(neighbor_info.ws_neighbor, data->signal_dbm);
 
     if (neighbor_info.neighbor) {
-#ifndef FEATURE_MBED_NO_AUTH
-        if (data->Key.SecurityLevel)
-#endif
+        if (data->Key.SecurityLevel || ti_wisun_config.auth_type == NO_AUTH)
         {
             //SET trusted state
             mac_neighbor_table_trusted_neighbor(mac_neighbor_info(interface), neighbor_info.neighbor, true);
@@ -852,9 +882,8 @@ static void ws_llc_eapol_indication_cb(const mac_api_t *api, const mcps_data_ind
         temp_entry->mpduLinkQuality = data->mpduLinkQuality;
         temp_entry->signal_dbm = data->signal_dbm;
     }
-#ifndef FEATURE_MBED_NO_AUTH
+
     uint8_t auth_eui64[8];
-#endif
     ws_neighbor_class_neighbor_unicast_time_info_update(neighbor_info.ws_neighbor, &ws_utt, data->timestamp, (uint8_t *) data->SrcAddr);
     if (us_ie_inline) {
         ws_neighbor_class_neighbor_unicast_schedule_set(neighbor_info.ws_neighbor, &us_ie, &interface->ws_info->hopping_schdule);
@@ -863,10 +892,12 @@ static void ws_llc_eapol_indication_cb(const mac_api_t *api, const mcps_data_ind
     if (bs_ie_inline) {
         ws_neighbor_class_neighbor_broadcast_schedule_set(neighbor_info.ws_neighbor, &ws_bs_ie);
     }
-#ifndef FEATURE_MBED_NO_AUTH
-    //Discover and write Auhtenticator EUI-64
-    if (ws_wh_ea_read(ie_ext->headerIeList, ie_ext->headerIeListLength, auth_eui64)) {
-        ws_pae_controller_border_router_addr_write(base->interface_ptr, auth_eui64);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        //Discover and write Auhtenticator EUI-64
+        if (ws_wh_ea_read(ie_ext->headerIeList, ie_ext->headerIeListLength, auth_eui64)) {
+            ws_pae_controller_border_router_addr_write(base->interface_ptr, auth_eui64);
+        }
     }
 #endif
     //Update BT if it is part of message
@@ -1274,9 +1305,11 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
     wp_nested_ie_sub_list_t nested_wp_id;
     memset(&nested_wp_id, 0, sizeof(wp_nested_ie_sub_list_t));
     ie_header_mask.utt_ie = true;
-#ifndef FEATURE_MBED_NO_AUTH
-    ie_header_mask.bt_ie = ws_eapol_relay_state_active(base->interface_ptr);
-    ie_header_mask.ea_ie = ws_eapol_handshake_first_msg(data->msdu, data->msduLength, base->interface_ptr);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        ie_header_mask.bt_ie = ws_eapol_relay_state_active(base->interface_ptr);
+        ie_header_mask.ea_ie = ws_eapol_handshake_first_msg(data->msdu, data->msduLength, base->interface_ptr);
+    }
 #endif
     nested_wp_id.bs_ie = ie_header_mask.ea_ie;
     nested_wp_id.us_ie = true;
@@ -1361,12 +1394,14 @@ static void ws_llc_mpx_eapol_request(llc_data_base_t *base, mpx_user_t *user_cb,
     message->ie_vector_list[2].iovLen =  data->msduLength;
     message->ie_header_mask = ie_header_mask;
     message->nested_wp_id = nested_wp_id;
-#ifndef FEATURE_MBED_NO_AUTH
-    if (ie_header_mask.ea_ie) {
-        uint8_t eapol_auth_eui64[8];
-        ws_pae_controller_border_router_addr_read(base->interface_ptr, eapol_auth_eui64);
-        /* TI 15.4 Stack uses panCoordAddress to fill in EA-IE value */
-        ApiMac_mlmeSetSecurityReqArray(ApiMac_securityAttribute_panCoordExtendedAddress, eapol_auth_eui64);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        if (ie_header_mask.ea_ie) {
+            uint8_t eapol_auth_eui64[8];
+            ws_pae_controller_border_router_addr_read(base->interface_ptr, eapol_auth_eui64);
+            /* TI 15.4 Stack uses panCoordAddress to fill in EA-IE value */
+            ApiMac_mlmeSetSecurityReqArray(ApiMac_securityAttribute_panCoordExtendedAddress, eapol_auth_eui64);
+        }
     }
 #endif
 #endif
@@ -1586,6 +1621,11 @@ static void ws_llc_release_eapol_temp_entry(temp_entriest_t *base, const uint8_t
 
     ns_list_remove(&base->active_eapol_temp_neigh, neighbor);
     ns_list_add_to_end(&base->free_temp_neigh, neighbor);
+
+#ifdef FEATURE_FHNT_CONTROL
+    FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, mac64);
+    tr_warn("FHNT ns: release_eapol_temp delete: %s | status: %d", trace_array(mac64, 8), status);
+#endif
 }
 
 ws_neighbor_temp_class_t *ws_llc_get_multicast_temp_entry(protocol_interface_info_entry_t *interface, const uint8_t *mac64)
@@ -1660,6 +1700,11 @@ static ws_neighbor_temp_class_t *ws_allocate_eapol_temp_entry(temp_entriest_t *b
     ns_list_add_to_start(&base->active_eapol_temp_neigh, entry);
     //Clear Old data
     ws_init_temporary_neigh_data(entry, mac64);
+
+#ifdef FEATURE_FHNT_CONTROL
+    FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, mac64);
+    tr_warn("FHNT ns: allocate_eapol_temp create: %s | status: %d", trace_array(mac64, 8), status);
+#endif
     return entry;
 }
 

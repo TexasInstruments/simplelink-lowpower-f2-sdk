@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2021, Texas Instruments Incorporated
+ * Copyright (c) 2017-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ extern "C" {
  */
 typedef struct
 {
-    /*!< Hardware interrupt priority of the Hash accelerator.
+    /*! Hardware interrupt priority of the Hash accelerator.
      *
      * The CC26XX provides 8 interrupt priority levels encoded in three bits:
      *

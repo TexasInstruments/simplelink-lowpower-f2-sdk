@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2021, Arm Limited. All rights reserved.
+ * Copyright (c) 2023, Texas Instruments Incorporated. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -31,15 +32,16 @@ extern "C" {
  * data structure internally. */
 struct psa_client_key_attributes_s
 {
-    uint32_t type;
-    uint32_t lifetime;
-    uint32_t id;
-    uint32_t alg;
-    uint32_t usage;
+    uint16_t type;
     uint16_t bits;
+    uint32_t lifetime;
+    psa_key_id_t id;
+    uint32_t usage;
+    uint32_t alg;
 };
 
-#define PSA_CLIENT_KEY_ATTRIBUTES_INIT {0, 0, 0, 0, 0, 0}
+/* TI-TFM: Changed from {0, 0, 0, 0, 0, 0} to {0} to avoid GCC warning */
+#define PSA_CLIENT_KEY_ATTRIBUTES_INIT {0}
 
 #ifdef __cplusplus
 }

@@ -61,11 +61,14 @@ TLV_VALUES = {
         'KEYHASH': 0x01,
         'PUBKEY': 0x02,
         'SHA256': 0x10,
-        'RSA2048': 0x20,
+        'SHA512': 0x11,
+        'RSA2048PSS': 0x20,
         'ECDSA224': 0x21,
         'ECDSA256': 0x22,
-        'RSA3072': 0x23,
+        'RSA3072PSS': 0x23,
         'ED25519': 0x24,
+        'ECDSA521': 0x25,
+        'RSA3072PKCS': 0x26,
         'ENCRSA2048': 0x30,
         'ENCKW128': 0x31,
         'ENCEC256': 0x32,
@@ -294,7 +297,10 @@ class Image():
         # Calculate the hash of the public key
         if key is not None:
             pub = key.get_public_bytes()
-            sha = hashlib.sha256()
+            if type(key) == ecdsa.ECDSA521P1:
+                sha = hashlib.sha512()
+            else:
+                sha = hashlib.sha256()
             sha.update(pub)
             pubbytes = sha.digest()
         else:
@@ -324,10 +330,18 @@ class Image():
             # before it is even calculated. For this reason the script fills
             # this field with zeros and the bootloader will insert the right
             # value later.
-            digest = bytes(hashlib.sha256().digest_size)
+            if type(key) == ecdsa.ECDSA521P1:
+                digest = bytes(hashlib.sha512().digest_size)
+            else:
+                digest = bytes(hashlib.sha256().digest_size)
 
             # Create CBOR encoded boot record
-            boot_record = create_sw_component_data(sw_type, image_version,
+            if type(key) == ecdsa.ECDSA521P1:
+                boot_record = create_sw_component_data(sw_type, image_version,
+                                                   "SHA512", digest,
+                                                   pubbytes)
+            else:
+                boot_record = create_sw_component_data(sw_type, image_version,
                                                    "SHA256", digest,
                                                    pubbytes)
 
@@ -398,11 +412,17 @@ class Image():
 
         # Note that ecdsa wants to do the hashing itself, which means
         # we get to hash it twice.
-        sha = hashlib.sha256()
+        if type(key) == ecdsa.ECDSA521P1:
+            sha = hashlib.sha512()
+        else:
+            sha = hashlib.sha256()
         sha.update(self.payload)
         digest = sha.digest()
 
-        tlv.add('SHA256', digest)
+        if type(key) == ecdsa.ECDSA521P1:
+            tlv.add('SHA512', digest)
+        else:
+            tlv.add('SHA256', digest)
 
         if key is not None:
             if public_key_format == 'hash':

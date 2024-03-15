@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,16 +33,19 @@
 /*
  *  ======== FlashCC26X4_s.c ========
  */
+#include <stdint.h>
 #include "FlashCC26X4_s.h"
+
+#include <psa_manifest/internal_storage_sp.h> /* Auto-generated header */
+
+#include <third_party/tfm/interface/include/psa/error.h>
+#include <third_party/tfm/interface/include/psa/service.h>
+#include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
 #include DeviceFamily_constructPath(driverlib/rom.h)
 
-#include <assert.h>
-#include "cmse.h"
-#include <tfm_secure_api.h>
-#include <psa_manifest/internal_storage_sp.h>
 #include <ti/drivers/dpl/HwiP.h>
 
 /*!
@@ -186,9 +189,10 @@ void FlashCC26X4_s_main(void *param)
         /* pend on next PSA message */
         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
-        if (signals & FLASH_SP_SERVICE_SIGNAL)
+        if (signals & TI_FLASH_SERVICE_SIGNAL)
         {
-            psa_get(FLASH_SP_SERVICE_SIGNAL, &msg);
+            psa_get(TI_FLASH_SERVICE_SIGNAL, &msg);
+
             switch (msg.type)
             {
                 case PSA_IPC_CONNECT:

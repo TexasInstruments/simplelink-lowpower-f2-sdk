@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* global xdc */
+/* global xdc, helperGetHexString, helperGetCurrentDevice */
 let Program = xdc.module('xdc.rov.Program');
 let TimerModule = xdc.loadCapsule("timer.rov.js");
 
@@ -177,7 +177,7 @@ function getListOfClockAddresses(device){
             clockAddress = clockQ.next;
         }
     }
-    else if (device == "CC23XX") {
+    else if (device == "CC23XX") { /* This also covers CC27XX */
         let clockPList = Program.fetchVariable("ClockP_list");
 
         let clockAddress = clockPList.head;
@@ -217,9 +217,11 @@ function getClock(makeDetailed){
         let initialized = Program.fetchVariable("ClockP_initialized");
 
         /* If the variable was present and with a value of false then simply return */
-        if (!Boolean(initialized)) return view;
+        if (!initialized) return view;
     }
-    catch(e) {}
+    catch(e) {
+        /* Continue regardless of error */
+    }
 
     let device     = helperGetCurrentDevice();
     let listOfAddr = getListOfClockAddresses(device);
@@ -231,6 +233,7 @@ function getClock(makeDetailed){
 /* ======== getBasicClock ========
  * Entry point for basic clock view. Sets makeDetailed to false
  */
+/* eslint-disable-next-line no-unused-vars */
 function getBasicClock(){
     return getClock(false);
 }
@@ -238,6 +241,7 @@ function getBasicClock(){
 /* ======== getDetailedClock ========
  * Entry point for detailed clock view. Sets makeDetailed to true
  */
+/* eslint-disable-next-line no-unused-vars */
 function getDetailedClock(){
     return getClock(true);
 }
@@ -295,7 +299,7 @@ function getClockModule(makeDetailed){
     }
     else if (currentDevice == "CC23XX") {
         if (makeDetailed) {
-            clockModule.Address = "Detailed module only applicable to CC26XX and CC13XX";
+            clockModule.Address = "Detailed module only applicable to CC13XX/CC26XX";
         }
         else {
             getCC23XXModule(clockModule);
@@ -304,7 +308,7 @@ function getClockModule(makeDetailed){
     else {
         /* The generic Clock dpl implementation does not expose
          * module information */
-        clockModule.Ticks = "Clock module only applicable to CC26XX, CC13XX and CC23XX devices";
+        clockModule.Ticks = "Clock module only applicable to CC13XX/CC26XX and CC23XX/CC27XX devices";
     }
 
     view.push(clockModule);

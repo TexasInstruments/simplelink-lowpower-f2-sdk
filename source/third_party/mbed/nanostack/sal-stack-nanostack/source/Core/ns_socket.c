@@ -795,7 +795,7 @@ static void socket_print(const socket_t *socket, int lwidth, int rwidth, route_p
             state = "CLOSED";
         }
     }
-    print_fn("%3.*"PRId8"%c%3u%c%6"PRId32/*"%c%6"PRId32*/"%c%6"PRId32"%c%-5.5s%c%-*s%c%-*s%c%s",
+    tr_info("%3.*"PRId8"%c%3u%c%6"PRId32/*"%c%6"PRId32*/"%c%6"PRId32"%c%-5.5s%c%-*s%c%-*s%c%s",
              socket->id >= 0 ? 1 : 0, socket->id >= 0 ? socket->id : 0, sep,
              socket->refcount, sep,
              socket->rcvq.data_bytes, sep,
@@ -826,7 +826,7 @@ void socket_list_print(route_print_fn_t *print_fn, char sep)
             rwidth = len;
         }
     }
-    print_fn("Sck%cRef%cRecv-Q%c"/*"Recv-B%c"*/"Send-Q%cProto%c%-*s%c%-*s%c(state)", sep, sep, sep, /*sep,*/ sep, sep, lwidth, "Local Address", sep, rwidth, "Remote Address", sep);
+    tr_info("Sck%cRef%cRecv-Q%c"/*"Recv-B%c"*/"Send-Q%cProto%c%-*s%c%-*s%c(state)", sep, sep, sep, /*sep,*/ sep, sep, lwidth, "Local Address", sep, rwidth, "Remote Address", sep);
     ns_list_foreach(const socket_t, socket, &socket_list) {
         socket_print(socket, lwidth, rwidth, print_fn, sep);
     }

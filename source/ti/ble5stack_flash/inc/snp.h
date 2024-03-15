@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -148,7 +148,7 @@ enum SNP_CMD1_HDR_TYPE {
 #define SNP_SET_SECURITY_PARAM_REQ             0x4A  //!< SNP GAP Set Security Parameters Request
 #define SNP_SEND_SECURITY_REQUEST_REQ          0x4B  //!< SNP GAP Send Security Request
 #define SNP_SET_AUTHENTICATION_DATA_REQ        0x4C  //!< SNP GAP Set Auth Data Request
-#define SNP_SET_WHITE_LIST_POLICY_REQ          0x4D  //!< SNP GAP White List Policy Request
+#define SNP_SET_ACCEPT_LIST_POLICY_REQ         0x4D  //!< SNP GAP Accept List Policy Request
 /** @} End SNP_GAP_CMD_LIST */
 
 /**
@@ -162,7 +162,7 @@ enum SNP_CMD1_HDR_TYPE {
 #define SNP_GET_GAP_PARAM_RSP                  0x49  //!< SNP GAP Get Parameter Response
 #define SNP_SET_SECURITY_PARAM_RSP             0x4A  //!< SNP Set Security Parameter Response
 #define SNP_SEND_AUTHENTICATION_DATA_RSP       0x4C  //!< SNP Send Auth Data Response
-#define SNP_SET_WHITE_LIST_POLICY_RSP          0x4D  //!< SNP Set White List Policy Response
+#define SNP_SET_ACCEPT_LIST_POLICY_RSP         0x4D  //!< SNP Set Accept List Policy Response
 /** @} End SNP_GAP_RSP_IND_LIST */
 
 /**
@@ -275,8 +275,8 @@ SNP_CONN_PARAM_UPDATED_EVT | SNP_ADV_STARTED_EVT | SNP_ADV_ENDED_EVT | \
 #define SNP_HCI_OPCODE_EXT_PER                          0xFC14 //!< HCI Extension PER Command
 #define SNP_HCI_OPCODE_EXT_DECRYPT                      0xFC05 //!< HCI Extension decrypt encrypted data using AES128
 #define SNP_HCI_OPCODE_LE_ENCRYPT                       0x2017 //!< HCI Extension encrypt data using AES128
-#define SNP_HCI_OPCODE_EXT_OVERRIDE_SL                  0xFC1A //!< HCI Extension enable or disable suspending slave latency
-#define SNP_HCI_OPCODE_EXT_SET_FAST_TX_RESP_TIME        0xFC07 //!< HCI Extension set whether transmit data is sent as soon as possible even when slave latency is used
+#define SNP_HCI_OPCODE_EXT_OVERRIDE_PL                  0xFC1A //!< HCI Extension enable or disable suspending peripheral latency
+#define SNP_HCI_OPCODE_EXT_SET_FAST_TX_RESP_TIME        0xFC07 //!< HCI Extension set whether transmit data is sent as soon as possible even when peripheral latency is used
 #define SNP_HCI_OPCODE_EXT_ONE_PKT_PER_EVT              0xFC02 //!< HCI Extension set whether a connection will be limited to one packet per event
 #define SNP_HCI_OPCODE_EXT_GET_CONNECTION_INFO          0xFC20 //!< HCI Extension get connection related information
 /**
@@ -302,7 +302,7 @@ SNP_CONN_PARAM_UPDATED_EVT | SNP_ADV_STARTED_EVT | SNP_ADV_ENDED_EVT | \
  * @{
  */
 #define SNP_FILTER_POLICY_ALL             0x00 //!< Allow Scan Request from Any, Allow Connect Request from Any (default).
-#define SNP_FILTER_POLICY_WHITE           0x03 //!< Allow Scan Request and Connect from White List Only
+#define SNP_FILTER_POLICY_ACCEPT          0x03 //!< Allow Scan Request and Connect from Accept List Only
 /**
  * @}
  */
@@ -358,9 +358,9 @@ SNP_CONN_PARAM_UPDATED_EVT | SNP_ADV_STARTED_EVT | SNP_ADV_ENDED_EVT | \
 #define SNP_CONN_INT_MIN                 0x0006  //!< minimal connection interval range: 7.5ms
 #define SNP_CONN_INT_MAX                 0x0C80  //!< maximal connection interval range: 4a
 
-//! \brief Slave Latency Ranges
-#define SNP_CONN_SL_MIN                  0x0000 //!< minimal slave latency value
-#define SNP_CONN_SL_MAX                  0x01F3 //!< maximum slave latency value
+//! \brief Peripheral Latency Ranges
+#define SNP_CONN_PL_MIN                  0x0000 //!< minimal peripheral latency value
+#define SNP_CONN_PL_MAX                  0x01F3 //!< maximum peripheral latency value
 
 //! \brief Supervisor Timeout Range (in 10ms units, ranging from 100ms to 32 seconds)
 #define SNP_CONN_SUPERVISOR_TIMEOUT_MIN  0x000A //!< minimum supervision timeout, multiple of 10ms
@@ -749,7 +749,7 @@ PACKED_TYPEDEF_STRUCT
                         //! Range: 0x0006 to 0x0C80 \n
                         //! Time = intervalMax * 1.25 msec \n
                         //! Time Range: 7.5 msec to 4 seconds.
-  uint16_t slaveLatency; //!< @brief 2 Byte Slave latency for the connection in number of connection events.
+  uint16_t peripheralLatency; //!< @brief 2 Byte Peripheral latency for the connection in number of connection events.
                          //!
                          //! Range: 0x0000 to 0x01F3
   uint16_t supervisionTimeout; //!<  @brief 2 Byte Supervision timeout for the LE Link.
@@ -1214,11 +1214,11 @@ PACKED_TYPEDEF_STRUCT
  *
  * This is a packed structure. see @ref TL_Parameter for more information.
  *
- * @typedef snpSetWhiteListRsp_t
+ * @typedef snpSetAcceptListRsp_t
  *
  * @brief   1 Byte Command Status Response
  *
- * Used for @ref SNP_SET_WHITE_LIST_POLICY_RSP
+ * Used for @ref SNP_SET_ACCEPT_LIST_POLICY_RSP
  *
  * Same Structure as @ref snpSetGattParamRsp_t
  *
@@ -1230,7 +1230,7 @@ PACKED_TYPEDEF_STRUCT
   uint8_t status;       //!< 1 Byte Command Status (SUCCESS or Error, @ref SNP_ERRORS)
 }snpSetGattParamRsp_t, snpSetAdvDataCnf_t, snpSetGapParamRsp_t,
 snpAddServiceRsp_t, snpSetSecParamRsp_t, snpSetAuthDataRsp_t,
-snpSetWhiteListRsp_t;
+snpSetAcceptListRsp_t;
 
 /**
  * @struct snpSetGattParamReq_t
@@ -1339,16 +1339,16 @@ PACKED_TYPEDEF_STRUCT
 } snpCharCfgUpdatedInd_t;
 
 /**
- * @struct snpSetWhiteListReq_t
+ * @struct snpSetAcceptListReq_t
  *
- * @brief Parameter Structure for @ref SNP_setWhiteListFilterPolicy / @ref SNP_SET_WHITE_LIST_POLICY_REQ
+ * @brief Parameter Structure for @ref SNP_setAcceptListFilterPolicy / @ref SNP_SET_ACCEPT_LIST_POLICY_REQ
  *
  * This is a packed structure. see @ref TL_Parameter for more information.
  */
 PACKED_TYPEDEF_STRUCT
 {
-  uint8_t useWhiteList; //!< 1 Byte White List Filter Policy, @ref SNP_AdvFilterPolicyType
-} snpSetWhiteListReq_t;
+  uint8_t useAcceptList; //!< 1 Byte Accept List Filter Policy, @ref SNP_AdvFilterPolicyType
+} snpSetAcceptListReq_t;
 
 /**
  * @union snp_msg_t
@@ -1398,9 +1398,9 @@ typedef union
   snpSetAuthDataReq_t      setAuthDataReq;      //!< Set Authentication Data request.
   snpSetAuthDataRsp_t      setAuthDataRsp;      //!< Set Authentication Data response.
 
-  //White List
-  snpSetWhiteListReq_t     setWhiteListReq;    //!< Set the White List Filter Policy request.
-  snpSetWhiteListRsp_t     setWhiteListRsp;    //!< Set the White List Filter Policy response.
+  //Accept List
+  snpSetAcceptListReq_t     setAcceptListReq;    //!< Set the Accept List Filter Policy request.
+  snpSetAcceptListRsp_t     setAcceptListRsp;    //!< Set the Accept List Filter Policy response.
 
   //Services
   snpAddServiceReq_t       addServiceReq;       //!< Add service request.
@@ -1445,7 +1445,7 @@ PACKED_TYPEDEF_STRUCT
 {
   uint16_t connHandle;          //!< 2 Byte Handle of the connection
   uint16_t connInterval;        //!< 2 Byte @see snpUpdateConnParamReq_t::connInterval
-  uint16_t slaveLatency;        //!< 2 Byte @see snpUpdateConnParamReq_t::slaveLatency
+  uint16_t peripheralLatency;        //!< 2 Byte @see snpUpdateConnParamReq_t::peripheralLatency
   uint16_t supervisionTimeout;  //!< 2 Byte @see snpUpdateConnParamReq_t::supervisionTimeout
   uint8_t  addressType;         //!< 1 Byte Type of initiator address
   uint8_t  pAddr[6];            //!< 6 Byte Address of the initiator
@@ -1479,7 +1479,7 @@ PACKED_TYPEDEF_STRUCT
 {
   uint16_t connHandle;          //!< 2 Byte Handle of the connection
   uint16_t connInterval;        //!< 2 Byte @see snpUpdateConnParamReq_t::connInterval
-  uint16_t slaveLatency;        //!< 2 Byte @see snpUpdateConnParamReq_t::slaveLatency
+  uint16_t peripheralLatency;        //!< 2 Byte @see snpUpdateConnParamReq_t::peripheralLatency
   uint16_t supervisionTimeout;  //!< 2 Byte @see snpUpdateConnParamReq_t::supervisionTimeout
 } snpUpdateConnParamEvt_t;
 
@@ -1593,14 +1593,14 @@ PACKED_TYPEDEF_STRUCT
  * @brief Connection parameters for the peripheral device.
  *
  * These numbers are used to compare against connection events and
- * request connection parameter updates with the master.
+ * request connection parameter updates with the central.
  * this structure is used to update the parameter #SNP_GGS_PERI_CONN_PARAM_ATT of the GAP/GATT service.
  */
 typedef struct
 {
   uint16_t intervalMin; //!< 2 Byte @see snpUpdateConnParamReq_t::connInterval
   uint16_t intervalMax; //!< 2 Byte @see snpUpdateConnParamReq_t::connInterval
-  uint16_t latency;     //!< 2 Byte @see snpUpdateConnParamReq_t::slaveLatency
+  uint16_t latency;     //!< 2 Byte @see snpUpdateConnParamReq_t::peripheralLatency
   uint16_t timeout;     //!< 2 Byte @see snpUpdateConnParamReq_t::supervisionTimeout
 } snpGapPeriConnectParams_t;
 

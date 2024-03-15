@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@
 #ifndef __FLASH_LAYOUT_H__
 #define __FLASH_LAYOUT_H__
 
-#define FLASH0_SECTOR_SIZE   (0x800)    /* 2 KB */
-#define FLASH0_SIZE          (0x100000) /* 1 MB */
-#define FLASH0_PROGRAM_UNIT  (0x1)      /* Minimum write size */
-#define FLASH0_PAGE_SIZE     (0x00000800)  /* 2 KB */
 #define FLASH0_BASE_S        (0x0)
+#define FLASH0_SIZE          (0x100000) /* 1 MB */
+#define FLASH0_SECTOR_SIZE   (0x800)    /* 2 KB */
+#define FLASH0_PAGE_SIZE     (0x800)    /* 2 KB */
+#define FLASH0_PROGRAM_UNIT  (1)        /* Minimum write size */
 
 /* Sector size of the flash hardware */
 #define FLASH_AREA_IMAGE_SECTOR_SIZE FLASH0_SECTOR_SIZE
@@ -38,43 +38,7 @@
 
 /* Internal Trusted Storage (ITS) Service definitions */
 #define FLASH_ITS_AREA_OFFSET (FLASH_TOTAL_SIZE - FLASH_ITS_AREA_SIZE)
-#define FLASH_ITS_AREA_SIZE   (0x5000) /* 20 KB */
-
-/* Protected Storage (PS) Service definitions */
-#define FLASH_PS_AREA_OFFSET (FLASH_ITS_AREA_OFFSET - \
-                              FLASH_ITS_AREA_SIZE)
-#define FLASH_PS_AREA_SIZE   (0x1000)  /* 4 KB */
-
-
-/*
- * Flash device name used by BL2
- * Name is defined in flash driver file: Driver_Flash.c
- */
-#define FLASH_DEV_NAME Driver_FLASH0
-
-/*
- * Secure Storage (PS) Service definitions
- * Note: Further documentation of these definitions can be found in the
- * TF-M PS Integration Guide.
- */
-#define PS_FLASH_DEV_NAME Driver_FLASH0
-
-/*
- * In this target the CMSIS driver requires only the offset from the base
- * address instead of the full memory address.
- */
-#define PS_FLASH_AREA_ADDR     FLASH_PS_AREA_OFFSET
-/* Dedicated flash area for PS */
-#define PS_FLASH_AREA_SIZE     FLASH_PS_AREA_SIZE
-#define PS_SECTOR_SIZE         FLASH_AREA_IMAGE_SECTOR_SIZE
-/* Number of PS_SECTOR_SIZE per block */
-#define PS_SECTORS_PER_BLOCK   (0x1)
-/* Specifies the smallest flash programmable unit in bytes */
-#define PS_FLASH_PROGRAM_UNIT  0x1
-/* The maximum asset size to be stored in the PS area */
-#define PS_MAX_ASSET_SIZE      512
-/* The maximum number of assets to be stored in the PS area */
-#define PS_NUM_ASSETS          4
+#define FLASH_ITS_AREA_SIZE   (0x4800) /* 18 KB */
 
 /*
  * Internal Trusted Storage (ITS) Service definitions
@@ -82,19 +46,15 @@
  * TF-M ITS Integration Guide.
  */
 
-#define ITS_FLASH_DEV_NAME Driver_FLASH0
+#define TFM_HAL_ITS_FLASH_DRIVER Driver_FLASH0
 
-#define ITS_FLASH_AREA_ADDR    FLASH_ITS_AREA_OFFSET
+#define TFM_HAL_ITS_FLASH_AREA_ADDR    FLASH_ITS_AREA_OFFSET
 /* Dedicated flash area for ITS */
-#define ITS_FLASH_AREA_SIZE    FLASH_ITS_AREA_SIZE
-#define ITS_SECTOR_SIZE        FLASH_AREA_IMAGE_SECTOR_SIZE
+#define TFM_HAL_ITS_FLASH_AREA_SIZE    FLASH_ITS_AREA_SIZE
+#define TFM_HAL_ITS_SECTOR_SIZE        FLASH_AREA_IMAGE_SECTOR_SIZE
 /* Number of ITS_SECTOR_SIZE per block */
-#define ITS_SECTORS_PER_BLOCK  (0x1)
+#define TFM_HAL_ITS_SECTORS_PER_BLOCK  (1)
 /* Specifies the smallest flash programmable unit in bytes */
-#define ITS_FLASH_PROGRAM_UNIT FLASH0_PROGRAM_UNIT
-/* The maximum asset size to be stored in the ITS area */
-#define ITS_MAX_ASSET_SIZE     (1100) /* Worst case for SECP521 key */
-/* The maximum number of assets to be stored in the ITS area */
-#define ITS_NUM_ASSETS         (32)
+#define TFM_HAL_ITS_PROGRAM_UNIT FLASH0_PROGRAM_UNIT
 
 #endif /* __FLASH_LAYOUT_H__ */

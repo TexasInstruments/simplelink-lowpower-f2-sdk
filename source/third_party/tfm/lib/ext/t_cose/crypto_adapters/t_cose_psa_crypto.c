@@ -1,9 +1,8 @@
 /*
  * t_cose_psa_crypto.c
  *
- * Copyright (c) 2022, Texas Instruments Incorporated. All rights reserved.
  * Copyright 2019, Laurence Lundblade
- * Copyright (c) 2020, Arm Limited. All rights reserved
+ * Copyright (c) 2020-2021, Arm Limited. All rights reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -35,19 +34,6 @@
  * reference and dead stripping the executable won't do it).
  */
 
-#if TFM_ENABLED
-/* [TI-TFM] Redefinitions for custom TI PSA Crypto interface */
-#include <psa/ti_psa_tfm.h>
-
-/**
- * The size of private key in bits. Format is as defined in [COSE (RFC 8152)]
- * (https://tools.ietf.org/html/rfc8152) and [SEC 1: Elliptic Curve
- * Cryptography](http://www.secg.org/sec1-v2.pdf).
- *
- * This size is well-known and documented in public standards.
- */
-#define ECC_P256_PRIVATE_KEY_BITS 256
-#endif
 
 #include "t_cose_crypto.h"  /* The interface this implements */
 #include "psa/crypto.h"     /* PSA Crypto Interface to mbed crypto or such */
@@ -114,7 +100,7 @@ static enum t_cose_err_t psa_status_to_t_cose_error_signing(psa_status_t err)
            err == PSA_ERROR_INVALID_SIGNATURE   ? T_COSE_ERR_SIG_VERIFY :
            err == PSA_ERROR_NOT_SUPPORTED       ? T_COSE_ERR_UNSUPPORTED_SIGNING_ALG:
            err == PSA_ERROR_INSUFFICIENT_MEMORY ? T_COSE_ERR_INSUFFICIENT_MEMORY :
-           err == PSA_ERROR_TAMPERING_DETECTED  ? T_COSE_ERR_TAMPERING_DETECTED :
+           err == PSA_ERROR_CORRUPTION_DETECTED ? T_COSE_ERR_TAMPERING_DETECTED :
                                                   T_COSE_ERR_SIG_FAIL;
 }
 
@@ -148,7 +134,7 @@ t_cose_crypto_pub_key_verify(int32_t               cose_algorithm_id,
      * signing_key passed in, not the cose_algorithm_id This check
      * looks for ECDSA signing as indicated by COSE and rejects what
      * is not. (Perhaps this check can be removed to save object code
-     * if it is the case that psa_asymmetric_verify() does the right
+     * if it is the case that psa_verify_hash() does the right
      * checks).
      */
     if(!PSA_ALG_IS_ECDSA(psa_alg_id)) {
@@ -197,7 +183,7 @@ t_cose_crypto_pub_key_sign(int32_t                cose_algorithm_id,
      * signing_key passed in, not the cose_algorithm_id This check
      * looks for ECDSA signing as indicated by COSE and rejects what
      * is not. (Perhaps this check can be removed to save object code
-     * if it is the case that psa_asymmetric_verify() does the right
+     * if it is the case that psa_verify_hash() does the right
      * checks).
      */
     if(!PSA_ALG_IS_ECDSA(psa_alg_id)) {
@@ -279,20 +265,12 @@ enum t_cose_err_t t_cose_crypto_sig_size(int32_t           cose_algorithm_id,
      * very close to this, so this is likely the code to use with MBed
      * Crypto going forward.
      */
-#if TFM_ENABLED
-    /* [TI-TFM] Set private key size for NIST-P256 as keystore functions cannot
-     * be accessed from attestation partition and TI ECDSA driver only supports
-     * NIST-P256 keys.
-     */
-    key_len_bits = ECC_P256_PRIVATE_KEY_BITS;
-    psa_status_t status = PSA_SUCCESS;
-#else
+
     psa_key_attributes_t key_attributes = psa_key_attributes_init();
 
     psa_status_t status = psa_get_key_attributes(signing_key_psa, &key_attributes);
 
     key_len_bits = psa_get_key_bits(&key_attributes);
-#endif
 
 #endif /* T_COSE_USE_PSA_CRYPTO_FROM_MBED_CRYPTO11 */
 

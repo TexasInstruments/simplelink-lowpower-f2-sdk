@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2004-2023, Texas Instruments Incorporated
+ Copyright (c) 2004-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -236,7 +236,7 @@ extern "C"
 #define ZCD_NV_SAS_STARTUP_CTRL           0x00B7
 
 #define ZCD_NV_SAS_TC_ADDR                0x00C1
-#define ZCD_NV_SAS_TC_MASTER_KEY          0x00C2
+#define ZCD_NV_SAS_TC_CENTRAL_KEY         0x00C2
 #define ZCD_NV_SAS_NWK_KEY                0x00C3
 #define ZCD_NV_SAS_USE_INSEC_JOIN         0x00C4
 #define ZCD_NV_SAS_PRECFG_LINK_KEY        0x00C5
@@ -244,7 +244,7 @@ extern "C"
 #define ZCD_NV_SAS_NWK_KEY_TYPE           0x00C7
 #define ZCD_NV_SAS_NWK_MGR_ADDR           0x00C8
 
-#define ZCD_NV_SAS_CURR_TC_MASTER_KEY     0x00D1
+#define ZCD_NV_SAS_CURR_TC_CENTRAL_KEY    0x00D1
 #define ZCD_NV_SAS_CURR_NWK_KEY           0x00D2
 #define ZCD_NV_SAS_CURR_PRECFG_LINK_KEY   0x00D3
 

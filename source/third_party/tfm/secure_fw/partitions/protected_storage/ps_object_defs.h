@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "flash_layout.h"
+#include "config_tfm.h"
 #include "psa/protected_storage.h"
 
 #ifdef PS_ENCRYPTION

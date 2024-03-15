@@ -309,7 +309,7 @@ More information about the configuration and feature options can be found in the
 
 ### <a name="DisablingCommonUserInterface"></a>Disabling Common User Interface
 
-The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opts file:
+The common user interface (CUI) is a UART based interface that allows users to control and receive updates regarding the application. For various reasons, including reducing the memory footprint, the user is able to disable the common user interface (CUI). To disable the CUI, the following variable must be defined in the project-specific .opt file:
 
 ```
 -DCUI_DISABLE
@@ -321,7 +321,7 @@ The common user interface (CUI) is a UART based interface that allows users to c
 
 By default, this project is configured to use two pages of NV. A maximum of five NV pages are supported. In order to modify the NV pages, update the following:
 
-* `NVOCMP_NVPAGES=2` in the project-specific .opts file
+* `NVOCMP_NVPAGES=2` in the project-specific .opt file
 * SysConfig NVS module:
    * Set Region Size based on the formula `NVOCMP_NVPAGES * 0x2000`
    * Set Region Base based on the formula `0x100000 - (NVOCMP_NVPAGES * 0x2000)`
@@ -354,7 +354,7 @@ In Beacon Mode, data requests are configured to time out after 1 beacon interval
 #define OAD_BLOCK_AUTO_RESUME_DELAY   BEACON_INTERVAL
 ```
 
-Finally, the sensor_oad project has 3 defines related to the OAD feature, defined by default in the project's .opts file or in the project settings:
+Finally, the sensor_oad project has 3 defines related to the OAD feature, defined by default in the project's .opt file or in the project settings:
 
 * `FEATURE_NATIVE_OAD`: This includes the 15.4 OAD client. This results in an application that supports the OAD messages needed to receive an OAD update over the 15.4 network.
 * `FEATURE_BLE_OAD`: This allows the 15.4 application to revert to the persistent application to perform an OAD. Currently unused for MCUboot.

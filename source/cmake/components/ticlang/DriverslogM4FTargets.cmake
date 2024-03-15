@@ -56,7 +56,7 @@ add_library(Drivers::log_cc13x2 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc13x2 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc13x2;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc13x2;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::log_cc26x2
@@ -64,7 +64,7 @@ add_library(Drivers::log_cc26x2 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc26x2 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc26x2;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc26x2;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::log_cc13x2x7
@@ -72,7 +72,7 @@ add_library(Drivers::log_cc13x2x7 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc13x2x7 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc13x2x7;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc13x2x7;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
 )
 
 # Create imported target Drivers::log_cc26x2x7
@@ -80,7 +80,7 @@ add_library(Drivers::log_cc26x2x7 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc26x2x7 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc26x2x7;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc26x2x7;TiUtils::tiutils;TOOLCHAIN_ticlang_m4f"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
@@ -119,7 +119,7 @@ unset(_IMPORT_CHECK_TARGETS)
 # Make sure the targets which have been exported in some other
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "TiUtils::tiutils" )
+foreach(_target "Driverlib::cc13x2" "TiUtils::tiutils" "Driverlib::cc26x2" "Driverlib::cc13x2x7" "Driverlib::cc26x2x7" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

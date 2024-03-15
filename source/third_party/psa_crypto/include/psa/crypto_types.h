@@ -1,6 +1,8 @@
 /**
  * \file psa/crypto_types.h
  *
+ * \addtogroup ti_psa_crypto PSA cryptography module: type aliases.
+ *
  * \brief PSA cryptography module: type aliases.
  *
  * \note This file may not be included directly. Applications must
@@ -68,13 +70,8 @@ typedef int32_t psa_status_t;
 
 /** \brief Encoding of a key type.
  */
-#if !defined(USE_MBEDCRYPTO_VALUES)
-/* This is wrong, according to the spec key type should be 16 bits.
- * For now, it needs to be 32 bits to fit the older values used in mbedCrypto. */
 typedef uint16_t psa_key_type_t;
-#else
-typedef uint32_t psa_key_type_t;
-#endif
+
 /** The type of PSA elliptic curve family identifiers.
  *
  * The curve identifier is required to create an ECC key using the

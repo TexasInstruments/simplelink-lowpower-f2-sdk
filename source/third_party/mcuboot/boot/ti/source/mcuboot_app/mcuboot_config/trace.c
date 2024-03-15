@@ -338,7 +338,7 @@ void trace_flush_module(void)
 char *trace_array(const uint8_t *buf, uint16_t len)
 {
     int i;
-    if (len == 0 || tmpStr == NULL) {
+    if (len == 0) {
         return "";
     }
     if (buf == NULL) {

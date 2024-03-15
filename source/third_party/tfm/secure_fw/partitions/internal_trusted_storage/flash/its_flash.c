@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
- * Copyright (c) 2020 Cypress Semiconductor Corporation. All rights reserved.
+ * Copyright (c) 2021-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -8,61 +7,51 @@
 
 #include "its_flash.h"
 
-#ifndef ITS_MAX_BLOCK_DATA_COPY
-#define ITS_MAX_BLOCK_DATA_COPY 256
+#include "config_tfm.h"
+#include "flash_fs/its_flash_fs.h"
+
+#if ITS_RAM_FS
+#ifndef ITS_RAM_FS_SIZE
+#error "ITS_RAM_FS_SIZE must be defined by the target in flash_layout.h"
+#endif
+uint8_t its_block_data[ITS_RAM_FS_SIZE];
+
+#elif (TFM_HAL_ITS_PROGRAM_UNIT > 16)
+#ifndef ITS_FLASH_NAND_BUF_SIZE
+#error "ITS_FLASH_NAND_BUF_SIZE must be defined by the target in flash_layout.h"
+#endif
+static uint8_t its_write_buf_0[ITS_FLASH_NAND_BUF_SIZE];
+static uint8_t its_write_buf_1[ITS_FLASH_NAND_BUF_SIZE];
+struct its_flash_nand_dev_t its_flash_nand_dev = {
+    .driver = &TFM_HAL_ITS_FLASH_DRIVER,
+    .buf_block_id_0 = ITS_BLOCK_INVALID_ID,
+    .buf_block_id_1 = ITS_BLOCK_INVALID_ID,
+    .write_buf_0 = its_write_buf_0,
+    .write_buf_1 = its_write_buf_1,
+    .buf_size = sizeof(its_write_buf_0),
+};
 #endif
 
-extern const struct its_flash_info_t its_flash_info_internal;
-extern const struct its_flash_info_t its_flash_info_external;
+#ifdef TFM_PARTITION_PROTECTED_STORAGE
+#if PS_RAM_FS
+#ifndef PS_RAM_FS_SIZE
+#error "PS_RAM_FS_SIZE must be defined by the target in flash_layout.h"
+#endif
+uint8_t ps_block_data[PS_RAM_FS_SIZE];
 
-static const struct its_flash_info_t *const flash_infos[] = {
-    [ITS_FLASH_ID_INTERNAL] = &its_flash_info_internal,
-    [ITS_FLASH_ID_EXTERNAL] = &its_flash_info_external,
+#elif (TFM_HAL_PS_PROGRAM_UNIT > 16)
+#ifndef PS_FLASH_NAND_BUF_SIZE
+#error "PS_FLASH_NAND_BUF_SIZE must be defined by the target in flash_layout.h"
+#endif
+static uint8_t ps_write_buf_0[PS_FLASH_NAND_BUF_SIZE];
+static uint8_t ps_write_buf_1[PS_FLASH_NAND_BUF_SIZE];
+struct its_flash_nand_dev_t ps_flash_nand_dev = {
+    .driver = &TFM_HAL_PS_FLASH_DRIVER,
+    .buf_block_id_0 = ITS_BLOCK_INVALID_ID,
+    .buf_block_id_1 = ITS_BLOCK_INVALID_ID,
+    .write_buf_0 = ps_write_buf_0,
+    .write_buf_1 = ps_write_buf_1,
+    .buf_size = sizeof(ps_write_buf_0),
 };
-
-const struct its_flash_info_t *its_flash_get_info(enum its_flash_id_t id)
-{
-    return flash_infos[id];
-}
-
-psa_status_t its_flash_block_to_block_move(const struct its_flash_info_t *info,
-                                           uint32_t dst_block,
-                                           size_t dst_offset,
-                                           uint32_t src_block,
-                                           size_t src_offset,
-                                           size_t size)
-{
-    psa_status_t status;
-    size_t bytes_to_move;
-    uint8_t dst_block_data_copy[ITS_MAX_BLOCK_DATA_COPY];
-
-    while (size > 0) {
-        /* Calculates the number of bytes to move */
-        bytes_to_move = ITS_UTILS_MIN(size, ITS_MAX_BLOCK_DATA_COPY);
-
-        /* Reads data from source block and store it in the in-memory copy of
-         * destination content.
-         */
-        status = info->read(info, src_block, dst_block_data_copy, src_offset,
-                            bytes_to_move);
-        if (status != PSA_SUCCESS) {
-            return status;
-        }
-
-        /* Writes in flash the in-memory block content after modification */
-        status = info->write(info, dst_block, dst_block_data_copy, dst_offset,
-                             bytes_to_move);
-        if (status != PSA_SUCCESS) {
-            return status;
-        }
-
-        /* Updates pointers to the source and destination flash regions */
-        dst_offset += bytes_to_move;
-        src_offset += bytes_to_move;
-
-        /* Decrement remaining size to move */
-        size -= bytes_to_move;
-    }
-
-    return PSA_SUCCESS;
-}
+#endif
+#endif /* TFM_PARTITION_PROTECTED_STORAGE */

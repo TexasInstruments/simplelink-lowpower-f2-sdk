@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 
-set(SOURCES_M0P_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM0/portasm.s)
-set(SOURCES_M4_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM3/portasm.s)
-set(SOURCES_M4F_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM4F/portasm.s)
-set(SOURCES_M33F_IAR ${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/IAR/ARM_CM33_NTZ/non_secure/portasm.s)
+set(SOURCES_M0P_IAR ${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM0/portasm.s)
+set(SOURCES_M4_IAR ${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM3/portasm.s)
+set(SOURCES_M4F_IAR ${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM4F/portasm.s)
+set(SOURCES_M33F_IAR ${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/IAR/ARM_CM33_NTZ/non_secure/portasm.s)

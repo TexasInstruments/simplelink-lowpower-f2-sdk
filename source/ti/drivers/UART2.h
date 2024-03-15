@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2022, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -286,6 +286,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#include <ti/drivers/Power.h>
 
 #include <ti/drivers/dpl/ClockP.h>
 #include <ti/drivers/dpl/HwiP.h>
@@ -657,7 +659,7 @@ typedef struct
     UART2_Callback writeCallback;  /*!< Pointer to write callback */                      \
                                                                                           \
     /* For Power management */                                                            \
-    unsigned int powerMgrId; /*!< Determined from base address */                         \
+    Power_Resource powerMgrId; /*!< Determined from base address */                       \
 /*! @endcond */
 
 /*!
@@ -830,7 +832,7 @@ extern void UART2_Params_init(UART2_Params *params);
  *  Instead, a callback function specified by UART2_Params::readCallback
  *  is called when the transfer is finished (#UART2_ReadReturnMode_FULL), or
  *  reception has become inactive (#UART2_ReadReturnMode_PARTIAL).
- *  The callback function can occur in the caller's context or in SWI
+ *  The callback function can occur in the caller's context or in HWI
  *  context, depending on the device-specific implementation.
  *  An unfinished asynchronous read operation must always be cancelled using
  *  UART2_readCancel() before calling UART2_close().
@@ -845,6 +847,12 @@ extern void UART2_Params_init(UART2_Params *params);
  *
  *  @note It is ok to call %UART2_read() from its own callback function when in
  *  #UART2_Mode_CALLBACK.
+ *
+ *  @warning By calling this function, RX will be enabled even after the function
+ *  has returned. This is in order to keep collecting data into the RX buffer
+ *  to prevent losing data at high baud-rates. As a consequence, entering low
+ *  power mode will be inhibited. To disable RX and enable entering low power
+ *  mode, UART2_rxDisable must be called.
  *
  *  @param[in]  handle  A #UART2_Handle returned by UART2_open()
  *
@@ -923,6 +931,12 @@ UART2_readFull(UART2_Handle handle, void *buffer, size_t size, size_t *bytesRead
  *
  *  @note It is ok to call %UART2_readTimeout() from its own callback
  *  function when in #UART2_Mode_CALLBACK.
+ *
+ *  @warning By calling this function, RX will be enabled even after the function
+ *  has returned. This is in order to keep collecting data into the RX buffer
+ *  to prevent losing data at high baud-rates. As a consequence, entering low
+ *  power mode will be inhibited. To disable RX and enable entering low power
+ *  mode, UART2_rxDisable must be called.
  *
  *  @param[in]  handle  A #UART2_Handle returned by UART2_open()
  *

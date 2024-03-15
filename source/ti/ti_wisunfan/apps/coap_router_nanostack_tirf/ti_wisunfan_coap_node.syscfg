@@ -100,7 +100,6 @@ else
 LED_R.$name = "CONFIG_LED_RED";
 LED_R.gpioPin.$name = "CONFIG_GPIO_RLED";               // Descriptive name for the LED_R GPIO
 LED_R.gpioPin.mode = "Output";
-LED_R.gpioPin.callbackFunction = "";
 
 
 /* ======== LED Green ======== */
@@ -119,7 +118,6 @@ else
 LED_G.$name = "CONFIG_LED_GREEN";
 LED_G.gpioPin.$name = "CONFIG_GPIO_GLED";               // Descriptive name for the LED_G GPIO
 LED_G.gpioPin.mode = "Output";
-LED_G.gpioPin.callbackFunction = "";
 
 /* ======== Left Button ======== */
 var BUTTON = scripting.addModule("/ti/drivers/apps/Button");    // Add a BUTTON module

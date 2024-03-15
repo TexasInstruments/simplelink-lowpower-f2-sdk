@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -63,10 +63,10 @@
 #include <ti/drivers/AESECB.h>
 
 #ifdef CC23X0
-#include <ti/drivers/aesccm/AESCCMCC23XX.h>
-#include <ti/drivers/aesecb/AESECBCC23XX.h>
-#include <ti/drivers/ecdh/ECDHCC23XX.h>
-#include <ti/drivers/cryptoutils/sharedresources/CryptoResourceCC23XX.h>
+#include <ti/drivers/aesccm/AESCCMLPF3.h>
+#include <ti/drivers/aesecb/AESECBLPF3.h>
+#include <ti/drivers/ecdh/ECDHLPF3SW.h>
+#include <ti/drivers/cryptoutils/sharedresources/CryptoResourceLPF3.h>
 #include <ti/drivers/RNG.h>
 #else
 #include <ti/drivers/aesccm/AESCCMCC26XX.h>

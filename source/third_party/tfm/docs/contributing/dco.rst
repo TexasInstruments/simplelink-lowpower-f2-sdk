@@ -3,7 +3,7 @@
 Developer Certificate of Origin
 ###############################
 
-.. include:: /dco.txt
+.. include:: ../../dco.txt
    :literal:
 
 

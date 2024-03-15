@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -74,7 +74,7 @@
 #define MAP_DIRECT_H
 
 // Link Layer
-#define MAP_LL_AddDeviceToResolvingList                              LL_AddDeviceToResolvingList
+#define MAP_LL_AddDeviceToResolvingList                              LL_AddDeviceToResolvingList_sPatch
 #define MAP_LL_AddWhiteListDevice                                    LL_AddWhiteListDevice
 #define MAP_LL_AdvReportCback                                        LL_AdvReportCback
 #define MAP_LL_AuthPayloadTimeoutExpiredCback                        LL_AuthPayloadTimeoutExpiredCback
@@ -157,6 +157,12 @@
 #define MAP_LL_EXT_SetSlaveLatencyOverride                           LL_EXT_SetSlaveLatencyOverride
 #define MAP_LL_EXT_SetTxPower                                        LL_EXT_SetTxPower
 #define MAP_LL_EXT_SetTxPowerCback                                   LL_EXT_SetTxPowerCback
+#define MAP_LL_EXT_GetRxStats                                        LL_EXT_GetRxStats
+#define MAP_LL_EXT_GetRxStatsCback                                   LL_EXT_GetRxStatsCback
+#define MAP_LL_EXT_GetTxStats                                        LL_EXT_GetTxStats
+#define MAP_LL_EXT_GetTxStatsCback                                   LL_EXT_GetTxStatsCback
+#define MAP_LL_EXT_GetCoexStats                                      LL_EXT_GetCoexStats
+#define MAP_LL_EXT_GetCoexStatsCback                                 LL_EXT_GetCoexStatsCback
 #define MAP_LL_ChannelSelectionAlgorithmCback                        LL_ChannelSelectionAlgorithmCback
 #define MAP_LL_EncChangeCback                                        LL_EncChangeCback
 #define MAP_LL_EncKeyRefreshCback                                    LL_EncKeyRefreshCback
@@ -247,6 +253,7 @@
 #define MAP_LL_SetScanRspData                                        LL_SetScanRspData
 #define MAP_LL_StartEncrypt                                          LL_StartEncrypt
 #define MAP_LL_TX_bm_alloc                                           LL_TX_bm_alloc
+#define MAP_LL_TX_bm_free                                            LL_TX_bm_free
 #define MAP_LL_TxData                                                LL_TxData
 #define MAP_LL_WriteAuthPayloadTimeout                               LL_WriteAuthPayloadTimeout
 #define MAP_LL_WriteDefaultDataLen                                   LL_WriteDefaultDataLen
@@ -361,7 +368,7 @@
 #define MAP_llRfSetup                                                llRfSetup
 #define MAP_llRfStartFS                                              llRfStartFS
 #define MAP_llScan_TaskEnd                                           llScan_TaskEnd
-#define MAP_llScheduleTask                                           llScheduleTask
+#define MAP_llScheduleTask                                           llScheduleTask_sPatch
 #ifdef ONE_BLE_LIB_SIZE_OPTIMIZATION
 #define MAP_llScheduler                                              llScheduler_hook
 #else
@@ -608,7 +615,7 @@
 #define MAP_HCI_LE_WriteRfPathCompCmd                                HCI_LE_WriteRfPathCompCmd
 // V5.0 LE AE API
 #define MAP_LE_SetAdvSetRandAddr                                     LE_SetAdvSetRandAddr
-#define MAP_LE_SetExtAdvParams                                       LE_SetExtAdvParams
+#define MAP_LE_SetExtAdvParams                                       LE_SetExtAdvParams_sPatch
 #define MAP_LE_SetExtAdvData                                         LE_SetExtAdvData_hook
 #define MAP_LE_SetExtScanRspData                                     LE_SetExtScanRspData_hook
 #define MAP_LE_SetExtAdvEnable                                       LE_SetExtAdvEnable_hook
@@ -685,6 +692,8 @@
 #define MAP_linkDB_State                                             linkDB_State
 #define MAP_linkDB_Update                                            linkDB_Update
 #define MAP_linkDB_UpdateMTU                                         linkDB_UpdateMTU
+#define MAP_linkDB_UpdateOwnAddrType                                 linkDB_UpdateOwnAddrType
+#define MAP_linkDB_getExtraItems                                     linkDB_getExtraItems
 #define MAP_linkDB_reportStatusChange                                linkDB_reportStatusChange
 #define MAP_linkDB_SecurityModeSCOnly                                linkDB_SecurityModeSCOnly
 #define MAP_linkDB_updateConnParam                                   linkDB_updateConnParam
@@ -931,12 +940,12 @@
 #define MAP_gattServApp_ProcessReliableWrites                        gattServApp_ProcessReliableWrites
 #define MAP_gattServApp_ProcessWriteLong                             gattServApp_ProcessWriteLong
 #define MAP_gattServApp_SetNumPrepareWrites                          gattServApp_SetNumPrepareWrites
-#define MAP_gattServApp_EnqueueReTx                                  gattServApp_EnqueueReTx
+#define MAP_gattServApp_EnqueueReTx                                  gattServApp_EnqueueReTx_sPatch
 #define MAP_gattServApp_DequeueReTx                                  gattServApp_DequeueReTx
 
 // GAP API
 #define MAP_GAP_Authenticate                                         GAP_Authenticate
-#define MAP_GAP_Bond                                                 GAP_Bond
+#define MAP_GAP_Bond                                                 GAP_Bond_sPatch
 #define MAP_gap_CentConnRegister                                     gap_CentConnRegister
 #define MAP_GAP_CentDevMgrInit                                       GAP_CentDevMgrInit
 #ifdef GAP_BOND_MGR
@@ -972,6 +981,7 @@
 #endif
 #define MAP_GapConfig_SetParameter                                   GapConfig_SetParameter
 #define MAP_GAP_GetDevAddress                                        GAP_GetDevAddress
+#define MAP_GAP_GetDevAddressByType                                  GAP_GetDevAddressByType
 
 // GAP Task
 #define MAP_gapProcessBLEEvents                                      gapProcessBLEEvents
@@ -1023,7 +1033,7 @@
 
 // GAP Peripheral Link Mgr
 #define MAP_gapL2capConnParamUpdateReq                               gapL2capConnParamUpdateReq
-#define MAP_gapPeriProcessConnEvt                                    gapPeriProcessConnEvt
+#define MAP_gapPeriProcessConnEvt                                    gapPeriProcessConnEvt_sPatch
 #define MAP_gapPeriProcessConnUpdateCmdStatus                        gapPeriProcessConnUpdateCmdStatus
 #define MAP_gapPeriProcessConnUpdateCompleteEvt                      gapPeriProcessConnUpdateCompleteEvt
 #define MAP_gapPeriProcessSignalEvt                                  gapPeriProcessSignalEvt
@@ -1080,7 +1090,7 @@
 #define MAP_gapInit_initiatingEnd                                    gapInit_initiatingEnd
 
 // GAP Central Link Mgr
-#define MAP_gapCentProcessConnEvt                                    gapCentProcessConnEvt
+#define MAP_gapCentProcessConnEvt                                    gapCentProcessConnEvt_sPatch
 #define MAP_gapCentProcessConnUpdateCompleteEvt                      gapCentProcessConnUpdateCompleteEvt
 #define MAP_gapCentProcessSignalEvt                                  gapCentProcessSignalEvt
 #define MAP_gapProcessCreateLLConnCmdStatus                          gapProcessCreateLLConnCmdStatus
@@ -1107,7 +1117,7 @@
 #define MAP_SM_dhKeyCB                                               SM_dhKeyCB_hook
 
 // SM Task
-#define MAP_smProcessHCIBLEEventCode                                 smProcessHCIBLEEventCode
+#define MAP_smProcessHCIBLEEventCode                                 smProcessHCIBLEEventCode_sPatch
 #define MAP_smProcessHCIBLEMetaEventCode                             smProcessHCIBLEMetaEventCode
 #define MAP_smProcessOSALMsg                                         smProcessOSALMsg
 
@@ -1135,7 +1145,7 @@
 #define MAP_xor_128                                                  xor_128
 
 // SM Pairing Manager
-#define MAP_smDetermineIOCaps                                        smDetermineIOCaps
+#define MAP_smDetermineIOCaps                                        smDetermineIOCaps_sPatch
 #define MAP_smDetermineKeySize                                       smDetermineKeySize
 #define MAP_smEndPairing                                             smEndPairing
 #define MAP_smFreePairingParams                                      smFreePairingParams
@@ -1184,7 +1194,7 @@
 #define MAP_smpInitiatorProcessIdentityInfo                          smpInitiatorProcessIdentityInfo
 #define MAP_smpInitiatorProcessIncoming                              smpInitiatorProcessIncoming
 #define MAP_smpInitiatorProcessMasterID                              smpInitiatorProcessMasterID
-#define MAP_smpInitiatorProcessPairingConfirm                        smpInitiatorProcessPairingConfirm
+#define MAP_smpInitiatorProcessPairingConfirm                        smpInitiatorProcessPairingConfirm_sPatch
 #define MAP_smpInitiatorProcessPairingDHKeyCheck                     smpInitiatorProcessPairingDHKeyCheck
 #define MAP_smpInitiatorProcessPairingPubKey                         smpInitiatorProcessPairingPubKey_sPatch
 #define MAP_smpInitiatorProcessPairingRandom                         smpInitiatorProcessPairingRandom_hook
@@ -1195,19 +1205,21 @@
 #define MAP_smFinishPublicKeyExchange                                smFinishPublicKeyExchange
 #define MAP_smResponderAuthStageTwo                                  smResponderAuthStageTwo
 #define MAP_smResponderProcessLTKReq                                 smResponderProcessLTKReq_hook
+#define MAP_smTriggerProcessLTKReq                                   smTriggerProcessLTKReq
 #define MAP_smResponderSendNextKeyInfo                               smResponderSendNextKeyInfo
 #define MAP_smpResponderProcessEncryptionInformation                 smpResponderProcessEncryptionInformation
 #define MAP_smpResponderProcessIdentityAddrInfo                      smpResponderProcessIdentityAddrInfo
 #define MAP_smpResponderProcessIdentityInfo                          smpResponderProcessIdentityInfo
 #define MAP_smpResponderProcessIncoming                              smpResponderProcessIncoming_hook
 #define MAP_smpResponderProcessMasterID                              smpResponderProcessMasterID
-#define MAP_smpResponderProcessPairingConfirm                        smpResponderProcessPairingConfirm
-#define MAP_smpResponderProcessPairingDHKeyCheck                     smpResponderProcessPairingDHKeyCheck
+#define MAP_smpResponderProcessPairingConfirm                        smpResponderProcessPairingConfirm_sPatch
+#define MAP_smpResponderProcessPairingDHKeyCheck                     smpResponderProcessPairingDHKeyCheck_sPatch
 #define MAP_smpResponderProcessPairingPublicKey                      smpResponderProcessPairingPublicKey_hook
-#define MAP_smpResponderProcessPairingRandom                         smpResponderProcessPairingRandom
+#define MAP_smpResponderProcessPairingRandom                         smpResponderProcessPairingRandom_sPatch
 #define MAP_smpResponderProcessPairingReq                            smpResponderProcessPairingReq_sPatch
 #define MAP_smpResponderProcessSigningInfo                           smpResponderProcessSigningInfo
 #define MAP_smpResponderSendPairRspEvent                             smpResponderSendPairRspEvent
+#define MAP_smGetLtkReqDetails                                       smGetLtkReqDetails
 
 // SM Protocol
 #define MAP_smpBuildEncInfo                                          smpBuildEncInfo
@@ -1409,6 +1421,7 @@ extern void MAP_llCoexSetParams(uint16 cmdNum, void *pCmdParams);
 extern void MAP_llCoexInit(uint8 enable);
 extern void MAP_llCoexUpdateCounters(uint8 grant);
 extern uint8 MAP_LL_EXT_CoexEnable(uint8 enable);
+extern uint8 MAP_llCoexRfLinkRatCompareConnMaxTimeLength(void);
 
 /*******************************************************************************
  * Periodic Adv hooks
@@ -1531,5 +1544,31 @@ extern uint8_t MAP_checkLegacyHCICmdStatus(uint16_t opcode);
  */
 extern uint8_t MAP_checkVsEventsStatus(void);
 
+/*******************************************************************************
+ * Scan Optimization
+ */
+extern uint8 MAP_llAddExtWlAndSetIgnBit(void *extAdvRpt, uint8 ignoreBit);
+extern uint8 MAP_llFlushIgnoredRxEntry(uint8 ignoreBit);
+extern void MAP_llSetRxCfg(void);
+
+/*******************************************************************************
+ * SDAA module
+ */
+#ifdef SDAA_ENABLE
+#define MAP_LL_Is_SDAA_Enable( void ) TRUE
+#else
+#define MAP_LL_Is_SDAA_Enable( void ) FALSE
+#endif //SDAA_ENABLE
+extern void MAP_LL_SDAA_Init( void );
+extern void MAP_LL_SDAA_HandleSDAALastCmdDone( void );
+extern void MAP_LL_SDAA_AddDwtRecord( uint32 dwT, uint8 task, uint8 index );
+extern void MAP_LL_SDAA_RecordTxUsage( uint16 numOfBytes, uint8 phyType, uint8 power, uint8 channel);
+extern void MAP_LL_SDAA_SampleRXWindow( void );
+extern uint16 MAP_LL_SDAA_GetRXWindowDuration( void );
+extern void MAP_LL_SDAA_SetChannelInSample( uint8 channel );
+extern uint8 MAP_llSDAASetupRXWindowCmd(void);
+extern uint8 MAP_llHandleSDAAControlTX(void            *nextConnPtr,
+                                       void            *secTask,
+                                       uint8           startTaskType);
 /*******************************************************************************/
 #endif // MAP_DIRECT_H

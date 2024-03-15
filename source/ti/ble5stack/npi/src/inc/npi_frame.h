@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,11 @@ extern "C"
 // ****************************************************************************
 // typedefs
 // ****************************************************************************
+typedef enum {
+  QUEUE_EMPTY     = 0x0,
+  MSG_PROCESSED   = 0x1,
+  PROCESS_BUSY    = 0x2
+} NPITASK_STATUS;
 
 //! \brief typedef for call back function to return a complete NPI message.
 //!        The npiFrame module encapsulates the collecting/parsing of the
@@ -98,11 +103,12 @@ extern void NPIFrame_initialize(npiIncomingFrameCBack_t incomingFrameCB);
 //!             container.  A transport layer specific version of this function
 //!             must be implemented.
 //!
+//! \param[out] pData     Pointer to NPI message buffer.
 //! \param[in]  pData     Pointer to message buffer.
 //!
 //! \return     void
 // ----------------------------------------------------------------------------
-extern NPIMSG_msg_t * NPIFrame_frameMsg(uint8_t *pIncomingMsg);
+void NPIFrame_frameMsg(NPIMSG_msg_t *npiMsg, uint8_t *pIncomingMsg);
 
 // ----------------------------------------------------------------------------
 //! \brief      Collects serial message buffer.  Called based on events
@@ -110,9 +116,9 @@ extern NPIMSG_msg_t * NPIFrame_frameMsg(uint8_t *pIncomingMsg);
 //!             been successfully received, it is passed back to NPI task via
 //!             the callback function above: npiIncomingFrameCBack_t.
 //!
-//! \return     void
+//! \return     NPITASK_STATUS
 // -----------------------------------------------------------------------------
-extern void NPIFrame_collectFrameData(void);
+extern NPITASK_STATUS NPIFrame_collectFrameData(void);
 
 #ifdef __cplusplus
 }

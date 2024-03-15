@@ -268,8 +268,10 @@
     #include <ti/drivers/gpio/GPIOCC26XX.h>
 #elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
     #include <ti/drivers/gpio/GPIOCC32XX.h>
-#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
-    #include <ti/drivers/gpio/GPIOCC23XX.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0 || DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/gpio/GPIOLPF3.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
+    #include <ti/drivers/gpio/GPIOWFF3.h>
 #endif
 
 /* Generic functions for converting pin indexes to and from masks. Internal use
@@ -663,22 +665,6 @@ extern void GPIO_getConfig(uint_least8_t index, GPIO_PinConfig *pinConfig);
 extern void GPIO_resetConfig(uint_least8_t index);
 
 /*!
- *  @brief      Sets the mux for a gpio pin
- *
- *  The procedure for muxing differs across devices, but this is the process of
- *  telling the hardware what function a given pin should perform.
- *  GPIO_setConfig() always configures pins as general purpose IO, but many
- *  peripherals require alternative settings.
- *
- *  For details and valid mux options, see the device-specific header file.
- *
- *  @param      index       GPIO index
- *  @param      mux         Device-specific mux value to use a special mode,
- *                          or GPIO_MUX_GPIO to reset the pin to standard IO.
- */
-extern void GPIO_setMux(uint_least8_t index, uint32_t mux);
-
-/*!
  *  @brief      Get the current mux for a gpio pin
  *
  *  For details and valid mux options, see the device-specific header file.
@@ -701,7 +687,7 @@ extern uint32_t GPIO_getMux(uint_least8_t index);
  *  This helper function sets the pin configuration and the mux in a single access.
  *
  *  @param      index       GPIO index
- *  @param      pinConfig   Device specific pin configuration settings
+ *  @param      pinConfig   device specific pin configuration settings
  *  @param      mux         Device-specific mux value to use a special mode,
  *                          or GPIO_MUX_GPIO to reset the pin to standard IO.
  *

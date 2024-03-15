@@ -13,7 +13,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -1930,6 +1930,16 @@ void uble_processLLMsg(ubleEvtMsg_t *pEvtMsg)
   default:
     break;
   }
+}
+
+uint32_t ull_getCurrentTime()
+{
+  return( RF_getCurrentTime() );
+}
+
+uint32_t ull_convertRatTicksToUs(uint32_t time)
+{
+  return( RF_convertRatTicksToUs(time) );
 }
 
 /*********************************************************************

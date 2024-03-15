@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2020-2023, Texas Instruments Incorporated
+ Copyright (c) 2020-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1702,7 +1702,13 @@ void RemoteDisplay_bleFastStateUpdateCb(uint32_t StackRole, uint32_t stackState)
   {
     static uint32_t prevStackState = 0;
 
+
+//! Naming discrepancy between ble5stack and ble5stack_flash
+#ifdef DeviceFamily_CC13X4
+    if( !(prevStackState & LL_TASK_ID_PERIPHERAL) && (stackState & LL_TASK_ID_PERIPHERAL))
+#else
     if( !(prevStackState & LL_TASK_ID_SLAVE) && (stackState & LL_TASK_ID_SLAVE))
+#endif
     {
         /* update DMM policy */
         DMMPolicy_updateStackState(DMMPolicy_StackRole_BlePeripheral, DMMPOLICY_BLE_CONNECTING);
@@ -2510,7 +2516,7 @@ static void RemoteDisplay_processParamUpdate(uint16_t connHandle)
   uint8_t connIndex;
 
   req.connectionHandle = connHandle;
-  req.connLatency = DEFAULT_DESIRED_SLAVE_LATENCY;
+  req.connLatency = DEFAULT_DESIRED_PERIPHERAL_LATENCY;
   req.connTimeout = DEFAULT_DESIRED_CONN_TIMEOUT;
   req.intervalMin = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
   req.intervalMax = DEFAULT_DESIRED_MAX_CONN_INTERVAL;

@@ -3881,7 +3881,7 @@ static RF_Stat RF_abortCmd(RF_Handle h, RF_CmdHandle ch, bool graceful, bool flu
     /* Handle FLUSH_ALL request */
     if (ch == RF_CMDHANDLE_FLUSH_ALL)
     {
-        /* Start to cancel the commands from the actively running onces if it belongs to this client. */
+        /* Start to cancel the commands from the actively running once if it belongs to this client. */
         if (RF_isClientOwner(h, RF_cmdQ.pCurrCmdBg))
         {
             pCmd = RF_cmdQ.pCurrCmdBg;
@@ -3910,10 +3910,11 @@ static RF_Stat RF_abortCmd(RF_Handle h, RF_CmdHandle ch, bool graceful, bool flu
         if (pCmd->flags & RF_CMD_ALLOC_FLAG)
         {
             /* If the command we want to cancel is actively running. */
-            if ((pCmd == RF_cmdQ.pCurrCmdBg) || (pCmd == RF_cmdQ.pCurrCmdFg))
+            if (pCmd == RF_cmdQ.pCurrCmdBg)
             {
+                /* Canceling background command */
                 /* Flag that the command has been aborted. In IEEE 15.4 mode, this means
-                   aborting both the background and foreground commands. */
+                   aborting both the background and foreground commands when background is aborted. */
                 RF_cmdStoreEvents(RF_cmdQ.pCurrCmdBg, event);
                 RF_cmdStoreEvents(RF_cmdQ.pCurrCmdFg, event);
 
@@ -3927,6 +3928,38 @@ static RF_Stat RF_abortCmd(RF_Handle h, RF_CmdHandle ch, bool graceful, bool flu
                 {
                     /* Mark the command as being preempted. */
                     RF_cmdStoreEvents(RF_cmdQ.pCurrCmdBg, RF_EventCmdPreempted);
+                    RF_cmdStoreEvents(RF_cmdQ.pCurrCmdFg, RF_EventCmdPreempted);
+
+                    /* Subscribe the client for RadioFree callback. */
+                    RF_Sch.clientHndRadioFreeCb   = pCmd->pClient;
+                    RF_Sch.issueRadioFreeCbFlags |= RF_RADIOFREECB_PREEMPT_FLAG;
+                }
+
+                /* Remove all commands from the pend queue belong to this client. Only do it
+                   if it was explicitely requested through the flush argument. */
+                if (flush)
+                {
+                    RF_discardPendCmd(h, (RF_Cmd*)List_head(&RF_cmdQ.pPend), flush, preempt);
+                }
+
+                /* Return with success as we cancelled at least the currently running command. */
+                status = RF_StatSuccess;
+            }
+            else if (pCmd == RF_cmdQ.pCurrCmdFg)
+             {
+                /* Canceling foreground command */
+                /* Flag that the command has been aborted */
+                RF_cmdStoreEvents(RF_cmdQ.pCurrCmdFg, event);
+
+                /* Decode what method to use to terminate the ongoing FG radio operation. */
+                uint32_t directCmd = (graceful) ? CMDR_DIR_CMD(CMD_IEEE_STOP_FG) : CMDR_DIR_CMD(CMD_IEEE_ABORT_FG);
+
+                /* Send the abort/stop command through the doorbell to the RF core. */
+                RFCDoorbellSendTo(directCmd);
+
+                if (preempt)
+                {
+                    /* Mark the command as being preempted. */
                     RF_cmdStoreEvents(RF_cmdQ.pCurrCmdFg, RF_EventCmdPreempted);
 
                     /* Subscribe the client for RadioFree callback. */

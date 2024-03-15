@@ -387,6 +387,7 @@
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/src/ncp/ncp_config.h -> ncp_config.h",
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/src/ncp/ncp_uart.cpp -> ncp_uart.cpp",
             "+../../../../../../../source/ti/ti_wisunfan/ncp_interface/src/ncp/ncp_uart.hpp -> ncp_uart.hpp",
+            "+../../../../../../../source/ti/boards/LP_CC1312R7/Board.html -> Board.html",
             "+cc13x2x7_cc26x2x7.icf -> cc13x2x7_cc26x2x7.icf",
             "+../../README.md -> README.md",
             "+../ti_wisunfan_coap_node.syscfg -> ti_wisunfan_coap_node.syscfg"

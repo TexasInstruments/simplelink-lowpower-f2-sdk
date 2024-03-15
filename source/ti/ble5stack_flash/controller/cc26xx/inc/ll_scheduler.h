@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -107,6 +107,7 @@ extern "C"
 #define LL_SCHED_START_IMMED        0
 #define LL_SCHED_START_EVENT        1
 #define LL_SCHED_START_PRIMARY      2
+#define LL_SDAA_SCHED_HANDLED       3
 //
 #define LL_SCHED_START_IMMED_PAD    (3 *  RAT_TICKS_IN_625US)
 #define LL_SCHED_PRE_CUTOFF         (10 * RAT_TICKS_IN_625US)
@@ -119,8 +120,9 @@ extern "C"
 #define LL_TASK_ID_INITIATOR                     0x04
 #define LL_TASK_ID_PERIODIC_ADVERTISER           0x08
 #define LL_TASK_ID_PERIODIC_SCANNER              0x10
-#define LL_TASK_ID_SLAVE                         0x40
-#define LL_TASK_ID_MASTER                        0x80
+#define LL_TASK_ID_RX_WINDOW                     0x20
+#define LL_TASK_ID_PERIPHERAL                    0x40
+#define LL_TASK_ID_CENTRAL                       0x80
 #define LL_TASK_ID_NONE                          0xFF
 
 // Task ID Masks
@@ -140,21 +142,21 @@ extern "C"
 #define CRC_INIT_LEN                             3
 
 // The number of slots (i.e. 625us timer ticks) is the amount of time
-// each master has to execute including post-processing and scheduling.
+// each central has to execute including post-processing and scheduling.
 // It determines the relative offset of each additional connection
 // interval, and thus limits the number of allowed concurrent connections.
 // For example, if the value is four, then three connections can fit
 // without affecting each other or the minimum connection interval
 // (i.e. 7.5ms). But if the value is 12, then the minimum connection
 // interval for three connections is 22.5ms. For five is 37.5ms. Etc.
-#define NUM_SLOTS_PER_MASTER                     8
+#define NUM_SLOTS_PER_CENTRAL                    8
 
 // The number of task blocks needed depends on the build configuration. The
 // Non-connectable Adv and Scan would each require a task block if supported.
-// If a Slave connection is supported, then a task is needed for the connectable
-// Adv. This task is then reused when a Slave connection is formed. If a Master
+// If a Peripheral connection is supported, then a task is needed for the connectable
+// Adv. This task is then reused when a Peripheral connection is formed. If a Central
 // connection is supported, then a task is needed for Init. This task is then
-// reused when a Master connection is formed. Thus, the total number of needed
+// reused when a Central connection is formed. Thus, the total number of needed
 // tasks is at most two plus the number of connections.
 #if defined(CTRL_CONFIG) && (CTRL_CONFIG & ADV_NCONN_CFG)
 #define NUM_TASK_BLOCKS_ADV_NCONN_CFG            2 //Adv + Periodic Adv
@@ -218,10 +220,12 @@ typedef struct
  */
 
 extern taskList_t  llTaskList;
+extern taskInfo_t *pRXWindowTask;
 //
 extern void        llSchedulerInit( void );
 extern void        llScheduler( void );
 extern void        llScheduleTask( taskInfo_t *llTask );
+extern void        llScheduleTask_sPatch( taskInfo_t *llTask );
 extern uint8       llFindStartType( taskInfo_t *secTask, taskInfo_t *primTask );
 extern taskInfo_t *llFindNextSecTask( uint8 secTaskID );
 extern taskInfo_t *llAllocTask( uint8 llTaskID );
@@ -234,7 +238,6 @@ extern uint8       llGetActiveTasks( void );
 extern uint8       llGetNumTasks( void );
 extern void        llSetupRatCompare( taskInfo_t *llTask );
 extern void        llClearRatCompare( void );
-
 //
 extern void        llSetupAdv( void );
 extern void        llSetupDirectedAdvEvt( void );

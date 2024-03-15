@@ -72,8 +72,8 @@ function getLogSinks() {
         if ('topModules' in temp) {
             objectValuesToArray(temp.topModules, modules);
             for (var j = 0; j < modules.length; j++) {
-                if(typeof modules[j] === 'string' && modules[j].match(/\/LogSink[A-Z]/)){
-                    logSinks.push({name: modules[j]});
+                if (typeof modules[j] === 'string' && modules[j].match(/\/LogSink[A-Z]/)) {
+                    logSinks.push({ name: modules[j] });
                 }
             }
         }
@@ -87,8 +87,7 @@ function getLogSinks() {
  *  as a topmodule to the product, to make sure it appears in the correct place
  *  under "Logging". See log.component.js for example usage.
  */
-function sinksToTopModule(sinks)
-{
+function sinksToTopModule(sinks) {
     let loggingTopModule = {
         displayName: topModuleDisplayName,
         description: topModuleDescription,
@@ -105,39 +104,28 @@ function sinksToTopModule(sinks)
 let logLevels = [
     {
         name: "enable_DEBUG",
-        onChange: onLevelChanged,
         displayName: "Enable Level DEBUG",
         default: true
     },
     {
         name: "enable_VERBOSE",
-        onChange: onLevelChanged,
         displayName: "Enable Level VERBOSE",
-        default: false
+        default: true
     },
     {
         name: "enable_INFO",
-        onChange: onLevelChanged,
         displayName: "Enable Level INFO",
-        default: false
+        default: true
     },
     {
         name: "enable_WARNING",
-        onChange: onLevelChanged,
         displayName: "Enable Level WARNING",
-        default: false
+        default: true
     },
     {
         name: "enable_ERROR",
-        onChange: onLevelChanged,
         displayName: "Enable Level ERROR",
-        default: false
-    },
-    {
-        name: "enable_ALL",
-        onChange: onEnableAllChanged,
-        displayName: "Enable All Log Levels",
-        default: false
+        default: true
     }
 ];
 
@@ -188,50 +176,15 @@ let static_config = [
 
 let module_static = {
     collapsed: false,
-    config: static_config
+    config: static_config,
+    validate: validateStatic
 };
-
-/*
- *  ======== onEnableAllChanged ========
- *  Enable all button handler
- */
-function onEnableAllChanged(inst, ui)
-{
-    if (inst.enable_ALL === true) {
-        inst.enable_ERROR = true;
-        inst.enable_WARNING = true;
-        inst.enable_INFO = true;
-        inst.enable_VERBOSE = true;
-        inst.enable_DEBUG = true;
-    }
-}
-
-/*
- *  ======== onLevelChanged ========
- *  Level changed all button handler
- */
-function onLevelChanged(inst, ui)
-{
-    let logEnables = [
-        inst.enable_ERROR,
-        inst.enable_WARNING,
-        inst.enable_INFO,
-        inst.enable_VERBOSE,
-        inst.enable_DEBUG
-    ];
-
-    let anyDisabled = logEnables.some((val) => val === false);
-    if (anyDisabled) {
-        inst.enable_ALL = false;
-    }
-}
 
 /*
  *  ======== sharedModuleInstances ========
  *  Express dependencies for shared instances of other modules
  */
-function sharedModuleInstances(inst)
-{
+function sharedModuleInstances(inst) {
     let modules = new Array();
 
     modules.push({
@@ -244,8 +197,7 @@ function sharedModuleInstances(inst)
 }
 
 
-function getLibs(mod)
-{
+function getLibs(mod) {
     let libGroup = {
         name: "/ti/log",
         vers: "1.0.0.0",
@@ -268,7 +220,7 @@ function getLibs(mod)
     /* add dependency on /ti/drivers (if needed) */
     let needDrivers = false;
     for (let i = 0; i < mod.$instances.length; i++) {
-        let inst =  mod.$instances[i];
+        let inst = mod.$instances[i];
         if (inst.loggerSink != "/ti/log/LogSinkBuf") {
             needDrivers = true;
             break;
@@ -277,6 +229,35 @@ function getLibs(mod)
     libGroup.deps = needDrivers ? ["/ti/drivers"] : [];
 
     return (libGroup);
+}
+
+function getOpts() {
+    let options = [];
+
+    let logModule = system.modules["/ti/log/LogModule"];
+
+    /* Push the module-level enable define for each active module */
+    for (let i = 0; i < logModule.$instances.length; i++) {
+        let inst = logModule.$instances[i];
+        options.push("-Dti_log_Log_ENABLE_" + inst.$name + "=1");
+    }
+
+    /* Push the global enable define that enables all logs */
+    options.push("-Dti_log_Log_ENABLE")
+
+    /* Push these defines to enable logs in application-compiled code */
+    return options;
+}
+
+function validateStatic(inst, validation) {
+    let logModule = system.modules["/ti/log/LogModule"];
+
+    if (logModule.$instances.length == 0) {
+        validation.logWarning(`Global Log module enabled without any instances! This is caused by altered global
+settings. Click \"REMOVE ALL\" next to Log Modules to remove application-compiled log sites.`,
+            inst,
+            "enableGlobal");
+    }
 }
 
 /*
@@ -305,8 +286,10 @@ This module relies on Log sinks, which can be found a subsection to this SysConf
     sharedModuleInstances: sharedModuleInstances,
     templates: {
         /* contribute libraries to linker command file */
-        "/ti/utils/build/GenLibs.cmd.xdt"   :
-            {modName: "/ti/log/LogModule", getLibs: getLibs},
+        "/ti/utils/build/GenLibs.cmd.xdt":
+            { modName: "/ti/log/LogModule", getLibs: getLibs },
+        "/ti/utils/build/GenOpts.opt.xdt":
+            { modName: "/ti/log/LogModule", getOpts: getOpts },
         "/ti/log/templates/ti_log_config.c.xdt":
             "/ti/log/templates/LogModule.Config.c.xdt",
         "/ti/log/templates/ti_log_config.h.xdt":

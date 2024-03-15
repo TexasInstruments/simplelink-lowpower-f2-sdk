@@ -7,7 +7,7 @@ RSA Key management
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.asymmetric.padding import PSS, MGF1
+from cryptography.hazmat.primitives.asymmetric.padding import PSS, MGF1, PKCS1v15
 from cryptography.hazmat.primitives.hashes import SHA256
 
 from .general import KeyClass
@@ -25,6 +25,7 @@ class RSAPublic(KeyClass):
     """The public key can only do a few operations"""
     def __init__(self, key):
         self.key = key
+        self.rsa_pss = False
 
     def key_size(self):
         return self.key.key_size
@@ -62,7 +63,10 @@ class RSAPublic(KeyClass):
         return "PKCS1_PSS_RSA{}_SHA256".format(self.key_size())
 
     def sig_tlv(self):
-        return"RSA{}".format(self.key_size())
+        if self.rsa_pss:
+            return"RSA{}PSS".format(self.key_size())
+        else:
+            return"RSA{}PKCS".format(self.key_size())
 
     def sig_len(self):
         return self.key_size() / 8
@@ -71,9 +75,16 @@ class RSAPublic(KeyClass):
         k = self.key
         if isinstance(self.key, rsa.RSAPrivateKey):
             k = self.key.public_key()
-        return k.verify(signature=signature, data=payload,
-                        padding=PSS(mgf=MGF1(SHA256()), salt_length=32),
-                        algorithm=SHA256())
+        if self.rsa_pss:
+            print("Using RSA PSS for signature verification")
+            return k.verify(signature=signature, data=payload,
+                            padding=PSS(mgf=MGF1(SHA256()), salt_length=32),
+                            algorithm=SHA256())
+        else:
+            print("Using RSA PKCS for signature verification")
+            return k.verify(signature=signature, data=payload,
+                            padding=PKCS1v15(),
+                            algorithm=SHA256())
 
 
 class RSA(RSAPublic):
@@ -84,6 +95,7 @@ class RSA(RSAPublic):
     def __init__(self, key):
         """The key should be a private key from cryptography"""
         self.key = key
+        self.rsa_pss = False
 
     @staticmethod
     def generate(key_size=2048):
@@ -159,7 +171,13 @@ class RSA(RSAPublic):
     def sign(self, payload):
         # The verification code only allows the salt length to be the
         # same as the hash length, 32.
-        return self.key.sign(
-                data=payload,
-                padding=PSS(mgf=MGF1(SHA256()), salt_length=32),
-                algorithm=SHA256())
+        if self.rsa_pss:
+            print("Using RSA PSS for signing")
+            return self.key.sign(data=payload,
+                                padding=PSS(mgf=MGF1(SHA256()), salt_length=32),
+                                algorithm=SHA256())            
+        else:
+            print("Using RSA PKCS for signing")
+            return self.key.sign(data=payload,
+                                padding=PKCS1v15(),
+                                algorithm=SHA256())

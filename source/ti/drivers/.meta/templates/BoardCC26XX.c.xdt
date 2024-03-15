@@ -70,8 +70,8 @@
 #include <ti/drivers/GPIO.h>
 
 /* Board GPIO defines */
-% /* This regex deliberately excludes CC2653 and CC13X4 / CC26X4 RGZ packages,
-%  * which have the original pinout.
+% /* This regex deliberately excludes CC2653 and CC13X4/CC26X4 RGZ, which have
+%  * the original pinout
 %  */
 % if (deviceId.match(/CC13.4...RSK|CC26.4...RSK/)) {
 #define BOARD_EXT_FLASH_SPI_CS      38

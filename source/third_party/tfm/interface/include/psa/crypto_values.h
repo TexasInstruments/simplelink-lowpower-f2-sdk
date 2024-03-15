@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -18,6 +18,11 @@
  * designations of cryptographic algorithms, and error codes returned by
  * the library.
  *
+ * Note that many of the constants defined in this file are embedded in
+ * the persistent key store, as part of key metadata (including usage
+ * policies). As a consequence, they must not be changed (unless the storage
+ * format version changes).
+ *
  * This header file only defines preprocessor macros.
  */
 
@@ -29,6 +34,25 @@
  */
 
 /* PSA error codes */
+
+/* Error codes are standardized across PSA domains (framework, crypto, storage,
+ * etc.). Do not change the values in this section or even the expansions
+ * of each macro: it must be possible to `#include` both this header
+ * and some other PSA component's headers in the same C source,
+ * which will lead to duplicate definitions of the `PSA_SUCCESS` and
+ * `PSA_ERROR_xxx` macros, which is ok if and only if the macros expand
+ * to the same sequence of tokens.
+ *
+ * If you must add a new
+ * value, check with the Arm PSA framework group to pick one that other
+ * domains aren't already using. */
+
+/* Tell uncrustify not to touch the constant definitions, otherwise
+ * it might change the spacing to something that is not PSA-compliant
+ * (e.g. adding a space after casts).
+ *
+ * *INDENT-OFF*
+ */
 
 /** The action was completed successfully. */
 #ifndef PSA_SUCCESS
@@ -100,7 +124,7 @@
  * as applicable.
  *
  * Implementations shall not return this error code to indicate that a
- * key handle is invalid, but shall return #PSA_ERROR_INVALID_HANDLE
+ * key identifier is invalid, but shall return #PSA_ERROR_INVALID_HANDLE
  * instead. */
 #define PSA_ERROR_BAD_STATE             ((psa_status_t)-137)
 
@@ -110,7 +134,7 @@
  * combination of parameters are recognized as invalid.
  *
  * Implementations shall not return this error code to indicate that a
- * key handle is invalid, but shall return #PSA_ERROR_INVALID_HANDLE
+ * key identifier is invalid, but shall return #PSA_ERROR_INVALID_HANDLE
  * instead.
  */
 #define PSA_ERROR_INVALID_ARGUMENT      ((psa_status_t)-135)
@@ -258,9 +282,58 @@
  * to read from a resource. */
 #define PSA_ERROR_INSUFFICIENT_DATA     ((psa_status_t)-143)
 
-/** The key handle is not valid. See also :ref:\`key-handles\`.
+/** The key identifier is not valid. See also :ref:\`key-handles\`.
  */
 #define PSA_ERROR_INVALID_HANDLE        ((psa_status_t)-136)
+
+/** Stored data has been corrupted.
+ *
+ * This error indicates that some persistent storage has suffered corruption.
+ * It does not indicate the following situations, which have specific error
+ * codes:
+ *
+ * - A corruption of volatile memory - use #PSA_ERROR_CORRUPTION_DETECTED.
+ * - A communication error between the cryptoprocessor and its external
+ *   storage - use #PSA_ERROR_COMMUNICATION_FAILURE.
+ * - When the storage is in a valid state but is full - use
+ *   #PSA_ERROR_INSUFFICIENT_STORAGE.
+ * - When the storage fails for other reasons - use
+ *   #PSA_ERROR_STORAGE_FAILURE.
+ * - When the stored data is not valid - use #PSA_ERROR_DATA_INVALID.
+ *
+ * \note A storage corruption does not indicate that any data that was
+ * previously read is invalid. However this previously read data might no
+ * longer be readable from storage.
+ *
+ * When a storage failure occurs, it is no longer possible to ensure the
+ * global integrity of the keystore.
+ */
+#define PSA_ERROR_DATA_CORRUPT          ((psa_status_t)-152)
+
+/** Data read from storage is not valid for the implementation.
+ *
+ * This error indicates that some data read from storage does not have a valid
+ * format. It does not indicate the following situations, which have specific
+ * error codes:
+ *
+ * - When the storage or stored data is corrupted - use #PSA_ERROR_DATA_CORRUPT
+ * - When the storage fails for other reasons - use #PSA_ERROR_STORAGE_FAILURE
+ * - An invalid argument to the API - use #PSA_ERROR_INVALID_ARGUMENT
+ *
+ * This error is typically a result of either storage corruption on a
+ * cleartext storage backend, or an attempt to read data that was
+ * written by an incompatible version of the library.
+ */
+#define PSA_ERROR_DATA_INVALID          ((psa_status_t)-153)
+
+/** The function that returns this status is defined as interruptible and
+ *  still has work to do, thus the user should call the function again with the
+ *  same operation context until it either returns #PSA_SUCCESS or any other
+ *  error. This is not an error per se, more a notification of status.
+ */
+#define PSA_OPERATION_INCOMPLETE           ((psa_status_t)-248)
+
+/* *INDENT-ON* */
 
 /**@}*/
 
@@ -268,11 +341,17 @@
  * @{
  */
 
+/* Note that key type values, including ECC family and DH group values, are
+ * embedded in the persistent key store, as part of key metadata. As a
+ * consequence, they must not be changed (unless the storage format version
+ * changes).
+ */
+
 /** An invalid key type value.
  *
  * Zero is not the encoding of any key type.
  */
-#define PSA_KEY_TYPE_NONE                       ((psa_key_type_t)0x00000000)
+#define PSA_KEY_TYPE_NONE                           ((psa_key_type_t) 0x0000)
 
 /** Vendor-defined key type flag.
  *
@@ -281,15 +360,15 @@
  * must use an encoding with the #PSA_KEY_TYPE_VENDOR_FLAG bit set and should
  * respect the bitwise structure used by standard encodings whenever practical.
  */
-#define PSA_KEY_TYPE_VENDOR_FLAG                ((psa_key_type_t)0x80000000)
+#define PSA_KEY_TYPE_VENDOR_FLAG                    ((psa_key_type_t) 0x8000)
 
-#define PSA_KEY_TYPE_CATEGORY_MASK              ((psa_key_type_t)0x70000000)
-#define PSA_KEY_TYPE_CATEGORY_SYMMETRIC         ((psa_key_type_t)0x40000000)
-#define PSA_KEY_TYPE_CATEGORY_RAW               ((psa_key_type_t)0x50000000)
-#define PSA_KEY_TYPE_CATEGORY_PUBLIC_KEY        ((psa_key_type_t)0x60000000)
-#define PSA_KEY_TYPE_CATEGORY_KEY_PAIR          ((psa_key_type_t)0x70000000)
+#define PSA_KEY_TYPE_CATEGORY_MASK                  ((psa_key_type_t) 0x7000)
+#define PSA_KEY_TYPE_CATEGORY_RAW                   ((psa_key_type_t) 0x1000)
+#define PSA_KEY_TYPE_CATEGORY_SYMMETRIC             ((psa_key_type_t) 0x2000)
+#define PSA_KEY_TYPE_CATEGORY_PUBLIC_KEY            ((psa_key_type_t) 0x4000)
+#define PSA_KEY_TYPE_CATEGORY_KEY_PAIR              ((psa_key_type_t) 0x7000)
 
-#define PSA_KEY_TYPE_CATEGORY_FLAG_PAIR         ((psa_key_type_t)0x10000000)
+#define PSA_KEY_TYPE_CATEGORY_FLAG_PAIR             ((psa_key_type_t) 0x3000)
 
 /** Whether a key type is vendor-defined.
  *
@@ -303,8 +382,8 @@
  * This encompasses both symmetric keys and non-key data.
  */
 #define PSA_KEY_TYPE_IS_UNSTRUCTURED(type) \
-    (((type) & PSA_KEY_TYPE_CATEGORY_MASK & ~(psa_key_type_t)0x10000000) == \
-     PSA_KEY_TYPE_CATEGORY_SYMMETRIC)
+    (((type) & PSA_KEY_TYPE_CATEGORY_MASK) == PSA_KEY_TYPE_CATEGORY_RAW || \
+     ((type) & PSA_KEY_TYPE_CATEGORY_MASK) == PSA_KEY_TYPE_CATEGORY_SYMMETRIC)
 
 /** Whether a key type is asymmetric: either a key pair or a public key. */
 #define PSA_KEY_TYPE_IS_ASYMMETRIC(type)                                \
@@ -347,7 +426,7 @@
  *
  * A "key" of this type cannot be used for any cryptographic operation.
  * Applications may use this type to store arbitrary data in the keystore. */
-#define PSA_KEY_TYPE_RAW_DATA                   ((psa_key_type_t)0x50000001)
+#define PSA_KEY_TYPE_RAW_DATA                       ((psa_key_type_t) 0x1001)
 
 /** HMAC key.
  *
@@ -355,76 +434,136 @@
  * used for.
  *
  * HMAC keys should generally have the same size as the underlying hash.
- * This size can be calculated with #PSA_HASH_SIZE(\c alg) where
+ * This size can be calculated with #PSA_HASH_LENGTH(\c alg) where
  * \c alg is the HMAC algorithm or the underlying hash algorithm. */
-#define PSA_KEY_TYPE_HMAC                       ((psa_key_type_t)0x51000000)
+#define PSA_KEY_TYPE_HMAC                           ((psa_key_type_t) 0x1100)
 
 /** A secret for key derivation.
+ *
+ * This key type is for high-entropy secrets only. For low-entropy secrets,
+ * #PSA_KEY_TYPE_PASSWORD should be used instead.
+ *
+ * These keys can be used as the #PSA_KEY_DERIVATION_INPUT_SECRET or
+ * #PSA_KEY_DERIVATION_INPUT_PASSWORD input of key derivation algorithms.
  *
  * The key policy determines which key derivation algorithm the key
  * can be used for.
  */
-#define PSA_KEY_TYPE_DERIVE                     ((psa_key_type_t)0x52000000)
+#define PSA_KEY_TYPE_DERIVE                         ((psa_key_type_t) 0x1200)
+
+/** A low-entropy secret for password hashing or key derivation.
+ *
+ * This key type is suitable for passwords and passphrases which are typically
+ * intended to be memorizable by humans, and have a low entropy relative to
+ * their size. It can be used for randomly generated or derived keys with
+ * maximum or near-maximum entropy, but #PSA_KEY_TYPE_DERIVE is more suitable
+ * for such keys. It is not suitable for passwords with extremely low entropy,
+ * such as numerical PINs.
+ *
+ * These keys can be used as the #PSA_KEY_DERIVATION_INPUT_PASSWORD input of
+ * key derivation algorithms. Algorithms that accept such an input were
+ * designed to accept low-entropy secret and are known as password hashing or
+ * key stretching algorithms.
+ *
+ * These keys cannot be used as the #PSA_KEY_DERIVATION_INPUT_SECRET input of
+ * key derivation algorithms, as the algorithms that take such an input expect
+ * it to be high-entropy.
+ *
+ * The key policy determines which key derivation algorithm the key can be
+ * used for, among the permissible subset defined above.
+ */
+#define PSA_KEY_TYPE_PASSWORD                       ((psa_key_type_t) 0x1203)
+
+/** A secret value that can be used to verify a password hash.
+ *
+ * The key policy determines which key derivation algorithm the key
+ * can be used for, among the same permissible subset as for
+ * #PSA_KEY_TYPE_PASSWORD.
+ */
+#define PSA_KEY_TYPE_PASSWORD_HASH                  ((psa_key_type_t) 0x1205)
+
+/** A secret value that can be used in when computing a password hash.
+ *
+ * The key policy determines which key derivation algorithm the key
+ * can be used for, among the subset of algorithms that can use pepper.
+ */
+#define PSA_KEY_TYPE_PEPPER                         ((psa_key_type_t) 0x1206)
 
 /** Key for a cipher, AEAD or MAC algorithm based on the AES block cipher.
  *
  * The size of the key can be 16 bytes (AES-128), 24 bytes (AES-192) or
  * 32 bytes (AES-256).
  */
-#define PSA_KEY_TYPE_AES                        ((psa_key_type_t)0x40000001)
+#define PSA_KEY_TYPE_AES                            ((psa_key_type_t) 0x2400)
+
+/** Key for a cipher, AEAD or MAC algorithm based on the
+ * ARIA block cipher. */
+#define PSA_KEY_TYPE_ARIA                           ((psa_key_type_t) 0x2406)
 
 /** Key for a cipher or MAC algorithm based on DES or 3DES (Triple-DES).
  *
- * The size of the key can be 8 bytes (single DES), 16 bytes (2-key 3DES) or
- * 24 bytes (3-key 3DES).
+ * The size of the key can be 64 bits (single DES), 128 bits (2-key 3DES) or
+ * 192 bits (3-key 3DES).
  *
  * Note that single DES and 2-key 3DES are weak and strongly
  * deprecated and should only be used to decrypt legacy data. 3-key 3DES
  * is weak and deprecated and should only be used in legacy protocols.
  */
-#define PSA_KEY_TYPE_DES                        ((psa_key_type_t)0x40000002)
+#define PSA_KEY_TYPE_DES                            ((psa_key_type_t) 0x2301)
 
 /** Key for a cipher, AEAD or MAC algorithm based on the
  * Camellia block cipher. */
-#define PSA_KEY_TYPE_CAMELLIA                   ((psa_key_type_t)0x40000003)
-
-/** Key for the RC4 stream cipher.
- *
- * Note that RC4 is weak and deprecated and should only be used in
- * legacy protocols. */
-#define PSA_KEY_TYPE_ARC4                       ((psa_key_type_t)0x40000004)
+#define PSA_KEY_TYPE_CAMELLIA                       ((psa_key_type_t) 0x2403)
 
 /** Key for the ChaCha20 stream cipher or the Chacha20-Poly1305 AEAD algorithm.
  *
  * ChaCha20 and the ChaCha20_Poly1305 construction are defined in RFC 7539.
  *
- * Implementations must support 12-byte nonces, may support 8-byte nonces,
- * and should reject other sizes.
+ * \note For ChaCha20 and ChaCha20_Poly1305, Mbed TLS only supports
+ *       12-byte nonces.
+ *
+ * \note For ChaCha20, the initial counter value is 0. To encrypt or decrypt
+ *       with the initial counter value 1, you can process and discard a
+ *       64-byte block before the real data.
  */
-#define PSA_KEY_TYPE_CHACHA20                   ((psa_key_type_t)0x40000005)
+#define PSA_KEY_TYPE_CHACHA20                       ((psa_key_type_t) 0x2004)
 
-/** RSA public key. */
-#define PSA_KEY_TYPE_RSA_PUBLIC_KEY             ((psa_key_type_t)0x60010000)
-/** RSA key pair (private and public key). */
-#define PSA_KEY_TYPE_RSA_KEY_PAIR                ((psa_key_type_t)0x70010000)
+/** RSA public key.
+ *
+ * The size of an RSA key is the bit size of the modulus.
+ */
+#define PSA_KEY_TYPE_RSA_PUBLIC_KEY                 ((psa_key_type_t) 0x4001)
+/** RSA key pair (private and public key).
+ *
+ * The size of an RSA key is the bit size of the modulus.
+ */
+#define PSA_KEY_TYPE_RSA_KEY_PAIR                   ((psa_key_type_t) 0x7001)
 /** Whether a key type is an RSA key (pair or public-only). */
 #define PSA_KEY_TYPE_IS_RSA(type)                                       \
     (PSA_KEY_TYPE_PUBLIC_KEY_OF_KEY_PAIR(type) == PSA_KEY_TYPE_RSA_PUBLIC_KEY)
 
-#define PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE        ((psa_key_type_t)0x60030000)
-#define PSA_KEY_TYPE_ECC_KEY_PAIR_BASE           ((psa_key_type_t)0x70030000)
-#define PSA_KEY_TYPE_ECC_CURVE_MASK             ((psa_key_type_t)0x0000ffff)
+#define PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE            ((psa_key_type_t) 0x4100)
+#define PSA_KEY_TYPE_ECC_KEY_PAIR_BASE              ((psa_key_type_t) 0x7100)
+#define PSA_KEY_TYPE_ECC_CURVE_MASK                 ((psa_key_type_t) 0x00ff)
 /** Elliptic curve key pair.
  *
- * \param curve     A value of type ::psa_ecc_curve_t that identifies the
- *                  ECC curve to be used.
+ * The size of an elliptic curve key is the bit size associated with the curve,
+ * i.e. the bit size of *q* for a curve over a field *F<sub>q</sub>*.
+ * See the documentation of `PSA_ECC_FAMILY_xxx` curve families for details.
+ *
+ * \param curve     A value of type ::psa_ecc_family_t that
+ *                  identifies the ECC curve to be used.
  */
 #define PSA_KEY_TYPE_ECC_KEY_PAIR(curve)         \
     (PSA_KEY_TYPE_ECC_KEY_PAIR_BASE | (curve))
 /** Elliptic curve public key.
  *
- * \param curve     A value of type ::psa_ecc_curve_t that identifies the
- *                  ECC curve to be used.
+ * The size of an elliptic curve public key is the same as the corresponding
+ * private key (see #PSA_KEY_TYPE_ECC_KEY_PAIR and the documentation of
+ * `PSA_ECC_FAMILY_xxx` curve families).
+ *
+ * \param curve     A value of type ::psa_ecc_family_t that
+ *                  identifies the ECC curve to be used.
  */
 #define PSA_KEY_TYPE_ECC_PUBLIC_KEY(curve)              \
     (PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | (curve))
@@ -443,85 +582,116 @@
      PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE)
 
 /** Extract the curve from an elliptic curve key type. */
-#define PSA_KEY_TYPE_GET_CURVE(type)                             \
-    ((psa_ecc_curve_t) (PSA_KEY_TYPE_IS_ECC(type) ?              \
-                        ((type) & PSA_KEY_TYPE_ECC_CURVE_MASK) : \
-                        0))
+#define PSA_KEY_TYPE_ECC_GET_FAMILY(type)                        \
+    ((psa_ecc_family_t) (PSA_KEY_TYPE_IS_ECC(type) ?             \
+                         ((type) & PSA_KEY_TYPE_ECC_CURVE_MASK) : \
+                         0))
 
-/* The encoding of curve identifiers is currently aligned with the
- * TLS Supported Groups Registry (formerly known as the
- * TLS EC Named Curve Registry)
- * https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8
- * The values are defined by RFC 8422 and RFC 7027. */
-#define PSA_ECC_CURVE_SECT163K1         ((psa_ecc_curve_t) 0x0001)
-#define PSA_ECC_CURVE_SECT163R1         ((psa_ecc_curve_t) 0x0002)
-#define PSA_ECC_CURVE_SECT163R2         ((psa_ecc_curve_t) 0x0003)
-#define PSA_ECC_CURVE_SECT193R1         ((psa_ecc_curve_t) 0x0004)
-#define PSA_ECC_CURVE_SECT193R2         ((psa_ecc_curve_t) 0x0005)
-#define PSA_ECC_CURVE_SECT233K1         ((psa_ecc_curve_t) 0x0006)
-#define PSA_ECC_CURVE_SECT233R1         ((psa_ecc_curve_t) 0x0007)
-#define PSA_ECC_CURVE_SECT239K1         ((psa_ecc_curve_t) 0x0008)
-#define PSA_ECC_CURVE_SECT283K1         ((psa_ecc_curve_t) 0x0009)
-#define PSA_ECC_CURVE_SECT283R1         ((psa_ecc_curve_t) 0x000a)
-#define PSA_ECC_CURVE_SECT409K1         ((psa_ecc_curve_t) 0x000b)
-#define PSA_ECC_CURVE_SECT409R1         ((psa_ecc_curve_t) 0x000c)
-#define PSA_ECC_CURVE_SECT571K1         ((psa_ecc_curve_t) 0x000d)
-#define PSA_ECC_CURVE_SECT571R1         ((psa_ecc_curve_t) 0x000e)
-#define PSA_ECC_CURVE_SECP160K1         ((psa_ecc_curve_t) 0x000f)
-#define PSA_ECC_CURVE_SECP160R1         ((psa_ecc_curve_t) 0x0010)
-#define PSA_ECC_CURVE_SECP160R2         ((psa_ecc_curve_t) 0x0011)
-#define PSA_ECC_CURVE_SECP192K1         ((psa_ecc_curve_t) 0x0012)
-#define PSA_ECC_CURVE_SECP192R1         ((psa_ecc_curve_t) 0x0013)
-#define PSA_ECC_CURVE_SECP224K1         ((psa_ecc_curve_t) 0x0014)
-#define PSA_ECC_CURVE_SECP224R1         ((psa_ecc_curve_t) 0x0015)
-#define PSA_ECC_CURVE_SECP256K1         ((psa_ecc_curve_t) 0x0016)
-#define PSA_ECC_CURVE_SECP256R1         ((psa_ecc_curve_t) 0x0017)
-#define PSA_ECC_CURVE_SECP384R1         ((psa_ecc_curve_t) 0x0018)
-#define PSA_ECC_CURVE_SECP521R1         ((psa_ecc_curve_t) 0x0019)
-#define PSA_ECC_CURVE_BRAINPOOL_P256R1  ((psa_ecc_curve_t) 0x001a)
-#define PSA_ECC_CURVE_BRAINPOOL_P384R1  ((psa_ecc_curve_t) 0x001b)
-#define PSA_ECC_CURVE_BRAINPOOL_P512R1  ((psa_ecc_curve_t) 0x001c)
-/** Curve25519.
- *
- * This is the curve defined in Bernstein et al.,
- * _Curve25519: new Diffie-Hellman speed records_, LNCS 3958, 2006.
- * The algorithm #PSA_ALG_ECDH performs X25519 when used with this curve.
- */
-#define PSA_ECC_CURVE_CURVE25519        ((psa_ecc_curve_t) 0x001d)
-/** Curve448
- *
- * This is the curve defined in Hamburg,
- * _Ed448-Goldilocks, a new elliptic curve_, NIST ECC Workshop, 2015.
- * The algorithm #PSA_ALG_ECDH performs X448 when used with this curve.
- */
-#define PSA_ECC_CURVE_CURVE448          ((psa_ecc_curve_t) 0x001e)
+/** Check if the curve of given family is Weierstrass elliptic curve. */
+#define PSA_ECC_FAMILY_IS_WEIERSTRASS(family) ((family & 0xc0) == 0)
 
-/** Minimum value for a vendor-defined ECC curve identifier
+/** SEC Koblitz curves over prime fields.
  *
- * The range for vendor-defined curve identifiers is a subset of the IANA
- * registry private use range, `0xfe00` - `0xfeff`.
+ * This family comprises the following curves:
+ * secp192k1, secp224k1, secp256k1.
+ * They are defined in _Standards for Efficient Cryptography_,
+ * _SEC 2: Recommended Elliptic Curve Domain Parameters_.
+ * https://www.secg.org/sec2-v2.pdf
  */
-#define PSA_ECC_CURVE_VENDOR_MIN        ((psa_ecc_curve_t) 0xfe00)
-/** Maximum value for a vendor-defined ECC curve identifier
- *
- * The range for vendor-defined curve identifiers is a subset of the IANA
- * registry private use range, `0xfe00` - `0xfeff`.
- */
-#define PSA_ECC_CURVE_VENDOR_MAX        ((psa_ecc_curve_t) 0xfe7f)
+#define PSA_ECC_FAMILY_SECP_K1           ((psa_ecc_family_t) 0x17)
 
-#define PSA_KEY_TYPE_DH_PUBLIC_KEY_BASE         ((psa_key_type_t)0x60040000)
-#define PSA_KEY_TYPE_DH_KEY_PAIR_BASE            ((psa_key_type_t)0x70040000)
-#define PSA_KEY_TYPE_DH_GROUP_MASK              ((psa_key_type_t)0x0000ffff)
+/** SEC random curves over prime fields.
+ *
+ * This family comprises the following curves:
+ * secp192k1, secp224r1, secp256r1, secp384r1, secp521r1.
+ * They are defined in _Standards for Efficient Cryptography_,
+ * _SEC 2: Recommended Elliptic Curve Domain Parameters_.
+ * https://www.secg.org/sec2-v2.pdf
+ */
+#define PSA_ECC_FAMILY_SECP_R1           ((psa_ecc_family_t) 0x12)
+/* SECP160R2 (SEC2 v1, obsolete) */
+#define PSA_ECC_FAMILY_SECP_R2           ((psa_ecc_family_t) 0x1b)
+
+/** SEC Koblitz curves over binary fields.
+ *
+ * This family comprises the following curves:
+ * sect163k1, sect233k1, sect239k1, sect283k1, sect409k1, sect571k1.
+ * They are defined in _Standards for Efficient Cryptography_,
+ * _SEC 2: Recommended Elliptic Curve Domain Parameters_.
+ * https://www.secg.org/sec2-v2.pdf
+ */
+#define PSA_ECC_FAMILY_SECT_K1           ((psa_ecc_family_t) 0x27)
+
+/** SEC random curves over binary fields.
+ *
+ * This family comprises the following curves:
+ * sect163r1, sect233r1, sect283r1, sect409r1, sect571r1.
+ * They are defined in _Standards for Efficient Cryptography_,
+ * _SEC 2: Recommended Elliptic Curve Domain Parameters_.
+ * https://www.secg.org/sec2-v2.pdf
+ */
+#define PSA_ECC_FAMILY_SECT_R1           ((psa_ecc_family_t) 0x22)
+
+/** SEC additional random curves over binary fields.
+ *
+ * This family comprises the following curve:
+ * sect163r2.
+ * It is defined in _Standards for Efficient Cryptography_,
+ * _SEC 2: Recommended Elliptic Curve Domain Parameters_.
+ * https://www.secg.org/sec2-v2.pdf
+ */
+#define PSA_ECC_FAMILY_SECT_R2           ((psa_ecc_family_t) 0x2b)
+
+/** Brainpool P random curves.
+ *
+ * This family comprises the following curves:
+ * brainpoolP160r1, brainpoolP192r1, brainpoolP224r1, brainpoolP256r1,
+ * brainpoolP320r1, brainpoolP384r1, brainpoolP512r1.
+ * It is defined in RFC 5639.
+ */
+#define PSA_ECC_FAMILY_BRAINPOOL_P_R1    ((psa_ecc_family_t) 0x30)
+
+/** Curve25519 and Curve448.
+ *
+ * This family comprises the following Montgomery curves:
+ * - 255-bit: Bernstein et al.,
+ *   _Curve25519: new Diffie-Hellman speed records_, LNCS 3958, 2006.
+ *   The algorithm #PSA_ALG_ECDH performs X25519 when used with this curve.
+ * - 448-bit: Hamburg,
+ *   _Ed448-Goldilocks, a new elliptic curve_, NIST ECC Workshop, 2015.
+ *   The algorithm #PSA_ALG_ECDH performs X448 when used with this curve.
+ */
+#define PSA_ECC_FAMILY_MONTGOMERY        ((psa_ecc_family_t) 0x41)
+
+/** The twisted Edwards curves Ed25519 and Ed448.
+ *
+ * These curves are suitable for EdDSA (#PSA_ALG_PURE_EDDSA for both curves,
+ * #PSA_ALG_ED25519PH for the 255-bit curve,
+ * #PSA_ALG_ED448PH for the 448-bit curve).
+ *
+ * This family comprises the following twisted Edwards curves:
+ * - 255-bit: Edwards25519, the twisted Edwards curve birationally equivalent
+ *   to Curve25519.
+ *   Bernstein et al., _Twisted Edwards curves_, Africacrypt 2008.
+ * - 448-bit: Edwards448, the twisted Edwards curve birationally equivalent
+ *   to Curve448.
+ *   Hamburg, _Ed448-Goldilocks, a new elliptic curve_, NIST ECC Workshop, 2015.
+ */
+#define PSA_ECC_FAMILY_TWISTED_EDWARDS   ((psa_ecc_family_t) 0x42)
+
+#define PSA_KEY_TYPE_DH_PUBLIC_KEY_BASE             ((psa_key_type_t) 0x4200)
+#define PSA_KEY_TYPE_DH_KEY_PAIR_BASE               ((psa_key_type_t) 0x7200)
+#define PSA_KEY_TYPE_DH_GROUP_MASK                  ((psa_key_type_t) 0x00ff)
 /** Diffie-Hellman key pair.
  *
- * \param group     A value of type ::psa_dh_group_t that identifies the
+ * \param group     A value of type ::psa_dh_family_t that identifies the
  *                  Diffie-Hellman group to be used.
  */
 #define PSA_KEY_TYPE_DH_KEY_PAIR(group)          \
     (PSA_KEY_TYPE_DH_KEY_PAIR_BASE | (group))
 /** Diffie-Hellman public key.
  *
- * \param group     A value of type ::psa_dh_group_t that identifies the
+ * \param group     A value of type ::psa_dh_family_t that identifies the
  *                  Diffie-Hellman group to be used.
  */
 #define PSA_KEY_TYPE_DH_PUBLIC_KEY(group)               \
@@ -541,35 +711,21 @@
      PSA_KEY_TYPE_DH_PUBLIC_KEY_BASE)
 
 /** Extract the group from a Diffie-Hellman key type. */
-#define PSA_KEY_TYPE_GET_GROUP(type)                            \
-    ((psa_dh_group_t) (PSA_KEY_TYPE_IS_DH(type) ?               \
-                       ((type) & PSA_KEY_TYPE_DH_GROUP_MASK) :  \
-                       0))
+#define PSA_KEY_TYPE_DH_GET_FAMILY(type)                        \
+    ((psa_dh_family_t) (PSA_KEY_TYPE_IS_DH(type) ?              \
+                        ((type) & PSA_KEY_TYPE_DH_GROUP_MASK) :  \
+                        0))
 
-/* The encoding of group identifiers is currently aligned with the
- * TLS Supported Groups Registry (formerly known as the
- * TLS EC Named Curve Registry)
- * https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8
- * The values are defined by RFC 7919. */
-#define PSA_DH_GROUP_FFDHE2048          ((psa_dh_group_t) 0x0100)
-#define PSA_DH_GROUP_FFDHE3072          ((psa_dh_group_t) 0x0101)
-#define PSA_DH_GROUP_FFDHE4096          ((psa_dh_group_t) 0x0102)
-#define PSA_DH_GROUP_FFDHE6144          ((psa_dh_group_t) 0x0103)
-#define PSA_DH_GROUP_FFDHE8192          ((psa_dh_group_t) 0x0104)
-
-/** Minimum value for a vendor-defined Diffie Hellman group identifier
+/** Diffie-Hellman groups defined in RFC 7919 Appendix A.
  *
- * The range for vendor-defined group identifiers is a subset of the IANA
- * registry private use range, `0x01fc` - `0x01ff`.
+ * This family includes groups with the following key sizes (in bits):
+ * 2048, 3072, 4096, 6144, 8192. A given implementation may support
+ * all of these sizes or only a subset.
  */
-#define PSA_DH_GROUP_VENDOR_MIN         ((psa_dh_group_t) 0x01fc)
-/** Maximum value for a vendor-defined Diffie Hellman group identifier
- *
- * The range for vendor-defined group identifiers is a subset of the IANA
- * registry private use range, `0x01fc` - `0x01ff`.
- */
-#define PSA_DH_GROUP_VENDOR_MAX         ((psa_dh_group_t) 0x01fd)
+#define PSA_DH_FAMILY_RFC7919            ((psa_dh_family_t) 0x03)
 
+#define PSA_GET_KEY_TYPE_BLOCK_SIZE_EXPONENT(type)      \
+    (((type) >> 8) & 7)
 /** The block size of a block cipher.
  *
  * \param type  A cipher key type (value of type #psa_key_type_t).
@@ -588,14 +744,15 @@
  *
  * \warning This macro may evaluate its argument multiple times.
  */
-#define PSA_BLOCK_CIPHER_BLOCK_SIZE(type)            \
-    (                                                \
-        (type) == PSA_KEY_TYPE_AES ? 16 :            \
-        (type) == PSA_KEY_TYPE_DES ? 8 :             \
-        (type) == PSA_KEY_TYPE_CAMELLIA ? 16 :       \
-        (type) == PSA_KEY_TYPE_ARC4 ? 1 :            \
-        (type) == PSA_KEY_TYPE_CHACHA20 ? 1 :            \
-        0)
+#define PSA_BLOCK_CIPHER_BLOCK_LENGTH(type)                                     \
+    (((type) & PSA_KEY_TYPE_CATEGORY_MASK) == PSA_KEY_TYPE_CATEGORY_SYMMETRIC ? \
+     1u << PSA_GET_KEY_TYPE_BLOCK_SIZE_EXPONENT(type) :                         \
+        0u)
+
+/* Note that algorithm values are embedded in the persistent key store,
+ * as part of key metadata. As a consequence, they must not be changed
+ * (unless the storage format version changes).
+ */
 
 /** Vendor-defined algorithm flag.
  *
@@ -604,17 +761,17 @@
  * the #PSA_ALG_VENDOR_FLAG bit set and should respect the bitwise structure
  * used by standard encodings whenever practical.
  */
-#define PSA_ALG_VENDOR_FLAG                     ((psa_algorithm_t)0x80000000)
+#define PSA_ALG_VENDOR_FLAG                     ((psa_algorithm_t) 0x80000000)
 
-#define PSA_ALG_CATEGORY_MASK                   ((psa_algorithm_t)0x7f000000)
-#define PSA_ALG_CATEGORY_HASH                   ((psa_algorithm_t)0x01000000)
-#define PSA_ALG_CATEGORY_MAC                    ((psa_algorithm_t)0x02000000)
-#define PSA_ALG_CATEGORY_CIPHER                 ((psa_algorithm_t)0x04000000)
-#define PSA_ALG_CATEGORY_AEAD                   ((psa_algorithm_t)0x06000000)
-#define PSA_ALG_CATEGORY_SIGN                   ((psa_algorithm_t)0x10000000)
-#define PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION  ((psa_algorithm_t)0x12000000)
-#define PSA_ALG_CATEGORY_KEY_DERIVATION         ((psa_algorithm_t)0x20000000)
-#define PSA_ALG_CATEGORY_KEY_AGREEMENT          ((psa_algorithm_t)0x30000000)
+#define PSA_ALG_CATEGORY_MASK                   ((psa_algorithm_t) 0x7f000000)
+#define PSA_ALG_CATEGORY_HASH                   ((psa_algorithm_t) 0x02000000)
+#define PSA_ALG_CATEGORY_MAC                    ((psa_algorithm_t) 0x03000000)
+#define PSA_ALG_CATEGORY_CIPHER                 ((psa_algorithm_t) 0x04000000)
+#define PSA_ALG_CATEGORY_AEAD                   ((psa_algorithm_t) 0x05000000)
+#define PSA_ALG_CATEGORY_SIGN                   ((psa_algorithm_t) 0x06000000)
+#define PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION  ((psa_algorithm_t) 0x07000000)
+#define PSA_ALG_CATEGORY_KEY_DERIVATION         ((psa_algorithm_t) 0x08000000)
+#define PSA_ALG_CATEGORY_KEY_AGREEMENT          ((psa_algorithm_t) 0x09000000)
 
 /** Whether an algorithm is vendor-defined.
  *
@@ -668,22 +825,24 @@
 #define PSA_ALG_IS_AEAD(alg)                                            \
     (((alg) & PSA_ALG_CATEGORY_MASK) == PSA_ALG_CATEGORY_AEAD)
 
-/** Whether the specified algorithm is a public-key signature algorithm.
+/** Whether the specified algorithm is an asymmetric signature algorithm,
+ * also known as public-key signature algorithm.
  *
  * \param alg An algorithm identifier (value of type #psa_algorithm_t).
  *
- * \return 1 if \p alg is a public-key signature algorithm, 0 otherwise.
+ * \return 1 if \p alg is an asymmetric signature algorithm, 0 otherwise.
  *         This macro may return either 0 or 1 if \p alg is not a supported
  *         algorithm identifier.
  */
 #define PSA_ALG_IS_SIGN(alg)                                            \
     (((alg) & PSA_ALG_CATEGORY_MASK) == PSA_ALG_CATEGORY_SIGN)
 
-/** Whether the specified algorithm is a public-key encryption algorithm.
+/** Whether the specified algorithm is an asymmetric encryption algorithm,
+ * also known as public-key encryption algorithm.
  *
  * \param alg An algorithm identifier (value of type #psa_algorithm_t).
  *
- * \return 1 if \p alg is a public-key encryption algorithm, 0 otherwise.
+ * \return 1 if \p alg is an asymmetric encryption algorithm, 0 otherwise.
  *         This macro may return either 0 or 1 if \p alg is not a supported
  *         algorithm identifier.
  */
@@ -712,37 +871,63 @@
 #define PSA_ALG_IS_KEY_DERIVATION(alg)                                  \
     (((alg) & PSA_ALG_CATEGORY_MASK) == PSA_ALG_CATEGORY_KEY_DERIVATION)
 
-#define PSA_ALG_HASH_MASK                       ((psa_algorithm_t)0x000000ff)
-/** MD2 */
-#define PSA_ALG_MD2                             ((psa_algorithm_t)0x01000001)
-/** MD4 */
-#define PSA_ALG_MD4                             ((psa_algorithm_t)0x01000002)
+/** Whether the specified algorithm is a key stretching / password hashing
+ * algorithm.
+ *
+ * A key stretching / password hashing algorithm is a key derivation algorithm
+ * that is suitable for use with a low-entropy secret such as a password.
+ * Equivalently, it's a key derivation algorithm that uses a
+ * #PSA_KEY_DERIVATION_INPUT_PASSWORD input step.
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if \p alg is a key stretching / password hashing algorithm, 0
+ *         otherwise. This macro may return either 0 or 1 if \p alg is not a
+ *         supported algorithm identifier.
+ */
+#define PSA_ALG_IS_KEY_DERIVATION_STRETCHING(alg)                                  \
+    (PSA_ALG_IS_KEY_DERIVATION(alg) &&              \
+     (alg) & PSA_ALG_KEY_DERIVATION_STRETCHING_FLAG)
+
+/** An invalid algorithm identifier value. */
+/* *INDENT-OFF* (https://github.com/ARM-software/psa-arch-tests/issues/337) */
+#define PSA_ALG_NONE                            ((psa_algorithm_t)0)
+/* *INDENT-ON* */
+
+#define PSA_ALG_HASH_MASK                       ((psa_algorithm_t) 0x000000ff)
 /** MD5 */
-#define PSA_ALG_MD5                             ((psa_algorithm_t)0x01000003)
+#define PSA_ALG_MD5                             ((psa_algorithm_t) 0x02000003)
 /** PSA_ALG_RIPEMD160 */
-#define PSA_ALG_RIPEMD160                       ((psa_algorithm_t)0x01000004)
+#define PSA_ALG_RIPEMD160                       ((psa_algorithm_t) 0x02000004)
 /** SHA1 */
-#define PSA_ALG_SHA_1                           ((psa_algorithm_t)0x01000005)
+#define PSA_ALG_SHA_1                           ((psa_algorithm_t) 0x02000005)
 /** SHA2-224 */
-#define PSA_ALG_SHA_224                         ((psa_algorithm_t)0x01000008)
+#define PSA_ALG_SHA_224                         ((psa_algorithm_t) 0x02000008)
 /** SHA2-256 */
-#define PSA_ALG_SHA_256                         ((psa_algorithm_t)0x01000009)
+#define PSA_ALG_SHA_256                         ((psa_algorithm_t) 0x02000009)
 /** SHA2-384 */
-#define PSA_ALG_SHA_384                         ((psa_algorithm_t)0x0100000a)
+#define PSA_ALG_SHA_384                         ((psa_algorithm_t) 0x0200000a)
 /** SHA2-512 */
-#define PSA_ALG_SHA_512                         ((psa_algorithm_t)0x0100000b)
+#define PSA_ALG_SHA_512                         ((psa_algorithm_t) 0x0200000b)
 /** SHA2-512/224 */
-#define PSA_ALG_SHA_512_224                     ((psa_algorithm_t)0x0100000c)
+#define PSA_ALG_SHA_512_224                     ((psa_algorithm_t) 0x0200000c)
 /** SHA2-512/256 */
-#define PSA_ALG_SHA_512_256                     ((psa_algorithm_t)0x0100000d)
+#define PSA_ALG_SHA_512_256                     ((psa_algorithm_t) 0x0200000d)
 /** SHA3-224 */
-#define PSA_ALG_SHA3_224                        ((psa_algorithm_t)0x01000010)
+#define PSA_ALG_SHA3_224                        ((psa_algorithm_t) 0x02000010)
 /** SHA3-256 */
-#define PSA_ALG_SHA3_256                        ((psa_algorithm_t)0x01000011)
+#define PSA_ALG_SHA3_256                        ((psa_algorithm_t) 0x02000011)
 /** SHA3-384 */
-#define PSA_ALG_SHA3_384                        ((psa_algorithm_t)0x01000012)
+#define PSA_ALG_SHA3_384                        ((psa_algorithm_t) 0x02000012)
 /** SHA3-512 */
-#define PSA_ALG_SHA3_512                        ((psa_algorithm_t)0x01000013)
+#define PSA_ALG_SHA3_512                        ((psa_algorithm_t) 0x02000013)
+/** The first 512 bits (64 bytes) of the SHAKE256 output.
+ *
+ * This is the prehashing for Ed448ph (see #PSA_ALG_ED448PH). For other
+ * scenarios where a hash function based on SHA3/SHAKE is desired, SHA3-512
+ * has the same output size and a (theoretically) higher security strength.
+ */
+#define PSA_ALG_SHAKE256_512                    ((psa_algorithm_t) 0x02000015)
 
 /** In a hash-and-sign algorithm policy, allow any hash algorithm.
  *
@@ -752,7 +937,7 @@
  * algorithm parametrized with any supported hash.
  *
  * That is, suppose that `PSA_xxx_SIGNATURE` is one of the following macros:
- * - #PSA_ALG_RSA_PKCS1V15_SIGN, #PSA_ALG_RSA_PSS,
+ * - #PSA_ALG_RSA_PKCS1V15_SIGN, #PSA_ALG_RSA_PSS, #PSA_ALG_RSA_PSS_ANY_SALT,
  * - #PSA_ALG_ECDSA, #PSA_ALG_DETERMINISTIC_ECDSA.
  * Then you may create and use a key as follows:
  * - Set the key usage field using #PSA_ALG_ANY_HASH, for example:
@@ -765,9 +950,9 @@
  *   an algorithm built from `PSA_xxx_SIGNATURE` and a specific hash. Each
  *   call to sign or verify a message may use a different hash.
  *   ```
- *   psa_sign_hash(handle, PSA_xxx_SIGNATURE(PSA_ALG_SHA_256), ...);
- *   psa_sign_hash(handle, PSA_xxx_SIGNATURE(PSA_ALG_SHA_512), ...);
- *   psa_sign_hash(handle, PSA_xxx_SIGNATURE(PSA_ALG_SHA3_256), ...);
+ *   psa_sign_hash(key, PSA_xxx_SIGNATURE(PSA_ALG_SHA_256), ...);
+ *   psa_sign_hash(key, PSA_xxx_SIGNATURE(PSA_ALG_SHA_512), ...);
+ *   psa_sign_hash(key, PSA_xxx_SIGNATURE(PSA_ALG_SHA3_256), ...);
  *   ```
  *
  * This value may not be used to build other algorithms that are
@@ -777,10 +962,10 @@
  * This value may not be used to build an algorithm specification to
  * perform an operation. It is only valid to build policies.
  */
-#define PSA_ALG_ANY_HASH                        ((psa_algorithm_t)0x010000ff)
+#define PSA_ALG_ANY_HASH                        ((psa_algorithm_t) 0x020000ff)
 
-#define PSA_ALG_MAC_SUBCATEGORY_MASK            ((psa_algorithm_t)0x00c00000)
-#define PSA_ALG_HMAC_BASE                       ((psa_algorithm_t)0x02800000)
+#define PSA_ALG_MAC_SUBCATEGORY_MASK            ((psa_algorithm_t) 0x00c00000)
+#define PSA_ALG_HMAC_BASE                       ((psa_algorithm_t) 0x03800000)
 /** Macro to build an HMAC algorithm.
  *
  * For example, #PSA_ALG_HMAC(#PSA_ALG_SHA_256) is HMAC-SHA-256.
@@ -819,8 +1004,16 @@
  * reach up to 63; the largest MAC is 64 bytes so its trivial truncation
  * to full length is correctly encoded as 0 and any non-trivial truncation
  * is correctly encoded as a value between 1 and 63. */
-#define PSA_ALG_MAC_TRUNCATION_MASK             ((psa_algorithm_t)0x00003f00)
-#define PSA_MAC_TRUNCATION_OFFSET 8
+#define PSA_ALG_MAC_TRUNCATION_MASK             ((psa_algorithm_t) 0x003f0000)
+#define PSA_MAC_TRUNCATION_OFFSET 16
+
+/* In the encoding of a MAC algorithm, the bit corresponding to
+ * #PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG encodes the fact that the algorithm
+ * is a wildcard algorithm. A key with such wildcard algorithm as permitted
+ * algorithm policy can be used with any algorithm corresponding to the
+ * same base class and having a (potentially truncated) MAC length greater or
+ * equal than the one encoded in #PSA_ALG_MAC_TRUNCATION_MASK. */
+#define PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG   ((psa_algorithm_t) 0x00008000)
 
 /** Macro to build a truncated MAC algorithm.
  *
@@ -840,7 +1033,7 @@
  *          for policy comparison purposes.
  *
  * \param mac_alg       A MAC algorithm identifier (value of type
- *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p alg)
+ *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p mac_alg)
  *                      is true). This may be a truncated or untruncated
  *                      MAC algorithm.
  * \param mac_length    Desired length of the truncated MAC in bytes.
@@ -851,52 +1044,82 @@
  *
  * \return              The corresponding MAC algorithm with the specified
  *                      length.
- * \return              Unspecified if \p alg is not a supported
+ * \return              Unspecified if \p mac_alg is not a supported
  *                      MAC algorithm or if \p mac_length is too small or
  *                      too large for the specified MAC algorithm.
  */
-#define PSA_ALG_TRUNCATED_MAC(mac_alg, mac_length)                      \
-    (((mac_alg) & ~PSA_ALG_MAC_TRUNCATION_MASK) |                       \
+#define PSA_ALG_TRUNCATED_MAC(mac_alg, mac_length)              \
+    (((mac_alg) & ~(PSA_ALG_MAC_TRUNCATION_MASK |               \
+                    PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG)) |   \
      ((mac_length) << PSA_MAC_TRUNCATION_OFFSET & PSA_ALG_MAC_TRUNCATION_MASK))
 
 /** Macro to build the base MAC algorithm corresponding to a truncated
  * MAC algorithm.
  *
  * \param mac_alg       A MAC algorithm identifier (value of type
- *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p alg)
+ *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p mac_alg)
  *                      is true). This may be a truncated or untruncated
  *                      MAC algorithm.
  *
  * \return              The corresponding base MAC algorithm.
- * \return              Unspecified if \p alg is not a supported
+ * \return              Unspecified if \p mac_alg is not a supported
  *                      MAC algorithm.
  */
-#define PSA_ALG_FULL_LENGTH_MAC(mac_alg)        \
-    ((mac_alg) & ~PSA_ALG_MAC_TRUNCATION_MASK)
+#define PSA_ALG_FULL_LENGTH_MAC(mac_alg)                        \
+    ((mac_alg) & ~(PSA_ALG_MAC_TRUNCATION_MASK |                \
+                   PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG))
 
 /** Length to which a MAC algorithm is truncated.
  *
  * \param mac_alg       A MAC algorithm identifier (value of type
- *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p alg)
+ *                      #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p mac_alg)
  *                      is true).
  *
  * \return              Length of the truncated MAC in bytes.
- * \return              0 if \p alg is a non-truncated MAC algorithm.
- * \return              Unspecified if \p alg is not a supported
+ * \return              0 if \p mac_alg is a non-truncated MAC algorithm.
+ * \return              Unspecified if \p mac_alg is not a supported
  *                      MAC algorithm.
  */
 #define PSA_MAC_TRUNCATED_LENGTH(mac_alg)                               \
     (((mac_alg) & PSA_ALG_MAC_TRUNCATION_MASK) >> PSA_MAC_TRUNCATION_OFFSET)
 
-#define PSA_ALG_CIPHER_MAC_BASE                 ((psa_algorithm_t)0x02c00000)
+/** Macro to build a MAC minimum-MAC-length wildcard algorithm.
+ *
+ * A minimum-MAC-length MAC wildcard algorithm permits all MAC algorithms
+ * sharing the same base algorithm, and where the (potentially truncated) MAC
+ * length of the specific algorithm is equal to or larger then the wildcard
+ * algorithm's minimum MAC length.
+ *
+ * \note    When setting the minimum required MAC length to less than the
+ *          smallest MAC length allowed by the base algorithm, this effectively
+ *          becomes an 'any-MAC-length-allowed' policy for that base algorithm.
+ *
+ * \param mac_alg         A MAC algorithm identifier (value of type
+ *                        #psa_algorithm_t such that #PSA_ALG_IS_MAC(\p mac_alg)
+ *                        is true).
+ * \param min_mac_length  Desired minimum length of the message authentication
+ *                        code in bytes. This must be at most the untruncated
+ *                        length of the MAC and must be at least 1.
+ *
+ * \return                The corresponding MAC wildcard algorithm with the
+ *                        specified minimum length.
+ * \return                Unspecified if \p mac_alg is not a supported MAC
+ *                        algorithm or if \p min_mac_length is less than 1 or
+ *                        too large for the specified MAC algorithm.
+ */
+#define PSA_ALG_AT_LEAST_THIS_LENGTH_MAC(mac_alg, min_mac_length)   \
+    (PSA_ALG_TRUNCATED_MAC(mac_alg, min_mac_length) |              \
+     PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG)
+
+#define PSA_ALG_CIPHER_MAC_BASE                 ((psa_algorithm_t) 0x03c00000)
 /** The CBC-MAC construction over a block cipher
  *
  * \warning CBC-MAC is insecure in many cases.
  * A more secure mode, such as #PSA_ALG_CMAC, is recommended.
  */
-#define PSA_ALG_CBC_MAC                         ((psa_algorithm_t)0x02c00001)
+#define PSA_ALG_CBC_MAC                         ((psa_algorithm_t) 0x03c00100)
 /** The CMAC construction over a block cipher */
-#define PSA_ALG_CMAC                            ((psa_algorithm_t)0x02c00002)
+#define PSA_ALG_CMAC                            ((psa_algorithm_t) 0x03c00200)
 
 /** Whether the specified algorithm is a MAC algorithm based on a block cipher.
  *
@@ -910,8 +1133,8 @@
     (((alg) & (PSA_ALG_CATEGORY_MASK | PSA_ALG_MAC_SUBCATEGORY_MASK)) == \
      PSA_ALG_CIPHER_MAC_BASE)
 
-#define PSA_ALG_CIPHER_STREAM_FLAG              ((psa_algorithm_t)0x00800000)
-#define PSA_ALG_CIPHER_FROM_BLOCK_FLAG          ((psa_algorithm_t)0x00400000)
+#define PSA_ALG_CIPHER_STREAM_FLAG              ((psa_algorithm_t) 0x00800000)
+#define PSA_ALG_CIPHER_FROM_BLOCK_FLAG          ((psa_algorithm_t) 0x00400000)
 
 /** Whether the specified algorithm is a stream cipher.
  *
@@ -927,23 +1150,14 @@
  */
 #define PSA_ALG_IS_STREAM_CIPHER(alg)            \
     (((alg) & (PSA_ALG_CATEGORY_MASK | PSA_ALG_CIPHER_STREAM_FLAG)) == \
-        (PSA_ALG_CATEGORY_CIPHER | PSA_ALG_CIPHER_STREAM_FLAG))
+     (PSA_ALG_CATEGORY_CIPHER | PSA_ALG_CIPHER_STREAM_FLAG))
 
-/** The ARC4 stream cipher algorithm.
+/** The stream cipher mode of a stream cipher algorithm.
+ *
+ * The underlying stream cipher is determined by the key type.
+ * - To use ChaCha20, use a key type of #PSA_KEY_TYPE_CHACHA20.
  */
-#define PSA_ALG_ARC4                            ((psa_algorithm_t)0x04800001)
-
-/** The ChaCha20 stream cipher.
- *
- * ChaCha20 is defined in RFC 7539.
- *
- * The nonce size for psa_cipher_set_iv() or psa_cipher_generate_iv()
- * must be 12.
- *
- * The initial block counter is always 0.
- *
- */
-#define PSA_ALG_CHACHA20                        ((psa_algorithm_t)0x04800005)
+#define PSA_ALG_STREAM_CIPHER                   ((psa_algorithm_t) 0x04800100)
 
 /** The CTR stream cipher mode.
  *
@@ -952,19 +1166,19 @@
  * For example, to use AES-128-CTR, use this algorithm with
  * a key of type #PSA_KEY_TYPE_AES and a length of 128 bits (16 bytes).
  */
-#define PSA_ALG_CTR                             ((psa_algorithm_t)0x04c00001)
+#define PSA_ALG_CTR                             ((psa_algorithm_t) 0x04c01000)
 
 /** The CFB stream cipher mode.
  *
  * The underlying block cipher is determined by the key type.
  */
-#define PSA_ALG_CFB                             ((psa_algorithm_t)0x04c00002)
+#define PSA_ALG_CFB                             ((psa_algorithm_t) 0x04c01100)
 
 /** The OFB stream cipher mode.
  *
  * The underlying block cipher is determined by the key type.
  */
-#define PSA_ALG_OFB                             ((psa_algorithm_t)0x04c00003)
+#define PSA_ALG_OFB                             ((psa_algorithm_t) 0x04c01200)
 
 /** The XTS cipher mode.
  *
@@ -972,7 +1186,27 @@
  * least one full block of input, but beyond this minimum the input
  * does not need to be a whole number of blocks.
  */
-#define PSA_ALG_XTS                             ((psa_algorithm_t)0x044000ff)
+#define PSA_ALG_XTS                             ((psa_algorithm_t) 0x0440ff00)
+
+/** The Electronic Code Book (ECB) mode of a block cipher, with no padding.
+ *
+ * \warning ECB mode does not protect the confidentiality of the encrypted data
+ * except in extremely narrow circumstances. It is recommended that applications
+ * only use ECB if they need to construct an operating mode that the
+ * implementation does not provide. Implementations are encouraged to provide
+ * the modes that applications need in preference to supporting direct access
+ * to ECB.
+ *
+ * The underlying block cipher is determined by the key type.
+ *
+ * This symmetric cipher mode can only be used with messages whose lengths are a
+ * multiple of the block size of the chosen block cipher.
+ *
+ * ECB mode does not accept an initialization vector (IV). When using a
+ * multi-part cipher operation with this algorithm, psa_cipher_generate_iv()
+ * and psa_cipher_set_iv() must not be called.
+ */
+#define PSA_ALG_ECB_NO_PADDING                  ((psa_algorithm_t) 0x04404400)
 
 /** The CBC block cipher chaining mode, with no padding.
  *
@@ -981,7 +1215,7 @@
  * This symmetric cipher mode can only be used with messages whose lengths
  * are whole number of blocks for the chosen block cipher.
  */
-#define PSA_ALG_CBC_NO_PADDING                  ((psa_algorithm_t)0x04600100)
+#define PSA_ALG_CBC_NO_PADDING                  ((psa_algorithm_t) 0x04404000)
 
 /** The CBC block cipher chaining mode with PKCS#7 padding.
  *
@@ -989,9 +1223,9 @@
  *
  * This is the padding method defined by PKCS#7 (RFC 2315) &sect;10.3.
  */
-#define PSA_ALG_CBC_PKCS7                       ((psa_algorithm_t)0x04600101)
+#define PSA_ALG_CBC_PKCS7                       ((psa_algorithm_t) 0x04404100)
 
-#define PSA_ALG_AEAD_FROM_BLOCK_FLAG            ((psa_algorithm_t)0x00400000)
+#define PSA_ALG_AEAD_FROM_BLOCK_FLAG            ((psa_algorithm_t) 0x00400000)
 
 /** Whether the specified algorithm is an AEAD mode on a block cipher.
  *
@@ -1010,13 +1244,24 @@
  *
  * The underlying block cipher is determined by the key type.
  */
-#define PSA_ALG_CCM                             ((psa_algorithm_t)0x06401001)
+#define PSA_ALG_CCM                             ((psa_algorithm_t) 0x05500100)
+
+/** The CCM* cipher mode without authentication.
+ *
+ * This is CCM* as specified in IEEE 802.15.4 §7, with a tag length of 0.
+ * For CCM* with a nonzero tag length, use the AEAD algorithm #PSA_ALG_CCM.
+ *
+ * The underlying block cipher is determined by the key type.
+ *
+ * Currently only 13-byte long IV's are supported.
+ */
+#define PSA_ALG_CCM_STAR_NO_TAG                 ((psa_algorithm_t) 0x04c01300)
 
 /** The GCM authenticated encryption algorithm.
  *
  * The underlying block cipher is determined by the key type.
  */
-#define PSA_ALG_GCM                             ((psa_algorithm_t)0x06401002)
+#define PSA_ALG_GCM                             ((psa_algorithm_t) 0x05500200)
 
 /** The Chacha20-Poly1305 AEAD algorithm.
  *
@@ -1027,14 +1272,22 @@
  *
  * Implementations must support 16-byte tags and should reject other sizes.
  */
-#define PSA_ALG_CHACHA20_POLY1305               ((psa_algorithm_t)0x06001005)
+#define PSA_ALG_CHACHA20_POLY1305               ((psa_algorithm_t) 0x05100500)
 
-/* In the encoding of a AEAD algorithm, the bits corresponding to
+/* In the encoding of an AEAD algorithm, the bits corresponding to
  * PSA_ALG_AEAD_TAG_LENGTH_MASK encode the length of the AEAD tag.
  * The constants for default lengths follow this encoding.
  */
-#define PSA_ALG_AEAD_TAG_LENGTH_MASK            ((psa_algorithm_t)0x00003f00)
-#define PSA_AEAD_TAG_LENGTH_OFFSET 8
+#define PSA_ALG_AEAD_TAG_LENGTH_MASK            ((psa_algorithm_t) 0x003f0000)
+#define PSA_AEAD_TAG_LENGTH_OFFSET 16
+
+/* In the encoding of an AEAD algorithm, the bit corresponding to
+ * #PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG encodes the fact that the algorithm
+ * is a wildcard algorithm. A key with such wildcard algorithm as permitted
+ * algorithm policy can be used with any algorithm corresponding to the
+ * same base class and having a tag length greater than or equal to the one
+ * encoded in #PSA_ALG_AEAD_TAG_LENGTH_MASK. */
+#define PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG  ((psa_algorithm_t) 0x00008000)
 
 /** Macro to build a shortened AEAD algorithm.
  *
@@ -1044,41 +1297,84 @@
  * of the ciphertext.
  *
  * \param aead_alg      An AEAD algorithm identifier (value of type
- *                      #psa_algorithm_t such that #PSA_ALG_IS_AEAD(\p alg)
+ *                      #psa_algorithm_t such that #PSA_ALG_IS_AEAD(\p aead_alg)
  *                      is true).
  * \param tag_length    Desired length of the authentication tag in bytes.
  *
  * \return              The corresponding AEAD algorithm with the specified
  *                      length.
- * \return              Unspecified if \p alg is not a supported
+ * \return              Unspecified if \p aead_alg is not a supported
  *                      AEAD algorithm or if \p tag_length is not valid
  *                      for the specified AEAD algorithm.
  */
-#define PSA_ALG_AEAD_WITH_TAG_LENGTH(aead_alg, tag_length)              \
-    (((aead_alg) & ~PSA_ALG_AEAD_TAG_LENGTH_MASK) |                     \
+#define PSA_ALG_AEAD_WITH_SHORTENED_TAG(aead_alg, tag_length)           \
+    (((aead_alg) & ~(PSA_ALG_AEAD_TAG_LENGTH_MASK |                     \
+                     PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG)) |         \
      ((tag_length) << PSA_AEAD_TAG_LENGTH_OFFSET &                      \
-      PSA_ALG_AEAD_TAG_LENGTH_MASK))
+        PSA_ALG_AEAD_TAG_LENGTH_MASK))
+
+/** Retrieve the tag length of a specified AEAD algorithm
+ *
+ * \param aead_alg      An AEAD algorithm identifier (value of type
+ *                      #psa_algorithm_t such that #PSA_ALG_IS_AEAD(\p aead_alg)
+ *                      is true).
+ *
+ * \return              The tag length specified by the input algorithm.
+ * \return              Unspecified if \p aead_alg is not a supported
+ *                      AEAD algorithm.
+ */
+#define PSA_ALG_AEAD_GET_TAG_LENGTH(aead_alg)                           \
+    (((aead_alg) & PSA_ALG_AEAD_TAG_LENGTH_MASK) >>                     \
+     PSA_AEAD_TAG_LENGTH_OFFSET)
 
 /** Calculate the corresponding AEAD algorithm with the default tag length.
  *
  * \param aead_alg      An AEAD algorithm (\c PSA_ALG_XXX value such that
- *                      #PSA_ALG_IS_AEAD(\p alg) is true).
+ *                      #PSA_ALG_IS_AEAD(\p aead_alg) is true).
  *
  * \return              The corresponding AEAD algorithm with the default
  *                      tag length for that algorithm.
  */
-#define PSA_ALG_AEAD_WITH_DEFAULT_TAG_LENGTH(aead_alg)                   \
+#define PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(aead_alg)                   \
     (                                                                    \
-        PSA_ALG_AEAD_WITH_DEFAULT_TAG_LENGTH_CASE(aead_alg, PSA_ALG_CCM) \
-        PSA_ALG_AEAD_WITH_DEFAULT_TAG_LENGTH_CASE(aead_alg, PSA_ALG_GCM) \
-        PSA_ALG_AEAD_WITH_DEFAULT_TAG_LENGTH_CASE(aead_alg, PSA_ALG_CHACHA20_POLY1305) \
+        PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG_CASE(aead_alg, PSA_ALG_CCM) \
+        PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG_CASE(aead_alg, PSA_ALG_GCM) \
+        PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG_CASE(aead_alg, PSA_ALG_CHACHA20_POLY1305) \
         0)
-#define PSA_ALG_AEAD_WITH_DEFAULT_TAG_LENGTH_CASE(aead_alg, ref)         \
-    PSA_ALG_AEAD_WITH_TAG_LENGTH(aead_alg, 0) ==                         \
-    PSA_ALG_AEAD_WITH_TAG_LENGTH(ref, 0) ?                               \
+#define PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG_CASE(aead_alg, ref)         \
+    PSA_ALG_AEAD_WITH_SHORTENED_TAG(aead_alg, 0) ==                      \
+    PSA_ALG_AEAD_WITH_SHORTENED_TAG(ref, 0) ?                            \
     ref :
 
-#define PSA_ALG_RSA_PKCS1V15_SIGN_BASE          ((psa_algorithm_t)0x10020000)
+/** Macro to build an AEAD minimum-tag-length wildcard algorithm.
+ *
+ * A minimum-tag-length AEAD wildcard algorithm permits all AEAD algorithms
+ * sharing the same base algorithm, and where the tag length of the specific
+ * algorithm is equal to or larger then the minimum tag length specified by the
+ * wildcard algorithm.
+ *
+ * \note    When setting the minimum required tag length to less than the
+ *          smallest tag length allowed by the base algorithm, this effectively
+ *          becomes an 'any-tag-length-allowed' policy for that base algorithm.
+ *
+ * \param aead_alg        An AEAD algorithm identifier (value of type
+ *                        #psa_algorithm_t such that
+ *                        #PSA_ALG_IS_AEAD(\p aead_alg) is true).
+ * \param min_tag_length  Desired minimum length of the authentication tag in
+ *                        bytes. This must be at least 1 and at most the largest
+ *                        allowed tag length of the algorithm.
+ *
+ * \return                The corresponding AEAD wildcard algorithm with the
+ *                        specified minimum length.
+ * \return                Unspecified if \p aead_alg is not a supported
+ *                        AEAD algorithm or if \p min_tag_length is less than 1
+ *                        or too large for the specified AEAD algorithm.
+ */
+#define PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(aead_alg, min_tag_length) \
+    (PSA_ALG_AEAD_WITH_SHORTENED_TAG(aead_alg, min_tag_length) |            \
+     PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG)
+
+#define PSA_ALG_RSA_PKCS1V15_SIGN_BASE          ((psa_algorithm_t) 0x06000200)
 /** RSA PKCS#1 v1.5 signature with hashing.
  *
  * This is the signature scheme defined by RFC 8017
@@ -1106,15 +1402,18 @@
 #define PSA_ALG_IS_RSA_PKCS1V15_SIGN(alg)                               \
     (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_RSA_PKCS1V15_SIGN_BASE)
 
-#define PSA_ALG_RSA_PSS_BASE               ((psa_algorithm_t)0x10030000)
+#define PSA_ALG_RSA_PSS_BASE               ((psa_algorithm_t) 0x06000300)
+#define PSA_ALG_RSA_PSS_ANY_SALT_BASE      ((psa_algorithm_t) 0x06001300)
 /** RSA PSS signature with hashing.
  *
  * This is the signature scheme defined by RFC 8017
  * (PKCS#1: RSA Cryptography Specifications) under the name
  * RSASSA-PSS, with the message generation function MGF1, and with
- * a salt length equal to the length of the hash. The specified
- * hash algorithm is used to hash the input message, to create the
- * salted hash, and for the mask generation.
+ * a salt length equal to the length of the hash, or the largest
+ * possible salt length for the algorithm and key size if that is
+ * smaller than the hash length. The specified hash algorithm is
+ * used to hash the input message, to create the salted hash, and
+ * for the mask generation.
  *
  * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
  *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
@@ -1127,17 +1426,80 @@
  */
 #define PSA_ALG_RSA_PSS(hash_alg)                               \
     (PSA_ALG_RSA_PSS_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
-#define PSA_ALG_IS_RSA_PSS(alg)                                 \
+
+/** RSA PSS signature with hashing with relaxed verification.
+ *
+ * This algorithm has the same behavior as #PSA_ALG_RSA_PSS when signing,
+ * but allows an arbitrary salt length (including \c 0) when verifying a
+ * signature.
+ *
+ * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
+ *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
+ *                      This includes #PSA_ALG_ANY_HASH
+ *                      when specifying the algorithm in a usage policy.
+ *
+ * \return              The corresponding RSA PSS signature algorithm.
+ * \return              Unspecified if \p hash_alg is not a supported
+ *                      hash algorithm.
+ */
+#define PSA_ALG_RSA_PSS_ANY_SALT(hash_alg)                      \
+    (PSA_ALG_RSA_PSS_ANY_SALT_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+
+/** Whether the specified algorithm is RSA PSS with standard salt.
+ *
+ * \param alg           An algorithm value or an algorithm policy wildcard.
+ *
+ * \return              1 if \p alg is of the form
+ *                      #PSA_ALG_RSA_PSS(\c hash_alg),
+ *                      where \c hash_alg is a hash algorithm or
+ *                      #PSA_ALG_ANY_HASH. 0 otherwise.
+ *                      This macro may return either 0 or 1 if \p alg is not
+ *                      a supported algorithm identifier or policy.
+ */
+#define PSA_ALG_IS_RSA_PSS_STANDARD_SALT(alg)                   \
     (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_RSA_PSS_BASE)
 
-#define PSA_ALG_ECDSA_BASE                      ((psa_algorithm_t)0x10060000)
+/** Whether the specified algorithm is RSA PSS with any salt.
+ *
+ * \param alg           An algorithm value or an algorithm policy wildcard.
+ *
+ * \return              1 if \p alg is of the form
+ *                      #PSA_ALG_RSA_PSS_ANY_SALT_BASE(\c hash_alg),
+ *                      where \c hash_alg is a hash algorithm or
+ *                      #PSA_ALG_ANY_HASH. 0 otherwise.
+ *                      This macro may return either 0 or 1 if \p alg is not
+ *                      a supported algorithm identifier or policy.
+ */
+#define PSA_ALG_IS_RSA_PSS_ANY_SALT(alg)                                \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_RSA_PSS_ANY_SALT_BASE)
+
+/** Whether the specified algorithm is RSA PSS.
+ *
+ * This includes any of the RSA PSS algorithm variants, regardless of the
+ * constraints on salt length.
+ *
+ * \param alg           An algorithm value or an algorithm policy wildcard.
+ *
+ * \return              1 if \p alg is of the form
+ *                      #PSA_ALG_RSA_PSS(\c hash_alg) or
+ *                      #PSA_ALG_RSA_PSS_ANY_SALT_BASE(\c hash_alg),
+ *                      where \c hash_alg is a hash algorithm or
+ *                      #PSA_ALG_ANY_HASH. 0 otherwise.
+ *                      This macro may return either 0 or 1 if \p alg is not
+ *                      a supported algorithm identifier or policy.
+ */
+#define PSA_ALG_IS_RSA_PSS(alg)                                 \
+    (PSA_ALG_IS_RSA_PSS_STANDARD_SALT(alg) ||                   \
+     PSA_ALG_IS_RSA_PSS_ANY_SALT(alg))
+
+#define PSA_ALG_ECDSA_BASE                      ((psa_algorithm_t) 0x06000600)
 /** ECDSA signature with hashing.
  *
  * This is the ECDSA signature scheme defined by ANSI X9.62,
  * with a random per-message secret number (*k*).
  *
  * The representation of the signature as a byte string consists of
- * the concatentation of the signature values *r* and *s*. Each of
+ * the concatenation of the signature values *r* and *s*. Each of
  * *r* and *s* is encoded as an *N*-octet string, where *N* is the length
  * of the base point of the curve in octets. Each value is represented
  * in big-endian order (most significant octet first).
@@ -1163,7 +1525,7 @@
  * the curve size.
  */
 #define PSA_ALG_ECDSA_ANY PSA_ALG_ECDSA_BASE
-#define PSA_ALG_DETERMINISTIC_ECDSA_BASE        ((psa_algorithm_t)0x10070000)
+#define PSA_ALG_DETERMINISTIC_ECDSA_BASE        ((psa_algorithm_t) 0x06000700)
 /** Deterministic ECDSA signature with hashing.
  *
  * This is the deterministic ECDSA signature scheme defined by RFC 6979.
@@ -1188,7 +1550,7 @@
  */
 #define PSA_ALG_DETERMINISTIC_ECDSA(hash_alg)                           \
     (PSA_ALG_DETERMINISTIC_ECDSA_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
-#define PSA_ALG_ECDSA_DETERMINISTIC_FLAG        ((psa_algorithm_t)0x00010000)
+#define PSA_ALG_ECDSA_DETERMINISTIC_FLAG        ((psa_algorithm_t) 0x00000100)
 #define PSA_ALG_IS_ECDSA(alg)                                           \
     (((alg) & ~PSA_ALG_HASH_MASK & ~PSA_ALG_ECDSA_DETERMINISTIC_FLAG) ==  \
      PSA_ALG_ECDSA_BASE)
@@ -1199,12 +1561,149 @@
 #define PSA_ALG_IS_RANDOMIZED_ECDSA(alg)                                \
     (PSA_ALG_IS_ECDSA(alg) && !PSA_ALG_ECDSA_IS_DETERMINISTIC(alg))
 
+/** Edwards-curve digital signature algorithm without prehashing (PureEdDSA),
+ * using standard parameters.
+ *
+ * Contexts are not supported in the current version of this specification
+ * because there is no suitable signature interface that can take the
+ * context as a parameter. A future version of this specification may add
+ * suitable functions and extend this algorithm to support contexts.
+ *
+ * PureEdDSA requires an elliptic curve key on a twisted Edwards curve.
+ * In this specification, the following curves are supported:
+ * - #PSA_ECC_FAMILY_TWISTED_EDWARDS, 255-bit: Ed25519 as specified
+ *   in RFC 8032.
+ *   The curve is Edwards25519.
+ *   The hash function used internally is SHA-512.
+ * - #PSA_ECC_FAMILY_TWISTED_EDWARDS, 448-bit: Ed448 as specified
+ *   in RFC 8032.
+ *   The curve is Edwards448.
+ *   The hash function used internally is the first 114 bytes of the
+ *   SHAKE256 output.
+ *
+ * This algorithm can be used with psa_sign_message() and
+ * psa_verify_message(). Since there is no prehashing, it cannot be used
+ * with psa_sign_hash() or psa_verify_hash().
+ *
+ * The signature format is the concatenation of R and S as defined by
+ * RFC 8032 §5.1.6 and §5.2.6 (a 64-byte string for Ed25519, a 114-byte
+ * string for Ed448).
+ */
+#define PSA_ALG_PURE_EDDSA                      ((psa_algorithm_t) 0x06000800)
+
+#define PSA_ALG_HASH_EDDSA_BASE                 ((psa_algorithm_t) 0x06000900)
+#define PSA_ALG_IS_HASH_EDDSA(alg)              \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HASH_EDDSA_BASE)
+
+/** Edwards-curve digital signature algorithm with prehashing (HashEdDSA),
+ * using SHA-512 and the Edwards25519 curve.
+ *
+ * See #PSA_ALG_PURE_EDDSA regarding context support and the signature format.
+ *
+ * This algorithm is Ed25519 as specified in RFC 8032.
+ * The curve is Edwards25519.
+ * The prehash is SHA-512.
+ * The hash function used internally is SHA-512.
+ *
+ * This is a hash-and-sign algorithm: to calculate a signature,
+ * you can either:
+ * - call psa_sign_message() on the message;
+ * - or calculate the SHA-512 hash of the message
+ *   with psa_hash_compute()
+ *   or with a multi-part hash operation started with psa_hash_setup(),
+ *   using the hash algorithm #PSA_ALG_SHA_512,
+ *   then sign the calculated hash with psa_sign_hash().
+ * Verifying a signature is similar, using psa_verify_message() or
+ * psa_verify_hash() instead of the signature function.
+ */
+#define PSA_ALG_ED25519PH                               \
+    (PSA_ALG_HASH_EDDSA_BASE | (PSA_ALG_SHA_512 & PSA_ALG_HASH_MASK))
+
+/** Edwards-curve digital signature algorithm with prehashing (HashEdDSA),
+ * using SHAKE256 and the Edwards448 curve.
+ *
+ * See #PSA_ALG_PURE_EDDSA regarding context support and the signature format.
+ *
+ * This algorithm is Ed448 as specified in RFC 8032.
+ * The curve is Edwards448.
+ * The prehash is the first 64 bytes of the SHAKE256 output.
+ * The hash function used internally is the first 114 bytes of the
+ * SHAKE256 output.
+ *
+ * This is a hash-and-sign algorithm: to calculate a signature,
+ * you can either:
+ * - call psa_sign_message() on the message;
+ * - or calculate the first 64 bytes of the SHAKE256 output of the message
+ *   with psa_hash_compute()
+ *   or with a multi-part hash operation started with psa_hash_setup(),
+ *   using the hash algorithm #PSA_ALG_SHAKE256_512,
+ *   then sign the calculated hash with psa_sign_hash().
+ * Verifying a signature is similar, using psa_verify_message() or
+ * psa_verify_hash() instead of the signature function.
+ */
+#define PSA_ALG_ED448PH                                 \
+    (PSA_ALG_HASH_EDDSA_BASE | (PSA_ALG_SHAKE256_512 & PSA_ALG_HASH_MASK))
+
+/* Default definition, to be overridden if the library is extended with
+ * more hash-and-sign algorithms that we want to keep out of this header
+ * file. */
+#define PSA_ALG_IS_VENDOR_HASH_AND_SIGN(alg) 0
+
+/** Whether the specified algorithm is a signature algorithm that can be used
+ * with psa_sign_hash() and psa_verify_hash().
+ *
+ * This encompasses all strict hash-and-sign algorithms categorized by
+ * PSA_ALG_IS_HASH_AND_SIGN(), as well as algorithms that follow the
+ * paradigm more loosely:
+ * - #PSA_ALG_RSA_PKCS1V15_SIGN_RAW (expects its input to be an encoded hash)
+ * - #PSA_ALG_ECDSA_ANY (doesn't specify what kind of hash the input is)
+ *
+ * \param alg An algorithm identifier (value of type psa_algorithm_t).
+ *
+ * \return 1 if alg is a signature algorithm that can be used to sign a
+ *         hash. 0 if alg is a signature algorithm that can only be used
+ *         to sign a message. 0 if alg is not a signature algorithm.
+ *         This macro can return either 0 or 1 if alg is not a
+ *         supported algorithm identifier.
+ */
+#define PSA_ALG_IS_SIGN_HASH(alg)                                       \
+    (PSA_ALG_IS_RSA_PSS(alg) || PSA_ALG_IS_RSA_PKCS1V15_SIGN(alg) ||    \
+     PSA_ALG_IS_ECDSA(alg) || PSA_ALG_IS_HASH_EDDSA(alg) ||             \
+     PSA_ALG_IS_VENDOR_HASH_AND_SIGN(alg))
+
+/** Whether the specified algorithm is a signature algorithm that can be used
+ * with psa_sign_message() and psa_verify_message().
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if alg is a signature algorithm that can be used to sign a
+ *         message. 0 if \p alg is a signature algorithm that can only be used
+ *         to sign an already-calculated hash. 0 if \p alg is not a signature
+ *         algorithm. This macro can return either 0 or 1 if \p alg is not a
+ *         supported algorithm identifier.
+ */
+#define PSA_ALG_IS_SIGN_MESSAGE(alg)                                    \
+    (PSA_ALG_IS_SIGN_HASH(alg) || (alg) == PSA_ALG_PURE_EDDSA)
+
 /** Whether the specified algorithm is a hash-and-sign algorithm.
  *
- * Hash-and-sign algorithms are public-key signature algorithms structured
- * in two parts: first the calculation of a hash in a way that does not
- * depend on the key, then the calculation of a signature from the
- * hash value and the key.
+ * Hash-and-sign algorithms are asymmetric (public-key) signature algorithms
+ * structured in two parts: first the calculation of a hash in a way that
+ * does not depend on the key, then the calculation of a signature from the
+ * hash value and the key. Hash-and-sign algorithms encode the hash
+ * used for the hashing step, and you can call #PSA_ALG_SIGN_GET_HASH
+ * to extract this algorithm.
+ *
+ * Thus, for a hash-and-sign algorithm,
+ * `psa_sign_message(key, alg, input, ...)` is equivalent to
+ * ```
+ * psa_hash_compute(PSA_ALG_SIGN_GET_HASH(alg), input, ..., hash, ...);
+ * psa_sign_hash(key, alg, hash, ..., signature, ...);
+ * ```
+ * Most usefully, separating the hash from the signature allows the hash
+ * to be calculated in multiple steps with psa_hash_setup(), psa_hash_update()
+ * and psa_hash_finish(). Likewise psa_verify_message() is equivalent to
+ * calculating the hash and then calling psa_verify_hash().
  *
  * \param alg An algorithm identifier (value of type #psa_algorithm_t).
  *
@@ -1213,8 +1712,8 @@
  *         algorithm identifier.
  */
 #define PSA_ALG_IS_HASH_AND_SIGN(alg)                                   \
-    (PSA_ALG_IS_RSA_PSS(alg) || PSA_ALG_IS_RSA_PKCS1V15_SIGN(alg) ||    \
-     PSA_ALG_IS_ECDSA(alg))
+    (PSA_ALG_IS_SIGN_HASH(alg) &&                                       \
+     ((alg) & PSA_ALG_HASH_MASK) != 0)
 
 /** Get the hash used by a hash-and-sign signature algorithm.
  *
@@ -1236,15 +1735,14 @@
  */
 #define PSA_ALG_SIGN_GET_HASH(alg)                                     \
     (PSA_ALG_IS_HASH_AND_SIGN(alg) ?                                   \
-     ((alg) & PSA_ALG_HASH_MASK) == 0 ? /*"raw" algorithm*/ 0 :        \
      ((alg) & PSA_ALG_HASH_MASK) | PSA_ALG_CATEGORY_HASH :             \
      0)
 
 /** RSA PKCS#1 v1.5 encryption.
  */
-#define PSA_ALG_RSA_PKCS1V15_CRYPT              ((psa_algorithm_t)0x12020000)
+#define PSA_ALG_RSA_PKCS1V15_CRYPT              ((psa_algorithm_t) 0x07000200)
 
-#define PSA_ALG_RSA_OAEP_BASE                   ((psa_algorithm_t)0x12030000)
+#define PSA_ALG_RSA_OAEP_BASE                   ((psa_algorithm_t) 0x07000300)
 /** RSA OAEP encryption.
  *
  * This is the encryption scheme defined by RFC 8017
@@ -1255,7 +1753,7 @@
  *                      #PSA_ALG_IS_HASH(\p hash_alg) is true) to use
  *                      for MGF1.
  *
- * \return              The corresponding RSA OAEP signature algorithm.
+ * \return              The corresponding RSA OAEP encryption algorithm.
  * \return              Unspecified if \p hash_alg is not a supported
  *                      hash algorithm.
  */
@@ -1268,10 +1766,10 @@
      ((alg) & PSA_ALG_HASH_MASK) | PSA_ALG_CATEGORY_HASH :      \
      0)
 
-#define PSA_ALG_HKDF_BASE                       ((psa_algorithm_t)0x20000100)
+#define PSA_ALG_HKDF_BASE                       ((psa_algorithm_t) 0x08000100)
 /** Macro to build an HKDF algorithm.
  *
- * For example, `PSA_ALG_HKDF(PSA_ALG_SHA256)` is HKDF using HMAC-SHA-256.
+ * For example, `PSA_ALG_HKDF(PSA_ALG_SHA_256)` is HKDF using HMAC-SHA-256.
  *
  * This key derivation algorithm uses the following inputs:
  * - #PSA_KEY_DERIVATION_INPUT_SALT is the salt used in the "extract" step.
@@ -1281,6 +1779,12 @@
  * You must pass #PSA_KEY_DERIVATION_INPUT_SALT before #PSA_KEY_DERIVATION_INPUT_SECRET.
  * You may pass #PSA_KEY_DERIVATION_INPUT_INFO at any time after steup and before
  * starting to generate output.
+ *
+ *  \warning  HKDF processes the salt as follows: first hash it with hash_alg
+ *  if the salt is longer than the block size of the hash algorithm; then
+ *  pad with null bytes up to the block size. As a result, it is possible
+ *  for distinct salt inputs to result in the same outputs. To ensure
+ *  unique outputs, it is recommended to use a fixed length for salt values.
  *
  * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
  *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
@@ -1307,7 +1811,113 @@
 #define PSA_ALG_HKDF_GET_HASH(hkdf_alg)                         \
     (PSA_ALG_CATEGORY_HASH | ((hkdf_alg) & PSA_ALG_HASH_MASK))
 
-#define PSA_ALG_TLS12_PRF_BASE                  ((psa_algorithm_t)0x20000200)
+#define PSA_ALG_HKDF_EXTRACT_BASE                       ((psa_algorithm_t) 0x08000400)
+/** Macro to build an HKDF-Extract algorithm.
+ *
+ * For example, `PSA_ALG_HKDF_EXTRACT(PSA_ALG_SHA_256)` is
+ * HKDF-Extract using HMAC-SHA-256.
+ *
+ * This key derivation algorithm uses the following inputs:
+ *  - PSA_KEY_DERIVATION_INPUT_SALT is the salt.
+ *  - PSA_KEY_DERIVATION_INPUT_SECRET is the input keying material used in the
+ *    "extract" step.
+ * The inputs are mandatory and must be passed in the order above.
+ * Each input may only be passed once.
+ *
+ *  \warning HKDF-Extract is not meant to be used on its own. PSA_ALG_HKDF
+ *  should be used instead if possible. PSA_ALG_HKDF_EXTRACT is provided
+ *  as a separate algorithm for the sake of protocols that use it as a
+ *  building block. It may also be a slight performance optimization
+ *  in applications that use HKDF with the same salt and key but many
+ *  different info strings.
+ *
+ *  \warning  HKDF processes the salt as follows: first hash it with hash_alg
+ *  if the salt is longer than the block size of the hash algorithm; then
+ *  pad with null bytes up to the block size. As a result, it is possible
+ *  for distinct salt inputs to result in the same outputs. To ensure
+ *  unique outputs, it is recommended to use a fixed length for salt values.
+ *
+ * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
+ *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
+ *
+ * \return              The corresponding HKDF-Extract algorithm.
+ * \return              Unspecified if \p hash_alg is not a supported
+ *                      hash algorithm.
+ */
+#define PSA_ALG_HKDF_EXTRACT(hash_alg)                                  \
+    (PSA_ALG_HKDF_EXTRACT_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+/** Whether the specified algorithm is an HKDF-Extract algorithm.
+ *
+ * HKDF-Extract is a family of key derivation algorithms that are based
+ * on a hash function and the HMAC construction.
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if \c alg is an HKDF-Extract algorithm, 0 otherwise.
+ *         This macro may return either 0 or 1 if \c alg is not a supported
+ *         key derivation algorithm identifier.
+ */
+#define PSA_ALG_IS_HKDF_EXTRACT(alg)                            \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HKDF_EXTRACT_BASE)
+
+#define PSA_ALG_HKDF_EXPAND_BASE                       ((psa_algorithm_t) 0x08000500)
+/** Macro to build an HKDF-Expand algorithm.
+ *
+ * For example, `PSA_ALG_HKDF_EXPAND(PSA_ALG_SHA_256)` is
+ * HKDF-Expand using HMAC-SHA-256.
+ *
+ * This key derivation algorithm uses the following inputs:
+ *  - PSA_KEY_DERIVATION_INPUT_SECRET is the pseudorandom key (PRK).
+ *  - PSA_KEY_DERIVATION_INPUT_INFO is the info string.
+ *
+ *  The inputs are mandatory and must be passed in the order above.
+ *  Each input may only be passed once.
+ *
+ *  \warning HKDF-Expand is not meant to be used on its own. `PSA_ALG_HKDF`
+ *  should be used instead if possible. `PSA_ALG_HKDF_EXPAND` is provided as
+ *  a separate algorithm for the sake of protocols that use it as a building
+ *  block. It may also be a slight performance optimization in applications
+ *  that use HKDF with the same salt and key but many different info strings.
+ *
+ * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
+ *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
+ *
+ * \return              The corresponding HKDF-Expand algorithm.
+ * \return              Unspecified if \p hash_alg is not a supported
+ *                      hash algorithm.
+ */
+#define PSA_ALG_HKDF_EXPAND(hash_alg)                                  \
+    (PSA_ALG_HKDF_EXPAND_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+/** Whether the specified algorithm is an HKDF-Expand algorithm.
+ *
+ * HKDF-Expand is a family of key derivation algorithms that are based
+ * on a hash function and the HMAC construction.
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if \c alg is an HKDF-Expand algorithm, 0 otherwise.
+ *         This macro may return either 0 or 1 if \c alg is not a supported
+ *         key derivation algorithm identifier.
+ */
+#define PSA_ALG_IS_HKDF_EXPAND(alg)                            \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HKDF_EXPAND_BASE)
+
+/** Whether the specified algorithm is an HKDF or HKDF-Extract or
+ *  HKDF-Expand algorithm.
+ *
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if \c alg is any HKDF type algorithm, 0 otherwise.
+ *         This macro may return either 0 or 1 if \c alg is not a supported
+ *         key derivation algorithm identifier.
+ */
+#define PSA_ALG_IS_ANY_HKDF(alg)                                   \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HKDF_BASE ||          \
+     ((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HKDF_EXTRACT_BASE ||  \
+     ((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_HKDF_EXPAND_BASE)
+
+#define PSA_ALG_TLS12_PRF_BASE                  ((psa_algorithm_t) 0x08000200)
 /** Macro to build a TLS-1.2 PRF algorithm.
  *
  * TLS 1.2 uses a custom pseudorandom function (PRF) for key schedule,
@@ -1324,7 +1934,7 @@
  * concatenation of ServerHello.Random + ClientHello.Random,
  * and the label is "key expansion".
  *
- * For example, `PSA_ALG_TLS12_PRF(PSA_ALG_SHA256)` represents the
+ * For example, `PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256)` represents the
  * TLS 1.2 PRF using HMAC-SHA-256.
  *
  * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
@@ -1350,7 +1960,7 @@
 #define PSA_ALG_TLS12_PRF_GET_HASH(hkdf_alg)                         \
     (PSA_ALG_CATEGORY_HASH | ((hkdf_alg) & PSA_ALG_HASH_MASK))
 
-#define PSA_ALG_TLS12_PSK_TO_MS_BASE            ((psa_algorithm_t)0x20000300)
+#define PSA_ALG_TLS12_PSK_TO_MS_BASE            ((psa_algorithm_t) 0x08000300)
 /** Macro to build a TLS-1.2 PSK-to-MasterSecret algorithm.
  *
  * In a pure-PSK handshake in TLS 1.2, the master secret is derived
@@ -1362,15 +1972,39 @@
  * This key derivation algorithm uses the following inputs, which must be
  * passed in the order given here:
  * - #PSA_KEY_DERIVATION_INPUT_SEED is the seed.
+ * - #PSA_KEY_DERIVATION_INPUT_OTHER_SECRET is the other secret for the
+ *   computation of the premaster secret. This input is optional;
+ *   if omitted, it defaults to a string of null bytes with the same length
+ *   as the secret (PSK) input.
  * - #PSA_KEY_DERIVATION_INPUT_SECRET is the secret key.
  * - #PSA_KEY_DERIVATION_INPUT_LABEL is the label.
  *
  * For the application to TLS-1.2, the seed (which is
  * forwarded to the TLS-1.2 PRF) is the concatenation of the
  * ClientHello.Random + ServerHello.Random,
- * and the label is "master secret" or "extended master secret".
+ * the label is "master secret" or "extended master secret" and
+ * the other secret depends on the key exchange specified in the cipher suite:
+ * - for a plain PSK cipher suite (RFC 4279, Section 2), omit
+ *   PSA_KEY_DERIVATION_INPUT_OTHER_SECRET
+ * - for a DHE-PSK (RFC 4279, Section 3) or ECDHE-PSK cipher suite
+ *   (RFC 5489, Section 2), the other secret should be the output of the
+ *   PSA_ALG_FFDH or PSA_ALG_ECDH key agreement performed with the peer.
+ *   The recommended way to pass this input is to use a key derivation
+ *   algorithm constructed as
+ *   PSA_ALG_KEY_AGREEMENT(ka_alg, PSA_ALG_TLS12_PSK_TO_MS(hash_alg))
+ *   and to call psa_key_derivation_key_agreement(). Alternatively,
+ *   this input may be an output of `psa_raw_key_agreement()` passed with
+ *   psa_key_derivation_input_bytes(), or an equivalent input passed with
+ *   psa_key_derivation_input_bytes() or psa_key_derivation_input_key().
+ * - for a RSA-PSK cipher suite (RFC 4279, Section 4), the other secret
+ *   should be the 48-byte client challenge (the PreMasterSecret of
+ *   (RFC 5246, Section 7.4.7.1)) concatenation of the TLS version and
+ *   a 46-byte random string chosen by the client. On the server, this is
+ *   typically an output of psa_asymmetric_decrypt() using
+ *   PSA_ALG_RSA_PKCS1V15_CRYPT, passed to the key derivation operation
+ *   with `psa_key_derivation_input_bytes()`.
  *
- * For example, `PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA256)` represents the
+ * For example, `PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256)` represents the
  * TLS-1.2 PSK to MasterSecret derivation PRF using HMAC-SHA-256.
  *
  * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
@@ -1396,8 +2030,83 @@
 #define PSA_ALG_TLS12_PSK_TO_MS_GET_HASH(hkdf_alg)                         \
     (PSA_ALG_CATEGORY_HASH | ((hkdf_alg) & PSA_ALG_HASH_MASK))
 
-#define PSA_ALG_KEY_DERIVATION_MASK             ((psa_algorithm_t)0x0803ffff)
-#define PSA_ALG_KEY_AGREEMENT_MASK              ((psa_algorithm_t)0x10fc0000)
+/* The TLS 1.2 ECJPAKE-to-PMS KDF. It takes the shared secret K (an EC point
+ * in case of EC J-PAKE) and calculates SHA256(K.X) that the rest of TLS 1.2
+ * will use to derive the session secret, as defined by step 2 of
+ * https://datatracker.ietf.org/doc/html/draft-cragie-tls-ecjpake-01#section-8.7.
+ * Uses PSA_ALG_SHA_256.
+ * This function takes a single input:
+ * #PSA_KEY_DERIVATION_INPUT_SECRET is the shared secret K from EC J-PAKE.
+ * The only supported curve is secp256r1 (the 256-bit curve in
+ * #PSA_ECC_FAMILY_SECP_R1), so the input must be exactly 65 bytes.
+ * The output has to be read as a single chunk of 32 bytes, defined as
+ * PSA_TLS12_ECJPAKE_TO_PMS_DATA_SIZE.
+ */
+#define PSA_ALG_TLS12_ECJPAKE_TO_PMS            ((psa_algorithm_t) 0x08000609)
+
+/* This flag indicates whether the key derivation algorithm is suitable for
+ * use on low-entropy secrets such as password - these algorithms are also
+ * known as key stretching or password hashing schemes. These are also the
+ * algorithms that accepts inputs of type #PSA_KEY_DERIVATION_INPUT_PASSWORD.
+ *
+ * Those algorithms cannot be combined with a key agreement algorithm.
+ */
+#define PSA_ALG_KEY_DERIVATION_STRETCHING_FLAG  ((psa_algorithm_t) 0x00800000)
+
+#define PSA_ALG_PBKDF2_HMAC_BASE                ((psa_algorithm_t) 0x08800100)
+/** Macro to build a PBKDF2-HMAC password hashing / key stretching algorithm.
+ *
+ * PBKDF2 is defined by PKCS#5, republished as RFC 8018 (section 5.2).
+ * This macro specifies the PBKDF2 algorithm constructed using a PRF based on
+ * HMAC with the specified hash.
+ * For example, `PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256)` specifies PBKDF2
+ * using the PRF HMAC-SHA-256.
+ *
+ * This key derivation algorithm uses the following inputs, which must be
+ * provided in the following order:
+ * - #PSA_KEY_DERIVATION_INPUT_COST is the iteration count.
+ *   This input step must be used exactly once.
+ * - #PSA_KEY_DERIVATION_INPUT_SALT is the salt.
+ *   This input step must be used one or more times; if used several times, the
+ *   inputs will be concatenated. This can be used to build the final salt
+ *   from multiple sources, both public and secret (also known as pepper).
+ * - #PSA_KEY_DERIVATION_INPUT_PASSWORD is the password to be hashed.
+ *   This input step must be used exactly once.
+ *
+ * \param hash_alg      A hash algorithm (\c PSA_ALG_XXX value such that
+ *                      #PSA_ALG_IS_HASH(\p hash_alg) is true).
+ *
+ * \return              The corresponding PBKDF2-HMAC-XXX algorithm.
+ * \return              Unspecified if \p hash_alg is not a supported
+ *                      hash algorithm.
+ */
+#define PSA_ALG_PBKDF2_HMAC(hash_alg)                                  \
+    (PSA_ALG_PBKDF2_HMAC_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+
+/** Whether the specified algorithm is a PBKDF2-HMAC algorithm.
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return 1 if \c alg is a PBKDF2-HMAC algorithm, 0 otherwise.
+ *         This macro may return either 0 or 1 if \c alg is not a supported
+ *         key derivation algorithm identifier.
+ */
+#define PSA_ALG_IS_PBKDF2_HMAC(alg)                                    \
+    (((alg) & ~PSA_ALG_HASH_MASK) == PSA_ALG_PBKDF2_HMAC_BASE)
+
+/** The PBKDF2-AES-CMAC-PRF-128 password hashing / key stretching algorithm.
+ *
+ * PBKDF2 is defined by PKCS#5, republished as RFC 8018 (section 5.2).
+ * This macro specifies the PBKDF2 algorithm constructed using the
+ * AES-CMAC-PRF-128 PRF specified by RFC 4615.
+ *
+ * This key derivation algorithm uses the same inputs as
+ * #PSA_ALG_PBKDF2_HMAC() with the same constraints.
+ */
+#define PSA_ALG_PBKDF2_AES_CMAC_PRF_128         ((psa_algorithm_t) 0x08800200)
+
+#define PSA_ALG_KEY_DERIVATION_MASK             ((psa_algorithm_t) 0xfe00ffff)
+#define PSA_ALG_KEY_AGREEMENT_MASK              ((psa_algorithm_t) 0xffff0000)
 
 /** Macro to build a combined algorithm that chains a key agreement with
  * a key derivation.
@@ -1428,7 +2137,7 @@
  * a key derivation function.
  * Usually, raw key agreement algorithms are constructed directly with
  * a \c PSA_ALG_xxx macro while non-raw key agreement algorithms are
- * constructed with PSA_ALG_KEY_AGREEMENT().
+ * constructed with #PSA_ALG_KEY_AGREEMENT().
  *
  * \param alg An algorithm identifier (value of type #psa_algorithm_t).
  *
@@ -1450,7 +2159,7 @@
  * It is `ceiling(m / 8)` bytes long where `m` is the size of the prime `p`
  * in bits.
  */
-#define PSA_ALG_FFDH                            ((psa_algorithm_t)0x30100000)
+#define PSA_ALG_FFDH                            ((psa_algorithm_t) 0x09010000)
 
 /** Whether the specified algorithm is a finite field Diffie-Hellman algorithm.
  *
@@ -1477,22 +2186,22 @@
  * is padded with zero bits. The byte order is either little-endian
  * or big-endian depending on the curve type.
  *
- * - For Montgomery curves (curve types `PSA_ECC_CURVE_CURVEXXX`),
+ * - For Montgomery curves (curve types `PSA_ECC_FAMILY_CURVEXXX`),
  *   the shared secret is the x-coordinate of `d_A Q_B = d_B Q_A`
  *   in little-endian byte order.
  *   The bit size is 448 for Curve448 and 255 for Curve25519.
  * - For Weierstrass curves over prime fields (curve types
- *   `PSA_ECC_CURVE_SECPXXX` and `PSA_ECC_CURVE_BRAINPOOL_PXXX`),
+ *   `PSA_ECC_FAMILY_SECPXXX` and `PSA_ECC_FAMILY_BRAINPOOL_PXXX`),
  *   the shared secret is the x-coordinate of `d_A Q_B = d_B Q_A`
  *   in big-endian byte order.
  *   The bit size is `m = ceiling(log_2(p))` for the field `F_p`.
  * - For Weierstrass curves over binary fields (curve types
- *   `PSA_ECC_CURVE_SECTXXX`),
+ *   `PSA_ECC_FAMILY_SECTXXX`),
  *   the shared secret is the x-coordinate of `d_A Q_B = d_B Q_A`
  *   in big-endian byte order.
  *   The bit size is `m` for the field `F_{2^m}`.
  */
-#define PSA_ALG_ECDH                            ((psa_algorithm_t)0x30200000)
+#define PSA_ALG_ECDH                            ((psa_algorithm_t) 0x09020000)
 
 /** Whether the specified algorithm is an elliptic curve Diffie-Hellman
  * algorithm.
@@ -1524,10 +2233,26 @@
  * \return This macro may return either 0 or 1 if \c alg is not a supported
  *         algorithm identifier.
  */
-#define PSA_ALG_IS_WILDCARD(alg)                        \
-    (PSA_ALG_IS_HASH_AND_SIGN(alg) ?                    \
-     PSA_ALG_SIGN_GET_HASH(alg) == PSA_ALG_ANY_HASH :   \
+#define PSA_ALG_IS_WILDCARD(alg)                            \
+    (PSA_ALG_IS_HASH_AND_SIGN(alg) ?                        \
+     PSA_ALG_SIGN_GET_HASH(alg) == PSA_ALG_ANY_HASH :       \
+     PSA_ALG_IS_MAC(alg) ?                                  \
+     (alg & PSA_ALG_MAC_AT_LEAST_THIS_LENGTH_FLAG) != 0 :   \
+     PSA_ALG_IS_AEAD(alg) ?                                 \
+     (alg & PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG) != 0 :  \
      (alg) == PSA_ALG_ANY_HASH)
+
+/** Get the hash used by a composite algorithm.
+ *
+ * \param alg An algorithm identifier (value of type #psa_algorithm_t).
+ *
+ * \return The underlying hash algorithm if alg is a composite algorithm that
+ * uses a hash algorithm.
+ *
+ * \return \c 0 if alg is not a composite algorithm that uses a hash.
+ */
+#define PSA_ALG_GET_HASH(alg) \
+    (((alg) & 0x000000ff) == 0 ? ((psa_algorithm_t) 0) : 0x02000000 | ((alg) & 0x000000ff))
 
 /**@}*/
 
@@ -1535,42 +2260,247 @@
  * @{
  */
 
-/** A volatile key only exists as long as the handle to it is not closed.
- * The key material is guaranteed to be erased on a power reset.
+/* Note that location and persistence level values are embedded in the
+ * persistent key store, as part of key metadata. As a consequence, they
+ * must not be changed (unless the storage format version changes).
  */
-#define PSA_KEY_LIFETIME_VOLATILE               ((psa_key_lifetime_t)0x00000000)
 
-/** The default storage area for persistent keys.
+/** The default lifetime for volatile keys.
+ *
+ * A volatile key only exists as long as the identifier to it is not destroyed.
+ * The key material is guaranteed to be erased on a power reset.
+ *
+ * A key with this lifetime is typically stored in the RAM area of the
+ * PSA Crypto subsystem. However this is an implementation choice.
+ * If an implementation stores data about the key in a non-volatile memory,
+ * it must release all the resources associated with the key and erase the
+ * key material if the calling application terminates.
+ */
+#define PSA_KEY_LIFETIME_VOLATILE               ((psa_key_lifetime_t) 0x00000000)
+
+/** The default lifetime for persistent keys.
  *
  * A persistent key remains in storage until it is explicitly destroyed or
  * until the corresponding storage area is wiped. This specification does
- * not define any mechanism to wipe a storage area, but implementations may
+ * not define any mechanism to wipe a storage area, but integrations may
  * provide their own mechanism (for example to perform a factory reset,
  * to prepare for device refurbishment, or to uninstall an application).
  *
  * This lifetime value is the default storage area for the calling
- * application. Implementations may offer other storage areas designated
- * by other lifetime values as implementation-specific extensions.
+ * application. Integrations of Mbed TLS may support other persistent lifetimes.
+ * See ::psa_key_lifetime_t for more information.
  */
-#define PSA_KEY_LIFETIME_PERSISTENT             ((psa_key_lifetime_t)0x00000001)
+#define PSA_KEY_LIFETIME_PERSISTENT             ((psa_key_lifetime_t) 0x00000001)
 
+/** The persistence level of volatile keys.
+ *
+ * See ::psa_key_persistence_t for more information.
+ */
+#define PSA_KEY_PERSISTENCE_VOLATILE            ((psa_key_persistence_t) 0x00)
+
+/** The default persistence level for persistent keys.
+ *
+ * See ::psa_key_persistence_t for more information.
+ */
+#define PSA_KEY_PERSISTENCE_DEFAULT             ((psa_key_persistence_t) 0x01)
+
+/** A persistence level indicating that a key is never destroyed.
+ *
+ * See ::psa_key_persistence_t for more information.
+ */
+#define PSA_KEY_PERSISTENCE_READ_ONLY           ((psa_key_persistence_t) 0xff)
+
+#define PSA_KEY_LIFETIME_GET_PERSISTENCE(lifetime)      \
+    ((psa_key_persistence_t) ((lifetime) & 0x000000ff))
+
+#define PSA_KEY_LIFETIME_GET_LOCATION(lifetime)      \
+    ((psa_key_location_t) ((lifetime) >> 8))
+
+/** Whether a key lifetime indicates that the key is volatile.
+ *
+ * A volatile key is automatically destroyed by the implementation when
+ * the application instance terminates. In particular, a volatile key
+ * is automatically destroyed on a power reset of the device.
+ *
+ * A key that is not volatile is persistent. Persistent keys are
+ * preserved until the application explicitly destroys them or until an
+ * implementation-specific device management event occurs (for example,
+ * a factory reset).
+ *
+ * \param lifetime      The lifetime value to query (value of type
+ *                      ::psa_key_lifetime_t).
+ *
+ * \return \c 1 if the key is volatile, otherwise \c 0.
+ */
+#define PSA_KEY_LIFETIME_IS_VOLATILE(lifetime)  \
+    (PSA_KEY_LIFETIME_GET_PERSISTENCE(lifetime) == \
+     PSA_KEY_PERSISTENCE_VOLATILE)
+
+/** Whether a key lifetime indicates that the key is read-only.
+ *
+ * Read-only keys cannot be created or destroyed through the PSA Crypto API.
+ * They must be created through platform-specific means that bypass the API.
+ *
+ * Some platforms may offer ways to destroy read-only keys. For example,
+ * consider a platform with multiple levels of privilege, where a
+ * low-privilege application can use a key but is not allowed to destroy
+ * it, and the platform exposes the key to the application with a read-only
+ * lifetime. High-privilege code can destroy the key even though the
+ * application sees the key as read-only.
+ *
+ * \param lifetime      The lifetime value to query (value of type
+ *                      ::psa_key_lifetime_t).
+ *
+ * \return \c 1 if the key is read-only, otherwise \c 0.
+ */
+#define PSA_KEY_LIFETIME_IS_READ_ONLY(lifetime)  \
+    (PSA_KEY_LIFETIME_GET_PERSISTENCE(lifetime) == \
+     PSA_KEY_PERSISTENCE_READ_ONLY)
+
+/** Construct a lifetime from a persistence level and a location.
+ *
+ * \param persistence   The persistence level
+ *                      (value of type ::psa_key_persistence_t).
+ * \param location      The location indicator
+ *                      (value of type ::psa_key_location_t).
+ *
+ * \return The constructed lifetime value.
+ */
+#define PSA_KEY_LIFETIME_FROM_PERSISTENCE_AND_LOCATION(persistence, location) \
+    ((location) << 8 | (persistence))
+
+/** The local storage area for persistent keys.
+ *
+ * This storage area is available on all systems that can store persistent
+ * keys without delegating the storage to a third-party cryptoprocessor.
+ *
+ * See ::psa_key_location_t for more information.
+ */
+#define PSA_KEY_LOCATION_LOCAL_STORAGE          ((psa_key_location_t) 0x000000)
+
+#define PSA_KEY_LOCATION_VENDOR_FLAG            ((psa_key_location_t) 0x800000)
+
+/* Note that key identifier values are embedded in the
+ * persistent key store, as part of key metadata. As a consequence, they
+ * must not be changed (unless the storage format version changes).
+ */
+
+/** The null key identifier.
+ */
+/* *INDENT-OFF* (https://github.com/ARM-software/psa-arch-tests/issues/337) */
+#define PSA_KEY_ID_NULL                         ((psa_key_id_t)0)
+/* *INDENT-ON* */
 /** The minimum value for a key identifier chosen by the application.
  */
-#define PSA_KEY_ID_USER_MIN                     ((psa_key_id_t)0x00000001)
+#define PSA_KEY_ID_USER_MIN                     ((psa_key_id_t) 0x00000001)
 /** The maximum value for a key identifier chosen by the application.
  */
-#define PSA_KEY_ID_USER_MAX                     ((psa_key_id_t)0x3fffffff)
+#define PSA_KEY_ID_USER_MAX                     ((psa_key_id_t) 0x3fffffff)
 /** The minimum value for a key identifier chosen by the implementation.
  */
-#define PSA_KEY_ID_VENDOR_MIN                   ((psa_key_id_t)0x40000000)
+#define PSA_KEY_ID_VENDOR_MIN                   ((psa_key_id_t) 0x40000000)
 /** The maximum value for a key identifier chosen by the implementation.
  */
-#define PSA_KEY_ID_VENDOR_MAX                   ((psa_key_id_t)0x7fffffff)
+#define PSA_KEY_ID_VENDOR_MAX                   ((psa_key_id_t) 0x7fffffff)
+
+
+#if !defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+
+#define MBEDTLS_SVC_KEY_ID_INIT ((psa_key_id_t) 0)
+#define MBEDTLS_SVC_KEY_ID_GET_KEY_ID(id) (id)
+#define MBEDTLS_SVC_KEY_ID_GET_OWNER_ID(id) (0)
+
+/** Utility to initialize a key identifier at runtime.
+ *
+ * \param unused  Unused parameter.
+ * \param key_id  Identifier of the key.
+ */
+static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
+    unsigned int unused, psa_key_id_t key_id)
+{
+    (void) unused;
+
+    return key_id;
+}
+
+/** Compare two key identifiers.
+ *
+ * \param id1 First key identifier.
+ * \param id2 Second key identifier.
+ *
+ * \return Non-zero if the two key identifier are equal, zero otherwise.
+ */
+static inline int mbedtls_svc_key_id_equal(mbedtls_svc_key_id_t id1,
+                                           mbedtls_svc_key_id_t id2)
+{
+    return id1 == id2;
+}
+
+/** Check whether a key identifier is null.
+ *
+ * \param key Key identifier.
+ *
+ * \return Non-zero if the key identifier is null, zero otherwise.
+ */
+static inline int mbedtls_svc_key_id_is_null(mbedtls_svc_key_id_t key)
+{
+    return key == 0;
+}
+
+#else /* MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER */
+#include "mbedtls/private_access.h"
+#define MBEDTLS_SVC_KEY_ID_INIT ((mbedtls_svc_key_id_t){ 0, 0 })
+#define MBEDTLS_SVC_KEY_ID_GET_KEY_ID(id) ((id).MBEDTLS_PRIVATE(key_id))
+#define MBEDTLS_SVC_KEY_ID_GET_OWNER_ID(id) ((id).MBEDTLS_PRIVATE(owner))
+
+/** Utility to initialize a key identifier at runtime.
+ *
+ * \param owner_id Identifier of the key owner.
+ * \param key_id   Identifier of the key.
+ */
+static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
+    mbedtls_key_owner_id_t owner_id, psa_key_id_t key_id)
+{
+    return (mbedtls_svc_key_id_t){ .MBEDTLS_PRIVATE(key_id) = key_id,
+                                   .MBEDTLS_PRIVATE(owner) = owner_id };
+}
+
+/** Compare two key identifiers.
+ *
+ * \param id1 First key identifier.
+ * \param id2 Second key identifier.
+ *
+ * \return Non-zero if the two key identifier are equal, zero otherwise.
+ */
+static inline int mbedtls_svc_key_id_equal(mbedtls_svc_key_id_t id1,
+                                           mbedtls_svc_key_id_t id2)
+{
+    return (id1.MBEDTLS_PRIVATE(key_id) == id2.MBEDTLS_PRIVATE(key_id)) &&
+           mbedtls_key_owner_id_equal(id1.MBEDTLS_PRIVATE(owner), id2.MBEDTLS_PRIVATE(owner));
+}
+
+/** Check whether a key identifier is null.
+ *
+ * \param key Key identifier.
+ *
+ * \return Non-zero if the key identifier is null, zero otherwise.
+ */
+static inline int mbedtls_svc_key_id_is_null(mbedtls_svc_key_id_t key)
+{
+    return key.MBEDTLS_PRIVATE(key_id) == 0;
+}
+
+#endif /* !MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER */
 
 /**@}*/
 
 /** \defgroup policy Key policies
  * @{
+ */
+
+/* Note that key usage flags are embedded in the
+ * persistent key store, as part of key metadata. As a consequence, they
+ * must not be changed (unless the storage format version changes).
  */
 
 /** Whether the key may be exported.
@@ -1584,7 +2514,7 @@
  * The key may however be exportable in a wrapped form, i.e. in a form
  * where it is encrypted by another key.
  */
-#define PSA_KEY_USAGE_EXPORT                    ((psa_key_usage_t)0x00000001)
+#define PSA_KEY_USAGE_EXPORT                    ((psa_key_usage_t) 0x00000001)
 
 /** Whether the key may be copied.
  *
@@ -1600,7 +2530,7 @@
  * #PSA_KEY_LIFETIME_PERSISTENT, the usage flag #PSA_KEY_USAGE_COPY
  * is sufficient to permit the copy.
  */
-#define PSA_KEY_USAGE_COPY                      ((psa_key_usage_t)0x00000002)
+#define PSA_KEY_USAGE_COPY                      ((psa_key_usage_t) 0x00000002)
 
 /** Whether the key may be used to encrypt a message.
  *
@@ -1611,7 +2541,7 @@
  *
  * For a key pair, this concerns the public key.
  */
-#define PSA_KEY_USAGE_ENCRYPT                   ((psa_key_usage_t)0x00000100)
+#define PSA_KEY_USAGE_ENCRYPT                   ((psa_key_usage_t) 0x00000100)
 
 /** Whether the key may be used to decrypt a message.
  *
@@ -1622,7 +2552,27 @@
  *
  * For a key pair, this concerns the private key.
  */
-#define PSA_KEY_USAGE_DECRYPT                   ((psa_key_usage_t)0x00000200)
+#define PSA_KEY_USAGE_DECRYPT                   ((psa_key_usage_t) 0x00000200)
+
+/** Whether the key may be used to sign a message.
+ *
+ * This flag allows the key to be used for a MAC calculation operation or for
+ * an asymmetric message signature operation, if otherwise permitted by the
+ * key’s type and policy.
+ *
+ * For a key pair, this concerns the private key.
+ */
+#define PSA_KEY_USAGE_SIGN_MESSAGE              ((psa_key_usage_t) 0x00000400)
+
+/** Whether the key may be used to verify a message.
+ *
+ * This flag allows the key to be used for a MAC verification operation or for
+ * an asymmetric message signature verification operation, if otherwise
+ * permitted by the key’s type and policy.
+ *
+ * For a key pair, this concerns the public key.
+ */
+#define PSA_KEY_USAGE_VERIFY_MESSAGE            ((psa_key_usage_t) 0x00000800)
 
 /** Whether the key may be used to sign a message.
  *
@@ -1632,27 +2582,55 @@
  *
  * For a key pair, this concerns the private key.
  */
-#define PSA_KEY_USAGE_SIGN_HASH                 ((psa_key_usage_t)0x00000400)
+#define PSA_KEY_USAGE_SIGN_HASH                 ((psa_key_usage_t) 0x00001000)
 
 /** Whether the key may be used to verify a message signature.
  *
  * This flag allows the key to be used for a MAC verification operation
  * or for an asymmetric signature verification operation,
- * if otherwise permitted by by the key's type and policy.
+ * if otherwise permitted by the key's type and policy.
  *
  * For a key pair, this concerns the public key.
  */
-#define PSA_KEY_USAGE_VERIFY_HASH               ((psa_key_usage_t)0x00000800)
+#define PSA_KEY_USAGE_VERIFY_HASH               ((psa_key_usage_t) 0x00002000)
 
-/** Whether the key may be used to derive other keys.
+/** Whether the key may be used to derive other keys or produce a password
+ * hash.
+ *
+ * This flag allows the key to be used for a key derivation operation or for
+ * a key agreement operation, if otherwise permitted by the key's type and
+ * policy.
+ *
+ * If this flag is present on all keys used in calls to
+ * psa_key_derivation_input_key() for a key derivation operation, then it
+ * permits calling psa_key_derivation_output_bytes() or
+ * psa_key_derivation_output_key() at the end of the operation.
  */
-#define PSA_KEY_USAGE_DERIVE                    ((psa_key_usage_t)0x00001000)
+#define PSA_KEY_USAGE_DERIVE                    ((psa_key_usage_t) 0x00004000)
+
+/** Whether the key may be used to verify the result of a key derivation,
+ * including password hashing.
+ *
+ * This flag allows the key to be used:
+ *
+ * This flag allows the key to be used in a key derivation operation, if
+ * otherwise permitted by the key's type and policy.
+ *
+ * If this flag is present on all keys used in calls to
+ * psa_key_derivation_input_key() for a key derivation operation, then it
+ * permits calling psa_key_derivation_verify_bytes() or
+ * psa_key_derivation_verify_key() at the end of the operation.
+ */
+#define PSA_KEY_USAGE_VERIFY_DERIVATION         ((psa_key_usage_t) 0x00008000)
 
 /**@}*/
 
 /** \defgroup derivation Key derivation
  * @{
  */
+
+/* Key input steps are not embedded in the persistent storage, so you can
+ * change them if needed: it's only an ABI change. */
 
 /** A secret input for key derivation.
  *
@@ -1664,37 +2642,112 @@
  * The secret can also be a direct input (passed to
  * key_derivation_input_bytes()). In this case, the derivation operation
  * may not be used to derive keys: the operation will only allow
- * psa_key_derivation_output_bytes(), not psa_key_derivation_output_key().
+ * psa_key_derivation_output_bytes(),
+ * psa_key_derivation_verify_bytes(), or
+ * psa_key_derivation_verify_key(), but not
+ * psa_key_derivation_output_key().
  */
-#define PSA_KEY_DERIVATION_INPUT_SECRET     ((psa_key_derivation_step_t)0x0101)
+#define PSA_KEY_DERIVATION_INPUT_SECRET     ((psa_key_derivation_step_t) 0x0101)
+
+/** A low-entropy secret input for password hashing / key stretching.
+ *
+ * This is usually a key of type #PSA_KEY_TYPE_PASSWORD (passed to
+ * psa_key_derivation_input_key()) or a direct input (passed to
+ * psa_key_derivation_input_bytes()) that is a password or passphrase. It can
+ * also be high-entropy secret such as a key of type #PSA_KEY_TYPE_DERIVE or
+ * the shared secret resulting from a key agreement.
+ *
+ * The secret can also be a direct input (passed to
+ * key_derivation_input_bytes()). In this case, the derivation operation
+ * may not be used to derive keys: the operation will only allow
+ * psa_key_derivation_output_bytes(),
+ * psa_key_derivation_verify_bytes(), or
+ * psa_key_derivation_verify_key(), but not
+ * psa_key_derivation_output_key().
+ */
+#define PSA_KEY_DERIVATION_INPUT_PASSWORD   ((psa_key_derivation_step_t) 0x0102)
+
+/** A high-entropy additional secret input for key derivation.
+ *
+ * This is typically the shared secret resulting from a key agreement obtained
+ * via `psa_key_derivation_key_agreement()`. It may alternatively be a key of
+ * type `PSA_KEY_TYPE_DERIVE` passed to `psa_key_derivation_input_key()`, or
+ * a direct input passed to `psa_key_derivation_input_bytes()`.
+ */
+#define PSA_KEY_DERIVATION_INPUT_OTHER_SECRET \
+    ((psa_key_derivation_step_t) 0x0103)
 
 /** A label for key derivation.
  *
  * This should be a direct input.
  * It can also be a key of type #PSA_KEY_TYPE_RAW_DATA.
  */
-#define PSA_KEY_DERIVATION_INPUT_LABEL      ((psa_key_derivation_step_t)0x0201)
+#define PSA_KEY_DERIVATION_INPUT_LABEL      ((psa_key_derivation_step_t) 0x0201)
 
 /** A salt for key derivation.
  *
  * This should be a direct input.
- * It can also be a key of type #PSA_KEY_TYPE_RAW_DATA.
+ * It can also be a key of type #PSA_KEY_TYPE_RAW_DATA or
+ * #PSA_KEY_TYPE_PEPPER.
  */
-#define PSA_KEY_DERIVATION_INPUT_SALT       ((psa_key_derivation_step_t)0x0202)
+#define PSA_KEY_DERIVATION_INPUT_SALT       ((psa_key_derivation_step_t) 0x0202)
 
 /** An information string for key derivation.
  *
  * This should be a direct input.
  * It can also be a key of type #PSA_KEY_TYPE_RAW_DATA.
  */
-#define PSA_KEY_DERIVATION_INPUT_INFO       ((psa_key_derivation_step_t)0x0203)
+#define PSA_KEY_DERIVATION_INPUT_INFO       ((psa_key_derivation_step_t) 0x0203)
 
 /** A seed for key derivation.
  *
  * This should be a direct input.
  * It can also be a key of type #PSA_KEY_TYPE_RAW_DATA.
  */
-#define PSA_KEY_DERIVATION_INPUT_SEED       ((psa_key_derivation_step_t)0x0204)
+#define PSA_KEY_DERIVATION_INPUT_SEED       ((psa_key_derivation_step_t) 0x0204)
+
+/** A cost parameter for password hashing / key stretching.
+ *
+ * This must be a direct input, passed to psa_key_derivation_input_integer().
+ */
+#define PSA_KEY_DERIVATION_INPUT_COST       ((psa_key_derivation_step_t) 0x0205)
+
+/**@}*/
+
+/** \defgroup helper_macros Helper macros
+ * @{
+ */
+
+/* Helper macros */
+
+/** Check if two AEAD algorithm identifiers refer to the same AEAD algorithm
+ *  regardless of the tag length they encode.
+ *
+ * \param aead_alg_1 An AEAD algorithm identifier.
+ * \param aead_alg_2 An AEAD algorithm identifier.
+ *
+ * \return           1 if both identifiers refer to the same AEAD algorithm,
+ *                   0 otherwise.
+ *                   Unspecified if neither \p aead_alg_1 nor \p aead_alg_2 are
+ *                   a supported AEAD algorithm.
+ */
+#define MBEDTLS_PSA_ALG_AEAD_EQUAL(aead_alg_1, aead_alg_2) \
+    (!(((aead_alg_1) ^ (aead_alg_2)) & \
+       ~(PSA_ALG_AEAD_TAG_LENGTH_MASK | PSA_ALG_AEAD_AT_LEAST_THIS_LENGTH_FLAG)))
+
+/**@}*/
+
+/**@}*/
+
+/** \defgroup interruptible Interruptible operations
+ * @{
+ */
+
+/** Maximum value for use with \c psa_interruptible_set_max_ops() to determine
+ *  the maximum number of ops allowed to be executed by an interruptible
+ *  function in a single call.
+ */
+#define PSA_INTERRUPTIBLE_MAX_OPS_UNLIMITED UINT32_MAX
 
 /**@}*/
 

@@ -174,8 +174,12 @@ int8_t ws_pae_controller_authenticate(protocol_interface_info_entry_t *interface
             sec_prot_keys_gtks_updated_reset(&controller->gtks);
             ws_pae_supp_gtks_set(controller->interface_ptr, &controller->gtks);
         }
-        controller->auth_completed(interface_ptr, AUTH_RESULT_OK, NULL);
-        return 0;
+#if !defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+        if (ti_wisun_config.auth_type != CUSTOM_EUI_AUTH) {
+            controller->auth_completed(interface_ptr, AUTH_RESULT_OK, NULL);
+            return 0;
+        }
+#endif
     }
 
     if (ws_pae_supp_authenticate(controller->interface_ptr, controller->target_pan_id, controller->target_eui_64, controller->sec_keys_nw_info.network_name) < 0) {
@@ -222,29 +226,32 @@ int8_t ws_pae_controller_authenticator_start(protocol_interface_info_entry_t *in
         return -1;
     }
 
-    if (ws_pae_auth_addresses_set(interface_ptr, local_port, remote_addr, remote_port) < 0) {
-        return -1;
-    }
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        if (ws_pae_auth_addresses_set(interface_ptr, local_port, remote_addr, remote_port) < 0) {
+            return -1;
+        }
 
-    // If either radius address or password is set, both must be set
-    if (controller->sec_cfg.radius_cfg != NULL) {
-        if (controller->sec_cfg.radius_cfg->radius_addr_set || controller->sec_cfg.radius_cfg->radius_shared_secret_len > 0) {
-            if (!controller->sec_cfg.radius_cfg->radius_addr_set) {
-                return -1;
-            }
-            if (controller->sec_cfg.radius_cfg->radius_shared_secret_len == 0) {
-                return -1;
-            }
-            if (ws_pae_auth_radius_address_set(interface_ptr, controller->sec_cfg.radius_cfg->radius_addr) < 0) {
-                return -1;
+        // If either radius address or password is set, both must be set
+        if (controller->sec_cfg.radius_cfg != NULL) {
+            if (controller->sec_cfg.radius_cfg->radius_addr_set || controller->sec_cfg.radius_cfg->radius_shared_secret_len > 0) {
+                if (!controller->sec_cfg.radius_cfg->radius_addr_set) {
+                    return -1;
+                }
+                if (controller->sec_cfg.radius_cfg->radius_shared_secret_len == 0) {
+                    return -1;
+                }
+                if (ws_pae_auth_radius_address_set(interface_ptr, controller->sec_cfg.radius_cfg->radius_addr) < 0) {
+                    return -1;
+                }
             }
         }
-    }
 
-    if (pae_controller_config.node_limit_set) {
-        ws_pae_auth_node_limit_set(controller->interface_ptr, pae_controller_config.node_limit);
+        if (pae_controller_config.node_limit_set) {
+            ws_pae_auth_node_limit_set(controller->interface_ptr, pae_controller_config.node_limit);
+        }
     }
-
+#endif
     ws_pae_auth_cb_register(interface_ptr, ws_pae_controller_gtk_hash_set, ws_pae_controller_nw_key_check_and_insert, ws_pae_controller_nw_key_index_check_and_set, ws_pae_controller_nw_info_updated_check, ws_pae_controller_auth_ip_addr_get, ws_pae_controller_auth_congestion_get);
 
     controller->auth_started = true;
@@ -540,45 +547,52 @@ static void ws_pae_controller_active_nw_key_clear(nw_key_t *nw_key)
 
 static int8_t ws_pae_controller_gak_from_gtk(uint8_t *gak, uint8_t *gtk, char *network_name)
 {
-#if defined(HAVE_PAE_SUPP) || defined(HAVE_PAE_AUTH)
-    uint8_t network_name_len = strlen(network_name);
-    if (network_name_len == 0) {
-        return -1;
-    }
 
-    uint8_t input[network_name_len + GTK_LEN];
-    memcpy(input, network_name, network_name_len);
-    memcpy(input + network_name_len, gtk, GTK_LEN);
+#if (defined(HAVE_PAE_SUPP) || defined(HAVE_PAE_AUTH))
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        uint8_t network_name_len = strlen(network_name);
+        if (network_name_len == 0) {
+            return -1;
+        }
 
-    int8_t ret_val = 0;
+        uint8_t input[network_name_len + GTK_LEN];
+        memcpy(input, network_name, network_name_len);
+        memcpy(input + network_name_len, gtk, GTK_LEN);
 
-    mbedtls_sha256_context ctx;
+        int8_t ret_val = 0;
 
-    mbedtls_sha256_init(&ctx);
+        mbedtls_sha256_context ctx;
 
-    if (mbedtls_sha256_starts_ret(&ctx, 0) != 0) {
-        ret_val = -1;
-        goto error;
-    }
+        mbedtls_sha256_init(&ctx);
 
-    if (mbedtls_sha256_update_ret(&ctx, input, network_name_len + GTK_LEN) != 0) {
-        ret_val = -1;
-        goto error;
-    }
+        if (mbedtls_sha256_starts_ret(&ctx, 0) != 0) {
+            ret_val = -1;
+            goto error;
+        }
 
-    uint8_t output[32];
+        if (mbedtls_sha256_update_ret(&ctx, input, network_name_len + GTK_LEN) != 0) {
+            ret_val = -1;
+            goto error;
+        }
 
-    if (mbedtls_sha256_finish_ret(&ctx, output) != 0) {
-        ret_val = -1;
-        goto error;
-    }
+        uint8_t output[32];
 
-    memcpy(gak, &output[0], 16);
+        if (mbedtls_sha256_finish_ret(&ctx, output) != 0) {
+            ret_val = -1;
+            goto error;
+        }
 
+        memcpy(gak, &output[0], 16);
 error:
-    mbedtls_sha256_free(&ctx);
-
-    return ret_val;
+        mbedtls_sha256_free(&ctx);
+        return ret_val;
+    } else
+#endif
+    {
+        memcpy(gak, gtk, 16);
+        return 0;
+    }
 #else
     (void) network_name;
     memcpy(gak, gtk, 16);
@@ -1468,7 +1482,7 @@ int8_t ws_pae_controller_border_router_addr_read(protocol_interface_info_entry_t
     return 0;
 }
 
-int8_t ws_pae_controller_gtk_update(int8_t interface_id, uint8_t *gtk[GTK_NUM])
+int8_t ws_pae_controller_gtk_update(int8_t interface_id, uint8_t gtk[GTK_NUM][GTK_LEN])
 {
     if (!gtk) {
         return -1;
@@ -1510,7 +1524,7 @@ int8_t ws_pae_controller_gtk_update(int8_t interface_id, uint8_t *gtk[GTK_NUM])
     return 0;
 }
 
-int8_t ws_pae_controller_next_gtk_update(int8_t interface_id, uint8_t *gtk[GTK_NUM])
+int8_t ws_pae_controller_next_gtk_update(int8_t interface_id, uint8_t gtk[GTK_NUM][GTK_LEN])
 {
     if (!gtk) {
         return -1;
@@ -1674,7 +1688,20 @@ int8_t ws_pae_controller_gtk_hash_update(protocol_interface_info_entry_t *interf
     }
 
     memcpy(controller->gtkhash, gtkhash, 32);
+    uint8_t *gtk_hash_ptr = gtkhash;
 
+    if ((ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH && ti_wisun_config.use_fixed_gtk_keys == true) ||
+         ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        for (uint8_t i = 0; i < GTK_NUM; i++, gtk_hash_ptr += 8) {
+            // If hash is not set, clear the frame count for the key
+            if (sec_prot_keys_gtk_hash_empty(gtk_hash_ptr)) {
+                if (sec_prot_keys_gtk_is_set(&controller->gtks, i)) {
+                    // Reset TX and RX frame count for the previous index
+                    controller->nw_key_clear(interface_ptr, i);
+                }
+            }
+        }
+    }
     if (controller->pae_gtk_hash_update) {
         return controller->pae_gtk_hash_update(interface_ptr, controller->gtkhash);
     }
@@ -1737,7 +1764,23 @@ static void ws_pae_controller_frame_counter_store(pae_controller_t *entry, bool 
          *       This is because GTKs are removed e.g. if PAN configuration is not heard/cannot be
          *       de-crypted during a bootstrap. If BR later installs previous keys using 4WH/GKH, the
          *       frame counters will be still valid.
+         *       This does not apply to fixed key or preshared key modes. In these modes,
+         *       BR will reset frame counters for non-installed keys to support key reuse.
          */
+        if (entry->interface_ptr->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER &&
+            ((ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH && ti_wisun_config.use_fixed_gtk_keys == true) ||
+            ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH)) {
+            // Clear non-installed key frame counters if needed
+            if (!entry->nw_key[i].installed) {
+                if (entry->frame_counters.counter[i].set) {
+                    entry->frame_counters.counter[i].set = false;
+                    entry->frame_counters.counter[i].frame_counter = 0;
+                    entry->frame_counters.counter[i].stored_frame_counter = 0;
+                    update_needed = true;
+                }
+            }
+        }
+
         if (entry->nw_key[i].installed) {
             // Reads frame counter for the key
             uint32_t curr_frame_counter;

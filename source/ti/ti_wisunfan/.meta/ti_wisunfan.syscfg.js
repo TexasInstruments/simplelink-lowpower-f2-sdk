@@ -55,6 +55,10 @@ const testModeScript = system.getScript("/ti/ti_wisunfan/test_config/"
 const securityScript = system.getScript("/ti/ti_wisunfan/security_config/"
     + "ti_wisunfan_security_config");
 
+// Get advanced settings script
+const advancedScript = system.getScript("/ti/ti_wisunfan/advanced_config/"
+    + "ti_wisunfan_advanced_config");
+
 // Get top level setting descriptions
 const docs = system.getScript("/ti/ti_wisunfan/ti_wisunfan_docs.js");
 
@@ -135,7 +139,8 @@ const moduleStatic = {
         radioScript.config,
         networkScript.config,
         powerScript.config,
-        securityScript.config
+        securityScript.config,
+        advancedScript.config
         //testModeScript.config
     ],
     validate: validate,
@@ -303,6 +308,7 @@ function validate(inst, vo)
     networkScript.validate(inst, vo);
     powerScript.validate(inst, vo);
     securityScript.validate(inst, vo);
+    advancedScript.validate(inst, vo);
 }
 
 /*
@@ -338,7 +344,6 @@ function getLibs(inst)
         let security;
         switch(inst.$static.secureLevel)
         {
-            case "macSecureAndCommissioning": security = "sm_"; break;
             case "macSecureDisabled": security = "nosecure_"; break;
             default: security = "secure_"; break;
         }
@@ -408,6 +413,36 @@ function getLibs(inst)
 }
 
 /*
+ *  ======== getOpts ========
+ */
+function getOpts(inst) {
+    let result =[]
+
+    if (system.getRTOS() === "tirtos7") {
+        result.push(
+            "-DTIRTOS7_SUPPORT",
+            "-DHEAPMGR_CONFIG=0x80",
+            "-DHEAPMGR_SIZE=0x0"
+        );
+    }
+    if (inst.$static.secureLevel === "macSecureDisabled") {
+        //#define NETWORK_AUTH_TYPE NO_AUTH
+        result.push("-DNO_AUTH_ENABLE");
+    }
+    else if(inst.$static.secureLevel === "macSecurePresharedKey") {
+        if(inst.$static.euiJoin === false) {
+            result.push("-DPRESHARED_KEY_AUTH_ENABLE");
+        } else {
+            result.push("-DCUSTOM_EUI_AUTH_ENABLE");
+        }
+    } else { // Default security
+        result.push("-DDEFAULT_MBEDTLS_AUTH_ENABLE");
+    }
+
+    return result; 
+}
+
+/*
  *  ======== moduleInstances ========
  *  Determines what modules are added as non-static submodules
  *
@@ -424,14 +459,6 @@ function moduleInstances(inst)
 
     dependencyModule = dependencyModule.concat(radioScriptModuleInst);
     dependencyModule = dependencyModule.concat(securityScriptModuleInst);
-
-    if(system.getRTOS() === "tirtos7")
-    {
-        dependencyModule.push({
-            name: "ti_wisunfanOpts",
-            moduleName: "/ti/ti_wisunfan/ti_wisunfan_config_opts.js"
-        });
-    }
 
     return(dependencyModule);
 }
@@ -497,6 +524,10 @@ const ti_wisunfanStackModule = {
         {
             modName: "/ti/ti_wisunfan/ti_wisunfan",
             getLibs: getLibs
+        },
+        "/ti/utils/build/GenOpts.opt.xdt": {
+            modName: "/ti/ti_wisunfan/ti_wisunfan",
+            getOpts: getOpts
         }
     }
 };

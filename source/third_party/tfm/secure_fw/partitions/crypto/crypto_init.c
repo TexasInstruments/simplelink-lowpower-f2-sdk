@@ -1,43 +1,36 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
+#include <stdbool.h>
 
+#include "config_tfm.h"
+#include "config_crypto_check.h"
 #include "tfm_mbedcrypto_include.h"
 
 #include "tfm_crypto_api.h"
+#include "tfm_crypto_key.h"
 #include "tfm_crypto_defs.h"
+#include "tfm_sp_log.h"
+#include "crypto_check_config.h"
+#include "tfm_plat_crypto_keys.h"
 
-/*
- * \brief This Mbed TLS include is needed to initialise the memory allocator
- *        inside the Mbed TLS layer of Mbed Crypto
- */
-#include "mbedtls/memory_buffer_alloc.h"
+#include "crypto_library.h"
 
-#ifndef TFM_PSA_API
-#include "tfm_secure_api.h"
-#endif
+#if CRYPTO_NV_SEED
+#include "tfm_plat_crypto_nv_seed.h"
+#endif /* CRYPTO_NV_SEED */
 
 #ifdef CRYPTO_HW_ACCELERATOR
 #include "crypto_hw.h"
-#endif /* CRYPTO_HW_ACCLERATOR */
+#endif /* CRYPTO_HW_ACCELERATOR */
 
-#ifdef TFM_PSA_API
+#include <string.h>
+#include "psa/framework_feature.h"
 #include "psa/service.h"
 #include "psa_manifest/tfm_crypto.h"
-#include "tfm_memory_utils.h"
-
-/**
- * \brief Table containing all the Uniform Signature API exposed
- *        by the TF-M Crypto partition
- */
-static const tfm_crypto_us_t sfid_func_table[TFM_CRYPTO_SID_MAX] = {
-#define X(api_name) api_name,
-LIST_TFM_CRYPTO_UNIFORM_SIGNATURE_API
-#undef X
-};
 
 /**
  * \brief Aligns a value x up to an alignment a.
@@ -50,21 +43,57 @@ LIST_TFM_CRYPTO_UNIFORM_SIGNATURE_API
  */
 #define TFM_CRYPTO_IOVEC_ALIGNMENT (4u)
 
-/**
- * \brief Default size of the internal scratch buffer used for IOVec allocations
- *        in bytes
- */
-#ifndef TFM_CRYPTO_IOVEC_BUFFER_SIZE
-#define TFM_CRYPTO_IOVEC_BUFFER_SIZE (5120)
-#endif
+#if PSA_FRAMEWORK_HAS_MM_IOVEC == 1
+static int32_t g_client_id;
 
+static void tfm_crypto_set_caller_id(int32_t id)
+{
+    g_client_id = id;
+}
+
+psa_status_t tfm_crypto_get_caller_id(int32_t *id)
+{
+    *id = g_client_id;
+    return PSA_SUCCESS;
+}
+
+static psa_status_t tfm_crypto_init_iovecs(const psa_msg_t *msg,
+                                           psa_invec in_vec[],
+                                           size_t in_len,
+                                           psa_outvec out_vec[],
+                                           size_t out_len)
+{
+    uint32_t i;
+
+    /* Map from the second element as the first is read when parsing */
+    for (i = 1; i < in_len; i++) {
+        in_vec[i].len = msg->in_size[i];
+        if (in_vec[i].len != 0) {
+            in_vec[i].base = psa_map_invec(msg->handle, i);
+        } else {
+            in_vec[i].base = NULL;
+        }
+    }
+
+    for (i = 0; i < out_len; i++) {
+        out_vec[i].len = msg->out_size[i];
+        if (out_vec[i].len != 0) {
+            out_vec[i].base = psa_map_outvec(msg->handle, i);
+        } else {
+            out_vec[i].base = NULL;
+        }
+    }
+
+    return PSA_SUCCESS;
+}
+#else /* PSA_FRAMEWORK_HAS_MM_IOVEC == 1 */
 /**
  * \brief Internal scratch used for IOVec allocations
  *
  */
 static struct tfm_crypto_scratch {
     __attribute__((__aligned__(TFM_CRYPTO_IOVEC_ALIGNMENT)))
-    uint8_t buf[TFM_CRYPTO_IOVEC_BUFFER_SIZE];
+    uint8_t buf[CRYPTO_IOVEC_BUFFER_SIZE];
     uint32_t alloc_index;
     int32_t owner;
 } scratch = {.buf = {0}, .alloc_index = 0};
@@ -99,63 +128,54 @@ static psa_status_t tfm_crypto_alloc_scratch(size_t requested_size, void **buf)
     return PSA_SUCCESS;
 }
 
-static psa_status_t tfm_crypto_clear_scratch(void)
+static void tfm_crypto_clear_scratch(void)
 {
-    scratch.alloc_index = 0;
     scratch.owner = 0;
-    (void)tfm_memset(scratch.buf, 0, sizeof(scratch.buf));
-
-    return PSA_SUCCESS;
+    (void)memset(scratch.buf, 0, scratch.alloc_index);
+    scratch.alloc_index = 0;
 }
 
-static psa_status_t tfm_crypto_call_sfn(psa_msg_t *msg,
-                                        struct tfm_crypto_pack_iovec *iov,
-                                        const uint32_t sfn_id)
+static void tfm_crypto_set_caller_id(int32_t id)
 {
-    psa_status_t status = PSA_SUCCESS;
-    size_t in_len = PSA_MAX_IOVEC, out_len = PSA_MAX_IOVEC, i;
-    psa_invec in_vec[PSA_MAX_IOVEC] = { {0} };
-    psa_outvec out_vec[PSA_MAX_IOVEC] = { {0} };
+    /* Set the owner of the data in the scratch */
+    (void)tfm_crypto_set_scratch_owner(id);
+}
+
+psa_status_t tfm_crypto_get_caller_id(int32_t *id)
+{
+    return tfm_crypto_get_scratch_owner(id);
+}
+
+static psa_status_t tfm_crypto_init_iovecs(const psa_msg_t *msg,
+                                           psa_invec in_vec[],
+                                           size_t in_len,
+                                           psa_outvec out_vec[],
+                                           size_t out_len)
+{
+    uint32_t i;
     void *alloc_buf_ptr = NULL;
-
-    /* Check the number of in_vec filled */
-    while ((in_len > 0) && (msg->in_size[in_len - 1] == 0)) {
-        in_len--;
-    }
-
-    /* There will always be a tfm_crypto_pack_iovec in the first iovec */
-    if (in_len < 1) {
-        return PSA_ERROR_GENERIC_ERROR;
-    }
-    /* Initialise the first iovec with the IOV read when parsing */
-    in_vec[0].base = iov;
-    in_vec[0].len = sizeof(struct tfm_crypto_pack_iovec);
+    psa_status_t status;
 
     /* Alloc/read from the second element as the first is read when parsing */
     for (i = 1; i < in_len; i++) {
         /* Allocate necessary space in the internal scratch */
         status = tfm_crypto_alloc_scratch(msg->in_size[i], &alloc_buf_ptr);
         if (status != PSA_SUCCESS) {
-            (void)tfm_crypto_clear_scratch();
+            tfm_crypto_clear_scratch();
             return status;
         }
         /* Read from the IPC framework inputs into the scratch */
-        (void) psa_read(msg->handle, i, alloc_buf_ptr, msg->in_size[i]);
+        in_vec[i].len =
+                       psa_read(msg->handle, i, alloc_buf_ptr, msg->in_size[i]);
         /* Populate the fields of the input to the secure function */
         in_vec[i].base = alloc_buf_ptr;
-        in_vec[i].len = msg->in_size[i];
-    }
-
-    /* Check the number of out_vec filled */
-    while ((out_len > 0) && (msg->out_size[out_len - 1] == 0)) {
-        out_len--;
     }
 
     for (i = 0; i < out_len; i++) {
         /* Allocate necessary space for the output in the internal scratch */
         status = tfm_crypto_alloc_scratch(msg->out_size[i], &alloc_buf_ptr);
         if (status != PSA_SUCCESS) {
-            (void)tfm_crypto_clear_scratch();
+            tfm_crypto_clear_scratch();
             return status;
         }
         /* Populate the fields of the output to the secure function */
@@ -163,138 +183,112 @@ static psa_status_t tfm_crypto_call_sfn(psa_msg_t *msg,
         out_vec[i].len = msg->out_size[i];
     }
 
-    /* Set the owner of the data in the scratch */
-    (void)tfm_crypto_set_scratch_owner(msg->client_id);
+    return PSA_SUCCESS;
+}
+#endif /* PSA_FRAMEWORK_HAS_MM_IOVEC == 1 */
 
-    /* Call the uniform signature API */
-    status = sfid_func_table[sfn_id](in_vec, in_len, out_vec, out_len);
+static psa_status_t tfm_crypto_call_srv(const psa_msg_t *msg)
+{
+    psa_status_t status = PSA_SUCCESS;
+    size_t in_len = PSA_MAX_IOVEC, out_len = PSA_MAX_IOVEC, i;
+    psa_invec in_vec[PSA_MAX_IOVEC] = { {NULL, 0} };
+    psa_outvec out_vec[PSA_MAX_IOVEC] = { {NULL, 0} };
+    struct tfm_crypto_pack_iovec iov = {0};
 
+    /* Check the number of in_vec filled */
+    while ((in_len > 0) && (msg->in_size[in_len - 1] == 0)) {
+        in_len--;
+    }
+
+    /* Check the number of out_vec filled */
+    while ((out_len > 0) && (msg->out_size[out_len - 1] == 0)) {
+        out_len--;
+    }
+
+    /* There will always be a tfm_crypto_pack_iovec in the first iovec */
+    if (in_len < 1) {
+        return PSA_ERROR_GENERIC_ERROR;
+    }
+
+    if (psa_read(msg->handle, 0, &iov, sizeof(iov)) != sizeof(iov)) {
+        return PSA_ERROR_GENERIC_ERROR;
+    }
+
+    /* Initialise the first iovec with the IOV read when parsing */
+    in_vec[0].base = &iov;
+    in_vec[0].len = sizeof(struct tfm_crypto_pack_iovec);
+
+    status = tfm_crypto_init_iovecs(msg, in_vec, in_len, out_vec, out_len);
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+
+    tfm_crypto_set_caller_id(msg->client_id);
+
+    /* Call the dispatcher to the functions that implement the PSA Crypto API */
+    status = tfm_crypto_api_dispatcher(in_vec, in_len, out_vec, out_len);
+
+#if PSA_FRAMEWORK_HAS_MM_IOVEC == 1
+    for (i = 0; i < out_len; i++) {
+        if (out_vec[i].base != NULL) {
+            psa_unmap_outvec(msg->handle, i, out_vec[i].len);
+        }
+    }
+#else
     /* Write into the IPC framework outputs from the scratch */
     for (i = 0; i < out_len; i++) {
         psa_write(msg->handle, i, out_vec[i].base, out_vec[i].len);
     }
 
     /* Clear the allocated internal scratch before returning */
-    if (tfm_crypto_clear_scratch() != PSA_SUCCESS) {
-        return PSA_ERROR_GENERIC_ERROR;
-    }
+    tfm_crypto_clear_scratch();
+#endif
 
     return status;
 }
 
-static psa_status_t tfm_crypto_parse_msg(psa_msg_t *msg,
-                                         struct tfm_crypto_pack_iovec *iov,
-                                         uint32_t *sfn_id_p)
-{
-    size_t read_size;
-
-    /* Read the in_vec[0] which holds the IOVEC always */
-    read_size = psa_read(msg->handle,
-                         0,
-                         iov,
-                         sizeof(struct tfm_crypto_pack_iovec));
-
-    if (read_size != sizeof(struct tfm_crypto_pack_iovec)) {
-        return PSA_ERROR_GENERIC_ERROR;
-    }
-
-    if (iov->sfn_id >= TFM_CRYPTO_SID_MAX) {
-        *sfn_id_p = TFM_CRYPTO_SID_INVALID;
-        return PSA_ERROR_GENERIC_ERROR;
-    }
-
-    *sfn_id_p = iov->sfn_id;
-
-    return PSA_SUCCESS;
-}
-
-static void tfm_crypto_ipc_handler(void)
-{
-    psa_signal_t signals = 0;
-    psa_msg_t msg;
-    psa_status_t status = PSA_SUCCESS;
-    uint32_t sfn_id = TFM_CRYPTO_SID_INVALID;
-    struct tfm_crypto_pack_iovec iov = {0};
-
-    while (1) {
-        signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
-        if (signals & TFM_CRYPTO_SIGNAL) {
-            /* Extract the message */
-            if (psa_get(TFM_CRYPTO_SIGNAL, &msg) != PSA_SUCCESS) {
-                /* FIXME: Should be replaced by TF-M error handling */
-                while (1) {
-                    ;
-                }
-            }
-
-            /* Process the message type */
-            switch (msg.type) {
-            case PSA_IPC_CONNECT:
-            case PSA_IPC_DISCONNECT:
-                psa_reply(msg.handle, PSA_SUCCESS);
-                break;
-            case PSA_IPC_CALL:
-                /* Parse the message */
-                status = tfm_crypto_parse_msg(&msg, &iov, &sfn_id);
-                /* Call the dispatcher based on the SID passed as type */
-                if (sfn_id != TFM_CRYPTO_SID_INVALID) {
-                    status = tfm_crypto_call_sfn(&msg, &iov, sfn_id);
-                } else {
-                    status = PSA_ERROR_GENERIC_ERROR;
-                }
-                psa_reply(msg.handle, status);
-                break;
-            default:
-                /* FIXME: Should be replaced by TF-M error handling */
-                while (1) {
-                    ;
-                }
-            }
-        } else {
-            /* FIXME: Should be replaced by TF-M error handling */
-            while (1) {
-               ;
-            }
-        }
-    }
-
-    /* NOTREACHED */
-    return;
-}
-#endif /* TFM_PSA_API */
-
-/**
- * \brief Default value for the size of the static buffer used by Mbed
- *        Crypto for its dynamic allocations
- */
-#ifndef TFM_CRYPTO_ENGINE_BUF_SIZE
-#define TFM_CRYPTO_ENGINE_BUF_SIZE (0x2000) /* 8KB for EC signing in attest */
-#endif
-
-/**
- * \brief Static buffer to be used by Mbed Crypto for memory allocations
- *
- */
-static uint8_t mbedtls_mem_buf[TFM_CRYPTO_ENGINE_BUF_SIZE] = {0};
-
 static psa_status_t tfm_crypto_engine_init(void)
 {
-    /* Initialise the Mbed Crypto memory allocator to use static
-     * memory allocation from the provided buffer instead of using
-     * the heap
-     */
-    mbedtls_memory_buffer_alloc_init(mbedtls_mem_buf,
-                                     TFM_CRYPTO_ENGINE_BUF_SIZE);
+    psa_status_t status = PSA_ERROR_GENERIC_ERROR;
+    char *library_info = NULL;
 
-    /* Initialise the crypto accelerator if one is enabled */
-#ifdef CRYPTO_HW_ACCELERATOR
+#if CRYPTO_NV_SEED
+    LOG_INFFMT("[INF][Crypto] ");
+    LOG_INFFMT("Provisioning entropy seed... ");
+    if (tfm_plat_crypto_provision_entropy_seed() != TFM_CRYPTO_NV_SEED_SUCCESS) {
+        return PSA_ERROR_GENERIC_ERROR;
+    }
+    LOG_INFFMT("\033[0;32mcomplete.\033[0m\r\n");
+#endif /* CRYPTO_NV_SEED */
+
+    /* Initialise the underlying Cryptographic library that provides the
+     * PSA Crypto core layer
+     */
+    library_info = tfm_crypto_library_get_info();
+    LOG_DBGFMT("[DBG][Crypto] Initialising \033[0;32m%s\033[0m as PSA Crypto backend library... ", library_info);
+    status = tfm_crypto_core_library_init();
+    if (status != PSA_SUCCESS) {
+        return status;
+    }
+    LOG_DBGFMT("\033[0;32mcomplete.\033[0m\r\n");
+
+    /* Initialise the crypto accelerator if one is enabled. If the driver API is
+     * the one defined by the PSA Unified Driver interface, the initialisation is
+     * performed directly through psa_crypto_init() while the PSA subsystem is
+     * initialised
+     */
+#if defined(CRYPTO_HW_ACCELERATOR) && defined(LEGACY_DRIVER_API_ENABLED)
+    LOG_INFFMT("[INF][Crypto] Initialising HW accelerator... ");
     if (crypto_hw_accelerator_init() != 0) {
         return PSA_ERROR_HARDWARE_FAILURE;
     }
+    LOG_INFFMT("\033[0;32mcomplete.\033[0m\r\n");
 #endif /* CRYPTO_HW_ACCELERATOR */
 
-    /* Previous function does not return any value, so just call the
-     * initialisation function of the Mbed Crypto layer
+    /* Perform the initialisation of the PSA subsystem available through the chosen
+     * Cryptographic library. If a driver is built using the PSA Driver interface,
+     * the function below will perform also the same operations done by the HAL init
+     * crypto_hw_accelerator_init()
      */
     return psa_crypto_init();
 }
@@ -303,22 +297,6 @@ static psa_status_t tfm_crypto_module_init(void)
 {
     /* Init the Alloc module */
     return tfm_crypto_init_alloc();
-}
-
-psa_status_t tfm_crypto_get_caller_id(int32_t *id)
-{
-#ifdef TFM_PSA_API
-    return tfm_crypto_get_scratch_owner(id);
-#else
-    int32_t res;
-
-    res = tfm_core_get_caller_client_id(id);
-    if (res != TFM_SUCCESS) {
-        return PSA_ERROR_NOT_PERMITTED;
-    } else {
-        return PSA_SUCCESS;
-    }
-#endif
 }
 
 psa_status_t tfm_crypto_init(void)
@@ -332,15 +310,88 @@ psa_status_t tfm_crypto_init(void)
     }
 
     /* Initialise the engine layer */
-    status = tfm_crypto_engine_init();
+    status =  tfm_crypto_engine_init();
     if (status != PSA_SUCCESS) {
         return status;
     }
 
-#ifdef TFM_PSA_API
-    /* Should not return in normal operations */
-    tfm_crypto_ipc_handler();
-#endif
+    return PSA_SUCCESS;
+}
 
-    return status;
+psa_status_t tfm_crypto_sfn(const psa_msg_t *msg)
+{
+    /* Process the message type */
+    switch (msg->type) {
+    case PSA_IPC_CALL:
+        return tfm_crypto_call_srv(msg);
+    default:
+        return PSA_ERROR_NOT_SUPPORTED;
+    }
+
+    return PSA_ERROR_GENERIC_ERROR;
+}
+
+psa_status_t tfm_crypto_api_dispatcher(psa_invec in_vec[],
+                                       size_t in_len,
+                                       psa_outvec out_vec[],
+                                       size_t out_len)
+{
+    psa_status_t status = PSA_ERROR_CORRUPTION_DETECTED;
+    const struct tfm_crypto_pack_iovec *iov = in_vec[0].base;
+    int32_t caller_id = 0;
+    struct tfm_crypto_key_id_s encoded_key = TFM_CRYPTO_KEY_ID_S_INIT;
+    bool is_key_required = false;
+    enum tfm_crypto_group_id group_id;
+
+    if (in_vec[0].len != sizeof(struct tfm_crypto_pack_iovec)) {
+        return PSA_ERROR_PROGRAMMER_ERROR;
+    }
+
+    group_id = TFM_CRYPTO_GET_GROUP_ID(iov->function_id);
+
+    is_key_required = !((group_id == TFM_CRYPTO_GROUP_ID_HASH) ||
+                        (group_id == TFM_CRYPTO_GROUP_ID_RANDOM));
+
+    if (is_key_required) {
+        status = tfm_crypto_get_caller_id(&caller_id);
+        if (status != PSA_SUCCESS) {
+            return status;
+        }
+        /* The caller_id being set in the owner field is the partition ID
+         * of the calling partition
+         */
+        encoded_key.key_id = iov->key_id;
+        encoded_key.owner = caller_id;
+    }
+
+    /* Dispatch to each sub-module based on the Group ID */
+    switch (group_id) {
+    case TFM_CRYPTO_GROUP_ID_KEY_MANAGEMENT:
+        return tfm_crypto_key_management_interface(in_vec, out_vec,
+                                                   &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_HASH:
+        return tfm_crypto_hash_interface(in_vec, out_vec);
+    case TFM_CRYPTO_GROUP_ID_MAC:
+        return tfm_crypto_mac_interface(in_vec, out_vec, &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_CIPHER:
+        return tfm_crypto_cipher_interface(in_vec, out_vec, &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_AEAD:
+        return tfm_crypto_aead_interface(in_vec, out_vec, &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_ASYM_SIGN:
+        return tfm_crypto_asymmetric_sign_interface(in_vec, out_vec,
+                                                    &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_ASYM_ENCRYPT:
+        return tfm_crypto_asymmetric_encrypt_interface(in_vec, out_vec,
+                                                       &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_KEY_DERIVATION:
+        return tfm_crypto_key_derivation_interface(in_vec, out_vec,
+                                                   &encoded_key);
+    case TFM_CRYPTO_GROUP_ID_RANDOM:
+        return tfm_crypto_random_interface(in_vec, out_vec);
+    default:
+        LOG_ERRFMT("[ERR][Crypto] Unsupported request!\r\n");
+        return PSA_ERROR_NOT_SUPPORTED;
+    }
+
+    return PSA_ERROR_NOT_SUPPORTED;
 }

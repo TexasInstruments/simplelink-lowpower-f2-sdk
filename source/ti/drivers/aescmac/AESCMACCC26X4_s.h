@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#if defined(TFM_PSA_API)
+#if defined(TFM_BUILD)
     #include "ti_drivers_config.h" /* Sysconfig generated header */
 #endif
 
@@ -53,26 +53,18 @@ extern "C" {
 
 /*
  * AES CMAC secure message types
- *
- * Non-secure clients must register their callback after opening or
- * constructing a driver instance with blocking or callback return behavior.
  */
-#define AESCMAC_S_MSG_TYPE_CONSTRUCT (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define AESCMAC_S_MSG_TYPE_OPEN      (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define AESCMAC_S_MSG_TYPE_REGISTER_CALLBACK \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define AESCMAC_S_MSG_TYPE_CLOSE (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define AESCMAC_S_MSG_TYPE_ONE_STEP_SIGN \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define AESCMAC_S_MSG_TYPE_ONE_STEP_VERIFY \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
-#define AESCMAC_S_MSG_TYPE_SETUP_SIGN (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 6U)))
-#define AESCMAC_S_MSG_TYPE_SETUP_VERIFY \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 7U)))
-#define AESCMAC_S_MSG_TYPE_ADD_DATA (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 8U)))
-#define AESCMAC_S_MSG_TYPE_FINALIZE (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 9U)))
-#define AESCMAC_S_MSG_TYPE_CANCEL_OPERATION \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESCMAC | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 10U)))
+#define AESCMAC_S_MSG_TYPE_CONSTRUCT         AESCMAC_S_MSG_TYPE(0U)
+#define AESCMAC_S_MSG_TYPE_OPEN              AESCMAC_S_MSG_TYPE(1U)
+#define AESCMAC_S_MSG_TYPE_REGISTER_CALLBACK AESCMAC_S_MSG_TYPE(2U)
+#define AESCMAC_S_MSG_TYPE_CLOSE             AESCMAC_S_MSG_TYPE(3U)
+#define AESCMAC_S_MSG_TYPE_ONE_STEP_SIGN     AESCMAC_S_MSG_TYPE(4U)
+#define AESCMAC_S_MSG_TYPE_ONE_STEP_VERIFY   AESCMAC_S_MSG_TYPE(5U)
+#define AESCMAC_S_MSG_TYPE_SETUP_SIGN        AESCMAC_S_MSG_TYPE(6U)
+#define AESCMAC_S_MSG_TYPE_SETUP_VERIFY      AESCMAC_S_MSG_TYPE(7U)
+#define AESCMAC_S_MSG_TYPE_ADD_DATA          AESCMAC_S_MSG_TYPE(8U)
+#define AESCMAC_S_MSG_TYPE_FINALIZE          AESCMAC_S_MSG_TYPE(9U)
+#define AESCMAC_S_MSG_TYPE_CANCEL_OPERATION  AESCMAC_S_MSG_TYPE(10U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created
@@ -86,6 +78,8 @@ extern "C" {
 
 /*
  * ========= AES CMAC Secure Callback struct =========
+ * Non-secure clients must register their callback after opening or
+ * constructing a driver instance with blocking or callback return behavior.
  */
 typedef struct
 {

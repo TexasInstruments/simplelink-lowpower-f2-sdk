@@ -18,6 +18,18 @@
 #ifndef WS_BOOTSTRAP_H_
 #define WS_BOOTSTRAP_H_
 
+#define DEBUG_JOIN_TIME
+#ifdef DEBUG_JOIN_TIME
+#define NUM_OF_JOIN_TIME   5
+
+typedef struct __join_time__
+{
+//    uint32_t ts_bootstrap_discovery;
+//    uint32_t ts_bootstrap_done;
+    uint32_t joining_time[NUM_OF_JOIN_TIME]; // 10 us per tick
+    uint32_t br_disconnect;
+} JOIN_TIME_s;
+#endif
 
 typedef enum {
     WS_INIT_EVENT = 0,       /**< tasklet initializion event*/
@@ -152,6 +164,27 @@ int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
  * Output Parameters: success or failure
  */
 int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t panid, bool all);
+
+/*!
+ * API to add the device (MAC64) to meigbor table
+ * Input Parameters:
+ * cur : pointer to current protocol interface
+ * mac64 : pointer of (direct) neigbor's MAC address
+
+ * Output Parameters: none
+ */
+void ws_bootstrap_add_locallink(protocol_interface_info_entry_t *cur, const uint8_t *mac64);
+
+/*!
+ * API to configure the network PANID
+ * Input Parameters:
+ * cur : pointer to current protocol interface
+ * panid : network PAN ID
+
+ * Output Parameters: none
+ */
+
+void ws_bootstrap_configure_network_panid(protocol_interface_info_entry_t *cur,uint16_t panid );
 
 #else
 

@@ -1,7 +1,7 @@
 ;/*
-; * Copyright (c) 2009-2019 ARM Limited. All rights reserved.
+; * Copyright (c) 2009-2022 ARM Limited. All rights reserved.
 ; * Copyright (c) 2019-2020, Cypress Semiconductor Corporation. All rights reserved.
-; * Copyright (c) 2020 IAR Systems AB
+; * Copyright (c) 2020-2021 IAR Systems AB
 ; *
 ; * SPDX-License-Identifier: Apache-2.0
 ; *
@@ -22,12 +22,15 @@
 ;/*
 ;//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 ;*/
-
-
                 MODULE   ?cstartup
 
+; The CPU VTOR register
+CY_CPU_VTOR_ADDR EQU    0xE000ED08
+
+; Vector Table Mapped to Address 0 at Reset
+
                 ;; Forward declaration of sections.
-                SECTION  ARM_LIB_STACK:DATA:NOROOT(3)
+                SECTION  CSTACK:DATA:NOROOT(3)
 
                 SECTION  .intvec:CODE:NOROOT(2)
 
@@ -44,7 +47,7 @@
                 DATA
 
 __vector_table
-                DCD     sfe(ARM_LIB_STACK)        ; Top of Stack
+                DCD     sfe(CSTACK)               ; Top of Stack
                 DCD     Reset_Handler             ; Reset Handler
                 DCD     NMI_Handler               ; NMI Handler
                 DCD     HardFault_Handler         ; Hard Fault Handler
@@ -236,7 +239,7 @@ __Vectors_End
 __Vectors       EQU     __vector_table
 __Vectors_Size  EQU     __Vectors_End - __Vectors
 
-                DATA
+                SECTION  .ramvec:DATA:NOROOT(2)
                 EXPORT  __ramVectors
 __ramVectors
                 DS8     __Vectors_Size
@@ -247,6 +250,27 @@ __ramVectors
                 PUBWEAK  Reset_Handler
 
 Reset_Handler
+#ifdef RAM_VECTORS_SUPPORT
+                ; Copy vectors from ROM to RAM
+                LDR     R1, =__Vectors
+                LDR     R0, =__ramVectors
+                LDR     R2, =__Vectors_Size
+Vectors_Copy
+                LDR     R3, [R1]
+                STR     R3, [R0]
+                ADDS    R0, R0, #4
+                ADDS    R1, R1, #4
+                SUBS    R2, R2, #4
+                CMP     R2, #0
+                BNE     Vectors_Copy
+                LDR     R0, =__ramVectors
+#else
+                LDR     R0, =__Vectors
+#endif
+                LDR     R1, =CY_CPU_VTOR_ADDR
+                STR     R0, [R1]
+                DSB     #0xF
+
                 LDR     R0, =Cy_SystemInitFpuEnable
                 BLX     R0
                 LDR     R0, =SystemInit

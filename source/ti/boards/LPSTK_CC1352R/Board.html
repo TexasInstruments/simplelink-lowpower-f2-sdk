@@ -34,13 +34,13 @@
 </header>
 <div id="content">
   <h1></h1>
-<h1 id="simplelink-lpstk_cc1352r-launchpad-settings-resources">SimpleLink™ LPSTK_CC1352R LaunchPad™ Settings &amp; Resources</h1>
-<p>The <a href="https://www.ti.com/tool/LPSTK-CC1352R"><strong>SimpleLink LPSTK_CC1352R LaunchPad</strong></a> contains a <a href="https://www.ti.com/product/CC1352R"><strong>CC1352R1F3RGZR</strong></a> device and several on-board sensors:</p>
+<h1 id="simplelink-lpstk-cc1352r-launchpad-settings-resources">SimpleLink™ LPSTK-CC1352R LaunchPad™ Settings &amp; Resources</h1>
+<p>The <a href="https://www.ti.com/tool/LPSTK-CC1352R"><strong>SimpleLink™ LPSTK-CC1352R LaunchPad™</strong></a> contains a <a href="https://www.ti.com/product/CC1352R"><strong>CC1352R1F3RGZR</strong></a> device and several on-board sensors:</p>
 <ul>
-<li>The <a href="http://www.ti.com/product/HDC2080"><strong>HDC2080</strong></a> is an integrated humidity and temperature sensor that provides high accuracy measurements with very low power consumption, in a small DFN package</li>
-<li>The <a href="http://www.ti.com/product/DRV5055"><strong>DRV5055</strong></a> is a high accuracy 3.3 V or 5 V ratio-metric bipolar hall effect sensor that responds proportionally to magnetic flux density. The device can be used for accurate position sensing in a wide range of applications.</li>
+<li>The <a href="https://www.ti.com/product/HDC2080"><strong>HDC2080</strong></a> is an integrated humidity and temperature sensor that provides high accuracy measurements with very low power consumption, in a small DFN package</li>
+<li>The <a href="https://www.ti.com/product/DRV5055"><strong>DRV5055</strong></a> is a high accuracy 3.3 V or 5 V ratio-metric bipolar hall effect sensor that responds proportionally to magnetic flux density. The device can be used for accurate position sensing in a wide range of applications.</li>
 <li>The <a href="https://www.analog.com/en/products/adxl362.html"><strong>ADXL362</strong></a> is an ultralow power, 3-axis MEMS accelerometer that consumes less than 2 μA at a 100 Hz output data rate and 270 nA when in motion triggered wake-up mode,</li>
-<li>The <a href="http://www.ti.com/product/OPT3001"><strong>OPT3001</strong></a> is a sensor that measures the intensity of visible light. The spectral response of the sensor tightly matches the photopic response of the human eye and includes significant infrared rejection.</li>
+<li>The <a href="https://www.ti.com/product/OPT3001"><strong>OPT3001</strong></a> is a sensor that measures the intensity of visible light. The spectral response of the sensor tightly matches the photopic response of the human eye and includes significant infrared rejection.</li>
 </ul>
 <h2 id="jumper-settings">Jumper Settings</h2>
 <ul>
@@ -51,12 +51,21 @@
 <h2 id="driver-examples-resources">Driver Examples Resources</h2>
 <p>Examples utilize SysConfig to generate software configurations into the <strong>ti_drivers_config.c</strong> and <strong>ti_drivers_config.h</strong> files. The SysConfig user interface can be utilized to determine pins and resources used. Information on pins and resources used is also present in both generated files.</p>
 <h2 id="ti-boosterpacks">TI BoosterPacks™</h2>
-<p>The following BoosterPack(s) are used with some driver examples.</p>
-<h4 id="boostxl-bassensors-boosterpackboostxl-bassensors"><a href="https://www.ti.com/tool/BOOSTXL-BASSENSORS"><strong>BOOSTXL-BASSENSORS BoosterPack</strong></a></h4>
+<p>The following BoosterPacks are used with some driver examples.</p>
+<h3 id="boostxl-canfd-lin-spi-to-can-fd-lin-boosterpackboostxl-canfd-lin"><a href="https://www.ti.com/tool/BOOSTXL-CANFD-LIN"><strong>BOOSTXL-CANFD-LIN SPI to CAN FD + LIN BoosterPack</strong></a></h3>
+<p>The BoosterPack requires an external voltage supply connected to the barrel jack <strong><code>J2</code></strong> in the range of 6 V to 24 V.</p>
+<p>The following modifications are required:</p>
+<ul>
+<li>On the BoosterPack, remove jumpers <strong><code>J11</code></strong> and <strong><code>J12</code></strong> to disconnect the BoosterPack’s 3.3 V and 5 V rails if the LaunchPad is powered from the debugger.</li>
+<li>On the LaunchPad, bend down header pin BP.33 (<strong><code>TCK</code></strong>) to prevent the signal from interfering with the BoosterPack <strong><code>nWKRQ</code></strong> signal.</li>
+<li>On the LaunchPad, remove the <strong><code>TDI</code></strong> jumper to disconnect the debugger from LP.31 and prevent interference with the BoosterPack <strong><code>nINT</code></strong> signal.</li>
+</ul>
+<p>Place the BoosterPack directly atop the LaunchPad.</p>
+<h3 id="boostxl-sharp128-lcd-sd-card-boosterpackboostxl-sharp128"><a href="https://www.ti.com/tool/BOOSTXL-SHARP128"><strong>BOOSTXL-SHARP128 LCD &amp; SD Card BoosterPack</strong></a></h3>
 <ul>
 <li>No modifications are needed.</li>
 </ul>
-<h4 id="bp-bassensors-mkii-boosterpackbp-bassensorsmkii"><a href="https://www.ti.com/tool/BP-BASSENSORSMKII"><strong>BP-BASSENSORS MKII BoosterPack</strong></a></h4>
+<h3 id="bp-bassensorsmkii-boosterpackbp-bassensorsmkii"><a href="https://www.ti.com/tool/BP-BASSENSORSMKII"><strong>BP-BASSENSORSMKII BoosterPack</strong></a></h3>
 <ul>
 <li>No modifications are needed.</li>
 </ul>

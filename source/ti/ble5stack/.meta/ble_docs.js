@@ -45,19 +45,19 @@ Role | Description
 Broadcaster | The device is an advertiser that is non connectable
 Observer | The device scans for advertisements but cannot initiate connections
 Peripheral | The device is an advertiser that is connectable and operates as \
-slave in a single or multiple link-layer connection
+peripheral in a single or multiple link-layer connection
 Central | The device scans for advertisements and initiates connections and \
-operates as a master in a single or multiple link-layer connections
+operates as a central in a single or multiple link-layer connections
 Central + Broadcaster | The device scans for advertisements and initiates \
-connections and operates as a master in a single or multiple link-layer \
+connections and operates as a central in a single or multiple link-layer \
 connections. In addition, the device is an advertiser that is non connectable
 Peripheral + Observer | The device is an advertiser that is connectable and \
-operates as slave in a single or multiple link-layer connection. In addition, \
+operates as peripheral in a single or multiple link-layer connection. In addition, \
 the device scans for advertisements but cannot initiate connections
 Peripheral + Central | The device is an advertiser that is connectable and \
-operates as slave in a single or multiple link-layer connection. In addition, \
+operates as peripheral in a single or multiple link-layer connection. In addition, \
 the device scans for advertisements and initiates connections and \
-operates as a master in a single or multiple link-layer connections
+operates as a central in a single or multiple link-layer connections
 \n\
 For more information, refer to the [BLE Stack User's Guide]\
 (ble5stack/ble_user_guide/html/ble-stack-5.x/gap.html#gap-roles).\n
@@ -114,9 +114,8 @@ __Default__: False (unchecked)\n`
 // Long description for the L2CAPCOC configuration parameter
 const L2CAPCOCLongDescription = `Enable/Disable the use of L2CAP Connection Oriented Channels. \
 The BLE5-Stack provides APIs to create L2CAP CoC channels to transfer bidirectional data between \
-two Bluetooth Low Energy devices supporting this feature. For more information, refer to the \
-[BLE Stack User's Guide](/ble5stack/ble_user_guide/html/ble-stack-common/l2cap.html#connection\
--oriented-channels-example).\n
+two Bluetooth Low Energy devices supporting this feature. \
+For more information, refer to the User Guide \n
 __Default__: False (unchecked)\n`
 
 // Long description for the delayingAttReadReq configuration parameter

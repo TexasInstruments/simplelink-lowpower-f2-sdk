@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -129,7 +129,7 @@ let deferred = {
 
 /*!
  *  ======== addImplementationConfig ========
- *  Displays device-specific driver impelementation. This function is intended
+ *  Displays device-specific driver implementation. This function is intended
  *  to be called in the extend function of the <driver><device>.syscfg.js file.
  *
  *  @param[in] base: The base exports object needing to be modified
@@ -335,8 +335,10 @@ function device2Family(device, mod)
         {prefix: "CC26.1",   family: "CC26X1"},
         {prefix: "CC13",     family: "CC26XX"},
         {prefix: "CC26",     family: "CC26XX"},
-        {prefix: "CC23.0",   family: "CC23XX"},
-        {prefix: "CC32",     family: "CC32XX"}
+        {prefix: "CC23.0",   family: "CC23X0"},
+        {prefix: "CC27",     family: "CC27XX"},
+        {prefix: "CC32",     family: "CC32XX"},
+        {prefix: "CC35",     family: "CC35XX"}
     ];
 
     /* CC26X4 specific module delegates */
@@ -371,8 +373,37 @@ function device2Family(device, mod)
         "Temperature" : "CC26X2"
     };
 
-    /* CC23X0 specific module delegates */
+    /* CC23X0 specific module delegates
+     * Note, the default family name returned below is LPF3, so this list must
+     * contain all CC23X0 specific modules
+     */
     let cc23x0Mods = {
+        "Board" :        "CC23X0",
+        "Power" :        "CC23X0",
+        "CAN" :          "CC23X0",
+        "CCFG" :         "CC23X0",
+        "SHA2" :         "LPF3SW",
+        "ECDH" :         "LPF3SW",
+        "ECDSA" :        "LPF3SW",
+        "RNG"  :         "LPF3RF"
+    };
+
+    /* CC27XX specific module delegates
+     * Note, the default family name returned below is LPF3, so this list must
+     * contain all CC27XX specific modules
+     */
+    let cc27xxMods = {
+        "Board" :          "CC27XX",
+        "CAN" :            "CC27XX",
+        "CCFG" :           "CC27XX",
+        "Power" :          "CC27XX",
+        "ECDH" :           "LPF3SW",
+        "SHA2" :           "LPF3SW",
+        "RNG"  :           "LPF3HSM"
+    };
+
+    /* CC35XX specific module delegates */
+    let cc35xxMods = {
     };
 
     /* deviceId is the directory name within the pinmux/deviceData */
@@ -412,7 +443,23 @@ function device2Family(device, mod)
                     return (cc23x0Mods[mod]);
                 }
                 else {
-                    return ("CC23XX");
+                    return ("LPF3");
+                }
+            }
+            else if (d2f.prefix == "CC27") {
+                if (mod in cc27xxMods) {
+                    return (cc27xxMods[mod]);
+                }
+                else {
+                    return ("LPF3");
+                }
+            }
+            else if (d2f.prefix == "CC35") {
+                if (mod in cc35xxMods) {
+                    return (cc35xxMods[mod]);
+                }
+                else {
+                    return ("WFF3");
                 }
             }
             else {
@@ -856,26 +903,42 @@ function newConfig()
  */
 function newIntPri()
 {
-    let intPri = [{
-        name: "interruptPriority",
-        displayName: "Hardware Interrupt Priority",
-        description: "Hardware interrupt priority",
-        longDescription:`This configuration allows you to configure the
-hardware interrupt priority.
-`,
-        default: "7",
-        options: [
-            { name: "7", displayName: "7 - Lowest Priority" },
-            { name: "6" },
-            { name: "5" },
-            { name: "4" },
-            { name: "3" },
-            { name: "2" },
-            { name: "1", displayName: "1 - Highest Priority" }
-        ]
-    }];
-
-    return (intPri);
+    if (system.deviceData.deviceId.match(/CC23.0/)) {
+        /* CC23X0 devices only have two NVIC priority bits available instead of 3 */
+        return [{
+                    name: "interruptPriority",
+                    displayName: "Hardware Interrupt Priority",
+                    description: "Hardware interrupt priority",
+                    longDescription:`This configuration allows you to configure the
+hardware interrupt priority.`,
+                    default: "3",
+                    options: [
+                        { name: "3", displayName: "3 - Lowest Priority" },
+                        { name: "2" },
+                        { name: "1", displayName: "1 - Highest Priority" }
+                    ]
+                }];
+    }
+    else {
+        /* Other devices have three NVIC priority bits available */
+        return [{
+                    name: "interruptPriority",
+                    displayName: "Hardware Interrupt Priority",
+                    description: "Hardware interrupt priority",
+                    longDescription:`This configuration allows you to configure the
+hardware interrupt priority.`,
+                    default: "7",
+                    options: [
+                        { name: "7", displayName: "7 - Lowest Priority" },
+                        { name: "6" },
+                        { name: "5" },
+                        { name: "4" },
+                        { name: "3" },
+                        { name: "2" },
+                        { name: "1", displayName: "1 - Highest Priority" }
+                    ]
+                }];
+    }
 }
 
 /*
@@ -884,17 +947,28 @@ hardware interrupt priority.
  */
 function intPriority2Hex(intPri)
 {
+    if (system.deviceData.deviceId.match(/CC23.0/)) {
+        /*
+        *(~0) is always interpreted as the lowest priority.
+        * NoRTOS and FreeRTOS DPL do not support "3" as a HwiP priority.
+        */
+        if (intPri == "3") {
+            return ("(~0)");
+        }
 
-    /*
-     *(~0) is always interpreted as the lowest priority.
-     * NoRTOS DPL does not support "7" as a HwiP priority.
-     */
-    if (intPri == "7") {
-
-        return ("(~0)");
+        return ("0x" + (intPri << 6).toString(16));
     }
+    else {
+        /*
+        *(~0) is always interpreted as the lowest priority.
+        * NoRTOS and FreeRTOS DPL do not support "7" as a HwiP priority.
+        */
+        if (intPri == "7") {
+            return ("(~0)");
+        }
 
-    return ("0x" + (intPri << 5).toString(16));
+        return ("0x" + (intPri << 5).toString(16));
+    }
 }
 
 /*

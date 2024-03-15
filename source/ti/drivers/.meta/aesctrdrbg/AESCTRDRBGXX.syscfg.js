@@ -40,8 +40,8 @@
 /* get Common /ti/drivers utility functions */
 let Common = system.getScript("/ti/drivers/Common.js");
 
-/* get /ti/drivers family name from device object */
-let family = Common.device2Family(system.deviceData, "Board");
+/* get device ID */
+let deviceId = system.deviceData.deviceId;
 
 /* Interrupt Priority for internal AESCTR instance */
 let intPriority = Common.newIntPri()[0];
@@ -58,8 +58,6 @@ let devSpecific = {
         intPriority
     ],
 
-    filterHardware: filterHardware,
-
     /* override device-specific templates */
     templates: {
         boardh: "/ti/drivers/aesctrdrbg/AESCTRDRBG.Board.h.xdt",
@@ -67,8 +65,9 @@ let devSpecific = {
     },
 
     modules: (inst) => {
-        if (family.match(/CC23/))
+        if (deviceId.match(/CC23|CC27/))
         {
+            /* LAES uses DMA */
             return Common.autoForceModules(["Board", "Power", "DMA"])();
         }
         else
@@ -77,27 +76,6 @@ let devSpecific = {
         }
     }
 };
-
-/*
- *  ========= filterHardware ========
- *  Check 'component' signals for compatibility with AESCTRDRBG
- *
- *  param component - hardware object describing signals and
- *                    resources they're attached to
- *  returns Boolean indicating whether or not to allow the component to
- *           be assigned to an instance's $hardware config
- */
-function filterHardware(component)
-{
-    for (let sig in component.signals) {
-        let type = component.signals[sig].type;
-        if (Common.typeMatches(type, ["AESCTRDRBG"])) {
-            return (true);
-        }
-    }
-
-    return (false);
-}
 
 /*
  *  ======== extend ========

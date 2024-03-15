@@ -83,7 +83,7 @@ def transport_factory_cli(app: typer.Typer):
         ctx: typer.Context,
         port: str = typer.Argument(..., help="Serial port (eg COM12)"),
         baudrate: int = typer.Argument(..., help="TPIU baudrate"),
-        elf: List[Path] = typer.Option([], help="Symbol file paths (elf/out file)"),
+        elf: List[Path] = typer.Option([], help="Symbol file path (elf/out file)"),
         alias: Optional[str] = typer.Option(None, help="Alias for this device in the log"),
     ):
         """Add ITM transport as input to log.
@@ -147,9 +147,6 @@ def itm_raw_viewer():
 
     # Parse arguments from command-line
     args = parser.parse_args()
-
-    # Set logging-level to INFO to display status of serial-thread
-    logging.basicConfig(level=logging.INFO)
 
     # Create an ITM transport and start it. With logger=None, the raw output will be printed to terminal
     itm_transport = ITM_Transport(args.com_port, args.baud_rate, None, None)

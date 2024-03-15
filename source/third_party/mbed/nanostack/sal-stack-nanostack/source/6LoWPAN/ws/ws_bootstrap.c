@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Arm Limited and affiliates.
+* Copyright (c) 2018-2019, Arm Limited and affiliates.
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +85,42 @@
 #include "timac_ns_interface.h"
 #endif
 
+#define MAX_NUM_PC      20
+#define MAX_NUM_PA      20
+#ifdef FEATURE_DISABLE_PA_PC_AFTER_JOIN
+volatile uint8_t disable_pa_pc_after_join = 1;
+#else
+volatile uint8_t disable_pa_pc_after_join = 0;
+#endif
+
+#include "fh_nt.h"
+
 #define TRACE_GROUP "wsbs"
+
+#ifdef WISUN_TEST_MPL_UDP
+const uint8_t ADDR_MULTICAST_TEST[16]      = { 0xff, 0x15, [12] = 0x81, 0x0a, 0x64, 0xd1};
+#endif
+
+#ifdef WISUN_TEST_METRICS
+extern uint32_t eventOS_event_timer_ticks(void);
+extern uint32_t ClockP_getSystemTicks(void);
+
+uint8_t bootstrap_join_started = 0;
+uint32_t ts_bootstrap_discovery;
+uint32_t ts_bootstrap_done;
+JOIN_TIME_s node_join_time;
+
+uint16_t num_of_joining=0;
+uint16_t num_of_joined =0;
+#endif
+
+#ifdef WISUN_TEST_MPL_UDP
+extern int8_t add_multicast_addr(const uint8_t *address);
+extern bool udpSocketSetup(void);
+uint8_t isUDPSetUp = 0;
+#endif
+
+void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur);
 
 //The pan id filtering changes are being done in the ws_bootstrap.c file, which
 //is common to both router & border router logic to keep the changes contained
@@ -99,6 +134,9 @@ uint16_t panid_list_clear_timeout_sec = 1800;
 uint16_t panid_list_clear_timeout_counter = 0;
 
 extern configurable_props_t cfg_props;
+extern uint8_t enableVPIE;
+extern uint8_t detectVPIE;  /* for Router node */
+uint16 panID_in_VPIE;
 
 static void ws_bootstrap_event_handler(arm_event_s *event);
 static void ws_bootstrap_state_change(protocol_interface_info_entry_t *cur, icmp_state_t nwk_bootstrap_state);
@@ -418,7 +456,17 @@ static ws_nud_table_entry_t *ws_nud_entry_get_free(protocol_interface_info_entry
         entry->wait_response = false;
         entry->retry_count = 0;
         entry->nud_process = false;
-        entry->timer = randLIB_get_random_in_range(1, 900);
+        if (ti_wisun_config.rapid_join) {
+            // Speed up NUD TX during bootstrap. Afterwards, reduce NUD TX rate.
+            if (cur->nwk_bootstrap_state == ER_BOOTSRAP_DONE) {
+                entry->timer = randLIB_get_random_in_range(500, 1000);
+            }
+            else {
+                entry->timer = randLIB_get_random_in_range(50, 100);
+            }
+        } else {
+            entry->timer = randLIB_get_random_in_range(1, 900);
+        }
         entry->neighbor_info = NULL;
         ns_list_remove(&cur->ws_info->free_nud_entries, entry);
         ns_list_add_to_end(&cur->ws_info->active_nud_process, entry);
@@ -829,6 +877,15 @@ static int8_t ws_fhss_enable(protocol_interface_info_entry_t *cur)
     }
     if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
         ns_fhss_ws_set_hop_count(cur->ws_info->fhss_api, 0);
+#ifdef FEATURE_TIMAC_SUPPORT
+        timac_BootstrapCallbackMode(1);
+#endif
+    }
+    else
+    {
+#ifdef FEATURE_TIMAC_SUPPORT
+        timac_BootstrapCallbackMode(0);
+#endif
     }
     return 0;
 }
@@ -1145,7 +1202,15 @@ static int8_t ws_bootstrap_up(protocol_interface_info_entry_t *cur)
     dhcp_client_init(cur->id, DHCPV6_DUID_HARDWARE_IEEE_802_NETWORKS_TYPE);
     dhcp_service_link_local_rx_cb_set(cur->id, ws_bootstrap_dhcp_neighbour_update_cb);
     dhcp_client_configure(cur->id, true, true, true); //RENEW uses SOLICIT, Interface will use 1 instance for address get, IAID address hint is not used.
-    dhcp_client_solicit_timeout_set(cur->id, WS_DHCP_SOLICIT_TIMEOUT, WS_DHCP_SOLICIT_MAX_RT, WS_DHCP_SOLICIT_MAX_RC);
+
+    uint16_t dhcp_timeout = WS_DHCP_SOLICIT_TIMEOUT;
+    uint16_t dhcp_max_rt = WS_DHCP_SOLICIT_MAX_RT;
+    if (ti_wisun_config.rapid_join)
+    {
+        dhcp_timeout = WS_DHCP_SOLICIT_TIMEOUT_RAPID;
+        dhcp_max_rt = WS_DHCP_SOLICIT_MAX_RT_RAPID;
+    }
+    dhcp_client_solicit_timeout_set(cur->id, dhcp_timeout, dhcp_max_rt, WS_DHCP_SOLICIT_MAX_RC);
     dhcp_client_option_notification_cb_set(cur->id, ws_bootstrap_dhcp_info_notify_cb);
 
     // Configure memory limits and garbage collection values;
@@ -1230,10 +1295,16 @@ static int8_t ws_bootstrap_down(protocol_interface_info_entry_t *cur)
     }
     ws_nud_table_reset(cur);
     dhcp_client_delete(cur->id);
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_eapol_relay_delete(cur);
-    ws_eapol_auth_relay_delete(cur);
-    ws_pae_controller_stop(cur);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        ws_eapol_relay_delete(cur);
+        ws_eapol_auth_relay_delete(cur);
+    }
+#endif
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        ws_pae_controller_stop(cur);
+    }
 #endif
     ws_bootstrap_candidate_table_reset(cur);
     blacklist_clear();
@@ -1272,7 +1343,8 @@ void ws_bootstrap_configuration_reset(protocol_interface_info_entry_t *cur)
     cur->nwk_bootstrap_state = ER_ACTIVE_SCAN;
     cur->ws_info->network_pan_id = 0xffff;
 #ifdef FEATURE_TIMAC_SUPPORT
-    timacSetPanId(cur->ws_info->network_pan_id);
+    tr_info("bootstrap_configuration_reset: panID 0x%x",cur->ws_info->network_pan_id);
+    ws_bootstrap_set_MAC_panid(cur);
 #endif
     ws_bootstrap_asynch_trickle_stop(cur);
 
@@ -1441,7 +1513,7 @@ static parent_info_t *ws_bootstrap_candidate_parent_allocate(protocol_interface_
     } else {
         // If there is no free entries always allocate the last one of reserved as it is the worst
         entry = ns_list_get_last(&cur->ws_info->parent_list_reserved);
-
+        tr_info("candidate_parent_allocate: no entry in list_free, use the last in reserved");
     }
     if (entry) {
         entry->tx_fail = 0;
@@ -1520,9 +1592,16 @@ static bool ws_bootstrap_candidate_parent_compare(parent_info_t *p1, parent_info
 static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_entry *cur, uint8_t pan_max, uint32_t current_time, uint16_t pan_id)
 {
     int pan_count = 0;
+    FHAPI_status status;
 
     ns_list_foreach_safe(parent_info_t, entry, &cur->ws_info->parent_list_reserved) {
         if ((current_time - entry->age) > WS_PARENT_LIST_MAX_AGE) {
+#ifdef FEATURE_FHNT_CONTROL
+            if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
+                status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, entry->addr);
+                tr_warn("FHNT ns: ws_bs_pa clean delete join b/c of age: %s | status: %d", trace_array(entry->addr, 8), status);
+            }
+#endif
             ns_list_remove(&cur->ws_info->parent_list_reserved, entry);
             ns_list_add_to_end(&cur->ws_info->parent_list_free, entry);
             continue;
@@ -1531,6 +1610,15 @@ static void ws_bootstrap_candidate_list_clean(struct protocol_interface_info_ent
             // Same panid if there is more than limited amount free those
             pan_count++;
             if (pan_count > pan_max) {
+#ifdef FEATURE_FHNT_CONTROL
+                if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN) {
+                    parent_info_t *selected_parent_ptr = ws_bootstrap_candidate_parent_get_best(cur);
+                    if (!(selected_parent_ptr && (memcmp(selected_parent_ptr->addr, entry->addr, 8) == 0))) {
+                        status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, entry->addr);
+                        tr_warn("FHNT ns: ws_bs_pa clean delete join b/c of max: %s | status: %d", trace_array(entry->addr, 8), status);
+                    }
+                }
+#endif
                 ns_list_remove(&cur->ws_info->parent_list_reserved, entry);
                 ns_list_add_to_end(&cur->ws_info->parent_list_free, entry);
                 continue;
@@ -1586,25 +1674,30 @@ static void ws_bootstrap_pan_information_store(struct protocol_interface_info_en
     ws_bootstrap_candidate_parent_store(new_entry, data, ws_utt, ws_us, pan_information);
     // set to the correct place in list
     ws_bootstrap_candidate_parent_sort(cur, new_entry);
-
+#ifdef FEATURE_FHNT_CONTROL
+    if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
+        FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, data->SrcAddr);
+        tr_warn("FHNT ns: ws_bs_pa store add join: %s | status: %d", trace_array(data->SrcAddr, 8), status);
+    }
+#endif
     return;
 }
 
 static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, const struct mcps_data_ie_list *ie_ext, ws_utt_ie_t *ws_utt, ws_us_ie_t *ws_us)
 {
-
+    bool fhnt_delete = false;
     //Validate Pan Conrfirmation is at packet
     ws_pan_information_t pan_information;
     if (!ws_wp_nested_pan_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &pan_information)) {
         // Corrupted
         tr_error("No pan information");
-        return;
+        fhnt_delete = true;
     }
 
     if (ws_us->excluded_channel_ctrl) {
         //Validate that we can storage data
         if (ws_us->excluded_channel_ctrl == WS_EXC_CHAN_CTRL_BITMASK && ws_us->excluded_channels.mask.mask_len_inline > 32) {
-            return;
+            fhnt_delete = true;
         }
     }
 
@@ -1612,6 +1705,21 @@ static void ws_bootstrap_pan_advertisement_analyse(struct protocol_interface_inf
     if (!pan_information.rpl_routing_method) {
         // NOT RPL routing
         //tr_warn("Not supported routing");
+        fhnt_delete = true;
+    }
+
+    if (cur->nwk_bootstrap_state != ER_ACTIVE_SCAN && cur->nwk_bootstrap_state != ER_PANA_AUTH) {
+        if (data->SrcPANId != cur->ws_info->network_pan_id) {
+            fhnt_delete = true;
+        }
+    }
+
+    if (fhnt_delete)
+    {
+#ifdef FEATURE_FHNT_CONTROL
+        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        tr_warn("FHNT ns: ws_bs_pa delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
+#endif
         return;
     }
 
@@ -1664,26 +1772,50 @@ static void ws_bootstrap_pan_advertisement_solicit_analyse(struct protocol_inter
     (void)data;
     (void)ws_utt;
     (void)ws_us;
-    /*
-     * An inconsistent transmission is defined as:
-     * A PAN Advertisement Solicit with NETNAME-IE matching that of the receiving node.
+
+    /* for node, check if the PA trickle time is running
+     * if it is not ruuning, start the PA trickle timer
+     *
      */
-    trickle_inconsistent_heard(&cur->ws_info->trickle_pan_advertisement, &cur->ws_info->trickle_params_pan_discovery);
-    /*
-     *  A consistent transmission is defined as
-     *  a PAN Advertisement Solicit with NETNAME-IE / Network Name matching that configured on the receiving node.
-     */
-    trickle_consistent_heard(&cur->ws_info->trickle_pan_advertisement_solicit);
+    if ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) &&
+            (cur->nwk_bootstrap_state == ER_BOOTSRAP_DONE) &&
+            (cur->ws_info->trickle_pa_running == false) &&
+            (disable_pa_pc_after_join == 1) )
+    {
+        /* PA timer is not running start this timer */
+        cur->ws_info->trickle_pa_running = true;
+        trickle_start(&cur->ws_info->trickle_pan_advertisement, &cur->ws_info->trickle_params_pan_discovery);
+        cur->ws_info->trickle_pan_advertisement.num_tx = 0;
+    }
+    else
+    {
+        /*
+         * An inconsistent transmission is defined as:
+         * A PAN Advertisement Solicit with NETNAME-IE matching that of the receiving node.
+         */
+        trickle_inconsistent_heard(&cur->ws_info->trickle_pan_advertisement, &cur->ws_info->trickle_params_pan_discovery);
+        /*
+         *  A consistent transmission is defined as
+         *  a PAN Advertisement Solicit with NETNAME-IE / Network Name matching that configured on the receiving node.
+         */
+        trickle_consistent_heard(&cur->ws_info->trickle_pan_advertisement_solicit);
+    }
+
     /*
      *  Optimized PAN discovery to select the parent faster if we hear solicit from someone else
      */
-
-    if (ws_bootstrap_state_discovery(cur)  && ws_cfg_network_config_get(cur) <= CONFIG_MEDIUM &&
-            cur->bootsrap_state_machine_cnt > cur->ws_info->trickle_params_pan_discovery.Imin * 2) {
-
-        cur->bootsrap_state_machine_cnt = cur->ws_info->trickle_params_pan_discovery.Imin + randLIB_get_random_in_range(0, cur->ws_info->trickle_params_pan_discovery.Imin);
-
-        tr_info("Making parent selection in %u s", (cur->bootsrap_state_machine_cnt / 10));
+    if (ti_wisun_config.rapid_join) {
+        // Speed up parent selection further after hearing PAS
+        if (ws_bootstrap_state_discovery(cur) && cur->bootsrap_state_machine_cnt > 20) {
+            cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(1, 20);
+            tr_info("Making parent selection in %u s", (cur->bootsrap_state_machine_cnt / 10));
+        }
+    } else {
+        if (ws_bootstrap_state_discovery(cur)  && ws_cfg_network_config_get(cur) <= CONFIG_MEDIUM &&
+                cur->bootsrap_state_machine_cnt > cur->ws_info->trickle_params_pan_discovery.Imin * 2) {
+            cur->bootsrap_state_machine_cnt = cur->ws_info->trickle_params_pan_discovery.Imin + randLIB_get_random_in_range(0, cur->ws_info->trickle_params_pan_discovery.Imin);
+            tr_info("Making parent selection in %u s", (cur->bootsrap_state_machine_cnt / 10));
+        }
     }
 
     if (ws_bootstrap_state_active(cur) && cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
@@ -1697,18 +1829,25 @@ static void ws_bootstrap_pan_advertisement_solicit_analyse(struct protocol_inter
 
 static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, const struct mcps_data_ie_list *ie_ext, ws_utt_ie_t *ws_utt, ws_us_ie_t *ws_us)
 {
+    bool fhnt_delete = false;
 
     uint16_t pan_version;
     ws_bs_ie_t ws_bs_ie;
     uint8_t *gtkhash_ptr;
 
-    if (data->SrcPANId != cur->ws_info->network_pan_id) {
+    if (cur->nwk_bootstrap_state == ER_ACTIVE_SCAN || cur->nwk_bootstrap_state == ER_PANA_AUTH) {
+        tr_warn("PC dropped in stage 1/2, source pan: 0x%x, network pan 0x%x", data->SrcPANId, cur->ws_info->network_pan_id);
         return;
+    }
+
+    if (data->SrcPANId != cur->ws_info->network_pan_id) {
+        tr_warn("PC dropped, source pan: 0x%x, network pan 0x%x", data->SrcPANId, cur->ws_info->network_pan_id);
+        fhnt_delete = true;
     }
     ws_bt_ie_t ws_bt_ie;
     if (!ws_wh_bt_read(ie_ext->headerIeList, ie_ext->headerIeListLength, &ws_bt_ie)) {
         tr_warn("BT-IE");
-        return;
+        fhnt_delete = true;
     }
 
     /*
@@ -1724,23 +1863,34 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
     if (!ws_wp_nested_pan_version_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &pan_version)) {
         // Corrupted
         tr_warn("no version");
-        return;
+        fhnt_delete = true;
     }
-#ifndef FEATURE_MBED_NO_AUTH
-    gtkhash_ptr = ws_wp_nested_gtkhash_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength);
 
-    if (!gtkhash_ptr) {
-        // Corrupted
-        tr_error("No gtk hash");
-        return;
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        gtkhash_ptr = ws_wp_nested_gtkhash_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength);
+
+        if (!gtkhash_ptr) {
+            // Corrupted
+            tr_error("No gtk hash");
+            fhnt_delete = true;
+        }
     }
 #endif
+
     if (!ws_wp_nested_bs_read(ie_ext->payloadIeList, ie_ext->payloadIeListLength, &ws_bs_ie)) {
         // Corrupted
         tr_error("No broadcast schedule");
-        return;
+        fhnt_delete = true;
     }
 
+    if (fhnt_delete) {
+#ifdef FEATURE_FHNT_CONTROL
+        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        tr_warn("FHNT ns: ws_bs_pc delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
+#endif
+        return;
+    }
     llc_neighbour_req_t neighbor_info;
     bool neighbour_pointer_valid;
 
@@ -1840,11 +1990,15 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
     }
 
     cur->ws_info->pan_information.pan_version = pan_version;
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_pae_controller_gtk_hash_update(cur, gtkhash_ptr);
 
-    ws_pae_controller_nw_key_index_update(cur, data->Key.KeyIndex - 1);
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        ws_pae_controller_gtk_hash_update(cur, gtkhash_ptr);
+
+        ws_pae_controller_nw_key_index_update(cur, data->Key.KeyIndex - 1);
+    }
 #endif
+
     if (!cur->ws_info->configuration_learned) {
         // Generate own hopping schedules Follow first parent broadcast and plans and also use same unicast dwell
         tr_info("learn network configuration");
@@ -1862,6 +2016,10 @@ static void ws_bootstrap_pan_config_analyse(struct protocol_interface_info_entry
 static void ws_bootstrap_pan_config_solicit_analyse(struct protocol_interface_info_entry *cur, const struct mcps_data_ind_s *data, ws_utt_ie_t *ws_utt, ws_us_ie_t *ws_us)
 {
     if (data->SrcPANId != cur->ws_info->network_pan_id) {
+#ifdef FEATURE_FHNT_CONTROL
+        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        tr_warn("FHNT ns: ws_bs_pcs delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
+#endif
         return;
     }
 
@@ -1878,19 +2036,34 @@ static void ws_bootstrap_pan_config_solicit_analyse(struct protocol_interface_in
         }
     }
 
-    /*
-     * A consistent transmission is defined as a PAN Configuration Solicit with
-     * a PAN-ID matching that of the receiving node and a NETNAME-IE / Network Name
-     * matching that configured on the receiving node.
-     */
-    trickle_consistent_heard(&cur->ws_info->trickle_pan_config_solicit);
-    /*
-     *  inconsistent transmission is defined as either:
-     *  A PAN Configuration Solicit with a PAN-ID matching that of the receiving node and
-     *  a NETNAME-IE / Network Name matching the network name configured on the receiving
-     */
-    trickle_inconsistent_heard(&cur->ws_info->trickle_pan_config, &cur->ws_info->trickle_params_pan_discovery);
+    if ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) &&
+            (cur->nwk_bootstrap_state == ER_BOOTSRAP_DONE) &&
+            (cur->ws_info->trickle_pc_running == false) &&
+            (disable_pa_pc_after_join ==1) )
+    {
+        /* PA timer is not running start this timer */
+        cur->ws_info->trickle_pc_running = true;
+        cur->ws_info->trickle_pc_consistency_block_period = 0;
+        trickle_start(&cur->ws_info->trickle_pan_config, &cur->ws_info->trickle_params_pan_discovery);
+        cur->ws_info->trickle_pan_config.num_tx = 0;
+    }
+    else
+    {
+        /*
+         * A consistent transmission is defined as a PAN Configuration Solicit with
+         * a PAN-ID matching that of the receiving node and a NETNAME-IE / Network Name
+         * matching that configured on the receiving node.
+         */
+        trickle_consistent_heard(&cur->ws_info->trickle_pan_config_solicit);
+        /*
+         *  inconsistent transmission is defined as either:
+         *  A PAN Configuration Solicit with a PAN-ID matching that of the receiving node and
+         *  a NETNAME-IE / Network Name matching the network name configured on the receiving
+         */
+        trickle_inconsistent_heard(&cur->ws_info->trickle_pan_config, &cur->ws_info->trickle_params_pan_discovery);
+    }
 }
+
 static bool ws_channel_plan_zero_compare(ws_channel_plan_zero_t *rx_plan, ws_hopping_schedule_t *hopping_schdule)
 {
 #ifndef FEATURE_TIMAC_SUPPORT
@@ -1980,6 +2153,8 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
         // Not from long address
         return;
     }
+
+    bool fhnt_delete = false;
     ws_stats_update(cur, STATS_WS_ASYNCH_RX, 1);
     //Validate network name
     switch (message_type) {
@@ -1989,7 +2164,8 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
             //Check Network Name
             if (!ws_bootstrap_network_name_matches(ie_ext, cur->ws_info->cfg->gen.network_name)) {
                 // Not in our network
-                return;
+                fhnt_delete = true;
+                break;
             }
 
             //added code for pan id filtering feature
@@ -2009,8 +2185,8 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
                     if(i == MAX_PANID_ALLOW_LIST_LEN)
                     {
                         //traversed whole list without match
-                        //do not process this frame
-                        return;
+                        fhnt_delete = true;
+                        break;
                     }
                     //else : match found: proceed to processing the frame further
                 }
@@ -2021,7 +2197,8 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
                         if(data->SrcPANId == panid_deny_list[i]) //match found in deny list
                         {
                             //do not process the frame further
-                            return;
+                            fhnt_delete = true;
+                            break;
                         }
                     }
                 }
@@ -2032,6 +2209,14 @@ static void ws_bootstrap_asynch_ind(struct protocol_interface_info_entry *cur, c
         default:
             return;
     }
+    if (fhnt_delete) {
+#ifdef FEATURE_FHNT_CONTROL
+        FHAPI_status status = FHNT_deleteEntry(data->SrcAddr);
+        tr_warn("FHNT ns: async_ind delete: %s | status: %d", trace_array(data->SrcAddr, 8), status);
+#endif
+        return;
+    }
+
     //UTT-IE and US-IE are mandatory for all Asynch Messages
     ws_utt_ie_t ws_utt;
     if (!ws_wh_utt_read(ie_ext->headerIeList, ie_ext->headerIeListLength, &ws_utt)) {
@@ -2384,7 +2569,12 @@ int ws_bootstrap_init(int8_t interface_id, net_6lowpan_mode_e bootstrap_mode)
     if (!etx_storage_list_allocate(cur->id, buffer.device_decription_table_size)) {
         return -1;
     }
-    if (!etx_cached_etx_parameter_set(WS_ETX_MIN_WAIT_TIME, WS_ETX_MIN_SAMPLE_COUNT, WS_NEIGHBOR_FIRST_ETX_SAMPLE_MIN_COUNT)) {
+
+    uint8_t init_etx_sample_count = WS_NEIGHBOR_FIRST_ETX_SAMPLE_MIN_COUNT;
+    if (ti_wisun_config.rapid_join) {
+        init_etx_sample_count = WS_NEIGHBOR_FIRST_ETX_SAMPLE_MIN_COUNT_RAPID;
+    }
+    if (!etx_cached_etx_parameter_set(WS_ETX_MIN_WAIT_TIME, WS_ETX_MIN_SAMPLE_COUNT, init_etx_sample_count)) {
         etx_storage_list_allocate(cur->id, 0);
         return -1;
     }
@@ -2464,32 +2654,38 @@ int ws_bootstrap_init(int8_t interface_id, net_6lowpan_mode_e bootstrap_mode)
         ret_val =  -4;
         goto init_fail;
     }
-#ifndef FEATURE_MBED_NO_AUTH
-    //Init PAE controller and set callback
-    if (ws_pae_controller_init(cur) < 0) {
-        ret_val =  -4;
-        goto init_fail;
-    }
-    if (ws_pae_controller_cb_register(cur, &ws_bootstrap_authentication_completed, &ws_bootstrap_authentication_next_target, &ws_bootstrap_nw_key_set, &ws_bootstrap_nw_key_clear, &ws_bootstrap_nw_key_index_set, &ws_bootstrap_nw_frame_counter_set, &ws_bootstrap_nw_frame_counter_read, &ws_bootstrap_pan_version_increment, &ws_bootstrap_nw_info_updated, &ws_bootstrap_eapol_congestion_get) < 0) {
-        ret_val =  -4;
-        goto init_fail;
-    }
-    if (ws_pae_controller_configure(cur, &cur->ws_info->cfg->sec_timer, &cur->ws_info->cfg->sec_prot, &cur->ws_info->cfg->timing) < 0) {
-        ret_val =  -4;
-        goto init_fail;
-    }
 
-    //Init EAPOL PDU handler and register it to MPX
-    if (ws_eapol_pdu_init(cur) < 0) {
-        ret_val =  -4;
-        goto init_fail;
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        //Init PAE controller and set callback
+        if (ws_pae_controller_init(cur) < 0) {
+            ret_val =  -4;
+            goto init_fail;
+        }
+        if (ws_pae_controller_cb_register(cur, &ws_bootstrap_authentication_completed, &ws_bootstrap_authentication_next_target, &ws_bootstrap_nw_key_set, &ws_bootstrap_nw_key_clear, &ws_bootstrap_nw_key_index_set, &ws_bootstrap_nw_frame_counter_set, &ws_bootstrap_nw_frame_counter_read, &ws_bootstrap_pan_version_increment, &ws_bootstrap_nw_info_updated, &ws_bootstrap_eapol_congestion_get) < 0) {
+            ret_val =  -4;
+            goto init_fail;
+        }
+        if (ws_pae_controller_configure(cur, &cur->ws_info->cfg->sec_timer, &cur->ws_info->cfg->sec_prot, &cur->ws_info->cfg->timing) < 0) {
+            ret_val =  -4;
+            goto init_fail;
+        }
     }
-    if (ws_eapol_pdu_mpx_register(cur, mpx_api, MPX_KEY_MANAGEMENT_ENC_USER_ID != 0)) {
-        ret_val =  -4;
-        // add deallocs
-        goto init_fail;
-    }
+#endif
 
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        //Init EAPOL PDU handler and register it to MPX
+        if (ws_eapol_pdu_init(cur) < 0) {
+            ret_val =  -4;
+            goto init_fail;
+        }
+        if (ws_eapol_pdu_mpx_register(cur, mpx_api, MPX_KEY_MANAGEMENT_ENC_USER_ID != 0)) {
+            ret_val =  -4;
+            // add deallocs
+            goto init_fail;
+        }
+    }
 #endif
 
     cur->ipv6_neighbour_cache.link_mtu = cur->max_link_mtu = WS_MPX_MAX_MTU;
@@ -2528,16 +2724,25 @@ int ws_bootstrap_init(int8_t interface_id, net_6lowpan_mode_e bootstrap_mode)
     //Error handling and free memory
 init_fail:
     lowpan_adaptation_interface_mpx_register(interface_id, NULL, 0);
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_eapol_pdu_mpx_register(cur, NULL, 0);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        ws_eapol_pdu_mpx_register(cur, NULL, 0);
+    }
 #endif
     mac_neighbor_table_delete(mac_neighbor_info(cur));
     etx_storage_list_allocate(cur->id, 0);
     ws_neighbor_class_dealloc(&neigh_info);
     ws_llc_delete(cur);
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_eapol_pdu_delete(cur);
-    ws_pae_controller_delete(cur);
+
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        ws_eapol_pdu_delete(cur);
+    }
+#endif
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        ws_pae_controller_delete(cur);
+    }
 #endif
     return ret_val;
 }
@@ -2687,9 +2892,11 @@ static void ws_bootstrap_network_configuration_learn(protocol_interface_info_ent
 
     // Timing information can be modified here
     ws_llc_set_pan_information_pointer(cur, &cur->ws_info->pan_information);
-#ifndef FEATURE_MBED_NO_AUTH
-    uint8_t *gtkhash = ws_pae_controller_gtk_hash_ptr_get(cur);
-    ws_llc_set_gtkhash(cur, gtkhash);
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        uint8_t *gtkhash = ws_pae_controller_gtk_hash_ptr_get(cur);
+        ws_llc_set_gtkhash(cur, gtkhash);
+    }
 #endif
 
     return;
@@ -2857,13 +3064,19 @@ static void ws_bootstrap_rpl_callback(rpl_event_t event, void *handle)
             dhcp_relay_agent_enable(cur->id, dodag_info.dodag_id);
 
             tr_debug("Start EAPOL relay");
-#ifndef FEATURE_MBED_NO_AUTH
-            // Set both own port and border router port to 10253
-            ws_eapol_relay_start(cur, EAPOL_RELAY_SOCKET_PORT, dodag_info.dodag_id, EAPOL_RELAY_SOCKET_PORT);
-            // Set network information to PAE
-            ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
-            // Network key is valid, indicate border router IID to controller
-            ws_pae_controller_nw_key_valid(cur, &dodag_info.dodag_id[8]);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                // Set both own port and border router port to 10253
+                ws_eapol_relay_start(cur, EAPOL_RELAY_SOCKET_PORT, dodag_info.dodag_id, EAPOL_RELAY_SOCKET_PORT);
+            }
+#endif
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+                // Set network information to PAE
+                ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
+                // Network key is valid, indicate border router IID to controller
+                ws_pae_controller_nw_key_valid(cur, &dodag_info.dodag_id[8]);
+            }
 #endif
             //Update here Suplikant target by validated Primary Parent
             if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
@@ -3127,8 +3340,13 @@ static void ws_bootstrap_rpl_activate(protocol_interface_info_entry_t *cur)
     rpl_control_request_parent_link_confirmation(true);
     rpl_control_set_dio_multicast_min_config_advertisment_count(WS_MIN_DIO_MULTICAST_CONFIG_ADVERTISMENT_COUNT);
     rpl_control_set_address_registration_timeout((WS_NEIGHBOR_LINK_TIMEOUT / 60) + 1);
-    rpl_control_set_dao_retry_count(WS_MAX_DAO_RETRIES);
-    rpl_control_set_initial_dao_ack_wait(WS_MAX_DAO_INITIAL_TIMEOUT);
+    if (ti_wisun_config.rapid_join) {
+        rpl_control_set_dao_retry_count(WS_MAX_DAO_RETRIES_RAPID);
+        rpl_control_set_initial_dao_ack_wait(WS_MAX_DAO_INITIAL_TIMEOUT_RAPID);
+    } else {
+        rpl_control_set_dao_retry_count(WS_MAX_DAO_RETRIES);
+        rpl_control_set_initial_dao_ack_wait(WS_MAX_DAO_INITIAL_TIMEOUT);
+    }
     rpl_control_set_mrhof_parent_set_size(WS_MAX_PARENT_SET_COUNT);
     rpl_control_set_force_tunnel(true);
     if (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
@@ -3157,7 +3375,8 @@ static void ws_bootstrap_network_discovery_configure(protocol_interface_info_ent
     // Reset information to defaults
     cur->ws_info->network_pan_id = 0xffff;
 #ifdef FEATURE_TIMAC_SUPPORT
-    timacSetPanId(cur->ws_info->network_pan_id);
+    tr_info("bootstrap_network_discovery_configure: panID 0x%x",cur->ws_info->network_pan_id);
+    ws_bootstrap_set_MAC_panid(cur);
 #endif
 
     ws_common_regulatory_domain_config(cur, &cur->ws_info->hopping_schdule);
@@ -3168,14 +3387,27 @@ static void ws_bootstrap_network_discovery_configure(protocol_interface_info_ent
     ws_llc_set_network_name(cur, (uint8_t *)cur->ws_info->cfg->gen.network_name, strlen(cur->ws_info->cfg->gen.network_name));
 }
 
-
 static void ws_bootstrap_advertise_start(protocol_interface_info_entry_t *cur)
 {
+    if  ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) &&
+          (disable_pa_pc_after_join ==1) )
+    {
+        /* for node, only start the PA/or PC when receiving solicitation */
+        return;
+    }
+
     cur->ws_info->trickle_pa_running = true;
+    cur->ws_info->trickle_pan_advertisement.num_tx = 0;
     trickle_start(&cur->ws_info->trickle_pan_advertisement, &cur->ws_info->trickle_params_pan_discovery);
-    cur->ws_info->trickle_pc_running = true;
-    cur->ws_info->trickle_pc_consistency_block_period = 0;
-    trickle_start(&cur->ws_info->trickle_pan_config, &cur->ws_info->trickle_params_pan_discovery);
+
+    if (enableVPIE == 0)
+    {
+        cur->ws_info->trickle_pc_running = true;
+        cur->ws_info->trickle_pc_consistency_block_period = 0;
+
+        cur->ws_info->trickle_pan_config.num_tx = 0;
+        trickle_start(&cur->ws_info->trickle_pan_config, &cur->ws_info->trickle_params_pan_discovery);
+    }
 }
 
 static void ws_bootstrap_pan_version_increment(protocol_interface_info_entry_t *cur)
@@ -3188,12 +3420,19 @@ static void ws_bootstrap_pan_version_increment(protocol_interface_info_entry_t *
 static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
 {
     tr_debug("router discovery start");
-#ifndef FEATURE_MBED_NO_AUTH
-    // Remove network keys from MAC
-    ws_pae_controller_nw_keys_remove(cur);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+        // Remove network keys from MAC
+        ws_pae_controller_nw_keys_remove(cur);
+    }
 #endif
     // Start PAN ID list clear timeout timer
     panid_list_clear_timeout_counter = panid_list_clear_timeout_sec;
+    if (panid_list_clear_timeout_counter == 0)
+    {
+         panid_list_clear_timeout_counter = panid_list_clear_timeout_sec;
+    }
+
     ws_bootstrap_state_change(cur, ER_ACTIVE_SCAN);
     cur->nwk_nd_re_scan_count = 0;
     cur->ws_info->configuration_learned = false;
@@ -3205,9 +3444,11 @@ static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
 
     // Clear RPL information
     rpl_control_free_domain_instances_from_interface(cur);
-#ifndef FEATURE_MBED_NO_AUTH
-    // Clear EAPOL relay address
-    ws_eapol_relay_delete(cur);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        // Clear EAPOL relay address
+        ws_eapol_relay_delete(cur);
+    }
 #endif
     // Clear ip stack from old information
     ws_bootstrap_ip_stack_reset(cur);
@@ -3222,6 +3463,9 @@ static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
     }
 
     // Start advertisement solicit trickle and calculate when we are checking the status
+    if (ti_wisun_config.rapid_join) {
+        cur->ws_info->trickle_params_pan_discovery.Imin = 60;
+    }
     cur->ws_info->trickle_pas_running = true;
     if (cur->ws_info->trickle_pan_advertisement_solicit.I != cur->ws_info->trickle_params_pan_discovery.Imin) {
         // Trickle not reseted so starting a new interval
@@ -3243,7 +3487,12 @@ static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
     if (time_to_solicit > 0xffff) {
         time_to_solicit = 0xffff;
     }
-    cur->bootsrap_state_machine_cnt = time_to_solicit;
+    if (ti_wisun_config.rapid_join) {
+        // Speed up discovery start delay
+        cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(1, 10);
+    } else {
+        cur->bootsrap_state_machine_cnt = time_to_solicit;
+    }
 
     tr_info("Making parent selection in %u s", (cur->bootsrap_state_machine_cnt / 10));
 }
@@ -3251,23 +3500,35 @@ static void ws_bootstrap_start_discovery(protocol_interface_info_entry_t *cur)
 // Start authentication
 static void ws_bootstrap_start_authentication(protocol_interface_info_entry_t *cur)
 {
-#ifndef FEATURE_MBED_NO_AUTH
-    // Set PAN ID and network name to controller
-    ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
 
-    ws_pae_controller_authenticate(cur);
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        // Set PAN ID and network name to controller
+        ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
+#if defined(PRESHARED_KEY_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+        if (ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+            // nw_info_set clears the keys, so it needs to be updated again
+            ws_pae_controller_gtk_update(cur->id, ti_wisun_config.fixed_gtk_keys);
+        }
+#endif
+        ws_pae_controller_authenticate(cur);
+    }
 #endif
 }
 
 static void ws_bootstrap_mac_security_enable(protocol_interface_info_entry_t *cur)
 {
-#ifdef FEATURE_MBED_NO_AUTH
-    mac_helper_default_security_level_set(cur, AES_NO_SECURITY);
-    mac_helper_default_security_key_id_mode_set(cur, MAC_KEY_ID_MODE_IMPLICIT);
-#else
-    mac_helper_default_security_level_set(cur, AES_SECURITY_LEVEL_ENC_MIC64);
-    mac_helper_default_security_key_id_mode_set(cur, MAC_KEY_ID_MODE_IDX);
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == NO_AUTH) {
+        mac_helper_default_security_level_set(cur, AES_NO_SECURITY);
+        mac_helper_default_security_key_id_mode_set(cur, MAC_KEY_ID_MODE_IMPLICIT);
+    } else
 #endif
+    {
+        mac_helper_default_security_level_set(cur, AES_SECURITY_LEVEL_ENC_MIC64);
+        mac_helper_default_security_key_id_mode_set(cur, MAC_KEY_ID_MODE_IDX);
+    }
+
 }
 
 static void ws_bootstrap_nw_key_set(protocol_interface_info_entry_t *cur, uint8_t slot, uint8_t index, uint8_t *key)
@@ -3344,8 +3605,19 @@ static void ws_bootstrap_authentication_completed(protocol_interface_info_entry_
         if (target_eui_64) {
             // Authentication was made contacting the authenticator
             cur->ws_info->authentication_time = cur->ws_info->uptime;
+#ifdef FEATURE_FHNT_CONTROL
+            FHAPI_status status = FHNT_restoreTableEntry(FHNT_TABLE_TYPE_JOIN, target_eui_64);
+            tr_warn("FHNT ns: auth_complete restore target: %s | status: %d", trace_array(target_eui_64, 8), status);
+            ns_list_foreach_safe(parent_info_t, entry, &cur->ws_info->parent_list_reserved) {
+                if (entry->pan_id == cur->ws_info->network_pan_id) {
+                    FHAPI_status status = FHNT_restoreTableEntry(FHNT_TABLE_TYPE_JOIN, entry->addr);
+                    tr_warn("FHNT ns: auth_complete restore: %s | status: %d", trace_array(entry->addr, 8), status);
+                }
+            }
+#endif
         }
         ws_bootstrap_event_configuration_start(cur);
+        return;
     } else if (result == AUTH_RESULT_ERR_TX_ERR) {
         // eapol parent selected is not working
         tr_debug("authentication TX failed");
@@ -3368,6 +3640,10 @@ static void ws_bootstrap_authentication_completed(protocol_interface_info_entry_
         trickle_inconsistent_heard(&cur->ws_info->trickle_pan_advertisement_solicit, &cur->ws_info->trickle_params_pan_discovery);
         ws_bootstrap_event_discovery_start(cur);
     }
+#ifdef FEATURE_FHNT_CONTROL
+    FHAPI_status status = FHNT_deleteTableEntry(FHNT_TABLE_TYPE_JOIN, target_eui_64);
+    tr_warn("FHNT ns: auth_complete delete: %s | status: %d", trace_array(target_eui_64, 8), status);
+#endif
 }
 
 static const uint8_t *ws_bootstrap_authentication_next_target(protocol_interface_info_entry_t *cur, const uint8_t *previous_eui_64, uint16_t *pan_id)
@@ -3441,10 +3717,18 @@ static bool ws_bootstrap_eapol_congestion_get(protocol_interface_info_entry_t *c
       * 1000k:  (1000k / 50k) * 2 + 1 = 41
       * 2000k:  (2000k / 50k) * 2 + 1 = 50 (upper limit)
       */
-    active_max = (heap_size / 50000) * 2 + 1;
 
-    if (active_max > 50) {
-        active_max = 50;
+#if defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+        active_max = 15; // Custom eui auth has low memory requirements. More simultaneous connections allowed.
+    } else
+#endif
+    {
+        active_max = (heap_size / 50000) * 2 + 1;
+
+        if (active_max > 50) {
+            active_max = 50;
+        }
     }
 
     // Read the values for adaptation and LLC queues
@@ -3703,6 +3987,22 @@ static void ws_bootstrap_pan_advert(protocol_interface_info_entry_t *cur)
 
     ws_stats_update(cur, STATS_WS_ASYNCH_TX_PA, 1);
     ws_llc_asynch_request(cur, &async_req);
+
+    if  ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) &&
+          (disable_pa_pc_after_join ==1) )
+    {
+        /* update the num_tx count */
+        cur->ws_info->trickle_pan_advertisement.num_tx +=1;
+
+        /* if the num_tx creates than MAX_limit,
+         * stop the timer
+         */
+        if (cur->ws_info->trickle_pan_advertisement.num_tx >= MAX_NUM_PA )
+        {
+            cur->ws_info->trickle_pa_running = false;
+        }
+    }
+
 }
 
 static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
@@ -3716,8 +4016,10 @@ static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
     async_req.wp_requested_nested_ie_list.us_ie = true;
     async_req.wp_requested_nested_ie_list.bs_ie = true;
     async_req.wp_requested_nested_ie_list.pan_version_ie = true;
-#ifndef FEATURE_MBED_NO_AUTH
-    async_req.wp_requested_nested_ie_list.gtkhash_ie = true;
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+        async_req.wp_requested_nested_ie_list.gtkhash_ie = true;
+    }
 #endif
     async_req.wp_requested_nested_ie_list.vp_ie = true;
 
@@ -3734,6 +4036,22 @@ static void ws_bootstrap_pan_config(protocol_interface_info_entry_t *cur)
 
     ws_stats_update(cur, STATS_WS_ASYNCH_TX_PC, 1);
     ws_llc_asynch_request(cur, &async_req);
+
+    if ( (cur->bootsrap_mode != ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) &&
+         (disable_pa_pc_after_join ==1) )
+    {
+        /* update the num_tx count */
+        cur->ws_info->trickle_pan_config.num_tx += 1;
+
+        /* if the num_tx creates than MAX_limit,
+         * stop the timer
+         */
+        if (cur->ws_info->trickle_pan_config.num_tx >= MAX_NUM_PC )
+        {
+            cur->ws_info->trickle_pc_running = false;
+        }
+    }
+
 }
 
 static int8_t ws_bootstrap_backbone_ip_addr_get(protocol_interface_info_entry_t *interface_ptr, uint8_t *address)
@@ -3747,6 +4065,8 @@ static int8_t ws_bootstrap_backbone_ip_addr_get(protocol_interface_info_entry_t 
 
     return -1;
 }
+
+
 
 
 static void ws_bootstrap_event_handler(arm_event_s *event)
@@ -3799,9 +4119,12 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
                 ws_nud_table_reset(cur);
                 ws_bootstrap_neighbor_list_clean(cur);
                 ws_bootstrap_ip_stack_reset(cur);
-#ifndef FEATURE_MBED_NO_AUTH
-                ws_pae_controller_auth_init(cur);
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+                if (ti_wisun_config.auth_type != NO_AUTH) {
+                    ws_pae_controller_auth_init(cur);
+                }
 #endif
+
                 if (cur->ws_info->cfg->gen.network_pan_id == 0xffff) {
                     cur->ws_info->network_pan_id = randLIB_get_random_in_range(0, 0xfffd);
                 } else {
@@ -3816,10 +4139,14 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
                 cur->ws_info->pan_information.rpl_routing_method = true;
                 cur->ws_info->pan_information.use_parent_bs = true;
                 cur->ws_info->pan_information.version = WS_FAN_VERSION_1_0;
-#ifndef FEATURE_MBED_NO_AUTH
-                uint8_t *gtkhash = ws_pae_controller_gtk_hash_ptr_get(cur);
-                ws_llc_set_gtkhash(cur, gtkhash);
+
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+                if (ti_wisun_config.auth_type != NO_AUTH) {
+                    uint8_t *gtkhash = ws_pae_controller_gtk_hash_ptr_get(cur);
+                    ws_llc_set_gtkhash(cur, gtkhash);
+                }
 #endif
+
                 ws_bbr_pan_version_increase(cur);
 
                 // Set default parameters for FHSS when starting a discovery
@@ -3830,24 +4157,31 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
 
                 uint8_t ll_addr[16];
                 addr_interface_get_ll_address(cur, ll_addr, 1);
-#ifndef FEATURE_MBED_NO_AUTH
-                //SET EAPOL authenticator EUI64
-                ws_pae_controller_border_router_addr_write(cur, cur->mac);
 
-                // Set EAPOL relay to port 10255 and authenticator relay to 10253 (and to own ll address)
-                ws_eapol_relay_start(cur, BR_EAPOL_RELAY_SOCKET_PORT, ll_addr, EAPOL_RELAY_SOCKET_PORT);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+                if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                    //SET EAPOL authenticator EUI64
+                    ws_pae_controller_border_router_addr_write(cur, cur->mac);
 
-                // Set authenticator relay to port 10253 and PAE to 10254 (and to own ll address)
-                ws_eapol_auth_relay_start(cur, EAPOL_RELAY_SOCKET_PORT, ll_addr, PAE_AUTH_SOCKET_PORT);
+                    // Set EAPOL relay to port 10255 and authenticator relay to 10253 (and to own ll address)
+                    ws_eapol_relay_start(cur, BR_EAPOL_RELAY_SOCKET_PORT, ll_addr, EAPOL_RELAY_SOCKET_PORT);
 
-                // Set PAN ID and network name to controller
-                ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
+                    // Set authenticator relay to port 10253 and PAE to 10254 (and to own ll address)
+                    ws_eapol_auth_relay_start(cur, EAPOL_RELAY_SOCKET_PORT, ll_addr, PAE_AUTH_SOCKET_PORT);
 
-                // Set backbone IP address get callback
-                ws_pae_controller_auth_cb_register(cur, ws_bootstrap_backbone_ip_addr_get);
+                    // Set PAN ID and network name to controller
+                    ws_pae_controller_nw_info_set(cur, cur->ws_info->network_pan_id, cur->ws_info->pan_information.pan_version, cur->ws_info->cfg->gen.network_name);
 
-                // Set PAE port to 10254 and authenticator relay to 10253 (and to own ll address)
-                ws_pae_controller_authenticator_start(cur, PAE_AUTH_SOCKET_PORT, ll_addr, EAPOL_RELAY_SOCKET_PORT);
+                    // Set backbone IP address get callback
+                    ws_pae_controller_auth_cb_register(cur, ws_bootstrap_backbone_ip_addr_get);
+                }
+#endif
+
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+                if (ti_wisun_config.auth_type != NO_AUTH) {
+                    // Set PAE port to 10254 and authenticator relay to 10253 (and to own ll address)
+                    ws_pae_controller_authenticator_start(cur, PAE_AUTH_SOCKET_PORT, ll_addr, EAPOL_RELAY_SOCKET_PORT);
+                }
 #endif
 
                 // Initialize eapol congestion tracking
@@ -3863,10 +4197,29 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
                 ws_bootstrap_configure_csma_ca_backoffs(cur, WS_MAX_CSMA_BACKOFFS, WS_MAC_MIN_BE, WS_MAC_MAX_BE);
 
                 ws_bootstrap_event_operation_start(cur);
+#ifdef FEATURE_TIMAC_SUPPORT
+                // notify the MAC, joined network yet
+                timac_BootstrapCallback(5);
+                // start the MAC MPL test packet
+                // timac_set_mpl_test(1);
+#endif
                 break;
             }
-#ifndef FEATURE_MBED_NO_AUTH
-            ws_pae_controller_supp_init(cur);
+
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type != NO_AUTH) {
+                ws_pae_controller_supp_init(cur);
+
+#if defined(PRESHARED_KEY_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+                if (ti_wisun_config.auth_type == PRESHARED_KEY_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+                    // Keys are added at this stage to enable use of hard coded keys for link local connections
+                    // before joining network
+                    ws_pae_controller_gtk_update(cur->id, ti_wisun_config.fixed_gtk_keys);
+                    // Set to key index 0 (1 in MAC) early to handle link-local frames before bootstrap
+                    ws_pae_controller_nw_key_index_update(cur, 0);
+                }
+#endif
+            }
 #endif
             // Clear learned neighbours
             ws_bootstrap_neighbor_list_clean(cur);
@@ -3885,6 +4238,7 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
 
         case WS_CONFIGURATION_START:
             tr_info("Configuration start");
+            timac_BootstrapCallback(3);
             // Old configuration is considered invalid stopping all
             ws_bootstrap_asynch_trickle_stop(cur);
 
@@ -3917,10 +4271,11 @@ static void ws_bootstrap_event_handler(arm_event_s *event)
             tr_info("Routing ready");
             // stopped all to make sure we can enter here from any state
             ws_bootstrap_asynch_trickle_stop(cur);
-            
-#ifndef FEATURE_MBED_NO_AUTH
-            // Indicate PAE controller that bootstrap is ready
-            ws_pae_controller_bootstrap_done(cur);
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(MBED_LIBRARY)
+            if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH) {
+                // Indicate PAE controller that bootstrap is ready
+                ws_pae_controller_bootstrap_done(cur);
+            }
 #endif
             ws_bootstrap_advertise_start(cur);
             // Stop the PAN ID list timeout timer on bootstrap completion
@@ -3946,7 +4301,9 @@ static int8_t ws_bootstrap_neighbor_set(protocol_interface_info_entry_t *cur, pa
     // Add EAPOL neighbor
     cur->ws_info->network_pan_id = parent_ptr->pan_id;
 #ifdef FEATURE_TIMAC_SUPPORT
-    timacSetPanId(cur->ws_info->network_pan_id);
+    tr_info("bootstrap_neighbor_set selected Parent PanID (%d) Network PanID %d",
+            parent_ptr->pan_id, pan_id);
+    ws_bootstrap_set_MAC_panid(cur);
 #endif
     cur->ws_info->pan_information = parent_ptr->pan_information;
     cur->ws_info->pan_information.pan_version = 0; // This is learned from actual configuration
@@ -3956,7 +4313,7 @@ static int8_t ws_bootstrap_neighbor_set(protocol_interface_info_entry_t *cur, pa
         if (clear_list) {
             ws_bootstrap_neighbor_list_clean(cur);
         }
-        ws_bootstrap_fhss_activate(cur);
+        //ws_bootstrap_fhss_activate(cur);
     }
 
     llc_neighbour_req_t neighbor_info;
@@ -3985,6 +4342,10 @@ void ws_bootstrap_network_scan_process(protocol_interface_info_entry_t *cur)
 
 select_best_candidate:
     selected_parent_ptr = ws_bootstrap_candidate_parent_get_best(cur);
+    uint32_t random_start = cur->ws_info->trickle_params_pan_discovery.Imin + randLIB_get_random_in_range(0, cur->ws_info->trickle_params_pan_discovery.Imin);
+    if (random_start > 0xffff) {
+        random_start = 0xffff;
+    }
 
     if (!selected_parent_ptr) {
         // Configure LLC for network discovery
@@ -3994,12 +4355,12 @@ select_best_candidate:
         ws_bootstrap_fhss_activate(cur);
 #endif
         // Next check will be after one trickle
-        uint32_t random_start = cur->ws_info->trickle_params_pan_discovery.Imin + randLIB_get_random_in_range(0, cur->ws_info->trickle_params_pan_discovery.Imin);
-        if (random_start > 0xffff) {
-            random_start = 0xffff;
+        if (ti_wisun_config.rapid_join) {
+            // If parent not found, check for parent again more rapidly
+            cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(10, 20);
+        } else {
+            cur->bootsrap_state_machine_cnt = random_start;
         }
-        cur->bootsrap_state_machine_cnt = random_start;
-
         tr_info("Making parent selection in %u s", (cur->bootsrap_state_machine_cnt / 10));
         return;
     }
@@ -4008,12 +4369,42 @@ select_best_candidate:
     if (ws_bootstrap_neighbor_set(cur, selected_parent_ptr, false) < 0) {
         goto select_best_candidate;
     }
-#ifndef FEATURE_MBED_NO_AUTH
-    ws_pae_controller_set_target(cur, selected_parent_ptr->pan_id, selected_parent_ptr->addr); // temporary!!! store since auth
-    ws_bootstrap_event_authentication_start(cur);
-#else
-    ws_bootstrap_event_configuration_start(cur);
+
+    if (detectVPIE)
+    {   /* make sure the select the parent is from parent with VPIE */
+        if (selected_parent_ptr->pan_id != panID_in_VPIE )
+        {
+            ns_list_remove(&cur->ws_info->parent_list_reserved, selected_parent_ptr);
+            ns_list_add_to_end(&cur->ws_info->parent_list_free, selected_parent_ptr);
+            goto select_best_candidate;
+        }
+        if (ti_wisun_config.rapid_join) {
+            // If parent not found, check for parent again more rapidly
+            cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(10, 20);
+        } else {
+            cur->bootsrap_state_machine_cnt = random_start;
+        }
+        tr_info("Select Parent with VPIE PANID %u ", panID_in_VPIE);
+        return;
+    }
+
+#if !defined(NO_AUTH_ENABLE) || defined(MBED_LIBRARY)
+    if (ti_wisun_config.auth_type != NO_AUTH) {
+#if defined(DEFAULT_MBEDTLS_AUTH_ENABLE) || defined(CUSTOM_EUI_AUTH_ENABLE) || defined(MBED_LIBRARY)
+        if (ti_wisun_config.auth_type == DEFAULT_MBEDTLS_AUTH || ti_wisun_config.auth_type == CUSTOM_EUI_AUTH) {
+            ws_pae_controller_set_target(cur, selected_parent_ptr->pan_id, selected_parent_ptr->addr); // temporary!!! store since auth
+        }
 #endif
+        ws_bootstrap_event_authentication_start(cur);
+#ifdef FEATURE_FHNT_CONTROL
+        FHAPI_status status = FHNT_createTableEntry(FHNT_TABLE_TYPE_JOIN, selected_parent_ptr->addr);
+        tr_warn("FHNT ns: auth_start create: %s | status: %d", trace_array(selected_parent_ptr->addr, 8), status);
+#endif
+    } else
+#endif
+    {
+        ws_bootstrap_event_configuration_start(cur);
+    }
     return;
 }
 
@@ -4040,7 +4431,12 @@ void ws_bootstrap_rpl_wait_process(protocol_interface_info_entry_t *cur)
             rpl_control_transmit_dis(cur->rpl_domain, cur, 0, 0, NULL, 0, ADDR_LINK_LOCAL_ALL_RPL_NODES);
         }
         // set timer for next DIS
-        cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(WS_RPL_DIS_TIMEOUT / 2, WS_RPL_DIS_TIMEOUT);
+        if (ti_wisun_config.rapid_join) {
+            // Send DIS more rapidly
+            cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(50, 200); // 5-20 sec
+        } else {
+            cur->bootsrap_state_machine_cnt = randLIB_get_random_in_range(WS_RPL_DIS_TIMEOUT / 2, WS_RPL_DIS_TIMEOUT);
+        }
     }
     return;
 }
@@ -4104,13 +4500,36 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
             break;
         case ER_ACTIVE_SCAN:
             tr_debug("WS SM:Active Scan");
+
+#ifdef FEATURE_TIMAC_SUPPORT
+            // notify the MAC, not joined network yet
+            timac_BootstrapCallback(1);
+#endif
+
+#ifdef WISUN_TEST_METRICS
+            if (bootstrap_join_started == 0)
+            {   // first tme to start the Active Scan
+                bootstrap_join_started = 1;
+                num_of_joining++;
+                // record the bootstrap time
+                ts_bootstrap_discovery = ClockP_getSystemTicks(); //eventOS_event_timer_ticks();
+            }
+#endif
             ws_bootstrap_network_scan_process(cur);
             break;
         case ER_SCAN:
+#ifdef FEATURE_TIMAC_SUPPORT
+            // notify the MAC, not joined network yet
+            timac_BootstrapCallback(3);
+#endif
             tr_debug("WS SM:configuration Scan");
             ws_bootstrap_configure_process(cur);
             break;
         case ER_PANA_AUTH:
+#ifdef FEATURE_TIMAC_SUPPORT
+            // notify the MAC, not joined network yet
+            timac_BootstrapCallback(2);
+#endif
             tr_info("authentication start");
             // Advertisements stopped during the EAPOL
             ws_bootstrap_asynch_trickle_stop(cur);
@@ -4123,11 +4542,48 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
             ws_bootstrap_start_authentication(cur);
             break;
         case ER_RPL_SCAN:
+#ifdef FEATURE_TIMAC_SUPPORT
+            // notify the MAC, not joined network yet
+            timac_BootstrapCallback(4);
+#endif
             tr_debug("WS SM:Wait RPL to contact DODAG root");
             ws_bootstrap_rpl_wait_process(cur);
             break;
         case ER_BOOTSRAP_DONE:
             tr_debug("WS SM:Bootstrap Done");
+
+#ifdef FEATURE_TIMAC_SUPPORT
+            // notify the MAC, joined network yet
+            timac_BootstrapCallback(5);
+#endif
+
+#ifdef WISUN_TEST_METRICS
+            if (bootstrap_join_started == 1)
+            {   // first tme to start the Active Scan
+                bootstrap_join_started = 0;
+                // record the bootstrap time
+                ts_bootstrap_done = ClockP_getSystemTicks(); //eventOS_event_timer_ticks();
+                if (num_of_joined >= NUM_OF_JOIN_TIME)
+                    num_of_joined = 0;
+                node_join_time.joining_time[num_of_joined++] = ts_bootstrap_done - ts_bootstrap_discovery;
+            }
+#endif
+
+#ifdef WISUN_TEST_MPL_UDP
+            if (isUDPSetUp == 0)
+            {
+                // UDP set up is done only once after device joins network
+                isUDPSetUp = 1;
+                if (0 == add_multicast_addr(ADDR_MULTICAST_TEST))
+                {
+                    // Call function to setup UDP
+                    if(!udpSocketSetup())
+                    {
+                        tr_debug("WS SM:Failed to setup UDP Socket");
+                    }
+                }
+            }
+#endif
             // Bootstrap_done event to application
             nwk_bootsrap_state_update(ARM_NWK_BOOTSTRAP_READY, cur);
             break;
@@ -4143,13 +4599,36 @@ void ws_bootstrap_state_machine(protocol_interface_info_entry_t *cur)
 void ws_bootstrap_trickle_timer(protocol_interface_info_entry_t *cur, uint16_t ticks)
 {
 #ifndef WISUN_CERT_CONFIG
-    if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
-    {
-        cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin * 80;
-    }
-    else{
-        //cur->ws_info->trickle_params_pan_discovery.Imin = 120; //KV - Hardcoding Value for now
-        cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin;
+    if (ti_wisun_config.rapid_join) {
+        if (cur->ws_info->trickle_pas_running || cur->ws_info->trickle_pcs_running)
+        {
+            // Reduce rate/increase redundancy factor (k) for PAS/PCS to avoid flooding
+            cur->ws_info->trickle_params_pan_discovery.Imin = 60;  // 6 sec
+            cur->ws_info->trickle_params_pan_discovery.Imax = 120; // 12 sec
+            cur->ws_info->trickle_params_pan_discovery.k = 2;
+        }
+        else if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
+        {
+            // Increase responsiveness/rate of PA/PC. BRs will transmit PA/PC more frequently
+            // than RTs to encourage direct connection to BR for faster join time.
+            cur->ws_info->trickle_params_pan_discovery.Imin = 30;   // 3 sec
+            cur->ws_info->trickle_params_pan_discovery.Imax = 15*600;  // 15 min
+            if (cur->bootsrap_mode == ARM_NWK_BOOTSRAP_MODE_6LoWPAN_BORDER_ROUTER) {
+                cur->ws_info->trickle_params_pan_discovery.k = 5;
+            }
+            else {
+                cur->ws_info->trickle_params_pan_discovery.k = 2;
+            }
+        }
+    } else {
+        if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
+        {
+            cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin * 80;
+        }
+        else{
+            //cur->ws_info->trickle_params_pan_discovery.Imin = 120; //KV - Hardcoding Value for now
+            cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin;
+        }
     }
 #else
     if (cur->ws_info->trickle_pa_running || cur->ws_info->trickle_pc_running)
@@ -4158,7 +4637,6 @@ void ws_bootstrap_trickle_timer(protocol_interface_info_entry_t *cur, uint16_t t
         cur->ws_info->trickle_params_pan_discovery.Imin = 150;
     }
     else{
-        //cur->ws_info->trickle_params_pan_discovery.Imin = 120; //KV - Hardcoding Value for now
         cur->ws_info->trickle_params_pan_discovery.Imax = cur->ws_info->trickle_params_pan_discovery.Imin;
     }
 #endif
@@ -4247,6 +4725,10 @@ void ws_bootstrap_seconds_timer(protocol_interface_info_entry_t *cur, uint32_t s
             //Clear Timeout timer
             cur->ws_info->pan_timeout_timer = 0;
             tr_warn("Border router has timed out");
+#ifdef WISUN_TEST_METRICS
+            //Router detects the BR is offline
+            node_join_time.br_disconnect++;
+#endif
             ws_bootstrap_event_disconnect(cur, WS_FAST_DISCONNECT);
         }
     }
@@ -4271,12 +4753,16 @@ void ws_bootstrap_seconds_timer(protocol_interface_info_entry_t *cur, uint32_t s
     }
 
     if (panid_list_clear_timeout_counter) {
+        if (panid_list_clear_timeout_counter % 5 == 0) {
+            tr_info("PAN ID List clear timeout timer at %u sec", panid_list_clear_timeout_counter);
+        }
         if (panid_list_clear_timeout_counter > seconds) {
             panid_list_clear_timeout_counter -= seconds;
         } else {
             // Timeout reached, clear PAN ID filter list
             api_panid_filter_list_remove(PANID_ALLOW_LIST_E, 0, true);
             api_panid_filter_list_remove(PANID_DENY_LIST_E, 0, true);
+            tr_warn("PAN ID lists cleared by timeout.");
             panid_list_clear_timeout_counter = 0;
         }
     }
@@ -4566,19 +5052,11 @@ int nanostack_net_stack_restart(bool force_restart)
 
         //if we are here: either allow list or deny list is non empty AND
         //match was not found in allow list or match was found in deny list
-        retVal = ws_bootstrap_restart_delayed(cur->id);
-        if (retVal != 0)
-        {
-            return PANID_STACK_RESTART_FAILED;
-        }
+        ws_bootstrap_disconnect(cur, WS_FAST_DISCONNECT);
     }
     else //border router which has no pan id filtering logic
     {
-        retVal = ws_bootstrap_restart_delayed(cur->id);
-        if (retVal != 0)
-        {
-            return PANID_STACK_RESTART_FAILED;
-        }
+        ws_bootstrap_disconnect(cur, WS_FAST_DISCONNECT);
     }
     return PANID_STACK_RESTART_SUCCESS;
 }
@@ -4664,6 +5142,14 @@ int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
         else if(ptr_panid_list[i] == panid)
         {
             //already present
+            if(panid_list_type == PANID_ALLOW_LIST_E)
+            {
+                tr_info("PanID (%04x) is already in  Allow List",panid);
+            }
+            else
+            {
+                tr_info("PanID (%04x) is already in  Deny List",panid);
+            }
             return(PANID_FLTR_UPDATE_SUCCESS);
         }
     }
@@ -4671,12 +5157,33 @@ int api_panid_filter_list_add(panid_list_type_e panid_list_type, uint16_t panid)
     if(idx == -1)
     {
         //already full
+        if(panid_list_type == PANID_ALLOW_LIST_E)
+        {
+            tr_info("PanID Allow List is full");
+            tr_info("PanID Allow List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
+        else
+        {
+            tr_info("PanID Deny List is full");
+            tr_info("PanID Deny List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
         return(PANID_FLTR_UPDATE_NO_SPACE);
     }
     else
     {
         //insert the pan_id
         ptr_panid_list[idx] = panid;
+        if(panid_list_type == PANID_ALLOW_LIST_E)
+        {
+            tr_info("Add the PanID (%04x) to Allow List",panid);
+            tr_info("PanID Allow List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
+        else
+        {
+            tr_info("Add the PanID %04x to Deny List",panid);
+            tr_info("PanID Deny List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
+
         return(PANID_FLTR_UPDATE_SUCCESS);
     }
 }
@@ -4707,6 +5214,17 @@ int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t pan
         {
             ptr_panid_list[i] = PANID_UNUSED;
         }
+
+        if(panid_list_type == PANID_ALLOW_LIST_E)
+        {
+            tr_info("Purge the whole PanID Allow List");
+            tr_info("PanID Allow List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
+        else
+        {
+            tr_info("Purge the whole PanID Deny List");
+            tr_info("PanID Deny List %s", trace_array16(ptr_panid_list,panid_list_len));
+        }
         return(PANID_FLTR_UPDATE_SUCCESS);
     }
     else //individual entry update
@@ -4717,13 +5235,85 @@ int api_panid_filter_list_remove(panid_list_type_e panid_list_type, uint16_t pan
             {
                 //match found
                 ptr_panid_list[i] = PANID_UNUSED;
+
+                if(panid_list_type == PANID_ALLOW_LIST_E)
+                {
+                    tr_info("Remove PanID (%04x) from  PanID Allow List",panid);
+                    tr_info("PanID Allow List %s", trace_array16(ptr_panid_list,panid_list_len));
+                }
+                else
+                {
+                    tr_info("Remove PanID (%04x) from  PanID Deny List",panid);
+                    tr_info("PanID Deny List %s", trace_array16(ptr_panid_list,panid_list_len));
+                }
                 return(PANID_FLTR_UPDATE_SUCCESS);
             }
         }
 
+        if(panid_list_type == PANID_ALLOW_LIST_E)
+        {
+           tr_info("Remove PanID (%04x) not found in PanID Allow List",panid);
+        }
+        else
+        {
+           tr_info("Remove PanID (%04x) not found in PanID Deny List",panid);
+        }
         //traversed the list without finding a match
         return(PANID_FLTR_UPDATE_NO_MATCH);
     }
 }
 
+void ws_bootstrap_add_locallink(protocol_interface_info_entry_t *cur, const uint8_t *mac64)
+{
+    mac_neighbor_table_entry_t *pEntry;
+
+    pEntry = ws_bootstrap_mac_neighbor_add(cur,mac64);
+    if (pEntry != NULL)
+    {
+        // set other attributes
+        //pEntry->trusted_device   = false; //true;
+        pEntry->connected_device = true;
+    }
+    else
+    {
+        tr_error("Failed to allocate neighbor for add locallink");
+    }
+}
+
+void ws_bootstrap_configure_network_panid(protocol_interface_info_entry_t *cur,uint16_t panid )
+{
+    // set the PANID for local link test
+    cur->ws_info->network_pan_id = panid;
+
+#ifdef FEATURE_TIMAC_SUPPORT
+    tr_info("bootstrap_configure_network_panid (via VP-IE): panID %d",cur->ws_info->network_pan_id);
+    ws_bootstrap_set_MAC_panid(cur);
+    /* save this PAN ID */
+    panID_in_VPIE = panid;
+#endif
+}
+
+/*
+ * Return true if EUI is allowed to join BR PAN, false otherwise.
+ */
+#ifdef ENABLE_EAPOL_ALLOWLIST
+extern bool is_in_eapol_eui_allow_list(uint8_t *eui);
+#endif
+bool __attribute__((weak)) customAuthCheckAllowedJoin(uint8_t *eui)
+{
+    // Customer to override function.
+#ifdef ENABLE_EAPOL_ALLOWLIST
+    return is_in_eapol_eui_allow_list(eui);
+#else
+    return true;
+#endif
+}
+
+void ws_bootstrap_set_MAC_panid(protocol_interface_info_entry_t *cur)
+{
+    // set both Nanostack MAC and 15.4 MAC panID (using cur->ws_info->network_pan_id)
+    timacSetPanId(cur->ws_info->network_pan_id);
+    cur->mac_parameters->pan_id  = cur->ws_info->network_pan_id;
+
+}
 #endif //HAVE_WS

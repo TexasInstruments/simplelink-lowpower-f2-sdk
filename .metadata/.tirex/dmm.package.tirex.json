@@ -3,7 +3,7 @@
         "metadataVersion": "3.0.0",
         "id": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK_DMM_MODULE",
         "name": "TI Dynamic Multi-protocol Manager (DMM) Stack Core",
-        "version": "7.10.02.23",
+        "version": "7.40.00.77",
         "type": "software",
         "devices": [
             "CC13x1",
@@ -18,7 +18,7 @@
         "description": "CC13XX/CC26XX TI Dynamic Multi-protocol Manager (DMM) Stack",
         "moduleOf": {
             "packageId": "com.ti.SIMPLELINK_CC13XX_CC26XX_SDK",
-            "semver": "7.10.2"
+            "semver": "7.40.0"
         }
     }
 ]

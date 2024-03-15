@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2010-2023, Texas Instruments Incorporated
+ Copyright (c) 2010-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,6 @@
 #include <icall.h>
 /* This Header file contains all BLE API and icall structure definition */
 #include "icall_ble_api.h"
-
-#ifdef SYSCFG
-#include "ti_ble_config.h"
-#endif
 
 #include <ti/bleapp/profiles/data_stream/data_stream_profile.h>
 #include <ti/bleapp/services/data_stream/data_stream_server.h>

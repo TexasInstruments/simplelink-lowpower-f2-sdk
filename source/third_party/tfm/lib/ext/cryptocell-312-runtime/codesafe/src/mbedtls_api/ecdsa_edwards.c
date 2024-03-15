@@ -1,14 +1,10 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
+#include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_ECDSA_C)
 
@@ -95,9 +91,9 @@ int mbedtls_ecdsa_genkey_edwards( mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     }
 
-    grp = &ctx->grp;
-    d = &ctx->d;
-    Q = &ctx->Q;
+    grp = &ctx->MBEDTLS_PRIVATE(grp);
+    d = &ctx->MBEDTLS_PRIVATE(d);
+    Q = &ctx->MBEDTLS_PRIVATE(Q);
 
     pDomain = EcEdwGetDomain25519();
     if (NULL == pDomain)
@@ -139,13 +135,13 @@ int mbedtls_ecdsa_genkey_edwards( mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_
         ret =  error_mapping_cc_to_mbedtls_ecc(rc);
         goto END;
     }
-     ret = mbedtls_mpi_read_binary(&Q->Y, pPublicKey, CALC_FULL_BYTES(pDomain->ecModSizeInBits));
+     ret = mbedtls_mpi_read_binary(&Q->MBEDTLS_PRIVATE(Y), pPublicKey, CALC_FULL_BYTES(pDomain->ecModSizeInBits));
     if (ret != 0)
     {
          CC_PAL_LOG_ERR("Error - failed to allocate memory for Q->Y\n");
         goto END;
     }
-    Q->Y.s = 1; /*unsigned*/
+    Q->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
     ret = mbedtls_mpi_read_binary(d, pPrivKey, CALC_FULL_BYTES(2*pDomain->ecModSizeInBits));
     if (ret != 0)
@@ -153,7 +149,7 @@ int mbedtls_ecdsa_genkey_edwards( mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_
          CC_PAL_LOG_ERR("Error - failed to allocate memory for Q->Y\n");
         goto END;
     }
-    d->s = 1; /*unsigned*/
+    d->MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
 
     /* Set the group curve order used by sign & verify functions */
@@ -299,7 +295,7 @@ int mbedtls_ecdsa_verify_edwards(mbedtls_ecp_group *grp, const unsigned char *bu
 
     /* Only the Y coordinate is required */
     pub_key_size = order_size;
-    ret = ecdsa_export_mpi_to_buff( &Q->Y, &pub_key_size, pub_key_buf, order_size );
+    ret = ecdsa_export_mpi_to_buff( &Q->MBEDTLS_PRIVATE(Y), &pub_key_size, pub_key_buf, order_size );
     if ((ret != 0) ||
         (pub_key_size != order_size))
     {
@@ -375,13 +371,13 @@ int mbedtls_ecdsa_public_key_read_edwards( mbedtls_ecp_point *Q,
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     }
 
-    ret = mbedtls_mpi_read_binary(&Q->Y, buf, blen);
+    ret = mbedtls_mpi_read_binary(&Q->MBEDTLS_PRIVATE(Y), buf, blen);
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for Q->Y\n");
         return ret;
     }
-    Q->Y.s = 1; /*unsigned*/
+    Q->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
     return CC_OK;
 
@@ -411,7 +407,7 @@ int mbedtls_ecdsa_public_key_write_edwards( const mbedtls_ecp_point *Q,
     {
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     }
-    ret = ecdsa_export_mpi_to_buff(&Q->Y, olen, buf, keySize);
+    ret = ecdsa_export_mpi_to_buff(&Q->MBEDTLS_PRIVATE(Y), olen, buf, keySize);
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for Q->Y\n");

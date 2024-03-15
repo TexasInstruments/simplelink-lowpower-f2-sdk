@@ -173,13 +173,14 @@ logger_cli = typer.Typer(chain=True, result_callback=logger_cli_finalizer)
 @logger_cli.callback(invoke_without_command=False)
 def logger_cli_options(
     ctx: typer.Context,
-    elf: List[Path] = typer.Option([], help="Symbol file paths (elf/out file) shared by all input parsers"),
+    elf: List[Path] = typer.Option([], help="Symbol file path (elf/out file) shared by all input parsers"),
 ):
-    r"""Parse Log.h + LogSinkITM logs
+    r"""Parse LogSinkITM and LogSinkUART log output.
 
     This tool may be used to instantiate a serial port parser for the ITM
-    protocol and DOBBY overlay used to encode log strings and meta information
-    inside the toolchain-generated ELF output.
+    and UART Log Sinks. The tool receives logs generated with the Log.h API and
+    reconstructs and displays the log output by using the encoded metadata in the
+    toolchain-generated ELF output.
 
     A simple invocation (provided Wireshark is installed) is
 

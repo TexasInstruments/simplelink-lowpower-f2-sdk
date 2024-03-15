@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@
 #include <third_party/tfm/interface/include/tfm_api.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 #include "ti_drivers_config.h"                                  /* Sysconfig generated header */
@@ -64,7 +64,7 @@ typedef struct
 static AESECB_s_Operation AESECB_s_operation;
 
 /*
- * ========= AES ECB Secure Dynamic Instance struct =========
+ * AES ECB Secure Dynamic Instance struct.
  */
 typedef struct
 {
@@ -184,7 +184,7 @@ static inline psa_status_t AESECB_s_copyConfig(AESECB_Config **secureConfig,
             }
 
             /* Copy config to secure memory */
-            (void)tfm_memcpy(config_s, config, sizeof(dynInstance_s->config));
+            (void)spm_memcpy(config_s, config, sizeof(dynInstance_s->config));
 
             /* Validate object address range */
             if (cmse_has_unpriv_nonsecure_read_access(config_s->object, sizeof(dynInstance_s->object)) == NULL)
@@ -193,7 +193,7 @@ static inline psa_status_t AESECB_s_copyConfig(AESECB_Config **secureConfig,
             }
 
             /* Copy object to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
+            (void)spm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
             config_s->object = &dynInstance_s->object;
 
             /* Validate HW attributes address range */
@@ -204,7 +204,7 @@ static inline psa_status_t AESECB_s_copyConfig(AESECB_Config **secureConfig,
             }
 
             /* Copy HW attributes to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
+            (void)spm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
             config_s->hwAttrs = &dynInstance_s->hwAttrs;
 
             *secureConfig = config_s;
@@ -263,7 +263,7 @@ static inline psa_status_t AESECB_s_copyOperation(AESECB_Operation *secureOperat
     }
 
     /* Make a secure copy of the operation struct */
-    (void)tfm_memcpy(secureOperation, operation, sizeof(AESECB_Operation));
+    (void)spm_memcpy(secureOperation, operation, sizeof(AESECB_Operation));
 
     /*
      * Crypto key member of the AESECB_Operation is used for one-step operations
@@ -281,7 +281,7 @@ static inline psa_status_t AESECB_s_copyOperation(AESECB_Operation *secureOperat
          * Make a secure copy of the key struct and update the operation
          * struct to point to the secure key copy.
          */
-        (void)tfm_memcpy(secureKey, secureOperation->key, sizeof(CryptoKey));
+        (void)spm_memcpy(secureKey, secureOperation->key, sizeof(CryptoKey));
 
         if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
         {
@@ -323,7 +323,7 @@ static psa_status_t AESECB_s_copyParams(AESECB_Params *secureParams, const AESEC
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    (void)tfm_memcpy(secureParams, params, sizeof(AESECB_Params));
+    (void)spm_memcpy(secureParams, params, sizeof(AESECB_Params));
 
     /* Validate the return behavior */
     if ((secureParams->returnBehavior == AESECB_RETURN_BEHAVIOR_CALLBACK) ||
@@ -704,7 +704,7 @@ static inline psa_status_t AESECB_s_setupOperation(psa_msg_t *msg, int32_t msgTy
         }
 
         /* Copy key to secure memory */
-        (void)tfm_memcpy(&key_s, setupMsg.key, sizeof(CryptoKey));
+        (void)spm_memcpy(&key_s, setupMsg.key, sizeof(CryptoKey));
 
         if (CryptoKey_verifySecureInputKey(&key_s) != CryptoKey_STATUS_SUCCESS)
         {

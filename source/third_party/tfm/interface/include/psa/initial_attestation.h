@@ -1,16 +1,9 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
-
-/***************************************************************************/
-/*                             DRAFT UNDER REVIEW                          */
-/*   These APIs are still evolving and are meant as a prototype for review.*/
-/*   The APIs will change depending on feedback and will be firmed up      */
-/*   to a stable set of APIs once all the feedback has been considered.    */
-/***************************************************************************/
 
 #ifndef __PSA_INITIAL_ATTESTATION_H__
 #define __PSA_INITIAL_ATTESTATION_H__
@@ -46,7 +39,7 @@ extern "C" {
  * attestation service. Used to configure buffers for services that verify the
  * produced tokens.
  */
-#define PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE (0x400)
+#define PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE (0x800)
 
 /**
  * The list of fixed claims in the initial attestation token is still evolving,
@@ -115,11 +108,11 @@ extern "C" {
  *                 represents non-secure caller, positive numbers represents
  *                 secure callers, zero is invalid.
  *
- *  - HW version:  Optional claim. Globally unique number in EAN-13 format
- *                 identifying the GDSII that went to fabrication, HW and ROM.
- *                 It can be used to reference the security level of the PSA-ROT
- *                 via a certification website. Custom claim with a value is
- *                 encoded as text string.
+ *  - Certification Reference: Optional claim. Globally unique number in EAN-13
+ *                 format identifying the GDSII that went to fabrication, HW and
+ *                 ROM. It can be used to reference the security level of the
+ *                 PSA-ROTvia a certification website. Custom claim with a value
+ *                 is encoded as text string.
 
  *  - Boot seed:   It represents a random value created at system boot time that
  *                 will allow differentiation of reports from different system
@@ -200,26 +193,6 @@ psa_initial_attest_get_token(const uint8_t *auth_challenge,
 psa_status_t
 psa_initial_attest_get_token_size(size_t  challenge_size,
                                   size_t *token_size);
-
-/**
- * \brief Get the initial attestation public key.
- *
- * \param[out]  public_key        Pointer to the buffer where the public key
- *                                will be stored.
- * \param[in]   key_buf_size      Size of allocated buffer for key, in bytes.
- * \param[out]  public_key_len    Size of public key in bytes.
- * \param[out]  public_key_curve  Type of the elliptic curve which the key
- *                                belongs to.
- *
- * \note Currently only the ECDSA P-256 over SHA-256 algorithm is supported.
- *
- * \return Returns error code as specified in \ref psa_status_t
- */
-psa_status_t
-tfm_initial_attest_get_public_key(uint8_t         *public_key,
-                                  size_t           public_key_buf_size,
-                                  size_t          *public_key_len,
-                                  psa_ecc_curve_t *elliptic_curve_type);
 
 #ifdef __cplusplus
 }

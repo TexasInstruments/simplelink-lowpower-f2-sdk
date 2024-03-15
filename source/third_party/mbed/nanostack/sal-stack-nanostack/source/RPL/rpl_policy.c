@@ -28,6 +28,7 @@
 #include "Service_Libs/etx/etx.h"
 #include "Common_Protocols/ipv6_resolution.h"
 #include "ipv6_stack/ipv6_routing_table.h"
+#include "6LoWPAN/ws/ws_config.h"
 
 #include "RPL/rpl_objective.h"
 #include "RPL/rpl_policy.h"
@@ -272,8 +273,7 @@ uint16_t rpl_policy_modify_downward_cost_to_root_neighbour(rpl_domain_t *domain,
 uint16_t rpl_policy_parent_selection_period(rpl_domain_t *domain)
 {
     (void)domain;
-
-    return (10 * 60); /* seconds */
+    return WS_RPL_PARENT_SELECTION_PERIOD; /* seconds */
 }
 
 uint16_t rpl_policy_etx_hysteresis(rpl_domain_t *domain)

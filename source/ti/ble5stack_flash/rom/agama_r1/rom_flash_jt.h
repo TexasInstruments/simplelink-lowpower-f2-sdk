@@ -34,7 +34,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -162,7 +162,7 @@ extern uint32 RAM_BASE_ADDR[];
 // <<INSERT_DATA:&>>
 #define sizeInfo                                        (*(sizeInfo_t *)                                                                                                                               ROM_BLE_JT_OFFSET(7))
 // <<INSERT_DATA:&>>
-#define wlSize                                          (*(wlSize_t  *)                                                                                                                                ROM_BLE_JT_OFFSET(8))
+#define alSize                                          (*(alSize_t  *)                                                                                                                                ROM_BLE_JT_OFFSET(8))
 // <<INSERT_DATA:&>>
 #define rlSize                                          (*(rlSize_t *)                                                                                                                                 ROM_BLE_JT_OFFSET(9))
 // <<INSERT:#ifdef HOST_CONFIG>>
@@ -283,10 +283,10 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_LE_WriteRfPathCompCmd                       ((llStatus_t                (*) (int8, int8))                                                                                                  ROM_BLE_JT_OFFSET(105))
 // LL Bluetooth
 #define MAP_LL_AE_RegCBack                              ((llStatus_t                (*) (uint8, void *))                                                                                               ROM_BLE_JT_OFFSET(106))
-#define MAP_LL_AddWhiteListDevice                        ((uint8                    (*) (uint8 *, uint8))                                                                                              ROM_BLE_JT_OFFSET(107))
+#define MAP_LL_AddAcceptListDevice                       ((uint8                    (*) (uint8 *, uint8))                                                                                              ROM_BLE_JT_OFFSET(107))
 #define MAP_LL_AuthPayloadTimeoutExpiredCback            ((void                     (*) (uint16))                                                                                                      ROM_BLE_JT_OFFSET(108))
 #define MAP_LL_ChanMapUpdate                             ((uint8                    (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(109))
-#define MAP_LL_ClearWhiteList                            ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(110))
+#define MAP_LL_ClearAcceptList                           ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(110))
 #define MAP_LL_ConnActive                                ((uint8                    (*) (uint16))                                                                                                      ROM_BLE_JT_OFFSET(111))
 #define MAP_LL_ConnParamUpdateCback                      ((void                     (*) (uint8, uint16, uint16, uint16, uint16))                                                                       ROM_BLE_JT_OFFSET(112))
 #define MAP_LL_ConnUpdate                                ((uint8                    (*) (uint16, uint16, uint16, uint16, uint16, uint16, uint16))                                                      ROM_BLE_JT_OFFSET(113))
@@ -335,11 +335,11 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_LL_ReadRssi                                  ((uint8                    (*) (uint16, int8 *))                                                                                              ROM_BLE_JT_OFFSET(150))
 #define MAP_LL_ReadSupportedStates                       ((uint8                    (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(151))
 #define MAP_LL_ReadTxPowerLevel                          ((uint8                    (*) (uint8, uint8, int8 *))                                                                                        ROM_BLE_JT_OFFSET(152))
-#define MAP_LL_ReadWlSize                                ((uint8                    (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(153))
+#define MAP_LL_ReadalSize                                ((uint8                    (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(153))
 #define MAP_LL_RemoteConnParamReqReply                   ((uint8                    (*) (uint16, uint16, uint16, uint16, uint16, uint16, uint16))                                                      ROM_BLE_JT_OFFSET(154))
 #define MAP_LL_RemoteConnParamReqNegReply                ((uint8                    (*) (uint16, uint8))                                                                                               ROM_BLE_JT_OFFSET(155))
 #define MAP_LL_RemoteConnParamReqCback                   ((void                     (*) (uint16, uint16, uint16, uint16, uint16))                                                                      ROM_BLE_JT_OFFSET(156))
-#define MAP_LL_RemoveWhiteListDevice                     ((uint8                    (*) (uint8 *, uint8))                                                                                              ROM_BLE_JT_OFFSET(157))
+#define MAP_LL_RemoveAcceptListDevice                    ((uint8                    (*) (uint8 *, uint8))                                                                                              ROM_BLE_JT_OFFSET(157))
 #define MAP_LL_Reset                                     ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(158))
 // <<INSERT:#if (CTRL_CONFIG & (ADV_CONN_CFG | INIT_CFG))>>
 #define MAP_LL_RxDataCompleteCback                       ((void                     (*) (uint16, uint8 *, uint8, uint8, int8))                                                                         ROM_BLE_JT_OFFSET(159))
@@ -431,19 +431,19 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_LL_EXT_SetMaxDtmTxPower                      ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(216))
 #define MAP_LL_EXT_SetRxGain                             ((uint8                    (*) (uint8, uint8 *))                                                                                              ROM_BLE_JT_OFFSET(217))
 #define MAP_LL_EXT_SetSCA                                ((uint8                    (*) (uint16))                                                                                                      ROM_BLE_JT_OFFSET(218))
-#define MAP_LL_EXT_SetSlaveLatencyOverride               ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(219))
+#define MAP_LL_EXT_SetPeripheralLatencyOverride          ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(219))
 #define MAP_LL_EXT_SetTxPower                            ((uint8                    (*) (uint8, uint8 *))                                                                                              ROM_BLE_JT_OFFSET(220))
-// LL White List
-#define MAP_WL_AddEntry                                  ((uint8                    (*) (wlTable_t *, uint8 *, uint8, uint8))                                                                          ROM_BLE_JT_OFFSET(221))
-#define MAP_WL_Clear                                     ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(222))
-#define MAP_WL_ClearEntry                                ((void                     (*) (wlEntry_t *))                                                                                                 ROM_BLE_JT_OFFSET(223))
-#define MAP_WL_ClearIgnoreList                           ((uint8                    (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(224))
-#define MAP_WL_FindEntry                                 ((uint8                    (*) (wlTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(225))
-#define MAP_WL_GetNumFreeEntries                         ((uint8                    (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(226))
-#define MAP_WL_GetSize                                   ((uint8                    (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(227))
-#define MAP_WL_Init                                      ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(228))
-#define MAP_WL_RemoveEntry                               ((uint8                    (*) (wlTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(229))
-#define MAP_WL_SetWlIgnore                               ((llStatus_t               (*) (wlTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(230))
+// LL Accept List
+#define MAP_AL_AddEntry                                  ((uint8                    (*) (alTable_t *, uint8 *, uint8, uint8))                                                                          ROM_BLE_JT_OFFSET(221))
+#define MAP_AL_Clear                                     ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(222))
+#define MAP_AL_ClearEntry                                ((void                     (*) (alEntry_t *))                                                                                                 ROM_BLE_JT_OFFSET(223))
+#define MAP_AL_ClearIgnoreList                           ((uint8                    (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(224))
+#define MAP_AL_FindEntry                                 ((uint8                    (*) (alTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(225))
+#define MAP_AL_GetNumFreeEntries                         ((uint8                    (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(226))
+#define MAP_AL_GetSize                                   ((uint8                    (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(227))
+#define MAP_AL_Init                                      ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(228))
+#define MAP_AL_RemoveEntry                               ((uint8                    (*) (alTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(229))
+#define MAP_AL_SetAlIgnore                               ((llStatus_t               (*) (alTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(230))
 // LL RF
 #define MAP_rfCallback                                   ((void                     (*) (RF_Handle, RF_CmdHandle, RF_EventMask))                                                                       ROM_BLE_JT_OFFSET(231))
 // LL RFHAL
@@ -488,13 +488,13 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_LL_SetAddressResolutionEnable                ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(265))
 #define MAP_LL_SetResolvablePrivateAddressTimeout        ((uint8                    (*) (uint16))                                                                                                      ROM_BLE_JT_OFFSET(266))
 //
-#define MAP_LL_PRIV_AddExtWLEntry                        ((uint8                    (*) (wlTable_t *, uint8 *, uint8, uint8))                                                                          ROM_BLE_JT_OFFSET(267))
+#define MAP_LL_PRIV_AddExtALEntry                        ((uint8                    (*) (alTable_t *, uint8 *, uint8, uint8))                                                                          ROM_BLE_JT_OFFSET(267))
 #define MAP_LL_PRIV_Ah                                   ((uint32                   (*) (uint8 *, uint8 *))                                                                                            ROM_BLE_JT_OFFSET(268))
-#define MAP_LL_PRIV_CheckRLPeerId                        ((void                     (*) (rlEntry_t *, wlTable_t *))                                                                                    ROM_BLE_JT_OFFSET(269))
-#define MAP_LL_PRIV_CheckRLPeerIdEntry                   ((void                     (*) (rlEntry_t *, wlTable_t *))                                                                                    ROM_BLE_JT_OFFSET(270))
-#define MAP_LL_PRIV_ClearAllPrivIgn                      ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(271))
-#define MAP_LL_PRIV_ClearExtWL                           ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(272))
-#define MAP_LL_PRIV_FindExtWLEntry                       ((uint8                    (*) (wlTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(273))
+#define MAP_LL_PRIV_CheckRLPeerId                        ((void                     (*) (rlEntry_t *, alTable_t *))                                                                                    ROM_BLE_JT_OFFSET(269))
+#define MAP_LL_PRIV_CheckRLPeerIdEntry                   ((void                     (*) (rlEntry_t *, alTable_t *))                                                                                    ROM_BLE_JT_OFFSET(270))
+#define MAP_LL_PRIV_ClearAllPrivIgn                      ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(271))
+#define MAP_LL_PRIV_ClearExtAL                           ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(272))
+#define MAP_LL_PRIV_FindExtALEntry                       ((uint8                    (*) (alTable_t *, uint8 *, uint8))                                                                                 ROM_BLE_JT_OFFSET(273))
 #define MAP_LL_PRIV_FindPeerInRL                         ((uint8                    (*) (rlEntry_t *, uint8, uint8 *))                                                                                 ROM_BLE_JT_OFFSET(274))
 #define MAP_LL_PRIV_GenerateRPA                          ((void                     (*) (uint8 *, uint8 *))                                                                                            ROM_BLE_JT_OFFSET(275))
 #define MAP_LL_PRIV_IsIDA                                ((uint8                    (*) (uint8, uint8 *))                                                                                              ROM_BLE_JT_OFFSET(276))
@@ -502,9 +502,9 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_LL_PRIV_IsZeroIRK                            ((uint8                    (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(278))
 #define MAP_LL_PRIV_IsResolvable                         ((uint8                    (*) (uint8 *, rlEntry_t *))                                                                                        ROM_BLE_JT_OFFSET(279))
 #define MAP_LL_PRIV_ResolveRPA                           ((uint8                    (*) (uint8 *, uint8 *))                                                                                            ROM_BLE_JT_OFFSET(280))
-#define MAP_LL_PRIV_SetupPrivacy                         ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(281))
-#define MAP_LL_PRIV_SetWLSize                            ((void                     (*) (wlTable_t *, uint8))                                                                                          ROM_BLE_JT_OFFSET(282))
-#define MAP_LL_PRIV_TeardownPrivacy                      ((void                     (*) (wlTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(283))
+#define MAP_LL_PRIV_SetupPrivacy                         ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(281))
+#define MAP_LL_PRIV_SetaLSize                            ((void                     (*) (alTable_t *, uint8))                                                                                          ROM_BLE_JT_OFFSET(282))
+#define MAP_LL_PRIV_TeardownPrivacy                      ((void                     (*) (alTable_t *))                                                                                                 ROM_BLE_JT_OFFSET(283))
 // LL Internal
 #define MAP_llActiveTask                                 ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(284))
 #define MAP_llAllocTask                                  ((taskInfo_t *             (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(285))
@@ -520,10 +520,10 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_llCalcScaFactor                              ((uint16                   (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(291))
 #define MAP_llCBTimer_AptoExpiredCback                   ((void                     (*) (uint8 *))                                                                                                     ROM_BLE_JT_OFFSET(292))
 #define MAP_llCheckForLstoDuringSL                       ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(293))
-#define MAP_llCheckWhiteListUsage                        ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(294))
+#define MAP_llCheckAcceptListUsage                       ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(294))
 #define MAP_llClearRatCompare                            ((void                     (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(295))
 #define MAP_llConnCleanup                                ((void                     (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(296))
-#define MAP_llConnExists                                 ((uint8                    (*) (uint8, uint8 *, uint8))                                                                                       ROM_BLE_JT_OFFSET(297))
+#define MAP_llConnExists                                 ((uint8                    (*) (uint8 *, uint8))                                                                                              ROM_BLE_JT_OFFSET(297))
 #define MAP_llConnTerminate                              ((void                     (*) (llConnState_t *, uint8))                                                                                      ROM_BLE_JT_OFFSET(298))
 #define MAP_llConvertCtrlProcTimeoutToEvent              ((void                     (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(299))
 #define MAP_llConvertLstoToEvent                         ((void                     (*) (llConnState_t *, connParam_t *))                                                                              ROM_BLE_JT_OFFSET(300))
@@ -610,9 +610,9 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_llOneBitSynchWordDiffer                      ((uint8                    (*) (uint32))                                                                                                      ROM_BLE_JT_OFFSET(349))
 #define MAP_llPendingUpdateParam                         ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(350))
 #define MAP_llProcessChanMap                             ((void                     (*) (llConnState_t *, uint8 *))                                                                                    ROM_BLE_JT_OFFSET(351))
-#define MAP_llProcessMasterControlProcedures             ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(352))
+#define MAP_llProcessCentralControlProcedures            ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(352))
 #define MAP_llProcessTxData                              ((void                     (*) (llConnState_t *, uint8))                                                                                      ROM_BLE_JT_OFFSET(353))
-#define MAP_llProcessSlaveControlProcedures              ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(354))
+#define MAP_llProcessPeripheralControlProcedures         ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(354))
 #define MAP_llReleaseConnId                              ((void                     (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(355))
 #define MAP_llReplaceCtrlPkt                             ((void                     (*) (llConnState_t *, uint8, uint8))                                                                               ROM_BLE_JT_OFFSET(356))
 #define MAP_llReverseBits                                ((uint8                    (*) (uint8))                                                                                                       ROM_BLE_JT_OFFSET(357))
@@ -661,8 +661,8 @@ extern uint32 RAM_BASE_ADDR[];
 // <<INSERT_LOOP:(uint32)ROM_Spinlock,>>
 // <<INSERT:#endif>>
 #define MAP_llSetupInitDataEntryQueue                    ((dataEntryQ_t *           (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(386))
-#define MAP_llSetupNextMasterEvent                       ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(387))
-#define MAP_llSetupNextSlaveEvent                        ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(388))
+#define MAP_llSetupNextCentralEvent                      ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(387))
+#define MAP_llSetupNextPeripheralEvent                   ((uint8                    (*) (void))                                                                                                        ROM_BLE_JT_OFFSET(388))
 #define MAP_llSetupPauseEncReq                           ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(389))
 #define MAP_llSetupPauseEncRsp                           ((uint8                    (*) (llConnState_t *))                                                                                             ROM_BLE_JT_OFFSET(390))
 #define MAP_llSetupPhyCtrlPkt                            ((uint8                    (*) (llConnState_t *, uint8))                                                                                      ROM_BLE_JT_OFFSET(391))
@@ -1028,7 +1028,7 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_gapSendLinkUpdateEvent                       ((void                     (*) (uint8, uint16, uint16, uint16, uint16))                                                                       ROM_BLE_JT_OFFSET(696))
 #define MAP_gapSendPairingReqEvent                       ((void                     (*) (uint8, uint16, uint8, uint8, uint8, uint8, keyDist_t))                                                        ROM_BLE_JT_OFFSET(697))
 #define MAP_gapSendSignUpdateEvent                       ((void                     (*) (uint8, uint8, uint8 *, uint32))                                                                               ROM_BLE_JT_OFFSET(698))
-#define MAP_gapSendSlaveSecurityReqEvent                 ((void                     (*) (uint8, uint16, uint8 *, uint8))                                                                               ROM_BLE_JT_OFFSET(699))
+#define MAP_gapSendPeripheralSecurityReqEvent            ((void                     (*) (uint8, uint16, uint8 *, uint8))                                                                               ROM_BLE_JT_OFFSET(699))
 #define MAP_gapUpdateConnSignCounter                     ((void                     (*) (uint16, uint32))                                                                                              ROM_BLE_JT_OFFSET(700))
 #define MAP_sendAuthEvent                                ((void                     (*) (uint8, uint16, uint8, smSecurityInfo_t *))                                                                    ROM_BLE_JT_OFFSET(701))
 #define MAP_sendEstLinkEvent                             ((void                     (*) (uint8, uint8, uint8, uint8 *, uint16, uint8, uint16, uint16, uint16, uint16))                                 ROM_BLE_JT_OFFSET(702))
@@ -1108,7 +1108,7 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_smPairingSendEncInfo                         ((void                     (*) (uint16, uint8 *))                                                                                             ROM_BLE_JT_OFFSET(761))
 #define MAP_smPairingSendIdentityAddrInfo                ((void                     (*) (uint16, uint8, uint8 *))                                                                                      ROM_BLE_JT_OFFSET(762))
 #define MAP_smPairingSendIdentityInfo                    ((void                     (*) (uint16, uint8 *))                                                                                             ROM_BLE_JT_OFFSET(763))
-#define MAP_smPairingSendMasterID                        ((void                     (*) (uint16, uint16, uint8 *))                                                                                     ROM_BLE_JT_OFFSET(764))
+#define MAP_smPairingSendCentralID                       ((void                     (*) (uint16, uint16, uint8 *))                                                                                     ROM_BLE_JT_OFFSET(764))
 #define MAP_smPairingSendSigningInfo                     ((void                     (*) (uint16, uint8 *))                                                                                             ROM_BLE_JT_OFFSET(765))
 #define MAP_smProcessDataMsg                             ((void                     (*) (l2capDataEvent_t *))                                                                                          ROM_BLE_JT_OFFSET(766))
 #define MAP_smProcessEncryptChange                       ((uint8                    (*) (uint16, uint8))                                                                                               ROM_BLE_JT_OFFSET(767))
@@ -1133,7 +1133,7 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_smpResponderProcessEncryptionInformation     ((uint8                    (*) (smpEncInfo_t *))                                                                                              ROM_BLE_JT_OFFSET(785))
 #define MAP_smpResponderProcessIdentityAddrInfo          ((uint8                    (*) (smpIdentityAddrInfo_t *))                                                                                     ROM_BLE_JT_OFFSET(786))
 #define MAP_smpResponderProcessIdentityInfo              ((uint8                    (*) (smpIdentityInfo_t *))                                                                                         ROM_BLE_JT_OFFSET(787))
-#define MAP_smpResponderProcessMasterID                  ((uint8                    (*) (smpMasterID_t *))                                                                                             ROM_BLE_JT_OFFSET(788))
+#define MAP_smpResponderProcessCentralID                 ((uint8                    (*) (smpCentralID_t *))                                                                                             ROM_BLE_JT_OFFSET(788))
 #define MAP_smpResponderProcessPairingConfirm            ((uint8                    (*) (smpPairingConfirm_t *))                                                                                       ROM_BLE_JT_OFFSET(789))
 #define MAP_smpResponderProcessPairingDHKeyCheck         ((uint8                    (*) (smpPairingDHKeyCheck_t *))                                                                                    ROM_BLE_JT_OFFSET(790))
 #define MAP_smpResponderProcessPairingPublicKey          ((uint8                    (*) (smpPairingPublicKey_t *))                                                                                     ROM_BLE_JT_OFFSET(791))
@@ -1144,7 +1144,7 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_smpBuildEncInfo                              ((bStatus_t                (*) (smpEncInfo_t *, uint8 *))                                                                                     ROM_BLE_JT_OFFSET(795))
 #define MAP_smpBuildIdentityAddrInfo                     ((bStatus_t                (*) (smpIdentityAddrInfo_t *, uint8 *))                                                                            ROM_BLE_JT_OFFSET(796))
 #define MAP_smpBuildIdentityInfo                         ((bStatus_t                (*) (smpIdentityInfo_t *, uint8 *))                                                                                ROM_BLE_JT_OFFSET(797))
-#define MAP_smpBuildMasterID                             ((bStatus_t                (*) (smpMasterID_t *, uint8 *))                                                                                    ROM_BLE_JT_OFFSET(798))
+#define MAP_smpBuildCentralID                            ((bStatus_t                (*) (smpCentralID_t *, uint8 *))                                                                                    ROM_BLE_JT_OFFSET(798))
 #define MAP_smpBuildPairingConfirm                       ((bStatus_t                (*) (smpPairingConfirm_t *, uint8 *))                                                                              ROM_BLE_JT_OFFSET(799))
 #define MAP_smpBuildPairingDHKeyCheck                    ((bStatus_t                (*) (smpPairingDHKeyCheck_t *, uint8 *))                                                                           ROM_BLE_JT_OFFSET(800))
 #define MAP_smpBuildPairingFailed                        ((bStatus_t                (*) (smpPairingFailed_t *, uint8 *))                                                                               ROM_BLE_JT_OFFSET(801))
@@ -1159,7 +1159,7 @@ extern uint32 RAM_BASE_ADDR[];
 #define MAP_smpParseIdentityAddrInfo                     ((bStatus_t                (*) (uint8 *, smpIdentityAddrInfo_t *))                                                                            ROM_BLE_JT_OFFSET(810))
 #define MAP_smpParseIdentityInfo                         ((bStatus_t                (*) (uint8 *, smpIdentityInfo_t *))                                                                                ROM_BLE_JT_OFFSET(811))
 #define MAP_smpParseKeypressNoti                         ((bStatus_t                (*) (uint8 *, smpKeyPressNoti_t *))                                                                                ROM_BLE_JT_OFFSET(812))
-#define MAP_smpParseMasterID                             ((bStatus_t                (*) (uint8 *, smpMasterID_t *))                                                                                    ROM_BLE_JT_OFFSET(813))
+#define MAP_smpParseCentralID                            ((bStatus_t                (*) (uint8 *, smpCentralID_t *))                                                                                    ROM_BLE_JT_OFFSET(813))
 #define MAP_smpParsePairingConfirm                       ((bStatus_t                (*) (uint8 *, smpPairingConfirm_t *))                                                                              ROM_BLE_JT_OFFSET(814))
 #define MAP_smpParsePairingDHKeyCheck                    ((bStatus_t                (*) (uint8 *, smpPairingDHKeyCheck_t *))                                                                           ROM_BLE_JT_OFFSET(815))
 #define MAP_smpParsePairingFailed                        ((bStatus_t                (*) (uint8 *, smpPairingFailed_t *))                                                                               ROM_BLE_JT_OFFSET(816))
@@ -1180,7 +1180,7 @@ extern uint32 RAM_BASE_ADDR[];
 // <<INSERT:  (uint32)ROM_Spinlock,>>
 // <<INSERT:#endif>>
 #define MAP_smpInitiatorProcessEncryptionInformation     ((uint8                    (*) (smpEncInfo_t *))                                                                                              ROM_BLE_JT_OFFSET(829))
-#define MAP_smpInitiatorProcessMasterID                  ((uint8                    (*) (smpMasterID_t *))                                                                                             ROM_BLE_JT_OFFSET(830))
+#define MAP_smpInitiatorProcessCentralID                 ((uint8                    (*) (smpCentralID_t *))                                                                                             ROM_BLE_JT_OFFSET(830))
 #define MAP_smpInitiatorProcessIdentityInfo              ((uint8                    (*) (smpIdentityInfo_t *))                                                                                         ROM_BLE_JT_OFFSET(831))
 #define MAP_smpInitiatorProcessIdentityAddrInfo          ((uint8                    (*) (smpIdentityAddrInfo_t *))                                                                                     ROM_BLE_JT_OFFSET(832))
 #define MAP_smpInitiatorProcessSigningInfo               ((uint8                    (*) (smpSigningInfo_t *))                                                                                          ROM_BLE_JT_OFFSET(833))

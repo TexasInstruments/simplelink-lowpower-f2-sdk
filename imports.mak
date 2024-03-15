@@ -19,23 +19,28 @@
 #
 
 XDC_INSTALL_DIR        ?= /home/username/ti/xdctools_3_62_01_15_core
-SYSCONFIG_TOOL         ?= /home/username/ti/ccs1220/ccs/utils/sysconfig_1.15.0/sysconfig_cli.sh
+SYSCONFIG_TOOL         ?= /home/username/ti/ccs1230/ccs/utils/sysconfig_1.18.1/sysconfig_cli.sh
 
-FREERTOS_INSTALL_DIR   ?= /home/username/FreeRTOSv202104.00
 CMAKE                  ?= /home/username/cmake-3.21.3/bin/cmake
 PYTHON                 ?= python3
 
-TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1220/ccs/tools/compiler/ti-cgt-armllvm_2.1.2.LTS-0
-GCC_ARMCOMPILER        ?= /home/username/ti/ccs1220/ccs/tools/compiler/9.2019.q4.major-0
-
-# The IAR compiler is not supported on Linux
-# IAR_ARMCOMPILER      ?=
+TICLANG_ARMCOMPILER    ?= /home/username/ti/ccs1230/ccs/tools/compiler/ti-cgt-armllvm_3.2.0.LTS-0
+GCC_ARMCOMPILER        ?= /home/username/arm-none-eabi-gcc/9.2019.q4.major-0
+IAR_ARMCOMPILER        ?= /home/username/iar9.40.2
 
 # Uncomment this to enable the TFM build
 # ENABLE_TFM_BUILD=1
 
-# For Linux
-RM      = rm -f
-RMDIR   = rm -rf
-DEVNULL = /dev/null
-ECHOBLANKLINE = echo
+ifeq ("$(SHELL)","sh.exe")
+# for Windows/DOS shell
+    RM      = del
+    RMDIR   = -rmdir /S /Q
+    DEVNULL = NUL
+    ECHOBLANKLINE = @cmd /c echo.
+else
+# for Linux-like shells
+    RM      = rm -f
+    RMDIR   = rm -rf
+    DEVNULL = /dev/null
+    ECHOBLANKLINE = echo
+endif

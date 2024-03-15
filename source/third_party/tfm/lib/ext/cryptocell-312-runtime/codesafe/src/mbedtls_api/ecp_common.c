@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,7 +8,7 @@
 #include "cc_pal_log.h"
 #include "cc_ecpki_error.h"
 #include "mbedtls_cc_ec_mont_edw_error.h"
-#include "ecp.h"
+#include "mbedtls/ecp.h"
 #include "ecp_common.h"
 #include "cc_bitops.h"
 
@@ -142,10 +142,10 @@ int error_mapping_cc_to_mbedtls_ecc (CCError_t cc_error)
 
             default:
                 ret = -1;
-                CC_PAL_LOG_ERR("Unknown CC_ERROR %d\n", cc_error);
+                CC_PAL_LOG_ERR("Unknown CC_ERROR %d\r\n", cc_error);
                 break;
     }
-    CC_PAL_LOG_INFO("Converted CC_ERROR %d to MBEDTLS_ERR %d\n", cc_error, ret);
+    CC_PAL_LOG_DEBUG("Converted CC_ERROR %d to MBEDTLS_ERR %d\r\n", cc_error, ret);
     return ret;
 }
 

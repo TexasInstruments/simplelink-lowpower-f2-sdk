@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -109,13 +109,7 @@ extern "C"
 
 #define L2CAP_HDR_SIZE                   4 //!< Basic L2CAP header: Length (2 bytes) + Channel ID (2 bytes)
 
-/**
- * @brief L2CAP PDU Size
- *
- * Minimum size of PDU received from lower layer protocol (incoming
- * packet), or delivered to lower layer protocol (outgoing packet).
- */
-#define L2CAP_PDU_SIZE                   ( L2CAP_HDR_SIZE + L2CAP_MTU_SIZE )
+#define L2CAP_MAX_NOF_CREDITS            0xFFFF //!< Maximum number of credits to be given to a Connection Oriented Channel is 0xFFFF
 
 #define L2CAP_LEN_FIELD_SIZE             2 //!< SDU Length field size
 
@@ -344,7 +338,12 @@ extern "C"
 /*********************************************************************
  * TYPEDEFS
  */
-
+/// Address modes to initialize the local device
+typedef enum
+{
+     L2CAPCOC_INITIATOR = 0x00,  //!< Always Use Public Address
+     L2CAPCOC_RESPONDER = 0x01
+}l2capConEstablishRole_t;
 /**
  * @defgroup L2CAP_Structs L2CAP Data Structures
  * @{
@@ -388,7 +387,7 @@ typedef struct
 {
   uint16 intervalMin;       //!< Minimum Interval
   uint16 intervalMax;       //!< Maximum Interval
-  uint16 slaveLatency;      //!< Slave Latency
+  uint16 peripheralLatency;      //!< Peripheral Latency
   uint16 timeoutMultiplier; //!< Timeout Multiplier
 } l2capParamUpdateReq_t;
 
@@ -425,8 +424,10 @@ typedef struct
 {
   uint16 psm;         //!< LE PSM
   uint16 srcCID;      //!< Represents CID on device sending request and receiving response
-  uint16 mtu;         //!< Specifies maximum SDU size that can be received on this channel
-  uint16 mps;         //!< Specifies maximum payload size that can be received on this channel
+  uint16 mtu;         //!< Specifies maximum SDU (service data unit) size that can be received on this channel
+                      //!< (Maximum Transmission Unit for an unsegmented outgoing/incoming L2CAP SDU)
+  uint16 mps;         //!< Specifies Maximum PDU Payload Size (MPS) that can be received on this channel
+                      //!< (Maximum Transmission Unit (MTU) for an outgoing/incoming L2CAP PDU.)
   uint16 initCredits; //!< Indicates number of LE-frames that peer device can send
 } l2capConnectReq_t;
 
@@ -434,8 +435,10 @@ typedef struct
 typedef struct
 {
   uint16 dstCID;      //!< Represents CID on device receiving request and sending response
-  uint16 mtu;         //!< Specifies maximum SDU size that can be received on this channel
-  uint16 mps;         //!< Specifies maximum payload size that can be received on this channel
+  uint16 mtu;         //!< Specifies maximum SDU (service data unit) size that can be received on this channel
+                      //!< (Maximum Transmission Unit for an unsegmented outgoing/incoming L2CAP SDU)
+  uint16 mps;         //!< Specifies Maximum PDU Payload Size (MPS) that can be received on this channel
+                      //!< (Maximum Transmission Unit (MTU) for an outgoing/incoming L2CAP PDU.)
   uint16 initCredits; //!< Indicates number of LE-frames that peer device can send
   uint16 result;      //!< Indicates outcome of connection request: @ref L2CAP_CONN_RESULT_VALUES
 } l2capConnectRsp_t;
@@ -668,7 +671,11 @@ typedef uint16 (*pfnVerifySecCB_t)( uint16 connHandle, uint8 id, l2capConnectReq
 typedef struct
 {
   uint16 psm;                      //!< Registered PSM
-  uint16 mtu;                      //!< Maximum SDU size that can be received by local device
+  uint16 mtu;                      //!< The maximum size of payload data, in octets, that the upper layer entity
+                                   //!< can accept (that is, the MTU corresponds to the maximum SDU size).
+                                   //!< Note: This is different than ATT_MTU.
+  uint16 mps;                      //!< The maximum size of payload data in octets that the L2CAP layer entity
+                                   //!< can accept (that is, the MPS corresponds to the maximum PDU payload size).
   uint16 initPeerCredits;          //!< Number of LE-frames that peer device can send
   uint16 peerCreditThreshold;      //!< Low threshold for peer credit count
   uint8 maxNumChannels;            //!< Maximum number of CO Channels supported by PSM
@@ -940,6 +947,13 @@ extern bStatus_t L2CAP_ConnParamUpdateRsp( uint16 connHandle, uint8 id, l2capPar
  * @param   pUserCfg - pointer to user configuration
  */
 extern void L2CAP_SetUserConfig( l2capUserCfg_t *pUserCfg );
+
+/**
+ * @brief   Get the user configurable variables for the L2CAP layer.
+ *
+ * @param   pL2capCfg - pointer to user configuration
+ */
+extern void L2CAP_GetUserConfig( l2capUserCfg_t *pL2capCfg );
 
 /**
  * @brief   This API is used by the upper layer to set the maximum data

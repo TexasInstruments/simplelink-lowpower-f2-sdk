@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -173,13 +173,16 @@ extern "C"
     #endif
     #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
 #elif defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) ||  \
-      defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5)
+      defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5) || \
+      defined(DeviceFamily_CC23X0R2)
     #define FLASH_ADDRESS(page, offset)     (((page) << 11) + (offset))
     #define FLASH_PAGE(addr)                (addr >> 11)
     #define INTFLASH_PAGE_MASK              0xFFFFF800
     #define INTFLASH_PAGE_SIZE              0x800
     #if defined(DeviceFamily_CC23X0R5)
         #define MAX_ONCHIP_FLASH_PAGES          256
+    #elif defined(DeviceFamily_CC23X0R2)
+        #define MAX_ONCHIP_FLASH_PAGES          128
     #else
         #define MAX_ONCHIP_FLASH_PAGES          512
     #endif

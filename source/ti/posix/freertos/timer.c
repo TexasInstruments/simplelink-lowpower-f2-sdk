@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2016-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -310,18 +310,10 @@ int timer_settime(timer_t timerid, int flags, const struct itimerspec *value, st
     if (HwiP_inISR())
     {
         status = xTimerChangePeriodFromISR(timer->xTimer, timeoutTicks, &xHigherPriorityTaskWoken);
-        if (status == pdPASS)
-        {
-            xTimerStartFromISR(timer->xTimer, &xHigherPriorityTaskWoken);
-        }
     }
     else
     {
         status = xTimerChangePeriod(timer->xTimer, timeoutTicks, (TickType_t)-1);
-        if (status == pdPASS)
-        {
-            status = xTimerStart(timer->xTimer, (TickType_t)-1);
-        }
     }
 
     if (status == pdPASS)

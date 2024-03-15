@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -292,7 +292,28 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
                                &publicKeyUnionY.word[1],
                                ECC_NISTP256_PARAM_LENGTH_BYTES);
 
-    eccStatus = ECC_validatePublicKey(&(object->eccState), publicKeyUnionX.word, publicKeyUnionY.word);
+    /* Verify r in range [1, n-1] where n is the order of the curve */
+    eccStatus = ECC_validatePrivateKey(&object->eccState, rUnion.word);
+
+    if (eccStatus == STATUS_PRIVATE_VALID)
+    {
+        /* Verify s in range [1, n-1] where n is the order of the curve */
+        eccStatus = ECC_validatePrivateKey(&object->eccState, sUnion.word);
+
+        if (eccStatus != STATUS_PRIVATE_VALID)
+        {
+            returnStatus = ECDSA_STATUS_S_LARGER_THAN_ORDER;
+        }
+    }
+    else
+    {
+        returnStatus = ECDSA_STATUS_R_LARGER_THAN_ORDER;
+    }
+
+    if (eccStatus == STATUS_PRIVATE_VALID)
+    {
+        eccStatus = ECC_validatePublicKey(&object->eccState, publicKeyUnionX.word, publicKeyUnionY.word);
+    }
 
     if (eccStatus == STATUS_ECC_POINT_ON_CURVE)
     {
@@ -309,10 +330,6 @@ int_fast16_t ECDSA_verify(ECDSA_Handle handle, ECDSA_OperationVerify *operation)
         {
             returnStatus = ECDSA_STATUS_SUCCESS;
         }
-    }
-    else
-    {
-        returnStatus = ECDSA_STATUS_ERROR;
     }
 
     return returnStatus;

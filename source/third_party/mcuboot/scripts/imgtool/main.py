@@ -46,6 +46,10 @@ def gen_ecdsa_p256(keyfile, passwd):
     keys.ECDSA256P1.generate().export_private(keyfile, passwd=passwd)
 
 
+def gen_ecdsa_p521(keyfile, passwd):
+    keys.ECDSA521P1.generate().export_private(keyfile, passwd=passwd)
+
+
 def gen_ecdsa_p224(keyfile, passwd):
     print("TODO: p-224 not yet implemented")
 
@@ -64,6 +68,7 @@ keygens = {
     'rsa-3072':   gen_rsa3072,
     'ecdsa-p256': gen_ecdsa_p256,
     'ecdsa-p224': gen_ecdsa_p224,
+    'ecdsa-p521': gen_ecdsa_p521,
     'ed25519':    gen_ed25519,
     'x25519':     gen_x25519,
 }
@@ -138,10 +143,16 @@ def getpriv(key, minimal):
 
 
 @click.argument('imgfile')
+@click.option('--rsa-pss', default=False, is_flag=True,
+              help='Use PSS padding for signature verification. Only used with RSA keys.')
 @click.option('-k', '--key', metavar='filename')
 @click.command(help="Check that signed image can be verified by given key")
-def verify(key, imgfile):
+def verify(key, imgfile, rsa_pss):
     key = load_key(key) if key else None
+
+    if rsa_pss and hasattr(key, 'rsa_pss'):
+        key.rsa_pss = True
+
     ret, version, digest = image.Image.verify(imgfile, key)
     if ret == image.VerifyResult.OK:
         print("Image was correctly validated")
@@ -228,6 +239,8 @@ class BasedIntParamType(click.ParamType):
 
 @click.argument('outfile')
 @click.argument('infile')
+@click.option('--rsa-pss', default=False, is_flag=True,
+              help='Use PSS padding when signing. Only used with RSA keys.')
 @click.option('--custom-tlv', required=False, nargs=2, default=[],
               multiple=True, metavar='[tag] [value]',
               help='Custom TLV that will be placed into protected area. '
@@ -297,7 +310,7 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
          pad_header, slot_size, pad, confirm, max_sectors, overwrite_only,
          endian, encrypt, infile, outfile, dependencies, load_addr, hex_addr,
          erased_val, save_enctlv, security_counter, boot_record, custom_tlv,
-         rom_fixed):
+         rom_fixed, rsa_pss):
 
     if confirm:
         # Confirmed but non-padded images don't make much sense, because
@@ -316,6 +329,8 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
     if enckey and key:
         if ((isinstance(key, keys.ECDSA256P1) and
              not isinstance(enckey, keys.ECDSA256P1Public))
+                or (isinstance(key, keys.ECDSA521P1) and
+             not isinstance(enckey, keys.ECDSA521P1Public))
                 or (isinstance(key, keys.RSA) and
                     not isinstance(enckey, keys.RSAPublic))):
             # FIXME
@@ -324,6 +339,9 @@ def sign(key, public_key_format, align, version, pad_sig, header_size,
 
     if pad_sig and hasattr(key, 'pad_sig'):
         key.pad_sig = True
+
+    if rsa_pss and hasattr(key, 'rsa_pss'):
+        key.rsa_pss = True
 
     # Get list of custom protected TLVs from the command-line
     custom_tlvs = {}

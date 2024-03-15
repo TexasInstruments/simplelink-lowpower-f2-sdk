@@ -33,7 +33,7 @@
 #ifndef __SCALARMUL25519_H_
 #define __SCALARMUL25519_H_
 
-#include "lowlevelapi.h"
+#include "third_party/ecc/include/lowlevelapi.h"
 
 #include <stdint.h>
 

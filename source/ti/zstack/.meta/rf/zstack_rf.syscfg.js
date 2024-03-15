@@ -180,7 +180,7 @@ const rfModule = {
                          + "use in network formation or joining. Used only "
                          + "after primary channel fails formation or joining.",
             longDescription: secondaryChannelsLongDescription,
-            default: [],
+            default: [11],
             options: rfOptions,
             minSelections: 0
         },

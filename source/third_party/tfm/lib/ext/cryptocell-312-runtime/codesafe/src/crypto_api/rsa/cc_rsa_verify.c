@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifdef CC_IOT
-    #if defined(MBEDTLS_CONFIG_FILE)
-    #include MBEDTLS_CONFIG_FILE
-    #endif
+#include "mbedtls/build_info.h"
 #endif
 
 #if !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C))
@@ -394,12 +392,22 @@ End:
    @param[in] Sig_ptr - A pointer to the signature to be verified.
                         The length of the signature is PubKey_ptr->N.len bytes
                         (that is, the size of the modulus, in bytes).
+   @param[in] bIsRawMode - boolean to indicate if the function is used in Raw
+                           mode, which means that the structure T to be signed
+                           is passed as input (no need to perform hashing)
+   @param[in] DataIn_ptr - Buffer containing the T structure to be signed
+                           (possibly the DER encoding of ASN.1 DigestInfo
+                           structure as specified in RFC8017 sect. 9.2 notes)
+   @param[in] DataInSize - Size in bytes of the raw input provided in DataIn_ptr
 
    @return CCError_t - CC_OK, or error
 */
 
 CEXPORT_C CCError_t CC_RsaVerifyFinish(CCRsaPubUserContext_t *UserContext_ptr,
-                       uint8_t *Sig_ptr)
+                       uint8_t *Sig_ptr,
+                       bool bIsRawMode,
+                       const uint8_t *DataIn_ptr,
+                       size_t DataInSize)
 {
     /* FUNCTION DECLERATIONS */
 
@@ -456,7 +464,6 @@ CEXPORT_C CCError_t CC_RsaVerifyFinish(CCRsaPubUserContext_t *UserContext_ptr,
     /* Initialize the Effective size in bits of the result */
     ccmWorkingContext_ptr->EBDSizeInBits = CC_CommonGetBytesCounterEffectiveSizeInBits((uint8_t*)&ccmWorkingContext_ptr->EBD,
                                                                                               modSizeBytes);
-
     /*Operating the HASH Finish function only in case that Hash operation is needed*/
     if (ccmWorkingContext_ptr->doHash) {
         /*Operating the HASH Finish function*/
@@ -496,11 +503,12 @@ CEXPORT_C CCError_t CC_RsaVerifyFinish(CCRsaPubUserContext_t *UserContext_ptr,
                 ccmWorkingContext_ptr->HashOperationMode,
                 (uint8_t*)ccmWorkingContext_ptr->HASH_Result,
                 ccmWorkingContext_ptr->HASH_Result_Size*sizeof(uint32_t),
-                (uint8_t*)&ccmWorkingContext_ptr->PrimeData/*expected buff*/);
+                (uint8_t*)&ccmWorkingContext_ptr->PrimeData/*expected buff*/,
+                bIsRawMode,
+                DataIn_ptr,
+                DataInSize);
         if (Error!=CC_OK)
             goto End;
-
-
 
         /* compare actual and expected values of signature buffer */
         if (CC_PalMemCmp(&ccmWorkingContext_ptr->PrimeData,
@@ -584,11 +592,10 @@ CEXPORT_C CCError_t CC_RsaVerify(CCRsaPubUserContext_t *UserContext_ptr,
 
     /* The return error identifier */
     CCError_t Error = CC_OK;
-
+    bool bIsRawMode = (rsaHashMode == CC_RSA_HASH_NO_HASH_mode) ? true : false;
     /* FUNCTION LOGIC */
 
     CHECK_AND_RETURN_ERR_UPON_FIPS_ERROR();
-
     /**********************************************************************
      *  RSA_VerifyInit
      **********************************************************************/
@@ -600,22 +607,24 @@ CEXPORT_C CCError_t CC_RsaVerify(CCRsaPubUserContext_t *UserContext_ptr,
                    PKCS1_ver);
     if (Error!=CC_OK)
         return Error;
-
     /**********************************************************************
      *  RSA_VerifyUpdate
      **********************************************************************/
-    Error = CC_RsaVerifyUpdate(UserContext_ptr,
-                     DataIn_ptr,
-                     DataInSize);
-    if (Error!=CC_OK)
-        return Error;
-
+    if (!bIsRawMode) {
+        Error = CC_RsaVerifyUpdate(UserContext_ptr,
+                         DataIn_ptr,
+                         DataInSize);
+        if (Error!=CC_OK)
+            return Error;
+    }
     /**********************************************************************
      *  RSA_VerifyFinish
      **********************************************************************/
     Error = CC_RsaVerifyFinish(UserContext_ptr,
-                     Sig_ptr);
-
+                     Sig_ptr,
+                     bIsRawMode,
+                     DataIn_ptr,
+                     DataInSize);
     return Error;
 
 }/* END OF CC_RsaVerify */

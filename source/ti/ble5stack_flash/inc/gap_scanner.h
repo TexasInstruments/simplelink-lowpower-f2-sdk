@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -360,7 +360,7 @@ typedef enum
   /**
    * Scanning Filter Policy (R/W)
    *
-   * Policy of how to apply white list to filter out unwanted packets
+   * Policy of how to apply accept list to filter out unwanted packets
    *
    * @note Change of this parameter will not affect an ongoing scanning.
    * If changed during scanning, it will take effect when the scanning is
@@ -515,10 +515,10 @@ typedef enum {
   SCAN_FLT_POLICY_ALL     = 0,
   /**
    * Accept only advertising packets from devices where the advertiser's address
-   * is in the whitelist. Directed advertising packets which are not addressed
+   * is in the acceptlist. Directed advertising packets which are not addressed
    * to this device shall be ignored.
    */
-  SCAN_FLT_POLICY_WL      = 1,
+  SCAN_FLT_POLICY_AL      = 1,
   /**
    * Accept all advertising packets except directed advertising packets where
    * the TargetA does not addrress this device. Note that directed advdertising
@@ -528,12 +528,12 @@ typedef enum {
   SCAN_FLT_POLICY_ALL_RPA = 2,
   /**
    * Accept all advertising packets except advertising packets where the
-   * advertiser's identity address is not in the whitelist and directed
+   * advertiser's identity address is not in the acceptlist and directed
    * advertising packets where the TargetA does not address this device.
    * Note that directed advertising packets where the TargetA is a resolvable
    * private address that cannot be resolved are also accepted.
    */
-  SCAN_FLT_POLICY_WL_RPA  = 3
+  SCAN_FLT_POLICY_AL_RPA  = 3
 } GapScan_FilterPolicy_t;
 
 /// Choices for GAP Scanner Discoverable Mode Filter

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -102,7 +102,7 @@ extern "C"
 #define SMP_PAIRING_RANDOM                        0x04
 #define SMP_PAIRING_FAILED                        0x05
 #define SMP_ENCRYPTION_INFORMATION                0x06
-#define SMP_MASTER_IDENTIFICATION                 0x07
+#define SMP_CENTRAL_IDENTIFICATION                0x07
 #define SMP_IDENTITY_INFORMATION                  0x08
 #define SMP_IDENTITY_ADDR_INFORMATION             0x09
 #define SMP_SIGNING_INFORMATION                   0x0A
@@ -171,7 +171,7 @@ extern "C"
 #define SMP_PAIRING_RANDOM_LEN                    17
 #define SMP_PAIRING_FAILED_LEN                    2
 #define SMP_ENCRYPTION_INFORMATION_LEN            17
-#define SMP_MASTER_IDENTIFICATION_LEN             11
+#define SMP_CENTRAL_IDENTIFICATION_LEN            11
 #define SMP_IDENTITY_INFORMATION_LEN              17
 #define SMP_IDENTITY_ADDR_INFORMATION_LEN         8
 #define SMP_SIGNING_INFORMATION_LEN               17
@@ -210,10 +210,10 @@ extern "C"
                          (smpMsgs_t *)(msgStruct), \
                          (pfnSMBuildCmd_t)(MAP_smpBuildEncInfo) )
 
-#define smSendMasterID( connHandle, msgStruct )  \
-        MAP_smSendSMMsg( (connHandle), SMP_MASTER_IDENTIFICATION_LEN, \
+#define smSendCentralID( connHandle, msgStruct )  \
+        MAP_smSendSMMsg( (connHandle), SMP_CENTRAL_IDENTIFICATION_LEN, \
                          (smpMsgs_t *)(msgStruct), \
-                         (pfnSMBuildCmd_t)(MAP_smpBuildMasterID) )
+                         (pfnSMBuildCmd_t)(MAP_smpBuildCentralID) )
 
 #define smSendIdentityInfo( connHandle, msgStruct )  \
         MAP_smSendSMMsg( (connHandle), SMP_IDENTITY_INFORMATION_LEN, \
@@ -291,12 +291,12 @@ typedef struct
   uint8  ltk[KEYLEN];
 } smpEncInfo_t;
 
-// Master Identification
+// Central Identification
 typedef struct
 {
   uint16  ediv;
   uint16  rand[B_RANDOM_NUM_SIZE];
-} smpMasterID_t;
+} smpCentralID_t;
 
 // Identity Information
 typedef struct
@@ -317,7 +317,7 @@ typedef struct
   uint8 signature[KEYLEN];
 } smpSigningInfo_t;
 
-// Slave Security Request
+// Peripheral Security Request
 typedef struct
 {
   authReq_t authReq;
@@ -351,7 +351,7 @@ typedef union
   smpPairingRandom_t     pairingRandom;
   smpPairingFailed_t     pairingFailed;
   smpEncInfo_t           encInfo;
-  smpMasterID_t          masterID;
+  smpCentralID_t         centralID;
   smpIdentityInfo_t      idInfo;
   smpIdentityAddrInfo_t  idAddrInfo;
   smpSigningInfo_t       signingInfo;
@@ -444,14 +444,14 @@ extern smpPairingReq_t pairingReg;
   extern bStatus_t smpParseEncInfo( uint8 *buf, smpEncInfo_t *encInfo );
 
   /*
-   * smpBuildMasterID - Build an SM Master Identification
+   * smpBuildCentralID - Build an SM Central Identification
    */
-  extern bStatus_t smpBuildMasterID( smpMasterID_t *pMasterID, uint8 *pBuf );
+  extern bStatus_t smpBuildCentralID( smpCentralID_t *pCentralID, uint8 *pBuf );
 
   /*
-   * smpParseMasterID - Parse an SM Master Identification
+   * smpParseCentralID - Parse an SM Central Identification
    */
-  extern bStatus_t smpParseMasterID( uint8 *pBuf, smpMasterID_t *pMasterID );
+  extern bStatus_t smpParseCentralID( uint8 *pBuf, smpCentralID_t *pCentralID );
 
   /*
    * smpBuildIdentityInfo - Build an SM Identity Information
@@ -484,12 +484,12 @@ extern smpPairingReq_t pairingReg;
   extern bStatus_t smpParseSigningInfo( uint8 *pBuf, smpSigningInfo_t *pSigningInfo );
 
   /*
-   * smpBuildSecurityReq - Build an SM Slave Security Request
+   * smpBuildSecurityReq - Build an SM Peripheral Security Request
    */
   extern bStatus_t smpBuildSecurityReq( smpSecurityReq_t *pSecReq, uint8 *pBuf );
 
   /*
-   * smpParseSecurityReq - Parse an SM Slave Security Request
+   * smpParseSecurityReq - Parse an SM Peripheral Security Request
    */
   extern bStatus_t smpParseSecurityReq( uint8 *pBuf, smpSecurityReq_t *pSecReq );
 

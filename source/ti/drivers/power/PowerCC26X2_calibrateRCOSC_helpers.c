@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,17 +52,17 @@
 #define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S              18         /* shift */
 #define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_M           0x00020000 /* mask */
 #define DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_EN_LOCAL_S           17         /* shift */
-#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M 0x00000C00 /* offset */
+#define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M 0x00000C00 /* mask */
 #define DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_S 10         /* shift */
 
 #define ACLK_REF_SRC_RCOSC_HF 0 /* Use RCOSC_HF for ACLK REF */
 #define ACLK_REF_SRC_RCOSC_LF 2 /* Use RCOSC_LF for ACLK REF */
 
 #if TFM_ENABLED
-    #include <third_party/tfm/secure_fw/spm/include/tfm_secure_api.h>
+    #include <third_party/tfm/secure_fw/include/security_defs.h>
 #else
     /* Define the gateway attributes to nothing instead of ifdefs on each function */
-    #define __tfm_secure_gateway_attributes__
+    #define __tz_c_veneer
 #endif
 
 /*
@@ -70,7 +70,7 @@
  *  Update the SUBSECINC register based on measured RCOSC_LF frequency
  *  Reads measured result directly from TDC to guard againse injection
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_updateSubSecInc(bool firstLF)
+__tz_c_veneer void PowerCC26X2_updateSubSecInc(bool firstLF)
 {
     int32_t newSubSecInc;
     uint32_t oldSubSecInc;
@@ -119,7 +119,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_updateSubSecInc(bool firstLF)
 /*
  *  ======== PowerCC26X2_readCtrim ========
  */
-__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrim(void)
+__tz_c_veneer int32_t PowerCC26X2_readCtrim(void)
 {
     return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_RCOSCHFCTL) & DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_M) >>
            DDI_0_OSC_RCOSCHFCTL_RCOSCHF_CTRIM_S;
@@ -128,7 +128,7 @@ __tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrim(void)
 /*
  *  ======== PowerCC26X2_readCtrimFract ========
  */
-__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrimFract(void)
+__tz_c_veneer int32_t PowerCC26X2_readCtrimFract(void)
 {
     return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_CTL1_LOCAL) & DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_M) >>
            DDI_0_OSC_CTL1_RCOSCHFCTRIMFRACT_LOCAL_S;
@@ -137,7 +137,7 @@ __tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readCtrimFract(void)
 /*
  *  ======== PowerCC26X2_readRtrim ========
  */
-__tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readRtrim(void)
+__tz_c_veneer int32_t PowerCC26X2_readRtrim(void)
 {
     return (DDI32RegRead(AUX_DDI0_OSC_BASE, DDI_0_OSC_O_ATESTCTL) &
             DDI_0_OSC_ATESTCTL_SET_RCOSC_HF_FINE_RESISTOR_LOCAL_M) >>
@@ -147,7 +147,7 @@ __tfm_secure_gateway_attributes__ int32_t PowerCC26X2_readRtrim(void)
 /*
  *  ======== PowerCC26X2_writeCtrim ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrim(int32_t newValue)
+__tz_c_veneer void PowerCC26X2_writeCtrim(int32_t newValue)
 {
     DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
                        DDI_0_OSC_O_RCOSCHFCTL,
@@ -159,7 +159,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrim(int32_t newValue)
 /*
  *  ======== PowerCC26X2_writeCtrimFract ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFract(int32_t newValue)
+__tz_c_veneer void PowerCC26X2_writeCtrimFract(int32_t newValue)
 {
     DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
                        DDI_0_OSC_O_CTL1_LOCAL,
@@ -171,7 +171,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFract(int32_t newVa
 /*
  *  ======== PowerCC26X2_writeCtrimFractEn ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFractEn(int32_t newValue)
+__tz_c_veneer void PowerCC26X2_writeCtrimFractEn(int32_t newValue)
 {
     DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
                        DDI_0_OSC_O_CTL1_LOCAL,
@@ -183,7 +183,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_writeCtrimFractEn(int32_t new
 /*
  *  ======== PowerCC26X2_writeRtrim ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_writeRtrim(int32_t newValue)
+__tz_c_veneer void PowerCC26X2_writeRtrim(int32_t newValue)
 {
     DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
                        DDI_0_OSC_O_ATESTCTL,
@@ -195,7 +195,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_writeRtrim(int32_t newValue)
 /*
  *  ======== PowerCC26X2_setTdcClkSrc24M ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_setTdcClkSrc24M(void)
+__tz_c_veneer void PowerCC26X2_setTdcClkSrc24M(void)
 {
     /* set TDC_SRC clock to be XOSC_HF/2 = 24 MHz */
     DDI16BitfieldWrite(AUX_DDI0_OSC_BASE,
@@ -214,7 +214,7 @@ __tfm_secure_gateway_attributes__ void PowerCC26X2_setTdcClkSrc24M(void)
 /*
  *  ======== PowerCC26X2_setAclkRefSrc ========
  */
-__tfm_secure_gateway_attributes__ void PowerCC26X2_setAclkRefSrc(uint32_t source)
+__tz_c_veneer void PowerCC26X2_setAclkRefSrc(uint32_t source)
 {
     if (source == ACLK_REF_SRC_RCOSC_HF || source == ACLK_REF_SRC_RCOSC_LF)
     {

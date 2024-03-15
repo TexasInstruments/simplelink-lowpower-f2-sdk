@@ -1,5 +1,31 @@
 [
     {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -81,6 +107,32 @@
             "ns_br",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -168,6 +220,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -252,6 +330,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -333,6 +437,32 @@
             "ns_br",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -475,84 +605,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br/tirtos7/iar/ns_br_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
         "name": "ns_br",
         "description": "ns_br",
@@ -631,84 +683,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br/tirtos7/iar/ns_br_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_br",
         "description": "ns_br",
@@ -728,45 +702,6 @@
             "ti_wisunfan",
             "ns_br",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -857,45 +792,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1352P7"
         ],
         "coreTypes": [
@@ -923,84 +819,6 @@
             "ti_wisunfan",
             "ns_br",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -1099,84 +917,6 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br",
-        "description": "ns_br",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br/tirtos7/iar/ns_br_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_br",
         "description": "ns_br",
@@ -1197,6 +937,32 @@
             "ns_br",
             "TI-RTOS7",
             "IAR Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -1284,6 +1050,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -1365,6 +1157,32 @@
             "ns_br_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br_src",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -1452,6 +1270,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br_src",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -1533,6 +1377,32 @@
             "ns_br_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_br_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -1636,45 +1506,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/freertos/iar/ns_br_src_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_br_src",
         "description": "ns_br_src",
@@ -1733,84 +1564,6 @@
             "ti_wisunfan",
             "ns_br_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_br_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -1901,45 +1654,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_br_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1312R7"
         ],
         "coreTypes": [
@@ -1949,45 +1663,6 @@
             "LP-CC1312R7"
         ],
         "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/iar/ns_br_src_LP_CC1312R7_freertos_iar.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/freertos/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_br_src",
         "description": "ns_br_src",
         "kernel": [
@@ -2045,84 +1720,6 @@
             "ti_wisunfan",
             "ns_br_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_br_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -2213,45 +1810,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_br_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -2261,45 +1819,6 @@
             "LP-EM-CC1354P10-6"
         ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/iar/ns_br_src_LP_EM_CC1354P10_6_freertos_iar.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/freertos/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_br_src",
         "description": "ns_br_src",
         "kernel": [
@@ -2361,30 +1880,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_br_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_br_src",
-        "description": "ns_br_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -2393,10 +1896,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_br_src",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -2484,6 +1990,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -2565,6 +2097,32 @@
             "ns_coap_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -2652,6 +2210,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -2733,6 +2317,32 @@
             "ns_coap_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -2875,84 +2485,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node/tirtos7/iar/ns_coap_node_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
         "name": "ns_coap_node",
         "description": "ns_coap_node",
@@ -2972,45 +2504,6 @@
             "ti_wisunfan",
             "ns_coap_node",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -3070,45 +2563,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node/tirtos7/iar/ns_coap_node_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_coap_node",
         "description": "ns_coap_node",
@@ -3128,45 +2582,6 @@
             "ti_wisunfan",
             "ns_coap_node",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -3257,84 +2672,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1352P7"
         ],
         "coreTypes": [
@@ -3413,84 +2750,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -3538,7 +2797,7 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node/tirtos7/iar/ns_coap_node_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_coap_node",
         "description": "ns_coap_node",
         "kernel": [
@@ -3561,30 +2820,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node/tirtos7/iar/ns_coap_node_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
-        "name": "ns_coap_node",
-        "description": "ns_coap_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -3593,10 +2836,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -3684,6 +2930,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -3765,6 +3037,32 @@
             "ns_coap_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node_src",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -3852,6 +3150,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node_src",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -3933,6 +3257,32 @@
             "ns_coap_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_node_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -4036,45 +3386,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/freertos/iar/ns_coap_node_src_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_coap_node_src",
         "description": "ns_coap_node_src",
@@ -4145,84 +3456,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1314R10"
         ],
         "coreTypes": [
@@ -4270,45 +3503,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_node_src/tirtos7/iar/ns_coap_node_src_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_coap_node_src",
         "description": "ns_coap_node_src",
@@ -4328,45 +3522,6 @@
             "ti_wisunfan",
             "ns_coap_node_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -4457,45 +3612,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1352P7"
         ],
         "coreTypes": [
@@ -4505,45 +3621,6 @@
             "LP-CC1352P7-1"
         ],
         "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/iar/ns_coap_node_src_LP_CC1352P7_1_freertos_iar.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_coap_node_src",
         "description": "ns_coap_node_src",
         "kernel": [
@@ -4613,84 +3690,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -4738,7 +3737,7 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/iar/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_coap_node_src",
         "description": "ns_coap_node_src",
         "kernel": [
@@ -4761,30 +3760,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_node_src/tirtos7/iar/ns_coap_node_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
-        "name": "ns_coap_node_src",
-        "description": "ns_coap_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -4793,10 +3776,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -4884,6 +3870,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -4965,6 +3977,32 @@
             "ns_coap_oad_offchip",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -5052,6 +4090,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -5133,6 +4197,32 @@
             "ns_coap_oad_offchip",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -5236,45 +4326,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/ns_coap_oad_offchip_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_coap_oad_offchip",
         "description": "ns_coap_oad_offchip",
@@ -5294,45 +4345,6 @@
             "ti_wisunfan",
             "ns_coap_oad_offchip",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -5431,85 +4443,7 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/ns_coap_oad_offchip_LP_EM_CC1314R10_tirtos7_iar.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_coap_oad_offchip",
         "description": "ns_coap_oad_offchip",
         "kernel": [
@@ -5587,85 +4521,7 @@
         "devtools": [
             "LP-CC1312R7"
         ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
         "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/ns_coap_oad_offchip_LP_CC1312R7_tirtos7_iar.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_coap_oad_offchip",
         "description": "ns_coap_oad_offchip",
         "kernel": [
@@ -5743,84 +4599,6 @@
         "devtools": [
             "LP-CC1352P7-1"
         ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
         "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/ns_coap_oad_offchip_LP_CC1352P7_1_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_offchip",
         "description": "ns_coap_oad_offchip",
@@ -5840,45 +4618,6 @@
             "ti_wisunfan",
             "ns_coap_oad_offchip",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -5961,30 +4700,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip",
-        "description": "ns_coap_oad_offchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -5993,10 +4716,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -6084,6 +4810,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -6165,6 +4917,32 @@
             "ns_coap_oad_offchip_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip_src",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -6252,6 +5030,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip_src",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -6333,6 +5137,32 @@
             "ns_coap_oad_offchip_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_offchip_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -6436,45 +5266,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/ns_coap_oad_offchip_src_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_coap_oad_offchip_src",
         "description": "ns_coap_oad_offchip_src",
@@ -6494,45 +5285,6 @@
             "ti_wisunfan",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -6631,45 +5383,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/ns_coap_oad_offchip_src_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_offchip_src",
         "description": "ns_coap_oad_offchip_src",
@@ -6689,84 +5402,6 @@
             "ti_wisunfan",
             "ns_coap_oad_offchip_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -6857,45 +5492,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1352P7"
         ],
         "coreTypes": [
@@ -6923,84 +5519,6 @@
             "ti_wisunfan",
             "ns_coap_oad_offchip_src",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -7099,45 +5617,6 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/ns_coap_oad_offchip_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_offchip_src",
         "description": "ns_coap_oad_offchip_src",
@@ -7161,30 +5640,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_offchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_offchip_src",
-        "description": "ns_coap_oad_offchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -7193,10 +5656,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_offchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -7284,6 +5750,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -7365,6 +5857,32 @@
             "ns_coap_oad_onchip",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -7468,45 +5986,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip/freertos/iar/ns_coap_oad_onchip_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_coap_oad_onchip",
         "description": "ns_coap_oad_onchip",
@@ -7547,45 +6026,6 @@
             "LP-EM-CC1354P10-1"
         ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip/tirtos7/iar/ns_coap_oad_onchip_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_coap_oad_onchip",
         "description": "ns_coap_oad_onchip",
         "kernel": [
@@ -7663,45 +6103,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip/tirtos7/iar/ns_coap_oad_onchip_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_onchip",
         "description": "ns_coap_oad_onchip",
@@ -7721,84 +6122,6 @@
             "ti_wisunfan",
             "ns_coap_oad_onchip",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -7881,30 +6204,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
         ],
         "devices": [
             "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip",
-        "description": "ns_coap_oad_onchip",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
         ],
         "mainCategories": [
             [
@@ -7913,10 +6220,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -8004,6 +6314,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -8085,6 +6421,32 @@
             "ns_coap_oad_onchip_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_coap_oad_onchip_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -8188,45 +6550,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/freertos/iar/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_freertos_iar.ipcf",
         "name": "ns_coap_oad_onchip_src",
         "description": "ns_coap_oad_onchip_src",
@@ -8266,45 +6589,6 @@
         "devtools": [
             "LP-EM-CC1354P10-1"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/ns_coap_oad_onchip_src_LP_EM_CC1354P10_1_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_onchip_src",
         "description": "ns_coap_oad_onchip_src",
@@ -8324,45 +6608,6 @@
             "ti_wisunfan",
             "ns_coap_oad_onchip_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -8453,84 +6698,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -8578,7 +6745,7 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_coap_oad_onchip_src",
         "description": "ns_coap_oad_onchip_src",
         "kernel": [
@@ -8601,30 +6768,14 @@
         ]
     },
     {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
         ],
         "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_coap_oad_onchip_src/tirtos7/iar/ns_coap_oad_onchip_src_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
-        "name": "ns_coap_oad_onchip_src",
-        "description": "ns_coap_oad_onchip_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
+            "CC1352P1F3"
         ],
         "mainCategories": [
             [
@@ -8633,10 +6784,13 @@
             ]
         ],
         "subCategories": [
-            "ti_wisunfan",
-            "ns_coap_oad_onchip_src",
-            "TI-RTOS7",
-            "IAR Compiler"
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -8679,6 +6833,32 @@
             "ns_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -8766,6 +6946,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -8847,6 +7053,32 @@
             "ns_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -8934,6 +7166,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -8973,6 +7231,32 @@
             "ns_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -9060,6 +7344,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -9102,6 +7412,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -9141,6 +7477,32 @@
             "ns_node",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -9275,84 +7637,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352P1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1352P1"
-        ],
-        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -9431,84 +7715,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1314R10"
         ],
         "coreTypes": [
@@ -9536,45 +7742,6 @@
             "ti_wisunfan",
             "ns_node",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -9673,85 +7840,7 @@
         "devtools": [
             "LP-CC1312R7"
         ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
         "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node/tirtos7/iar/ns_node_LP_CC1312R7_tirtos7_iar.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_node",
         "description": "ns_node",
         "kernel": [
@@ -9821,84 +7910,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352R1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352R1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1352R1"
-        ],
-        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1352P7"
         ],
         "coreTypes": [
@@ -9926,45 +7937,6 @@
             "ti_wisunfan",
             "ns_node",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -10055,45 +8027,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312R1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1312R1"
-        ],
-        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1312PSIP"
         ],
         "coreTypes": [
@@ -10103,45 +8036,6 @@
             "LP-EM-CC1312PSIP"
         ],
         "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node/tirtos7/iar/ns_node_LP_EM_CC1312PSIP_tirtos7_iar.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312PSIP"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312PSIP"
-        ],
-        "devtools": [
-            "LP-EM-CC1312PSIP"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_node",
         "description": "ns_node",
         "kernel": [
@@ -10219,84 +8113,6 @@
         "devtools": [
             "LP-EM-CC1354P10-6"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node",
-        "description": "ns_node",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node/tirtos7/iar/ns_node_LP_EM_CC1354P10_6_tirtos7_iar.ipcf",
         "name": "ns_node",
         "description": "ns_node",
@@ -10317,6 +8133,32 @@
             "ns_node",
             "TI-RTOS7",
             "IAR Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LAUNCHXL-CC1352P1"
+        ],
+        "devices": [
+            "CC1352P1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -10359,6 +8201,32 @@
             "ns_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-EM-CC1354P10-1"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -10446,6 +8314,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-EM-CC1314R10"
+        ],
+        "devices": [
+            "CC1314R10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -10527,6 +8421,32 @@
             "ns_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-CC1312R7"
+        ],
+        "devices": [
+            "CC1312R7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -10614,6 +8534,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LAUNCHXL-CC1352R1"
+        ],
+        "devices": [
+            "CC1352R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -10653,6 +8599,32 @@
             "ns_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-CC1352P7-1"
+        ],
+        "devices": [
+            "CC1352P7"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -10740,6 +8712,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LAUNCHXL-CC1312R1"
+        ],
+        "devices": [
+            "CC1312R1F3"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -10782,6 +8780,32 @@
         ]
     },
     {
+        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-EM-CC1312PSIP"
+        ],
+        "devices": [
+            "CC1312PSIP"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
+        ]
+    },
+    {
         "resourceType": "project.ccs",
         "advanced": {
             "overrideProjectSpecDeviceId": true
@@ -10821,6 +8845,32 @@
             "ns_node_src",
             "TI-RTOS7",
             "TI Clang Compiler"
+        ]
+    },
+    {
+        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/README.html",
+        "resourceType": "categoryInfo",
+        "name": "ns_node_src",
+        "devtools": [
+            "LP-EM-CC1354P10-6"
+        ],
+        "devices": [
+            "CC1354P10"
+        ],
+        "mainCategories": [
+            [
+                "Examples",
+                "Development Tools"
+            ]
+        ],
+        "subCategories": [
+            "ti_wisunfan"
+        ],
+        "resourceClass": [
+            "example"
+        ],
+        "resourceSubClass": [
+            "example.general"
         ]
     },
     {
@@ -10955,45 +9005,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1352P1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1352P1"
-        ],
-        "location": "../../examples/rtos/CC1352P1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -11021,84 +9032,6 @@
             "ti_wisunfan",
             "ns_node_src",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-1"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_1/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },
@@ -11197,45 +9130,6 @@
         "devtools": [
             "LP-EM-CC1314R10"
         ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
         "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/iar/ns_node_src_LP_EM_CC1314R10_tirtos7_iar.ipcf",
         "name": "ns_node_src",
         "description": "ns_node_src",
@@ -11255,84 +9149,6 @@
             "ti_wisunfan",
             "ns_node_src",
             "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1314R10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1314R10"
-        ],
-        "devtools": [
-            "LP-EM-CC1314R10"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1314R10/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "FreeRTOS",
             "IAR Compiler"
         ]
     },
@@ -11392,85 +9208,7 @@
         "devtools": [
             "LP-CC1312R7"
         ],
-        "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R7"
-        ],
-        "devtools": [
-            "LP-CC1312R7"
-        ],
         "location": "../../examples/rtos/LP_CC1312R7/ti_wisunfan/ns_node_src/tirtos7/iar/ns_node_src_LP_CC1312R7_tirtos7_iar.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352R1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352R1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1352R1"
-        ],
-        "location": "../../examples/rtos/CC1352R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_node_src",
         "description": "ns_node_src",
         "kernel": [
@@ -11548,45 +9286,6 @@
         "devtools": [
             "LP-CC1352P7-1"
         ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
         "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/freertos/iar/ns_node_src_LP_CC1352P7_1_freertos_iar.ipcf",
         "name": "ns_node_src",
         "description": "ns_node_src",
@@ -11626,85 +9325,7 @@
         "devtools": [
             "LP-CC1352P7-1"
         ],
-        "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1352P7"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1352P7"
-        ],
-        "devtools": [
-            "LP-CC1352P7-1"
-        ],
         "location": "../../examples/rtos/LP_CC1352P7_1/ti_wisunfan/ns_node_src/tirtos7/iar/ns_node_src_LP_CC1352P7_1_tirtos7_iar.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1312R1F3"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312R1F3"
-        ],
-        "devtools": [
-            "LAUNCHXL-CC1312R1"
-        ],
-        "location": "../../examples/rtos/CC1312R1_LAUNCHXL/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
         "name": "ns_node_src",
         "description": "ns_node_src",
         "kernel": [
@@ -11813,45 +9434,6 @@
             "example.general"
         ],
         "devices": [
-            "CC1312PSIP"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1312PSIP"
-        ],
-        "devtools": [
-            "LP-EM-CC1312PSIP"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1312PSIP/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
             "CC1354P10"
         ],
         "coreTypes": [
@@ -11879,84 +9461,6 @@
             "ti_wisunfan",
             "ns_node_src",
             "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/freertos/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "freertos"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "FreeRTOS",
-            "IAR Compiler"
-        ]
-    },
-    {
-        "resourceType": "project.iar",
-        "resourceClass": [
-            "example"
-        ],
-        "resourceSubClass": [
-            "example.general"
-        ],
-        "devices": [
-            "CC1354P10"
-        ],
-        "coreTypes": [
-            "Cortex M.CC1354P10"
-        ],
-        "devtools": [
-            "LP-EM-CC1354P10-6"
-        ],
-        "location": "../../examples/rtos/LP_EM_CC1354P10_6/ti_wisunfan/ns_node_src/tirtos7/iar/SysConfig_Generated_Files.ipcf",
-        "name": "ns_node_src",
-        "description": "ns_node_src",
-        "kernel": [
-            "tirtos7"
-        ],
-        "compiler": [
-            "iar"
-        ],
-        "mainCategories": [
-            [
-                "Examples",
-                "Development Tools"
-            ]
-        ],
-        "subCategories": [
-            "ti_wisunfan",
-            "ns_node_src",
-            "TI-RTOS7",
             "IAR Compiler"
         ]
     },

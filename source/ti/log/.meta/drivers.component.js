@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ let deviceId = system.deviceData.deviceId;
 let topModules;
 let templates;
 
-/* Include LogSinkBuf by default */
+/* Include LogSinkBuf for all devices*/
 let logSinks = ["/ti/log/LogSinkBuf"];
 
 /* Include LogSinks conditionally on the board */
@@ -51,15 +51,12 @@ if(!deviceId.match(/CC23.0/)) {
 
     logSinks.push("/ti/log/LogSinkITM");
 }
+/* LogSinkUART excluded form CC35 as it doesn't have UART2 driver yet */
+if(!deviceId.match(/CC35.0/)) {
+    logSinks.push("/ti/log/LogSinkUART");
+}
 
 topModules = [
-    {
-        displayName: LogModule.topModuleDisplayName,
-        description: LogModule.topModuleDescription,
-        modules: [
-            "/ti/log/LogModule"
-        ]
-    },
     LogModule.sinksToTopModule(logSinks)
 ];
 

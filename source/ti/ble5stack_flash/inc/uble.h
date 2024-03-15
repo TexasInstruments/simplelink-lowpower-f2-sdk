@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -91,7 +91,6 @@ extern "C"
 /*-------------------------------------------------------------------
  * INCLUDES
  */
-#include <urfc.h>
 #include <port.h>
 
 /*-------------------------------------------------------------------
@@ -282,7 +281,7 @@ extern "C"
     #define UBLE_PARAM_SCAN_END           UBLE_PARAM_ADV_SR_END
 /// @endcond NODOC
 #endif /* FEATURE_SCANNER */
-    #if defined(FEATURE_MONITOR)
+#if defined(FEATURE_MONITOR)
 /// @cond NODOC
     #define UBLE_PARAM_MONITOR_START         (UBLE_PARAM_ADV_SR_END+1)
 /// @endcond NODOC
@@ -343,9 +342,16 @@ extern "C"
 /** @defgroup UBLE_Radio_Priority Micro BLE Stack Radio Priorities
  * @{
  */
+#ifdef USE_RCL
+#define UBLE_RF_PRI_NORMAL      ((uint8) RCL_Schedule_Now)   //!< Normal Priority
+#define UBLE_RF_PRI_HIGH        ((uint8) RCL_Schedule_Now)   //!< High Priority
+#define UBLE_RF_PRI_HIGHEST     ((uint8) RCL_Schedule_Now)   //!< Highest Priority
+
+#else
 #define UBLE_RF_PRI_NORMAL      ((uint8) RF_PriorityNormal)  //!< Normal Priority
 #define UBLE_RF_PRI_HIGH        ((uint8) RF_PriorityHigh)    //!< High Priority
 #define UBLE_RF_PRI_HIGHEST     ((uint8) RF_PriorityHighest) //!< Highest Priority
+#endif
 /** @} End UBLE_Radio_Priority */
 
 /** @defgroup UBLE_Radio_Criticality Micro BLE Stack Radio Criticality
@@ -406,7 +412,11 @@ extern "C"
 /* Default Parameter Values */
 #define UBLE_PARAM_DFLT_RFPRIORITY      UBLE_RF_PRI_NORMAL  //!< RF_PriorityNormal
 #define UBLE_PARAM_DFLT_RFTIMECRIT      RF_TIME_RELAXED   //!< Time-relaxed
+#ifdef USE_RCL
+#define UBLE_PARAM_DFLT_TXPOWER         0    //!< 0 dBm
+#else
 #define UBLE_PARAM_DFLT_TXPOWER         TX_POWER_0_DBM    //!< 0 dBm
+#endif
 #define UBLE_PARAM_DFLT_ADVINTERVAL     1600              //!< 1 sec
 #define UBLE_PARAM_DFLT_ADVCHANMAP      UBLE_ADV_CHAN_ALL   //!< All Channels
 #define UBLE_PARAM_DFLT_ADVTYPE         UBLE_ADVTYPE_ADV_NC //!< ADV_NONCONN_IND
@@ -459,6 +469,9 @@ extern "C"
 #define UBLE_MAX_OVERLAP_TIME_LIMIT     0x7270E000  // 8 minutes in 625us ticks. chosen to be half of 17 minutes RF overlap.
 #define UBLE_MAX_32BIT_TIME             0xFFFFFFFF
 
+#define BLE_ROLE_PERIPHERAL  4
+#define BLE_ROLE_CENTRAL     8
+
 /** @} End UBLE_Constants */
 
 /*-------------------------------------------------------------------
@@ -478,8 +491,7 @@ typedef uint8 ubleEvtDst_t;
 /** @brief Micro BLE Stack Event */
 typedef uint8 ubleEvt_t;
 
-PACKED_TYPEDEF_STRUCT {
-  port_queueElem_t pElem;  //!< queue element pointer
+typedef struct {
   ubleEvtDst_t     dst;    //!< destination
   ubleEvt_t        evt;    //!< event
 } ubleEvtHdr_t;  //!< Type of Micro BLE Stack event header
@@ -487,9 +499,9 @@ PACKED_TYPEDEF_STRUCT {
 /** @brief Type of Micro BLE Stack message */
 typedef uint8 ubleMsg_t;
 
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   ubleEvtHdr_t  hdr;      //!< header
-  ubleMsg_t     msg[];    //!< message
+  ubleMsg_t     *msg;    //!< message
 } ubleEvtMsg_t; //!< Type of Micro BLE Stack event message
 
 /** @} End UBLE_Structures */
@@ -523,7 +535,7 @@ typedef void (*ubleProcessMsg_t)(ubleEvtMsg_t *pEvtMsg);
 
 /// @cond NODOC
 /** @brief Type of Micro BLE Stack Parameters */
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   uint8  rfPriority;              //!< RF Priority
   int8   txPower;                 //!< TX Power in dBm
 #if defined(FEATURE_ADVERTISER)
@@ -560,7 +572,7 @@ PACKED_TYPEDEF_STRUCT {
  *
  * @note Min/max work only for uint8-type parameters
  */
-PACKED_TYPEDEF_STRUCT {
+typedef struct {
   uint8  offset;
   uint8  len;
   uint8  min;

@@ -9,7 +9,7 @@ Target Device: cc13xx_cc26xx
 
 ******************************************************************************
 
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -182,8 +182,8 @@ void bleStack_initGapBondParams(gapBondParams_t *pGapBondParams)
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &pGapBondParams->secureConnection);
     // Set Authenticated Pairing Only mode
     GAPBondMgr_SetParameter(GAPBOND_AUTHEN_PAIRING_ONLY, sizeof(uint8_t), &pGapBondParams->authenPairingOnly);
-    // Set Auto Whitelist Sync
-    GAPBondMgr_SetParameter(GAPBOND_AUTO_SYNC_WL, sizeof(uint8_t), &pGapBondParams->autoSyncWL);
+    // Set Auto Acceptlist Sync
+    GAPBondMgr_SetParameter(GAPBOND_AUTO_SYNC_AL, sizeof(uint8_t), &pGapBondParams->autoSyncAL);
     // Set ECC Key Regeneration Policy
     GAPBondMgr_SetParameter(GAPBOND_ECCKEY_REGEN_POLICY, sizeof(uint8_t), &pGapBondParams->eccReGenPolicy);
     // Set Key Size used in pairing
@@ -322,8 +322,8 @@ bStatus_t bleStack_initGatt(uint8_t role, ICall_EntityID appSelfEntity, uint8_t 
 bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHandle,
                                    GapAdv_eventMaskFlags_t eventMask,
                                    GapAdv_params_t *advParams,
-                                   uint16_t advDataLen ,uint8_t advData[],
-                                   uint16_t scanRespDataLen, uint8_t scanRespData[])
+                                   uint16_t advDataLen ,uint8_t *advData,
+                                   uint16_t scanRespDataLen, uint8_t *scanRespData)
 {
   bStatus_t status;
 
@@ -341,15 +341,18 @@ bStatus_t bleStk_initAdvSet(pfnBleStkAdvCB_t advCallback, uint8_t *advHandle,
     return status;
   }
 
-  // Load advertising data for set that is statically allocated by the app
-#ifdef ERPC_SERVER
-  status = bleStk_GapAdv_loadLocalByHandle(*advHandle, GAP_ADV_DATA_TYPE_ADV, advDataLen, advData);
-#else
-  status = GapAdv_loadByHandle(*advHandle, GAP_ADV_DATA_TYPE_ADV, advDataLen, advData);
-#endif
-  if (status != SUCCESS)
+  if (advData != NULL)
   {
-    return status;
+    // Load advertising data for set that is statically allocated by the app
+#ifdef ERPC_SERVER
+    status = bleStk_GapAdv_loadLocalByHandle(*advHandle, GAP_ADV_DATA_TYPE_ADV, advDataLen, advData);
+#else
+    status = GapAdv_loadByHandle(*advHandle, GAP_ADV_DATA_TYPE_ADV, advDataLen, advData);
+#endif
+    if (status != SUCCESS)
+    {
+      return status;
+    }
   }
 
   // Load scan response data for set that is statically allocated by the app

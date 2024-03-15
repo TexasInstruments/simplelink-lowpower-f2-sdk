@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,9 @@
 #include <ti/sysbios/BIOS.h>
 
 #include <string.h>
+#include <semaphore.h>
+#include <mqueue.h>
+
 #include "icall.h"
 
 #include "inc/npi_task.h"
@@ -73,75 +76,19 @@
 // defines
 // ****************************************************************************
 
+#if defined(NPI_SREQRSP)
+
 #ifdef ICALL_EVENTS
-#define NPITASK_ICALL_EVENT ICALL_MSG_EVENT_ID // Event_Id_31
-
-//! \brief Transport layer RX Event (ie. bytes received, RX ISR etc.)
-#define NPITASK_TRANSPORT_RX_EVENT Event_Id_00
-
-//! \brief Transmit Complete Event (likely associated with TX ISR etc.)
-#define NPITASK_TRANSPORT_TX_DONE_EVENT Event_Id_01
-
-//! \brief ASYNC Message Received Event (no framing bytes)
-#define NPITASK_FRAME_RX_EVENT Event_Id_02
-
-//! \brief A framed message buffer is ready to be sent to the transport layer.
-#define NPITASK_TX_READY_EVENT Event_Id_03
-
-#if defined(NPI_SREQRSP)
-//! \brief ASYNC Message Received Event (no framing bytes)
-#define NPITASK_SYNC_FRAME_RX_EVENT Event_Id_04
-
-//! \brief A SYNC framed message buffer is ready to be sent to the transport layer.
-#define NPITASK_SYNC_TX_READY_EVENT Event_Id_05
-
 //! \brief SYNC REQ/RSP Watchdog Timer Duration (in ms)
 #define NPITASK_WD_TIMEOUT 500
-#else // !NPI_SREQRSP
-#define NPITASK_SYNC_FRAME_RX_EVENT Event_Id_NONE
-#define NPITASK_SYNC_TX_READY_EVENT Event_Id_NONE
-#endif // NPI_SREQRSP
-
-//! \brief MRDY Received Event
-#define NPITASK_MRDY_EVENT Event_Id_06
-
-#define NPITASK_ALL_EVENTS (NPITASK_ICALL_EVENT | NPITASK_TRANSPORT_RX_EVENT | \
-                            NPITASK_TRANSPORT_TX_DONE_EVENT | \
-                            NPITASK_FRAME_RX_EVENT | NPITASK_TX_READY_EVENT | \
-                            NPITASK_SYNC_FRAME_RX_EVENT | \
-                            NPITASK_SYNC_TX_READY_EVENT | NPITASK_MRDY_EVENT)
-
 #else //!ICALL_EVENTS
-//! \brief Transport layer RX Event (ie. bytes received, RX ISR etc.)
-#define NPITASK_TRANSPORT_RX_EVENT 0x0002
-
-//! \brief Transmit Complete Event (likely associated with TX ISR etc.)
-#define NPITASK_TRANSPORT_TX_DONE_EVENT 0x0004
-
-//! \brief ASYNC Message Received Event (no framing bytes)
-#define NPITASK_FRAME_RX_EVENT 0x0008
-
-//! \brief A framed message buffer is ready to be sent to the transport layer.
-#define NPITASK_TX_READY_EVENT 0x0010
-
-#if defined(NPI_SREQRSP)
-//! \brief ASYNC Message Received Event (no framing bytes)
-#define NPITASK_SYNC_FRAME_RX_EVENT 0x0020
-
-//! \brief A SYNC framed message buffer is ready to be sent to the transport layer.
-#define NPITASK_SYNC_TX_READY_EVENT 0x0040
-
 //! \brief SYNC REQ/RSP Watchdog Timer Duration (in ms)
 #define NPITASK_WD_TIMEOUT 500
 #endif // NPI_SREQRSP
-
-//! \brief MRDY Received Event
-#define NPITASK_MRDY_EVENT 0x0080
-
 #endif //ICALL_EVENTS
 
 #if defined(CC26X2) || defined(CC13X2) || defined(CC13X2P)
-#define NPITASK_STACK_SIZE (130*8)     /* in order to optimize memory, this value should be a multiple of 8 bytes */
+#define NPITASK_STACK_SIZE (180*8)     /* in order to optimize memory, this value should be a multiple of 8 bytes */
 #else // !CC26X2 && !CC13X2
 //! \brief Size of stack created for NPI RTOS task
 #ifndef Display_DISABLE_ALL
@@ -162,60 +109,71 @@
 //! \brief Task priority for NPI RTOS task
 #define NPITASK_PRIORITY 2
 
+// ****************************************************************************
+// defines
+// ****************************************************************************
+#define NPI_TX_QUEUE_SIZE                             16
+#define NPI_RX_QUEUE_SIZE                             16
+#define NPI_SYNC_TX_QUEUE_SIZE                        16
+#define NPI_SYNC_RX_QUEUE_SIZE                        16
+
+#define NPITASK_MRDY_FLAG                             TRUE
 
 // ****************************************************************************
 // typedefs
 // ****************************************************************************
 
-//! \brief Queue record structure
-//!
-typedef struct NPI_QueueRec_t
-{
-    Queue_Elem _elem;
-    NPIMSG_msg_t *npiMsg;
-} NPI_QueueRec;
-
-
 //*****************************************************************************
 // globals
 //*****************************************************************************
 
-//! \brief ICall ID for stack which will be sending NPI messages
-//!
-static uint32_t stackServiceID = 0x0000;
+typedef struct
+{
+    //! \brief ICall ID for stack which will be sending NPI messages
+    //!
+    uint32_t stackServiceID;
 
-//! \brief RTOS task structure for NPI task
-//!
-static Task_Struct npiTaskStruct;
+    //! \brief RTOS task handle for NPI task
+    pthread_t taskHandle;
 
-//! \brief Allocated memory block for NPI task's stack
-//!
-#if defined __TI_COMPILER_VERSION__
-#pragma DATA_ALIGN(npiTaskStack, 8)
-#elif defined __clang__
-__attribute__ ((aligned (8)))
-#else
-#pragma data_alignment=8
+    uint8_t *pTaskStack;
+
+    Task_Struct TaskStruct;
+
+    //! \brief Handle for the ASYNC TX Queue
+    mqd_t      npiTxQueue;
+
+    //! \brief Handle for the ASYNC RX Queue
+    mqd_t      npiRxQueue;
+//    mq_attr    txQueueAttr;
+//    mq_attr    rxQueueAttr;
+#if defined(NPI_SREQRSP)
+    //! \brief Handle for the SYNC TX Queue
+    mqd_t      npiSyncTxQueue;
+
+    //! \brief Handle for the SYNC RX Queue
+    mqd_t      npiSyncRxQueue;
 #endif
-uint8_t npiTaskStack[NPITASK_STACK_SIZE];
+    //! \brief Pointer to last tx message.  This is free'd once confirmation is
+    //!        is received that the buffer has been transmitted
+    //!        (ie. NPITASK_TRANSPORT_TX_DONE_EVENT)
+    //!
+    uint8_t *lastQueuedTxMsg;
+    uint16_t lastQueuedTxMsgSize;
 
-//! \brief Handle for the ASYNC TX Queue
-//!
-static Queue_Handle npiTxQueue;
+    //! \brief Handle for the semaphore
+    sem_t *pNpiSem;
+    //! \brief NPI ICall Application Entity ID.
+    //!
+    ICall_EntityID npiAppEntityID;
 
-//! \brief Handle for the ASYNC RX Queue
-//!
-static Queue_Handle npiRxQueue;
+    uint8_t mrdyIsrEventFlag;
+
+}NPITASK_AppData_t;
+
+NPITASK_AppData_t gNpiTaskAppData;
 
 #if defined(NPI_SREQRSP)
-//! \brief Handle for the SYNC TX Queue
-//!
-static Queue_Handle npiSyncTxQueue;
-
-//! \brief Handle for the SYNC RX Queue
-//!
-static Queue_Handle npiSyncRxQueue;
-
 //! \brief Flag/Counter indicating a Synchronous REQ/RSP is currently being
 //!        processed.
 static int8_t syncTransactionInProgress = 0;
@@ -226,46 +184,11 @@ static Clock_Struct syncReqRspWatchDogClkStruct;
 static Clock_Handle syncReqRspWatchDogClkHandle;
 #endif // NPI_SREQRSP
 
-//! \brief Pointer to last tx message.  This is free'd once confirmation is
-//!        is received that the buffer has been transmitted
-//!        (ie. NPITASK_TRANSPORT_TX_DONE_EVENT)
-//!
-static uint8_t *lastQueuedTxMsg;
 
 //! \brief NPI thread ICall Semaphore.
 //!
 #define FLE_DEBUG 1
 
-#ifdef ICALL_EVENTS
-ICall_SyncHandle syncEvent;
-#else //!ICALL_EVENTS
-#ifdef FLE_DEBUG
-static ICall_Semaphore appSem = NULL;
-#else
-static Semaphore_Struct structSem;
-static Semaphore_Handle appSem;
-#endif //FLE_DEBUG
-#endif //ICALL_EVENTS
-
-//! \brief NPI ICall Application Entity ID.
-//!
-ICall_EntityID npiAppEntityID = 0;
-
-#ifndef ICALL_EVENTS
-//! \brief Task pending events
-//!
-static uint16_t NPITask_events = 0;
-
-//! \brief Event flags for capturing Task-related events from ISR context
-//!
-static uint16_t TX_DONE_ISR_EVENT_FLAG = 0;
-static uint16_t MRDY_ISR_EVENT_FLAG = 0;
-static uint16_t TRANSPORT_RX_ISR_EVENT_FLAG = 0;
-#endif //ICALL_EVENTS
-
-//! \brief Pointer to Application RX event callback function for optional
-//!        rerouting of messages to application.
-//!
 static npiIncomingEventCBack_t incomingRXEventAppCBFunc = NULL;
 
 //! \brief Type of rerouting for RX messages requested by Application
@@ -304,16 +227,16 @@ static void NPITask_MRDYEventCB(int size);
 
 //! \brief ASYNC TX Q Processing function.
 //!
-static void NPITask_ProcessTXQ(void);
+static NPITASK_STATUS NPITask_ProcessTXQ(void);
 
 #if defined(NPI_SREQRSP)
 //! \brief SYNC TX Q Processing function.
 //!
-static void NPITask_ProcessSyncTXQ(void);
+static NPITASK_STATUS NPITask_ProcessSyncTXQ(void);
 
 //! \brief SYNC RX Q Processing function.
 //!
-static void NPITask_processSyncRXQ(void);
+static NPITASK_STATUS NPITask_processSyncRXQ(void);
 
 //! \brief Sync REQ/RSP Watchdog Timer CB
 //!
@@ -322,7 +245,7 @@ static void syncReqRspWatchDogTimeoutCB( UArg a0 );
 
 //! \brief ASYNC RX Q Processing function.
 //!
-static void NPITask_processRXQ(void);
+static NPITASK_STATUS NPITask_ProcessRXQ(void);
 
 //! \brief Callback function registered with Frame module to handle successful
 //!        reception of message from host.
@@ -338,7 +261,7 @@ static ICall_Errno NPITask_sendBufToStack(ICall_EntityID appEntity,
 
 //! \brief Function to handle incoming ICall Message Event
 //!
-static uint_least16_t NPITask_processICallMsgEvent(uint8_t *pMsg,
+static NPITASK_STATUS NPITask_processICallMsgEvent(uint8_t *pMsg,
                                                    ICall_ServiceEnum src,
                                                    ICall_EntityID dest);
 
@@ -346,6 +269,9 @@ static uint_least16_t NPITask_processICallMsgEvent(uint8_t *pMsg,
 //!
 static void NPITask_processStackMsg(uint8_t *pMsg);
 
+//! \brief Function to create a POSIX queue.
+//!
+static int NPITask_createPQueue(mqd_t *queueHandle, char *mq_name, uint32_t mq_size, uint32_t mq_msgsize, uint32_t mq_flags);
 
 // -----------------------------------------------------------------------------
 //! \brief      Initialization for the NPI Thread
@@ -354,22 +280,16 @@ static void NPITask_processStackMsg(uint8_t *pMsg);
 // -----------------------------------------------------------------------------
 static void NPITask_inititializeTask(void)
 {
-#ifndef ICALL_EVENTS
-    NPITask_events = 0;
-#endif //ICALL_EVENTS
-
-    lastQueuedTxMsg = NULL;
-
     // create a Tx Queue instance
-    npiTxQueue = Queue_create(NULL, NULL);
+    NPITask_createPQueue(&gNpiTaskAppData.npiTxQueue,     "NPI Tx Queue",      NPI_TX_QUEUE_SIZE,      sizeof(NPIMSG_msg_t), O_NONBLOCK);
     // create an Rx Queue instance
-    npiRxQueue = Queue_create(NULL, NULL);
+    NPITask_createPQueue(&gNpiTaskAppData.npiRxQueue,     "NPI Rx Queue",      NPI_RX_QUEUE_SIZE,      sizeof(NPIMSG_msg_t), O_NONBLOCK);
 
 #if defined(NPI_SREQRSP)
     // create an Sync RX Queue instance
-    npiSyncRxQueue = Queue_create(NULL, NULL);
+    NPITask_createPQueue(&gNpiTaskAppData.npiSyncRxQueue, "NPI Sync Tx Queue", NPI_SYNC_TX_QUEUE_SIZE, sizeof(NPIMSG_msg_t), 0 /* BLOCKING */);
     // create an Sync TX Queue instance
-    npiSyncTxQueue = Queue_create(NULL, NULL);
+    NPITask_createPQueue(&gNpiTaskAppData.npiSyncTxQueue, "NPI Sync Rx Queue", NPI_SYNC_RX_QUEUE_SIZE, sizeof(NPIMSG_msg_t), O_NONBLOCK);
 
     // Create clock for SYNC REQ/RSP message watchdog
     Clock_Params clockParams;
@@ -393,22 +313,9 @@ static void NPITask_inititializeTask(void)
 
     syncReqRspWatchDogClkHandle = Clock_handle(&syncReqRspWatchDogClkStruct);
 #endif // NPI_SREQRSP
-
     /* Enroll the service that this stack represents */
-#ifdef ICALL_EVENTS
-    ICall_enrollService ( ICALL_SERVICE_CLASS_NPI, NULL, &npiAppEntityID,
-                          &syncEvent );
-#else //!ICALL_EVENTS
-#ifdef FLE_DEBUG
-    ICall_enrollService( ICALL_SERVICE_CLASS_NPI, NULL, &npiAppEntityID, &appSem );
-#else
-    Semaphore_Params semParams;
-    Semaphore_Params_init(&semParams);
-    Semaphore_construct(&structSem, 1, &semParams);
-    appSem = Semaphore_handle(&structSem);
-#endif //FLE_DEBUG
-#endif //ICALL_EVENTS
-
+    ICall_enrollService( ICALL_SERVICE_CLASS_NPI, NULL, &gNpiTaskAppData.npiAppEntityID, (void *)&gNpiTaskAppData.pNpiSem );
+    // create Semaphore instance
     // Initialize Frame Module
     NPIFrame_initialize(&NPITask_incomingFrameCB);
 
@@ -416,296 +323,100 @@ static void NPITask_inititializeTask(void)
     NPITL_initTL( &NPITask_transportTxDoneCallBack,
                   &NPITask_transportRXCallBack,
                   &NPITask_MRDYEventCB );
-
 }
 
+static NPITASK_STATUS NPITask_handleICallEvents()
+{
+  ICall_ServiceEnum src;
+  ICall_EntityID dest;
+  NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+
+  uint8_t *pMsg;
+
+  // ICall Message Event
+  if (ICall_fetchServiceMsg(&src, &dest, (void * *) &pMsg) == ICALL_ERRNO_SUCCESS)
+  {
+    npiStatus = NPITask_processICallMsgEvent( pMsg, src, dest );
+  }
+  return npiStatus;
+}
+
+static void NPITask_handleAsyncEvents()
+{
+  NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+
+  npiStatus |= NPITask_handleICallEvents();
+
+  npiStatus |= NPITask_ProcessTXQ();
+
+  npiStatus |= NPIFrame_collectFrameData();
+
+  npiStatus |= NPITask_ProcessRXQ();
+
+  /* As long as there was a processed message - Post the semaphore, so the NPI task
+   * will run again, as there could be multiple number of messages in the queue.
+   * In case all queues are empty - meaning the NPI task finished handling all
+   * messages and there is no need for post for the semaphore. */
+  if (npiStatus != QUEUE_EMPTY)
+  {
+    sem_post(gNpiTaskAppData.pNpiSem);
+  }
+}
+
+static void NPITask_handleSyncEvents()
+{
+#if defined(NPI_SREQRSP)
+  NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+
+  if (syncTransactionInProgress)
+  {
+    npiStatus = NPITask_ProcessSyncTXQ();
+    if (npiStatus == MSG_PROCESSED)
+    {
+      npiStatus |= NPITask_handleICallEvents();
+      npiStatus |= NPITask_ProcessSyncRXQ();
+    }
+    /* As long as there was a processed message - Post the semaphore, so the NPI task
+     * will run again, as there could be multiple number of messages in the queue.
+     * In case all queues are empty - meaning the NPI task finished handling all
+     * messages and there is no need for post for the semaphore. */
+    if (npiStatus != QUEUE_EMPTY)
+    {
+      sem_post(gNpiTaskAppData.pNpiSem);
+    }
+  }
+#endif
+}
+
+static void NPITask_handleMrdyEvents(void)
+{
+#if (NPI_FLOW_CTRL == 1)
+  if (gNpiTaskAppData.mrdyIsrEventFlag & NPITASK_MRDY_FLAG)
+  {
+    NPITL_handleMrdyEvent();
+    gNpiTaskAppData.mrdyIsrEventFlag = 0;
+  }
+#endif // NPI_FLOW_CTRL = 1
+}
 
 // -----------------------------------------------------------------------------
 //! \brief      NPI main event processing loop.
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-#define ITM_Port32(n) (*((volatile unsigned int *)(0xE0000000+4*n)))
-
 static void NPITask_process(void)
 {
-    ICall_ServiceEnum stackid;
-    ICall_EntityID dest;
-    uint8_t *pMsg;
-    ICall_CSState key;
+  while (true)
+  {
+//    mq_getattr(gNpiTaskAppData.npiTxQueue, &gNpiTaskAppData.txQueueAttr);
+//    mq_getattr(gNpiTaskAppData.npiRxQueue, &gNpiTaskAppData.rxQueueAttr);
 
-    /* Forever loop */
-    for (;; )
-    {
-        /* Wait for response message */
+    sem_wait(gNpiTaskAppData.pNpiSem);
 
-#ifdef ICALL_EVENTS
-        uint32_t NPITask_events;
-
-        NPITask_events = Event_pend(syncEvent, Event_Id_NONE,
-                                    NPITASK_ALL_EVENTS, BIOS_WAIT_FOREVER);
-#else //!ICALL_EVENTS
-        //if (ICall_wait(ICALL_TIMEOUT_FOREVER) == ICALL_ERRNO_SUCCESS)
-        Semaphore_pend(appSem, BIOS_WAIT_FOREVER);
-#endif //ICALL_EVENTS
-        {
-            // Capture the ISR events flags now within a critical section.
-            // We do this to avoid possible race conditions where the ISR is
-            // modifying the event mask while the task is read/writing it.
-            key = ICall_enterCriticalSection();
-
-#ifndef ICALL_EVENTS
-            NPITask_events = NPITask_events | TX_DONE_ISR_EVENT_FLAG |
-                             MRDY_ISR_EVENT_FLAG | TRANSPORT_RX_ISR_EVENT_FLAG;
-
-            TX_DONE_ISR_EVENT_FLAG = 0;
-            MRDY_ISR_EVENT_FLAG = 0;
-            TRANSPORT_RX_ISR_EVENT_FLAG = 0;
-#endif //ICALL_EVENTS
-
-            ICall_leaveCriticalSection(key);
-
-            // MRDY event
-            if (NPITask_events & NPITASK_MRDY_EVENT)
-            {
-#ifndef ICALL_EVENTS
-                NPITask_events &= ~NPITASK_MRDY_EVENT;
-#endif //ICALL_EVENTS
-#if (NPI_FLOW_CTRL == 1)
-                NPITL_handleMrdyEvent();
-#endif // NPI_FLOW_CTRL = 1
-
-            }
-
-#if defined(NPI_SREQRSP)
-            // Something is ready to send to the Host
-            if(NPITask_events & NPITASK_SYNC_TX_READY_EVENT)
-            {
-
-                if (syncTransactionInProgress)
-                {
-                    // Prioritize Synchronous traffic
-                    if ((!Queue_empty(npiSyncTxQueue)) && !NPITL_checkNpiBusy())
-                    {
-                        // Push the pending Sync RSP to the host.
-                        NPITask_ProcessSyncTXQ();
-                    }
-                }
-                else
-                {
-                    // Not expected
-                }
-
-                if (Queue_empty(npiSyncTxQueue))
-                {
-#ifndef ICALL_EVENTS
-                    // If the Sync Q is empty now (and it should be) clear the
-                    // event.
-                    NPITask_events &= ~NPITASK_SYNC_TX_READY_EVENT;
-#endif //ICALL_EVENTS
-                }
-                else
-                {
-                    // If the Sync Q is not empty now :
-                    // - It means we're handling "stacked" SYNC REQ/RSP's
-                    //   (which shouldn't be happening).
-                    // - Preserve the event flag and repost on the semaphore.
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-            }
-#endif // NPI_SREQRSP
-
-            // ICall Message Event
-            if (ICall_fetchServiceMsg(&stackid, &dest, (void * *) &pMsg)
-                == ICALL_ERRNO_SUCCESS)
-            {
-                NPITask_processICallMsgEvent( pMsg, stackid, dest );
-            }
-
-#if defined(NPI_SREQRSP)
-            // Synchronous Frame received from Host
-            if(NPITask_events & NPITASK_SYNC_FRAME_RX_EVENT)
-            {
-                // Process it
-                NPITask_processSyncRXQ();
-
-                if (Queue_empty(npiSyncRxQueue))
-                {
-#ifndef ICALL_EVENTS
-                    // Q is empty, it's safe to clear the event flag.
-                    NPITask_events &= ~NPITASK_SYNC_FRAME_RX_EVENT;
-#endif //ICALL_EVENTS
-                }
-                else
-                {
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-                    // Q is not empty, there's more to handle so preserve the
-                    // flag and repost to the task semaphore.
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-            }
-#endif // NPI_SREQRSP
-
-            // An ASYNC message is ready to send to the Host
-            if(NPITask_events & NPITASK_TX_READY_EVENT)
-            {
-#if defined(NPI_SREQRSP)
-                // Check for outstanding SYNC REQ/RSP transactions.  If so,
-                // this ASYNC message must remain Q'd while we wait for the
-                // SYNC RSP.
-                if (syncTransactionInProgress  == 0)
-                {
-                    // No outstanding SYNC REQ/RSP transactions, process
-                    // ASYNC messages.
-#endif // NPI_SREQRSP
-                    if ((!Queue_empty(npiTxQueue)) && !NPITL_checkNpiBusy())
-                    {
-                        // Push the pending Async Msg to the host.
-                        NPITask_ProcessTXQ();
-                    }
-#if defined(NPI_SREQRSP)
-                }
-#endif // NPI_SREQRSP
-
-                if (Queue_empty(npiTxQueue))
-                {
-#ifndef ICALL_EVENTS
-                    // Q is empty, it's safe to clear the event flag.
-                    NPITask_events &= ~NPITASK_TX_READY_EVENT;
-#endif //ICALL_EVENTS
-                }
-                else
-                {
-                    // Q is not empty, there's more to handle so preserve the
-                    // flag and repost to the task semaphore.
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-            }
-
-
-            // The Transport Layer has received some bytes
-            if(NPITask_events & NPITASK_TRANSPORT_RX_EVENT)
-            {
-                // Call the packet/frame collector parser.  This function is
-                // specific to the supported technology:
-                // - HCI for BLE
-                // - MT for ZigBee, TIMAC, RF4CE
-                // - ? for your favorite technology
-                NPIFrame_collectFrameData();
-
-                if (NPIRxBuf_GetRxBufCount() == 0)
-                {
-#ifndef ICALL_EVENTS
-                    // No additional bytes to collect, clear the flag.
-                    NPITask_events &= ~NPITASK_TRANSPORT_RX_EVENT;
-#endif //ICALL_EVENTS
-                }
-                else
-                {
-                    // Additional bytes to collect, preserve the flag and repost
-                    // to the semaphore
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
-#else //!ICALL_EVENTS
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-            }
-
-            // A complete frame (msg) has been received and is ready for handling
-            if(NPITask_events & NPITASK_FRAME_RX_EVENT)
-            {
-#if defined(NPI_SREQRSP)
-                // Check for outstanding SYNC REQ/RSP transactions.  If so,
-                // this ASYNC message must remain Q'd while we wait for the
-                // SYNC RSP.
-                if (syncTransactionInProgress == 0)
-                {
-#endif // NPI_SREQRSP
-                    // Process the ASYNC message
-                    NPITask_processRXQ();
-                    if (Queue_empty(npiRxQueue))
-                    {
-#ifndef ICALL_EVENTS
-                        // Q is empty, it's safe to clear the event flag.
-                        NPITask_events &= ~NPITASK_FRAME_RX_EVENT;
-#endif //ICALL_EVENTS
-                    }
-                    else
-                    {
-                        // Q is not empty, there's more to handle so preserve the
-                        // flag and repost to the task semaphore.
-#ifdef ICALL_EVENTS
-                        Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-                        Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                    }
-#if defined(NPI_SREQRSP)
-                }
-                else
-                {
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-                    // Preserve the flag and repost to the task semaphore.
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-#endif // NPI_SREQRSP
-            }
-
-            // The last transmission to the host has completed.
-            if(NPITask_events & NPITASK_TRANSPORT_TX_DONE_EVENT)
-            {
-                // Current TX is done.
-                NPITask_events &= ~NPITASK_TRANSPORT_TX_DONE_EVENT;
-
-#if defined(NPI_SREQRSP)
-                if (!Queue_empty(npiSyncTxQueue))
-                {
-                    // There are pending SYNC RSP messages waiting to be sent
-                    // to the host. Set the appropriate flag and post to
-                    // the semaphore.
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                    NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                }
-                else
-                {
-#endif // NPI_SREQRSP
-                    if (!Queue_empty(npiTxQueue))
-                    {
-                        // There are pending ASYNC messages waiting to be sent
-                        // to the host. Set the appropriate flag and post to
-                        // the semaphore.
-#ifdef ICALL_EVENTS
-                        Event_post(syncEvent, NPITASK_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                        NPITask_events |= NPITASK_TX_READY_EVENT;
-                        Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-                    }
-#if defined(NPI_SREQRSP)
-                }
-#endif // NPI_SREQRSP
-            }
-        }
-    }
+    NPITask_handleMrdyEvents();
+    NPITask_handleSyncEvents();
+    NPITask_handleAsyncEvents();
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -744,19 +455,26 @@ Void NPITask_Fxn(UArg a0, UArg a1)
 // -----------------------------------------------------------------------------
 void NPITask_createTask(uint32_t stackID)
 {
-    // Set stackID for future ICall Messaging
-    stackServiceID = stackID;
+    memset(&gNpiTaskAppData, 0, sizeof(NPITASK_AppData_t));
 
-    memset(&npiTaskStack, 0xBB, sizeof(npiTaskStack));
+    // Set stackID for future ICall Messaging
+    gNpiTaskAppData.stackServiceID = stackID;
+
+    gNpiTaskAppData.pTaskStack = ICall_malloc(NPITASK_STACK_SIZE);
+    if (gNpiTaskAppData.pTaskStack == NULL)
+    {
+      return;
+    }
 
     // Configure and create the NPI task.
     Task_Params npiTaskParams;
     Task_Params_init(&npiTaskParams);
-    npiTaskParams.stack = npiTaskStack;
+    npiTaskParams.name = "npi";
+    npiTaskParams.stack = gNpiTaskAppData.pTaskStack;
     npiTaskParams.stackSize = NPITASK_STACK_SIZE;
     npiTaskParams.priority = NPITASK_PRIORITY;
 
-    Task_construct(&npiTaskStruct, NPITask_Fxn, &npiTaskParams, NULL);
+    gNpiTaskAppData.taskHandle = Task_construct(&gNpiTaskAppData.TaskStruct, NPITask_Fxn, &npiTaskParams, NULL);
 }
 
 // -----------------------------------------------------------------------------
@@ -803,59 +521,59 @@ void NPITask_registerIncomingTXEventAppCB(npiIncomingEventCBack_t appTxCB,
 void NPITask_sendToHost(uint8_t *pMsg)
 {
     ICall_CSState key;
-    NPI_QueueRec *recPtr;
-
-    NPIMSG_msg_t *pNPIMsg = NPIFrame_frameMsg(pMsg);
-
-    if(!pNPIMsg)
-    {
-      return;
-    }
-    recPtr = ICall_malloc(sizeof(NPI_QueueRec));
-
-    if(!recPtr)
-    {
-      ICall_free(pNPIMsg);
-      return;
-    }
 
     // Enter CS to prevent higher priority tasks
     // from also enqueuing msg at the same time
     key = ICall_enterCriticalSection();
 
-    recPtr->npiMsg = pNPIMsg;
+    NPIMSG_msg_t npiMsg;
 
-    switch (pNPIMsg->msgType)
+    NPIFrame_frameMsg(&npiMsg, pMsg);
+
+    switch (npiMsg.msgType)
     {
         // Enqueue to appropriate NPI Task Q and post corresponding event.
 #if defined(NPI_SREQRSP)
         case NPIMSG_Type_SYNCRSP:
         {
-            Queue_put(npiSyncTxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-            Event_post(syncevent, NPITASK_SYNC_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-            NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
-            Semaphore_post(appSem);
-#endif //ICALL_EVENT
+            if (mq_send(gNpiTaskAppData.npiSyncTxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
+            {
+              // Failed to enqeue the message, free the allocations
+                if (npiMsg.pBuf)
+                {
+                  ICall_freeMsg(npiMsg.pBuf);
+                }
+                ICall_leaveCriticalSection(key);
+              return;
+            }
+            sem_post(gNpiTaskAppData.pNpiSem);
             break;
         }
 #endif // NPI_SREQRSP
         case NPIMSG_Type_ASYNC:
         {
-            Queue_put(npiTxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-            Event_post(syncEvent, NPITASK_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-            NPITask_events |= NPITASK_TX_READY_EVENT;
-            Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+            if (mq_send(gNpiTaskAppData.npiTxQueue, (char *)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
+            {
+                // Failed to enqeue the message, free the allocations
+              if (npiMsg.pBuf)
+              {
+                ICall_freeMsg(npiMsg.pBuf);
+              }
+              ICall_leaveCriticalSection(key);
+              return;
+            }
+            sem_post(gNpiTaskAppData.pNpiSem);
             break;
         }
         default:
         {
             //error
-            break;
+            if (npiMsg.pBuf)
+            {
+              ICall_freeMsg(npiMsg.pBuf);
+            }
+            ICall_leaveCriticalSection(key);
+            return;
         }
     }
 
@@ -874,17 +592,20 @@ void NPITask_sendToHost(uint8_t *pMsg)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static uint_least16_t NPITask_processICallMsgEvent(uint8_t *pMsg,
+static NPITASK_STATUS NPITask_processICallMsgEvent(uint8_t *pMsg,
                                                    ICall_ServiceEnum src,
                                                    ICall_EntityID dest)
 {
-    if (dest == npiAppEntityID)
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+
+    if (dest == gNpiTaskAppData.npiAppEntityID)
     {
         // Message received from the Stack.
         NPITask_processStackMsg(pMsg);
+        npiStatus = MSG_PROCESSED;
     }
 
-    return(0);
+    return npiStatus;
 }
 
 
@@ -906,10 +627,12 @@ static ICall_Errno NPITask_sendBufToStack(ICall_EntityID appEntity,
     ICall_Errno errno = ICALL_ERRNO_SUCCESS;
 
 
-    errno = ICall_sendServiceMsg(appEntity, stackServiceID,
+    errno = ICall_sendServiceMsg(appEntity, gNpiTaskAppData.stackServiceID,
                                  ICALL_MSG_FORMAT_KEEP, pMsg->pBuf);
 
-    ICall_free(pMsg);
+    /* Freeing the pMsg here will cause a double free in some cases, such as in NPITask_processRXQ(),
+     * where the pMsg is re-used in the incomingRXEventAppCBFunc() */
+//    ICall_free(pMsg);
 
     return (errno);
 }
@@ -927,7 +650,6 @@ static ICall_Errno NPITask_sendBufToStack(ICall_EntityID appEntity,
 // -----------------------------------------------------------------------------
 static void NPITask_processStackMsg(uint8_t *pMsg)
 {
-    NPIMSG_msg_t *pNPIMsg;
 
     if(incomingTXEventAppCBFunc != NULL)
     {
@@ -954,66 +676,66 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
         }
     }
 
-    pNPIMsg = NPIFrame_frameMsg(pMsg);
-    if(pNPIMsg != NULL)
-    {
-        NPI_QueueRec *recPtr;
 
-        recPtr = ICall_malloc(sizeof(NPI_QueueRec));
-        if(recPtr != NULL)
-        {
             ICall_CSState key;
 
             // Enter CS to prevent higher priority tasks
             // from also enqueuing msg at the same time
             key = ICall_enterCriticalSection();
+            NPIMSG_msg_t npiMsg;
 
-            recPtr->npiMsg = pNPIMsg;
+            NPIFrame_frameMsg(&npiMsg, pMsg);
 
-            switch(pNPIMsg->msgType)
+            switch(npiMsg.msgType)
             {
                 // Enqueue to appropriate NPI Task Q and post corresponding event.
 #if defined(NPI_SREQRSP)
                 case NPIMSG_Type_SYNCRSP:
                 {
-                    Queue_put(npiSyncTxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                    NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+                    if (mq_send(gNpiTaskAppData.npiSyncTxQueue, (char *)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
+                    {
+                        // Failed to enque the message, free the allocations
+                        if (npiMsg.pBuf)
+                        {
+                          ICall_freeMsg(npiMsg.pBuf);
+                        }
+                        ICall_leaveCriticalSection(key);
+                      return;
+                    }
+
+                    sem_post(gNpiTaskAppData.pNpiSem);
                     break;
                 }
 #endif // NPI_SREQRSP
                 case NPIMSG_Type_ASYNC:
                 {
-                    Queue_put(npiTxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TX_READY_EVENT);
-#else //!ICALL_EVENTS
-                    NPITask_events |= NPITASK_TX_READY_EVENT;
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+                    if (mq_send(gNpiTaskAppData.npiTxQueue, (char *)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
+                    {
+                      // Failed to enqueue the message, free the allocations
+                      if (npiMsg.pBuf)
+                      {
+                        ICall_freeMsg(npiMsg.pBuf);
+                      }
+                      ICall_leaveCriticalSection(key);
+                      return;
+                    }
+
+                    sem_post(gNpiTaskAppData.pNpiSem);
                     break;
                 }
                 default:
                 {
-                    /* Fail - unsupported message type */
-                	ICall_free(recPtr);
-                	ICall_free(pNPIMsg);
-                    break;
+                  /* Fail - unsupported message type */
+                    if (npiMsg.pBuf)
+                    {
+                      ICall_freeMsg(npiMsg.pBuf);
+                    }
+                    ICall_leaveCriticalSection(key);
+                    return;
                 }
             }
 
             ICall_leaveCriticalSection(key);
-        }
-        else
-        {
-            /* Fail - couldn't get queue record */
-        	ICall_free(pNPIMsg);
-        }
-    }
 }
 
 // -----------------------------------------------------------------------------
@@ -1022,33 +744,34 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITask_ProcessTXQ(void)
+static NPITASK_STATUS NPITask_ProcessTXQ(void)
 {
-    ICall_CSState key;
-    NPI_QueueRec *recPtr = NULL;
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+    NPIMSG_msg_t npiMsg;
 
-    // Processing of any TX Queue should only be done
-    // in a critical section since any application
-    // task can enqueue items freely
-    key = ICall_enterCriticalSection();
-
-    if (!Queue_empty(npiTxQueue))
+    if (NPITask_NpiTlTestIsFree())
     {
-      recPtr = Queue_dequeue(npiTxQueue);
-
-      if (recPtr != NULL)
+      if (mq_receive(gNpiTaskAppData.npiTxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), NULL) == sizeof(NPIMSG_msg_t))
       {
-          lastQueuedTxMsg = recPtr->npiMsg->pBuf;
+        gNpiTaskAppData.lastQueuedTxMsg = npiMsg.pBuf;
+        gNpiTaskAppData.lastQueuedTxMsgSize = npiMsg.pBufSize;
 
-          NPITL_writeTL(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize);
+        if (npiMsg.pBuf)
+        {
+          NPITL_writeTL(npiMsg.pBuf, npiMsg.pBufSize);
 
           //free the Queue record
-          ICall_free(recPtr->npiMsg);
-          ICall_free(recPtr);
+          ICall_freeMsg(npiMsg.pBuf);
+        }
+
+        npiStatus = MSG_PROCESSED;
       }
     }
-
-    ICall_leaveCriticalSection(key);
+    else
+    {
+      npiStatus = PROCESS_BUSY;
+    }
+    return npiStatus;
 }
 
 #if defined(NPI_SREQRSP)
@@ -1058,26 +781,24 @@ static void NPITask_ProcessTXQ(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITask_ProcessSyncTXQ(void)
+static NPITASK_STATUS NPITask_ProcessSyncTXQ(void)
 {
     ICall_CSState key;
-    NPI_QueueRec *recPtr = NULL;
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
 
     // Processing of any TX Queue should only be done
     // in a critical section since any application
     // task can enqueue items freely
-    key = ICall_enterCriticalSection();
-
-    if (!Queue_empty(npiSyncTxQueue))
+    NPIMSG_msg_t npiMsg;
+    if (NPITask_NpiTlTestIsFree())
     {
-      recPtr = Queue_dequeue(npiSyncTxQueue);
-
-      if (recPtr != NULL)
+      if (mq_receive(gNpiTaskAppData.npiSyncTxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), NULL) == sizeof(NPIMSG_msg_t))
       {
-          lastQueuedTxMsg = recPtr->npiMsg->pBuf;
+          gNpiTaskAppData.lastQueuedTxMsg = npiMsg.pBuf;
 
-          NPITL_writeTL(recPtr->npiMsg->pBuf, recPtr->npiMsg->pBufSize);
+          NPITL_writeTL(npiMsg.pBuf, npiMsg.pBufSize);
 
+          key = ICall_enterCriticalSection();
           // Decrement the outstanding Sync REQ/RSP flag.
           syncTransactionInProgress--;
 
@@ -1089,13 +810,22 @@ static void NPITask_ProcessSyncTXQ(void)
               // not expected!
               syncTransactionInProgress = 0;
           }
+          ICall_leaveCriticalSection(key);
 
-          ICall_free(recPtr->npiMsg);
-          ICall_free(recPtr);
+          //free the Queue record
+          if (npiMsg.pBuf)
+          {
+            ICall_freeMsg(npiMsg.pBuf);
+          }
+
+          npiStatus = MSG_PROCESSED;
       }
     }
-
-    ICall_leaveCriticalSection(key);
+    else
+    {
+      npiStatus = PROCESS_BUSY;
+    }
+    return npiStatus;
 }
 #endif // NPI_SREQRSP
 
@@ -1104,56 +834,63 @@ static void NPITask_ProcessSyncTXQ(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITask_processRXQ(void)
+static NPITASK_STATUS NPITask_ProcessRXQ(void)
 {
-    NPI_QueueRec *recPtr = NULL;
+    ICall_CSState key;
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+    NPIMSG_msg_t npiMsg;
+    ssize_t msg_size;
 
-    if (!Queue_empty(npiRxQueue))
+    key = ICall_enterCriticalSection();
+    msg_size = mq_receive(gNpiTaskAppData.npiRxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), NULL);
+    ICall_leaveCriticalSection(key);
+
+    if (msg_size == sizeof(NPIMSG_msg_t))
     {
-      recPtr = Queue_get(npiRxQueue);
-
-      if (recPtr != NULL)
+      if (incomingRXEventAppCBFunc != NULL)
       {
-          if (incomingRXEventAppCBFunc != NULL)
+          switch (incomingRXReroute)
           {
-              switch (incomingRXReroute)
+              case ECHO:
               {
-                  case ECHO:
-                  {
-                      // send to stack and a copy to the application
-                      NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-                      incomingRXEventAppCBFunc((uint8_t *)recPtr->npiMsg);
-                      break;
-                  }
+                  /* Race in freeing the npiMsg->pData (double free). Should not use this case! */
+                  // send to stack and a copy to the application
+                  NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+                      /*HostTestApp_handleNPIRxInterceptEvent*/
+                  incomingRXEventAppCBFunc((uint8_t *) &npiMsg);
+                  break;
+              }
 
-                  case INTERCEPT:
-                  {
-                      // send a copy only to the application
-                      // npiMsg need to be free in the callback
-                      incomingRXEventAppCBFunc((uint8_t *)recPtr->npiMsg);
-                      break;
-                  }
+              case INTERCEPT:
+              {
+                  // send a copy only to the application
+                  // npiMsg need to be free in the callback
+                      /*HostTestApp_handleNPIRxInterceptEvent*/
+                  incomingRXEventAppCBFunc((uint8_t *) &npiMsg);
+                  break;
+              }
 
-                  case NONE:
-                  {
-                      NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-                      break;
-                  }
+              case NONE:
+              {
+                  NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+                  ICall_freeMsg(npiMsg.pBuf);
+                  break;
               }
           }
-          else
-          {
-              // send to stack and a copy to the application
-              NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-          }
-
-          //free the Queue record
-          ICall_free(recPtr);
-
-          // DON'T free the referenced npiMsg container.  This will be free'd in the
-          // stack task.
       }
+      else
+      {
+          // send to stack and a copy to the application
+          NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+          ICall_freeMsg(npiMsg.pBuf);
+      }
+      npiStatus = MSG_PROCESSED;
+
+      // DON'T free the referenced npiMsg container.  This will be free'd in the
+      // stack task.
     }
+
+    return npiStatus;
 }
 
 #if defined(NPI_SREQRSP)
@@ -1162,64 +899,64 @@ static void NPITask_processRXQ(void)
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITask_processSyncRXQ(void)
+static NPITASK_STATUS NPITask_processSyncRXQ(void)
 {
-    NPI_QueueRec *recPtr = NULL;
+    NPITASK_STATUS npiStatus = QUEUE_EMPTY;
+
+    NPIMSG_msg_t npiMsg;
 
     if (syncTransactionInProgress == 0)
     {
-        if (!Queue_empty(npiSyncRxQueue))
-        {
-          recPtr = Queue_get(npiSyncRxQueue);
+       if (mq_receive(gNpiTaskAppData.npiSyncRxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), NULL) == sizeof(NPIMSG_msg_t))
+       {
+           // Increment the outstanding Sync REQ/RSP flag.
+           syncTransactionInProgress++;
 
-          if (recPtr != NULL)
-          {
+           // Start the Sync REQ/RSP watchdog timer
+           Clock_start(syncReqRspWatchDogClkHandle);
 
-              // Increment the outstanding Sync REQ/RSP flag.
-              syncTransactionInProgress++;
+           if (incomingRXEventAppCBFunc != NULL)
+           {
+               switch (incomingRXReroute)
+               {
+                   case ECHO:
+                   {
+                       // send to stack and a copy to the application
+                       NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+                       incomingRXEventAppCBFunc(npiMsg.pBuf);
+                       break;
+                   }
 
-              // Start the Sync REQ/RSP watchdog timer
-              Clock_start(syncReqRspWatchDogClkHandle);
+                   case INTERCEPT:
+                   {
+                       // send a copy only to the application
+                       incomingRXEventAppCBFunc(npiMsg.pBuf);
+                       break;
+                   }
 
-              if (incomingRXEventAppCBFunc != NULL)
-              {
-                  switch (incomingRXReroute)
-                  {
-                      case ECHO:
-                      {
-                          // send to stack and a copy to the application
-                          NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-                          incomingRXEventAppCBFunc(recPtr->npiMsg->pBuf);
-                          break;
-                      }
+                   case NONE:
+                   {
+                       NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+                       ICall_freeMsg(npiMsg.pBuf);
+                       break;
+                   }
+               }
+           }
+           else
+           {
+               // send to stack and a copy to the application
+               NPITask_sendBufToStack(gNpiTaskAppData.npiAppEntityID, &npiMsg);
+               ICall_freeMsg(npiMsg.pBuf);
+           }
 
-                      case INTERCEPT:
-                      {
-                          // send a copy only to the application
-                          incomingRXEventAppCBFunc(recPtr->npiMsg->pBuf);
-                          break;
-                      }
-
-                      case NONE:
-                      {
-                          NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-                          break;
-                      }
-                  }
-              }
-              else
-              {
-                  // send to stack and a copy to the application
-                  NPITask_sendBufToStack(npiAppEntityID, recPtr->npiMsg);
-              }
-
-              //free the Queue record
-              ICall_free(recPtr);
-              // DON'T free the referenced npiMsg container.  This will be free'd in the
-              // stack task.
-          }
-        }
+           //free the Queue record
+           // DON'T free the referenced npiMsg container.  This will be free'd in the
+           // stack task.
+           npiStatus = MSG_PROCESSED;
+       }
     }
+
+    return npiStatus;
 }
 #endif // NPI_SREQRSP
 
@@ -1235,22 +972,7 @@ static void NPITask_processSyncRXQ(void)
 // -----------------------------------------------------------------------------
 static void NPITask_transportTxDoneCallBack(int size)
 {
-
-    if(lastQueuedTxMsg)
-    {
-        //Deallocate most recent message being transmitted.
-        ICall_freeMsg(lastQueuedTxMsg);
-
-        lastQueuedTxMsg = NULL;
-    }
-
-    // Post the event to the NPI task thread.
-#ifdef ICALL_EVENTS
-    Event_post(syncEvent, NPITASK_TRANSPORT_TX_DONE_EVENT);
-#else //!ICALL_EVENTS
-    TX_DONE_ISR_EVENT_FLAG = NPITASK_TRANSPORT_TX_DONE_EVENT;
-    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+    sem_post(gNpiTaskAppData.pNpiSem);
 }
 
 // -----------------------------------------------------------------------------
@@ -1265,68 +987,62 @@ static void NPITask_transportTxDoneCallBack(int size)
 static void NPITask_incomingFrameCB(uint16_t frameSize, uint8_t *pFrame,
                                     NPIMSG_Type msgType)
 {
-    NPI_QueueRec *recPtr = ICall_malloc(sizeof(NPI_QueueRec));
+    // Create NPIMSG_msg_t
+    NPIMSG_msg_t npiMsg;
 
-    if (recPtr != NULL)
+    npiMsg.pBuf = pFrame;
+    npiMsg.pBufSize = frameSize;
+
+    switch (msgType)
     {
-        // Allocate NPIMSG_msg_t container
-        NPIMSG_msg_t *npiMsgPtr = ICall_malloc(sizeof(NPIMSG_msg_t));
 
-        if (npiMsgPtr != NULL)
+        // Enqueue to appropriate NPI Task Q and post corresponding event.
+        case NPIMSG_Type_ASYNC:
         {
-            npiMsgPtr->pBuf = pFrame;
-            npiMsgPtr->pBufSize = frameSize;
-            recPtr->npiMsg = npiMsgPtr;
-
-            switch (msgType)
+            npiMsg.msgType = NPIMSG_Type_ASYNC;
+            if (mq_send(gNpiTaskAppData.npiRxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
             {
+               // Failed to enqueue, free the allocation
+               if (npiMsg.pBuf)
+               {
+                 ICall_freeMsg(npiMsg.pBuf);
+               }
+               return;
+            }
 
-                // Enqueue to appropriate NPI Task Q and post corresponding event.
-                case NPIMSG_Type_ASYNC:
-                {
-                    recPtr->npiMsg->msgType = NPIMSG_Type_ASYNC;
-                    Queue_put(npiRxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-                    NPITask_events |= NPITASK_FRAME_RX_EVENT;
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+            sem_post(gNpiTaskAppData.pNpiSem);
 
-                    break;
-                }
+            break;
+        }
 
 #if defined(NPI_SREQRSP)
-                case NPIMSG_Type_SYNCREQ:
+        case NPIMSG_Type_SYNCREQ:
+        {
+            npiMsg.msgType = NPIMSG_Type_SYNCREQ;
+            if (mq_send(gNpiTaskAppData.npiSyncRxQueue, (char*)&npiMsg, sizeof(NPIMSG_msg_t), 1) != 0)
+            {
+                 // Failed to enqueue, free the allocation
+                if (npiMsg.pBuf)
                 {
-                    recPtr->npiMsg->msgType = NPIMSG_Type_SYNCREQ;
-                    Queue_put(npiSyncRxQueue, &recPtr->_elem);
-#ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-                    NPITask_events |= NPITASK_SYNC_FRAME_RX_EVENT;
-                    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
-
-                    break;
+                  ICall_freeMsg(npiMsg.pBuf);
                 }
+                return;
+            }
+
+            sem_post(gNpiTaskAppData.pNpiSem);
+
+            break;
+        }
 #endif // NPI_SREQRSP
 
-                default:
-                {
-                    // undefined msgType
-                    ICall_free(npiMsgPtr);
-                    ICall_free(recPtr);
-                    ICall_freeMsg(pFrame);
-
-                    break;
-                }
-            }
-        }
-        else
+        default:
         {
-            // Malloc failed - release previous dynamic allocation
-            ICall_free(recPtr);
+            // undefined msgType
+            if (npiMsg.pBuf)
+            {
+              ICall_freeMsg(npiMsg.pBuf);
+            }
+            return;
         }
     }
 }
@@ -1355,12 +1071,7 @@ static void NPITask_transportRXCallBack(int size)
     if ( size < NPIRxBuf_GetRxBufAvail() )
     {
         NPIRxBuf_Read(size);
-#ifdef ICALL_EVENTS
-        Event_post(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
-#else //!ICALL_EVENTS
-        TRANSPORT_RX_ISR_EVENT_FLAG = NPITASK_TRANSPORT_RX_EVENT;
-        Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+        sem_post(gNpiTaskAppData.pNpiSem);
     }
     else
     {
@@ -1379,12 +1090,8 @@ static void NPITask_transportRXCallBack(int size)
 // -----------------------------------------------------------------------------
 static void NPITask_MRDYEventCB(int size)
 {
-#ifdef ICALL_EVENTS
-    Event_post(syncEvent, NPITASK_MRDY_EVENT);
-#else //!ICALL_EVENTS
-    MRDY_ISR_EVENT_FLAG = NPITASK_MRDY_EVENT;
-    Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+  gNpiTaskAppData.mrdyIsrEventFlag = NPITASK_MRDY_FLAG;
+  sem_post(gNpiTaskAppData.pNpiSem);
 }
 
 
@@ -1404,20 +1111,8 @@ static void syncReqRspWatchDogTimeoutCB( UArg a0 )
         // reduce the number of transactions outstanding
         syncTransactionInProgress--;
 
-        // check if there are more pending SYNC REQ's
-        if (!Queue_empty(npiSyncRxQueue))
-        {
-#ifdef ICALL_EVENTS
-            Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
-#else //!ICALL_EVENTS
-            NPITask_events |= NPITASK_SYNC_FRAME_RX_EVENT;
-#endif //ICALL_EVENTS
-        }
-
-#ifndef ICALL_EVENTS
         // re-enter to Task event loop
-        Semaphore_post(appSem);
-#endif //ICALL_EVENTS
+        sem_post(gNpiTaskAppData.pNpiSem);
     }
     else
     {
@@ -1426,3 +1121,50 @@ static void syncReqRspWatchDogTimeoutCB( UArg a0 )
 }
 #endif // NPI_SREQRSP
 
+// -----------------------------------------------------------------------------
+//! \brief      Create a POSIX queue.
+//!
+//! \param    queueHandle     queue handle
+//! \param    mq_name         name
+//! \param    mq_size         number of elements for the queue
+//! \param    mq_msgsize      size of queue element
+//! \param    mq_flags        flags
+//!
+//! \return   int
+// -----------------------------------------------------------------------------
+static int NPITask_createPQueue(mqd_t *queueHandle, char *mq_name, uint32_t mq_size, uint32_t mq_msgsize, uint32_t mq_flags)
+{
+  struct mq_attr attr;
+
+  attr.mq_flags =  O_CREAT | O_RDWR | mq_flags;
+  attr.mq_curmsgs = 0;
+  attr.mq_maxmsg = mq_size;
+  attr.mq_msgsize = mq_msgsize;
+
+  /* Create the message queue */
+  *queueHandle = mq_open(mq_name, O_CREAT | O_RDWR | mq_flags, 0, &attr);
+
+  return 0;
+}
+
+// -----------------------------------------------------------------------------
+//! \brief      API for application task to properly release the NPI message
+//!             internal buffer. The container is declared on stack and should not be freed.
+//!
+//! \param[in]  pMsg    Pointer to message buffer.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITask_freeNpiMsg(uint8_t *pMsg)
+{
+  if (NULL != pMsg)
+  {
+    if (((NPIMSG_msg_t *)pMsg)->pBuf && ((NPIMSG_msg_t *)pMsg)->pBufSize)
+    {
+      // The data is stored as a message, free this first.
+      ICall_freeMsg(((NPIMSG_msg_t *)pMsg)->pBuf);
+    }
+
+    // The pMsg is declared on stack and should not be freed
+  }
+}

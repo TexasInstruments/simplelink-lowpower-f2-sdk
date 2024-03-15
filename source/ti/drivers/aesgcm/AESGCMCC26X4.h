@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@
  *  in an AES operation is not supported in this driver.
  *
  *  # Implementation Limitations
- *  - Only plaintext CryptoKeys are supported by this implementation.
+ *  - Only 12-byte IV lengths are supported by this implementation.
  *  - This implementation does not support internal generation of IVs
  *
  *  # Runtime Parameter Validation #

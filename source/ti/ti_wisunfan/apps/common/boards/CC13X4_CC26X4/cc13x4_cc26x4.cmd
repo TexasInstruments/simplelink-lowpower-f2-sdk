@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -126,7 +126,7 @@ SECTIONS
     .text           :   > FLASH
 #else
     .resetVecs      :   > FLASH_BASE
-    .text           :   >> FLASH_LAST | FLASH
+    .text           :   >> FLASH
 #endif
     .const          :   > FLASH
     .constdata      :   > FLASH

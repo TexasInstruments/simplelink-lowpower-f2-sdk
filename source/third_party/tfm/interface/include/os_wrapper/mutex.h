@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2017-2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -12,7 +14,7 @@
 extern "C" {
 #endif
 
-#include "common.h"
+#include "os_wrapper/common.h"
 
 /**
  * \brief Creates a mutex for mutual exclusion of resources
@@ -33,6 +35,7 @@ void *os_wrapper_mutex_create(void);
  *                     cause the thread to wait indefinitely
  *
  * \return \ref OS_WRAPPER_SUCCESS on success or \ref OS_WRAPPER_ERROR on error
+ *              or timeout
  */
 uint32_t os_wrapper_mutex_acquire(void *handle, uint32_t timeout);
 

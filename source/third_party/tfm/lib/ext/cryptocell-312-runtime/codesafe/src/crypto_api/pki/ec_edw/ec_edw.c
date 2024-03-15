@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -30,7 +30,7 @@
 #include "pki_dbg.h"
 #include "cc_int_general_defs.h"
 #include "cc_general_defs.h"
-#include "md.h"
+#include "mbedtls/md.h"
 
 /* global data definitions */
 extern CC_PalMutex CCAsymCryptoMutex;

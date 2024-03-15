@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -120,152 +120,98 @@ function _getPinResources(inst)
 function moduleInstances(inst)
 {
     let pinInstances = new Array();
+    let shortName = inst.$name.replace("CONFIG_", "");
 
-    if(inst.sd0DataDirection == "Output") {
+    if(inst.sd0DataDirection != "Disabled") {
         pinInstances.push({
             name: "sd0PinInstance",
-            displayName: "I2S SD0 GPIO Driver Instance - Output",
+            displayName: "SD0 configuration when not in use",
             moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
+            collapsed: true,
             requiredArgs: {
                 parentInterfaceName: "i2s",
                 parentSignalName: "SD0Pin",
-                parentSignalDisplayName: "SD0",
-                mode: "Output"
-            }
-        });
-    }
-
-    if(inst.sd0DataDirection == "Input") {
-        pinInstances.push({
-            name: "sd0PinInstance",
-            displayName: "I2S SD0 GPIO Driver Instance - Input",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
-            requiredArgs: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "SD0Pin",
-                parentSignalDisplayName: "SD0",
-                mode: "Input"
-            }
-        });
-    }
-
-    if(inst.sd1DataDirection == "Input") {
-        pinInstances.push({
-            name: "sd1PinInstance",
-            displayName: "I2S SD1 GPIO Driver Instance - Input",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
-            requiredArgs: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "SD1Pin",
-                parentSignalDisplayName: "SD1",
-                mode: "Input"
-            }
-        });
-    }
-
-    if(inst.sd1DataDirection == "Output") {
-        pinInstances.push({
-            name: "sd1PinInstance",
-            displayName: "I2S SD1 GPIO Driver Instance - Output",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
-            requiredArgs: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "SD1Pin",
-                parentSignalDisplayName: "SD1",
-                mode: "Output"
-            }
-        });
-    }
-
-    if(inst.controllerTargetSelection == "Controller") {
-        pinInstances.push({
-            name: "sckPinInstance",
-            displayName: "I2S SCK GPIO Driver Instance - Output",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
-            requiredArgs: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "SCKPin",
-                parentSignalDisplayName: "SCK",
-                mode: "Output"
-            }
-        });
-
-        pinInstances.push({
-            name: "wsPinInstance",
-            displayName: "I2S WS GPIO Driver Instance - Output",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
+                parentSignalDisplayName: "SD0"
+            },
             args: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "WSPin",
-                parentSignalDisplayName: "WS",
-                mode: "Output"
+                $name: "CONFIG_GPIO_" + shortName + "_SD0",
+                mode: "Input",
+                pull: "Pull Down"
             }
         });
-
-        if(inst.enableCCLK) {
-            pinInstances.push({
-                name: "cclkPinInstance",
-                legacyNames: ["mclkPinInstance"],
-                displayName: "I2S CCLK GPIO Driver Instance - Output",
-                moduleName: "/ti/drivers/GPIO",
-                readOnly: true,
-                requiredArgs: {
-                    parentInterfaceName: "i2s",
-                    parentSignalName: "CCLKPin",
-                    parentSignalDisplayName: "CCLK",
-                    mode: "Output"
-                }
-            });
-        }
     }
-    else {
+
+    if(inst.sd1DataDirection != "Disabled") {
         pinInstances.push({
-            name: "sckPinInstance",
-            displayName: "I2S SCK GPIO Driver Instance - Input",
+            name: "sd1PinInstance",
+            displayName: "SD1 configuration when not in use",
             moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
+            collapsed: true,
             requiredArgs: {
                 parentInterfaceName: "i2s",
-                parentSignalName: "SCKPin",
-                parentSignalDisplayName: "SCK",
-                mode: "Input"
+                parentSignalName: "SD1Pin",
+                parentSignalDisplayName: "SD1"
+            },
+            args: {
+                $name: "CONFIG_GPIO_" + shortName + "_SD1",
+                mode: "Input",
+                pull: "Pull Down"
             }
         });
+    }
 
-        pinInstances.push({
-            name: "wsPinInstance",
-            displayName: "I2S WS GPIO Driver Instance - Input",
-            moduleName: "/ti/drivers/GPIO",
-            readOnly: true,
-            requiredArgs: {
-                parentInterfaceName: "i2s",
-                parentSignalName: "WSPin",
-                parentSignalDisplayName: "WS",
-                mode: "Input"
-            }
-        });
-
-        if(inst.enableCCLK) {
-            pinInstances.push({
-                name: "cclkPinInstance",
-                legacyNames: ["mclkPinInstance"],
-                displayName: "I2S CCLK GPIO Driver Instance - Input",
-                moduleName: "/ti/drivers/GPIO",
-                readOnly: true,
-                args: {
-                    parentInterfaceName: "i2s",
-                    parentSignalName: "CCLKPin",
-                    parentSignalDisplayName: "CCLK",
-                    mode: "Input"
-                }
-            });
+    pinInstances.push({
+        name: "sckPinInstance",
+        displayName: "SCK configuration when not in use",
+        moduleName: "/ti/drivers/GPIO",
+        collapsed: true,
+        requiredArgs: {
+            parentInterfaceName: "i2s",
+            parentSignalName: "SCKPin",
+            parentSignalDisplayName: "SCK"
+        },
+        args: {
+            $name: "CONFIG_GPIO_" + shortName + "_SCK",
+            mode: "Input",
+            pull: "Pull Down"
         }
+    });
+
+    pinInstances.push({
+        name: "wsPinInstance",
+        displayName: "WS configuration when not in use",
+        moduleName: "/ti/drivers/GPIO",
+        collapsed: true,
+        requiredArgs: {
+            parentInterfaceName: "i2s",
+            parentSignalName: "WSPin",
+            parentSignalDisplayName: "WS"
+        },
+        args: {
+            $name: "CONFIG_GPIO_" + shortName + "_WS",
+            mode: "Input",
+            pull: "Pull Down"
+        }
+    });
+
+    if(inst.enableCCLK) {
+        pinInstances.push({
+            name: "cclkPinInstance",
+            legacyNames: ["mclkPinInstance"],
+            displayName: "CCLK configuration when not in use",
+            moduleName: "/ti/drivers/GPIO",
+            collapsed: true,
+            requiredArgs: {
+                parentInterfaceName: "i2s",
+                parentSignalName: "CCLKPin",
+                parentSignalDisplayName: "CCLK"
+            },
+            args: {
+                $name: "CONFIG_GPIO_" + shortName + "_CCLK",
+                mode: "Input",
+                pull: "Pull Down"
+            }
+        });
     }
 
     return (pinInstances);

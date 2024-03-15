@@ -1,0 +1,88 @@
+From 8be39b4353bdeee2f80e42c23a73a276cbd9a8ad Mon Sep 17 00:00:00 2001
+From: TTornblom <thomas.tornblom@iar.com>
+Date: Thu, 16 Apr 2020 13:53:38 +0200
+Subject: [PATCH 1/8] BUILD: Update For IAR support
+
+Applied the same change as in mbed-crypto for using this as a sub
+project with the IAR toolchain. Use __asm generic ,and avoid empty
+enum. Avoid declaration of array with null size.
+
+Signed-off-by: TTornblom <thomas.tornblom@iar.com>
+Signed-off-by: Michel Jaouen <michel.jaouen@st.com>
+---
+ CMakeLists.txt          | 4 +++-
+ include/mbedtls/ssl.h   | 1 +
+ library/constant_time.c | 2 +-
+ library/psa_crypto.c    | 7 ++++++-
+ 4 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d3f08a98..096bb6e14 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -222,7 +222,9 @@ if(CMAKE_COMPILER_IS_CLANG)
+ endif(CMAKE_COMPILER_IS_CLANG)
+ 
+ if(CMAKE_COMPILER_IS_IAR)
+-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --warn_about_c_style_casts -Ohz")
++    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --warn_about_c_style_casts")
++    set(CMAKE_C_FLAGS_RELEASE     "-Ohz")
++    set(CMAKE_C_FLAGS_DEBUG       "--debug -On")
+ endif(CMAKE_COMPILER_IS_IAR)
+ 
+ if(CMAKE_COMPILER_IS_MSVC)
+diff --git a/include/mbedtls/ssl.h b/include/mbedtls/ssl.h
+index 68e8d040f..fbd150638 100644
+--- a/include/mbedtls/ssl.h
++++ b/include/mbedtls/ssl.h
+@@ -620,6 +620,7 @@
+ 
+ /* Dummy type used only for its size */
+ union mbedtls_ssl_premaster_secret {
++    unsigned MBEDTLS_PRIVATE(dummy); /* Make the union non-empty even with no supported algorithms. */
+ #if defined(MBEDTLS_KEY_EXCHANGE_RSA_ENABLED)
+     unsigned char _pms_rsa[48];                         /* RFC 5246 8.1.1 */
+ #endif
+diff --git a/library/constant_time.c b/library/constant_time.c
+index 552a918f4..471d91618 100644
+--- a/library/constant_time.c
++++ b/library/constant_time.c
+@@ -77,7 +77,7 @@ static inline uint32_t mbedtls_get_unaligned_volatile_uint32(volatile const unsi
+      */
+     uint32_t r;
+ #if defined(__arm__) || defined(__thumb__) || defined(__thumb2__)
+-    asm volatile ("ldr %0, [%1]" : "=r" (r) : "r" (p) :);
++    __asm volatile ("ldr %0, [%1]" : "=r" (r) : "r" (p) :);
+ #elif defined(__aarch64__)
+     asm volatile ("ldr %w0, [%1]" : "=r" (r) : "r" (p) :);
+ #endif
+diff --git a/library/psa_crypto.c b/library/psa_crypto.c
+index bc19ed07c..8b9f28f4d 100644
+--- a/library/psa_crypto.c
++++ b/library/psa_crypto.c
+@@ -6611,8 +6611,13 @@ static psa_status_t psa_key_agreement_internal(psa_key_derivation_operation_t *o
+                                                size_t peer_key_length)
+ {
+     psa_status_t status;
++#if PSA_RAW_KEY_AGREEMENT_OUTPUT_MAX_SIZE != 0
+     uint8_t shared_secret[PSA_RAW_KEY_AGREEMENT_OUTPUT_MAX_SIZE];
++    size_t shared_secret_length = sizeof(shared_secret);
++#else
++    uint8_t *shared_secret = NULL;
+     size_t shared_secret_length = 0;
++#endif
+     psa_algorithm_t ka_alg = PSA_ALG_KEY_AGREEMENT_GET_BASE(operation->alg);
+ 
+     /* Step 1: run the secret agreement algorithm to generate the shared
+@@ -6621,7 +6626,7 @@ static psa_status_t psa_key_agreement_internal(psa_key_derivation_operation_t *o
+                                             private_key,
+                                             peer_key, peer_key_length,
+                                             shared_secret,
+-                                            sizeof(shared_secret),
++                                            shared_secret_length,
+                                             &shared_secret_length);
+     if (status != PSA_SUCCESS) {
+         goto exit;
+-- 
+2.32.0
+

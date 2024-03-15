@@ -1,0 +1,62 @@
+From 90e24d8259fc2aea1f261e47da1b753c66cc52d8 Mon Sep 17 00:00:00 2001
+From: Summer Qin <summer.qin@arm.com>
+Date: Mon, 3 Apr 2023 10:12:31 +0800
+Subject: [PATCH 8/8] Auto-enable MBEDTLS_MD_LIGHT after
+ MBEDTLS_PSA_CRYPTO_CONFIG
+
+PSA_WANT_xxx influences MBEDTLS_xxx, so it can also auto-enable MBEDTLS_MD_LIGHT.
+
+Signed-off-by: Summer Qin <summer.qin@arm.com>
+---
+ include/mbedtls/build_info.h | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/include/mbedtls/build_info.h b/include/mbedtls/build_info.h
+index 1b3d59fab..b13f9308a 100644
+--- a/include/mbedtls/build_info.h
++++ b/include/mbedtls/build_info.h
+@@ -80,20 +80,6 @@
+ #include MBEDTLS_USER_CONFIG_FILE
+ #endif
+ 
+-/* Auto-enable MBEDTLS_MD_LIGHT based on MBEDTLS_MD_C.
+- * This allows checking for MD_LIGHT rather than MD_LIGHT || MD_C.
+- */
+-#if defined(MBEDTLS_MD_C)
+-#define MBEDTLS_MD_LIGHT
+-#endif
+-
+-/* Auto-enable MBEDTLS_MD_LIGHT if some module needs it.
+- */
+-#if defined(MBEDTLS_PEM_PARSE_C) || \
+-    defined(MBEDTLS_RSA_C)
+-#define MBEDTLS_MD_LIGHT
+-#endif
+-
+ /* If MBEDTLS_PSA_CRYPTO_C is defined, make sure MBEDTLS_PSA_CRYPTO_CLIENT
+  * is defined as well to include all PSA code.
+  */
+@@ -148,6 +134,20 @@
+ #include "mbedtls/config_psa.h"
+ #endif
+ 
++/* Auto-enable MBEDTLS_MD_LIGHT based on MBEDTLS_MD_C.
++ * This allows checking for MD_LIGHT rather than MD_LIGHT || MD_C.
++ */
++#if defined(MBEDTLS_MD_C)
++#define MBEDTLS_MD_LIGHT
++#endif
++
++/* Auto-enable MBEDTLS_MD_LIGHT if some module needs it.
++ */
++#if defined(MBEDTLS_PEM_PARSE_C) || \
++    defined(MBEDTLS_RSA_C)
++#define MBEDTLS_MD_LIGHT
++#endif
++
+ #include "mbedtls/check_config.h"
+ 
+ #endif /* MBEDTLS_BUILD_INFO_H */
+-- 
+2.25.1
+

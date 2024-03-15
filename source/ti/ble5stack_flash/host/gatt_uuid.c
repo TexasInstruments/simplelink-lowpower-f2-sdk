@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2011-2023, Texas Instruments Incorporated
+ Copyright (c) 2011-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -374,6 +374,12 @@ const uint8 *GATT_FindUUIDRec( const uint8 *pUUID, uint8 len )
   else if ( len == ATT_UUID_SIZE )
   {
     // 128-bit UUID
+  }
+  else
+  {
+        /* this else clause is required, even if the
+           programmer expects this will never be reached
+           Fix Misra-C Required: MISRA.IF.NO_ELSE */
   }
 
   return ( pRec );

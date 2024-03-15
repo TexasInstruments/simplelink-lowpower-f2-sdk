@@ -1,6 +1,8 @@
 /**
  * \file psa/crypto_struct.h
  *
+ * \addtogroup ti_psa_crypto PSA cryptography module: Mbed TLS structured type implementations
+ *
  * \brief PSA cryptography module: Mbed TLS structured type implementations
  *
  * \note This file may not be included directly. Applications must
@@ -416,13 +418,6 @@ static inline struct psa_key_policy_s psa_key_policy_init(void)
     {                           \
         0                       \
     }
-
-#ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
-static inline void mbedtls_set_key_owner_id(psa_key_attributes_t *attributes, mbedtls_key_owner_id_t owner)
-{
-    attributes->core.id.owner = owner;
-}
-#endif
 
 #ifdef __cplusplus
 }

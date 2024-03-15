@@ -175,10 +175,10 @@ ChipInfo_GetHwRevision( void )
 
     if ( chipFam == FAMILY_CC13x1_CC26x1 ) {
         switch ( fcfg1Rev ) {
-        case 0 : // CC13x1, CC26x1 - PG1.0
+        case 0 : // CC13x1, CC26x1 - rev. 1.0
             hwRev = (HwRevision_t)(((uint32_t)HWREV_1_0 ) + minorHwRev );
             break;
-        case 1 : // CC13x1, CC26x1 - PG1.1 (or later)
+        case 1 : // CC13x1, CC26x1 - rev. 1.1 (or later)
             hwRev = (HwRevision_t)(((uint32_t)HWREV_1_1 ) + minorHwRev );
             break;
         }

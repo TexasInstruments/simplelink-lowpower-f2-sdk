@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2006-2023, Texas Instruments Incorporated
+ Copyright (c) 2006-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -59,8 +59,7 @@
 #endif
 
 #ifdef CC23X0
-#include DeviceFamily_constructPath(inc/hw_memmap.h)
-#include DeviceFamily_constructPath(inc/hw_pmctl.h)
+#include <ti/drivers/Power.h>
 #endif
 
 #include "hal_mcu.h"
@@ -105,8 +104,7 @@ extern void _itoa(uint16 num, uint8 *buf, uint8 radix);
 #ifndef CC23X0
 #define SystemReset()        SysCtrlSystemReset();
 #else
-// TODO: Replace the temporary code with PMCTLResetSystem() when it is available
-#define SystemReset()        __disable_irq();  HWREG(PMCTL_BASE + PMCTL_O_RSTCTL) |= PMCTL_RSTCTL_SYSRST_SET;  while (1) {}
+#define SystemReset()        Power_reset();
 #endif//CC23X0
 #define SystemResetSoft()    Onboard_soft_reset();
 #define BootLoader()         // Not yet implemented for MSP430

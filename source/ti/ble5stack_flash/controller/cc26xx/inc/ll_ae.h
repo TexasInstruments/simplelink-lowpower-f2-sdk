@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -96,7 +96,7 @@
 #include "rf_hal.h"
 #endif
 #include "ble.h"
-#include "ll_wl.h"
+#include "ll_al.h"
 #include "ll_common.h"
 #include "ll_config.h"
 
@@ -183,17 +183,9 @@
 #define AE_MAX_ADV_SETS                                     254
 #define AE_MAX_ADV_SETS_TO_ENABLE_DISABLE                   63
 
-#if defined( CC26XX ) || defined( CC13XX ) || defined( CC23X0 )
-  #if defined( CC26X2 ) || defined( CC13X2 ) || defined( CC13X2P ) || defined( CC23X0 )
-    #define AE_MAX_ADV_DATA_LEN                             1650
-    #define AE_MAX_SCAN_RSP_DATA_LEN                        1650
-    #define AE_MAX_NUM_ADV_SETS                             20
-  #else // CC26XX_R2 || CC1350LP_7XD ...
-    #define AE_MAX_ADV_DATA_LEN                             300
-    #define AE_MAX_SCAN_RSP_DATA_LEN                        300
-    #define AE_MAX_NUM_ADV_SETS                             6
-  #endif // CC26X2 || CC13X2
-#endif // CC26XX || CC13XX
+#define AE_MAX_ADV_DATA_LEN                                 1650
+#define AE_MAX_SCAN_RSP_DATA_LEN                            1650
+#define AE_MAX_NUM_ADV_SETS                                 20
 
 #define AE_MAX_ADV_PAYLOAD_LEN                              255
 #define AE_DEFAULT_ADV_DATA_LEN                             AE_MAX_ADV_DATA_LEN
@@ -284,15 +276,28 @@
 #define EXTHDR_ACAD_CHANMAP_UPDATE_SIZE                    0x08
 #define EXTHDR_ACAD_CHANMAP_UPDATE_TYPE                    0x28
 //
+#ifdef USE_RCL
+#define EXTHDR_TOTAL_BUF_SIZE                               (EXTHDR_FLAGS_SIZE         +  \
+                                                             EXTHDR_FLAG_ADVA_SIZE     +  \
+                                                             EXTHDR_FLAG_TARGETA_SIZE  +  \
+                                                             EXTHDR_FLAG_CTEINFO_SIZE  +  \
+                                                             EXTHDR_FLAG_ADI_SIZE      +  \
+                                                             EXTHDR_FLAG_AUXPTR_SIZE   +  \
+                                                             EXTHDR_FLAG_SYNCINFO_SIZE +  \
+                                                             EXTHDR_FLAG_TXPWR_SIZE)
+#else
 #define EXTHDR_TOTAL_BUF_SIZE                               (EXTHDR_FLAG_ADI_SIZE      +  \
                                                              EXTHDR_FLAG_AUXPTR_SIZE   +  \
                                                              EXTHDR_FLAG_SYNCINFO_SIZE +  \
                                                              EXTHDR_FLAG_TXPWR_SIZE)
 
+#endif // USE_RCL
 #define PERIODIC_ADV_HDR_TOTAL_BUF_SIZE                     (EXTHDR_FLAG_CTEINFO_SIZE  +  \
                                                              EXTHDR_FLAG_AUXPTR_SIZE   +  \
                                                              EXTHDR_FLAG_TXPWR_SIZE)   +  \
                                                              EXTHDR_FLAG_ACAD_SIZE
+
+#define AE_EXT_HDR_ADV_TYPE_FIELD_SIZE                      1 // 6 bits extended header size and 2 bits for the adv type
 
 // Auxilary Offset Units
 #define AE_AUX_OFFSET_UNITS_30_US                           0
@@ -301,7 +306,10 @@
 #define AE_AUX_OFFSET_30_US_UNIT_VALUE                      30
 #define AE_AUX_OFFSET_300_US_UNIT_VALUE                     300
 #define AE_AUX_OFFSET_UNITS_VALUE_DIFF                      (AE_AUX_OFFSET_300_US_UNIT_VALUE - AE_AUX_OFFSET_30_US_UNIT_VALUE)
+#define AE_AUX_OFFSET_LSB                                   1
+#define AE_AUX_OFFSET_MSB                                   2
 #define AE_AUX_OFFSET_UNITS_OFFSET                          7
+#define AE_AUX_OFFSET_OFFSET                                8
 #define AE_AUX_OFFSET_UNIT_CUTOFF_TIME                      0x0003BFC4 // 245,700 us
 #define AE_AUX_OFFSET_SIZE                                  13         // in bits
 #define AE_AUX_OFFSET_MASK                                  0x1FFF
@@ -309,6 +317,8 @@
 
 // Auxiliary Channel Index
 #define AE_CHAN_INDEX_MASK                                  0x3F
+#define AE_IGNORE_BIT_MASK                                  0x40
+#define AE_IGNORE_BIT_OFFSET                                6
 
 // Auxiliary PHY mask
 #define AE_PHY_MASK                                         0x3
@@ -455,6 +465,9 @@
 #define LEGACY_ADV_MAX_TIME_CONSUME                        3500
 #define AE_CONSUME_OVERHEAD                                1500
 #define AE_NUM_BYTES_OVERHAED_27_BYTES                       27
+#ifdef USE_RCL
+#define AE_SWITCH_TIME                                     420
+#endif
 
 // adv sorted list node start time error code
 #define AE_INVALID_START_TIME                                 0
@@ -482,9 +495,9 @@
 #define AE_SCAN_PERIOD_TIMEOUT                              1
 
 // scan start state
-#define AE_SCAN_START_STATE_FIRST                           0
-#define AE_SCAN_START_STATE_SECOND                          1
-#define AE_SCAN_START_STATE_NEXT                            2
+#define AE_SCAN_START_STATE_FIRST                           0  // New period
+#define AE_SCAN_START_STATE_SECOND                          1  // Invoke interval callback
+#define AE_SCAN_START_STATE_NEXT                            2  // End of a period
 
 // Action on scan state list
 #define EXT_SCAN_STATE_LIST_ADD                             0
@@ -996,6 +1009,9 @@
 #define GET_PERIODIC_CTE_TYPE_SYNC_NO_TYPE_3(c)    (((c) >> 3) & 0x01)
 #define GET_PERIODIC_CTE_TYPE_SYNC_ONLY_CTE(c)     (((c) >> 4) & 0x01)
 
+// Ignore Bit for Scan Optimization
+#define GET_IGNORE_BIT(pkt)                        (((pkt) & AE_IGNORE_BIT_MASK) >> AE_IGNORE_BIT_OFFSET)
+#define GET_CHANNEL_IDX(pkt)                       ( (pkt) & AE_CHAN_INDEX_MASK)
 
 /*******************************************************************************
  * TYPEDEFS
@@ -1036,6 +1052,9 @@ PACKED_TYPEDEF_STRUCT
   uint8 secPhy;
   uint8 sid;
   uint8 notifyEnableFlags;                  // scan request notification
+#ifndef CONTROLLER_ONLY
+  uint8 zeroDelay;                          // not part of BLE SIG HCI command
+#endif
 } aeSetParamCmd_t;
 
 //
@@ -1219,6 +1238,7 @@ PACKED_TYPEDEF_STRUCT
 */
 #ifdef USE_RCL
 
+// Legacy advertising packet struct
 typedef struct
 {
   List_Elem          __elem__;
@@ -1235,10 +1255,64 @@ typedef struct
   {
     uint8            targetA[ LL_DEVICE_ADDR_LEN ];
     uint8            advData[ LL_MAX_ADV_DATA_LEN ];
-    uint8            scanRspData[ LL_MAX_ADV_DATA_LEN ];
+    uint8            scanRspData[ LL_MAX_SCAN_DATA_LEN  ];
   };
-}aeLegacyPacket;
+} aeLegacyPacket;
+#ifdef USE_AE
 
+// Common Extended Packet Entry Format
+typedef struct
+{
+  uint8         extHdrInfo;            // W:  advMode(7..6), lenth(5..0)
+  uint8         extHdrFlags;           // W:  ext hdr flags per spec
+  uint8         extHdrConfig;          // W:  ext hdr configuration
+  uint8         advDataLen;            // W:  size of Adv data
+  uint8        *pExtHeader;            // W:  ptr to buffer with ext hdr
+  uint8        *pAdvData;              // W:  ptr to adv data
+} comExtPktFormat_t;
+
+// Extended advertising packet struct
+typedef struct
+{
+  List_Elem          __elem__;
+  RCL_BufferState    state;                                   ///< Buffer state
+  uint16             length   __attribute__ ((aligned (4)));  ///< Number of bytes in buffer after the length field
+  uint8              numPad;                                  ///< Number of pad bytes before start of the packet
+  uint8              pad0;                                    ///< First pad byte, or first byte of the packet if numPad == 0
+  uint8              pad1;
+  uint8              pad2;
+  uint8              header;                                  ///< contain the packet type (EXT_IND/AUX_ADV...), chSel, TX/RX address type if needed
+  uint8              payloadLen;                              ///< Packet payload length, include the header length and data length
+  uint8              extHdrLen:6;                             ///< Extended header length
+  uint8              advType:2;                               ///< NC_NS/Connectable...
+  uint8              data[ LL_MAX_EXT_DATA_LEN ];             ///< The maximum is 254 and it depends on the header len
+} aePacket;
+
+/*
+ * Extended advertising command struct
+ * This structure holds 3 TX buffers. These buffer are used for building
+ * the extended advertising packets the RCL will transmit.
+ * There will be a rotation between the three buffers depending on the
+ * chain length
+ */
+typedef struct
+{
+  RCL_CmdBle5Advertiser    extRfCmd;
+  RCL_CtxAdvertiser        advParam;
+  RCL_StatsAdvScanInit     advOutput;
+  aePacket                 txBuffer;
+  aePacket                 txBuffer2;
+  aePacket                 txBuffer3;
+  comExtPktFormat_t        comPkt;
+  uint16                   auxPhyFeature;
+  uint8                    extHdr[EXTHDR_TOTAL_BUF_SIZE];
+  uint8                    buffNo:2;  /// < Marks the next txBuffer that should be used
+  uint8                    rfu:6;
+} aeRf_t;
+
+#endif // USE_AE
+
+// Legacy advertising command struct
 typedef struct
 {
   RCL_CmdBle5Advertiser advCmd;
@@ -1251,7 +1325,11 @@ typedef struct
 typedef union
 {
   aeLegacyRf_t aeRfLegacyCmd;
+#ifdef USE_AE
+  aeRf_t       aeRfCmd;
+#endif
 } aeRfCmdSize_t;
+
 
 #else
 
@@ -1279,7 +1357,7 @@ PACKED_ALIGNED_TYPEDEF_STRUCT
   uint8        *pAdvPkt;               // W:  ptr to Ext Adv Pkt (ADV_AUX_IND)
   uint8        *pRspPkt;               // W:  ptr to Ext Adv Pkt (AUX_SCAN_RSP, AUX_CONNECT_RSP)
   uint8        *pDeviceAddr;           // W:  ptr to device BLE address
-  wlEntry_t    *pWhiteList;            // W:  ptr to white list
+  alEntry_t    *pAcceptList;           // W:  ptr to accept list
 } secChanAdvCmd_t;
 
 // Common Extended Packet Entry Format
@@ -1423,8 +1501,8 @@ struct advSet_t
   uint8           minTimeAdj;                     // total OTA time modulo min offset
 #endif
   // Common Packet
-  uint8           txPowerIndex;                   // tx power table index
-  uint16          scaValue;                       // Slave SCA in PPM
+  RFBLEDPL_TX_POWER_TYPE txPowerIndex;            // tx power table index
+  uint16          scaValue;                       // Peripheral SCA in PPM
   uint8          *pOwnRandAddr;                   // Host defined random address (for LE_SetAdvSetRandAddr)
   // Note: Address must start on word boundary!
   uint8           ownAddr[ LL_DEVICE_ADDR_LEN ];  // own device address
@@ -1455,6 +1533,8 @@ struct advSet_t
   aeSetDataCmd_t  *pAdvData;                      // ptr to Host provided adv data params
   aeSetDataCmd_t  *pScanRspData;                  // ptr to Host provided scan response data params
   aeEnableCmd_t   *pEnable;                       // ptr to Host provided enable params
+
+  uint8           actualOwnAddrType;              // The original address type
 };
 
 typedef struct sortedAdv_t sortedAdv_t;
@@ -1501,7 +1581,7 @@ typedef struct
   uint8       scanMode;                       // flag to indicate if currently scanning
   uint32      initStartTime;                  // start time of initiator event
   uint8       connId;                         // allocated connection ID
-  uint8       scaValue;                       // Master SCA as an ordinal value for PPM
+  uint8       scaValue;                       // Central SCA as an ordinal value for PPM
   //
   // Host Extended Initiator Parameters
   aeCreateConnCmd_t *pCreateConn;             // ptr to Host provided enable params
@@ -1629,7 +1709,7 @@ typedef struct llPeriodicAdvSet_t
   uint8                             handle;                // Used to identify a periodic advertising train (Range: 0x00 to 0xEF)
   uint8                             state;                 // Enable, disable or pending the periodic advertising
   uint8                             currentChan;           // the current unmapped channel for the periodic adv
-  uint8                             txPowerIndex;          // tx power table index
+  RFBLEDPL_TX_POWER_TYPE            txPowerIndex;          // tx power table index
   uint8                             phy;                   // phy used in periodic train
   uint8                             pendingDisable;        // disable periodic adv flag
   uint8                             pendingChanUpdate;     // flag to indicate channel map update is pending
@@ -1709,19 +1789,19 @@ typedef struct llPeriodicScanSet_t
 
 } llPeriodicScanSet_t;
 
-typedef struct llPeriodicWhiteListItem_t
+typedef struct llPeriodicAcceptListItem_t
 {
   uint8                             addr[B_ADDR_LEN];     // Peer address
   uint8                             addrType;             // Peer address type
   uint8                             sid;                  // Peer SID
-  struct llPeriodicWhiteListItem_t  *next;                // Pointer to next item or NULL
-} llPeriodicWhiteListItem_t;
+  struct llPeriodicAcceptListItem_t  *next;                // Pointer to next item or NULL
+} llPeriodicAcceptListItem_t;
 
 typedef struct
 {
-  uint8                             numItems;             // number of items in the white list
-  llPeriodicWhiteListItem_t         *itemList;            // white list head
-} llPeriodicWhiteList_t;
+  uint8                             numItems;             // number of items in the accept list
+  llPeriodicAcceptListItem_t         *itemList;            // accept list head
+} llPeriodicAcceptList_t;
 
 typedef struct
 {
@@ -1732,7 +1812,7 @@ typedef struct
   dataQ_t                           queue;                 // shared queue for all periodic scanners
   llPeriodicScanDataEntry_t         rxBuf[ NUM_RX_SCAN_ENTRIES ];// shared buffers for all periodic scanners
   extScanOut_t                      rfOutput;              // shared Periodic Scanner RF Command Output
-  llPeriodicWhiteList_t             whiteList;             // Periodic Scanner white list
+  llPeriodicAcceptList_t             AcceptList;             // Periodic Scanner accept list
   uint8                             scanNumActive;         // current number of active periodic scanners
   uint8                             terminateList[PERIODIC_SCAN_TERMINATE_LIST_MAX_HANDLES]; // terminate handle array (first index reserved for create sync cancel)
 } llPeriodicScan_t;
@@ -1754,7 +1834,7 @@ extern advSet_t       *advSetList;
 extern uint8           aeCurHandle;
 extern uint8           aeCurAdvEnableHandle;
 extern uint8           aeCurConnHandle;
-extern uint8           aeSlaveSCA;
+extern uint8           aePeripheralSCA;
 #ifdef USE_PERIODIC_ADV
 extern llPeriodicAdv_t llPeriodicAdv;
 #endif
@@ -1770,9 +1850,9 @@ extern uint16          extScanNumMissed;
 extern uint8           extScanPriority;
 //
 #ifdef USE_RCL
-RCL_CmdBle5Scanner   extScanCmd;
-RCL_CtxScanInit      extScanParam;
-RCL_StatsAdvScanInit extScanOutput;
+extern RCL_CmdBle5Scanner   extScanCmd;
+extern RCL_CtxScanInit      extScanParam;
+extern RCL_StatsAdvScanInit extScanOutput;
 #else
 extern ble5OpCmd_t     extScanCmd;
 extern adiList_t       adiList[AE_MAX_NUM_SID];
@@ -1858,8 +1938,10 @@ extern void          llUpdateSortedAdvList( void );
 extern void          llSetAETimeConsume( sortedAdv_t *aeNode );
 extern sortedAdv_t  *llDetachNode( sortedAdv_t *aeNode );
 extern uint32        llAddAdvSortedEntry( advSet_t *pAdvSet, sortedAdv_t** newNode );
+extern void          llRemoveAdvSortedEntry( advSet_t *pAdvSet );
 extern void          llAllocRfMem( advSet_t * );
 extern llStatus_t    llSetupExtAdv( advSet_t * );
+extern llStatus_t    llBuildExtAdvPacket(advSet_t *pAdvSet, uint8 pktType, uint8 payloadLen, uint8 *pData, uint8 dataLen);
 #if !defined(DeviceFamily_CC13X4) && !defined(DeviceFamily_CC26X4)
 extern llStatus_t    llSetupPeriodicAdv( advSet_t * );
 #endif
@@ -1891,7 +1973,7 @@ extern uint32        llEstimatePeriodicAdvOtaTime(uint16 , uint8 , uint8 , uint8
 extern llStatus_t    llSetupPeriodicScan( llPeriodicScanSet_t * );
 extern llStatus_t    llTrigPeriodicScan( llPeriodicScanSet_t * );
 extern void          llEndPeriodicScanTask( llPeriodicScanSet_t * );
-extern llPeriodicWhiteListItem_t *llGetPeriodicWhiteListItem( uint8 , uint8 , uint8 *, llPeriodicWhiteListItem_t ** );
+extern llPeriodicAcceptListItem_t *llGetPeriodicAcceptListItem( uint8 , uint8 , uint8 *, llPeriodicAcceptListItem_t ** );
 extern llPeriodicScanSet_t *llGetPeriodicScanByAdvertiser( uint8 , uint8 , uint8 * );
 extern void          llSetPeriodicScanChmapUpdate( llPeriodicScanSet_t *, uint8 , uint8 *, uint16  );
 #endif
@@ -1905,6 +1987,9 @@ extern uint32        llGetSecondaryTaskEndTime( taskInfo_t *, uint32 , llConnSta
 extern uint8         llCheckRfCmdPreemption( uint32, uint8 );
 extern void          llSetRestPrimaryChannels( advSet_t * );
 extern void          llTermExtAdv( advSet_t *, uint8  );
+#ifdef USE_RCL
+extern void          llRclPrepareAndUpdateAlEntry(RCL_FilterList *filterList, uint16 flags, uint8 *pAddr, uint8 alIndex);
+#endif
 // RF Post Processing
 extern void          llExtAdv_PostProcess( void );
 extern void          llPeriodicAdv_PostProcess( void );
@@ -1927,6 +2012,10 @@ extern void         *llFindNextPeriodicAdv( void );
 extern dataEntryQ_t *llSetupExtScanDataEntryQueue( void );
 extern dataEntryQ_t *llSetupPeriodicScanDataEntryQueue( void );
 #endif
+
+extern uint8 llAddExtAlAndSetIgnBit(aeExtAdvRptEvt_t *extAdvRpt, uint8 ignoreBit);
+extern uint8 llFlushIgnoredRxEntry(uint8 ignoreBit);
+extern void llSetRxCfg(void);
 /*******************************************************************************
  */
 

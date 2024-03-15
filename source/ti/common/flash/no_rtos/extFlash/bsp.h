@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,9 @@ extern "C"
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
 #include DeviceFamily_constructPath(inc/hw_sysctl.h)
 #include DeviceFamily_constructPath(inc/hw_ioc.h)
-#ifndef DeviceFamily_CC23X0R5
+
+
+#if (!defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2))
 #include DeviceFamily_constructPath(driverlib/ioc.h)
 #endif
 #include DeviceFamily_constructPath(driverlib/gpio.h)
@@ -76,7 +78,7 @@ extern "C"
 * DEFINES
 */
 
-#ifndef DeviceFamily_CC23X0R5
+#if (!defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2))
 // Board LED defines
 #define BSP_IOID_LED_1          IOID_6
 #define BSP_IOID_LED_2          IOID_7
@@ -102,12 +104,19 @@ extern "C"
 #define BSP_SPI_MISO            IOID_37
 #define BSP_SPI_CLK_FLASH       IOID_39
 
-#elif defined DeviceFamily_CC23X0R5
+#elif defined(DeviceFamily_CC23X0R5)
 
 #define BSP_IOID_FLASH_CS       6
 #define BSP_SPI_MOSI            13
 #define BSP_SPI_MISO            12
 #define BSP_SPI_CLK_FLASH       18
+
+#elif defined(DeviceFamily_CC23X0R2)
+
+#define BSP_IOID_FLASH_CS       11
+#define BSP_SPI_MOSI            13
+#define BSP_SPI_MISO            21
+#define BSP_SPI_CLK_FLASH       24
 
 #else
 

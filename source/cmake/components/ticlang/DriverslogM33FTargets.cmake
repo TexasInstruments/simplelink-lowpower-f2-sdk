@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget Drivers::log_cc13x4 Drivers::log_cc26x3 Drivers::log_cc26x4)
+foreach(_expectedTarget Drivers::log_cc13x4 Drivers::log_cc26x4 Drivers::log_cc26x3)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -56,15 +56,7 @@ add_library(Drivers::log_cc13x4 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc13x4 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc13x4;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
-)
-
-# Create imported target Drivers::log_cc26x3
-add_library(Drivers::log_cc26x3 STATIC IMPORTED)
-
-set_target_properties(Drivers::log_cc26x3 PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc26x3;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc13x4;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
 )
 
 # Create imported target Drivers::log_cc26x4
@@ -72,7 +64,15 @@ add_library(Drivers::log_cc26x4 STATIC IMPORTED)
 
 set_target_properties(Drivers::log_cc26x4 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
-  INTERFACE_LINK_LIBRARIES "driverlib_cc26x4;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc26x4;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
+)
+
+# Create imported target Drivers::log_cc26x3
+add_library(Drivers::log_cc26x3 STATIC IMPORTED)
+
+set_target_properties(Drivers::log_cc26x3 PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/source"
+  INTERFACE_LINK_LIBRARIES "Driverlib::cc26x3;TiUtils::tiutils;TOOLCHAIN_ticlang_m33f"
 )
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
@@ -111,7 +111,7 @@ unset(_IMPORT_CHECK_TARGETS)
 # Make sure the targets which have been exported in some other
 # export set exist.
 unset(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets)
-foreach(_target "TiUtils::tiutils" )
+foreach(_target "Driverlib::cc13x4" "TiUtils::tiutils" "Driverlib::cc26x4" "Driverlib::cc26x3" )
   if(NOT TARGET "${_target}" )
     set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets "${${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE_targets} ${_target}")
   endif()

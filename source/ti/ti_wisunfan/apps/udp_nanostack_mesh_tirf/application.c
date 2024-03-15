@@ -69,11 +69,13 @@
 #include "6LoWPAN/ws/ws_common_defines.h"
 #include "Common_Protocols/ipv6_constants.h"
 #include "6LoWPAN/ws/ws_common.h"
+#include "6LoWPAN/ws/ws_config.h"
+#include "udp.h"
 
 #include "Core/include/ns_address_internal.h"
 #include "NWK_INTERFACE/Include/protocol_abstract.h"
 #include "NWK_INTERFACE/Include/protocol.h"
-#include "ws_bootstrap.h"
+#include "6LoWPAN/ws/ws_bootstrap.h"
 
 #include "nsdynmemLIB.h"
 
@@ -97,10 +99,15 @@
 #endif
 
 #include "application.h"
+#include "ti_wisunfan_features.h"
 
 #ifdef COAP_OAD_ENABLE
 #include "oad.h"
 #endif
+
+#include "fh_map_direct.h"
+#include "fh_pib.h"
+#include "fh_nt.h"
 
 /******************************************************************************
 Defines & enums
@@ -120,6 +127,7 @@ Defines & enums
 #define COAP_JOIN_URI "join"
 #define COAP_LED_URI "led"
 #define COAP_RSSI_URI "rssi"
+#define COAP_TEST_METRICS_URI "metrics"
 #ifdef COAP_PANID_LIST
 #define COAP_PANID_LIST_ALLOW_URI "panid/allow"
 #define COAP_PANID_LIST_DENY_URI "panid/deny"
@@ -149,6 +157,7 @@ typedef enum pan_rediscover_evt {
     PAN_REDISCOVER_RESTART_EVT = 4,
 } pan_rediscover_evt_t;
 #endif //COAP_PANID_LIST
+
 #endif // COAP_SERVICE_ENABLE
 
 typedef enum connection_status {
@@ -158,6 +167,7 @@ typedef enum connection_status {
     CON_STATUS_CONNECTING         = 3,        /*!< connecting to network */
     CON_STATUS_ERROR_UNSUPPORTED  = 4
 } connection_status_t;
+
 
 /******************************************************************************
  Static & Global Variables
@@ -190,10 +200,12 @@ uint32_t ticks_after_joining = 0;
 #ifdef COAP_SERVICE_ENABLE
 int8_t service_id = -1;
 static uint8_t led_state[2];
+
 #ifdef COAP_PANID_LIST
 static int8_t pan_rediscover_tasklet_id = -1;
 extern uint16_t panid_list_clear_timeout_sec;
 #endif
+
 #endif
 
 #ifdef WISUN_NCP_ENABLE
@@ -208,12 +220,39 @@ static inline void autoStartSignal();
 #endif //WISUN_AUTO_START
 #endif //WISUN_NCP_ENABLE
 
+#ifdef WISUN_TEST_METRICS
+static uint32_t num_pkts = 0;
+static void handle_message(char* msg);
+
+#ifdef WISUN_TEST_MPL_UDP
+static void get_txFrameInfo(char* msg, uint16_t* txIdx, uint32_t* txbfio);
+extern void timac_GetBC_Slot_BFIO(uint16_t *slot, uint32_t *bfio);
+#endif
+
+#endif
+
 /* variables to help fetch rssi of neighbor nodes */
 uint8_t cur_num_nbrs;
 uint8_t nbr_idx = 0;
 nbr_node_metrics_t nbr_nodes_metrics[SIZE_OF_NEIGH_LIST];
 
 uint8_t get_current_net_state(void);
+
+ti_wisun_config_t ti_wisun_config =
+{
+    .rapid_join = FEATURE_RAPID_JOIN_ENABLE,
+    .mpl_low_latency = FEATURE_MPL_LOW_LATENCY_ENABLE,
+    .rapid_disconnect_detect_br = FEATURE_RAPID_DISCONNECT_DETECT_BR_SEC,
+    .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
+    .auth_type  = NETWORK_AUTH_TYPE,
+    .use_fixed_gtk_keys = false,
+    .fixed_gtk_keys = {
+        FIXED_GTK_KEY_1,
+        FIXED_GTK_KEY_2,
+        FIXED_GTK_KEY_3,
+        FIXED_GTK_KEY_4,
+    },
+};
 
 configurable_props_t cfg_props = { .phyTxPower = CONFIG_TRANSMIT_POWER, \
                                    .ccaDefaultdBm = CONFIG_CCA_THRESHOLD, \
@@ -263,10 +302,19 @@ static int coap_recv_cb(int8_t service_id, uint8_t source_address[static 16],
                  uint16_t source_port, sn_coap_hdr_s *request_ptr);
 static int coap_recv_cb_rssi(int8_t service_id, uint8_t source_address[static 16],
                  uint16_t source_port, sn_coap_hdr_s *request_ptr);
-
 static int coap_panid_list_cb(int8_t service_id, uint8_t source_address[static 16],
                  uint16_t source_port, sn_coap_hdr_s *request_ptr);
+
+#ifdef WISUN_TEST_METRICS
+static int coap_recv_cb_tstmetrics(int8_t service_id, uint8_t source_address[static 16],
+                 uint16_t source_port, sn_coap_hdr_s *request_ptr);
 #endif
+#endif
+
+#ifdef WISUN_TEST_METRICS
+void get_test_metrics(test_metrics_s *test_metrics);
+#endif
+
 /******************************************************************************
 Function definitions
  *****************************************************************************/
@@ -338,12 +386,42 @@ void socket_callback(void *cb)
 {
     socket_callback_t *sock_cb = (socket_callback_t *) cb;
 
+#ifdef WISUN_TEST_METRICS
+    int16_t len;
+    ns_address_t source_addr;
+#endif
     tr_debug("socket_callback() sock=%d, event=0x%x, interface=%d, data len=%d",
              sock_cb->socket_id, sock_cb->event_type, sock_cb->interface_id, sock_cb->d_len);
 
     switch (sock_cb->event_type & SOCKET_EVENT_MASK) {
         case SOCKET_DATA:
             tr_info("socket_callback: SOCKET_DATA, sock=%d, bytes=%d", sock_cb->socket_id, sock_cb->d_len);
+
+#ifdef WISUN_TEST_METRICS
+//            tr_mpl("socket_callback: SOCKET_DATA, sock=%d, bytes=%d", sock_cb->socket_id, sock_cb->d_len);
+
+            /* Convert string addr to ipaddr array */
+            len = socket_recvfrom(socket_id, recv_buffer, sizeof(recv_buffer), 0, &source_addr);
+            if(len > 0)
+              {
+                  num_pkts++;
+#ifdef WISUN_TEST_MPL_UDP
+                  uint16_t slotIdx_tx, slotIdx_rx;
+                  uint32_t bfio_tx, bfio_rx, latency, macBcInterval;
+                  get_txFrameInfo ((char*)recv_buffer, &slotIdx_tx, &bfio_tx);
+                  timac_GetBC_Slot_BFIO(&slotIdx_rx, &bfio_rx);
+                  MAP_FHPIB_get(FHPIB_BC_INTERVAL, &macBcInterval);
+                  latency = (bfio_rx - bfio_tx) + (slotIdx_rx - slotIdx_tx) * macBcInterval;
+                  tr_mpl("Latency: %d L:%d B1:%d S1:%d B2:%d S2:%d BI:%d\r\n", latency, len, bfio_tx, slotIdx_tx, bfio_rx, slotIdx_rx, macBcInterval);
+#else
+                  tr_mpl("Recv[%d]: %s, Pkts:%d", len, recv_buffer, num_pkts);
+#endif
+              }
+              else if(NS_EWOULDBLOCK != len)
+              {
+                  tr_mpl("Recv error %x", len);
+              }
+#endif
             break;
         case SOCKET_CONNECT_DONE:
             tr_info("socket_callback: SOCKET_CONNECT_DONE");
@@ -405,19 +483,16 @@ bool udpSocketSetup(void)
 
     static const int32_t buf_size = 20;
     int32_t rtn = 20;
-    rtn = socket_setsockopt(socket_id, SOCKET_SOL_SOCKET, SOCKET_SO_RCVBUF, &buf_size, sizeof buf_size);
+//    rtn = socket_setsockopt(socket_id, SOCKET_SOL_SOCKET, SOCKET_SO_RCVBUF, &buf_size, sizeof buf_size);
     tr_info("set rx buffer len %x, status %x", buf_size, rtn);
 /*
     rtn = socket_setsockopt(socket_id, SOCKET_SOL_SOCKET, SOCKET_SO_SNDBUF, &buf_size, sizeof buf_size);
     tr_info("set Tx buffer len %x, status %x", buf_size, rtn);
 */
-    memcpy(mreq.ipv6mr_multiaddr, multi_cast_addr, 16);
-    mreq.ipv6mr_interface = 0;
-    socket_setsockopt(socket_id, SOCKET_IPPROTO_IPV6, SOCKET_IPV6_JOIN_GROUP, &mreq, sizeof(mreq));
 
     bind_addr.type = ADDRESS_IPV6;
     memcpy(bind_addr.address, ns_in6addr_any, 16);
-    bind_addr.identifier = UDP_PORT;
+    bind_addr.identifier = UDP_PORT_TEST;
     ret = socket_bind(socket_id, &bind_addr);
     if (ret < 0) {
         tr_error("socket bind failed with error %d", ret);
@@ -430,9 +505,15 @@ bool udpSocketSetup(void)
  * Configure the network settings like network name,
  * regulatory domain etc. before starting the network
  */
+extern const char *ti154stack_lib_version;
+extern const char *ti154stack_lib_date;
+extern const char *ti154stack_lib_time;
 mesh_error_t nanostack_wisunInterface_configure(void)
 {
     int ret;
+
+    tr_info("Library info | Date: %s, Time: %s, Version: %s", ti154stack_lib_date, ti154stack_lib_time,
+            ti154stack_lib_version);
 
     if (_configured) {
         // Already configured
@@ -638,6 +719,36 @@ static void handle_message(char* msg) {
     }
 }
 
+#ifdef WISUN_TEST_MPL_UDP
+/*!
+ * Retrieve Idx and BFIO from received message
+ */
+void get_txFrameInfo(char* msg, uint16_t* txIdx, uint32_t* txbfio) {
+    char *txinfo;
+
+    // Format from Border Router for the payload is as follows
+    // snprintf(send_buf, sizeof(send_buf), "Id:%d:bfio:%u", slotIdx,bfio);
+    txinfo = strstr(msg, "Id:");
+    if (txinfo == NULL)
+    {
+        // Idx and BFIO for tx is not in the message payload
+        *txIdx = 0;
+        *txbfio = 0;
+    }
+    else
+    {
+        char *ptr;
+        // Retrieve slot ID index
+        *txIdx = strtol(txinfo+3, &ptr, 10);
+
+        // Retrieve BFIO
+        txinfo = strstr(ptr, "bfio:");
+        *txbfio = strtol(txinfo+5, &ptr, 10);
+    }
+    return;
+}
+#endif
+
 #ifdef COAP_SERVICE_ENABLE
 #ifdef COAP_PANID_LIST
 static void pan_rediscover_tasklet_start(void)
@@ -743,7 +854,7 @@ static int coap_recv_cb(int8_t service_id, uint8_t source_address[static 16],
         led_state[COAP_RLED_ID] = GPIO_read(CONFIG_GPIO_RLED);
         led_state[COAP_GLED_ID] = GPIO_read(CONFIG_GPIO_GLED);
         coap_service_response_send(service_id, 0, request_ptr, COAP_MSG_CODE_RESPONSE_CONTENT,
-                                   COAP_CT_TEXT_PLAIN, led_state, sizeof(led_state));
+                                   COAP_CT_TEXT_PLAIN, (uint8_t *) &led_state, sizeof(led_state));
     }
     else if (request_ptr->msg_code == COAP_MSG_CODE_REQUEST_POST ||
              request_ptr->msg_code == COAP_MSG_CODE_REQUEST_PUT)
@@ -796,6 +907,31 @@ static int coap_recv_cb(int8_t service_id, uint8_t source_address[static 16],
     }
     return 0;
 }
+
+#ifdef WISUN_TEST_METRICS
+/*!
+ * Callback for processing received coap message for Test metrics
+ */
+static int coap_recv_cb_tstmetrics(int8_t service_id, uint8_t source_address[static 16],
+                 uint16_t source_port, sn_coap_hdr_s *request_ptr)
+{
+    if (request_ptr->msg_code == COAP_MSG_CODE_REQUEST_GET)
+    {
+        test_metrics_s test_metrics;
+        // Send test metrics data
+        get_test_metrics(&test_metrics);
+        coap_service_response_send(service_id, 0, request_ptr, COAP_MSG_CODE_RESPONSE_CONTENT,
+                                   COAP_CT_TEXT_PLAIN, (uint8_t *) &test_metrics, sizeof(test_metrics_s));
+    }
+    else
+    {
+        // Post, Put, and Delete resource are not supported for now
+        coap_service_response_send(service_id, 0, request_ptr, COAP_MSG_CODE_RESPONSE_METHOD_NOT_ALLOWED,
+                                   COAP_CT_TEXT_PLAIN, NULL, 0);
+    }
+    return 0;
+}
+#endif
 
 #ifdef COAP_PANID_LIST
 static int coap_panid_list_cb(int8_t service_id, uint8_t source_address[static 16],
@@ -1076,6 +1212,12 @@ void *mainThread(void *arg0)
     GPIO_enableInt(CONFIG_GPIO_BTN2);
 #endif //NWK_TEST
 
+    extern const char *ti154stack_lib_version;
+    extern const char *ti154stack_lib_date;
+    extern const char *ti154stack_lib_time;
+    tr_info("Library info | Date: %s, Time: %s, Version: %s", ti154stack_lib_date, ti154stack_lib_time,
+            ti154stack_lib_version);
+
     nanostack_wisunInterface_configure();
 
     // Release mutex before blocking
@@ -1101,8 +1243,6 @@ void *mainThread(void *arg0)
     // Release mutex before blocking
     nanostack_unlock();
 
-    nanostack_wait_till_connect();
-
 #ifdef NWK_TEST
 
     /* this should only be initialized once */
@@ -1123,6 +1263,12 @@ void *mainThread(void *arg0)
     coap_service_register_uri(service_id, COAP_RSSI_URI,
                                   COAP_SERVICE_ACCESS_GET_ALLOWED,
                                   coap_recv_cb_rssi);
+#ifdef WISUN_TEST_METRICS
+    coap_service_register_uri(service_id, COAP_TEST_METRICS_URI,
+                              COAP_SERVICE_ACCESS_GET_ALLOWED,
+                              coap_recv_cb_tstmetrics);
+#endif
+
 #ifdef COAP_PANID_LIST
     coap_service_register_uri(service_id, COAP_PANID_LIST_ALLOW_URI,
                               COAP_SERVICE_ACCESS_GET_ALLOWED |
@@ -1144,7 +1290,6 @@ void *mainThread(void *arg0)
                               coap_panid_list_cb);
 
     pan_rediscover_tasklet_start();
-    pan_rediscover_update(PAN_REDISCOVER_JOIN_EVT);
 #endif // COAP_PANID_LIST
 
 #if defined(COAP_OAD_ENABLE)
@@ -1162,8 +1307,8 @@ void *mainThread(void *arg0)
                               COAP_SERVICE_ACCESS_PUT_ALLOWED |
                               COAP_SERVICE_ACCESS_POST_ALLOWED,
                               coap_oad_cb);
-
 #endif // COAP_OAD_ENABLE
+
 #else
     /* Convert string addr to ipaddr array */
     stoip6(multicast_addr_str, strlen(multicast_addr_str), multi_cast_addr);
@@ -1258,6 +1403,10 @@ void *mainThread(void *arg0)
         usleep(100000);
     }
 #endif /* endif for NWK_TEST not defined */
+    nanostack_wait_till_connect();
+#if defined(COAP_SERVICE_ENABLE) && defined(COAP_PANID_LIST)
+    pan_rediscover_update(PAN_REDISCOVER_JOIN_EVT);
+#endif
     return NULL;
 }
 
@@ -1719,8 +1868,15 @@ int8_t remove_multicast_addr(const uint8_t *address)
 
 rpl_instance_t *get_rpl_instance()
 {
-    // Always return NULL, only valid for BR devices
-    return NULL;
+    protocol_interface_info_entry_t *cur;
+    cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+    if (!cur || !cur->rpl_domain) {
+        return NULL;
+    }
+
+    rpl_instance_t *instance = ns_list_get_first(&cur->rpl_domain->instances);
+
+    return instance;
 }
 
 rpl_dao_target_t *get_dao_target_from_addr(rpl_instance_t *instance, const uint8_t *addr)
@@ -1729,4 +1885,42 @@ rpl_dao_target_t *get_dao_target_from_addr(rpl_instance_t *instance, const uint8
     return NULL;
 }
 
+#ifdef WISUN_TEST_METRICS
+extern JOIN_TIME_s node_join_time;
 
+/*
+ * Get latest test metrics
+ */
+void get_test_metrics(test_metrics_s *test_metrics)
+{
+    rpl_instance_t *rpl_inst;
+
+    test_metrics->revision = 4;
+    // Populate join time
+    memcpy(&test_metrics->join_time, &node_join_time, sizeof(JOIN_TIME_s));
+
+    // Populate MAC debug
+    timac_getMACDebugCounts(&test_metrics->mac_debug);
+
+    // Populate heap debug
+    const mem_stat_t *heap_stats = ns_dyn_mem_get_mem_stat();
+
+    test_metrics->heap_debug.heap_sector_size = heap_stats->heap_sector_size;
+    test_metrics->heap_debug.heap_sector_allocated_bytes =
+            heap_stats->heap_sector_allocated_bytes;
+    test_metrics->heap_debug.heap_sector_allocated_bytes_max =
+            heap_stats->heap_sector_allocated_bytes_max;
+
+    timac_getMACPerfData(&test_metrics->mac_perf_data);
+    test_metrics->udpPktCnt = num_pkts;
+    // Reset UDP packet count to 0 for next test
+    num_pkts = 0;
+
+    // Get current rank
+    rpl_inst = get_rpl_instance();
+    test_metrics->current_rank = rpl_inst->current_rank;
+
+    // Populate length
+    test_metrics->length = (uint16_t) sizeof(test_metrics_s);
+}
+#endif

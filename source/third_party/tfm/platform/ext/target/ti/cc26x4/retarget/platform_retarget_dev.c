@@ -25,7 +25,7 @@
 
 #include "platform_retarget_dev.h"
 #include "platform_retarget.h"
-#include "system_cc26x4.h"
+#include "system_core_init.h"
 
 /* ARM UART driver structures */
 #ifdef ARM_UART0_S

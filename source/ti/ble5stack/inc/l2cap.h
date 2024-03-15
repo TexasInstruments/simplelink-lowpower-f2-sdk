@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -109,13 +109,7 @@ extern "C"
 
 #define L2CAP_HDR_SIZE                   4 //!< Basic L2CAP header: Length (2 bytes) + Channel ID (2 bytes)
 
-/**
- * @brief L2CAP PDU Size
- *
- * Minimum size of PDU received from lower layer protocol (incoming
- * packet), or delivered to lower layer protocol (outgoing packet).
- */
-#define L2CAP_PDU_SIZE                   ( L2CAP_HDR_SIZE + L2CAP_MTU_SIZE )
+#define L2CAP_MAX_NOF_CREDITS            0xFFFF //!< Maximum number of credits to be given to a Connection Oriented Channel is 0xFFFF
 
 #define L2CAP_LEN_FIELD_SIZE             2 //!< SDU Length field size
 

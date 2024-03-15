@@ -15,7 +15,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -558,6 +558,9 @@ extern "C"
 #define LL_EXT_DISABLE_SCAN_REQUEST_REPORT             0
 #define LL_EXT_ENABLE_SCAN_REQUEST_REPORT              1
 
+#define LL_EXT_STATS_RESET                             0
+#define LL_EXT_STATS_READ                              1
+
 // Enhanced Modem Test
 
 // BLE5 PHYs
@@ -791,6 +794,25 @@ extern uint16 LL_ProcessEvent( uint8  task_id,
  * @return      Pointer to buffer, or NULL.
  */
 extern void *LL_TX_bm_alloc( uint16 size );
+
+
+/*******************************************************************************
+ * @fn          LL_TX_bm_free API
+ *
+ * @brief       This API is used to free memory using buffer management.
+ *
+ *              Note: This function should never be called by the application.
+ *                    It is only used by HCI and L2CAP_bm_alloc.
+ *
+ * input parameters
+ *
+ * @param       pBuf - Pointer to buffer.
+ *
+ * output parameters
+ *
+ * @return      None.
+ */
+extern void LL_TX_bm_free( uint8* pBuf );
 
 
 /*******************************************************************************
@@ -2072,6 +2094,35 @@ extern llStatus_t LL_AddDeviceToResolvingList( uint8  peerIdAddrType,
                                                uint8 *localIRK );
 
 /*******************************************************************************
+ * @fn          LL_AddDeviceToResolvingList_sPatch API
+ *
+ * @brief       This API is used to add one device to the list of address
+ *              translations used to resolve Resolvable Private Addresses in
+ *              the Controller.
+ *
+ * Note: This sPatch adds the ability to change the Controller connection's
+ *       RPA address to it's IDA after pariring succeed with the peer device.
+ *
+ * input parameters
+ *
+ * @param       peerIdAddrType - LL_DEV_ADDR_TYPE_PUBLIC,
+ *                               LL_DEV_ADDR_TYPE_RANDOM
+ * @param       peerIdAddr     - Peer device Identity Address.
+ * @param       peerIRK        - IRK of peer device.
+ * @param       localIRK       - IRK for own device.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      llStatus_t
+ */
+extern llStatus_t LL_AddDeviceToResolvingList_sPatch( uint8  peerIdAddrType,
+                                                      uint8 *peerIdAddr,
+                                                      uint8 *peerIRK,
+                                                      uint8 *localIRK );
+
+/*******************************************************************************
  * @fn          LL_RemoveDeviceFromResolvingList API
  *
  * @brief       This API is used to remove one device fromthe list of address
@@ -2712,13 +2763,13 @@ extern llStatus_t LL_ReadAntennaInformation( uint8 *sampleRates,
  *
  * input parameters
  *
- * @param   advHandle              – Used to identify a periodic advertising train
+ * @param   advHandle              ï¿½ Used to identify a periodic advertising train
  *                                   Created by LE Set Extended Advertising Parameters command
- * @param   periodicAdvIntervalMin – Minimum advertising interval for periodic advertising
+ * @param   periodicAdvIntervalMin ï¿½ Minimum advertising interval for periodic advertising
  *                                   Range: 0x0006 to 0xFFFF Time = N * 1.25 ms Time Range: 7.5ms to 81.91875 s
- * @param   periodicAdvIntervalMax – Maximum advertising interval for periodic advertising
+ * @param   periodicAdvIntervalMax ï¿½ Maximum advertising interval for periodic advertising
  *                                   Range: 0x0006 to 0xFFFF Time = N * 1.25 ms Time Range: 7.5ms to 81.91875 s
- * @param   periodicAdvProp        – Periodic advertising properties - set bit 6 for include TxPower in the advertising PDU
+ * @param   periodicAdvProp        ï¿½ Periodic advertising properties - set bit 6 for include TxPower in the advertising PDU
  *
  * output parameters
  *
@@ -2743,13 +2794,13 @@ extern llStatus_t LE_SetPeriodicAdvParams( uint8 advHandle,
  *
  * input parameters
  *
- * @param   advHandle  – Used to identify a periodic advertising train
- * @param   operation  – 0x00 - Intermediate fragment of fragmented periodic advertising data
+ * @param   advHandle  ï¿½ Used to identify a periodic advertising train
+ * @param   operation  ï¿½ 0x00 - Intermediate fragment of fragmented periodic advertising data
  *                       0x01 - First fragment of fragmented periodic advertising data
  *                       0x02 - Last fragment of fragmented periodic advertising data
  *                       0x03 - Complete periodic advertising data
- * @param   dataLength – The number of bytes in the Advertising Data parameter
- * @param   data       – Periodic advertising data
+ * @param   dataLength ï¿½ The number of bytes in the Advertising Data parameter
+ * @param   data       ï¿½ Periodic advertising data
  *
  * output parameters
  *
@@ -2772,9 +2823,9 @@ extern llStatus_t LE_SetPeriodicAdvData( uint8 advHandle,
  *
  * input parameters
  *
- * @param   enable    – 0x00 - Periodic advertising is disabled (default)
+ * @param   enable    ï¿½ 0x00 - Periodic advertising is disabled (default)
  *                      0x01 - Periodic advertising is enabled
- * @param   advHandle – Used to identify a periodic advertising train
+ * @param   advHandle ï¿½ Used to identify a periodic advertising train
  *
  * output parameters
  *
@@ -2794,12 +2845,12 @@ extern llStatus_t LE_SetPeriodicAdvEnable( uint8 enable,
  *
  * input parameters
  *
- * @param   advHandle – Used to identify a periodic advertising train
- * @param   cteLen    – CTE length (0x02 - 0x14) 16 usec - 160 usec
- * @param   cteType   – CTE type (0 - AoA, 1 - AoD 1usec, 2 - AoD 2usec)
- * @param   cteCount  – Number of CTE's to transmit in the same periodic event
- * @param   length    – Number of items in Antenna array (relevant to AoD only)
- * @param   pAntenna  – Pointer to Antenna array (relevant to AoD only)
+ * @param   advHandle ï¿½ Used to identify a periodic advertising train
+ * @param   cteLen    ï¿½ CTE length (0x02 - 0x14) 16 usec - 160 usec
+ * @param   cteType   ï¿½ CTE type (0 - AoA, 1 - AoD 1usec, 2 - AoD 2usec)
+ * @param   cteCount  ï¿½ Number of CTE's to transmit in the same periodic event
+ * @param   length    ï¿½ Number of items in Antenna array (relevant to AoD only)
+ * @param   pAntenna  ï¿½ Pointer to Antenna array (relevant to AoD only)
  *
  * output parameters
  *
@@ -2824,8 +2875,8 @@ extern llStatus_t LE_SetConnectionlessCteTransmitParams( uint8 advHandle,
  *
  * input parameters
  *
- * @param   advHandle – Used to identify a periodic advertising train
- * @param   enable    – 0x00 - Advertising with CTE is disabled (default)
+ * @param   advHandle ï¿½ Used to identify a periodic advertising train
+ * @param   enable    ï¿½ 0x00 - Advertising with CTE is disabled (default)
  *                      0x01 - Advertising with CTE is enabled
  *
  * output parameters
@@ -2845,21 +2896,21 @@ extern llStatus_t LE_SetConnectionlessCteTransmitEnable( uint8 advHandle,
  *
  * @design /ref did_286039104
  *
- * @param   options     – Clear Bit 0 - Use the advSID, advAddrType, and advAddress
+ * @param   options     ï¿½ Clear Bit 0 - Use the advSID, advAddrType, and advAddress
  *                                      parameters to determine which advertiser to listen to.
  *                        Set Bit 0   - Use the Periodic Advertiser List to determine which
  *                                      advertiser to listen to.
  *                        Clear Bit 1 - Reporting initially enabled.
  *                        Set Bit 1   - Reporting initially disabled.
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advSID      ï¿½ Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
- * @param   advAddrType – Advertiser address type - 0x00 - public ; 0x01 - random
- * @param   advAddress  – Advertiser address
- * @param   skip        – The maximum number of periodic advertising events that can be
+ * @param   advAddrType ï¿½ Advertiser address type - 0x00 - public ; 0x01 - random
+ * @param   advAddress  ï¿½ Advertiser address
+ * @param   skip        ï¿½ The maximum number of periodic advertising events that can be
  *                        skipped after a successful receive (Range: 0x0000 to 0x01F3)
- * @param   syncTimeout – Synchronization timeout for the periodic advertising train
+ * @param   syncTimeout ï¿½ Synchronization timeout for the periodic advertising train
  *                           Range: 0x000A to 0x4000 Time = N*10 ms Time Range: 100 ms to 163.84 s
- * @param   syncCteType – Set Bit 0 - Do not sync to packets with an AoA CTE
+ * @param   syncCteType ï¿½ Set Bit 0 - Do not sync to packets with an AoA CTE
  *                        Set Bit 1 - Do not sync to packets with an AoD CTE with 1 us slots
  *                        Set Bit 2 - Do not sync to packets with an AoD CTE with 2 us slots
  *                        Set Bit 4 - Do not sync to packets without a CTE
@@ -2913,10 +2964,10 @@ extern llStatus_t LE_PeriodicAdvTerminateSync( uint16 syncHandle );
  *
  * @design /ref did_286039104
  *
- * @param   advAddrType – Advertiser address type - 0x00 - Public or Public Identity Address
+ * @param   advAddrType ï¿½ Advertiser address type - 0x00 - Public or Public Identity Address
  *                                                  0x01 - Random or Random (static) Identity Address
- * @param   advAddress  – Advertiser address
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advAddress  ï¿½ Advertiser address
+ * @param   advSID      ï¿½ Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
  *
  * @return  llStatus_t
@@ -2933,11 +2984,11 @@ extern llStatus_t LE_AddDeviceToPeriodicAdvList( uint8 advAddrType,
  *
  * @design /ref did_286039104
  *
- * @param   advAddrType – Advertiser address type -
+ * @param   advAddrType ï¿½ Advertiser address type -
  *                        0x00 - Public or Public Identity Address
  *                        0x01 - Random or Random (static) Identity Address
- * @param   advAddress  – Advertiser address
- * @param   advSID      – Advertising SID subfield in the ADI field used to identify
+ * @param   advAddress  ï¿½ Advertiser address
+ * @param   advSID      ï¿½ Advertising SID subfield in the ADI field used to identify
  *                        the Periodic Advertising (Range: 0x00 to 0x0F)
  *
  * @return  llStatus_t
@@ -3001,10 +3052,10 @@ extern llStatus_t LE_SetPeriodicAdvReceiveEnable( uint16 syncHandle,
  * @param   syncHandle - Handle identifying the periodic advertising train (Range: 0x0000 to 0x0EFF)
  * @param   samplingEnable - Sample CTE on a received periodic advertising and report the samples to the Host.
  * @param   slotDurations - Switching and sampling slots in 1 us or 2 us each (1 or 2).
- * @param   maxSampledCtes – 0 - Sample and report all available CTEs
+ * @param   maxSampledCtes ï¿½ 0 - Sample and report all available CTEs
  *                           1 to 16 - Max number of CTEs to sample and report in each periodic event
- * @param   length    – Number of items in Antenna array (relevant to AoA only)
- * @param   pAntenna  – Pointer to Antenna array (relevant to AoA only)
+ * @param   length    ï¿½ Number of items in Antenna array (relevant to AoA only)
+ * @param   pAntenna  ï¿½ Pointer to Antenna array (relevant to AoA only)
  *
  * @return  llStatus_t
  */
@@ -4199,6 +4250,44 @@ extern llStatus_t LL_EXT_SetLocationingAccuracy( uint16 handle,
  */
 extern llStatus_t LL_EXT_CoexEnable( uint8 enable );
 
+/*******************************************************************************
+ * @fn          LL_EXT_GetRxStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the RX
+ *              Statistics counters for a connection.
+ *
+ * @param       connId - connection handle.
+ *              command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetRxStats( uint16 connId, uint8 command );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetTxStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the TX
+ *              Statistics counters for a connection.
+ *
+ * @param       connId - connection handle.
+ *              command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetTxStats( uint16 connId, uint8 command );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetCoexStats API
+ *
+ * @brief       This API is called by the HCI to Reset or Read the COEX
+ *              Statistics counters
+ *
+ * @param       command - Reset/Read
+ *
+ * @return      LL_STATUS_SUCCESS
+ */
+extern llStatus_t LL_EXT_GetCoexStats( uint8 command );
+
 /*
 **  LL Callbacks to HCI
 */
@@ -4924,6 +5013,90 @@ extern void LL_EXT_ScanReqReportCback( uint8  peerAddrType,
                                        uint8 *peerAddr,
                                        uint8  chan,
                                        int8   rssi );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetRxStatsCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       numRxOk      - Number of RX pakets
+ * @param       numRxCtrl    - Number of RX control packets
+ * @param       numRxCtrlAck - Number of RX control packets acked
+ * @param       numRxCrcErr  - Number of RX CRC error packets
+ * @param       numRxIgnored - Number of RX ignored packets
+ * @param       numRxEmpty   - Number of RX empty packets
+ * @param       numRxBufFull - Number of RX discarded packets
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetRxStatsCback( uint16 numRxOk,
+                                    uint16 numRxCtrl,
+                                    uint16 numRxCtrlAck,
+                                    uint16 numRxCrcErr,
+                                    uint16 numRxIgnored,
+                                    uint16 numRxEmpty,
+                                    uint16 numRxBufFull );
+
+/*******************************************************************************
+ * @fn          LL_EXT_GetTxStatsCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       numTx           - Number of TX pakets
+ * @param       numTxAck        - Number of TX packets Acked
+ * @param       numTxCtrl       - Number of TX control packets
+ * @param       numTxCtrlAck    - Number of TX control packets acked
+ * @param       numTxCtrlAckAck - Number of TX control packets acked that were acked
+ * @param       numTxRetrans    - Number of retransmissions
+ * @param       numTxEntryDone  - Number of packets on Tx queue that are finished
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetTxStatsCback( uint16 numTx,
+                                    uint16 numTxAck,
+                                    uint16 numTxCtrl,
+                                    uint16 numTxCtrlAck,
+                                    uint16 numTxCtrlAckAck,
+                                    uint16 numTxRetrans,
+                                    uint16 numTxEntryDone );
+
+/*******************************************************************************
+ * @fn          LL_EXT_ChanMapUpdateCback Callback
+ *
+ * @brief       This LL callback is used to generate a vendor specific channel map
+ *              update event
+ *
+ * input parameters
+ *
+ * @param       grants         - Number of grants
+ * @param       rejects        - Number of rejects (no grant)
+ * @param       contRejects    - Number of continuously rejected requests
+ * @param       maxContRejects - Max continuously rejected requests
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+extern void LL_EXT_GetCoexStatsCback( uint32 grants,
+                                      uint32 rejects,
+                                      uint16 contRejects,
+                                      uint16 maxContRejects );
 
 /*******************************************************************************
  * @fn          LL_SetDefChanMap API

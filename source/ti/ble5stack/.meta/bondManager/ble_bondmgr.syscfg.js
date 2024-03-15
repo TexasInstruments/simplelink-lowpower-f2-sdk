@@ -127,9 +127,10 @@ const config = {
             default: false
         },
         {
-            name: "syncWLWithBondDev",
-            displayName: "Sync Whitelist With Bonded Devices",
-            longDescription: Docs.syncWLWithBondDevLongDescription,
+            name: "syncALWithBondDev",
+            legacyNames: ["syncWLWithBondDev"],
+            displayName: "Sync Acceptlist With Bonded Devices",
+            longDescription: Docs.syncALWithBondDevLongDescription,
             default: false
         },
         {
@@ -186,46 +187,8 @@ const config = {
             name: "keyDistList",
             displayName: "Key Distribution List for Pairing",
             longDescription: Docs.keyDistListLongDescription,
-            default: ["GAPBOND_KEYDIST_SENCKEY", "GAPBOND_KEYDIST_SIDKEY", "GAPBOND_KEYDIST_SSIGN",
-                      "GAPBOND_KEYDIST_MENCKEY", "GAPBOND_KEYDIST_MIDKEY", "GAPBOND_KEYDIST_MSIGN"],
-            options: [
-                {
-                    displayName: "Slave Encryption Key",
-                    name: "GAPBOND_KEYDIST_SENCKEY"
-                },
-                {
-                    displayName: "Slave IRK and ID information",
-                    name: "GAPBOND_KEYDIST_SIDKEY",
-                    description: "Resolving Identity Key"
-                },
-                {
-                    displayName: "Slave CSRK",
-                    name: "GAPBOND_KEYDIST_SSIGN",
-                    description: "Connection Signature Resolving Key"
-                },
-                {
-                    displayName: "Slave Link Key",
-                    name: "GAPBOND_KEYDIST_SLINK"
-                },
-                {
-                    displayName: "Master Encryption Key",
-                    name: "GAPBOND_KEYDIST_MENCKEY"
-                },
-                {
-                    displayName: "Master IRK and ID information",
-                    name: "GAPBOND_KEYDIST_MIDKEY",
-                    description: "Resolving Identity Key"
-                },
-                {
-                    displayName: "Master CSRK",
-                    name: "GAPBOND_KEYDIST_MSIGN",
-                    description: "Connection Signature Resolving Key"
-                },
-                {
-                    displayName: "Master Link Key",
-                    name: "GAPBOND_KEYDIST_MLINK"
-                }
-            ]
+            default: Common.getDefaultKeyDistList(),
+            options: Common.getOptionsKeyDistList()
         },
         {
             name: "eccDebugKeys",
@@ -279,7 +242,8 @@ const config = {
  */
 function validate(inst, validation)
 {
-    if( Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0" )
+    if( Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0R5" &&
+        Common.device2DeviceFamily(system.deviceData.deviceId) != "DeviceFamily_CC23X0R2")
     {
        //check what is the max value
        if(inst.maxBonds < 0 || inst.maxBonds > 32)
@@ -287,23 +251,19 @@ function validate(inst, validation)
            validation.logError("The Max number of bonds that can be saved in NV is 32"
                                , inst, "maxBonds");
        }
-
-       if(inst.maxBonds > 21)
-       {
-           validation.logWarning("If scanning or connection initiation on the 2M PHY is used, "
-           + "the max number of bonds that can be saved in NV is 21.", inst, "maxBonds");
-       }
     }
     else
     {
         // Check what is the max value
         if ( inst.maxBonds > 5 )
         {
-            validation.logWarning("When using privacy the maxBonds should not be greater than 5");
+            validation.logWarning("When using privacy the maxBonds should not be greater than 5",
+                                   inst, "maxBonds");
         }
         if ( (inst.maxBonds < 0) || (inst.maxBonds > 15) )
         {
-            validation.logError("Maximum number of bonds allowed is 15");
+            validation.logError("Maximum number of bonds allowed is 15",
+                                 inst, "maxBonds");
         }
     }
 

@@ -4,7 +4,7 @@
             "+../../README.md -> README.md",
             "+../../README.html -> README.html",
             "+../../application/sensor/advanced_config.h -> application/sensor/advanced_config.h",
-            "+../../application/defines/sensor_oad_onchip_persistent_2_4g.opts -> application/defines/sensor_oad_onchip_persistent_2_4g.opts",
+            "+../../application/defines/sensor_oad_onchip_persistent_2_4g.opt -> application/defines/sensor_oad_onchip_persistent_2_4g.opt",
             "+../sensor_oad_onchip_persistent.syscfg -> sensor_oad_onchip_persistent.syscfg",
             "+cc13x2x7_cc26x2x7_oad_onchip.cmd -> cc13x2x7_cc26x2x7_oad_onchip.cmd"
         ]

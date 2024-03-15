@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -21,7 +21,7 @@
 #include "driver_defs.h"
 #include "cc_production_asset.h"
 #include "cc_aes_defs.h"
-#include "ccm.h"
+#include "mbedtls/ccm.h"
 
 /**
  * This function is used to perform AES  operation.

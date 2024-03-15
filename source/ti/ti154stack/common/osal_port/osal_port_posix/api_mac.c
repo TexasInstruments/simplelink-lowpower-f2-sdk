@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,13 @@
 
 #ifdef IEEE_COEX_ENABLED
 #include DeviceFamily_constructPath(driverlib/rf_ieee_coex.h)
+#endif
+
+#ifdef FREERTOS_SUPPORT
+/* POSIX Header files */
+#include <FreeRTOS.h>
+/* debug */
+#include "mac_assert.h"
 #endif
 
 /*!
@@ -2353,3 +2360,105 @@ static ApiMac_status_t mlmeSetFhReq(uint16_t pibAttribute, void *pValue)
     return (ApiMac_status_t) MAC_MlmeFHSetReq(pibAttribute, pValue);
 }
 
+#ifdef FREERTOS_SUPPORT
+
+#define RF_CB_THREADSTACKSIZE 2000
+
+pthread_t rfCdThreadHndl = NULL;
+
+sem_t rfCbSemHandle;
+
+uint32_t rxCount;
+bool rxRec;
+// rf queue variables
+uint8_t macRfQueueSize;
+macRfQueue_t macRfQueue[MAC_FREERTOS_RF_SLOTS];
+uint8_t wRfPtr;
+uint8_t rRfPtr;
+uint8_t numRfCmdQueued;
+
+void runRxCb(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
+{
+    //pushing to rf queue
+
+    macRfQueue[wRfPtr].rfCbHndl = h;
+    macRfQueue[wRfPtr].rfCbCmdHndl = ch;
+    macRfQueue[wRfPtr].rfCbEventMask = e;
+    macRfQueue[wRfPtr].rfCb = macRxCb;
+    wRfPtr = (wRfPtr + 1) % macRfQueueSize;
+    numRfCmdQueued++;
+
+    rxCount++;
+
+    sem_post(&rfCbSemHandle);
+
+}
+
+void *rfCbThread(void *arg0)
+{
+    halIntState_t  s;
+    while(true)
+    {
+        sem_wait(&rfCbSemHandle);
+        MAC_ASSERT(numRfCmdQueued);
+
+        macRfQueue[rRfPtr].rfCb(macRfQueue[rRfPtr].rfCbHndl,
+                               macRfQueue[rRfPtr].rfCbCmdHndl,
+                               macRfQueue[rRfPtr].rfCbEventMask);
+        HAL_ENTER_CRITICAL_SECTION(s);
+        numRfCmdQueued--;
+        HAL_EXIT_CRITICAL_SECTION(s);
+        rRfPtr = (rRfPtr + 1) % macRfQueueSize;
+    }
+}
+
+void startRfCbThread(void)
+{
+    pthread_attr_t      attrs;
+    struct sched_param  priParam;
+    int                 retc;
+    rxCount = 0;
+    rxRec = true;
+    numRfCmdQueued = 0;
+
+    // initialize the RF Queue
+    wRfPtr = 0;
+    rRfPtr = 0;
+    macRfQueueSize = MAC_FREERTOS_RF_SLOTS;
+    for (int i = 0; i < macRfQueueSize; i++)
+    {
+      memset(&macRfQueue[i], 0, sizeof(macRfQueue_t));
+
+    }
+
+    if(rfCdThreadHndl == NULL)
+    {
+        /* create semaphores
+         */
+        retc = sem_init(&rfCbSemHandle, 0, 0);
+        if (retc != 0) {
+            while (1);
+        }
+
+        /* Initialize the attributes structure with default values */
+        pthread_attr_init(&attrs);
+
+        /* Set priority, detach state, and stack size attributes */
+        priParam.sched_priority = (configMAX_PRIORITIES - 1);
+        retc = pthread_attr_setschedparam(&attrs, &priParam);
+        retc |= pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_DETACHED);
+        retc |= pthread_attr_setstacksize(&attrs, RF_CB_THREADSTACKSIZE);
+        if (retc != 0) {
+            /* failed to set attributes */
+            while (1) {}
+        }
+
+        retc = pthread_create(&rfCdThreadHndl, &attrs, rfCbThread, NULL);
+        if (retc != 0) {
+            /* pthread_create() failed */
+            while (1) {}
+        }
+    }
+}
+
+#endif //FREERTOS_SUPPORT

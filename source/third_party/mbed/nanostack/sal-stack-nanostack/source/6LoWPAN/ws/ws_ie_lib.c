@@ -644,4 +644,58 @@ bool ws_wp_nested_network_name_read(uint8_t *data, uint16_t length, ws_wp_networ
     network_name->network_name_length = nested_payload_ie.length;
     return true;
 }
+#ifdef FEATURE_WISUN_SUPPORT
+#define MSG_ID_PANID     (0x01)
+bool ws_wp_nested_vp_read(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie)
+{
+    uint8_t msgID;
+    mac_nested_payload_IE_t nested_payload_ie;
+    nested_payload_ie.id = WP_PAYLOAD_IE_VP_TYPE;
+    nested_payload_ie.type_long = true;
+    if (mac_ie_nested_discover(data, length, &nested_payload_ie) < 3) {
+        return false;
+    }
+    data = nested_payload_ie.content_ptr;
+    vp_ie->vendor_id = *data++;
+    /* messages are encoded in
+     * msgID-1 + value (length is predefined)
+     * msgID-2 + value
+     * msgID-n : 0xFF termination
+     */
+    msgID = *data++;
+    if (msgID == MSG_ID_PANID)
+    {
+        vp_ie->network_pan_id = common_read_16_bit_inverse(data);
+    }
+    return true;
+}
+
+/* provide this function to MAC
+ * data point to WiSUN Paylaod IE header
+ * */
+bool ws_wp_nested_vp_get(uint8_t *data, uint16_t length, struct ws_vp_ie *vp_ie)
+{
+    mac_nested_payload_IE_t nested_payload_ie;
+    mac_payload_IE_t ws_wp_nested;
+    ws_wp_nested.id = WS_WP_NESTED_IE;
+
+    /* make sure we have WiSUN Paylaod header IE */
+    if (mac_ie_payload_discover(data, length, &ws_wp_nested) > 2)
+    {   /* there is Wisun Paylaod header IE , serach VPIE */
+        nested_payload_ie.id = WP_PAYLOAD_IE_VP_TYPE;
+        nested_payload_ie.type_long = true;
+
+        if (mac_ie_nested_discover(ws_wp_nested.content_ptr, ws_wp_nested.length, &nested_payload_ie) < 3)
+        {
+            return false;
+        }
+
+        vp_ie->ptrContent = nested_payload_ie.content_ptr;
+        vp_ie->length = nested_payload_ie.length;
+        return true;
+    }
+    return false;
+
+}
+#endif
 

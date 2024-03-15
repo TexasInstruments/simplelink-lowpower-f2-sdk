@@ -616,7 +616,7 @@ function isCoexSupport() {
      * - cc13x2_cc26x2
      * - cc13x2x7_cc13x2x7
      * - cc13x4_cc26x4
-     * 
+     *
      * AND not a sub1g only device
      */
     return (
@@ -905,7 +905,6 @@ function getCoexPinInfo(inst) {
             $name: inst["rfCoexGrantPinSymbol"],
             mode: "Input",
             interruptTrigger: getGrantIntTrigger(inst),
-            callbackFunction: "rfDriverCoexPinsHwi",
             invert: inst["coexPinGrantIdleLevel"] ? false : true
         }
     };

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -155,6 +155,14 @@ typedef struct
   uint16 connLatency;            //!< Slave latency
 } linkDBItem_t;
 
+// This is the extra attributes that can be added to the linkDB.
+// This have been added due to the constrains that the ROM functions and vars
+// have the pre compiled linkDB struct size and attributes
+typedef struct
+{
+  uint8 ownAddrType;             //!< Own address type
+} linkDBExtraItem_t;
+
 typedef struct
 {
   uint8 addr[B_ADDR_LEN];        //!< This device's Private addresses during connection establishment
@@ -292,6 +300,25 @@ extern uint8 linkDB_UpdateMTU( uint16 connectionHandle, uint16 newMtu );
  * @return link MTU size
  */
 extern uint16 linkDB_MTU( uint16 connectionHandle );
+
+/**
+ * This function is used to update the ownAddrType of a link record.
+ *
+ * @param connectionHandle controller link connection handle.
+ * @param addrType  new ownAddrType.
+ *
+ * @return @ref SUCCESS or failure
+ */
+extern uint8 linkDB_UpdateOwnAddrType( uint16 connectionHandle, uint8 addrType );
+
+/**
+ * @fn          linkDB_getExtraItems
+ *
+ * @brief       This function returns a pointer to linkDBExtra
+ *
+ * @return      pointer to linkDBExtra
+ */
+extern linkDBExtraItem_t* linkDB_getExtraItems(void);
 
   /**
  * Find a link in the link database.

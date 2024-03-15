@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "../NoRTOS.h"
 
 #include <ti/drivers/dpl/SystemP.h>
 
@@ -46,10 +47,6 @@
  *  Constants and macros
  * -----------------------------------------------------------------------------
  */
-#ifndef MIN
-    #define MIN(n, m) (((n) > (m)) ? (m) : (n))
-#endif
-
 /*
  *  ======== OUTMAX ========
  *  The maximum length of the output of a base 8 number produced by formatNum
@@ -100,6 +97,11 @@ int SystemP_snprintf(char *buf, size_t n, const char *format, ...)
     va_end(args);
 
     return (ret);
+}
+
+void SystemP_startScheduler(void)
+{
+    NoRTOS_start();
 }
 
 /*

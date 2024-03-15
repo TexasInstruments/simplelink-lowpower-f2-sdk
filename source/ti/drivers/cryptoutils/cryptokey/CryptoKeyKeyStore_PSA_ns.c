@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -164,7 +164,7 @@ int_fast16_t KeyStore_PSA_importCertificate(KeyStore_PSA_KeyAttributes *attribut
     KeyStore_s_ImportCertificateMsg importCertificateMsg;
     int_fast16_t ret = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
-    importCertificateMsg.attributes = attributes;
+    importCertificateMsg.attributes = &attributes->client;
     importCertificateMsg.key        = key;
     importCertificateMsg.data       = data;
     importCertificateMsg.dataLength = dataLength;
@@ -197,7 +197,7 @@ int_fast16_t KeyStore_PSA_importKey(KeyStore_PSA_KeyAttributes *attributes,
     KeyStore_s_ImportKeyMsg importKeyMsg;
     int_fast16_t ret = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
-    importKeyMsg.attributes = attributes;
+    importKeyMsg.attributes = &attributes->client;
     importKeyMsg.key        = key;
     importKeyMsg.data       = data;
     importKeyMsg.dataLength = dataLength;
@@ -235,7 +235,7 @@ int_fast16_t KeyStore_PSA_getKeyAttributes(KeyStore_PSA_KeyFileId key, KeyStore_
     KeyStore_s_GetKeyAttributesMsg getKeyAttributesMsg;
     int_fast16_t ret = KEYSTORE_PSA_STATUS_GENERIC_ERROR;
 
-    getKeyAttributesMsg.attributes = attributes;
+    getKeyAttributesMsg.attributes = &attributes->client;
     getKeyAttributesMsg.key        = key;
 
     invecs[0].base = &getKeyAttributesMsg;
@@ -262,7 +262,7 @@ void KeyStore_PSA_resetKeyAttributes(KeyStore_PSA_KeyAttributes *attributes)
 {
     KeyStore_s_ResetKeyAttributesMsg resetKeyAttributeMsg;
 
-    resetKeyAttributeMsg.attributes = attributes;
+    resetKeyAttributeMsg.attributes = &attributes->client;
 
     invecs[0].base = &resetKeyAttributeMsg;
     invecs[0].len  = sizeof(resetKeyAttributeMsg);

@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2023, Texas Instruments Incorporated
+ Copyright (c) 2013-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -322,10 +322,10 @@ extern "C" {
 /** @internal Primitive service "disable single interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_DISABLE_INT                  14
 
-/** @internal Primitive service "enable master interrupt" function id */
+/** @internal Primitive service "enable central interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_ENABLE_MINT                  15
 
-/** @internal Primitive service "disable master interrupt" function id */
+/** @internal Primitive service "disable central interrupt" function id */
 #define ICALL_PRIMITIVE_FUNC_DISABLE_MINT                 16
 
 /** @internal Primitive service "register ISR" function id */
@@ -1142,6 +1142,15 @@ ICall_Errno ICall_registerApp(ICall_EntityID *entity, ICall_SyncHandle *msgSyncH
 void *ICall_allocMsg(size_t size);
 
 /**
+ * Allocates memory block for a message, but check if enough memory will be left after the allocation.
+ * @param size   size of the message body in bytes.
+ * @return pointer to the start of the message body of the newly
+ *         allocated memory block, or NULL if the allocation
+ *         failed.
+ */
+void *ICall_allocMsgLimited(size_t size);
+
+/**
  * @brief       Frees the memory block allocated for a message.
  *
  * @param msg   pointer to the start of the message body
@@ -1226,7 +1235,14 @@ ICall_Errno
 ICall_fetchServiceMsg(ICall_ServiceEnum *src,
                       ICall_EntityID *dest,
                       void **msg);
-
+/**
+ * Check if Task Queue is empty.
+ *
+ * @return @ref ICALL_ERRNO_SUCCESS when a message was successfully
+ *         retrieved.<br>
+ *         @ref ICALL_ERRNO_NOMSG when no message was queued to
+ */
+uint8 ICall_IsQueueEmpty();
 /**
  * @brief Waits for a signal to the semaphore associated with the calling thread.
  *
@@ -1416,14 +1432,14 @@ ICall_Errno
 ICall_disableInt(int intnum);
 
 /**
- * @brief  Enables master interrupt and context switching.
+ * @brief  Enables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno
 ICall_enableMInt(void);
 
 /**
- * @brief Disables master interrupt and context switching.
+ * @brief Disables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 ICall_Errno
@@ -2235,7 +2251,7 @@ ICall_disableInt(int intnum)
 }
 
 /**
- * @brief Enables master interrupt and context switching.
+ * @brief Enables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 static ICall_Errno
@@ -2248,7 +2264,7 @@ ICall_enableMInt(void)
 }
 
 /**
- * @brief Disables master interrupt and context switching.
+ * @brief Disables central interrupt and context switching.
  * @return @ref ICALL_ERRNO_SUCCESS
  */
 static ICall_Errno

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -96,7 +96,7 @@
 #include "bcomdef.h"
 #include "ll.h"
 #include "ll_common.h"
-#include "ll_wl.h"
+#include "ll_al.h"
 
 /*******************************************************************************
  * MACROS
@@ -114,11 +114,11 @@
  */
 
 #define BLE_RESOLVING_LIST_SIZE      (rlSize) // Resolving List Size For Peer + Local IRK/RP/IdAddr
-#define EXT_WHITE_LIST_SIZE          (2 * BLE_RESOLVING_LIST_SIZE)
+#define EXT_ACCEPT_LIST_SIZE         (2 * BLE_RESOLVING_LIST_SIZE)
 #define LOCAL_RL_INDEX               0
 #define EMPTY_RESOLVE_LIST_ENTRY     0xFF
-#define INVALID_RESOLVE_LIST_INDEX   0xFF
-#define INVALID_EXT_WHITE_LIST_INDEX 0
+#define INVALID_RESOLVE_LIST_INDEX   0xFFU
+#define INVALID_EXT_ACCEPT_LIST_INDEX 0
 #define MIN_RPA_TIMEOUT              0x0001 // 1s
 #define MAX_RPA_TIMEOUT              0xA1B8 // 41400s or 11.5 hours
 #define DEFAULT_RPA_TIMEOUT          0x0384 // 900s or 15 mins
@@ -130,13 +130,13 @@
 #define RESOLVABLE_ADDR_MASK         0x40
 #define STATIC_RANDOM_ADDR_MASK      0xC0
 
-// White List Size
-#define WL_SIZE_STANDARD             0
-#define WL_SIZE_EXTENDED             1
+// Accept List Size
+#define AL_SIZE_STANDARD             0
+#define AL_SIZE_EXTENDED             1
 
-// White List Ignore For Privacy
-#define PRIV_IGNORE_WL_ENTRY         0
-#define PRIV_USE_WL_ENTRY            1
+// Accept List Ignore For Privacy
+#define PRIV_IGNORE_AL_ENTRY         0
+#define PRIV_USE_AL_ENTRY            1
 
 #ifdef QUAL_TEST
 // List size limited to 3 entries because of test case LL/CON/INI/BV-23-C
@@ -158,12 +158,12 @@ typedef struct
   uint8 idAddr[ B_ADDR_LEN ];        // Identity Address
   uint8 RPA[ B_ADDR_LEN ];           // Resolvable Private Address
   uint8 IRK[ KEYLEN ];               // Identity Resolving Key
-  uint8 privMode;                    // Privacy Mode
+  uint8 privMode;                    // Privacy Mode (NPM - 0 , DPM - 1)
 } rlEntry_t;
 
 PACKED_TYPEDEF_STRUCT
 {
-  uint8 offset;                      //Index which indicates the end of the standard WL and the beginning of the ExtWL
+  uint8 offset;                      //Index which indicates the end of the standard AL and the beginning of the ExtAL
   rpaTargetAConf_t conf;             //TargetA RPA configuration
   uint8 address[ LSB_2_BYTES ];      //Least significant 16 bits of the address contained in the entry
   uint8 addressHi[ MSB_4_BYTES ];    //Most significant 32 bits of the address contained in the entry
@@ -227,27 +227,29 @@ extern void   LL_PRIV_UpdateRL( rlEntry_t *resolvingList );
 
 extern uint8  LL_PRIV_NumberPeerRLEntries( rlEntry_t *resolvingList );
 
-extern void   LL_PRIV_CheckRLPeerId( rlEntry_t *resolvingList, wlTable_t *pWlTable );
+extern void   LL_PRIV_CheckRLPeerId( rlEntry_t *resolvingList, alTable_t *pAlTable );
 
-extern void   LL_PRIV_CheckRLPeerIdEntry( rlEntry_t *resolvingList, wlTable_t *pWlTable );
+extern void   LL_PRIV_CheckRLPeerIdEntry( rlEntry_t *resolvingList, alTable_t *pAlTable );
 
-// Extended (i.e. Private) White List
+// Extended (i.e. Private) Accept List
 
-extern void   LL_PRIV_SetupPrivacy( wlTable_t *pWlTable );
+extern void   LL_PRIV_SetupPrivacy( alTable_t *pAlTable );
 
-extern void   LL_PRIV_TeardownPrivacy( wlTable_t *pWlTable );
+extern void   LL_PRIV_TeardownPrivacy( alTable_t *pAlTable );
 
-extern void   LL_PRIV_ClearExtWL( wlTable_t *pWlTable );
+extern void   LL_PRIV_ClearExtAL( alTable_t *pAlTable );
 
-extern void   LL_PRIV_ClearAllPrivIgn( wlTable_t *pWlTable );
+extern void   LL_PRIV_ClearAllPrivIgn( alTable_t *pAlTable );
 
-extern uint8  LL_PRIV_AddExtWLEntry( wlTable_t *pWlTable, uint8 *devAddr, uint8 devAddrType, uint8 setIgnore );
+extern uint8  LL_PRIV_AddExtALEntry( alTable_t *pAlTable, uint8 *devAddr, uint8 devAddrType, uint8 setIgnore );
 
-extern void   LL_PRIV_UpdateExtWLEntry( wlTable_t *pWlTable, uint8 *oldRPA, uint8 *newRPA );
+extern void   LL_PRIV_UpdateExtALEntry( alTable_t *pAlTable, uint8 *oldRPA, uint8 *newRPA );
 
-extern uint8  LL_PRIV_FindExtWLEntry( wlTable_t *pWlTable, uint8 *devAddr, uint8 devAddrType );
+extern uint8  LL_PRIV_FindExtALEntry( alTable_t *pAlTable, uint8 *devAddr, uint8 devAddrType );
 
-extern void   LL_PRIV_SetWLSize( wlTable_t *pWlTable, uint8 wlSizeType );
+extern void   LL_PRIV_SetALSize( alTable_t *pAlTable, uint8 alSizeType );
+
+extern uint8  LL_PRIV_FindEmptyExtALEntry(alTable_t *pAlTable);
 
 #ifdef QUAL_TEST
 extern void   LL_PRIV_UpdateLocalIrkList( uint8 *peerAddr, uint8 peerAddrType, uint8 *localIrk );

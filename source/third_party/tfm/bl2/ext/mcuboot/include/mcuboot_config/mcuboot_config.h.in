@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2018 Open Source Foundries Limited
- * Copyright (c) 2019-2020 Arm Limited
+ * Copyright (c) 2019-2022 Arm Limited
  *
  * SPDX-License-Identifier: Apache-2.0
  */
 
 /*
  * Original code taken from mcuboot project at:
- * https://github.com/JuulLabs-OSS/mcuboot
+ * https://github.com/mcu-tools/mcuboot
  * Git SHA of the original version: ac55554059147fff718015be9f4bd3108123f50a
  */
 
@@ -33,23 +33,11 @@ extern "C" {
 #define MCUBOOT_USE_FLASH_AREA_GET_SECTORS
 #define MCUBOOT_TARGET_CONFIG "flash_layout.h"
 
-/*
- * Signature types
- */
-#cmakedefine MCUBOOT_SIGN_RSA
-#cmakedefine MCUBOOT_SIGN_RSA_LEN @MCUBOOT_SIGN_RSA_LEN@
-
-/*
- * Upgrade mode
- */
-#cmakedefine MCUBOOT_OVERWRITE_ONLY
-#cmakedefine MCUBOOT_NO_SWAP
-#cmakedefine MCUBOOT_RAM_LOADING
-
-#cmakedefine MCUBOOT_HW_KEY
 #cmakedefine MCUBOOT_HW_ROLLBACK_PROT
 #cmakedefine MCUBOOT_MEASURED_BOOT
+#cmakedefine MCUBOOT_DATA_SHARING
 
+#cmakedefine MCUBOOT_BOOTSTRAP
 /*
  * Maximum size of the measured boot record.
  *
@@ -61,6 +49,15 @@ extern "C" {
  * the boot record size can be up to 100 bytes.
  */
 #define MAX_BOOT_RECORD_SZ  (100u)
+
+#cmakedefine MCUBOOT_ENC_IMAGES
+#cmakedefine MCUBOOT_ENCRYPT_RSA
+
+#ifdef MCUBOOT_ENC_IMAGES
+#define MCUBOOT_AES_@MCUBOOT_ENC_KEY_LEN@
+#endif /* MCUBOOT_ENC_IMAGES */
+
+#define MCUBOOT_BOOT_MAX_ALIGN @MCUBOOT_BOOT_MAX_ALIGN@
 
 /*
  * Cryptographic settings

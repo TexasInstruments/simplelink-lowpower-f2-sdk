@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -415,6 +415,9 @@ extern uint8 hciSmpTaskID;
 #define HCI_EXT_SET_LOCATIONING_ACCURACY                    0xFC2B    //!< opcode of @ref HCI_SetLocationingAccuracyCmd
 #define HCI_EXT_GET_ACTIVE_CONNECTION_INFO                  0xFC2C    //!< opcode of @ref HCI_EXT_GetActiveConnInfoCmd
 #define HCI_EXT_COEX_ENABLE                                 0xFC2E    //!< opcode of @ref HCI_EXT_CoexEnableCmd
+#define HCI_EXT_GET_RX_STATS                                0xFC31    //!< opcode of @ref HCI_EXT_GetRxStatisticsCmd
+#define HCI_EXT_GET_TX_STATS                                0xFC32    //!< opcode of @ref HCI_EXT_GetTxStatisticsCmd
+#define HCI_EXT_GET_COEX_STATS                              0xFC33    //!< opcode of @ref HCI_EXT_GetCoexStatisticsCmd
 
 #define HCI_EXT_LL_TEST_MODE                                0xFC70    //!< opcode of @ref HCI_EXT_LLTestModeCmd
 
@@ -559,6 +562,9 @@ extern char *BLEEventCode_BleLogStrings[];
 #define HCI_EXT_COEX_ENABLE_EVENT                          0x042E    //!< event from @ref HCI_EXT_CoexEnableCmd
 #define HCI_EXT_SET_HOST_DEF_CHANNEL_CLASSIFICATION_EVENT  0x042F    //!< event from @ref HCI_EXT_CoexEnableCmd
 #define HCI_EXT_SET_HOST_CONN_CHANNEL_CLASSIFICATION_EVENT 0x0430    //!< event from @ref HCI_EXT_CoexEnableCmd
+#define HCI_EXT_GET_RX_STATS_EVENT                         0x0431    //!< opcode of @ref HCI_EXT_GetRxStatisticsCmd
+#define HCI_EXT_GET_TX_STATS_EVENT                         0x0432    //!< opcode of @ref HCI_EXT_GetTxStatisticsCmd
+#define HCI_EXT_GET_COEX_STATS_EVENT                       0x0433    //!< opcode of @ref HCI_EXT_GetCoexStatisticsCmd
 
 
 

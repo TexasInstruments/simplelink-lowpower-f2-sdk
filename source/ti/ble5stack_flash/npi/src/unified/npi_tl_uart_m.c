@@ -2,14 +2,14 @@
 
  @file  npi_tl_uart_m.c
 
- @brief NPI Transport Layer Module for UART Master
+ @brief NPI Transport Layer Module for UART Central
 
  Group: WCS, LPC, BTS
  Target Device: cc13xx_cc26xx
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -182,9 +182,9 @@ void NPITLUART_closeTransport(void)
 // -----------------------------------------------------------------------------
 void NPITLUART_stopTransfer(void)
 {
-  // This is a dummy function for the UART Master implementation
-  // The transfer will end once the master has finished sending and has
-  // received a valid packet from Slave or no data at all
+  // This is a dummy function for the UART Central implementation
+  // The transfer will end once the central has finished sending and has
+  // received a valid packet from Peripheral or no data at all
 }
 #endif // NPI_FLOW_CTRL = 1
 
@@ -200,7 +200,7 @@ void NPITLUART_handleRemRdyEvent(void)
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
 
-  // If read has not yet been started, now is the time before Master
+  // If read has not yet been started, now is the time before Central
   // potentially starts to send data
   // There is the possibility that MRDY gets set high which
   // clears RxActive prior to us getting to this event. This will cause us to
@@ -212,7 +212,7 @@ void NPITLUART_handleRemRdyEvent(void)
   }
 
   // If write has already been initialized then kick off the driver write
-  // now that Master has signalled it is ready
+  // now that Central has signalled it is ready
   if (TxActive)
   {
     // Check to see if transport is successful. If not, reset TxLen to allow
@@ -459,7 +459,7 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
   TxActive = TRUE;
 
   // Start reading prior to impending write transaction
-  // We can only call UART_write() once MRDY has been signaled from Master
+  // We can only call UART_write() once MRDY has been signaled from Central
   // device
   NPITLUART_readTransport();
 #else

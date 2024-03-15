@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -28,8 +28,11 @@
 #define CC_BSV_PID_4_VAL        0x00000004UL
 #define CC_BSV_PID_SIZE_WORDS       5
 
+#define CC_BSV_PID_0_1_VAL      0x000000C1UL
+
 #define CC_BSV_PID_2_1_VAL      0x0000002BUL
 
+#define CC_BSV_PID_2_2_VAL      0x0000001BUL
 
 /* Component ID registers values */
 #define CC_BSV_CID_0_VAL        0x0DUL

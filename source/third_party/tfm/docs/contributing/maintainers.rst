@@ -11,32 +11,43 @@ document.
 Maintainers
 ===========
 
-Abhishek Pandit
-    :email: `abhishek.pandit@arm.com <abhishek.pandit@arm.com>`__
-    :github: `abhishek-pandit <https://github.com/abhishek-pandit>`__
-
-Ashutosh Singh
-    :email: `ashutosh.singh@arm.com <ashutosh.singh@arm.com>`__
-    :github: `ashutoshksingh <https://github.com/ashutoshksingh>`__
-
-Miklos Balint
-    :email: `miklos.balint@arm.com <miklos.balint@arm.com>`__
-    :github: `wmnt <https://github.com/wmnt>`__
-
 Anton Komlev
     :email: `Anton.Komlev@arm.com <Anton.Komlev@arm.com>`__
     :github: `Anton-TF <https://github.com/Anton-TF>`__
+
+Chris Brand
+    :email: `Chris.Brand@cypress.com <chris.brand@cypress.com>`__
+    :github: `UEWBot <https://github.com/UEWBot>`__
+
+Ken Liu
+    :email: `Ken.Liu@arm.com <Ken.Liu@arm.com>`__
+    :github: `KenLSoft <https://github.com/KenLSoft>`__
+
+David Hu
+    :email: `David.Hu@arm.com <David.Hu@arm.com>`__
+    :github: `davidhuziji <https://github.com/davidhuziji>`__
 
 
 Code owners
 ===========
 
-Bootloader
-~~~~~~~~~~
+Bootloader and FWU
+~~~~~~~~~~~~~~~~~~
 
 Tamas Ban
     :email: `Tamas.Ban@arm.com <Tamas.Ban@arm.com>`__
-    :github: `tamban01 <https://github.com/tamban01>`__
+    :github: `tamasban <https://github.com/tamasban>`__
+
+Sherry Zhang
+    :email: `Sherry.Zhang2@arm.com <Sherry.Zhang2@arm.com>`__
+    :github: `sherryzhang <https://github.com/sherryzhang>`__
+
+BL1 immutable bootloader
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Raef Coles
+    :email: `Raef.Coles@arm.com <Raef.Coles@arm.com>`__
+    :github: `RcColes <https://github.com/RcColes>`__
 
 Secure Storage
 ~~~~~~~~~~~~~~
@@ -45,56 +56,93 @@ Jamie Fox
     :email: `jamie.fox@arm.com <jamie.fox@arm.com>`__
     :github: `jf549 <https://github.com/jf549>`__
 
+Sherry Zhang
+    :email: `Sherry.Zhang2@arm.com <Sherry.Zhang2@arm.com>`__
+    :github: `sherryzhang <https://github.com/sherryzhang>`__
+
 Crypto
 ~~~~~~
 
-Soby Mathew
-    :email: `Soby.Mathew@arm.com <Soby.Mathew@arm.com>`__
-    :github: `soby-mathew <https://github.com/soby-mathew>`__
+Antonio de Angelis
+    :email: `Antonio.deAngelis@arm.com <Antonio.deAngelis@arm.com>`__
+    :github: `adeaarm <https://github.com/adeaarm>`__
 
-SPM & IPC
-~~~~~~~~~
+Summer Qin
+    :email: `Summer.Qin@arm.com <Summer.Qin@arm.com>`__
+    :github: `Summer-ARM <https://github.com/Summer-ARM>`__
+
+Framework (SPM, etc.)
+~~~~~~~~~~~~~~~~~~~~~
 
 Ken Liu
     :email: `Ken.Liu@arm.com <Ken.Liu@arm.com>`__
     :github: `KenLSoft <https://github.com/KenLSoft>`__
 
-Mate Toth-Pal
-    :email: `Mate.Toth-Pal@arm.com <Mate.Toth-Pal@arm.com>`__
-    :github: `matetothpal <https://github.com/matetothpal>`__
-
-Audit Log
-~~~~~~~~~
-
-Jamie Fox
-    :email: `jamie.fox@arm.com <jamie.fox@arm.com>`__
-    :github: `jf549 <https://github.com/jf549>`__
+Kevin Peng
+    :email: `Kevin.Peng@arm.com <Kevin.Peng@arm.com>`__
+    :github: `kevin-peng-hao <https://github.com/kevin-peng-hao>`__
 
 Attestation
 ~~~~~~~~~~~
 
-Tamas Ban
-    :email: `Tamas.Ban@arm.com <Tamas.Ban@arm.com>`__
-    :github: `tamban01 <https://github.com/tamban01>`__
+Maulik Patel
+    :email: `Maulik.Patel@arm.com <Maulik.Patel@arm.com>`__
+    :github: `maulik-arm <https://github.com/maulik-arm>`__
 
-CMake Build System
-~~~~~~~~~~~~~~~~~~
+David Hu
+    :email: `David.Hu@arm.com <David.Hu@arm.com>`__
+    :github: `davidhuziji <https://github.com/davidhuziji>`__
+
+Build System
+~~~~~~~~~~~~
+
+Raef Coles
+    :email: `Raef.Coles@arm.com <Raef.Coles@arm.com>`__
+    :github: `RcColes <https://github.com/RcColes>`__
 
 Anton Komlev
     :email: `Anton.Komlev@arm.com <Anton.Komlev@arm.com>`__
     :github: `Anton-TF <https://github.com/Anton-TF>`__
 
+Tests
+~~~~~
 
-Arm Platforms: MPS2, MPS3, Musca(A,B1,S1)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+David Hu
+    :email: `David.Hu@arm.com <David.Hu@arm.com>`__
+    :github: `davidhuziji <https://github.com/davidhuziji>`__
 
-Mark Horvath
-    :email: `Mark.Horvath@arm.com <mark.horvath@arm.com>`__
-    :github: `mark-horvath-arm <https://github.com/mark-horvath-arm>`__
+Kevin Peng
+    :email: `Kevin.Peng@arm.com <Kevin.Peng@arm.com>`__
+    :github: `kevin-peng-hao <https://github.com/kevin-peng-hao>`__
 
-Lakshmi Kailasanathan
-    :email: `Lakshmi.Kailasanathan@arm.com <lakshmi.kailasanathan@arm.com>`__
-    :github: `lakkai <https://github.com/lakkai>`__
+
+Arm Platforms
+~~~~~~~~~~~~~
+
+MPS2, MPS3, Musca(B1,S1)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+David Hazi
+    :email: `David.Hazi@arm.com <david.hazi@arm.com>`__
+    :github: `david-hazi-arm <https://github.com/david-hazi-arm>`__
+
+Corstone1000
+^^^^^^^^^^^^
+
+Xueliang Zhong
+    :email: `Xueliang.Zhong@arm.com <xueliang.zhong@arm.com>`__
+    :github: `xueliang-zhong <https://github.com/xueliang-zhong-arm>`__
+
+Emekcan Aras
+    :email: `Emekcan.Aras@arm.com <emekcan.aras@arm.com>`__
+    :github: `ememarar <https://github.com/ememarar>`__
+
+RSS
+^^^
+
+Jamie Fox
+    :email: `jamie.fox@arm.com <jamie.fox@arm.com>`__
+    :github: `jf549 <https://github.com/jf549>`__
 
 NXP Platforms
 ~~~~~~~~~~~~~
@@ -111,18 +159,35 @@ Michel JAOUEN
     :github: `jamike <https://github.com/jamike>`__
 
 
-Cypress Platform: 
-~~~~~~~~~~~~~~~~~
+Infineon/Cypress Platforms
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Chris Brand
     :email: `Chris Brand@cypress.com <chris.brand@cypress.com>`__
     :github: `UEWBot <https://github.com/UEWBot>`__
 
-Raymond Ngun
-    :email: `Raymond.Ngunn@cypress.com <raymond.ngunn@cypress.com>`__
-    :github: `RaymondNgun <https://github.com/RaymondNgun>`__
+Laird Connectivity Platforms:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Greg Leach
+    :email: `Greg.Leach@lairdconnect.com <greg.leach@lairdconnect.com>`__
+    :github: `greg-leach <https://github.com/greg-leach>`__
+
+Nordic Semiconductor Platforms
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Joakim Andersson
+    :email: `joakim.andersson@nordicsemi.no <joakim.andersson@nordicsemi.no>`__
+    :github: `joerchan <https://github.com/joerchan>`__
+
+
+Nuvoton Platform:
+~~~~~~~~~~~~~~~~~
+
+WS Chang
+    :email: `MS20 WSChang0@nuvoton.com <wschang0@nuvoton.com>`__
+    :github: `wschang0 <https://github.com/wschang0>`__
 
 =============
 
-*Copyright (c) 2017-2020, Arm Limited. All rights reserved.*
+*Copyright (c) 2017-2023, Arm Limited. All rights reserved.*

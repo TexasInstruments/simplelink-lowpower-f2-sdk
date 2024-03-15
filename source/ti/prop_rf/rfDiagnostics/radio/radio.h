@@ -148,7 +148,7 @@ extern bool Radio_packetTx(uint16_t numPkts, uint32_t *pktLen);
  * return true or false, depending on success or not
  *
  ***************************************************************************************************/
-extern bool Radio_packetRx(uint8_t pktLen);
+extern bool Radio_packetRx(uint16_t pktLen);
 
 /***************************************************************************************************
  *
@@ -176,7 +176,7 @@ extern bool Radio_packetMdrTx(uint16_t numPkts, uint32_t *pktLen);
  * return true or false, depending on success or not
  *
  ***************************************************************************************************/
-extern bool Radio_packetMdrRx(uint8_t pktLen);
+extern bool Radio_packetMdrRx(uint16_t pktLen);
 
 /***************************************************************************************************
  *
@@ -191,6 +191,20 @@ extern bool Radio_packetMdrRx(uint8_t pktLen);
  *
  ***************************************************************************************************/
 extern bool Radio_packetMdrCsTx(uint16_t numPkts, uint32_t *pktLen);
+
+/***************************************************************************************************
+ *
+ * Add application specific fields to the different TX commands imported from sysConf.
+ * Setup the length properly based on AT_apiType, AT_cmdType and AT_testType.
+ * Set the frequency, and transmit a given number of packets
+ *
+ * param numPkts - Number of packets to be transmitted during the TX MDR Test (TEST_MODE_MDR_CS_TX)
+ * param *pktLen - Pointer to the length of the packet to be transmitted
+ *
+ * return true or false, depending on success or not
+ *
+ ***************************************************************************************************/
+extern bool Radio_packetCsTx(uint16_t numPkts, uint32_t *pktLen);
 
 /***************************************************************************************************
  *

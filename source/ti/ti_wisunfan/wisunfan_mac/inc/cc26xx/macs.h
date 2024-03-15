@@ -232,7 +232,7 @@ enum
     
     /* DIO7  - RF Core GPO1 controls PA_EN
      * DIO13 - RF Core GPO0 controls LNA_EN
-     * DIO14 - must be configured as output ‘1’ to enable High Gain Mode
+     * DIO14 - must be configured as output Â‘1Â’ to enable High Gain Mode
     */
     #define RF_FE_IOD         {IOC_O_IOCFG7, IOC_O_IOCFG13, IOC_O_IOCFG14}
     #define RF_FE_IOD_VAL     {0x30, 0x2F, 1}

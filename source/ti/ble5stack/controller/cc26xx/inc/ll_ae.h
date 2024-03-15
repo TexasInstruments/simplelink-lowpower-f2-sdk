@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -307,6 +307,8 @@
 
 // Auxiliary Channel Index
 #define AE_CHAN_INDEX_MASK                                  0x3F
+#define AE_IGNORE_BIT_MASK                                  0x40
+#define AE_IGNORE_BIT_OFFSET                                6
 
 // Auxiliary PHY mask
 #define AE_PHY_MASK                                         0x3
@@ -965,6 +967,8 @@
 #define GET_PERIODIC_CTE_TYPE_SYNC_NO_TYPE_3(c)    (((c) >> 3) & 0x01)
 #define GET_PERIODIC_CTE_TYPE_SYNC_ONLY_CTE(c)     (((c) >> 4) & 0x01)
 
+// Ignore Bit for Scan Optimization
+#define GET_IGNORE_BIT(pkt)                        (((pkt) & AE_IGNORE_BIT_MASK) >> AE_IGNORE_BIT_OFFSET)
 
 /*******************************************************************************
  * TYPEDEFS
@@ -1371,6 +1375,7 @@ struct advSet_t
 
   // Extended advertise Priority
   uint8           priority;                       // Extended Advertise Priority.
+  uint8           actualOwnAddrType;              // The original address type
 };
 
 typedef struct sortedAdv_t sortedAdv_t;
@@ -1698,6 +1703,7 @@ extern extScanOut_t    extInitOutput;
 
 extern llStatus_t    LE_SetAdvSetRandAddr( aeRandAddrCmd_t * );
 extern llStatus_t    LE_SetExtAdvParams( aeSetParamCmd_t *, aeSetParamRtn_t * );
+extern llStatus_t    LE_SetExtAdvParams_sPatch( aeSetParamCmd_t *, aeSetParamRtn_t * );
 extern llStatus_t    LE_SetExtAdvData( aeSetDataCmd_t * );
 extern llStatus_t    LE_SetExtScanRspData( aeSetDataCmd_t * );
 extern llStatus_t    LE_SetExtAdvEnable( aeEnableCmd_t * );
@@ -1792,6 +1798,9 @@ extern ble5OpCmd_t  *llFindNextPeriodicAdv( void );
 extern dataEntryQ_t *llSetupExtScanDataEntryQueue( void );
 extern dataEntryQ_t *llSetupPeriodicScanDataEntryQueue( void );
 
+extern uint8         llAddExtWlAndSetIgnBit(aeExtAdvRptEvt_t *extAdvRpt, uint8 ignoreBit);
+extern uint8         llFlushIgnoredRxEntry(uint8 ignoreBit);
+extern void          llSetRxCfg(void);
 /*******************************************************************************
  */
 

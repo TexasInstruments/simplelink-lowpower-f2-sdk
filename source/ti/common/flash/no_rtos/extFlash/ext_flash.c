@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -160,7 +160,7 @@ static int extFlashWaitPowerDown(void);
 */
 static void extFlashSelect(void)
 {
-#ifndef DeviceFamily_CC23X0R5
+#if (!defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2))
     GPIO_clearDio(BSP_IOID_FLASH_CS);
 #else
     bspGpioWrite(BSP_IOID_FLASH_CS, 0);
@@ -178,7 +178,7 @@ static void extFlashSelect(void)
 */
 static void extFlashDeselect(void)
 {
-#ifndef DeviceFamily_CC23X0R5
+#if (!defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2))
     GPIO_setDio(BSP_IOID_FLASH_CS);
 #else
     bspGpioWrite(BSP_IOID_FLASH_CS, 1);
@@ -397,7 +397,7 @@ bool extFlashOpen(void)
     bspSpiOpen(SPI_BIT_RATE, BSP_SPI_CLK_FLASH);
 
     /* GPIO pin configuration */
-#ifndef DeviceFamily_CC23X0R5
+#if (!defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2))
     IOCPinTypeGpioOutput(BSP_IOID_FLASH_CS);
 #else
     bspGpioSetConfig(BSP_IOID_FLASH_CS, SPI_CS_STD_OUT);

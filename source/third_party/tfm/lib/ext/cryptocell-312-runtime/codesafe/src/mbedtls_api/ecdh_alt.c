@@ -1,20 +1,13 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
-
-
+#include "mbedtls/build_info.h"
 #include "mbedtls/ecdh.h"
 
 #include "cc_ecc_internal.h"
-
 
 
 const mbedtls_ecp_curve_info curve_25519_data = { MBEDTLS_ECP_DP_CURVE25519,   29,     255,     "curve25519"};
@@ -74,7 +67,7 @@ int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
         goto cleanup;
     }
 
-    MBEDTLS_MPI_CHK( mbedtls_mpi_copy( z, &P.X ) );
+    MBEDTLS_MPI_CHK( mbedtls_mpi_copy( z, &P.MBEDTLS_PRIVATE(X) ) );
 
 cleanup:
     mbedtls_ecp_point_free( &P );
@@ -130,24 +123,24 @@ int mbedtls_ecdh_make_params_edwards( mbedtls_ecdh_context *ctx, size_t *olen,
     int ret;
     size_t grp_len, pt_len;
 
-    if( ctx == NULL || ctx->grp.pbits == 0 ||
+    if( ctx == NULL || ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp).pbits == 0 ||
             olen == NULL || buf == NULL ||
-            blen <= 0 || (ctx->grp.id != MBEDTLS_ECP_DP_CURVE25519) ){
+            blen <= 0 || (ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp).id != MBEDTLS_ECP_DP_CURVE25519) ){
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
     }
 
-    if( ( ret = mbedtls_ecdh_gen_public( &ctx->grp, &ctx->d, &ctx->Q, f_rng, p_rng ) )
+    if( ( ret = mbedtls_ecdh_gen_public( &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp), &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(d), &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(Q), f_rng, p_rng ) )
                 != 0 )
         return( ret );
 
-    if( ( ret = mbedtls_ecp_tls_write_group_edwards( &ctx->grp, &grp_len, buf, blen ) )
+    if( ( ret = mbedtls_ecp_tls_write_group_edwards( &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp), &grp_len, buf, blen ) )
                 != 0 )
         return( ret );
 
     buf += grp_len;
     blen -= grp_len;
 
-    if( ( ret = mbedtls_ecp_tls_write_point( &ctx->grp, &ctx->Q, ctx->point_format,
+    if( ( ret = mbedtls_ecp_tls_write_point( &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp), &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(Q), ctx->MBEDTLS_PRIVATE(point_format),
                                      &pt_len, buf, blen ) ) != 0 )
         return( ret );
 
@@ -203,10 +196,10 @@ int mbedtls_ecdh_read_params_edwards( mbedtls_ecdh_context *ctx,
     if( ctx == NULL || buf == NULL || end == NULL){
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
     }
-    if( ( ret = mbedtls_ecp_tls_read_group_edwards( &ctx->grp, buf, end - *buf ) ) != 0 )
+    if( ( ret = mbedtls_ecp_tls_read_group_edwards( &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp), buf, end - *buf ) ) != 0 )
         return( ret );
 
-    if( ( ret = mbedtls_ecp_tls_read_point( &ctx->grp, &ctx->Qp, buf, end - *buf ) )
+    if( ( ret = mbedtls_ecp_tls_read_point( &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(grp), &ctx->MBEDTLS_PRIVATE(ctx).MBEDTLS_PRIVATE(mbed_ecdh).MBEDTLS_PRIVATE(Qp), buf, end - *buf ) )
                 != 0 ){
             return( ret );
     }

@@ -11,12 +11,6 @@ Instructions below will setup your python environment with required packages.
 - The latest version of [Python 3.7]( https://www.python.org )
 
     Note: Python 3.7 should be installed at **_C:\Python37_**. 
-    
-    If it is not the case, you have to modify the content of `package.bat` / `package.sh` to have the variable `PY3` pointing on the right location
-    ```
-    rem if "%PY3%"=="" set PY3=C:\Python37\python.exe
-    if "%PY3%"=="" set PY3==<Python 3.7 directory>\python.exe
-    ```
 
 - [Code Composer Studio (CCS)](http://www.ti.com/tool/CCSTUDIO) 
 - Set of three CC26x2 devices.
@@ -28,22 +22,6 @@ Instructions below will setup your python environment with required packages.
     cd <rtls_agent folder>
     
     c:\Python37\Scripts\pip.exe install -r requirements.txt [--proxy <www.proxy.com>]
-    ```
-
-* Setup Texas Instrument custom packages
-
-    ```
-    cd <rtls_agent folder>
-    
-    package.bat -c -b -u -i 
-    ```
-    
-    for more information about package.bat try
-
-    ```
-    cd <rtls_agent folder>
-    
-    package.bat -h 
     ```
 * Import the examples rtls_coordinator, rtls_responder and (if needed) rtls_passive under CCS. The examples are stored under examples\rtos\CC26X2R1_LAUNCHXL\ble5stack.
 Build the binaries and flash the devices.

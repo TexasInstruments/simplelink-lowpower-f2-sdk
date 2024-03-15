@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -310,6 +310,7 @@ extern uint8 gapValidADType( uint8 adType );
 
 extern uint8 gapL2capConnParamUpdateReq( void );
 extern uint8 gapPeriProcessConnEvt( uint16 cmdOpcode, hciEvt_CommandStatus_t *pMsg );
+extern uint8 gapPeriProcessConnEvt_sPatch( uint16 cmdOpcode, hciEvt_CommandStatus_t *pMsg );
 extern void gapPeriProcessConnUpdateCmdStatus( uint8 status );
 extern void gapPeriProcessConnUpdateCompleteEvt( hciEvt_BLEConnUpdateComplete_t *pPkt );
 extern void gapPeriProcessConnUpdateRejectEvt( hciEvt_BLEConnUpdateComplete_t *pPkt );
@@ -320,6 +321,7 @@ extern uint8 gapPeriProcessSignalEvt( l2capSignalEvent_t *pCmd );
  */
 
 extern uint8 gapCentProcessConnEvt( uint16 cmdOpcode, hciEvt_CommandStatus_t *pMsg );
+extern uint8 gapCentProcessConnEvt_sPatch( uint16 cmdOpcode, hciEvt_CommandStatus_t *pMsg );
 extern void gapCentProcessConnUpdateCompleteEvt( hciEvt_BLEConnUpdateComplete_t *pPkt );
 extern void gapCentProcessConnUpdateRejectEvt( hciEvt_BLEConnUpdateComplete_t *pPkt );
 extern uint8 gapCentProcessSignalEvt( l2capSignalEvent_t *pCmd );

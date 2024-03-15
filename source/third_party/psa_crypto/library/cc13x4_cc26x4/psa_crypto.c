@@ -484,13 +484,6 @@ psa_status_t psa_get_key_attributes(psa_key_id_t key, psa_key_attributes_t *attr
     }
 
     /*
-     * map attributes back from those used by KeyStore_PSA to the newer values
-     * used by this version of the PSA API
-     */
-    psa_key_type_t oldType = psa_get_key_type(attributes);
-    psa_set_key_type(attributes, map_KeyStoreKeyType_to_PSAKeyType(oldType));
-
-    /*
      * retreve the algorithm set by the application,
      * before the algorithm was mapped to the value needed by the drivers
      */
@@ -626,16 +619,20 @@ psa_status_t psa_import_key(const psa_key_attributes_t *attributes,
     psa_key_attributes_t attributesCopy = *attributes;
     psa_key_type_t psaKeyType           = psa_get_key_type(attributes);
     psa_algorithm_t originalAlgorithm   = psa_get_key_algorithm(attributes);
-    size_t keyBits                      = psa_get_key_bits(attributes);
     psa_key_file_id_t keyStoreKeyID;
 
-#if defined(USE_MBEDCRYPTO_VALUES)
-    psa_key_type_t keyStoreKeyType = map_PSAKeyType_to_KeyStoreKeyType(psaKeyType, keyBits);
-    psa_set_key_type(&attributesCopy, keyStoreKeyType);
-
-    psa_algorithm_t keyStoreAlg = map_PSAKeyAlg_to_KeyStoreKeyAlg(originalAlgorithm);
-    psa_set_key_algorithm(&attributesCopy, keyStoreAlg);
-#endif
+    /* SL KeyStore driver does not support distinct algorithms for AEAD with different tag sizes
+     * The SL Crypto driver for CCM and GCM can only accept the standard PSA_ALG_CCM or 
+     * PSA_ALG_GCM algorithm */
+    if (PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(originalAlgorithm) == PSA_ALG_CCM)
+    {
+        psa_set_key_algorithm(&attributesCopy, PSA_ALG_CCM);
+    }
+    if (PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(originalAlgorithm) == PSA_ALG_GCM)
+    {
+        psa_set_key_algorithm(&attributesCopy, PSA_ALG_GCM);
+    }
+    psa_set_key_type(&attributesCopy, psaKeyType);
 
     /*
      * Since ECDSA driver does not support SKS,
@@ -2771,7 +2768,12 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
 
     psa_status_t status             = PSA_ERROR_CORRUPTION_DETECTED;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
-    *output_length                  = 0;
+    psa_key_type_t symKeyType;
+    size_t blockLength;
+    size_t key_bits;
+    size_t ivSize;
+    size_t outputSize;
+    CryptoKey cryptoKey;
 #if defined(PSA_DEBUG)
     uint8_t tempArray[16] = {0};
     uint8_t *iv_array     = tempArray;
@@ -2779,7 +2781,7 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
     uint8_t iv_array[16] = {0};
 #endif
 
-    CryptoKey cryptoKey;
+    *output_length                  = 0;
 
     /* The requested algorithm must be one that can be processed by cipher. */
     if (!PSA_ALG_IS_CIPHER(alg))
@@ -2791,15 +2793,18 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
     /* Get key attributes from key id*/
     status = psa_get_key_attributes(key, &attributes);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
     status = psa_key_attributes_usage_check(&attributes, PSA_KEY_USAGE_ENCRYPT, alg);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
-    psa_key_type_t symKeyType = psa_get_key_type(&attributes);
-
-    size_t blockLength = PSA_BLOCK_CIPHER_BLOCK_LENGTH(symKeyType);
+    symKeyType  = psa_get_key_type(&attributes);
+    blockLength = PSA_BLOCK_CIPHER_BLOCK_LENGTH(symKeyType);
     if (input_length < blockLength)
     {
         /* if no padding is required, then input must be at least blockLength */
@@ -2811,9 +2816,9 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
     }
 
     /* iv length */
-    size_t ivSize     = PSA_CIPHER_IV_LENGTH(symKeyType, alg);
+    ivSize     = PSA_CIPHER_IV_LENGTH(symKeyType, alg);
     /* this macro accounts for the iv as well  */
-    size_t outputSize = PSA_CIPHER_ENCRYPT_OUTPUT_SIZE(symKeyType, alg, input_length);
+    outputSize = PSA_CIPHER_ENCRYPT_OUTPUT_SIZE(symKeyType, alg, input_length);
     /* make sure output_size is big enough to take in the (iv if there is one and) ciphertext */
     if (output_size < outputSize)
     {
@@ -2821,7 +2826,7 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
         goto exit;
     }
 
-    size_t key_bits = psa_get_key_bits(&attributes);
+    key_bits = psa_get_key_bits(&attributes);
     KeyStore_PSA_initKey(&cryptoKey, toKeyStoreKeyID(key), PSA_BITS_TO_BYTES(key_bits), NULL);
 
     if (alg == PSA_ALG_ECB_NO_PADDING)
@@ -2871,7 +2876,7 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
 
         operation.initialCounter = iv_array;
         status                   = AESCTR_oneStepEncrypt(AESCTR_Hand, &operation);
-        if (status != 0)
+        if (status != AESCTR_STATUS_SUCCESS)
         {
             status = map_AESError_to_PSA_error(status);
             goto exit;
@@ -2909,7 +2914,7 @@ psa_status_t psa_cipher_encrypt(psa_key_id_t key,
 
         operation.iv = iv_array;
         status       = AESCBC_oneStepEncrypt(AESCBC_Hand, &operation);
-        if (status != 0)
+        if (status != AESCBC_STATUS_SUCCESS)
         {
             status = map_AESError_to_PSA_error(status);
             goto exit;
@@ -2944,6 +2949,14 @@ psa_status_t psa_cipher_decrypt(psa_key_id_t key,
 
     psa_status_t status             = PSA_ERROR_CORRUPTION_DETECTED;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_type_t symKeyType;
+    /* iv length (note ivSize = 0) for AESECB, code can be generic.*/
+    size_t ivSize;
+    /* just need space for the plain text */
+    size_t payloadSize;
+    size_t blockLength;
+    size_t key_bits;
+
     *output_length                  = 0;
 
     CryptoKey cryptoKey;
@@ -2958,19 +2971,20 @@ psa_status_t psa_cipher_decrypt(psa_key_id_t key,
     /* Get ket attributes from key id */
     status = psa_get_key_attributes(key, &attributes);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
     status = psa_key_attributes_usage_check(&attributes, PSA_KEY_USAGE_DECRYPT, alg);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
-    psa_key_type_t symKeyType = psa_get_key_type(&attributes);
+    symKeyType  = psa_get_key_type(&attributes);
+    ivSize      = PSA_CIPHER_IV_LENGTH(symKeyType, alg);
+    payloadSize = PSA_CIPHER_DECRYPT_OUTPUT_SIZE(symKeyType, alg, input_length - ivSize);
 
-    /* iv length (note ivSize = 0) for AESECB, code can be generic.*/
-    size_t ivSize = PSA_CIPHER_IV_LENGTH(symKeyType, alg);
-
-    /* just need space for the plain text */
-    size_t payloadSize = PSA_CIPHER_DECRYPT_OUTPUT_SIZE(symKeyType, alg, input_length - ivSize);
     /* this is needed to check that there is an iv the input since if there is none, the payloadSize will be a large
      * unreasonable number due to previous opeartion*/
     if (payloadSize > PSA_CIPHER_DECRYPT_OUTPUT_MAX_SIZE(input_length))
@@ -2985,7 +2999,7 @@ psa_status_t psa_cipher_decrypt(psa_key_id_t key,
         goto exit;
     }
 
-    size_t blockLength = PSA_BLOCK_CIPHER_BLOCK_LENGTH(symKeyType);
+    blockLength = PSA_BLOCK_CIPHER_BLOCK_LENGTH(symKeyType);
     /* if payload size is smaller than the actual block length, then there is a problem if there is no padding*/
     if (payloadSize < blockLength)
     {
@@ -2997,7 +3011,7 @@ psa_status_t psa_cipher_decrypt(psa_key_id_t key,
         }
     }
 
-    size_t key_bits = psa_get_key_bits(&attributes);
+    key_bits = psa_get_key_bits(&attributes);
     KeyStore_PSA_initKey(&cryptoKey, toKeyStoreKeyID(key), PSA_BITS_TO_BYTES(key_bits), NULL);
 
     if (alg == PSA_ALG_ECB_NO_PADDING)
@@ -4385,6 +4399,10 @@ psa_status_t psa_aead_encrypt(psa_key_id_t key,
     psa_status_t status             = PSA_ERROR_CORRUPTION_DETECTED;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
     uint8_t *tag;
+    psa_key_type_t keyType;
+    size_t keyBits;
+    size_t tagLength;
+
     *ciphertext_length = 0;
 
     CryptoKey cryptoKey;
@@ -4400,12 +4418,10 @@ psa_status_t psa_aead_encrypt(psa_key_id_t key,
     if (status != PSA_SUCCESS)
         goto exit;
 
-    psa_key_type_t keyType = psa_get_key_type(&attributes);
-
-    size_t keyBits = psa_get_key_bits(&attributes);
-
-    size_t tagLength = PSA_AEAD_TAG_LENGTH(keyType, keyBits, alg);
-
+    
+    keyType = psa_get_key_type(&attributes);
+    keyBits = psa_get_key_bits(&attributes);
+    tagLength = PSA_AEAD_TAG_LENGTH(keyType, keyBits, alg);
     if (tagLength > PSA_AEAD_TAG_MAX_SIZE)
     {
         status = PSA_ERROR_INVALID_ARGUMENT;
@@ -4551,27 +4567,34 @@ psa_status_t psa_aead_decrypt(psa_key_id_t key,
     psa_status_t status             = PSA_ERROR_CORRUPTION_DETECTED;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
     uint8_t *tag;
-    *plaintext_length = 0;
 
     CryptoKey cryptoKey;
+    psa_key_type_t keyType;
+    size_t keyBits;
+    size_t tagLength;
+    size_t payload_length;
+
+    *plaintext_length = 0;
 
     if (!PSA_ALG_IS_AEAD(alg) || PSA_ALG_IS_WILDCARD(alg))
         return (PSA_ERROR_NOT_SUPPORTED);
 
     status = psa_get_key_attributes(key, &attributes);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
     status = psa_key_attributes_usage_check(&attributes, PSA_KEY_USAGE_DECRYPT, alg);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
-    psa_key_type_t keyType = psa_get_key_type(&attributes);
-
-    size_t keyBits = psa_get_key_bits(&attributes);
-
-    size_t tagLength = PSA_AEAD_TAG_LENGTH(keyType, keyBits, alg);
-
+    keyType = psa_get_key_type(&attributes);
+    keyBits = psa_get_key_bits(&attributes);
+    tagLength = PSA_AEAD_TAG_LENGTH(keyType, keyBits, alg);
+    payload_length = ciphertext_length - tagLength;
     if (tagLength > PSA_AEAD_TAG_MAX_SIZE)
     {
         status = PSA_ERROR_INVALID_ARGUMENT;
@@ -4584,7 +4607,6 @@ psa_status_t psa_aead_decrypt(psa_key_id_t key,
         goto exit;
     }
 
-    size_t payload_length = ciphertext_length - tagLength;
     if (payload_length > plaintext_size)
     {
         status = PSA_ERROR_BUFFER_TOO_SMALL;
@@ -4775,6 +4797,11 @@ psa_status_t psa_raw_key_agreement(psa_algorithm_t alg,
     CryptoKey myPrivateKey;
     CryptoKey sharedSecret;
     CryptoKey myPublicKey;
+    psa_key_type_t privateKeyType;
+    size_t key_bits;
+    psa_ecc_family_t curveFamily;
+    size_t curveBits;
+    size_t publicKeyBytes;
 
     if (ECDH_Hand == NULL)
     {
@@ -4790,24 +4817,27 @@ psa_status_t psa_raw_key_agreement(psa_algorithm_t alg,
 
     status = psa_get_key_attributes(private_key, &private_key_attributes);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
+    }
 
     status = psa_key_attributes_usage_check(&private_key_attributes, PSA_KEY_USAGE_DERIVE, alg);
     if (status != PSA_SUCCESS)
+    {
         goto exit;
-
-    /* use key_type to map to curve type */
-    psa_key_type_t privateKeyType = psa_get_key_type(&private_key_attributes);
+    }
+    
+    privateKeyType = psa_get_key_type(&private_key_attributes);
+    curveFamily = PSA_KEY_TYPE_ECC_GET_FAMILY(privateKeyType);
+    key_bits = psa_get_key_bits(&private_key_attributes);
+    curveBits = psa_get_key_bits(&private_key_attributes);
+    
     /* the only correct type here is PSA_KEY_TYPE_ECC_PUBLIC_KEY */
     if (!PSA_KEY_TYPE_IS_ECC_KEY_PAIR(privateKeyType))
     {
         status = PSA_ERROR_INVALID_ARGUMENT;
         goto exit;
     }
-
-    psa_ecc_family_t curveFamily = PSA_KEY_TYPE_ECC_GET_FAMILY(privateKeyType);
-    size_t curveBits             = psa_get_key_bits(&private_key_attributes);
-    size_t publicKeyBytes;
 
     ECDH_OperationComputeSharedSecret OperationComputeSharedSecret;
     ECDH_OperationComputeSharedSecret_init(&OperationComputeSharedSecret);
@@ -4852,7 +4882,6 @@ psa_status_t psa_raw_key_agreement(psa_algorithm_t alg,
     }
 
     /* The device supports Montgomery and Short Weierstrass */
-    size_t key_bits = psa_get_key_bits(&private_key_attributes);
     KeyStore_PSA_initKey(&myPrivateKey, toKeyStoreKeyID(private_key), PSA_BITS_TO_BYTES(key_bits), NULL);
 
     CryptoKeyPlaintext_initKey(&myPublicKey, (uint8_t *)peer_key, peer_key_length);

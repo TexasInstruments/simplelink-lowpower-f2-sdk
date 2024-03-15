@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_common.h"
 #include "t_cose_sign1_sign.h"
 

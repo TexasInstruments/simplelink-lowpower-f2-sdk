@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#if defined(TFM_PSA_API)
+#if defined(TFM_BUILD)
     #include "ti_drivers_config.h" /* Sysconfig generated header */
 #endif
 
@@ -53,27 +53,18 @@ extern "C" {
 
 /*
  * AES ECB secure message types
- *
- * Non-secure clients must register their callback after opening or
- * constructing a driver instance with blocking or callback return behavior.
  */
-#define AESECB_S_MSG_TYPE_CONSTRUCT (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define AESECB_S_MSG_TYPE_OPEN      (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define AESECB_S_MSG_TYPE_REGISTER_CALLBACK \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define AESECB_S_MSG_TYPE_CLOSE (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define AESECB_S_MSG_TYPE_ONE_STEP_ENCRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define AESECB_S_MSG_TYPE_ONE_STEP_DECRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
-#define AESECB_S_MSG_TYPE_SETUP_ENCRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 6U)))
-#define AESECB_S_MSG_TYPE_SETUP_DECRYPT \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 7U)))
-#define AESECB_S_MSG_TYPE_ADD_DATA (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 8U)))
-#define AESECB_S_MSG_TYPE_FINALIZE (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 9U)))
-#define AESECB_S_MSG_TYPE_CANCEL_OPERATION \
-    (CRYPTO_S_MSG_TYPE_INDEX_AESECB | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 10U)))
+#define AESECB_S_MSG_TYPE_CONSTRUCT         AESECB_S_MSG_TYPE(0U)
+#define AESECB_S_MSG_TYPE_OPEN              AESECB_S_MSG_TYPE(1U)
+#define AESECB_S_MSG_TYPE_REGISTER_CALLBACK AESECB_S_MSG_TYPE(2U)
+#define AESECB_S_MSG_TYPE_CLOSE             AESECB_S_MSG_TYPE(3U)
+#define AESECB_S_MSG_TYPE_ONE_STEP_ENCRYPT  AESECB_S_MSG_TYPE(4U)
+#define AESECB_S_MSG_TYPE_ONE_STEP_DECRYPT  AESECB_S_MSG_TYPE(5U)
+#define AESECB_S_MSG_TYPE_SETUP_ENCRYPT     AESECB_S_MSG_TYPE(6U)
+#define AESECB_S_MSG_TYPE_SETUP_DECRYPT     AESECB_S_MSG_TYPE(7U)
+#define AESECB_S_MSG_TYPE_ADD_DATA          AESECB_S_MSG_TYPE(8U)
+#define AESECB_S_MSG_TYPE_FINALIZE          AESECB_S_MSG_TYPE(9U)
+#define AESECB_S_MSG_TYPE_CANCEL_OPERATION  AESECB_S_MSG_TYPE(10U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created
@@ -87,6 +78,8 @@ extern "C" {
 
 /*
  * ========= AES ECB Secure Callback struct =========
+ * Non-secure clients must register their callback after opening or
+ * constructing a driver instance with blocking or callback return behavior.
  */
 typedef struct
 {

@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ typedef void (*npiCB_t)(uint16_t rxLen, uint16_t txLen);
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-extern void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
+extern void NPITLUART_openTransport(uint8_t portID, UART2_Params *portParams,
                                     npiCB_t npiCBack);
 
 // -----------------------------------------------------------------------------

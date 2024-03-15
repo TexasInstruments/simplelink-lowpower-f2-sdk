@@ -64,6 +64,8 @@
 #define RAM_SIZE                0x20000
 #define GPRAM_BASE              0x11000000
 #define GPRAM_SIZE              0x2000
+#define CCFG_BASE               0x50000000
+#define CCFG_SIZE               0x800
 
 /* Export the header address to the blinky app */
 
@@ -86,6 +88,8 @@ MEMORY
     /* Application can use GPRAM region as RAM if cache is disabled in the CCFG
     (DEFAULT_CCFG_SIZE_AND_DIS_FLAGS.SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM = 0) */
     GPRAM (RWX): origin = GPRAM_BASE, length = GPRAM_SIZE
+    /* Configuration region */
+    CCFG (RW) : origin = CCFG_BASE, length = CCFG_SIZE
 }
 
 /* Section allocation in memory */
@@ -103,6 +107,7 @@ SECTIONS
     .pinit          :   > FLASH
     .init_array     :   > FLASH
     .emb_text       :   > FLASH
+    .ccfg           :   > CCFG
 
     .ramVecs        :   > SRAM
     .vtable         :   > SRAM

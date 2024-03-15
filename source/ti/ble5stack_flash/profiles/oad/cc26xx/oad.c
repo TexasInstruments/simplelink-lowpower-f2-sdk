@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1844,11 +1844,11 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             // Pack up the payload
             rsp->cmdID = OAD_EXT_CTRL_GET_DEV_TYPE;
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
             rsp->chipType = (uint8_t )ChipInfo_GetChipType();
             rsp->chipFamily = (uint8_t )ChipInfo_GetChipFamily();
             rsp->hardwareRev = (uint8_t )ChipInfo_GetHwRevision();
-#endif //DeviceFamily_CC23X0
+#endif //DeviceFamily_CC23X0R5
             rsp->rsvd = 0xFF;
 
             break;

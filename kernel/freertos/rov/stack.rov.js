@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Texas Instruments Incorporated
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 /* global xdc */
 let Program = xdc.module('xdc.rov.Program');
 
-/* global helperGetHexString, helperGetCurrentDevice */
+/* global helperGetHexString */
 
 /* eslint-disable-next-line no-unused-vars */
 var moduleName = "System Stack";
@@ -68,16 +68,6 @@ function getSystemStack(){
     }
     else {
         stackInfo.StackSize = Program.lookupSymbolValue("__STACK_SIZE");
-    }
-
-    /* The stack in CC23XX seems to not be filled with 0xa5a5a5a5 correctly
-     * therefore stack peak is not supported yet for those devices */
-    let device = helperGetCurrentDevice();
-
-    if (device == "CC23XX") {
-        stackInfo.StackPeak = "Stack peak currently not supported for CC23XX devices";
-        view.push(stackInfo);
-        return view;
     }
 
     let stackData = Program.fetchArray(

@@ -1,0 +1,19 @@
+%%{
+    /*
+     *  ======== GenOpts.opt.xdt ========
+     *  Generate compiler options file containing a sorted and grouped list of
+     *  options required to compile the current SysConfig configuration.
+     *
+     *  Note: Some compilers do not support comments in the generated file.
+     */
+%%}
+% for (let arg of args) {
+%     var mod = system.modules[arg.modName];
+%     /* Make sure the relevant module has actually been added to the project */
+%     if (mod != null) {
+%         // console.log("adding", arg.getOpts(), "from", arg.modName, "(" + mod + ")");
+%         for (let opt of arg.getOpts(mod)) {
+`opt`
+%         }
+%     }
+% }

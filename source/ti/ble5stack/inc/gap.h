@@ -5,7 +5,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -1702,6 +1702,18 @@ extern bStatus_t GapConfig_SetParameter(Gap_configParamIds_t param,
 extern uint8_t *GAP_GetDevAddress(uint8 wantIA);
 
 /**
+ * Get the address of this device using the it's type
+ *
+ * @param wantIA TRUE for Identity Address. FALSE for Resolvable Private
+ *        Address (if the device has been initialized with the address mode
+ *        @ref ADDRMODE_RP_WITH_PUBLIC_ID or @ref ADDRMODE_RP_WITH_RANDOM_ID)
+ *
+ * @param       deviceAddrType - The own device address type
+ * @return pointer to device address.
+ */
+extern uint8 *GAP_GetDevAddressByType( uint8 wantIA, uint8 deviceAddrType);
+
+/**
  * Get the IRK
  *
  * @warning The memory indicated by the returned pointer should not be modified
@@ -1896,6 +1908,35 @@ extern bStatus_t GAP_Signable(uint16_t connectionHandle, uint8_t authenticated,
 extern bStatus_t GAP_Bond(uint16_t connectionHandle, uint8_t authenticated,
                           uint8_t secureConnections, smSecurityInfo_t *pParams,
                           uint8_t startEncryption);
+
+/**
+ * Set up the connection's bound parameters.
+ * This patch used to reject the bond encryption request
+ *  when the connection role is peripheral and the key is zero.
+ *
+ * @warning This API should not be called by the application if the
+ * gapbondmgr exists as it will be used automatically when a connection is
+ * formed to a previously bonded device
+ *
+ * @par Corresponding Events:
+ * @ref GAP_BOND_COMPLETE_EVENT of type @ref gapBondCompleteEvent_t
+ *
+ * @param connectionHandle connection handle of the signing information
+ * @param authenticated TRUE if bond is authenticated.
+ * @param secureConnections TRUE if bond has Secure Connections strength.
+ * @param pParams the connected device's security parameters
+ * @param startEncryption whether or not to start encryption
+ *
+ * @return @ref SUCCESS
+ * @return @ref bleIncorrectMode : Not correct profile role
+ * @return @ref INVALIDPARAMETER
+ * @return @ref bleNotConnected
+ * @return @ref FAILURE : not workable
+ */
+extern bStatus_t GAP_Bond_sPatch( uint16 connectionHandle, uint8 authenticated,
+                                  uint8 secureConnections,
+                                  smSecurityInfo_t *pParams,
+                                  uint8 startEncryption );
 
 /*-------------------------------------------------------------------
  * TASK FUNCTIONS - To only be used in osal_icall_ble.c

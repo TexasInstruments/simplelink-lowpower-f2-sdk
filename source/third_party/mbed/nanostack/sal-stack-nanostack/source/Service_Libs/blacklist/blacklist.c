@@ -108,8 +108,8 @@ bool blacklist_reject(const uint8_t *ll64_address)
 void blacklist_update(const uint8_t *ll64_address, bool success)
 {
     //KV: To be updated
-    (void*) ll64_address;
-    (void*) success;
+    (void) ll64_address;
+    (void) success;
     return;
 #if 0
     if (!blacklist_data) {
@@ -242,7 +242,7 @@ static blacklist_entry_t *blacklist_entry_find(const uint8_t *eui64)
 static void blacklist_entry_add(const uint8_t *eui64)
 {
     //KV: To be updated
-    (void*) eui64;
+    (void) eui64;
 
 #if 0
     blacklist_entry_t *blacklist_entry;

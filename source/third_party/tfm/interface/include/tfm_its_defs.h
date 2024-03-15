@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -14,6 +14,12 @@ extern "C" {
 
 /* Invalid UID */
 #define TFM_ITS_INVALID_UID 0
+
+/* ITS message types that distinguish ITS services. */
+#define TFM_ITS_SET                1001
+#define TFM_ITS_GET                1002
+#define TFM_ITS_GET_INFO           1003
+#define TFM_ITS_REMOVE             1004
 
 #ifdef __cplusplus
 }

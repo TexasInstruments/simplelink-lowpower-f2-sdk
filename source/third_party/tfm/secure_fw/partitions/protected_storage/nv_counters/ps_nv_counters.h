@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -20,9 +20,9 @@
 #include "psa/protected_storage.h"
 #include "tfm_plat_nv_counters.h"
 
-#define TFM_PS_NV_COUNTER_1        PLAT_NV_COUNTER_0
-#define TFM_PS_NV_COUNTER_2        PLAT_NV_COUNTER_1
-#define TFM_PS_NV_COUNTER_3        PLAT_NV_COUNTER_2
+#define TFM_PS_NV_COUNTER_1        PLAT_NV_COUNTER_PS_0
+#define TFM_PS_NV_COUNTER_2        PLAT_NV_COUNTER_PS_1
+#define TFM_PS_NV_COUNTER_3        PLAT_NV_COUNTER_PS_2
 
 #define PS_NV_COUNTER_SIZE         4 /* In bytes */
 

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -87,6 +87,7 @@ extern "C"
  * CONSTANTS
  */
 
+#ifdef FEATURE_ADVERTISER
 /**
  * Link layer Advertiser Events
  */
@@ -96,7 +97,9 @@ extern "C"
 #define ULL_EVT_ADV_TX_RADIO_AVAILABLE      4 //!< Adv event radio available
 #define ULL_EVT_ADV_TX_TIMER_EXPIRED        5 //!< Adv event interval timer expired
 #define ULL_EVT_ADV_TX_STARTED              6 //!< Adv event tx started
+#endif
 
+#ifdef FEATURE_SCANNER
 /**
  * Link layer Scanner Events
  */
@@ -106,7 +109,9 @@ extern "C"
 #define ULL_EVT_SCAN_RX_SUCCESS            10 //!< Scan event rx success
 #define ULL_EVT_SCAN_RX_RADIO_AVAILABLE    11 //!< Scan event radio available
 #define ULL_EVT_SCAN_RX_STARTED            12 //!< Scan event rx started
+#endif
 
+#ifdef FEATURE_MONITOR
 /**
  * Link layer Monitor Events
  */
@@ -117,22 +122,38 @@ extern "C"
 #define ULL_EVT_MONITOR_RX_WINDOW_COMPLETE    17 //!< Monitor event rx window complete
 #define ULL_EVT_MONITOR_RX_RADIO_AVAILABLE    18 //!< Monitor event radio available
 #define ULL_EVT_MONITOR_RX_STARTED            19 //!< Monitor event rx started
+#endif
 
+#ifdef FEATURE_SCANNER
 /**
  * Link layer Scanner number of rx entries
  */
 #define ULL_NUM_RX_SCAN_ENTRIES             6 //!< Number of scan rx entries
-#define ULL_PKT_HDR_LEN                     2 //!< Packet hearde length
+#define ULL_PKT_HDR_LEN                     2 //!< Packet head length
 #define ULL_MAX_BLE_ADV_PKT_SIZE           37 //!< Payload size
+#endif
 
+#if defined(FEATURE_MONITOR)
 /**
  * Link layer Monitor number of rx entries
  */
 #define ULL_NUM_RX_MONITOR_ENTRIES          6 //!< Number of monitoring scan rx entries
 #define ULL_PKT_HDR_LEN                     2 //!< Packet header length
 #define ULL_MAX_BLE_PKT_SIZE              255 //!< Payload size.
+#endif
 
+#ifdef USE_RCL
+/**
+ * Link layer Receive Suffix Data Sizes
+ */
+#define ULL_SUFFIX_CRC_SIZE                 0 // RCL does not append CRC
+#define ULL_SUFFIX_RSSI_SIZE                1
+#define ULL_SUFFIX_STATUS_SIZE              1 // RCL status byte is 1
+#define ULL_SUFFIX_TIMESTAMP_SIZE           4
+#define RCL_BUFFER_MAX_HEADER_PAD_BYTES     2 // padding of 2 bytes will be located before the packet header
 
+#define DUMMY_PAYLOAD_SIZE                  1 /* Dummy byte for alignment with RF AGAMA*/
+#else
 /**
  * Link layer Receive Suffix Data Sizes
  */
@@ -140,24 +161,30 @@ extern "C"
 #define ULL_SUFFIX_RSSI_SIZE            1
 #define ULL_SUFFIX_STATUS_SIZE          1
 #define ULL_SUFFIX_TIMESTAMP_SIZE       4
+#endif
+
+
+
 #define ULL_SUFFIX_MAX_SIZE             (ULL_SUFFIX_CRC_SIZE    +              \
                                          ULL_SUFFIX_RSSI_SIZE   +              \
                                          ULL_SUFFIX_STATUS_SIZE +              \
                                          ULL_SUFFIX_TIMESTAMP_SIZE)
 
+#ifdef FEATURE_ADVERTISER
 #define ULL_ADV_UNALIGNED_BUFFER_SIZE   (ULL_PKT_HDR_LEN + ULL_MAX_BLE_ADV_PKT_SIZE + ULL_SUFFIX_MAX_SIZE)
 #define ULL_ADV_ALIGNED_BUFFER_SIZE     (ULL_ADV_UNALIGNED_BUFFER_SIZE + 4 - \
                                          (ULL_ADV_UNALIGNED_BUFFER_SIZE % 4))
+#endif
 
 #define ULL_BLE_UNALIGNED_BUFFER_SIZE   (ULL_PKT_HDR_LEN + ULL_MAX_BLE_PKT_SIZE + ULL_SUFFIX_MAX_SIZE)
 #define ULL_BLE_ALIGNED_BUFFER_SIZE     (ULL_BLE_UNALIGNED_BUFFER_SIZE + 4 - \
                                          (ULL_BLE_UNALIGNED_BUFFER_SIZE % 4))
 
 /**
- * Scanner White List Policy
+ * Scanner Accept List Policy
  */
-#define ULL_SCAN_WL_POLICY_ANY_ADV_PKTS                0
-#define ULL_SCAN_WL_POLICY_USE_WHITE_LIST              1
+#define ULL_SCAN_AL_POLICY_ANY_ADV_PKTS                0
+#define ULL_SCAN_AL_POLICY_USE_ACCEPT_LIST             1
 
 
 /******************************************************************************
@@ -344,6 +371,22 @@ bStatus_t ull_monitorStart(uint8_t channel);
  * @return  none
  */
 void      ull_monitorStop(void);
+
+/*********************************************************************
+ * @fn      ull_getCurrentTime
+ *
+ * @brief   Current SYSTIM time (0.25 us steps) usable for radio command timing
+ *          This function is a DPL implementation for
+ *          RF_getCurrentTime() and RCL_Scheduler_getCurrentTime()
+ *          (RF and RCL accordingly)
+ *
+ * @param   none
+ *
+ * @return  uint32
+ */
+uint32_t  ull_getCurrentTime();
+
+uint32_t ull_convertRatTicksToUs(uint32_t time);
 
 #endif /* FEATURE_MONITOR */
 

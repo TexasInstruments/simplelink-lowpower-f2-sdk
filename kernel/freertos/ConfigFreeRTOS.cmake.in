@@ -9,25 +9,25 @@ include("${CMAKE_CURRENT_LIST_DIR}/FreeRTOSM33FTargets.cmake")
 check_required_components(FreeRTOS)
 
 set_target_properties(FreeRTOS::freertos PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${FREERTOS_INSTALL_DIR}/source/third_party/freertos/include"
 )
 target_include_directories(FreeRTOS::freertos_m0p
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/@freertos_m0p_PORT_TOOL_FOLDER@"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/@freertos_m0p_PORT_TOOL_FOLDER@"
 )
 target_include_directories(FreeRTOS::freertos_m4
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/@freertos_m4_PORT_TOOL_FOLDER@"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/@freertos_m4_PORT_TOOL_FOLDER@"
 )
 target_include_directories(FreeRTOS::freertos_m4f
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/@freertos_m4f_PORT_TOOL_FOLDER@"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/@freertos_m4f_PORT_TOOL_FOLDER@"
 )
 target_include_directories(FreeRTOS::freertos_m33f
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/@freertos_m33f_PORT_TOOL_FOLDER@"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/@freertos_m33f_PORT_TOOL_FOLDER@"
 )
 target_include_directories(FreeRTOS::freertos_m33f_tfm
   INTERFACE
-    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/FreeRTOS/Source/portable/@freertos_m33f_PORT_TOOL_FOLDER@"
+    "$<INSTALL_INTERFACE:${FREERTOS_INSTALL_DIR}/source/third_party/freertos/portable/@freertos_m33f_PORT_TOOL_FOLDER@"
 )

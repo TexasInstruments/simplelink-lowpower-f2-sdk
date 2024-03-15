@@ -1,34 +1,36 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2022 Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 #-------------------------------------------------------------------------------
 
 {
-    "psa_framework_version": 1.0,
+    "psa_framework_version": 1.1,
+    "description": "Crypto Secure Partition",
     "name": "CRYPTO_SP",
     "type": "PSA-ROT",
-    "description": "Crypto Secure Partition",
     "priority": "HIGH",
+    "model": "IPC",
     "entry_point": "Crypto_sp_main",
     "stack_size": "0x1000",
-    "tfm_partition_ipc": true,
     "services" : [
         {
-            "name": "CRYPTO_SP_SERVICE",
+            "description": "TI HW-based Crypto PRoT Service",
+            "name": "TI_CRYPTO_SERVICE",
             "sid": "0xAE000080",  # VendorID = 0xAE000, FunctionID = 0x80 (crypto)
             "non_secure_clients": true,
-            "minor_version": 1,
-            "minor_policy": "STRICT",
-            "description": "Crypto Secure Service"
+            "connection_based": true,
+            "version": 1,
+            "version_policy": "STRICT"
         },
 
-        # Note: ITS services are only available if ENABLE_ITS_IPC_INTEGRATION is set.
+        # The following ITS services are only available if ENABLE_ITS_IPC_INTEGRATION is set to ON.
         {
             "name": "TFM_ITS_SET",
             "sid": "0x00000070",
             "non_secure_clients": true,
+            "connection_based": true,
             "version": 1,
             "version_policy": "STRICT"
         },
@@ -36,6 +38,7 @@
             "name": "TFM_ITS_GET",
             "sid": "0x00000071",
             "non_secure_clients": true,
+            "connection_based": true,
             "version": 1,
             "version_policy": "STRICT"
         },
@@ -43,6 +46,7 @@
             "name": "TFM_ITS_GET_INFO",
             "sid": "0x00000072",
             "non_secure_clients": true,
+            "connection_based": true,
             "version": 1,
             "version_policy": "STRICT"
         },
@@ -50,31 +54,34 @@
             "name": "TFM_ITS_REMOVE",
             "sid": "0x00000073",
             "non_secure_clients": true,
+            "connection_based": true,
             "version": 1,
             "version_policy": "STRICT"
         }
     ],
     "irqs": [
+        # All IRQs use FLIH without asserting a signal since IRQs may occur while
+        # inside NSPE and the SP would not be scheduled to process the signal.
         {
-            # AES Engine IRQ
-            "line_name": "INT_CRYPTO_RESULT_AVAIL_IRQ_Handler",
-            "line_num": "CRYPTO_RESULT_AVAIL_IRQ_IRQn",
-            "signal": "CryptoResultAvail_IRQn_SIGNAL",
-            "tfm_irq_priority": 7
+            "description": "AES interrupt",
+            "source": "CRYPTO_RESULT_AVAIL_IRQ_IRQn",
+            "name": "CryptoResultAvail_IRQn",
+            "handling": "FLIH"
         },
         {
-            # PKA Engine IRQ
-            "line_name": "INT_PKA_IRQ_Handler",
-            "line_num": "PKA_IRQ_IRQn",
-            "signal": "PKA_IRQn_SIGNAL",
-            "tfm_irq_priority": 7
+            "description": "PKA interrupt",
+            "source": "PKA_IRQ_IRQn",
+            "name": "PKA_IRQn",
+            "handling": "FLIH"
         },
         {
-            # TRNG IRQ
-            "line_name": "INT_TRNG_IRQ_Handler",
-            "line_num": "TRNG_IRQ_IRQn",
-            "signal": "TRNG_IRQn_SIGNAL",
-            "tfm_irq_priority": 7
+            "description": "TRNG interrupt",
+            "source": "TRNG_IRQ_IRQn",
+            "name": "TRNG_IRQn",
+            "handling": "FLIH"
         }
     ],
+    "dependencies": [
+#        "TFM_INTERNAL_TRUSTED_STORAGE_SERVICE"
+    ]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -114,15 +114,26 @@ typedef struct CCRsaOaepData_t{
  * @param MSize - Denotes the Message size: for Sig/Ver = hashSize,
  *                for Enc/Dec <= K-hashAlgIdSize-PSS_MIN_LEN-3.
  * @param pOut - The pointer to a buffer which is at least K octets long.
+ * @param bIsRawMode - boolean to indicate if the function is used in Raw mode,
+ *                     which means that structure T to be signed is passed as
+ *                     input already (no need to perform hashing)
+ * @param DataIn_ptr - Buffer containing the T structure to be signed (possibly
+ *                     the DER encoding of ASN.1 DigestInfo structure as
+ *                     specified in RFC8017 sect. 9.2 notes)
+ * @param DataInSize - Size in bytes of the structure T to be signed
+ *                     which is passed as input for raw signing mode
  *
  * @return CCError_t
  */
 CCError_t RsaEmsaPkcs1v15Encode(
-        uint32_t K,
-            CCHashOperationMode_t hashMode,
-        uint8_t     *pM, /*mess.digest*/
-        uint32_t     MSize,
-        uint8_t     *pOut);
+        uint32_t              K,
+        CCHashOperationMode_t hashMode,
+        uint8_t               *pM, /*mess.digest*/
+        uint32_t              MSize,
+        uint8_t               *pOut,
+        bool                  bIsRawMode,
+        const uint8_t         *DataIn_ptr,
+        size_t                DataInSize);
 
 
 
@@ -324,13 +335,16 @@ and releases the context.
 */
 
 CIMPORT_C CCError_t CC_RsaSignFinish(
-                                CCRndContext_t *rndContext_ptr,             /*!< [in/out] Pointer to the RND context buffer. */
-                                CCRsaPrivUserContext_t *UserContext_ptr,     /*!< [in/out] A pointer to the Context initialized by the SignInit function and used by the SignUpdate function. */
-                                uint8_t     *Output_ptr,                        /*!< [out] A pointer to the signature.
-                                                                                            The buffer must be at least PrivKey_ptr->N.len bytes long (that is, the size of the modulus, in bytes). */
-                                size_t      *OutputSize_ptr                     /*!< [in/out] A pointer to the Signature Size value -
-                                                                                                the input value is the signature buffer size allocated, the output value is the signature size used.
-                                                                                                The buffer must be at least PrivKey_ptr->N.len bytes long (that is, the size of the modulus, in bytes). */
+            CCRndContext_t *rndContext_ptr,          /*!< [in/out] Pointer to the RND context buffer. */
+            CCRsaPrivUserContext_t *UserContext_ptr, /*!< [in/out] A pointer to the Context initialized by the SignInit function and used by the SignUpdate function. */
+            uint8_t *Output_ptr,                     /*!< [out] A pointer to the signature.
+                                                          The buffer must be at least PrivKey_ptr->N.len bytes long (that is, the size of the modulus, in bytes). */
+            size_t *OutputSize_ptr,                  /*!< [in/out] A pointer to the Signature Size value -
+                                                          the input value is the signature buffer size allocated, the output value is the signature size used.
+                                                          The buffer must be at least PrivKey_ptr->N.len bytes long (that is, the size of the modulus, in bytes). */
+            bool bIsRawMode,                         /*!< [in] This flag is true for those cases where we need to sign only (without encoding T) */
+            const uint8_t *DataIn_ptr,               /*!< [in] Pointer to the raw data to be signed in raw mode. Relevant only when bIsRawMode is true */
+            size_t DataInSize                        /*!< [in] Size in bytes of the raw input data pointed by DataIn_ptr */
 );
 
 /**********************************************************************************************************/
@@ -382,11 +396,14 @@ CIMPORT_C CCError_t CC_RsaVerifyUpdate(
 */
 
 CIMPORT_C CCError_t CC_RsaVerifyFinish(
-                            CCRsaPubUserContext_t *UserContext_ptr,      /*!< [in]  A pointer to the public Context structure of the User. */
-                            uint8_t *Sig_ptr                                /*!< [in]  A pointer to the signature to be verified.
-                                                                                        The length of the signature is PubKey_ptr->N.len bytes (that is, the size of the modulus, in bytes). */
+            CCRsaPubUserContext_t *UserContext_ptr,  /*!< [in]  A pointer to the public Context structure of the User. */
+            uint8_t *Sig_ptr,                        /*!< [in]  A pointer to the signature to be verified.
+                                                                The length of the signature is PubKey_ptr->N.len bytes (that is, the size of the modulus, in bytes). */
+            bool bIsRawMode,                         /*!< [in]  Boolean indicating whether the input is a an already encoded T structure (possibly as specified by RFC8017 sect 9.2)
+                                                                In that case, no hashing is performed */
+            const uint8_t *DataIn_ptr,               /*!< [in]  Pointer containing the already encoded T structure to be verified as input in raw mode */
+            size_t DataInSize                        /*!< [in]  Size in bytes of the structure T passed as raw input */
 );
-
 
 #ifdef __cplusplus
 }

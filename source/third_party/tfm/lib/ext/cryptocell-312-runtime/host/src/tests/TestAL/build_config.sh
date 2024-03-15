@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------------------------------------
 
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script defines only the necessary environment variables for TestAL makefile.
 # Note that it does not run our internal script set_toolchain.sh as it is

@@ -13,7 +13,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -108,10 +108,10 @@ extern "C"
  * CONSTANTS
  */
 
-#define LL_ENC_TX_DIRECTION_MASTER   1
-#define LL_ENC_TX_DIRECTION_SLAVE    0
-#define LL_ENC_RX_DIRECTION_MASTER   0
-#define LL_ENC_RX_DIRECTION_SLAVE    1
+#define LL_ENC_TX_DIRECTION_CENTRAL       1
+#define LL_ENC_TX_DIRECTION_PERIPHERAL    0
+#define LL_ENC_RX_DIRECTION_CENTRAL       0
+#define LL_ENC_RX_DIRECTION_PERIPHERAL    1
 
 #define LL_ENC_DATA_BANK_MASK        0xFF7F
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
 
-#if defined(TFM_PSA_API)
+#if defined(TFM_BUILD)
     #include "ti_drivers_config.h" /* Sysconfig generated header */
 #endif
 
@@ -53,25 +53,20 @@ extern "C" {
 
 /*
  * SHA2 secure message types
- *
- * Non-secure clients must register their callback after opening or
- * constructing a driver instance with blocking or callback return behavior.
  */
-#define SHA2_S_MSG_TYPE_CONSTRUCT (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 0U)))
-#define SHA2_S_MSG_TYPE_OPEN      (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 1U)))
-#define SHA2_S_MSG_TYPE_REGISTER_CALLBACK \
-    (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 2U)))
-#define SHA2_S_MSG_TYPE_CLOSE         (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 3U)))
-#define SHA2_S_MSG_TYPE_HASH_DATA     (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 4U)))
-#define SHA2_S_MSG_TYPE_HMAC          (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 5U)))
-#define SHA2_S_MSG_TYPE_SET_HASH_TYPE (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 6U)))
-#define SHA2_S_MSG_TYPE_SETUP_HMAC    (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 7U)))
-#define SHA2_S_MSG_TYPE_ADD_DATA      (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 8U)))
-#define SHA2_S_MSG_TYPE_FINALIZE      (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 9U)))
-#define SHA2_S_MSG_TYPE_FINALIZE_HMAC (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 10U)))
-#define SHA2_S_MSG_TYPE_CANCEL_OPERATION \
-    (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 11U)))
-#define SHA2_S_MSG_TYPE_RESET (CRYPTO_S_MSG_TYPE_INDEX_SHA2 | ((int32_t)1 << (CRYPTO_S_MSG_TYPE_SHIFT + 12U)))
+#define SHA2_S_MSG_TYPE_CONSTRUCT         SHA2_S_MSG_TYPE(0U)
+#define SHA2_S_MSG_TYPE_OPEN              SHA2_S_MSG_TYPE(1U)
+#define SHA2_S_MSG_TYPE_REGISTER_CALLBACK SHA2_S_MSG_TYPE(2U)
+#define SHA2_S_MSG_TYPE_CLOSE             SHA2_S_MSG_TYPE(3U)
+#define SHA2_S_MSG_TYPE_HASH_DATA         SHA2_S_MSG_TYPE(4U)
+#define SHA2_S_MSG_TYPE_HMAC              SHA2_S_MSG_TYPE(5U)
+#define SHA2_S_MSG_TYPE_SET_HASH_TYPE     SHA2_S_MSG_TYPE(6U)
+#define SHA2_S_MSG_TYPE_SETUP_HMAC        SHA2_S_MSG_TYPE(7U)
+#define SHA2_S_MSG_TYPE_ADD_DATA          SHA2_S_MSG_TYPE(8U)
+#define SHA2_S_MSG_TYPE_FINALIZE          SHA2_S_MSG_TYPE(9U)
+#define SHA2_S_MSG_TYPE_FINALIZE_HMAC     SHA2_S_MSG_TYPE(10U)
+#define SHA2_S_MSG_TYPE_CANCEL_OPERATION  SHA2_S_MSG_TYPE(11U)
+#define SHA2_S_MSG_TYPE_RESET             SHA2_S_MSG_TYPE(12U)
 
 /*
  * Config pool size determines how many dynamic driver instances can be created
@@ -85,6 +80,8 @@ extern "C" {
 
 /*
  * ========= SHA2 Secure Callback struct =========
+ * Non-secure clients must register their callback after opening or
+ * constructing a driver instance with blocking or callback return behavior.
  */
 typedef struct
 {

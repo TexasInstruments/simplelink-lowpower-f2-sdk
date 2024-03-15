@@ -240,12 +240,15 @@ function getLibs(mod)
     /* Get device information from GenLibs */
     let GenLibs = system.getScript("/ti/utils/build/GenLibs");
 
+    /*Uses different library for CC26XX devices*/
+
+    let libname     = family.startsWith("CC26XX") ? "spiffs_cc26xx.a" : "spiffs.a";
+
     let libGroup = {
         name: "/third_party/spiffs",
         deps: ["/ti/drivers"],
-        libs: [GenLibs.libPath("third_party/spiffs", "spiffs.a")]
+        libs: [GenLibs.libPath("third_party/spiffs", libname)]
     };
-
     return (libGroup);
 }
 

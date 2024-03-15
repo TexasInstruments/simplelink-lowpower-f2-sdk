@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2016-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -143,21 +143,21 @@ extern const ADC_FxnTable ADCCC26XX_fxnTable;
  */
 typedef struct
 {
-    /*!< DIO that the ADC is routed to */
+    /*! DIO that the ADC is routed to */
     uint8_t adcDIO;
-    /*!< Internal signal routed to comparator B */
+    /*! Internal signal routed to comparator B */
     uint8_t adcCompBInput;
-    /*!< Should the raw output be trimmed before returning it */
+    /*! Should the raw output be trimmed before returning it */
     bool returnAdjustedVal;
-    /*!< Is input scaling enabled */
+    /*! Is input scaling enabled */
     bool inputScalingEnabled;
-    /*!< Reference voltage in microvolts*/
+    /*! Reference voltage in microvolts*/
     uint_fast32_t refVoltage;
-    /*!< Reference source for the ADC to use */
+    /*! Reference source for the ADC to use */
     ADCCC26XX_Reference_Source refSource;
-    /*!< Time the ADC spends sampling. This is load dependent */
+    /*! Time the ADC spends sampling. This is load dependent */
     ADCCC26XX_Sampling_Duration samplingDuration;
-    /*!< Source that the ADC triggers off of. Currently only supports AUXADC_TRIGGER_MANUAL */
+    /*! Source that the ADC triggers off of. Currently only supports AUXADC_TRIGGER_MANUAL */
     ADCCC26XX_Trigger_Source triggerSource;
 } ADCCC26XX_HWAttrs;
 
@@ -168,9 +168,9 @@ typedef struct
  */
 typedef struct
 {
-    /*!< Flag if the instance is in use */
+    /*! Flag if the instance is in use */
     bool isOpen;
-    /*!< Flag to indicate if thread safety is ensured by the driver */
+    /*! Flag to indicate if thread safety is ensured by the driver */
     bool isProtected;
 } ADCCC26XX_Object;
 

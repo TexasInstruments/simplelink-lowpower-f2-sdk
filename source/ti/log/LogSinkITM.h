@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,7 @@
  *  @endcode
  *
  *  Additionally, LogSinkITM_init must be called before LogSinkITM can be used.
+ *  It is called from Board_init().
  *  @code
  *  // Initialize ITM sink
  *  LogSinkITM_init();

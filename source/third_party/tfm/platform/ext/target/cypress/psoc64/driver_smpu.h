@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019, Cypress Semiconductor Corporation. All rights reserved.
+ * Copyright (c) 2019-2022 Cypress Semiconductor Corporation (an Infineon company)
+ * or an affiliate of Cypress Semiconductor Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +20,14 @@
 
 #include "cy_prot.h"
 #include "RTE_Device.h"
+#include "tfm_multi_core.h"
 
 typedef struct smpu_resources SMPU_Resources;
 
 /* API functions */
+void SMPU_Get_Access_Rules(const void *p, size_t s,
+                           uint32_t pc,
+                           struct mem_attr_info_t *p_attr);
 cy_en_prot_status_t SMPU_Configure(const SMPU_Resources *smpu_dev);
 cy_en_prot_status_t protect_unconfigured_smpus(void);
 void SMPU_Print_Config(const SMPU_Resources *smpu_dev);

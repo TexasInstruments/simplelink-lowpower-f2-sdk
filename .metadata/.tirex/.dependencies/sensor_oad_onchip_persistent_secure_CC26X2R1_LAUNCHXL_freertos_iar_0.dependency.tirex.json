@@ -5,7 +5,7 @@
             "+../../../../../../../source/ti/common/cui/cui.c -> cui.c",
             "+../../../../../../../source/ti/common/cui/cui.h -> cui.h",
             "+../../../../../../../source/ti/ti154stack/common/boards/device_type.h -> device_type.h",
-            "+../../application/defines/sensor_oad_onchip_persistent.opts -> sensor_oad_onchip_persistent.opts",
+            "+../../application/defines/sensor_oad_onchip_persistent.opt -> sensor_oad_onchip_persistent.opt",
             "+../../application/sensor/advanced_config.h -> advanced_config.h",
             "+../../../../../../../source/ti/ti154stack/apps/sensor/sensor.c -> sensor.c",
             "+../../../../../../../source/ti/ti154stack/apps/sensor/sensor.h -> sensor.h",

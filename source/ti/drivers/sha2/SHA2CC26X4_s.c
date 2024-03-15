@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,13 @@
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/error.h>
 #include <third_party/tfm/interface/include/psa/service.h>
-#include <third_party/tfm/secure_fw/spm/include/tfm_memory_utils.h>
+#include <third_party/tfm/secure_fw/spm/include/utilities.h>
 
 #include <third_party/tfm/platform/ext/target/ti/cc26x4/cmse.h> /* TI CMSE helper functions */
 #include "ti_drivers_config.h"                                  /* Sysconfig generated header */
 
 /*
- * ========= SHA2 Secure Dynamic Instance struct =========
+ * SHA2 Secure Dynamic Instance struct.
  */
 typedef struct
 {
@@ -188,7 +188,7 @@ static inline psa_status_t SHA2_s_copyConfig(SHA2_Config **secureConfig,
             }
 
             /* Copy config to secure memory */
-            (void)tfm_memcpy(config_s, config, sizeof(dynInstance_s->config));
+            (void)spm_memcpy(config_s, config, sizeof(dynInstance_s->config));
 
             /* Validate object address range */
             if (cmse_has_unpriv_nonsecure_read_access(config_s->object, sizeof(dynInstance_s->object)) == NULL)
@@ -197,7 +197,7 @@ static inline psa_status_t SHA2_s_copyConfig(SHA2_Config **secureConfig,
             }
 
             /* Copy object to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
+            (void)spm_memcpy(&dynInstance_s->object, config_s->object, sizeof(dynInstance_s->object));
             config_s->object = &dynInstance_s->object;
 
             /* Validate HW attributes address range */
@@ -208,7 +208,7 @@ static inline psa_status_t SHA2_s_copyConfig(SHA2_Config **secureConfig,
             }
 
             /* Copy HW attributes to secure memory and point config to it */
-            (void)tfm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
+            (void)spm_memcpy(&dynInstance_s->hwAttrs, config_s->hwAttrs, sizeof(dynInstance_s->hwAttrs));
             config_s->hwAttrs = &dynInstance_s->hwAttrs;
 
             *secureConfig = config_s;
@@ -265,7 +265,7 @@ static psa_status_t SHA2_s_copyParams(SHA2_Params *secureParams, const SHA2_Para
         return PSA_ERROR_PROGRAMMER_ERROR;
     }
 
-    (void)tfm_memcpy(secureParams, params, sizeof(SHA2_Params));
+    (void)spm_memcpy(secureParams, params, sizeof(SHA2_Params));
 
     /* Validate the return behavior */
     if ((secureParams->returnBehavior == SHA2_RETURN_BEHAVIOR_CALLBACK) ||
@@ -558,7 +558,7 @@ static psa_status_t SHA2_s_copyKey(CryptoKey *secureKey, const CryptoKey *key)
     }
 
     /* Copy key to secure memory */
-    (void)tfm_memcpy(secureKey, key, sizeof(CryptoKey));
+    (void)spm_memcpy(secureKey, key, sizeof(CryptoKey));
 
     if (CryptoKey_verifySecureInputKey(secureKey) != CryptoKey_STATUS_SUCCESS)
     {

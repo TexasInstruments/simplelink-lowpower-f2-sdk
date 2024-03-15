@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -128,7 +128,7 @@
 #define IDX_GapInit_setPhyParam                       GapInit_setPhyParam
 #define IDX_GapInit_getPhyParam                       GapInit_getPhyParam
 #define IDX_GapInit_connect                           GapInit_connect
-#define IDX_GapInit_connectWl                         GapInit_connectWl
+#define IDX_GapInit_connectAl                         GapInit_connectAl
 #define IDX_GapInit_cancelConnect                     GapInit_cancelConnect
 
 #define IDX_GAP_TerminateLinkReq                      GAP_TerminateLinkReq
@@ -138,14 +138,14 @@
 #define IDX_GAP_Authenticate                          GAP_Authenticate
 #define IDX_GAP_TerminateAuth                         GAP_TerminateAuth
 #define IDX_GAP_PasskeyUpdate                         GAP_PasskeyUpdate
-#define IDX_GAP_SendSlaveSecurityRequest              GAP_SendSlaveSecurityRequest
+#define IDX_GAP_SendPeripheralSecurityRequest         GAP_SendPeripheralSecurityRequest
 #define IDX_GAP_Signable                              GAP_Signable
 #define IDX_GAP_Bond                                  GAP_Bond
 
 /* RTLS Services API */
 /*********************/
 #define IDX_RTLSSrv_init                               RTLSSrv_init
-#define IDX_RTLSSrv_register                           RTLSSrv_register
+#define IDX_RTLSSrv_register                           RTLSSrv_registers
 #define IDX_RTLSSrv_setConnCteReceiveParams            RTLSSrv_setConnCteReceiveParams
 #define IDX_RTLSSrv_setConnCteTransmitParams           RTLSSrv_setConnCteTransmitParams
 #define IDX_RTLSSrv_setConnCteRequestEnableCmd         RTLSSrv_setConnCteRequestEnableCmd
@@ -173,10 +173,10 @@
 #define IDX_HCI_LE_SetEventMaskCmd                    HCI_LE_SetEventMaskCmd
 #define IDX_HCI_LE_ReadLocalSupportedFeaturesCmd      HCI_LE_ReadLocalSupportedFeaturesCmd
 #define IDX_HCI_LE_ReadAdvChanTxPowerCmd              HCI_LE_ReadAdvChanTxPowerCmd
-#define IDX_HCI_LE_ReadWhiteListSizeCmd               HCI_LE_ReadWhiteListSizeCmd
-#define IDX_HCI_LE_ClearWhiteListCmd                  HCI_LE_ClearWhiteListCmd
-#define IDX_HCI_LE_AddWhiteListCmd                    HCI_LE_AddWhiteListCmd
-#define IDX_HCI_LE_RemoveWhiteListCmd                 HCI_LE_RemoveWhiteListCmd
+#define IDX_HCI_LE_ReadAcceptListSizeCmd              HCI_LE_ReadAcceptListSizeCmd
+#define IDX_HCI_LE_ClearAcceptListCmd                 HCI_LE_ClearAcceptListCmd
+#define IDX_HCI_LE_AddAcceptListCmd                   HCI_LE_AddAcceptListCmd
+#define IDX_HCI_LE_RemoveAcceptListCmd                HCI_LE_RemoveAcceptListCmd
 #define IDX_HCI_LE_SetHostChanClassificationCmd       HCI_LE_SetHostChanClassificationCmd
 #define IDX_HCI_LE_ReadChannelMapCmd                  HCI_LE_ReadChannelMapCmd
 #define IDX_HCI_LE_ReadRemoteUsedFeaturesCmd          HCI_LE_ReadRemoteUsedFeaturesCmd
@@ -218,11 +218,12 @@
 /* HCI Extended API */
 /********************/
 #define IDX_HCI_EXT_SetTxPowerCmd                        HCI_EXT_SetTxPowerCmd
+#define IDX_HCI_EXT_SetTxPowerDbmCmd                     HCI_EXT_SetTxPowerDbmCmd
 #define IDX_HCI_EXT_OnePktPerEvtCmd                      HCI_EXT_OnePktPerEvtCmd
 #define IDX_HCI_EXT_DecryptCmd                           HCI_EXT_DecryptCmd
 #define IDX_HCI_EXT_SetLocalSupportedFeaturesCmd         HCI_EXT_SetLocalSupportedFeaturesCmd
 #define IDX_HCI_EXT_SetFastTxResponseTimeCmd             HCI_EXT_SetFastTxResponseTimeCmd
-#define IDX_HCI_EXT_SetSlaveLatencyOverrideCmd           HCI_EXT_SetSlaveLatencyOverrideCmd
+#define IDX_HCI_EXT_SetPeripheralLatencyOverrideCmd      HCI_EXT_SetPeripheralLatencyOverrideCmd
 #define IDX_HCI_EXT_ModemTestTxCmd                       HCI_EXT_ModemTestTxCmd
 #define IDX_HCI_EXT_ModemHopTestTxCmd                    HCI_EXT_ModemHopTestTxCmd
 #define IDX_HCI_EXT_ModemTestRxCmd                       HCI_EXT_ModemTestRxCmd
@@ -234,6 +235,7 @@
 #define IDX_HCI_EXT_SetSCACmd                            HCI_EXT_SetSCACmd
 #define IDX_HCI_EXT_EnablePTMCmd                         HCI_EXT_EnablePTMCmd
 #define IDX_HCI_EXT_SetMaxDtmTxPowerCmd                  HCI_EXT_SetMaxDtmTxPowerCmd
+#define IDX_HCI_EXT_SetMaxDtmTxPowerDbmCmd               HCI_EXT_SetMaxDtmTxPowerDbmCmd
 #define IDX_HCI_EXT_DisconnectImmedCmd                   HCI_EXT_DisconnectImmedCmd
 #define IDX_HCI_EXT_PacketErrorRateCmd                   HCI_EXT_PacketErrorRateCmd
 #define IDX_HCI_EXT_PERbyChanCmd                         HCI_EXT_PERbyChanCmd
@@ -246,6 +248,9 @@
 #define IDX_HCI_EXT_SetDtmTxPktCntCmd                    HCI_EXT_SetDtmTxPktCntCmd
 #define IDX_HCI_EXT_SetHostDefChanClassificationCmd      HCI_EXT_SetHostDefChanClassificationCmd
 #define IDX_HCI_EXT_SetHostConnChanClassificationCmd     HCI_EXT_SetHostConnChanClassificationCmd
+#define IDX_HCI_EXT_GetRxStatisticsCmd                   HCI_EXT_GetRxStatisticsCmd
+#define IDX_HCI_EXT_GetTxStatisticsCmd                   HCI_EXT_GetTxStatisticsCmd
+#define IDX_HCI_EXT_GetCoexStatisticsCmd                 HCI_EXT_GetCoexStatisticsCmd
 #define IDX_HCI_TL_getCmdResponderID                     HCI_TL_getCmdResponderID
 #define IDX_HCI_LE_RandCmd                               HCI_LE_RandCmd
 #define IDX_HCI_LE_ReadBufSizeCmd                        HCI_LE_ReadBufSizeCmd
@@ -269,6 +274,7 @@
 #define IDX_HCI_LE_SetPrivacyModeCmd                     HCI_LE_SetPrivacyModeCmd
 #define IDX_HCI_LE_ReadLocalP256PublicKeyCmd             HCI_LE_ReadLocalP256PublicKeyCmd
 #define IDX_HCI_LE_GenerateDHKeyCmd                      HCI_LE_GenerateDHKeyCmd
+#define IDX_HCI_LE_GenerateDHKeyV2Cmd                    HCI_LE_GenerateDHKeyV2Cmd
 #define IDX_HCI_LE_SetAdvParamCmd                        HCI_LE_SetAdvParamCmd
 #define IDX_HCI_LE_SetAdvDataCmd                         HCI_LE_SetAdvDataCmd
 #define IDX_HCI_LE_SetScanRspDataCmd                     HCI_LE_SetScanRspDataCmd
@@ -296,6 +302,7 @@
 #define IDX_HCI_CommandStatusEvent                       HCI_CommandStatusEvent
 #define IDX_HCI_CommandCompleteEvent                     HCI_CommandCompleteEvent
 #define IDX_HCI_bm_alloc                                 HCI_bm_alloc
+#define IDX_HCI_bm_free                                  HCI_bm_free
 #define IDX_HCI_LE_ReadPhyCmd                            HCI_LE_ReadPhyCmd
 #define IDX_HCI_LE_SetDefaultPhyCmd                      HCI_LE_SetDefaultPhyCmd
 #define IDX_HCI_LE_SetPhyCmd                             HCI_LE_SetPhyCmd
@@ -318,6 +325,7 @@
 #define IDX_LE_ExtCreateConn                             LE_ExtCreateConn
 #define IDX_HCI_EXT_SetPinOutputCmd                      HCI_EXT_SetPinOutputCmd
 #define IDX_HCI_EXT_SetLocationingAccuracyCmd            HCI_EXT_SetLocationingAccuracyCmd
+#define IDX_HCI_EXT_SetAdvSetRandAddrCmd                 HCI_EXT_SetAdvSetRandAddrCmd
 #define IDX_HCI_EXT_SetVirtualAdvAddrCmd                 HCI_EXT_SetVirtualAdvAddrCmd
 #define IDX_HCI_EXT_CoexEnableCmd                        HCI_EXT_CoexEnableCmd
 #define IDX_HCI_EXT_SetExtScanChannels                   HCI_EXT_SetExtScanChannels

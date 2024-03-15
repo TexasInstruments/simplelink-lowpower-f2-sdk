@@ -14,10 +14,6 @@ hide ICall_dispatcher
 hide ICall_enterCriticalSection
 hide ICall_leaveCriticalSection
 hide abort
-hide smpInitiatorProcessPairingConfirm
-hide smpResponderProcessPairingConfirm
-hide smpResponderProcessPairingRandom
-hide smpResponderProcessPairingDHKeyCheck
 hide HCI_ReadLocalVersionInfoCmd
 hide abort
 hide rfMode
@@ -56,21 +52,24 @@ hide LE_ExtCreateConn
 hide llSetupConn
 hide llSetupNextMasterEvent
 hide llSetupNextSlaveEvent
+hide RFHAL_FreeNextTxDataEntry
 hide llRegisterConnEvtCallback
 hide GapAdv_prepareLoadByHandle
 hide GapAdv_loadByHandle
+hide GapAdv_setParam
 hide gapProcessOSALMsg
 hide gapProcessHCICmdCompleteEvt
 hide gapProcessCommandStatusEvt
-hide gapCentProcessConnEvt
+hide gapProcessDisconnectCompleteEvt
 hide gapPeriProcessConnUpdateCmdStatus
 hide gapPeriProcessConnUpdateCompleteEvt
-hide gapPeriProcessConnEvt
 hide gapProcessBLEEvents
 hide gapScan_processStartEndCb
 hide gapScan_filterDiscMode
 hide GAP_SetParamValue
 hide Gap_RegisterConnEventCb
+hide gapGetDevAddressMode
+hide GAP_GetDevAddress
 hide GATT_VerifyReadPermissions
 hide GATT_VerifyWritePermissions
 hide gattProcessReadByType
@@ -87,7 +86,6 @@ hide SM_SetECCRegenerationCount
 hide smResponderProcessLTKReq
 hide SM_p256KeyCB
 hide SM_dhKeyCB
-hide smDetermineIOCaps
 hide llConnExists
 hide llNextChanIndex
 hide llSendAdvSetEndEvent
@@ -138,6 +136,9 @@ hide l2capProcessOSALMsg
 hide gapScan_defragAdvRpt
 hide gattServApp_DequeueReTx
 hide osal_bm_free
+hide l2capReassembleSegment
+hide gapAdvParamLookup
+hide GapAdv_getParam
 //
 rename ECC_keyGen                 as eccRom_genKeys
 rename ECDH_commonKey             as eccRom_genSharedSecret

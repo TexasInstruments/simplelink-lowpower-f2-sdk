@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------------------------------------
 
-#!/bin/bash
+#!/usr/bin/env bash
 cd ../../../../bin/
 
 cp ../tester/util_assisted/get_pub_key/get_pub_key.sh .

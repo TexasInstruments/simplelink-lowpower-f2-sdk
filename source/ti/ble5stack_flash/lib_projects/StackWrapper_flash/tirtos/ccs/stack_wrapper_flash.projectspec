@@ -56,7 +56,6 @@
             -I${SRC_BLE_DIR}/inc
             -I${SRC_BLE_DIR}/hal/src/target/_common
             -I${SRC_BLE_DIR}/hal/src/target/_common/cc26xx
-            -I${SRC_BLE_DIR}/hal/src/target/cc2650tirtos
             -I${SRC_BLE_DIR}/hal/src/target
             -I${SRC_BLE_DIR}/hal/src/inc
             -I${SRC_BLE_DIR}/icall/src/inc

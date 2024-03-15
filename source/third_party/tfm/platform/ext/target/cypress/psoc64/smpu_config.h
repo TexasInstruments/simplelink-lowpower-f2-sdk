@@ -28,6 +28,13 @@
 /* This macro depends on the actual CY_PROT_REGIONSIZE_XXX values */
 #define REGIONSIZE_TO_BYTES(X)      (1UL << (1 + (X)))
 
+/* This triplet of flag values indicates that the actual values
+ * must be retrieved from provisioning data at runtime.
+ */
+#define SMPU_DYNAMIC_BASE       ((void *)-1)
+#define SMPU_DYNAMIC_REGIONSIZE ((cy_en_prot_size_t)0)
+#define SMPU_DYNAMIC_SUBREGIONS (0)
+
 /* The actual SMPU configs */
 
 /* SMPU configs can only be changed by privileged secure PC=1 bus masters */
@@ -49,8 +56,8 @@
     .address = (void *)SMPU0_BASE, \
     .regionSize = (cy_en_prot_size_t) SMPU0_REGIONSIZE, \
     .subregions = SMPU0_SUBREGION_DIS, \
-    .userPermission = CY_PROT_PERM_RWX, \
-    .privPermission = CY_PROT_PERM_RWX, \
+    .userPermission = CY_PROT_PERM_RX, \
+    .privPermission = CY_PROT_PERM_RX, \
     .secure = false, \
     .pcMatch = false, \
     .pcMask = SECURE_PCS_MASK, \
@@ -70,12 +77,12 @@
 #endif
 
 /* SMPU1 - Internal Trusted Storage in Flash */
-#define SMPU1_BASE         S_ROM_ALIAS(FLASH_ITS_AREA_OFFSET)
-#define SMPU1_REGIONSIZE   PROT_SIZE_16KB_BIT_SHIFT
+/* Dynamically configured from provisioning data */
+#define ITS_SMPU_STRUCT     PROT_SMPU_SMPU_STRUCT1
 #define SMPU1_SLAVE_CONFIG {\
-    .address = (void *)SMPU1_BASE, \
-    .regionSize = (cy_en_prot_size_t) SMPU1_REGIONSIZE, \
-    .subregions = ALL_ENABLED, \
+    .address = SMPU_DYNAMIC_BASE, \
+    .regionSize = SMPU_DYNAMIC_REGIONSIZE, \
+    .subregions = SMPU_DYNAMIC_SUBREGIONS, \
     .userPermission = CY_PROT_PERM_DISABLED, \
     .privPermission = CY_PROT_PERM_RW, \
     .secure = false, \
@@ -84,23 +91,13 @@
 }
 #define SMPU1_MASTER_CONFIG COMMON_SMPU_MASTER_CONFIG
 
-/* SMPU requires base address aligned to size */
-#if SMPU1_BASE % REGIONSIZE_TO_BYTES(SMPU1_REGIONSIZE)
-#error "Flash layout has changed - SMPU1 needs updating"
-#endif
-
-/* Should exactly cover the ITS region */
-#if FLASH_ITS_AREA_SIZE != REGIONSIZE_TO_BYTES(SMPU1_REGIONSIZE)
-#error "Flash layout has changed - SMPU1_REGIONSIZE isn't FLASH_ITS_AREA_SIZE"
-#endif
-
 /* SMPU2 - NV counters in Flash */
-#define SMPU2_BASE         S_ROM_ALIAS(FLASH_NV_COUNTERS_AREA_OFFSET)
-#define SMPU2_REGIONSIZE   PROT_SIZE_1KB_BIT_SHIFT
+/* Dynamically configured from provisioning data */
+#define NVC_SMPU_STRUCT     PROT_SMPU_SMPU_STRUCT2
 #define SMPU2_SLAVE_CONFIG {\
-    .address = (void *)SMPU2_BASE, \
-    .regionSize = (cy_en_prot_size_t) SMPU2_REGIONSIZE, \
-    .subregions = ALL_ENABLED, \
+    .address = SMPU_DYNAMIC_BASE, \
+    .regionSize = SMPU_DYNAMIC_REGIONSIZE, \
+    .subregions = SMPU_DYNAMIC_SUBREGIONS, \
     .userPermission = CY_PROT_PERM_DISABLED, \
     .privPermission = CY_PROT_PERM_RW, \
     .secure = false, \
@@ -109,26 +106,13 @@
 }
 #define SMPU2_MASTER_CONFIG COMMON_SMPU_MASTER_CONFIG
 
-/* SMPU requires base address aligned to size */
-#if SMPU2_BASE % REGIONSIZE_TO_BYTES(SMPU2_REGIONSIZE)
-#error "Flash layout has changed - SMPU2 needs updating"
-#endif
-
-/* Should exactly cover the NV Counters region */
-#if FLASH_NV_COUNTERS_AREA_SIZE != REGIONSIZE_TO_BYTES(SMPU2_REGIONSIZE)
-#error "Flash layout has changed - SMPU2_REGIONSIZE isn't FLASH_NV_COUNTERS_AREA_SIZE"
-#endif
-
 /* SMPU3 - PS in Flash */
-#define SMPU3_BASE         S_ROM_ALIAS(0x1c8000)
-#define SMPU3_REGIONSIZE   PROT_SIZE_32KB_BIT_SHIFT
-#define SMPU3_SUBREGION_DIS (CY_PROT_SUBREGION_DIS0 | \
-                             CY_PROT_SUBREGION_DIS1 | \
-                             CY_PROT_SUBREGION_DIS2)
+/* Dynamically configured from provisioning data */
+#define PS_SMPU_STRUCT      PROT_SMPU_SMPU_STRUCT3
 #define SMPU3_SLAVE_CONFIG {\
-    .address = (void *)SMPU3_BASE, \
-    .regionSize = (cy_en_prot_size_t) SMPU3_REGIONSIZE, \
-    .subregions = SMPU3_SUBREGION_DIS, \
+    .address = SMPU_DYNAMIC_BASE, \
+    .regionSize = SMPU_DYNAMIC_REGIONSIZE, \
+    .subregions = SMPU_DYNAMIC_SUBREGIONS, \
     .userPermission = CY_PROT_PERM_RW, \
     .privPermission = CY_PROT_PERM_RW, \
     .secure = false, \
@@ -136,25 +120,6 @@
     .pcMask = SECURE_PCS_MASK, \
 }
 #define SMPU3_MASTER_CONFIG COMMON_SMPU_MASTER_CONFIG
-
-/* SMPU requires base address aligned to size */
-#if SMPU3_BASE % REGIONSIZE_TO_BYTES(SMPU3_REGIONSIZE)
-#error "Flash layout has changed - SMPU3 needs updating"
-#endif
-
-/*
- * PS_FLASH_AREA_ADDR must equal the base address of subregion 3 of
- * SMPU3
- */
-#if S_ROM_ALIAS(PS_FLASH_AREA_ADDR) != (SMPU3_BASE + \
-                          (3 * REGIONSIZE_TO_BYTES(SMPU3_REGIONSIZE) / 8))
-#error "Flash layout has changed - S_DATA_PRIV_START isn't subregion 3 of SMPU3"
-#endif
-
-/* Should exactly cover the PS region */
-#if FLASH_PS_AREA_SIZE != (5 * REGIONSIZE_TO_BYTES(SMPU3_REGIONSIZE) / 8)
-#error "Flash layout has changed - SMPU3_REGIONSIZE isn't FLASH_PS_AREA_SIZE"
-#endif
 
 /* SMPU6 - 32KB of unprivileged secure data in SRAM */
 #define SMPU6_BASE         S_DATA_START
@@ -238,10 +203,48 @@
 #error "Flash layout has changed - SMPU8 doesn't immediately follow SMPU7"
 #endif
 
-/* SMPU7 and SMPU8 should exactly cover the privileged secure SRAM */
+/* SMPU7 and SMPU8 should exactly cover the privileged secure SRAM which
+ * consists of S_PRIV_DATA and S_RAM_CODE
+ */
 #if ((6*REGIONSIZE_TO_BYTES(SMPU7_REGIONSIZE)/8) + \
-     REGIONSIZE_TO_BYTES(SMPU8_REGIONSIZE)) != S_PRIV_DATA_SIZE
-#error "SMPU7_REGIONSIZE+SMPU8_REGIONSIZE should match S_PRIV_DATA_SIZE"
+     REGIONSIZE_TO_BYTES(SMPU8_REGIONSIZE)) != \
+     (S_PRIV_DATA_SIZE + S_RAM_CODE_SIZE)
+#error "SMPU7+SMPU8 REGIONSIZE should match privileged secure SRAM size"
+#endif
+
+/* SMPU9 - 2KB of privileged executable data in SRAM
+ * Note: Region resides in subregion 7 of SMPU 8*/
+#define SMPU9_BASE         S_RAM_CODE_START
+#define SMPU9_REGIONSIZE   PROT_SIZE_2KB_BIT_SHIFT
+#define SMPU9_SLAVE_CONFIG {\
+    .address = (void *)SMPU9_BASE, \
+    .regionSize = (cy_en_prot_size_t) SMPU9_REGIONSIZE, \
+    .subregions = ALL_ENABLED, \
+    .userPermission = CY_PROT_PERM_DISABLED, \
+    .privPermission = CY_PROT_PERM_RX, \
+    .secure = false, \
+    .pcMatch = false, \
+    .pcMask = SECURE_PCS_MASK, \
+}
+#define SMPU9_MASTER_CONFIG COMMON_SMPU_MASTER_CONFIG
+
+/* SMPU requires base address aligned to size */
+#if SMPU9_BASE % REGIONSIZE_TO_BYTES(SMPU9_REGIONSIZE)
+#error "Flash layout has changed - SMPU9 needs updating"
+#endif
+
+#if S_RAM_CODE_SIZE != REGIONSIZE_TO_BYTES(SMPU9_REGIONSIZE)
+#error "SMPU9_REGIONSIZE is not equal S_RAM_CODE_SIZE"
+#endif
+
+/* SMPU9 should be contained within SMPU8 */
+#if SMPU9_BASE < SMPU8_BASE
+#error "SMPU9 is below SMPU8"
+#endif
+
+#if (SMPU9_BASE + REGIONSIZE_TO_BYTES(SMPU9_REGIONSIZE)) > \
+    (SMPU8_BASE + REGIONSIZE_TO_BYTES(SMPU8_REGIONSIZE))
+#error "SMPU9 is not within SMPU8"
 #endif
 
 #endif /* __SMPU_CONFIG_H__ */

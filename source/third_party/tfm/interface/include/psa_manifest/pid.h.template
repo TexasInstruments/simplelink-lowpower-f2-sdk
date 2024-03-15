@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2021, Cypress Semiconductor Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
-{{utilities.donotedit_warning}}
+/***********{{utilities.donotedit_warning}}***********/
 
 #ifndef __PSA_MANIFEST_PID_H__
 #define __PSA_MANIFEST_PID_H__
@@ -14,15 +15,11 @@
 extern "C" {
 #endif
 
-{% for manifest in manifests %}
-    {% if manifest.attr.pid - 256 < 0 %}
-#error "Partition ID for '{{manifest.manifest.name}}' have to be at least TFM_SP_BASE"
-    {% else %}
-#define {{"%-62s"|format(manifest.manifest.name)}} ({{manifest.attr.pid}})
-    {% endif %}
+{% for partition in partitions %}
+#define {{"%-62s"|format(partition.manifest.name)}} ({{partition.attr.pid}})
 {% endfor %}
 
-#define {{"%-62s"|format("TFM_MAX_USER_PARTITIONS")}} ({{manifests | length()}})
+#define {{"%-62s"|format("TFM_MAX_USER_PARTITIONS")}} ({{partitions | length()}})
 
 #ifdef __cplusplus
 }

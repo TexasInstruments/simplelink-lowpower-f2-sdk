@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2022, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@
 #include <ti/drivers/trng/TRNGCC26XX.h>
 #include <ti/drivers/cryptoutils/cryptokey/CryptoKey.h>
 #include <ti/drivers/utils/StructRingBuf.h>
+#include <ti/drivers/utils/Math.h>
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(inc/hw_memmap.h)
@@ -54,9 +55,6 @@
 #include DeviceFamily_constructPath(driverlib/interrupt.h)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #include DeviceFamily_constructPath(driverlib/trng.h)
-
-/* Macros */
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 /* Forward declarations */
 static void TRNGCC26XX_hwiFxn(uintptr_t arg0);
@@ -138,7 +136,7 @@ static void TRNGCC26XX_copyToClient(TRNGCC26XX_Object *object)
         if (StructRingBuf_get(&entropyPool, tmpEntropyBuf) != -1)
         {
 
-            bytesToCopy = MIN(object->entropyRequested - object->entropyGenerated, sizeof(tmpEntropyBuf));
+            bytesToCopy = Math_MIN(object->entropyRequested - object->entropyGenerated, sizeof(tmpEntropyBuf));
 
             memcpy(object->entropyBuffer + object->entropyGenerated, tmpEntropyBuf, bytesToCopy);
 

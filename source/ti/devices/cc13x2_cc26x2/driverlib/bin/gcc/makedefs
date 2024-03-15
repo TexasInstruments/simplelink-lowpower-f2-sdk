@@ -1,2 +1,0 @@
-COMPILER_TOOL = ${GCC_ARMCOMPILER}/bin/arm-none-eabi-gcc
-ARCHIVER_TOOL = ${GCC_ARMCOMPILER}/bin/arm-none-eabi-ar

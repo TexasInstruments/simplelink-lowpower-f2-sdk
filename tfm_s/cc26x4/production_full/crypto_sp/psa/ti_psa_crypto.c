@@ -32,7 +32,7 @@
 
 #include <stdint.h>
 
-#include <third_party/mbedcrypto/include/psa/crypto.h>
+#include <third_party/mbedtls/include/psa/crypto.h>
 
 #include <psa_manifest/pid.h>
 

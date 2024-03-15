@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <mqueue.h>
+#include <ti/drivers/dpl/EventP.h>
 #include <stdarg.h>
 #include <Queue_freertos.h>
 #include "util.h"
@@ -67,10 +68,8 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/BIOS.h>
 #endif
-
 #include <string.h>
 #include "icall.h"
-
 #include "inc/npi_task.h"
 #include "inc/npi_data.h"
 #include "inc/npi_frame.h"
@@ -80,9 +79,15 @@
 // ****************************************************************************
 // defines
 // ****************************************************************************
-
+#ifdef CC23X0
+#define EVENT_POST(event, eventMask)          EventP_post(event, eventMask)
+#define EVENT_PEND(event)                     EventP_pend(event, FREE_RTOS_NPITASK_ALL_EVENTS , 0, WAIT_FOREVER)
+#else
+#define EVENT_POST(event, eventMask)          Event_post(event, eventMask)
+#define EVENT_PEND(event)                     Event_pend(event, Event_Id_NONE, NPITASK_ALL_EVENTS, BIOS_WAIT_FOREVER)
+#endif
 #ifdef ICALL_EVENTS
-#define NPITASK_ICALL_EVENT ICALL_MSG_EVENT_ID // Event_Id_31
+#define NPITASK_ICALL_EVENT 0x00001000 //Event_id_31
 #ifdef FREERTOS
 #define NPITASK_TRANSPORT_RX_EVENT UTIL_EVENT_ID_00 // Event_Id_00
 
@@ -94,6 +99,9 @@
 
 //! \brief A framed message buffer is ready to be sent to the transport layer.
 #define NPITASK_TX_READY_EVENT UTIL_EVENT_ID_03//Event_Id_03
+
+#define FREE_RTOS_NPITASK_ALL_EVENTS (NPITASK_TX_READY_EVENT | NPITASK_FRAME_RX_EVENT | NPITASK_TRANSPORT_TX_DONE_EVENT | NPITASK_TRANSPORT_RX_EVENT | NPITASK_ICALL_EVENT)
+
 #else
 //! \brief Transport layer RX Event (ie. bytes received, RX ISR etc.)
 #define NPITASK_TRANSPORT_RX_EVENT Event_Id_00
@@ -121,6 +129,7 @@
 #ifdef FREERTOS
 #define NPITASK_SYNC_FRAME_RX_EVENT UTIL_EVENT_ID_NONE
 #define NPITASK_SYNC_TX_READY_EVENT UTIL_EVENT_ID_NONE
+#define WAIT_FOREVER (~(0U))
 #else
 #define NPITASK_SYNC_FRAME_RX_EVENT Event_Id_NONE
 #define NPITASK_SYNC_TX_READY_EVENT Event_Id_NONE
@@ -501,13 +510,7 @@ static void NPITask_process(void)
 
 #ifdef ICALL_EVENTS
         uint32_t NPITask_events;
-
-#ifdef FREERTOS
-        mq_receive(syncEvent, (char*)&NPITask_events, sizeof(uint32_t), NULL);
-#else
-        NPITask_events = Event_pend(syncEvent, Event_Id_NONE,
-                                    NPITASK_ALL_EVENTS, BIOS_WAIT_FOREVER);
-#endif // FREERTOS
+        NPITask_events = EVENT_PEND(syncEvent);
 #else //!ICALL_EVENTS
         //if (ICall_wait(ICALL_TIMEOUT_FOREVER) == ICALL_ERRNO_SUCCESS)
         Semaphore_pend(appSem, BIOS_WAIT_FOREVER);
@@ -575,7 +578,7 @@ static void NPITask_process(void)
                     //   (which shouldn't be happening).
                     // - Preserve the event flag and repost on the semaphore.
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                     Semaphore_post(appSem);
 #endif //ICALL_EVENTS
@@ -607,7 +610,7 @@ static void NPITask_process(void)
                 else
                 {
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
                     // Q is not empty, there's more to handle so preserve the
                     // flag and repost to the task semaphore.
@@ -650,7 +653,7 @@ static void NPITask_process(void)
                     // Q is not empty, there's more to handle so preserve the
                     // flag and repost to the task semaphore.
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TX_READY_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                     Semaphore_post(appSem);
 #endif //ICALL_EVENTS
@@ -680,7 +683,7 @@ static void NPITask_process(void)
                     // Additional bytes to collect, preserve the flag and repost
                     // to the semaphore
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
 #else //!ICALL_EVENTS
                     Semaphore_post(appSem);
 #endif //ICALL_EVENTS
@@ -711,7 +714,7 @@ static void NPITask_process(void)
                         // Q is not empty, there's more to handle so preserve the
                         // flag and repost to the task semaphore.
 #ifdef ICALL_EVENTS
-                        Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
+                        EVENT_POST(syncEvent, NPITASK_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
                         Semaphore_post(appSem);
 #endif //ICALL_EVENTS
@@ -721,7 +724,7 @@ static void NPITask_process(void)
                 else
                 {
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
                     // Preserve the flag and repost to the task semaphore.
                     Semaphore_post(appSem);
@@ -743,7 +746,7 @@ static void NPITask_process(void)
                     // to the host. Set the appropriate flag and post to
                     // the semaphore.
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                     NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
                     Semaphore_post(appSem);
@@ -758,7 +761,7 @@ static void NPITask_process(void)
                         // to the host. Set the appropriate flag and post to
                         // the semaphore.
 #ifdef ICALL_EVENTS
-                        Event_post(syncEvent, NPITASK_TX_READY_EVENT);
+                        EVENT_POST(syncEvent, NPITASK_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                         NPITask_events |= NPITASK_TX_READY_EVENT;
                         Semaphore_post(appSem);
@@ -918,7 +921,7 @@ void NPITask_sendToHost(uint8_t *pMsg)
         {
             Queue_put(npiSyncTxQueue, &recPtr->_elem);
 #ifdef ICALL_EVENTS
-            Event_post(syncevent, NPITASK_SYNC_TX_READY_EVENT);
+            EVENT_POST(syncevent, NPITASK_SYNC_TX_READY_EVENT);
 #else //!ICALL_EVENTS
             NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
             Semaphore_post(appSem);
@@ -929,12 +932,18 @@ void NPITask_sendToHost(uint8_t *pMsg)
         case NPIMSG_Type_ASYNC:
         {
 #ifdef FREERTOS
-            Queue_enqueue(npiTxQueue, (char*)&recPtr);
+            if(Queue_enqueue(npiTxQueue, (char*)&recPtr) == FAILURE)
+            {
+                ICall_free(pNPIMsg);
+                ICall_free(recPtr);
+                ICall_leaveCriticalSection(key);
+                return;
+            }
 #else
             Queue_put(npiTxQueue, &recPtr->_elem);
 #endif
 #ifdef ICALL_EVENTS
-            Event_post(syncEvent, NPITASK_TX_READY_EVENT);
+            EVENT_POST(syncEvent, NPITASK_TX_READY_EVENT);
 #else //!ICALL_EVENTS
             NPITask_events |= NPITASK_TX_READY_EVENT;
             Semaphore_post(appSem);
@@ -1067,7 +1076,7 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
                 {
                     Queue_put(npiSyncTxQueue, &recPtr->_elem);
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_SYNC_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                     NPITask_events |= NPITASK_SYNC_TX_READY_EVENT;
                     Semaphore_post(appSem);
@@ -1078,12 +1087,17 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
                 case NPIMSG_Type_ASYNC:
                 {
 #ifdef FREERTOS
-                    Queue_enqueue(npiTxQueue, (char*)&recPtr);
+                    if(Queue_enqueue(npiTxQueue, (char*)&recPtr) == FAILURE)
+                    {
+                        ICall_free(recPtr);
+                        ICall_free(pNPIMsg);
+                        return;
+                    }
 #else
                     Queue_put(npiTxQueue, &recPtr->_elem);
 #endif
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_TX_READY_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_TX_READY_EVENT);
 #else //!ICALL_EVENTS
                     NPITask_events |= NPITASK_TX_READY_EVENT;
                     Semaphore_post(appSem);
@@ -1093,7 +1107,7 @@ static void NPITask_processStackMsg(uint8_t *pMsg)
                 default:
                 {
                     /* Fail - unsupported message type */
-                     ICall_free(recPtr);
+                    ICall_free(recPtr);
                     ICall_free(pNPIMsg);
                     break;
                 }
@@ -1350,7 +1364,7 @@ static void NPITask_transportTxDoneCallBack(int size)
 
     // Post the event to the NPI task thread.
 #ifdef ICALL_EVENTS
-    Event_post(syncEvent, NPITASK_TRANSPORT_TX_DONE_EVENT);
+    EVENT_POST(syncEvent, NPITASK_TRANSPORT_TX_DONE_EVENT);
 #else //!ICALL_EVENTS
     TX_DONE_ISR_EVENT_FLAG = NPITASK_TRANSPORT_TX_DONE_EVENT;
     Semaphore_post(appSem);
@@ -1390,12 +1404,18 @@ static void NPITask_incomingFrameCB(uint16_t frameSize, uint8_t *pFrame,
                 {
                     recPtr->npiMsg->msgType = NPIMSG_Type_ASYNC;
 #ifdef FREERTOS
-                    Queue_enqueue(npiRxQueue, (char*)&recPtr);
+                    if(Queue_enqueue(npiRxQueue, (char*)&recPtr) == FAILURE)
+                    {
+                        ICall_free(npiMsgPtr);
+                        ICall_free(recPtr);
+                        ICall_freeMsg(pFrame);
+                        return;
+                    }
 #else
                     Queue_put(npiRxQueue, &recPtr->_elem);
 #endif
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_FRAME_RX_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
                     NPITask_events |= NPITASK_FRAME_RX_EVENT;
                     Semaphore_post(appSem);
@@ -1410,7 +1430,7 @@ static void NPITask_incomingFrameCB(uint16_t frameSize, uint8_t *pFrame,
                     recPtr->npiMsg->msgType = NPIMSG_Type_SYNCREQ;
                     Queue_put(npiSyncRxQueue, &recPtr->_elem);
 #ifdef ICALL_EVENTS
-                    Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
+                    EVENT_POST(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
                     NPITask_events |= NPITASK_SYNC_FRAME_RX_EVENT;
                     Semaphore_post(appSem);
@@ -1455,8 +1475,8 @@ static void NPITask_transportRXCallBack(int size)
     // the frame parser behavior becomes undefined. The only way to prevent
     // RxBuf overflow is to enable NPI_FLOW_CTRL.
     //
-    // If NPI_FLOW_CTRL is not enabled then there is no way to for slave to
-    // control the master transfer rate. With NPI_FLOW_CTRL the slave has SRDY
+    // If NPI_FLOW_CTRL is not enabled then there is no way to for peripheral to
+    // control the central transfer rate. With NPI_FLOW_CTRL the peripheral has SRDY
     // to use as a software flow control mechanism.
     // When using NPI_FLOW_CTRL make sure to increase NPI_TL_BUF_SIZE
     // to suit the NPI frame length that is expected to be received.
@@ -1464,7 +1484,7 @@ static void NPITask_transportRXCallBack(int size)
     {
         NPIRxBuf_Read(size);
 #ifdef ICALL_EVENTS
-        Event_post(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
+        EVENT_POST(syncEvent, NPITASK_TRANSPORT_RX_EVENT);
 #else //!ICALL_EVENTS
         TRANSPORT_RX_ISR_EVENT_FLAG = NPITASK_TRANSPORT_RX_EVENT;
         Semaphore_post(appSem);
@@ -1488,7 +1508,7 @@ static void NPITask_transportRXCallBack(int size)
 static void NPITask_MRDYEventCB(int size)
 {
 #ifdef ICALL_EVENTS
-    Event_post(syncEvent, NPITASK_MRDY_EVENT);
+    EVENT_POST(syncEvent, NPITASK_MRDY_EVENT);
 #else //!ICALL_EVENTS
     MRDY_ISR_EVENT_FLAG = NPITASK_MRDY_EVENT;
     Semaphore_post(appSem);
@@ -1516,7 +1536,7 @@ static void syncReqRspWatchDogTimeoutCB( UArg a0 )
         if (!Queue_empty(npiSyncRxQueue))
         {
 #ifdef ICALL_EVENTS
-            Event_post(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
+            EVENT_POST(syncEvent, NPITASK_SYNC_FRAME_RX_EVENT);
 #else //!ICALL_EVENTS
             NPITask_events |= NPITASK_SYNC_FRAME_RX_EVENT;
 #endif //ICALL_EVENTS
@@ -1533,3 +1553,26 @@ static void syncReqRspWatchDogTimeoutCB( UArg a0 )
     }
 }
 #endif // NPI_SREQRSP
+
+// -----------------------------------------------------------------------------
+//! \brief      API for application task to properly release the NPI message
+//!             container and internal buffer.
+//!
+//! \param[in]  pMsg    Pointer to message buffer.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITask_freeNpiMsg(uint8_t *pMsg)
+{
+  if (NULL != pMsg)
+  {
+    if (((NPIMSG_msg_t *)pMsg)->pBuf && ((NPIMSG_msg_t *)pMsg)->pBufSize)
+    {
+      // The data is stored as a message, free this first.
+      ICall_freeMsg(((NPIMSG_msg_t *)pMsg)->pBuf);
+    }
+
+    // Free the pMsg container
+    ICall_free(pMsg);
+  }
+}

@@ -50,6 +50,7 @@
 #include "openthread/error.h"
 extern protocol_interface_info_entry_t *global_interface_ptr;
 #endif
+extern void ws_bootstrap_add_locallink(protocol_interface_info_entry_t *cur, const uint8_t *mac64);
 
 static buffer_t *ipv6_consider_forwarding_multicast_packet(buffer_t *buf, protocol_interface_info_entry_t *cur, bool for_us);
 
@@ -1408,6 +1409,18 @@ buffer_t *ipv6_forwarding_up(buffer_t *buf)
 #endif
 
     bool for_us = intercept || ipv6_packet_is_for_us(buf);
+
+    if  ( (addr_is_ipv6_link_local(buf->dst_sa.address)) && (addr_is_ipv6_link_local(buf->src_sa.address) ) )
+    {   // get the destimation MAC address and add the neighbor table
+        uint8_t temp_ll64[16],mac64[8];
+
+        memcpy(temp_ll64,buf->dst_sa.address,16);
+        memcpy(mac64,&(temp_ll64[8]), 8);
+        /* flip bit bit 1 */
+        mac64[0] ^= 0x02;
+        // add the local link to Neighbor table
+        ws_bootstrap_add_locallink(cur, mac64);
+    }
 
     if (addr_is_ipv6_multicast(buf->dst_sa.address)) {
         /* Multicast forwarding is told whether we're interested. It may

@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2009-2023, Texas Instruments Incorporated
+ Copyright (c) 2009-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -58,9 +58,10 @@ extern "C"
  */
 
 #include "hal_types.h"
-#include <inc/hw_types.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_types.h)
 #ifndef CC23X0
-#include <driverlib/trng.h>
+#include DeviceFamily_constructPath(driverlib/trng.h)
 #endif
 /*******************************************************************************
  * MACROS

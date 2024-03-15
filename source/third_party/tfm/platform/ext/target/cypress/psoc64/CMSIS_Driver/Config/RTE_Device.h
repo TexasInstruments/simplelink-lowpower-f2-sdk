@@ -37,7 +37,7 @@
 
 // <e> MPC (Memory Protection Controller) [Driver_SMPU3]
 // <i> Configuration settings for Driver_SMPU3 in component ::Drivers:MPC
-#define   RTE_SMPU3                                 0
+#define   RTE_SMPU3                                 1
 // </e> MPC (Memory Protection Controller) [Driver_SMPU3]
 
 // <e> MPC (Memory Protection Controller) [Driver_SMPU4]
@@ -67,7 +67,7 @@
 
 // <e> MPC (Memory Protection Controller) [Driver_SMPU9]
 // <i> Configuration settings for Driver_SMPU9 in component ::Drivers:MPC
-#define   RTE_SMPU9                                 0
+#define   RTE_SMPU9                                 1
 // </e> MPC (Memory Protection Controller) [Driver_SMPU9]
 
 // <e> MPC (Memory Protection Controller) [Driver_SMPU10]
@@ -199,17 +199,17 @@
 
 // <e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_BOOT]
 // <i> Configuration settings for Driver_PPU_CRYPTO_BOOT in component ::Drivers:PPC
-#define   RTE_MS_PPU_CRYPTO_BOOT                    1
+#define   RTE_MS_PPU_CRYPTO_BOOT                    0
 // </e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_BOOT]
 
 // <e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_KEY0]
 // <i> Configuration settings for Driver_PPU_CRYPTO_KEY0 in component ::Drivers:PPC
-#define   RTE_MS_PPU_CRYPTO_KEY0                    1
+#define   RTE_MS_PPU_CRYPTO_KEY0                    0
 // </e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_KEY0]
 
 // <e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_KEY1]
 // <i> Configuration settings for Driver_PPU_CRYPTO_KEY1 in component ::Drivers:PPC
-#define   RTE_MS_PPU_CRYPTO_KEY1                    1
+#define   RTE_MS_PPU_CRYPTO_KEY1                    0
 // </e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_KEY1]
 
 // <e> PPC (Peripheral Protection Controller) [Driver_PPU_CRYPTO_BUF]

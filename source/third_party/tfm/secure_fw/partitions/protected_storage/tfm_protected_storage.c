@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2019-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
+#include "config_tfm.h"
+#include "config_ps_check.h"
 #include "tfm_protected_storage.h"
 #include "ps_object_system.h"
 #include "tfm_ps_defs.h"
@@ -14,8 +16,8 @@ psa_status_t tfm_ps_init(void)
     psa_status_t err;
 
     err = ps_system_prepare();
-#ifdef PS_CREATE_FLASH_LAYOUT
-    /* If PS_CREATE_FLASH_LAYOUT is set, it indicates that it is required to
+#if PS_CREATE_FLASH_LAYOUT
+    /* If PS_CREATE_FLASH_LAYOUT is set to 1, it indicates that it is required to
      * create a PS flash layout. PS service will generate an empty and valid
      * PS flash layout to store assets. It will erase all data located in the
      * assigned PS memory area before generating the PS layout.

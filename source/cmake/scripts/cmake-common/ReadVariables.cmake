@@ -1,4 +1,4 @@
-# Copyright (c) 2022, Texas Instruments Incorporated
+# Copyright (c) 2022-2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,9 @@
 cmake_minimum_required(VERSION ${TI_MIN_CMAKE_VERSION})
 
 # Don't ignore empty list elements when counting length
-if (POLICY CMP0007)
+if(POLICY CMP0007)
     cmake_policy(SET CMP0007 NEW)
-endif ()
+endif()
 
 ################################################################################
 # read_makefile_vars
@@ -44,17 +44,17 @@ endif ()
 # Argument MKFile: Makefile name (current directory) or full path
 # Output: Makes variable assignments in the cache
 #
-function (read_makefile_vars MKFile)
+function(read_makefile_vars MKFile)
     file(STRINGS "${MKFile}" FileContents REGEX "=")
-    foreach (line ${FileContents})
+    foreach(line ${FileContents})
         # Replace = and := with semicolons and split the line
         string(REGEX REPLACE "(:?=)" ";" line_split "${line}")
         list(LENGTH line_split count)
 
         # Ignore anything that isn't A=B, this is not supposed to be generic
-        if (NOT count EQUAL 2)
+        if(NOT count EQUAL 2)
             continue()
-        endif ()
+        endif()
 
         # Extract variable name and value from the list
         list(GET line_split 0 var_name)
@@ -64,5 +64,5 @@ function (read_makefile_vars MKFile)
 
         # Set during this run only, re-run import next configure step
         set(${var_name} "${value}" PARENT_SCOPE)
-    endforeach ()
-endfunction ()
+    endforeach()
+endfunction()

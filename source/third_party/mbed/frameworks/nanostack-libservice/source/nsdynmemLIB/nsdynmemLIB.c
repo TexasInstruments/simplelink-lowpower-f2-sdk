@@ -57,8 +57,8 @@ extern struct wisun_debug wisunDbg;
 #define TRACE_GROUP "dynAlloc"
 #endif
 
-static mem_stat_t default_stats;
-static ns_mem_book_t *default_book; // heap pointer for original "ns_" API use
+mem_stat_t default_stats;
+ns_mem_book_t *default_book; // heap pointer for original "ns_" API use
 
 // size of a hole_t in our word units
 #define HOLE_T_SIZE ((ns_mem_word_size_t) ((sizeof(hole_t) + sizeof(ns_mem_word_size_t) - 1) / sizeof(ns_mem_word_size_t)))

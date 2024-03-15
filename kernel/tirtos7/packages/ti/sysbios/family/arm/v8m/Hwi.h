@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021, Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -948,34 +948,25 @@ extern const Hwi_VectorFuncPtr Hwi_nullIsrFunc;
 /*!
  * @brief Exception handler function pointer.
  *
- * The default is determined by the value of Hwi.enableException.
+ * There are four valid values:
+ * - The 'Hwi_excHandlerMin' is used by default. This exception handler
+ * saves the exception context then raises an Error. The exception context can be
+ * viewed within CCS in the ROV Hwi module's Exception view.
  *
- * If the user does NOT set this parameter, then the following default behavior
- * is followed:
+ * - The 'Hwi_excHandlerMax' function. This exception handler saves the exception
+ * context then does a complete exception decode and dump to the console, then
+ * raises an Error. The exception context can be viewed within CCS in the ROV Hwi
+ * module's Exception view.
  *
- * If Hwi.enableException is true, then the internal 'Hwi_excHandlerMax'
- * function is used. This exception handler saves the exception context then
- * does a complete exception decode and dump to the console, then raises an
- * Error. The exception context can be viewed within CCS in the ROV Hwi module's
- * Exception view.
- *
- * If Hwi.enableException is false, then the internal 'Hwi_excHandlerMin'
- * function is used. This exception handler saves the exception context then
- * raises an Error. The exception context can be viewed within CCS in the ROV
- * Hwi module's Exception view.
- *
- * If the user sets this parameter to their own function, then the user's
- * function will be invoked with the following arguments:
- *
- * void myExceptionHandler(unsigned int *excStack, unsigned int lr);
- *
+ * - A user-provided function. It should have the following signature:
+ * 'void myExceptionHandler(UInt *excStack, UInt lr);'
  * Where 'excStack' is the address of the stack containing the register context
  * at the time of the exception, and 'lr' is the link register value when the
  * low-level-assembly-coded exception handler was vectored to.
  *
- * If this parameter is set to 'null', then an infinite while loop is entered
- * when an exception occurs. This setting minimizes code and data footprint but
- * provides no automatic exception decoding.
+ * - 'NULL'. An infinite while loop is entered when an exception occurs.
+ * This setting minimizes code and data footprint but provides no automatic
+ * exception decoding.
  */
 extern const Hwi_ExcHandlerFuncPtr Hwi_excHandlerFunc;
 /*! @endcond */

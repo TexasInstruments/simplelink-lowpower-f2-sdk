@@ -41,6 +41,12 @@
 
 ////////////////////////////////////* ECC *////////////////////////////////////
 
+#if defined(__GNUC__) && !defined(__ti__)
+// Disable string operation overflow warning when writing a
+// value to memory given by a uint8_t pointer.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow=2"
+#endif
 //*****************************************************************************
 // ECC_initialize
 //*****************************************************************************
@@ -74,6 +80,10 @@ ECC_initialize(uint32_t *pWorkzone)
   //workzone = (uint32_t *) pWorkzone;
   *((uint32_t **)0x20000134) = (uint32_t *) pWorkzone;
 }
+#if defined(__GNUC__) && !defined(__ti__)
+// GCC: Stop ignoring -Wstringop-overflow=2
+#pragma GCC diagnostic pop
+#endif
 
 //*****************************************************************************
 // ECC_init

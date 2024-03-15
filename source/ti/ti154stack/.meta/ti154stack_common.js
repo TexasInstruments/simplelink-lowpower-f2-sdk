@@ -253,6 +253,10 @@ const supportedMigrations = {
         CC2674P10RGZ: {},
         LP_EM_CC2674R10: {},
         LP_CC2674R10: {},
+    },
+    LP_EM_CC1314R10: {
+        CC1314R10RGZ: {},
+        LP_CC1314R10_RGZ: {},
     }
 };
 

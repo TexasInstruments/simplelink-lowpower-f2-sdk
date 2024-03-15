@@ -10,9 +10,13 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "psa/error.h"
 #include "psa/storage_common.h"
+
+#include "flash_fs/its_flash_fs.h"
+#include "its_utils.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,10 +50,6 @@ psa_status_t tfm_its_init(void);
  * \return A status indicating the success/failure of the operation
  *
  * \retval PSA_SUCCESS                     The operation completed successfully
- * \retval PSA_ERROR_NOT_PERMITTED         The operation failed because the
- *                                         provided `uid` value was already
- *                                         created with
- *                                         PSA_STORAGE_FLAG_WRITE_ONCE
  * \retval PSA_ERROR_NOT_SUPPORTED         The operation failed because one or
  *                                         more of the flags provided in
  *                                         `create_flags` is not supported or is

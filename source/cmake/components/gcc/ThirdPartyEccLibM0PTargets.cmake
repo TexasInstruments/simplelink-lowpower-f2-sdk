@@ -16,7 +16,7 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 set(_targetsDefined)
 set(_targetsNotDefined)
 set(_expectedTargets)
-foreach(_expectedTarget ThirdPartyEccLib::ecc_cc23xx)
+foreach(_expectedTarget ThirdPartyEccLib::ecc_cc23x0)
   list(APPEND _expectedTargets ${_expectedTarget})
   if(NOT TARGET ${_expectedTarget})
     list(APPEND _targetsNotDefined ${_expectedTarget})
@@ -51,8 +51,8 @@ if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-# Create imported target ThirdPartyEccLib::ecc_cc23xx
-add_library(ThirdPartyEccLib::ecc_cc23xx INTERFACE IMPORTED)
+# Create imported target ThirdPartyEccLib::ecc_cc23x0
+add_library(ThirdPartyEccLib::ecc_cc23x0 INTERFACE IMPORTED)
 
 if(CMAKE_VERSION VERSION_LESS 3.0.0)
   message(FATAL_ERROR "This file relies on consumers using CMake 3.0.0 or greater.")

@@ -100,18 +100,26 @@ function getExtraMigrationMarkdown()
         {
             isStackProject = true;
 
-            // Workaround for RF driver examples 
+            // Workaround for RF driver examples
             if(stackPath === "/ti/devices/radioconfig/custom")
             {
                 stackPath = "/ti/prop_rf/prop_rf";
                 stackName = "PropRF";
             }
 
-            // Get the stack's common functions
-            const stackCommon = system.getScript(stackPath + "_common.js");
+            let stackCommon = undefined;
+            try
+            {
+                stackCommon = system.getScript(stackPath + "_common.js");
+            }
+            catch (error)
+            {
+                // No need to do anything, it's ok if a stack doesn't exist
+                continue
+            }
 
             // Verify stack has a documentation function before calling it
-            if(stackCommon.getMigrationMarkdown)
+            if((stackCommon !== undefined) && (stackCommon.getMigrationMarkdown))
             {
                 let stackInfo = stackCommon.getMigrationMarkdown(currTarget);
                 stackInfo = _.trim(stackInfo);
@@ -208,18 +216,26 @@ function getIsMigrationValidDialog(args)
         let stackName = stack.name;
         if(system.modules[stackPath])
         {
-            // Workaround for RF driver examples 
+            // Workaround for RF driver examples
             if(stackPath === "/ti/devices/radioconfig/custom")
             {
                 stackPath = "/ti/prop_rf/prop_rf";
                 stackName = "PropRF";
             }
 
-            // Get the stack's common functions
-            const stackCommon = system.getScript(stackPath + "_common.js");
+            let stackCommon = undefined;
+            try
+            {
+                stackCommon = system.getScript(stackPath + "_common.js");
+            }
+            catch (error)
+            {
+                // No need to do anything, it's ok if a stack doesn't exist
+                continue
+            }
 
             // Verify that the stack has a migration function before calling it
-            if(stackCommon.isMigrationValid)
+            if((stackCommon !== undefined) && (stackCommon.isMigrationValid))
             {
                 const stackMigrationInfo = stackCommon.isMigrationValid(
                     currTarget, migrationTarget

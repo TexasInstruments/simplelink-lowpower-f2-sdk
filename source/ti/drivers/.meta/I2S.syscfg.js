@@ -76,21 +76,8 @@ let config = [
     {
         name        : "controllerTargetSelection",
         legacyNames : ["masterSlaveSelection"],
-        displayName : "Controller Target Selection",
-        description : "Select the I2S module role",
         default     : 'Controller',
-        options     : [
-            {
-                name: 'Controller',
-                legacyNames: ["Master"],
-                description: "Clocks internally generated"
-            },
-            {
-                name: 'Target',
-                legacyNames: ["Slave"],
-                description: "Clocks externally generated"
-            }
-        ]
+        deprecated  : true
     }
 ];
 

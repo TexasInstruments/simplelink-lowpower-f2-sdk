@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2017-2023, Texas Instruments Incorporated
+ Copyright (c) 2017-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -56,16 +56,9 @@
 /* This Header file contains all BLE API and icall structure definition */
 #include "icall_ble_api.h"
 
-#ifdef MCUBOOT_ENABLE
-#include "bootutil/bootutil.h"
-#include "bootutil/image.h"
-#define   MCUBOOT_TLV_SIZE   0x120
-typedef struct image_header imgHdr_t;  // continue using imgHdr_t name to reduce differences
-#else
 #include <common/cc26xx/crc/crc32.h>
 #include <common/cc26xx/oad/oad_image_header.h>
 #include <common/cc26xx/oad/ext_flash_layout.h>
-#endif
 
 #include <common/cc26xx/flash_interface/flash_interface.h>
 
@@ -130,9 +123,6 @@ static const uint8_t oadCharUUID[OAD_CHAR_CNT][ATT_UUID_SIZE] =
     TI_BASE_UUID_128(OAD_EXT_CTRL_UUID)
 };
 
-#ifdef MCUBOOT_ENABLE
-static struct image_header primary_mcubootHdr __attribute__((section(".primary_mcuboot_hdr")));
-#else
 // The current image's header is initialized in oad_image_header_app.c
 extern const imgHdr_t _imgHdr;
 
@@ -140,7 +130,6 @@ extern const imgHdr_t _imgHdr;
 // The stack's image header is located in the main function
 extern const imgHdr_t *stackImageHeader;
 #endif // STACK_LIBRARY
-#endif // MCUBOOT_ENABLE
 
 /*********************************************************************
  * Profile Attributes - variables
@@ -301,10 +290,6 @@ static uint32_t imageAddress = 0;
 static uint16_t imagePage = 0;
 static uint32_t candidateImageLength = 0xFFFFFFFF;
 static uint8_t  candidateImageType = OAD_IMG_TYPE_APP;
-
-
-static bool useExternalFlash = false;
-
 // Number of retries allowed on image ID
 static uint8_t imgIDRetries = OAD_IMG_ID_RETRIES;
 
@@ -360,14 +345,10 @@ static uint8_t oadSendNotification(uint16_t connHandle, gattCharCfg_t *charCfg,
                                     uint8_t charIdx, uint8_t *pData,
                                     uint8_t len);
 
-#ifdef MCUBOOT_ENABLE
-static uint8_t oadCheckImageID(struct image_header *idPld);
-#else
 static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld);
 static uint8_t oadCheckDL(void);
 static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader);
 static uint8_t oadFindCurrentImageHdr(void);
-#endif //MCUBOOT_ENABLE
 
 #ifndef EXCLUDE_OAD_OFFCHIP
 static bool oadCheckFactoryImage(void);
@@ -389,6 +370,7 @@ static void oadInactivityTimeout(void);
 static void oadInactivityTimeout(UArg param);
 #endif //FREERTOS
 
+static genericExtCtrlRsp_t* oadBuildGenericRsp(uint8_t opCode, uint8_t status);
 /*********************************************************************
  * PROFILE CALLBACKS
  */
@@ -489,11 +471,8 @@ uint8_t OAD_open(uint32_t oadTimeout)
     // Initialize the flash interface
     flash_init();
 
-    // This variable controls whether the OAD module uses internal or external flash memory
-    useExternalFlash = hasExternalFlash();
-
 #ifndef EXCLUDE_OAD_OFFCHIP
-    if(( status == OAD_SUCCESS) && (useExternalFlash == true))
+    if(status == OAD_SUCCESS)
     {
         // Create factory image if there isn't one
         if(!oadCheckFactoryImage())
@@ -559,18 +538,6 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
     {
         // Set status to true
         status = true;
-
-#ifdef MCUBOOT_ENABLE
-        // Populate the software version field
-        uint8_t swVerCombined[OAD_SW_VER_LEN] = {candidateImageHeader.ih_ver.iv_major,
-                                                 candidateImageHeader.ih_ver.iv_minor,
-                                                 HI_UINT16(candidateImageHeader.ih_ver.iv_revision),
-                                                 LO_UINT16(candidateImageHeader.ih_ver.iv_revision),
-                                                 };
-
-        // Copy into the return buffer
-        memcpy(swVer, swVerCombined, OAD_SW_VER_LEN);
-#else
         // Read in the current image header
         uint8_t currentImgPg = oadFindCurrentImageHdr();
         if(currentImgPg != OAD_IMG_PG_INVALID)
@@ -607,7 +574,6 @@ bool OAD_getSWVersion(uint8_t *swVer, uint8_t len)
           memcpy(swVer, &swVerCombined, OAD_SW_VER_LEN);
         }
 #endif //STACK_LIBRARY
-#endif //MCUBOOT_ENABLE
     }
     else
     {
@@ -973,12 +939,8 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
     numBlksInImgHdr = sizeof(imgHdr_t) / (oadImgBytesPerBlock)  +  \
                         (sizeof(imgHdr_t) % (oadImgBytesPerBlock) != 0);
 
-#ifdef MCUBOOT_ENABLE
-    struct image_header *idPld = (struct image_header *)(pValue);
-#else
     // Cast the pValue byte array to imgIdentifyPld_t
     imgIdentifyPld_t *idPld = (imgIdentifyPld_t *)(pValue);
-#endif /* MCUBOOT_ENABLE */
 
     // Validate the ID
     idStatus = oadCheckImageID(idPld);
@@ -993,26 +955,24 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
     // If image ID is accepted, set variables and pre-erase flash pages
     if(idStatus == OAD_SUCCESS && verifStatus == OAD_SUCCESS)
     {
+#ifdef EXCLUDE_OAD_OFFCHIP
 
-        if(!useExternalFlash)
-        {
-            imageAddress = 0;
-            imagePage = 0;
-            metaPage = 0;
-        }
-#ifndef EXCLUDE_OAD_OFFCHIP
-        else
-        {
-            ImageSizeInfo_t extFlInfo[OAD_EFL_MAX_META] = {0};
+        imageAddress = 0;
+        imagePage = 0;
+        metaPage = 0;
 
-            // Warning: oadFindExtFlMetaPage needs to be called first
-            // to populate the imageInfo structure.
-            oadFindExtFlMetaPage(&metaPage, extFlInfo);
-            // oadFindExtFlImgAddr will find a suitable region
-            // based on ext meta
-            imageAddress = oadFindExtFlImgAddr(extFlInfo , idPld->len);
-            imagePage = EXT_FLASH_PAGE(imageAddress);
-        }
+#else
+
+        ImageSizeInfo_t extFlInfo[OAD_EFL_MAX_META] = {0};
+
+        // Warning: oadFindExtFlMetaPage needs to be called first
+        // to populate the imageInfo structure.
+        oadFindExtFlMetaPage(&metaPage, extFlInfo);
+        // oadFindExtFlImgAddr will find a suitable region
+        // based on ext meta
+        imageAddress = oadFindExtFlImgAddr(extFlInfo , idPld->len);
+        imagePage = EXT_FLASH_PAGE(imageAddress);
+
 #endif //EXCLUDE_OAD_OFFCHIP
         // Calculate total number of OAD blocks, round up if needed
         oadBlkTot = candidateImageLength / (oadImgBytesPerBlock);
@@ -1074,7 +1034,11 @@ uint8_t oadImgIdentifyWrite(uint16_t connHandle, uint8_t *pValue, uint16_t len,
     imageAddress = 0;
     candidateImageLength = 0;
     imagePage = 0;
-    candidateImageType = OAD_IMG_TYPE_APP;
+    if ( candidateImageType != OAD_IMG_TYPE_APP )
+    {
+       candidateImageType = OAD_IMG_TYPE_APP;
+    }
+
     activeOadCxnHandle = LINKDB_CONNHANDLE_INVALID;
 
     // Remove the element from the head of the Queue
@@ -1135,19 +1099,11 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
     uint8_t expectedBlkSz;
     if(blkNum == (oadBlkTot- 1))
     {
-#ifdef MCUBOOT_ENABLE
-        if(candidateImageLength % (oadImgBytesPerBlock) != 0)
-        {
-            expectedBlkSz = (candidateImageLength % (oadImgBytesPerBlock)) + \
-                                OAD_BLK_NUM_HDR_SZ;
-        }
-#else
         if(candidateImageHeader.fixedHdr.len % (oadImgBytesPerBlock) != 0)
         {
             expectedBlkSz = (candidateImageHeader.fixedHdr.len % (oadImgBytesPerBlock)) + \
                                 OAD_BLK_NUM_HDR_SZ;
         }
-#endif // MCUBOOT_ENABLE
         else
         {
             expectedBlkSz = oadBlkSize;
@@ -1209,31 +1165,27 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
                 // if this block contains the last part of the header
                 memcpy(destAddr, pValue+OAD_BLK_NUM_HDR_SZ, remainder);
             }
-
-#ifndef MCUBOOT_ENABLE //MCUBOOT make validition instead of crc process
             status = oadValidateCandidateHdr((imgHdr_t * )&candidateImageHeader);
-#endif
             if(status == OAD_SUCCESS)
             {
                 // Calculate number of flash pages to pre-erase
-                uint32_t pageSize = (useExternalFlash)?EFL_PAGE_SIZE:INTFLASH_PAGE_SIZE;
-
-#ifdef MCUBOOT_ENABLE
-                status = oadEraseExtFlashPages(imagePage, candidateImageHeader.ih_img_size + candidateImageHeader.ih_hdr_size + MCUBOOT_TLV_SIZE, pageSize);
+#ifdef EXCLUDE_OAD_OFFCHIP
+                uint32_t pageSize =INTFLASH_PAGE_SIZE;
 #else
+                uint32_t pageSize = EFL_PAGE_SIZE;
+#endif //EXCLUDE_OAD_OFFCHIP
+
                 status = oadEraseExtFlashPages(imagePage, candidateImageHeader.fixedHdr.len, pageSize);
-#endif
                 // Cancel OAD due to flash erase error
                 if(FLASH_SUCCESS != status)
                 {
                     return (OAD_FLASH_ERR);
                 }
 
+#ifdef EXCLUDE_OAD_OFFCHIP
                 // at this point we have erased the user app
-                if(!useExternalFlash)
-                {
-                    userAppValid = false;
-                }
+                userAppValid = false;
+#endif //EXCLUDE_OAD_OFFCHIP
 
                 // Write a OAD_BLOCK to Flash.
                 status = writeFlashPg(imagePage, 0,
@@ -1277,16 +1229,13 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
             uint8_t page = 0xFF;
             uint32_t offset = 0;
 
-            if(useExternalFlash)
-            {
-                page = EXT_FLASH_PAGE(blkStartAddr); //(blkStartAddr >> 12);
-                offset = blkStartAddr & (~EXTFLASH_PAGE_MASK); //0x00000FFF);
-            }
-            else
-            {
-                page = FLASH_PAGE(blkStartAddr); //(blkStartAddr >> 13);
-                offset = blkStartAddr & (~INTFLASH_PAGE_MASK); //0x00001FFF);
-            }
+#ifdef EXCLUDE_OAD_OFFCHIP
+            page = FLASH_PAGE(blkStartAddr); //(blkStartAddr >> 13);
+            offset = blkStartAddr & (~INTFLASH_PAGE_MASK); //0x00001FFF);
+#else
+            page = EXT_FLASH_PAGE(blkStartAddr); //(blkStartAddr >> 12);
+            offset = blkStartAddr & (~EXTFLASH_PAGE_MASK); //0x00000FFF);
+#endif //EXCLUDE_OAD_OFFCHIP
 
             // Write a OAD_BLOCK to Flash.
             status = writeFlashPg(page, offset, pValue+OAD_BLK_NUM_HDR_SZ,
@@ -1313,10 +1262,6 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
     // Check if the OAD Image is complete.
     if (oadBlkNum == oadBlkTot)
     {
-#ifdef MCUBOOT_ENABLE
-        // The MCUboot bootloader will validate the image and will check CRC
-        return (OAD_DL_COMPLETE);
-#else
         // Run CRC check on new image.
         if (OAD_SUCCESS != oadCheckDL())
         {
@@ -1325,9 +1270,9 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
 
         }
 
+#ifdef EXCLUDE_OAD_OFFCHIP
         // Set copy status
-        if( !useExternalFlash &&
-            (candidateImageType == OAD_IMG_TYPE_STACK))
+        if(candidateImageType == OAD_IMG_TYPE_STACK)
         {
             uint8_t copyStatus = NEED_COPY;
             uint8_t flashStatus = OAD_SUCCESS;
@@ -1339,48 +1284,43 @@ uint8_t oadImgBlockWrite(uint16_t connHandle, uint8_t *pValue, uint8_t len)
                 return (OAD_FLASH_ERR);
             }
         }
+#else
+        // Copy the metadata to the meta page
+        imgHdr_t storedImgHdr;
+        readFlashPg(imagePage, 0, (uint8_t *)&storedImgHdr,
+                        OAD_IMG_HDR_LEN);
 
-        if(useExternalFlash)
+        // Populate ext imge info struct
+        ExtImageInfo_t extFlMetaHdr;
+
+        // ExtImgInfo and imgHdr are identical for the first
+        // EFL_META_COPY_SZ bytes
+        memcpy((uint8_t *)&extFlMetaHdr, (uint8_t *)&storedImgHdr,
+                EFL_META_COPY_SZ);
+
+
+        uint8_t imgIDExtFl[] = OAD_EXTFL_ID_VAL;
+        memcpy((uint8_t *)&extFlMetaHdr, imgIDExtFl, OAD_IMG_ID_LEN);
+
+        extFlMetaHdr.extFlAddr = imageAddress;
+        extFlMetaHdr.counter =  0x00000000;
+        //extFlMetaHdr.imgCpStat = NEED_COPY;
+
+        // Store the metadata
+        uint8_t flashStatus = OAD_SUCCESS;
+        flashStatus =  writeFlashPg(metaPage, 0,
+                                        (uint8_t *)&extFlMetaHdr,
+                                        sizeof(ExtImageInfo_t));
+
+        if(flashStatus != FLASH_SUCCESS)
         {
-
-            // Copy the metadata to the meta page
-            imgHdr_t storedImgHdr;
-            readFlashPg(imagePage, 0, (uint8_t *)&storedImgHdr,
-                            OAD_IMG_HDR_LEN);
-
-            // Populate ext imge info struct
-            ExtImageInfo_t extFlMetaHdr;
-
-            // ExtImgInfo and imgHdr are identical for the first
-            // EFL_META_COPY_SZ bytes
-            memcpy((uint8_t *)&extFlMetaHdr, (uint8_t *)&storedImgHdr,
-                    EFL_META_COPY_SZ);
-
-
-            uint8_t imgIDExtFl[] = OAD_EXTFL_ID_VAL;
-            memcpy((uint8_t *)&extFlMetaHdr, imgIDExtFl, OAD_IMG_ID_LEN);
-
-            extFlMetaHdr.extFlAddr = imageAddress;
-            extFlMetaHdr.counter =  0x00000000;
-            //extFlMetaHdr.imgCpStat = NEED_COPY;
-
-            // Store the metadata
-            uint8_t flashStatus = OAD_SUCCESS;
-            flashStatus =  writeFlashPg(metaPage, 0,
-                                            (uint8_t *)&extFlMetaHdr,
-                                            sizeof(ExtImageInfo_t));
-
-            if(flashStatus != FLASH_SUCCESS)
-            {
-                return (OAD_FLASH_ERR);
-            }
-
+            return (OAD_FLASH_ERR);
         }
+#endif //EXCLUDE_OAD_OFFCHIP
 
         // Indicate a successful download and CRC
         oadBlkNum = 0;
         return (OAD_DL_COMPLETE);
-#endif //MCUBOOT_ENABLE
     }
     else
     {
@@ -1405,7 +1345,8 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
     uint8_t *pCmdRsp = NULL;
     uint8_t pRspPldlen;
     uint8_t status = OAD_SUCCESS;
-
+    uint8_t rspStatus = OAD_SUCCESS;
+    genericExtCtrlRsp_t *rsp = NULL;
     switch(EXT_CTRL_OP_CODE(pData))
     {
         case OAD_EXT_CTRL_GET_BLK_SZ:
@@ -1432,32 +1373,15 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
         }
         case OAD_EXT_CTRL_IMG_CNT:
         {
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_IMG_CNT;
-
             if(state == OAD_CONFIG)
             {
-                rsp->status = OAD_SUCCESS;
+                rspStatus = OAD_SUCCESS;
             }
             else
             {
-                rsp->status = OAD_NOT_STARTED;
+                rspStatus = OAD_NOT_STARTED;
             }
-
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_IMG_CNT,rspStatus);
             break;
         }
         case OAD_EXT_CTRL_START_OAD:
@@ -1475,53 +1399,12 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
             }
             else
             {
-                // Cannot start an OAD before image ID
-                pRspPldlen = sizeof(genericExtCtrlRsp_t);
-                pCmdRsp = ICall_malloc(pRspPldlen);
-                if(pCmdRsp == NULL)
-                {
-                    // Ensure the allocation succeeded
-                    return (OAD_NO_RESOURCES);
-                }
-
-                genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-                rsp->cmdID = OAD_EXT_CTRL_START_OAD;
-                rsp->status = OAD_NOT_STARTED;
+                rsp = oadBuildGenericRsp(OAD_EXT_CTRL_START_OAD,OAD_NOT_STARTED);
             }
             break;
         }
         case OAD_EXT_CTRL_ENABLE_IMG:
         {
-
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_ENABLE_IMG;
-
-            // Setup the payload rsp
-            rsp->status = OAD_SUCCESS;
-#ifdef MCUBOOT_ENABLE
-            if (state == OAD_COMPLETE)
-            {
-                // We're about to reset, close the flash interface
-                flash_close();
-                if (oadTargetWriteCB != NULL)
-                {
-                    (*oadTargetWriteCB)(OAD_DL_COMPLETE_EVT, 0);
-                }
-            }
-#else
             uint16_t bim_var = 0x0001;
 
             // An enable command with zero payload means the
@@ -1541,139 +1424,44 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
                          * We can safely enable the active image
                          * image since its boundary has already been validated
                          */
-                        if(!useExternalFlash)
+#ifdef EXCLUDE_OAD_OFFCHIP
+                        if(candidateImageHeader.fixedHdr.imgType == OAD_IMG_TYPE_STACK)
                         {
-                            if(candidateImageHeader.fixedHdr.imgType == OAD_IMG_TYPE_STACK)
-                            {
-                                // Set BIM var to persist app
-                                bim_var = 0x0001;
-                            }
-                            else if(candidateImageHeader.fixedHdr.imgType == OAD_IMG_TYPE_APP)
-                            {
-                                // Set BIM var to usr app
-                                bim_var = 0x0101;
-                            }
+                            // Set BIM var to persist app
+                            bim_var = 0x0001;
+                        }
+                        if(candidateImageHeader.fixedHdr.imgType == OAD_IMG_TYPE_APP)
+                        {
+                            // Set BIM var to usr app
+                            bim_var = 0x0101;
+                        }
+#else
+                        /*
+                        * We can safely enable the active image
+                        * image since its boundary has already been validated
+                        */
+                        ExtImageInfo_t extFlMetaHdr;
+                        // Read in the meta header
+                        readFlashPg(metaPage, 0, (uint8_t *)&extFlMetaHdr,
+                                    sizeof(ExtImageInfo_t));
+
+                        extFlMetaHdr.fixedHdr.imgCpStat = NEED_COPY;
+                        extFlMetaHdr.fixedHdr.crcStat = CRC_VALID;
+                        eraseFlashPg(metaPage);
+
+                        if(writeFlashPg(metaPage,
+                                        0,
+                                        (uint8_t *)&extFlMetaHdr,
+                                        sizeof(ExtImageInfo_t)) == FLASH_SUCCESS)
+                        {
+                            rspStatus = FLASH_SUCCESS;
                         }
                         else
                         {
-                            /*
-                             * We can safely enable the active image
-                             * image since its boundary has already been validated
-                             */
-                            ExtImageInfo_t extFlMetaHdr;
-                            // Read in the meta header
-                            readFlashPg(metaPage, 0, (uint8_t *)&extFlMetaHdr,
-                                            sizeof(ExtImageInfo_t));
-
-                            extFlMetaHdr.fixedHdr.imgCpStat = NEED_COPY;
-                            extFlMetaHdr.fixedHdr.crcStat = CRC_VALID;
-                            eraseFlashPg(metaPage);
-
-                            if(writeFlashPg(metaPage,
-                                            0,
-                                            (uint8_t *)&extFlMetaHdr,
-                                             sizeof(ExtImageInfo_t)) == FLASH_SUCCESS)
-                            {
-                                rsp->status = FLASH_SUCCESS;
-                            }
-                            else
-                            {
-                                rsp->status = OAD_FLASH_ERR;
-                            }
+                            rspStatus = OAD_FLASH_ERR;
                         }
+#endif //EXCLUDE_OAD_OFFCHIP
 
-                        // We're about to reset, close the flash interface
-                        flash_close();
-
-                        if (oadTargetWriteCB != NULL)
-                        {
-                        (*oadTargetWriteCB)(OAD_DL_COMPLETE_EVT, bim_var);
-                        }
-                    }
-                    else
-                    {
-                        // Image type is not runnable
-                        rsp->status = OAD_INCOMPATIBLE_IMAGE;
-                    }
-                }
-                else
-                {
-                    rsp->status = OAD_DL_NOT_COMPLETE;
-                }
-            }
-            else if (len == sizeof(extImgEnableReq_t))
-            {
-                if(useExternalFlash)
-                {
-                    // Extended img enable can happen at any time and is only
-                    // supported on external flash
-                    extImgEnableReq_t *enablePld = (extImgEnableReq_t *) pData;
-                    bool imgFound = false;
-
-                    // Only app, stack, merged or stacklib images allowed
-                    if((enablePld->imgType <= OAD_IMG_TYPE_APP_STACK &&
-                        enablePld->imgType > OAD_IMG_TYPE_PERSISTENT_APP)
-                         ||
-                        (enablePld->imgType == OAD_IMG_TYPE_APPSTACKLIB))
-                    {
-                        /*
-                         * First find the meta page of the image to enable
-                         * This search is greedy, it will return the first
-                         * meta page that matches the requested params
-                         */
-                        ExtImageInfo_t extFlMetaHdr;
-                        for(uint8_t curPg = 0; curPg < OAD_EFL_MAX_META; ++curPg)
-                        {
-                            // Read in the meta header
-                            readFlashPg(curPg, 0, (uint8_t *)&extFlMetaHdr,
-                                            sizeof(ExtImageInfo_t));
-
-                            // Check to see if image matches the requested params
-                            if(extFlMetaHdr.fixedHdr.imgType == enablePld->imgType &&
-                                extFlMetaHdr.fixedHdr.imgNo == enablePld->imgNo    &&
-                                extFlMetaHdr.fixedHdr.techType == enablePld->techType)
-                            {
-
-                                // Copy the candidate img header into the buffer
-                                readFlashPg(EXT_FLASH_PAGE(extFlMetaHdr.extFlAddr), 0,
-                                            (uint8_t *)&candidateImageHeader,
-                                            sizeof(imgHdr_t));
-
-                                uint8_t status = oadValidateCandidateHdr((imgHdr_t * )&candidateImageHeader);
-
-                                if(status == OAD_SUCCESS)
-                                {
-                                    extFlMetaHdr.fixedHdr.imgCpStat = NEED_COPY;
-                                    extFlMetaHdr.fixedHdr.crcStat = CRC_VALID;
-                                    eraseFlashPg(curPg);
-
-                                    // Write the meta page back
-                                    if(writeFlashPg(curPg,
-                                                    0,
-                                                    (uint8_t *)&extFlMetaHdr,
-                                                     sizeof(ExtImageInfo_t)) == FLASH_SUCCESS)
-                                    {
-                                        rsp->status = FLASH_SUCCESS;
-                                    }
-                                    else
-                                    {
-                                        rsp->status = OAD_FLASH_ERR;
-                                    }
-
-                                    imgFound = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if(!imgFound)
-                    {
-                        // We didn't find a matching image in ext fl
-                        rsp->status = OAD_INCOMPATIBLE_IMAGE;
-                    }
-                    else
-                    {
                         // We're about to reset, close the flash interface
                         flash_close();
 
@@ -1682,49 +1470,121 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
                             (*oadTargetWriteCB)(OAD_DL_COMPLETE_EVT, bim_var);
                         }
                     }
+                    else
+                    {
+                        // Image type is not runnable
+                        rspStatus = OAD_INCOMPATIBLE_IMAGE;
+                    }
                 }
                 else
                 {
-                    // Extended imgEnable is not allowed on-chip
-                    rsp->status = OAD_EXT_CTRL_CMD_NOT_SUPPORTED;
+                    rspStatus = OAD_DL_NOT_COMPLETE;
                 }
             }
-#endif // MCUBOOT_ENABLE
+            else if (len == sizeof(extImgEnableReq_t))
+            {
+#ifdef EXCLUDE_OAD_OFFCHIP
+            // Extended imgEnable is not allowed on-chip
+            rspStatus = OAD_EXT_CTRL_CMD_NOT_SUPPORTED;
+#else
+            // Extended img enable can happen at any time and is only
+            // supported on external flash
+            extImgEnableReq_t *enablePld = (extImgEnableReq_t *) pData;
+            bool imgFound = false;
 
+            // Only app, stack, merged or stacklib images allowed
+            if((enablePld->imgType <= OAD_IMG_TYPE_APP_STACK &&
+                enablePld->imgType > OAD_IMG_TYPE_PERSISTENT_APP)
+                 ||
+                (enablePld->imgType == OAD_IMG_TYPE_APPSTACKLIB))
+            {
+                /*
+                 * First find the meta page of the image to enable
+                 * This search is greedy, it will return the first
+                 * meta page that matches the requested params
+                 */
+                ExtImageInfo_t extFlMetaHdr;
+                for(uint8_t curPg = 0; curPg < OAD_EFL_MAX_META; ++curPg)
+                {
+                    // Read in the meta header
+                    readFlashPg(curPg, 0, (uint8_t *)&extFlMetaHdr,
+                                    sizeof(ExtImageInfo_t));
+
+                    // Check to see if image matches the requested params
+                    if(extFlMetaHdr.fixedHdr.imgType == enablePld->imgType &&
+                        extFlMetaHdr.fixedHdr.imgNo == enablePld->imgNo    &&
+                        extFlMetaHdr.fixedHdr.techType == enablePld->techType)
+                    {
+
+                        // Copy the candidate img header into the buffer
+                        readFlashPg(EXT_FLASH_PAGE(extFlMetaHdr.extFlAddr), 0,
+                                    (uint8_t *)&candidateImageHeader,
+                                    sizeof(imgHdr_t));
+
+                        uint8_t status = oadValidateCandidateHdr((imgHdr_t * )&candidateImageHeader);
+
+                        if(status == OAD_SUCCESS)
+                        {
+                            extFlMetaHdr.fixedHdr.imgCpStat = NEED_COPY;
+                            extFlMetaHdr.fixedHdr.crcStat = CRC_VALID;
+                            eraseFlashPg(curPg);
+
+                            // Write the meta page back
+                            if(writeFlashPg(curPg,
+                                            0,
+                                            (uint8_t *)&extFlMetaHdr,
+                                             sizeof(ExtImageInfo_t)) == FLASH_SUCCESS)
+                            {
+                                rspStatus = FLASH_SUCCESS;
+                            }
+                            else
+                            {
+                                rspStatus = OAD_FLASH_ERR;
+                            }
+
+                            imgFound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(!imgFound)
+            {
+                // We didn't find a matching image in ext fl
+                rspStatus = OAD_INCOMPATIBLE_IMAGE;
+            }
+            else
+            {
+                // We're about to reset, close the flash interface
+                flash_close();
+
+                if (oadTargetWriteCB != NULL)
+                {
+                    (*oadTargetWriteCB)(OAD_DL_COMPLETE_EVT, bim_var);
+                }
+            }
+#endif //EXCLUDE_OAD_OFFCHIP
+
+            }
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_ENABLE_IMG,rspStatus);
             break;
         }
         case OAD_EXT_CTRL_CANCEL_OAD:
         {
-
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_CANCEL_OAD;
-
             if(state != OAD_IDLE)
             {
                 // Setup the payload rsp
-                rsp->status = OAD_SUCCESS;
+                rspStatus = OAD_SUCCESS;
                 // Reset the OAD state machine
                 oadResetState();
             }
             else
             {
                 // Cannot cancel inactive OAD
-                rsp->status = OAD_NOT_STARTED;
+                rspStatus = OAD_NOT_STARTED;
             }
-
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_CANCEL_OAD,rspStatus);
             break;
         }
         case OAD_EXT_CTRL_DISABLE_BLK_NOTIF:
@@ -1732,25 +1592,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
             // Stop sending block request notifications
             blkReqActive = false;
 
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_DISABLE_BLK_NOTIF;
-
-            // Setup the payload rsp
-            rsp->status = OAD_SUCCESS;
-
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_DISABLE_BLK_NOTIF,OAD_SUCCESS);
             break;
         }
         case OAD_EXT_CTRL_GET_SW_VER:
@@ -1783,25 +1625,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
         }
         case OAD_EXT_CTRL_GET_IMG_STAT:
         {
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_GET_IMG_STAT;
-
-            // Setup the payload rsp
-            rsp->status = oadGlobalStatus;
-
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_GET_IMG_STAT,oadGlobalStatus);
             break;
         }
         case OAD_EXT_CTRL_GET_PROF_VER:
@@ -1844,11 +1668,11 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             // Pack up the payload
             rsp->cmdID = OAD_EXT_CTRL_GET_DEV_TYPE;
-#ifndef DeviceFamily_CC23X0
+#ifndef DeviceFamily_CC23X0R5
             rsp->chipType = (uint8_t )ChipInfo_GetChipType();
             rsp->chipFamily = (uint8_t )ChipInfo_GetChipFamily();
             rsp->hardwareRev = (uint8_t )ChipInfo_GetHwRevision();
-#endif //DeviceFamily_CC23X0
+#endif //DeviceFamily_CC23X0R5
             rsp->rsvd = 0xFF;
 
             break;
@@ -1858,40 +1682,18 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
 
             if(pData[1] == OAD_IMG_INFO_ONCHIP)
             {
-#ifdef MCUBOOT_ENABLE // New OAD header
-                pRspPldlen = sizeof(imageInfoRspPld_t);
-
-                // Allocate memory for the ext ctrl rsp message
-                pCmdRsp = ICall_malloc(pRspPldlen);
-
-                if(pCmdRsp == NULL)
-                {
-                    // Ensure the allocation succeeded
-                    return (OAD_NO_RESOURCES);
-                }
-
-                imageInfoRspPld_t *rsp = (imageInfoRspPld_t *)pCmdRsp;
-
-                // Pack up the payload
-                rsp->cmdID = OAD_EXT_CTRL_GET_IMG_INFO;
-                // There is only image for on-chip
-                rsp->numImages = 0x01;
-                rsp->imgCpStat = 0;
-                rsp->crcStat = 0;
-                rsp->imgType = 0;
-                rsp->imgNo = 0;
-            }
-#else
                 // Read the active app's image header
                 uint8_t  appImageHdrPage = oadFindCurrentImageHdr();
                 uint32_t appImageHeaderAddr = FLASH_ADDRESS(appImageHdrPage, 0);
                 imgHdr_t *currentImageHeader = (imgHdr_t *)(appImageHeaderAddr);
 
                 // If on-chip and the user app is erased, use persist app
-                if(!useExternalFlash && (appImageHdrPage == OAD_IMG_PG_INVALID))
+#ifdef EXCLUDE_OAD_OFFCHIP
+                if(appImageHdrPage == OAD_IMG_PG_INVALID)
                 {
                     currentImageHeader = (imgHdr_t *)&_imgHdr;
                 }
+#endif //EXCLUDE_OAD_OFFCHIP
 
                 pRspPldlen = sizeof(imageInfoRspPld_t);
 
@@ -1966,7 +1768,6 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
                     flash_close();
                 }
             }
-#endif // MCUBOOT_ENABLE
             break;
         }
         case OAD_EXT_CTRL_ERASE_BONDS:
@@ -1974,23 +1775,7 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
             // Ext control commands for erasing bonds
             GAPBondMgr_SetParameter(GAPBOND_ERASE_ALLBONDS, 0, NULL);
 
-            pRspPldlen = sizeof(genericExtCtrlRsp_t);
-
-            // Allocate memory for the ext ctrl rsp message
-            pCmdRsp = ICall_malloc(pRspPldlen);
-
-            if(pCmdRsp == NULL)
-            {
-                // Ensure the allocation succeeded
-                return (OAD_NO_RESOURCES);
-            }
-
-            genericExtCtrlRsp_t *rsp = (genericExtCtrlRsp_t *)pCmdRsp;
-
-            rsp->status = OAD_SUCCESS;
-
-            // Pack up the payload
-            rsp->cmdID = OAD_EXT_CTRL_ERASE_BONDS;
+            rsp = oadBuildGenericRsp(OAD_EXT_CTRL_ERASE_BONDS, OAD_SUCCESS);
             break;
         }
         default:
@@ -2009,13 +1794,23 @@ uint8_t oadProcessExtControlCmd(uint16_t connHandle, uint8_t  *pData,
         }
     }
 
-    if(pCmdRsp != NULL)
+    if(pCmdRsp != NULL || rsp != NULL)
     {
-        // Send out the populated command structure
-         status = oadSendNotification(activeOadCxnHandle, oadExtCtrlConfig,
-                                        OAD_IDX_EXT_CTRL, pCmdRsp, pRspPldlen);
-        ICall_free(pCmdRsp);
 
+        if(pCmdRsp != NULL)
+        {
+            // Send out the populated command structure
+            status = oadSendNotification(activeOadCxnHandle, oadExtCtrlConfig,
+                                         OAD_IDX_EXT_CTRL, pCmdRsp, pRspPldlen);
+            ICall_free(pCmdRsp);
+        }
+        else
+        {
+            // Send out the populated command structure
+            status = oadSendNotification(activeOadCxnHandle, oadExtCtrlConfig,
+                                         OAD_IDX_EXT_CTRL, (uint8_t *)rsp, sizeof(genericExtCtrlRsp_t));
+            ICall_free(rsp);
+        }
     }
     else
     {
@@ -2067,7 +1862,6 @@ uint8_t oadEnqueueMsg(oadEvent_e event, uint16_t connHandle,
     return (status);
 }
 
-#ifndef MCUBOOT_ENABLE
 /*********************************************************************
  * @fn      oadFindCurrentImageHdr
  *
@@ -2133,7 +1927,7 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
     uint8_t status = OAD_SUCCESS;
     imgHdr_t *currentImageHeader = NULL;
     // If running image in app+stack library, then use it's image header to validate
-    if(_imgHdr.fixedHdr.imgType == OAD_IMG_TYPE_APPSTACKLIB)
+    if(_imgHdr.fixedHdr.imgType == OAD_IMG_TYPE_APPSTACKLIB && currentImageHeader == NULL)
     {
         currentImageHeader = (imgHdr_t *)&_imgHdr;
     }
@@ -2148,10 +1942,12 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
         }
 
         // If on-chip and the user app is erased, use persist app
-        else if(!useExternalFlash && (appImageHdrPage == OAD_IMG_PG_INVALID))
+#ifdef EXCLUDE_OAD_OFFCHIP
+        else if(appImageHdrPage == OAD_IMG_PG_INVALID)
         {
             currentImageHeader = (imgHdr_t *)&_imgHdr;
         }
+#endif //EXCLUDE_OAD_OFFCHIP
         else
         {
             return OAD_FLASH_ERR;
@@ -2162,7 +1958,8 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
      * for off-chip OAD the tech type must match with the exception of
      * merged images which can be of a different tech type
      */
-    if(!useExternalFlash && (receivedHeader->fixedHdr.imgType == OAD_IMG_TYPE_APP_STACK))
+#ifdef EXCLUDE_OAD_OFFCHIP
+    if(receivedHeader->fixedHdr.imgType == OAD_IMG_TYPE_APP_STACK)
     {
         if(currentImageHeader->fixedHdr.techType !=  receivedHeader->fixedHdr.techType          ||
 #ifndef STACK_LIBRARY
@@ -2173,6 +1970,8 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
             status = OAD_INCOMPATIBLE_IMAGE;
         }
     }
+#endif //EXCLUDE_OAD_OFFCHIP
+
 
     // Check that the incoming image is page aligned
     if((receivedHeader->imgPayload.startAddr & (INTFLASH_PAGE_SIZE - 1)) != 0)
@@ -2213,52 +2012,49 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
          * In off-chip OAD the stack can grow so long as it doesn't overwrite
          * the last address of the current application
          */
-        if(!useExternalFlash)
+#ifdef EXCLUDE_OAD_OFFCHIP
+        if(receivedHeader->len > stackImageHeader->startAddr)
         {
-            if(receivedHeader->len > stackImageHeader->startAddr)
+            status = OAD_IMAGE_TOO_BIG;
+        }
+
+        // Check that the stack will not overwrite the persistent app
+        if(receivedHeader->imgEndAddr + nvSize > _imgHdr.startAddr)
+        {
+            status = OAD_IMAGE_TOO_BIG;
+        }
+#else
+        if(currentImageHeader->imgType != OAD_IMG_TYPE_APP_STACK)
+        {
+            /*
+             * If the current image is not of merged type then its
+             * end addr is the end of the app. The stack cannot overwrite
+             * the app
+             */
+            if(receivedHeader->startAddr <= currentImageHeader->imgEndAddr)
             {
                 status = OAD_IMAGE_TOO_BIG;
             }
 
-            // Check that the stack will not overwrite the persistent app
-            if(receivedHeader->imgEndAddr + nvSize > _imgHdr.startAddr)
+            // Check that the stack will not overwrite the BIM
+            if(receivedHeader->imgEndAddr + nvSize > BIM_START)
             {
                 status = OAD_IMAGE_TOO_BIG;
             }
         }
         else
         {
-            if(currentImageHeader->imgType != OAD_IMG_TYPE_APP_STACK)
+            /*
+             * If the current image is of merged type then its not possible
+             * to know exactly where the app ends, just make sure
+             * ICALL_STACK0 isn't violated.
+             */
+            if(receivedHeader->startAddr < stackImageHeader->stackStartAddr)
             {
-                /*
-                 * If the current image is not of merged type then its
-                 * end addr is the end of the app. The stack cannot overwrite
-                 * the app
-                 */
-                if(receivedHeader->startAddr <= currentImageHeader->imgEndAddr)
-                {
-                    status = OAD_IMAGE_TOO_BIG;
-                }
-
-                // Check that the stack will not overwrite the BIM
-                if(receivedHeader->imgEndAddr + nvSize > BIM_START)
-                {
-                    status = OAD_IMAGE_TOO_BIG;
-                }
-            }
-            else
-            {
-                /*
-                 * If the current image is of merged type then its not possible
-                 * to know exactly where the app ends, just make sure
-                 * ICALL_STACK0 isn't violated.
-                 */
-                if(receivedHeader->startAddr < stackImageHeader->stackStartAddr)
-                {
-                    status = OAD_IMAGE_TOO_BIG;
-                }
+                status = OAD_IMAGE_TOO_BIG;
             }
         }
+#endif //EXCLUDE_OAD_OFFCHIP
 
         /*
          *  In on-chip use cases this will check that the persistent app's
@@ -2276,7 +2072,6 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
     // Merged image types and images not targed to run on CC26xx are not checked
     return (status);
 }
-#endif //MCUBOOT_ENABLE
 
 /*********************************************************************
  * @fn      oadCheckImageID
@@ -2287,17 +2082,6 @@ static uint8_t oadValidateCandidateHdr(imgHdr_t *receivedHeader)
  *
  * @return  headerValid - SUCCESS or fail code
  */
-#ifdef MCUBOOT_ENABLE
-static uint8_t oadCheckImageID(struct image_header *idPld)
-{
-    uint8_t status = OAD_SUCCESS;
-    if(status == OAD_SUCCESS)
-    {
-        candidateImageLength = idPld->ih_img_size;
-    }
-    return (status);
-}
-#else
 static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
 {
     uint8_t status = OAD_SUCCESS;
@@ -2314,10 +2098,12 @@ static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
     }
 
     // If on-chip and the user app is erased, use persist app
-    if(!useExternalFlash && (appImageHdrPage == OAD_IMG_PG_INVALID))
+#ifdef EXCLUDE_OAD_OFFCHIP
+    if(appImageHdrPage == OAD_IMG_PG_INVALID)
     {
         currentImageHeader = (imgHdr_t *)&_imgHdr;
     }
+#endif //EXCLUDE_OAD_OFFCHIP
 
     // Validate the Image header preamble
     if(memcmp(&imgIDExpected, idPld->imgID, OAD_IMG_ID_LEN))
@@ -2349,59 +2135,53 @@ static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
     }
     else if (idPld->imgType == OAD_IMG_TYPE_STACK)
     {
-        if(!useExternalFlash)
+#ifdef EXCLUDE_OAD_OFFCHIP
+        /*
+         * On-chip OAD, stack only OAD must be followed by app only oad
+         * (user application is erased), thus we must only check that
+         * the proposed stack can fit within the space between the existing
+         * scratch space (usr app region)
+         */
+        if(idPld->len > (stackImageHeader->stackStartAddr - 1))
         {
-            /*
-             * On-chip OAD, stack only OAD must be followed by app only oad
-             * (user application is erased), thus we must only check that
-             * the proposed stack can fit within the space between the existing
-             * scratch space (usr app region)
-             */
-            if(idPld->len > (stackImageHeader->stackStartAddr - 1))
+          status = OAD_IMAGE_TOO_BIG;
+        }
+#else
+        /*
+         * Off-chip OAD, stack only can be done without changing the
+         * existing application, must fit between app end and BIM_START
+         */
+        if(currentImageHeader->imgType != OAD_IMG_TYPE_APP_STACK)
+        {
+            if((idPld->len - 1) >= (BIM_START - currentImageHeader->imgEndAddr - 1))
             {
               status = OAD_IMAGE_TOO_BIG;
             }
         }
         else
         {
-            /*
-             * Off-chip OAD, stack only can be done without changing the
-             * existing application, must fit between app end and BIM_START
-             */
-            if(currentImageHeader->imgType != OAD_IMG_TYPE_APP_STACK)
+            if((idPld->len - 1) >= (BIM_START - stackImageHeader->stackStartAddr - 1))
             {
-                if((idPld->len - 1) >= (BIM_START - currentImageHeader->imgEndAddr - 1))
-                {
-                  status = OAD_IMAGE_TOO_BIG;
-                }
-            }
-            else
-            {
-                if((idPld->len - 1) >= (BIM_START - stackImageHeader->stackStartAddr - 1))
-                {
-                  status = OAD_IMAGE_TOO_BIG;
-                }
+              status = OAD_IMAGE_TOO_BIG;
             }
         }
+#endif //EXCLUDE_OAD_OFFCHIP
     }
     else if (idPld->imgType == OAD_IMG_TYPE_APP_STACK)
 #else
     if (idPld->imgType == OAD_IMG_TYPE_APP_STACK)
 #endif
     {
-        if(!useExternalFlash)
+#ifdef EXCLUDE_OAD_OFFCHIP
+        // On-chip OAD doesn't support App + Stack merged images
+        status = OAD_INCOMPATIBLE_IMAGE;
+#else
+        // Off-chip OAD
+        if((idPld->len - 1) > (BIM_START - 1))
         {
-            // On-chip OAD doesn't support App + Stack merged images
-            status = OAD_INCOMPATIBLE_IMAGE;
+            status = OAD_IMAGE_TOO_BIG;
         }
-        else
-        {
-            // Off-chip OAD
-            if((idPld->len - 1) > (BIM_START - 1))
-            {
-                status = OAD_IMAGE_TOO_BIG;
-            }
-        }
+#endif //EXCLUDE_OAD_OFFCHIP
     }
     else if (idPld->imgType == OAD_IMG_TYPE_PERSISTENT_APP     ||
              idPld->imgType == OAD_IMG_TYPE_BIM         ||
@@ -2422,7 +2202,6 @@ static uint8_t oadCheckImageID(imgIdentifyPld_t *idPld)
     }
     return (status);
 }
-#endif // MCUBOOT_ENABLE
 
 /*********************************************************************
  * @fn      oadGetNextBlockReq
@@ -2768,7 +2547,6 @@ static uint32_t oadFindFactImgAddr()
     return (EFL_FLASH_SIZE - EXT_FLASH_ADDRESS(numFlashPages + 1, 0));
 }
 #endif // EXCLUDE_OAD_OFFCHIP
-#ifndef MCUBOOT_ENABLE
 /*********************************************************************
  * @fn      oadCheckDL
  *
@@ -2810,14 +2588,11 @@ static uint8_t oadCheckDL(void)
 
     //uint8_t page, uint32_t pageSize, uint16_t offset, bool useExtFl
     // Calculate CRC of downloaded image.
-    if(useExternalFlash)
-    {
-        crcCalculated = CRC32_calc(imagePage, EFL_PAGE_SIZE, 0, imgHdr.fixedHdr.len, useExternalFlash);
-    }
-    else
-    {
-        crcCalculated = CRC32_calc(imagePage, INTFLASH_PAGE_SIZE, 0, imgHdr.fixedHdr.len, useExternalFlash);
-    }
+#ifdef EXCLUDE_OAD_OFFCHIP
+    crcCalculated = CRC32_calc(imagePage, INTFLASH_PAGE_SIZE, 0, imgHdr.fixedHdr.len, 0);
+#else
+    crcCalculated = CRC32_calc(imagePage, EFL_PAGE_SIZE, 0, imgHdr.fixedHdr.len, 1);
+#endif //EXCLUDE_OAD_OFFCHIP
 
     if (crcCalculated == crcFromHdr)
     {
@@ -2825,12 +2600,12 @@ static uint8_t oadCheckDL(void)
         crcStatus = CRC_VALID;
 
         // Only write to the CRC flag if using internal flash
-        if(!useExternalFlash)
-        {
-            // Write CRC status back to flash
-            writeFlashPg(imagePage, CRC_STAT_OFFSET, &crcStatus,
-                            sizeof(uint8_t));
-        }
+#ifdef EXCLUDE_OAD_OFFCHIP
+        // Write CRC status back to flash
+        writeFlashPg(imagePage, CRC_STAT_OFFSET, &crcStatus,
+                        sizeof(uint8_t));
+#endif //EXCLUDE_OAD_OFFCHIP
+
         status = OAD_SUCCESS;
 
     }
@@ -2841,7 +2616,6 @@ static uint8_t oadCheckDL(void)
 
     return (status);
 }
-#endif // MCUBOOT_ENABLE
 /*********************************************************************
  * Callback Functions - These run in the BLE-Stack context!
  *********************************************************************/
@@ -3220,5 +2994,22 @@ void OAD_getProgressInfo(imgProgressInfo_t* pImgInfo)
 }
 #endif
 
+genericExtCtrlRsp_t* oadBuildGenericRsp(uint8_t opCode, uint8_t status)
+{
+    uint8_t pRspPldlen = sizeof(genericExtCtrlRsp_t);
+    // Allocate memory for the ext ctrl rsp message
+    genericExtCtrlRsp_t *pCmdRsp = ICall_malloc(pRspPldlen);
+
+    if(pCmdRsp == NULL)
+    {
+        return (NULL);
+    }
+
+    // Pack up the payload
+    pCmdRsp->cmdID = opCode;
+    pCmdRsp->status = status;
+
+    return pCmdRsp;
+}
 /*********************************************************************
 *********************************************************************/

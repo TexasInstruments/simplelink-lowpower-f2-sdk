@@ -11,7 +11,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2023, Texas Instruments Incorporated
+ Copyright (c) 2005-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ static uint8 registeredKeysTaskID = NO_TASK_ID;
  * EXTERNAL FUNCTIONS
  */
 
-extern uint8 LL_PseudoRand( uint8 *, uint8 );
+extern uint8 LL_Rand( uint8 *, uint8 );
 
 #if   defined FEATURE_ABL
   #include "../../util/abl/app/sbl_app.c"
@@ -144,7 +144,7 @@ uint16 Onboard_rand( void )
 {
   uint16 randNum;
 
-  LL_PseudoRand( (uint8 *)&randNum, 2 );
+  LL_Rand( (uint8 *)&randNum, 2 );
 
   return ( randNum );
 }

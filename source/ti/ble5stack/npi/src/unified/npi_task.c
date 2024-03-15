@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2015-2023, Texas Instruments Incorporated
+ Copyright (c) 2015-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -312,10 +312,10 @@ void NPITask_Fxn(UArg a0, UArg a1)
     ICall_EntityID dest;
 
 #ifdef ICALL_EVENTS
-    ICall_enrollService(ICALL_SERVICE_CLASS_NPI, NULL, &npiAppEntityID,
+    ICall_enrollService(ICALL_SERVICE_CLASS_UNPI, NULL, &npiAppEntityID,
                         &syncEvent);
 #else //!ICALL_EVENTS
-    ICall_enrollService(ICALL_SERVICE_CLASS_NPI, NULL, &npiAppEntityID, &npiSem);
+    ICall_enrollService(ICALL_SERVICE_CLASS_UNPI, NULL, &npiAppEntityID, &npiSem);
 #endif //ICALL_EVENTS
 #endif //USE_ICALL
 
@@ -896,7 +896,10 @@ static uint8_t * NPITask_SerializeFrame(_npiFrame_t *pNPIMsg)
         pSerMsg[3] = pNPIMsg->cmd1;
 
         // Copy Data Payload
-        memcpy(&pSerMsg[4],pNPIMsg->pData,pNPIMsg->dataLen);
+        if (pNPIMsg->dataLen && pNPIMsg->pData)
+        {
+          memcpy(&pSerMsg[4],pNPIMsg->pData,pNPIMsg->dataLen);
+        }
     }
     else
     {

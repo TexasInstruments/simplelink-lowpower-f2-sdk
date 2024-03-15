@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -25,11 +25,7 @@
  *     <http://eprint.iacr.org/2004/342.pdf>
  */
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
+#include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_ECP_C)
 
@@ -102,7 +98,7 @@ static int ecc_conv_scalar_to_mpi( uint8_t * scalar, size_t scalarSize, mbedtls_
         return ret;
     }
 
-    X->s = 1; /*unsigned*/
+    X->MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
     mbedtls_free(outArr);
 
@@ -136,7 +132,7 @@ static int ecc_conv_mpi_to_scalar( const mbedtls_mpi * X, uint8_t *scalar, size_
         CC_PAL_LOG_ERR("Error - failed to reverse memcpy, status = %d\n",status);
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     }
-    *scalarSize = (X->n * sizeof(mbedtls_mpi_uint));
+    *scalarSize = (X->MBEDTLS_PRIVATE(n) * sizeof(mbedtls_mpi_uint));
 
     mbedtls_free(outArr);
 
@@ -167,7 +163,7 @@ static int ecp_mont_mul( mbedtls_ecp_point *R,
     }
 
     mbedtls_zeroize_internal(px, CC_EC_MONT_MOD_SIZE_IN_BYTES);
-    ret = ecc_conv_mpi_to_scalar(&P->X, px, &pxSize);
+    ret = ecc_conv_mpi_to_scalar(&P->MBEDTLS_PRIVATE(X), px, &pxSize);
     if (ret != 0)
     {
         return ret;
@@ -193,14 +189,14 @@ static int ecp_mont_mul( mbedtls_ecp_point *R,
     }
     /* prepare the output point R*/
     /* Y is not used in the result, and Z is 1*/
-    ret =  mbedtls_mpi_lset( &R->Z, 1 );
+    ret =  mbedtls_mpi_lset( &R->MBEDTLS_PRIVATE(Z), 1 );
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - could not set R.z\n");
         return MBEDTLS_ERR_ECP_ALLOC_FAILED;
     }
-    mbedtls_mpi_free(&R->Y);
-    ret = ecc_conv_scalar_to_mpi(resPoint, resPointSize, &R->X);
+    mbedtls_mpi_free(&R->MBEDTLS_PRIVATE(Y));
+    ret = ecc_conv_scalar_to_mpi(resPoint, resPointSize, &R->MBEDTLS_PRIVATE(X));
     if (ret != 0)
     {
         return ret;
@@ -241,7 +237,7 @@ static int ecp_wrst_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
         CC_PAL_LOG_ERR("Error - failed to allocate memory for temporary buffer\n");
         return MBEDTLS_ERR_ECP_ALLOC_FAILED;
     }
-    ret = mbedtls_mpi_grow(&R->X, CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
+    ret = mbedtls_mpi_grow(&R->MBEDTLS_PRIVATE(X), CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R\n");
@@ -249,16 +245,16 @@ static int ecp_wrst_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
         return MBEDTLS_ERR_ECP_ALLOC_FAILED;
     }
 
-    ret = mbedtls_mpi_grow(&R->Y, CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
+    ret = mbedtls_mpi_grow(&R->MBEDTLS_PRIVATE(Y), CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R.x\n");
         mbedtls_free(tmpBuf);
-        mbedtls_mpi_free(&R->X);
+        mbedtls_mpi_free(&R->MBEDTLS_PRIVATE(X));
         return MBEDTLS_ERR_ECP_ALLOC_FAILED;
     }
 
-    rc = PkaEcWrstScalarMult(pDomain, m->p, m->n, P->X.p, P->Y.p, R->X.p, R->Y.p, tmpBuf);
+    rc = PkaEcWrstScalarMult(pDomain, m->MBEDTLS_PRIVATE(p), m->MBEDTLS_PRIVATE(n), P->MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(p), P->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(p), R->MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(p), R->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(p), tmpBuf);
     mbedtls_free(tmpBuf);
     if (rc != CC_SUCCESS)
     {
@@ -266,12 +262,12 @@ static int ecp_wrst_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
         return error_mapping_cc_to_mbedtls_ecc(rc);
     }
 
-    ret = mbedtls_mpi_lset( &R->Z, 1 );
+    ret = mbedtls_mpi_lset( &R->MBEDTLS_PRIVATE(Z), 1 );
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R\n");
-        mbedtls_mpi_free(&R->X);
-        mbedtls_mpi_free(&R->Y);
+        mbedtls_mpi_free(&R->MBEDTLS_PRIVATE(X));
+        mbedtls_mpi_free(&R->MBEDTLS_PRIVATE(Y));
         return MBEDTLS_ERR_ECP_ALLOC_FAILED;
     }
     return (0);
@@ -298,7 +294,7 @@ int cc_ecp_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 
     }
     /* Common sanity checks */
-    if( mbedtls_mpi_cmp_int( &P->Z, 1 ) != 0 )
+    if( mbedtls_mpi_cmp_int( &P->MBEDTLS_PRIVATE(Z), 1 ) != 0 )
     {
         CC_PAL_LOG_ERR("Error - trying to multiply the infinity point\n");
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
@@ -357,7 +353,7 @@ static int ecp_mont_gen_keypair_base(
     if (G != NULL) /* Base point was supplied by application*/
     {
         mbedtls_zeroize_internal(px, CC_EC_MONT_MOD_SIZE_IN_BYTES);
-        ret = ecc_conv_mpi_to_scalar(&G->X, px, &pxSize);
+        ret = ecc_conv_mpi_to_scalar(&G->MBEDTLS_PRIVATE(X), px, &pxSize);
         if (ret != 0)
         {
             return ret;
@@ -401,14 +397,14 @@ static int ecp_mont_gen_keypair_base(
     }
     /* prepare the output point Q*/
     /* Y is not used in the result, and Z is 1*/
-    ret =  mbedtls_mpi_lset( &Q->Z, 1 );
+    ret =  mbedtls_mpi_lset( &Q->MBEDTLS_PRIVATE(Z), 1 );
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - could not set Q.z\n");
         goto END;
     }
-    mbedtls_mpi_free(&Q->Y);
-    ret = ecc_conv_scalar_to_mpi(resPoint, resPointSize, &Q->X);
+    mbedtls_mpi_free(&Q->MBEDTLS_PRIVATE(Y));
+    ret = ecc_conv_scalar_to_mpi(resPoint, resPointSize, &Q->MBEDTLS_PRIVATE(X));
     if (ret != 0)
     {
         goto END;
@@ -497,21 +493,21 @@ static int ecp_wrst_gen_keypair_base( mbedtls_ecp_group *grp,
     pRndContext->rndGenerateVectFunc = (CCRndGenerateVectWorkFunc_t)f_rng;
     pRndContext->rndState = p_rng;
 
-    ret = mbedtls_mpi_grow(&Q->X, CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
+    ret = mbedtls_mpi_grow(&Q->MBEDTLS_PRIVATE(X), CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R\n");
         goto END;
     }
-    Q->X.s = 1; /*unsigned*/
+    Q->MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
-    ret = mbedtls_mpi_grow(&Q->Y, CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
+    ret = mbedtls_mpi_grow(&Q->MBEDTLS_PRIVATE(Y), CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R.x\n");
         goto END;
     }
-    Q->Y.s = 1; /*unsigned*/
+    Q->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
     ret = mbedtls_mpi_grow(d, CALC_FULL_32BIT_WORDS(pDomain->modSizeInBits));
     if (ret != 0)
@@ -520,11 +516,11 @@ static int ecp_wrst_gen_keypair_base( mbedtls_ecp_group *grp,
         goto END;
     }
 
-    d->s = 1; /*unsigned*/
+    d->MBEDTLS_PRIVATE(s) = 1; /*unsigned*/
 
     if (G != NULL) /* Base point was supplied by the application*/
     {
-        rc = CC_EcpkiKeyPairGenerateBase(pRndContext, pDomain, G->X.p, G->Y.p, pUserPrivKey, pUserPublKey, pTempBuff, NULL);
+        rc = CC_EcpkiKeyPairGenerateBase(pRndContext, pDomain, G->MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(p), G->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(p), pUserPrivKey, pUserPublKey, pTempBuff, NULL);
     }
     else
     {
@@ -539,11 +535,11 @@ static int ecp_wrst_gen_keypair_base( mbedtls_ecp_group *grp,
 
     pPrivKey = (CCEcpkiPrivKey_t *)pUserPrivKey->PrivKeyDbBuff;
     pPublicKey = (CCEcpkiPublKey_t *)pUserPublKey->PublKeyDbBuff;
-    CC_PalMemCopy(d->p, pPrivKey->PrivKey, CALC_FULL_BYTES(pDomain->modSizeInBits));
-    CC_PalMemCopy(Q->X.p, pPublicKey->x, CALC_FULL_BYTES(pDomain->modSizeInBits));
-    CC_PalMemCopy(Q->Y.p, pPublicKey->y, CALC_FULL_BYTES(pDomain->modSizeInBits));
+    CC_PalMemCopy(d->MBEDTLS_PRIVATE(p), pPrivKey->PrivKey, CALC_FULL_BYTES(pDomain->modSizeInBits));
+    CC_PalMemCopy(Q->MBEDTLS_PRIVATE(X).MBEDTLS_PRIVATE(p), pPublicKey->x, CALC_FULL_BYTES(pDomain->modSizeInBits));
+    CC_PalMemCopy(Q->MBEDTLS_PRIVATE(Y).MBEDTLS_PRIVATE(p), pPublicKey->y, CALC_FULL_BYTES(pDomain->modSizeInBits));
 
-    ret = mbedtls_mpi_lset( &Q->Z, 1 );
+    ret = mbedtls_mpi_lset( &Q->MBEDTLS_PRIVATE(Z), 1 );
     if (ret != 0)
     {
         CC_PAL_LOG_ERR("Error - failed to allocate memory for R\n");

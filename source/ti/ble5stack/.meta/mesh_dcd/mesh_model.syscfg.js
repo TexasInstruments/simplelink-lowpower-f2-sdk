@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2023 Texas Instruments Incorporated - http://www.ti.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,29 +110,31 @@ function onSigModelChange(inst,ui)
 {
     const SigModelData = system.getScript("/ti/ble5stack/ble_common.js").sigModelMapping;
 
-    if(inst.sigModelName =="HEALTH_SRV" || inst.sigModelName =="HEALTH_CLI"){
-        ui.healthCbk.hidden = false;
-        ui.modelCbStructName.hidden = true;
-        ui.healthSrvMaxFaults.hidden = false;
-        ui.userDataName.hidden = true;
-        ui.userDataStructType.hidden = true;
-        inst.healthCbk = SigModelData[inst.sigModelName.toLowerCase()].healthSrvCbk;
-        inst.healthSrvMaxFaults = SigModelData[inst.sigModelName.toLowerCase()].maxFaults;
-        inst.userDataName = "";
-        inst.userDataStructType = "";
-        inst.modelCbStructName = "";
-    }
-    else
-    {
-        ui.healthCbk.hidden = true;
-        ui.modelCbStructName.hidden = false;
-        ui.healthSrvMaxFaults.hidden = true;
-        ui.userDataName.hidden = false;
-        ui.userDataStructType.hidden = false;
-        ui.userDataStructType.readOnly = true;
-        inst.userDataName = SigModelData[inst.sigModelName.toLowerCase()].defaultUserData;
-        inst.userDataStructType = SigModelData[inst.sigModelName.toLowerCase()].userDataStructType;
-        inst.modelCbStructName = SigModelData[inst.sigModelName.toLowerCase()].modelCbStructName;
+    if (SigModelData[inst.sigModelName.toLowerCase()] != undefined) {
+        if (inst.sigModelName == "HEALTH_SRV" || inst.sigModelName == "HEALTH_CLI") {
+            ui.healthCbk.hidden = false;
+            ui.modelCbStructName.hidden = true;
+            ui.healthSrvMaxFaults.hidden = false;
+            ui.userDataName.hidden = true;
+            ui.userDataStructType.hidden = true;
+            inst.healthCbk = SigModelData[inst.sigModelName.toLowerCase()].healthSrvCbk;
+            inst.healthSrvMaxFaults = SigModelData[inst.sigModelName.toLowerCase()].maxFaults;
+            inst.userDataName = "";
+            inst.userDataStructType = "";
+            inst.modelCbStructName = "";
+        }
+        else
+        {
+            ui.healthCbk.hidden = true;
+            ui.modelCbStructName.hidden = false;
+            ui.healthSrvMaxFaults.hidden = true;
+            ui.userDataName.hidden = false;
+            ui.userDataStructType.hidden = false;
+            ui.userDataStructType.readOnly = true;
+            inst.userDataName = SigModelData[inst.sigModelName.toLowerCase()].defaultUserData;
+            inst.userDataStructType = SigModelData[inst.sigModelName.toLowerCase()].userDataStructType;
+            inst.modelCbStructName = SigModelData[inst.sigModelName.toLowerCase()].modelCbStructName;
+        }
     }
 }
 
@@ -406,7 +408,12 @@ function validate(inst, validation)
                             validation.logError("This Vendor Id already exists in the current element" ,inst,"vendorID");
                         }
 					}
-				}else{//SIG MODEL
+				} else {//SIG MODEL
+          const SigModelData = Common.sigModelMapping;
+          if (SigModelData[inst.sigModelName.toLowerCase()] === undefined) {
+            validation.logError("This SIG Model is unsupported", inst, "sigModelName");
+          }
+
 					if(sigArrayNoDup.indexOf(modelObj.sigModelName)<0){
 						sigArrayNoDup.push(modelObj.sigModelName);
 					}else{

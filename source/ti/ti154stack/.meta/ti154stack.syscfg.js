@@ -506,6 +506,52 @@ function getLibs(inst)
 }
 
 /*
+ *  ======== getOpts ========
+ */
+function getOpts(mod) {
+    const tmp_mod = system.modules["/ti/ti154stack/ti154stack"] ;
+    const toad_mod = system.modules["/ti/ti154stack/oad_config/toad_config/ti154stack_toad_config"]
+    let result = []
+
+    if (system.getRTOS() === "tirtos7") {
+        result.push(
+            /*
+            * The following -D requirements are unconditional.  Note that they
+            * appear to only be used to configure the OSAL heap, and likely
+            * could/should be reviewed and ideally removed.
+            *
+            * For example, -DTIRTOS7_SUPPORT only appears to be used in
+            * ti/ti154stack/common/heapmgr/rtos_heaposal.h, and only to support (no
+            * longer supported!) BIOS 6/XDC.
+            */
+            "-DTIRTOS7_SUPPORT",
+            "-DHEAPMGR_CONFIG=0x80",
+            "-DHEAPMGR_SIZE=0x0"
+        );
+    }
+    if (tmp_mod.$static.dutyCycleEnable) {
+        result.push(
+            "-DMAC_DUTY_CYCLE_CHECKING",
+            "-DMAC_DUTY_CYCLE_THRESHOLD=" + tmp_mod.$static.dutyCycle
+        )
+    }
+    if (tmp_mod.$static.customMinTxOff) {
+        result.push(
+            "-DMAC_OVERRIDE_TX_DELAY",
+            "-DMAC_CONFIG_MIN_TX_OFF=" + tmp_mod.$static.minTxOff
+        )
+    }
+    if (!(toad_mod===undefined) && toad_mod.$instances[0].enabled) {
+        result.push("-DFEATURE_TOAD")
+    }
+
+    // This is always defined in .opt, but I don't think it's actually used by us
+    result.push("-DTI154STACK")
+
+    return result;
+}
+
+/*
  *  ======== moduleInstances ========
  *  Determines what modules are added as non-static submodules
  *
@@ -531,14 +577,6 @@ function moduleInstances(inst)
         dependencyModule.push({
             name: "ti154stackModule",
             moduleName: "/ti/ti154stack/ti154stack_config_mod.js"
-        });
-    }
-
-    if(system.getRTOS() === "tirtos7")
-    {
-        dependencyModule.push({
-            name: "ti154stackOpts",
-            moduleName: "/ti/ti154stack/ti154stack_config_opts.js"
         });
     }
 
@@ -605,6 +643,10 @@ const ti154StackModule = {
         {
             modName: "/ti/ti154stack/ti154stack",
             getLibs: getLibs
+        },
+        "/ti/utils/build/GenOpts.opt.xdt": {
+            modName: "/ti/ti154stack/ti154stack",
+            getOpts: getOpts
         }
     }
 };

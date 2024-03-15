@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,12 +8,8 @@
 #define _CC_RSA_KG_H
 
 #ifdef CC_IOT
-    #if defined(MBEDTLS_CONFIG_FILE)
-    #include MBEDTLS_CONFIG_FILE
-    #endif
+#include "mbedtls/build_info.h"
 #endif
-
-#if !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C))
 
 #include "cc_rsa_types.h"
 #include "cc_rnd_common.h"
@@ -103,7 +99,5 @@ CIMPORT_C CCError_t CC_RsaKgKeyPairCrtGenerate(
 /**
 @}
  */
-#endif /* !defined(CC_IOT) || ( defined(CC_IOT) && defined(MBEDTLS_RSA_C)) */
+
 #endif /* _CC_RSA_KG_H */
-
-

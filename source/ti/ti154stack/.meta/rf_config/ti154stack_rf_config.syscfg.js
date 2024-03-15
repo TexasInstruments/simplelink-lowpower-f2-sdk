@@ -430,6 +430,10 @@ function getRfDesignOptions()
     {
         newRfDesignOptions = [{name: "LP_EM_CC1314R10"}];
     }
+    else if(deviceId === "CC1314R10RGZ")
+    {
+        newRfDesignOptions = [{name: "LP_CC1314R10_RGZ"}];
+    }
     else if(deviceId === "CC1354R10RGZ")
     {
         newRfDesignOptions = [{name: "LP_CC1354R10_RGZ"}];

@@ -322,9 +322,6 @@
  *      case Power_EXITING_SLEEP:
  *        // Transition from sleep in progress
  *        break;
- *      case Power_CHANGING_PERF_LEVEL:
- *        // Performance level change in progress
- *        break;
  *  }
  *
  *  // Get the Power_TOTAL and Power_RESUME transition latency for a
@@ -356,6 +353,9 @@
 /* @endcond */
 
 #include <ti/drivers/utils/List.h>
+#include <ti/devices/DeviceFamily.h>
+
+/* Note: Device specific Power include files are included in the bottom of this file. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -389,11 +389,10 @@ extern "C" {
 /*! @addtogroup Power_Transition_State
  *  @{
  */
-#define Power_ACTIVE              (1U) /*!< normal active state */
-#define Power_ENTERING_SLEEP      (2U) /*!< entering a sleep state */
-#define Power_EXITING_SLEEP       (3U) /*!< exiting a sleep state */
-#define Power_ENTERING_SHUTDOWN   (4U) /*!< entering a shutdown state */
-#define Power_CHANGING_PERF_LEVEL (5U) /*!< moving to new performance level */
+#define Power_ACTIVE            (1U) /*!< normal active state */
+#define Power_ENTERING_SLEEP    (2U) /*!< entering a sleep state */
+#define Power_EXITING_SLEEP     (3U) /*!< exiting a sleep state */
+#define Power_ENTERING_SHUTDOWN (4U) /*!< entering a shutdown state */
 /*! @}*/
 
 /*!
@@ -448,6 +447,11 @@ typedef struct
 } Power_NotifyObj;
 
 /*!
+ *  @brief      Power resource identifier
+ */
+typedef uint32_t Power_Resource;
+
+/*!
  *  @brief  Disable the configured power policy from running when the CPU is
  *  idle
  *
@@ -500,11 +504,11 @@ void Power_enablePolicy(void);
  *
  *  Constraint identifiers are device specific, and defined in the
  *  device-specific Power include file.  For example, the constraints for
- *  MSP432 are defined in PowerMSP432.h.  The corresponding bit in the
+ *  CC26XX are defined in PowerCC26XX.h.  The corresponding bit in the
  *  bitmask returned by this function can be derived by a left-shift using
- *  the constraint identifier.  For example, for MSP432, for the corresponding
- *  bit for the PowerMSP432_DISALLOW_SLEEP constraint, the bit position is
- *  determined by the operation: (1 << PowerMSP432_DISALLOW_SLEEP)
+ *  the constraint identifier.  For example, for CC26XX, for the corresponding
+ *  bit for the PowerCC26XX_DISALLOW_STANDBY constraint, the bit position is
+ *  determined by the operation: (1 << PowerCC26XX_DISALLOW_STANDBY)
  *
  *  @return A bitmask of the currently declared constraints.
  *
@@ -533,21 +537,30 @@ uint_fast32_t Power_getConstraintMask(void);
  *  @sa  Power_setDependency()
  *  @sa  @ref ti_drivers_Power_Examples_dependency "Using power dependency"
  */
-int_fast16_t Power_getDependencyCount(uint_fast16_t resourceId);
+int_fast16_t Power_getDependencyCount(Power_Resource resourceId);
 
 /*!
- *  @brief  Get the current performance level
+ *  @brief  Get the current constraint count for an operational transition
  *
- *  This function returns the current device performance level in effect.
+ *  This function returns the current number of constraints that is set on the
+ *  given operational transition.
  *
- *  If performance scaling is not supported for the device, this function
- *  will always indicate a performance level of zero.
+ *  Constraint identifiers are device specific, and defined in the
+ *  device-specific Power include file.  For example, the constraints for
+ *  CC26XX are defined in PowerCC26XX.h, and to see how many constraints there
+ *  currently are on entering standby, call this function with argument
+ *  PowerCC26XX_DISALLOW_STANDBY
  *
- *  @return The current performance level.
+ *  @param[in]  constraintId  constraint identifier
  *
- *  @sa     Power_setPerformanceLevel()
+ *  @return  The count for the given power constraint identifier
+ *
+ *  @retval  #Power_EINVALIDINPUT if the @p constraintId is invalid or this
+ *  function is not supported by the device specific implementation.
+ *
+ *  @sa  Power_setConstraint()
  */
-uint_fast16_t Power_getPerformanceLevel(void);
+int_fast16_t Power_getConstraintCount(uint_fast16_t constraintId);
 
 /*!
  *  @brief  Get the hardware transition latency for a sleep state
@@ -586,9 +599,6 @@ uint_fast32_t Power_getTransitionLatency(uint_fast16_t sleepState, uint_fast16_t
  *
  *  @retval #Power_EXITING_SLEEP returned after wakeup, as the device is
  *  being transitioned back to #Power_ACTIVE.
- *
- *  @retval #Power_CHANGING_PERF_LEVEL returned when a change is being made
- *  to the performance level.
  *
  *  @sa  @ref ti_drivers_Power_Examples_transistion "Power transitions"
  */
@@ -637,13 +647,13 @@ int_fast16_t Power_init(void);
  *  The eventTypes parameter identifies the type of power event(s) for which
  *  the notify function being registered is to be called. (Event identifiers are
  *  device specific, and defined in the device-specific Power include file.
- *  For example, the events for MSP432 are defined in PowerMSP432.h.)  The
+ *  For example, the events for CC26XX are defined in PowerCC26XX.h.)  The
  *  eventTypes parameter for this function call is treated as a bitmask, so
  *  multiple event types can be registered at once, using a common callback
  *  function.  For example, to call the specified notifyFxn when both
  *  the entering deepsleep and awake from deepsleep events occur, eventTypes
- *  should be specified as: PowerMSP432_ENTERING_DEEPSLEEP |
- *  PowerMSP432_AWAKE_DEEPSLEEP
+ *  should be specified as: PowerCC26XX_ENTERING_STANDBY |
+ *  PowerCC26XX_AWAKE_STANDBY
  *
  *  The notifyFxn parameter specifies a callback function to be called when the
  *  specified Power event occurs. The notifyFxn must implement the following
@@ -702,7 +712,7 @@ int_fast16_t Power_registerNotify(Power_NotifyObj *pNotifyObj,
  *
  *  Constraint identifiers are device specific, and defined in the
  *  device-specific Power include file.  For example, the constraints for
- *  MSP432 are defined in PowerMSP432.h.
+ *  CC26XX are defined in PowerCC26XX.h.
  *
  *  Only one constraint can be specified with each call to this function; to
  *  release multiple constraints this function must be called multiple times.
@@ -753,7 +763,7 @@ int_fast16_t Power_releaseConstraint(uint_fast16_t constraintId);
  *  @sa  Power_setDependency()
  *  @sa  @ref ti_drivers_Power_Examples_dependency "Using power dependency"
  */
-int_fast16_t Power_releaseDependency(uint_fast16_t resourceId);
+int_fast16_t Power_releaseDependency(Power_Resource resourceId);
 
 /*!
  *  @brief  Resets the system and causes it to reboot
@@ -776,7 +786,7 @@ void Power_reset(void);
  *
  *  Constraint identifiers are device specific, and defined in the
  *  device-specific Power include file.  For example, the constraints for
- *  MSP432 are defined in PowerMSP432.h.
+ *  CC26XX are defined in PowerCC26XX.h.
  *
  *  Only one constraint can be specified with each call to this function; to
  *  declare multiple constraints this function must be called multiple times.
@@ -830,50 +840,7 @@ int_fast16_t Power_setConstraint(uint_fast16_t constraintId);
  *  @sa  Power_releaseDependency()
  *  @sa  @ref ti_drivers_Power_Examples_dependency "Using power dependency"
  */
-int_fast16_t Power_setDependency(uint_fast16_t resourceId);
-
-/*!
- *  @brief  Set the MCU performance level
- *
- *  This function manages a transition to a new device performance level.
- *  Before the actual transition is initiated, notifications will be sent to
- *  any clients who've registered with Power_registerNotify() for a
- *  'start change performance level' notification.  The event name is device
- *  specific, and defined in the device-specific Power include file.  For
- *  example, for MSP432, the event is "PowerMSP432_START_CHANGE_PERF_LEVEL",
- *  which is defined in PowerMSP432.h.  Once notifications have been completed,
- *  the change to the performance level is initiated.  After the level change
- *  is completed, there is a comparable event that can be used to signal a
- *  client that the change has completed.  For example, on MSP432 the
- *  "PowerMSP432_DONE_CHANGE_PERF_LEVEL" event can be used to signal
- *  completion.
- *
- *  This function will not return until the new performance level is in effect.
- *  If performance scaling is not supported for the device, or is prohibited
- *  by an active constraint, or if the specified level is invalid, then an
- *  error status will be returned.
- *
- *  @param[in]  level    the new performance level
- *
- *  @retval  #Power_SOK on success.
- *
- *  @retval  #Power_EINVALIDINPUT if the specified performance level is out of
- *           range of valid levels.
- *
- *  @retval  #Power_EBUSY if another transition is already in progress, or if
- *           a single constraint is set to prohibit any change to the
- *           performance level.
- *
- *  @retval  #Power_ECHANGE_NOT_ALLOWED if a level-specific constraint prohibits
- *           a change to the requested level.
- *
- *  @retval  #Power_EFAIL if performance scaling is not supported, if an
- *           error occurred during initialization, or if an error occurred
- *           during client notifications.
- *
- *  @sa  Power_getPerformanceLevel()
- */
-int_fast16_t Power_setPerformanceLevel(uint_fast16_t level);
+int_fast16_t Power_setDependency(Power_Resource resourceId);
 
 /*!
  *  @brief  Set a new Power policy
@@ -974,6 +941,21 @@ void Power_unregisterNotify(Power_NotifyObj *pNotifyObj);
 
 #ifdef __cplusplus
 }
+#endif
+
+#if (DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X0_CC26X0 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X1_CC26X1 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X2_CC26X2 || \
+     DeviceFamily_PARENT == DeviceFamily_PARENT_CC13X4_CC26X3_CC26X4)
+    #include <ti/drivers/power/PowerCC26XX.h>
+#elif (DeviceFamily_ID == DeviceFamily_ID_CC3220 || DeviceFamily_ID == DeviceFamily_ID_CC3200)
+    #include <ti/drivers/power/PowerCC32XX.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC23X0)
+    #include <ti/drivers/power/PowerCC23X0.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC27XX)
+    #include <ti/drivers/power/PowerCC27XX.h>
+#elif (DeviceFamily_PARENT == DeviceFamily_PARENT_CC35XX)
+    #include <ti/drivers/power/PowerWFF3.h>
 #endif
 
 #endif /* ti_drivers_Power__include */

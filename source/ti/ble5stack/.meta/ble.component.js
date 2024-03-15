@@ -69,14 +69,6 @@ const templates = [
         outputPath: "ti_ble_mesh_prov_data.h"
     },
     {
-        name: "/ti/ble5stack/templates/build_config.opt.xdt",
-        outputPath: "ti_build_config.opt"
-    },
-    {
-        name: "/ti/ble5stack/templates/ble_app_config.opt.xdt",
-        outputPath: "ti_ble_app_config.opt"
-    },
-    {
         name: "/ti/ble5stack/templates/ble_gatt_service.h.xdt",
         outputPath: "ti_ble_gatt_service.h"
     },

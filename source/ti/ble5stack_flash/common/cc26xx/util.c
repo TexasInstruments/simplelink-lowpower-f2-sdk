@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2023, Texas Instruments Incorporated
+ Copyright (c) 2014-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
-#include <mqueue.h>
+#include <icall.h>
 #else
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -102,7 +102,6 @@ typedef struct _queueRec_
  */
 
 #ifdef FREERTOS
-typedef void (*UtilTimerCback)(uint32_t arg);
 void Util_stopClock(Clock_Struct *pClock);
 
 /**
@@ -157,7 +156,7 @@ static void UtilclockFunc(union sigval sv)
  */
 
 #ifdef FREERTOS
-void* Util_constructClock(Clock_Struct *entry, void *clockCB,
+void* Util_constructClock(Clock_Struct *entry, UtilTimerCback clockCB,
                           uint32_t clockDuration, uint32_t clockPeriod,
                           uint8_t startFlag, uint32_t arg)
 {
@@ -441,7 +440,7 @@ void Util_constructQueue(mqd_t *pQueue)
 {
     struct mq_attr MRattr;
 
-    MRattr.mq_flags = O_NONBLOCK; //Blocking
+    MRattr.mq_flags = O_NONBLOCK;  //NON-Blocking
     MRattr.mq_curmsgs = 0;
     MRattr.mq_maxmsg = 32;
     MRattr.mq_msgsize = sizeof(uint8_t*);

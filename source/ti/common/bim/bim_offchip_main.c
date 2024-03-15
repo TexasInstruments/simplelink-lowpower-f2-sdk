@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2012-2023, Texas Instruments Incorporated
+ Copyright (c) 2012-2024, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -52,15 +52,20 @@
 #include <string.h>
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
+#if !defined(DeviceFamily_CC23X0R2)
 #include DeviceFamily_constructPath(driverlib/watchdog.h)
 #include DeviceFamily_constructPath(inc/hw_prcm.h)
+#endif
 
 #include "ti/common/cc26xx/oad/ext_flash_layout.h"
 #include "ti/common/cc26xx/crc/crc32.h"
 #include "ti/common/flash/no_rtos/extFlash/ext_flash.h"
 #include "ti/common/cc26xx/flash_interface/flash_interface.h"
+#if !defined(DeviceFamily_CC23X0R2)
 #include "ti/common/cc26xx/bim/bim_util.h"
-#include "ti/common/cc26xx/oad/oad_image_header.h"
+#else
+#include "ti/common/cc23xx/bim/bim_util.h"
+#endif
 #include "ti/common/cc26xx/oad/oad_image_header.h"
 #ifdef __IAR_SYSTEMS_ICC__
 #include <intrinsics.h>
@@ -74,6 +79,8 @@
 #include "sign_util.h"
 #if defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || defined(DeviceFamily_CC13X2X7) || defined(DeviceFamily_CC26X2X7)
 #include "sha2_driverlib.h"
+#elif defined(DeviceFamily_CC23X0R2)
+#include DeviceFamily_constructPath(driverlib/sha256sw.h)
 #else
 #include DeviceFamily_constructPath(driverlib/rom_sha256.h)
 #endif /* DeviceFamily_CC26X2 || DeviceFamily_CC13X2 || DeviceFamily_CC13X2X7 || DeviceFamily_CC26X2X7 */
@@ -89,6 +96,14 @@
 #define FAIL                           ~0x0
 
 #define ONCHIP_COPY_CHUNK_SIZE          256            /* Max number of bytes to copy on on-chip flash */
+
+#if defined(DeviceFamily_CC23X0R2)
+#define START_PAGE                      7
+#define MAX_ONCHIP_FLASH_SEARCH_PAGE    MAX_ONCHIP_FLASH_PAGES
+#else
+#define START_PAGE                      0
+#define MAX_ONCHIP_FLASH_SEARCH_PAGE    (MAX_ONCHIP_FLASH_PAGES - 1)
+#endif
 
 #if defined (SECURITY)
 #define SHA_BUF_SZ                      EFL_PAGE_SIZE
@@ -476,7 +491,6 @@ static int8_t checkImagesExtFlash(void)
                 the CRC of the copied
                 and update it's CRC status. CRC_STAT_OFFSET
                 */
-
                 uint32_t crc32 = CRC32_calc(FLASH_PAGE(startAddr), intFlashPageSize, 0, imgFxdHdr.len, false);
                 if(crc32 == imgFxdHdr.crc32) // if crc matched then update its status in the copied image
                 {
@@ -646,7 +660,7 @@ static uint8_t checkImagesIntFlash(uint8_t flashPageNum)
 
         } /* if (imgIDCheck(&imgHdr) == true) */
 
-    } while(flashPageNum++ < (MAX_ONCHIP_FLASH_PAGES -1));  /* last flash page contains CCFG */
+    } while(flashPageNum++ < MAX_ONCHIP_FLASH_SEARCH_PAGE);  /* last flash page contains CCFG */
 
     return(0);
 }
@@ -702,7 +716,6 @@ static bool Bim_revertFactoryImage(void)
 
     if(Bim_copyImage(eFlStrAddr, metadataHdr.fixedHdr.len, startAddr) == SUCCESS)
     {
-
         // Calculate the CRC of the copied on-chip image to make sure copy is successful
         uint32_t crc32 = CRC32_calc(FLASH_PAGE(startAddr), intFlashPageSize, 0, metadataHdr.fixedHdr.len, false);
         uint8_t status = CRC_INVALID;
@@ -749,7 +762,7 @@ static void Bim_checkImages(void)
 
     /* In no valid image has been found in external flash, then
      * try to find a valid executable image on on-chip flash and execute */
-    checkImagesIntFlash(0);
+    checkImagesIntFlash(START_PAGE);
 
     /* BIM is not able find any valid application, either on off-chip
      * or on-chip flash. Try to revert to Factory image */
@@ -825,6 +838,10 @@ uint8_t Bim_payloadVerify(uint8_t ver, uint32_t cntr, uint32_t payloadlen, uint8
         SHA2_addData(dataPayload, payloadlen);
         SHA2_finalize(finalHash);
         SHA2_close();
+#elif defined(DeviceFamily_CC23X0R2)
+        SHA256SW_Object sha256SWObject;
+        SHA256SW_Handle sha256SWHandle = &sha256SWObject;
+        SHA256SWHashData(sha256SWHandle, SHA2SW_HASH_TYPE_256, dataPayload, payloadlen, (uint32_t*)finalHash);
 #else
         SHA256_Workzone sha256_workzone;
         SHA256_init(&sha256_workzone);
@@ -1084,7 +1101,7 @@ static uint8_t Bim_verifyImageIntFlash(uint32_t startAddr, uint8_t *shaBuffer)
  /*******************************************************************************
  * @fn      Bim_authenticateImage
  *
- * @brief   Verifies  if the image spasses authentication using ECDSA-SHA256
+ * @brief   Verifies  if the image passes authentication using ECDSA-SHA256
  *
  * @param   flStrAddr -  start address on flash of the image to be verified.
  * @param   imgLen    - length of the image
@@ -1229,7 +1246,11 @@ int main(void)
 
 #endif /* FLASH_DEVICE_ERASE */
 
+#if !defined(DeviceFamily_CC23X0R2)
     intFlashPageSize = FlashSectorSizeGet();
+#else
+    intFlashPageSize = FlashGetSectorSize();
+#endif
 
     Bim_checkImages();
 

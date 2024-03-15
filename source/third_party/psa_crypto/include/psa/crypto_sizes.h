@@ -1,6 +1,8 @@
 /**
  * \file psa/crypto_sizes.h
  *
+ * \addtogroup ti_psa_crypto PSA cryptography module: Mbed TLS buffer size macros
+ *
  * \brief PSA cryptography module: Mbed TLS buffer size macros
  *
  * \note This file may not be included directly. Applications must

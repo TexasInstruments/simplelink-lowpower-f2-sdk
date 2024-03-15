@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2020, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,7 +15,7 @@
 #include "ec_mont_local.h"
 #include "ec_mont.h"
 #include "cc_general_defs.h"
-#include "md.h"
+#include "mbedtls/md.h"
 
 // RL Debug
 #include "pki_dbg.h"

@@ -61,10 +61,9 @@
 #if (ENABLE_KEY_STORAGE == 1)
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_helpers.h>
     #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_init.h>
-#endif
-
-#if (TFM_ENABLED == 1)
-    #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+    #if (TFM_ENABLED == 1)
+        #include <ti/drivers/cryptoutils/cryptokey/CryptoKeyKeyStore_PSA_s.h>
+    #endif
 #endif
 
 /* Forward declarations */
@@ -154,12 +153,12 @@ static int_fast16_t ECDHCC26X2_importSecureKey(CryptoKey *key,
     int_fast16_t status;
     int_fast16_t pkaResult = ECDH_STATUS_KEYSTORE_ERROR;
     KeyStore_PSA_KeyAttributes *attributesPtr;
+    #if (TFM_ENABLED == 1)
     KeyStore_PSA_KeyAttributes attributes = KEYSTORE_PSA_KEY_ATTRIBUTES_INIT;
+    #endif
 
-    if (key->u.keyStore.keyID > KEYSTORE_PSA_MAX_VOLATILE_KEY_ID)
-    {
-        GET_KEY_ID(keyID, key->u.keyStore.keyID);
-    }
+    /* Copy key identifier from CryptoKey */
+    GET_KEY_ID(keyID, key->u.keyStore.keyID);
 
     #if (TFM_ENABLED == 0)
     attributesPtr = (KeyStore_PSA_KeyAttributes *)key->u.keyStore.keyAttributes;
@@ -1038,22 +1037,12 @@ int_fast16_t ECDH_computeSharedSecret(ECDH_Handle handle, ECDH_OperationComputeS
             return ECDH_STATUS_KEYSTORE_ERROR;
         }
 
-        if ((operation->keyMaterialEndianness == ECDH_LITTLE_ENDIAN_KEY) &&
-            (operation->curve->curveType == ECCParams_CURVE_TYPE_SHORT_WEIERSTRASS_AN3))
-        {
-            /* mbedcrypto adds octet offset prefix to Weierstrass public keys in big-endian format while exporting */
-            theirPublicKeyMaterial = KeyStore_theirPublicKeyMaterial + 1;
-            theirPublicKeyLength--;
-        }
-        else
-        {
-            theirPublicKeyMaterial = KeyStore_theirPublicKeyMaterial;
-        }
-
         if (theirPublicKeyLength != operation->theirPublicKey->u.keyStore.keyLength)
         {
             return ECDH_STATUS_KEYSTORE_ERROR;
         }
+
+        theirPublicKeyMaterial = KeyStore_theirPublicKeyMaterial;
     }
 #endif
     else

@@ -25,11 +25,8 @@ concurrently on a CC13x2.
 
 ## <a name="Hardware Prerequisites"></a>Hardware Prerequisites
 
-The default Simple Peripheral configuration uses the
-[LAUNCHXL-CC1352R](http://www.ti.com/tool/launchxl-cc1352r1). This hardware
-configuration is shown in the below image:
-
-<img src="resource/hardware_setup.jpg" height="480" />
+The default Simple Peripheral configuration does not require any modifications
+to the standard LaunchPad.
 
 ## <a name="Software Prerequisites"></a>Software Prerequisites
 

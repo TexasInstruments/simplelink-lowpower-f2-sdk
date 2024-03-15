@@ -309,6 +309,7 @@ static void SPICC26X2DMA_hwiFxn(uintptr_t arg)
     SPICC26X2DMA_Object *object         = ((SPI_Handle)arg)->object;
     SPICC26X2DMA_HWAttrs const *hwAttrs = ((SPI_Handle)arg)->hwAttrs;
     uint8_t i;
+    uintptr_t key;
 
     intStatus = SSIIntStatus(hwAttrs->baseAddr, true);
     SSIIntClear(hwAttrs->baseAddr, intStatus);
@@ -418,6 +419,7 @@ static void SPICC26X2DMA_hwiFxn(uintptr_t arg)
                 }
                 else
                 {
+                    key                     = HwiP_disable();
                     /*
                      * All data has been transferred for the current
                      * transaction. Set status & move the transaction to
@@ -464,6 +466,8 @@ static void SPICC26X2DMA_hwiFxn(uintptr_t arg)
                     object->framesQueued      = (object->activeChannel == UDMA_PRI_SELECT) ? object->priTransferSize
                                                                                            : object->altTransferSize;
                     object->framesTransferred = 0;
+
+                    HwiP_restore(key);
 
                     if (object->headPtr != NULL)
                     {
@@ -598,6 +602,13 @@ static void SPICC26X2DMA_swiFxn(uintptr_t arg0, uintptr_t arg1)
 {
     SPI_Transaction *transaction;
     SPICC26X2DMA_Object *object = ((SPI_Handle)arg0)->object;
+    uintptr_t key;
+
+    /* To protect against any Linked-List manipulation, we took ownership of the processor and disabled interrupts
+     * This also includes the while loop check here, since another process might temporarily tamper with
+     * object->copmoletedTransfers
+     */
+    key = HwiP_disable();
 
     while (object->completedTransfers != NULL)
     {
@@ -611,9 +622,18 @@ static void SPICC26X2DMA_swiFxn(uintptr_t arg0, uintptr_t arg1)
         /* Transaction complete; release power constraints */
         releaseConstraint((uint32_t)transaction->txBuf);
 
+        /* Inverted logic here to restore interrupts right before we jump to the callback function and disable them
+         * after we return */
+        HwiP_restore(key);
+
         /* Execute callback function for completed transfer */
         object->transferCallbackFxn((SPI_Handle)arg0, transaction);
+
+        key = HwiP_disable();
     }
+
+    /* Restore interrupts */
+    HwiP_restore(key);
 }
 
 /*

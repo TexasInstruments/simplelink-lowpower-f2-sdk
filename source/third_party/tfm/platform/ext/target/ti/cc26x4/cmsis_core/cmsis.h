@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017-2018 ARM Limited
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 ARM Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Texas Instruments Incorporated. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-#ifndef __CC26X4_CMSIS_H__
-#define __CC26X4_CMSIS_H__
+#ifndef __CMSIS_H__
+#define __CMSIS_H__
 
-/* TI CC13x4/CC26x4 SDK include(s) */
-#include "ti/devices/cc13x4_cc26x4/cmsis/cc26x4.h" /* IRQn + CM33 config */
+/* CC13x4/CC26x4 IRQn + Cortex-M33 processor and core peripheral configuration */
+#include <ti/devices/cc13x4_cc26x4/cmsis/cc26x4.h>
+
+#include "platform_irq.h"
+#include "system_core_init.h"
 
 #include <core_cm33.h> /*!< Arm Cortex-M33 processor and core peripherals */
 
-#endif /*__CC26X4_CMSIS_H__ */
+#endif /*__CMSIS_H__ */

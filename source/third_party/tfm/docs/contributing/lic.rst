@@ -3,7 +3,7 @@
 License
 #######
 
-.. include:: /license.rst
+.. include:: ../../license.rst
 
 -----------
 

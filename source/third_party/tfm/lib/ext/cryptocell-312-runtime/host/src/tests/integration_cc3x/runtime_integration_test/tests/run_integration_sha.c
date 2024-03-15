@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2019, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2001-2021, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -119,10 +119,10 @@ static RunItError_t runIt_sha224Test(void)
 
     /* Initialize sha engine */
     RUNIT_API(mbedtls_sha256_init(pCtx));
-    RUNIT_ASSERT(mbedtls_sha256_starts_ret(pCtx, IS_SHA_224) == 0);
-    RUNIT_ASSERT(mbedtls_sha256_update_ret(pCtx, (const unsigned char*)INPUT_MESSAGE, strlen(INPUT_MESSAGE)) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_starts(pCtx, IS_SHA_224) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_update(pCtx, (const unsigned char*)INPUT_MESSAGE, strlen(INPUT_MESSAGE)) == 0);
     RUNIT_API(mbedtls_sha256_clone(pCtxCloned, pCtx));
-    RUNIT_ASSERT(mbedtls_sha256_finish_ret(pCtxCloned, sha224sum) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_finish(pCtxCloned, sha224sum) == 0);
 
     RUNIT_PRINT_BUF(sha224sum, 28, "result");
 
@@ -174,10 +174,10 @@ static RunItError_t runIt_sha256Test(void)
 
     /* Initialize sha engine */
     RUNIT_API(mbedtls_sha256_init(pCtx));
-    RUNIT_ASSERT(mbedtls_sha256_starts_ret(pCtx, IS_SHA_224) == 0);
-    RUNIT_ASSERT(mbedtls_sha256_update_ret(pCtx, (const unsigned char*)INPUT_MESSAGE, strlen(INPUT_MESSAGE)) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_starts(pCtx, IS_SHA_224) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_update(pCtx, (const unsigned char*)INPUT_MESSAGE, strlen(INPUT_MESSAGE)) == 0);
     RUNIT_API(mbedtls_sha256_clone(pCtxCloned, pCtx));
-    RUNIT_ASSERT(mbedtls_sha256_finish_ret(pCtxCloned, sha256sum) == 0);
+    RUNIT_ASSERT(mbedtls_sha256_finish(pCtxCloned, sha256sum) == 0);
 
     RUNIT_PRINT_BUF(sha256sum, 32, "result");
 

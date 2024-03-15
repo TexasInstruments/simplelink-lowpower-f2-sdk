@@ -2,7 +2,7 @@
  *  t_cose_util.c
  *
  * Copyright 2019, Laurence Lundblade
- * Copyright (c) 2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -10,7 +10,7 @@
  */
 
 #include "t_cose_util.h"
-#include "qcbor.h"
+#include "qcbor/qcbor.h"
 #include "t_cose_standard_constants.h"
 #include "t_cose_common.h"
 #include "t_cose_crypto.h"

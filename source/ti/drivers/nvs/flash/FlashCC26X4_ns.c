@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ int_fast16_t FlashOpen(void)
     if (spHandle <= 0)
     {
         /* Connect to the Flash Service */
-        spHandle = psa_connect(FLASH_SP_SERVICE_SID, psa_version(FLASH_SP_SERVICE_SID));
+        spHandle = psa_connect(TI_FLASH_SERVICE_SID, psa_version(TI_FLASH_SERVICE_SID));
 
         if (spHandle <= 0)
         {

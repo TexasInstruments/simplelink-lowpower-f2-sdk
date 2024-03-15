@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2016-2023, Texas Instruments Incorporated
+ Copyright (c) 2016-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -128,6 +128,8 @@
 #define FH_WISUN_PIE_US_IE_BITMAP       0x00010000
 /*! FH broadcast Schedule Payload IE bitmap  */
 #define FH_WISUN_PIE_BS_IE_BITMAP       0x00020000
+/*! FH Vendor Payload IE bitmap  */
+#define FH_WISUN_PIE_VP_IE_BITMAP       0x00400000
 /*! FH PAN Payload IE bitmap  */
 #define FH_WISUN_PIE_PAN_IE_BITMAP      0x00040000
 /*! FH Network name Payload IE bitmap  */
@@ -138,7 +140,8 @@
 #define FH_WISUN_PIE_GTKHASH_IE_BITMAP  0x00200000
 
 /*Num times to check if a packet is detected or not in a certain time */
-#define FH_MAXPDB                                2
+#define FH_MAXPDB                                1 //2
+
 /******************************************************************************
  Typedefs
  *****************************************************************************/
@@ -181,6 +184,8 @@ typedef enum __fhapi_status_
     /*! CCA Failure */
     FHAPI_STATUS_ERR_EDFE_CCA_FAIL             = 0x72,
     /*! last status value of FH module */
+    FHAPI_STATUS_ERR_NT_FULL                   = 0x73,
+
     FHAPI_STATUS_MAX
 } FHAPI_status;
 
@@ -376,4 +381,10 @@ extern MAC_INTERNAL_API uint32_t FHAPI_getRemDT(void);
 extern MAC_INTERNAL_API uint8_t FHAPI_getBitCount(void);
 /**************************************************************************************************
  */
+
+extern uint16_t FH_GetVpieLenInTxEvent(void);
+
+extern uint8_t * FH_GetVpieDataInTxEvent(void);
+
+extern uint8_t FHAPI_IsAsyncState(void);
 #endif

@@ -14,8 +14,8 @@ hci_event_PATCH.c
 
 ble_PATCH.c
 - rev. 38892 (V4.1 Remote Feature Exchange)
--- llProcessSlaveControlPacket_PATCH
--- llProcessMasterControlPacket_PATCH
+-- llProcessPeripheralControlPacket_PATCH
+-- llProcessCentralControlPacket_PATCH
 
 ll_PATCH.c
 - rev. 39000 (new: LL_EXT_GetNumConns)
@@ -32,10 +32,10 @@ ll_common_PATCH.c
 -- llSetupFeatureSetRsp_PATCH
 -- llAllocConnId_PATCH
 
-ll_masterEndCauses_PATCH.c
+ll_centralEndCauses_PATCH.c
 - rev. 38892 (V4.1 Remote Feature Exchange)
--- llProcessMasterControlProcedures_PATCH
+-- llProcessCentralControlProcedures_PATCH
 
-ll_slaveEndCauses_PATCH.c
+ll_peripheralEndCauses_PATCH.c
 - rev. 38892 (V4.1 Remote Feature Exchange)
--- llProcessSlaveControlProcedures_PATCH
+-- llProcessPeripheralControlProcedures_PATCH

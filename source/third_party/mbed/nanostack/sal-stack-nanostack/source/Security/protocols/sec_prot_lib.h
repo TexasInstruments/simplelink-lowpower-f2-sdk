@@ -33,6 +33,7 @@
 #define EUI64_LEN                     8
 #define SEC_TOTAL_TIMEOUT             30 * 60 * 10 // 30 minutes
 #define SEC_INIT_TIMEOUT              60 * 10      // 60 seconds
+#define SEC_INIT_TIMEOUT_CUSTOM_AUTH  3 * 10       // 3 seconds
 #define SEC_FINISHED_TIMEOUT          5 * 10       // 5 seconds
 
 

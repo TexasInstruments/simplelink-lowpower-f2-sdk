@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Texas Instruments Incorporated
+ * Copyright (c) 2021-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,11 +59,11 @@ extern "C" {
  */
 typedef enum
 {
-    /*!< Use the Core Voltage Decoupling pin as the DAC's voltage reference source. */
+    /*! Use the Core Voltage Decoupling pin as the DAC's voltage reference source. */
     DAC_VREF_DCOUPL = AUXDAC_VREF_SEL_DCOUPL,
-    /*!< Use the ADC reference voltage as the DAC's voltage reference source. */
+    /*! Use the ADC reference voltage as the DAC's voltage reference source. */
     DAC_VREF_ADCREF = AUXDAC_VREF_SEL_ADCREF,
-    /*!< Use the main supply voltage VDDS as the DAC's voltage reference source. */
+    /*! Use the main supply voltage VDDS as the DAC's voltage reference source. */
     DAC_VREF_VDDS   = AUXDAC_VREF_SEL_VDDS,
 } DAC_VrefSource;
 
@@ -75,15 +75,15 @@ typedef enum
  */
 typedef struct
 {
-    /*!< Pin used for DAC output */
+    /*! Pin used for DAC output */
     uint_least8_t outputPin;
-    /*!< DAC voltage reference source */
+    /*! DAC voltage reference source */
     DAC_VrefSource dacVrefSource;
-    /*!< Internal signal routed to COMPA_IN */
+    /*! Internal signal routed to COMPA_IN */
     uint8_t dacCompAInput;
-    /*!< Valid divider to set the sample clock for the DAC */
+    /*! Valid divider to set the sample clock for the DAC */
     uint8_t dacSmplClkDivider;
-    /*!< Flag to determine precharge state when DCOUPL has been selected as voltage reference */
+    /*! Flag to determine precharge state when DCOUPL has been selected as voltage reference */
     bool dacPrecharge;
 } DACCC26XX_HWAttrs;
 
@@ -94,15 +94,15 @@ typedef struct
  */
 typedef struct
 {
-    /*!< Flag to determine current state of the DAC's output */
+    /*! Flag to determine current state of the DAC's output */
     bool isEnabled;
-    /*!< Flag if the instance is in use */
+    /*! Flag if the instance is in use */
     bool isOpen;
-    /*!< Current DAC code set */
+    /*! Current DAC code set */
     uint32_t currCode;
-    /*!< Minimum DAC output in uV */
+    /*! Minimum DAC output in uV */
     uint32_t dacOutputMin;
-    /*!< Maximum DAC output in uV */
+    /*! Maximum DAC output in uV */
     uint32_t dacOutputMax;
 } DACCC26XX_Object;
 

@@ -92,6 +92,7 @@
 #include "NWK_INTERFACE/Include/protocol.h"
 #include "ipv6_stack/ipv6_routing_table.h"
 #include "Common_Protocols/ip.h"
+#include "6LoWPAN/ws/ws_config.h"
 
 #include "net_rpl.h"
 #include "RPL/rpl_protocol.h"
@@ -914,9 +915,16 @@ void rpl_instance_send_dao_update(rpl_instance_t *instance)
         //Multiply Delay by attempt
         delay = delay << instance->dao_attempt;
 
-        if (delay > 5400) {
-            //MAX base 540 seconds (9min)
-            delay = 5400;
+        if (ti_wisun_config.rapid_join) {
+            if (delay > 300) {
+                //MAX base 30 seconds
+                delay = 300;
+            }
+        } else {
+            if (delay > 5400) {
+                //MAX base 540 seconds (9min)
+                delay = 5400;
+            }
         }
 
         // 0.5 - 1.5 *t randomized base delay
@@ -1807,7 +1815,7 @@ void rpl_downward_print_instance(rpl_instance_t *instance, route_print_fn_t *pri
     if (ns_list_is_empty(&instance->dao_targets)) {
         return;
     }
-    print_fn("DAO Targets:");
+    tr_info("DAO Targets:");
     if (rpl_instance_am_root(instance)) {
         rpl_downward_compute_paths(instance);
     }
@@ -1817,7 +1825,7 @@ void rpl_downward_print_instance(rpl_instance_t *instance, route_print_fn_t *pri
         ip6_prefix_tos(target->prefix, target->prefix_len, str_buf);
 #ifdef HAVE_RPL_ROOT
         if (target->root) {
-            print_fn("  %-40s %02x seq=%d%s cost=%"PRIu32"%s%s%s",
+            tr_info("  %-40s %02x seq=%d%s cost=%"PRIu32"%s%s%s",
                      str_buf,
                      target->path_control, target->path_sequence, target->need_seq_inc ? "+" : "",
                      target->info.root.cost,
@@ -1826,12 +1834,12 @@ void rpl_downward_print_instance(rpl_instance_t *instance, route_print_fn_t *pri
                      target->connected ? "" : " (disconnected)");
             ns_list_foreach(rpl_dao_root_transit_t, transit, &target->info.root.transits) {
                 // Reuse str_buf as it's no longer needed and it's large enough for ROUTE_PRINT_ADDR_STR_FORMAT.
-                print_fn("    ->%-36s %02x cost=%"PRIu16, ROUTE_PRINT_ADDR_STR_FORMAT(str_buf, transit->transit), transit->path_control, transit->cost);
+                tr_info("    ->%-36s %02x cost=%"PRIu16, ROUTE_PRINT_ADDR_STR_FORMAT(str_buf, transit->transit), transit->path_control, transit->cost);
             }
         } else
 #endif
         {
-            print_fn("  %-40s %02x seq=%d%s%s%s",
+            tr_info("  %-40s %02x seq=%d%s%s%s",
                      str_buf,
                      target->path_control, target->path_sequence, target->need_seq_inc ? "+" : "",
                      target->published ? " (pub)" : "",

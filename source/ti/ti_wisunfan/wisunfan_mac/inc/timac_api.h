@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2005-2023, Texas Instruments Incorporated
+ Copyright (c) 2005-2024, Texas Instruments Incorporated
 
  All rights reserved not granted herein.
  Limited License.
@@ -952,6 +952,8 @@ typedef struct
     sAddr_t             dstAddr;       /* Destination address, extended */
     uint8               chList[MAC_154G_CHANNEL_BITMAP_SIZ]; /* Channel List as a bitmap */
   } dest;
+  uint8                 priority;       /* priority of packet */
+  uint32                reqTimestamp;   /* data request time stamp */
 } macTxIntData_t;
 
 /* For internal use only */
@@ -967,6 +969,22 @@ typedef struct
   uint32            frameCntr;
 } macRxIntData_t;
 
+/*
+ * FH_VP_IE_LEN is defined in fh_ie.h
+ * MAC_FH_VP_IE_LEN should match FH_VP_IE_LEN
+ */
+#define MAC_FH_VP_IE_LEN            (27)
+
+/* define MAC MPL TX timeout value
+ * MPL is transmit at every one second
+ * one second is 1000ms ==> 1000,000 us ==> 100,000 tick (each tick is 10 us)
+ */
+#define MAC_MPL_TX_TIMEOUT_IN_TICK      (100000)
+/*
+ * NanoStack is using MAC_DATA_EXPEDITE_FORWARD
+ */
+#define MAC_MPL_PACKET_PRIORITY     (3)
+
 /* Data request parameters type */
 typedef struct
 {
@@ -978,9 +996,13 @@ typedef struct
   uint8           channel;           /* Transmit the data frame on this channel */
   uint8           power;             /* Transmit the data frame at this power level */
   uint8*          pIEList;           /* pointer to the payload IE list, excluding termination IEs */
-  uint16          payloadIELen;      /* length of the payload IE’s */
+  uint16          payloadIELen;      /* length of the payload IEÂ’s */
   uint8           fhProtoDispatch;   /* Not Used, RESERVED for future. Shall be set to zero */
   uint32          includeFhIEs;      /* Bitmap indicates which FH IE's need to be included */
+  uint8           priority;          /* priority of the data request packet */
+  uint8           vpie_type;         /* vpie type: panID, MPL payload etc */
+  uint8           vpie_length;       /* VPIE payload length */
+  uint8           vpie_payload[MAC_FH_VP_IE_LEN];  /* hold VPIE payload */
 } macDataReq_t;
 
 /* MCPS data request type */
@@ -1062,6 +1084,8 @@ typedef struct
   uint16             headerIeLen;
   uint8*             pPayloadIE;       /* Pointer to the start of payload IE's */
   uint16             payloadIeLen;     /* length of payload ie if any */
+  uint8              ackOption;        /* indicate the TX data has ack Option */
+  uint8              priority;         /* TX packet priority */
 } macMcpsDataCnfAck_t;
 #endif
 
@@ -1448,6 +1472,44 @@ typedef struct
   uint16        macMaxFrameSize;          /* Maximum application data length without security */
 } macCfg_t;
 
+
+#define MAC_MSG_EVT_LOG_SIZE    64
+
+#define MAC_EVENT_LOG_ID_TX_BROADCAST_CHAN              1
+#define MAC_EVENT_LOG_ID_TX_UNICAST_CHAN                2
+#define MAC_EVENT_LOG_ID_START_BS_PANID                 3
+#define MAC_EVENT_LOG_ID_FH_NT                          4
+#define MAC_EVENT_LOG_ID_RX_SYNC_ERROR                  5
+#define MAC_EVENT_LOG_ID_RX_PKT_BC_SLOT_BFIO            6
+
+#define MAC_EVENT_LOG_ID_FH_NT_CREATE_SUCCESS           0
+#define MAC_EVENT_LOG_ID_FH_NT_CREATE_REPLACE           1
+#define MAC_EVENT_LOG_ID_FH_NT_CREATE_FAIL              2
+#define MAC_EVENT_LOG_ID_FH_NT_PUT_SUCCESS              3
+#define MAC_EVENT_LOG_ID_FH_NT_PUT_FAIL                 4
+#define MAC_EVENT_LOG_ID_FH_NT_HIE_FAIL_NO_ENTRY        5
+#define MAC_EVENT_LOG_ID_FH_NT_HIE_FAIL_LEN             6
+#define MAC_EVENT_LOG_ID_FH_NT_PIE_FAIL_FORMAT          7
+#define MAC_EVENT_LOG_ID_FH_NT_PIE_FAIL_CREATE          8
+#define MAC_EVENT_LOG_ID_FH_NT_CREATE_NUM_NODE          9
+#define MAC_EVENT_LOG_ID_FH_NT_DELETE_ENTRY             10
+#define MAC_EVENT_LOG_ID_FH_NT_CREATE_JOIN_NUM_NODE     11
+#define MAC_EVENT_LOG_ID_FH_NT_DELETE_NUM_NODE          12
+#define MAC_EVENT_LOG_ID_FH_NT_DELETE_JOIN_NUM_NODE     13
+#define MAC_EVENT_LOG_ID_FH_NT_RESTORE_NUM_NODE         14
+
+typedef struct _msgLogEvt
+{
+    uint32_t timestamp;
+    uint32_t msgLogID;
+    uint32_t st1;
+    uint32_t st2;
+    uint32_t st3;
+    uint32_t st4;
+} MacMsgEvtLog_s;
+
+uint16_t macReadLogMsg(MacMsgEvtLog_s *pMacLog);
+void macWriteLogMsg(uint32_t eventID, uint32_t st1, uint32_t st2,uint32_t st3,uint32_t st4);
 
 /* ------------------------------------------------------------------------------------------------
  *                                        Internal Functions

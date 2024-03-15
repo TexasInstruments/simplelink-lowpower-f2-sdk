@@ -5,36 +5,36 @@ interpret log messages and send them to Wireshark to be displayed. If you would
 just like to view arbitrary packets in an ITM stream, see the section at the end
 of this document.
 
-Please note there is no support for Linux in this beta, but it will be supported
-in the GA release.
+Please note there is no support for Linux in this version of the logging tool.
 
 # Quick Start Guide
 
 Install Python (3.8.10) from [__python.org__][python-web] and Wireshark
 from [__wireshark.org__][wireshark-web].
 
-There are three steps to displaying logs: installing the python modules using
+There are three steps to displaying logs: installing the Python modules using
 the setup script, configuring Wireshark to display the logs correctly, and
 running the tools.
 
 ## Install `tilogger` command line tool
 
-These modules can be installed in a local "virtualenv" so that the global python
-install is not affected, or it can simply be installed to the global python
+These modules can be installed in a local "virtualenv" so that the global Python
+install is not affected, or it can simply be installed to the global Python
 library.
 
-For windows the python invocation can be done through `py -3 <args>` instead of
-`python3 <args>`. The py launcher lets you specify which python installation
-to use. For example, to run example.py with version 3.8, run `py -3.8 example.py`.
-To list all available version, run `py -0p`.
+*Note*: If you have several versions of Python installed, it is important that
+the tilogger is run with the correct version (3.8). On Windows, this can be controlled
+via the py launcher. To see a list of installed versions, run `py -0p`. The instructions
+below will assume there are multiple versions available, but will also work if only 3.8
+is available.
 
 ### Create and activate a venv (optional)
 
 ```bash
 # Create a virtualenv (local copy of python + packages)
-$ python3 -m venv .venv
+$ py -3.8 -m venv .venv
 # Activate virtualenv.
-$ ./.venv/Scripts/activate.ps1 (or .bat)
+$ .\.venv\Scripts\activate.ps1 (or .bat)
 ```
 
 When you install to a virtualenv you must `activate` it again each time you open
@@ -46,16 +46,38 @@ If you are behind a proxy, you need to either have this configured in the global
 environment variables `http_proxy` and `https_proxy` (and `no_proxy`), or you
 can add `--proxy yourproxy.com` after `install` in the `pip` calls below.
 
+#### Installing the tilogger tool in the virtual environment
+If you are using a virtual environment as created above, the py launcher should not be used to install tilogger.
+Use instead the following command
 ```bash
-# Install the logger core, and ITM and wireshark streams
+# Install the tilogger tool in the virtual environment created above
 $ python3 -m pip install [--proxy yourproxy.com] -r requirements.txt
 ```
 
+#### Installing the tilogger tool globally
+If you wish to install the tilogger tool globally, use the following command
+```bash
+# Install the tilogger tool in the virtual environment created above (optional)
+$ py -3.8 -m pip install [--proxy yourproxy.com] -r requirements.txt
+```
 If you install globally, `python` must be available on PATH for these scripts to
-work, and the `Scripts` folder for the python version you use to install must
+work, and the `Scripts` folder for the Python version you use to install must
 also be on the PATH.
 
 After installing you can use the `tilogger` command. Try it!
+
+## Configure Wireshark
+
+Copy `streams/wireshark/tilog_dissector.lua` to `[Wireshark install
+dir]/plugins/x.y/tilogger_dissector.lua`. This will teach Wireshark to
+understand the TI Logger's packet format. *Warning*: If you have previously
+used an older version of the TI logger tool, make sure to remove the previous
+`dissector.lua` containing the old TI Logger from Wireshark.
+
+To automatically start wireshark when starting the logger, supply `--start` to the
+`wireshark` command.
+
+This has been tested with Wireshark 3.4.x, but should work with later versions as well.
 
 ## Using the `tilogger` command line interface tool
 
@@ -68,18 +90,19 @@ see what the available options and commands are, and by running `tilogger
 $ tilogger --help
 Usage: tilogger [OPTIONS] COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
 
-  Parse Log.h + LogSinkITM logs
+  Parse LogSinkITM and LogSinkUART log output.
 
   This tool may be used to instantiate a serial port parser for the ITM
-  protocol and DOBBY overlay used to encode log strings and meta information
-  inside the toolchain-generated ELF output.
+    and UART Log Sinks. The tool receives logs generated with the Log.h API and
+    reconstructs and displays the log output by using the encoded metadata in the
+    toolchain-generated ELF output.
 
   A simple invocation (provided Wireshark is installed) is
 
     tilogger --elf path/to/elf.out itm COM3 12000000 wireshark --start
 
 Options:
-  --elf PATH            Symbol file paths (elf/out file) shared by all input
+  --elf PATH            Symbol file path (elf/out file) shared by all input
                         parsers  [default: ]
 
   --install-completion  Install completion for the current shell.
@@ -90,6 +113,7 @@ Options:
 
 Commands:
   itm        Add ITM transport as input to log.
+  uart       Add UART transport as input to log.
   wireshark  Add Wireshark to log outputs.
 ```
 
@@ -131,7 +155,33 @@ Arguments:
   BAUDRATE  TPIU baudrate  [required]
 
 Options:
-  --elf PATH    Symbol file paths (elf/out file)  [default: ]
+  --elf PATH    Symbol file path (elf/out file)  [default: ]
+  --alias TEXT  Alias for this device in the log
+  --help        Show this message and exit.
+```
+
+### UART transport help
+
+```
+$ tilogger uart --help
+Usage: tilogger uart [OPTIONS] PORT BAUDRATE
+
+  Add UART transport as input to log.
+
+  You need to specify a serial port and a baudrate (UART LogSink module
+  configures this). The baudrate is often quite high, such as 3000000
+  (3 MHz).
+
+  You also need to specify .out/.elf files that contain symbol information
+  needed to parse the log, but this may also be provided globally before
+  adding transports.
+
+Arguments:
+  PORT      Serial port (eg COM11)  [required]
+  BAUDRATE  UART baudrate  [required]
+
+Options:
+  --elf PATH    Symbol file path (elf/out file)  [default: ]
   --alias TEXT  Alias for this device in the log
   --help        Show this message and exit.
 ```
@@ -160,19 +210,6 @@ Options:
   --help       Show this message and exit.
 ```
 
-## Configure Wireshark
-
-Copy `streams/wireshark/tilog_dissector.lua` to `[Wireshark install
-dir]/plugins/x.x/tilogger_dissector.lua`. This will teach Wireshark to
-understand the TI Logger's packet format. *Warning*: If you have previously
-used an older version of the to logger tool, make sure to remove the previous
-dissector.lua containing the old TI Logger from Wireshark.
-
-To automatically start wireshark when starting the logger, supply `--start` to the
-`wireshark` command.
-
-This has been tested with Wireshark 3.4.x, but should work with later versions as well.
-
 ## Extracting some Logs
 
 The tools must be started in sequence:
@@ -200,7 +237,7 @@ If all goes well, your logs should begin to appear in the Wireshark window.
 
 ## User format modules
 User format modules are functional in this beta, but there are no examples
-provided. You will need to create a python package with a class that inherits
+provided. You will need to create a Python package with a class that inherits
 from one of the ABCs in tilogger.interface. Your package must register an entry
 point (this is documented in the interface classes). If placed in a subfolder of
 modules/, it will be installed into the virtual environment automatically when

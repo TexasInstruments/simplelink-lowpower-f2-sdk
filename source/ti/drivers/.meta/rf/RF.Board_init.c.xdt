@@ -36,6 +36,17 @@
  *  ======== RF.Board_init.c.xdt ========
  */
 
+    const RF = args[0];
+    const rfStatic = RF.$static
+
+    /* See RF.Board.c.xdt for details; this logic is reproduced directly */
+    const generateRfCallback = (
+        (rfStatic.globalCallbackFunction.length !== 0) &&
+        (rfStatic.globalCallbackFunction.toLowerCase() !== "null")
+    );
+    const generateRfCoexCallback = ( generateRfCallback && rfStatic.coexEnable );
+    const useGrantPin = (rfStatic.coexEnable && (rfStatic.coexMode !== "coexMode1WireRequest"));
+
     let RF_CCFG = system.modules["/ti/devices/CCFG"];
     let rfCompensateHf = false;
     if (RF_CCFG !== undefined) {
@@ -52,4 +63,9 @@
     if (status != RF_StatSuccess) {
         while (1);
     }
+%   }
+
+%   if (generateRfCoexCallback === true && useGrantPin === true) {
+    /* Set the GPIO callback for the CoEx GRANT signal to point to the driver's handler (see above)*/
+    GPIO_setCallback(CONFIG_RF_COEX_GRANT, rfDriverCoexPinsHwi);
 %   }
