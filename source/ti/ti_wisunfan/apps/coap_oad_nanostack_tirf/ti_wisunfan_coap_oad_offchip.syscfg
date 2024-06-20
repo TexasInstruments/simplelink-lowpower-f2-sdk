@@ -179,7 +179,6 @@ TI154Stack.project = "coapnode";
 TI154Stack.mode = "frequencyHopping";
 TI154Stack.lockProject = true;
 TI154Stack.rxOnIdle = true;
-TI154Stack.panID = 0xABCD;
 TI154Stack.secureLevel = "macSecure";
 
 /* ======== Device ======== */

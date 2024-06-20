@@ -43,7 +43,7 @@
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
 #include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
 #else
 #include DeviceFamily_constructPath(driverlib/hapi.h)
@@ -55,6 +55,8 @@
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 
+
+#include "slate_test.h"
 #include "trace.h"
 
 #define BLINK_INTERVAL     500000  /* Set blink interval to 500000us or 500ms */
@@ -64,7 +66,7 @@
 extern int MCUBOOT_HDR_BASE;
 struct image_header *mcubootHdr = (struct image_header *)&MCUBOOT_HDR_BASE;
 
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
 /*
  *  ======== disableFlashCache ========
  */
@@ -108,20 +110,20 @@ void gpioButtonFxn0(uint_least8_t index)
     struct image_version versionZero = {0};
     uint32_t flashStat;
     unsigned int key;
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     uint8_t mode;
 #endif
 
     TRACE_LOG_INF("blinky_app invalidating image");
 
     /* Set mcuboot header ver to 0 to invalidate the image */
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     mode = disableFlashCache();
 #endif
     key = HwiP_disable();
     flashStat = FlashProgram((uint8_t *) &versionZero, (uint32_t) &(mcubootHdr->ih_ver), sizeof(mcubootHdr->ih_ver));
     HwiP_restore(key);
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     restoreFlashCache(mode);
 #endif
 
@@ -131,7 +133,7 @@ void gpioButtonFxn0(uint_least8_t index)
     }
 
     /* Reset and run mcuboot */
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22)
     SysCtrlSystemReset();
 #else
     HapiResetDevice();
@@ -153,6 +155,8 @@ void *mainThread(void *arg0)
                       mcubootHdr->ih_ver.iv_minor,
                       mcubootHdr->ih_ver.iv_revision,
                       mcubootHdr->ih_ver.iv_build_num);
+    
+    slate_test_print();
 
     /* Init LED's state */
     GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);

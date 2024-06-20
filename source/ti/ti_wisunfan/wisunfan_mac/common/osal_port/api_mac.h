@@ -737,6 +737,16 @@ typedef enum
     ApiMac_attribute_includeMPMIE = 0x62,
     /*! FCS type */
     ApiMac_attribute_fcsType = 0xE9,
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    /*! DutyCycle PIB - Enable - True if duty cycle checking is enabled,
+     * false otherwise. */
+    ApiMac_attribute_dutyCycleEnabled = 0xEB,
+#endif
+#ifdef MAC_OVERRIDE_TX_DELAY
+    /*! Minimum TX Off-time PIB - True if user-defined minTxOff time is to be used
+     * false otherwise. */
+    ApiMac_attribute_customMinTxOffEnabled = 0xEC
+#endif
 } ApiMac_attribute_bool_t;
 
 /*! Standard PIB Get and Set Attributes - size uint8_t */
@@ -840,6 +850,18 @@ typedef enum
      RF PA Selection from 0 to 1
      */
     ApiMac_attribute_paType = 0xF8,
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    /*! MAC Duty Cycle Mode Status - Current operating mode of the duty cycle
+     * algorithm. For ARIB regulation, can be either dcModeNormal (0) if the duty cycle
+     * network utilization threshold has not been reached or dcModeRegulated (3) if
+     * the threshold has been reached. These states are defined by macDutyCycleMode_t
+     * enum in mac_api.h */
+    ApiMac_attribute_dutyCycleStatus = 0xF2,
+#endif
+    /*!
+     regdomain
+    */
+    ApiMac_attribute_regDomain = 0x63
 } ApiMac_attribute_uint8_t;
 
 /*! Standard PIB Get and Set Attributes - size uint16_t */
@@ -890,6 +912,7 @@ typedef enum
     ApiMac_attribute_beaconTxTime = 0x48,
     /*! Diagnostics PIB - Received CRC pass counter */
     ApiMac_attribute_diagRxCrcPass = 0xEA,
+#ifndef MAC_DUTY_CYCLE_CHECKING
     /*! Diagnostics PIB - Received CRC fail counter */
     ApiMac_attribute_diagRxCrcFail = 0xEB,
     /*! Diagnostics PIB - Received broadcast counter */
@@ -906,8 +929,37 @@ typedef enum
     ApiMac_attribute_diagTxUnicastFail = 0xF1,
     /*! Diagnostics PIB - Received Security fail counter */
     ApiMac_attribute_diagRxSecureFail = 0xF2,
+
+#else
+    /*! DutyCycle PIB - Limited Threshold - unused for ARIB regulation */
+    ApiMac_attribute_dutyCycleLimited = 0xEC,
+    /*! DutyCycle PIB - Critical Threshold - unused for ARIB regulation */
+    ApiMac_attribute_dutyCycleCritical = 0xED,
+    /*! DutyCycle PIB - Regulated Threshold - Threshold (in ms of TX time)
+     * at which the duty cycle limitation is reached for the last 1 hour.
+     * By default, ARIB regulation is at most 360s/hour of TX time per device. */
+    ApiMac_attribute_dutyCycleRegulated = 0xEE,
+    /*! DutyCycle PIB - Used Amount - How much TX time (in ms) has been used within
+     * the last hour of transmission. Note that in Beacon Mode operation, beacon
+     * frames are not included in this count, as beacon frames are required to be
+     * sent to maintain the network. Beacon frames are accounted for via internal
+     * adjustment of the duty cycle threshold to make sure enough time is allocated
+     * for the specified beacon interval (derived from beacon order). */
+    ApiMac_attribute_dutyCycleUsed = 0xEF,
+    /*! DutyCycle PIB - Bucket Pointer (wr_idx) - Duty cycle debug value indicating
+     * which bucket of the duty cycle tracking array is the current target bucket
+     * for new transmissions. */
+    ApiMac_attribute_dutyCyclePtr = 0xF0,
+#endif
+#ifndef MAC_OVERRIDE_TX_DELAY
     /*! Diagnostics PIB - Transmit Security fail counter */
     ApiMac_attribute_diagTxSecureFail = 0xF3
+#else
+    /*!
+     Sets the minimum amount of time during which the transmitter shall
+     remain off following a transmission when using an ARIB or ETSI PHY */
+    ApiMac_attribute_minTxOffTime = 0xF3
+#endif
 } ApiMac_attribute_uint32_t;
 
 /*! Standard PIB Get and Set Attributes - these attributes are array of bytes */
@@ -922,6 +974,13 @@ typedef enum
     ApiMac_attribute_coordExtendedAddress = 0x4A,
     /*! The extended address of the device */
     ApiMac_attribute_extendedAddress = 0xE2,
+
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    /*! DutyCycle PIB - Bucket - Duty cycle debug parameter which returns the full
+     * list of buckets and their values. Size of the returned bucket array is
+     * sizeof(DC_NODE_ENTRY_s) * DUTY_CYCLE_BUCKETS*/
+    ApiMac_attribute_dutyCycleBucket = 0xF1,
+#endif
 } ApiMac_attribute_array_t;
 
 /*! Security PIB Get and Set Attributes - size uint8_t  */

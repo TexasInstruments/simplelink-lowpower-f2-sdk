@@ -103,6 +103,14 @@ const moduleStatic = {
                     name: "coapnode",
                     displayName: "CoAP"
                 },
+                {
+                    name: "solarborderrouter",
+                    displayName: "Solar Base Station"
+                },
+                {
+                    name: "solarcoapnode",
+                    displayName: "Solar Node"
+                }
             ],
             description: docs.project.description,
             longDescription: docs.project.longDescription,
@@ -186,6 +194,7 @@ function onProjectChange(inst, ui)
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhNetname");
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhBroadcastDwellTime");
     networkScript.setNetworkConfigHiddenState(inst, ui, "broadcastChannelMask");
+    networkScript.setNetworkConfigReadonlyState(inst, ui, "panID");
 
     // Set visibility of power group dependents
     powerScript.setPowerConfigHiddenState(inst, ui, "rxOnIdle");
@@ -195,6 +204,12 @@ function onProjectChange(inst, ui)
         "collectorTestRampDataSize");
     testModeScript.setTestConfigHiddenState(inst, ui,
         "sensorTestRampDataSize");*/
+
+    // Solar example defaults/hidden setting changes
+    networkScript.setDefaultNetname(inst);
+    networkScript.setDefaultDwellTime(inst);
+    advancedScript.setDefaultAdvancedSettings(inst);
+    advancedScript.setAdvancedSettingsHiddenState(inst, ui);
 }
 
 /*
@@ -220,7 +235,6 @@ function onModeChange(inst, ui)
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhNetname");
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhBroadcastDwellTime");
     networkScript.setNetworkConfigHiddenState(inst, ui, "fhBroadcastInterval");
-
 
     // Polling interval not used in be
     networkScript.setDefaultChannelMasks(inst);
@@ -354,6 +368,8 @@ function getLibs(inst)
             case "borderrouter": mbedType = "br"; break;
             case "routernode":   mbedType = "rn"; break;
             case "coapnode":     mbedType = "coap"; break;
+            case "solarborderrouter": mbedType = "br"; break;
+            case "solarcoapnode":     mbedType = "coap"; break;
         }
 
         let devType;
@@ -437,6 +453,16 @@ function getOpts(inst) {
         }
     } else { // Default security
         result.push("-DDEFAULT_MBEDTLS_AUTH_ENABLE");
+    }
+
+    if (inst.$static.dutyCycleEnable) {
+        result.push("-DMAC_DUTY_CYCLE_CHECKING");
+        result.push("-DMAC_DUTY_CYCLE_THRESHOLD=(" + inst.$static.dutyCycle + ")");
+    }
+
+    if (inst.$static.customMinTxOff) {
+        result.push("-DMAC_OVERRIDE_TX_DELAY");
+        result.push("-DMAC_CONFIG_MIN_TX_OFF=(" + inst.$static.minTxOff + ")");
     }
 
     return result; 
@@ -529,6 +555,15 @@ const ti_wisunfanStackModule = {
             modName: "/ti/ti_wisunfan/ti_wisunfan",
             getOpts: getOpts
         }
+    },
+    extraExports: {
+        onLockProjectChange: onLockProjectChange,
+        onProjectChange: onProjectChange,
+        getDisabledModeOptions: getDisabledModeOptions,
+        onModeChange: onModeChange,
+        validate: validate,
+        moduleInstances: moduleInstances,
+        modules: modules
     }
 };
 

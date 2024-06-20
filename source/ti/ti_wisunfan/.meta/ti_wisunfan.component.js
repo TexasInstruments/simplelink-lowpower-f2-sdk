@@ -46,6 +46,7 @@ const supportedDevices = [
     "CC1314R10RSK",
     "CC1354R10RGZ",
     "CC1354P10RSK",
+    "CC1354P10RGZ",
 ];
 
 let topModules = [];

@@ -52,7 +52,7 @@
 
 #include <ti/devices/DeviceFamily.h>
 #include DeviceFamily_constructPath(driverlib/flash.h)
-#ifdef DeviceFamily_CC23X0R2
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
   #include DeviceFamily_constructPath(inc/hw_vims.h)
 #else
   #include DeviceFamily_constructPath(driverlib/vims.h)

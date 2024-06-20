@@ -56,8 +56,8 @@ extern "C"
  *                                          Includes
  */
 
-#include "oad_image_header.h"
-#include "crc32.h"
+#include "ti/common/cc26xx/oad/oad_image_header.h"
+#include "ti/common/cc26xx/crc/crc32.h"
 
 
 /*********************************************************************

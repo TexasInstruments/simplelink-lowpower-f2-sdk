@@ -246,6 +246,7 @@ ti_wisun_config_t ti_wisun_config =
     .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
     .auth_type  = NETWORK_AUTH_TYPE,
     .use_fixed_gtk_keys = false,
+    .force_star_topology = FEATURE_FORCE_STAR_TOPOLOGY,
     .fixed_gtk_keys = {
         FIXED_GTK_KEY_1,
         FIXED_GTK_KEY_2,
@@ -1740,6 +1741,11 @@ void fetch_neighbor_details()
 {
     protocol_interface_info_entry_t *cur;
     cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+    if(!cur || !cur->mac_parameters || !cur->mac_parameters->mac_neighbor_table)
+    {
+        tr_debug("fetch_neighbor_details: NULL pointer");
+        return;
+    }
 
     uint8_t max_nbrs, nbr_idx = 0;
 
@@ -1884,6 +1890,17 @@ rpl_dao_target_t *get_dao_target_from_addr(rpl_instance_t *instance, const uint8
     // Always return NULL, only valid for BR devices
     return NULL;
 }
+
+uint16_t get_network_panid(void)
+{
+    protocol_interface_info_entry_t *cur;
+    cur = protocol_stack_interface_info_get(IF_6LoWPAN);
+    if (!cur || !cur->ws_info) {
+        return 0xFFFF;
+    }
+    return cur->ws_info->network_pan_id;
+}
+
 
 #ifdef WISUN_TEST_METRICS
 extern JOIN_TIME_s node_join_time;

@@ -46,7 +46,11 @@ const defaultPropPhyList = commonPhySettings.defaultPropPhyList;
 // IEEE phy setting only supported on the LP_CC1352P7_1 CoP
 const defaultIEEEPhyList = commonPhySettings.defaultIEEEPhyList;
 
+// Contains the object over the configurable phy 
+const customPhyList = commonPhySettings.customPhyList;
+
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList: customPhyList
 };

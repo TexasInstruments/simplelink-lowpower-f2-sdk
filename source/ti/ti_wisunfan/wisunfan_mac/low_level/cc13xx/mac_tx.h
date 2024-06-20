@@ -125,6 +125,7 @@ extern uint8  txAckReq;
 extern uint8 txSeqn;
 extern volatile uint8 txRetransmitFlag;
 extern uint8  txChannel;
+extern uint8_t regDomain;
 /* ------------------------------------------------------------------------------------------------
  *                                       Prototypes
  * ------------------------------------------------------------------------------------------------
@@ -158,6 +159,7 @@ extern void macTxAbortIsr(void);
 extern void macTxAckIsr(void);
 extern void macTxRequestCsmaDelay(void);
 extern uint8 macTxDecrypt(void);
+extern uint32_t macTxGetDefaultMinTxOffTime(void);
 
 
 /**************************************************************************************************

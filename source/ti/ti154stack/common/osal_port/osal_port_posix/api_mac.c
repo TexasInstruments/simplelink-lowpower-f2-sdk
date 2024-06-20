@@ -353,7 +353,7 @@ void ApiMac_registerCallbacks(ApiMac_callbacks_t *pCallbacks)
 }
 
 /*!
- Register for MAC callbacks.
+ Process incoming messages from the MAC
 
  Public function defined in api_mac.h
  */
@@ -547,7 +547,7 @@ ApiMac_status_t ApiMac_mlmeGetReqArray(ApiMac_attribute_array_t pibAttribute,
  *
  * @param       pibAttribute - The attribute identifier
  * @param       pValue - pointer to the attribute value
- * @param       pLen - pointer to the read length
+ * @param       pLen - pointer to the read length - Max size of MAX_PARAM_BUF_SIZE_MAC
  *
  * @return      The status of the request
  */
@@ -577,6 +577,11 @@ ApiMac_status_t ApiMac_mlmeGetReqArrayLen(ApiMac_attribute_array_t pibAttribute,
             memcpy(pValue, &ti154stack_version, sizeof(ti154stack_version_t));
             pValue += sizeof(ti154stack_version_t);
             memcpy(pValue, &ti154stack_core_version, sizeof(ti154stack_core_version_t));
+        }
+        else if(subAttributeReadId == ApiMac_subAttribute_getMacStatistics)
+        {
+            *pLen = sizeof(macStatisticsStruct_t);
+            memcpy(pValue, &macStatistics, sizeof(macStatisticsStruct_t));
         }
         else
         {
@@ -1035,6 +1040,10 @@ ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
             GP_Offset = *value;
         }
 #endif
+        else if (subAttribute == ApiMac_subAttribute_setMacStatistics)
+        {
+            memcpy(&macStatistics, value, sizeof(macStatisticsStruct_t));
+        }
         else
         {
             return ApiMac_status_unsupportedAttribute;
@@ -1135,23 +1144,28 @@ ApiMac_status_t ApiMac_mlmeEnableCoex(bool enabled)
 
 ApiMac_status_t ApiMac_mlmeConfigCoex(uint16_t* coexEnableBitmap)
 {
+    uint16_t panID;
+
 #ifdef IEEE_COEX_ENABLED
-        ieeeCoexBitmap = *coexEnableBitmap;
-        coexConfig.coExEnable.bCoExEnable = ieeeCoexBitmap & APIMAC_COEX_ENABLE ? 1 : 0;
+    ieeeCoexBitmap = *coexEnableBitmap;
+    coexConfig.coExEnable.bCoExEnable = ieeeCoexBitmap & APIMAC_COEX_ENABLE ? 1 : 0;
 #endif
 #ifdef IEEE_COEX_3_WIRE
-        coexOverrideUseCases.ieeeConnEstabTx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CE_TX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
-        coexOverrideUseCases.ieeeConnEstabTx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CE_TX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
+    coexOverrideUseCases.ieeeConnEstabTx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CE_TX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
+    coexOverrideUseCases.ieeeConnEstabTx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CE_TX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
 
-        coexOverrideUseCases.ieeeConnectedTx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CONN_TX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
-        coexOverrideUseCases.ieeeConnectedTx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CONN_TX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
+    coexOverrideUseCases.ieeeConnectedTx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CONN_TX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
+    coexOverrideUseCases.ieeeConnectedTx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CONN_TX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
 
-        coexOverrideUseCases.ieeeConnEstabRx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CE_RX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
-        coexOverrideUseCases.ieeeConnEstabRx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CE_RX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
+    coexOverrideUseCases.ieeeConnEstabRx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CE_RX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
+    coexOverrideUseCases.ieeeConnEstabRx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CE_RX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
 
-        coexOverrideUseCases.ieeeConnectedRx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CONN_RX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
-        coexOverrideUseCases.ieeeConnectedRx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CONN_RX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
-#endif 
+    coexOverrideUseCases.ieeeConnectedRx.defaultPriority        = (ieeeCoexBitmap & APIMAC_COEX_PRI_CONN_RX) ? RF_PriorityCoexHigh : RF_PriorityCoexLow;
+    coexOverrideUseCases.ieeeConnectedRx.assertRequestForRx     = (ieeeCoexBitmap & APIMAC_COEX_RX_REQ_CONN_RX) ? RF_RequestCoexAssertRx : RF_RequestCoexNoAssertRx;
+#endif
+    ApiMac_mlmeGetReqUint16(ApiMac_attribute_panId, &panID);
+    ApiMac_updatePanId(panID);
+
     return ApiMac_status_success;
 }
 

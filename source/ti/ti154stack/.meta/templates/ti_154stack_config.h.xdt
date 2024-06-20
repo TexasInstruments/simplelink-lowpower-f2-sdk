@@ -65,6 +65,14 @@ const inst = system.modules["/ti/ti154stack/ti154stack"].$static;
 // Get the RF module
 const RF = system.modules["/ti/drivers/RF"].$static;
 
+// Get radio common script
+const rfConfig = system.getScript("/ti/ti154stack/rf_config/"
++ "ti154stack_rf_config.syscfg.js");
+
+// Get custom PHY settings 
+const customObj = system.getScript("/ti/ti154stack/rf_config/"
+    + "phyCustom.js");
+
 function keyTable() {
     const isSecureEnabled = inst.secureLevel !== "macSecurityDisabled";
     const psk = isSecureEnabled ? inst.keyTableDefaultKey : _.repeat("F",32);
@@ -114,6 +122,7 @@ extern "C"
 #endif
 %
 
+
 /* Setting for PAN ID */
 #define CONFIG_PAN_ID                   `Common.toHexString(inst.panID)`
 
@@ -122,6 +131,27 @@ extern "C"
 
 /* Setting for channel page */
 #define CONFIG_CHANNEL_PAGE             `rfCommon.getPhySysConfigInfo(inst).channelPage`
+
+% if (inst.customPhy) {
+#define ENABLE_CUSTOM_PHY
+#define CENTER_FREQUENCY_CUSTOM         `rfCommon.getPhySysConfigInfo(inst).chan0Freq`
+#define CHANNEL_SPACING_CUSTOM          `rfCommon.getPhySysConfigInfo(inst).chanSpacing`
+#define NUM_CHANNELS_CUSTOM             `rfCommon.getPhySysConfigInfo(inst).numChannels`
+#define SYMBOL_RATE_CUSTOM              `inst.radioConfig.symbolRate`
+#define CCA_TYPE_CUSTOM                 `(rfCommon.getPhySysConfigInfo(inst).freqBand === "freq863") ? "2" : "1"`
+% }
+
+ /* Setting for symbol duration */
+#define RF_CONFIG_CUSTOM_PHY_ID    {                                                           \
+    &`customObj.commonCustomPhySettings.args.codeExportConfig.rfMode`,                                                                  \
+    `customObj.commonCustomPhySettings.args.codeExportConfig.txPower`,                                                              \
+    (const rfc_CMD_PROP_RADIO_DIV_SETUP_PA_t *)&`rfConfig.IsPdevice()`,       \
+    (const rfc_CMD_FS_t *)&`customObj.commonCustomPhySettings.args.codeExportConfig.cmdFs`,                                           \
+    (const rfc_CMD_PROP_TX_ADV_t *)&`customObj.commonCustomPhySettings.args.codeExportConfig.cmdPropTxAdv`,                           \
+    (const rfc_CMD_PROP_RX_ADV_t *)&`customObj.commonCustomPhySettings.args.codeExportConfig.cmdPropRxAdv`,                           \
+    (const rfc_CMD_PROP_CS_t *)&`customObj.commonCustomPhySettings.args.codeExportConfig.cmdPropCs`,                                  \
+    (void *)NULL                                                                                     \
+} 
 
 % let channelMaskHexArr = Common.channelMaskCHexStrArr(inst["channels"]);
 /*

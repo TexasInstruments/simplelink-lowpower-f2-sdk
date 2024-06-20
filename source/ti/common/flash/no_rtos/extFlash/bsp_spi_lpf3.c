@@ -61,7 +61,7 @@
 #define BLS_SPI_BASE      SPI0_BASE
 #define BLS_CPU_FREQ      48000000ul
 
-#if defined(DeviceFamily_CC23X0R2)
+#if defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
 #define IOC_O_IOC0        (IOC_O_IOC3 - (sizeof(uint32_t) * 3))
 #endif
 
@@ -77,11 +77,11 @@
 #define GPIO_MUX_PORTCFG_PFUNC_4                0x00000004
 #define GPIO_CFG_INPUT_INTERNAL_NO_PULL         0x20040002
 
-#if defined(DeviceFamily_CC23X0R5)
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53)
     #define MISO_PINMUX     GPIO_MUX_PORTCFG_PFUNC_1
     #define MOSI_PINMUX     GPIO_MUX_PORTCFG_PFUNC_2
     #define CLK_PINMUX      GPIO_MUX_PORTCFG_PFUNC_4
-#elif defined(DeviceFamily_CC23X0R2)
+#elif defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
     #define MISO_PINMUX     GPIO_MUX_PORTCFG_PFUNC_4
     #define MOSI_PINMUX     GPIO_MUX_PORTCFG_PFUNC_2
     #define CLK_PINMUX      GPIO_MUX_PORTCFG_PFUNC_1

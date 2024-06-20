@@ -40,12 +40,12 @@
 const rfDesign = {
     description: "Select which RF design to use as template",
     longDescription: `
-The user must select an existing TI RF design to reference for radio \
-configuration. This value must match the Based on RF Design parameter in the \
+The user must select an existing TI RF design to reference for radio
+configuration. This value must match the Based on RF Design parameter in the
 RF module.
 \n\
-__Default__: The RF design reference selected in this project is automatically \
-configured based on the example. Please move to a custom board or see the \
+__Default__: The RF design reference selected in this project is automatically
+configured based on the example. Please move to a custom board or see the
 other examples provided in the SDK if another reference board is desired.`
 };
 
@@ -53,11 +53,11 @@ const freqBand = {
     description: "Configures the frequency band used for radio operations",
     readOnly: "Automatically set based on the project selected",
     longDescription: `
-The TI 15.4-Stack can be configured for operation in Sub-1 GHz and 2.4GHz \
+The TI 15.4-Stack can be configured for operation in Sub-1 GHz and 2.4GHz
 frequency bands.
 \n\
-__Default__: The frequency band selected in this project is automatically \
-configured based on the example. Please see the other examples provided in \
+__Default__: The frequency band selected in this project is automatically
+configured based on the example. Please see the other examples provided in
 the SDK if another frequency band is desired.
 `
 };
@@ -65,15 +65,15 @@ the SDK if another frequency band is desired.
 const freqSub1 = {
     description: "Configures Sub-1 GHz frequency band used for radio operation",
     longDescription: `
-Configures the Sub-1 GHz ISM frequency band that will be used for radio \
-configuration. The Sub-1 GHz frequency band should be selected based on region \
+Configures the Sub-1 GHz ISM frequency band that will be used for radio
+configuration. The Sub-1 GHz frequency band should be selected based on region
 of operation.
 \n\
 For more information, refer to the [Data-Rate and PHY](/ti154stack/html/\
-ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the \
+ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the
 TI15.4-Stack User's Guide.
 \n\
-__Default__: 915 MHz
+__Default__: 902-927 MHz
 \n\
 Frequency Band | Region
 ---   | ---
@@ -88,12 +88,12 @@ const phyType = {
     description: "Configures the PHY frequency modulation and data-rate",
     readOnly: "Only phy type available for 2.4 GHz projects",
     longDescription: `
-Configures the frequency modulation and data rate that will be used for radio \
+Configures the frequency modulation and data rate that will be used for radio
 configuration.
 \n\
-For more information, refer to the \
+For more information, refer to the
 [Data-Rate and PHY](/ti154stack/html/ti154stack/\
-ti154stack-overview.html#data-rate-and-phy) section of the TI15.4-Stack User's\
+ti154stack-overview.html#data-rate-and-phy) section of the TI15.4-Stack User's
 Guide.
 \n\
 __Default__ (Sub-1 GHz): 50kbps, 2-GFSK
@@ -105,7 +105,7 @@ __Default__ (2.4 GHz): 250kbps, OQPSK
 const regulationType = {
     description: "Selects the PHY regulation",
     longDescription: `
-Select the PHY regulation to be followed. Note that not all frequency \
+Select the PHY regulation to be followed. Note that not all frequency
 bands are supported on each standard.
 \n\
 __Supported Frequency Bands__:
@@ -128,12 +128,12 @@ const phyID = {
     description: "Configures the PHY descriptor",
     readOnly: "Automatically set based on frequency and phy type selected",
     longDescription: `
-The PHY ID corresponds to the PHY descriptor to be used based on the region \
-of operation. It is automatically configured based on the selections made for \
+The PHY ID corresponds to the PHY descriptor to be used based on the region
+of operation. It is automatically configured based on the selections made for
 frequency band, modulation, and data rate.
 \n\
 For more information, refer to the [Data-Rate and PHY](/ti154stack/html/\
-ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the \
+ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the
 TI15.4-Stack User's Guide.
 \n\
 __Default__ (Sub-1 GHz): APIMAC_50KBPS_915MHZ_PHY_1
@@ -146,7 +146,7 @@ const channelPage = {
     description: "Configures the channel page on which to perform the scan",
     readOnly: "Automatically set based on frequency and phy type selected",
     longDescription: `
-Configures the channel page on which to perform the scan. It is automatically \
+Configures the channel page on which to perform the scan. It is automatically
 configured based on the PHY ID.
 \n\
 __Default__ (Sub-1 GHz): APIMAC_CHANNEL_PAGE_9
@@ -247,6 +247,94 @@ RF   __| rx |__| tx |__| rx |___
     }
 };
 
+const customPhy = {
+    description: "Enables usage and configuration of Sub1GHz custom PHY",
+    readOnly: "Disabled by Custom PHY option. Setting is overridden by " +
+        "custom PHY settings.",
+    readOnlyMode: "Disabled by Custom PHY option. Only non-beacon mode is " +
+        "supported for Custom PHY",
+    longDescription: `
+Enables the usage and configuration of Sub1GHz custom PHY. This will override
+existing selections for regulation type, Sub1GHz frequency, and PHY type,
+instead using the custom configurations below and the configurables provided
+by the Custom PHY Radio Configuration tab.
+
+This option is only available for collector and sensor projects. Coprocessor
+is not supported. Additionally, only non-beacon mode is supported. Beacon and
+FH mode are not supported.
+
+Note that PHYs enabled by the custom PHY mode have not been individually
+verified to function with the 15.4 MAC or application examples. Certain
+combinations of configurations may not be fully functional.
+
+The default settings provided by the custom PHY mode support the WB-DSSS PHYs.
+To access new PHYs, change the PHY Type configurable in the Custom PHY Radio
+Configuration tab. It is recommended to only change the PHY Type configurable
+and leave all other settings to their default values.
+
+After selecting the desired PHY Type, make compatible selections in the
+custom frequency band, channel 0 center frequency, channel spacing, total
+channel number, and symbol rate fields.
+
+__Default__: false
+`
+};
+
+const customFreqBand = {
+    description: "Set Sub-1 GHz frequency band for custom PHY",
+    longDescription: `
+Configures the Sub-1 GHz ISM frequency band that will be used for radio
+configuration. The Sub-1 GHz frequency band should be selected based on region
+of operation. The band must also lie within the Frequency Band selection
+in the Custom PHY Radio Configuration tab.
+
+\n\
+For more information, refer to the [Data-Rate and PHY](/ti154stack/html/\
+ti154stack/ti154stack-overview.html#data-rate-and-phy) section of the
+TI15.4-Stack User's Guide.
+\n\
+__Default__: 902-927 MHz
+\n\
+Frequency Band | Region
+---   | ---
+433 - 434 MHz | China
+863 - 869 MHz | European Union
+902 - 927 MHz | North America
+920 - 927 MHz | Japan
+`
+};
+
+const customCh0Freq = {
+    description: "Set custom the channel 0 frequency in MHz",
+    longDescription: `
+Configure starting channel (channel 0) frequency in MHz. Must be within the
+Sub1GHz frequency band range.
+
+__Default__: 903.0 MHz
+`
+};
+
+const customChSpacing = {
+    description: "Set the channel spacing in kHz",
+    longDescription: `
+Configures the interchannel spacing in kHz. Must be twice as high as the RX
+Filter BW set in the Custom PHY Radio Configuration tab (under PHY properties).
+
+__Default__: 1600 kHz
+`
+};
+
+const customChNum = {
+    description: "Set the total number of channels used",
+    longDescription: `
+Set the total number of channels used. Combined with Ch0 frequency and channel
+spacing configuration, final channel range should be within the Sub-1 GHz
+frequency band selection.
+
+__Default__: 16
+`
+};
+
 exports = {
     rfDesign: rfDesign,
     freqBand: freqBand,
@@ -255,5 +343,10 @@ exports = {
     phyType: phyType,
     phyID: phyID,
     channelPage: channelPage,
-    coex: coex
+    coex: coex,
+    customPhy: customPhy,
+    customFreqBand: customFreqBand,
+    customCh0Freq: customCh0Freq,
+    customChSpacing: customChSpacing,
+    customChNum: customChNum
 };

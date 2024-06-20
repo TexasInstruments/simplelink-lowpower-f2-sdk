@@ -134,6 +134,7 @@ ti_wisun_config_t ti_wisun_config =
     .rapid_disconnect_detect_rn = FEATURE_RAPID_DISCONNECT_DETECT_RN_SEC,
     .auth_type  = NETWORK_AUTH_TYPE,
     .use_fixed_gtk_keys = false,
+    .force_star_topology = FEATURE_FORCE_STAR_TOPOLOGY,
     .fixed_gtk_keys = {
         FIXED_GTK_KEY_1,
         FIXED_GTK_KEY_2,
@@ -190,12 +191,11 @@ static uint32_t num_pkts = 0;
 int8_t socket_id;
 uint8_t multi_cast_addr[16] = {0};
 
-uint8_t send_buf[SEND_BUF_SIZE] = {0};
-
 uint32_t gPktCount = 0;
 timeout_t *gUDP_pkt_timeout;
 void handle_message(char* msg);
 extern void timac_GetBC_Slot_BFIO(uint16_t *slot, uint32_t *bfio);
+uint16_t startUDPArgs[2];
 #endif
 
 bool is_in_eapol_eui_allow_list(uint8_t *euiAddress);
@@ -567,21 +567,42 @@ void sendUDPTraffic () {
     ns_address_t send_addr = {0};
     uint16_t slotIdx;
     uint32_t bfio;
+    uint8_t hopCount = 1;
+    uint16_t pktLen = 20;
+    int16_t multicast_hops;
+    uint8_t* send_buf;
 
     /* Set multicast send address */
     send_addr.type = ADDRESS_IPV6;
     send_addr.identifier = UDP_PORT_TEST;
     memcpy(send_addr.address, multi_cast_addr, 16);
 
+    hopCount = (uint8_t) startUDPArgs[0];
+    pktLen   = (uint16_t) startUDPArgs[1];
+
+    send_buf = malloc(pktLen);
+
     timac_GetBC_Slot_BFIO(&slotIdx, &bfio);
-    snprintf(send_buf, sizeof(send_buf), "Id:%d:bfio:%u", slotIdx,bfio);
-    tr_mpl("UDP payload slot(%d), BFIO(%u)", slotIdx, bfio);
+//    tr_mpl("UDP payload slot(%d), BFIO(%u)", slotIdx, bfio);
+
+    if (send_buf)
+    {
+        snprintf(send_buf, pktLen, "Id:%d:bfio:%u:%d:%d", slotIdx,bfio, hopCount, pktLen);
+    }
 
     // Send UDP Packet until the desired numbers
     if (gPktCount--) {
-        ret = socket_sendto(socket_id, &send_addr, send_buf, sizeof(send_buf));
+        // Set #of hops for multicast message
+        multicast_hops = hopCount;
+        socket_setsockopt(socket_id, SOCKET_IPPROTO_IPV6, SOCKET_IPV6_MULTICAST_HOPS, &multicast_hops, sizeof(multicast_hops));
+        ret = socket_sendto(socket_id, &send_addr, send_buf, pktLen);
     } else {
        eventOS_timeout_cancel(gUDP_pkt_timeout);
+    }
+
+    if (send_buf)
+    {
+        free(send_buf);
     }
 }
 
@@ -589,13 +610,19 @@ void sendUDPTraffic () {
  * Set up number of UDP packets to be send
  * and set up timer to send the packets.
  */
-void startUDPTraffic (uint32_t numPkts) {
+void startUDPTraffic (uint32_t numPkts, uint8_t pktInterval, uint8_t hopCount, uint16_t pktLen) {
+    uint32_t updPktInterval;
+
     if (numPkts){
         gPktCount = numPkts;
     } else {
         gPktCount = 0xFFFFFFFF;
     }
-    gUDP_pkt_timeout = eventOS_timeout_every_ms(sendUDPTraffic, UDP_PKT_INTERVAL, NULL);
+    startUDPArgs[0] = hopCount;
+    startUDPArgs[1] = pktLen;
+    // Convert seconds to mSec
+    updPktInterval = pktInterval * 1000;
+    gUDP_pkt_timeout = eventOS_timeout_every_ms(sendUDPTraffic, updPktInterval, NULL);
 }
 #endif
 

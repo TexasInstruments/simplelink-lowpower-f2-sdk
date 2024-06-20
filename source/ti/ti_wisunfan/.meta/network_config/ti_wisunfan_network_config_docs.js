@@ -43,10 +43,10 @@ const panID = {
     description: "Configures personal area network ID",
     longDescription: `
 Used to restrict the network to a certain PAN ID. If left as 0xFFFF on the \
-border router, the border router starts with a randomly selected PAN ID between 0x0000 and 0xFFFE. If this parameter is set \
-to a certain value for the border router, the value should be set to either the \
-same value or 0xFFFF for the router application, so that the router joins the \
-intended parent.
+border router, the border router starts with a randomly selected PAN ID between 0x0000 and 0xFFFE.
+\n\
+PAN ID is initially set to 0xFFFF on router nodes. On network join, it is updated to the PAN ID \
+of the joined network.
 \n\
 __Default__: 0xFFFF
 \n\
@@ -133,6 +133,15 @@ __Acceptable Values__: 32-bit ASCII value
     `
 };
 
+const starNetwork = {
+    description: "Force the network topology to a star network.",
+    longDescription: `
+Use the RPL minimum rank increase per hop to enforce a star network topology. \
+All nodes will join the network directly connected to the base node at 1-hop.
+`
+};
+
+// ======== Advanced MAC ========
 
 const ccaThreshold = {
     description: "Configures network ccaThreshold",
@@ -192,6 +201,72 @@ __Range__: 0 to 255
 `
 };
 
+const customMinTxOff = {
+    description: `Enable in order to set a custom minimum TX off-time`,
+    longDescription: `
+The minimum TX off-time, also known as the pause duration, specifies the \
+minimum amount of time during which the transmitter shall remain off following \
+a transmission.
+\n\
+If left unselected, the MAC will use the minimum TX off-time specified by the \
+appropriate regulation:
+* ETSI (EU region): 100 ms
+* ARIB (JP region): 2 ms
+\n\
+__Default__: False (unchecked)
+`
+};
+
+const minTxOff = {
+    description: `Configures a custom minimum TX off-time`,
+    longDescription: `
+The minimum TX off-time, also known as the pause duration, specifies the \
+minimum amount of time during which the transmitter shall remain off following \
+a transmission.
+\n\
+Note that on the CoProcessor project this minimum TX off-time will be used for \
+all PHYs.
+\n\
+__Default__ (ETSI (EU region)): 100 ms
+\n\
+__Default__ (ARIB (JP region)): 2 ms
+\n\
+__Range__: 0 to UINT32_MAX
+`
+};
+
+const dutyCycleEnable = {
+    description: `Enable duty cycling to set a network utilization threshold`,
+    longDescription: `
+The duty cycle feature keeps track of the network utilization in an arbitrary \
+hour (3600 sec) and rejects any radio TX (including ACK frames) that would \
+violate the network utilization setting.
+\n\
+If left unselected, the network will not use duty cycling. This feature is \
+currently only available when using an EU or JP region PHY.
+
+\n\
+__Default__: False
+`
+};
+
+const dutyCycle = {
+    description: `Configures the network utilization threshold in percentage.`,
+    longDescription: `
+The duty cycle feature keeps track of the network utilization in an arbitrary \
+hour (3600 sec), and rejects any radio TX (including ACK frames) that would \
+violate the network utilization setting.
+\n\
+The configurable sets the allowable network utilization per hour as a \
+percentage of the total 1 hour window. For example, a 10% duty cycle value \
+would permit total network utilization of 3600*0.10 = 360 sec per hour window.
+\n\
+__Default__ (fixed channel network): 10%
+\n\
+__Range__: 0 to 100
+`
+};
+
 exports = {
     panID: panID,
     channels: fhChannels,
@@ -199,8 +274,13 @@ exports = {
     fhAsyncChannels: fhAsyncChannels,
     maxDevices: maxDevices,
     fhNetname: fhNetname,
+    starNetwork: starNetwork,
     fhBroadcastInterval: fhBroadcastInterval,
     fhBroadcastDwellTime: fhBroadcastDwellTime,
     ccaThreshold: ccaThreshold,
-    unicastDwellTime: unicastDwellTime
+    unicastDwellTime: unicastDwellTime,
+    custMinTxOff: customMinTxOff,
+    minTxOff: minTxOff,
+    dcEnable: dutyCycleEnable,
+    dutyCycle: dutyCycle
 };

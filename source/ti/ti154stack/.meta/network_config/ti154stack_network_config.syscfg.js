@@ -444,10 +444,17 @@ function getSupportedChannels(inst)
 {
     let range = [];
 
+    const phy154Settings = rfCommon.getPhySysConfigInfo(inst);
+
     if((inst == null && !Common.isSub1GHzDevice())
         || (inst != null && inst.freqBand === "freqBand24"))
     {
         range = _.range(11, 27); // Channels 11 - 26
+    }
+    // If custom phy is enabled read from the custom phy settings and set number of channels accordingly
+    else if(inst != null && inst.customPhy === true)
+    {
+        range = _.range(phy154Settings.numChannels)
     }
     else if(inst != null && inst.freqSub1 === "freq433")
     {
@@ -502,14 +509,13 @@ function getSupportedChannels(inst)
 function getChannelOptions(inst, isLegacyConfig)
 {
     const options = [];
-
     // Get largest subset of channels allowed by device
     const allowedRange = getSupportedChannels(inst);
     const firstChannel = allowedRange[0];
 
     // Get frequency data on channels to display in drop-down
     const channelData = rfCommon.getPhySysConfigInfo(inst);
-
+    
     // Create an array of drop down options for channel configs
     _.each(allowedRange, (channel) =>
     {
@@ -530,7 +536,7 @@ function getChannelOptions(inst, isLegacyConfig)
             + (channel - firstChannel) * channelData.chanSpacing;
         channelFreq = _.round(channelFreq / 1000, 1);
 
-        if(inst && inst.phyRegulation === "arib")
+        if((inst && inst.phyRegulation === "arib" && !inst.customPhy) || (inst && inst.customPhy && channelData.freqBand === "freq920"))
         {
             // ARIB uses channel bundles. SysConfig/MAC channel 0
             // corresponds to channel bundle 24,25. Channel 1 corresponds
@@ -759,12 +765,14 @@ function getNetworkConfigHiddenState(inst, cfgName)
         case "customMinTxOff":
         {
             isVisible = inst.phyRegulation === "arib"
-                || inst.phyRegulation === "etsi" || isCoPProject;
+                || inst.phyRegulation === "etsi" || isCoPProject
+                || inst.customPhy;
             break;
         }
         case "dutyCycleEnable":
         {
-            isVisible = inst.phyRegulation === "arib" || isCoPProject;
+            isVisible = inst.phyRegulation === "arib" || isCoPProject
+                || inst.customPhy;
             break;
         }
         case "dutyCycle":

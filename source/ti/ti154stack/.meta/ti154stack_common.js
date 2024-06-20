@@ -248,6 +248,10 @@ const supportedMigrations = {
         CC2651R3RGZ: {},
         LP_CC2651R3: {}
     },
+    LP_EM_CC1354P10_1: {
+        CC1352P1_LAUNCHXL: {},
+        LP_CC1354P10_1_RGZ: {}
+    },
     LP_EM_CC1354P10: {
         CC2674R10RGZ: {},
         CC2674P10RGZ: {},

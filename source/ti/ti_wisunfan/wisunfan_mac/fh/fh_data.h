@@ -254,9 +254,12 @@ typedef struct fh_debug_s
     uint16_t                numAsyncStopReq;                        /*<! number of ASYNC stop request */
     uint16_t                numPurge;                               /*<! number of ASYNC packets are purged */
     uint16_t                numUnSupportedTypes;                    /*<! number of unsupported frames purged */
-    uint16_t                numTxAsyncDelay;                        /*<! number ofTX ASYNC delay */
-    uint16_t                numTxAsyncCCAError;                     /*<! number ofTX ASYNC CCA error */
-    uint16_t                numTxMinOffDelay;                       /*<! number ofTX minimum off delay */
+    uint16_t                numTxAsyncDelay;                        /*<! number of TX ASYNC delay */
+    uint16_t                numTxAsyncCCAError;                     /*<! number of TX ASYNC CCA error */
+    uint16_t                numCsmaReq;                             /*<! number of CSMA requests total */
+    uint16_t                numCsmaReqOutSlot;                      /*<! number of CSMA requests to out of lot time (no minTxOff) */
+    uint16_t                numTxMinOffDelay;                       /*<! number of TX minimum off delay */
+    uint16_t                numTxMinOffAsyncDelay;                  /*<! number of TX minimum off async delay */
     uint16_t                numRxEDFEinDFE;                         /*<! number of RX EDFE while in DFE */
     uint16_t                numEdfeStart;                           /*<! number of edfe packets */
 #ifdef FEATURE_WISUN_SUPPORT

@@ -102,11 +102,14 @@ working buffer by setting NVOCMP_RAM_BUFFER_SIZE, which defaults to 500.
 /*
 Since this is multi page NV driver, the number of NV pages is configurable.
 NVOCMP_NVPAGES = 1 means 1 page storage and 0 compaction page.
-NVOCMP_NVPAGES = 2 means 1 page storage and 1 compaction page.
-NVOCMP_NVPAGES = 3 means 2 pages storage and 1 compaction page.
-NVOCMP_NVPAGES = 4 means 3 pages storage and 1 compaction page.
-NVOCMP_NVPAGES = 5 means 4 pages storage and 1 compaction page.
-NVOCMP_NVPAGES = 6 means 5 pages storage and 1 compaction page.
+In general, if NVOCMP_NVPAGES > 1, means NVOCMP_NVPAGES - 1 pages for
+storage and 1 compaction page.
+
+Note that as the configured number of pages is increased, it may impact
+performance during read (find active item) and write operations (create
+a new record for a given item and marking the previous record of such
+item as inactive).
+
 NVOCMP_NVPAGES can be configured from project option. If this flag is not
 configured, NVOCMP_NVPAGES = 2 will be by default.
 "nvintf.h" describes the generic NV interface which is used to access NVOCMP
@@ -192,14 +195,14 @@ Requires API's in a crc.h to implement CRC functionality.
 #include <ti/sysbios/gates/GateMutexPri.h>
 #endif
 #include "nvocmp.h"
-#include "crc.h"
+#include "ti/common/nv/crc.h"
 
 #ifndef NV_LINUX
 
 #include <ti/devices/DeviceFamily.h>
 /* CC23X0 and CC27XX does not support GPRAM,
  * so VIMS access is not needed */
-#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC27XX)
+#if !defined(DeviceFamily_CC23X0R5) && !defined(DeviceFamily_CC23X0R53) && !defined(DeviceFamily_CC23X0R2) && !defined(DeviceFamily_CC23X0R22) && !defined(DeviceFamily_CC27XX)
 #include DeviceFamily_constructPath(driverlib/vims.h)
 #endif
 
@@ -216,11 +219,7 @@ Requires API's in a crc.h to implement CRC functionality.
 // Constants and Definitions
 //*****************************************************************************
 #ifndef NVOCMP_NVPAGES
-#define NVOCMP_NVPAGES      2     //1 ~ 6 are supported
-#endif
-
-#if (NVOCMP_NVPAGES > 6)
-#error "NVOCMP_NVPAGES should be in between 1 and 6"
+#define NVOCMP_NVPAGES      2
 #endif
 
 #define NVOCMP_FASTCP       1           // Fast Compaction by Skipping All Active Item Pages
@@ -369,7 +368,8 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 //*****************************************************************************
 #if defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) || \
     defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5) || \
-    defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC27XX)
+    defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || \
+    defined(DeviceFamily_CC23X0R22) || defined(DeviceFamily_CC27XX)
 // CC26x4/CC13x4/CC23x0/cc27xx devices flash page size is (1 << 11) or 0x800
 #define PAGE_SIZE_LSHIFT 11
 #else
@@ -391,7 +391,7 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
 #endif // NVOCMP_SIGNATURE
 
 #ifndef NVOCMP_NO_RAM_OPTIMIZATION
-#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC27XX)
+#if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22) || defined(DeviceFamily_CC27XX)
     #define NVOCMP_RAM_OPTIMIZATION
 #endif
 #endif
@@ -403,7 +403,9 @@ static void NVOCMP_assert(bool cond, char *message, bool fatal)
         !defined (DeviceFamily_CC26X4) && \
         !defined (DeviceFamily_CC26X3) && \
         !defined (DeviceFamily_CC23X0R5) && \
+        !defined (DeviceFamily_CC23X0R53) && \
         !defined (DeviceFamily_CC23X0R2) && \
+        !defined (DeviceFamily_CC23X0R22) && \
         !defined (DeviceFamily_CC27XX)
         #define NVOCMP_GPRAM
     #endif

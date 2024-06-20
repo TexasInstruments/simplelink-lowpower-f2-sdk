@@ -103,21 +103,6 @@ extern "C"
 #define FEATURE_FULL_FUNCTION_DEVICE
 % }
 
-% if (inst.coexMode === "coexMode2Wire" || inst.coexMode === "coexMode3Wire") {
-/* Builds the image with Wifi Coexistence Enabled */
-#ifndef IEEE_COEX_ENABLED
-#define IEEE_COEX_ENABLED
-#endif
-
-% if (inst.coexMode === "coexMode3Wire") {
-/* IEEE 3 Wire Coexistence is enabled */
-#ifndef IEEE_COEX_3_WIRE
-#define IEEE_COEX_3_WIRE
-#endif
-% }
-% }
-
-
 #ifdef __cplusplus
 }
 #endif

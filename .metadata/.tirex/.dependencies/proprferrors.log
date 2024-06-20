@@ -6544,10 +6544,7 @@ In project: examples/rtos/LP_EM_CC1314R10/prop_rf/rfWakeOnRadioTx/tirtos7/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/freertos/gcc/tfm_rfPacketRx_LP_EM_CC1314R10_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/freertos/iar/tfm_rfPacketRx_LP_EM_CC1314R10_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
@@ -6556,10 +6553,7 @@ In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/freertos/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/tirtos7/gcc/tfm_rfPacketRx_LP_EM_CC1314R10_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/tirtos7/iar/tfm_rfPacketRx_LP_EM_CC1314R10_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
@@ -6568,10 +6562,7 @@ In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketRx/tirtos7/ticlang
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketTx/freertos/gcc/tfm_rfPacketTx_LP_EM_CC1314R10_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketTx/freertos/iar/tfm_rfPacketTx_LP_EM_CC1314R10_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
@@ -6580,10 +6571,7 @@ In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketTx/freertos/ticlan
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketTx/tirtos7/gcc/tfm_rfPacketTx_LP_EM_CC1314R10_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1314R10/prop_rf/tfm_rfPacketTx/tirtos7/iar/tfm_rfPacketTx_LP_EM_CC1314R10_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1314R10/Board.html
@@ -6826,10 +6814,7 @@ In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/rfWakeOnRadioTx/tirtos7/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/freertos/gcc/tfm_rfPacketRx_LP_EM_CC1354P10_1_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/freertos/iar/tfm_rfPacketRx_LP_EM_CC1354P10_1_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
@@ -6838,10 +6823,7 @@ In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/freertos/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/tirtos7/gcc/tfm_rfPacketRx_LP_EM_CC1354P10_1_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/tirtos7/iar/tfm_rfPacketRx_LP_EM_CC1354P10_1_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
@@ -6850,10 +6832,7 @@ In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketRx/tirtos7/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketTx/freertos/gcc/tfm_rfPacketTx_LP_EM_CC1354P10_1_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketTx/freertos/iar/tfm_rfPacketTx_LP_EM_CC1354P10_1_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
@@ -6862,10 +6841,7 @@ In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketTx/freertos/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketTx/tirtos7/gcc/tfm_rfPacketTx_LP_EM_CC1354P10_1_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_1/prop_rf/tfm_rfPacketTx/tirtos7/iar/tfm_rfPacketTx_LP_EM_CC1354P10_1_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html
@@ -7096,10 +7072,7 @@ In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/rfWakeOnRadioTx/tirtos7/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/freertos/gcc/tfm_rfPacketRx_LP_EM_CC1354P10_6_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/freertos/iar/tfm_rfPacketRx_LP_EM_CC1354P10_6_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
@@ -7108,10 +7081,7 @@ In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/freertos/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/tirtos7/gcc/tfm_rfPacketRx_LP_EM_CC1354P10_6_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/tirtos7/iar/tfm_rfPacketRx_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
@@ -7120,10 +7090,7 @@ In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketRx/tirtos7/ticla
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/freertos/gcc/tfm_rfPacketTx_LP_EM_CC1354P10_6_freertos_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 31
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/freertos/iar/tfm_rfPacketTx_LP_EM_CC1354P10_6_freertos_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
@@ -7132,10 +7099,7 @@ In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/freertos/ticl
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/gcc/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_gcc.projectspec
 
-Error: Forward-slash in opening tag not followed by >
-Line: 29
-Column: 58
-Char: c
+Unable to parse files
 In project: examples/rtos/LP_EM_CC1354P10_6/prop_rf/tfm_rfPacketTx/tirtos7/iar/tfm_rfPacketTx_LP_EM_CC1354P10_6_tirtos7_iar.ipcf
 
 File not found: ${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_6/Board.html

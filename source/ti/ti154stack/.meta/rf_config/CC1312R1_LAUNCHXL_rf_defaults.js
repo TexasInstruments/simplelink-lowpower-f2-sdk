@@ -43,11 +43,15 @@ const commonPhySettings = system.getScript("/ti/ti154stack/rf_config/"
 // Array containing all the phy settings for the CC1312R1_LAUNCHXL
 const defaultPropPhyList = commonPhySettings.defaultPropPhyList;
 
+// Custom Phy settings
+const customPhyList = commonPhySettings.customPhyList;
+
 // IEEE phy setting not supported on the CC1312R1_LAUNCHXL
 const defaultIEEEPhyList = [
 ];
 
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList: customPhyList
 };

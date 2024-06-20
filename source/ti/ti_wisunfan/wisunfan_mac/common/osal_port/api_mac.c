@@ -127,6 +127,10 @@
 void timac_setup_Test_GPIO(void);
 void timac_Set_MAC_BROADCAST_GPIO(uint8_t st);
 
+#ifdef MAC_DUTY_CYCLE_CHECKING
+#include "mac_duty_cycle/mac_duty_cycle.h"
+#endif
+
 /*!
  This module is the ICall interface for the application and all ICall
  activity must go through this module, no ICall activity anywhere else.
@@ -206,6 +210,8 @@ extern sem_t event_thread_sem_handle;
 extern configurable_props_t cfg_props;
 extern int8_t eventOS_event_timer_request(uint8_t event_id, uint8_t event_type, int8_t tasklet_id, uint32_t time);
 
+//fake pib variable to hold reg domain info
+extern uint8_t regDomain;
 /******************************************************************************
  Local variables
  *****************************************************************************/
@@ -374,6 +380,13 @@ ApiMac_status_t ApiMac_mcpsPurgeReq(uint8_t msduHandle)
 ApiMac_status_t ApiMac_mlmeGetReqBool(ApiMac_attribute_bool_t pibAttribute,
 bool *pValue)
 {
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleEnabled)
+    {
+        *pValue = dcEnabled;
+        return ApiMac_status_success;
+    }
+#endif
     return (ApiMac_status_t) MAC_MlmeGetReq(pibAttribute, pValue);
 }
 
@@ -386,6 +399,18 @@ bool *pValue)
 ApiMac_status_t ApiMac_mlmeGetReqUint8(ApiMac_attribute_uint8_t pibAttribute,
                                        uint8_t *pValue)
 {
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleStatus)
+    {
+        *pValue = dcStatus;
+        return ApiMac_status_success;
+    }
+#endif
+    if (pibAttribute == ApiMac_attribute_regDomain)
+    {
+        *pValue = regDomain;
+        return ApiMac_status_success;
+    }
     return (ApiMac_status_t) MAC_MlmeGetReq(pibAttribute, pValue);
 }
 
@@ -410,6 +435,39 @@ ApiMac_status_t ApiMac_mlmeGetReqUint16(ApiMac_attribute_uint16_t pibAttribute,
 ApiMac_status_t ApiMac_mlmeGetReqUint32(ApiMac_attribute_uint32_t pibAttribute,
                                         uint32_t *pValue)
 {
+#ifdef MAC_OVERRIDE_TX_DELAY
+    if (pibAttribute == ApiMac_attribute_minTxOffTime)
+    {
+        *pValue = minTxOffTime;
+        return ApiMac_status_success;
+    }
+#endif
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute >= ApiMac_attribute_dutyCycleLimited && pibAttribute <= ApiMac_attribute_dutyCyclePtr)
+    {
+        if (pibAttribute == ApiMac_attribute_dutyCycleLimited)
+        {
+            *pValue = dcLimited;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleCritical)
+        {
+            *pValue = dcCritical;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleRegulated)
+        {
+            *pValue = dcRegulated;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleUsed)
+        {
+            *pValue = dcTimeUsed;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCyclePtr)
+        {
+            *pValue = dcPtr;
+        }
+        return ApiMac_status_success;
+    }
+#endif
     return (ApiMac_status_t) MAC_MlmeGetReq(pibAttribute, pValue);
 }
 
@@ -439,6 +497,15 @@ ApiMac_status_t ApiMac_mlmeGetReqArrayLen(ApiMac_attribute_array_t pibAttribute,
                                           uint8_t *pValue,
                                           uint16_t *pLen)
 {
+    /* Duty Cycle PIB Variable */
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleBucket)
+    {
+        memcpy((DC_NODE_ENTRY_s *)pValue, dcBucket, sizeof(DC_NODE_ENTRY_s) * DUTY_CYCLE_BUCKETS);
+        return ApiMac_status_success;
+    }
+#endif
+
     if (NULL != pLen)
     {
         *pLen = (uint32_t)MAC_MlmeGetReqSize(pibAttribute);
@@ -598,6 +665,20 @@ ApiMac_status_t ApiMac_mlmeResetReq(bool setDefaultPib)
 ApiMac_status_t ApiMac_mlmeSetReqBool(ApiMac_attribute_bool_t pibAttribute,
 bool value)
 {
+#ifdef MAC_OVERRIDE_TX_DELAY
+    if (pibAttribute == ApiMac_attribute_customMinTxOffEnabled)
+    {
+        customMinTxOffEnabled = value;
+        return ApiMac_status_success;
+    }
+#endif
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleEnabled)
+    {
+        dcEnabled = value;
+        return ApiMac_status_success;
+    }
+#endif
     return (ApiMac_status_t) MAC_MlmeSetReq(pibAttribute, (void *)&value);
 }
 
@@ -610,6 +691,18 @@ bool value)
 ApiMac_status_t ApiMac_mlmeSetReqUint8(ApiMac_attribute_uint8_t pibAttribute,
                                        uint8_t value)
 {
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleStatus)
+    {
+        dcStatus = value;
+        return ApiMac_status_success;
+    }
+#endif
+    if (pibAttribute == ApiMac_attribute_regDomain)
+    {
+        regDomain = value;
+        return ApiMac_status_success;
+    }
     return (ApiMac_status_t) MAC_MlmeSetReq(pibAttribute, (void *)&value);
 }
 
@@ -634,6 +727,39 @@ ApiMac_status_t ApiMac_mlmeSetReqUint16(ApiMac_attribute_uint16_t pibAttribute,
 ApiMac_status_t ApiMac_mlmeSetReqUint32(ApiMac_attribute_uint32_t pibAttribute,
                                         uint32_t value)
 {
+#ifdef MAC_OVERRIDE_TX_DELAY
+    if (pibAttribute == ApiMac_attribute_minTxOffTime)
+    {
+        minTxOffTime = value;
+        return ApiMac_status_success;
+    }
+#endif
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute >= ApiMac_attribute_dutyCycleLimited && pibAttribute <= ApiMac_attribute_dutyCyclePtr)
+    {
+        if (pibAttribute == ApiMac_attribute_dutyCycleLimited)
+        {
+            dcLimited = value;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleCritical)
+        {
+            dcCritical = value;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleRegulated)
+        {
+            dcRegulated = value;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCycleUsed)
+        {
+            dcTimeUsed = value;
+        }
+        if (pibAttribute == ApiMac_attribute_dutyCyclePtr)
+        {
+            dcPtr = value;
+        }
+        return ApiMac_status_success;
+    }
+#endif
     return (ApiMac_status_t) MAC_MlmeSetReq(pibAttribute, (void *)&value);
 }
 
@@ -646,6 +772,13 @@ ApiMac_status_t ApiMac_mlmeSetReqUint32(ApiMac_attribute_uint32_t pibAttribute,
 ApiMac_status_t ApiMac_mlmeSetReqArray(ApiMac_attribute_array_t pibAttribute,
                                        uint8_t *pValue)
 {
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    if (pibAttribute == ApiMac_attribute_dutyCycleBucket)
+    {
+        memcpy(dcBucket, (DC_NODE_ENTRY_s *)pValue, sizeof(DC_NODE_ENTRY_s) * DUTY_CYCLE_BUCKETS);
+        return ApiMac_status_success;
+    }
+#endif
     return (ApiMac_status_t) MAC_MlmeSetReq(pibAttribute, pValue);
 }
 
@@ -1843,6 +1976,7 @@ void timac_initialize(struct mac_api_s *api)
     mbed_mac_api = api;
 
     ApiMac_mlmeSetReqUint8(ApiMac_attribute_phyCurrentDescriptorId, cfg_props.config_phy_id);
+    ApiMac_mlmeSetReqUint8(ApiMac_attribute_regDomain, cfg_props.config_reg_domain);
     ApiMac_mlmeSetReqUint8(ApiMac_attribute_channelPage, (uint8_t)CONFIG_CHANNEL_PAGE);
     /* Set the transmit power */
     ApiMac_mlmeSetReqUint8(ApiMac_attribute_phyTransmitPowerSigned, (uint8_t)cfg_props.phyTxPower);
@@ -1921,6 +2055,25 @@ void timac_initialize(struct mac_api_s *api)
     memset(excludeChannels, 0, APIMAC_154G_CHANNEL_BITMAP_SIZ);
     ApiMac_mlmeSetFhReqArray(ApiMac_FHAttribute_broadcastExcludedChannels,
                             excludeChannels);
+#endif
+
+#ifdef MAC_DUTY_CYCLE_CHECKING
+    ApiMac_mlmeSetReqBool(ApiMac_attribute_dutyCycleEnabled, true);
+    ApiMac_mlmeSetReqUint32(ApiMac_attribute_dutyCycleRegulated,
+                            DUTY_CYCLE_MEAS_PERIOD*MAC_DUTY_CYCLE_THRESHOLD/100);
+
+    /* Critical and limited duty cycle modes unused, set to max
+     * value to avoid entering state */
+    ApiMac_mlmeSetReqUint32(ApiMac_attribute_dutyCycleCritical,
+                            UINT32_MAX);
+    ApiMac_mlmeSetReqUint32(ApiMac_attribute_dutyCycleLimited,
+                            UINT32_MAX);
+#endif
+
+#ifdef MAC_OVERRIDE_TX_DELAY
+    ApiMac_mlmeSetReqBool(ApiMac_attribute_customMinTxOffEnabled, true);
+    ApiMac_mlmeSetReqUint32(ApiMac_attribute_minTxOffTime,
+                            (uint32_t)MAC_CONFIG_MIN_TX_OFF);
 #endif
 
 }

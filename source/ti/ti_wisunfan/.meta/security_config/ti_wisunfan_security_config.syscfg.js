@@ -60,7 +60,7 @@ const config = {
                 },
                 {
                     name: "macSecurePresharedKey",
-                    displayName: "Only MAC Security with Preshared Key"
+                    displayName: "MAC Security with Preshared Key"
                 },
                 {
                     name: "macSecure",
@@ -167,12 +167,15 @@ function getSecurityConfigHiddenState(inst, cfgName)
     switch(cfgName)
     {
         case "euiJoin":
+            isVisible = (inst.secureLevel == "macSecurePresharedKey");
+            break;
         case "keyTableDefaultKey1":
         case "keyTableDefaultKey2":
         case "keyTableDefaultKey3":
         case "keyTableDefaultKey4":
         {
-            isVisible = (inst.secureLevel == "macSecurePresharedKey");
+            isVisible = (inst.secureLevel == "macSecurePresharedKey" &&
+                !inst.project.includes("solar"));
             break;
         }
         case "secureLevel":
@@ -225,10 +228,13 @@ function validate(inst, validation)
     keyModules[3] = ["keyTableDefaultKey4", inst.keyTableDefaultKey4];
 
     // Log info for Wi-SUN non-compliant settings
-    if(inst.secureLevel != "macSecure")
+    if (!inst.project.includes("solar"))
     {
-        validation.logInfo("Network security must be enabled with key exchange \
-        to be Wi-SUN standard compliant", inst, "secureLevel");
+        if(inst.secureLevel != "macSecure")
+        {
+            validation.logInfo("Network security must be enabled with key exchange \
+            to be Wi-SUN standard compliant", inst, "secureLevel");
+        }
     }
     // Verify 32 digits entered if security is enabled
     if(inst.secureLevel === "macSecurePresharedKey")

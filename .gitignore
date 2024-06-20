@@ -46,3 +46,8 @@ __pycache__
 
 # backup files
 *~
+
+# built binaries
+/build/
+**/bin/
+**/lib/

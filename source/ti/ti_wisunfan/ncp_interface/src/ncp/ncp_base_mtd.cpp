@@ -158,9 +158,12 @@ extern "C" uint32_t g_switchNcp2Trace;
 extern "C" bool udpSocketSetup(void);
 extern "C" void ns_trace_printf(uint8_t dlevel, const char *grp, const char *fmt, ...);
 #ifdef HAVE_RPL_ROOT
-extern "C" void startUDPTraffic (uint32_t numPkts);
+extern "C" void startUDPTraffic (uint32_t numPkts, uint8_t pktInterval, uint8_t hopCount, uint16_t pktLen);
 #endif
 #endif
+
+extern "C" uint8_t get_current_net_state();
+extern "C" uint8_t get_network_panid();
 
 /* Core properties */
 
@@ -375,16 +378,25 @@ template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_PHY_METRICS>(void)
 /* MAC properties */
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_MAC_15_4_PANID>(void)
 {
-    return mEncoder.WriteUint16(cfg_props.pan_id);
+    if (get_current_net_state() < 3)
+    {
+        return mEncoder.WriteUint16(cfg_props.pan_id);
+    }
+    return mEncoder.WriteUint16(get_network_panid());
 }
 
 template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_MAC_15_4_PANID>(void)
 {
+#ifdef HAVE_RPL_ROOT
     otError  error = OT_ERROR_NONE;
+
     SuccessOrExit(error = mDecoder.ReadUint16(cfg_props.pan_id));
 
 exit:
     return error;
+#else
+    return OT_ERROR_NOT_IMPLEMENTED;
+#endif
 }
 
 /* NET properties */
@@ -516,14 +528,42 @@ template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_NETWORK_NAME>(voi
 
 template <> otError NcpBase::HandlePropertySet<SPINEL_PROP_NET_UDP_START>(void)
 {
-    uint32_t udp_pkts = 0;
+    uint32_t udpPkts = 0;
+    uint8_t udpPktInterval = 1;
+    uint8_t udpHopCount = 1;
+    uint8_t udpPktLen = 20;
 
-    otError error   = OT_ERROR_NONE;
-    SuccessOrExit(error = mDecoder.ReadUint32(udp_pkts));
+    spinel_eui64_t udpTestParams;
+    otError     error  = OT_ERROR_NONE;
+
+    SuccessOrExit(error = mDecoder.ReadEui64(udpTestParams));
+    // Number of packets to send - 4 bytes
+    udpPkts = udpTestParams.bytes[7] + (udpTestParams.bytes[6] << 8) + (udpTestParams.bytes[5] << 16) + (udpTestParams.bytes[4] << 24);
+    // Packet interval - 1 byte
+    udpPktInterval = udpTestParams.bytes[3];
+    // Packet interval is in seconds
+    if (udpPktInterval == 0)
+    {
+        udpPktInterval = 1;
+    }
+
+    // UDP Hop Count - 1 byte
+    udpHopCount = udpTestParams.bytes[2];
+    if (udpHopCount == 0)
+    {
+        udpHopCount = 1;
+    }
+    // Packet Length - 1 byte
+    udpPktLen = udpTestParams.bytes[1];
+    if (udpPktLen < 20)
+    {
+        udpPktLen = 20;
+    }
+
 #ifdef WISUN_TEST_MPL_EMBEDDED
 #ifdef HAVE_RPL_ROOT
     // Start UDP Traffic for given number of packets
-    startUDPTraffic(udp_pkts);
+    startUDPTraffic(udpPkts, udpPktInterval, udpHopCount, udpPktLen);
 #endif
 #endif
 
@@ -1135,7 +1175,6 @@ exit:
 }
 #endif //TI_WISUN_FAN_DEBUG
 
-extern "C"  uint8_t get_current_net_state();
 template <> otError NcpBase::HandlePropertyGet<SPINEL_PROP_NET_STATE>(void)
 {
     otError error = OT_ERROR_NONE;

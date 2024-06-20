@@ -457,6 +457,10 @@
                         {
                             "name": "OOK",
                             "key": 2
+                        },
+                        {
+                            "name": "QPSK",
+                            "key": 7
                         }
                     ]
                 },
@@ -835,8 +839,7 @@
             {
                 "file": "setting_tc600.json",
                 "name": "ook16kbps",
-                "description": "16.384 kbps, OOK, 100 kHz RX Bandwidth, Manchester encoding",
-                "options": "disable_high_pa"
+                "description": "16.384 kbps, OOK, 100 kHz RX Bandwidth, Manchester encoding"
             },
             {
                 "file": "setting_tc594.json",
@@ -908,25 +911,25 @@
                 "file": "setting_tc246.json",
                 "name": "qpsk50kbpsrm3",
                 "description": "SUN O-QPSK, 50 kbps, 100 kchip\/s, Rate Mode 3, 170 kHz RX Bandwidth (Release Candidate)",
-                "options": "ieee_15_4g"
+                "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc247.json",
                 "name": "qpsk25kbpsrm2",
                 "description": "SUN O-QPSK, 25 kbps, 100 kchip\/s, Rate Mode 2, 170 kHz RX Bandwidth (Release Candidate)",
-                "options": "ieee_15_4g"
+                "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc248.json",
                 "name": "qpsk12kbpsrm1",
                 "description": "SUN O-QPSK, 12.5 kbps, 100 kchip\/s, Rate Mode 1, 170 kHz RX Bandwidth (Release Candidate)",
-                "options": "ieee_15_4g"
+                "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc249.json",
                 "name": "qpsk6kbpsrm0",
                 "description": "SUN O-QPSK, 6.25 kbps, 100 kchip\/s, Rate Mode 0, 170 kHz RX Bandwidth (Release Candidate)",
-                "options": "ieee_15_4g"
+                "options": "disable_high_pa"
             },
             {
                 "file": "setting_tc383.json",

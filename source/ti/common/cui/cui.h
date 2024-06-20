@@ -100,7 +100,7 @@ Usage
 
     @code
     // Import the CUI definitions
-    #include "cui.h"
+    #include "ti/common/cc26xx/cui/cui.h"
 
     CUI_params_t cuiParams;
     CUI_paramsInit(&cuiParams);

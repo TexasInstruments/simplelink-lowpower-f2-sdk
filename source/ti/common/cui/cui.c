@@ -57,7 +57,7 @@
  
  
  *****************************************************************************/
- 
+
 /******************************************************************************
  Includes
  *****************************************************************************/
@@ -76,7 +76,7 @@
 #include DeviceFamily_constructPath(driverlib/cpu.h)
 #include "ti_drivers_config.h"
 
-#include "cui.h"
+#include "ti/common/cui/cui.h"
 
 
 #define CUI_INITIAL_STATUS_OFFSET 5

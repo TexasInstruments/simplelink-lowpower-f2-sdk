@@ -1,0 +1,128 @@
+{
+    "frontends": {
+        "FrontEnd": [
+            {
+                "_name": "ID",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "0"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "0"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride",
+                        "Block": {
+                            "_name": "override_frontend_id.json",
+                            "Element32b": {
+                                "_type": "ELEMENT",
+                                "_comment": "Rx: Set RSSI offset to adjust reported RSSI by +1 dB",
+                                "$": "0x00FF88A3"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "_name": "XD",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "0"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "1"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride"
+                    }
+                }
+            },
+            {
+                "_name": "IS_RFP",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "1"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "0"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride"
+                    }
+                }
+            },
+            {
+                "_name": "IS_RFN",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "2"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "0"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride"
+                    }
+                }
+            },
+            {
+                "_name": "XS_RFP",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "1"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "1"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride"
+                    }
+                }
+            },
+            {
+                "_name": "XS_RFN",
+                "Command": {
+                    "_name": "CMD_RADIO_SETUP",
+                    "Field": [
+                        {
+                            "_name": "config.frontEndMode",
+                            "$": "2"
+                        },
+                        {
+                            "_name": "config.biasMode",
+                            "$": "1"
+                        }
+                    ],
+                    "OverrideField": {
+                        "_name": "pRegOverride"
+                    }
+                }
+            }
+        ]
+    }
+}

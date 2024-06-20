@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <iarUserArgVars>
-  <group active="true" name="SIMPLELINK_CC13XX_CC26XX_SDK_7_40_00_77">
+  <group active="true" name="SIMPLELINK_CC13XX_CC26XX_SDK_7_41_00_17">
     <variable>
       <name>XDCPATH</name>
-      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_40_00_77/kernel/tirtos/packages;c:/ti/simplelink_cc13xx_cc26xx_sdk_7_40_00_77/source</value>
+      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/kernel/tirtos/packages;c:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/source</value>
     </variable>
     <variable>
       <name>XDCROOT</name>
@@ -20,15 +20,15 @@
     </variable>
     <variable>
       <name>SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR</name>
-      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_40_00_77</value>
+      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17</value>
     </variable>
     <variable>
       <name>COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR</name>
-      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_40_00_77</value>
+      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17</value>
     </variable>
     <variable>
       <name>EXAMPLE_ROOT</name>
-      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_40_00_77/tools/iar</value>
+      <value>c:/ti/simplelink_cc13xx_cc26xx_sdk_7_41_00_17/tools/iar</value>
     </variable>
   </group>
 </iarUserArgVars>

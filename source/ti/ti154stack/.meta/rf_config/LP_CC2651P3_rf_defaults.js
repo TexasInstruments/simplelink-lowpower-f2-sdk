@@ -47,7 +47,11 @@ const defaultIEEEPhyList = commonPhySettings.defaultIEEEPhyList;
 const defaultPropPhyList = [
 ];
 
+// Custom Phy settings
+const customPhyList = commonPhySettings.customPhyList;
+
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList: customPhyList
 };

@@ -303,6 +303,8 @@ extern "C"
 #define APIMAC_200KBPS_868MHZ_PHY_133          133
  /*! 920MHz Frequency band operating mode #4a */
 #define APIMAC_200KBPS_920MHZ_PHY_136          136
+/* Configurable custom PHY*/
+#define APIMAC_CUSTOM_PHY_ID               134
  /*! Channel Page - none for IEEE modes */
 #define APIMAC_250KBPS_IEEE_PHY_0                      0
 
@@ -737,6 +739,8 @@ typedef enum
     ApiMac_subAttribute_setGpOffset = 0x07, // Only used for Coprocesscor
     ApiMac_subAttribute_srcMatchSetManualAddressTracking = 0x08,
     ApiMac_subAttribute_getVersions = 0x09, // Only supports get operation
+    ApiMac_subAttribute_setMacStatistics = 0xF0, // Used to manually set macStatistics
+    ApiMac_subAttribute_getMacStatistics = 0xFA, // Only supports get operation
     ApiMac_subAttribute_setReadId = 0xFF,
 } ApiMac_subAttribute_t;
 

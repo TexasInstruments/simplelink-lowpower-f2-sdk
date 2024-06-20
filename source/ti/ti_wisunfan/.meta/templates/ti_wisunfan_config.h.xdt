@@ -36,6 +36,17 @@
  *  ======== ti_wisunfan_config.h.xdt ========
  */
 
+let mode = args[0];
+let inst;
+
+if (typeof mode !== 'undefined' && mode === "wsms") {
+    // Get the WSMS module
+    inst = system.modules["/ti/ti_wisunfan/wsms/wsms"].$static;
+} else {
+    // Get the Wi-SUN module
+    inst = system.modules["/ti/ti_wisunfan/ti_wisunfan"].$static;
+}
+
 // Get network settings script
 const networkScript = system.getScript("/ti/ti_wisunfan/network_config/"
 + "ti_wisunfan_network_config");
@@ -55,8 +66,6 @@ const securityScript = system.getScript("/ti/ti_wisunfan/security_config/"
 // Get common functions script
 const Common = system.getScript("/ti/ti_wisunfan/ti_wisunfan_common.js");
 
-// Get the TI 15.4 module
-const inst = system.modules["/ti/ti_wisunfan/ti_wisunfan"].$static;
 
 function keyTable() {
     const isSecureEnabled = inst.secureLevel !== "macSecurityDisabled";
@@ -72,6 +81,10 @@ function getProjectName(project) {
         case "routernode":
             return "Router";
         case "coapnode":
+            return "CoAP";
+        case "solarborderrouter":
+            return "Border Router";
+        case "solarcoapnode":
             return "CoAP";
         default:
             throw new Error("Unhanded project type: " + project);

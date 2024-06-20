@@ -143,7 +143,13 @@ Sensor to poll and get the frame*/
 #define MAX(n,m)   (((n) < (m)) ? (m) : (n))
 #endif
 
-#if ((CONFIG_PHY_ID >= APIMAC_MRFSK_STD_PHY_ID_BEGIN) && (CONFIG_PHY_ID <= APIMAC_MRFSK_GENERIC_PHY_ID_BEGIN))
+#if (CONFIG_PHY_ID == APIMAC_CUSTOM_PHY_ID)
+/* MAC Indirevt Persistent Timeout */
+#define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \
+                                  (BASE_SUPER_FRAME_DURATION * \
+                                   SYMBOL_DURATION_CUSTOM)) 
+
+#elif  ((CONFIG_PHY_ID >= APIMAC_MRFSK_STD_PHY_ID_BEGIN) && (CONFIG_PHY_ID <= APIMAC_MRFSK_GENERIC_PHY_ID_BEGIN))
 
 /* MAC Indirect Persistent Timeout */
 #define INDIRECT_PERSISTENT_TIME (MAX((5 * 1000 * CONFIG_POLLING_INTERVAL / 2), MIN_PERSISTENCE_TIME_USEC)/ \

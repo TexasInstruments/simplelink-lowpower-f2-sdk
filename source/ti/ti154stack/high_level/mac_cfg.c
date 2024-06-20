@@ -104,6 +104,25 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+// Coprocessor is not supported with the custom PHY feature yet. This is a temp solution.
+// If coprocessor is not defined, use the sysconfig values from ti_154stack_config.h
+// If coprocessor is defined, set the PHY settings to WB-DSSS PHY
+#if !defined(COPROCESSOR) && defined(ENABLE_CUSTOM_PHY)
+#define MAC_CUSTOM_BAND_MODE_2_CENTER_FREQ_KHZ          CENTER_FREQUENCY_CUSTOM
+#define MAC_CUSTOM_BAND_MODE_2_CHAN_SPACING_KHZ         CHANNEL_SPACING_CUSTOM
+#define MAC_CUSTOM_BAND_MODE_2_TOTAL_CHANNELS           NUM_CHANNELS_CUSTOM
+#define MAC_CCA_TYPE_CUSTOM                             CCA_TYPE_CUSTOM
+#else 
+#define MAC_CUSTOM_BAND_MODE_2_CENTER_FREQ_KHZ          903000
+#define MAC_CUSTOM_BAND_MODE_2_CHAN_SPACING_KHZ         1600
+#define MAC_CUSTOM_BAND_MODE_2_TOTAL_CHANNELS           17
+#define MAC_MODULATION_INDEX_CUSTOM                     1
+#define MAC_CCA_TYPE_CUSTOM                             1
+#define SYMBOL_RATE_CUSTOM                              480
+#endif
+uint16_t symbol_rate_custom = SYMBOL_RATE_CUSTOM;
+#define MAC_MODULATION_INDEX_CUSTOM                     1
+
 /* maximum number of data frames in transmit queue */
 #ifndef MAC_CFG_TX_DATA_MAX
 #define MAC_CFG_TX_DATA_MAX         2
@@ -644,10 +663,10 @@ macMRFSKPHYDesc_t macMRFSKGenPhyTable[MAC_GENERIC_PHY_DESCRIPTOR_ENTRIES] =
    MAC_MODULATION_INDEX_2FSK_200K,
    MAC_CCA_TYPE_LBT },
  // Dummy placeholder PHY
- { MAC_915MHZ_BAND_MODE_1_CENTER_FREQ_KHZ, MAC_915MHZ_BAND_MODE_1_CHAN_SPACING_KHZ,
-   MAC_915MHZ_BAND_MODE_1_TOTAL_CHANNELS, MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_50_K,
-   MAC_MODULATION_INDEX_2FSK_50K,
-   MAC_CCA_TYPE_CSMA_CA },
+ { MAC_CUSTOM_BAND_MODE_2_CENTER_FREQ_KHZ, MAC_CUSTOM_BAND_MODE_2_CHAN_SPACING_KHZ,
+   MAC_CUSTOM_BAND_MODE_2_TOTAL_CHANNELS, MAC_2_FSK_MODULATION, SYMBOL_RATE_CUSTOM,
+   MAC_MODULATION_INDEX_CUSTOM,
+   MAC_CCA_TYPE_CUSTOM },
  // Dummy placeholder PHY
  { MAC_915MHZ_BAND_MODE_1_CENTER_FREQ_KHZ, MAC_915MHZ_BAND_MODE_1_CHAN_SPACING_KHZ,
    MAC_915MHZ_BAND_MODE_1_TOTAL_CHANNELS, MAC_2_FSK_MODULATION, MAC_MRFSK_SYMBOL_RATE_50_K,

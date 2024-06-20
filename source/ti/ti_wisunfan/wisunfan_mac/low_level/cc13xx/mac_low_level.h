@@ -105,6 +105,7 @@
 #define MAC_TX_TYPE_FH_CSMA                 0x04
 #define MAC_TX_TYPE_LBT                     0x05
 #define MAC_TX_TYPE_GREEN_POWER             0x06
+#define MAC_TX_TYPE_CS_ONLY              0x07 //used in JP region for Async & ack frames
 
 /* FH enhanced ACK, there is CCA in UTIE or BTIE */
 #define MAC_TX_TYPE_FH_ENH_ACK              0xFF

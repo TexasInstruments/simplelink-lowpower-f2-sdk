@@ -64,7 +64,7 @@
 
     #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00056000
     #define BOOT_SECONDARY_1_SIZE               0x00056000
-#elif defined DeviceFamily_CC23X0R2
+#elif defined (DeviceFamily_CC23X0R2) || defined (DeviceFamily_CC23X0R22)
     #define BOOTLOADER_BASE_ADDRESS             0x00000000
     #define BOOT_BOOTLOADER_SIZE                0x00006000
 
@@ -73,7 +73,7 @@
 
     #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00023000
     #define BOOT_SECONDARY_1_SIZE               0x0001d000
-#elif defined DeviceFamily_CC23X0R5
+#elif defined (DeviceFamily_CC23X0R5) || defined (DeviceFamily_CC23X0R53)
     #define BOOTLOADER_BASE_ADDRESS             0x00000000
     #define BOOT_BOOTLOADER_SIZE                0x00006000
 
@@ -82,7 +82,10 @@
 
     #define BOOT_SECONDARY_1_BASE_ADDRESS       0x00043000
     #define BOOT_SECONDARY_1_SIZE               0x0003d000
-#else
+#elif defined(DeviceFamily_CC26X3) || \
+      defined(DeviceFamily_CC26X4) || \
+      defined(DeviceFamily_CC13X4) || \
+      defined(DeviceFamily_CC13X4_CC26X4)
     #if (MCUBOOT_IMAGE_NUMBER == 2)
         #define BOOTLOADER_BASE_ADDRESS         0x00000800
         #define BOOT_BOOTLOADER_SIZE            0x00006000
@@ -108,6 +111,8 @@
         #define BOOT_SECONDARY_1_BASE_ADDRESS   0x00031000
         #define BOOT_SECONDARY_1_SIZE           0x0002b000
     #endif
+#else
+    #error "Device is not supported"
 #endif
 
 /*

@@ -7,7 +7,9 @@
             "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/main_nortos.c -> main_nortos.c",
             "+../mcuboot_blinky.syscfg -> mcuboot_blinky.syscfg",
             "+../mcuboot_blinky_cc13x2x7_cc26x2x7.icf -> mcuboot_blinky_cc13x2x7_cc26x2x7.icf",
-            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/README.md -> README.md"
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/README.md -> README.md",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/slate_test.c -> slate_test.c",
+            "+../../../../../../source/third_party/mcuboot/boot/ti/source/blinky_app/slate_test.h -> slate_test.h"
         ]
     }
 ]

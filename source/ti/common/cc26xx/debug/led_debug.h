@@ -61,10 +61,10 @@ extern "C"
  * MACROS
  */
 
-#if defined(DeviceFamily_CC23X0R2)
+#if defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
 #define RED_LED    21
 #define GREEN_LED  8
-#elif defined(DeviceFamily_CC23X0R5)
+#elif defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53)
 #define RED_LED    14
 #define GREEN_LED  15
 #else

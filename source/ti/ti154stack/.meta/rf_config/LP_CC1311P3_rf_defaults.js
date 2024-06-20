@@ -47,7 +47,11 @@ const defaultPropPhyList = commonPhySettings.defaultPropPhyList;
 const defaultIEEEPhyList = [
 ];
 
+// Contains the object over the configurable phy 
+const customPhyList = commonPhySettings.customPhyList;
+
 exports = {
     defaultPropPhyList: defaultPropPhyList,
-    defaultIEEEPhyList: defaultIEEEPhyList
+    defaultIEEEPhyList: defaultIEEEPhyList,
+    customPhyList: customPhyList
 };

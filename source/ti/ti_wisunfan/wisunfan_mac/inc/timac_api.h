@@ -98,6 +98,7 @@ extern "C" {
 #define MAC_BEACON_LOSS             0xE0  /* The beacon was lost following a synchronization request */
 #define MAC_CHANNEL_ACCESS_FAILURE  0xE1  /* The operation or data request failed because of
                                              activity on the channel */
+#define MAC_DC_LIMIT_REACHED        0xDA  /* The TX operation failed because of duty cycle limit being reached */
 #define MAC_COUNTER_ERROR           0xDB  /* The frame counter puportedly applied by the originator of
                                              the received frame is invalid */
 #define MAC_DENIED                  0xE2  /* The MAC was not able to enter low power mode. */
@@ -467,6 +468,18 @@ extern "C" {
 #define MAC_DIAGS_TX_UCAST_FAIL           0xF1  /* Transmitted unicast fail counter */
 #define MAC_DIAGS_RX_SEC_FAIL             0xF2  /* Received Security fail counter */
 #define MAC_DIAGS_TX_SEC_FAIL             0xF3  /* Transmitted Security fail counter */
+
+#ifdef MAC_DUTY_CYCLE_CHECKING
+/* Duty Cycling */
+#define MAC_DC_ENABLED                    0xEB
+#define MAC_DC_LIMITED                    0xEC
+#define MAC_DC_CRITICAL                   0xED
+#define MAC_DC_REGULATED                  0xEE
+#define MAC_DC_USED                       0xEF
+#define MAC_DC_PTR                        0xF1
+#define MAC_DC_BUCKET                     0xF2
+#define MAC_DC_STATUS                     0xF3
+#endif
 
 /* LBT RSSI Threshold Attributes */
 #define MAC_RSSI_THRESHOLD                0xF4  /* RSSI Threshold */
@@ -1472,6 +1485,24 @@ typedef struct
   uint16        macMaxFrameSize;          /* Maximum application data length without security */
 } macCfg_t;
 
+typedef enum
+{
+    REGDOMAIN_NA = 0x1,
+    REGDOMAIN_JP = 0x2,
+    REGDOMAIN_EU = 0x3,
+    REGDOMAIN_BZ = 0x7,
+    REGDOMAIN_UNINIT = 0xFF
+}macRegDomain_t;
+
+#ifdef MAC_DUTY_CYCLE_CHECKING
+typedef enum
+{
+    dcModeNormal,
+    dcModeLimited,
+    dcModeCritical,
+    dcModeRegulated
+}macDutyCycleMode_t;
+#endif
 
 #define MAC_MSG_EVT_LOG_SIZE    64
 
@@ -2552,6 +2583,20 @@ extern uint8 MAC_MlmeFHGetReq(uint16 pibAttribute, void *pValue);
 /**************************************************************************************************
 */
 
+#ifdef MAC_DUTY_CYCLE_CHECKING
+/*
+ *
+ *
+ * @brief  Callback to application layer to notify when the MAC Duty Cycling
+ * mode changes.
+ *
+ * @param mode  - mode of duty cycle that the device should change to and trigger an
+ * event to notify the application
+ *
+ * @return        None
+ */
+void MAC_DutyCycleNotifyCB(uint8_t mode);
+#endif // MAC_DUTY_CYCLE_CHECKING
 
 
 #ifdef __cplusplus
